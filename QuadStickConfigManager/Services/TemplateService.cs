@@ -16,9 +16,7 @@ namespace QSCM.Services
           "2PACX-1vTdyPHsW5dHAgR8DKwQ3hB9hAF1SnrIrYsCt6qvEsPSWB7MxvIVyGFVNQCgD_RcRQRYB8_ncXCYB_EI";
         readonly HttpClient _http = new();
 
-        /// <summary>
         /// Fetches the index and returns every template’s metadata.
-        /// </summary>
         public async Task<List<TemplateInfo>> LoadIndexAsync()
         {
             var url = 
@@ -47,9 +45,7 @@ namespace QSCM.Services
             return records;
         }
 
-        /// <summary>
         /// Given one template’s FileId, download *its* CSV.
-        /// </summary>
         public async Task<Profile> LoadProfileAsync(TemplateInfo info)
         {
             // Construct the standard “export as CSV” URL for a Google sheet:

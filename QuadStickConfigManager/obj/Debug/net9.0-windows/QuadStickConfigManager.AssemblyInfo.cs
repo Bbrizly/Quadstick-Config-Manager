@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuadStickConfigManager")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+37314e3f13c341534d63bfa28f5014bcc2b6de0c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b31ba2b1513e82fc0c40aa6717d7cc0ce737a394")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuadStickConfigManager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuadStickConfigManager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
