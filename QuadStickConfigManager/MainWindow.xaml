@@ -1,0 +1,34 @@
+﻿<Window x:Class="QuadStickConfigManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="QuadStick Config Manager" Width="700" Height="500">
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <ComboBox Grid.Row="0"
+              Width="300"
+              Margin="0,0,0,10"
+              ItemsSource="{Binding TemplateList}"
+              DisplayMemberPath="Name"
+              SelectedItem="{Binding SelectedTemplate}"
+              IsSynchronizedWithCurrentItem="True"/>
+
+    <DataGrid Grid.Row="1"
+              ItemsSource="{Binding CurrentProfile.Rows}"
+              AutoGenerateColumns="False">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Input"  Binding="{Binding Input}"/>
+        <DataGridTextColumn Header="Output" Binding="{Binding Output}"/>
+        <DataGridTextColumn Header="Func"   Binding="{Binding Function}"/>
+      </DataGrid.Columns>
+    </DataGrid>
+
+    <Button Grid.Row="2" Content="Flash to QuadStick"
+            Height="30" Width="180" HorizontalAlignment="Left"
+            Click="OnFlashClick"/>
+  </Grid>
+</Window>
