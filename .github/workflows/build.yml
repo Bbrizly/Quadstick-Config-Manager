@@ -1,0 +1,78 @@
+name: CI
+
+# Build, package, and release the QuadStick Config Manager (WPF / .NET 9).
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Don't pile up redundant runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  PROJECT: QuadStickConfigManager/QuadStickConfigManager.csproj
+  CONFIG: Release
+  RUNTIME: win-x64
+
+jobs:
+  build:
+    name: Build & package
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT }}
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT }} -c ${{ env.CONFIG }} --no-restore
+
+      - name: Test
+        shell: pwsh
+        run: |
+          $tests = Get-ChildItem -Recurse -Filter *.csproj |
+            Where-Object { (Get-Content $_.FullName -Raw) -match 'Microsoft\.NET\.Test\.Sdk' }
+          if ($tests) { dotnet test -c ${{ env.CONFIG }} --no-build }
+          else { Write-Host "No test projects found; skipping." }
+
+      - name: Publish (self-contained, single file)
+        run: >
+          dotnet publish ${{ env.PROJECT }}
+          -c ${{ env.CONFIG }}
+          -r ${{ env.RUNTIME }}
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o publish
+
+      - name: Package
+        shell: pwsh
+        run: Compress-Archive -Path publish/* -DestinationPath QuadStickConfigManager-${{ env.RUNTIME }}.zip -Force
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuadStickConfigManager-${{ env.RUNTIME }}
+          path: QuadStickConfigManager-${{ env.RUNTIME }}.zip
+          if-no-files-found: error
+
+      - name: Release on tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: QuadStickConfigManager-${{ env.RUNTIME }}.zip
+          generate_release_notes: true
