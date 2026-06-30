@@ -1,0 +1,143 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="QuadStick.App.MainWindow"
+        Title="QuadStick Config Manager (unofficial)"
+        Width="1180" Height="850" MinWidth="1020" MinHeight="640"
+        Background="#F6F5F2">
+  <Panel>
+
+    <!-- ============ HOME ============ -->
+    <DockPanel x:Name="HomeView" Margin="32,28">
+      <StackPanel DockPanel.Dock="Top" Spacing="4">
+        <TextBlock Text="QuadStick Config Manager" FontSize="30" FontWeight="Bold"/>
+        <TextBlock Text="Edit and install game profiles for your QuadStick. Free, unofficial, works offline."
+                   FontSize="16" Foreground="#5A5A5A"/>
+        <TextBlock x:Name="HomeVersionText" FontSize="13" Foreground="#8A8A8A"/>
+      </StackPanel>
+
+      <ScrollViewer Margin="0,24,0,0">
+        <StackPanel Spacing="28">
+
+          <StackPanel Spacing="12">
+            <TextBlock Classes="section" Text="Start"/>
+            <WrapPanel x:Name="StartCards">
+              <Button x:Name="HomeNewButton" Classes="card"
+                      AutomationProperties.Name="Create a new profile from the factory default template">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="New profile" FontSize="18" FontWeight="Bold"/>
+                  <TextBlock Text="Start from the factory default layout" Classes="cardsub"/>
+                </StackPanel>
+              </Button>
+              <Button x:Name="HomeOpenButton" Classes="card"
+                      AutomationProperties.Name="Open a profile CSV file from your computer">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="Open a file" FontSize="18" FontWeight="Bold"/>
+                  <TextBlock Text="Edit a profile CSV from anywhere" Classes="cardsub"/>
+                </StackPanel>
+              </Button>
+              <Button x:Name="HomeHelpButton" Classes="card"
+                      AutomationProperties.Name="Open the quick guide that explains profiles, outputs, functions, and inputs">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="How it works" FontSize="18" FontWeight="Bold"/>
+                  <TextBlock Text="Profiles, sips, puffs, and installing, in plain words" Classes="cardsub"/>
+                </StackPanel>
+              </Button>
+            </WrapPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <TextBox x:Name="SheetsUrlBox" Width="520"
+                       Watermark="Paste a Google Sheets profile link to import"
+                       AutomationProperties.Name="Google Sheets profile link"/>
+              <Button x:Name="ImportButton" Content="Import from Sheets"
+                      AutomationProperties.Name="Import the profile from the pasted Google Sheets link"/>
+            </StackPanel>
+            <TextBlock x:Name="HomeStatusText" FontSize="15" Foreground="Crimson"
+                       TextWrapping="Wrap" MaxWidth="700" IsVisible="False"
+                       AutomationProperties.LiveSetting="Assertive"/>
+          </StackPanel>
+
+          <StackPanel Spacing="12">
+            <TextBlock Classes="section" Text="Your profiles"/>
+            <TextBlock x:Name="LibraryEmptyText" FontSize="15" Foreground="#777"
+                       Text="Profiles you save will show up here."/>
+            <WrapPanel x:Name="LibraryCards"/>
+          </StackPanel>
+
+          <StackPanel Spacing="12">
+            <TextBlock Classes="section" Text="On your QuadStick"/>
+            <TextBlock x:Name="DeviceEmptyText" FontSize="15" Foreground="#777"
+                       Text="Plug in your QuadStick and its profiles will show up here."/>
+            <WrapPanel x:Name="DeviceCards"/>
+          </StackPanel>
+
+        </StackPanel>
+      </ScrollViewer>
+    </DockPanel>
+
+    <!-- ============ EDITOR ============ -->
+    <DockPanel x:Name="EditorView" Margin="20,16" IsVisible="False">
+
+      <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10">
+        <Button x:Name="HomeButton" Content="← Home"
+                AutomationProperties.Name="Go back to the home screen"/>
+        <TextBox x:Name="FileNameBox" FontSize="17" FontWeight="Bold" MinWidth="220"
+                 VerticalAlignment="Center"
+                 AutomationProperties.Name="Profile file name. Edit to rename, must end in .csv"/>
+        <Button x:Name="SaveButton" Content="Save"
+                AutomationProperties.Name="Save this profile. Shortcut Control S"/>
+        <Button x:Name="UndoButton" Content="Undo"
+                AutomationProperties.Name="Undo the last change. Shortcut Control Z"/>
+        <Button x:Name="InstallButton" Content="Install to QuadStick" Classes="primary"
+                AutomationProperties.Name="Install this profile onto a connected QuadStick"/>
+        <Button x:Name="HelpButton" Content="Help"
+                AutomationProperties.Name="Open the quick guide"/>
+      </StackPanel>
+
+      <TextBlock x:Name="StatusText" DockPanel.Dock="Top" Margin="0,12"
+                 FontSize="15" Text=""/>
+
+      <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
+        <TextBlock Text="Mode sheet:" VerticalAlignment="Center" FontSize="15"/>
+        <ComboBox x:Name="SheetPicker" MinWidth="200"
+                  AutomationProperties.Name="Select which mode sheet to edit"/>
+        <Button x:Name="DeviceViewButton" Content="Device view"
+                AutomationProperties.Name="Show the mappings on a picture of the QuadStick"/>
+        <Button x:Name="ListViewButton" Content="List view"
+                AutomationProperties.Name="Show the mappings as a list of rows"/>
+        <Button x:Name="AddRowButton" Content="Add row"
+                AutomationProperties.Name="Add a new binding row to this sheet"/>
+        <ComboBox x:Name="ModelPicker" MinWidth="150"
+                  AutomationProperties.Name="Which QuadStick model you have"/>
+        <TextBlock x:Name="DeviceStatusText" VerticalAlignment="Center" FontSize="14"/>
+      </StackPanel>
+
+      <DockPanel DockPanel.Dock="Bottom" Height="170" Margin="0,12,0,0">
+        <TextBlock DockPanel.Dock="Top" Text="Problems (select one to copy it)" FontWeight="Bold" FontSize="15" Margin="0,0,0,4"/>
+        <Border BorderBrush="#D8D6D2" BorderThickness="1" CornerRadius="8" Background="White">
+          <ListBox x:Name="IssuesList" FontSize="14" Background="Transparent"
+                   AutomationProperties.Name="List of validation problems"/>
+        </Border>
+      </DockPanel>
+
+      <Panel>
+        <Border x:Name="GridContainer" Background="White" BorderBrush="#D8D6D2" BorderThickness="1" CornerRadius="8" Padding="14">
+          <ScrollViewer>
+            <StackPanel x:Name="RowsPanel" Spacing="6"/>
+          </ScrollViewer>
+        </Border>
+        <Border x:Name="DeviceContainer" Background="White" BorderBrush="#D8D6D2" BorderThickness="1" CornerRadius="8" IsVisible="False">
+          <Grid ColumnDefinitions="*,420">
+            <ScrollViewer>
+              <StackPanel x:Name="DeviceCanvas" Spacing="16" Margin="16"/>
+            </ScrollViewer>
+            <Border Grid.Column="1" Background="#FBFAF8" BorderBrush="#E3E1DD" BorderThickness="1,0,0,0" Padding="14">
+              <ScrollViewer>
+                <StackPanel x:Name="ZoneDetailPanel" Spacing="10"/>
+              </ScrollViewer>
+            </Border>
+          </Grid>
+        </Border>
+      </Panel>
+
+    </DockPanel>
+  </Panel>
+</Window>

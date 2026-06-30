@@ -1,0 +1,92 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="QuadStick.App.App"
+             RequestedThemeVariant="Light">
+  <Application.Styles>
+    <FluentTheme />
+    <!-- Accessibility: every interactive control gets a large hit target. -->
+    <Style Selector="Button">
+      <Setter Property="MinHeight" Value="44"/>
+      <Setter Property="MinWidth" Value="44"/>
+      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="Background" Value="White"/>
+      <Setter Property="BorderBrush" Value="#C9C7C3"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="16,10"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#EDF4FB"/>
+      <Setter Property="BorderBrush" Value="#0F6CBD"/>
+    </Style>
+    <Style Selector="Button.quiet">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="#0F6CBD"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="Foreground" Value="#B3261E"/>
+    </Style>
+    <!-- Zone buttons keep the SAME border thickness selected or not, so the
+         text inside never reflows when you click. Only colors change. -->
+    <Style Selector="Button.zone">
+      <Setter Property="Background" Value="White"/>
+      <Setter Property="BorderBrush" Value="#B9B7B3"/>
+      <Setter Property="BorderThickness" Value="2"/>
+      <Setter Property="Padding" Value="6"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.zoneSelected">
+      <Setter Property="BorderBrush" Value="#0F6CBD"/>
+      <Setter Property="Background" Value="#EDF4FB"/>
+    </Style>
+    <Style Selector="TextBox">
+      <Setter Property="MinHeight" Value="44"/>
+      <Setter Property="FontSize" Value="15"/>
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="MinHeight" Value="44"/>
+      <Setter Property="FontSize" Value="15"/>
+    </Style>
+    <Style Selector="AutoCompleteBox">
+      <Setter Property="MinHeight" Value="44"/>
+      <Setter Property="FontSize" Value="15"/>
+    </Style>
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#0F6CBD"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#0B5CA3"/>
+      <Setter Property="Foreground" Value="White"/>
+    </Style>
+    <Style Selector="Button.card">
+      <Setter Property="Margin" Value="0,0,14,14"/>
+      <Setter Property="Background" Value="White"/>
+      <Setter Property="BorderBrush" Value="#D8D6D2"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="18,16"/>
+      <Setter Property="MinWidth" Value="280"/>
+      <Setter Property="MinHeight" Value="96"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="VerticalContentAlignment" Value="Top"/>
+    </Style>
+    <Style Selector="Button.card:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#EDF4FB"/>
+      <Setter Property="BorderBrush" Value="#0F6CBD"/>
+    </Style>
+    <Style Selector="TextBlock.section">
+      <Setter Property="FontSize" Value="19"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+    <Style Selector="TextBlock.cardsub">
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Foreground" Value="#5A5A5A"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+      <Setter Property="MaxWidth" Value="250"/>
+    </Style>
+  </Application.Styles>
+</Application>
