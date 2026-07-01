@@ -1,0 +1,11 @@
+bin/
+obj/
+dist/
+.vs/
+*.user
+# Fred Davison's Apps Script sources, shared privately as reference. Not ours to publish.
+docs/google_apps_script_projects/
+# Internal planning and design notes — kept locally, not published.
+docs/plans/
+.DS_Store
+.claude/
