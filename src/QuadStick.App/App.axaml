@@ -91,6 +91,10 @@
       <Setter Property="MinHeight" Value="48"/>
       <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
     </Style>
+    <Style Selector="CheckBox">
+      <Setter Property="MinHeight" Value="48"/>
+      <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
+    </Style>
 
     <Style Selector="Button.primary">
       <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>

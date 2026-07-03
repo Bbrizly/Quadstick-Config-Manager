@@ -16,6 +16,8 @@
           <TextBlock Text="Appearance" VerticalAlignment="Center" Classes="secondary"/>
           <ComboBox x:Name="AppearancePicker" MinWidth="130"
                     AutomationProperties.Name="Appearance: choose System, Light, or Dark theme"/>
+          <Button x:Name="SettingsButton" Content="⚙ Settings"
+                  AutomationProperties.Name="Open Settings"/>
         </StackPanel>
         <StackPanel Spacing="4">
           <TextBlock Text="QuadStick Config Manager" FontSize="{DynamicResource TitleSize}" FontWeight="Bold"/>

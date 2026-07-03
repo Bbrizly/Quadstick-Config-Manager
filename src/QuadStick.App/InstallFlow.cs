@@ -69,7 +69,7 @@ public partial class MainWindow
             SizeToContent = SizeToContent.WidthAndHeight,
             CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Content = host,
+            Content = ZoomWrap(host, _uiScale),
         };
         // No inline/frozen Background: the app-wide "Window" style in
         // App.axaml already binds Background to {DynamicResource

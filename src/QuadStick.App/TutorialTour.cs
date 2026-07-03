@@ -247,7 +247,7 @@ public partial class MainWindow
 
         const double pad = 6;
         double left = p.X - pad, top = p.Y - pad;
-        double w = target.Bounds.Width + pad * 2, h = target.Bounds.Height + pad * 2;
+        double w = target.Bounds.Width * _uiScale + pad * 2, h = target.Bounds.Height * _uiScale + pad * 2;
 
         _tourRing.IsVisible = true;
         SetRect(_tourRing, left, top, w, h);
@@ -264,5 +264,14 @@ public partial class MainWindow
         Canvas.SetTop(b, top);
         b.Width = Math.Max(0, width);
         b.Height = Math.Max(0, height);
+    }
+
+    // Lets a runtime Reduce Motion change (Settings ▸ Advanced) take effect
+    // on the already-built overlay, not just on the next tour it starts.
+    void RefreshTourMotion()
+    {
+        if (_tourOverlay is null) return; // overlay not built yet
+        _tourCallout.Transitions = _reduceMotion ? null
+            : new Transitions { new DoubleTransition { Property = Visual.OpacityProperty, Duration = TimeSpan.FromMilliseconds(150) } };
     }
 }

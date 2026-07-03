@@ -195,6 +195,7 @@ public partial class MainWindow : Window
         ModelPicker.SelectedIndex = (int)_model;
         ModelPicker.SelectionChanged += (_, _) =>
         {
+            if (_pickerSyncing) return;
             if (ModelPicker.SelectedIndex < 0) return;
             _model = (QsModel)ModelPicker.SelectedIndex;
             SaveModel();
@@ -204,13 +205,11 @@ public partial class MainWindow : Window
         var savedTheme = _settings.Theme;
         AppearancePicker.ItemsSource = new[] { "System", "Light", "Dark" };
         AppearancePicker.SelectedIndex = savedTheme switch { "Light" => 1, "Dark" => 2, _ => 0 };
-        AppearancePicker.SelectionChanged += (_, _) =>
-        {
-            var choice = (string)AppearancePicker.SelectedItem!;
-            QuadStick.App.Theme.Apply(choice);
-            _settings.Theme = choice;
-            Settings.Save(_settings);
-        };
+        // ApplyTheme sets SelectedIndex back to the same value on the way out,
+        // which does not re-fire SelectionChanged, so this can't loop.
+        AppearancePicker.SelectionChanged += (_, _) => ApplyTheme((string)AppearancePicker.SelectedItem!);
+
+        SettingsButton.Click += (_, _) => new SettingsWindow(this).ShowDialog(this);
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
         // key. Ctrl-combos are safe to fire even while a field has focus
@@ -296,6 +295,82 @@ public partial class MainWindow : Window
             ScaleContent.Height = b.Height / _uiScale;
         }
     }
+
+    // ---- Settings window API: SettingsWindow.cs calls these so every
+    // setting applies live and persists through the same single source of
+    // truth (_settings) the rest of the window already uses. ----
+    public AppSettings CurrentSettings => _settings;
+    public void PersistSettings() => Settings.Save(_settings);
+    public static IReadOnlyList<string> ModelDisplayNames => ModelNames;
+    public double UiScale => _uiScale;
+
+    // Wrap a window's content so it scales with the app's interface-size setting.
+    public static Control ZoomWrap(Control content, double scale) =>
+        scale == 1.0 ? content
+        : new LayoutTransformControl { LayoutTransform = new ScaleTransform(scale, scale), Child = content };
+
+    bool _pickerSyncing; // stops the header/settings pickers re-triggering each other
+
+    public void ApplyTheme(string choice)
+    {
+        if (_pickerSyncing) return;
+        _pickerSyncing = true;
+        try
+        {
+            QuadStick.App.Theme.Apply(choice);
+            _settings.Theme = choice;
+            Settings.Save(_settings);
+            AppearancePicker.SelectedIndex = choice switch { "Light" => 1, "Dark" => 2, _ => 0 };
+        }
+        finally { _pickerSyncing = false; }
+    }
+
+    public void SetInterfaceScale(int pct)
+    {
+        _settings.InterfaceScalePercent = pct;
+        Settings.Save(_settings);
+        ApplyInterfaceScale(pct);
+    }
+
+    public void SetReduceMotion(bool v)
+    {
+        _reduceMotion = v;
+        _settings.ReduceMotion = v;
+        Settings.Save(_settings);
+        RefreshTourMotion();
+    }
+
+    public void SetDefaultModel(int index)
+    {
+        if (_pickerSyncing || index < 0 || index >= ModelNames.Length) return;
+        _pickerSyncing = true;
+        try
+        {
+            _model = (QsModel)index;
+            ModelPicker.SelectedIndex = index;
+            SaveModel();
+            if (_deviceView) { _selectedZone = null; RefreshEditor(); }
+        }
+        finally { _pickerSyncing = false; }
+    }
+
+    public void ResetSettings()
+    {
+        _settings = new AppSettings();
+        Settings.Save(_settings);
+        QuadStick.App.Theme.Apply(_settings.Theme);
+        AppearancePicker.SelectedIndex = 0;
+        _reduceMotion = _settings.ReduceMotion;
+        RefreshTourMotion();
+        _model = QsModel.FPS;
+        ModelPicker.SelectedIndex = 0;
+        ApplyInterfaceScale(_settings.InterfaceScalePercent);
+    }
+
+    // Small public wrapper: ConfirmAsync itself is private, and the Settings
+    // window's Reset button needs the same confirm-dialog idiom.
+    public Task<bool> ConfirmResetAsync() => ConfirmAsync("Reset all settings?",
+        "Appearance, interface size, and the rest go back to their defaults.");
 
     void ShowHome()
     {
@@ -1169,9 +1244,9 @@ public partial class MainWindow : Window
             kind == StatusKind.Error ? AutomationLiveSetting.Assertive : AutomationLiveSetting.Polite);
     }
 
-    void ShowHelp()
-    {
-        var sections = new (string Title, string Body)[]
+    // Shared by ShowHelp() and the Settings window's Help tab (DRY): one
+    // ground truth for the quick-guide copy.
+    internal static (string Title, string Body)[] HelpSections() => new (string Title, string Body)[]
         {
             ("What is a profile?",
              "One CSV file that tells the QuadStick which sip, puff, lip press, or joystick move presses which game button. A profile has one or more mode sheets: full control layouts you switch between while playing (walking layout, driving layout, menus). Sip or puff the side tube, or bind increment_mode / decrement_mode, to switch modes in-game."),
@@ -1207,6 +1282,10 @@ public partial class MainWindow : Window
              "Select a problem in the list to copy it. File at github.com/Bbrizly/Quadstick-Config-Manager/issues — say what you did and what went wrong."),
         };
 
+    void ShowHelp()
+    {
+        var sections = HelpSections();
+
         var panel = new StackPanel { Margin = new Avalonia.Thickness(24), Spacing = 14, MaxWidth = 640 };
         panel.Children.Add(new TextBlock { Text = "Quick guide", FontSize = Size("TitleSize"), FontWeight = FontWeight.Bold });
         foreach (var (title, body) in sections)
@@ -1220,9 +1299,9 @@ public partial class MainWindow : Window
         var win = new Window
         {
             Title = "Quick guide",
-            Width = 720, Height = 680,
+            Width = Math.Min(720 * _uiScale, 1200), Height = Math.Min(680 * _uiScale, 900),
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Content = new ScrollViewer { Content = panel },
+            Content = new ScrollViewer { Content = ZoomWrap(panel, _uiScale) },
         };
         win.Show(this);
     }
@@ -1261,7 +1340,7 @@ public partial class MainWindow : Window
             btn.Click += (_, _) => { picked = (string)btn.Tag!; dialog.Close(); };
             choices.Children.Add(btn);
         }
-        dialog.Content = new StackPanel
+        dialog.Content = ZoomWrap(new StackPanel
         {
             Margin = new Avalonia.Thickness(24),
             Spacing = 16,
@@ -1273,7 +1352,7 @@ public partial class MainWindow : Window
                 choices,
                 cancel,
             },
-        };
+        }, _uiScale);
         cancel.Click += (_, _) => dialog.Close();
         await dialog.ShowDialog(this);
         return picked;
@@ -1288,7 +1367,7 @@ public partial class MainWindow : Window
             Title = title,
             SizeToContent = SizeToContent.WidthAndHeight,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Content = new StackPanel
+            Content = ZoomWrap(new StackPanel
             {
                 Margin = new Avalonia.Thickness(24),
                 Spacing = 16,
@@ -1299,7 +1378,7 @@ public partial class MainWindow : Window
                     new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
                     new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { yes, no } },
                 },
-            },
+            }, _uiScale),
         };
         var result = false;
         yes.Click += (_, _) => { result = true; dialog.Close(); };
