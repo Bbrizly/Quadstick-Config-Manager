@@ -11,7 +11,7 @@ public class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         Theme.RegisterInto(this);
-        Theme.Apply(Settings.Load().theme);
+        Theme.Apply(Settings.Load().Theme);
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             desktop.MainWindow = new MainWindow();
         base.OnFrameworkInitializationCompleted();

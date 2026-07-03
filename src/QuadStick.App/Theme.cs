@@ -8,34 +8,63 @@ using Avalonia.Styling;
 
 namespace QuadStick.App;
 
+public sealed class AppSettings
+{
+    public string Model = "FPS";
+    public string Theme = "System";           // System | Light | Dark
+    public int InterfaceScalePercent = 100;    // 100 | 125 | 150 | 200
+    public bool ReduceMotion = false;
+    public bool RememberWindow = true;
+    public bool TutorialSeen = false;
+    public double? WinW, WinH, WinX, WinY;     // null = use window defaults
+}
+
 public static class Settings
 {
     public static string DefaultPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "QuadStickConfigManager", "settings.json");
 
-    public static (string model, string theme) Load(string? path = null)
+    public static AppSettings Load(string? path = null)
     {
         try
         {
             var node = JsonNode.Parse(File.ReadAllText(path ?? DefaultPath))!.AsObject();
-            return (node["model"]?.GetValue<string>() ?? "FPS",
-                    node["theme"]?.GetValue<string>() ?? "System");
+            return new AppSettings
+            {
+                Model = node["model"]?.GetValue<string>() ?? "FPS",
+                Theme = node["theme"]?.GetValue<string>() ?? "System",
+                InterfaceScalePercent = node["InterfaceScalePercent"]?.GetValue<int>() ?? 100,
+                ReduceMotion = node["ReduceMotion"]?.GetValue<bool>() ?? false,
+                RememberWindow = node["RememberWindow"]?.GetValue<bool>() ?? true,
+                TutorialSeen = node["TutorialSeen"]?.GetValue<bool>() ?? false,
+                WinW = node["WinW"]?.GetValue<double>(),
+                WinH = node["WinH"]?.GetValue<double>(),
+                WinX = node["WinX"]?.GetValue<double>(),
+                WinY = node["WinY"]?.GetValue<double>(),
+            };
         }
-        catch { return ("FPS", "System"); }
+        catch { return new AppSettings(); }
     }
 
-    // Load-modify-save. Pass null to leave a key untouched.
-    public static void Save(string? path, string? model, string? theme)
+    public static void Save(AppSettings s, string? path = null)
     {
         var p = path ?? DefaultPath;
-        JsonObject node;
-        try { node = JsonNode.Parse(File.ReadAllText(p))!.AsObject(); }
-        catch { node = new JsonObject(); }
-        if (model is not null) node["model"] = model;
-        if (theme is not null) node["theme"] = theme;
         try
         {
+            var node = new JsonObject
+            {
+                ["model"] = s.Model,
+                ["theme"] = s.Theme,
+                ["InterfaceScalePercent"] = s.InterfaceScalePercent,
+                ["ReduceMotion"] = s.ReduceMotion,
+                ["RememberWindow"] = s.RememberWindow,
+                ["TutorialSeen"] = s.TutorialSeen,
+                ["WinW"] = s.WinW,
+                ["WinH"] = s.WinH,
+                ["WinX"] = s.WinX,
+                ["WinY"] = s.WinY,
+            };
             Directory.CreateDirectory(Path.GetDirectoryName(p)!);
             File.WriteAllText(p, node.ToJsonString(new JsonSerializerOptions { WriteIndented = false }));
         }

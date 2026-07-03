@@ -52,14 +52,12 @@ public partial class MainWindow : Window
     bool _deviceView = true;    // the visual mapper is the default face of the editor
     string? _selectedZone;
     QsModel _model;
+    AppSettings _settings = Settings.Load();
 
     enum QsModel { FPS, Original, Singleton }
     static readonly string[] ModelNames = { "QuadStick FPS", "QuadStick Original", "QuadStick Singleton" };
 
-    static QsModel LoadModel() =>
-        Enum.TryParse<QsModel>(Settings.Load().model, out var m) ? m : QsModel.FPS;
-
-    void SaveModel() => Settings.Save(null, model: _model.ToString(), theme: null);
+    void SaveModel() { _settings.Model = _model.ToString(); Settings.Save(_settings); }
 
     readonly Dictionary<string, Border> _cellBorders = new();
     readonly Dictionary<string, Button> _zoneButtons = new(); // Device View zone id -> its button, for focus management
@@ -168,7 +166,7 @@ public partial class MainWindow : Window
 
         DeviceViewButton.Click += (_, _) => SetDeviceView(true);
         ListViewButton.Click += (_, _) => SetDeviceView(false);
-        _model = LoadModel();
+        _model = Enum.TryParse<QsModel>(_settings.Model, out var savedModel) ? savedModel : QsModel.FPS;
         ModelPicker.ItemsSource = ModelNames;
         ModelPicker.SelectedIndex = (int)_model;
         ModelPicker.SelectionChanged += (_, _) =>
@@ -179,14 +177,15 @@ public partial class MainWindow : Window
             if (_deviceView) { _selectedZone = null; RefreshEditor(); }
         };
 
-        var (_, savedTheme) = Settings.Load();
+        var savedTheme = _settings.Theme;
         AppearancePicker.ItemsSource = new[] { "System", "Light", "Dark" };
         AppearancePicker.SelectedIndex = savedTheme switch { "Light" => 1, "Dark" => 2, _ => 0 };
         AppearancePicker.SelectionChanged += (_, _) =>
         {
             var choice = (string)AppearancePicker.SelectedItem!;
             QuadStick.App.Theme.Apply(choice);
-            Settings.Save(null, model: null, theme: choice);
+            _settings.Theme = choice;
+            Settings.Save(_settings);
         };
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
