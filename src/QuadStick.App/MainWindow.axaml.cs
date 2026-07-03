@@ -615,21 +615,27 @@ public partial class MainWindow : Window
             FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         });
 
-        var layout = new StackPanel
-        { Orientation = Orientation.Horizontal, Spacing = 16, Margin = new Avalonia.Thickness(0, 8) };
+        // Primary parts, laid out to mirror the device. A centered WrapPanel so
+        // the whole diagram reflows and stays centered at any window size.
+        var primary = new WrapPanel
+        { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Avalonia.Thickness(0, 12, 0, 0) };
+        void AddPrimary(Control c) { c.Margin = new Avalonia.Thickness(6); primary.Children.Add(c); }
 
         // Joystick: the whole mouthpiece moves.
-        layout.Children.Add(ZoneButton(AllZones[0], byZone, 146, 146, 73, 2));
+        AddPrimary(ZoneButton(AllZones[0], byZone, 160));
 
-        // Mouthpiece bar with its holes.
-        var holes = new StackPanel
-        { Orientation = Orientation.Horizontal, Spacing = 10, HorizontalAlignment = HorizontalAlignment.Center };
+        // Mouthpiece holes, grouped in one labelled box; holes wrap when narrow.
+        var holes = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
         foreach (var z in visible.Where(z => z.Id.StartsWith("mp_")))
-            holes.Children.Add(ZoneButton(z, byZone, 112, 112, 56, 2));
+        {
+            var tile = ZoneButton(z, byZone, 120);
+            tile.Margin = new Avalonia.Thickness(4);
+            holes.Children.Add(tile);
+        }
         var mouthpieceBar = new Border
         {
-            CornerRadius = new Avalonia.CornerRadius(26),
-            Padding = new Avalonia.Thickness(16, 8),
+            CornerRadius = new Avalonia.CornerRadius(18),
+            Padding = new Avalonia.Thickness(12, 10),
             VerticalAlignment = VerticalAlignment.Center,
             Child = new StackPanel
             {
@@ -643,22 +649,23 @@ public partial class MainWindow : Window
             },
         };
         BindBrush(mouthpieceBar, Border.BackgroundProperty, "SurfaceSubtle");
-        layout.Children.Add(mouthpieceBar);
+        AddPrimary(mouthpieceBar);
 
         // Side tube + lip switch column.
-        var sideCol = new StackPanel { Spacing = 10, VerticalAlignment = VerticalAlignment.Center };
+        var sideCol = new StackPanel { Spacing = 8, VerticalAlignment = VerticalAlignment.Center };
         foreach (var z in visible.Where(z => z.Id is "side" or "lip"))
-            sideCol.Children.Add(ZoneButton(z, byZone, 140, 74, 16, 1));
-        layout.Children.Add(sideCol);
+            sideCol.Children.Add(ZoneButton(z, byZone, 150));
+        if (sideCol.Children.Count > 0) AddPrimary(sideCol);
 
-        DeviceCanvas.Children.Add(layout);
+        DeviceCanvas.Children.Add(primary);
 
-        var extras = new WrapPanel();
+        // Secondary parts (combos, jacks, USB, unmapped rows) as a centered row.
+        var extras = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
         foreach (var z in visible.Where(z => z.Id is "combo" or "jacks" or "other" or "unset"))
         {
-            var b = ZoneButton(z, byZone, 200, 92, 12, 2);
-            (b as Button)!.Margin = new Avalonia.Thickness(0, 0, 12, 12);
-            extras.Children.Add(b);
+            var tile = ZoneButton(z, byZone, 168);
+            tile.Margin = new Avalonia.Thickness(6);
+            extras.Children.Add(tile);
         }
         if (extras.Children.Count > 0) DeviceCanvas.Children.Add(extras);
     }
@@ -670,44 +677,58 @@ public partial class MainWindow : Window
         _model != QsModel.Singleton
         || zoneId is not ("mp_left" or "mp_right" or "combo" or "side" or "lip" or "jacks");
 
-    Control ZoneButton(Zone z, Dictionary<string, List<Binding>> byZone, double w, double h, double radius, int maxLines)
+    Control ZoneButton(Zone z, Dictionary<string, List<Binding>> byZone, double minWidth)
     {
         byZone.TryGetValue(z.Id, out var bindings);
-        bool foreign = !ModelHasZone(z.Id);
-        var lines = (bindings ?? new List<Binding>())
-            .Take(maxLines).Select(b => $"{ShortInput(z, b)} → {b.Output}").ToList();
-        var summary = bindings is null or { Count: 0 }
-            ? "not mapped yet"
-            : string.Join("\n", lines) + (bindings.Count > maxLines ? $"\n+{bindings.Count - maxLines} more" : "");
-        if (foreign) summary = "not on your model\n" + summary;
-
-        var content = new StackPanel { Spacing = 3 };
-        content.Children.Add(new TextBlock
-        { Text = z.Display, FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"), HorizontalAlignment = HorizontalAlignment.Center });
-        var summaryText = new TextBlock
-        {
-            Text = summary, FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap,
-            TextAlignment = TextAlignment.Center, MaxWidth = w - 20,
-        };
-        if (bindings is null or { Count: 0 }) summaryText.Classes.Add("muted");
-        content.Children.Add(summaryText);
-
-        bool selected = _selectedZone == z.Id;
         int count = bindings?.Count ?? 0;
+        bool foreign = !ModelHasZone(z.Id);
+        bool selected = _selectedZone == z.Id;
+
+        var content = new StackPanel { Spacing = 4 };
+        content.Children.Add(new TextBlock
+        {
+            Text = z.Title, FontWeight = FontWeight.Bold, FontSize = Size("BodySize"),
+            TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        });
+
+        // One clean status line — a count, never a truncated dump of bindings.
+        // The full, editable list lives in the detail panel, opened on select.
+        var countLabel = new TextBlock
+        {
+            Text = count == 0 ? "Not mapped yet" : count == 1 ? "1 mapping" : $"{count} mappings",
+            FontSize = Size("SmallSize"), TextAlignment = TextAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
+        if (count == 0) countLabel.Classes.Add("muted");
+        else BindBrush(countLabel, TextBlock.ForegroundProperty, "AccentText");
+        content.Children.Add(countLabel);
+
+        if (foreign)
+            content.Children.Add(new TextBlock
+            {
+                Text = "Not on your model", FontSize = Size("SmallSize"), Classes = { "muted" },
+                TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+
         var btn = new ToggleButton
         {
-            Classes = { "zone" }, Width = w, Height = h,
-            CornerRadius = new Avalonia.CornerRadius(radius),
+            Classes = { "zone" }, MinWidth = minWidth, MinHeight = 82,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
             Content = content,
             IsChecked = selected,
         };
-        if (foreign) BindBrush(btn, TemplatedControl.BorderBrushProperty, "Warning");
-        var spoken = bindings is null or { Count: 0 }
+        // Parts the model doesn't physically have are greyed out but still
+        // reachable, so a profile built for another model can be cleaned up.
+        if (foreign) btn.Opacity = 0.5;
+
+        var spoken = count == 0
             ? "nothing mapped yet"
-            : string.Join(", ", bindings.Take(4).Select(b => $"{ShortInput(z, b)} presses {b.Output}"));
-        var warning = foreign ? $"Warning: your {ModelNames[(int)_model]} does not have this part, but this profile maps it. " : "";
+            : string.Join(", ", (bindings ?? new()).Take(4).Select(b => $"{ShortInput(z, b)} presses {b.Output}"));
+        var warning = foreign ? $" Not available on your {ModelNames[(int)_model]}." : "";
         AutomationProperties.SetName(btn,
-            $"{z.Title}. {(selected ? "selected. " : "")}{count} mapping{(count == 1 ? "" : "s")}. {spoken}. {warning}Press Enter to edit.");
+            $"{z.Title}. {(selected ? "Selected. " : "")}{count} mapping{(count == 1 ? "" : "s")}. {spoken}.{warning} Press Enter to edit.");
         btn.Click += (_, _) =>
         {
             _selectedZone = z.Id;
@@ -761,21 +782,28 @@ public partial class MainWindow : Window
                 int inputCount = Math.Max(1, b.Inputs.Count);
                 for (int i = 0; i < inputCount && i < 8; i++)
                 {
-                    var inputBox = SuggestBox(b.Row, 2 + i, i < b.Inputs.Count ? b.Inputs[i] : "", 336,
+                    var inputBox = SuggestBox(b.Row, 2 + i, i < b.Inputs.Count ? b.Inputs[i] : "", 0,
                         zoneInputs.Count > 0 ? zoneInputs : InputSuggestions,
-                        $"Input {i + 1} for this {zone.Display} mapping", InputTint);
+                        $"Input {i + 1} for this {zone.Display} mapping", InputTint, stretch: true);
                     SetWatermark(inputBox, i == 0 ? "what you do (input)" : $"input {i + 1}");
                     card.Children.Add(inputBox);
                 }
 
-                var line2 = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-                var outBox = SuggestBox(b.Row, 0, b.Output, 168,
-                    OutputSuggestionsFor(CurrentSheet!), $"Game button pressed by {ShortInput(zone, b)}", OutputTint);
+                // Output stretches, function is compact, delete always visible.
+                // A Grid (not a fixed-width row) so nothing is clipped off the
+                // right edge of the detail panel, at any interface size.
+                var line2 = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto") };
+                var outBox = SuggestBox(b.Row, 0, b.Output, 0,
+                    OutputSuggestionsFor(CurrentSheet!), $"Game button pressed by {ShortInput(zone, b)}", OutputTint, stretch: true);
                 SetWatermark(outBox, "game button");
+                outBox.Margin = new Avalonia.Thickness(0, 0, 6, 0);
+                Grid.SetColumn(outBox, 0);
                 line2.Children.Add(outBox);
-                var fnBox = SuggestBox(b.Row, 1, b.Function, 114,
+                var fnBox = SuggestBox(b.Row, 1, b.Function, 104,
                     FunctionSuggestions, $"How {ShortInput(zone, b)} presses it", FunctionTint);
                 SetWatermark(fnBox, "how");
+                fnBox.Margin = new Avalonia.Thickness(0, 0, 6, 0);
+                Grid.SetColumn(fnBox, 1);
                 line2.Children.Add(fnBox);
                 var del = new Button { Content = "X", Classes = { "danger" } };
                 AutomationProperties.SetName(del, $"Remove the {ShortInput(zone, b)} mapping");
@@ -786,6 +814,7 @@ public partial class MainWindow : Window
                     BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                     FocusZoneDetailSibling(zone.Id, deletedIndex);
                 };
+                Grid.SetColumn(del, 2);
                 line2.Children.Add(del);
                 card.Children.Add(line2);
 
@@ -1049,16 +1078,17 @@ public partial class MainWindow : Window
         return p;
     }
 
-    Control SuggestBox(int row, int col, string value, double width, List<string> suggestions, string accessibleName, string tintKey)
+    Control SuggestBox(int row, int col, string value, double width, List<string> suggestions, string accessibleName, string tintKey, bool stretch = false)
     {
         var box = new AutoCompleteBox
         {
             Text = value,
-            Width = width,
             ItemsSource = suggestions,
             FilterMode = AutoCompleteFilterMode.Contains,
             MinimumPrefixLength = 1,
         };
+        if (stretch) box.HorizontalAlignment = HorizontalAlignment.Stretch;
+        else box.Width = width;
         box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
         AutomationProperties.SetName(box, accessibleName);
         void Commit()

@@ -175,7 +175,7 @@
                 <StackPanel x:Name="DeviceCanvas" Spacing="16" Margin="16"/>
               </ScrollViewer>
               <Border Grid.Column="1" Background="{DynamicResource SurfaceSubtleBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                      BorderThickness="1,0,0,0" Padding="12" MaxWidth="360">
+                      BorderThickness="1,0,0,0" Padding="14" Width="380">
                 <ScrollViewer>
                   <StackPanel x:Name="ZoneDetailPanel" Spacing="10"/>
                 </ScrollViewer>
