@@ -69,24 +69,31 @@ public static class Device
         toWrite.EnsureVersionHeader();
         var text = toWrite.ToCsvText();
         var tmp = target + ".qscm-tmp";
-        File.WriteAllText(tmp, text);
-        if (File.ReadAllText(tmp) != text)
-        {
-            File.Delete(tmp);
-            throw new InvalidOperationException("Readback verification failed; the device was not modified.");
-        }
         try
         {
-            File.Move(tmp, target, overwrite: true);
+            File.WriteAllText(tmp, text);
+            if (File.ReadAllText(tmp) != text)
+                throw new InvalidOperationException("Readback verification failed; the device was not modified.");
+
+            try
+            {
+                File.Move(tmp, target, overwrite: true);
+            }
+            catch (IOException) when (backup != null && !File.Exists(target))
+            {
+                // The swap died between delete and rename. Put the old file back
+                // so the device is never left without the profile.
+                File.Copy(backup, target, overwrite: true);
+                throw new InvalidOperationException(
+                    $"Writing failed mid-swap; the previous version of {name} was restored from backup. The device is unchanged.");
+            }
         }
-        catch (IOException) when (backup != null && !File.Exists(target))
+        finally
         {
-            // The swap died between delete and rename. Put the old file back
-            // so the device is never left without the profile.
-            File.Copy(backup, target, overwrite: true);
+            // Whatever threw between the write and the successful move, never leave
+            // a stray .qscm-tmp on the device. A successful File.Move already
+            // consumed it, so this is a no-op on the happy path.
             if (File.Exists(tmp)) File.Delete(tmp);
-            throw new InvalidOperationException(
-                $"Writing failed mid-swap; the previous version of {name} was restored from backup. The device is unchanged.");
         }
         return new InstallResult(target, backup);
     }

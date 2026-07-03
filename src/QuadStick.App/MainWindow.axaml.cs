@@ -127,7 +127,7 @@ public partial class MainWindow : Window
         FileNameBox.KeyDown += (_, e) => { if (e.Key == Key.Enter) CommitFileName(); };
         SaveButton.Click += async (_, _) => await SaveAsync();
         UndoButton.Click += (_, _) => UndoEdit();
-        InstallButton.Click += async (_, _) => await InstallAsync();
+        InstallButton.Click += async (_, _) => await RunInstallFlowAsync();
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
         SheetPicker.SelectionChanged += (_, _) =>
@@ -184,7 +184,7 @@ public partial class MainWindow : Window
         // (that's how Ctrl+S already behaved, and how every other app
         // treats Ctrl+shortcuts); a *bare* letter key is not, since it would
         // steal a keystroke out of whatever the user is typing (e.g. an
-        // un-modified "i" over InstallAsync mid-edit). Only the modifier-free
+        // un-modified "i" over RunInstallFlowAsync mid-edit). Only the modifier-free
         // case needs the typing guard.
         KeyDown += (_, e) =>
         {
@@ -200,7 +200,7 @@ public partial class MainWindow : Window
                 case Key.S: _ = SaveAsync(); e.Handled = true; break;
                 case Key.N: NewFromTemplate(); e.Handled = true; break; // uses DefaultNewName
                 case Key.Z: UndoEdit(); e.Handled = true; break;
-                case Key.I: _ = InstallAsync(); e.Handled = true; break;
+                case Key.I: _ = RunInstallFlowAsync(); e.Handled = true; break;
                 case Key.D: SetDeviceView(!_deviceView); e.Handled = true; break;
                 case Key.H: ShowHelp(); e.Handled = true; break;
             }
@@ -718,57 +718,6 @@ public partial class MainWindow : Window
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         { HomeError($"Could not download the sheet: {(ex is TaskCanceledException ? "the connection timed out after 15 seconds" : ex.Message)}. Check your internet connection and the link."); }
-    }
-
-    async Task InstallAsync()
-    {
-        if (_file is null) { Status("Open a profile first."); return; }
-        _file.Reparse();
-        if (_file.HasErrors)
-        { Status("Fix the errors in the Problems list before installing.", StatusKind.Error); RefreshIssues(); return; }
-
-        var candidates = Device.FindCandidates();
-        string? root = candidates.Count switch
-        {
-            > 1 => await PickDeviceRootAsync(candidates),
-            1 => candidates[0],
-            _ => null,
-        };
-        if (root is null)
-        {
-            Status("No QuadStick drive found (a drive with default.csv on it). Pick the drive or a folder manually.");
-            var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-            { Title = "Choose the QuadStick drive" });
-            if (folders.Count == 0) return;
-            root = folders[0].Path.LocalPath;
-        }
-
-        if (!Device.IsInstallTarget(root))
-        {
-            Status("That folder does not look like a QuadStick (no default.csv at its root).", StatusKind.Error);
-            return;
-        }
-
-        try
-        {
-            bool confirmDefault = false;
-            if (_file.Document.IsDefaultConfig)
-            {
-                confirmDefault = await ConfirmAsync(
-                    "Overwrite default.csv?",
-                    "A wrong default.csv can disable flash-drive access, and recovery needs a physical force-erase. A backup will be made first. Continue?");
-                if (!confirmDefault) { Status("Install cancelled."); return; }
-            }
-            var file = _file;
-            var installRoot = root;
-            var result = await Task.Run(() => Device.Install(file, installRoot, Device.DefaultBackupDir(), confirmDefault));
-            Status(result.BackupPath is null
-                ? $"Installed {Path.GetFileName(result.InstalledPath)} to {root}."
-                : $"Installed {Path.GetFileName(result.InstalledPath)} to {root}. Previous version backed up to {result.BackupPath}.",
-                StatusKind.Ready);
-        }
-        catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException)
-        { Status($"Install failed, device unchanged: {ex.Message}", StatusKind.Error); }
     }
 
     bool _closeConfirmed;
