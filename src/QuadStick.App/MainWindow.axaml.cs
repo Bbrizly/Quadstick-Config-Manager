@@ -221,6 +221,11 @@ public partial class MainWindow : Window
         // case needs the typing guard.
         KeyDown += (_, e) =>
         {
+            // The tutorial overlay owns the keyboard while it's up: its Next/Skip
+            // (Enter/Esc) still work, but app shortcuts like Ctrl+O must not fire
+            // behind it — Ctrl+O would swap in a real profile that teardown then
+            // discards. Returning without Handled leaves Enter/Esc to the callout.
+            if (_tourOverlay?.IsVisible == true) return;
             if (!e.KeyModifiers.HasFlag(KeyModifiers.Control) && !e.KeyModifiers.HasFlag(KeyModifiers.Meta))
             {
                 if (e.Key == Key.F1 && e.Source is not (TextBox or AutoCompleteBox))
@@ -242,6 +247,7 @@ public partial class MainWindow : Window
         _reduceMotion = _settings.ReduceMotion;
         ApplyInterfaceScale(_settings.InterfaceScalePercent);
         ShowHome();
+        if (!_settings.TutorialSeen) Opened += StartTutorialOnce;
     }
 
     static readonly int[] ValidScalePercents = { 100, 125, 150, 200 };
