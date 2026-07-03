@@ -53,6 +53,8 @@ public partial class MainWindow : Window
     string? _selectedZone;
     QsModel _model;
     AppSettings _settings = Settings.Load();
+    double _uiScale = 1.0;
+    bool _reduceMotion;
 
     enum QsModel { FPS, Original, Singleton }
     static readonly string[] ModelNames = { "QuadStick FPS", "QuadStick Original", "QuadStick Singleton" };
@@ -113,6 +115,19 @@ public partial class MainWindow : Window
         var v = typeof(MainWindow).Assembly.GetName().Version;
         HomeVersionText.Text = $"v{v?.Major}.{v?.Minor}.{v?.Build} · MIT · not affiliated with QuadStick";
 
+        if (_settings.RememberWindow)
+        {
+            if (_settings.WinW is { } winW && _settings.WinH is { } winH)
+            {
+                Width = Math.Max(winW, MinWidth);
+                Height = Math.Max(winH, MinHeight);
+            }
+            if (_settings.WinX is { } winX && _settings.WinY is { } winY)
+                Position = new PixelPoint((int)winX, (int)winY);
+        }
+        RootPanel.PropertyChanged += (_, e) => { if (e.Property == Visual.BoundsProperty) UpdateScaleSize(); };
+        Opened += (_, _) => ClampToScreen();
+
         HomeNewButton.Click += (_, _) => NewFromTemplate();
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
@@ -130,6 +145,15 @@ public partial class MainWindow : Window
             if (_file is not { Dirty: true } || _closeConfirmed) return;
             e.Cancel = true;
             if (await ConfirmLeaveAsync()) { _closeConfirmed = true; Close(); }
+        };
+        Closing += (_, _) =>
+        {
+            if (!_settings.RememberWindow) return;
+            _settings.WinW = Width;
+            _settings.WinH = Height;
+            _settings.WinX = Position.X;
+            _settings.WinY = Position.Y;
+            Settings.Save(_settings);
         };
         FileNameBox.LostFocus += (_, _) => CommitFileName();
         FileNameBox.KeyDown += (_, e) => { if (e.Key == Key.Enter) CommitFileName(); };
@@ -215,7 +239,56 @@ public partial class MainWindow : Window
             }
         };
 
+        _reduceMotion = _settings.ReduceMotion;
+        ApplyInterfaceScale(_settings.InterfaceScalePercent);
         ShowHome();
+    }
+
+    static readonly int[] ValidScalePercents = { 100, 125, 150, 200 };
+
+    public void ApplyInterfaceScale(int pct)
+    {
+        if (Array.IndexOf(ValidScalePercents, pct) < 0) pct = 100;
+        _uiScale = pct / 100.0;
+        ZoomHost.LayoutTransform = _uiScale == 1.0 ? null : new ScaleTransform(_uiScale, _uiScale);
+        EnsureWindowFitsScale();
+        UpdateScaleSize();
+    }
+
+    // Bigger scale needs a bigger window or the fixed-height Problems dock
+    // crowds the editor. Grow (never shrink) toward a comfortable size, capped
+    // to the screen. Skipped until the window is on screen, so the saved-size
+    // restore in the constructor wins at startup.
+    void EnsureWindowFitsScale()
+    {
+        if (!IsVisible || WindowState != WindowState.Normal) return;
+        var screen = Screens?.ScreenFromWindow(this) ?? Screens?.Primary;
+        if (screen is null) return;
+        var scaling = screen.Scaling <= 0 ? 1 : screen.Scaling;
+        var wantW = Math.Min(1000 * _uiScale, screen.WorkingArea.Width / scaling);
+        var wantH = Math.Min(720 * _uiScale, screen.WorkingArea.Height / scaling);
+        if (Width < wantW) Width = wantW;
+        if (Height < wantH) Height = wantH;
+    }
+
+    // A remembered position can land off-screen after a monitor is unplugged.
+    // For a mouth-operated app a lost window is very hard to recover, so pull
+    // it back onto a real screen once we know the actual monitor layout.
+    void ClampToScreen()
+    {
+        if (Screens is not { } screens) return;
+        if (screens.All.Any(s => s.WorkingArea.Contains(Position))) return;
+        var wa = (screens.ScreenFromWindow(this) ?? screens.Primary)?.WorkingArea;
+        if (wa is { } r) Position = new PixelPoint(r.X + 40, r.Y + 40);
+    }
+
+    void UpdateScaleSize()
+    {
+        if (RootPanel.Bounds is { Width: > 0, Height: > 0 } b)
+        {
+            ScaleContent.Width = b.Width / _uiScale;
+            ScaleContent.Height = b.Height / _uiScale;
+        }
     }
 
     void ShowHome()

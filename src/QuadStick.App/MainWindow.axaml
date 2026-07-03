@@ -3,7 +3,10 @@
         x:Class="QuadStick.App.MainWindow"
         Title="QuadStick Config Manager (unofficial)"
         Width="1180" Height="850" MinWidth="760" MinHeight="560">
-  <Panel>
+  <Panel x:Name="RootPanel">
+  <LayoutTransformControl x:Name="ZoomHost"
+                          HorizontalAlignment="Left" VerticalAlignment="Top">
+  <Panel x:Name="ScaleContent">
 
     <!-- ============ HOME ============ -->
     <DockPanel x:Name="HomeView" Margin="32,24">
@@ -181,5 +184,7 @@
       </Panel>
 
     </DockPanel>
+  </Panel>
+  </LayoutTransformControl>
   </Panel>
 </Window>
