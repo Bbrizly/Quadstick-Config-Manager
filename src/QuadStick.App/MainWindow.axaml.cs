@@ -19,6 +19,29 @@ public partial class MainWindow : Window
     static void BindBrush(Control target, AvaloniaProperty property, string tokenKey) =>
         target[!property] = new DynamicResourceExtension(tokenKey + "Brush");
 
+    enum StatusKind { Ready, Info, Warning, Error }
+
+    static Control StatusChip(StatusKind kind, string text)
+    {
+        var (iconKey, tokenKey) = kind switch
+        {
+            StatusKind.Ready   => ("IconCheck",   "Success"),
+            StatusKind.Warning => ("IconWarning", "Warning"),
+            StatusKind.Error   => ("IconError",   "Error"),
+            _                  => ("IconChevron", "TextSecondary"),
+        };
+        // Data is a one-time resource read (geometry doesn't change with theme);
+        // Foreground MUST be a dynamic binding so the color follows the theme.
+        var icon = new PathIcon { Width = 16, Height = 16,
+            Data = (Geometry)Application.Current!.FindResource(iconKey)! };
+        BindBrush(icon, IconElement.ForegroundProperty, tokenKey);
+        var label = new TextBlock { Text = text, FontSize = 15,
+            VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
+        BindBrush(label, TextBlock.ForegroundProperty, tokenKey);
+        return new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8,
+            Children = { icon, label } };
+    }
+
     ProfileFile? _file;
     string? _savePath;          // where Save writes; null until saved or opened from a path
     int _sheetIndex;
@@ -35,6 +58,7 @@ public partial class MainWindow : Window
     void SaveModel() => Settings.Save(null, model: _model.ToString(), theme: null);
 
     readonly Dictionary<string, Border> _cellBorders = new();
+    readonly Dictionary<string, Button> _zoneButtons = new(); // Device View zone id -> its button, for focus management
     static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(15) };
     const string DefaultNewName = "mygame.csv";
 
@@ -113,19 +137,27 @@ public partial class MainWindow : Window
         };
 
         // Selecting a problem copies it, so users can paste it into a bug
-        // report or a forum post without retyping.
+        // report or a forum post without retyping. It also jumps focus to
+        // the offending cell so the user can fix it right away.
         IssuesList.SelectionChanged += async (_, _) =>
         {
             if (IssuesList.SelectedItem is TextBlock { Text.Length: > 0 } tb && Clipboard is { } cb)
             {
                 await cb.SetTextAsync(tb.Text);
-                Status("Problem copied to the clipboard.", Brushes.Green);
+                Status("Problem copied to the clipboard.", StatusKind.Info);
+                if (tb.Tag is Issue issue) FocusIssueCell(issue);
                 IssuesList.SelectedIndex = -1; // allow copying the same one again
             }
         };
+        FixFirstButton.Click += (_, _) =>
+        {
+            var firstError = _file?.Issues.FirstOrDefault(i => i.Severity == Severity.Error);
+            if (firstError is null) { Status("No errors to fix.", StatusKind.Ready); return; }
+            FocusIssueCell(firstError);
+        };
 
-        DeviceViewButton.Click += (_, _) => { _deviceView = true; RefreshEditor(); };
-        ListViewButton.Click += (_, _) => { _deviceView = false; RefreshEditor(); };
+        DeviceViewButton.Click += (_, _) => SetDeviceView(true);
+        ListViewButton.Click += (_, _) => SetDeviceView(false);
         _model = LoadModel();
         ModelPicker.ItemsSource = ModelNames;
         ModelPicker.SelectedIndex = (int)_model;
@@ -147,16 +179,30 @@ public partial class MainWindow : Window
             Settings.Save(null, model: null, theme: choice);
         };
 
-        // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts.
+        // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
+        // key. Ctrl-combos are safe to fire even while a field has focus
+        // (that's how Ctrl+S already behaved, and how every other app
+        // treats Ctrl+shortcuts); a *bare* letter key is not, since it would
+        // steal a keystroke out of whatever the user is typing (e.g. an
+        // un-modified "i" over InstallAsync mid-edit). Only the modifier-free
+        // case needs the typing guard.
         KeyDown += (_, e) =>
         {
-            if (!e.KeyModifiers.HasFlag(KeyModifiers.Control) && !e.KeyModifiers.HasFlag(KeyModifiers.Meta)) return;
+            if (!e.KeyModifiers.HasFlag(KeyModifiers.Control) && !e.KeyModifiers.HasFlag(KeyModifiers.Meta))
+            {
+                if (e.Key == Key.F1 && e.Source is not (TextBox or AutoCompleteBox))
+                { ShowHelp(); e.Handled = true; }
+                return;
+            }
             switch (e.Key)
             {
                 case Key.O: _ = OpenAsync(); e.Handled = true; break;
                 case Key.S: _ = SaveAsync(); e.Handled = true; break;
                 case Key.N: NewFromTemplate(); e.Handled = true; break; // uses DefaultNewName
                 case Key.Z: UndoEdit(); e.Handled = true; break;
+                case Key.I: _ = InstallAsync(); e.Handled = true; break;
+                case Key.D: SetDeviceView(!_deviceView); e.Handled = true; break;
+                case Key.H: ShowHelp(); e.Handled = true; break;
             }
         };
 
@@ -168,12 +214,30 @@ public partial class MainWindow : Window
         HomeView.IsVisible = true;
         EditorView.IsVisible = false;
         RefreshHomeCards();
+        HomeNewButton.Focus();
     }
 
     void ShowEditor()
     {
         HomeView.IsVisible = false;
         EditorView.IsVisible = true;
+        HomeButton.Focus();
+    }
+
+    // Switches between Device View and List View, keeping keyboard focus on
+    // the new view's first interactive control instead of dropping it.
+    void SetDeviceView(bool device)
+    {
+        _deviceView = device;
+        RefreshEditor();
+        if (device)
+        {
+            if (_zoneButtons.TryGetValue("joystick", out var joystickBtn)) joystickBtn.Focus();
+        }
+        else if (CurrentSheet?.Bindings.FirstOrDefault()?.Row is int firstRow
+                 && _cellBorders.TryGetValue($"A{firstRow}", out var border))
+        { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); }
+        else AddRowButton.Focus();
     }
 
     void RefreshHomeCards()
@@ -226,7 +290,7 @@ public partial class MainWindow : Window
         {
             try { OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-            { Status($"Could not open {name}: {ex.Message}", Brushes.Crimson); ShowEditor(); }
+            { Status($"Could not open {name}: {ex.Message}", StatusKind.Error); ShowEditor(); }
         };
         return card;
     }
@@ -354,7 +418,7 @@ public partial class MainWindow : Window
         ListViewButton.Classes.Set("primary", !device);
         var connected = Device.FindCandidates().Count > 0;
         DeviceStatusText.Text = connected ? "● QuadStick connected" : "○ no QuadStick detected";
-        DeviceStatusText.Foreground = connected ? Brushes.Green : Brushes.Gray;
+        BindBrush(DeviceStatusText, TextBlock.ForegroundProperty, connected ? "Success" : "TextSecondary");
         if (device) { BuildDeviceView(); BuildZoneDetail(); }
         else RebuildRows();
         RefreshIssues();
@@ -363,6 +427,7 @@ public partial class MainWindow : Window
     void BuildDeviceView()
     {
         DeviceCanvas.Children.Clear();
+        _zoneButtons.Clear();
         var byZone = BindingsByZone();
         var visible = VisibleZones(byZone).ToList();
 
@@ -454,20 +519,34 @@ public partial class MainWindow : Window
         if (bindings is null or { Count: 0 }) summaryText.Classes.Add("muted");
         content.Children.Add(summaryText);
 
-        var btn = new Button
+        bool selected = _selectedZone == z.Id;
+        int count = bindings?.Count ?? 0;
+        var btn = new ToggleButton
         {
             Classes = { "zone" }, Width = w, Height = h,
             CornerRadius = new Avalonia.CornerRadius(radius),
             Content = content,
+            IsChecked = selected,
         };
-        if (_selectedZone == z.Id) btn.Classes.Add("zoneSelected");
         if (foreign) BindBrush(btn, TemplatedControl.BorderBrushProperty, "Warning");
         var spoken = bindings is null or { Count: 0 }
             ? "nothing mapped yet"
             : string.Join(", ", bindings.Take(4).Select(b => $"{ShortInput(z, b)} presses {b.Output}"));
-        if (foreign) spoken = $"Warning: your {ModelNames[(int)_model]} does not have this part, but this profile maps it. {spoken}";
-        AutomationProperties.SetName(btn, $"{z.Title}. {spoken}. Press Enter to view and edit.");
-        btn.Click += (_, _) => { _selectedZone = z.Id; BuildDeviceView(); BuildZoneDetail(); };
+        var warning = foreign ? $"Warning: your {ModelNames[(int)_model]} does not have this part, but this profile maps it. " : "";
+        AutomationProperties.SetName(btn,
+            $"{z.Title}. {(selected ? "selected. " : "")}{count} mapping{(count == 1 ? "" : "s")}. {spoken}. {warning}Press Enter to edit.");
+        btn.Click += (_, _) =>
+        {
+            _selectedZone = z.Id;
+            BuildDeviceView(); BuildZoneDetail();
+            // The click target no longer exists after the rebuild above;
+            // refocus its replacement so keyboard/switch users aren't dropped.
+            // IsChecked is re-derived from _selectedZone on rebuild, not from
+            // ToggleButton's own toggle state, so re-clicking the selected
+            // zone can't leave it unchecked with no selection.
+            _zoneButtons.GetValueOrDefault(z.Id)?.Focus();
+        };
+        _zoneButtons[z.Id] = btn;
         return btn;
     }
 
@@ -488,11 +567,13 @@ public partial class MainWindow : Window
         var byZone = BindingsByZone();
         byZone.TryGetValue(zone.Id, out var bindings);
 
-        ZoneDetailPanel.Children.Add(new TextBlock
+        var zoneTitle = new TextBlock
         {
             Text = $"{zone.Title}  ·  {bindings?.Count ?? 0} mapping(s)",
             FontSize = 19, FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
-        });
+        };
+        AutomationProperties.SetLiveSetting(zoneTitle, AutomationLiveSetting.Polite);
+        ZoneDetailPanel.Children.Add(zoneTitle);
         ZoneDetailPanel.Children.Add(new TextBlock
         { Text = zone.Blurb, FontSize = 14, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
 
@@ -525,7 +606,13 @@ public partial class MainWindow : Window
                 line2.Children.Add(fnBox);
                 var del = new Button { Content = "X", Classes = { "danger" }, Width = 40, MinWidth = 40 };
                 AutomationProperties.SetName(del, $"Remove the {ShortInput(zone, b)} mapping");
-                del.Click += (_, _) => { _file!.DeleteRow(b.Row); BuildDeviceView(); BuildZoneDetail(); RefreshIssues(); };
+                del.Click += (_, _) =>
+                {
+                    int deletedIndex = bindings.IndexOf(b);
+                    _file!.DeleteRow(b.Row);
+                    BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                    FocusZoneDetailSibling(zone.Id, deletedIndex);
+                };
                 line2.Children.Add(del);
                 card.Children.Add(line2);
 
@@ -555,6 +642,9 @@ public partial class MainWindow : Window
                 int newRow = _file.AddBindingRow(CurrentSheet);
                 _file.SetCell(newRow, 2, zone.DefaultInput);
                 BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                // Take the user to the mapping they just created (mirrors AddRow in List View).
+                if (_cellBorders.TryGetValue($"C{newRow}", out var newBorder))
+                { newBorder.BringIntoView(); (newBorder.Child as AutoCompleteBox)?.Focus(); }
             };
             ZoneDetailPanel.Children.Add(add);
         }
@@ -600,7 +690,7 @@ public partial class MainWindow : Window
         await File.WriteAllTextAsync(_savePath, _file.ToCsvText());
         _file.Dirty = false;
         RebuildRows(); // header insertion shifts grid rows
-        Status($"Saved to {_savePath}.", Brushes.Green);
+        Status($"Saved to {_savePath}.", StatusKind.Ready);
     }
 
     async Task ImportAsync()
@@ -624,7 +714,7 @@ public partial class MainWindow : Window
             var imported = ProfileFile.Load(text);
             OpenInEditor(imported, savePath: null);
             if (imported.Document.Sheets.Count == 1)
-                Status("Imported this spreadsheet's linked tab. If the profile has more mode tabs, they are not included yet; importing every tab is coming.", Brushes.DarkOrange);
+                Status("Imported this spreadsheet's linked tab. If the profile has more mode tabs, they are not included yet; importing every tab is coming.", StatusKind.Warning);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         { HomeError($"Could not download the sheet: {(ex is TaskCanceledException ? "the connection timed out after 15 seconds" : ex.Message)}. Check your internet connection and the link."); }
@@ -635,7 +725,7 @@ public partial class MainWindow : Window
         if (_file is null) { Status("Open a profile first."); return; }
         _file.Reparse();
         if (_file.HasErrors)
-        { Status("Fix the errors in the Problems list before installing.", Brushes.Crimson); RefreshIssues(); return; }
+        { Status("Fix the errors in the Problems list before installing.", StatusKind.Error); RefreshIssues(); return; }
 
         var candidates = Device.FindCandidates();
         string? root = candidates.Count switch
@@ -655,7 +745,7 @@ public partial class MainWindow : Window
 
         if (!Device.IsInstallTarget(root))
         {
-            Status("That folder does not look like a QuadStick (no default.csv at its root).", Brushes.Crimson);
+            Status("That folder does not look like a QuadStick (no default.csv at its root).", StatusKind.Error);
             return;
         }
 
@@ -675,10 +765,10 @@ public partial class MainWindow : Window
             Status(result.BackupPath is null
                 ? $"Installed {Path.GetFileName(result.InstalledPath)} to {root}."
                 : $"Installed {Path.GetFileName(result.InstalledPath)} to {root}. Previous version backed up to {result.BackupPath}.",
-                Brushes.Green);
+                StatusKind.Ready);
         }
         catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException)
-        { Status($"Install failed, device unchanged: {ex.Message}", Brushes.Crimson); }
+        { Status($"Install failed, device unchanged: {ex.Message}", StatusKind.Error); }
     }
 
     bool _closeConfirmed;
@@ -705,7 +795,7 @@ public partial class MainWindow : Window
         if (_file is null || !_file.Undo()) { Status("Nothing to undo."); return; }
         FileNameBox.Text = _file.Document.CsvFileName ?? "";
         RefreshEditor();
-        Status("Change undone.");
+        Status("Change undone.", StatusKind.Ready);
     }
 
     ModeSheet? CurrentSheet =>
@@ -783,7 +873,13 @@ public partial class MainWindow : Window
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 160, NoSuggestions, $"Setting value for row {b.Row}", FunctionTint));
         var del = new Button { Content = "Delete row", Classes = { "danger" } };
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
-        del.Click += (_, _) => { _file!.DeleteRow(b.Row); RebuildRows(); };
+        del.Click += (_, _) =>
+        {
+            int deletedIndex = CurrentSheet!.Bindings.IndexOf(b);
+            _file!.DeleteRow(b.Row);
+            RebuildRows();
+            FocusRowSibling(deletedIndex);
+        };
         p.Children.Add(del);
         return p;
     }
@@ -801,7 +897,13 @@ public partial class MainWindow : Window
 
         var del = new Button { Content = "Delete row", Classes = { "danger" } };
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
-        del.Click += (_, _) => { _file!.DeleteRow(b.Row); RebuildRows(); };
+        del.Click += (_, _) =>
+        {
+            int deletedIndex = CurrentSheet!.Bindings.IndexOf(b);
+            _file!.DeleteRow(b.Row);
+            RebuildRows();
+            FocusRowSibling(deletedIndex);
+        };
 
         if (inputCount < 8)
         {
@@ -881,9 +983,95 @@ public partial class MainWindow : Window
         }
     }
 
+    // After deleting a List View row, keep focus on the row that slid into
+    // its place instead of dropping it (mirrors AddRow's "take the user
+    // there" logic in reverse).
+    void FocusRowSibling(int deletedIndex)
+    {
+        if (CurrentSheet is { Bindings.Count: > 0 } sheet)
+        {
+            int idx = Math.Min(deletedIndex, sheet.Bindings.Count - 1);
+            var targetRow = sheet.Bindings[idx].Row;
+            if (_cellBorders.TryGetValue($"A{targetRow}", out var border))
+            { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); return; }
+        }
+        AddRowButton.Focus(); // no rows left; hand focus to the control that adds one
+    }
+
+    // Same idea for Device View's zone detail panel: focus the mapping card
+    // that took the deleted one's place, or the "add mapping" button, or a
+    // zone button, so a keyboard/switch user is never left with no focus.
+    void FocusZoneDetailSibling(string zoneId, int deletedIndex)
+    {
+        BindingsByZone().TryGetValue(zoneId, out var remaining);
+        int count = remaining?.Count ?? 0;
+        if (count > 0)
+        {
+            int childIndex = 2 + Math.Min(deletedIndex, count - 1); // 0: title, 1: blurb, 2+: cards
+            if (childIndex < ZoneDetailPanel.Children.Count
+                && ZoneDetailPanel.Children[childIndex] is Control card
+                && FindFocusable(card) is { } target)
+            { target.BringIntoView(); target.Focus(); return; }
+        }
+        if (ZoneDetailPanel.Children.OfType<Button>().FirstOrDefault() is { } addButton)
+        { addButton.Focus(); return; }
+        if (_zoneButtons.TryGetValue(zoneId, out var zoneButton)) zoneButton.Focus();
+        else if (_zoneButtons.Count > 0) _zoneButtons.Values.First().Focus();
+    }
+
+    // Depth-first search for the first AutoCompleteBox or Button under a
+    // mapping card's Border/StackPanel wrapper tree.
+    static Control? FindFocusable(Control root) => root switch
+    {
+        AutoCompleteBox or Button => root,
+        Border { Child: Control c } => FindFocusable(c),
+        Panel p => p.Children.Select(FindFocusable).FirstOrDefault(f => f != null),
+        _ => null,
+    };
+
+    // Jumps focus to the field an issue is about: the file name box for
+    // filename problems, or the matching grid cell otherwise. Switches mode
+    // sheet and, in Device View, zone selection first if the cell lives
+    // somewhere not currently on screen.
+    void FocusIssueCell(Issue issue)
+    {
+        if (_file is null) return;
+        if (issue.Cell == $"A{_file.Document.FileNameCellRow}")
+        { FileNameBox.Focus(); return; }
+
+        if (int.TryParse(issue.Cell.AsSpan(1), out int row))
+        {
+            int sheetIdx = _file.Document.Sheets.FindIndex(s => s.Bindings.Any(b => b.Row == row));
+            if (sheetIdx >= 0 && sheetIdx != _sheetIndex)
+                SheetPicker.SelectedIndex = sheetIdx; // triggers RefreshEditor synchronously
+
+            if (_deviceView && sheetIdx >= 0)
+            {
+                var binding = _file.Document.Sheets[sheetIdx].Bindings.First(b => b.Row == row);
+                var zoneId = binding.Inputs.Count > 0 ? ZoneOf(binding.Inputs[0]) : "unset";
+                if (_selectedZone != zoneId)
+                {
+                    _selectedZone = zoneId;
+                    BuildDeviceView(); BuildZoneDetail();
+                }
+            }
+        }
+
+        if (_cellBorders.TryGetValue(issue.Cell, out var border))
+        {
+            border.BringIntoView();
+            (border.Child as AutoCompleteBox)?.Focus();
+        }
+    }
+
     void RefreshIssues()
     {
-        foreach (var b in _cellBorders.Values) b.BorderBrush = Brushes.Transparent;
+        foreach (var b in _cellBorders.Values)
+        {
+            b.BorderBrush = Brushes.Transparent;
+            b.BorderThickness = new Avalonia.Thickness(2);
+            if (b.Child is Control c) AutomationProperties.SetName(b, AutomationProperties.GetName(c));
+        }
         if (_file is null) { IssuesList.ItemsSource = null; return; }
 
         IssuesList.ItemsSource = _file.Issues.Count == 0
@@ -900,19 +1088,26 @@ public partial class MainWindow : Window
                     TextWrapping = TextWrapping.Wrap,
                     FontSize = 14,
                     Classes = { i.Severity == Severity.Error ? "error" : "warn" },
+                    Tag = i, // lets SelectionChanged/Fix-first find the cell to focus
                 })
                 .ToList();
 
         foreach (var issue in _file.Issues)
             if (_cellBorders.TryGetValue(issue.Cell, out var border))
-                BindBrush(border, Border.BorderBrushProperty, issue.Severity == Severity.Error ? "Error" : "Warning");
+            {
+                var severityLabel = issue.Severity == Severity.Error ? "Error" : "Warning";
+                BindBrush(border, Border.BorderBrushProperty, severityLabel);
+                border.BorderThickness = new Avalonia.Thickness(3);
+                var baseName = border.Child is Control c ? AutomationProperties.GetName(c) : null;
+                AutomationProperties.SetName(border, $"{severityLabel}: {baseName}");
+            }
 
         var errors = _file.Issues.Count(i => i.Severity == Severity.Error);
         var warns = _file.Issues.Count - errors;
         Status(errors + warns == 0
                 ? "No problems. Ready to save or install."
                 : $"{errors} error(s), {warns} warning(s). Errors block installing.",
-            errors > 0 ? Brushes.Crimson : warns > 0 ? Brushes.DarkOrange : Brushes.Green);
+            errors > 0 ? StatusKind.Error : warns > 0 ? StatusKind.Warning : StatusKind.Ready);
     }
 
     static void SetWatermark(Control suggestBoxWrapper, string text)
@@ -920,10 +1115,11 @@ public partial class MainWindow : Window
         if ((suggestBoxWrapper as Border)?.Child is AutoCompleteBox box) box.Watermark = text;
     }
 
-    void Status(string text, IBrush? color = null)
+    void Status(string text, StatusKind kind = StatusKind.Info)
     {
-        StatusText.Text = text;
-        StatusText.Foreground = color ?? new SolidColorBrush(Color.Parse("#444444"));
+        StatusHost.Content = StatusChip(kind, text);
+        AutomationProperties.SetLiveSetting(StatusHost,
+            kind == StatusKind.Error ? AutomationLiveSetting.Assertive : AutomationLiveSetting.Polite);
     }
 
     void ShowHelp()
@@ -958,7 +1154,7 @@ public partial class MainWindow : Window
              "If the device is in PS4 boot mode, or virtual XBox / Dualshock controller emulation is enabled, the flash drive does not appear on the computer. Turn those off (in QMP or your prefs) and replug. On a Mac, the volume is named \"QUAD STICK\" in Finder."),
 
             ("Keyboard",
-             "Tab moves between fields, arrows navigate suggestion lists, Enter confirms. Ctrl/Cmd+O open, S save, N new, Z undo. Every control announces itself to screen readers."),
+             "Tab moves between fields, arrows navigate suggestion lists, Enter confirms. Ctrl/Cmd+O open, S save, N new, Z undo, I install, D switch between Device view and List view, H this guide. F1 also opens this guide from anywhere. Selecting a problem, or the Fix first problem button, jumps focus straight to it. Every control announces itself to screen readers."),
 
             ("Found a problem?",
              "Select a problem in the list to copy it. File at github.com/Bbrizly/Quadstick-Config-Manager/issues — say what you did and what went wrong."),

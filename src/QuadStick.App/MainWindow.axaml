@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="QuadStick.App.MainWindow"
         Title="QuadStick Config Manager (unofficial)"
-        Width="1180" Height="850" MinWidth="1020" MinHeight="640"
+        Width="1180" Height="850" MinWidth="760" MinHeight="560"
         Background="#F6F5F2">
   <Panel>
 
@@ -58,7 +58,7 @@
               <Button x:Name="ImportButton" Content="Import from Sheets"
                       AutomationProperties.Name="Import the profile from the pasted Google Sheets link"/>
             </StackPanel>
-            <TextBlock x:Name="HomeStatusText" FontSize="15" Foreground="Crimson"
+            <TextBlock x:Name="HomeStatusText" FontSize="15" Classes="error"
                        TextWrapping="Wrap" MaxWidth="700" IsVisible="False"
                        AutomationProperties.LiveSetting="Assertive"/>
           </StackPanel>
@@ -84,42 +84,53 @@
     <!-- ============ EDITOR ============ -->
     <DockPanel x:Name="EditorView" Margin="20,16" IsVisible="False">
 
-      <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10">
-        <Button x:Name="HomeButton" Content="← Home"
-                AutomationProperties.Name="Go back to the home screen"/>
-        <TextBox x:Name="FileNameBox" FontSize="17" FontWeight="Bold" MinWidth="220"
-                 VerticalAlignment="Center"
-                 AutomationProperties.Name="Profile file name. Edit to rename, must end in .csv"/>
-        <Button x:Name="SaveButton" Content="Save"
-                AutomationProperties.Name="Save this profile. Shortcut Control S"/>
-        <Button x:Name="UndoButton" Content="Undo"
-                AutomationProperties.Name="Undo the last change. Shortcut Control Z"/>
-        <Button x:Name="InstallButton" Content="Install to QuadStick" Classes="primary"
-                AutomationProperties.Name="Install this profile onto a connected QuadStick"/>
-        <Button x:Name="HelpButton" Content="Help"
-                AutomationProperties.Name="Open the quick guide"/>
-      </StackPanel>
+      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+          <Button x:Name="HomeButton" DockPanel.Dock="Left" Content="← Home"
+                  AutomationProperties.Name="Go back to the home screen"/>
+          <TextBox x:Name="FileNameBox" FontSize="17" FontWeight="Bold" MinWidth="220"
+                   HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,0,0"
+                   AutomationProperties.Name="Profile file name. Edit to rename, must end in .csv"/>
+        </DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10">
+          <Button x:Name="SaveButton" Content="Save"
+                  AutomationProperties.Name="Save this profile. Shortcut Control S"/>
+          <Button x:Name="UndoButton" Content="Undo"
+                  AutomationProperties.Name="Undo the last change. Shortcut Control Z"/>
+          <Button x:Name="InstallButton" Content="Install to QuadStick" Classes="primary"
+                  AutomationProperties.Name="Install this profile onto a connected QuadStick. Shortcut Control I"/>
+          <Button x:Name="HelpButton" Content="Help"
+                  AutomationProperties.Name="Open the quick guide. Shortcut Control H or F1"/>
+        </StackPanel>
+      </DockPanel>
 
-      <TextBlock x:Name="StatusText" DockPanel.Dock="Top" Margin="0,12"
-                 FontSize="15" Text=""/>
+      <ContentControl x:Name="StatusHost" DockPanel.Dock="Top" Margin="0,12"/>
 
-      <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
-        <TextBlock Text="Mode sheet:" VerticalAlignment="Center" FontSize="15"/>
-        <ComboBox x:Name="SheetPicker" MinWidth="200"
-                  AutomationProperties.Name="Select which mode sheet to edit"/>
-        <Button x:Name="DeviceViewButton" Content="Device view"
-                AutomationProperties.Name="Show the mappings on a picture of the QuadStick"/>
-        <Button x:Name="ListViewButton" Content="List view"
-                AutomationProperties.Name="Show the mappings as a list of rows"/>
-        <Button x:Name="AddRowButton" Content="Add row"
-                AutomationProperties.Name="Add a new binding row to this sheet"/>
-        <ComboBox x:Name="ModelPicker" MinWidth="150"
-                  AutomationProperties.Name="Which QuadStick model you have"/>
-        <TextBlock x:Name="DeviceStatusText" VerticalAlignment="Center" FontSize="14"/>
-      </StackPanel>
+      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,8">
+          <TextBlock Text="Mode sheet:" VerticalAlignment="Center" FontSize="15"/>
+          <ComboBox x:Name="SheetPicker" MinWidth="200"
+                    AutomationProperties.Name="Select which mode sheet to edit"/>
+          <Button x:Name="DeviceViewButton" Content="Device view"
+                  AutomationProperties.Name="Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this"/>
+          <Button x:Name="ListViewButton" Content="List view"
+                  AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this"/>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10">
+          <Button x:Name="AddRowButton" Content="Add row"
+                  AutomationProperties.Name="Add a new binding row to this sheet"/>
+          <ComboBox x:Name="ModelPicker" MinWidth="150"
+                    AutomationProperties.Name="Which QuadStick model you have"/>
+          <TextBlock x:Name="DeviceStatusText" VerticalAlignment="Center" FontSize="14"/>
+        </StackPanel>
+      </DockPanel>
 
       <DockPanel DockPanel.Dock="Bottom" Height="170" Margin="0,12,0,0">
-        <TextBlock DockPanel.Dock="Top" Text="Problems (select one to copy it)" FontWeight="Bold" FontSize="15" Margin="0,0,0,4"/>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,4">
+          <Button x:Name="FixFirstButton" DockPanel.Dock="Right" Content="Fix first problem" Classes="quiet"
+                  AutomationProperties.Name="Jump to and focus the first error in the Problems list"/>
+          <TextBlock Text="Problems (select one to copy it)" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"/>
+        </DockPanel>
         <Border BorderBrush="#D8D6D2" BorderThickness="1" CornerRadius="8" Background="White">
           <ListBox x:Name="IssuesList" FontSize="14" Background="Transparent"
                    AutomationProperties.Name="List of validation problems"/>
@@ -133,11 +144,12 @@
           </ScrollViewer>
         </Border>
         <Border x:Name="DeviceContainer" Background="White" BorderBrush="#D8D6D2" BorderThickness="1" CornerRadius="8" IsVisible="False">
-          <Grid ColumnDefinitions="*,420">
+          <Grid ColumnDefinitions="*,Auto">
             <ScrollViewer>
               <StackPanel x:Name="DeviceCanvas" Spacing="16" Margin="16"/>
             </ScrollViewer>
-            <Border Grid.Column="1" Background="#FBFAF8" BorderBrush="#E3E1DD" BorderThickness="1,0,0,0" Padding="14">
+            <Border Grid.Column="1" Background="#FBFAF8" BorderBrush="#E3E1DD" BorderThickness="1,0,0,0"
+                    Padding="14" MaxWidth="360">
               <ScrollViewer>
                 <StackPanel x:Name="ZoneDetailPanel" Spacing="10"/>
               </ScrollViewer>
