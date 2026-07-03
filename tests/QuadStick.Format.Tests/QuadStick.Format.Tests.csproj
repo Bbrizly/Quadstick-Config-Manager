@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/QuadStick.Format/QuadStick.Format.csproj" />
+    <ProjectReference Include="../../src/QuadStick.App/QuadStick.App.csproj" />
     <None Include="corpus/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

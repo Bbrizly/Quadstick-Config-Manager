@@ -1,71 +1,111 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="QuadStick.App.App"
-             RequestedThemeVariant="Light">
+             RequestedThemeVariant="Default">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://QuadStickConfigManager/Icons.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+      <x:Double x:Key="SpaceXs">4</x:Double>
+      <x:Double x:Key="SpaceSm">8</x:Double>
+      <x:Double x:Key="SpaceMd">12</x:Double>
+      <x:Double x:Key="SpaceLg">16</x:Double>
+      <x:Double x:Key="SpaceXl">24</x:Double>
+      <x:Double x:Key="Space2Xl">32</x:Double>
+      <x:Double x:Key="TitleSize">28</x:Double>
+      <x:Double x:Key="SectionSize">19</x:Double>
+      <x:Double x:Key="SubheadSize">16</x:Double>
+      <x:Double x:Key="BodySize">15</x:Double>
+      <x:Double x:Key="SmallSize">14</x:Double>
+    </ResourceDictionary>
+  </Application.Resources>
   <Application.Styles>
     <FluentTheme />
-    <!-- Accessibility: every interactive control gets a large hit target. -->
+
+    <Style Selector="Window">
+      <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}"/>
+    </Style>
+
     <Style Selector="Button">
-      <Setter Property="MinHeight" Value="44"/>
-      <Setter Property="MinWidth" Value="44"/>
-      <Setter Property="FontSize" Value="15"/>
-      <Setter Property="Background" Value="White"/>
-      <Setter Property="BorderBrush" Value="#C9C7C3"/>
+      <Setter Property="MinHeight" Value="48"/>
+      <Setter Property="MinWidth" Value="48"/>
+      <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="8"/>
       <Setter Property="Padding" Value="16,10"/>
     </Style>
     <Style Selector="Button:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="#EDF4FB"/>
-      <Setter Property="BorderBrush" Value="#0F6CBD"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
     </Style>
+
+    <!-- Focus ring: bold, offset, theme-aware, on every interactive control. -->
+    <Style Selector="Button:focus-visible /template/ ContentPresenter,
+                     ToggleButton:focus-visible /template/ ContentPresenter">
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusBrush}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+    <!-- ComboBox/AutoCompleteBox focus their inner template parts, so use
+         :focus-within (Codex: :focus-visible can miss the focused inner element). -->
+    <Style Selector="TextBox:focus-within, ComboBox:focus-within, AutoCompleteBox:focus-within">
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusBrush}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
     <Style Selector="Button.quiet">
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="Foreground" Value="#0F6CBD"/>
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
     <Style Selector="Button.danger">
-      <Setter Property="Foreground" Value="#B3261E"/>
+      <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}"/>
     </Style>
-    <!-- Zone buttons keep the SAME border thickness selected or not, so the
-         text inside never reflows when you click. Only colors change. -->
-    <Style Selector="Button.zone">
-      <Setter Property="Background" Value="White"/>
-      <Setter Property="BorderBrush" Value="#B9B7B3"/>
+
+    <Style Selector="Button.zone, ToggleButton.zone">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
       <Setter Property="BorderThickness" Value="2"/>
       <Setter Property="Padding" Value="6"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
-    <Style Selector="Button.zoneSelected">
-      <Setter Property="BorderBrush" Value="#0F6CBD"/>
-      <Setter Property="Background" Value="#EDF4FB"/>
+    <Style Selector="Button.zoneSelected, ToggleButton.zone:checked">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
     </Style>
+
     <Style Selector="TextBox">
-      <Setter Property="MinHeight" Value="44"/>
-      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="MinHeight" Value="48"/>
+      <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
     </Style>
     <Style Selector="ComboBox">
-      <Setter Property="MinHeight" Value="44"/>
-      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="MinHeight" Value="48"/>
+      <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
     </Style>
     <Style Selector="AutoCompleteBox">
-      <Setter Property="MinHeight" Value="44"/>
-      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="MinHeight" Value="48"/>
+      <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
     </Style>
+
     <Style Selector="Button.primary">
-      <Setter Property="Background" Value="#0F6CBD"/>
-      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
     <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="#0B5CA3"/>
-      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}"/>
     </Style>
+
     <Style Selector="Button.card">
       <Setter Property="Margin" Value="0,0,14,14"/>
-      <Setter Property="Background" Value="White"/>
-      <Setter Property="BorderBrush" Value="#D8D6D2"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="10"/>
       <Setter Property="Padding" Value="18,16"/>
@@ -74,19 +114,40 @@
       <Setter Property="HorizontalContentAlignment" Value="Left"/>
       <Setter Property="VerticalContentAlignment" Value="Top"/>
     </Style>
-    <Style Selector="Button.card:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="#EDF4FB"/>
-      <Setter Property="BorderBrush" Value="#0F6CBD"/>
+    <!-- BoxShadow lives on the ContentPresenter, not the Button (Codex). -->
+    <Style Selector="Button.card /template/ ContentPresenter">
+      <Setter Property="BoxShadow" Value="0 1 3 0 #14000000"/>
     </Style>
+    <Style Selector="Button.card:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+
     <Style Selector="TextBlock.section">
-      <Setter Property="FontSize" Value="19"/>
+      <Setter Property="FontSize" Value="{DynamicResource SectionSize}"/>
       <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="TextBlock.cardsub">
-      <Setter Property="FontSize" Value="14"/>
-      <Setter Property="Foreground" Value="#5A5A5A"/>
+      <Setter Property="FontSize" Value="{DynamicResource SmallSize}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
       <Setter Property="TextWrapping" Value="Wrap"/>
       <Setter Property="MaxWidth" Value="250"/>
+    </Style>
+    <Style Selector="TextBlock.secondary">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.success">
+      <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.warn">
+      <Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.error">
+      <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}"/>
     </Style>
   </Application.Styles>
 </Application>

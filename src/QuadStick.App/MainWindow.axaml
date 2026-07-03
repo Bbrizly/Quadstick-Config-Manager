@@ -8,12 +8,20 @@
 
     <!-- ============ HOME ============ -->
     <DockPanel x:Name="HomeView" Margin="32,28">
-      <StackPanel DockPanel.Dock="Top" Spacing="4">
-        <TextBlock Text="QuadStick Config Manager" FontSize="30" FontWeight="Bold"/>
-        <TextBlock Text="Edit and install game profiles for your QuadStick. Free, unofficial, works offline."
-                   FontSize="16" Foreground="#5A5A5A"/>
-        <TextBlock x:Name="HomeVersionText" FontSize="13" Foreground="#8A8A8A"/>
-      </StackPanel>
+      <DockPanel DockPanel.Dock="Top">
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8"
+                    VerticalAlignment="Top">
+          <TextBlock Text="Appearance" VerticalAlignment="Center" Classes="secondary"/>
+          <ComboBox x:Name="AppearancePicker" MinWidth="130"
+                    AutomationProperties.Name="Appearance: choose System, Light, or Dark theme"/>
+        </StackPanel>
+        <StackPanel Spacing="4">
+          <TextBlock Text="QuadStick Config Manager" FontSize="{DynamicResource TitleSize}" FontWeight="Bold"/>
+          <TextBlock Text="Edit and install game profiles for your QuadStick. Free, unofficial, works offline."
+                     FontSize="{DynamicResource SubheadSize}" Classes="secondary"/>
+          <TextBlock x:Name="HomeVersionText" FontSize="{DynamicResource SmallSize}" Classes="secondary"/>
+        </StackPanel>
+      </DockPanel>
 
       <ScrollViewer Margin="0,24,0,0">
         <StackPanel Spacing="28">

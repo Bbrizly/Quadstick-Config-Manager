@@ -1,8 +1,11 @@
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using QuadStick.Format;
@@ -11,6 +14,11 @@ namespace QuadStick.App;
 
 public partial class MainWindow : Window
 {
+    // Bind any brush property to a theme token so it repaints on theme change.
+    // Never resolve+assign a concrete brush for a themed color: that freezes it.
+    static void BindBrush(Control target, AvaloniaProperty property, string tokenKey) =>
+        target[!property] = new DynamicResourceExtension(tokenKey + "Brush");
+
     ProfileFile? _file;
     string? _savePath;          // where Save writes; null until saved or opened from a path
     int _sheetIndex;
@@ -21,29 +29,11 @@ public partial class MainWindow : Window
     enum QsModel { FPS, Original, Singleton }
     static readonly string[] ModelNames = { "QuadStick FPS", "QuadStick Original", "QuadStick Singleton" };
 
-    static string SettingsFile => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "QuadStickConfigManager", "settings.json");
+    static QsModel LoadModel() =>
+        Enum.TryParse<QsModel>(Settings.Load().model, out var m) ? m : QsModel.FPS;
 
-    static QsModel LoadModel()
-    {
-        try
-        {
-            var json = System.Text.Json.JsonDocument.Parse(File.ReadAllText(SettingsFile));
-            return Enum.TryParse<QsModel>(json.RootElement.GetProperty("model").GetString(), out var m) ? m : QsModel.FPS;
-        }
-        catch { return QsModel.FPS; }
-    }
+    void SaveModel() => Settings.Save(null, model: _model.ToString(), theme: null);
 
-    void SaveModel()
-    {
-        try
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(SettingsFile)!);
-            File.WriteAllText(SettingsFile, $"{{\"model\":\"{_model}\"}}");
-        }
-        catch { /* settings are a convenience, never fatal */ }
-    }
     readonly Dictionary<string, Border> _cellBorders = new();
     static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(15) };
     const string DefaultNewName = "mygame.csv";
@@ -72,10 +62,11 @@ public partial class MainWindow : Window
     }
 
     // The sheet's color language, familiar to every QuadStick user:
-    // yellow = outputs, pink = function, blue = inputs.
-    static readonly IBrush OutputTint = new SolidColorBrush(Color.Parse("#FFF6DE"));
-    static readonly IBrush FunctionTint = new SolidColorBrush(Color.Parse("#FDE7EC"));
-    static readonly IBrush InputTint = new SolidColorBrush(Color.Parse("#E3F0FC"));
+    // yellow = outputs, pink = function, blue = inputs. Keys into the theme's
+    // <Key>Brush DynamicResource (Palette.cs / Theme.cs), not fixed colors.
+    const string OutputTint = "OutputTint";
+    const string FunctionTint = "FunctionTint";
+    const string InputTint = "InputTint";
 
     // Group inputs the way users think of the hardware, not alphabetically.
     static int GroupRank(string input) => input switch
@@ -144,6 +135,16 @@ public partial class MainWindow : Window
             _model = (QsModel)ModelPicker.SelectedIndex;
             SaveModel();
             if (_deviceView) { _selectedZone = null; RefreshEditor(); }
+        };
+
+        var (_, savedTheme) = Settings.Load();
+        AppearancePicker.ItemsSource = new[] { "System", "Light", "Dark" };
+        AppearancePicker.SelectedIndex = savedTheme switch { "Light" => 1, "Dark" => 2, _ => 0 };
+        AppearancePicker.SelectionChanged += (_, _) =>
+        {
+            var choice = (string)AppearancePicker.SelectedItem!;
+            QuadStick.App.Theme.Apply(choice);
+            Settings.Save(null, model: null, theme: choice);
         };
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts.
@@ -368,12 +369,12 @@ public partial class MainWindow : Window
         DeviceCanvas.Children.Add(new TextBlock
         {
             Text = "Select a part of the QuadStick to see and change what it does.",
-            FontSize = 15, Foreground = new SolidColorBrush(Color.Parse("#555555")),
+            FontSize = 15, Classes = { "muted" },
         });
         DeviceCanvas.Children.Add(new TextBlock
         {
             Text = ModelDescription,
-            FontSize = 13, Foreground = Brushes.Gray, TextWrapping = TextWrapping.Wrap,
+            FontSize = 14, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         });
 
         var layout = new StackPanel
@@ -387,9 +388,8 @@ public partial class MainWindow : Window
         { Orientation = Orientation.Horizontal, Spacing = 10, HorizontalAlignment = HorizontalAlignment.Center };
         foreach (var z in visible.Where(z => z.Id.StartsWith("mp_")))
             holes.Children.Add(ZoneButton(z, byZone, 112, 112, 56, 2));
-        layout.Children.Add(new Border
+        var mouthpieceBar = new Border
         {
-            Background = new SolidColorBrush(Color.Parse("#F0EEEA")),
             CornerRadius = new Avalonia.CornerRadius(26),
             Padding = new Avalonia.Thickness(16, 10),
             VerticalAlignment = VerticalAlignment.Center,
@@ -403,7 +403,9 @@ public partial class MainWindow : Window
                     holes,
                 },
             },
-        });
+        };
+        BindBrush(mouthpieceBar, Border.BackgroundProperty, "SurfaceSubtle");
+        layout.Children.Add(mouthpieceBar);
 
         // Side tube + lip switch column.
         var sideCol = new StackPanel { Spacing = 10, VerticalAlignment = VerticalAlignment.Center };
@@ -444,12 +446,13 @@ public partial class MainWindow : Window
         var content = new StackPanel { Spacing = 3 };
         content.Children.Add(new TextBlock
         { Text = z.Display, FontWeight = FontWeight.Bold, FontSize = 14, HorizontalAlignment = HorizontalAlignment.Center });
-        content.Children.Add(new TextBlock
+        var summaryText = new TextBlock
         {
-            Text = summary, FontSize = 12, TextWrapping = TextWrapping.Wrap,
+            Text = summary, FontSize = 14, TextWrapping = TextWrapping.Wrap,
             TextAlignment = TextAlignment.Center, MaxWidth = w - 20,
-            Foreground = bindings is null or { Count: 0 } ? Brushes.Gray : new SolidColorBrush(Color.Parse("#2B2B2B")),
-        });
+        };
+        if (bindings is null or { Count: 0 }) summaryText.Classes.Add("muted");
+        content.Children.Add(summaryText);
 
         var btn = new Button
         {
@@ -458,7 +461,7 @@ public partial class MainWindow : Window
             Content = content,
         };
         if (_selectedZone == z.Id) btn.Classes.Add("zoneSelected");
-        if (foreign) btn.BorderBrush = new SolidColorBrush(Color.Parse("#C77700"));
+        if (foreign) BindBrush(btn, TemplatedControl.BorderBrushProperty, "Warning");
         var spoken = bindings is null or { Count: 0 }
             ? "nothing mapped yet"
             : string.Join(", ", bindings.Take(4).Select(b => $"{ShortInput(z, b)} presses {b.Output}"));
@@ -477,7 +480,7 @@ public partial class MainWindow : Window
             ZoneDetailPanel.Children.Add(new TextBlock
             {
                 Text = "Nothing selected.\n\nPick a part of the QuadStick on the left to see what it does in this mode, change it, or map something new to it.",
-                FontSize = 14, Foreground = Brushes.Gray, TextWrapping = TextWrapping.Wrap,
+                FontSize = 14, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
             });
             return;
         }
@@ -491,7 +494,7 @@ public partial class MainWindow : Window
             FontSize = 19, FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
         });
         ZoneDetailPanel.Children.Add(new TextBlock
-        { Text = zone.Blurb, FontSize = 14, Foreground = new SolidColorBrush(Color.Parse("#555555")), TextWrapping = TextWrapping.Wrap });
+        { Text = zone.Blurb, FontSize = 14, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
 
         if (bindings is { Count: > 0 })
         {
@@ -526,20 +529,21 @@ public partial class MainWindow : Window
                 line2.Children.Add(del);
                 card.Children.Add(line2);
 
-                ZoneDetailPanel.Children.Add(new Border
+                var mappingCard = new Border
                 {
-                    Background = Brushes.White,
-                    BorderBrush = new SolidColorBrush(Color.Parse("#E3E1DD")),
                     BorderThickness = new Avalonia.Thickness(1),
                     CornerRadius = new Avalonia.CornerRadius(8),
                     Padding = new Avalonia.Thickness(10),
                     Child = card,
-                });
+                };
+                BindBrush(mappingCard, Border.BackgroundProperty, "Surface");
+                BindBrush(mappingCard, Border.BorderBrushProperty, "SurfaceBorder");
+                ZoneDetailPanel.Children.Add(mappingCard);
             }
         }
         else
             ZoneDetailPanel.Children.Add(new TextBlock
-            { Text = "Nothing mapped here yet.", FontSize = 15, Foreground = Brushes.Gray });
+            { Text = "Nothing mapped here yet.", FontSize = 15, Classes = { "muted" } });
 
         if (zone.Id != "unset")
         {
@@ -724,7 +728,7 @@ public partial class MainWindow : Window
                 Text = prefs
                     ? "No settings on this sheet yet. Click \"Add row\" to add one."
                     : "No bindings yet. Click \"Add row\" to connect an input to an output.",
-                FontSize = 15, Foreground = Brushes.Gray, Margin = new Avalonia.Thickness(4, 12),
+                FontSize = 15, Classes = { "muted" }, Margin = new Avalonia.Thickness(4, 12),
             });
         RefreshIssues();
     }
@@ -737,29 +741,38 @@ public partial class MainWindow : Window
         p.Children.Add(Swatch("Inputs (sips, puffs, joystick)", 240, InputTint));
         return p;
 
-        static Control Swatch(string text, double width, IBrush tint) => new Border
+        static Control Swatch(string text, double width, string tintKey)
         {
-            Background = tint, Width = width, CornerRadius = new Avalonia.CornerRadius(5),
-            Padding = new Avalonia.Thickness(8, 6),
-            Child = new TextBlock { Text = text, FontWeight = FontWeight.Bold, FontSize = 14 },
-        };
+            var border = new Border
+            {
+                Width = width, CornerRadius = new Avalonia.CornerRadius(5),
+                Padding = new Avalonia.Thickness(8, 6),
+                Child = new TextBlock { Text = text, FontWeight = FontWeight.Bold, FontSize = 14 },
+            };
+            BindBrush(border, Border.BackgroundProperty, tintKey);
+            return border;
+        }
     }
 
     Control PrefsHeaderRow()
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(new Border
+        var settingHeader = new Border
         {
-            Background = OutputTint, Width = 300, CornerRadius = new Avalonia.CornerRadius(5),
+            Width = 300, CornerRadius = new Avalonia.CornerRadius(5),
             Padding = new Avalonia.Thickness(8, 6),
             Child = new TextBlock { Text = "Setting", FontWeight = FontWeight.Bold, FontSize = 14 },
-        });
-        p.Children.Add(new Border
+        };
+        BindBrush(settingHeader, Border.BackgroundProperty, OutputTint);
+        p.Children.Add(settingHeader);
+        var valueHeader = new Border
         {
-            Background = FunctionTint, Width = 160, CornerRadius = new Avalonia.CornerRadius(5),
+            Width = 160, CornerRadius = new Avalonia.CornerRadius(5),
             Padding = new Avalonia.Thickness(8, 6),
             Child = new TextBlock { Text = "Value", FontWeight = FontWeight.Bold, FontSize = 14 },
-        });
+        };
+        BindBrush(valueHeader, Border.BackgroundProperty, FunctionTint);
+        p.Children.Add(valueHeader);
         return p;
     }
 
@@ -812,7 +825,7 @@ public partial class MainWindow : Window
         return p;
     }
 
-    Control SuggestBox(int row, int col, string value, double width, List<string> suggestions, string accessibleName, IBrush tint)
+    Control SuggestBox(int row, int col, string value, double width, List<string> suggestions, string accessibleName, string tintKey)
     {
         var box = new AutoCompleteBox
         {
@@ -821,8 +834,8 @@ public partial class MainWindow : Window
             ItemsSource = suggestions,
             FilterMode = AutoCompleteFilterMode.Contains,
             MinimumPrefixLength = 1,
-            Background = tint,
         };
+        box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
         AutomationProperties.SetName(box, accessibleName);
         void Commit()
         {
@@ -877,7 +890,7 @@ public partial class MainWindow : Window
             ? new List<Control>
               {
                   new TextBlock { Text = "No problems found.", FontSize = 14,
-                                  Foreground = Brushes.Green, Margin = new Avalonia.Thickness(4) },
+                                  Classes = { "success" }, Margin = new Avalonia.Thickness(4) },
               }
             : _file.Issues
                 .OrderBy(i => i.Severity == Severity.Error ? 0 : 1)
@@ -886,13 +899,13 @@ public partial class MainWindow : Window
                     Text = i.ToString(),
                     TextWrapping = TextWrapping.Wrap,
                     FontSize = 14,
-                    Foreground = i.Severity == Severity.Error ? Brushes.Crimson : Brushes.DarkOrange,
+                    Classes = { i.Severity == Severity.Error ? "error" : "warn" },
                 })
                 .ToList();
 
         foreach (var issue in _file.Issues)
             if (_cellBorders.TryGetValue(issue.Cell, out var border))
-                border.BorderBrush = issue.Severity == Severity.Error ? Brushes.Crimson : Brushes.DarkOrange;
+                BindBrush(border, Border.BorderBrushProperty, issue.Severity == Severity.Error ? "Error" : "Warning");
 
         var errors = _file.Issues.Count(i => i.Severity == Severity.Error);
         var warns = _file.Issues.Count - errors;
@@ -995,7 +1008,7 @@ public partial class MainWindow : Window
                     Children =
                     {
                         new TextBlock { Text = name, FontWeight = FontWeight.Bold, FontSize = 15 },
-                        new TextBlock { Text = root, FontSize = 12, Foreground = Brushes.Gray, TextWrapping = TextWrapping.Wrap },
+                        new TextBlock { Text = root, FontSize = 14, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap },
                     },
                 },
                 MinWidth = 360,
