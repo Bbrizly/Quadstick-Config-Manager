@@ -19,6 +19,10 @@ public partial class MainWindow : Window
     static void BindBrush(Control target, AvaloniaProperty property, string tokenKey) =>
         target[!property] = new DynamicResourceExtension(tokenKey + "Brush");
 
+    // Type scale doesn't change with theme, so a one-time resource read is fine
+    // here (same reasoning as the icon Data lookup below).
+    static double Size(string tokenKey) => (double)Application.Current!.FindResource(tokenKey)!;
+
     enum StatusKind { Ready, Info, Warning, Error }
 
     static Control StatusChip(StatusKind kind, string text)
@@ -35,7 +39,7 @@ public partial class MainWindow : Window
         var icon = new PathIcon { Width = 16, Height = 16,
             Data = (Geometry)Application.Current!.FindResource(iconKey)! };
         BindBrush(icon, IconElement.ForegroundProperty, tokenKey);
-        var label = new TextBlock { Text = text, FontSize = 15,
+        var label = new TextBlock { Text = text, FontSize = Size("BodySize"),
             VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
         BindBrush(label, TextBlock.ForegroundProperty, tokenKey);
         return new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8,
@@ -115,6 +119,12 @@ public partial class MainWindow : Window
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
+
+        // Empty-library state offers the same three actions as the Start
+        // cards above, so an empty library is never a dead end.
+        LibraryEmptyNewButton.Click += (_, _) => NewFromTemplate();
+        LibraryEmptyOpenButton.Click += async (_, _) => await OpenAsync();
+        LibraryEmptyImportButton.Click += async (_, _) => await ImportAsync();
 
         HomeButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
         Closing += async (_, e) =>
@@ -246,7 +256,7 @@ public partial class MainWindow : Window
         var libraryFiles = Directory.Exists(LibraryDir)
             ? Directory.GetFiles(LibraryDir, "*.csv").OrderBy(Path.GetFileName).ToArray()
             : Array.Empty<string>();
-        LibraryEmptyText.IsVisible = libraryFiles.Length == 0;
+        LibraryEmptyPanel.IsVisible = libraryFiles.Length == 0;
         foreach (var path in libraryFiles)
             LibraryCards.Children.Add(ProfileCard(path, onDevice: false));
 
@@ -282,7 +292,7 @@ public partial class MainWindow : Window
             Spacing = 6,
             Children =
             {
-                new TextBlock { Text = name, FontSize = 18, FontWeight = FontWeight.Bold },
+                new TextBlock { Text = name, FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold },
                 new TextBlock { Text = subtitle, Classes = { "cardsub" } },
             },
         };
@@ -419,7 +429,17 @@ public partial class MainWindow : Window
         var connected = Device.FindCandidates().Count > 0;
         DeviceStatusText.Text = connected ? "● QuadStick connected" : "○ no QuadStick detected";
         BindBrush(DeviceStatusText, TextBlock.ForegroundProperty, connected ? "Success" : "TextSecondary");
-        if (device) { BuildDeviceView(); BuildZoneDetail(); }
+        if (device)
+        {
+            // Device View is the signature surface: a header row above the
+            // canvas repeats connection + mode so it reads as the primary
+            // editor, not a secondary tab.
+            DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
+                connected ? "QuadStick connected" : "No QuadStick detected");
+            var modeName = CurrentSheet is { } cs ? (cs.ModeName.Length > 0 ? cs.ModeName : cs.Type.ToString()) : "";
+            DeviceHeaderMode.Text = modeName.Length > 0 ? $"Mode: {modeName}" : "";
+            BuildDeviceView(); BuildZoneDetail();
+        }
         else RebuildRows();
         RefreshIssues();
     }
@@ -434,16 +454,16 @@ public partial class MainWindow : Window
         DeviceCanvas.Children.Add(new TextBlock
         {
             Text = "Select a part of the QuadStick to see and change what it does.",
-            FontSize = 15, Classes = { "muted" },
+            FontSize = Size("BodySize"), Classes = { "muted" },
         });
         DeviceCanvas.Children.Add(new TextBlock
         {
             Text = ModelDescription,
-            FontSize = 14, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+            FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         });
 
         var layout = new StackPanel
-        { Orientation = Orientation.Horizontal, Spacing = 16, Margin = new Avalonia.Thickness(0, 10) };
+        { Orientation = Orientation.Horizontal, Spacing = 16, Margin = new Avalonia.Thickness(0, 8) };
 
         // Joystick: the whole mouthpiece moves.
         layout.Children.Add(ZoneButton(AllZones[0], byZone, 146, 146, 73, 2));
@@ -456,14 +476,14 @@ public partial class MainWindow : Window
         var mouthpieceBar = new Border
         {
             CornerRadius = new Avalonia.CornerRadius(26),
-            Padding = new Avalonia.Thickness(16, 10),
+            Padding = new Avalonia.Thickness(16, 8),
             VerticalAlignment = VerticalAlignment.Center,
             Child = new StackPanel
             {
                 Spacing = 8,
                 Children =
                 {
-                    new TextBlock { Text = "Mouthpiece", FontWeight = FontWeight.Bold, FontSize = 14,
+                    new TextBlock { Text = "Mouthpiece", FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"),
                                     HorizontalAlignment = HorizontalAlignment.Center },
                     holes,
                 },
@@ -510,10 +530,10 @@ public partial class MainWindow : Window
 
         var content = new StackPanel { Spacing = 3 };
         content.Children.Add(new TextBlock
-        { Text = z.Display, FontWeight = FontWeight.Bold, FontSize = 14, HorizontalAlignment = HorizontalAlignment.Center });
+        { Text = z.Display, FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"), HorizontalAlignment = HorizontalAlignment.Center });
         var summaryText = new TextBlock
         {
-            Text = summary, FontSize = 14, TextWrapping = TextWrapping.Wrap,
+            Text = summary, FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap,
             TextAlignment = TextAlignment.Center, MaxWidth = w - 20,
         };
         if (bindings is null or { Count: 0 }) summaryText.Classes.Add("muted");
@@ -559,7 +579,7 @@ public partial class MainWindow : Window
             ZoneDetailPanel.Children.Add(new TextBlock
             {
                 Text = "Nothing selected.\n\nPick a part of the QuadStick on the left to see what it does in this mode, change it, or map something new to it.",
-                FontSize = 14, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+                FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
             });
             return;
         }
@@ -570,12 +590,12 @@ public partial class MainWindow : Window
         var zoneTitle = new TextBlock
         {
             Text = $"{zone.Title}  ·  {bindings?.Count ?? 0} mapping(s)",
-            FontSize = 19, FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
+            FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
         };
         AutomationProperties.SetLiveSetting(zoneTitle, AutomationLiveSetting.Polite);
         ZoneDetailPanel.Children.Add(zoneTitle);
         ZoneDetailPanel.Children.Add(new TextBlock
-        { Text = zone.Blurb, FontSize = 14, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
+        { Text = zone.Blurb, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
 
         if (bindings is { Count: > 0 })
         {
@@ -604,7 +624,7 @@ public partial class MainWindow : Window
                     FunctionSuggestions, $"How {ShortInput(zone, b)} presses it", FunctionTint);
                 SetWatermark(fnBox, "how");
                 line2.Children.Add(fnBox);
-                var del = new Button { Content = "X", Classes = { "danger" }, Width = 40, MinWidth = 40 };
+                var del = new Button { Content = "X", Classes = { "danger" } };
                 AutomationProperties.SetName(del, $"Remove the {ShortInput(zone, b)} mapping");
                 del.Click += (_, _) =>
                 {
@@ -620,7 +640,7 @@ public partial class MainWindow : Window
                 {
                     BorderThickness = new Avalonia.Thickness(1),
                     CornerRadius = new Avalonia.CornerRadius(8),
-                    Padding = new Avalonia.Thickness(10),
+                    Padding = new Avalonia.Thickness(8),
                     Child = card,
                 };
                 BindBrush(mappingCard, Border.BackgroundProperty, "Surface");
@@ -630,7 +650,7 @@ public partial class MainWindow : Window
         }
         else
             ZoneDetailPanel.Children.Add(new TextBlock
-            { Text = "Nothing mapped here yet.", FontSize = 15, Classes = { "muted" } });
+            { Text = "Nothing mapped here yet.", FontSize = Size("BodySize"), Classes = { "muted" } });
 
         if (zone.Id != "unset")
         {
@@ -767,7 +787,7 @@ public partial class MainWindow : Window
                 Text = prefs
                     ? "No settings on this sheet yet. Click \"Add row\" to add one."
                     : "No bindings yet. Click \"Add row\" to connect an input to an output.",
-                FontSize = 15, Classes = { "muted" }, Margin = new Avalonia.Thickness(4, 12),
+                FontSize = Size("BodySize"), Classes = { "muted" }, Margin = new Avalonia.Thickness(4, 12),
             });
         RefreshIssues();
     }
@@ -785,8 +805,8 @@ public partial class MainWindow : Window
             var border = new Border
             {
                 Width = width, CornerRadius = new Avalonia.CornerRadius(5),
-                Padding = new Avalonia.Thickness(8, 6),
-                Child = new TextBlock { Text = text, FontWeight = FontWeight.Bold, FontSize = 14 },
+                Padding = new Avalonia.Thickness(8, 4),
+                Child = new TextBlock { Text = text, FontWeight = FontWeight.Bold, FontSize = Size("SmallSize") },
             };
             BindBrush(border, Border.BackgroundProperty, tintKey);
             return border;
@@ -799,16 +819,16 @@ public partial class MainWindow : Window
         var settingHeader = new Border
         {
             Width = 300, CornerRadius = new Avalonia.CornerRadius(5),
-            Padding = new Avalonia.Thickness(8, 6),
-            Child = new TextBlock { Text = "Setting", FontWeight = FontWeight.Bold, FontSize = 14 },
+            Padding = new Avalonia.Thickness(8, 4),
+            Child = new TextBlock { Text = "Setting", FontWeight = FontWeight.Bold, FontSize = Size("SmallSize") },
         };
         BindBrush(settingHeader, Border.BackgroundProperty, OutputTint);
         p.Children.Add(settingHeader);
         var valueHeader = new Border
         {
             Width = 160, CornerRadius = new Avalonia.CornerRadius(5),
-            Padding = new Avalonia.Thickness(8, 6),
-            Child = new TextBlock { Text = "Value", FontWeight = FontWeight.Bold, FontSize = 14 },
+            Padding = new Avalonia.Thickness(8, 4),
+            Child = new TextBlock { Text = "Value", FontWeight = FontWeight.Bold, FontSize = Size("SmallSize") },
         };
         BindBrush(valueHeader, Border.BackgroundProperty, FunctionTint);
         p.Children.Add(valueHeader);
@@ -1026,7 +1046,7 @@ public partial class MainWindow : Window
         IssuesList.ItemsSource = _file.Issues.Count == 0
             ? new List<Control>
               {
-                  new TextBlock { Text = "No problems found.", FontSize = 14,
+                  new TextBlock { Text = "No problems found.", FontSize = Size("SmallSize"),
                                   Classes = { "success" }, Margin = new Avalonia.Thickness(4) },
               }
             : _file.Issues
@@ -1035,7 +1055,7 @@ public partial class MainWindow : Window
                 {
                     Text = i.ToString(),
                     TextWrapping = TextWrapping.Wrap,
-                    FontSize = 14,
+                    FontSize = Size("SmallSize"),
                     Classes = { i.Severity == Severity.Error ? "error" : "warn" },
                     Tag = i, // lets SelectionChanged/Fix-first find the cell to focus
                 })
@@ -1109,14 +1129,14 @@ public partial class MainWindow : Window
              "Select a problem in the list to copy it. File at github.com/Bbrizly/Quadstick-Config-Manager/issues — say what you did and what went wrong."),
         };
 
-        var panel = new StackPanel { Margin = new Avalonia.Thickness(28), Spacing = 14, MaxWidth = 640 };
-        panel.Children.Add(new TextBlock { Text = "Quick guide", FontSize = 24, FontWeight = FontWeight.Bold });
+        var panel = new StackPanel { Margin = new Avalonia.Thickness(24), Spacing = 14, MaxWidth = 640 };
+        panel.Children.Add(new TextBlock { Text = "Quick guide", FontSize = Size("TitleSize"), FontWeight = FontWeight.Bold });
         foreach (var (title, body) in sections)
         {
             panel.Children.Add(new TextBlock
-            { Text = title, FontSize = 17, FontWeight = FontWeight.Bold, Margin = new Avalonia.Thickness(0, 8, 0, 0) });
+            { Text = title, FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold, Margin = new Avalonia.Thickness(0, 8, 0, 0) });
             panel.Children.Add(new TextBlock
-            { Text = body, FontSize = 15, TextWrapping = TextWrapping.Wrap, LineHeight = 22 });
+            { Text = body, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap, LineHeight = 22 });
         }
 
         var win = new Window
@@ -1152,8 +1172,8 @@ public partial class MainWindow : Window
                     Spacing = 2,
                     Children =
                     {
-                        new TextBlock { Text = name, FontWeight = FontWeight.Bold, FontSize = 15 },
-                        new TextBlock { Text = root, FontSize = 14, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap },
+                        new TextBlock { Text = name, FontWeight = FontWeight.Bold, FontSize = Size("BodySize") },
+                        new TextBlock { Text = root, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap },
                     },
                 },
                 MinWidth = 360,
@@ -1170,8 +1190,8 @@ public partial class MainWindow : Window
             MaxWidth = 520,
             Children =
             {
-                new TextBlock { Text = "Multiple QuadSticks found", FontWeight = FontWeight.Bold, FontSize = 16 },
-                new TextBlock { Text = "Choose which drive to install to:", TextWrapping = TextWrapping.Wrap, FontSize = 15 },
+                new TextBlock { Text = "Multiple QuadSticks found", FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize") },
+                new TextBlock { Text = "Choose which drive to install to:", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
                 choices,
                 cancel,
             },
@@ -1197,8 +1217,8 @@ public partial class MainWindow : Window
                 MaxWidth = 480,
                 Children =
                 {
-                    new TextBlock { Text = title, FontWeight = FontWeight.Bold, FontSize = 16, TextWrapping = TextWrapping.Wrap },
-                    new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, FontSize = 15 },
+                    new TextBlock { Text = title, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
                     new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { yes, no } },
                 },
             },

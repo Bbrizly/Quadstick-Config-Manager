@@ -22,9 +22,10 @@ When something's wrong you get plain English: which cell, what's off, how to fix
 
 Install backs up the old file, writes a temp copy, reads it back, then swaps it in. Paste a Google Sheets link on the home screen to import a community profile. Overwriting `default.csv` always asks first.
 
-Big buttons, keyboard shortcuts, screen reader labels — the usual accessibility stuff.
+Big buttons, keyboard shortcuts, screen reader labels — the usual accessibility stuff. Light and dark themes, chosen from the Appearance menu or following your system.
 
 ![Validation errors](docs/screenshot-errors.png)
+![Validation errors, dark theme](docs/screenshot-errors-dark.png)
 
 ## Download
 

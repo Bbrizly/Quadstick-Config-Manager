@@ -2,12 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="QuadStick.App.MainWindow"
         Title="QuadStick Config Manager (unofficial)"
-        Width="1180" Height="850" MinWidth="760" MinHeight="560"
-        Background="#F6F5F2">
+        Width="1180" Height="850" MinWidth="760" MinHeight="560">
   <Panel>
 
     <!-- ============ HOME ============ -->
-    <DockPanel x:Name="HomeView" Margin="32,28">
+    <DockPanel x:Name="HomeView" Margin="32,24">
       <DockPanel DockPanel.Dock="Top">
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8"
                     VerticalAlignment="Top">
@@ -32,21 +31,21 @@
               <Button x:Name="HomeNewButton" Classes="card"
                       AutomationProperties.Name="Create a new profile from the factory default template">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="New profile" FontSize="18" FontWeight="Bold"/>
+                  <TextBlock Text="New profile" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
                   <TextBlock Text="Start from the factory default layout" Classes="cardsub"/>
                 </StackPanel>
               </Button>
               <Button x:Name="HomeOpenButton" Classes="card"
                       AutomationProperties.Name="Open a profile CSV file from your computer">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="Open a file" FontSize="18" FontWeight="Bold"/>
+                  <TextBlock Text="Open a file" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
                   <TextBlock Text="Edit a profile CSV from anywhere" Classes="cardsub"/>
                 </StackPanel>
               </Button>
               <Button x:Name="HomeHelpButton" Classes="card"
                       AutomationProperties.Name="Open the quick guide that explains profiles, outputs, functions, and inputs">
                 <StackPanel Spacing="6">
-                  <TextBlock Text="How it works" FontSize="18" FontWeight="Bold"/>
+                  <TextBlock Text="How it works" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
                   <TextBlock Text="Profiles, sips, puffs, and installing, in plain words" Classes="cardsub"/>
                 </StackPanel>
               </Button>
@@ -58,22 +57,32 @@
               <Button x:Name="ImportButton" Content="Import from Sheets"
                       AutomationProperties.Name="Import the profile from the pasted Google Sheets link"/>
             </StackPanel>
-            <TextBlock x:Name="HomeStatusText" FontSize="15" Classes="error"
+            <TextBlock x:Name="HomeStatusText" FontSize="{DynamicResource BodySize}" Classes="error"
                        TextWrapping="Wrap" MaxWidth="700" IsVisible="False"
                        AutomationProperties.LiveSetting="Assertive"/>
           </StackPanel>
 
           <StackPanel Spacing="12">
             <TextBlock Classes="section" Text="Your profiles"/>
-            <TextBlock x:Name="LibraryEmptyText" FontSize="15" Foreground="#777"
-                       Text="Profiles you save will show up here."/>
+            <StackPanel x:Name="LibraryEmptyPanel" Spacing="10">
+              <TextBlock FontSize="{DynamicResource BodySize}" Classes="secondary"
+                         Text="Profiles you save will show up here."/>
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button x:Name="LibraryEmptyNewButton" Content="New profile"
+                        AutomationProperties.Name="Create a new profile from the factory default template"/>
+                <Button x:Name="LibraryEmptyOpenButton" Content="Open a file"
+                        AutomationProperties.Name="Open a profile CSV file from your computer"/>
+                <Button x:Name="LibraryEmptyImportButton" Content="Import from Sheets"
+                        AutomationProperties.Name="Import the profile from the pasted Google Sheets link"/>
+              </StackPanel>
+            </StackPanel>
             <WrapPanel x:Name="LibraryCards"/>
           </StackPanel>
 
           <StackPanel Spacing="12">
             <TextBlock Classes="section" Text="On your QuadStick"/>
-            <TextBlock x:Name="DeviceEmptyText" FontSize="15" Foreground="#777"
-                       Text="Plug in your QuadStick and its profiles will show up here."/>
+            <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
+                       Text="Plug in your QuadStick and its profiles will show up here. (In PS4 boot mode or controller emulation? The drive won't appear.)"/>
             <WrapPanel x:Name="DeviceCards"/>
           </StackPanel>
 
@@ -82,14 +91,14 @@
     </DockPanel>
 
     <!-- ============ EDITOR ============ -->
-    <DockPanel x:Name="EditorView" Margin="20,16" IsVisible="False">
+    <DockPanel x:Name="EditorView" Margin="16,16" IsVisible="False">
 
-      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
           <Button x:Name="HomeButton" DockPanel.Dock="Left" Content="← Home"
                   AutomationProperties.Name="Go back to the home screen"/>
-          <TextBox x:Name="FileNameBox" FontSize="17" FontWeight="Bold" MinWidth="220"
-                   HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,0,0"
+          <TextBox x:Name="FileNameBox" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold" MinWidth="220"
+                   HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="8,0,0,0"
                    AutomationProperties.Name="Profile file name. Edit to rename, must end in .csv"/>
         </DockPanel>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10">
@@ -106,9 +115,9 @@
 
       <ContentControl x:Name="StatusHost" DockPanel.Dock="Top" Margin="0,12"/>
 
-      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,8">
-          <TextBlock Text="Mode sheet:" VerticalAlignment="Center" FontSize="15"/>
+          <TextBlock Text="Mode sheet:" VerticalAlignment="Center" FontSize="{DynamicResource BodySize}"/>
           <ComboBox x:Name="SheetPicker" MinWidth="200"
                     AutomationProperties.Name="Select which mode sheet to edit"/>
           <Button x:Name="DeviceViewButton" Content="Device view"
@@ -121,7 +130,7 @@
                   AutomationProperties.Name="Add a new binding row to this sheet"/>
           <ComboBox x:Name="ModelPicker" MinWidth="150"
                     AutomationProperties.Name="Which QuadStick model you have"/>
-          <TextBlock x:Name="DeviceStatusText" VerticalAlignment="Center" FontSize="14"/>
+          <TextBlock x:Name="DeviceStatusText" VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
         </StackPanel>
       </DockPanel>
 
@@ -129,32 +138,45 @@
         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,4">
           <Button x:Name="FixFirstButton" DockPanel.Dock="Right" Content="Fix first problem" Classes="quiet"
                   AutomationProperties.Name="Jump to and focus the first error in the Problems list"/>
-          <TextBlock Text="Problems (select one to copy it)" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"/>
+          <TextBlock Text="Problems (select one to copy it)" FontWeight="Bold" FontSize="{DynamicResource BodySize}" VerticalAlignment="Center"/>
         </DockPanel>
-        <Border BorderBrush="#D8D6D2" BorderThickness="1" CornerRadius="8" Background="White">
-          <ListBox x:Name="IssuesList" FontSize="14" Background="Transparent"
+        <Border BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1" CornerRadius="8"
+                Background="{DynamicResource SurfaceBrush}" BoxShadow="0 1 3 0 #14000000">
+          <ListBox x:Name="IssuesList" FontSize="{DynamicResource SmallSize}" Background="Transparent"
                    AutomationProperties.Name="List of validation problems"/>
         </Border>
       </DockPanel>
 
       <Panel>
-        <Border x:Name="GridContainer" Background="White" BorderBrush="#D8D6D2" BorderThickness="1" CornerRadius="8" Padding="14">
+        <Border x:Name="GridContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                BorderThickness="1" CornerRadius="8" Padding="12" BoxShadow="0 1 3 0 #14000000">
           <ScrollViewer>
             <StackPanel x:Name="RowsPanel" Spacing="6"/>
           </ScrollViewer>
         </Border>
-        <Border x:Name="DeviceContainer" Background="White" BorderBrush="#D8D6D2" BorderThickness="1" CornerRadius="8" IsVisible="False">
-          <Grid ColumnDefinitions="*,Auto">
-            <ScrollViewer>
-              <StackPanel x:Name="DeviceCanvas" Spacing="16" Margin="16"/>
-            </ScrollViewer>
-            <Border Grid.Column="1" Background="#FBFAF8" BorderBrush="#E3E1DD" BorderThickness="1,0,0,0"
-                    Padding="14" MaxWidth="360">
-              <ScrollViewer>
-                <StackPanel x:Name="ZoneDetailPanel" Spacing="10"/>
-              </ScrollViewer>
+        <Border x:Name="DeviceContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                BorderThickness="1" CornerRadius="8" IsVisible="False" BoxShadow="0 1 3 0 #14000000">
+          <DockPanel>
+            <Border x:Name="DeviceHeaderRow" DockPanel.Dock="Top" Padding="12,8"
+                    BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,0,1">
+              <StackPanel Orientation="Horizontal" Spacing="12">
+                <ContentControl x:Name="DeviceHeaderStatus"/>
+                <TextBlock x:Name="DeviceHeaderMode" Classes="secondary" VerticalAlignment="Center"
+                           FontSize="{DynamicResource SmallSize}"/>
+              </StackPanel>
             </Border>
-          </Grid>
+            <Grid ColumnDefinitions="*,Auto">
+              <ScrollViewer>
+                <StackPanel x:Name="DeviceCanvas" Spacing="16" Margin="16"/>
+              </ScrollViewer>
+              <Border Grid.Column="1" Background="{DynamicResource SurfaceSubtleBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
+                      BorderThickness="1,0,0,0" Padding="12" MaxWidth="360">
+                <ScrollViewer>
+                  <StackPanel x:Name="ZoneDetailPanel" Spacing="10"/>
+                </ScrollViewer>
+              </Border>
+            </Grid>
+          </DockPanel>
         </Border>
       </Panel>
 

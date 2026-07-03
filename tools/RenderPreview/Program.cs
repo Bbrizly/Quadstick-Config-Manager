@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Headless;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using QuadStick.App;
 using QuadStick.Format;
@@ -21,34 +22,39 @@ AppBuilder.Configure<App>()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
     .SetupWithoutStarting();
 
-Capture("1-home", _ => { });
-
-Capture("2-gta-loaded", w =>
-    w.LoadProfile(ProfileFile.Load(File.ReadAllText(Path.Combine(corpus, "gta-mode1.csv")))));
-
-Capture("3-errors", w =>
+foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) })
 {
-    var f = ProfileFile.Load(File.ReadAllText(Path.Combine(corpus, "gta-mode1.csv")));
-    f.SetCell(4, 1, "blink");        // unknown function
-    f.SetCell(5, 2, "left_sip");     // unknown input
-    w.LoadProfile(f);
-});
+    Application.Current!.RequestedThemeVariant = variant;
 
-Capture("4-new-from-template", w =>
-    w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv")));
+    Capture($"{suffix}-1-home", _ => { });
 
-Capture("5-device-view", w =>
-{
-    w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
-    w.SelectZoneForPreview("mp_left");
-});
+    Capture($"{suffix}-2-gta-loaded", w =>
+        w.LoadProfile(ProfileFile.Load(File.ReadAllText(Path.Combine(corpus, "gta-mode1.csv")))));
 
-Capture("6-singleton", w =>
-{
-    w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
-    w.SetModelForPreview(2); // Singleton
-    w.SelectZoneForPreview("mp_center");
-});
+    Capture($"{suffix}-3-errors", w =>
+    {
+        var f = ProfileFile.Load(File.ReadAllText(Path.Combine(corpus, "gta-mode1.csv")));
+        f.SetCell(4, 1, "blink");        // unknown function
+        f.SetCell(5, 2, "left_sip");     // unknown input
+        w.LoadProfile(f);
+    });
+
+    Capture($"{suffix}-4-new-from-template", w =>
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv")));
+
+    Capture($"{suffix}-5-device-view", w =>
+    {
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SelectZoneForPreview("mp_left");
+    });
+
+    Capture($"{suffix}-6-singleton", w =>
+    {
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SetModelForPreview(2); // Singleton
+        w.SelectZoneForPreview("mp_center");
+    });
+}
 
 Console.WriteLine($"Renders written to {outDir}");
 return;
