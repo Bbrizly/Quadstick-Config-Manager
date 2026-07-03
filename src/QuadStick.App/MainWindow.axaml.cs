@@ -471,7 +471,7 @@ public partial class MainWindow : Window
         SheetPicker.SelectedIndex = 0;
         FileNameBox.Text = file.Document.CsvFileName ?? "";
         var headerName = file.Document.HeaderName;
-        Title = "QuadStick Config Manager (unofficial) — "
+        Title = "QuadStick Config Manager (unofficial) - "
             + (headerName.Length > 0 ? $"{headerName} ({file.Document.CsvFileName})" : file.Document.CsvFileName ?? "untitled");
         _selectedZone = null;
         ShowEditor();
@@ -774,6 +774,9 @@ public partial class MainWindow : Window
         if (bindings is { Count: > 0 })
         {
             var zoneInputs = Vocab.Inputs.Where(i => ZoneOf(i) == zone.Id).OrderBy(GroupRank).ThenBy(x => x).ToList();
+            // Cards tile into as many columns as the (now wide) panel fits, so
+            // every mapping for the part is visible with little or no scrolling.
+            var cardsWrap = new WrapPanel();
             foreach (var b in bindings)
             {
                 // One card per mapping: the input on top, what it presses below.
@@ -799,7 +802,7 @@ public partial class MainWindow : Window
                 outBox.Margin = new Avalonia.Thickness(0, 0, 6, 0);
                 Grid.SetColumn(outBox, 0);
                 line2.Children.Add(outBox);
-                var fnBox = SuggestBox(b.Row, 1, b.Function, 104,
+                var fnBox = SuggestBox(b.Row, 1, b.Function, 84,
                     FunctionSuggestions, $"How {ShortInput(zone, b)} presses it", FunctionTint);
                 SetWatermark(fnBox, "how");
                 fnBox.Margin = new Avalonia.Thickness(0, 0, 6, 0);
@@ -818,17 +821,30 @@ public partial class MainWindow : Window
                 line2.Children.Add(del);
                 card.Children.Add(line2);
 
+                // Plain-language note of what this mapping does, so the user
+                // never has to already know what "toggle" or "pulse" means.
+                var explain = FunctionExplain(b.Function);
+                if (explain.Length > 0)
+                    card.Children.Add(new TextBlock
+                    {
+                        Text = explain, FontSize = Size("SmallSize"), Classes = { "muted" },
+                        TextWrapping = TextWrapping.Wrap,
+                    });
+
                 var mappingCard = new Border
                 {
+                    Width = 272,
+                    Margin = new Avalonia.Thickness(0, 0, 12, 12),
                     BorderThickness = new Avalonia.Thickness(1),
                     CornerRadius = new Avalonia.CornerRadius(8),
-                    Padding = new Avalonia.Thickness(8),
+                    Padding = new Avalonia.Thickness(10),
                     Child = card,
                 };
                 BindBrush(mappingCard, Border.BackgroundProperty, "Surface");
                 BindBrush(mappingCard, Border.BorderBrushProperty, "SurfaceBorder");
-                ZoneDetailPanel.Children.Add(mappingCard);
+                cardsWrap.Children.Add(mappingCard);
             }
+            ZoneDetailPanel.Children.Add(cardsWrap);
         }
         else
             ZoneDetailPanel.Children.Add(new TextBlock
@@ -930,7 +946,7 @@ public partial class MainWindow : Window
         var v = (FileNameBox.Text ?? "").Trim();
         if (v.Length == 0 || v == _file.Document.CsvFileName) return;
         _file.SetCell(_file.Document.FileNameCellRow, 0, v);
-        Title = $"QuadStick Config Manager (unofficial) — {v}";
+        Title = $"QuadStick Config Manager (unofficial) - {v}";
         RefreshIssues(); // bad names surface immediately as errors
     }
 
@@ -1074,6 +1090,22 @@ public partial class MainWindow : Window
             p.Children.Add(addInput);
         }
 
+        // Mirror of "+ input": drop the last input when a row has more than one,
+        // so an over-added input can be taken back without deleting the row.
+        if (b.Inputs.Count > 1)
+        {
+            var removeInput = new Button { Content = "- input", Classes = { "quiet" } };
+            AutomationProperties.SetName(removeInput, $"Remove the last input from row {b.Row}");
+            removeInput.Click += (_, _) =>
+            {
+                _file!.RemoveInput(b.Row, b.Inputs.Count - 1);
+                RebuildRows();
+                if (_cellBorders.TryGetValue($"A{b.Row}", out var border))
+                { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); }
+            };
+            p.Children.Add(removeInput);
+        }
+
         p.Children.Add(del);
         return p;
     }
@@ -1085,12 +1117,16 @@ public partial class MainWindow : Window
             Text = value,
             ItemsSource = suggestions,
             FilterMode = AutoCompleteFilterMode.Contains,
-            MinimumPrefixLength = 1,
+            MinimumPrefixLength = 0,
         };
         if (stretch) box.HorizontalAlignment = HorizontalAlignment.Stretch;
         else box.Width = width;
         box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
         AutomationProperties.SetName(box, accessibleName);
+        // Open the list of choices as soon as the field gets focus, so you can
+        // click and pick instead of having to know and type a value.
+        if (suggestions.Count > 0)
+            box.GotFocus += (_, _) => box.IsDropDownOpen = true;
         void Commit()
         {
             if (_file is null) return;
@@ -1267,6 +1303,32 @@ public partial class MainWindow : Window
         if ((suggestBoxWrapper as Border)?.Child is AutoCompleteBox box) box.Watermark = text;
     }
 
+    // Plain words for what a Function does, keyed on its first token so
+    // "repeat 5 2000" still explains. Empty when blank or unknown, so the
+    // note only appears once a behavior is actually chosen.
+    static string FunctionExplain(string function)
+    {
+        var name = (function ?? "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+        return name switch
+        {
+            "normal" => "Pressed while your input is active.",
+            "toggle" => "One activation latches it on, the next releases it.",
+            "repeat" => "Rapid-fire taps while your input is held.",
+            "pulse" => "One short press each time you activate.",
+            "delayed_latch" => "A short activation taps it; a long one latches it on.",
+            "delay_on" => "Waits a moment after you activate, then presses.",
+            "delay_off" => "Keeps pressing for a moment after you release.",
+            "tap" => "Splits one input into two outputs by how long you hold.",
+            "force_off" => "Releases another latched output.",
+            "greater_than" => "Fires once your input passes a set strength.",
+            "less_than" => "Fires while your input stays under a set strength.",
+            "duty" => "Presses in a repeating on and off cycle.",
+            "increment_value" => "Nudges a device setting up, like mouse speed.",
+            "decrement_value" => "Nudges a device setting down, like mouse speed.",
+            _ => "",
+        };
+    }
+
     void Status(string text, StatusKind kind = StatusKind.Info)
     {
         StatusHost.Content = StatusChip(kind, text);
@@ -1309,7 +1371,7 @@ public partial class MainWindow : Window
              "Tab moves between fields, arrows navigate suggestion lists, Enter confirms. Ctrl/Cmd+O open, S save, N new, Z undo, I install, D switch between Device view and List view, H this guide. F1 also opens this guide from anywhere. Selecting a problem, or the Fix first problem button, jumps focus straight to it. Every control announces itself to screen readers."),
 
             ("Found a problem?",
-             "Select a problem in the list to copy it. File at github.com/Bbrizly/Quadstick-Config-Manager/issues — say what you did and what went wrong."),
+             "Select a problem in the list to copy it. File at github.com/Bbrizly/Quadstick-Config-Manager/issues. Say what you did and what went wrong."),
         };
 
     void ShowHelp()

@@ -61,7 +61,24 @@ public class SettingsWindow : Window
         Text = text, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
     };
 
-    static Control Tab(Control content) => new ScrollViewer { Content = content };
+    // The outer window ScrollViewer allows horizontal scrolling (so zoomed-up
+    // content is reachable), which means it measures tab content at infinite
+    // width and TextWrapping never fires. Bounding each tab to a readable
+    // measure makes the text wrap and fit the window instead of running off
+    // the right edge.
+    static Control Tab(Control content)
+    {
+        if (content is Layoutable l)
+        {
+            l.MaxWidth = 560;
+            l.HorizontalAlignment = HorizontalAlignment.Left;
+        }
+        return new ScrollViewer
+        {
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            Content = content,
+        };
+    }
 
     static int ModelIndexOf(string modelName) => modelName switch
     {
@@ -186,6 +203,7 @@ public class SettingsWindow : Window
     Control HelpTab(MainWindow owner)
     {
         var panel = new StackPanel { Margin = new Thickness(24), Spacing = 14 };
+        panel.Children.Add(Heading("Quick guide"));
 
         var replay = new Button { Content = "Replay tutorial", Classes = { "primary" } };
         AutomationProperties.SetName(replay, "Replay the tutorial");
@@ -218,7 +236,7 @@ public class SettingsWindow : Window
             "https://github.com/Bbrizly/Quadstick-Config-Manager/issues",
             "Report a bug on GitHub, opens in your browser"));
         panel.Children.Add(LinkButton(
-            "Website — bbrizly.github.io",
+            "Website: bbrizly.github.io",
             "https://bbrizly.github.io",
             "Open the website, opens in your browser"));
         panel.Children.Add(LinkButton(
@@ -226,7 +244,7 @@ public class SettingsWindow : Window
             "https://www.linkedin.com/in/bassam-k/",
             "Open LinkedIn, opens in your browser"));
         panel.Children.Add(LinkButton(
-            "Email — bassamkamal.py@gmail.com",
+            "Email: bassamkamal.py@gmail.com",
             "mailto:bassamkamal.py@gmail.com",
             "Send an email, opens your mail app"));
 

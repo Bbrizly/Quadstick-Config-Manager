@@ -48,6 +48,25 @@ public class ProfileFileTests
     }
 
     [Fact]
+    public void RemoveInput_drops_one_input_and_shifts_the_rest_left()
+    {
+        var f = ProfileFile.Load(Load("gta-mode1.csv"));
+        int row = f.AddBindingRow(f.Document.Sheets[0]);
+        f.SetCell(row, 0, "circle");
+        f.SetCell(row, 1, "normal");
+        f.SetCell(row, 2, "lip");
+        f.SetCell(row, 3, "right_sip");
+        var b = f.Document.Sheets[0].Bindings.First(x => x.Row == row);
+        Assert.Equal(2, b.Inputs.Count);
+
+        f.RemoveInput(row, 0); // drop the first input
+        b = f.Document.Sheets[0].Bindings.First(x => x.Row == row);
+        Assert.Single(b.Inputs);
+        Assert.Equal("right_sip", b.Inputs[0]); // second input shifted into the first slot
+        Assert.False(f.HasErrors);
+    }
+
+    [Fact]
     public void New_from_template_clones_factory_default_with_new_name()
     {
         var f = ProfileFile.NewFromTemplate("mygame.csv");

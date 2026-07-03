@@ -106,6 +106,21 @@ public sealed class ProfileFile
         Reparse();
     }
 
+    // Remove one input cell (columns C onward, index 0 = first input) from a
+    // binding row and shift the remaining inputs left so there is no gap.
+    public void RemoveInput(int row, int inputIndex)
+    {
+        int col = 2 + inputIndex;
+        if (row < 1 || row > Grid.Count || inputIndex < 0) return;
+        var r = Grid[row - 1];
+        if (col >= r.Length) return;
+        Snapshot();
+        var list = r.ToList();
+        list.RemoveAt(col);
+        Grid[row - 1] = list.ToArray();
+        Reparse();
+    }
+
     public bool HasErrors => Issues.Any(i => i.Severity == Severity.Error);
 
     public bool Dirty { get; set; }
