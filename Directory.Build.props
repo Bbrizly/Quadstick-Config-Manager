@@ -1,0 +1,16 @@
+<Project>
+  <!-- Quality gates for every project in the repo. Warnings are errors:
+       the build refuses code that .NET's analyzers consider suspect. -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Strictness follows blast radius: the Format library (where a bug can
+         corrupt a disabled user's config) opts into latest-recommended in its
+         own csproj; the UI, tools, and tests run latest-minimum, which still
+         catches real bugs without cosmetic churn in working UI code. -->
+    <AnalysisLevel>latest-minimum</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+</Project>

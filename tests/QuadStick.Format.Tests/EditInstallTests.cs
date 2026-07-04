@@ -184,7 +184,12 @@ public class DeviceTests : IDisposable
     public DeviceTests() =>
         File.WriteAllText(Path.Combine(_drive, "default.csv"), "Profile Name,,L\ndefault.csv\nOutputs,Function,usb\n");
 
-    public void Dispose() { Directory.Delete(_drive, true); Directory.Delete(_backups, true); }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        Directory.Delete(_drive, true);
+        Directory.Delete(_backups, true);
+    }
 
     static ProfileFile Valid(string name = "game.csv") =>
         ProfileFile.Load($"Profile Name,,L\n{name}\nOutputs,Function,usb\nx,normal,lip\n");

@@ -1,6 +1,8 @@
 using QuadStick.Format;
 using Xunit;
 
+namespace QuadStick.Format.Tests;
+
 public class InstallCleanupTests
 {
     [Fact]

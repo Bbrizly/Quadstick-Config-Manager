@@ -1,0 +1,25 @@
+# Analyzer severity tuning. The build treats warnings as errors everywhere;
+# the Format library additionally runs the latest-recommended analyzer set
+# (see Directory.Build.props and its csproj).
+
+root = true
+
+[*.cs]
+charset = utf-8
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+# Micro-performance style rules (narrow return types, mark members static,
+# hoist constant arrays). Real but cosmetic in UI builder code; kept visible
+# as IDE suggestions instead of failing the build. The Format library has no
+# occurrences, so its stricter gate is unaffected.
+[src/QuadStick.App/**.cs]
+dotnet_diagnostic.CA1859.severity = suggestion
+dotnet_diagnostic.CA1822.severity = suggestion
+dotnet_diagnostic.CA1861.severity = suggestion
+
+# Inline arrays in asserts are idiomatic xunit; hoisting them to fields
+# would make tests less readable for zero runtime benefit.
+[tests/**.cs]
+dotnet_diagnostic.CA1861.severity = suggestion

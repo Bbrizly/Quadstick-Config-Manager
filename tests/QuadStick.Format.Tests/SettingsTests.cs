@@ -1,6 +1,8 @@
 using QuadStick.App;
 using Xunit;
 
+namespace QuadStick.Format.Tests;
+
 public class SettingsTests
 {
     [Fact]
