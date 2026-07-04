@@ -74,9 +74,47 @@
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
+    <!-- Selection = a bold blue OUTLINE, never a solid fill. Fluent's default
+         ToggleButton paints the ContentPresenter with the accent colour when
+         checked, which buries the label; every checked/hover state below pins
+         the fill back to a readable surface so only the border reads as
+         "selected". -->
+    <Style Selector="ToggleButton.zone /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.zone:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
+    </Style>
+    <!-- Selected = a light, readable blue wash + a bold accent ring. InputTint
+         is contrast-verified against the primary text colour, so the label
+         stays legible (unlike the old solid-accent fill). BorderBrush is set on
+         the ContentPresenter too, because Fluent's checked template otherwise
+         overrides the templated-parent border. -->
     <Style Selector="ToggleButton.zone:checked">
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
-      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
+      <Setter Property="BorderThickness" Value="3"/>
+    </Style>
+    <Style Selector="ToggleButton.zone:checked /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource InputTintBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.zone:checked:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource InputTintBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+
+    <!-- Round icon button used for the "?" help dots and the compact delete
+         control, so no user-visible control is ever a bare capital letter. -->
+    <Style Selector="Button.icon">
+      <Setter Property="MinWidth" Value="34"/>
+      <Setter Property="MinHeight" Value="34"/>
+      <Setter Property="Width" Value="34"/>
+      <Setter Property="Height" Value="34"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="CornerRadius" Value="17"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
 
     <Style Selector="TextBox">

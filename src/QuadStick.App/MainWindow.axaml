@@ -98,15 +98,17 @@
     <!-- ============ EDITOR ============ -->
     <DockPanel x:Name="EditorView" Margin="16,16" IsVisible="False">
 
-      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
-        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
-          <Button x:Name="HomeButton" DockPanel.Dock="Left" Content="← Home"
-                  AutomationProperties.Name="Go back to the home screen"/>
-          <TextBox x:Name="FileNameBox" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold" MinWidth="220"
-                   HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="8,0,0,0"
+      <!-- Row 1: back + compact profile name on the left, primary actions on the right. -->
+      <Grid DockPanel.Dock="Top" Margin="0,0,0,10" ColumnDefinitions="Auto,Auto,*,Auto">
+        <Button x:Name="HomeButton" Grid.Column="0" Content="← Home"
+                AutomationProperties.Name="Go back to the home screen"/>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="14,0,0,0" VerticalAlignment="Center">
+          <TextBlock Text="Profile" VerticalAlignment="Center" Classes="secondary"/>
+          <TextBox x:Name="FileNameBox" Width="230" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold"
+                   VerticalAlignment="Center"
                    AutomationProperties.Name="Profile file name. Edit to rename, must end in .csv"/>
-        </DockPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10">
+        </StackPanel>
+        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="10">
           <Button x:Name="SaveButton" Content="Save"
                   AutomationProperties.Name="Save this profile. Shortcut Control S"/>
           <Button x:Name="UndoButton" Content="Undo"
@@ -116,71 +118,80 @@
           <Button x:Name="HelpButton" Content="Help"
                   AutomationProperties.Name="Open the quick guide. Shortcut Control H or F1"/>
         </StackPanel>
-      </DockPanel>
+      </Grid>
 
-      <ContentControl x:Name="StatusHost" DockPanel.Dock="Top" Margin="0,12"/>
+      <ContentControl x:Name="StatusHost" DockPanel.Dock="Top" Margin="0,0,0,10"/>
 
-      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,8">
-          <TextBlock Text="Mode sheet:" VerticalAlignment="Center" FontSize="{DynamicResource BodySize}"/>
-          <ComboBox x:Name="SheetPicker" MinWidth="200"
-                    AutomationProperties.Name="Select which mode sheet to edit"/>
-          <Button x:Name="DeviceViewButton" Content="Device view"
-                  AutomationProperties.Name="Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this"/>
-          <Button x:Name="ListViewButton" Content="List view"
-                  AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this"/>
-        </StackPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10">
-          <Button x:Name="AddRowButton" Content="Add row"
-                  AutomationProperties.Name="Add a new binding row to this sheet"/>
-          <ComboBox x:Name="ModelPicker" MinWidth="150"
-                    AutomationProperties.Name="Which QuadStick model you have"/>
-          <TextBlock x:Name="DeviceStatusText" VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
-        </StackPanel>
-      </DockPanel>
+      <!-- Row 2: which mode (with a plain-language explainer), how to view it, add a row. -->
+      <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,10" VerticalAlignment="Center">
+        <TextBlock Text="Mode" VerticalAlignment="Center" FontSize="{DynamicResource BodySize}"/>
+        <ComboBox x:Name="SheetPicker" MinWidth="210"
+                  AutomationProperties.Name="Select which mode to edit"/>
+        <Button x:Name="ModeHelpButton" Classes="icon" Content="?"
+                AutomationProperties.Name="What is a mode, and why is there only one?"/>
+        <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
+        <Button x:Name="DeviceViewButton" Content="Device view"
+                AutomationProperties.Name="Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this"/>
+        <Button x:Name="ListViewButton" Content="List view"
+                AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this"/>
+        <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
+        <Button x:Name="AddRowButton" Content="+ Add row"
+                AutomationProperties.Name="Add a new binding row to this mode"/>
+      </StackPanel>
 
-      <DockPanel DockPanel.Dock="Bottom" Height="170" Margin="0,12,0,0">
-        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,4">
-          <Button x:Name="FixFirstButton" DockPanel.Dock="Right" Content="Fix first problem" Classes="quiet"
-                  AutomationProperties.Name="Jump to and focus the first error in the Problems list"/>
-          <TextBlock Text="Problems (select one to copy it)" FontWeight="Bold" FontSize="{DynamicResource BodySize}" VerticalAlignment="Center"/>
-        </DockPanel>
-        <Border BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1" CornerRadius="8"
+      <!-- Problems: collapsed to a single bar by default so it never eats the
+           editor; the full list expands above the bar on demand. -->
+      <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+        <Border x:Name="ProblemsListBorder" IsVisible="False" Height="150" Margin="0,0,0,8"
+                BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1" CornerRadius="8"
                 Background="{DynamicResource SurfaceBrush}" BoxShadow="0 1 3 0 #14000000">
           <ListBox x:Name="IssuesList" FontSize="{DynamicResource SmallSize}" Background="Transparent"
-                   AutomationProperties.Name="List of validation problems"/>
+                   AutomationProperties.Name="List of validation problems. Select one to copy it."/>
         </Border>
-      </DockPanel>
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <Button x:Name="ProblemsToggle" Grid.Column="0" Classes="quiet" HorizontalContentAlignment="Left"
+                  AutomationProperties.Name="Show or hide the list of problems"/>
+          <Button x:Name="FixFirstButton" Grid.Column="2" Content="Fix first problem" Classes="quiet"
+                  AutomationProperties.Name="Jump to and focus the first error in the Problems list"/>
+        </Grid>
+      </StackPanel>
 
       <Panel>
         <Border x:Name="GridContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                 BorderThickness="1" CornerRadius="8" Padding="12" BoxShadow="0 1 3 0 #14000000">
-          <ScrollViewer>
+          <ScrollViewer x:Name="GridScroll">
             <StackPanel x:Name="RowsPanel" Spacing="6"/>
           </ScrollViewer>
         </Border>
         <Border x:Name="DeviceContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                 BorderThickness="1" CornerRadius="8" IsVisible="False" BoxShadow="0 1 3 0 #14000000">
           <DockPanel>
-            <Border x:Name="DeviceHeaderRow" DockPanel.Dock="Top" Padding="12,8"
+            <Border x:Name="DeviceHeaderRow" DockPanel.Dock="Top" Padding="14,10"
                     BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,0,1">
-              <StackPanel Orientation="Horizontal" Spacing="12">
-                <ContentControl x:Name="DeviceHeaderStatus"/>
-                <TextBlock x:Name="DeviceHeaderMode" Classes="secondary" VerticalAlignment="Center"
-                           FontSize="{DynamicResource SmallSize}"/>
-              </StackPanel>
+              <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+                <ContentControl x:Name="DeviceHeaderStatus" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBlock x:Name="DeviceHeaderMode" Grid.Column="1" Margin="14,0,0,0" Classes="secondary"
+                           VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
+                <TextBlock Grid.Column="3" Text="Your QuadStick" Classes="secondary" VerticalAlignment="Center"
+                           Margin="0,0,8,0" FontSize="{DynamicResource SmallSize}"/>
+                <ComboBox x:Name="ModelPicker" Grid.Column="4" MinWidth="180"
+                          AutomationProperties.Name="Which QuadStick model you have"/>
+                <Button x:Name="DeviceHelpButton" Grid.Column="5" Classes="icon" Content="?" Margin="10,0,0,0"
+                        AutomationProperties.Name="How device view works, and which parts your model has"/>
+              </Grid>
             </Border>
-            <!-- Detail panel gets the larger, proportional share so a selected
-                 part's mappings use the whole right side and reflow into
-                 columns; it still shrinks gracefully on a narrow window. -->
-            <Grid ColumnDefinitions="1*,1.25*">
-              <ScrollViewer>
-                <StackPanel x:Name="DeviceCanvas" Spacing="16" Margin="16"/>
+            <!-- The mappings panel owns the larger, right-hand share of the
+                 editor (like a split terminal): a selected part's mappings get
+                 the room to be full-width and readable. The device diagram on
+                 the left is sized to fit whole, with no scrolling. -->
+            <Grid ColumnDefinitions="1.05*,1.3*">
+              <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="DeviceCanvas" Margin="14"/>
               </ScrollViewer>
               <Border Grid.Column="1" Background="{DynamicResource SurfaceSubtleBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                      BorderThickness="1,0,0,0" Padding="16" MinWidth="330">
-                <ScrollViewer>
-                  <StackPanel x:Name="ZoneDetailPanel" Spacing="12"/>
+                      BorderThickness="1,0,0,0" Padding="18" MinWidth="360">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                  <StackPanel x:Name="ZoneDetailPanel" Spacing="14"/>
                 </ScrollViewer>
               </Border>
             </Grid>

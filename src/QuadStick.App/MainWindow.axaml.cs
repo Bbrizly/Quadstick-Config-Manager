@@ -2,12 +2,14 @@ using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using QuadStick.Format;
 
 namespace QuadStick.App;
@@ -25,7 +27,7 @@ public partial class MainWindow : Window
 
     enum StatusKind { Ready, Info, Warning, Error }
 
-    static Control StatusChip(StatusKind kind, string text)
+    static Control StatusChip(StatusKind kind, string text, bool plainDot = false)
     {
         var (iconKey, tokenKey) = kind switch
         {
@@ -34,11 +36,25 @@ public partial class MainWindow : Window
             StatusKind.Error   => ("IconError",   "Error"),
             _                  => ("IconChevron", "TextSecondary"),
         };
-        // Data is a one-time resource read (geometry doesn't change with theme);
-        // Foreground MUST be a dynamic binding so the color follows the theme.
-        var icon = new PathIcon { Width = 16, Height = 16,
-            Data = (Geometry)Application.Current!.FindResource(iconKey)! };
-        BindBrush(icon, IconElement.ForegroundProperty, tokenKey);
+        // A neutral "not connected" state reads better as a simple hollow dot
+        // than a chevron glyph (which looked like a stray ">").
+        Control icon;
+        if (plainDot)
+        {
+            var dot = new Border { Width = 12, Height = 12, CornerRadius = new Avalonia.CornerRadius(6),
+                BorderThickness = new Avalonia.Thickness(2), Background = Brushes.Transparent };
+            BindBrush(dot, Border.BorderBrushProperty, tokenKey);
+            icon = dot;
+        }
+        else
+        {
+            // Data is a one-time resource read (geometry doesn't change with theme);
+            // Foreground MUST be a dynamic binding so the color follows the theme.
+            var pathIcon = new PathIcon { Width = 16, Height = 16,
+                Data = (Geometry)Application.Current!.FindResource(iconKey)! };
+            BindBrush(pathIcon, IconElement.ForegroundProperty, tokenKey);
+            icon = pathIcon;
+        }
         var label = new TextBlock { Text = text, FontSize = Size("BodySize"),
             VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
         BindBrush(label, TextBlock.ForegroundProperty, tokenKey);
@@ -167,6 +183,21 @@ public partial class MainWindow : Window
             if (SheetPicker.SelectedIndex >= 0 && _file != null)
             { _sheetIndex = SheetPicker.SelectedIndex; _selectedZone = null; RefreshEditor(); }
         };
+
+        // Plain-language explainers, shown as dismissable popups so the answer
+        // is one click away and never clutters the editing surface.
+        ModeHelpButton.Click += (_, _) => ShowInfoFlyout(ModeHelpButton, "What is a mode?",
+            "A mode is one full layout of your inputs. A profile can hold several and you switch "
+            + "between them while playing, for example a walking layout and a driving layout. To "
+            + "switch modes in the game, sip or puff the side tube, or map increment_mode / "
+            + "decrement_mode to an input.\n\n"
+            + "Most profiles have just one mode, so this list often shows a single entry. That is normal.");
+        DeviceHelpButton.Click += (_, _) => ShowInfoFlyout(DeviceHelpButton, "Using device view",
+            "Click any part of the QuadStick to see and change what it does in this mode. The number "
+            + "on each part is how many game buttons it presses. Parts your model does not have are "
+            + "dimmed.\n\n" + ModelDescription);
+
+        ProblemsToggle.Click += (_, _) => ToggleProblems();
 
         // Selecting a problem copies it, so users can paste it into a bug
         // report or a forum post without retyping. It also jumps focus to
@@ -580,15 +611,13 @@ public partial class MainWindow : Window
         DeviceViewButton.Classes.Set("primary", device);
         ListViewButton.Classes.Set("primary", !device);
         var connected = Device.FindCandidates().Count > 0;
-        DeviceStatusText.Text = connected ? "● QuadStick connected" : "○ no QuadStick detected";
-        BindBrush(DeviceStatusText, TextBlock.ForegroundProperty, connected ? "Success" : "TextSecondary");
         if (device)
         {
             // Device View is the signature surface: a header row above the
             // canvas repeats connection + mode so it reads as the primary
             // editor, not a secondary tab.
             DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
-                connected ? "QuadStick connected" : "No QuadStick detected");
+                connected ? "QuadStick connected" : "No QuadStick detected", plainDot: !connected);
             var modeName = CurrentSheet is { } cs ? (cs.ModeName.Length > 0 ? cs.ModeName : cs.Type.ToString()) : "";
             DeviceHeaderMode.Text = modeName.Length > 0 ? $"Mode: {modeName}" : "";
             BuildDeviceView(); BuildZoneDetail();
@@ -604,69 +633,69 @@ public partial class MainWindow : Window
         var byZone = BindingsByZone();
         var visible = VisibleZones(byZone).ToList();
 
-        DeviceCanvas.Children.Add(new TextBlock
-        {
-            Text = "Select a part of the QuadStick to see and change what it does.",
-            FontSize = Size("BodySize"), Classes = { "muted" },
-        });
-        DeviceCanvas.Children.Add(new TextBlock
-        {
-            Text = ModelDescription,
-            FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
-        });
+        // ---- Main diagram, arranged to mirror the real device: the joystick
+        // on the left, the round mouthpiece holes on the right, and the side
+        // tube + lip switch directly beneath the mouthpiece. Sized to fit the
+        // panel whole, so nothing here scrolls. ----
+        var diagram = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
 
-        // Primary parts, laid out to mirror the device. A centered WrapPanel so
-        // the whole diagram reflows and stays centered at any window size.
-        var primary = new WrapPanel
-        { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Avalonia.Thickness(0, 12, 0, 0) };
-        void AddPrimary(Control c) { c.Margin = new Avalonia.Thickness(6); primary.Children.Add(c); }
+        var joystick = ZoneButton(AllZones[0], byZone, 128, minHeight: 148);
+        joystick.Margin = new Avalonia.Thickness(0, 0, 14, 0);
+        joystick.VerticalAlignment = VerticalAlignment.Center;
+        Grid.SetColumn(joystick, 0);
+        diagram.Children.Add(joystick);
 
-        // Joystick: the whole mouthpiece moves.
-        AddPrimary(ZoneButton(AllZones[0], byZone, 160));
+        var rightCol = new StackPanel { Spacing = 12, VerticalAlignment = VerticalAlignment.Center };
 
-        // Mouthpiece holes, grouped in one labelled box; holes wrap when narrow.
+        // A WrapPanel so the round holes drop to a second row instead of
+        // clipping when the window is narrow; on a normal window they sit in a
+        // single row across the mouthpiece.
         var holes = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
         foreach (var z in visible.Where(z => z.Id.StartsWith("mp_")))
         {
-            var tile = ZoneButton(z, byZone, 120);
-            tile.Margin = new Avalonia.Thickness(4);
-            holes.Children.Add(tile);
+            var hole = ZoneButton(z, byZone, 90, circle: true);
+            hole.Margin = new Avalonia.Thickness(4);
+            holes.Children.Add(hole);
         }
-        var mouthpieceBar = new Border
+        if (holes.Children.Count > 0)
         {
-            CornerRadius = new Avalonia.CornerRadius(18),
-            Padding = new Avalonia.Thickness(12, 10),
-            VerticalAlignment = VerticalAlignment.Center,
-            Child = new StackPanel
+            var mouthpieceBar = new Border
             {
-                Spacing = 8,
-                Children =
+                CornerRadius = new Avalonia.CornerRadius(22),
+                Padding = new Avalonia.Thickness(14, 12),
+                BorderThickness = new Avalonia.Thickness(1),
+                Child = new StackPanel
                 {
-                    new TextBlock { Text = "Mouthpiece", FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"),
-                                    HorizontalAlignment = HorizontalAlignment.Center },
-                    holes,
+                    Spacing = 8,
+                    Children =
+                    {
+                        new TextBlock { Text = "Mouthpiece", FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"),
+                                        HorizontalAlignment = HorizontalAlignment.Center },
+                        holes,
+                    },
                 },
-            },
-        };
-        BindBrush(mouthpieceBar, Border.BackgroundProperty, "SurfaceSubtle");
-        AddPrimary(mouthpieceBar);
-
-        // Side tube + lip switch column.
-        var sideCol = new StackPanel { Spacing = 8, VerticalAlignment = VerticalAlignment.Center };
-        foreach (var z in visible.Where(z => z.Id is "side" or "lip"))
-            sideCol.Children.Add(ZoneButton(z, byZone, 150));
-        if (sideCol.Children.Count > 0) AddPrimary(sideCol);
-
-        DeviceCanvas.Children.Add(primary);
-
-        // Secondary parts (combos, jacks, USB, unmapped rows) as a centered row.
-        var extras = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
-        foreach (var z in visible.Where(z => z.Id is "combo" or "jacks" or "other" or "unset"))
-        {
-            var tile = ZoneButton(z, byZone, 168);
-            tile.Margin = new Avalonia.Thickness(6);
-            extras.Children.Add(tile);
+            };
+            BindBrush(mouthpieceBar, Border.BackgroundProperty, "SurfaceSubtle");
+            BindBrush(mouthpieceBar, Border.BorderBrushProperty, "SurfaceBorder");
+            rightCol.Children.Add(mouthpieceBar);
         }
+
+        var sideRow = new StackPanel
+        { Orientation = Orientation.Horizontal, Spacing = 10, HorizontalAlignment = HorizontalAlignment.Center };
+        foreach (var z in visible.Where(z => z.Id is "side" or "lip"))
+            sideRow.Children.Add(ZoneButton(z, byZone, 148));
+        if (sideRow.Children.Count > 0) rightCol.Children.Add(sideRow);
+
+        Grid.SetColumn(rightCol, 1);
+        diagram.Children.Add(rightCol);
+        DeviceCanvas.Children.Add(diagram);
+
+        // ---- Secondary parts along the bottom: hole combos, switch jacks, USB,
+        // then unmapped rows last so "No input yet" lands at the bottom right. ----
+        var extras = new WrapPanel { Margin = new Avalonia.Thickness(0, 18, 0, 0) };
+        void AddExtra(Zone z) { var t = ZoneButton(z, byZone, 156); t.Margin = new Avalonia.Thickness(0, 0, 10, 10); extras.Children.Add(t); }
+        foreach (var z in visible.Where(z => z.Id is "combo" or "jacks" or "other")) AddExtra(z);
+        foreach (var z in visible.Where(z => z.Id is "unset")) AddExtra(z);
         if (extras.Children.Count > 0) DeviceCanvas.Children.Add(extras);
     }
 
@@ -677,17 +706,20 @@ public partial class MainWindow : Window
         _model != QsModel.Singleton
         || zoneId is not ("mp_left" or "mp_right" or "combo" or "side" or "lip" or "jacks");
 
-    Control ZoneButton(Zone z, Dictionary<string, List<Binding>> byZone, double minWidth)
+    Control ZoneButton(Zone z, Dictionary<string, List<Binding>> byZone, double minWidth,
+                       double minHeight = 84, bool circle = false)
     {
         byZone.TryGetValue(z.Id, out var bindings);
         int count = bindings?.Count ?? 0;
         bool foreign = !ModelHasZone(z.Id);
         bool selected = _selectedZone == z.Id;
 
-        var content = new StackPanel { Spacing = 4 };
+        var content = new StackPanel { Spacing = 3 };
         content.Children.Add(new TextBlock
         {
-            Text = z.Title, FontWeight = FontWeight.Bold, FontSize = Size("BodySize"),
+            // Circular holes use the short name so the label fits inside the ring.
+            Text = circle ? z.Display : z.Title, FontWeight = FontWeight.Bold,
+            FontSize = Size(circle ? "SmallSize" : "BodySize"),
             TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
         });
@@ -696,7 +728,7 @@ public partial class MainWindow : Window
         // The full, editable list lives in the detail panel, opened on select.
         var countLabel = new TextBlock
         {
-            Text = count == 0 ? "Not mapped yet" : count == 1 ? "1 mapping" : $"{count} mappings",
+            Text = count == 0 ? "Not mapped" : count == 1 ? "1 mapping" : $"{count} mappings",
             FontSize = Size("SmallSize"), TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
         };
@@ -704,7 +736,7 @@ public partial class MainWindow : Window
         else BindBrush(countLabel, TextBlock.ForegroundProperty, "AccentText");
         content.Children.Add(countLabel);
 
-        if (foreign)
+        if (foreign && !circle)
             content.Children.Add(new TextBlock
             {
                 Text = "Not on your model", FontSize = Size("SmallSize"), Classes = { "muted" },
@@ -714,11 +746,17 @@ public partial class MainWindow : Window
 
         var btn = new ToggleButton
         {
-            Classes = { "zone" }, MinWidth = minWidth, MinHeight = 82,
+            Classes = { "zone" }, MinWidth = minWidth, MinHeight = minHeight,
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
             Content = content,
             IsChecked = selected,
         };
+        if (circle)
+        {
+            btn.Width = minWidth; btn.Height = minWidth;
+            btn.CornerRadius = new Avalonia.CornerRadius(minWidth / 2);
+            btn.Padding = new Avalonia.Thickness(2);
+        }
         // Parts the model doesn't physically have are greyed out but still
         // reachable, so a profile built for another model can be cleaned up.
         if (foreign) btn.Opacity = 0.5;
@@ -774,77 +812,108 @@ public partial class MainWindow : Window
         if (bindings is { Count: > 0 })
         {
             var zoneInputs = Vocab.Inputs.Where(i => ZoneOf(i) == zone.Id).OrderBy(GroupRank).ThenBy(x => x).ToList();
-            // Cards tile into as many columns as the (now wide) panel fits, so
-            // every mapping for the part is visible with little or no scrolling.
-            var cardsWrap = new WrapPanel();
+            int n = 0;
             foreach (var b in bindings)
             {
-                // One card per mapping: the input on top, what it presses below.
-                var card = new StackPanel { Spacing = 6 };
+                n++;
+                // Each mapping is one full-width, clearly labelled card so the
+                // whole list reads top to bottom without cramped side-by-side
+                // boxes. Fields fill the panel width and are never clipped.
+                var card = new StackPanel { Spacing = 8 };
+                card.Children.Add(new TextBlock
+                { Text = $"Mapping {n}", FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold, Classes = { "muted" } });
 
+                // ---- What you do (one row per input, each removable) ----
+                card.Children.Add(FieldLabel("You do this"));
                 int inputCount = Math.Max(1, b.Inputs.Count);
                 for (int i = 0; i < inputCount && i < 8; i++)
                 {
+                    var inputRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
                     var inputBox = SuggestBox(b.Row, 2 + i, i < b.Inputs.Count ? b.Inputs[i] : "", 0,
-                        zoneInputs.Count > 0 ? zoneInputs : InputSuggestions,
+                        i == 0 && zoneInputs.Count > 0 ? zoneInputs : InputSuggestions,
                         $"Input {i + 1} for this {zone.Display} mapping", InputTint, stretch: true);
-                    SetWatermark(inputBox, i == 0 ? "what you do (input)" : $"input {i + 1}");
-                    card.Children.Add(inputBox);
+                    SetWatermark(inputBox, i == 0 ? "what you do (sip, puff, move...)" : "and (both must be active)");
+                    Grid.SetColumn(inputBox, 0);
+                    inputRow.Children.Add(inputBox);
+                    // Remove a specific input (not just empty it) when there is
+                    // more than one committed input on the row.
+                    if (b.Inputs.Count > 1 && i < b.Inputs.Count)
+                    {
+                        int idx = i;
+                        var rmv = IconButton("IconDelete", $"Remove this input from mapping {n}");
+                        rmv.Margin = new Avalonia.Thickness(8, 0, 0, 0);
+                        rmv.Click += (_, _) =>
+                        {
+                            _file!.RemoveInput(b.Row, idx);
+                            BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                            FocusZoneDetailSibling(zone.Id, bindings!.IndexOf(b));
+                        };
+                        Grid.SetColumn(rmv, 1);
+                        inputRow.Children.Add(rmv);
+                    }
+                    card.Children.Add(inputRow);
+                }
+                if (inputCount < 8)
+                {
+                    var addInput = new Button
+                    { Content = "+ Add another input", Classes = { "quiet" }, HorizontalContentAlignment = HorizontalAlignment.Left };
+                    AutomationProperties.SetName(addInput, $"Add another input to mapping {n}; both inputs must be active together");
+                    int nextCol = 2 + inputCount;
+                    addInput.Click += (_, _) =>
+                    {
+                        var newRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                        var newBox = SuggestBox(b.Row, nextCol, "", 0, InputSuggestions,
+                            $"Extra input for mapping {n}", InputTint, stretch: true);
+                        SetWatermark(newBox, "and (both must be active)");
+                        Grid.SetColumn(newBox, 0);
+                        newRow.Children.Add(newBox);
+                        card.Children.Insert(card.Children.IndexOf(addInput), newRow);
+                        nextCol++;
+                        if (nextCol >= 2 + 8) card.Children.Remove(addInput);
+                        ((newBox as Border)!.Child as AutoCompleteBox)!.Focus();
+                    };
+                    card.Children.Add(addInput);
                 }
 
-                // Output stretches, function is compact, delete always visible.
-                // A Grid (not a fixed-width row) so nothing is clipped off the
-                // right edge of the detail panel, at any interface size.
-                var line2 = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto") };
+                // ---- It presses (game button) ----
+                card.Children.Add(FieldLabel("It presses this game button"));
                 var outBox = SuggestBox(b.Row, 0, b.Output, 0,
                     OutputSuggestionsFor(CurrentSheet!), $"Game button pressed by {ShortInput(zone, b)}", OutputTint, stretch: true);
-                SetWatermark(outBox, "game button");
-                outBox.Margin = new Avalonia.Thickness(0, 0, 6, 0);
-                Grid.SetColumn(outBox, 0);
-                line2.Children.Add(outBox);
-                var fnBox = SuggestBox(b.Row, 1, b.Function, 84,
-                    FunctionSuggestions, $"How {ShortInput(zone, b)} presses it", FunctionTint);
-                SetWatermark(fnBox, "how");
-                fnBox.Margin = new Avalonia.Thickness(0, 0, 6, 0);
-                Grid.SetColumn(fnBox, 1);
-                line2.Children.Add(fnBox);
-                var del = new Button { Content = "X", Classes = { "danger" } };
+                SetWatermark(outBox, "game button, e.g. circle, x, mouse_left_button");
+                card.Children.Add(outBox);
+
+                // ---- How it presses (a self-describing dropdown) ----
+                card.Children.Add(FieldLabel("How it presses"));
+                card.Children.Add(FunctionCombo(b, zone));
+
+                // ---- Remove this whole mapping (real button, never a bare "X") ----
+                var del = new Button { Classes = { "danger" }, HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Avalonia.Thickness(0, 4, 0, 0) };
+                del.Content = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal, Spacing = 8,
+                    Children = { Glyph("IconDelete", "Error"), new TextBlock { Text = "Remove this mapping", FontSize = Size("BodySize"), VerticalAlignment = VerticalAlignment.Center } },
+                };
                 AutomationProperties.SetName(del, $"Remove the {ShortInput(zone, b)} mapping");
                 del.Click += (_, _) =>
                 {
-                    int deletedIndex = bindings.IndexOf(b);
+                    int deletedIndex = bindings!.IndexOf(b);
                     _file!.DeleteRow(b.Row);
                     BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                     FocusZoneDetailSibling(zone.Id, deletedIndex);
                 };
-                Grid.SetColumn(del, 2);
-                line2.Children.Add(del);
-                card.Children.Add(line2);
-
-                // Plain-language note of what this mapping does, so the user
-                // never has to already know what "toggle" or "pulse" means.
-                var explain = FunctionExplain(b.Function);
-                if (explain.Length > 0)
-                    card.Children.Add(new TextBlock
-                    {
-                        Text = explain, FontSize = Size("SmallSize"), Classes = { "muted" },
-                        TextWrapping = TextWrapping.Wrap,
-                    });
+                card.Children.Add(del);
 
                 var mappingCard = new Border
                 {
-                    Width = 272,
-                    Margin = new Avalonia.Thickness(0, 0, 12, 12),
                     BorderThickness = new Avalonia.Thickness(1),
-                    CornerRadius = new Avalonia.CornerRadius(8),
-                    Padding = new Avalonia.Thickness(10),
+                    CornerRadius = new Avalonia.CornerRadius(10),
+                    Padding = new Avalonia.Thickness(14),
                     Child = card,
                 };
                 BindBrush(mappingCard, Border.BackgroundProperty, "Surface");
                 BindBrush(mappingCard, Border.BorderBrushProperty, "SurfaceBorder");
-                cardsWrap.Children.Add(mappingCard);
+                ZoneDetailPanel.Children.Add(mappingCard);
             }
-            ZoneDetailPanel.Children.Add(cardsWrap);
         }
         else
             ZoneDetailPanel.Children.Add(new TextBlock
@@ -1040,13 +1109,7 @@ public partial class MainWindow : Window
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 160, NoSuggestions, $"Setting value for row {b.Row}", FunctionTint));
         var del = new Button { Content = "Delete row", Classes = { "danger" } };
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
-        del.Click += (_, _) =>
-        {
-            int deletedIndex = CurrentSheet!.Bindings.IndexOf(b);
-            _file!.DeleteRow(b.Row);
-            RebuildRows();
-            FocusRowSibling(deletedIndex);
-        };
+        del.Click += (_, _) => DeleteListRow(b);
         p.Children.Add(del);
         return p;
     }
@@ -1059,18 +1122,29 @@ public partial class MainWindow : Window
 
         int inputCount = Math.Max(1, b.Inputs.Count);
         for (int i = 0; i < inputCount; i++)
+        {
             p.Children.Add(SuggestBox(b.Row, 2 + i, i < b.Inputs.Count ? b.Inputs[i] : "", 240,
                 InputSuggestions, $"Input {i + 1} for row {b.Row}", InputTint));
-
-        var del = new Button { Content = "Delete row", Classes = { "danger" } };
-        AutomationProperties.SetName(del, $"Delete row {b.Row}");
-        del.Click += (_, _) =>
-        {
-            int deletedIndex = CurrentSheet!.Bindings.IndexOf(b);
-            _file!.DeleteRow(b.Row);
-            RebuildRows();
-            FocusRowSibling(deletedIndex);
-        };
+            // A round remove control right after each real input, so any input
+            // can be taken out (not just emptied, and not just the last one).
+            if (b.Inputs.Count > 1 && i < b.Inputs.Count)
+            {
+                int idx = i;
+                var rmv = IconButton("IconDelete", $"Remove input {i + 1} from row {b.Row}");
+                rmv.Click += (_, _) =>
+                {
+                    var off = GridScroll.Offset;
+                    _file!.RemoveInput(b.Row, idx);
+                    RebuildRows();
+                    RestoreListScroll(off, () =>
+                    {
+                        if (_cellBorders.TryGetValue($"A{b.Row}", out var border))
+                        { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); }
+                    });
+                };
+                p.Children.Add(rmv);
+            }
+        }
 
         if (inputCount < 8)
         {
@@ -1090,25 +1164,33 @@ public partial class MainWindow : Window
             p.Children.Add(addInput);
         }
 
-        // Mirror of "+ input": drop the last input when a row has more than one,
-        // so an over-added input can be taken back without deleting the row.
-        if (b.Inputs.Count > 1)
-        {
-            var removeInput = new Button { Content = "- input", Classes = { "quiet" } };
-            AutomationProperties.SetName(removeInput, $"Remove the last input from row {b.Row}");
-            removeInput.Click += (_, _) =>
-            {
-                _file!.RemoveInput(b.Row, b.Inputs.Count - 1);
-                RebuildRows();
-                if (_cellBorders.TryGetValue($"A{b.Row}", out var border))
-                { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); }
-            };
-            p.Children.Add(removeInput);
-        }
-
+        var del = new Button { Content = "Delete row", Classes = { "danger" } };
+        AutomationProperties.SetName(del, $"Delete row {b.Row}");
+        del.Click += (_, _) => DeleteListRow(b);
         p.Children.Add(del);
         return p;
     }
+
+    // Delete a List View row without the scroll jumping to the top: restore the
+    // saved scroll offset after the rebuild, then focus the row that slid into
+    // place. (RebuildRows() clears and re-adds every row, which otherwise resets
+    // the ScrollViewer to 0.)
+    void DeleteListRow(Binding b)
+    {
+        int deletedIndex = CurrentSheet!.Bindings.IndexOf(b);
+        var off = GridScroll.Offset;
+        _file!.DeleteRow(b.Row);
+        RebuildRows();
+        RestoreListScroll(off, () => FocusRowSibling(deletedIndex));
+    }
+
+    void RestoreListScroll(Vector offset, Action thenFocus) =>
+        Dispatcher.UIThread.Post(() =>
+        {
+            var maxY = Math.Max(0, GridScroll.Extent.Height - GridScroll.Viewport.Height);
+            GridScroll.Offset = new Vector(offset.X, Math.Min(offset.Y, maxY));
+            thenFocus();
+        }, DispatcherPriority.Loaded);
 
     Control SuggestBox(int row, int col, string value, double width, List<string> suggestions, string accessibleName, string tintKey, bool stretch = false)
     {
@@ -1296,11 +1378,117 @@ public partial class MainWindow : Window
                 ? "No problems. Ready to save or install."
                 : $"{errors} error(s), {warns} warning(s). Errors block installing.",
             errors > 0 ? StatusKind.Error : warns > 0 ? StatusKind.Warning : StatusKind.Ready);
+        UpdateProblemsToggle();
     }
 
     static void SetWatermark(Control suggestBoxWrapper, string text)
     {
         if ((suggestBoxWrapper as Border)?.Child is AutoCompleteBox box) box.Watermark = text;
+    }
+
+    // ---- Small shared UI builders for the redesigned editor ----
+
+    static TextBlock FieldLabel(string text) => new()
+    { Text = text, FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold, Classes = { "muted" } };
+
+    static PathIcon Glyph(string iconKey, string tokenKey)
+    {
+        var icon = new PathIcon { Width = 16, Height = 16, Data = (Geometry)Application.Current!.FindResource(iconKey)! };
+        BindBrush(icon, IconElement.ForegroundProperty, tokenKey);
+        return icon;
+    }
+
+    static Button IconButton(string iconKey, string accessibleName)
+    {
+        var b = new Button { Classes = { "icon" }, Content = Glyph(iconKey, "TextSecondary") };
+        AutomationProperties.SetName(b, accessibleName);
+        return b;
+    }
+
+    // Function picker: a real dropdown (opens on click, no typing needed) whose
+    // items spell out in plain words what each behavior does, so the user never
+    // has to already know what "toggle" or "pulse" means. Exotic values with
+    // parameters (e.g. "repeat 5 2000") stay selectable so nothing is lost.
+    Control FunctionCombo(Binding b, Zone zone)
+    {
+        var items = new List<string>(FunctionSuggestions);
+        var current = (b.Function ?? "").Trim();
+        if (current.Length > 0 && !items.Contains(current)) items.Insert(0, current);
+
+        var combo = new ComboBox { ItemsSource = items, HorizontalAlignment = HorizontalAlignment.Stretch };
+        combo.SelectedItem = items.FirstOrDefault(x => x == current);
+        combo.ItemTemplate = new FuncDataTemplate<string>((name, _) =>
+        {
+            var sp = new StackPanel { Spacing = 1, Margin = new Avalonia.Thickness(0, 2) };
+            sp.Children.Add(new TextBlock { Text = name, FontWeight = FontWeight.SemiBold, FontSize = Size("BodySize") });
+            var d = FunctionExplain(name);
+            if (d.Length > 0)
+                sp.Children.Add(new TextBlock { Text = d, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
+            return sp;
+        });
+        AutomationProperties.SetName(combo, $"How {ShortInput(zone, b)} presses it. {FunctionExplain(current)}");
+        combo.SelectionChanged += (_, _) =>
+        {
+            if (combo.SelectedItem is string s && _file != null && s != _file.GetCell(b.Row, 1))
+            {
+                _file.SetCell(b.Row, 1, s);
+                BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+            }
+        };
+        return combo;
+    }
+
+    // A dismissable popup anchored to its "?" button: the answer is one click
+    // away and never clutters the editing surface.
+    static void ShowInfoFlyout(Control anchor, string title, string body)
+    {
+        var content = new StackPanel { Spacing = 8, MaxWidth = 340, Margin = new Avalonia.Thickness(4) };
+        content.Children.Add(new TextBlock
+        { Text = title, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap });
+        content.Children.Add(new TextBlock
+        { Text = body, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap, LineHeight = 21 });
+        new Flyout { Content = content, Placement = PlacementMode.Bottom }.ShowAt(anchor);
+    }
+
+    bool _problemsExpanded;
+
+    void ToggleProblems()
+    {
+        _problemsExpanded = !_problemsExpanded;
+        ProblemsListBorder.IsVisible = _problemsExpanded;
+        UpdateProblemsToggle();
+    }
+
+    // The bottom problems bar: always a slim one-line summary; the full list
+    // expands above it only when asked. Icon + count read at a glance.
+    void UpdateProblemsToggle()
+    {
+        int errors = 0, warns = 0;
+        if (_file != null)
+        {
+            errors = _file.Issues.Count(i => i.Severity == Severity.Error);
+            warns = _file.Issues.Count - errors;
+        }
+        string iconKey, token, label;
+        if (errors + warns == 0)
+        {
+            iconKey = "IconCheck"; token = "Success";
+            label = _problemsExpanded ? "No problems (click to hide)" : "No problems";
+        }
+        else
+        {
+            var parts = new List<string>();
+            if (errors > 0) parts.Add($"{errors} error{(errors == 1 ? "" : "s")}");
+            if (warns > 0) parts.Add($"{warns} warning{(warns == 1 ? "" : "s")}");
+            iconKey = errors > 0 ? "IconError" : "IconWarning";
+            token = errors > 0 ? "Error" : "Warning";
+            label = string.Join(", ", parts) + (_problemsExpanded ? "  (click to hide)" : "  (click to view)");
+        }
+        var text = new TextBlock { Text = label, FontSize = Size("BodySize"), VerticalAlignment = VerticalAlignment.Center };
+        BindBrush(text, TextBlock.ForegroundProperty, token);
+        ProblemsToggle.Content = new StackPanel
+        { Orientation = Orientation.Horizontal, Spacing = 8, Children = { Glyph(iconKey, token), text } };
+        FixFirstButton.IsVisible = _problemsExpanded && errors > 0;
     }
 
     // Plain words for what a Function does, keyed on its first token so
