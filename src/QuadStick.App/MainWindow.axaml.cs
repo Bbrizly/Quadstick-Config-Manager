@@ -625,6 +625,32 @@ public partial class MainWindow : Window
         _friendlyLabels ? Humanize(StripInput(token, zoneId)) : token;
     string TokenLabel(string token) => _friendlyLabels ? Humanize(token) : token;
 
+    // Label for an input token in a dropdown that can list inputs from more than
+    // one part. Same-part tokens read bare ("Puff"); tokens from another part are
+    // qualified ("Left · puff") so three parts' "puff" don't collapse into three
+    // identical-looking rows.
+    string InputOptionLabel(string token, string cardZone)
+    {
+        if (!_friendlyLabels) return token;
+        var tz = ZoneOf(token);
+        var bare = Humanize(StripInput(token, tz));
+        if (bare.Length == 0) return bare;
+        var low = $"{char.ToLowerInvariant(bare[0])}{bare[1..]}";
+        // Four hole pairings all strip to the same word ("sip"), so a combo
+        // token must always name its pairing or the list reads as duplicates.
+        if (tz == "combo")
+        {
+            var pair = token.StartsWith("mp_triple_") ? "All three"
+                : token.StartsWith("mp_left_center_") ? "Left + Center"
+                : token.StartsWith("mp_right_center_") ? "Right + Center"
+                : token.StartsWith("mp_left_right_") ? "Left + Right" : "Combo";
+            return $"{pair} · {low}";
+        }
+        if (tz == cardZone || tz is "other" or "unset") return bare;
+        var disp = AllZones.FirstOrDefault(z => z.Id == tz)?.Display ?? tz;
+        return $"{disp} · {low}";
+    }
+
     Dictionary<string, List<Binding>> BindingsByZone()
     {
         var map = new Dictionary<string, List<Binding>>();
@@ -867,28 +893,50 @@ public partial class MainWindow : Window
             foreach (var b in bindings)
             {
                 n++;
-                // Each mapping is one full-width, clearly labelled card so the
-                // whole list reads top to bottom without cramped side-by-side
-                // boxes. Fields fill the panel width and are never clipped.
-                var card = new StackPanel { Spacing = 8 };
-                card.Children.Add(new TextBlock
-                { Text = $"Mapping {n}", FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold, Classes = { "muted" } });
+                // One compact card per mapping. A header line carries the number
+                // and a small remove button; the body is three aligned label|field
+                // rows ("When you / Press / As") so a mapping reads like a short
+                // sentence instead of a tall stack of separate labelled boxes.
+                var body = new StackPanel { Spacing = 6 };
 
-                // ---- What you do (one row per input, each removable) ----
-                card.Children.Add(FieldLabel("You do this"));
+                var header = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                header.Children.Add(new TextBlock
+                { Text = $"Mapping {n}", FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold, Classes = { "muted" }, VerticalAlignment = VerticalAlignment.Center });
+                // Remove the whole mapping: trash icon + "Remove" word, never a
+                // bare "X", right-aligned in the header so it never crowds a field.
+                var del = new Button { Classes = { "danger", "quiet" }, Padding = new Avalonia.Thickness(8, 2) };
+                del.Content = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal, Spacing = 6,
+                    Children = { Glyph("IconDelete", "Error"), new TextBlock { Text = "Remove", FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center } },
+                };
+                AutomationProperties.SetName(del, $"Remove the {ShortInput(zone, b)} mapping");
+                del.Click += (_, _) =>
+                {
+                    int deletedIndex = bindings!.IndexOf(b);
+                    _file!.DeleteRow(b.Row);
+                    BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                    FocusZoneDetailSibling(zone.Id, deletedIndex);
+                };
+                Grid.SetColumn(del, 1);
+                header.Children.Add(del);
+                body.Children.Add(header);
+
+                // ---- "When you": one aligned row per input, each removable ----
+                var inputsBox = new StackPanel { Spacing = 6 };
                 int inputCount = Math.Max(1, b.Inputs.Count);
                 for (int i = 0; i < inputCount && i < 8; i++)
                 {
-                    var inputRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                    var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
                     var inputBox = TokenField(b.Row, 2 + i, i < b.Inputs.Count ? b.Inputs[i] : "",
                         i == 0 && zoneInputs.Count > 0 ? zoneInputs : InputSuggestions,
-                        t => InputLabel(t, zone.Id),
+                        t => InputOptionLabel(t, zone.Id),
                         $"Input {i + 1} for this {zone.Display} mapping", InputTint);
                     Grid.SetColumn(inputBox, 0);
-                    inputRow.Children.Add(inputBox);
-                    // Remove a specific input (not just empty it) when there is
-                    // more than one committed input on the row.
-                    if (b.Inputs.Count > 1 && i < b.Inputs.Count)
+                    row.Children.Add(inputBox);
+                    // Every committed input gets a trash. Removing the last one
+                    // leaves an empty box on purpose — that IS the "no input" state.
+                    if (i < b.Inputs.Count)
                     {
                         int idx = i;
                         var rmv = IconButton("IconDelete", $"Remove this input from mapping {n}");
@@ -900,9 +948,9 @@ public partial class MainWindow : Window
                             FocusZoneDetailSibling(zone.Id, bindings!.IndexOf(b));
                         };
                         Grid.SetColumn(rmv, 1);
-                        inputRow.Children.Add(rmv);
+                        row.Children.Add(rmv);
                     }
-                    card.Children.Add(inputRow);
+                    inputsBox.Children.Add(row);
                 }
                 if (inputCount < 8)
                 {
@@ -912,51 +960,38 @@ public partial class MainWindow : Window
                     int nextCol = 2 + inputCount;
                     addInput.Click += (_, _) =>
                     {
-                        var newRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
                         var newBox = TokenField(b.Row, nextCol, "", InputSuggestions,
-                            t => InputLabel(t, zone.Id), $"Extra input for mapping {n}", InputTint);
+                            t => InputOptionLabel(t, zone.Id), $"Extra input for mapping {n}", InputTint);
                         Grid.SetColumn(newBox, 0);
-                        newRow.Children.Add(newBox);
-                        card.Children.Insert(card.Children.IndexOf(addInput), newRow);
+                        row.Children.Add(newBox);
+                        // The new row isn't committed until a value is picked, so its
+                        // trash just drops the row instead of editing the file.
+                        var rmv = IconButton("IconDelete", $"Remove this empty input from mapping {n}");
+                        rmv.Margin = new Avalonia.Thickness(8, 0, 0, 0);
+                        rmv.Click += (_, _) => inputsBox.Children.Remove(row);
+                        Grid.SetColumn(rmv, 1);
+                        row.Children.Add(rmv);
+                        inputsBox.Children.Insert(inputsBox.Children.IndexOf(addInput), row);
                         nextCol++;
-                        if (nextCol >= 2 + 8) card.Children.Remove(addInput);
+                        if (nextCol >= 2 + 8) addInput.IsVisible = false;
                         (newBox as Border)?.Child?.Focus();
                     };
-                    card.Children.Add(addInput);
+                    inputsBox.Children.Add(addInput);
                 }
+                body.Children.Add(Labeled("When you", inputsBox));
 
-                // ---- It presses (game button) ----
-                card.Children.Add(FieldLabel("It presses this game button"));
-                card.Children.Add(TokenField(b.Row, 0, b.Output, OutputSuggestionsFor(CurrentSheet!),
-                    TokenLabel, $"Game button pressed by {ShortInput(zone, b)}", OutputTint));
-
-                // ---- How it presses (a self-describing dropdown) ----
-                card.Children.Add(FieldLabel("How it presses"));
-                card.Children.Add(FunctionCombo(b, zone));
-
-                // ---- Remove this whole mapping (real button, never a bare "X") ----
-                var del = new Button { Classes = { "danger" }, HorizontalContentAlignment = HorizontalAlignment.Left, Margin = new Avalonia.Thickness(0, 4, 0, 0) };
-                del.Content = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal, Spacing = 8,
-                    Children = { Glyph("IconDelete", "Error"), new TextBlock { Text = "Remove this mapping", FontSize = Size("BodySize"), VerticalAlignment = VerticalAlignment.Center } },
-                };
-                AutomationProperties.SetName(del, $"Remove the {ShortInput(zone, b)} mapping");
-                del.Click += (_, _) =>
-                {
-                    int deletedIndex = bindings!.IndexOf(b);
-                    _file!.DeleteRow(b.Row);
-                    BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
-                    FocusZoneDetailSibling(zone.Id, deletedIndex);
-                };
-                card.Children.Add(del);
+                // ---- "Press" (game button) and "As" (how it presses) ----
+                body.Children.Add(Labeled("Press", TokenField(b.Row, 0, b.Output, OutputSuggestionsFor(CurrentSheet!),
+                    TokenLabel, $"Game button pressed by {ShortInput(zone, b)}", OutputTint)));
+                body.Children.Add(Labeled("As", FunctionCombo(b, zone)));
 
                 var mappingCard = new Border
                 {
                     BorderThickness = new Avalonia.Thickness(1),
                     CornerRadius = new Avalonia.CornerRadius(10),
                     Padding = new Avalonia.Thickness(14),
-                    Child = card,
+                    Child = body,
                 };
                 BindBrush(mappingCard, Border.BackgroundProperty, "Surface");
                 BindBrush(mappingCard, Border.BorderBrushProperty, "SurfaceBorder");
@@ -1433,6 +1468,22 @@ public partial class MainWindow : Window
 
     static TextBlock FieldLabel(string text) => new()
     { Text = text, FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold, Classes = { "muted" } };
+
+    // A compact aligned row: a short muted label in a fixed-width first column,
+    // the field filling the rest. Collapses the old label-above-field pairs so a
+    // mapping reads across in far less vertical space.
+    static Control Labeled(string label, Control field)
+    {
+        var g = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        g.Children.Add(new TextBlock
+        {
+            Text = label, FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold, Classes = { "muted" },
+            VerticalAlignment = VerticalAlignment.Center, MinWidth = 76, Margin = new Avalonia.Thickness(0, 0, 10, 0),
+        });
+        Grid.SetColumn(field, 1);
+        g.Children.Add(field);
+        return g;
+    }
 
     static PathIcon Glyph(string iconKey, string tokenKey)
     {
