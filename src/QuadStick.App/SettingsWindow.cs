@@ -18,9 +18,8 @@ namespace QuadStick.App;
 // source of truth, this window never keeps its own copy.
 public class SettingsWindow : Window
 {
-    // Interface-size choices are owned by MainWindow.ValidScalePercents; labels
-    // are just the percents formatted, so there is nothing to keep in sync here.
-    static readonly int[] ScalePercents = MainWindow.ValidScalePercents;
+    // Interface-size choices live on MainWindow.ValidScalePercents; labels are
+    // just those percents formatted, so this window keeps no copy of its own.
 
     public SettingsWindow(MainWindow owner)
     {
@@ -108,17 +107,18 @@ public class SettingsWindow : Window
         panel.Children.Add(appearance);
 
         panel.Children.Add(Label("Interface size"));
-        int scaleIndex = Array.IndexOf(ScalePercents, owner.CurrentSettings.InterfaceScalePercent);
+        var scalePercents = MainWindow.ValidScalePercents;
+        int scaleIndex = Array.IndexOf(scalePercents, owner.CurrentSettings.InterfaceScalePercent);
         var scale = new ComboBox
         {
-            ItemsSource = Array.ConvertAll(ScalePercents, p => $"{p}%"),
+            ItemsSource = Array.ConvertAll(scalePercents, p => $"{p}%"),
             SelectedIndex = scaleIndex >= 0 ? scaleIndex : 0,
             MinWidth = 220,
         };
         AutomationProperties.SetName(scale, "Interface size: 100, 125, 150, or 200 percent");
         scale.SelectionChanged += (_, _) =>
         {
-            if (scale.SelectedIndex >= 0) owner.SetInterfaceScale(ScalePercents[scale.SelectedIndex]);
+            if (scale.SelectedIndex >= 0) owner.SetInterfaceScale(scalePercents[scale.SelectedIndex]);
         };
         panel.Children.Add(scale);
         panel.Children.Add(Caption("Makes all text and controls larger."));
