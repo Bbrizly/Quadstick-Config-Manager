@@ -87,15 +87,20 @@ public sealed class ProfileFile
         Reparse();
     }
 
+    static readonly string[] NewBindingRowCells = { "", "normal", "" };
+    static readonly string[] NewPrefsRowCells = { "", "" };
+
     public int AddBindingRow(ModeSheet sheet)
     {
         Snapshot();
         int insertAt = sheet.Bindings.Count > 0
             ? sheet.Bindings[^1].Row
             : sheet.StartRow + 2;
-        Grid.Insert(insertAt, sheet.Type == SheetType.ProfileName
-            ? new[] { "", "normal", "" }
-            : new[] { "", "" });
+        // Insert a CLONE: rows in the grid are mutated in place by SetCell,
+        // so sharing one template array would link every added row together.
+        Grid.Insert(insertAt, (string[])(sheet.Type == SheetType.ProfileName
+            ? NewBindingRowCells.Clone()
+            : NewPrefsRowCells.Clone()));
         Reparse(); // Document must never be stale after a mutation
         return insertAt + 1;
     }

@@ -3,6 +3,9 @@ namespace QuadStick.Format;
 // Checks a parsed profile against the format rules. Errors block install.
 public static class Validator
 {
+    static readonly System.Buffers.SearchValues<char> InvalidFileNameChars =
+        System.Buffers.SearchValues.Create("/\\:*?\"<>| ");
+
     public static List<Issue> Validate(ProfileDocument doc)
     {
         var issues = new List<Issue>();
@@ -40,7 +43,7 @@ public static class Validator
         }
         if (!name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)
             || name.Length <= 4
-            || name.IndexOfAny(new[] { '/', '\\', ':', '*', '?', '"', '<', '>', '|', ' ' }) >= 0)
+            || name.AsSpan().ContainsAny(InvalidFileNameChars))
         {
             issues.Add(new Issue(Severity.Error, cell,
                 $"\"{name}\" is not a valid configuration filename.",

@@ -25,7 +25,7 @@ public static class Device
 
     // macOS mounts USB sticks under /Volumes as "fixed" drives.
     static bool IsMacExternal(DriveInfo d) =>
-        OperatingSystem.IsMacOS() && d.RootDirectory.FullName.StartsWith("/Volumes/");
+        OperatingSystem.IsMacOS() && d.RootDirectory.FullName.StartsWith("/Volumes/", StringComparison.Ordinal);
 
     public static bool IsInstallTarget(string deviceRoot) =>
         File.Exists(Path.Combine(deviceRoot, "default.csv"));
