@@ -70,8 +70,6 @@ public static class Settings
         }
         catch { /* settings are a convenience, never fatal */ }
     }
-
-    public static void WriteRaw(string path, string json) => File.WriteAllText(path, json);
 }
 
 public static class Theme

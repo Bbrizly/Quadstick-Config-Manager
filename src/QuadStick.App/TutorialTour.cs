@@ -182,16 +182,12 @@ public partial class MainWindow
         // The callout is a live region so screen readers announce each step.
         AutomationProperties.SetLiveSetting(_tourCallout, AutomationLiveSetting.Polite);
 
-        // Motion is the reduce-motion toggle's one observable effect: a gentle
-        // fade per step when motion is allowed, nothing when it is reduced.
-        if (!_reduceMotion)
-            _tourCallout.Transitions = new Transitions
-            {
-                new DoubleTransition { Property = Visual.OpacityProperty, Duration = TimeSpan.FromMilliseconds(150) },
-            };
-
         _tourOverlay = new Grid { IsVisible = false, Children = { blocker, _tourCanvas, _tourCallout } };
         RootPanel.Children.Add(_tourOverlay); // last child: sits above (and outside) the scaled content
+
+        // Motion is the reduce-motion toggle's one observable effect: a gentle
+        // fade per step when motion is allowed, nothing when it is reduced.
+        RefreshTourMotion();
 
         // Keep the spotlight aligned with its target as the window resizes.
         SizeChanged += (_, _) => { if (_tourOverlay?.IsVisible == true) PositionSpotlight(); };

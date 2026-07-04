@@ -52,10 +52,6 @@ public static class Vocab
         ["decrement_value"] = (0, 2),
     };
 
-    public static readonly IReadOnlySet<string> SheetKeywords =
-        new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        { "Profile Name", "Preferences", "Infrared" };
-
     /// <summary>A1 must contain "Profile", or be Preferences / Infrared.</summary>
     public static bool IsSheetKeyword(string a1) =>
         a1.Contains("Profile", StringComparison.OrdinalIgnoreCase)

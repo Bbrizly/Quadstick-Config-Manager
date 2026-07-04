@@ -18,8 +18,9 @@ namespace QuadStick.App;
 // source of truth, this window never keeps its own copy.
 public class SettingsWindow : Window
 {
-    static readonly int[] ScalePercents = { 100, 125, 150, 200 };
-    static readonly string[] ScaleLabels = { "100%", "125%", "150%", "200%" };
+    // Interface-size choices are owned by MainWindow.ValidScalePercents; labels
+    // are just the percents formatted, so there is nothing to keep in sync here.
+    static readonly int[] ScalePercents = MainWindow.ValidScalePercents;
 
     public SettingsWindow(MainWindow owner)
     {
@@ -110,7 +111,7 @@ public class SettingsWindow : Window
         int scaleIndex = Array.IndexOf(ScalePercents, owner.CurrentSettings.InterfaceScalePercent);
         var scale = new ComboBox
         {
-            ItemsSource = ScaleLabels,
+            ItemsSource = Array.ConvertAll(ScalePercents, p => $"{p}%"),
             SelectedIndex = scaleIndex >= 0 ? scaleIndex : 0,
             MinWidth = 220,
         };

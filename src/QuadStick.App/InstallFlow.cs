@@ -96,16 +96,17 @@ public partial class MainWindow
         // background install runs so the progress line is actually seen.
         var dialogTask = dialog.ShowDialog(this);
 
+        // Same dismiss button for both outcomes; only one branch ever shows it.
+        var close = new Button { Content = "Close", MinWidth = 140, IsDefault = true, IsCancel = true };
+        AutomationProperties.SetName(close, "Close");
+        close.Click += (_, _) => dialog.Close();
+
         try
         {
             // Device.Install does synchronous file I/O; keep it off the UI
             // thread. Avalonia's SynchronizationContext resumes the
             // continuation on the UI thread, so the content swap below is safe.
             var result = await Task.Run(() => Device.Install(file, root, Device.DefaultBackupDir(), confirmDefault));
-
-            var close = new Button { Content = "Close", MinWidth = 140, IsDefault = true, IsCancel = true };
-            AutomationProperties.SetName(close, "Close");
-            close.Click += (_, _) => dialog.Close();
 
             SetContent(new StackPanel
             {
@@ -131,10 +132,6 @@ public partial class MainWindow
             // distinguishes "the device was not modified" (readback failure)
             // from "restored from backup" (mid-swap failure), and inventing a
             // blanket "unchanged" here would misstate the mid-swap case.
-            var close = new Button { Content = "Close", MinWidth = 140, IsDefault = true, IsCancel = true };
-            AutomationProperties.SetName(close, "Close");
-            close.Click += (_, _) => dialog.Close();
-
             SetContent(new StackPanel
             {
                 Spacing = 12,

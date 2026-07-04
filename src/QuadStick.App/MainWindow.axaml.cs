@@ -46,15 +46,7 @@ public partial class MainWindow : Window
             BindBrush(dot, Border.BorderBrushProperty, tokenKey);
             icon = dot;
         }
-        else
-        {
-            // Data is a one-time resource read (geometry doesn't change with theme);
-            // Foreground MUST be a dynamic binding so the color follows the theme.
-            var pathIcon = new PathIcon { Width = 16, Height = 16,
-                Data = (Geometry)Application.Current!.FindResource(iconKey)! };
-            BindBrush(pathIcon, IconElement.ForegroundProperty, tokenKey);
-            icon = pathIcon;
-        }
+        else icon = Glyph(iconKey, tokenKey);
         var label = new TextBlock { Text = text, FontSize = Size("BodySize"),
             VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap };
         BindBrush(label, TextBlock.ForegroundProperty, tokenKey);
@@ -289,7 +281,7 @@ public partial class MainWindow : Window
         if (!_settings.TutorialSeen) Opened += StartTutorialOnce;
     }
 
-    static readonly int[] ValidScalePercents = { 100, 125, 150, 200 };
+    internal static readonly int[] ValidScalePercents = { 100, 125, 150, 200 };
 
     public void ApplyInterfaceScale(int pct)
     {
@@ -627,10 +619,8 @@ public partial class MainWindow : Window
         return char.ToUpperInvariant(s[0]) + s[1..];
     }
 
-    // How an input/output/function token is shown in Device View: friendly
-    // words, or the raw token exactly as List View and the CSV spell it.
-    string InputLabel(string token, string zoneId) =>
-        _friendlyLabels ? Humanize(StripInput(token, zoneId)) : token;
+    // How an output/function token is shown in Device View: friendly words, or
+    // the raw token exactly as List View and the CSV spell it.
     string TokenLabel(string token) => _friendlyLabels ? Humanize(token) : token;
 
     // Label for an input token in a dropdown that can list inputs from more than
@@ -1214,6 +1204,20 @@ public partial class MainWindow : Window
         RefreshIssues();
     }
 
+    // A tinted, rounded column header used by both the bindings and preferences
+    // header rows.
+    static Control Swatch(string text, double width, string tintKey)
+    {
+        var border = new Border
+        {
+            Width = width, CornerRadius = new Avalonia.CornerRadius(5),
+            Padding = new Avalonia.Thickness(8, 4),
+            Child = new TextBlock { Text = text, FontWeight = FontWeight.Bold, FontSize = Size("SmallSize") },
+        };
+        BindBrush(border, Border.BackgroundProperty, tintKey);
+        return border;
+    }
+
     Control HeaderRow()
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
@@ -1221,39 +1225,13 @@ public partial class MainWindow : Window
         p.Children.Add(Swatch("Function (behavior)", 180, FunctionTint));
         p.Children.Add(Swatch("Inputs (sips, puffs, joystick)", 240, InputTint));
         return p;
-
-        static Control Swatch(string text, double width, string tintKey)
-        {
-            var border = new Border
-            {
-                Width = width, CornerRadius = new Avalonia.CornerRadius(5),
-                Padding = new Avalonia.Thickness(8, 4),
-                Child = new TextBlock { Text = text, FontWeight = FontWeight.Bold, FontSize = Size("SmallSize") },
-            };
-            BindBrush(border, Border.BackgroundProperty, tintKey);
-            return border;
-        }
     }
 
     Control PrefsHeaderRow()
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        var settingHeader = new Border
-        {
-            Width = 300, CornerRadius = new Avalonia.CornerRadius(5),
-            Padding = new Avalonia.Thickness(8, 4),
-            Child = new TextBlock { Text = "Setting", FontWeight = FontWeight.Bold, FontSize = Size("SmallSize") },
-        };
-        BindBrush(settingHeader, Border.BackgroundProperty, OutputTint);
-        p.Children.Add(settingHeader);
-        var valueHeader = new Border
-        {
-            Width = 160, CornerRadius = new Avalonia.CornerRadius(5),
-            Padding = new Avalonia.Thickness(8, 4),
-            Child = new TextBlock { Text = "Value", FontWeight = FontWeight.Bold, FontSize = Size("SmallSize") },
-        };
-        BindBrush(valueHeader, Border.BackgroundProperty, FunctionTint);
-        p.Children.Add(valueHeader);
+        p.Children.Add(Swatch("Setting", 300, OutputTint));
+        p.Children.Add(Swatch("Value", 160, FunctionTint));
         return p;
     }
 
@@ -1347,7 +1325,7 @@ public partial class MainWindow : Window
             thenFocus();
         }, DispatcherPriority.Loaded);
 
-    Control SuggestBox(int row, int col, string value, double width, List<string> suggestions, string accessibleName, string tintKey, bool stretch = false)
+    Control SuggestBox(int row, int col, string value, double width, List<string> suggestions, string accessibleName, string tintKey)
     {
         var box = new AutoCompleteBox
         {
@@ -1355,9 +1333,8 @@ public partial class MainWindow : Window
             ItemsSource = suggestions,
             FilterMode = AutoCompleteFilterMode.Contains,
             MinimumPrefixLength = 0,
+            Width = width,
         };
-        if (stretch) box.HorizontalAlignment = HorizontalAlignment.Stretch;
-        else box.Width = width;
         box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
         AutomationProperties.SetName(box, accessibleName);
         // Open the list of choices as soon as the field gets focus, so you can
@@ -1537,9 +1514,6 @@ public partial class MainWindow : Window
     }
 
     // ---- Small shared UI builders for the redesigned editor ----
-
-    static TextBlock FieldLabel(string text) => new()
-    { Text = text, FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold, Classes = { "muted" } };
 
     // A compact aligned row: a short muted label in a fixed-width first column,
     // the field filling the rest. Collapses the old label-above-field pairs so a

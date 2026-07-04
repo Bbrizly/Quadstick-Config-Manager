@@ -29,14 +29,14 @@ public sealed class ProfileFile
     readonly List<List<string[]>> _undo = new();
     const int MaxUndo = 200;
 
-    public bool CanUndo => _undo.Count > 0;
-
     void Snapshot()
     {
         Dirty = true;
         _undo.Add(Grid.Select(r => (string[])r.Clone()).ToList());
         if (_undo.Count > MaxUndo) _undo.RemoveAt(0);
     }
+
+    public bool CanUndo => _undo.Count > 0;
 
     public void ClearUndo() => _undo.Clear();
 

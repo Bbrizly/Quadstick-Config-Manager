@@ -60,7 +60,7 @@ public class SettingsTests
     {
         var dir = Directory.CreateTempSubdirectory().FullName;
         var path = Path.Combine(dir, "settings.json");
-        Settings.WriteRaw(path, "{\"model\":\"Nexus\",\"theme\":\"Dark\"}");
+        File.WriteAllText(path, "{\"model\":\"Nexus\",\"theme\":\"Dark\"}");
 
         var settings = Settings.Load(path);
 
@@ -81,7 +81,7 @@ public class SettingsTests
     {
         var dir = Directory.CreateTempSubdirectory().FullName;
         var path = Path.Combine(dir, "settings.json");
-        Settings.WriteRaw(path, "not json");
+        File.WriteAllText(path, "not json");
 
         var settings = Settings.Load(path);
 
