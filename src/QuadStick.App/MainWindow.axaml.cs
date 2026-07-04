@@ -631,7 +631,8 @@ public partial class MainWindow : Window
     // identical-looking rows.
     string InputOptionLabel(string token, string cardZone)
     {
-        if (!_friendlyLabels) return token;
+        // Avalonia templates a null item during measure before any value binds.
+        if (string.IsNullOrEmpty(token) || !_friendlyLabels) return token ?? "";
         var tz = ZoneOf(token);
         var bare = Humanize(StripInput(token, tz));
         if (bare.Length == 0) return bare;
