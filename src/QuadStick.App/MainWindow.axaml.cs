@@ -599,7 +599,9 @@ public partial class MainWindow : Window
     // ShortInput and the Device View dropdown labels.
     static string StripInput(string input, string zoneId)
     {
-        if (input.Length == 0) return "(no input)";
+        // Avalonia calls item templates with a null item during measure, so a
+        // null token can reach here before any real value is bound.
+        if (string.IsNullOrEmpty(input)) return "(no input)";
         var s = input;
         foreach (var prefix in new[] { "mp_left_center_", "mp_right_center_", "mp_left_right_", "mp_triple_", "mp_left_", "mp_center_", "mp_right_", "right_" })
             if (zoneId is not ("joystick" or "other") && s.StartsWith(prefix)) { s = s[prefix.Length..]; break; }
@@ -1525,7 +1527,9 @@ public partial class MainWindow : Window
             combo.SelectionChanged += (_, _) =>
             {
                 if (combo.SelectedItem is not string s || _file is null) return;
-                if (ReferenceEquals(s, TypeYourOwn)) { ShowTyping(); return; }
+                // Swapping the child synchronously here fights the ComboBox as it
+                // closes its own popup, so the text box never appears. Defer it.
+                if (ReferenceEquals(s, TypeYourOwn)) { Dispatcher.UIThread.Post(ShowTyping); return; }
                 if (s == _file.GetCell(row, col)) return;
                 _file.SetCell(row, col, s);
                 BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
