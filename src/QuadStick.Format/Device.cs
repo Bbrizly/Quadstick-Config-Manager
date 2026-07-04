@@ -60,7 +60,12 @@ public static class Device
         if (File.Exists(target))
         {
             Directory.CreateDirectory(backupDir);
-            backup = Path.Combine(backupDir, $"{DateTime.Now:yyyyMMdd-HHmmss}-{name}");
+            // Millisecond stamp plus a counter: two installs in the same
+            // instant must both keep their backups, never throw.
+            var stamp = $"{DateTime.Now:yyyyMMdd-HHmmss-fff}";
+            backup = Path.Combine(backupDir, $"{stamp}-{name}");
+            for (int n = 2; File.Exists(backup); n++)
+                backup = Path.Combine(backupDir, $"{stamp}-{n}-{name}");
             File.Copy(target, backup, overwrite: false);
         }
 

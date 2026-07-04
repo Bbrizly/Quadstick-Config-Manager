@@ -127,6 +127,33 @@ public class ProfileFileTests
     }
 
     [Fact]
+    public void RemoveInput_maps_index_to_real_column_when_inputs_have_gaps()
+    {
+        // Input in column D (col 3) with a blank C: index 0 must remove the
+        // REAL input, not the blank, and must not shift the column-K comment.
+        var f = ProfileFile.Load(
+            "Profile Name,,L\ngame.csv\nOutputs,Function,usb\n" +
+            "x,normal,,mp_left_sip,lip,,,,,,my comment\n");
+        var b = f.Document.Sheets[0].Bindings[0];
+        Assert.Equal(new[] { 3, 4 }, b.InputCols);
+
+        f.RemoveInput(b.Row, 0); // remove mp_left_sip
+        b = f.Document.Sheets[0].Bindings[0];
+        Assert.Equal(new[] { "lip" }, b.Inputs);
+        Assert.Contains("my comment", f.ToCsvText()); // column K untouched
+    }
+
+    [Fact]
+    public void Undo_after_save_marks_the_file_dirty_again()
+    {
+        var f = ProfileFile.Load(Load("gta-mode1.csv"));
+        f.SetCell(f.Document.Sheets[0].Bindings[0].Row, 2, "lip");
+        f.Dirty = false; // simulate a save
+        Assert.True(f.Undo());
+        Assert.True(f.Dirty); // memory differs from disk again
+    }
+
+    [Fact]
     public void Undo_reverses_edits_adds_and_deletes()
     {
         var f = ProfileFile.Load(Load("gta-mode1.csv"));

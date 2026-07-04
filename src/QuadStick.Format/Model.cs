@@ -9,7 +9,9 @@ public sealed record Issue(Severity Severity, string Cell, string Message, strin
     public override string ToString() => $"{Severity} {Cell}: {Message} ({Fix})";
 }
 
-public sealed record Binding(int Row, string Output, string Function, IReadOnlyList<string> Inputs);
+/// <summary>One binding row. InputCols carries each input's real 0-based grid
+/// column, because inputs may sit in any of columns C..J with gaps between.</summary>
+public sealed record Binding(int Row, string Output, string Function, IReadOnlyList<string> Inputs, IReadOnlyList<int> InputCols);
 
 public sealed class ModeSheet
 {

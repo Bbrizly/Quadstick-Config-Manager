@@ -56,6 +56,11 @@ public partial class MainWindow
         EnsureTutorialOverlay();
         _tourIndex = 0;
         _tourOverlay!.IsVisible = true;
+        // The overlay's blocker stops the pointer, but Tab would still walk
+        // into the live app behind the dim: a keyboard or switch user (the
+        // primary audience) could reach and press Install mid-tour. Disabling
+        // the content host walls off keyboard focus too.
+        ZoomHost.IsEnabled = false;
         ShowTourStep();
     }
 
@@ -64,6 +69,7 @@ public partial class MainWindow
         _settings.TutorialSeen = true;
         Settings.Save(_settings);
         if (_tourOverlay is not null) _tourOverlay.IsVisible = false;
+        ZoomHost.IsEnabled = true;
         _file = null;            // always discard the scratch template
         ShowHome();
     }

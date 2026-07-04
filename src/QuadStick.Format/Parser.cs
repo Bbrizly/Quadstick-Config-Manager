@@ -97,12 +97,13 @@ public static class Parser
             }
 
             var inputs = new List<string>();
+            var inputCols = new List<int>();
             for (int c = 2; c < 2 + MaxInputColumns; c++)
             {
                 var v = Cell(grid, r, c).Trim();
-                if (v.Length > 0) inputs.Add(v);
+                if (v.Length > 0) { inputs.Add(v); inputCols.Add(c); }
             }
-            sheet.Bindings.Add(new Binding(r + 1, output, Cell(grid, r, 1).Trim(), inputs));
+            sheet.Bindings.Add(new Binding(r + 1, output, Cell(grid, r, 1).Trim(), inputs, inputCols));
         }
         return sheet;
     }

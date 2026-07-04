@@ -88,14 +88,26 @@ public class ValidatorGoldenTests
     }
 
     [Fact]
+    public void Single_parameter_function_forms_are_legal_per_the_manual()
+    {
+        // "tap 500", "delay_on 500 1", "repeat 4": all documented usage.
+        Assert.Empty(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,tap 500,lip\n")
+            .Where(i => i.Severity == Severity.Error));
+        Assert.Empty(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,delay_on 500 1,lip\n")
+            .Where(i => i.Severity == Severity.Error));
+        Assert.Empty(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,repeat 4,lip\n")
+            .Where(i => i.Severity == Severity.Error));
+    }
+
+    [Fact]
     public void Unknown_function_is_an_error_and_bad_params_are_errors()
     {
         Assert.Contains(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,blink,lip\n"),
             i => i.Severity == Severity.Error && i.Message.Contains("blink"));
         Assert.Contains(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,repeat fast,lip\n"),
             i => i.Severity == Severity.Error && i.Message.Contains("fast"));
-        Assert.Contains(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,repeat 5,lip\n"),
-            i => i.Severity == Severity.Error && i.Message.Contains("both parameters"));
+        Assert.Contains(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,repeat 5 2000 9,lip\n"),
+            i => i.Severity == Severity.Error && i.Message.Contains("at most"));
         Assert.Empty(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,repeat 5 2000,lip\n")
             .Where(i => i.Severity == Severity.Error));
     }

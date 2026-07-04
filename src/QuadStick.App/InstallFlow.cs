@@ -26,13 +26,19 @@ public partial class MainWindow
         { Status("Fix the errors in the Problems list before installing.", StatusKind.Error); RefreshIssues(); return; }
 
         var candidates = Device.FindCandidates();
-        string? root = candidates.Count switch
+        string? root;
+        if (candidates.Count > 1)
         {
-            > 1 => await PickDeviceRootAsync(candidates),
-            1 => candidates[0],
-            _ => null,
-        };
-        if (root is null)
+            root = await PickDeviceRootAsync(candidates);
+            // Cancelling the drive choice cancels the install; it must not
+            // fall through to a folder picker the user did not ask for.
+            if (root is null) { Status("Install cancelled."); return; }
+        }
+        else if (candidates.Count == 1)
+        {
+            root = candidates[0];
+        }
+        else
         {
             Status("No QuadStick drive found (a drive with default.csv on it). Pick the drive or a folder manually.");
             var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions

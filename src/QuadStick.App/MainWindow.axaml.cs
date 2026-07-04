@@ -142,7 +142,7 @@ public partial class MainWindow : Window
         RootPanel.PropertyChanged += (_, e) => { if (e.Property == Visual.BoundsProperty) UpdateScaleSize(); };
         Opened += (_, _) => ClampToScreen();
 
-        HomeNewButton.Click += (_, _) => NewFromTemplate();
+        HomeNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
@@ -265,12 +265,14 @@ public partial class MainWindow : Window
             }
             switch (e.Key)
             {
-                case Key.O: _ = OpenAsync(); e.Handled = true; break;
+                // Open and New both discard the current profile, so they get
+                // the same unsaved-changes gate as Home and window close.
+                case Key.O: _ = GuardedAsync(OpenAsync); e.Handled = true; break;
                 case Key.S: _ = SaveAsync(); e.Handled = true; break;
-                case Key.N: NewFromTemplate(); e.Handled = true; break; // uses DefaultNewName
+                case Key.N: _ = GuardedAsync(async () => { if (await ConfirmLeaveAsync()) NewFromTemplate(); }); e.Handled = true; break;
                 case Key.Z: UndoEdit(); e.Handled = true; break;
                 case Key.I: _ = RunInstallFlowAsync(); e.Handled = true; break;
-                case Key.D: SetDeviceView(!_deviceView); e.Handled = true; break;
+                case Key.D: SetDeviceView(!_deviceView, _railView); e.Handled = true; break; // keep Parts List sub-mode
                 case Key.H: ShowHelp(); e.Handled = true; break;
             }
         };
@@ -408,6 +410,7 @@ public partial class MainWindow : Window
     {
         HomeView.IsVisible = true;
         EditorView.IsVisible = false;
+        Title = "QuadStick Config Manager (unofficial)"; // no profile is open on Home
         RefreshHomeCards();
         HomeNewButton.Focus();
     }
@@ -470,8 +473,15 @@ public partial class MainWindow : Window
             LibraryCards.Children.Add(ProfileCard(path, onDevice: false));
 
         DeviceCards.Children.Clear();
+        // A yanked USB stick between FindCandidates and GetFiles is routine
+        // for this hardware; it must never crash the home screen.
         var deviceFiles = Device.FindCandidates()
-            .SelectMany(root => Directory.GetFiles(root, "*.csv"))
+            .SelectMany(root =>
+            {
+                try { return Directory.GetFiles(root, "*.csv"); }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
+                { return Array.Empty<string>(); }
+            })
             .OrderBy(Path.GetFileName)
             .ToArray();
         DeviceEmptyText.IsVisible = deviceFiles.Length == 0;
@@ -507,14 +517,31 @@ public partial class MainWindow : Window
         };
         card.Click += (_, _) =>
         {
-            try { OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path); }
+            try
+            {
+                // Device files open as a working copy (no save path): Save
+                // routes to the library, and only Install, with its backup and
+                // verification, ever writes back to the QuadStick.
+                OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), onDevice ? null : path);
+                if (onDevice)
+                    Status("Opened from your QuadStick. Save keeps a copy in your library; use Install to put changes back on the device.", StatusKind.Warning);
+            }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-            { Status($"Could not open {name}: {ex.Message}", StatusKind.Error); ShowEditor(); }
+            {
+                // Stay on Home: showing an empty editor to display an error
+                // strands the user in a dead view.
+                HomeStatusText.Text = $"Could not open {name}: {ex.Message}";
+                HomeStatusText.IsVisible = true;
+            }
         };
         return card;
     }
 
     void NewFromTemplate() => OpenInEditor(ProfileFile.NewFromTemplate(DefaultNewName), savePath: null);
+
+    /// <summary>First empty input cell (column C..J) on a binding row; 9 when the row is full.</summary>
+    static int FirstFreeInputColumn(Binding b) =>
+        Enumerable.Range(2, 8).FirstOrDefault(c => !b.InputCols.Contains(c), 9);
 
     void OpenInEditor(ProfileFile file, string? savePath)
     {
@@ -711,6 +738,7 @@ public partial class MainWindow : Window
     {
         DeviceCanvas.Children.Clear();
         _zoneButtons.Clear();
+        _cellBorders.Clear(); // stale entries from other zones/profiles would get issue-highlighted
         var byZone = BindingsByZone();
 
         // Parts List: a plain vertical list of part rows instead of the diagram,
@@ -990,7 +1018,11 @@ public partial class MainWindow : Window
                 for (int i = 0; i < inputCount && i < 8; i++)
                 {
                     var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
-                    var inputBox = TokenField(b.Row, 2 + i, i < b.Inputs.Count ? b.Inputs[i] : "",
+                    // Inputs can sit in any of columns C..J with gaps; the
+                    // editor must write to each input's REAL column, or an
+                    // edit lands on a blank cell and duplicates the input.
+                    int col = i < b.InputCols.Count ? b.InputCols[i] : FirstFreeInputColumn(b);
+                    var inputBox = TokenField(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "",
                         i == 0 && zoneInputs.Count > 0 ? zoneInputs : InputSuggestions,
                         t => InputOptionLabel(t, zone.Id),
                         $"Input {i + 1} for this {zone.Display} mapping", InputTint);
@@ -1019,7 +1051,7 @@ public partial class MainWindow : Window
                     var addInput = new Button
                     { Content = "+ Add another input", Classes = { "quiet" }, HorizontalContentAlignment = HorizontalAlignment.Left };
                     AutomationProperties.SetName(addInput, $"Add another input to mapping {n}; both inputs must be active together");
-                    int nextCol = 2 + inputCount;
+                    int nextCol = FirstFreeInputColumn(b);
                     addInput.Click += (_, _) =>
                     {
                         var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
@@ -1090,20 +1122,49 @@ public partial class MainWindow : Window
     public void SetModelForPreview(int index)
     { ModelPicker.SelectedIndex = index; }
 
+    // Async click/shortcut handlers are fire-and-forget; an unhandled disk
+    // error would otherwise tear down the whole app.
+    async Task GuardedAsync(Func<Task> action)
+    {
+        try { await action(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        { Status(ex.Message, StatusKind.Error); }
+    }
+
     async Task OpenAsync()
     {
+        if (!await ConfirmLeaveAsync()) return; // opening discards unsaved work
         var picks = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Open QuadStick profile",
             FileTypeFilter = new[] { new FilePickerFileType("QuadStick profile CSV") { Patterns = new[] { "*.csv" } } },
         });
         if (picks.Count == 0) return;
-        OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(picks[0].Path.LocalPath)), picks[0].Path.LocalPath);
+        try
+        {
+            OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(picks[0].Path.LocalPath)), picks[0].Path.LocalPath);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        { Status($"Could not open {picks[0].Name}: {ex.Message}", StatusKind.Error); }
     }
 
     async Task SaveAsync()
     {
         if (_file is null) return;
+
+        // Save never writes to the QuadStick itself. Only Install does: it is
+        // the one path with validate, backup, readback, and the default.csv
+        // confirmation. Without this gate, opening default.csv from its own
+        // device card and pressing Ctrl+S would overwrite the fallback file raw.
+        if (_savePath is not null
+            && Path.GetDirectoryName(_savePath) is string dir
+            && Device.IsInstallTarget(dir))
+        {
+            Status("This profile lives on the QuadStick. Use Install to write it back safely; Save As puts a copy in your library.", StatusKind.Warning);
+            _savePath = null; // fall through to Save As on the next save
+            return;
+        }
+
         if (_savePath is null)
         {
             Directory.CreateDirectory(LibraryDir);
@@ -1116,12 +1177,24 @@ public partial class MainWindow : Window
                 DefaultExtension = "csv",
             });
             if (pick is null) return;
+            var pickedDir = Path.GetDirectoryName(pick.Path.LocalPath);
+            if (pickedDir is not null && Device.IsInstallTarget(pickedDir))
+            {
+                Status("That folder is a QuadStick drive. Use Install to write to the device safely.", StatusKind.Warning);
+                return;
+            }
             _savePath = pick.Path.LocalPath;
         }
-        _file.EnsureVersionHeader(); // saved files match installed files byte for byte
-        await File.WriteAllTextAsync(_savePath, _file.ToCsvText());
+
+        try
+        {
+            _file.EnsureVersionHeader(); // saved files match installed files byte for byte
+            await File.WriteAllTextAsync(_savePath, _file.ToCsvText());
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        { Status($"Could not save: {ex.Message}", StatusKind.Error); return; }
         _file.Dirty = false;
-        RebuildRows(); // header insertion shifts grid rows
+        RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
         Status($"Saved to {_savePath}.", StatusKind.Ready);
     }
 
@@ -1256,7 +1329,9 @@ public partial class MainWindow : Window
         int inputCount = Math.Max(1, b.Inputs.Count);
         for (int i = 0; i < inputCount; i++)
         {
-            p.Children.Add(SuggestBox(b.Row, 2 + i, i < b.Inputs.Count ? b.Inputs[i] : "", 240,
+            // Write to each input's REAL column (inputs may have gaps in C..J).
+            int col = i < b.InputCols.Count ? b.InputCols[i] : FirstFreeInputColumn(b);
+            p.Children.Add(SuggestBox(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "", 240,
                 InputSuggestions, $"Input {i + 1} for row {b.Row}", InputTint));
             // A round remove control right after each real input, so any input
             // can be taken out (not just emptied, and not just the last one).
@@ -1283,7 +1358,7 @@ public partial class MainWindow : Window
         {
             var addInput = new Button { Content = "+ input", Classes = { "quiet" } };
             AutomationProperties.SetName(addInput, $"Add another input to row {b.Row}");
-            int nextCol = 2 + inputCount;
+            int nextCol = FirstFreeInputColumn(b);
             addInput.Click += (_, _) =>
             {
                 // Add the box directly; the file only changes when a value is committed.
@@ -1291,7 +1366,8 @@ public partial class MainWindow : Window
                     $"Input {nextCol - 1} for row {b.Row}", InputTint);
                 p.Children.Insert(p.Children.IndexOf(addInput), newBox);
                 nextCol++;
-                if (nextCol >= 2 + 8) p.Children.Remove(addInput);
+                while (nextCol < 10 && b.InputCols.Contains(nextCol)) nextCol++; // skip occupied cells
+                if (nextCol >= 10) p.Children.Remove(addInput);
                 ((newBox as Border)!.Child as AutoCompleteBox)!.Focus();
             };
             p.Children.Add(addInput);
@@ -1841,6 +1917,9 @@ public partial class MainWindow : Window
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
                 Tag = root,
             };
+            // Complex button content is invisible to screen readers without
+            // an explicit name; this is a safety-relevant choice.
+            AutomationProperties.SetName(btn, $"Install to the QuadStick named {name}, at {root}");
             btn.Click += (_, _) => { picked = (string)btn.Tag!; dialog.Close(); };
             choices.Children.Add(btn);
         }

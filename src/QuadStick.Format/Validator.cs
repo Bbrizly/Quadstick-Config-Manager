@@ -96,15 +96,10 @@ public static class Validator
                 $"Use one of: {string.Join(", ", Vocab.FunctionArity.Keys)}."));
             return;
         }
+        // Every parameter is optional per the user manual: "tap 500",
+        // "repeat 4", and "delay_on 500 1" are all legal community usage.
+        // Only MORE than the documented maximum is an error.
         var args = parts.Skip(1).ToArray();
-        if (args.Length < arity.Min)
-            issues.Add(new Issue(Severity.Error, $"B{b.Row}",
-                $"\"{parts[0]}\" requires {arity.Min} parameter(s), found {args.Length}.",
-                arity.Min == 2 ? $"Add the missing value, e.g. \"{parts[0]} 5 2000\"." : $"Add the missing value."));
-        else if (arity.Max >= 2 && args.Length > 0 && args.Length < arity.Max)
-            issues.Add(new Issue(Severity.Error, $"B{b.Row}",
-                $"\"{parts[0]}\" needs both parameters or none, found {args.Length}.",
-                $"Use \"{parts[0]}\" alone or give both values, e.g. \"{parts[0]} 5 2000\"."));
         if (args.Length > arity.Max)
             issues.Add(new Issue(Severity.Error, $"B{b.Row}",
                 $"\"{parts[0]}\" takes at most {arity.Max} parameter(s), found {args.Length}.",

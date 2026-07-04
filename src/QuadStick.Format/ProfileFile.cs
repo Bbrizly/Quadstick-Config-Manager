@@ -45,6 +45,7 @@ public sealed class ProfileFile
         if (_undo.Count == 0) return false;
         Grid = _undo[^1];
         _undo.RemoveAt(_undo.Count - 1);
+        Dirty = true; // undo AFTER a save diverges memory from disk again
         Reparse();
         return true;
     }
@@ -95,6 +96,7 @@ public sealed class ProfileFile
         Grid.Insert(insertAt, sheet.Type == SheetType.ProfileName
             ? new[] { "", "normal", "" }
             : new[] { "", "" });
+        Reparse(); // Document must never be stale after a mutation
         return insertAt + 1;
     }
 
@@ -106,18 +108,30 @@ public sealed class ProfileFile
         Reparse();
     }
 
-    // Remove one input cell (columns C onward, index 0 = first input) from a
-    // binding row and shift the remaining inputs left so there is no gap.
+    // Remove one input (index 0 = first NON-EMPTY input) from a binding row.
+    // Inputs may sit in any of columns C..J with gaps, so the index is mapped
+    // to its real column via the parsed binding, and the remaining inputs are
+    // repacked from column C. Columns A, B, and K onward (comments) are never
+    // touched: removing an input must not shift a comment into the data area.
     public void RemoveInput(int row, int inputIndex)
     {
-        int col = 2 + inputIndex;
-        if (row < 1 || row > Grid.Count || inputIndex < 0) return;
-        var r = Grid[row - 1];
-        if (col >= r.Length) return;
+        var binding = Document.Sheets.SelectMany(s => s.Bindings).FirstOrDefault(b => b.Row == row);
+        if (binding is null || inputIndex < 0 || inputIndex >= binding.Inputs.Count) return;
+
         Snapshot();
-        var list = r.ToList();
-        list.RemoveAt(col);
-        Grid[row - 1] = list.ToArray();
+        var remaining = binding.Inputs.Where((_, i) => i != inputIndex).ToList();
+        var r = Grid[row - 1];
+        int needed = 2 + remaining.Count;
+        if (r.Length < needed)
+        {
+            var wider = new string[needed];
+            r.CopyTo(wider, 0);
+            for (int i = r.Length; i < needed; i++) wider[i] = "";
+            Grid[row - 1] = wider;
+            r = wider;
+        }
+        for (int c = 2; c < 10 && c < r.Length; c++)
+            r[c] = c - 2 < remaining.Count ? remaining[c - 2] : "";
         Reparse();
     }
 
