@@ -67,6 +67,11 @@ public partial class MainWindow : Window
     int _sheetIndex;
     bool _deviceView = true;    // the visual mapper is the default face of the editor
     string? _selectedZone;
+    // Device View shows friendly words ("soft sip") by default; the Labels
+    // toggle flips every input/output/function name to the raw token the List
+    // View and the CSV use ("mp_left_sip_soft"), so the two views speak the
+    // same vocabulary when a power user wants it.
+    bool _friendlyLabels = true;
     QsModel _model;
     AppSettings _settings = Settings.Load();
     double _uiScale = 1.0;
@@ -221,6 +226,8 @@ public partial class MainWindow : Window
 
         DeviceViewButton.Click += (_, _) => SetDeviceView(true);
         ListViewButton.Click += (_, _) => SetDeviceView(false);
+        LabelStyleButton.Click += (_, _) => ToggleLabelStyle();
+        UpdateLabelStyleButton();
         _model = Enum.TryParse<QsModel>(_settings.Model, out var savedModel) ? savedModel : QsModel.FPS;
         ModelPicker.ItemsSource = ModelNames;
         ModelPicker.SelectedIndex = (int)_model;
@@ -434,6 +441,24 @@ public partial class MainWindow : Window
         else AddRowButton.Focus();
     }
 
+    // Flip Device View between plain-English words and the raw list-view/CSV
+    // token names, and rebuild so every dropdown label follows suit.
+    void ToggleLabelStyle()
+    {
+        _friendlyLabels = !_friendlyLabels;
+        UpdateLabelStyleButton();
+        if (_deviceView && CurrentSheet?.Type == SheetType.ProfileName)
+        { BuildDeviceView(); BuildZoneDetail(); }
+    }
+
+    void UpdateLabelStyleButton()
+    {
+        LabelStyleButton.Content = _friendlyLabels ? "Words: Plain English" : "Words: List names";
+        AutomationProperties.SetName(LabelStyleButton, _friendlyLabels
+            ? "Words are shown in plain English. Switch to the raw list-view names."
+            : "Words are shown as raw list-view names. Switch to plain English.");
+    }
+
     void RefreshHomeCards()
     {
         LibraryCards.Children.Clear();
@@ -565,13 +590,38 @@ public partial class MainWindow : Window
     {
         var input = b.Inputs.Count > 0 ? b.Inputs[0] : "";
         if (input.Length == 0) return "(no input)";
+        var extra = b.Inputs.Count > 1 ? $" +{b.Inputs.Count - 1}" : "";
+        return StripInput(input, z.Id) + extra;
+    }
+
+    // The friendly short form of one input token, scoped to the part it lives
+    // on: on the Left hole "mp_left_puff_soft" becomes "soft puff". Shared by
+    // ShortInput and the Device View dropdown labels.
+    static string StripInput(string input, string zoneId)
+    {
+        if (input.Length == 0) return "(no input)";
         var s = input;
         foreach (var prefix in new[] { "mp_left_center_", "mp_right_center_", "mp_left_right_", "mp_triple_", "mp_left_", "mp_center_", "mp_right_", "right_" })
-            if (z.Id is not ("joystick" or "other") && s.StartsWith(prefix)) { s = s[prefix.Length..]; break; }
+            if (zoneId is not ("joystick" or "other") && s.StartsWith(prefix)) { s = s[prefix.Length..]; break; }
         if (s.EndsWith("_soft")) s = "soft " + s[..^5];
-        var extra = b.Inputs.Count > 1 ? $" +{b.Inputs.Count - 1}" : "";
-        return s.Replace('_', ' ') + extra;
+        return s.Replace('_', ' ');
     }
+
+    // Turn a raw token into plain words: "mouse_left_button" -> "Mouse left
+    // button". Used for outputs and functions in friendly mode.
+    static string Humanize(string token)
+    {
+        var s = (token ?? "").Trim();
+        if (s.Length == 0) return s;
+        s = s.Replace('_', ' ');
+        return char.ToUpperInvariant(s[0]) + s[1..];
+    }
+
+    // How an input/output/function token is shown in Device View: friendly
+    // words, or the raw token exactly as List View and the CSV spell it.
+    string InputLabel(string token, string zoneId) =>
+        _friendlyLabels ? Humanize(StripInput(token, zoneId)) : token;
+    string TokenLabel(string token) => _friendlyLabels ? Humanize(token) : token;
 
     Dictionary<string, List<Binding>> BindingsByZone()
     {
@@ -610,6 +660,9 @@ public partial class MainWindow : Window
         DeviceContainer.IsVisible = device;
         DeviceViewButton.Classes.Set("primary", device);
         ListViewButton.Classes.Set("primary", !device);
+        // The words toggle only changes Device View labels; List View already
+        // shows the raw names, so hide it there rather than offer a dead control.
+        LabelStyleButton.IsVisible = device;
         var connected = Device.FindCandidates().Count > 0;
         if (device)
         {
@@ -633,19 +686,17 @@ public partial class MainWindow : Window
         var byZone = BindingsByZone();
         var visible = VisibleZones(byZone).ToList();
 
-        // ---- Main diagram, arranged to mirror the real device: the joystick
-        // on the left, the round mouthpiece holes on the right, and the side
-        // tube + lip switch directly beneath the mouthpiece. Sized to fit the
-        // panel whole, so nothing here scrolls. ----
-        var diagram = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        // ---- Main diagram, stacked to mirror the real device top to bottom:
+        // the joystick on top, the round mouthpiece holes below it, then the
+        // side tube + lip switch. Full width, so each row's parts can be large;
+        // sized to fit the panel whole, so nothing here scrolls. ----
+        var diagram = new StackPanel { Spacing = 14, HorizontalAlignment = HorizontalAlignment.Center };
 
-        var joystick = ZoneButton(AllZones[0], byZone, 128, minHeight: 148);
-        joystick.Margin = new Avalonia.Thickness(0, 0, 14, 0);
-        joystick.VerticalAlignment = VerticalAlignment.Center;
-        Grid.SetColumn(joystick, 0);
+        var joystick = ZoneButton(AllZones[0], byZone, 220, minHeight: 120);
+        joystick.HorizontalAlignment = HorizontalAlignment.Center;
         diagram.Children.Add(joystick);
 
-        var rightCol = new StackPanel { Spacing = 12, VerticalAlignment = VerticalAlignment.Center };
+        var rightCol = diagram; // rows are appended straight down the stack
 
         // A WrapPanel so the round holes drop to a second row instead of
         // clipping when the window is narrow; on a normal window they sit in a
@@ -681,19 +732,17 @@ public partial class MainWindow : Window
         }
 
         var sideRow = new StackPanel
-        { Orientation = Orientation.Horizontal, Spacing = 10, HorizontalAlignment = HorizontalAlignment.Center };
+        { Orientation = Orientation.Horizontal, Spacing = 12, HorizontalAlignment = HorizontalAlignment.Center };
         foreach (var z in visible.Where(z => z.Id is "side" or "lip"))
-            sideRow.Children.Add(ZoneButton(z, byZone, 148));
+            sideRow.Children.Add(ZoneButton(z, byZone, 200, minHeight: 108));
         if (sideRow.Children.Count > 0) rightCol.Children.Add(sideRow);
 
-        Grid.SetColumn(rightCol, 1);
-        diagram.Children.Add(rightCol);
         DeviceCanvas.Children.Add(diagram);
 
         // ---- Secondary parts along the bottom: hole combos, switch jacks, USB,
         // then unmapped rows last so "No input yet" lands at the bottom right. ----
         var extras = new WrapPanel { Margin = new Avalonia.Thickness(0, 18, 0, 0) };
-        void AddExtra(Zone z) { var t = ZoneButton(z, byZone, 156); t.Margin = new Avalonia.Thickness(0, 0, 10, 10); extras.Children.Add(t); }
+        void AddExtra(Zone z) { var t = ZoneButton(z, byZone, 210, minHeight: 108); t.Margin = new Avalonia.Thickness(0, 0, 12, 12); extras.Children.Add(t); }
         foreach (var z in visible.Where(z => z.Id is "combo" or "jacks" or "other")) AddExtra(z);
         foreach (var z in visible.Where(z => z.Id is "unset")) AddExtra(z);
         if (extras.Children.Count > 0) DeviceCanvas.Children.Add(extras);
@@ -829,10 +878,10 @@ public partial class MainWindow : Window
                 for (int i = 0; i < inputCount && i < 8; i++)
                 {
                     var inputRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
-                    var inputBox = SuggestBox(b.Row, 2 + i, i < b.Inputs.Count ? b.Inputs[i] : "", 0,
+                    var inputBox = TokenField(b.Row, 2 + i, i < b.Inputs.Count ? b.Inputs[i] : "",
                         i == 0 && zoneInputs.Count > 0 ? zoneInputs : InputSuggestions,
-                        $"Input {i + 1} for this {zone.Display} mapping", InputTint, stretch: true);
-                    SetWatermark(inputBox, i == 0 ? "what you do (sip, puff, move...)" : "and (both must be active)");
+                        t => InputLabel(t, zone.Id),
+                        $"Input {i + 1} for this {zone.Display} mapping", InputTint);
                     Grid.SetColumn(inputBox, 0);
                     inputRow.Children.Add(inputBox);
                     // Remove a specific input (not just empty it) when there is
@@ -862,25 +911,22 @@ public partial class MainWindow : Window
                     addInput.Click += (_, _) =>
                     {
                         var newRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
-                        var newBox = SuggestBox(b.Row, nextCol, "", 0, InputSuggestions,
-                            $"Extra input for mapping {n}", InputTint, stretch: true);
-                        SetWatermark(newBox, "and (both must be active)");
+                        var newBox = TokenField(b.Row, nextCol, "", InputSuggestions,
+                            t => InputLabel(t, zone.Id), $"Extra input for mapping {n}", InputTint);
                         Grid.SetColumn(newBox, 0);
                         newRow.Children.Add(newBox);
                         card.Children.Insert(card.Children.IndexOf(addInput), newRow);
                         nextCol++;
                         if (nextCol >= 2 + 8) card.Children.Remove(addInput);
-                        ((newBox as Border)!.Child as AutoCompleteBox)!.Focus();
+                        (newBox as Border)?.Child?.Focus();
                     };
                     card.Children.Add(addInput);
                 }
 
                 // ---- It presses (game button) ----
                 card.Children.Add(FieldLabel("It presses this game button"));
-                var outBox = SuggestBox(b.Row, 0, b.Output, 0,
-                    OutputSuggestionsFor(CurrentSheet!), $"Game button pressed by {ShortInput(zone, b)}", OutputTint, stretch: true);
-                SetWatermark(outBox, "game button, e.g. circle, x, mouse_left_button");
-                card.Children.Add(outBox);
+                card.Children.Add(TokenField(b.Row, 0, b.Output, OutputSuggestionsFor(CurrentSheet!),
+                    TokenLabel, $"Game button pressed by {ShortInput(zone, b)}", OutputTint));
 
                 // ---- How it presses (a self-describing dropdown) ----
                 card.Children.Add(FieldLabel("How it presses"));
@@ -1293,7 +1339,7 @@ public partial class MainWindow : Window
     // mapping card's Border/StackPanel wrapper tree.
     static Control? FindFocusable(Control root) => root switch
     {
-        AutoCompleteBox or Button => root,
+        AutoCompleteBox or Button or ComboBox => root,
         Border { Child: Control c } => FindFocusable(c),
         Panel p => p.Children.Select(FindFocusable).FirstOrDefault(f => f != null),
         _ => null,
@@ -1381,11 +1427,6 @@ public partial class MainWindow : Window
         UpdateProblemsToggle();
     }
 
-    static void SetWatermark(Control suggestBoxWrapper, string text)
-    {
-        if ((suggestBoxWrapper as Border)?.Child is AutoCompleteBox box) box.Watermark = text;
-    }
-
     // ---- Small shared UI builders for the redesigned editor ----
 
     static TextBlock FieldLabel(string text) => new()
@@ -1420,7 +1461,7 @@ public partial class MainWindow : Window
         combo.ItemTemplate = new FuncDataTemplate<string>((name, _) =>
         {
             var sp = new StackPanel { Spacing = 1, Margin = new Avalonia.Thickness(0, 2) };
-            sp.Children.Add(new TextBlock { Text = name, FontWeight = FontWeight.SemiBold, FontSize = Size("BodySize") });
+            sp.Children.Add(new TextBlock { Text = TokenLabel(name), FontWeight = FontWeight.SemiBold, FontSize = Size("BodySize") });
             var d = FunctionExplain(name);
             if (d.Length > 0)
                 sp.Children.Add(new TextBlock { Text = d, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
@@ -1436,6 +1477,88 @@ public partial class MainWindow : Window
             }
         };
         return combo;
+    }
+
+    // The item that reveals a free-text box at the very bottom of a Device View
+    // dropdown, so an exotic value is still reachable without making typing the
+    // default. Reference-compared, never shown as a real token.
+    const string TypeYourOwn = "＋ Type your own…";
+
+    // A pick-don't-type field for Device View: a dropdown of known tokens shown
+    // in the current label style, committing the raw token to the cell. The
+    // last entry drops to a text box for anything not on the list. Keeps the
+    // wrapper registered in _cellBorders so problem highlighting still lands.
+    Control TokenField(int row, int col, string current, IReadOnlyList<string> options,
+                       Func<string, string> labelFor, string accessibleName, string tintKey)
+    {
+        var wrapper = new Border
+        {
+            BorderThickness = new Avalonia.Thickness(2),
+            BorderBrush = Brushes.Transparent,
+            CornerRadius = new Avalonia.CornerRadius(5),
+        };
+        _cellBorders[$"{(char)('A' + col)}{row}"] = wrapper;
+
+        void ShowCombo()
+        {
+            var items = new List<string>(options);
+            var cur = (current ?? "").Trim();
+            if (cur.Length > 0 && !items.Contains(cur)) items.Insert(0, cur);
+            items.Add(TypeYourOwn);
+
+            var combo = new ComboBox { ItemsSource = items, HorizontalAlignment = HorizontalAlignment.Stretch };
+            combo.SelectedItem = cur.Length > 0 ? items.FirstOrDefault(x => x == cur) : null;
+            combo[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
+            combo.ItemTemplate = new FuncDataTemplate<string>((token, _) =>
+            {
+                bool own = ReferenceEquals(token, TypeYourOwn);
+                var tb = new TextBlock
+                {
+                    Text = own ? TypeYourOwn : labelFor(token),
+                    FontSize = Size("BodySize"),
+                    TextWrapping = TextWrapping.Wrap, Margin = new Avalonia.Thickness(0, 2),
+                };
+                if (own) tb.Classes.Add("muted");
+                return tb;
+            });
+            AutomationProperties.SetName(combo, accessibleName);
+            combo.SelectionChanged += (_, _) =>
+            {
+                if (combo.SelectedItem is not string s || _file is null) return;
+                if (ReferenceEquals(s, TypeYourOwn)) { ShowTyping(); return; }
+                if (s == _file.GetCell(row, col)) return;
+                _file.SetCell(row, col, s);
+                BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+            };
+            wrapper.Child = combo;
+        }
+
+        void ShowTyping()
+        {
+            var box = new AutoCompleteBox
+            {
+                Text = "", ItemsSource = options, FilterMode = AutoCompleteFilterMode.Contains,
+                MinimumPrefixLength = 0, HorizontalAlignment = HorizontalAlignment.Stretch,
+                Watermark = "type a value, or leave blank to go back",
+            };
+            box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
+            AutomationProperties.SetName(box, accessibleName + ". Type a custom value.");
+            void Commit()
+            {
+                if (_file is null) return;
+                var v = (box.Text ?? "").Trim();
+                if (v.Length == 0) { ShowCombo(); return; } // empty = cancel, back to the list
+                if (v != _file.GetCell(row, col)) { _file.SetCell(row, col, v); }
+                BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+            }
+            box.LostFocus += (_, _) => Commit();
+            box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
+            wrapper.Child = box;
+            Dispatcher.UIThread.Post(() => box.Focus(), DispatcherPriority.Loaded);
+        }
+
+        ShowCombo();
+        return wrapper;
     }
 
     // A dismissable popup anchored to its "?" button: the answer is one click

@@ -135,6 +135,9 @@
         <Button x:Name="ListViewButton" Content="List view"
                 AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this"/>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
+        <Button x:Name="LabelStyleButton"
+                AutomationProperties.Name="Switch the words used in device view between plain English and the raw list-view names"/>
+        <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
         <Button x:Name="AddRowButton" Content="+ Add row"
                 AutomationProperties.Name="Add a new binding row to this mode"/>
       </StackPanel>
