@@ -65,7 +65,8 @@ public partial class MainWindow : Window
     ProfileFile? _file;
     string? _savePath;          // where Save writes; null until saved or opened from a path
     int _sheetIndex;
-    bool _deviceView = true;    // the visual mapper is the default face of the editor
+    bool _deviceView = true;    // true = the split editor (diagram OR rail); false = the raw List View
+    bool _railView;             // when in the split editor, show the parts as a list instead of the diagram
     string? _selectedZone;
     // Device View shows friendly words ("soft sip") by default; the Labels
     // toggle flips every input/output/function name to the raw token the List
@@ -224,7 +225,8 @@ public partial class MainWindow : Window
             FocusIssueCell(firstError);
         };
 
-        DeviceViewButton.Click += (_, _) => SetDeviceView(true);
+        DeviceViewButton.Click += (_, _) => SetDeviceView(true, rail: false);
+        RailViewButton.Click += (_, _) => SetDeviceView(true, rail: true);
         ListViewButton.Click += (_, _) => SetDeviceView(false);
         LabelStyleButton.Click += (_, _) => ToggleLabelStyle();
         UpdateLabelStyleButton();
@@ -427,11 +429,17 @@ public partial class MainWindow : Window
 
     // Switches between Device View and List View, keeping keyboard focus on
     // the new view's first interactive control instead of dropping it.
-    void SetDeviceView(bool device)
+    void SetDeviceView(bool device, bool rail = false)
     {
         _deviceView = device;
+        _railView = device && rail;
         RefreshEditor();
-        if (device)
+        if (device && _railView)
+        {
+            // Land on the selected row, or the first part, so arrow keys work at once.
+            (_zoneButtons.GetValueOrDefault(_selectedZone ?? "") ?? _zoneButtons.Values.FirstOrDefault())?.Focus();
+        }
+        else if (device)
         {
             if (_zoneButtons.TryGetValue("joystick", out var joystickBtn)) joystickBtn.Focus();
         }
@@ -687,7 +695,8 @@ public partial class MainWindow : Window
         bool device = _deviceView && CurrentSheet?.Type == SheetType.ProfileName;
         GridContainer.IsVisible = !device;
         DeviceContainer.IsVisible = device;
-        DeviceViewButton.Classes.Set("primary", device);
+        DeviceViewButton.Classes.Set("primary", device && !_railView);
+        RailViewButton.Classes.Set("primary", device && _railView);
         ListViewButton.Classes.Set("primary", !device);
         // The words toggle only changes Device View labels; List View already
         // shows the raw names, so hide it there rather than offer a dead control.
@@ -713,6 +722,20 @@ public partial class MainWindow : Window
         DeviceCanvas.Children.Clear();
         _zoneButtons.Clear();
         var byZone = BindingsByZone();
+
+        // Parts List: a plain vertical list of part rows instead of the diagram,
+        // for users who'd rather arrow through a list than read a picture.
+        if (_railView)
+        {
+            var rail = new StackPanel { Spacing = 6 };
+            rail.Children.Add(new TextBlock
+            { Text = "Parts", FontSize = Size("SmallSize"), FontWeight = FontWeight.Bold, Classes = { "muted" }, Margin = new Avalonia.Thickness(2, 0, 0, 4) });
+            foreach (var z in VisibleZones(byZone))
+                rail.Children.Add(RailRow(z, byZone));
+            DeviceCanvas.Children.Add(rail);
+            return;
+        }
+
         var visible = VisibleZones(byZone).ToList();
 
         // ---- Main diagram, stacked to mirror the real device top to bottom:
@@ -839,25 +862,73 @@ public partial class MainWindow : Window
         // reachable, so a profile built for another model can be cleaned up.
         if (foreign) btn.Opacity = 0.5;
 
+        SetZoneAccessibleName(btn, z, bindings, count, foreign, selected);
+        WireZoneSelect(btn, z.Id);
+        return btn;
+    }
+
+    // A part row for the Parts List view: the same selectable control as a
+    // diagram tile, laid out as a wide row (name + mapping count) so the left
+    // side becomes a plain list to arrow through. Feeds the same editor.
+    Control RailRow(Zone z, Dictionary<string, List<Binding>> byZone)
+    {
+        byZone.TryGetValue(z.Id, out var bindings);
+        int count = bindings?.Count ?? 0;
+        bool foreign = !ModelHasZone(z.Id);
+        bool selected = _selectedZone == z.Id;
+
+        var name = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+        name.Children.Add(new TextBlock { Text = z.Title, FontWeight = FontWeight.Bold, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap });
+        if (foreign)
+            name.Children.Add(new TextBlock { Text = "Not on your model", FontSize = Size("SmallSize"), Classes = { "muted" } });
+
+        var cnt = new TextBlock
+        {
+            Text = count == 0 ? "Not mapped" : count == 1 ? "1 mapping" : $"{count} mappings",
+            FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center,
+        };
+        if (count == 0) cnt.Classes.Add("muted"); else BindBrush(cnt, TextBlock.ForegroundProperty, "AccentText");
+
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        row.Children.Add(name);
+        Grid.SetColumn(cnt, 1);
+        row.Children.Add(cnt);
+
+        var btn = new ToggleButton
+        {
+            Classes = { "zone" }, HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            Padding = new Avalonia.Thickness(14, 12), Content = row, IsChecked = selected,
+        };
+        if (foreign) btn.Opacity = 0.5;
+        SetZoneAccessibleName(btn, z, bindings, count, foreign, selected);
+        WireZoneSelect(btn, z.Id);
+        return btn;
+    }
+
+    void SetZoneAccessibleName(Control btn, Zone z, List<Binding>? bindings, int count, bool foreign, bool selected)
+    {
         var spoken = count == 0
             ? "nothing mapped yet"
             : string.Join(", ", (bindings ?? new()).Take(4).Select(b => $"{ShortInput(z, b)} presses {b.Output}"));
         var warning = foreign ? $" Not available on your {ModelNames[(int)_model]}." : "";
         AutomationProperties.SetName(btn,
             $"{z.Title}. {(selected ? "Selected. " : "")}{count} mapping{(count == 1 ? "" : "s")}. {spoken}.{warning} Press Enter to edit.");
+    }
+
+    void WireZoneSelect(ToggleButton btn, string zoneId)
+    {
         btn.Click += (_, _) =>
         {
-            _selectedZone = z.Id;
+            _selectedZone = zoneId;
             BuildDeviceView(); BuildZoneDetail();
-            // The click target no longer exists after the rebuild above;
-            // refocus its replacement so keyboard/switch users aren't dropped.
-            // IsChecked is re-derived from _selectedZone on rebuild, not from
-            // ToggleButton's own toggle state, so re-clicking the selected
-            // zone can't leave it unchecked with no selection.
-            _zoneButtons.GetValueOrDefault(z.Id)?.Focus();
+            // The click target no longer exists after the rebuild above; refocus
+            // its replacement so keyboard/switch users aren't dropped. IsChecked
+            // is re-derived from _selectedZone on rebuild, so re-clicking the
+            // selected part can't leave it unchecked with no selection.
+            _zoneButtons.GetValueOrDefault(zoneId)?.Focus();
         };
-        _zoneButtons[z.Id] = btn;
-        return btn;
+        _zoneButtons[zoneId] = btn;
     }
 
     void BuildZoneDetail()

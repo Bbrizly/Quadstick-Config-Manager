@@ -132,6 +132,8 @@
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
         <Button x:Name="DeviceViewButton" Content="Device view"
                 AutomationProperties.Name="Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this"/>
+        <Button x:Name="RailViewButton" Content="Parts list"
+                AutomationProperties.Name="Show the parts as a simple list you arrow through, with the same editor on the right"/>
         <Button x:Name="ListViewButton" Content="List view"
                 AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this"/>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
