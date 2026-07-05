@@ -855,10 +855,13 @@ public partial class MainWindow : Window
         else BindBrush(countLabel, TextBlock.ForegroundProperty, "AccentText");
         content.Children.Add(countLabel);
 
-        if (foreign && !circle)
+        // Every foreign part says so in TEXT, circles included: dimming alone
+        // is a contrast-only cue that low-vision users cannot rely on.
+        if (foreign)
             content.Children.Add(new TextBlock
             {
-                Text = "Not on your model", FontSize = Size("SmallSize"), Classes = { "muted" },
+                Text = circle ? "Not on model" : "Not on your model",
+                FontSize = Size("SmallSize"), Classes = { "muted" },
                 TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
             });
@@ -1742,12 +1745,20 @@ public partial class MainWindow : Window
     // away and never clutters the editing surface.
     static void ShowInfoFlyout(Control anchor, string title, string body)
     {
-        var content = new StackPanel { Spacing = 8, MaxWidth = 340, Margin = new Avalonia.Thickness(4) };
+        var content = new StackPanel
+        {
+            Spacing = 8, MaxWidth = 340, Margin = new Avalonia.Thickness(4),
+            Focusable = true, // focus lands here so screen readers read the tip, not silence
+        };
         content.Children.Add(new TextBlock
         { Text = title, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap });
         content.Children.Add(new TextBlock
         { Text = body, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap, LineHeight = 21 });
-        new Flyout { Content = content, Placement = PlacementMode.Bottom }.ShowAt(anchor);
+        AutomationProperties.SetName(content, $"{title}. {body}. Press Escape to close.");
+        AutomationProperties.SetLiveSetting(content, AutomationLiveSetting.Polite);
+        var flyout = new Flyout { Content = content, Placement = PlacementMode.Bottom };
+        flyout.Opened += (_, _) => content.Focus();
+        flyout.ShowAt(anchor);
     }
 
     bool _problemsExpanded;

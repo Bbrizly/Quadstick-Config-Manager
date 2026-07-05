@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How QuadStick Config Manager works</title>
+<style>
+  :root {
+    --bg: #F6F5F2; --surface: #FFFFFF; --ink: #1E1E1E; --muted: #5A5A5A;
+    --accent: #0F6CBD; --border: #D8D6D2;
+    --yellow: #FFF6DE; --pink: #FDE7EC; --blue: #E3F0FC;
+    --green: #1E7B34; --red: #B3261E; --orange: #C77700;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 32px; line-height: 1.2; margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 32px; }
+  h2 { font-size: 23px; margin: 44px 0 8px; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+  h3 { font-size: 18px; margin: 26px 0 6px; }
+  p { margin: 10px 0; max-width: 72ch; }
+  figure { margin: 18px 0; background: var(--surface); border: 1px solid var(--border);
+           border-radius: 10px; padding: 16px; overflow-x: auto; }
+  figcaption { font-size: 14px; color: var(--muted); margin-top: 10px; max-width: 78ch; }
+  svg { display: block; width: 100%; height: auto; }
+  svg text { font: 14px -apple-system, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+  svg .small { font-size: 12px; fill: var(--muted); }
+  svg .bold { font-weight: 700; }
+  svg .box { fill: var(--surface); stroke: #9a9791; stroke-width: 1.5; rx: 8; }
+  svg .accentbox { fill: var(--accent); stroke: none; rx: 8; }
+  svg .accentbox + text, svg text.onaccent { fill: #fff; font-weight: 700; }
+  svg .soft { fill: var(--bg); stroke: var(--border); rx: 8; }
+  svg .arrow { stroke: #555; stroke-width: 2; fill: none; marker-end: url(#arr); }
+  svg .good { stroke: var(--green); }
+  svg .bad { stroke: var(--red); }
+  table { border-collapse: collapse; width: 100%; background: var(--surface);
+          border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--bg); }
+  tr:last-child td { border-bottom: none; }
+  code, .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.92em;
+                background: var(--bg); padding: 1px 5px; border-radius: 4px; }
+  .cell-a { background: var(--yellow); } .cell-b { background: var(--pink); }
+  .cell-c { background: var(--blue); } .cell-k { background: #EFEFEF; color: var(--muted); }
+  .ok { color: var(--green); font-weight: 700; } .warn { color: var(--orange); font-weight: 700; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>How QuadStick Config Manager works</h1>
+<p class="sub">A plain-English tour of the code, for contributors and the curious. Everything here matches the source; nothing is simplified into being wrong.</p>
+
+<h2>1. The one-paragraph version</h2>
+<p>The QuadStick is a mouth-operated game controller. It reads one CSV file at a time from its own memory (it shows up on your computer like a USB stick). That file says which sip, puff, or joystick move presses which game button. This app opens those files, shows them as a picture of the QuadStick, lets you change them safely, and copies them back to the device in a way that can never leave it half-written.</p>
+
+<h2>2. The big picture</h2>
+<figure>
+<svg viewBox="0 0 860 330" role="img" aria-label="Architecture diagram: the app window talks to the Format library, which reads and writes profile files in the library folder and on the QuadStick drive; Google Sheets can be imported over the network.">
+  <defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#555"/></marker></defs>
+  <rect class="accentbox" x="20" y="30" width="240" height="110"/>
+  <text x="140" y="60" text-anchor="middle" class="onaccent">The app window</text>
+  <text x="140" y="84" text-anchor="middle" class="onaccent" style="font-weight:400">Home · Device View · List View</text>
+  <text x="140" y="106" text-anchor="middle" class="onaccent" style="font-weight:400">buttons, dialogs, tutorial</text>
+
+  <rect class="box" x="330" y="30" width="240" height="110"/>
+  <text x="450" y="60" text-anchor="middle" class="bold">Format library</text>
+  <text x="450" y="84" text-anchor="middle" class="small">reads, checks, edits, and</text>
+  <text x="450" y="102" text-anchor="middle" class="small">writes profile files. No UI inside.</text>
+
+  <rect class="soft" x="640" y="16" width="200" height="64"/>
+  <text x="740" y="42" text-anchor="middle" class="bold">Your library folder</text>
+  <text x="740" y="62" text-anchor="middle" class="small">Documents/QuadStick Profiles</text>
+
+  <rect class="soft" x="640" y="100" width="200" height="64"/>
+  <text x="740" y="126" text-anchor="middle" class="bold">The QuadStick drive</text>
+  <text x="740" y="146" text-anchor="middle" class="small">has default.csv at its root</text>
+
+  <rect class="soft" x="640" y="184" width="200" height="64"/>
+  <text x="740" y="210" text-anchor="middle" class="bold">Google Sheets</text>
+  <text x="740" y="230" text-anchor="middle" class="small">shared community profiles</text>
+
+  <line class="arrow" x1="260" y1="85" x2="326" y2="85"/>
+  <line class="arrow" x1="570" y1="60" x2="636" y2="48"/>
+  <line class="arrow" x1="570" y1="110" x2="636" y2="130"/>
+  <line class="arrow" x1="636" y1="216" x2="450" y2="145"/>
+
+  <rect class="soft" x="20" y="200" width="550" height="100"/>
+  <text x="40" y="228" class="bold">The rule that keeps files safe</text>
+  <text x="40" y="252" class="small">The window never touches a file directly. Every read, change, and write goes through the</text>
+  <text x="40" y="270" class="small">Format library, so the same safety checks run no matter which button you clicked.</text>
+  <text x="40" y="288" class="small">Save writes only to your library. Only Install may write to the QuadStick.</text>
+</svg>
+<figcaption>Two layers. The window is everything you see. The Format library is the careful part: it is pure logic with 82 automated tests and the strictest compiler checks, because a bug there could break someone's controller setup.</figcaption>
+</figure>
+
+<h2>3. What a profile file looks like</h2>
+<p>A profile is one CSV file (a plain text table). The layout comes from the maker's own tools and is documented fact, not guesswork (see <code>docs/FORMAT.md</code> for sources).</p>
+<figure>
+<table aria-label="Profile file layout, row by row">
+<tr><th style="width:110px">Line</th><th>Content</th><th>Meaning</th></tr>
+<tr><td class="mono">1</td><td class="mono">QuadStick Configuration,Version 1.5,,gta</td><td>Header. Says which tool wrote the file and the profile's name.</td></tr>
+<tr><td class="mono">2</td><td class="mono">Profile Name,,Left joy</td><td>A sheet starts. A1 must contain the word "Profile" (or be "Preferences" / "Infrared").</td></tr>
+<tr><td class="mono">3</td><td class="mono">gta.csv</td><td>Only on the FIRST sheet: the file's own name.</td></tr>
+<tr><td class="mono">4</td><td class="mono">PlayStation Outputs,Function,usb</td><td>Column labels. The first cell also picks PlayStation or Xbox button names.</td></tr>
+<tr><td class="mono">5+</td><td><span class="cell-a mono">&nbsp;x&nbsp;</span> <span class="cell-b mono">&nbsp;repeat 5&nbsp;</span> <span class="cell-c mono">&nbsp;mp_right_sip&nbsp;</span> … <span class="cell-k mono">&nbsp;my note&nbsp;</span></td><td>One mapping per row: <b>game button</b> (yellow), <b>how it presses</b> (pink), <b>up to 8 inputs</b> (blue, columns C–J), and free comments after column J (grey) that the device ignores.</td></tr>
+<tr><td class="mono">…</td><td class="mono">(blank line)</td><td>A blank line ends the sheet. The next sheet starts after it.</td></tr>
+</table>
+<figcaption>The colors are the same ones the app and the official Google Sheets use: yellow = outputs, pink = functions, blue = inputs. A row after a blank line is an error in this app, because the device could mistake it for a new sheet.</figcaption>
+</figure>
+
+<h2>4. How editing never corrupts a file</h2>
+<p>The app never converts your file into its own format and back. It keeps the file's raw table (the "grid") in memory and edits cells in place. What you see on screen is a read-only <em>view</em> built from that grid.</p>
+<figure>
+<svg viewBox="0 0 860 300" role="img" aria-label="Round-trip diagram: file text becomes a grid of cells, the parser builds a view for the screen, edits change grid cells directly, and saving writes the grid back out unchanged except for your edits.">
+  <rect class="soft" x="20" y="40" width="180" height="70"/>
+  <text x="110" y="70" text-anchor="middle" class="bold">File text</text>
+  <text x="110" y="92" text-anchor="middle" class="small">gta.csv</text>
+
+  <rect class="accentbox" x="270" y="40" width="180" height="70"/>
+  <text x="360" y="70" text-anchor="middle" class="onaccent">The grid</text>
+  <text x="360" y="92" text-anchor="middle" class="onaccent" style="font-weight:400">every cell, kept verbatim</text>
+
+  <rect class="box" x="540" y="40" width="180" height="70"/>
+  <text x="630" y="70" text-anchor="middle" class="bold">Parsed view</text>
+  <text x="630" y="92" text-anchor="middle" class="small">sheets, mappings, problems</text>
+
+  <line class="arrow" x1="200" y1="75" x2="266" y2="75"/>
+  <text x="233" y="62" text-anchor="middle" class="small">open</text>
+  <line class="arrow" x1="450" y1="75" x2="536" y2="75"/>
+  <text x="493" y="62" text-anchor="middle" class="small">parse</text>
+
+  <rect class="box" x="540" y="180" width="180" height="70"/>
+  <text x="630" y="210" text-anchor="middle" class="bold">Your edit</text>
+  <text x="630" y="232" text-anchor="middle" class="small">change one cell</text>
+  <line class="arrow" x1="540" y1="215" x2="380" y2="118"/>
+  <text x="440" y="185" text-anchor="middle" class="small">writes to the grid</text>
+
+  <line class="arrow" x1="270" y1="90" x2="204" y2="104"/>
+  <text x="240" y="118" text-anchor="middle" class="small">save</text>
+
+  <rect class="soft" x="20" y="180" width="430" height="86"/>
+  <text x="40" y="208" class="bold">Why this matters</text>
+  <text x="40" y="230" class="small">Anything the app does not understand — comments after column J, unusual spacing,</text>
+  <text x="40" y="248" class="small">extra cells — passes through untouched. Undo restores a full snapshot of the grid.</text>
+</svg>
+<figcaption>Edits go grid-first, the view is rebuilt after each change, and saving writes the grid back out. Your file is never "translated", so nothing is ever lost in translation.</figcaption>
+</figure>
+
+<h2>5. The install pipeline (the most careful code in the app)</h2>
+<figure>
+<svg viewBox="0 0 860 430" role="img" aria-label="Install pipeline: check for errors, confirm default.csv, back up the old file, write to a temporary name, verify every byte, swap it into place, and restore the backup if the swap fails.">
+  <rect class="box" x="20" y="20" width="230" height="58"/>
+  <text x="135" y="44" text-anchor="middle" class="bold">1. Any errors?</text>
+  <text x="135" y="64" text-anchor="middle" class="small">errors block install, always</text>
+
+  <rect class="box" x="20" y="110" width="230" height="58"/>
+  <text x="135" y="134" text-anchor="middle" class="bold">2. default.csv?</text>
+  <text x="135" y="154" text-anchor="middle" class="small">asks you twice before touching it</text>
+
+  <rect class="box" x="20" y="200" width="230" height="58"/>
+  <text x="135" y="224" text-anchor="middle" class="bold">3. Back up the old file</text>
+  <text x="135" y="244" text-anchor="middle" class="small">to QuadStickBackups, timestamped</text>
+
+  <rect class="box" x="315" y="200" width="230" height="58"/>
+  <text x="430" y="224" text-anchor="middle" class="bold">4. Write to a temp name</text>
+  <text x="430" y="244" text-anchor="middle" class="small">the real file is still untouched</text>
+
+  <rect class="box" x="610" y="200" width="230" height="58"/>
+  <text x="725" y="224" text-anchor="middle" class="bold">5. Read it back</text>
+  <text x="725" y="244" text-anchor="middle" class="small">every byte must match</text>
+
+  <rect class="box" x="610" y="300" width="230" height="58"/>
+  <text x="725" y="324" text-anchor="middle" class="bold">6. Swap into place</text>
+  <text x="725" y="344" text-anchor="middle" class="small">temp file becomes the real file</text>
+
+  <rect class="soft" x="315" y="300" width="230" height="88"/>
+  <text x="430" y="326" text-anchor="middle" class="bold">If the swap fails</text>
+  <text x="430" y="348" text-anchor="middle" class="small">the backup is copied back</text>
+  <text x="430" y="366" text-anchor="middle" class="small">automatically. The device is</text>
+  <text x="430" y="384" text-anchor="middle" class="small">never left without its profile.</text>
+
+  <line class="arrow good" x1="135" y1="78" x2="135" y2="106"/>
+  <line class="arrow good" x1="135" y1="168" x2="135" y2="196"/>
+  <line class="arrow good" x1="250" y1="229" x2="311" y2="229"/>
+  <line class="arrow good" x1="545" y1="229" x2="606" y2="229"/>
+  <line class="arrow good" x1="725" y1="258" x2="725" y2="296"/>
+  <line class="arrow bad" x1="610" y1="329" x2="549" y2="329"/>
+  <text x="580" y="318" text-anchor="middle" class="small">error</text>
+</svg>
+<figcaption>Steps 3–6 mean there is no moment where the device holds a half-written or unverified file. This chain is covered by automated tests, including one that makes the drive read-only mid-install and proves the old file survives.</figcaption>
+</figure>
+
+<h2>6. Where the "legal words" come from</h2>
+<p>Every input name (<code>mp_left_sip</code>), button name (<code>left_trigger</code>), and function (<code>repeat</code>) the app suggests or checks comes from one place: the validation list the QuadStick's maker uses for his own spreadsheets. It is embedded in the app verbatim and compared against his source by script, not by eye: 140 inputs, 388 PlayStation-style outputs, 380 Xbox-style outputs, 14 functions.</p>
+<figure>
+<svg viewBox="0 0 860 180" role="img" aria-label="Vocabulary flow: the maker's validation endpoint was embedded verbatim as validation.json inside the app, which feeds both the autocomplete suggestions and the error checking.">
+  <rect class="soft" x="20" y="50" width="230" height="70"/>
+  <text x="135" y="78" text-anchor="middle" class="bold">validation.quadstick.com</text>
+  <text x="135" y="100" text-anchor="middle" class="small">the maker's own list</text>
+  <rect class="accentbox" x="315" y="50" width="230" height="70"/>
+  <text x="430" y="78" text-anchor="middle" class="onaccent">validation.json</text>
+  <text x="430" y="100" text-anchor="middle" class="onaccent" style="font-weight:400">embedded in the app, verbatim</text>
+  <rect class="box" x="610" y="16" width="230" height="58"/>
+  <text x="725" y="40" text-anchor="middle" class="bold">Autocomplete</text>
+  <text x="725" y="60" text-anchor="middle" class="small">suggests only real names</text>
+  <rect class="box" x="610" y="100" width="230" height="58"/>
+  <text x="725" y="124" text-anchor="middle" class="bold">Error checking</text>
+  <text x="725" y="144" text-anchor="middle" class="small">names the cell and the fix</text>
+  <line class="arrow" x1="250" y1="85" x2="311" y2="85"/>
+  <line class="arrow" x1="545" y1="70" x2="606" y2="48"/>
+  <line class="arrow" x1="545" y1="100" x2="606" y2="124"/>
+</svg>
+<figcaption>One source of truth, used twice. If a name is not in the list, the Problems panel tells you the exact cell and what to pick instead — and errors block installing.</figcaption>
+</figure>
+
+<h2>7. Finding your way around the app</h2>
+<figure>
+<svg viewBox="0 0 860 300" role="img" aria-label="Screen map: Home leads to the editor; the editor has Device View, List View and Parts List; Install and Settings open as dialogs.">
+  <rect class="accentbox" x="20" y="90" width="200" height="90"/>
+  <text x="120" y="122" text-anchor="middle" class="onaccent">Home</text>
+  <text x="120" y="144" text-anchor="middle" class="onaccent" style="font-weight:400">your profiles · the device</text>
+  <text x="120" y="163" text-anchor="middle" class="onaccent" style="font-weight:400">new · open · import</text>
+
+  <rect class="box" x="330" y="90" width="220" height="90"/>
+  <text x="440" y="120" text-anchor="middle" class="bold">Editor</text>
+  <text x="440" y="142" text-anchor="middle" class="small">Device View (the picture)</text>
+  <text x="440" y="160" text-anchor="middle" class="small">List View · Parts List</text>
+
+  <rect class="box" x="660" y="20" width="180" height="58"/>
+  <text x="750" y="44" text-anchor="middle" class="bold">Install dialog</text>
+  <text x="750" y="63" text-anchor="middle" class="small">progress and receipt</text>
+  <rect class="box" x="660" y="120" width="180" height="58"/>
+  <text x="750" y="144" text-anchor="middle" class="bold">Settings</text>
+  <text x="750" y="163" text-anchor="middle" class="small">theme, size, model</text>
+  <rect class="box" x="660" y="220" width="180" height="58"/>
+  <text x="750" y="244" text-anchor="middle" class="bold">Help &amp; tutorial</text>
+  <text x="750" y="263" text-anchor="middle" class="small">F1 anywhere</text>
+
+  <line class="arrow" x1="220" y1="135" x2="326" y2="135"/>
+  <text x="273" y="122" text-anchor="middle" class="small">open a profile</text>
+  <line class="arrow" x1="550" y1="110" x2="656" y2="55"/>
+  <line class="arrow" x1="550" y1="140" x2="656" y2="145"/>
+  <line class="arrow" x1="550" y1="170" x2="656" y2="240"/>
+</svg>
+<figcaption>Two screens, three dialogs. Keyboard shortcuts: Ctrl/Cmd+O open, S save, N new, Z undo, I install, D switch view, F1 or H for help.</figcaption>
+</figure>
+
+<h2>8. Accessibility: what is built in</h2>
+<p>This app is built for the people who use a QuadStick: mouth-mouse users, switch users, screen-reader users, and low-vision users. These are not add-ons; several are enforced by automated tests.</p>
+<table aria-label="Accessibility features and how each is verified">
+<tr><th>Feature</th><th>What it means</th><th>Checked how</th></tr>
+<tr><td>Everything speaks</td><td>Every button, field, card, and device part has a spoken name, usually a full sentence ("Left mouthpiece hole. sip presses left_1…").</td><td>Deep review sweep; names live next to each control in code</td></tr>
+<tr><td>Keyboard everywhere</td><td>Tab reaches everything, Enter activates, Escape closes, arrows move through suggestions. No drag-only or right-click-only actions exist.</td><td class="ok">Review sweep</td></tr>
+<tr><td>Color contrast gated</td><td>Every text/background pair used on screen must meet WCAG 4.5:1 (3:1 for the focus ring) in every theme.</td><td class="ok">Automated: PaletteContrastTests, 82-test suite</td></tr>
+<tr><td>Never color-only</td><td>State is always words plus color: "Not on model" is written on dimmed parts, problems say the cell and the fix in text.</td><td class="ok">Fixed in this sweep</td></tr>
+<tr><td>Tutorial can't trap or leak</td><td>The welcome tour blocks the app behind it for pointer AND keyboard, so Tab cannot reach live buttons mid-tour.</td><td class="ok">Fixed in this sweep</td></tr>
+<tr><td>Tips are announced</td><td>Info popovers take focus and announce politely to screen readers; Escape closes them.</td><td class="ok">Fixed in this sweep</td></tr>
+<tr><td>Big targets, scalable UI</td><td>44px minimum hit targets; the whole interface scales from Settings; motion can be reduced.</td><td class="ok">Review sweep</td></tr>
+<tr><td>Mistakes are cheap</td><td>Undo everywhere (Ctrl/Cmd+Z), unsaved-work warnings on every exit path, and installs that back up first.</td><td class="ok">Automated tests</td></tr>
+</table>
+<p><b>Honest remainders:</b> real screen-reader testing (VoiceOver/NVDA) by actual users hasn't happened yet — that is what the beta ask is for. Sync file reads on the UI thread can briefly freeze the window with a slow USB stick (logged, low risk, on the list).</p>
+
+<h2>9. Where things live</h2>
+<table aria-label="Project layout">
+<tr><th style="width:320px">Path</th><th>What it is</th></tr>
+<tr><td class="mono">src/QuadStick.Format/</td><td>The careful layer: CSV parser, validator, lossless editor, safe installer, vocabulary. Pure logic, no UI, strictest compiler checks.</td></tr>
+<tr><td class="mono">src/QuadStick.Format/Data/validation.json</td><td>The maker's legal-names list, embedded verbatim.</td></tr>
+<tr><td class="mono">src/QuadStick.App/</td><td>The window: home, device view, list view, install flow, settings, tutorial, theme and contrast tokens.</td></tr>
+<tr><td class="mono">tests/</td><td>82 automated tests, including real community profiles as fixtures and the contrast gate.</td></tr>
+<tr><td class="mono">tools/RenderPreview/</td><td>Takes screenshots of the real window without a display, so UI changes are reviewed by looking, not hoping.</td></tr>
+<tr><td class="mono">docs/FORMAT.md</td><td>The file-format ground truth, every statement tied to its source.</td></tr>
+</table>
+
+<p style="margin-top:40px" class="sub">QuadStick Config Manager · free, open source (MIT) · not affiliated with QuadStick · <span class="mono">github.com/Bbrizly/Quadstick-Config-Manager</span></p>
+</main>
+</body>
+</html>

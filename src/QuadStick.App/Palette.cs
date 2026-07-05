@@ -63,6 +63,15 @@ public static class Palette
         ("TextPrimary",   "OutputTint",    4.5),
         ("TextPrimary",   "FunctionTint",  4.5),
         ("TextPrimary",   "InputTint",     4.5),
+        // Real on-screen pairs the gate previously missed: the status bar
+        // renders its colors on AppBackground, and the zone detail panel
+        // puts secondary/accent text on SurfaceSubtle.
+        ("Error",         "AppBackground", 4.5),
+        ("Warning",       "AppBackground", 4.5),
+        ("Success",       "AppBackground", 4.5),
+        ("AccentText",    "AppBackground", 4.5),
+        ("TextSecondary", "SurfaceSubtle", 4.5),
+        ("AccentText",    "SurfaceSubtle", 4.5),
         // NOTE (Codex review): SurfaceBorder is a decorative separator, not a
         // meaningful UI-component boundary or text, so WCAG does not require a
         // contrast floor for it. Do NOT add it to the gate — #D8D6D2 on white
