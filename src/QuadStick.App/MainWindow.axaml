@@ -31,7 +31,8 @@
         <StackPanel Spacing="28">
 
           <StackPanel Spacing="12">
-            <TextBlock Classes="section" Text="Start"/>
+            <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
+            <TextBlock Classes="section" Text="START"/>
             <WrapPanel x:Name="StartCards">
               <Button x:Name="HomeNewButton" Classes="card"
                       AutomationProperties.Name="Create a new profile from the factory default template">
@@ -65,10 +66,17 @@
             <TextBlock x:Name="HomeStatusText" FontSize="{DynamicResource BodySize}" Classes="error"
                        TextWrapping="Wrap" MaxWidth="700" IsVisible="False"
                        AutomationProperties.LiveSetting="Assertive"/>
+            <StackPanel x:Name="RescuePanel" Orientation="Horizontal" Spacing="10" IsVisible="False">
+              <Button x:Name="RescueOpenButton" Content="Open recovered work" Classes="primary"
+                      AutomationProperties.Name="Open the profile that was recovered after the last crash or force quit"/>
+              <Button x:Name="RescueDismissButton" Content="Dismiss"
+                      AutomationProperties.Name="Discard the recovered work permanently"/>
+            </StackPanel>
           </StackPanel>
 
           <StackPanel Spacing="12">
-            <TextBlock Classes="section" Text="Your profiles"/>
+            <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
+            <TextBlock Classes="section" Text="YOUR PROFILES"/>
             <StackPanel x:Name="LibraryEmptyPanel" Spacing="10">
               <TextBlock FontSize="{DynamicResource BodySize}" Classes="secondary"
                          Text="Profiles you save will show up here."/>
@@ -85,7 +93,8 @@
           </StackPanel>
 
           <StackPanel Spacing="12">
-            <TextBlock Classes="section" Text="On your QuadStick"/>
+            <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
+            <TextBlock Classes="section" Text="ON YOUR QUADSTICK"/>
             <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
                        Text="Plug in your QuadStick and its profiles will show up here. (In PS4 boot mode or controller emulation? The drive won't appear.)"/>
             <WrapPanel x:Name="DeviceCards"/>
@@ -130,12 +139,19 @@
         <Button x:Name="ModeHelpButton" Classes="icon" Content="?"
                 AutomationProperties.Name="What is a mode, and why is there only one?"/>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
-        <Button x:Name="DeviceViewButton" Content="Device view"
-                AutomationProperties.Name="Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this"/>
-        <Button x:Name="RailViewButton" Content="Parts list"
-                AutomationProperties.Name="Show the parts as a simple list you arrow through, with the same editor on the right"/>
-        <Button x:Name="ListViewButton" Content="List view"
-                AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this"/>
+        <!-- These three are one mutually-exclusive choice, so they sit in a
+             shared track like a rocker switch bank rather than as loose,
+             independent buttons. -->
+        <Border Classes="switchtrack">
+          <StackPanel Orientation="Horizontal" Spacing="2">
+            <Button x:Name="DeviceViewButton" Classes="switchkey" Content="Device view"
+                    AutomationProperties.Name="Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this"/>
+            <Button x:Name="RailViewButton" Classes="switchkey" Content="Parts list"
+                    AutomationProperties.Name="Show the parts as a simple list you arrow through, with the same editor on the right"/>
+            <Button x:Name="ListViewButton" Classes="switchkey" Content="List view"
+                    AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this"/>
+          </StackPanel>
+        </Border>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
         <Button x:Name="LabelStyleButton"
                 AutomationProperties.Name="Switch the words used in device view between plain English and the raw list-view names"/>
@@ -148,8 +164,8 @@
            editor; the full list expands above the bar on demand. -->
       <StackPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
         <Border x:Name="ProblemsListBorder" IsVisible="False" Height="150" Margin="0,0,0,8"
-                BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1" CornerRadius="8"
-                Background="{DynamicResource SurfaceBrush}" BoxShadow="0 1 3 0 #14000000">
+                BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1" CornerRadius="6"
+                Background="{DynamicResource SurfaceBrush}">
           <ListBox x:Name="IssuesList" FontSize="{DynamicResource SmallSize}" Background="Transparent"
                    AutomationProperties.Name="List of validation problems. Select one to copy it."/>
         </Border>
@@ -163,13 +179,13 @@
 
       <Panel>
         <Border x:Name="GridContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                BorderThickness="1" CornerRadius="8" Padding="12" BoxShadow="0 1 3 0 #14000000">
+                BorderThickness="1" CornerRadius="6" Padding="12">
           <ScrollViewer x:Name="GridScroll">
             <StackPanel x:Name="RowsPanel" Spacing="6"/>
           </ScrollViewer>
         </Border>
         <Border x:Name="DeviceContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                BorderThickness="1" CornerRadius="8" IsVisible="False" BoxShadow="0 1 3 0 #14000000">
+                BorderThickness="1" CornerRadius="6" IsVisible="False">
           <DockPanel>
             <Border x:Name="DeviceHeaderRow" DockPanel.Dock="Top" Padding="14,10"
                     BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,0,1">

@@ -279,8 +279,82 @@ public partial class MainWindow : Window
 
         _reduceMotion = _settings.ReduceMotion;
         ApplyInterfaceScale(_settings.InterfaceScalePercent);
+
+        // The crash safety net needs to know what to rescue, always.
+        CrashGuard.CurrentFile = () => _file;
+
+        // Autosave: every 30 seconds, unsaved work is copied to a draft file.
+        // A crash, a dead battery, or a force-quit can then cost at most 30
+        // seconds of edits, never an afternoon.
+        var autosave = new Avalonia.Threading.DispatcherTimer
+        { Interval = TimeSpan.FromSeconds(30) };
+        autosave.Tick += (_, _) => WriteDraft();
+        autosave.Start();
+
         ShowHome();
+        OfferRescueIfAny();
         if (!_settings.TutorialSeen) Opened += StartTutorialOnce;
+    }
+
+    // ---------- autosave drafts and crash recovery ----------
+
+    static string DraftPath => Path.Combine(CrashGuard.RescueDir, "autosave-draft.csv");
+    int _draftedRevision = -1; // last _file.Revision written to the draft; -1 = none
+
+    void WriteDraft()
+    {
+        try
+        {
+            if (_file is { Dirty: true })
+            {
+                // Nothing edited since the last draft: don't re-serialize the whole
+                // grid and rewrite the file every 30s for no reason.
+                if (_file.Revision == _draftedRevision) return;
+                Directory.CreateDirectory(CrashGuard.RescueDir);
+                File.WriteAllText(DraftPath, _file.ToCsvText());
+                _draftedRevision = _file.Revision;
+            }
+            else if (_file is not null && File.Exists(DraftPath))
+            {
+                // A file is open and clean (just saved): its draft is stale, drop it.
+                // When NO file is open we must NOT delete — on startup after a crash
+                // that draft is the unopened recovery still offered on the Home screen,
+                // and the 30s timer would otherwise erase it out from under the user.
+                File.Delete(DraftPath);
+                _draftedRevision = -1;
+            }
+        }
+        catch { /* autosave must never interrupt the user */ }
+    }
+
+    void OfferRescueIfAny()
+    {
+        var rescues = CrashGuard.PendingRescues();
+        if (rescues.Count == 0) return;
+        var newest = rescues[0];
+        HomeStatusText.Text =
+            $"Unsaved work from last time was recovered ({Path.GetFileName(newest)}). " +
+            "Open it from the button below, or dismiss to discard.";
+        HomeStatusText.IsVisible = true;
+        RescuePanel.IsVisible = true;
+        RescueOpenButton.Click += (_, _) =>
+        {
+            try
+            {
+                OpenInEditor(ProfileFile.Load(File.ReadAllText(newest)), savePath: null);
+                if (_file is not null) _file.Dirty = true; // unsaved recovery: leaving must warn, not silently drop it
+                Status("Recovered profile opened. Save it to keep it.", StatusKind.Warning);
+                RescuePanel.IsVisible = false;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            { HomeStatusText.Text = $"Could not open the recovered file: {ex.Message}"; }
+        };
+        RescueDismissButton.Click += (_, _) =>
+        {
+            CrashGuard.DiscardRescues();
+            RescuePanel.IsVisible = false;
+            HomeStatusText.IsVisible = false;
+        };
     }
 
     internal static readonly int[] ValidScalePercents = { 100, 125, 150, 200 };
@@ -475,7 +549,7 @@ public partial class MainWindow : Window
         DeviceCards.Children.Clear();
         // A yanked USB stick between FindCandidates and GetFiles is routine
         // for this hardware; it must never crash the home screen.
-        var deviceFiles = Device.FindCandidates()
+        var deviceFiles = Device.FindCandidatesCached()
             .SelectMany(root =>
             {
                 try { return Directory.GetFiles(root, "*.csv"); }
@@ -489,17 +563,34 @@ public partial class MainWindow : Window
             DeviceCards.Children.Add(ProfileCard(path, onDevice: true));
     }
 
-    Control ProfileCard(string path, bool onDevice)
+    // ShowHome re-reads and re-parses every library + device file on each visit
+    // just to show "N sheets, M bindings". Cache it by path + last-write time so
+    // an unchanged file is parsed once, not on every navigation back to Home.
+    // A slow USB still costs one read the first time it's seen; that's inherent.
+    static readonly Dictionary<string, (long Stamp, string Sub)> _cardCache = new();
+
+    static string CardSubtitle(string path)
     {
-        var name = Path.GetFileName(path);
-        string subtitle;
+        long stamp;
+        try { stamp = File.GetLastWriteTimeUtc(path).Ticks; }
+        catch { stamp = 0; }
+        if (_cardCache.TryGetValue(path, out var hit) && hit.Stamp == stamp) return hit.Sub;
+        string sub;
         try
         {
             var doc = Parser.Parse(File.ReadAllText(path)).Doc;
             var bindings = doc.Sheets.Sum(s => s.Bindings.Count);
-            subtitle = $"{doc.Sheets.Count} mode sheet(s), {bindings} binding(s)";
+            sub = $"{doc.Sheets.Count} mode sheet(s), {bindings} binding(s)";
         }
-        catch { subtitle = "Could not read this file"; }
+        catch { sub = "Could not read this file"; }
+        _cardCache[path] = (stamp, sub);
+        return sub;
+    }
+
+    Control ProfileCard(string path, bool onDevice)
+    {
+        var name = Path.GetFileName(path);
+        var subtitle = CardSubtitle(path);
         if (onDevice && name.Equals("default.csv", StringComparison.OrdinalIgnoreCase))
             subtitle += " · the device's fallback file";
 
@@ -547,6 +638,7 @@ public partial class MainWindow : Window
     {
         _file = file;
         _savePath = savePath;
+        _draftedRevision = -1; // new file: its Revision counter is unrelated to the last one's
         _sheetIndex = 0;
         SheetPicker.ItemsSource = file.Document.Sheets
             .Select((s, i) => $"{i + 1}: {(s.ModeName.Length > 0 ? s.ModeName : s.Type.ToString())}")
@@ -718,7 +810,7 @@ public partial class MainWindow : Window
         // The words toggle only changes Device View labels; List View already
         // shows the raw names, so hide it there rather than offer a dead control.
         LabelStyleButton.IsVisible = device;
-        var connected = Device.FindCandidates().Count > 0;
+        var connected = Device.FindCandidatesCached().Count > 0;
         if (device)
         {
             // Device View is the signature surface: a header row above the
@@ -732,6 +824,23 @@ public partial class MainWindow : Window
         }
         else RebuildRows();
         RefreshIssues();
+    }
+
+    // The "refactor": NOT an incremental diff engine. Device View still rebuilds
+    // from truth on every edit (small profiles, blur-triggered commits — a diff
+    // would only add stale-UI and focus bugs). What was missing is focus: after
+    // a rebuild the control the user just used is gone, so keyboard/switch users
+    // were dropped. Rebuild, then refocus the same cell's replacement control.
+    // Editing an input can move its mapping to another zone, so follow it there.
+    void RebuildDeviceAfterEdit(int row, int col)
+    {
+        if (col >= 2 && _file is not null) // an input cell: its zone follows the new value
+            _selectedZone = ZoneOf(_file.GetCell(row, col));
+        BuildDeviceView();
+        BuildZoneDetail();
+        RefreshIssues();
+        if (_cellBorders.TryGetValue($"{(char)('A' + col)}{row}", out var border))
+        { border.BringIntoView(); (border.Child as Control)?.Focus(); }
     }
 
     void BuildDeviceView()
@@ -1086,7 +1195,7 @@ public partial class MainWindow : Window
                 var mappingCard = new Border
                 {
                     BorderThickness = new Avalonia.Thickness(1),
-                    CornerRadius = new Avalonia.CornerRadius(10),
+                    CornerRadius = new Avalonia.CornerRadius(6),
                     Padding = new Avalonia.Thickness(14),
                     Child = body,
                 };
@@ -1110,8 +1219,9 @@ public partial class MainWindow : Window
                 _file.SetCell(newRow, 2, zone.DefaultInput);
                 BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                 // Take the user to the mapping they just created (mirrors AddRow in List View).
+                // The new input cell is a ComboBox (TokenField), so focus it as a Control.
                 if (_cellBorders.TryGetValue($"C{newRow}", out var newBorder))
-                { newBorder.BringIntoView(); (newBorder.Child as AutoCompleteBox)?.Focus(); }
+                { newBorder.BringIntoView(); (newBorder.Child as Control)?.Focus(); }
             };
             ZoneDetailPanel.Children.Add(add);
         }
@@ -1447,8 +1557,7 @@ public partial class MainWindow : Window
     void AddRow()
     {
         if (_file is null || CurrentSheet is null) { Status("Open or create a profile first."); return; }
-        int newRow = _file.AddBindingRow(CurrentSheet);
-        _file.Reparse();
+        int newRow = _file.AddBindingRow(CurrentSheet); // already reparses
         if (DeviceContainer.IsVisible)
         {
             _selectedZone = "unset"; // the new row has no input yet; take the user to it
@@ -1651,10 +1760,21 @@ public partial class MainWindow : Window
             if (combo.SelectedItem is string s && _file != null && s != _file.GetCell(b.Row, 1))
             {
                 _file.SetCell(b.Row, 1, s);
-                BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                RebuildDeviceAfterEdit(b.Row, 1);
             }
         };
-        return combo;
+        // Register the function cell like the input/output fields so a function
+        // error (bad name, too many params) can be highlighted and focused here
+        // too — without the wrapper, B{row} lives nowhere in _cellBorders.
+        var wrapper = new Border
+        {
+            Child = combo,
+            BorderThickness = new Avalonia.Thickness(2),
+            BorderBrush = Brushes.Transparent,
+            CornerRadius = new Avalonia.CornerRadius(5),
+        };
+        _cellBorders[$"B{b.Row}"] = wrapper;
+        return wrapper;
     }
 
     // The item that reveals a free-text box at the very bottom of a Device View
@@ -1708,7 +1828,7 @@ public partial class MainWindow : Window
                 if (ReferenceEquals(s, TypeYourOwn)) { Dispatcher.UIThread.Post(ShowTyping); return; }
                 if (s == _file.GetCell(row, col)) return;
                 _file.SetCell(row, col, s);
-                BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                RebuildDeviceAfterEdit(row, col);
             };
             wrapper.Child = combo;
         }
@@ -1728,8 +1848,8 @@ public partial class MainWindow : Window
                 if (_file is null) return;
                 var v = (box.Text ?? "").Trim();
                 if (v.Length == 0) { ShowCombo(); return; } // empty = cancel, back to the list
-                if (v != _file.GetCell(row, col)) { _file.SetCell(row, col, v); }
-                BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                if (v != _file.GetCell(row, col)) _file.SetCell(row, col, v);
+                RebuildDeviceAfterEdit(row, col);
             }
             box.LostFocus += (_, _) => Commit();
             box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
@@ -1799,6 +1919,11 @@ public partial class MainWindow : Window
         BindBrush(text, TextBlock.ForegroundProperty, token);
         ProblemsToggle.Content = new StackPanel
         { Orientation = Orientation.Horizontal, Spacing = 8, Children = { Glyph(iconKey, token), text } };
+        // The visible label carries the live count ("2 errors"); mirror it to the
+        // screen-reader name so it never reads a stale "show or hide" while the
+        // eye sees a number. The glyph+text content itself isn't announced.
+        AutomationProperties.SetName(ProblemsToggle,
+            $"{label}. {(_problemsExpanded ? "Hides" : "Shows")} the list of problems.");
         FixFirstButton.IsVisible = _problemsExpanded && errors > 0;
     }
 

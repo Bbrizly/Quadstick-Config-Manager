@@ -5,44 +5,50 @@ public static class Palette
 {
     // Single source of truth. Keys match the DynamicResource names used in
     // App.axaml.cs (Theme.Build) and in styles.
+    // "Instrument panel" palette: cool graphite surfaces + hairline borders,
+    // not the warm-cream/soft-shadow default. Blue stays the accent hue
+    // (existing users already read blue as "select/primary") but deepens to
+    // a less generic instrument blue.
     public static readonly IReadOnlyDictionary<string, string> Light = new Dictionary<string, string>
     {
-        ["AppBackground"] = "#F6F5F2",
+        ["AppBackground"] = "#E9EBED",
         ["Surface"]       = "#FFFFFF",
-        ["SurfaceSubtle"] = "#FBFAF8",
-        ["SurfaceBorder"] = "#D8D6D2",
-        ["TextPrimary"]   = "#1F1F1F",
-        ["TextSecondary"] = "#565656",
-        ["Accent"]        = "#0F6CBD",
-        ["AccentText"]    = "#0B5CA3",
+        ["SurfaceSubtle"] = "#F2F3F5",
+        ["SurfaceBorder"] = "#C6CACF",
+        ["TextPrimary"]   = "#16191C",
+        ["TextSecondary"] = "#4E545B",
+        ["Accent"]        = "#0B4F8A",
+        ["AccentText"]    = "#084A80",
         ["OnAccent"]      = "#FFFFFF",
-        ["Error"]         = "#B3261E",
-        ["Success"]       = "#146C2E",
-        ["Warning"]       = "#8A5000",
-        ["Focus"]         = "#1348A6",
-        ["OutputTint"]    = "#FBF3D6",
-        ["FunctionTint"]  = "#F9E1E8",
-        ["InputTint"]     = "#DCEBFB",
+        ["Error"]         = "#A6291F",
+        ["Success"]       = "#0F6B34",
+        ["Warning"]       = "#7A4B00",
+        // Distinct from Accent on purpose: a focus ring that matches an
+        // accent-filled button's own fill/border is invisible on that button.
+        ["Focus"]         = "#1E6FD1",
+        ["OutputTint"]    = "#F3E2AE",
+        ["FunctionTint"]  = "#F6DCE4",
+        ["InputTint"]     = "#D3E6F5",
     };
 
     public static readonly IReadOnlyDictionary<string, string> Dark = new Dictionary<string, string>
     {
-        ["AppBackground"] = "#1B1B1A",
-        ["Surface"]       = "#262625",
-        ["SurfaceSubtle"] = "#2E2E2C",
-        ["SurfaceBorder"] = "#43423F",
-        ["TextPrimary"]   = "#F2F1EE",
-        ["TextSecondary"] = "#BCBAB5",
-        ["Accent"]        = "#4CA0EA",
-        ["AccentText"]    = "#8FC3F5",
-        ["OnAccent"]      = "#0B1E30",
-        ["Error"]         = "#F2B8B5",
-        ["Success"]       = "#7DD693",
-        ["Warning"]       = "#E6C36B",
-        ["Focus"]         = "#8FC3F5",
-        ["OutputTint"]    = "#3A3320",
-        ["FunctionTint"]  = "#3A2630",
-        ["InputTint"]     = "#22303F",
+        ["AppBackground"] = "#17191B",
+        ["Surface"]       = "#202224",
+        ["SurfaceSubtle"] = "#26282B",
+        ["SurfaceBorder"] = "#3C3F43",
+        ["TextPrimary"]   = "#EEF0F2",
+        ["TextSecondary"] = "#AEB3B8",
+        ["Accent"]        = "#4FA8E0",
+        ["AccentText"]    = "#7CC0EE",
+        ["OnAccent"]      = "#062338",
+        ["Error"]         = "#F2B4B0",
+        ["Success"]       = "#7FDE9B",
+        ["Warning"]       = "#E8C36A",
+        ["Focus"]         = "#7CC0EE",
+        ["OutputTint"]    = "#3C3420",
+        ["FunctionTint"]  = "#3A2530",
+        ["InputTint"]     = "#1E2F3F",
     };
 
     // (foreground token, background token, minimum ratio).
