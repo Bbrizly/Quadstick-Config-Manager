@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: write   # the release job needs to create the GitHub Release
 
 jobs:
   test:
@@ -26,35 +26,76 @@ jobs:
           dotnet-version: "8.0.x"
       - run: dotnet test QuadStick.sln --nologo
 
+  # Build a self-contained download per platform. Only runs for v* tags.
+  # Windows/Linux ship one compressed single-file binary; macOS ships a proper
+  # .app bundle (built by scripts/make-macos-app.sh, same as `make package`).
   package:
-    name: Package ${{ matrix.rid }}
+    name: Package ${{ matrix.label }}
     needs: test
     if: startsWith(github.ref, 'refs/tags/v')
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - rid: win-x64
-            os: windows-latest
-          - rid: osx-arm64
-            os: macos-latest
-          - rid: osx-x64
-            os: macos-latest
+          - { os: windows-latest, rid: win-x64,   label: Windows-x64,        kind: windows }
+          - { os: macos-latest,   rid: osx-arm64, label: macOS-AppleSilicon, kind: macos   }
+          - { os: macos-latest,   rid: osx-x64,   label: macOS-Intel,        kind: macos   }
+          - { os: ubuntu-latest,  rid: linux-x64, label: Linux-x64,          kind: linux   }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
-      - run: >
-          dotnet publish src/QuadStick.App/QuadStick.App.csproj
-          -c Release -r ${{ matrix.rid }}
-          --self-contained true
-          -p:PublishSingleFile=true
-          -o publish/${{ matrix.rid }}
+
+      - name: Version from tag
+        shell: bash
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"   # v1.2.3 -> 1.2.3
+
+      - name: Publish
+        shell: bash
+        run: |
+          # macOS bundles the plain self-contained folder inside the .app;
+          # Windows/Linux collapse to one compressed single file.
+          EXTRA=""
+          [ "${{ matrix.kind }}" = "macos" ] || \
+            EXTRA="-p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true"
+          dotnet publish src/QuadStick.App/QuadStick.App.csproj \
+            -c Release -r ${{ matrix.rid }} --self-contained true \
+            -p:Version="$VERSION" $EXTRA -o publish --nologo
+
+      - name: Package (Windows)
+        if: matrix.kind == 'windows'
+        shell: pwsh
+        run: |
+          Remove-Item publish/*.pdb -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Compress-Archive publish/* "dist/QuadStickConfigManager-${{ matrix.label }}.zip"
+
+      - name: Package (macOS)
+        if: matrix.kind == 'macos'
+        shell: bash
+        run: |
+          mkdir -p dist
+          scripts/make-macos-app.sh publish "$VERSION" "QuadStick Config Manager.app"
+          # ditto is the Mac-correct zip: it keeps the bundle bit, symlinks and
+          # the executable permission a plain `zip` would flatten.
+          ditto -c -k --keepParent "QuadStick Config Manager.app" \
+            "dist/QuadStickConfigManager-${{ matrix.label }}.zip"
+
+      - name: Package (Linux)
+        if: matrix.kind == 'linux'
+        shell: bash
+        run: |
+          mkdir -p dist
+          rm -f publish/*.pdb
+          tar -C publish -czf "dist/QuadStickConfigManager-${{ matrix.label }}.tar.gz" .
+
       - uses: actions/upload-artifact@v4
         with:
-          name: QuadStickConfigManager-${{ matrix.rid }}
-          path: publish/${{ matrix.rid }}
+          name: ${{ matrix.label }}
+          path: dist/*
+          if-no-files-found: error
 
   release:
     name: Release
@@ -64,10 +105,28 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          path: artifacts
-      - run: |
-          cd artifacts
-          for d in */; do (cd "$d" && zip -r "../${d%/}.zip" .); done
+          path: dist
+          merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/*.zip
+          name: QuadStick Config Manager ${{ github.ref_name }}
+          files: dist/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          body: |
+            Download the file for your computer, unzip, and run. No installer, works offline (except Sheets import).
+
+            | File | Computer |
+            |------|----------|
+            | `QuadStickConfigManager-Windows-x64.zip` | Windows 10/11, 64-bit |
+            | `QuadStickConfigManager-macOS-AppleSilicon.zip` | Mac with Apple Silicon (M1/M2/M3/M4) |
+            | `QuadStickConfigManager-macOS-Intel.zip` | Intel Mac |
+            | `QuadStickConfigManager-Linux-x64.tar.gz` | Linux, 64-bit |
+
+            **Windows:** SmartScreen may warn on first launch (the app isn't code-signed) — click **More info -> Run anyway**.
+
+            **macOS:** the app isn't notarized yet, so the first launch needs **right-click the app -> Open -> Open**. If macOS says it "is damaged", run this in Terminal, then open it:
+            ```
+            xattr -dr com.apple.quarantine "/Applications/QuadStick Config Manager.app"
+            ```

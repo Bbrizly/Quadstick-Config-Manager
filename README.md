@@ -33,13 +33,16 @@ Big buttons, keyboard shortcuts, screen reader labels — the usual accessibilit
 
 | File | Computer |
 |------|----------|
-| `QuadStickConfigManager-win-x64.zip` | Windows 64-bit |
-| `QuadStickConfigManager-osx-arm64.zip` | Mac, Apple Silicon |
-| `QuadStickConfigManager-osx-x64.zip` | Intel Mac |
+| `QuadStickConfigManager-Windows-x64.zip` | Windows 10/11, 64-bit |
+| `QuadStickConfigManager-macOS-AppleSilicon.zip` | Mac, Apple Silicon (M1/M2/M3/M4) |
+| `QuadStickConfigManager-macOS-Intel.zip` | Intel Mac |
+| `QuadStickConfigManager-Linux-x64.tar.gz` | Linux, 64-bit |
 
 Unzip and run. No installer. Works offline except Sheets import.
 
-**Mac:** not notarized yet. Right-click → Open → Open again the first time.
+**Windows:** SmartScreen may warn on first launch (not code-signed) — More info → Run anyway.
+
+**Mac:** not notarized yet. Right-click → Open → Open the first time. If it says "is damaged", run `xattr -dr com.apple.quarantine "/Applications/QuadStick Config Manager.app"` then open it.
 
 ## Build it yourself
 
