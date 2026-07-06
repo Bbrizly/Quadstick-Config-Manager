@@ -49,12 +49,13 @@ Unzip and run. No installer. Works offline except Sheets import.
 Need [.NET 8](https://dotnet.microsoft.com/download/dotnet/8.0).
 
 ```bash
-make test       # run tests
-make run        # launch the app
-make package    # zips in dist/
-make release    # test + package, do this before tagging
-make tag        # tags v1.0.0
+make test                    # run tests
+make run                     # launch the app
+make package                 # build the macOS app locally to test it
+make release VERSION=1.2.3   # tag + push; CI builds and publishes every download
 ```
+
+To ship a version: `make release VERSION=1.2.3` (or just push a `vX.Y.Z` tag). GitHub Actions runs the tests, builds the Windows, macOS, and Linux downloads, and publishes the GitHub Release automatically. Nothing else to do.
 
 Without Make:
 
@@ -85,7 +86,7 @@ docs/FORMAT.md         CSV format notes
 
 ## Tests
 
-Rules come from Fred's validation endpoint, his converter code, and the [user manual](https://www.quadstick.com/online-user-manual). The test corpus is real community profiles. CI runs on every push; pushing a `v*` tag builds release zips.
+Rules come from Fred's validation endpoint, his converter code, and the [user manual](https://www.quadstick.com/online-user-manual). The test corpus is real community profiles. CI runs on every push; pushing a `v*` tag builds and publishes the downloads.
 
 ## License
 

@@ -1,5 +1,8 @@
 name: CI
 
+# Tests run on every push and PR. Pushing a version tag (vX.Y.Z) additionally
+# builds a download for each platform and publishes a GitHub Release — the tag
+# is the only thing you create; everything below is automatic.
 on:
   push:
     branches: [main]
@@ -12,13 +15,15 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Least privilege by default; only the release job can write to the repo.
 permissions:
-  contents: write   # the release job needs to create the GitHub Release
+  contents: read
 
 jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -26,13 +31,15 @@ jobs:
           dotnet-version: "8.0.x"
       - run: dotnet test QuadStick.sln --nologo
 
-  # Build a self-contained download per platform. Only runs for v* tags.
+  # One self-contained download per platform, built only for v* tags.
   # Windows/Linux ship one compressed single-file binary; macOS ships a proper
-  # .app bundle (built by scripts/make-macos-app.sh, same as `make package`).
+  # .app bundle via scripts/make-macos-app.sh (the same script `make package`
+  # uses, so local and release builds are identical).
   package:
     name: Package ${{ matrix.label }}
     needs: test
     if: startsWith(github.ref, 'refs/tags/v')
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -55,8 +62,8 @@ jobs:
       - name: Publish
         shell: bash
         run: |
-          # macOS bundles the plain self-contained folder inside the .app;
-          # Windows/Linux collapse to one compressed single file.
+          # macOS puts the plain self-contained folder inside the .app; the
+          # other platforms collapse to one compressed single file.
           EXTRA=""
           [ "${{ matrix.kind }}" = "macos" ] || \
             EXTRA="-p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true"
@@ -78,8 +85,8 @@ jobs:
         run: |
           mkdir -p dist
           scripts/make-macos-app.sh publish "$VERSION" "QuadStick Config Manager.app"
-          # ditto is the Mac-correct zip: it keeps the bundle bit, symlinks and
-          # the executable permission a plain `zip` would flatten.
+          # ditto is the Mac-correct zip: keeps the bundle bit, symlinks and the
+          # executable permission a plain `zip` would flatten.
           ditto -c -k --keepParent "QuadStick Config Manager.app" \
             "dist/QuadStickConfigManager-${{ matrix.label }}.zip"
 
@@ -102,6 +109,9 @@ jobs:
     needs: package
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write   # create the release and upload the downloads
     steps:
       - uses: actions/download-artifact@v4
         with:
