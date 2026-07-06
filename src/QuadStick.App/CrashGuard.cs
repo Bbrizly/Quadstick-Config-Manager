@@ -9,7 +9,11 @@ namespace QuadStick.App;
 // afternoon of mappings to a bug, and must never see the app just vanish.
 public static class CrashGuard
 {
-    public static string RescueDir => Path.Combine(
+    // Test seam, same pattern as Settings.Load(path): tests point this at a
+    // temp directory instead of the real per-user ApplicationData folder.
+    public static string? RescueDirOverride { get; set; }
+
+    public static string RescueDir => RescueDirOverride ?? Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "QuadStickConfigManager", "rescue");
 
@@ -55,7 +59,11 @@ public static class CrashGuard
             {
                 var raw = Path.GetFileNameWithoutExtension(file.Document.CsvFileName ?? "profile");
                 var name = Sanitize(raw);
-                var path = Path.Combine(RescueDir, $"{name}-rescued-{DateTime.Now:yyyyMMdd-HHmmss}.csv");
+                // Ticks, not just a second-resolution timestamp: a burst of
+                // faulted background tasks can raise UnobservedTaskException
+                // more than once in the same second, and each one must keep
+                // its own snapshot rather than overwrite the last.
+                var path = Path.Combine(RescueDir, $"{name}-rescued-{DateTime.Now:yyyyMMdd-HHmmss}-{DateTime.Now.Ticks % 10000}.csv");
                 File.WriteAllText(path, file.ToCsvText());
             }
         }
@@ -89,10 +97,9 @@ public static class CrashGuard
 
     public static void DiscardRescues()
     {
-        try
-        {
-            foreach (var f in PendingRescues()) File.Delete(f);
-        }
-        catch { /* best effort */ }
+        // Per-file catch: one locked/undeletable file must not stop the rest
+        // from being cleaned up.
+        foreach (var f in PendingRescues())
+            try { File.Delete(f); } catch { /* best effort */ }
     }
 }

@@ -343,6 +343,7 @@ public partial class MainWindow : Window
             {
                 OpenInEditor(ProfileFile.Load(File.ReadAllText(newest)), savePath: null);
                 if (_file is not null) _file.Dirty = true; // unsaved recovery: leaving must warn, not silently drop it
+                CrashGuard.DiscardRescues(); // now in the editor: the rescue files on disk are spent, don't re-offer them forever
                 Status("Recovered profile opened. Save it to keep it.", StatusKind.Warning);
                 RescuePanel.IsVisible = false;
             }

@@ -45,6 +45,18 @@ public class CorpusTests
         var twice = Csv.Write(Csv.Parse(once));
         Assert.Equal(once, twice);
     }
+
+    [Fact]
+    public void Csv_quotes_a_bare_carriage_return_so_it_round_trips()
+    {
+        // A lone '\r' (no '\n') used to slip out unquoted, corrupting the
+        // written CSV's row structure for any reader that treats '\r' as a
+        // row break on its own (old Mac line endings).
+        var grid = new List<string[]> { new[] { "a\rb", "c" } };
+        var written = Csv.Write(grid);
+        var reparsed = Csv.Parse(written);
+        Assert.Equal("a\rb", reparsed[0][0]);
+    }
 }
 
 public class ValidatorGoldenTests
