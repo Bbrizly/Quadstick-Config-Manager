@@ -29,9 +29,14 @@ public sealed class ProfileFile
     readonly List<List<string[]>> _undo = new();
     const int MaxUndo = 200;
 
+    // Bumped on every mutation so callers (e.g. autosave) can cheaply tell
+    // whether anything changed without diffing the whole grid.
+    public int Revision { get; private set; }
+
     void Snapshot()
     {
         Dirty = true;
+        Revision++;
         _undo.Add(Grid.Select(r => (string[])r.Clone()).ToList());
         if (_undo.Count > MaxUndo) _undo.RemoveAt(0);
     }
@@ -46,6 +51,7 @@ public sealed class ProfileFile
         Grid = _undo[^1];
         _undo.RemoveAt(_undo.Count - 1);
         Dirty = true; // undo AFTER a save diverges memory from disk again
+        Revision++;   // content changed; autosave should redraft
         Reparse();
         return true;
     }

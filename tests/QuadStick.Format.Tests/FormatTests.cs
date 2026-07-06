@@ -88,6 +88,30 @@ public class ValidatorGoldenTests
     }
 
     [Fact]
+    public void Invalid_input_points_at_its_real_column_not_always_C()
+    {
+        // "lip" (C, valid) then "bogus" (D, invalid): the issue must land on D4
+        // so Fix First and the highlight reach the bad input, not the first one.
+        var issues = All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,normal,lip,bogus\n");
+        Assert.Contains(issues, i => i.Severity == Severity.Error && i.Message.Contains("bogus") && i.Cell == "D4");
+    }
+
+    [Fact]
+    public void Decimal_function_params_are_accepted_regardless_of_OS_locale()
+    {
+        // On a comma-decimal culture, a current-culture parse would reject "2.5".
+        var prior = System.Globalization.CultureInfo.CurrentCulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentCulture =
+                System.Globalization.CultureInfo.GetCultureInfo("de-DE");
+            Assert.Empty(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,repeat 2.5,lip\n")
+                .Where(i => i.Severity == Severity.Error));
+        }
+        finally { System.Globalization.CultureInfo.CurrentCulture = prior; }
+    }
+
+    [Fact]
     public void Single_parameter_function_forms_are_legal_per_the_manual()
     {
         // "tap 500", "delay_on 500 1", "repeat 4": all documented usage.

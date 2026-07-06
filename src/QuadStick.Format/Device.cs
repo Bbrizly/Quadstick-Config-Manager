@@ -4,6 +4,23 @@ namespace QuadStick.Format;
 // Backup → write .qscm-tmp → read back → rename. default.csv needs explicit OK.
 public static class Device
 {
+    // Display-only wrapper. RefreshEditor and the Home cards call this many
+    // times per user action (save → refresh → undo …); a live scan each time
+    // enumerates every drive and stats default.csv on the UI thread, which a
+    // spun-down USB stick can stall on. A short TTL collapses the burst.
+    // ponytail: 3s cache, tune up if a freshly plugged device is slow to show
+    // on Home. Install always uses the live FindCandidates() below.
+    static List<string>? _cache;
+    static DateTime _cacheAtUtc;
+    public static List<string> FindCandidatesCached(TimeSpan? ttl = null)
+    {
+        if (_cache is not null && DateTime.UtcNow - _cacheAtUtc < (ttl ?? TimeSpan.FromSeconds(3)))
+            return _cache;
+        _cache = FindCandidates();
+        _cacheAtUtc = DateTime.UtcNow;
+        return _cache;
+    }
+
     public static List<string> FindCandidates()
     {
         var found = new List<string>();
@@ -97,8 +114,9 @@ public static class Device
         {
             // Whatever threw between the write and the successful move, never leave
             // a stray .qscm-tmp on the device. A successful File.Move already
-            // consumed it, so this is a no-op on the happy path.
-            if (File.Exists(tmp)) File.Delete(tmp);
+            // consumed it, so this is a no-op on the happy path. Best-effort: a
+            // failure to delete the temp must not mask the real install error.
+            try { if (File.Exists(tmp)) File.Delete(tmp); } catch { /* leave the stray temp */ }
         }
         return new InstallResult(target, backup);
     }

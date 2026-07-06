@@ -107,8 +107,12 @@ public static class Validator
             issues.Add(new Issue(Severity.Error, $"B{b.Row}",
                 $"\"{parts[0]}\" takes at most {arity.Max} parameter(s), found {args.Length}.",
                 "Remove the extra values."));
+        // The device stores parameters with a '.' decimal, independent of the
+        // user's OS locale; parse invariantly so "repeat 2.5" is not rejected
+        // just because the machine's culture uses a comma.
         foreach (var a in args)
-            if (!double.TryParse(a, out _))
+            if (!double.TryParse(a, System.Globalization.NumberStyles.Float,
+                                  System.Globalization.CultureInfo.InvariantCulture, out _))
                 issues.Add(new Issue(Severity.Error, $"B{b.Row}",
                     $"\"{a}\" is not a number. Parameters to \"{parts[0]}\" must be numeric.",
                     "Replace it with a number, e.g. \"repeat 4\"."));
@@ -116,10 +120,16 @@ public static class Validator
 
     static void ValidateInputs(Binding b, List<Issue> issues)
     {
-        foreach (var input in b.Inputs)
-            if (!Vocab.Inputs.Contains(input))
-                issues.Add(new Issue(Severity.Error, $"C{b.Row}",
-                    $"\"{input}\" is not a documented input name.",
+        // Point the issue at the input's REAL column (C..J), not always C, so
+        // Fix First and the cell highlight land on the offending input instead
+        // of the first one when the bad token sits in a later column.
+        for (int i = 0; i < b.Inputs.Count; i++)
+            if (!Vocab.Inputs.Contains(b.Inputs[i]))
+            {
+                int col = i < b.InputCols.Count ? b.InputCols[i] : 2;
+                issues.Add(new Issue(Severity.Error, $"{(char)('A' + col)}{b.Row}",
+                    $"\"{b.Inputs[i]}\" is not a documented input name.",
                     "Pick an input from the Inputs dropdown list, e.g. \"mp_left_sip\" or \"lip\"."));
+            }
     }
 }

@@ -49,7 +49,7 @@ public static class Csv
             {
                 if (i > 0) sb.Append(',');
                 var f = row[i] ?? "";
-                if (f.Contains(',') || f.Contains('"') || f.Contains('\n'))
+                if (f.Contains(',') || f.Contains('"') || f.Contains('\n') || f.Contains('\r'))
                     sb.Append('"').Append(f.Replace("\"", "\"\"")).Append('"');
                 else
                     sb.Append(f);
