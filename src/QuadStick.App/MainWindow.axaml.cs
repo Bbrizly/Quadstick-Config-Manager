@@ -1236,6 +1236,11 @@ public partial class MainWindow : Window
     public void SetModelForPreview(int index)
     { ModelPicker.SelectedIndex = index; }
 
+    public void SetDeviceViewForPreview(bool device) => SetDeviceView(device);
+
+    public void ShowProblemsForPreview()
+    { if (!_problemsExpanded) ToggleProblems(); }
+
     // Async click/shortcut handlers are fire-and-forget; an unhandled disk
     // error would otherwise tear down the whole app.
     async Task GuardedAsync(Func<Task> action)

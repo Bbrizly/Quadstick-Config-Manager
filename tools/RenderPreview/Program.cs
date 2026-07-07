@@ -37,6 +37,8 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
         f.SetCell(4, 1, "blink");        // unknown function
         f.SetCell(5, 2, "left_sip");     // unknown input
         w.LoadProfile(f);
+        w.SetDeviceViewForPreview(false); // list view shows the bad cells
+        w.ShowProblemsForPreview();       // and the plain English fix
     });
 
     Capture($"{suffix}-4-new-from-template", w =>
