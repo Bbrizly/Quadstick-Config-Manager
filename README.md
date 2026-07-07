@@ -1,10 +1,20 @@
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/QSLogo-dark.png">
+  <img src="docs/QSLogo.png" alt="QuadStick Config Manager logo" width="108">
+</picture>
+
 # QuadStick Config Manager
+
+**A free desktop app for editing and installing [QuadStick](https://www.quadstick.com/) game profiles.**<br>
+Windows, macOS, and Linux. Not affiliated with QuadStick or Fred Davison.
 
 [![CI](https://github.com/Bbrizly/Quadstick-Config-Manager/actions/workflows/build.yml/badge.svg)](https://github.com/Bbrizly/Quadstick-Config-Manager/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/Bbrizly/Quadstick-Config-Manager?label=download)](https://github.com/Bbrizly/Quadstick-Config-Manager/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-A free desktop app for editing and installing [QuadStick](https://www.quadstick.com/) game profiles. Runs on Windows, macOS, and Linux. Not affiliated with QuadStick or Fred Davison.
+</div>
 
 ![Editing a profile on a picture of the hardware](docs/screenshot-device-view.png)
 
