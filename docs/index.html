@@ -78,6 +78,11 @@
     border-bottom:1px solid transparent;transition:border-color .3s var(--ease)}
   header.nav.scrolled{border-bottom-color:var(--line)}
   .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .corner-btn{position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:30;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14px;color:var(--ink-soft);text-decoration:none;border:1px solid var(--line);border-radius:999px;background:var(--paper-2);transition:color .2s var(--ease),background .2s var(--ease),border-color .2s var(--ease)}
+  .corner-btn:hover{color:var(--ink);background:var(--paper);border-color:var(--ink-faint)}
+  .corner-btn svg{width:14px;height:14px;flex:none}
+  /* keep the centered brand clear of the corner button until the viewport is wide enough for its own margin */
+  @media(max-width:1223px){.nav-inner{padding-left:98px}}
   .brand{display:flex;align-items:center;gap:11px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:17px;letter-spacing:-.01em}
   .brand .glyph{width:30px;height:30px;flex:none}
   .nav-links{display:flex;align-items:center;gap:8px}
@@ -221,6 +226,10 @@
 
 <!-- ===== NAV ===== -->
 <header class="nav" id="nav">
+  <a class="corner-btn" href="https://bbrizly.github.io/" aria-label="Bassam's site, bbrizly.github.io">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    Bassam
+  </a>
   <div class="wrap nav-inner">
     <a class="brand" href="#top" aria-label="QuadStick Config Manager home">
       <svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true">

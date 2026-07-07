@@ -21,6 +21,9 @@ cp -R "$PUBLISH"/* "$APP/Contents/MacOS/"
 rm -f "$APP/Contents/MacOS/"*.pdb
 chmod +x "$APP/Contents/MacOS/$EXE"
 
+# Dock / Finder icon. Same AppIcon the running window uses, in macOS .icns form.
+cp "$(dirname "$0")/../src/QuadStick.App/Assets/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -30,6 +33,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundleDisplayName</key><string>QuadStick Config Manager</string>
   <key>CFBundleIdentifier</key><string>com.bbrizly.quadstickconfigmanager</string>
   <key>CFBundleExecutable</key><string>$EXE</string>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
   <key>CFBundleShortVersionString</key><string>$SHORT</string>
@@ -40,7 +44,5 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </dict>
 </plist>
 PLIST
-# ponytail: no .icns yet — drop Contents/Resources/app.icns and a CFBundleIconFile
-# key here to brand the Dock icon once a logo exists.
 
 echo "Built $APP (v$VERSION)"

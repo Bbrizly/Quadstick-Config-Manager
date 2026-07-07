@@ -14,6 +14,8 @@ Windows, macOS, and Linux. Not affiliated with QuadStick or Fred Davison.
 [![Release](https://img.shields.io/github/v/release/Bbrizly/Quadstick-Config-Manager?label=download)](https://github.com/Bbrizly/Quadstick-Config-Manager/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
+[Website](https://bbrizly.github.io/Quadstick-Config-Manager/) &middot; [Download](https://github.com/Bbrizly/Quadstick-Config-Manager/releases) &middot; [QuadStick.com](https://www.quadstick.com/) &middot; [User manual](https://www.quadstick.com/online-user-manual)
+
 </div>
 
 ![Editing a profile on a picture of the hardware](docs/screenshot-device-view.png)
