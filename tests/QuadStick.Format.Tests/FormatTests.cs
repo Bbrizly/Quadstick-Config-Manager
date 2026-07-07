@@ -68,13 +68,20 @@ public class ValidatorGoldenTests
     }
 
     [Fact]
-    public void Wrong_A1_keyword_is_an_error_but_containing_Profile_is_legal()
+    public void A1_must_START_with_the_sheet_keyword_because_the_firmware_dispatches_on_the_line_start()
     {
-        // QMP's actual rule: A1 must CONTAIN "Profile" or equal Preferences/Infrared.
+        // QMP's validator accepts A1 that merely CONTAINS "Profile", but the
+        // firmware (Configuration.c, 1476) strncmp's the START of the line,
+        // case sensitively, and silently skips a sheet that fails.
         var bad = All("My Cool Setup,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n");
         Assert.Contains(bad, i => i.Severity == Severity.Error && i.Cell == "A1");
 
-        var good = All("My Cool Profile,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n");
+        // Contains-but-not-starts: parsed as a sheet (QMP would), but errored
+        // so it can never be installed in a form the device throws away.
+        var contains = All("My Cool Profile,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n");
+        Assert.Contains(contains, i => i.Severity == Severity.Error && i.Cell == "A1" && i.Message.Contains("START"));
+
+        var good = All("Profile Name,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n");
         Assert.Empty(good.Where(i => i.Severity == Severity.Error));
     }
 

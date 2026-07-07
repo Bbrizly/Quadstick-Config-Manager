@@ -48,8 +48,40 @@ public static class Parser
             int start = sectionStarts[s];
             int end = s + 1 < sectionStarts.Count ? sectionStarts[s + 1] : grid.Count;
             doc.Sheets.Add(ParseSheet(grid, start, end, isFirst: s == 0, issues));
+
+            // The device dispatches sheets by the START of the raw A1 line,
+            // case sensitively (Configuration.c). "GTA Profile" or "profile"
+            // passes the converters but the device skips the whole sheet.
+            var rawA1 = Cell(grid, start, 0);
+            if (!Vocab.FirmwareAcceptsSheetKeyword(rawA1))
+                issues.Add(new Issue(Severity.Error, $"A{start + 1}",
+                    $"\"{rawA1}\" does not START with \"Profile\", \"Preferences\" or \"Infrared\" (capitalized exactly), so the device skips this whole sheet.",
+                    "Begin the cell with the sheet keyword, e.g. \"Profile Name\"."));
         }
+
+        CheckDeviceLineLimits(grid, issues);
         return (doc, issues);
+    }
+
+    // Two hard limits in the device's reader (Configuration.c, firmware 1476):
+    // a line buffer of 1024 bytes, and a 64-char cap per keyword. A longer
+    // line is split mid-row and everything after it misparses; a longer cell
+    // in the data columns kills its row.
+    static void CheckDeviceLineLimits(List<string[]> grid, List<Issue> issues)
+    {
+        for (int r = 0; r < grid.Count; r++)
+        {
+            var line = Csv.Write(new[] { grid[r] });
+            if (System.Text.Encoding.UTF8.GetByteCount(line) > 1023)
+                issues.Add(new Issue(Severity.Error, $"A{r + 1}",
+                    $"Row {r + 1} is longer than 1023 characters including comments. The device reads lines into a 1024-byte buffer and would misread this row and every row after it.",
+                    "Shorten the row's comments."));
+            for (int c = 0; c < 10 && c < grid[r].Length; c++)
+                if (grid[r][c].Length > 64 && !(r == 0 && grid[r].Length > 0 && grid[r][0].StartsWith("QuadStick", StringComparison.Ordinal)))
+                    issues.Add(new Issue(Severity.Error, $"{(char)('A' + c)}{r + 1}",
+                        $"This cell is longer than 64 characters, the device's keyword limit. The device gives up on the row here.",
+                        "Shorten the cell."));
+        }
     }
 
     static bool IsHeaderRow(List<string[]> grid, int r)
@@ -87,11 +119,11 @@ public static class Parser
             var output = Cell(grid, r, 0).Trim();
             if (terminated)
             {
-                // Blank lines separate sheets on the device, so a row after a
-                // blank could be read as the start of a new sheet and scramble
-                // the modes. Both official converters drop such rows entirely.
+                // A blank line ends the mode on the device; rows after it are
+                // ignored (or, if one starts with a sheet keyword, read as a
+                // phantom sheet). Both official converters drop such rows.
                 issues.Add(new Issue(Severity.Error, $"A{r + 1}",
-                    $"Row {r + 1} appears after a blank row. The device could read it as the start of a new sheet and scramble the modes.",
+                    $"Row {r + 1} appears after a blank row, where the device stops reading this mode. The row would be silently ignored.",
                     "Move it above the first blank row or delete it."));
                 continue;
             }
