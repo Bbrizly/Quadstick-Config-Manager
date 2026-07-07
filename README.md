@@ -1,93 +1,92 @@
 # QuadStick Config Manager
 
 [![CI](https://github.com/Bbrizly/Quadstick-Config-Manager/actions/workflows/build.yml/badge.svg)](https://github.com/Bbrizly/Quadstick-Config-Manager/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/Bbrizly/Quadstick-Config-Manager?label=download)](https://github.com/Bbrizly/Quadstick-Config-Manager/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-Free desktop app for editing and installing [QuadStick](https://www.quadstick.com/) game profiles. Windows and macOS.
+A free desktop app for editing and installing [QuadStick](https://www.quadstick.com/) game profiles. Runs on Windows, macOS, and Linux. Not affiliated with QuadStick or Fred Davison.
 
-Not affiliated with QuadStick or Fred Davison.
+![Editing a profile on a picture of the hardware](docs/screenshot-device-view.png)
 
-![Profile editor](docs/screenshot-editor.png)
+## Why it exists
 
-## Why this exists
+A QuadStick keeps its settings in a CSV on its USB drive. The usual way to edit that is Google Sheets plus an export add-on, then copy the file over with QMP, a Windows-only tool. One bad cell can break a profile, and a broken `default.csv` can make the drive vanish until you do a physical reset.
 
-A QuadStick stores its settings in a CSV on the USB drive. Most people edit that in Google Sheets, export with an add-on, and copy the file over with **QMP** — which only runs on Windows. One bad cell can brick a profile. Mess up `default.csv` and the drive can disappear until you do a physical reset.
+This is a plain editor that catches those mistakes before anything reaches the device.
 
-This is a normal editor that catches mistakes before anything hits the device.
+## What it does
 
-## What you get
+- **Two ways to edit.** Map inputs on a picture of the hardware, or work in a spreadsheet view. Autocomplete knows the real input, output, and function names from Fred's validation data.
+- **Plain-English validation.** When something is wrong you get which cell, what is off, and how to fix it. Bad cells turn red. Errors block install.
+- **Safe install.** Backs up the old file, writes a temp copy, reads it back, then swaps it in. Overwriting `default.csv` always asks first.
+- **Import from Sheets.** Paste a Google Sheets link on the home screen to pull in a community profile.
+- **Built for access.** Big buttons, keyboard shortcuts, and screen reader labels throughout. Light and dark themes, following your system or set by hand.
 
-Edit profiles in a spreadsheet view or on a picture of the hardware. Autocomplete knows the real input, output, and function names from Fred's validation data.
-
-When something's wrong you get plain English: which cell, what's off, how to fix it. Red outline in the editor. Errors block install.
-
-Install backs up the old file, writes a temp copy, reads it back, then swaps it in. Paste a Google Sheets link on the home screen to import a community profile. Overwriting `default.csv` always asks first.
-
-Big buttons, keyboard shortcuts, screen reader labels — the usual accessibility stuff. Light and dark themes, chosen from the Appearance menu or following your system.
-
-![Validation errors](docs/screenshot-errors.png)
-![Validation errors, dark theme](docs/screenshot-errors-dark.png)
+![Spreadsheet view catching two bad cells, dark theme](docs/screenshot-errors-dark.png)
 
 ## Download
 
-[Releases](https://github.com/Bbrizly/Quadstick-Config-Manager/releases):
+Grab the latest build from [Releases](https://github.com/Bbrizly/Quadstick-Config-Manager/releases):
 
-| File | Computer |
-|------|----------|
+| File | For |
+|------|-----|
 | `QuadStickConfigManager-Windows-x64.zip` | Windows 10/11, 64-bit |
-| `QuadStickConfigManager-macOS-AppleSilicon.zip` | Mac, Apple Silicon (M1/M2/M3/M4) |
+| `QuadStickConfigManager-macOS-AppleSilicon.zip` | Mac, Apple Silicon (M1 to M4) |
 | `QuadStickConfigManager-macOS-Intel.zip` | Intel Mac |
 | `QuadStickConfigManager-Linux-x64.tar.gz` | Linux, 64-bit |
 
-Unzip and run. No installer. Works offline except Sheets import.
+Unzip and run. No installer. Works offline except for Sheets import.
 
-**Windows:** SmartScreen may warn on first launch (not code-signed) — More info → Run anyway.
+**Windows:** SmartScreen may warn on first launch (not code-signed). Click More info, then Run anyway.
 
-**Mac:** not notarized yet. Right-click → Open → Open the first time. If it says "is damaged", run `xattr -dr com.apple.quarantine "/Applications/QuadStick Config Manager.app"` then open it.
-
-## Build it yourself
-
-Need [.NET 8](https://dotnet.microsoft.com/download/dotnet/8.0).
+**Mac:** not notarized yet. Right-click, Open, then Open again the first time. If it says the app is damaged, run this once and reopen:
 
 ```bash
-make test                    # run tests
-make run                     # launch the app
-make package                 # build the macOS app locally to test it
-make release VERSION=1.2.3   # tag + push; CI builds and publishes every download
+xattr -dr com.apple.quarantine "/Applications/QuadStick Config Manager.app"
 ```
 
-To ship a version: `make release VERSION=1.2.3` (or just push a `vX.Y.Z` tag). GitHub Actions runs the tests, builds the Windows, macOS, and Linux downloads, and publishes the GitHub Release automatically. Nothing else to do.
+## Using it
 
-Without Make:
+The home screen lets you start a new profile, open a file, pick your library (`Documents/QuadStick Profiles`), or paste a Sheets link.
+
+The editor has a device view (a picture of the stick) and a list view (rows and columns). Fix anything red in the Problems panel before you install. Click a problem to copy it for a bug report.
+
+Save goes to your library or wherever you choose. Install needs the QuadStick plugged in; old files land in `~/QuadStickBackups`.
+
+Shortcuts: `Ctrl/Cmd+O` open, `S` save, `N` new, `Z` undo, `I` install, `D` switch views, `H` or `F1` for help.
+
+## Build from source
+
+Needs [.NET 8](https://dotnet.microsoft.com/download/dotnet/8.0).
+
+```bash
+make test                    # run the tests
+make run                     # launch the app
+make package                 # build the macOS app locally to smoke-test it
+make release VERSION=1.2.3   # tag and push; CI builds and publishes every download
+```
+
+Pushing a `vX.Y.Z` tag is the whole release process. GitHub Actions runs the tests, builds the Windows, macOS, and Linux downloads, and publishes the release. Without Make:
 
 ```bash
 dotnet test
 dotnet run --project src/QuadStick.App
 ```
 
-## Using it
-
-Home screen: new profile, open one from your library (`Documents/QuadStick Profiles`), pick a file on the device, or paste a Sheets link.
-
-Editor has two faces — device view (picture of the stick) and list view (rows and columns). Fix anything red in the Problems panel before you install. Click a problem to copy it for a bug report.
-
-Save goes to your library or wherever you pick. Install needs the QuadStick plugged in; old files land in `~/QuadStickBackups`.
-
-Ctrl/Cmd+O open, S save, N new, Z undo.
-
 ## Layout
 
 ```
 src/QuadStick.Format   parser, validator, USB install
 src/QuadStick.App      Avalonia UI
-tests/                 unit tests + real profile CSVs
+tests/                 unit tests and real profile CSVs
 tools/RenderPreview    screenshot helper (dev only)
-docs/FORMAT.md         CSV format notes
+docs/FORMAT.md         notes on the CSV format
 ```
 
-## Tests
-
-Rules come from Fred's validation endpoint, his converter code, and the [user manual](https://www.quadstick.com/online-user-manual). The test corpus is real community profiles. CI runs on every push; pushing a `v*` tag builds and publishes the downloads.
+Validation rules come from Fred's validation endpoint, his converter code, and the [user manual](https://www.quadstick.com/online-user-manual). The test corpus is real community profiles.
 
 ## License
 
-MIT.
+MIT. See [LICENSE](LICENSE).
+</content>
+</invoke>
