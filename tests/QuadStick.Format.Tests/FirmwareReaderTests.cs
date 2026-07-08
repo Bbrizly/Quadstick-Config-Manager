@@ -52,6 +52,32 @@ public class FirmwareReaderTests
         Assert.Contains(bad, i => i.Severity == Severity.Error && i.Message.Contains("not_an_input"));
     }
 
+    // A Preferences sheet is not a mode sheet: the value lives in column B,
+    // not C (Fred Davison, 2026-07-08). These guard that distinction.
+    const string PrefsHead =
+        "Profile Name,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n,,\n"
+        + "Preferences,,\n,,\nPreference,Value,Units,Description\n";
+
+    [Fact]
+    public void Preferences_sheet_value_in_column_B_is_clean()
+    {
+        // Real device prefs.csv rows: "mouse_speed,201". On a Preferences
+        // sheet column B is correct and must not warn.
+        var issues = All(PrefsHead + "mouse_speed,201\n");
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+        Assert.DoesNotContain(issues, i => i.Cell == "B9"); // the mouse_speed value row is clean
+    }
+
+    [Fact]
+    public void Preferences_sheet_value_misplaced_in_column_C_warns()
+    {
+        // The mode-sheet shape "name,,value" is wrong on a Preferences sheet.
+        var issues = All(PrefsHead + "mouse_speed,,201\n");
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning
+            && i.Cell.StartsWith('B') && i.Message.Contains("column B"));
+    }
+
     [Fact]
     public void Blank_function_is_a_warning_because_the_device_defaults_to_normal()
     {

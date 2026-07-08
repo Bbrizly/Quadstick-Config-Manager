@@ -14,10 +14,17 @@ public static class Validator
         int profileSheets = 0;
         foreach (var sheet in doc.Sheets)
         {
-            // Preferences and Infrared sheets carry name,value rows, not
-            // output/function/input bindings. Binding vocabulary does not
-            // apply to them; validating it would produce false errors on
-            // every profile with a Preferences tab.
+            // A Preferences sheet carries "name,value" rows with the value in
+            // column B (Fred Davison, 2026-07-08), unlike a mode-sheet
+            // preference override, which puts the value in column C. Validate
+            // it on its own rules rather than as bindings.
+            if (sheet.Type == SheetType.Preferences)
+            {
+                ValidatePreferencesSheet(sheet, issues);
+                continue;
+            }
+            // Infrared sheets carry IR codes, not bindings; skip them so their
+            // rows don't trip binding-vocabulary false errors.
             if (sheet.Type != SheetType.ProfileName) continue;
 
             // Device limits (Configuration.c): 16 profiles, 128 binding rows
@@ -84,6 +91,41 @@ public static class Validator
         issues.Add(new Issue(Severity.Warning, $"C{b.Row}",
             $"\"{b.Output}\" is a device setting but no value follows it, so the device sets it to 0.",
             "Put the value in column C."));
+    }
+
+    // A Preferences sheet (or a standalone prefs.csv) holds "name,value" rows:
+    // the preference name in column A and its value in column B (Fred Davison,
+    // 2026-07-08). This is the opposite of a mode-sheet preference override,
+    // where column B is skipped and the value lives in column C. Column C+ on a
+    // Preferences sheet is the human Units/Description annotation, not data.
+    static void ValidatePreferencesSheet(ModeSheet sheet, List<Issue> issues)
+    {
+        foreach (var b in sheet.Bindings)
+        {
+            if (b.Output.Length == 0) continue; // blank name sets nothing
+            var value = b.Function; // column B is the value here
+            var valueInC = b.InputCols.Count > 0 && b.InputCols[0] == 2 ? b.Inputs[0] : null;
+
+            if (value.Length == 0)
+            {
+                if (valueInC != null)
+                    issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+                        $"On a Preferences sheet the device reads \"{b.Output}\"'s value from column B, but B is empty and the value sits in column C. (A mode sheet uses column C; a Preferences sheet uses column B.)",
+                        $"Move the value into column B: \"{b.Output},{valueInC}\"."));
+                else
+                    issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+                        $"\"{b.Output}\" has no value in column B, so the device reads it as 0.",
+                        "Put the preference's value in column B."));
+                continue;
+            }
+
+            if (!long.TryParse(value, System.Globalization.NumberStyles.Integer,
+                               System.Globalization.CultureInfo.InvariantCulture, out _)
+                && !IsWordValuedPreference(b.Output))
+                issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+                    $"\"{value}\" in column B is the value of \"{b.Output}\" but is not a whole number.",
+                    "Most preferences take a whole number, e.g. \"50\"."));
+        }
     }
 
     // bluetooth_device_mode, bluetooth_connection_mode and

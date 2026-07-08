@@ -151,10 +151,15 @@ firmware-confirmed.
 
 A preference name in the output column WITHOUT increment/decrement is a
 per-mode preference override: the device skips the function column and
-reads the value from the third column (S6). Files in the wild also carry
-the value in the function column; 1476 would read those as 0, so the app
-warns. Whether newer firmware accepts the column-B form is an open
-question with Fred.
+reads the value from the third column (S6). This is column C, and it is
+specific to a mode sheet. A value in the function column (B) on a mode
+sheet is read as 0 by 1476, so the app warns.
+
+The column is different on a dedicated Preferences sheet: there the value
+is in column B, not C (Fred Davison, 2026-07-08). The two forms are not in
+conflict: a mode sheet uses C, a Preferences sheet uses B, because
+mode-specific preferences were bolted on later than the Preferences sheet.
+The app branches on sheet type (see `ValidatePreferencesSheet`).
 
 ## prefs.csv (S3, `qsflash.py`)
 
@@ -228,5 +233,7 @@ contains default.csv, with a manual folder picker as fallback.
    CURRENT firmware (mechanism confirmed in S6; PS4-era values postdate it).
 4. Multi-tab Sheets import: QMP converts every tab via xlsx export; this app
    currently imports the linked tab only and says so in-app.
-5. Preference-override rows with the value in column B instead of C: 1476
-   reads column C only; real files carry B. Ask Fred which is right today.
+5. ~~Preference value column B vs C~~ CLOSED 2026-07-08 (Fred): it depends
+   on the sheet. A Preferences sheet puts the value in column B; a mode-sheet
+   preference override puts it in column C (B is ignored there). The app now
+   branches on sheet type in `ValidatePreferencesSheet`.
