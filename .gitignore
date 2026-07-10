@@ -7,6 +7,8 @@ dist/
 docs/google_apps_script_projects/
 # Internal planning and design notes — kept locally, not published.
 docs/plans/
+# Local-only docs (e.g. the interactive architecture map). Not published.
+docs/local/
 .DS_Store
 .claude/
 .gstack/
