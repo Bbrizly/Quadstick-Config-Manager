@@ -119,10 +119,14 @@ public static class Validator
                 continue;
             }
 
+            // A value that isn't a number at all is an Error, matching the
+            // mode-sheet override path and ValidateFunction: the device's atoi
+            // reads it as 0, so the preference is simply wrong. (A number in the
+            // wrong form would be a Warning, but there's no such form here.)
             if (!long.TryParse(value, System.Globalization.NumberStyles.Integer,
                                System.Globalization.CultureInfo.InvariantCulture, out _)
                 && !IsWordValuedPreference(b.Output))
-                issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+                issues.Add(new Issue(Severity.Error, $"B{b.Row}",
                     $"\"{value}\" in column B is the value of \"{b.Output}\" but is not a whole number.",
                     "Most preferences take a whole number, e.g. \"50\"."));
         }

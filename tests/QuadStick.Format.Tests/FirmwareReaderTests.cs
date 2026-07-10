@@ -54,6 +54,8 @@ public class FirmwareReaderTests
 
     // A Preferences sheet is not a mode sheet: the value lives in column B,
     // not C (Fred Davison, 2026-07-08). These guard that distinction.
+    // Layout is load-bearing: the parser reads data from the sheet's 4th row,
+    // so the keyword, blank, and "Preference,Value,..." header must precede it.
     const string PrefsHead =
         "Profile Name,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n,,\n"
         + "Preferences,,\n,,\nPreference,Value,Units,Description\n";
@@ -76,6 +78,33 @@ public class FirmwareReaderTests
         Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
         Assert.Contains(issues, i => i.Severity == Severity.Warning
             && i.Cell.StartsWith('B') && i.Message.Contains("column B"));
+    }
+
+    [Fact]
+    public void Preferences_sheet_missing_value_warns_reads_as_zero()
+    {
+        var issues = All(PrefsHead + "mouse_speed,\n");
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning
+            && i.Cell == "B9" && i.Message.Contains("reads it as 0"));
+    }
+
+    [Fact]
+    public void Preferences_sheet_non_numeric_value_is_an_error()
+    {
+        // "not a number at all" is an Error here, same as a mode-sheet override.
+        var issues = All(PrefsHead + "mouse_speed,fast\n");
+        Assert.Contains(issues, i => i.Severity == Severity.Error
+            && i.Cell == "B9" && i.Message.Contains("whole number"));
+    }
+
+    [Fact]
+    public void Preferences_sheet_bluetooth_word_value_is_clean()
+    {
+        // bluetooth_* preferences take word values, so a non-number is fine.
+        var issues = All(PrefsHead + "bluetooth_device_mode,PS4\n");
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+        Assert.DoesNotContain(issues, i => i.Cell == "B9");
     }
 
     [Fact]
