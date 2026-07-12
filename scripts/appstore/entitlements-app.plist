@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Mac App Store requires the sandbox. -->
+  <key>com.apple.security.app-sandbox</key><true/>
+  <!-- .NET runs a JIT; without this the app crashes at launch in sandbox. -->
+  <key>com.apple.security.cs.allow-jit</key><true/>
+  <!-- User picks the QuadStick volume/CSV via the folder and file pickers. -->
+  <key>com.apple.security.files.user-selected.read-write</key><true/>
+</dict>
+</plist>

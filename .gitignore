@@ -12,3 +12,4 @@ docs/local/
 .DS_Store
 .claude/
 .gstack/
+scripts/appstore/embedded.provisionprofile
