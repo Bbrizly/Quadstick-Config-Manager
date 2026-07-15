@@ -1,0 +1,67 @@
+name: Windows Store package
+
+# Builds the .msix you upload to the Microsoft Store (Partner Center).
+# Run it by hand from the Actions tab (Run workflow) once you have reserved
+# the app name and pasted the two identity values into
+# packaging/windows/Package.appxmanifest. The Store signs the package, so no
+# code-signing certificate is needed here.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version, e.g. 1.0.0"
+        required: true
+        default: "1.0.0"
+
+permissions:
+  contents: read
+
+jobs:
+  msix:
+    name: Build MSIX
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      # Self-contained folder (not single-file): MSIX packs a directory tree.
+      - name: Publish
+        shell: pwsh
+        run: |
+          dotnet publish src/QuadStick.App/QuadStick.App.csproj `
+            -c Release -r win-x64 --self-contained true `
+            -p:Version="${{ inputs.version }}" -o staging/app --nologo
+          Remove-Item staging/app/*.pdb -ErrorAction SilentlyContinue
+
+      # Lay out the package root: manifest at top, code under app\, logos under Images\.
+      - name: Stage package
+        shell: pwsh
+        run: |
+          Copy-Item packaging/windows/Package.appxmanifest staging/AppxManifest.xml
+          Copy-Item packaging/windows/Images staging/Images -Recurse
+          # MSIX wants a four-part version; the tag gives three.
+          $xml = [xml](Get-Content staging/AppxManifest.xml)
+          $xml.Package.Identity.Version = "${{ inputs.version }}.0"
+          $xml.Save("$PWD/staging/AppxManifest.xml")
+          if ((Get-Content staging/AppxManifest.xml -Raw) -match 'REPLACE_WITH') {
+            throw "Package.appxmanifest still has placeholder identity values. Paste the Partner Center Name and Publisher first."
+          }
+
+      - name: Pack MSIX
+        shell: pwsh
+        run: |
+          $makeappx = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter makeappx.exe |
+            Where-Object { $_.FullName -match '\\x64\\' } |
+            Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $makeappx) { throw "makeappx.exe not found in the Windows SDK." }
+          New-Item -ItemType Directory -Force dist | Out-Null
+          & $makeappx.FullName pack /d staging /p "dist/QuadstickConfigManager-${{ inputs.version }}.msix" /o
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: msix
+          path: dist/*.msix
+          if-no-files-found: error
