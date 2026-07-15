@@ -206,16 +206,15 @@
                         AutomationProperties.Name="How device view works, and which parts your model has"/>
               </Grid>
             </Border>
-            <!-- The mappings panel owns the larger, right-hand share of the
-                 editor (like a split terminal): a selected part's mappings get
-                 the room to be full-width and readable. The device diagram on
-                 the left is sized to fit whole, with no scrolling. -->
-            <Grid ColumnDefinitions="1.05*,1.3*">
+            <!-- The device diagram owns the larger, left-hand share of the
+                 editor so its parts sit at a comfortable size. The mappings
+                 panel on the right stays readable through its minimum width. -->
+            <Grid ColumnDefinitions="1.2*,1*">
               <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                 <StackPanel x:Name="DeviceCanvas" Margin="14"/>
               </ScrollViewer>
               <Border Grid.Column="1" Background="{DynamicResource SurfaceSubtleBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                      BorderThickness="1,0,0,0" Padding="18" MinWidth="360">
+                      BorderThickness="1,0,0,0" Padding="18" MinWidth="340">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                   <StackPanel x:Name="ZoneDetailPanel" Spacing="14"/>
                 </ScrollViewer>
