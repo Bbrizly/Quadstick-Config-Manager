@@ -1195,6 +1195,7 @@ public partial class MainWindow : Window
                 body.Children.Add(Labeled("Press", TokenField(b.Row, 0, b.Output, OutputSuggestionsFor(CurrentSheet!),
                     TokenLabel, $"Game button pressed by {ShortInput(zone, b)}", OutputTint)));
                 body.Children.Add(Labeled("As", FunctionCombo(b, zone)));
+                body.Children.Add(Labeled("Note", NoteBox(b.Row, $"Note for this mapping. Saved in the file, ignored by the QuadStick")));
 
                 var mappingCard = new Border
                 {
@@ -1498,6 +1499,10 @@ public partial class MainWindow : Window
             p.Children.Add(addInput);
         }
 
+        var note = NoteBox(b.Row, $"Note for row {b.Row}. Saved in the file, ignored by the QuadStick");
+        note.Width = 200;
+        p.Children.Add(note);
+
         var del = new Button { Content = "Delete row", Classes = { "danger" } };
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
         del.Click += (_, _) => DeleteListRow(b);
@@ -1569,6 +1574,31 @@ public partial class MainWindow : Window
         };
         _cellBorders[$"{(char)('A' + col)}{row}"] = wrapper;
         return wrapper;
+    }
+
+    // Column K is the first cell the device ignores, so notes live there.
+    const int NoteColumn = 10;
+
+    Control NoteBox(int row, string accessibleName)
+    {
+        var box = new TextBox
+        {
+            Text = _file!.GetCell(row, NoteColumn),
+            Watermark = "note",
+            FontSize = Size("SmallSize"),
+        };
+        AutomationProperties.SetName(box, accessibleName);
+        void Commit()
+        {
+            if (_file is null) return;
+            var v = (box.Text ?? "").Trim();
+            if (v == _file.GetCell(row, NoteColumn)) return;
+            _file.SetCell(row, NoteColumn, v);
+            RefreshIssues(); // the 1023-byte row limit can trip on a long note
+        }
+        box.LostFocus += (_, _) => Commit();
+        box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
+        return box;
     }
 
     void AddRow()
