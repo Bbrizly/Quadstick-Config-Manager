@@ -26,8 +26,8 @@ package: build
 	@mkdir -p $(DIST)
 	dotnet publish $(APP) -c Release -r $(HOSTRID) --self-contained true -o $(DIST)/pub --nologo
 	rm -f $(DIST)/pub/*.pdb
-	scripts/make-macos-app.sh $(DIST)/pub 0.0.0-dev "$(DIST)/QuadStick Config Manager.app"
-	@echo "Open '$(DIST)/QuadStick Config Manager.app' to test it."
+	scripts/make-macos-app.sh $(DIST)/pub 0.0.0-dev "$(DIST)/Quadstick Config Manager.app"
+	@echo "Open '$(DIST)/Quadstick Config Manager.app' to test it."
 
 # Ship a release: verify, tag, push. That is the whole process — pushing the
 # tag triggers CI, which builds every download and publishes the release.

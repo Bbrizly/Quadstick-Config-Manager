@@ -485,7 +485,7 @@ public partial class MainWindow : Window
     {
         HomeView.IsVisible = true;
         EditorView.IsVisible = false;
-        Title = "QuadStick Config Manager (unofficial)"; // no profile is open on Home
+        Title = "Quadstick: Config Manager (unofficial)"; // no profile is open on Home
         RefreshHomeCards();
         HomeNewButton.Focus();
     }
@@ -647,7 +647,7 @@ public partial class MainWindow : Window
         SheetPicker.SelectedIndex = 0;
         FileNameBox.Text = file.Document.CsvFileName ?? "";
         var headerName = file.Document.HeaderName;
-        Title = "QuadStick Config Manager (unofficial) - "
+        Title = "Quadstick: Config Manager (unofficial) - "
             + (headerName.Length > 0 ? $"{headerName} ({file.Document.CsvFileName})" : file.Document.CsvFileName ?? "untitled");
         _selectedZone = null;
         ShowEditor();
@@ -1352,7 +1352,7 @@ public partial class MainWindow : Window
         var v = (FileNameBox.Text ?? "").Trim();
         if (v.Length == 0 || v == _file.Document.CsvFileName) return;
         _file.SetCell(_file.Document.FileNameCellRow, 0, v);
-        Title = $"QuadStick Config Manager (unofficial) - {v}";
+        Title = $"Quadstick: Config Manager (unofficial) - {v}";
         RefreshIssues(); // bad names surface immediately as errors
     }
 

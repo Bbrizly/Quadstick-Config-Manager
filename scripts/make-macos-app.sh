@@ -29,8 +29,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleName</key><string>QuadStick Config Manager</string>
-  <key>CFBundleDisplayName</key><string>QuadStick Config Manager</string>
+  <key>CFBundleName</key><string>Quadstick: Config Manager</string>
+  <key>CFBundleDisplayName</key><string>Quadstick: Config Manager</string>
   <key>CFBundleIdentifier</key><string>com.bbrizly.quadstickconfigmanager</string>
   <key>CFBundleExecutable</key><string>$EXE</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>

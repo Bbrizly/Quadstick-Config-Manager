@@ -1,7 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="QuadStick.App.MainWindow"
-        Title="QuadStick Config Manager (unofficial)"
+        Title="Quadstick: Config Manager (unofficial)"
         Icon="avares://QuadStickConfigManager/Assets/AppIcon.png"
         Width="1180" Height="850" MinWidth="760" MinHeight="560">
   <Panel x:Name="RootPanel">
@@ -21,7 +21,7 @@
                   AutomationProperties.Name="Open Settings"/>
         </StackPanel>
         <StackPanel Spacing="4">
-          <TextBlock Text="QuadStick Config Manager" FontSize="{DynamicResource TitleSize}" FontWeight="Bold"/>
+          <TextBlock Text="Quadstick: Config Manager" FontSize="{DynamicResource TitleSize}" FontWeight="Bold"/>
           <TextBlock Text="Edit and install game profiles for your QuadStick. Free, unofficial, works offline."
                      FontSize="{DynamicResource SubheadSize}" Classes="secondary"/>
           <TextBlock x:Name="HomeVersionText" FontSize="{DynamicResource SmallSize}" Classes="secondary"/>

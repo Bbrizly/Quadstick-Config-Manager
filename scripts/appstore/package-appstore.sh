@@ -17,7 +17,7 @@ PKG_SIGN="${3:?Mac Installer Distribution signing identity}"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HERE="$ROOT/scripts/appstore"
 OUT="$ROOT/dist/appstore"
-APP="$OUT/QuadStick Config Manager.app"
+APP="$OUT/Quadstick Config Manager.app"
 RID="osx-$(uname -m | sed 's/x86_64/x64/')"
 
 [ -f "$HERE/embedded.provisionprofile" ] || { echo "Missing $HERE/embedded.provisionprofile (Mac App Store profile from developer.apple.com)"; exit 1; }

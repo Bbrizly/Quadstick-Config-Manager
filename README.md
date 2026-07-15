@@ -2,10 +2,10 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/QSLogo-dark.png">
-  <img src="docs/QSLogo.png" alt="QuadStick Config Manager logo" width="108">
+  <img src="docs/QSLogo.png" alt="Quadstick: Config Manager logo" width="108">
 </picture>
 
-# QuadStick Config Manager
+# Quadstick: Config Manager
 
 **A free desktop app for editing and installing [QuadStick](https://www.quadstick.com/) game profiles.**<br>
 Windows, macOS, and Linux. Not affiliated with QuadStick or Fred Davison.
@@ -54,7 +54,7 @@ Unzip and run. No installer. Works offline except for Sheets import.
 **Mac:** not notarized yet. Right-click, Open, then Open again the first time. If it says the app is damaged, run this once and reopen:
 
 ```bash
-xattr -dr com.apple.quarantine "/Applications/QuadStick Config Manager.app"
+xattr -dr com.apple.quarantine "/Applications/Quadstick Config Manager.app"
 ```
 
 ## Using it

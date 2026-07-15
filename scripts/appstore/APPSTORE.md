@@ -1,4 +1,4 @@
-# QuadStick Config Manager: Mac App Store runbook
+# Quadstick: Config Manager: Mac App Store runbook
 
 Written 2026-07-11. The packaging is scripted; the Apple-side setup is yours.
 
@@ -10,7 +10,7 @@ in the existing testers-group thread, one line:
 
 > I'd like to put the config manager on the Mac App Store for free so
 > QuadStick users can install it the easy way. It stays free and open
-> source. Are you OK with "QuadStick Config Manager" as the store name,
+> source. Are you OK with "Quadstick: Config Manager" as the store name,
 > or would you prefer different wording?
 
 If he prefers distance, fallback name: "Config Manager for QuadStick"
@@ -53,7 +53,7 @@ App Store Connect.
 
 ## Listing metadata
 
-- Name: `QuadStick Config Manager` (pending Fred's OK)
+- Name: `Quadstick: Config Manager` (pending Fred's OK)
 - Subtitle: `Edit QuadStick profiles safely`
 - Category: Utilities. Price: Free.
 - Privacy: Data Not Collected.
