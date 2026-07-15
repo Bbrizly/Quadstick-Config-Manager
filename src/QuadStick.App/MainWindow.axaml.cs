@@ -2086,15 +2086,15 @@ public partial class MainWindow : Window
         var name = (function ?? "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
         return name switch
         {
-            "normal" => "Pressed while your input is active.",
+            "normal" => "Held down for as long as your input is active.",
             "toggle" => "One activation latches it on, the next releases it.",
             "repeat" => "Rapid-fire taps while your input is held.",
             "pulse" => "One short press each time you activate.",
             "delayed_latch" => "A short activation taps it; a long one latches it on.",
             "delay_on" => "Waits a moment after you activate, then presses.",
             "delay_off" => "Keeps pressing for a moment after you release.",
-            "tap" => "Splits one input into two outputs by how long you hold.",
-            "force_off" => "Releases another latched output.",
+            "tap" => "A quick press sends one output; holding longer sends a different one.",
+            "force_off" => "Turns off an output that toggle or delayed_latch left on.",
             "greater_than" => "Fires once your input passes a set strength.",
             "less_than" => "Fires while your input stays under a set strength.",
             "duty" => "Presses in a repeating on and off cycle.",
