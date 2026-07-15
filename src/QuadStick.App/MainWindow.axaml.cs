@@ -2075,6 +2075,7 @@ public partial class MainWindow : Window
         AutomationProperties.SetName(ProblemsToggle,
             $"{label}. {(_problemsExpanded ? "Hides" : "Shows")} the list of problems.");
         FixFirstButton.IsVisible = _problemsExpanded && errors > 0;
+        ProblemsDock.IsVisible = _problemsExpanded || errors + warns > 0;
     }
 
     // Plain words for what a Function does, keyed on its first token so
