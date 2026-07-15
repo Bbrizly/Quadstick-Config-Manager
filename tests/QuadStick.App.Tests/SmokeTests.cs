@@ -38,7 +38,7 @@ public class SmokeTests
     public void Window_opens_on_home_without_throwing()
     {
         var w = NewWindow();
-        Assert.Contains("QuadStick Config Manager", w.Title);
+        Assert.Contains("Quadstick: Config Manager", w.Title);
         w.Close();
     }
 
