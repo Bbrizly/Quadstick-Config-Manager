@@ -41,6 +41,9 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSMinimumSystemVersion</key><string>11.0</string>
   <key>NSHighResolutionCapable</key><true/>
   <key>LSApplicationCategoryType</key><string>public.app-category.utilities</string>
+  <!-- Only standard HTTPS (the Sheets import), which is exempt encryption.
+       Declaring this clears "Missing Compliance" without the per-build prompt. -->
+  <key>ITSAppUsesNonExemptEncryption</key><false/>
 </dict>
 </plist>
 PLIST
