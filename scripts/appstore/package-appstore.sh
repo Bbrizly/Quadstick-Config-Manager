@@ -33,8 +33,10 @@ rm -f "$OUT/pub/"*.pdb
 # 2. Embed the provisioning profile (required for MAS).
 cp "$HERE/embedded.provisionprofile" "$APP/Contents/embedded.provisionprofile"
 
-# 3. Sign inside-out: every dylib, then any nested executables, then the app.
-find "$APP/Contents/MacOS" -name '*.dylib' -print0 | while IFS= read -r -d '' lib; do
+# 3. Sign inside-out: native dylibs and managed dlls, then nested
+#    executables, then the app. Managed .NET assemblies are code too, and
+#    MAS deep-verify rejects any unsigned code object in the bundle.
+find "$APP/Contents/MacOS" \( -name '*.dylib' -o -name '*.dll' \) -print0 | while IFS= read -r -d '' lib; do
   codesign --force --timestamp --sign "$APP_SIGN" "$lib"
 done
 find "$APP/Contents/MacOS" -type f -perm +111 ! -name '*.dylib' ! -name 'QuadStickConfigManager' -print0 | while IFS= read -r -d '' bin; do
