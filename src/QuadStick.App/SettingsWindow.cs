@@ -115,13 +115,13 @@ public class SettingsWindow : Window
             SelectedIndex = scaleIndex >= 0 ? scaleIndex : 0,
             MinWidth = 220,
         };
-        AutomationProperties.SetName(scale, "Interface size: 100, 125, 150, or 200 percent");
+        AutomationProperties.SetName(scale, "Interface size, in percent");
         scale.SelectionChanged += (_, _) =>
         {
             if (scale.SelectedIndex >= 0) owner.SetInterfaceScale(scalePercents[scale.SelectedIndex]);
         };
         panel.Children.Add(scale);
-        panel.Children.Add(Caption("Makes all text and controls larger."));
+        panel.Children.Add(Caption("Makes all text and controls larger or smaller."));
 
         panel.Children.Add(Label("Default QuadStick model"));
         var model = new ComboBox

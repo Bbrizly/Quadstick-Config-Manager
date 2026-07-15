@@ -359,7 +359,7 @@ public partial class MainWindow : Window
         };
     }
 
-    internal static readonly int[] ValidScalePercents = { 100, 125, 150, 200 };
+    internal static readonly int[] ValidScalePercents = { 60, 70, 80, 90, 100, 125, 150, 200 };
 
     public void ApplyInterfaceScale(int pct)
     {
