@@ -1846,12 +1846,20 @@ public partial class MainWindow : Window
     // parameters (e.g. "repeat 5 2000") stay selectable so nothing is lost.
     Control FunctionCombo(Binding b, Zone zone)
     {
-        var items = new List<string>(FunctionSuggestions);
         var current = (b.Function ?? "").Trim();
-        if (current.Length > 0 && !items.Contains(current)) items.Insert(0, current);
+        var tokens = current.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var firstToken = tokens.FirstOrDefault() ?? "";
+        bool known = Vocab.FunctionArity.ContainsKey(firstToken);
+        var currentParams = known ? string.Join(' ', tokens.Skip(1)) : "";
+
+        var items = new List<string>(FunctionSuggestions);
+        // An unknown value (e.g. a typo or a form the list doesn't carry) stays
+        // selectable exactly as before; a known value with parameters shows the
+        // bare name in the list and edits its values in the box below.
+        if (!known && current.Length > 0 && !items.Contains(current)) items.Insert(0, current);
 
         var combo = new ComboBox { ItemsSource = items, HorizontalAlignment = HorizontalAlignment.Stretch };
-        combo.SelectedItem = items.FirstOrDefault(x => x == current);
+        combo.SelectedItem = known ? firstToken : items.FirstOrDefault(x => x == current);
         combo.ItemTemplate = new FuncDataTemplate<string>((name, _) =>
         {
             var sp = new StackPanel { Spacing = 1, Margin = new Avalonia.Thickness(0, 2) };
@@ -1862,20 +1870,55 @@ public partial class MainWindow : Window
             return sp;
         });
         AutomationProperties.SetName(combo, $"How {ShortInput(zone, b)} presses it. {FunctionExplain(current)}");
+
+        var paramsBox = new TextBox
+        {
+            Text = currentParams,
+            Watermark = "optional values, e.g. 1000",
+            FontSize = Size("SmallSize"),
+            Margin = new Avalonia.Thickness(0, 4, 0, 0),
+            IsVisible = Vocab.FunctionArity.TryGetValue(firstToken, out var startArity) && startArity.Max > 0,
+        };
+        AutomationProperties.SetName(paramsBox,
+            $"Optional parameter values for {firstToken}. Whole numbers separated by spaces, for example 1000");
+
+        void Commit()
+        {
+            if (_file is null || combo.SelectedItem is not string name) return;
+            // The raw exotic value has no arity: commit it as-is, never append params.
+            if (!Vocab.FunctionArity.TryGetValue(name, out var arity))
+            {
+                if (name != _file.GetCell(b.Row, 1)) { _file.SetCell(b.Row, 1, name); RebuildDeviceAfterEdit(b.Row, 1); }
+                return;
+            }
+            var p = (paramsBox.Text ?? "").Trim();
+            var value = p.Length > 0 && arity.Max > 0 ? $"{name} {p}" : name;
+            // Equality guard: RebuildDeviceAfterEdit replaces these controls, so a
+            // stale LostFocus firing afterward must land as a no-op, not a loop.
+            if (value != _file.GetCell(b.Row, 1)) { _file.SetCell(b.Row, 1, value); RebuildDeviceAfterEdit(b.Row, 1); }
+        }
+
         combo.SelectionChanged += (_, _) =>
         {
-            if (combo.SelectedItem is string s && _file != null && s != _file.GetCell(b.Row, 1))
+            if (combo.SelectedItem is string name)
             {
-                _file.SetCell(b.Row, 1, s);
-                RebuildDeviceAfterEdit(b.Row, 1);
+                bool hasParams = Vocab.FunctionArity.TryGetValue(name, out var ar) && ar.Max > 0;
+                paramsBox.IsVisible = hasParams;
+                AutomationProperties.SetName(paramsBox,
+                    $"Optional parameter values for {name}. Whole numbers separated by spaces, for example 1000");
+                if (!hasParams) paramsBox.Text = "";
             }
+            Commit();
         };
+        paramsBox.LostFocus += (_, _) => Commit();
+        paramsBox.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
+
         // Register the function cell like the input/output fields so a function
         // error (bad name, too many params) can be highlighted and focused here
         // too — without the wrapper, B{row} lives nowhere in _cellBorders.
         var wrapper = new Border
         {
-            Child = combo,
+            Child = new StackPanel { Children = { combo, paramsBox } },
             BorderThickness = new Avalonia.Thickness(2),
             BorderBrush = Brushes.Transparent,
             CornerRadius = new Avalonia.CornerRadius(5),
