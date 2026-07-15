@@ -24,9 +24,14 @@ RID="osx-$(uname -m | sed 's/x86_64/x64/')"
 
 rm -rf "$OUT"; mkdir -p "$OUT"
 
-# 1. Publish and wrap, same bundle the normal release uses.
+# 1. Publish single-file and wrap. Single-file embeds the managed dlls and the
+#    deps/runtimeconfig json into the apphost, so Contents/MacOS holds only
+#    Mach-O binaries (apphost + native dylibs). Loose json/dll files there are
+#    neither signable code nor sealed resources, and MAS deep-verify rejects
+#    them. Native libraries stay loose (not self-extracted), so no sandbox
+#    temp-extraction crash at launch.
 dotnet publish "$ROOT/src/QuadStick.App/QuadStick.App.csproj" -c Release -r "$RID" \
-  --self-contained true -o "$OUT/pub" --nologo
+  --self-contained true -p:PublishSingleFile=true -o "$OUT/pub" --nologo
 rm -f "$OUT/pub/"*.pdb
 "$ROOT/scripts/make-macos-app.sh" "$OUT/pub" "$VERSION" "$APP"
 
