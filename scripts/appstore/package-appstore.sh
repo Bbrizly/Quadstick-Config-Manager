@@ -35,6 +35,12 @@ dotnet publish "$ROOT/src/QuadStick.App/QuadStick.App.csproj" -c Release -r "$RI
 rm -f "$OUT/pub/"*.pdb
 "$ROOT/scripts/make-macos-app.sh" "$OUT/pub" "$VERSION" "$APP"
 
+# 1b. MAS rejects an arm64-only build unless it declares macOS 12.0+ (otherwise
+#     it demands a universal Intel binary). Bump the floor here only; the
+#     direct-download builds keep their wider macOS 11 support. Must run before
+#     signing, since editing Info.plist after codesign breaks the signature.
+/usr/libexec/PlistBuddy -c "Set :LSMinimumSystemVersion 12.0" "$APP/Contents/Info.plist"
+
 # 2. Embed the provisioning profile (required for MAS).
 cp "$HERE/embedded.provisionprofile" "$APP/Contents/embedded.provisionprofile"
 
