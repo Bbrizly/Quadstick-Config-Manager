@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy · Quadstick: Config Manager</title>
+<meta name="description" content="Quadstick: Config Manager collects no data. Privacy policy for the free, open-source QuadStick profile editor.">
+
+<!-- favicon: the QuadStick glyph, same as the home page -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiByeD0iOSIgZmlsbD0iIzFBMTcxNCIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTIiIHI9IjMuNCIgZmlsbD0iI0RBRTZGNyIvPjxyZWN0IHg9IjguNSIgeT0iMTkiIHdpZHRoPSI2IiBoZWlnaHQ9IjUuMiIgcng9IjIiIGZpbGw9IiNGNUU5QzYiLz48cmVjdCB4PSIxNy41IiB5PSIxOSIgd2lkdGg9IjYiIGhlaWdodD0iNS4yIiByeD0iMiIgZmlsbD0iI0Y1RDlFMiIvPjwvc3ZnPg==">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#F4F1EA; --paper-2:#FBF9F4;
+    --ink:#1A1714; --ink-soft:#5F584D; --ink-faint:#8C8478;
+    --line:#E2DBCC; --action:#1B4D9B;
+    --radius:16px; --maxw:720px;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:"Instrument Sans",system-ui,sans-serif;
+    font-size:18px;line-height:1.65;-webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--action)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .display{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.02em;line-height:1.08}
+
+  header.nav{padding:16px 0;border-bottom:1px solid var(--line);
+    background:color-mix(in srgb, var(--paper) 82%, transparent);
+    backdrop-filter:saturate(140%) blur(12px);position:sticky;top:0;z-index:10}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:16px;letter-spacing:-.01em;text-decoration:none;color:var(--ink)}
+  .brand .glyph{width:28px;height:28px;flex:none}
+  .back{display:inline-flex;align-items:center;gap:6px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14px;color:var(--ink-soft);text-decoration:none;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--paper-2);transition:color .2s var(--ease),border-color .2s var(--ease)}
+  .back:hover{color:var(--ink);border-color:var(--ink-faint)}
+  .back svg{width:14px;height:14px}
+
+  main{padding:clamp(48px,8vw,88px) 0 40px}
+  .kicker{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--action)}
+  h1{font-size:clamp(34px,6vw,52px);margin:14px 0 0}
+  .updated{color:var(--ink-faint);font-size:15px;margin-top:16px}
+  .lede{font-size:clamp(19px,2.4vw,22px);color:var(--ink-soft);margin:28px 0 0;line-height:1.5}
+
+  h2{font-family:"Space Grotesk",sans-serif;font-size:clamp(21px,3vw,26px);letter-spacing:-.015em;margin:44px 0 12px}
+  p{color:var(--ink-soft);margin-top:14px}
+  p b{color:var(--ink);font-weight:600}
+
+  footer{padding:50px 0 70px;border-top:1px solid var(--line);margin-top:56px;color:var(--ink-faint);font-size:13.5px}
+  .foot-links{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:20px}
+  .foot-links a{color:var(--ink-soft);text-decoration:none}
+  .foot-links a:hover{color:var(--ink)}
+  :focus-visible{outline:2.5px solid var(--action);outline-offset:3px;border-radius:6px}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="index.html" aria-label="Quadstick: Config Manager home">
+      <svg class="glyph" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="#1A1714"/>
+        <circle cx="16" cy="12" r="3.4" fill="#DAE6F7"/>
+        <rect x="8.5" y="19" width="6" height="5.2" rx="2" fill="#F5E9C6"/>
+        <rect x="17.5" y="19" width="6" height="5.2" rx="2" fill="#F5D9E2"/>
+      </svg>
+      Quadstick&nbsp;<span style="color:var(--ink-faint);font-weight:500">Config Manager</span>
+    </a>
+    <a class="back" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to home
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <span class="kicker">Privacy</span>
+    <h1 class="display">Privacy Policy</h1>
+    <p class="updated">Last updated 15 July 2026</p>
+
+    <p class="lede">Quadstick: Config Manager does not collect, store, or share any personal information. There are no accounts, no analytics, and no tracking.</p>
+
+    <h2>What the app does with your data</h2>
+    <p>The app runs entirely on your own computer and works with the profile files you choose to open. It does not create an account, it does not sign you in, and it does not send anything about you or your files anywhere.</p>
+
+    <h2>The one time it uses the network</h2>
+    <p>The only feature that touches the internet is the optional Google Sheets import. When <b>you</b> paste a Google Sheets link, the app fetches that sheet so it can bring the profile into the editor. It requests the sheet you asked for and nothing else. If you never use that feature, the app never uses the network at all.</p>
+
+    <h2>Analytics and tracking</h2>
+    <p>None. There is no telemetry, no usage reporting, no advertising, and no third-party SDK collecting data in the background.</p>
+
+    <h2>Children</h2>
+    <p>The app is safe for all ages and collects no data from anyone, including children.</p>
+
+    <h2>Changes</h2>
+    <p>If this policy ever changes, the updated version will be posted on this page.</p>
+
+    <h2>Contact</h2>
+    <p>Questions? Open an issue at <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/issues">github.com/Bbrizly/Quadstick-Config-Manager/issues</a>.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-links">
+      <a href="index.html">Home</a>
+      <a href="https://github.com/Bbrizly/Quadstick-Config-Manager">GitHub</a>
+      <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/issues/new">Report a bug</a>
+      <a href="https://www.quadstick.com/">QuadStick.com</a>
+    </div>
+    Not affiliated with QuadStick or Fred Davison. Independent, community-made, open source under the MIT license.
+  </div>
+</footer>
+
+</body>
+</html>
