@@ -840,8 +840,11 @@ public partial class MainWindow : Window
         BuildDeviceView();
         BuildZoneDetail();
         RefreshIssues();
-        if (_cellBorders.TryGetValue($"{(char)('A' + col)}{row}", out var border))
-        { border.BringIntoView(); (border.Child as Control)?.Focus(); }
+        AfterLayout(() =>
+        {
+            if (_cellBorders.TryGetValue($"{(char)('A' + col)}{row}", out var border))
+            { border.BringIntoView(); (border.Child as Control)?.Focus(); }
+        });
     }
 
     void BuildDeviceView()
@@ -1221,8 +1224,11 @@ public partial class MainWindow : Window
                 BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                 // Take the user to the mapping they just created (mirrors AddRow in List View).
                 // The new input cell is a ComboBox (TokenField), so focus it as a Control.
-                if (_cellBorders.TryGetValue($"C{newRow}", out var newBorder))
-                { newBorder.BringIntoView(); (newBorder.Child as Control)?.Focus(); }
+                AfterLayout(() =>
+                {
+                    if (_cellBorders.TryGetValue($"C{newRow}", out var newBorder))
+                    { newBorder.BringIntoView(); (newBorder.Child as Control)?.Focus(); }
+                });
             };
             ZoneDetailPanel.Children.Add(add);
         }
@@ -1512,6 +1518,11 @@ public partial class MainWindow : Window
         RestoreListScroll(off, () => FocusRowSibling(deletedIndex));
     }
 
+    // Scroll and focus must wait until the rebuilt panel has been measured,
+    // or BringIntoView runs against a zero-size control and the ScrollViewer
+    // snaps back to the top.
+    static void AfterLayout(Action act) => Dispatcher.UIThread.Post(act, DispatcherPriority.Loaded);
+
     void RestoreListScroll(Vector offset, Action thenFocus) =>
         Dispatcher.UIThread.Post(() =>
         {
@@ -1572,11 +1583,14 @@ public partial class MainWindow : Window
         }
         RebuildRows();
         // Take the user to the row they just created.
-        if (_cellBorders.TryGetValue($"A{newRow}", out var border))
+        AfterLayout(() =>
         {
-            border.BringIntoView();
-            (border.Child as AutoCompleteBox)?.Focus();
-        }
+            if (_cellBorders.TryGetValue($"A{newRow}", out var border))
+            {
+                border.BringIntoView();
+                (border.Child as AutoCompleteBox)?.Focus();
+            }
+        });
     }
 
     // After deleting a List View row, keep focus on the row that slid into
