@@ -44,6 +44,10 @@ rm -f "$OUT/pub/"*.pdb
 # 2. Embed the provisioning profile (required for MAS).
 cp "$HERE/embedded.provisionprofile" "$APP/Contents/embedded.provisionprofile"
 
+# 2b. Strip extended attributes (the downloaded profile carries
+#     com.apple.quarantine, which MAS/TestFlight rejects, error 91109).
+xattr -cr "$APP"
+
 # 3. Sign inside-out: native dylibs and managed dlls, then nested
 #    executables, then the app. Managed .NET assemblies are code too, and
 #    MAS deep-verify rejects any unsigned code object in the bundle.
