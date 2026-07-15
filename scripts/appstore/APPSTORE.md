@@ -37,12 +37,17 @@ scripts/appstore/package-appstore.sh 1.0.0 \
   "3rd Party Mac Developer Installer: Bassam ... (TEAMID)"
 ```
 
-Install the app from the built bundle and test BEFORE uploading: the
-sandbox changes behavior. Expected difference: automatic drive detection
-may find nothing (sandbox hides /Volumes contents); the folder picker path
-must carry the whole install flow. That is the acceptance test:
-Install flow > pick the QuadStick volume by hand > write succeeds > backup
-created.
+The store build will NOT launch by double-click from a folder. It is signed
+with a Mac App Store provisioning profile, which only authorizes launches
+from the store or TestFlight, so a local run fails with "Launch failed"
+(launchd error 163). That is expected, not a broken build.
+
+Run the acceptance test through TestFlight instead: upload the pkg, add
+yourself as an internal tester in App Store Connect, install from the
+TestFlight app, then walk the flow: New profile > edit a cell > Install to
+any folder > write succeeds > backup created. The sandbox changes behavior
+(automatic drive detection may find nothing, since the sandbox hides
+/Volumes), so the folder-picker path must carry the whole install flow.
 
 The build publishes single-file on purpose: it embeds the managed dlls and
 the deps/runtimeconfig json into the apphost, so Contents/MacOS holds only
