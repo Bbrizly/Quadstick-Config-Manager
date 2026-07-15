@@ -608,8 +608,12 @@ public partial class MainWindow : Window
                 new TextBlock { Text = subtitle, Classes = { "cardsub" } },
             },
         };
-        card.Click += (_, _) =>
+        card.Click += async (_, _) =>
         {
+            if (onDevice && name.Equals("prefs.csv", StringComparison.OrdinalIgnoreCase)
+                && !await ConfirmAsync("Edit device preferences?",
+                    "prefs.csv holds the QuadStick's own settings, not a game profile. A wrong value here changes how the whole device behaves. Only continue if you know which setting you are changing."))
+                return;
             try
             {
                 // Device files open as a working copy (no save path): Save
