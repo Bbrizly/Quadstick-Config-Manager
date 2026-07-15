@@ -42,6 +42,13 @@
                   <TextBlock Text="Start from the factory default layout" Classes="cardsub"/>
                 </StackPanel>
               </Button>
+              <Button x:Name="HomeTemplateButton" Classes="card"
+                      AutomationProperties.Name="Start a new profile from one of your saved templates">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="Use template" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
+                  <TextBlock Text="Start from a profile you saved as a template" Classes="cardsub"/>
+                </StackPanel>
+              </Button>
               <Button x:Name="HomeOpenButton" Classes="card"
                       AutomationProperties.Name="Open a profile CSV file from your computer">
                 <StackPanel Spacing="6">
@@ -123,6 +130,8 @@
                   AutomationProperties.Name="Save this profile. Shortcut Control S"/>
           <Button x:Name="UndoButton" Content="Undo"
                   AutomationProperties.Name="Undo the last change. Shortcut Control Z"/>
+          <Button x:Name="SaveTemplateButton" Content="Save as template"
+                  AutomationProperties.Name="Save this profile as a reusable template you can start new profiles from"/>
           <Button x:Name="InstallButton" Content="Install to QuadStick" Classes="primary"
                   AutomationProperties.Name="Install this profile onto a connected QuadStick. Shortcut Control I"/>
           <Button x:Name="HelpButton" Content="Help"

@@ -70,6 +70,36 @@ public class SmokeTests
     }
 
     [AvaloniaFact]
+    public void Save_as_template_then_use_template_round_trips()
+    {
+        MainWindow.LibraryDir = Path.Combine(Path.GetTempPath(), "qs-tpl-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            Directory.CreateDirectory(MainWindow.TemplatesDir);
+            var f = ProfileFile.NewFromTemplate("shooter.csv");
+            File.WriteAllText(Path.Combine(MainWindow.TemplatesDir, "My FPS.csv"), f.ToCsvText());
+
+            // A saved template must load back into the editor as a fresh copy.
+            var w = NewWindow();
+            var loaded = ProfileFile.Load(File.ReadAllText(Path.Combine(MainWindow.TemplatesDir, "My FPS.csv")));
+            w.LoadProfile(loaded);
+            Assert.NotEmpty(loaded.Document.Sheets);
+            loaded.Dirty = false;
+            w.Close();
+        }
+        finally
+        { if (Directory.Exists(MainWindow.LibraryDir)) Directory.Delete(MainWindow.LibraryDir, recursive: true); }
+    }
+
+    [Theory]
+    [InlineData("My FPS", "My FPS.csv")]
+    [InlineData("shooter.csv", "shooter.csv")]
+    [InlineData("bad/name:v2", "bad_name_v2.csv")]
+    [InlineData("   ", "")]
+    public void Template_names_are_made_safe(string input, string expected)
+        => Assert.Equal(expected, MainWindow.SafeTemplateName(input));
+
+    [AvaloniaFact]
     public void Editing_through_the_file_keeps_the_window_alive()
     {
         var w = NewWindow();

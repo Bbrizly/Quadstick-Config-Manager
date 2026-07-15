@@ -83,6 +83,12 @@ public partial class MainWindow : Window
     public static string LibraryDir { get; set; } =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "QuadStick Profiles");
 
+    // Templates are just saved profile CSVs kept in a subfolder of the library.
+    // The library card list reads LibraryDir non-recursively, so this subfolder
+    // never leaks into "Your profiles". A template opens as a fresh local copy
+    // (savePath null), so editing and installing never touches the template.
+    public static string TemplatesDir => Path.Combine(LibraryDir, "Templates");
+
     static readonly HashSet<string> JoystickDirs = new(StringComparer.OrdinalIgnoreCase)
     { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
 
@@ -143,6 +149,7 @@ public partial class MainWindow : Window
         Opened += (_, _) => ClampToScreen();
 
         HomeNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
+        HomeTemplateButton.Click += async (_, _) => await UseTemplateAsync();
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
@@ -173,6 +180,7 @@ public partial class MainWindow : Window
         FileNameBox.KeyDown += (_, e) => { if (e.Key == Key.Enter) CommitFileName(); };
         SaveButton.Click += async (_, _) => await SaveAsync();
         UndoButton.Click += (_, _) => UndoEdit();
+        SaveTemplateButton.Click += async (_, _) => await SaveAsTemplateAsync();
         InstallButton.Click += async (_, _) => await RunInstallFlowAsync();
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
@@ -1410,6 +1418,135 @@ public partial class MainWindow : Window
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         { HomeError($"Could not download the sheet: {(ex is TaskCanceledException ? "the connection timed out after 15 seconds" : ex.Message)}. Check your internet connection and the link."); }
+    }
+
+    // Strip characters that are illegal in a file name and force a .csv
+    // extension, so a template named "My FPS / v2" cannot escape TemplatesDir
+    // or land without an extension the loader looks for.
+    public static string SafeTemplateName(string name)
+    {
+        var trimmed = (name ?? "").Trim();
+        if (trimmed.Length == 0) return "";
+        // Strip this platform's invalid chars, plus the path separators and
+        // drive colon that are legal on macOS but break a synced file on
+        // Windows. This app runs on both, so a template name must be safe on
+        // both.
+        var invalid = Path.GetInvalidFileNameChars().Concat(new[] { '/', '\\', ':' }).ToHashSet();
+        var cleaned = string.Concat(trimmed.Select(c => invalid.Contains(c) ? '_' : c));
+        if (cleaned.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)) cleaned = cleaned[..^4];
+        return cleaned + ".csv";
+    }
+
+    async Task SaveAsTemplateAsync()
+    {
+        if (_file is null) { Status("Open or create a profile first."); return; }
+
+        var suggested = Path.GetFileNameWithoutExtension(_file.Document.CsvFileName ?? "my template");
+        var box = new TextBox { Text = suggested, HorizontalAlignment = HorizontalAlignment.Stretch };
+        AutomationProperties.SetName(box, "Name for this template");
+        var save = new Button { Content = "Save template", MinWidth = 140, IsDefault = true };
+        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        var dialog = new Window
+        {
+            Title = "Save as template",
+            SizeToContent = SizeToContent.WidthAndHeight,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = ZoomWrap(new StackPanel
+            {
+                Margin = new Avalonia.Thickness(24),
+                Spacing = 16,
+                MaxWidth = 480,
+                Children =
+                {
+                    new TextBlock { Text = "Save as template", FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = "Keeps a copy you can start new profiles from any time, under Use template on the home screen. Editing or installing a profile never changes its template.", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                    box,
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { save, cancel } },
+                },
+            }, _uiScale),
+        };
+        var confirmed = false;
+        void Confirm() { confirmed = true; dialog.Close(); }
+        save.Click += (_, _) => Confirm();
+        cancel.Click += (_, _) => dialog.Close();
+        box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Confirm(); };
+        await dialog.ShowDialog(this);
+        if (!confirmed) return;
+
+        var fileName = SafeTemplateName(box.Text ?? "");
+        if (fileName.Length == 0) { Status("A template needs a name.", StatusKind.Warning); return; }
+        try
+        {
+            Directory.CreateDirectory(TemplatesDir);
+            _file.EnsureVersionHeader(); // templates match installed files byte for byte
+            await File.WriteAllTextAsync(Path.Combine(TemplatesDir, fileName), _file.ToCsvText());
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        { Status($"Could not save the template: {ex.Message}", StatusKind.Error); return; }
+        RefreshEditor(); // EnsureVersionHeader may have shifted rows
+        Status($"Saved template {fileName}. Find it under Use template on the home screen.", StatusKind.Ready);
+    }
+
+    async Task UseTemplateAsync()
+    {
+        void HomeError(string message)
+        { HomeStatusText.Text = message; HomeStatusText.IsVisible = true; }
+        HomeStatusText.IsVisible = false;
+
+        var templates = Directory.Exists(TemplatesDir)
+            ? Directory.GetFiles(TemplatesDir, "*.csv").OrderBy(Path.GetFileName).ToArray()
+            : Array.Empty<string>();
+        if (templates.Length == 0)
+        { HomeError("You have not saved any templates yet. Open a profile and use Save as template to make one."); return; }
+
+        if (!await ConfirmLeaveAsync()) return; // opening discards unsaved work
+
+        var list = new ListBox
+        {
+            ItemsSource = templates.Select(Path.GetFileNameWithoutExtension).ToList(),
+            SelectedIndex = 0,
+            MaxHeight = 320,
+        };
+        AutomationProperties.SetName(list, "Your saved templates");
+        var open = new Button { Content = "Use template", MinWidth = 140, IsDefault = true };
+        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        var dialog = new Window
+        {
+            Title = "Use template",
+            SizeToContent = SizeToContent.WidthAndHeight,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = ZoomWrap(new StackPanel
+            {
+                Margin = new Avalonia.Thickness(24),
+                Spacing = 16,
+                MaxWidth = 480,
+                Children =
+                {
+                    new TextBlock { Text = "Start from a template", FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = "Opens a fresh copy you can edit and install. Your template stays as it is.", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                    list,
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { open, cancel } },
+                },
+            }, _uiScale),
+        };
+        var confirmed = false;
+        void Confirm() { confirmed = true; dialog.Close(); }
+        open.Click += (_, _) => Confirm();
+        cancel.Click += (_, _) => dialog.Close();
+        list.DoubleTapped += (_, _) => Confirm();
+        await dialog.ShowDialog(this);
+        if (!confirmed || list.SelectedIndex < 0) return;
+
+        var path = templates[list.SelectedIndex];
+        try
+        {
+            // savePath null: the copy is unsaved, so Save prompts for a new
+            // location and the template file is never overwritten.
+            OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), savePath: null);
+            Status($"Started from template {Path.GetFileNameWithoutExtension(path)}. Save to keep this as its own profile.", StatusKind.Ready);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        { HomeError($"Could not open that template: {ex.Message}"); }
     }
 
     bool _closeConfirmed;
