@@ -1920,9 +1920,13 @@ public partial class MainWindow : Window
         // Register the function cell like the input/output fields so a function
         // error (bad name, too many params) can be highlighted and focused here
         // too — without the wrapper, B{row} lives nowhere in _cellBorders.
+        // RefreshIssues mirrors the wrapper child's accessible name onto the
+        // highlight; the panel needs the combo's name or an error reads as nothing.
+        var stack = new StackPanel { Children = { combo, paramsBox } };
+        AutomationProperties.SetName(stack, AutomationProperties.GetName(combo));
         var wrapper = new Border
         {
-            Child = new StackPanel { Children = { combo, paramsBox } },
+            Child = stack,
             BorderThickness = new Avalonia.Thickness(2),
             BorderBrush = Brushes.Transparent,
             CornerRadius = new Avalonia.CornerRadius(5),
