@@ -44,9 +44,16 @@ must carry the whole install flow. That is the acceptance test:
 Install flow > pick the QuadStick volume by hand > write succeeds > backup
 created.
 
-If the app crashes at launch under sandbox, republish single-file
-(`-p:PublishSingleFile=true` on the dotnet publish line): known Avalonia
-sandbox fix.
+The build publishes single-file on purpose: it embeds the managed dlls and
+the deps/runtimeconfig json into the apphost, so Contents/MacOS holds only
+Mach-O binaries. Loose dll/json files there are neither signable code nor
+sealed resources, and MAS deep-verify rejects them. Native libraries stay
+loose (not self-extracted), so there is no sandbox temp-extraction crash.
+
+The store build is arm64-only and declares macOS 12.0 as the minimum. Apple
+rejects an arm64-only bundle that targets anything lower (it wants a universal
+Intel binary otherwise). Intel Mac users get the app from GitHub Releases,
+not the store.
 
 Upload the .pkg with Transporter (App Store), then create the listing in
 App Store Connect.
