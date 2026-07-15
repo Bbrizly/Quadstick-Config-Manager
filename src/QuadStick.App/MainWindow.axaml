@@ -139,6 +139,8 @@
                   AutomationProperties.Name="Select which mode to edit"/>
         <Button x:Name="ModeHelpButton" Classes="icon" Content="?"
                 AutomationProperties.Name="What is a mode, and why is there only one?"/>
+        <Button x:Name="AddModeButton" Classes="quiet" Content="+ Add mode"
+                AutomationProperties.Name="Add a new mode, a second full layout of your inputs, to this profile"/>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
         <!-- These three are one mutually-exclusive choice, so they sit in a
              shared track like a rocker switch bank rather than as loose,

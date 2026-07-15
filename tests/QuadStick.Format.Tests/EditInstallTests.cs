@@ -48,6 +48,30 @@ public class ProfileFileTests
     }
 
     [Fact]
+    public void AddModeSheet_appends_an_empty_mode_that_round_trips()
+    {
+        var f = ProfileFile.Load(Load("gta-mode1.csv"));
+        int sheetsBefore = f.Document.Sheets.Count;
+        int issuesBefore = f.Issues.Count;
+
+        int idx = f.AddModeSheet("Driving");
+        Assert.Equal(sheetsBefore + 1, f.Document.Sheets.Count);
+        Assert.Equal(idx, f.Document.Sheets.Count - 1);
+        Assert.Equal("Driving", f.Document.Sheets[idx].ModeName);
+        Assert.Equal(SheetType.ProfileName, f.Document.Sheets[idx].Type);
+        Assert.Empty(f.Document.Sheets[idx].Bindings);
+        // An empty mode must not raise a fresh validation error.
+        Assert.Equal(issuesBefore, f.Issues.Count);
+
+        var reloaded = ProfileFile.Load(f.ToCsvText());
+        Assert.Equal(sheetsBefore + 1, reloaded.Document.Sheets.Count);
+        Assert.Equal("Driving", reloaded.Document.Sheets[idx].ModeName);
+
+        Assert.True(f.Undo());
+        Assert.Equal(sheetsBefore, f.Document.Sheets.Count);
+    }
+
+    [Fact]
     public void RemoveInput_drops_one_input_and_shifts_the_rest_left()
     {
         var f = ProfileFile.Load(Load("gta-mode1.csv"));

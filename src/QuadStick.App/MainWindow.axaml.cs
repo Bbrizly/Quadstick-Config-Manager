@@ -176,6 +176,7 @@ public partial class MainWindow : Window
         InstallButton.Click += async (_, _) => await RunInstallFlowAsync();
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
+        AddModeButton.Click += async (_, _) => await AddModeAsync();
         SheetPicker.SelectionChanged += (_, _) =>
         {
             if (SheetPicker.SelectedIndex >= 0 && _file != null)
@@ -641,10 +642,7 @@ public partial class MainWindow : Window
         _savePath = savePath;
         _draftedRevision = -1; // new file: its Revision counter is unrelated to the last one's
         _sheetIndex = 0;
-        SheetPicker.ItemsSource = file.Document.Sheets
-            .Select((s, i) => $"{i + 1}: {(s.ModeName.Length > 0 ? s.ModeName : s.Type.ToString())}")
-            .ToList();
-        SheetPicker.SelectedIndex = 0;
+        RepopulateSheetPicker(0);
         FileNameBox.Text = file.Document.CsvFileName ?? "";
         var headerName = file.Document.HeaderName;
         Title = "Quadstick: Config Manager (unofficial) - "
@@ -652,6 +650,65 @@ public partial class MainWindow : Window
         _selectedZone = null;
         ShowEditor();
         RefreshEditor(); // RefreshIssues inside sets the status line
+    }
+
+    void RepopulateSheetPicker(int select)
+    {
+        if (_file is null) return;
+        SheetPicker.ItemsSource = _file.Document.Sheets
+            .Select((s, i) => $"{i + 1}: {(s.ModeName.Length > 0 ? s.ModeName : s.Type.ToString())}")
+            .ToList();
+        SheetPicker.SelectedIndex = select;
+    }
+
+    async Task AddModeAsync()
+    {
+        if (_file is null) { Status("Open or create a profile first."); return; }
+
+        var box = new TextBox
+        {
+            Text = $"Mode {_file.Document.Sheets.Count + 1}",
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
+        AutomationProperties.SetName(box, "Name for the new mode");
+        var add = new Button { Content = "Add mode", MinWidth = 140, IsDefault = true };
+        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        var dialog = new Window
+        {
+            Title = "Add a mode",
+            SizeToContent = SizeToContent.WidthAndHeight,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = ZoomWrap(new StackPanel
+            {
+                Margin = new Avalonia.Thickness(24),
+                Spacing = 16,
+                MaxWidth = 480,
+                Children =
+                {
+                    new TextBlock { Text = "Add a mode", FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = "A mode is a second full layout of your inputs. Switch between modes while playing with the side tube or increment_mode / decrement_mode.", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                    box,
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { add, cancel } },
+                },
+            }, _uiScale),
+        };
+        var confirmed = false;
+        void Confirm() { confirmed = true; dialog.Close(); }
+        add.Click += (_, _) => Confirm();
+        cancel.Click += (_, _) => dialog.Close();
+        box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Confirm(); };
+        await dialog.ShowDialog(this);
+
+        if (!confirmed) return;
+        var name = (box.Text ?? "").Trim();
+        if (name.Length == 0) return;
+        int idx = _file.AddModeSheet(name);
+        // SelectionChanged only fires when the index changes, so drive the
+        // editor refresh explicitly (RefreshEditor is idempotent).
+        _sheetIndex = idx;
+        _selectedZone = null;
+        RepopulateSheetPicker(idx);
+        RefreshEditor();
     }
 
     sealed record Zone(string Id, string Title, string Display, string DefaultInput, string Blurb);

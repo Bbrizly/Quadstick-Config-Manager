@@ -111,6 +111,23 @@ public sealed class ProfileFile
         return insertAt + 1;
     }
 
+    // Append a new empty Profile sheet. The section mirrors a mode header:
+    // the keyword row must START with "Profile" or the firmware skips the whole
+    // sheet, the second row is the (ignored) filename slot, the third carries
+    // the output label/channel. No binding rows: an empty mode shows the "No
+    // bindings yet" hint, not an instant validation error.
+    public int AddModeSheet(string modeName)
+    {
+        Snapshot();
+        var first = Document.Sheets.FirstOrDefault(s => s.Type == SheetType.ProfileName);
+        var label = first is { HeaderLabel.Length: > 0 } ? first.HeaderLabel : "PlayStation Outputs";
+        Grid.Add(new[] { "Profile Name", "", modeName });
+        Grid.Add(Array.Empty<string>()); // filename slot: ignored on a non-first sheet
+        Grid.Add(new[] { label, "Function", first?.Channel ?? "" });
+        Reparse();
+        return Document.Sheets.Count - 1;
+    }
+
     public void DeleteRow(int row)
     {
         if (row < 1 || row > Grid.Count) return;
