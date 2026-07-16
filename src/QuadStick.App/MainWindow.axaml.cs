@@ -1706,11 +1706,53 @@ public partial class MainWindow : Window
         note.Width = 200;
         p.Children.Add(note);
 
+        // Reorder within the mode. Both buttons always render (disabled at the
+        // edges) so the click targets stay put while a row is walked up or down.
+        int rowIndex = CurrentSheet!.Bindings.IndexOf(b);
+        foreach (var (delta, word, angle) in new[] { (-1, "up", 180.0), (+1, "down", 0.0) })
+        {
+            var move = IconButton("IconChevron", $"Move row {b.Row} {word}");
+            // The chevron points right; +90 turns it down, 180+90 turns it up.
+            ((PathIcon)move.Content!).RenderTransform = new RotateTransform(angle + 90);
+            move.Tag = (word, b.Row);
+            move.IsEnabled = rowIndex + delta >= 0 && rowIndex + delta < CurrentSheet!.Bindings.Count;
+            move.Click += (_, _) => MoveListRow(b, delta);
+            p.Children.Add(move);
+        }
+
         var del = new Button { Content = "Delete row", Classes = { "danger" } };
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
         del.Click += (_, _) => DeleteListRow(b);
         p.Children.Add(del);
         return p;
+    }
+
+    // Swap this row with its neighbor in the same mode's binding list. After
+    // the rebuild, focus follows the same-direction move button on the moved
+    // row so a keyboard user can keep walking it without re-tabbing; at the
+    // edge (button disabled) focus lands on the row's output cell instead.
+    void MoveListRow(Binding b, int delta)
+    {
+        var sheet = CurrentSheet;
+        if (sheet is null || _file is null) return;
+        int i = sheet.Bindings.IndexOf(b);
+        int j = i + delta;
+        if (i < 0 || j < 0 || j >= sheet.Bindings.Count) return;
+        int destRow = sheet.Bindings[j].Row;
+        var off = GridScroll.Offset;
+        _file.SwapRows(b.Row, destRow);
+        RebuildRows();
+        RestoreListScroll(off, () =>
+        {
+            var key = (delta < 0 ? "up" : "down", destRow);
+            var moveButton = RowsPanel.Children.OfType<StackPanel>()
+                .SelectMany(row => row.Children.OfType<Button>())
+                .FirstOrDefault(x => x.Tag is ValueTuple<string, int> t && t.Equals(key));
+            if (moveButton is { IsEnabled: true })
+            { moveButton.BringIntoView(); moveButton.Focus(); }
+            else if (_cellBorders.TryGetValue($"A{destRow}", out var border))
+            { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); }
+        });
     }
 
     // Delete a List View row without the scroll jumping to the top: restore the

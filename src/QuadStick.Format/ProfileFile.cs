@@ -128,6 +128,15 @@ public sealed class ProfileFile
         return Document.Sheets.Count - 1;
     }
 
+    // Swap two whole grid rows, so column-K comments travel with their row.
+    public void SwapRows(int rowA, int rowB)
+    {
+        if (rowA == rowB || rowA < 1 || rowB < 1 || rowA > Grid.Count || rowB > Grid.Count) return;
+        Snapshot();
+        (Grid[rowA - 1], Grid[rowB - 1]) = (Grid[rowB - 1], Grid[rowA - 1]);
+        Reparse();
+    }
+
     // Heal the "note kept in an input column" habit: move the cell's text into
     // the notes area (column K, which the device ignores) and clear the cell.
     public void MoveInputToNotes(int row, int col)

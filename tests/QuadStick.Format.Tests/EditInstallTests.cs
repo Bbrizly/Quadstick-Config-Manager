@@ -91,6 +91,26 @@ public class ProfileFileTests
     }
 
     [Fact]
+    public void SwapRows_reorders_bindings_and_comments_travel_with_their_row()
+    {
+        var f = ProfileFile.Load(Load("default.csv"));
+        var sheet = f.Document.Sheets[0];
+        var first = sheet.Bindings[0];
+        var second = sheet.Bindings[1];
+        f.SetCell(first.Row, 10, "note on first");
+
+        f.SwapRows(first.Row, second.Row);
+        sheet = f.Document.Sheets[0];
+        Assert.Equal(second.Output, sheet.Bindings[0].Output);
+        Assert.Equal(first.Output, sheet.Bindings[1].Output);
+        // The comment moved with its row: it now sits where the row landed.
+        Assert.Equal("note on first", f.GetCell(second.Row, 10));
+
+        Assert.True(f.Undo());
+        Assert.Equal(first.Output, f.Document.Sheets[0].Bindings[0].Output);
+    }
+
+    [Fact]
     public void MoveInputToNotes_heals_a_note_kept_in_an_input_column()
     {
         var f = ProfileFile.Load(Load("default.csv"));
