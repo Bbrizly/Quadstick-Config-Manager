@@ -4,7 +4,11 @@ public enum SheetType { ProfileName, Preferences, Infrared }
 
 public enum Severity { Error, Warning }
 
-public sealed record Issue(Severity Severity, string Cell, string Message, string Fix)
+// A machine-readable tag for issues the app can fix with one click.
+// Matching on the message text would break the moment a wording changes.
+public enum IssueKind { None, UnknownInput }
+
+public sealed record Issue(Severity Severity, string Cell, string Message, string Fix, IssueKind Kind = IssueKind.None)
 {
     public override string ToString() => $"{Severity} {Cell}: {Message} ({Fix})";
 }

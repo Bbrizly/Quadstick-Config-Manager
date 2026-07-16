@@ -211,7 +211,11 @@ public partial class MainWindow : Window
         // the offending cell so the user can fix it right away.
         IssuesList.SelectionChanged += async (_, _) =>
         {
-            if (IssuesList.SelectedItem is TextBlock { Text.Length: > 0 } tb && Clipboard is { } cb)
+            // An item is a bare TextBlock, or a StackPanel wrapping the text
+            // plus a quick-fix button (unknown-input errors).
+            var tb = IssuesList.SelectedItem as TextBlock
+                ?? (IssuesList.SelectedItem as StackPanel)?.Children.OfType<TextBlock>().FirstOrDefault();
+            if (tb is { Text.Length: > 0 } && Clipboard is { } cb)
             {
                 await cb.SetTextAsync(tb.Text);
                 Status("Problem copied to the clipboard.", StatusKind.Info);
@@ -1921,14 +1925,7 @@ public partial class MainWindow : Window
               }
             : _file.Issues
                 .OrderBy(i => i.Severity == Severity.Error ? 0 : 1)
-                .Select(i => (Control)new TextBlock
-                {
-                    Text = i.ToString(),
-                    TextWrapping = TextWrapping.Wrap,
-                    FontSize = Size("SmallSize"),
-                    Classes = { i.Severity == Severity.Error ? "error" : "warn" },
-                    Tag = i, // lets SelectionChanged/Fix-first find the cell to focus
-                })
+                .Select(IssueItem)
                 .ToList();
 
         foreach (var issue in _file.Issues)
@@ -1948,6 +1945,41 @@ public partial class MainWindow : Window
                 : $"{errors} error(s), {warns} warning(s). Errors block installing.",
             errors > 0 ? StatusKind.Error : warns > 0 ? StatusKind.Warning : StatusKind.Ready);
         UpdateProblemsToggle();
+    }
+
+    // One row in the problems list. Unknown-input errors get a one-click cure:
+    // old profiles keep notes in the input columns (C..J), which the device
+    // reads as inputs; moving the text to the notes column keeps the note and
+    // clears the error.
+    Control IssueItem(Issue i)
+    {
+        var tb = new TextBlock
+        {
+            Text = i.ToString(),
+            TextWrapping = TextWrapping.Wrap,
+            FontSize = Size("SmallSize"),
+            Classes = { i.Severity == Severity.Error ? "error" : "warn" },
+            Tag = i, // lets SelectionChanged/Fix-first find the cell to focus
+        };
+        if (i.Kind != IssueKind.UnknownInput) return tb;
+
+        var fix = new Button
+        {
+            Content = "Move to notes", Classes = { "quiet" },
+            Margin = new Avalonia.Thickness(0, 2, 0, 0), HorizontalAlignment = HorizontalAlignment.Left,
+        };
+        AutomationProperties.SetName(fix, $"Move the text in cell {i.Cell} to the notes column");
+        fix.Click += (_, _) => MoveIssueTextToNotes(i);
+        return new StackPanel { Children = { tb, fix }, Tag = i };
+    }
+
+    void MoveIssueTextToNotes(Issue i)
+    {
+        if (_file is null || !int.TryParse(i.Cell.AsSpan(1), out int row)) return;
+        _file.MoveInputToNotes(row, i.Cell[0] - 'A');
+        if (_deviceView) { BuildDeviceView(); BuildZoneDetail(); RefreshIssues(); }
+        else { var off = GridScroll.Offset; RebuildRows(); RestoreListScroll(off, () => { }); }
+        Status($"Moved the text from {i.Cell} into the notes column.", StatusKind.Info);
     }
 
     // ---- Small shared UI builders for the redesigned editor ----

@@ -91,6 +91,29 @@ public class ProfileFileTests
     }
 
     [Fact]
+    public void MoveInputToNotes_heals_a_note_kept_in_an_input_column()
+    {
+        var f = ProfileFile.Load(Load("default.csv"));
+        int row = f.Document.Sheets[0].Bindings[0].Row;
+        f.SetCell(row, 3, "reload here"); // an old-habit note in column D
+        var issue = f.Issues.Single(i => i.Kind == IssueKind.UnknownInput);
+        Assert.Equal($"D{row}", issue.Cell);
+
+        f.MoveInputToNotes(row, 3);
+        Assert.Equal("", f.GetCell(row, 3));
+        Assert.Equal("reload here", f.GetCell(row, 10));
+        Assert.DoesNotContain(f.Issues, i => i.Kind == IssueKind.UnknownInput);
+
+        // A second move appends instead of overwriting the existing note.
+        f.SetCell(row, 3, "aim here");
+        f.MoveInputToNotes(row, 3);
+        Assert.Equal("reload here; aim here", f.GetCell(row, 10));
+
+        Assert.True(f.Undo()); // undoes just the move, one snapshot per fix
+        Assert.Equal("aim here", f.GetCell(row, 3));
+    }
+
+    [Fact]
     public void New_from_template_clones_factory_default_with_new_name()
     {
         var f = ProfileFile.NewFromTemplate("mygame.csv");

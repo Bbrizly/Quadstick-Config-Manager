@@ -128,6 +128,29 @@ public sealed class ProfileFile
         return Document.Sheets.Count - 1;
     }
 
+    // Heal the "note kept in an input column" habit: move the cell's text into
+    // the notes area (column K, which the device ignores) and clear the cell.
+    public void MoveInputToNotes(int row, int col)
+    {
+        const int noteCol = 10;
+        var val = GetCell(row, col);
+        if (val.Length == 0 || col is < 2 or > 9) return;
+        Snapshot();
+        var r = Grid[row - 1];
+        if (r.Length <= noteCol)
+        {
+            var wider = new string[noteCol + 1];
+            r.CopyTo(wider, 0);
+            for (int i = r.Length; i < wider.Length; i++) wider[i] = "";
+            Grid[row - 1] = wider;
+            r = wider;
+        }
+        var existing = r[noteCol].Trim();
+        r[noteCol] = existing.Length > 0 ? existing + "; " + val : val;
+        r[col] = "";
+        Reparse();
+    }
+
     public void DeleteRow(int row)
     {
         if (row < 1 || row > Grid.Count) return;

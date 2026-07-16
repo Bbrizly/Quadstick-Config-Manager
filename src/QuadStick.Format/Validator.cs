@@ -264,7 +264,8 @@ public static class Validator
             else
                 issues.Add(new Issue(Severity.Error, $"{(char)('A' + col)}{b.Row}",
                     $"\"{input}\" is not a documented input name.",
-                    "Pick an input from the Inputs dropdown list, e.g. \"mp_left_sip\" or \"lip\"."));
+                    "Pick an input from the Inputs dropdown list, e.g. \"mp_left_sip\" or \"lip\".",
+                    IssueKind.UnknownInput));
         }
     }
 }
