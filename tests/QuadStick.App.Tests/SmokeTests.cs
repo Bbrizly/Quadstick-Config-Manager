@@ -70,6 +70,17 @@ public class SmokeTests
     }
 
     [AvaloniaFact]
+    public void Label_style_cycles_through_all_three_without_throwing()
+    {
+        var w = NewWindow();
+        w.LoadProfile(ProfileFile.NewFromTemplate("smoke.csv"));
+        w.SelectZoneForPreview("mp_center");
+        // plain English -> Xbox style -> raw list names -> back to plain
+        for (int k = 0; k < 3; k++) w.CycleLabelStyleForPreview();
+        w.Close();
+    }
+
+    [AvaloniaFact]
     public void Save_as_template_then_use_template_round_trips()
     {
         MainWindow.LibraryDir = Path.Combine(Path.GetTempPath(), "qs-tpl-" + Guid.NewGuid().ToString("N"));

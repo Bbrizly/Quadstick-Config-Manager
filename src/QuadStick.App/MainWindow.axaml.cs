@@ -60,11 +60,12 @@ public partial class MainWindow : Window
     bool _deviceView = true;    // true = the split editor (diagram OR rail); false = the raw List View
     bool _railView;             // when in the split editor, show the parts as a list instead of the diagram
     string? _selectedZone;
-    // Device View shows friendly words ("soft sip") by default; the Labels
-    // toggle flips every input/output/function name to the raw token the List
-    // View and the CSV use ("mp_left_sip_soft"), so the two views speak the
-    // same vocabulary when a power user wants it.
-    bool _friendlyLabels = true;
+    // Device View shows friendly words ("soft sip") by default; the Words
+    // button cycles plain English -> Xbox-style button names -> the raw token
+    // the List View and the CSV use ("mp_left_sip_soft"), so the views speak
+    // whichever vocabulary the user thinks in.
+    int _labelStyle = 1; // 0 = raw list names, 1 = plain English, 2 = Xbox style
+    bool _friendlyLabels => _labelStyle != 0;
     QsModel _model;
     AppSettings _settings = Settings.Load();
     double _uiScale = 1.0;
@@ -533,11 +534,12 @@ public partial class MainWindow : Window
         else AddRowButton.Focus();
     }
 
-    // Flip Device View between plain-English words and the raw list-view/CSV
-    // token names, and rebuild so every dropdown label follows suit.
+    // Cycle Device View between plain-English words, Xbox-style button names,
+    // and the raw list-view/CSV token names, and rebuild so every dropdown
+    // label follows suit.
     void ToggleLabelStyle()
     {
-        _friendlyLabels = !_friendlyLabels;
+        _labelStyle = (_labelStyle + 1) % 3;
         UpdateLabelStyleButton();
         if (_deviceView && CurrentSheet?.Type == SheetType.ProfileName)
         { BuildDeviceView(); BuildZoneDetail(); }
@@ -545,10 +547,18 @@ public partial class MainWindow : Window
 
     void UpdateLabelStyleButton()
     {
-        LabelStyleButton.Content = _friendlyLabels ? "Words: Plain English" : "Words: List names";
-        AutomationProperties.SetName(LabelStyleButton, _friendlyLabels
-            ? "Words are shown in plain English. Switch to the raw list-view names."
-            : "Words are shown as raw list-view names. Switch to plain English.");
+        LabelStyleButton.Content = _labelStyle switch
+        {
+            0 => "Words: List names",
+            1 => "Words: Plain English",
+            _ => "Words: Xbox style",
+        };
+        AutomationProperties.SetName(LabelStyleButton, _labelStyle switch
+        {
+            0 => "Words are shown as raw list-view names. Switch to plain English.",
+            1 => "Words are shown in plain English. Switch to Xbox style button names.",
+            _ => "Words are shown as Xbox style button names. Switch to the raw list-view names.",
+        });
     }
 
     void RefreshHomeCards()
@@ -813,9 +823,30 @@ public partial class MainWindow : Window
         return char.ToUpperInvariant(s[0]) + s[1..];
     }
 
-    // How an output/function token is shown in Device View: friendly words, or
-    // the raw token exactly as List View and the CSV spell it.
-    string TokenLabel(string token) => _friendlyLabels ? Humanize(token) : token;
+    // PlayStation output tokens shown with their Xbox equivalents, for users
+    // who think in Xbox terms. Only game buttons differ; everything else
+    // (keyboard, mouse, dpad, sticks) reads the same on both and falls back
+    // to plain English.
+    internal static readonly Dictionary<string, string> XboxStyle = new(StringComparer.Ordinal)
+    {
+        ["x"] = "A button", ["circle"] = "B button", ["square"] = "X button",
+        ["triangle"] = "Y button", ["left_1"] = "Left bumper", ["right_1"] = "Right bumper",
+        ["left_2"] = "Left trigger", ["right_2"] = "Right trigger",
+        ["left_3"] = "Left stick click", ["right_3"] = "Right stick click",
+        ["select"] = "View button", ["start"] = "Menu button", ["ps3"] = "Xbox button",
+    };
+
+    // How an output/function token is shown in Device View: friendly words,
+    // Xbox-style names, or the raw token exactly as List View and the CSV
+    // spell it.
+    string TokenLabel(string token)
+    {
+        // Avalonia templates a null item during measure before any value binds.
+        var t = token ?? "";
+        return _labelStyle == 0 ? t
+            : _labelStyle == 2 && XboxStyle.TryGetValue(t, out var xbox) ? xbox
+            : Humanize(t);
+    }
 
     // Label for an input token in a dropdown that can list inputs from more than
     // one part. Same-part tokens read bare ("Puff"); tokens from another part are
@@ -1318,6 +1349,8 @@ public partial class MainWindow : Window
     { ModelPicker.SelectedIndex = index; }
 
     public void SetDeviceViewForPreview(bool device) => SetDeviceView(device);
+
+    public void CycleLabelStyleForPreview() => ToggleLabelStyle();
 
     public void ShowProblemsForPreview()
     { if (!_problemsExpanded) ToggleProblems(); }
