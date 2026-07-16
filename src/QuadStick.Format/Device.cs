@@ -12,9 +12,9 @@ public static class Device
     // on Home. Install always uses the live FindCandidates() below.
     static List<string>? _cache;
     static DateTime _cacheAtUtc;
-    public static List<string> FindCandidatesCached(TimeSpan? ttl = null)
+    public static List<string> FindCandidatesCached()
     {
-        if (_cache is not null && DateTime.UtcNow - _cacheAtUtc < (ttl ?? TimeSpan.FromSeconds(3)))
+        if (_cache is not null && DateTime.UtcNow - _cacheAtUtc < TimeSpan.FromSeconds(3))
             return _cache;
         _cache = FindCandidates();
         _cacheAtUtc = DateTime.UtcNow;

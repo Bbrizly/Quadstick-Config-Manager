@@ -1,6 +1,5 @@
 // src/QuadStick.App/Theme.cs
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -25,25 +24,16 @@ public static class Settings
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "QuadStickConfigManager", "settings.json");
 
+    // Case-insensitive so old files with lowercase "model"/"theme" still load.
+    static readonly JsonSerializerOptions Opts = new()
+    {
+        IncludeFields = true,
+        PropertyNameCaseInsensitive = true,
+    };
+
     public static AppSettings Load(string? path = null)
     {
-        try
-        {
-            var node = JsonNode.Parse(File.ReadAllText(path ?? DefaultPath))!.AsObject();
-            return new AppSettings
-            {
-                Model = node["model"]?.GetValue<string>() ?? "FPS",
-                Theme = node["theme"]?.GetValue<string>() ?? "System",
-                InterfaceScalePercent = node["InterfaceScalePercent"]?.GetValue<int>() ?? 100,
-                ReduceMotion = node["ReduceMotion"]?.GetValue<bool>() ?? false,
-                RememberWindow = node["RememberWindow"]?.GetValue<bool>() ?? true,
-                TutorialSeen = node["TutorialSeen"]?.GetValue<bool>() ?? false,
-                WinW = node["WinW"]?.GetValue<double>(),
-                WinH = node["WinH"]?.GetValue<double>(),
-                WinX = node["WinX"]?.GetValue<double>(),
-                WinY = node["WinY"]?.GetValue<double>(),
-            };
-        }
+        try { return JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(path ?? DefaultPath), Opts) ?? new(); }
         catch { return new AppSettings(); }
     }
 
@@ -52,21 +42,8 @@ public static class Settings
         var p = path ?? DefaultPath;
         try
         {
-            var node = new JsonObject
-            {
-                ["model"] = s.Model,
-                ["theme"] = s.Theme,
-                ["InterfaceScalePercent"] = s.InterfaceScalePercent,
-                ["ReduceMotion"] = s.ReduceMotion,
-                ["RememberWindow"] = s.RememberWindow,
-                ["TutorialSeen"] = s.TutorialSeen,
-                ["WinW"] = s.WinW,
-                ["WinH"] = s.WinH,
-                ["WinX"] = s.WinX,
-                ["WinY"] = s.WinY,
-            };
             Directory.CreateDirectory(Path.GetDirectoryName(p)!);
-            File.WriteAllText(p, node.ToJsonString(new JsonSerializerOptions { WriteIndented = false }));
+            File.WriteAllText(p, JsonSerializer.Serialize(s, Opts));
         }
         catch { /* settings are a convenience, never fatal */ }
     }
