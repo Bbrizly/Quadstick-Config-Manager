@@ -1865,8 +1865,9 @@ public partial class MainWindow : Window
 
         bool prefs = CurrentSheet.Type != SheetType.ProfileName;
         RowsPanel.Children.Add(prefs ? PrefsHeaderRow() : HeaderRow());
+        int number = 1;
         foreach (var b in CurrentSheet.Bindings)
-            RowsPanel.Children.Add(prefs ? PrefsRow(b) : BindingRow(b));
+            RowsPanel.Children.Add(prefs ? PrefsRow(b, number++) : BindingRow(b, number++));
 
         if (CurrentSheet.Bindings.Count == 0)
             RowsPanel.Children.Add(new TextBlock
@@ -1898,11 +1899,12 @@ public partial class MainWindow : Window
     // Output swatch no matter how many digits the row number has.
     const double RowNumberWidth = 34;
 
-    // The CSV row number for this line, shown at the left edge so it matches
-    // the "A12"-style cell references in validation messages.
-    static Control RowNumberLabel(int row) => new TextBlock
+    // The line's position in the visible list (1, 2, 3...), shown at the left
+    // edge. Not the CSV grid row: bindings start three header lines down, so
+    // the raw row would begin at 4 and read as wrong.
+    static Control RowNumberLabel(int number) => new TextBlock
     {
-        Text = row.ToString(), FontSize = Size("SmallSize"), Classes = { "muted" },
+        Text = number.ToString(), FontSize = Size("SmallSize"), Classes = { "muted" },
         Width = RowNumberWidth, VerticalAlignment = VerticalAlignment.Center,
         TextAlignment = TextAlignment.Right, Margin = new Avalonia.Thickness(0, 0, 4, 0),
     };
@@ -1930,10 +1932,10 @@ public partial class MainWindow : Window
         return p;
     }
 
-    Control PrefsRow(Binding b)
+    Control PrefsRow(Binding b, int number)
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(RowNumberLabel(b.Row));
+        p.Children.Add(RowNumberLabel(number));
         p.Children.Add(SuggestBox(b.Row, 0, b.Output, 300, NoSuggestions, $"Setting name for row {b.Row}", OutputTint));
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 160, NoSuggestions, $"Setting value for row {b.Row}", FunctionTint));
         var del = new Button { Content = "Delete row", Classes = { "danger" } };
@@ -1943,10 +1945,10 @@ public partial class MainWindow : Window
         return p;
     }
 
-    Control BindingRow(Binding b)
+    Control BindingRow(Binding b, int number)
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(RowNumberLabel(b.Row));
+        p.Children.Add(RowNumberLabel(number));
         p.Children.Add(SuggestBox(b.Row, 0, b.Output, 220, OutputSuggestionsFor(CurrentSheet!), $"Output for row {b.Row}", OutputTint));
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint));
 
@@ -2112,7 +2114,11 @@ public partial class MainWindow : Window
         var wrapper = new Border
         {
             Child = box,
-            BorderThickness = new Avalonia.Thickness(2),
+            // Match the thickness RefreshIssues sets on an errored cell, so
+            // flagging a problem only recolors the border and never reflows the
+            // row. A thinner clean border would shift the row a pixel and knock
+            // the row number off center.
+            BorderThickness = new Avalonia.Thickness(3),
             BorderBrush = Brushes.Transparent,
             CornerRadius = new Avalonia.CornerRadius(5),
         };
@@ -2309,7 +2315,9 @@ public partial class MainWindow : Window
         foreach (var b in _cellBorders.Values)
         {
             b.BorderBrush = Brushes.Transparent;
-            b.BorderThickness = new Avalonia.Thickness(2);
+            // Keep the same thickness an errored cell gets below, so toggling a
+            // problem only recolors the border and never reflows the row height.
+            b.BorderThickness = new Avalonia.Thickness(3);
             if (b.Child is Control c) AutomationProperties.SetName(b, AutomationProperties.GetName(c));
         }
         if (_file is null) { IssuesList.ItemsSource = null; return; }
