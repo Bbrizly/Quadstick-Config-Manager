@@ -2166,19 +2166,21 @@ public partial class MainWindow : Window
             // row. Compute the row's own position in GridScroll's coordinate
             // space (untouched by the ancestor zoom, same units as Offset) and
             // make sure its bottom edge is inside the viewport too.
-            ScrollRowIntoView(border);
-
-            // A focused AutoCompleteBox is invisible to a mouse-only user with
-            // no cursor to find it, so also flash the row itself.
-            if (border.Parent is Control row) FlashNewRow(row);
+            if (border.Parent is Control row)
+            {
+                ScrollRowIntoView(row);
+                // A focused AutoCompleteBox is invisible to a mouse-only user
+                // with no cursor to find it, so also flash the row itself.
+                FlashNewRow(row);
+            }
         });
     }
 
     // Clamped the same way RestoreListScroll clamps a restored offset: never
     // past the scrollable extent.
-    void ScrollRowIntoView(Border rowCell)
+    void ScrollRowIntoView(Control row)
     {
-        var bottom = rowCell.TranslatePoint(new Point(0, rowCell.Bounds.Height), RowsPanel);
+        var bottom = row.TranslatePoint(new Point(0, row.Bounds.Height), RowsPanel);
         if (bottom is not { } p) return;
         var viewport = GridScroll.Viewport.Height;
         var maxY = Math.Max(0, GridScroll.Extent.Height - viewport);
