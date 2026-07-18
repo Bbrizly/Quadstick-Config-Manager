@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 
 namespace QuadStick.App;
 
@@ -28,6 +29,11 @@ public class SettingsWindow : Window
     // it builds and holds its own LayoutTransformControl instead.
     readonly LayoutTransformControl _zoom;
 
+    // A pending interface-size preview: the timer counts down and _revertSize
+    // puts the size back unless the user confirms. Null when nothing is pending.
+    DispatcherTimer? _sizeTimer;
+    Action? _revertSize;
+
     public SettingsWindow(MainWindow owner)
     {
         Title = "Settings";
@@ -46,34 +52,55 @@ public class SettingsWindow : Window
             },
         };
 
-        // At high interface scale the window can grow taller than the screen,
-        // pushing the titlebar's own close control out of reach. IsCancel wires
-        // Esc to this button at the window level (no focus needed), and it stays
-        // reachable by scrolling since it lives in the same scrollable content
-        // as the tabs, matching this app's Cancel-button dialog idiom elsewhere.
-        var close = new Button { Content = "Close", MinWidth = 140, IsCancel = true, HorizontalAlignment = HorizontalAlignment.Right };
+        // A big Close button pinned to the top-right, outside the scroll and
+        // zoom so it never scrolls off screen or shrinks at small interface
+        // sizes. IsCancel wires Esc to it too, no focus needed.
+        var close = new Button
+        {
+            Content = "Close", Classes = { "primary" }, IsCancel = true,
+            FontSize = Size("SubheadSize"), Padding = new Thickness(28, 12),
+            MinWidth = 150, VerticalAlignment = VerticalAlignment.Center,
+        };
         AutomationProperties.SetName(close, "Close settings");
         close.Click += (_, _) => Close();
 
-        var footer = new StackPanel
+        var header = new Grid
         {
-            Margin = new Thickness(24, 0, 24, 24),
-            Spacing = 16,
+            Margin = new Thickness(20, 12),
+            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
             Children =
             {
-                new Border { Height = 1, Background = (Application.Current!.FindResource("SurfaceBorderBrush") as IBrush) },
+                new TextBlock
+                {
+                    Text = "Settings", FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold,
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
                 close,
             },
         };
-        var layout = new StackPanel { Children = { tabControl, footer } };
+        Grid.SetColumn(close, 1);
+        var divider = new Border { Height = 1, Background = Application.Current!.FindResource("SurfaceBorderBrush") as IBrush };
 
-        _zoom = new LayoutTransformControl { LayoutTransform = new ScaleTransform(owner.UiScale, owner.UiScale), Child = layout };
-        Content = new ScrollViewer
+        _zoom = new LayoutTransformControl { LayoutTransform = new ScaleTransform(owner.UiScale, owner.UiScale), Child = tabControl };
+        var body = new ScrollViewer
         {
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             Content = _zoom,
         };
+
+        DockPanel.SetDock(header, Dock.Top);
+        DockPanel.SetDock(divider, Dock.Top);
+        Content = new DockPanel { LastChildFill = true, Children = { header, divider, body } };
+    }
+
+    // A settings window closed with an interface-size preview still pending
+    // counts as "not confirmed", so put the size back, matching the countdown.
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        _sizeTimer?.Stop();
+        _revertSize?.Invoke();
     }
 
     // Keeps this window's own zoom and size in sync with the interface-size
@@ -165,15 +192,96 @@ public class SettingsWindow : Window
             ItemsSource = Array.ConvertAll(scalePercents, p => $"{p}%"),
             SelectedIndex = scaleIndex >= 0 ? scaleIndex : 0,
             MinWidth = 220,
+            VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(scale, "Interface size, in percent");
+
+        // A new size previews live but is not saved until the user confirms.
+        // A countdown reverts to the last saved size otherwise, so a size that
+        // turns out to be unusable can never trap the user, the same guard
+        // Windows puts on a display-resolution change.
+        var saveSize = new Button
+        {
+            Content = "Save size", Classes = { "primary" }, IsVisible = false,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        AutomationProperties.SetName(saveSize, "Keep this interface size");
+        var countdown = new TextBlock
+        {
+            IsVisible = false, VerticalAlignment = VerticalAlignment.Center,
+            FontSize = Size("BodySize"), Classes = { "muted" },
+        };
+
+        bool suppress = false; // stops the programmatic revert re-triggering this
+        int remaining = 0;
+        const int RevertSeconds = 15;
+
+        void EndPreview()
+        {
+            _sizeTimer?.Stop();
+            _revertSize = null;
+            saveSize.IsVisible = false;
+            countdown.IsVisible = false;
+        }
+
+        void Revert()
+        {
+            var saved = owner.CurrentSettings.InterfaceScalePercent;
+            EndPreview();
+            suppress = true;
+            int idx = Array.IndexOf(scalePercents, saved);
+            scale.SelectedIndex = idx >= 0 ? idx : 0;
+            suppress = false;
+            owner.ApplyInterfaceScale(saved);
+            RescaleTo(owner);
+        }
+
+        _sizeTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _sizeTimer.Tick += (_, _) =>
+        {
+            remaining--;
+            if (remaining <= 0) { Revert(); return; }
+            countdown.Text = $"Reverting in {remaining}s";
+        };
+
         scale.SelectionChanged += (_, _) =>
         {
-            if (scale.SelectedIndex < 0) return;
-            owner.SetInterfaceScale(scalePercents[scale.SelectedIndex]);
+            if (suppress || scale.SelectedIndex < 0) return;
+            int pct = scalePercents[scale.SelectedIndex];
+
+            // Picking the already-saved size just applies it, no countdown.
+            if (pct == owner.CurrentSettings.InterfaceScalePercent)
+            {
+                EndPreview();
+                owner.ApplyInterfaceScale(pct);
+                RescaleTo(owner);
+                return;
+            }
+
+            owner.ApplyInterfaceScale(pct); // preview only; SetInterfaceScale saves
             RescaleTo(owner);
+            remaining = RevertSeconds;
+            countdown.Text = $"Reverting in {remaining}s";
+            saveSize.IsVisible = true;
+            countdown.IsVisible = true;
+            _revertSize = Revert;
+            _sizeTimer.Stop();
+            _sizeTimer.Start();
         };
-        panel.Children.Add(scale);
+
+        saveSize.Click += (_, _) =>
+        {
+            if (scale.SelectedIndex < 0) return;
+            owner.SetInterfaceScale(scalePercents[scale.SelectedIndex]); // now persist it
+            EndPreview();
+        };
+
+        var scaleRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 10,
+            Children = { scale, saveSize, countdown },
+        };
+        panel.Children.Add(scaleRow);
         panel.Children.Add(Caption("Makes all text and controls larger or smaller."));
 
         panel.Children.Add(Label("Default QuadStick model"));
