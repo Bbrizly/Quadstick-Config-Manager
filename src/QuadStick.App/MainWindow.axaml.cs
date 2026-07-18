@@ -1515,9 +1515,12 @@ public partial class MainWindow : Window
         { Status($"Could not open {picks[0].Name}: {ex.Message}", StatusKind.Error); }
     }
 
-    async Task SaveAsync()
+    // Returns true only once the file has actually reached disk, so
+    // ConfirmLeaveAsync can tell a real save from a cancelled picker or a
+    // failed write and keep the user's work on screen either way.
+    async Task<bool> SaveAsync()
     {
-        if (_file is null) return;
+        if (_file is null) return false;
 
         // Save never writes to the QuadStick itself. Only Install does: it is
         // the one path with validate, backup, readback, and the default.csv
@@ -1529,7 +1532,7 @@ public partial class MainWindow : Window
         {
             Status("This profile lives on the QuadStick. Use Install to write it back safely; Save As puts a copy in your library.", StatusKind.Warning);
             _savePath = null; // fall through to Save As on the next save
-            return;
+            return false;
         }
 
         if (_savePath is null)
@@ -1543,12 +1546,12 @@ public partial class MainWindow : Window
                 SuggestedStartLocation = start,
                 DefaultExtension = "csv",
             });
-            if (pick is null) return;
+            if (pick is null) return false;
             var pickedDir = Path.GetDirectoryName(pick.Path.LocalPath);
             if (pickedDir is not null && Device.IsInstallTarget(pickedDir))
             {
                 Status("That folder is a QuadStick drive. Use Install to write to the device safely.", StatusKind.Warning);
-                return;
+                return false;
             }
             _savePath = pick.Path.LocalPath;
         }
@@ -1559,10 +1562,11 @@ public partial class MainWindow : Window
             await File.WriteAllTextAsync(_savePath, _file.ToCsvText());
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        { Status($"Could not save: {ex.Message}", StatusKind.Error); return; }
+        { Status($"Could not save: {ex.Message}", StatusKind.Error); return false; }
         _file.Dirty = false;
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
         Status($"Saved to {_savePath}.", StatusKind.Ready);
+        return true;
     }
 
     async Task ImportAsync()
@@ -1733,11 +1737,49 @@ public partial class MainWindow : Window
         RefreshIssues(); // bad names surface immediately as errors
     }
 
+    // Returning true means it is safe to discard the open profile and
+    // proceed. Save only earns that if SaveAsync actually reached disk; a
+    // cancelled picker or a failed write must keep the user right where
+    // they were, work intact.
     async Task<bool> ConfirmLeaveAsync()
     {
         if (_file is not { Dirty: true }) return true;
-        return await ConfirmAsync("Leave without saving?",
-            "This profile has unsaved changes. If you leave now they are lost. Leave anyway?");
+
+        var title = "Save your changes?";
+        var message = "This profile has unsaved changes. Save them before leaving?";
+        var save = new Button { Content = "Save", MinWidth = 140, IsDefault = true };
+        var dontSave = new Button { Content = "Don't save", MinWidth = 140 };
+        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        var dialog = new Window
+        {
+            Title = title,
+            SizeToContent = SizeToContent.WidthAndHeight,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = ZoomWrap(new StackPanel
+            {
+                Margin = new Avalonia.Thickness(24),
+                Spacing = 16,
+                MaxWidth = 480,
+                Children =
+                {
+                    new TextBlock { Text = title, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { save, dontSave, cancel } },
+                },
+            }, _uiScale),
+        };
+        var choice = "cancel";
+        save.Click += (_, _) => { choice = "save"; dialog.Close(); };
+        dontSave.Click += (_, _) => { choice = "dontsave"; dialog.Close(); };
+        cancel.Click += (_, _) => dialog.Close();
+        await dialog.ShowDialog(this);
+
+        return choice switch
+        {
+            "save" => await SaveAsync(), // a blocked or cancelled save must not leave
+            "dontsave" => true,
+            _ => false,
+        };
     }
 
     void UndoEdit()
