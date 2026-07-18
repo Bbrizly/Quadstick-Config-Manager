@@ -1787,9 +1787,28 @@ public partial class MainWindow : Window
         return border;
     }
 
+    // How wide the row-number column is, in RowNumberLabel and its matching
+    // header spacer. Fixed so every row's Output cell lines up under the
+    // Output swatch no matter how many digits the row number has.
+    const double RowNumberWidth = 34;
+
+    // The CSV row number for this line, shown at the left edge so it matches
+    // the "A12"-style cell references in validation messages.
+    static Control RowNumberLabel(int row) => new TextBlock
+    {
+        Text = row.ToString(), FontSize = Size("SmallSize"), Classes = { "muted" },
+        Width = RowNumberWidth, VerticalAlignment = VerticalAlignment.Center,
+        TextAlignment = TextAlignment.Right, Margin = new Avalonia.Thickness(0, 0, 4, 0),
+    };
+
+    // Keeps the header swatches lined up over their columns now that every
+    // data row starts with a row-number label.
+    static Control RowNumberHeaderSpacer() => new Border { Width = RowNumberWidth };
+
     Control HeaderRow()
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        p.Children.Add(RowNumberHeaderSpacer());
         p.Children.Add(Swatch("Output (game button)", 220, OutputTint));
         p.Children.Add(Swatch("Function (behavior)", 180, FunctionTint));
         p.Children.Add(Swatch("Inputs (sips, puffs, joystick)", 240, InputTint));
@@ -1799,6 +1818,7 @@ public partial class MainWindow : Window
     Control PrefsHeaderRow()
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        p.Children.Add(RowNumberHeaderSpacer());
         p.Children.Add(Swatch("Setting", 300, OutputTint));
         p.Children.Add(Swatch("Value", 160, FunctionTint));
         return p;
@@ -1807,6 +1827,7 @@ public partial class MainWindow : Window
     Control PrefsRow(Binding b)
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        p.Children.Add(RowNumberLabel(b.Row));
         p.Children.Add(SuggestBox(b.Row, 0, b.Output, 300, NoSuggestions, $"Setting name for row {b.Row}", OutputTint));
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 160, NoSuggestions, $"Setting value for row {b.Row}", FunctionTint));
         var del = new Button { Content = "Delete row", Classes = { "danger" } };
@@ -1819,6 +1840,7 @@ public partial class MainWindow : Window
     Control BindingRow(Binding b)
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        p.Children.Add(RowNumberLabel(b.Row));
         p.Children.Add(SuggestBox(b.Row, 0, b.Output, 220, OutputSuggestionsFor(CurrentSheet!), $"Output for row {b.Row}", OutputTint));
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint));
 
