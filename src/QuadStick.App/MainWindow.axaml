@@ -17,7 +17,7 @@
           <TextBlock Text="Appearance" VerticalAlignment="Center" Classes="secondary"/>
           <ComboBox x:Name="AppearancePicker" MinWidth="130"
                     AutomationProperties.Name="Appearance: choose System, Light, or Dark theme"/>
-          <Button x:Name="SettingsButton" Content="⚙ Settings"
+          <Button x:Name="SettingsButton" Classes="icon" Content="⚙" FontSize="20"
                   AutomationProperties.Name="Open Settings"/>
         </StackPanel>
         <StackPanel Spacing="4">
@@ -136,6 +136,8 @@
                   AutomationProperties.Name="Install this profile onto a connected QuadStick. Shortcut Control I"/>
           <Button x:Name="HelpButton" Content="Help"
                   AutomationProperties.Name="Open the quick guide. Shortcut Control H or F1"/>
+          <Button x:Name="EditorSettingsButton" Classes="icon" Content="⚙" FontSize="20"
+                  AutomationProperties.Name="Open Settings"/>
         </StackPanel>
       </Grid>
 

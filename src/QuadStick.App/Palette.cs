@@ -29,6 +29,10 @@ public static class Palette
         ["OutputTint"]    = "#F3E2AE",
         ["FunctionTint"]  = "#F6DCE4",
         ["InputTint"]     = "#D3E6F5",
+        // A fourth, green tint reserved for "you just landed here" (new row),
+        // distinct from the three column tints above so it reads as its own
+        // signal instead of looking like an Output/Function/Input cell.
+        ["NewRowTint"]    = "#CDEED8",
     };
 
     public static readonly IReadOnlyDictionary<string, string> Dark = new Dictionary<string, string>
@@ -49,6 +53,7 @@ public static class Palette
         ["OutputTint"]    = "#3C3420",
         ["FunctionTint"]  = "#3A2530",
         ["InputTint"]     = "#1E2F3F",
+        ["NewRowTint"]    = "#1C3A28",
     };
 
     // (foreground token, background token, minimum ratio).
@@ -69,6 +74,7 @@ public static class Palette
         ("TextPrimary",   "OutputTint",    4.5),
         ("TextPrimary",   "FunctionTint",  4.5),
         ("TextPrimary",   "InputTint",     4.5),
+        ("TextPrimary",   "NewRowTint",    4.5),
         // Real on-screen pairs the gate previously missed: the status bar
         // renders its colors on AppBackground, and the zone detail panel
         // puts secondary/accent text on SurfaceSubtle.

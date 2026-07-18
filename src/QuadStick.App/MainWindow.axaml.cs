@@ -257,6 +257,7 @@ public partial class MainWindow : Window
         AppearancePicker.SelectionChanged += (_, _) => ApplyTheme((string)AppearancePicker.SelectedItem!);
 
         SettingsButton.Click += (_, _) => new SettingsWindow(this).ShowDialog(this);
+        EditorSettingsButton.Click += (_, _) => new SettingsWindow(this).ShowDialog(this);
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
         // key. Ctrl-combos are safe to fire even while a field has focus
@@ -2154,12 +2155,53 @@ public partial class MainWindow : Window
         // Take the user to the row they just created.
         AfterLayout(() =>
         {
-            if (_cellBorders.TryGetValue($"A{newRow}", out var border))
-            {
-                border.BringIntoView();
-                (border.Child as AutoCompleteBox)?.Focus();
-            }
+            if (!_cellBorders.TryGetValue($"A{newRow}", out var border)) return;
+
+            border.BringIntoView();
+            (border.Child as AutoCompleteBox)?.Focus();
+
+            // BringIntoView alone is not reliable here: ZoomHost scales the whole
+            // tree with a LayoutTransform, and at some zoom levels the request
+            // resolves against stale bounds and leaves GridScroll short of the
+            // row. Compute the row's own position in GridScroll's coordinate
+            // space (untouched by the ancestor zoom, same units as Offset) and
+            // make sure its bottom edge is inside the viewport too.
+            ScrollRowIntoView(border);
+
+            // A focused AutoCompleteBox is invisible to a mouse-only user with
+            // no cursor to find it, so also flash the row itself.
+            if (border.Parent is Control row) FlashNewRow(row);
         });
+    }
+
+    // Clamped the same way RestoreListScroll clamps a restored offset: never
+    // past the scrollable extent.
+    void ScrollRowIntoView(Border rowCell)
+    {
+        var bottom = rowCell.TranslatePoint(new Point(0, rowCell.Bounds.Height), RowsPanel);
+        if (bottom is not { } p) return;
+        var viewport = GridScroll.Viewport.Height;
+        var maxY = Math.Max(0, GridScroll.Extent.Height - viewport);
+        var targetY = Math.Clamp(p.Y - viewport, 0, maxY);
+        if (targetY > GridScroll.Offset.Y)
+            GridScroll.Offset = new Vector(GridScroll.Offset.X, targetY);
+    }
+
+    // Briefly tints a just-added row so a mouse-only user can see where it
+    // landed, then clears it. The row reference is only ever touched inside
+    // this closure, so if the list gets rebuilt (another edit) before the
+    // timer fires, this just paints/clears a control nobody looks at anymore
+    // rather than throwing.
+    static void FlashNewRow(Control row)
+    {
+        BindBrush(row, Panel.BackgroundProperty, "NewRowTint");
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+        timer.Tick += (_, _) =>
+        {
+            timer.Stop();
+            row.ClearValue(Panel.BackgroundProperty);
+        };
+        timer.Start();
     }
 
     // After deleting a List View row, keep focus on the row that slid into
