@@ -196,7 +196,11 @@
       <Panel>
         <Border x:Name="GridContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                 BorderThickness="1" CornerRadius="6" Padding="12">
-          <ScrollViewer x:Name="GridScroll">
+          <!-- List-view rows are a horizontal stack of fixed-width cells (output,
+               function, inputs, note, move/delete buttons), so at high interface
+               scale a row can run wider than the window. Auto lets it pan sideways
+               instead of clipping columns off the edge unreachably. -->
+          <ScrollViewer x:Name="GridScroll" HorizontalScrollBarVisibility="Auto">
             <StackPanel x:Name="RowsPanel" Spacing="6"/>
           </ScrollViewer>
         </Border>

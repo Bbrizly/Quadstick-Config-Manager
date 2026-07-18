@@ -38,11 +38,33 @@ public class SettingsWindow : Window
                 new TabItem { Header = "Contact", Content = ContactTab() },
             },
         };
+
+        // At high interface scale the window can grow taller than the screen,
+        // pushing the titlebar's own close control out of reach. IsCancel wires
+        // Esc to this button at the window level (no focus needed), and it stays
+        // reachable by scrolling since it lives in the same scrollable content
+        // as the tabs, matching this app's Cancel-button dialog idiom elsewhere.
+        var close = new Button { Content = "Close", MinWidth = 140, IsCancel = true, HorizontalAlignment = HorizontalAlignment.Right };
+        AutomationProperties.SetName(close, "Close settings");
+        close.Click += (_, _) => Close();
+
+        var footer = new StackPanel
+        {
+            Margin = new Thickness(24, 0, 24, 24),
+            Spacing = 16,
+            Children =
+            {
+                new Border { Height = 1, Background = (Application.Current!.FindResource("SurfaceBorderBrush") as IBrush) },
+                close,
+            },
+        };
+        var layout = new StackPanel { Children = { tabControl, footer } };
+
         Content = new ScrollViewer
         {
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Content = MainWindow.ZoomWrap(tabControl, owner.UiScale),
+            Content = MainWindow.ZoomWrap(layout, owner.UiScale),
         };
     }
 
