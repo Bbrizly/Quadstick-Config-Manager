@@ -1164,7 +1164,7 @@ public partial class MainWindow : Window
 
         // ---- Secondary parts along the bottom: hole combos, switch jacks, USB,
         // then unmapped rows last so "No input yet" lands at the bottom right. ----
-        var extras = new WrapPanel { Margin = new Avalonia.Thickness(0, 18, 0, 0) };
+        var extras = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Avalonia.Thickness(0, 18, 0, 0) };
         void AddExtra(Zone z) { var t = ZoneButton(z, byZone, 210, minHeight: 108); t.Margin = new Avalonia.Thickness(0, 0, 12, 12); extras.Children.Add(t); }
         foreach (var z in visible.Where(z => z.Id is "combo" or "jacks" or "other")) AddExtra(z);
         foreach (var z in visible.Where(z => z.Id is "unset")) AddExtra(z);
