@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -63,6 +64,11 @@ public class SettingsWindow : Window
         };
         AutomationProperties.SetName(close, "Close settings");
         close.Click += (_, _) => Close();
+        // A dialog can open with keyboard focus still on the window behind
+        // it, and then every key press (Escape included) bypasses this window
+        // entirely. Focusing a real control on open pulls the keyboard in, so
+        // Escape and Tab work from the first press.
+        Opened += (_, _) => close.Focus();
 
         var header = new Grid
         {
@@ -96,6 +102,16 @@ public class SettingsWindow : Window
 
     // A settings window closed with an interface-size preview still pending
     // counts as "not confirmed", so put the size back, matching the countdown.
+    // The Close button's IsCancel only fires once keyboard focus lives inside
+    // the window's content, and a freshly opened dialog can have no focused
+    // element at all, which is exactly the stuck window the tester hit.
+    // Handling the key on the window itself works no matter where focus is.
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+        if (!e.Handled && e.Key == Key.Escape) { e.Handled = true; Close(); }
+    }
+
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
