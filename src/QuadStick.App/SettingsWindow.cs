@@ -21,6 +21,13 @@ public class SettingsWindow : Window
     // Interface-size choices live on MainWindow.ValidScalePercents; labels are
     // just those percents formatted, so this window keeps no copy of its own.
 
+    // MainWindow.ZoomWrap just returns the bare content at scale 1.0 and
+    // hands back a brand-new LayoutTransformControl otherwise, with nothing
+    // keeping a handle to it afterward. That's fine for a one-shot dialog,
+    // but this window has to rescale itself live while it's still open, so
+    // it builds and holds its own LayoutTransformControl instead.
+    readonly LayoutTransformControl _zoom;
+
     public SettingsWindow(MainWindow owner)
     {
         Title = "Settings";
@@ -60,12 +67,34 @@ public class SettingsWindow : Window
         };
         var layout = new StackPanel { Children = { tabControl, footer } };
 
+        _zoom = new LayoutTransformControl { LayoutTransform = new ScaleTransform(owner.UiScale, owner.UiScale), Child = layout };
         Content = new ScrollViewer
         {
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Content = MainWindow.ZoomWrap(layout, owner.UiScale),
+            Content = _zoom,
         };
+    }
+
+    // Keeps this window's own zoom and size in sync with the interface-size
+    // setting while it's open, instead of leaving it at its stale zoom until
+    // it's closed and reopened. Called after owner.SetInterfaceScale, once
+    // owner.UiScale already reflects the new value.
+    void RescaleTo(MainWindow owner)
+    {
+        var scale = owner.UiScale;
+        _zoom.LayoutTransform = new ScaleTransform(scale, scale);
+
+        // Mirrors MainWindow.EnsureWindowFitsScale's clamp so the rescaled
+        // window still fits the working area at any monitor's DPI. Width and
+        // Height are set explicitly (this window never used SizeToContent),
+        // and the Close button and Esc stay reachable through the same
+        // two-axis ScrollViewer this window already scrolls with.
+        var screen = Screens?.ScreenFromWindow(this) ?? Screens?.Primary;
+        if (screen is null) return;
+        var scaling = screen.Scaling <= 0 ? 1 : screen.Scaling;
+        Width = Math.Min(Math.Min(640 * scale, 1200), screen.WorkingArea.Width / scaling);
+        Height = Math.Min(Math.Min(640 * scale, 900), screen.WorkingArea.Height / scaling);
     }
 
     // Same one-time resource read used throughout MainWindow.axaml.cs: type
@@ -140,7 +169,9 @@ public class SettingsWindow : Window
         AutomationProperties.SetName(scale, "Interface size, in percent");
         scale.SelectionChanged += (_, _) =>
         {
-            if (scale.SelectedIndex >= 0) owner.SetInterfaceScale(scalePercents[scale.SelectedIndex]);
+            if (scale.SelectedIndex < 0) return;
+            owner.SetInterfaceScale(scalePercents[scale.SelectedIndex]);
+            RescaleTo(owner);
         };
         panel.Children.Add(scale);
         panel.Children.Add(Caption("Makes all text and controls larger or smaller."));
