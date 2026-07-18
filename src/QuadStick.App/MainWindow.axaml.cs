@@ -1998,6 +1998,10 @@ public partial class MainWindow : Window
         }
 
         var note = NoteBox(b.Row, $"Note for row {b.Row}. Saved in the file, ignored by the QuadStick");
+        // p is a horizontal StackPanel with unbounded width, so without a
+        // fixed Width the wrapped note would just grow sideways forever
+        // instead of wrapping. The fixed width is what lets it wrap and
+        // grow the row taller instead.
         note.Width = 200;
         p.Children.Add(note);
 
@@ -2126,7 +2130,20 @@ public partial class MainWindow : Window
             Text = _file!.GetCell(row, NoteColumn),
             Watermark = "note",
             FontSize = Size("SmallSize"),
+            // A long note used to sit on one clipped line. Wrapping needs a
+            // width bound to grow vertically instead of sideways, so every
+            // call site must give this box a fixed Width. Enter still commits
+            // (see KeyDown below), so it must not also insert a newline.
+            TextWrapping = TextWrapping.Wrap,
+            AcceptsReturn = false,
+            // Cap how tall one note can push its row before it scrolls
+            // internally, so a pathological note can't fill the screen.
+            MaxHeight = 92,
         };
+        // TextBox doesn't expose vertical scrollbar visibility as its own
+        // property; it reads the attached ScrollViewer property from its
+        // own template instead.
+        box.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, ScrollBarVisibility.Auto);
         AutomationProperties.SetName(box, accessibleName);
         void Commit()
         {
