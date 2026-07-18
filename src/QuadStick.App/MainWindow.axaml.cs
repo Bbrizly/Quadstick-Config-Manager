@@ -1677,15 +1677,28 @@ public partial class MainWindow : Window
 
         if (!await ConfirmLeaveAsync()) return; // opening discards unsaved work
 
+        // Mutable so Rename/Delete can update the picker in place without
+        // closing and reopening the dialog.
+        var templatePaths = templates.ToList();
         var list = new ListBox
         {
-            ItemsSource = templates.Select(Path.GetFileNameWithoutExtension).ToList(),
+            ItemsSource = templatePaths.Select(Path.GetFileNameWithoutExtension).ToList(),
             SelectedIndex = 0,
             MaxHeight = 320,
         };
         AutomationProperties.SetName(list, "Your saved templates");
+        void RefreshList(int selectIndex)
+        {
+            list.ItemsSource = templatePaths.Select(Path.GetFileNameWithoutExtension).ToList();
+            list.SelectedIndex = selectIndex;
+        }
+
         var open = new Button { Content = "Use template", MinWidth = 140, IsDefault = true };
         var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        var rename = new Button { Content = "Rename", Classes = { "quiet" } };
+        var delete = new Button { Content = "Delete", Classes = { "danger", "quiet" } };
+        AutomationProperties.SetName(rename, "Rename selected template");
+        AutomationProperties.SetName(delete, "Delete selected template");
         var dialog = new Window
         {
             Title = "Use template",
@@ -1701,6 +1714,7 @@ public partial class MainWindow : Window
                     new TextBlock { Text = "Start from a template", FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
                     new TextBlock { Text = "Opens a fresh copy you can edit and install. Your template stays as it is.", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
                     list,
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { rename, delete } },
                     new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { open, cancel } },
                 },
             }, _uiScale),
@@ -1710,10 +1724,59 @@ public partial class MainWindow : Window
         open.Click += (_, _) => Confirm();
         cancel.Click += (_, _) => dialog.Close();
         list.DoubleTapped += (_, _) => Confirm();
+
+        rename.Click += async (_, _) =>
+        {
+            var idx = list.SelectedIndex;
+            if (idx < 0) { Status("Select a template to rename first.", StatusKind.Warning); return; }
+            var oldPath = templatePaths[idx];
+            var newName = await AskNameAsync("Rename template", Path.GetFileNameWithoutExtension(oldPath),
+                "Rename", "New name for this template");
+            if (newName is null) return;
+            var fileName = SafeTemplateName(newName);
+            if (fileName.Length == 0) { Status("A template needs a name.", StatusKind.Warning); return; }
+            var newPath = Path.Combine(TemplatesDir, fileName);
+            if (!string.Equals(newPath, oldPath, StringComparison.Ordinal))
+            {
+                if (File.Exists(newPath))
+                { Status($"A template named {Path.GetFileNameWithoutExtension(fileName)} already exists.", StatusKind.Warning); return; }
+                try { File.Move(oldPath, newPath); }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                { Status($"Could not rename the template: {ex.Message}", StatusKind.Error); return; }
+                templatePaths[idx] = newPath;
+            }
+            RefreshList(idx);
+            Status($"Renamed template to {Path.GetFileNameWithoutExtension(fileName)}.", StatusKind.Ready);
+        };
+
+        delete.Click += async (_, _) =>
+        {
+            var idx = list.SelectedIndex;
+            if (idx < 0) { Status("Select a template to delete first.", StatusKind.Warning); return; }
+            var targetPath = templatePaths[idx];
+            var name = Path.GetFileNameWithoutExtension(targetPath);
+            if (!await ConfirmAsync($"Delete template \"{name}\"?",
+                "Profiles you already made from this template are not affected. This cannot be undone."))
+                return;
+            try { File.Delete(targetPath); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            { Status($"Could not delete the template: {ex.Message}", StatusKind.Error); return; }
+            templatePaths.RemoveAt(idx);
+            if (templatePaths.Count == 0)
+            {
+                dialog.Close();
+                HomeError("You have not saved any templates yet. Open a profile and use Save as template to make one.");
+                Status($"Deleted template {name}.", StatusKind.Ready);
+                return;
+            }
+            RefreshList(Math.Min(idx, templatePaths.Count - 1));
+            Status($"Deleted template {name}.", StatusKind.Ready);
+        };
+
         await dialog.ShowDialog(this);
         if (!confirmed || list.SelectedIndex < 0) return;
 
-        var path = templates[list.SelectedIndex];
+        var path = templatePaths[list.SelectedIndex];
         try
         {
             // savePath null: the copy is unsaved, so Save prompts for a new
