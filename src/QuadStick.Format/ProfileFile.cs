@@ -195,6 +195,109 @@ public sealed class ProfileFile
         Reparse();
     }
 
+    // A sheet's inclusive 1-based grid row range. The next sheet's keyword row
+    // marks the end; the last sheet runs to the bottom of the grid.
+    (int Start, int End) SheetRowRange(int sheetIndex)
+    {
+        var sheets = Document.Sheets;
+        int start = sheets[sheetIndex].StartRow;
+        int end = sheetIndex + 1 < sheets.Count ? sheets[sheetIndex + 1].StartRow - 1 : Grid.Count;
+        return (start, end);
+    }
+
+    // Rename a mode. The name lives in column C of the keyword row, so SetCell
+    // does the snapshot and reparse; guarding first keeps a no-op undo-free.
+    public bool RenameMode(int sheetIndex, string name)
+    {
+        if (sheetIndex < 0 || sheetIndex >= Document.Sheets.Count) return false;
+        var sheet = Document.Sheets[sheetIndex];
+        if (sheet.Type != SheetType.ProfileName) return false;
+        var trimmed = name.Trim();
+        if (trimmed.Length == 0 || trimmed == sheet.ModeName) return false;
+        SetCell(sheet.StartRow, 2, trimmed);
+        return true;
+    }
+
+    // Copy a whole mode to the end of the grid under a new name. Returns the new
+    // sheet's index, or -1 if the target is not a nameable mode.
+    public int DuplicateMode(int sheetIndex, string newName)
+    {
+        if (sheetIndex < 0 || sheetIndex >= Document.Sheets.Count) return -1;
+        var sheet = Document.Sheets[sheetIndex];
+        if (sheet.Type != SheetType.ProfileName) return -1;
+        var trimmed = newName.Trim();
+        if (trimmed.Length == 0) return -1;
+
+        Snapshot();
+        var (start, end) = SheetRowRange(sheetIndex);
+        // Clone each row: SetCell mutates rows in place, so sharing the arrays
+        // would couple the original and the copy.
+        var clones = new List<string[]>();
+        for (int row = start; row <= end; row++)
+            clones.Add((string[])Grid[row - 1].Clone());
+
+        // Name the copy in column C of its keyword row. Widen by hand rather
+        // than via SetCell, which would take a second snapshot.
+        var header = clones[0];
+        if (header.Length <= 2)
+        {
+            var wider = new string[3];
+            header.CopyTo(wider, 0);
+            for (int i = header.Length; i < wider.Length; i++) wider[i] = "";
+            clones[0] = header = wider;
+        }
+        header[2] = trimmed;
+
+        // Only the first sheet's second row holds the profile filename; clear it
+        // so a duplicated first sheet does not carry a stray filename cell.
+        if (clones.Count > 1 && clones[1].Length > 0) clones[1][0] = "";
+
+        Grid.AddRange(clones);
+        Reparse();
+        return Document.Sheets.Count - 1;
+    }
+
+    // Delete a mode. Sheet 0 carries the profile filename and stays, and the
+    // profile must keep at least one mode, so both are refused before snapshot.
+    public bool DeleteMode(int sheetIndex)
+    {
+        if (sheetIndex <= 0 || sheetIndex >= Document.Sheets.Count) return false;
+        if (Document.Sheets[sheetIndex].Type != SheetType.ProfileName) return false;
+        if (Document.Sheets.Count(s => s.Type == SheetType.ProfileName) <= 1) return false;
+
+        Snapshot();
+        var (start, end) = SheetRowRange(sheetIndex);
+        Grid.RemoveRange(start - 1, end - start + 1);
+        Reparse();
+        return true;
+    }
+
+    // Move a mode one slot up or down by swapping its whole row block with the
+    // neighbor's. delta is +1 (down) or -1 (up). Sheet 0 stays put.
+    public bool MoveMode(int sheetIndex, int delta)
+    {
+        int other = sheetIndex + delta;
+        var sheets = Document.Sheets;
+        if (sheetIndex <= 0 || sheetIndex >= sheets.Count) return false;
+        if (other <= 0 || other >= sheets.Count) return false;
+        if (sheets[sheetIndex].Type != SheetType.ProfileName) return false;
+        if (sheets[other].Type != SheetType.ProfileName) return false;
+
+        Snapshot();
+        // The two blocks are adjacent in the grid; swap them in place so column-K
+        // comments travel with their rows.
+        int lo = Math.Min(sheetIndex, other);
+        int hi = Math.Max(sheetIndex, other);
+        var (loStart, loEnd) = SheetRowRange(lo);
+        var (hiStart, hiEnd) = SheetRowRange(hi);
+        var hiBlock = Grid.GetRange(hiStart - 1, hiEnd - hiStart + 1);
+        var loBlock = Grid.GetRange(loStart - 1, loEnd - loStart + 1);
+        Grid.RemoveRange(loStart - 1, hiEnd - loStart + 1);
+        Grid.InsertRange(loStart - 1, hiBlock.Concat(loBlock));
+        Reparse();
+        return true;
+    }
+
     public bool HasErrors => Issues.Any(i => i.Severity == Severity.Error);
 
     public bool Dirty { get; set; }

@@ -186,6 +186,7 @@ public partial class MainWindow : Window
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
         AddModeButton.Click += async (_, _) => await AddModeAsync();
+        ModeMenuButton.Click += (_, _) => ShowModeMenu();
         SheetPicker.SelectionChanged += (_, _) =>
         {
             if (SheetPicker.SelectedIndex >= 0 && _file != null)
@@ -688,54 +689,187 @@ public partial class MainWindow : Window
         SheetPicker.SelectedIndex = select;
     }
 
-    async Task AddModeAsync()
+    // One dialog serves every "name a mode" prompt (add, rename, duplicate);
+    // extraAboveBox slots caller-specific controls between the title and the
+    // name box. Returns the trimmed name, or null on cancel or an empty name.
+    async Task<string?> AskNameAsync(string title, string initialText, string confirmLabel,
+        string boxAccessibleName, params Control[] extraAboveBox)
     {
-        if (_file is null) { Status("Open or create a profile first."); return; }
-
         var box = new TextBox
         {
-            Text = $"Mode {_file.Document.Sheets.Count + 1}",
+            Text = initialText,
             HorizontalAlignment = HorizontalAlignment.Stretch,
         };
-        AutomationProperties.SetName(box, "Name for the new mode");
-        var add = new Button { Content = "Add mode", MinWidth = 140, IsDefault = true };
+        AutomationProperties.SetName(box, boxAccessibleName);
+        var confirm = new Button { Content = confirmLabel, MinWidth = 140, IsDefault = true };
         var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        var panel = new StackPanel
+        {
+            Margin = new Avalonia.Thickness(24),
+            Spacing = 16,
+            MaxWidth = 480,
+        };
+        panel.Children.Add(new TextBlock { Text = title, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap });
+        foreach (var extra in extraAboveBox) panel.Children.Add(extra);
+        panel.Children.Add(box);
+        panel.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { confirm, cancel } });
         var dialog = new Window
         {
-            Title = "Add a mode",
+            Title = title,
             SizeToContent = SizeToContent.WidthAndHeight,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Content = ZoomWrap(new StackPanel
-            {
-                Margin = new Avalonia.Thickness(24),
-                Spacing = 16,
-                MaxWidth = 480,
-                Children =
-                {
-                    new TextBlock { Text = "Add a mode", FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
-                    new TextBlock { Text = "A mode is a second full layout of your inputs. Switch between modes while playing with the side tube or increment_mode / decrement_mode.", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
-                    box,
-                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { add, cancel } },
-                },
-            }, _uiScale),
+            Content = ZoomWrap(panel, _uiScale),
         };
         var confirmed = false;
         void Confirm() { confirmed = true; dialog.Close(); }
-        add.Click += (_, _) => Confirm();
+        confirm.Click += (_, _) => Confirm();
         cancel.Click += (_, _) => dialog.Close();
         box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Confirm(); };
         await dialog.ShowDialog(this);
 
-        if (!confirmed) return;
+        if (!confirmed) return null;
         var name = (box.Text ?? "").Trim();
-        if (name.Length == 0) return;
-        int idx = _file.AddModeSheet(name);
+        return name.Length == 0 ? null : name;
+    }
+
+    async Task AddModeAsync()
+    {
+        if (_file is null) { Status("Open or create a profile first."); return; }
+
+        // "Start from" lists every existing mode so a new one can copy a
+        // working layout instead of starting empty; index 0 is always blank.
+        var sourceSheets = _file.Document.Sheets
+            .Select((s, i) => (Sheet: s, Index: i))
+            .Where(t => t.Sheet.Type == SheetType.ProfileName)
+            .ToList();
+        var startFromItems = new List<string> { "Blank mode" };
+        startFromItems.AddRange(sourceSheets.Select(t => t.Sheet.ModeName));
+        var startFromBox = new ComboBox
+        {
+            ItemsSource = startFromItems,
+            SelectedIndex = 0,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
+        AutomationProperties.SetName(startFromBox, "Start the new mode from");
+
+        var name = await AskNameAsync("Add a mode", $"Mode {_file.Document.Sheets.Count + 1}",
+            "Add mode", "Name for the new mode",
+            new TextBlock { Text = "A mode is a second full layout of your inputs. Switch between modes while playing with the side tube or increment_mode / decrement_mode.", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+            startFromBox);
+        if (name is null) return;
+
+        int idx;
+        if (startFromBox.SelectedIndex > 0)
+        {
+            var source = sourceSheets[startFromBox.SelectedIndex - 1];
+            idx = _file.DuplicateMode(source.Index, name);
+            if (idx < 0) { Status("Could not add mode.", StatusKind.Error); return; }
+        }
+        else
+        {
+            idx = _file.AddModeSheet(name);
+        }
         // SelectionChanged only fires when the index changes, so drive the
         // editor refresh explicitly (RefreshEditor is idempotent).
         _sheetIndex = idx;
         _selectedZone = null;
         RepopulateSheetPicker(idx);
         RefreshEditor();
+    }
+
+    // Built fresh on every click so enabled state always matches whichever
+    // sheet is selected right now, not whatever was true when the app opened.
+    void ShowModeMenu()
+    {
+        var sheets = _file?.Document.Sheets;
+        var sheet = CurrentSheet;
+        bool nameable = sheet != null && sheet.Type == SheetType.ProfileName;
+        bool nextIsMode = sheets != null && _sheetIndex + 1 < sheets.Count
+            && sheets[_sheetIndex + 1].Type == SheetType.ProfileName;
+        bool onlyOneMode = sheets != null && sheets.Count(s => s.Type == SheetType.ProfileName) <= 1;
+
+        var rename = new MenuItem { Header = "Rename", IsEnabled = nameable };
+        var duplicate = new MenuItem { Header = "Duplicate", IsEnabled = nameable };
+        var moveUp = new MenuItem { Header = "Move up", IsEnabled = nameable && _sheetIndex > 1 };
+        var moveDown = new MenuItem { Header = "Move down", IsEnabled = nameable && _sheetIndex != 0 && nextIsMode };
+        // Sheet 0 can never be deleted, but the item stays visible (just
+        // disabled) so a user who lands on it sees why, not a missing option.
+        var delete = new MenuItem { Header = "Delete", IsEnabled = nameable && _sheetIndex != 0 && !onlyOneMode };
+
+        rename.Click += async (_, _) => await RenameModeAsync();
+        duplicate.Click += async (_, _) => await DuplicateModeAsync();
+        moveUp.Click += (_, _) => MoveCurrentMode(-1);
+        moveDown.Click += (_, _) => MoveCurrentMode(1);
+        delete.Click += async (_, _) => await DeleteModeAsync();
+
+        var menu = new MenuFlyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
+        menu.Items.Add(rename);
+        menu.Items.Add(duplicate);
+        menu.Items.Add(moveUp);
+        menu.Items.Add(moveDown);
+        menu.Items.Add(delete);
+        menu.ShowAt(ModeMenuButton);
+    }
+
+    async Task RenameModeAsync()
+    {
+        if (_file is null) return;
+        var sheet = CurrentSheet;
+        if (sheet is null || sheet.Type != SheetType.ProfileName) return;
+
+        var name = await AskNameAsync("Rename mode", sheet.ModeName, "Rename", "New name for this mode");
+        if (name is null) return;
+        if (_file.RenameMode(_sheetIndex, name))
+        {
+            RepopulateSheetPicker(_sheetIndex);
+            Status("Mode renamed.", StatusKind.Ready);
+        }
+    }
+
+    async Task DuplicateModeAsync()
+    {
+        if (_file is null) return;
+        var sheet = CurrentSheet;
+        if (sheet is null || sheet.Type != SheetType.ProfileName) return;
+
+        var name = await AskNameAsync("Duplicate mode", sheet.ModeName + " copy",
+            "Duplicate", "Name for the duplicated mode");
+        if (name is null) return;
+        int idx = _file.DuplicateMode(_sheetIndex, name);
+        if (idx < 0) { Status("Could not duplicate mode.", StatusKind.Error); return; }
+        _sheetIndex = idx;
+        _selectedZone = null;
+        RepopulateSheetPicker(idx);
+        RefreshEditor();
+        Status("Mode duplicated.", StatusKind.Ready);
+    }
+
+    void MoveCurrentMode(int delta)
+    {
+        if (_file is null) return;
+        if (!_file.MoveMode(_sheetIndex, delta)) return;
+        _sheetIndex += delta;
+        _selectedZone = null;
+        RepopulateSheetPicker(_sheetIndex);
+        RefreshEditor();
+        Status("Mode moved.", StatusKind.Ready);
+    }
+
+    async Task DeleteModeAsync()
+    {
+        if (_file is null) return;
+        var sheet = CurrentSheet;
+        if (sheet is null) return;
+        var name = sheet.ModeName.Length > 0 ? sheet.ModeName : "this mode";
+        if (!await ConfirmAsync("Delete this mode?",
+            $"\"{name}\" and its rows are removed from the profile. Undo can bring it back."))
+            return;
+        if (!_file.DeleteMode(_sheetIndex)) return;
+        _sheetIndex = Math.Min(_sheetIndex, _file.Document.Sheets.Count - 1);
+        _selectedZone = null;
+        RepopulateSheetPicker(_sheetIndex);
+        RefreshEditor();
+        Status("Mode deleted.", StatusKind.Ready);
     }
 
     sealed record Zone(string Id, string Title, string Display, string DefaultInput, string Blurb);
