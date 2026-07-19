@@ -1,6 +1,9 @@
+using Avalonia.Automation;
+using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
+using Avalonia.VisualTree;
 using QuadStick.App;
 using QuadStick.Format;
 using Xunit;
@@ -31,6 +34,35 @@ public class SettingsWindowTests
         settings.KeyPressQwerty(PhysicalKey.Escape, RawInputModifiers.None);
 
         Assert.False(settings.IsVisible);
+        w.Close();
+    }
+
+    // The tester previewed a new interface size, closed Settings without
+    // saving, and the app crashed when the revert countdown fired against the
+    // dead window. Closing with a preview pending must revert cleanly instead.
+    [AvaloniaFact]
+    public void Closing_with_a_size_preview_pending_reverts_without_crashing()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.InterfaceScalePercent = 100;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        w.LoadProfile(ProfileFile.NewFromTemplate("smoke.csv"));
+
+        var settings = new SettingsWindow(w);
+        _ = settings.ShowDialog(w);
+
+        var scale = settings.GetVisualDescendants().OfType<ComboBox>()
+            .First(c => AutomationProperties.GetName(c) == "Interface size, in percent");
+        scale.SelectedIndex = scale.ItemsSource!.Cast<string>().ToList().IndexOf("125%");
+        Assert.Equal(1.25, w.UiScale, 2); // preview applied, not saved
+
+        settings.Close();
+
+        Assert.Equal(1.0, w.UiScale, 2); // reverted on close, no crash
+        Assert.Equal(100, w.CurrentSettings.InterfaceScalePercent);
         w.Close();
     }
 }

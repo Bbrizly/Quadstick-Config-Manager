@@ -112,11 +112,17 @@ public class SettingsWindow : Window
         if (!e.Handled && e.Key == Key.Escape) { e.Handled = true; Close(); }
     }
 
-    protected override void OnClosed(EventArgs e)
+    // This must run in OnClosing, not OnClosed: the revert rescales this
+    // window, and after OnClosed the window has no platform backing left, so
+    // touching Screens crashes. The tester hit exactly that by closing the
+    // window with the countdown still running.
+    protected override void OnClosing(WindowClosingEventArgs e)
     {
-        base.OnClosed(e);
+        base.OnClosing(e);
+        if (e.Cancel) return;
         _sizeTimer?.Stop();
         _revertSize?.Invoke();
+        _revertSize = null;
     }
 
     // Keeps this window's own zoom and size in sync with the interface-size
