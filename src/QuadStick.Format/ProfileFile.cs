@@ -273,27 +273,44 @@ public sealed class ProfileFile
     }
 
     // Move a mode one slot up or down by swapping its whole row block with the
-    // neighbor's. delta is +1 (down) or -1 (up). Sheet 0 stays put.
+    // neighbor's. delta is +1 (down) or -1 (up).
     public bool MoveMode(int sheetIndex, int delta)
     {
         int other = sheetIndex + delta;
         var sheets = Document.Sheets;
-        if (sheetIndex <= 0 || sheetIndex >= sheets.Count) return false;
-        if (other <= 0 || other >= sheets.Count) return false;
+        if (sheetIndex < 0 || sheetIndex >= sheets.Count) return false;
+        if (other < 0 || other >= sheets.Count) return false;
         if (sheets[sheetIndex].Type != SheetType.ProfileName) return false;
         if (sheets[other].Type != SheetType.ProfileName) return false;
 
-        Snapshot();
-        // The two blocks are adjacent in the grid; swap them in place so column-K
-        // comments travel with their rows.
         int lo = Math.Min(sheetIndex, other);
         int hi = Math.Max(sheetIndex, other);
         var (loStart, loEnd) = SheetRowRange(lo);
         var (hiStart, hiEnd) = SheetRowRange(hi);
+        // Moving the first sheet needs a second row on the incoming sheet to
+        // carry the profile filename; a degenerate sheet without one stays put.
+        if (lo == 0 && hiEnd - hiStart < 1) return false;
+
+        Snapshot();
+        // The two blocks are adjacent in the grid; swap them in place so column-K
+        // comments travel with their rows.
         var hiBlock = Grid.GetRange(hiStart - 1, hiEnd - hiStart + 1);
         var loBlock = Grid.GetRange(loStart - 1, loEnd - loStart + 1);
         Grid.RemoveRange(loStart - 1, hiEnd - loStart + 1);
         Grid.InsertRange(loStart - 1, hiBlock.Concat(loBlock));
+
+        // The profile filename lives on the first sheet's second row, so it
+        // belongs to the file, not the mode: hand it to the new first sheet.
+        if (lo == 0)
+        {
+            var fname = loBlock.Count > 1 && loBlock[1].Length > 0 ? loBlock[1][0] : "";
+            if (loBlock.Count > 1 && loBlock[1].Length > 0) loBlock[1][0] = "";
+            if (hiBlock[1].Length == 0) hiBlock[1] = new[] { fname };
+            else hiBlock[1][0] = fname;
+            // hiBlock rows were re-inserted by reference except a fresh array:
+            // put the widened row back into the grid at the new first sheet.
+            Grid[loStart] = hiBlock[1];
+        }
         Reparse();
         return true;
     }

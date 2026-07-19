@@ -787,12 +787,14 @@ public partial class MainWindow : Window
         bool nameable = sheet != null && sheet.Type == SheetType.ProfileName;
         bool nextIsMode = sheets != null && _sheetIndex + 1 < sheets.Count
             && sheets[_sheetIndex + 1].Type == SheetType.ProfileName;
+        bool prevIsMode = sheets != null && _sheetIndex > 0
+            && sheets[_sheetIndex - 1].Type == SheetType.ProfileName;
         bool onlyOneMode = sheets != null && sheets.Count(s => s.Type == SheetType.ProfileName) <= 1;
 
         var rename = new MenuItem { Header = "Rename", IsEnabled = nameable };
         var duplicate = new MenuItem { Header = "Duplicate", IsEnabled = nameable };
-        var moveUp = new MenuItem { Header = "Move up", IsEnabled = nameable && _sheetIndex > 1 };
-        var moveDown = new MenuItem { Header = "Move down", IsEnabled = nameable && _sheetIndex != 0 && nextIsMode };
+        var moveUp = new MenuItem { Header = "Move up", IsEnabled = nameable && prevIsMode };
+        var moveDown = new MenuItem { Header = "Move down", IsEnabled = nameable && nextIsMode };
         // Sheet 0 can never be deleted, but the item stays visible (just
         // disabled) so a user who lands on it sees why, not a missing option.
         var delete = new MenuItem { Header = "Delete", IsEnabled = nameable && _sheetIndex != 0 && !onlyOneMode };

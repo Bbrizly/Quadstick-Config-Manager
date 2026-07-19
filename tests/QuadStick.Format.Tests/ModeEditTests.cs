@@ -62,7 +62,7 @@ public class ModeEditTests
         var f = ThreeModes();
         Assert.False(f.RenameMode(99, "Nope"));    // rename out of range
         Assert.False(f.DeleteMode(0));             // sheet 0 holds the filename
-        Assert.False(f.MoveMode(0, 1));            // sheet 0 stays put
+        Assert.False(f.MoveMode(0, -1));           // nothing above the first sheet
         Assert.False(f.MoveMode(2, 1));            // last sheet cannot move down
         Assert.Equal(-1, f.DuplicateMode(0, "  ")); // blank name
 
@@ -100,6 +100,22 @@ public class ModeEditTests
         Assert.Equal("Combat", f.Document.Sheets[1].ModeName);
         // Renaming to the same name is a no-op that adds no undo entry.
         Assert.False(f.RenameMode(1, "Combat"));
+    }
+
+    [Fact]
+    public void Moving_the_first_mode_keeps_the_filename_on_the_file()
+    {
+        var f = ThreeModes();
+        var before = f.ToCsvText();
+
+        Assert.True(f.MoveMode(0, 1));
+        Assert.Equal("Aiming", f.Document.Sheets[0].ModeName);
+        Assert.Equal("Driving", f.Document.Sheets[1].ModeName);
+        Assert.Equal("game.csv", f.Document.CsvFileName); // moved to the new first sheet
+
+        // Moving back restores the exact original text, filename included.
+        Assert.True(f.MoveMode(1, -1));
+        Assert.Equal(before, f.ToCsvText());
     }
 
     [Fact]
