@@ -119,6 +119,26 @@ public class ModeEditTests
     }
 
     [Fact]
+    public void MoveRow_drops_a_row_onto_another_rows_place()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n" +
+            "square,normal,left_puff\n");
+        var before = f.ToCsvText();
+
+        f.MoveRow(4, 6); // drag the first row onto the last
+        Assert.Equal(new[] { "circle", "square", "x" },
+            f.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+
+        f.MoveRow(6, 4); // drag it back
+        Assert.Equal(before, f.ToCsvText());
+    }
+
+    [Fact]
     public void Preferences_sheet_deletes_and_comes_back()
     {
         var f = ProfileFile.Load(

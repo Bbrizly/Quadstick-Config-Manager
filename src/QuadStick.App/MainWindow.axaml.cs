@@ -1943,6 +1943,49 @@ public partial class MainWindow : Window
     // data row starts with a row-number label.
     static Control RowNumberHeaderSpacer() => new Border { Width = RowNumberWidth };
 
+    // List View rows reorder by dragging their row number onto another row;
+    // the dragged row takes the drop target's place. The move chevrons stay:
+    // dragging is exactly what some QuadStick users cannot do.
+    const string RowDragFormat = "qcm-grid-row";
+
+    Control DragHandle(Binding b, int number)
+    {
+        var h = new Border
+        {
+            Child = RowNumberLabel(number),
+            Background = Brushes.Transparent, // hit-testable everywhere
+            Cursor = new Cursor(StandardCursorType.SizeAll),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        ToolTip.SetTip(h, "Drag to reorder");
+        h.PointerPressed += (_, e) =>
+        {
+            var data = new DataObject();
+            data.Set(RowDragFormat, b.Row);
+            _ = DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+        };
+        return h;
+    }
+
+    void WireRowDrop(StackPanel p, Binding b)
+    {
+        DragDrop.SetAllowDrop(p, true);
+        p.AddHandler(DragDrop.DragOverEvent, (_, e) =>
+            e.DragEffects = e.Data.Contains(RowDragFormat) ? DragDropEffects.Move : DragDropEffects.None);
+        p.AddHandler(DragDrop.DragEnterEvent, (_, e) =>
+        { if (e.Data.Contains(RowDragFormat)) BindBrush(p, Panel.BackgroundProperty, "NewRowTint"); });
+        p.AddHandler(DragDrop.DragLeaveEvent, (_, _) => p.ClearValue(Panel.BackgroundProperty));
+        p.AddHandler(DragDrop.DropEvent, (_, e) =>
+        {
+            p.ClearValue(Panel.BackgroundProperty);
+            if (e.Data.Get(RowDragFormat) is not int src || src == b.Row) return;
+            var off = GridScroll.Offset;
+            _file!.MoveRow(src, b.Row);
+            RebuildRows();
+            RestoreListScroll(off, () => { });
+        });
+    }
+
     Control HeaderRow()
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
@@ -1967,7 +2010,8 @@ public partial class MainWindow : Window
     Control PrefsRow(Binding b, int number)
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(RowNumberLabel(number));
+        p.Children.Add(DragHandle(b, number));
+        WireRowDrop(p, b);
         p.Children.Add(SuggestBox(b.Row, 0, b.Output, 300, NoSuggestions, $"Setting name for row {b.Row}", OutputTint));
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 160, NoSuggestions, $"Setting value for row {b.Row}", FunctionTint));
         // The official sheet annotates each preference with Units (column C)
@@ -1987,7 +2031,8 @@ public partial class MainWindow : Window
     Control BindingRow(Binding b, int number)
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(RowNumberLabel(number));
+        p.Children.Add(DragHandle(b, number));
+        WireRowDrop(p, b);
         p.Children.Add(SuggestBox(b.Row, 0, b.Output, 220, OutputSuggestionsFor(CurrentSheet!), $"Output for row {b.Row}", OutputTint));
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint));
 

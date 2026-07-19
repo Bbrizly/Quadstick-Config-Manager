@@ -146,6 +146,20 @@ public sealed class ProfileFile
         return Document.Sheets.Count - 1;
     }
 
+    // Move one grid row to another row's position (both 1-based); the rows
+    // between them shift by one. Drag and drop in List View lands here; the
+    // caller keeps both rows inside the same mode.
+    public void MoveRow(int fromRow, int toRow)
+    {
+        if (fromRow == toRow) return;
+        if (fromRow < 1 || toRow < 1 || fromRow > Grid.Count || toRow > Grid.Count) return;
+        Snapshot();
+        var moved = Grid[fromRow - 1];
+        Grid.RemoveAt(fromRow - 1);
+        Grid.Insert(toRow - 1, moved);
+        Reparse();
+    }
+
     // Swap two whole grid rows, so column-K comments travel with their row.
     public void SwapRows(int rowA, int rowB)
     {
