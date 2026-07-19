@@ -1440,7 +1440,7 @@ public partial class MainWindow : Window
                 body.Children.Add(Labeled("Press", TokenField(b.Row, 0, b.Output, OutputSuggestionsFor(CurrentSheet!),
                     TokenLabel, $"Game button pressed by {ShortInput(zone, b)}", OutputTint)));
                 body.Children.Add(Labeled("As", FunctionCombo(b, zone)));
-                body.Children.Add(Labeled("Note", NoteBox(b.Row, $"Note for this mapping. Saved in the file, ignored by the QuadStick")));
+                body.Children.Add(Labeled("Note", NoteBox(b.Row, NoteColumn, $"Note for this mapping. Saved in the file, ignored by the QuadStick")));
 
                 var mappingCard = new Border
                 {
@@ -1934,6 +1934,8 @@ public partial class MainWindow : Window
         p.Children.Add(RowNumberHeaderSpacer());
         p.Children.Add(Swatch("Setting", 300, OutputTint));
         p.Children.Add(Swatch("Value", 160, FunctionTint));
+        p.Children.Add(Swatch("Units", 100, InputTint));
+        p.Children.Add(Swatch("Description", 240, InputTint));
         return p;
     }
 
@@ -1943,6 +1945,13 @@ public partial class MainWindow : Window
         p.Children.Add(RowNumberLabel(number));
         p.Children.Add(SuggestBox(b.Row, 0, b.Output, 300, NoSuggestions, $"Setting name for row {b.Row}", OutputTint));
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 160, NoSuggestions, $"Setting value for row {b.Row}", FunctionTint));
+        // The official sheet annotates each preference with Units (column C)
+        // and a Description (column D). The device ignores both, but hiding
+        // them here hid the tester's own notes about what each setting does.
+        p.Children.Add(SuggestBox(b.Row, 2, _file!.GetCell(b.Row, 2), 100, NoSuggestions, $"Units for row {b.Row}", InputTint));
+        var desc = NoteBox(b.Row, 3, $"Description for row {b.Row}. Saved in the file, ignored by the QuadStick");
+        desc.Width = 240;
+        p.Children.Add(desc);
         var del = new Button { Content = "Delete row", Classes = { "danger" } };
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
         del.Click += (_, _) => DeleteListRow(b);
@@ -2004,7 +2013,7 @@ public partial class MainWindow : Window
             p.Children.Add(addInput);
         }
 
-        var note = NoteBox(b.Row, $"Note for row {b.Row}. Saved in the file, ignored by the QuadStick");
+        var note = NoteBox(b.Row, NoteColumn, $"Note for row {b.Row}. Saved in the file, ignored by the QuadStick");
         // p is a horizontal StackPanel with unbounded width, so without a
         // fixed Width the wrapped note would just grow sideways forever
         // instead of wrapping. The fixed width is what lets it wrap and
@@ -2158,11 +2167,11 @@ public partial class MainWindow : Window
     // Column K is the first cell the device ignores, so notes live there.
     const int NoteColumn = 10;
 
-    Control NoteBox(int row, string accessibleName)
+    Control NoteBox(int row, int col, string accessibleName)
     {
         var box = new TextBox
         {
-            Text = _file!.GetCell(row, NoteColumn),
+            Text = _file!.GetCell(row, col),
             Watermark = "note",
             FontSize = Size("SmallSize"),
             // A long note used to sit on one clipped line. Wrapping needs a
@@ -2184,8 +2193,8 @@ public partial class MainWindow : Window
         {
             if (_file is null) return;
             var v = (box.Text ?? "").Trim();
-            if (v == _file.GetCell(row, NoteColumn)) return;
-            _file.SetCell(row, NoteColumn, v);
+            if (v == _file.GetCell(row, col)) return;
+            _file.SetCell(row, col, v);
             RefreshIssues(); // the 1023-byte row limit can trip on a long note
         }
         box.LostFocus += (_, _) => Commit();
