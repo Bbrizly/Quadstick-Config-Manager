@@ -700,6 +700,9 @@ public partial class MainWindow : Window
         {
             Text = initialText,
             HorizontalAlignment = HorizontalAlignment.Stretch,
+            // A tester renamed a mode to a whole paragraph; nothing past this
+            // fits the mode picker or the side tube's speech anyway.
+            MaxLength = 40,
         };
         AutomationProperties.SetName(box, boxAccessibleName);
         var confirm = new Button { Content = confirmLabel, MinWidth = 140, IsDefault = true };
