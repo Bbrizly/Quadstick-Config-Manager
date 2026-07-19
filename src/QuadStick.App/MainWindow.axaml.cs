@@ -2102,12 +2102,36 @@ public partial class MainWindow : Window
         {
             if (_file is null) return;
             var v = (box.Text ?? "").Trim();
-            if (v == _file.GetCell(row, col)) return; // no no-op undo snapshots
+            var old = _file.GetCell(row, col);
+            if (v == old) return; // no no-op undo snapshots
             _file.SetCell(row, col, v);
             RefreshIssues();
             // Keep the device diagram's summaries current without stealing
             // focus from the detail panel the user is typing in.
-            if (DeviceContainer.IsVisible) BuildDeviceView();
+            if (DeviceContainer.IsVisible) { BuildDeviceView(); return; }
+            // An input appearing or disappearing changes the row's own
+            // controls (its remove buttons, the + input button), so rebuild
+            // the rows instead of leaving stale controls until the next view
+            // switch. Deferred: rebuilding synchronously destroys the box
+            // that is mid focus/key event and fights its closing dropdown,
+            // the same trap TokenField defers around. Only refocus when the
+            // box was focused (Enter commit); a click-away commit must not
+            // steal the click's focus back.
+            if (col is >= 2 and < 10 && (old.Length == 0) != (v.Length == 0))
+            {
+                bool refocus = box.IsFocused;
+                box.IsDropDownOpen = false;
+                var off = GridScroll.Offset;
+                Dispatcher.UIThread.Post(() =>
+                {
+                    RebuildRows();
+                    RestoreListScroll(off, () =>
+                    {
+                        if (refocus && _cellBorders.TryGetValue($"{(char)('A' + col)}{row}", out var border))
+                            (border.Child as Control)?.Focus();
+                    });
+                });
+            }
         }
         box.LostFocus += (_, _) => Commit();
         box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
