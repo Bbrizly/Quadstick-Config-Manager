@@ -13,3 +13,4 @@ docs/local/
 .claude/
 .gstack/
 scripts/appstore/embedded.provisionprofile
+.context/
