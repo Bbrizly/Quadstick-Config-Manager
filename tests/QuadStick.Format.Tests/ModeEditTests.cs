@@ -119,6 +119,29 @@ public class ModeEditTests
     }
 
     [Fact]
+    public void Preferences_sheet_deletes_and_comes_back()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "Preferences\n" +
+            "\n" +
+            "Preference,Value,Units\n" +
+            "mouse_speed,201\n");
+        Assert.Equal(SheetType.Preferences, f.Document.Sheets[1].Type);
+
+        Assert.True(f.DeleteMode(1));
+        Assert.Single(f.Document.Sheets);
+
+        int idx = f.AddPreferencesSheet();
+        Assert.Equal(1, idx);
+        Assert.Equal(SheetType.Preferences, f.Document.Sheets[1].Type);
+        Assert.Equal(-1, f.AddPreferencesSheet()); // the device reads only one
+    }
+
+    [Fact]
     public void Column_K_comment_travels_with_a_moved_mode()
     {
         var f = ThreeModes();

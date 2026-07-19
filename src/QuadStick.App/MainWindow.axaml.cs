@@ -800,7 +800,13 @@ public partial class MainWindow : Window
         var moveDown = new MenuItem { Header = "Move down", IsEnabled = nameable && nextIsMode };
         // Sheet 0 can never be deleted, but the item stays visible (just
         // disabled) so a user who lands on it sees why, not a missing option.
-        var delete = new MenuItem { Header = "Delete", IsEnabled = nameable && _sheetIndex != 0 && !onlyOneMode };
+        // The Preferences sheet deletes too, for people who never use it.
+        bool prefsSheet = sheet != null && sheet.Type == SheetType.Preferences;
+        var delete = new MenuItem
+        {
+            Header = "Delete",
+            IsEnabled = _sheetIndex != 0 && (prefsSheet || (nameable && !onlyOneMode)),
+        };
 
         rename.Click += async (_, _) => await RenameModeAsync();
         duplicate.Click += async (_, _) => await DuplicateModeAsync();
@@ -814,6 +820,12 @@ public partial class MainWindow : Window
         menu.Items.Add(moveUp);
         menu.Items.Add(moveDown);
         menu.Items.Add(delete);
+        if (sheets != null && !sheets.Any(s => s.Type == SheetType.Preferences))
+        {
+            var addPrefs = new MenuItem { Header = "Add preferences" };
+            addPrefs.Click += (_, _) => AddPreferencesSheetToFile();
+            menu.Items.Add(addPrefs);
+        }
         menu.ShowAt(ModeMenuButton);
     }
 
@@ -861,13 +873,26 @@ public partial class MainWindow : Window
         Status("Mode moved.", StatusKind.Ready);
     }
 
+    void AddPreferencesSheetToFile()
+    {
+        if (_file is null) return;
+        int idx = _file.AddPreferencesSheet();
+        if (idx < 0) return;
+        _sheetIndex = idx;
+        _selectedZone = null;
+        RepopulateSheetPicker(idx);
+        RefreshEditor();
+        Status("Preferences sheet added.", StatusKind.Ready);
+    }
+
     async Task DeleteModeAsync()
     {
         if (_file is null) return;
         var sheet = CurrentSheet;
         if (sheet is null) return;
-        var name = sheet.ModeName.Length > 0 ? sheet.ModeName : "this mode";
-        if (!await ConfirmAsync("Delete this mode?",
+        bool prefs = sheet.Type == SheetType.Preferences;
+        var name = prefs ? "Preferences" : sheet.ModeName.Length > 0 ? sheet.ModeName : "this mode";
+        if (!await ConfirmAsync(prefs ? "Delete the Preferences sheet?" : "Delete this mode?",
             $"\"{name}\" and its rows are removed from the profile. Undo can bring it back."))
             return;
         if (!_file.DeleteMode(_sheetIndex)) return;

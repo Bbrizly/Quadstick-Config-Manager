@@ -59,4 +59,40 @@ public class ListViewTests
         file.Dirty = false; // else Close opens the save dialog and waits forever
         w.Close();
     }
+
+    // The Preferences sheet must show the official template's Units and
+    // Description columns; hiding them hid the tester's own setting notes.
+    [AvaloniaFact]
+    public void Preferences_sheet_shows_units_and_description()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "Preferences\n" +
+            "\n" +
+            "Preference,Value,Units,Description\n" +
+            "mouse_speed,201,,how fast the pointer moves\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+
+        var picker = w.GetVisualDescendants().OfType<ComboBox>().First(c => c.Name == "SheetPicker");
+        picker.SelectedIndex = 1; // the Preferences sheet
+        w.UpdateLayout();
+
+        Assert.Contains(w.GetVisualDescendants().OfType<AutoCompleteBox>(),
+            b => AutomationProperties.GetName(b) == "Units for row 8");
+        var desc = w.GetVisualDescendants().OfType<TextBox>()
+            .First(t => (AutomationProperties.GetName(t) ?? "").StartsWith("Description for row 8"));
+        Assert.Equal("how fast the pointer moves", desc.Text);
+
+        file.Dirty = false;
+        w.Close();
+    }
 }

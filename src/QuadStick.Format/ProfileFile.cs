@@ -128,6 +128,24 @@ public sealed class ProfileFile
         return Document.Sheets.Count - 1;
     }
 
+    // Append a Preferences sheet shaped like the official template: keyword
+    // row, blank slot row, then the annotated column header. Refused when one
+    // already exists; the device only reads one.
+    static readonly string[] PrefsKeywordCells = { "Preferences" };
+    static readonly string[] PrefsHeaderCells = { "Preference", "Value", "Units", "Description" };
+
+    public int AddPreferencesSheet()
+    {
+        if (Document.Sheets.Any(s => s.Type == SheetType.Preferences)) return -1;
+        Snapshot();
+        // Clones, not the templates: SetCell mutates grid rows in place.
+        Grid.Add((string[])PrefsKeywordCells.Clone());
+        Grid.Add(Array.Empty<string>());
+        Grid.Add((string[])PrefsHeaderCells.Clone());
+        Reparse();
+        return Document.Sheets.Count - 1;
+    }
+
     // Swap two whole grid rows, so column-K comments travel with their row.
     public void SwapRows(int rowA, int rowB)
     {
@@ -257,13 +275,16 @@ public sealed class ProfileFile
         return Document.Sheets.Count - 1;
     }
 
-    // Delete a mode. Sheet 0 carries the profile filename and stays, and the
-    // profile must keep at least one mode, so both are refused before snapshot.
+    // Delete a mode or the Preferences sheet. Sheet 0 carries the profile
+    // filename and stays, and the profile must keep at least one mode, so
+    // both are refused before snapshot.
     public bool DeleteMode(int sheetIndex)
     {
         if (sheetIndex <= 0 || sheetIndex >= Document.Sheets.Count) return false;
-        if (Document.Sheets[sheetIndex].Type != SheetType.ProfileName) return false;
-        if (Document.Sheets.Count(s => s.Type == SheetType.ProfileName) <= 1) return false;
+        var type = Document.Sheets[sheetIndex].Type;
+        if (type == SheetType.Infrared) return false;
+        if (type == SheetType.ProfileName
+            && Document.Sheets.Count(s => s.Type == SheetType.ProfileName) <= 1) return false;
 
         Snapshot();
         var (start, end) = SheetRowRange(sheetIndex);
