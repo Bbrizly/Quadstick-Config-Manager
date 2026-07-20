@@ -107,6 +107,70 @@ public class CardViewTests
         w.Close();
     }
 
+    // The tester shift-clicked the second and last lip card and got "4
+    // selected": the range walked every row in the mode, not just this
+    // part's mappings. The range must stay inside the visible cards.
+    [AvaloniaFact]
+    public void Shift_click_counts_only_this_parts_mappings()
+    {
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "square,normal,up\n" +      // joystick row between the lip rows
+            "circle,turbo,lip\n" +
+            "triangle,normal,down\n");
+        var w = OpenOnLip(file);
+
+        Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Mapping {n},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Mapping {n}."));
+        void Click(int n, RawInputModifiers mods = RawInputModifiers.None)
+        {
+            var pt = Handle(n).TranslatePoint(new Point(3, 3), w)!.Value;
+            w.MouseDown(pt, MouseButton.Left, mods);
+            w.MouseUp(pt, MouseButton.Left, mods);
+        }
+
+        Click(1);
+        Click(2, RawInputModifiers.Shift);
+        Assert.Equal("2 selected",
+            w.GetVisualDescendants().OfType<TextBlock>().First(x => x.Name == "DeviceSelectionCount").Text);
+
+        // And deleting takes only the lip rows, never the joystick rows.
+        w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "DeviceSelectionDeleteButton")
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Assert.Equal(new[] { "square", "triangle" },
+            file.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // The expanded editor's header is just Done and a big trash icon: no
+    // "Mapping N" label, no "Remove" word.
+    [AvaloniaFact]
+    public void The_editor_header_is_done_plus_a_trash_icon()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file);
+
+        Card(w, 1)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        Assert.DoesNotContain(w.GetVisualDescendants().OfType<TextBlock>(),
+            t => t.Text == "Mapping 1" || t.Text == "Remove");
+        var del = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Remove the "));
+        var icon = Assert.IsType<PathIcon>(del.Content);
+        Assert.Equal(32, icon.Width); // double the usual 16
+
+        file.Dirty = false;
+        w.Close();
+    }
+
     // The three-line handle selects like a list-view row number, and the bar
     // above the cards deletes the whole selection in one undo step.
     [AvaloniaFact]

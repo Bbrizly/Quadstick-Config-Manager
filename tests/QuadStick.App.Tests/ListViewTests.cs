@@ -210,6 +210,144 @@ public class ListViewTests
         w.Close();
     }
 
+    // A plain click on a row that is already part of a bigger selection
+    // collapses the selection to just that row, like a file explorer. The
+    // multi-drag still works because the drag starts before release.
+    [AvaloniaFact]
+    public void A_plain_click_on_a_selected_row_keeps_just_that_row()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false; // a late window resize would move the click targets
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n" +
+            "square,normal,left_puff\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+        bool Selected(int n) => AutomationProperties.GetName(Handle(n))!.Contains("selected");
+        void Click(int n, RawInputModifiers mods = RawInputModifiers.None)
+        {
+            var pt = Handle(n).TranslatePoint(new Point(3, 3), w)!.Value;
+            w.MouseDown(pt, MouseButton.Left, mods);
+            w.MouseUp(pt, MouseButton.Left, mods);
+        }
+
+        Click(1);
+        Click(3, RawInputModifiers.Shift);
+        Assert.True(Selected(1) && Selected(2) && Selected(3));
+
+        Click(2); // plain click inside the selection
+        Assert.True(!Selected(1) && Selected(2) && !Selected(3));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // The bar floats over the list corner; selecting must never push the
+    // rows down (the tester called the jump "very bad").
+    [AvaloniaFact]
+    public void The_selection_bar_floats_without_moving_the_rows()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false; // a late window resize would move the click targets
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+
+        double before = Handle(1).TranslatePoint(new Point(0, 0), w)!.Value.Y;
+        var pt = Handle(1).TranslatePoint(new Point(3, 3), w)!.Value;
+        w.MouseDown(pt, MouseButton.Left, RawInputModifiers.None);
+        w.MouseUp(pt, MouseButton.Left, RawInputModifiers.None);
+        w.UpdateLayout();
+
+        Assert.True(w.GetVisualDescendants().OfType<Border>().First(x => x.Name == "SelectionBar").IsVisible);
+        Assert.Equal(before, Handle(1).TranslatePoint(new Point(0, 0), w)!.Value.Y);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // The Move button's menu sends the whole selection to the top or the
+    // bottom of the mode, one undo step per move.
+    [AvaloniaFact]
+    public void The_move_menu_sends_the_selection_to_the_top_or_bottom()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false; // a late window resize would move the click targets
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n" +
+            "square,normal,left_puff\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+        void Click(int n, RawInputModifiers mods = RawInputModifiers.None)
+        {
+            var pt = Handle(n).TranslatePoint(new Point(3, 3), w)!.Value;
+            w.MouseDown(pt, MouseButton.Left, mods);
+            w.MouseUp(pt, MouseButton.Left, mods);
+        }
+        string[] Order() => file.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray();
+        MenuItem Item(string header) => ((MenuFlyout)w.GetVisualDescendants().OfType<Button>()
+            .First(b => b.Name == "SelectionMoveButton").Flyout!).Items.OfType<MenuItem>()
+            .First(m => (string?)m.Header == header);
+
+        Click(2);
+        Click(3, RawInputModifiers.Control); // circle + square
+        Item("To the top").RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+        w.UpdateLayout();
+        Assert.Equal(new[] { "circle", "square", "x" }, Order());
+
+        Click(1);
+        Click(2, RawInputModifiers.Control); // circle + square again
+        Item("To the bottom").RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+        w.UpdateLayout();
+        Assert.Equal(new[] { "x", "circle", "square" }, Order());
+
+        Assert.True(file.Undo()); // one step per move
+        Assert.Equal(new[] { "circle", "square", "x" }, Order());
+
+        file.Dirty = false;
+        w.Close();
+    }
+
     // The Preferences sheet must show the official template's Units and
     // Description columns; hiding them hid the tester's own setting notes.
     [AvaloniaFact]

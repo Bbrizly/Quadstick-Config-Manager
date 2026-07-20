@@ -193,8 +193,10 @@ public partial class MainWindow : Window
         GridScroll.AddHandler(PointerPressedEvent, (_, _) => ClearSelection());
         SelectionDeleteButton.Click += (_, _) => DeleteSelectedRows();
         SelectionClearButton.Click += (_, _) => ClearSelection();
+        SelectionMoveButton.Flyout = MoveMenu();
         DeviceSelectionDeleteButton.Click += (_, _) => DeleteSelectedRows();
         DeviceSelectionClearButton.Click += (_, _) => ClearSelection();
+        DeviceSelectionMoveButton.Flyout = MoveMenu();
 
         // Device view mappings read as plain sentences by default; this flips
         // to the detailed editor for users who want every field on screen.
@@ -1512,17 +1514,15 @@ public partial class MainWindow : Window
                 // sentence instead of a tall stack of separate labelled boxes.
                 var body = new StackPanel { Spacing = 6 };
 
-                var header = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
-                header.Children.Add(new TextBlock
-                { Text = $"Mapping {n}", FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold, Classes = { "muted" }, VerticalAlignment = VerticalAlignment.Center });
-                // Remove the whole mapping: trash icon + "Remove" word, never a
-                // bare "X", right-aligned in the header so it never crowds a field.
-                var del = new Button { Classes = { "danger", "quiet" }, Padding = new Avalonia.Thickness(8, 2) };
-                del.Content = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal, Spacing = 6,
-                    Children = { Glyph("IconDelete", "Error"), new TextBlock { Text = "Remove", FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center } },
-                };
+                // The header is just the actions, right-aligned: Done (card
+                // mode only) and a big trash icon. The card already says
+                // which mapping this is, a "Mapping N" label repeated it.
+                var header = new StackPanel
+                { Orientation = Orientation.Horizontal, Spacing = 6, HorizontalAlignment = HorizontalAlignment.Right };
+                var delIcon = Glyph("IconDelete", "Error");
+                delIcon.Width = delIcon.Height = 32; // double the usual 16, per the tester
+                var del = new Button { Classes = { "danger", "quiet" }, Padding = new Avalonia.Thickness(8, 2), Content = delIcon };
+                ToolTip.SetTip(del, "Remove this mapping");
                 AutomationProperties.SetName(del, $"Remove the {ShortInput(zone, b)} mapping");
                 del.Click += (_, _) =>
                 {
@@ -1531,19 +1531,15 @@ public partial class MainWindow : Window
                     BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                     FocusZoneDetailSibling(zone.Id, deletedIndex);
                 };
-                Grid.SetColumn(del, 1);
-                header.Children.Add(del);
                 if (cards)
                 {
-                    // The way back to the sentence card, next to Remove.
-                    header.ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto");
-                    var done = new Button { Content = "Done", Classes = { "quiet" }, Padding = new Avalonia.Thickness(8, 2) };
+                    // The way back to the sentence card, next to the trash.
+                    var done = new Button { Content = "Done", Classes = { "quiet" }, Padding = new Avalonia.Thickness(12, 2) };
                     AutomationProperties.SetName(done, $"Close the editor for mapping {n} and go back to its card");
                     done.Click += (_, _) => { _expandedMapping = -1; BuildZoneDetail(); };
-                    Grid.SetColumn(done, 1);
                     header.Children.Add(done);
-                    Grid.SetColumn(del, 2);
                 }
+                header.Children.Add(del);
                 body.Children.Add(header);
 
                 // ---- "When you": one aligned row per input, each removable ----
@@ -2118,11 +2114,23 @@ public partial class MainWindow : Window
     int _selAnchor = -1;
     readonly Dictionary<int, Panel> _rowPanels = new();
 
+    // The rows the user can actually see and select right now: only this
+    // part's mappings in device view, the whole mode in list view. Shift
+    // ranges and the Move menu must never reach rows outside this list.
+    List<int> VisibleSelectableRows()
+    {
+        if (DeviceContainer.IsVisible && _selectedZone is { } z)
+            return BindingsByZone().TryGetValue(z, out var bs)
+                ? bs.Select(x => x.Row).ToList() : new List<int>();
+        return CurrentSheet is { } sheet
+            ? sheet.Bindings.Select(x => x.Row).ToList() : new List<int>();
+    }
+
     void PaintRow(int row)
     {
         if (!_rowPanels.TryGetValue(row, out var p)) return;
         bool sel = _selectedRows.Contains(row);
-        if (sel) BindBrush(p, Panel.BackgroundProperty, "NewRowTint");
+        if (sel) BindBrush(p, Panel.BackgroundProperty, "SelectionTint");
         else p.ClearValue(Panel.BackgroundProperty);
         if (p.Children[0] is Border h && h.Tag is string baseName)
             AutomationProperties.SetName(h,
@@ -2162,13 +2170,43 @@ public partial class MainWindow : Window
         RepaintSelection();
     }
 
+    MenuFlyout MoveMenu()
+    {
+        var top = new MenuItem { Header = "To the top" };
+        top.Click += (_, _) => MoveSelection(top: true);
+        var bottom = new MenuItem { Header = "To the bottom" };
+        bottom.Click += (_, _) => MoveSelection(top: false);
+        return new MenuFlyout { Items = { top, bottom } };
+    }
+
+    void MoveSelection(bool top)
+    {
+        if (_file is null || _selectedRows.Count == 0) return;
+        // Land against the first or last row the user can see that is not
+        // already selected; with everything selected there is nowhere to go.
+        var anchors = VisibleSelectableRows().Where(r => !_selectedRows.Contains(r)).ToList();
+        if (anchors.Count == 0) return;
+        var srcs = _selectedRows.OrderBy(r => r).ToArray();
+        _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
+        var off = GridScroll.Offset;
+        if (top) _file.MoveRowsBefore(srcs, anchors[0]);
+        else _file.MoveRowsAfter(srcs, anchors[^1]);
+        if (DeviceContainer.IsVisible) { BuildDeviceView(); BuildZoneDetail(); RefreshIssues(); }
+        else
+        {
+            RebuildRows();
+            RestoreListScroll(off, () => { });
+        }
+        Status($"{srcs.Length} row{(srcs.Length == 1 ? "" : "s")} moved to the {(top ? "top" : "bottom")}. Ctrl+Z undoes it.", StatusKind.Ready);
+    }
+
     void SelectFromClick(int row, KeyModifiers mods)
     {
         if (mods.HasFlag(KeyModifiers.Control) || mods.HasFlag(KeyModifiers.Meta))
         { if (!_selectedRows.Remove(row)) _selectedRows.Add(row); _selAnchor = row; }
-        else if (mods.HasFlag(KeyModifiers.Shift) && _selAnchor >= 0 && CurrentSheet is { } sheet)
+        else if (mods.HasFlag(KeyModifiers.Shift) && _selAnchor >= 0)
         {
-            var rows = sheet.Bindings.Select(x => x.Row).ToList();
+            var rows = VisibleSelectableRows();
             int a = rows.IndexOf(_selAnchor), z = rows.IndexOf(row);
             if (a < 0) a = z;
             _selectedRows.Clear();
@@ -2196,17 +2234,30 @@ public partial class MainWindow : Window
         h.Focusable = true; // Space selects for keyboard and switch users
         h.Tag = baseName;   // PaintRow appends ", selected" to this
         ToolTip.SetTip(h, "Click to select, drag to reorder");
-        bool pressed = false;
+        bool pressed = false, collapseOnRelease = false;
         var pressAt = new Avalonia.Point();
         h.PointerPressed += (_, e) =>
         {
+            // A plain press inside a bigger selection keeps the set so a
+            // multi-row drag can start; if no drag follows, the release
+            // below collapses to just this row, like a file explorer.
+            collapseOnRelease = e.KeyModifiers == KeyModifiers.None
+                && _selectedRows.Contains(b.Row) && _selectedRows.Count > 1;
             SelectFromClick(b.Row, e.KeyModifiers);
             pressed = true;
             pressAt = e.GetPosition(this);
             h.Focus();
             e.Handled = true; // the click-away clear below must not see this press
         };
-        h.PointerReleased += (_, _) => pressed = false;
+        h.PointerReleased += (_, _) =>
+        {
+            if (pressed && collapseOnRelease)
+            {
+                _selectedRows.Clear(); _selectedRows.Add(b.Row); _selAnchor = b.Row;
+                RepaintSelection();
+            }
+            pressed = false;
+        };
         h.PointerMoved += (_, e) =>
         {
             // Only a real movement starts a drag, so a plain click stays a click.

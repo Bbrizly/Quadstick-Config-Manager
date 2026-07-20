@@ -198,19 +198,7 @@
       <Panel>
         <Border x:Name="GridContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                 BorderThickness="1" CornerRadius="6" Padding="12">
-          <DockPanel>
-            <!-- Appears only while rows are selected: how many, and what can
-                 be done to them. -->
-            <Border x:Name="SelectionBar" DockPanel.Dock="Top" IsVisible="False" Margin="0,0,0,8"
-                    CornerRadius="6" Padding="10,6" Background="{DynamicResource NewRowTintBrush}">
-              <StackPanel Orientation="Horizontal" Spacing="10">
-                <TextBlock x:Name="SelectionCount" VerticalAlignment="Center" FontWeight="Bold"/>
-                <Button x:Name="SelectionDeleteButton" Content="Delete" Classes="danger"
-                        AutomationProperties.Name="Delete the selected rows"/>
-                <Button x:Name="SelectionClearButton" Content="Clear" Classes="quiet"
-                        AutomationProperties.Name="Clear the selection"/>
-              </StackPanel>
-            </Border>
+          <Panel>
             <!-- List-view rows are a horizontal stack of fixed-width cells (output,
                  function, inputs, note, move/delete buttons), so at high interface
                  scale a row can run wider than the window. Auto lets it pan sideways
@@ -218,7 +206,23 @@
             <ScrollViewer x:Name="GridScroll" HorizontalScrollBarVisibility="Auto">
               <StackPanel x:Name="RowsPanel" Spacing="6"/>
             </ScrollViewer>
-          </DockPanel>
+            <!-- Appears only while rows are selected: how many, and what can
+                 be done to them. Floats over the bottom-left corner so
+                 selecting never pushes the rows down. -->
+            <Border x:Name="SelectionBar" IsVisible="False" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                    CornerRadius="6" Padding="10,6" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1">
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock x:Name="SelectionCount" VerticalAlignment="Center" FontWeight="Bold"/>
+                <Button x:Name="SelectionMoveButton" Content="Move" Classes="quiet"
+                        AutomationProperties.Name="Move the selected rows to the top or bottom"/>
+                <Button x:Name="SelectionDeleteButton" Content="Delete" Classes="danger"
+                        AutomationProperties.Name="Delete the selected rows"/>
+                <Button x:Name="SelectionClearButton" Content="Clear" Classes="quiet"
+                        AutomationProperties.Name="Clear the selection"/>
+              </StackPanel>
+            </Border>
+          </Panel>
         </Border>
         <Border x:Name="DeviceContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                 BorderThickness="1" CornerRadius="6" IsVisible="False">
@@ -247,24 +251,28 @@
               </ScrollViewer>
               <Border Grid.Column="1" Background="{DynamicResource SurfaceSubtleBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                       BorderThickness="1,0,0,0" Padding="18" MinWidth="340">
-                <DockPanel>
+                <Panel>
+                  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="ZoneDetailPanel" Spacing="14"/>
+                  </ScrollViewer>
                   <!-- Same job as SelectionBar in list view, for card selections.
                        Lives outside the rebuilt panel so a selection click never
-                       destroys the control being dragged. -->
-                  <Border x:Name="DeviceSelectionBar" DockPanel.Dock="Top" IsVisible="False" Margin="0,0,0,10"
-                          CornerRadius="6" Padding="10,6" Background="{DynamicResource NewRowTintBrush}">
+                       destroys the control being dragged, and floats so
+                       selecting never pushes the cards down. -->
+                  <Border x:Name="DeviceSelectionBar" IsVisible="False" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                          CornerRadius="6" Padding="10,6" Background="{DynamicResource SurfaceBrush}"
+                          BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1">
                     <StackPanel Orientation="Horizontal" Spacing="10">
                       <TextBlock x:Name="DeviceSelectionCount" VerticalAlignment="Center" FontWeight="Bold"/>
+                      <Button x:Name="DeviceSelectionMoveButton" Content="Move" Classes="quiet"
+                              AutomationProperties.Name="Move the selected mappings to the top or bottom"/>
                       <Button x:Name="DeviceSelectionDeleteButton" Content="Delete" Classes="danger"
                               AutomationProperties.Name="Delete the selected mappings"/>
                       <Button x:Name="DeviceSelectionClearButton" Content="Clear" Classes="quiet"
                               AutomationProperties.Name="Clear the selection"/>
                     </StackPanel>
                   </Border>
-                  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                    <StackPanel x:Name="ZoneDetailPanel" Spacing="14"/>
-                  </ScrollViewer>
-                </DockPanel>
+                </Panel>
               </Border>
             </Grid>
           </DockPanel>

@@ -33,6 +33,10 @@ public static class Palette
         // distinct from the three column tints above so it reads as its own
         // signal instead of looking like an Output/Function/Input cell.
         ["NewRowTint"]    = "#CDEED8",
+        // Selected rows and cards. A calm blue-grey, kept apart from the
+        // green NewRowTint (the tester read green selection as "horrendous")
+        // and paler than InputTint so input cells still stand out on it.
+        ["SelectionTint"] = "#D9E2F2",
     };
 
     public static readonly IReadOnlyDictionary<string, string> Dark = new Dictionary<string, string>
@@ -54,6 +58,7 @@ public static class Palette
         ["FunctionTint"]  = "#3A2530",
         ["InputTint"]     = "#1E2F3F",
         ["NewRowTint"]    = "#1C3A28",
+        ["SelectionTint"] = "#2C3A4D",
     };
 
     // (foreground token, background token, minimum ratio).
@@ -75,6 +80,7 @@ public static class Palette
         ("TextPrimary",   "FunctionTint",  4.5),
         ("TextPrimary",   "InputTint",     4.5),
         ("TextPrimary",   "NewRowTint",    4.5),
+        ("TextPrimary",   "SelectionTint", 4.5),
         // Real on-screen pairs the gate previously missed: the status bar
         // renders its colors on AppBackground, and the zone detail panel
         // puts secondary/accent text on SurfaceSubtle.
