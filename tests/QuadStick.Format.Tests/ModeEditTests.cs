@@ -139,6 +139,32 @@ public class ModeEditTests
     }
 
     [Fact]
+    public void MoveRows_drags_a_selection_as_one_block()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n" +
+            "square,normal,left_puff\n" +
+            "triangle,normal,hard_puff\n");
+        var before = f.ToCsvText();
+
+        // A non-contiguous pair dropped on the last row keeps its order.
+        f.MoveRows(new[] { 4, 6 }, 7);
+        Assert.Equal(new[] { "circle", "triangle", "x", "square" },
+            f.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+
+        Assert.True(f.Undo()); // one step undoes the whole move
+        Assert.Equal(before, f.ToCsvText());
+
+        // Dropping onto a row that is itself selected does nothing.
+        f.MoveRows(new[] { 4, 5 }, 5);
+        Assert.Equal(before, f.ToCsvText());
+    }
+
+    [Fact]
     public void DeleteRows_takes_several_rows_in_one_undo_step()
     {
         var f = ProfileFile.Load(

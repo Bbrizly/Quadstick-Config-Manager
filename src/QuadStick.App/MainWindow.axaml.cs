@@ -2068,7 +2068,9 @@ public partial class MainWindow : Window
             if (!pressed || Math.Abs(d.X) + Math.Abs(d.Y) < 6) return;
             pressed = false;
             var data = new DataObject();
-            data.Set(RowDragFormat, b.Row);
+            // The whole selection travels; the press above guaranteed the
+            // pressed row is in it.
+            data.Set(RowDragFormat, _selectedRows.OrderBy(r => r).ToArray());
             _ = DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
         };
         h.KeyDown += (_, e) =>
@@ -2092,10 +2094,10 @@ public partial class MainWindow : Window
         p.AddHandler(DragDrop.DropEvent, (_, e) =>
         {
             PaintRow(b.Row);
-            if (e.Data.Get(RowDragFormat) is not int src || src == b.Row) return;
+            if (e.Data.Get(RowDragFormat) is not int[] srcs || srcs.Contains(b.Row)) return;
             var off = GridScroll.Offset;
             _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
-            _file!.MoveRow(src, b.Row);
+            _file!.MoveRows(srcs, b.Row);
             RebuildRows();
             RestoreListScroll(off, () => { });
         });

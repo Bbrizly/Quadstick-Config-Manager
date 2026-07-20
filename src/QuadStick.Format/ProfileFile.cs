@@ -160,6 +160,22 @@ public sealed class ProfileFile
         Reparse();
     }
 
+    // Move several grid rows as one contiguous block, keeping their relative
+    // order, in one undoable step. Same landing rule as MoveRow: dragging
+    // down lands the block after the target, dragging up lands it before.
+    // Dropping onto a row that is itself moving does nothing.
+    public void MoveRows(IEnumerable<int> fromRows, int toRow)
+    {
+        var moving = fromRows.Where(r => r >= 1 && r <= Grid.Count)
+            .Distinct().OrderBy(r => r).ToList();
+        if (moving.Count == 0 || toRow < 1 || toRow > Grid.Count || moving.Contains(toRow)) return;
+        Snapshot();
+        var block = moving.Select(r => Grid[r - 1]).ToList();
+        for (int i = moving.Count - 1; i >= 0; i--) Grid.RemoveAt(moving[i] - 1);
+        Grid.InsertRange(Math.Min(toRow - 1, Grid.Count), block);
+        Reparse();
+    }
+
     // Swap two whole grid rows, so column-K comments travel with their row.
     public void SwapRows(int rowA, int rowB)
     {
