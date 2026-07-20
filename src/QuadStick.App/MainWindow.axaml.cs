@@ -186,8 +186,7 @@ public partial class MainWindow : Window
         InstallButton.Click += async (_, _) => await RunInstallFlowAsync();
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
-        AddModeButton.Click += async (_, _) => await AddModeAsync();
-        ModeMenuButton.Click += (_, _) => ShowModeMenu();
+        ModesButton.Click += async (_, _) => await ShowModesAsync();
         // A click that lands on nothing selectable drops the row selection,
         // exactly like a file explorer. Row-number presses mark themselves
         // Handled, so they never reach this.
@@ -464,6 +463,23 @@ public partial class MainWindow : Window
     public static Control ZoomWrap(Control content, double scale) =>
         scale == 1.0 ? content
         : new LayoutTransformControl { LayoutTransform = new ScaleTransform(scale, scale), Child = content };
+
+    // ---- Modes window API: ModesWindow.cs owns adding, renaming, reordering
+    // and deleting modes, and edits the same open profile the editor shows. ----
+    public ProfileFile? OpenFile => _file;
+
+    // Called after any change made in the Modes window. The editor may be
+    // showing a mode that just moved or vanished, so it is rebuilt around
+    // whichever sheet should be selected now.
+    public void ModesChanged(int selectSheetIndex, string status)
+    {
+        if (_file is null) return;
+        _sheetIndex = Math.Clamp(selectSheetIndex, 0, _file.Document.Sheets.Count - 1);
+        _selectedZone = null;
+        RepopulateSheetPicker(_sheetIndex);
+        RefreshEditor();
+        if (status.Length > 0) Status(status, StatusKind.Ready);
+    }
 
     bool _pickerSyncing; // stops the header/settings pickers re-triggering each other
 
@@ -773,171 +789,20 @@ public partial class MainWindow : Window
         return name.Length == 0 ? null : name;
     }
 
-    async Task AddModeAsync()
+    // Modes are managed in one window (ModesWindow.cs), not through a menu:
+    // add, rename, reorder and delete all live next to the mode they act on.
+    async Task ShowModesAsync()
     {
         if (_file is null) { Status("Open or create a profile first."); return; }
-
-        // "Start from" lists every existing mode so a new one can copy a
-        // working layout instead of starting empty; index 0 is always blank.
-        var sourceSheets = _file.Document.Sheets
-            .Select((s, i) => (Sheet: s, Index: i))
-            .Where(t => t.Sheet.Type == SheetType.ProfileName)
-            .ToList();
-        var startFromItems = new List<string> { "Blank mode" };
-        startFromItems.AddRange(sourceSheets.Select(t => t.Sheet.ModeName));
-        var startFromBox = new ComboBox
-        {
-            ItemsSource = startFromItems,
-            SelectedIndex = 0,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-        };
-        AutomationProperties.SetName(startFromBox, "Start the new mode from");
-
-        var name = await AskNameAsync("Add a mode", $"Mode {_file.Document.Sheets.Count + 1}",
-            "Add mode", "Name for the new mode",
-            new TextBlock { Text = "A mode is a second full layout of your inputs. Switch between modes while playing with the side tube or increment_mode / decrement_mode.", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
-            startFromBox);
-        if (name is null) return;
-
-        int idx;
-        if (startFromBox.SelectedIndex > 0)
-        {
-            var source = sourceSheets[startFromBox.SelectedIndex - 1];
-            idx = _file.DuplicateMode(source.Index, name);
-            if (idx < 0) { Status("Could not add mode.", StatusKind.Error); return; }
-        }
-        else
-        {
-            idx = _file.AddModeSheet(name);
-        }
-        // SelectionChanged only fires when the index changes, so drive the
-        // editor refresh explicitly (RefreshEditor is idempotent).
-        _sheetIndex = idx;
-        _selectedZone = null;
-        RepopulateSheetPicker(idx);
-        RefreshEditor();
+        await new ModesWindow(this).ShowDialog(this);
     }
 
-    // Built fresh on every click so enabled state always matches whichever
-    // sheet is selected right now, not whatever was true when the app opened.
-    void ShowModeMenu()
-    {
-        var sheets = _file?.Document.Sheets;
-        var sheet = CurrentSheet;
-        bool nameable = sheet != null && sheet.Type == SheetType.ProfileName;
-        bool nextIsMode = sheets != null && _sheetIndex + 1 < sheets.Count
-            && sheets[_sheetIndex + 1].Type == SheetType.ProfileName;
-        bool prevIsMode = sheets != null && _sheetIndex > 0
-            && sheets[_sheetIndex - 1].Type == SheetType.ProfileName;
-        bool onlyOneMode = sheets != null && sheets.Count(s => s.Type == SheetType.ProfileName) <= 1;
-
-        var rename = new MenuItem { Header = "Rename", IsEnabled = nameable };
-        var duplicate = new MenuItem { Header = "Duplicate", IsEnabled = nameable };
-        var moveUp = new MenuItem { Header = "Move up", IsEnabled = nameable && prevIsMode };
-        var moveDown = new MenuItem { Header = "Move down", IsEnabled = nameable && nextIsMode };
-        // Sheet 0 can never be deleted, but the item stays visible (just
-        // disabled) so a user who lands on it sees why, not a missing option.
-        // The Preferences sheet deletes too, for people who never use it.
-        bool prefsSheet = sheet != null && sheet.Type == SheetType.Preferences;
-        var delete = new MenuItem
-        {
-            Header = "Delete",
-            IsEnabled = _sheetIndex != 0 && (prefsSheet || (nameable && !onlyOneMode)),
-        };
-
-        rename.Click += async (_, _) => await RenameModeAsync();
-        duplicate.Click += async (_, _) => await DuplicateModeAsync();
-        moveUp.Click += (_, _) => MoveCurrentMode(-1);
-        moveDown.Click += (_, _) => MoveCurrentMode(1);
-        delete.Click += async (_, _) => await DeleteModeAsync();
-
-        var menu = new MenuFlyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
-        menu.Items.Add(rename);
-        menu.Items.Add(duplicate);
-        menu.Items.Add(moveUp);
-        menu.Items.Add(moveDown);
-        menu.Items.Add(delete);
-        if (sheets != null && !sheets.Any(s => s.Type == SheetType.Preferences))
-        {
-            var addPrefs = new MenuItem { Header = "Add preferences" };
-            addPrefs.Click += (_, _) => AddPreferencesSheetToFile();
-            menu.Items.Add(addPrefs);
-        }
-        menu.ShowAt(ModeMenuButton);
-    }
-
-    async Task RenameModeAsync()
-    {
-        if (_file is null) return;
-        var sheet = CurrentSheet;
-        if (sheet is null || sheet.Type != SheetType.ProfileName) return;
-
-        var name = await AskNameAsync("Rename mode", sheet.ModeName, "Rename", "New name for this mode");
-        if (name is null) return;
-        if (_file.RenameMode(_sheetIndex, name))
-        {
-            RepopulateSheetPicker(_sheetIndex);
-            Status("Mode renamed.", StatusKind.Ready);
-        }
-    }
-
-    async Task DuplicateModeAsync()
-    {
-        if (_file is null) return;
-        var sheet = CurrentSheet;
-        if (sheet is null || sheet.Type != SheetType.ProfileName) return;
-
-        var name = await AskNameAsync("Duplicate mode", sheet.ModeName + " copy",
-            "Duplicate", "Name for the duplicated mode");
-        if (name is null) return;
-        int idx = _file.DuplicateMode(_sheetIndex, name);
-        if (idx < 0) { Status("Could not duplicate mode.", StatusKind.Error); return; }
-        _sheetIndex = idx;
-        _selectedZone = null;
-        RepopulateSheetPicker(idx);
-        RefreshEditor();
-        Status("Mode duplicated.", StatusKind.Ready);
-    }
-
-    void MoveCurrentMode(int delta)
-    {
-        if (_file is null) return;
-        if (!_file.MoveMode(_sheetIndex, delta)) return;
-        _sheetIndex += delta;
-        _selectedZone = null;
-        RepopulateSheetPicker(_sheetIndex);
-        RefreshEditor();
-        Status("Mode moved.", StatusKind.Ready);
-    }
-
-    void AddPreferencesSheetToFile()
+    public void AddPreferencesSheetToFile()
     {
         if (_file is null) return;
         int idx = _file.AddPreferencesSheet();
         if (idx < 0) return;
-        _sheetIndex = idx;
-        _selectedZone = null;
-        RepopulateSheetPicker(idx);
-        RefreshEditor();
-        Status("Preferences sheet added.", StatusKind.Ready);
-    }
-
-    async Task DeleteModeAsync()
-    {
-        if (_file is null) return;
-        var sheet = CurrentSheet;
-        if (sheet is null) return;
-        bool prefs = sheet.Type == SheetType.Preferences;
-        var name = prefs ? "Preferences" : sheet.ModeName.Length > 0 ? sheet.ModeName : "this mode";
-        if (!await ConfirmAsync(prefs ? "Delete the Preferences sheet?" : "Delete this mode?",
-            $"\"{name}\" and its rows are removed from the profile. Undo can bring it back."))
-            return;
-        if (!_file.DeleteMode(_sheetIndex)) return;
-        _sheetIndex = Math.Min(_sheetIndex, _file.Document.Sheets.Count - 1);
-        _selectedZone = null;
-        RepopulateSheetPicker(_sheetIndex);
-        RefreshEditor();
-        Status("Mode deleted.", StatusKind.Ready);
+        ModesChanged(idx, "Preferences sheet added.");
     }
 
     sealed record Zone(string Id, string Title, string Display, string DefaultInput, string Blurb);
