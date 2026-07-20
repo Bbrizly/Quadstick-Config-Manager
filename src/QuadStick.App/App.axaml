@@ -27,6 +27,30 @@
       <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}"/>
     </Style>
 
+    <!-- Press feedback: every button-shaped control dips to 96% while held
+         and settles back, so a click reads as a physical press instead of a
+         cut. 0.96 is the floor; smaller looks like a stunt. -->
+    <Style Selector=":is(Button)">
+      <Setter Property="RenderTransform" Value="scale(1)"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.08"/>
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector=":is(Button):pressed">
+      <Setter Property="RenderTransform" Value="scale(0.96)"/>
+    </Style>
+    <!-- Hover and focus repaints cross-fade instead of cutting. -->
+    <Style Selector=":is(Button) /template/ ContentPresenter">
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="0:0:0.12"/>
+          <BrushTransition Property="BorderBrush" Duration="0:0:0.12"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
     <Style Selector="Button">
       <Setter Property="MinHeight" Value="48"/>
       <Setter Property="MinWidth" Value="48"/>
