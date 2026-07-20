@@ -34,9 +34,9 @@ public static class Palette
         // signal instead of looking like an Output/Function/Input cell.
         ["NewRowTint"]    = "#CDEED8",
         // Selected rows and cards. A calm blue-grey, kept apart from the
-        // green NewRowTint (the tester read green selection as "horrendous")
-        // and paler than InputTint so input cells still stand out on it.
-        ["SelectionTint"] = "#D9E2F2",
+        // green NewRowTint (the tester read green selection as "horrendous").
+        // Deep enough to read at a glance; the first pass was too faint.
+        ["SelectionTint"] = "#C2D3EE",
     };
 
     public static readonly IReadOnlyDictionary<string, string> Dark = new Dictionary<string, string>
@@ -58,7 +58,7 @@ public static class Palette
         ["FunctionTint"]  = "#3A2530",
         ["InputTint"]     = "#1E2F3F",
         ["NewRowTint"]    = "#1C3A28",
-        ["SelectionTint"] = "#2C3A4D",
+        ["SelectionTint"] = "#33475F",
     };
 
     // (foreground token, background token, minimum ratio).
