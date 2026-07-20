@@ -359,15 +359,24 @@ public sealed class ProfileFile
     }
 
     // Move a mode one slot up or down by swapping its whole row block with the
-    // neighbor's. delta is +1 (down) or -1 (up).
+    // next mode's. delta is +1 (down) or -1 (up).
+    //
+    // "Next mode" means the nearest mode in that direction, not the neighbouring
+    // sheet. A Preferences or Infrared sheet in between used to freeze both modes
+    // either side of it, which is how a tester ended up unable to move the first
+    // mode at all. Anything sitting between the two modes keeps its place.
     public bool MoveMode(int sheetIndex, int delta)
     {
-        int other = sheetIndex + delta;
         var sheets = Document.Sheets;
+        if (delta == 0) return false;
         if (sheetIndex < 0 || sheetIndex >= sheets.Count) return false;
-        if (other < 0 || other >= sheets.Count) return false;
         if (sheets[sheetIndex].Type != SheetType.ProfileName) return false;
-        if (sheets[other].Type != SheetType.ProfileName) return false;
+
+        int step = Math.Sign(delta);
+        int other = -1;
+        for (int i = sheetIndex + step; i >= 0 && i < sheets.Count; i += step)
+            if (sheets[i].Type == SheetType.ProfileName) { other = i; break; }
+        if (other < 0) return false;
 
         int lo = Math.Min(sheetIndex, other);
         int hi = Math.Max(sheetIndex, other);
@@ -378,12 +387,14 @@ public sealed class ProfileFile
         if (lo == 0 && hiEnd - hiStart < 1) return false;
 
         Snapshot();
-        // The two blocks are adjacent in the grid; swap them in place so column-K
-        // comments travel with their rows.
+        // Swap the two blocks in place so column-K comments travel with their
+        // rows. Whatever sits between them (a Preferences or Infrared sheet)
+        // is lifted and put back unchanged, so only the modes move.
         var hiBlock = Grid.GetRange(hiStart - 1, hiEnd - hiStart + 1);
         var loBlock = Grid.GetRange(loStart - 1, loEnd - loStart + 1);
+        var midBlock = Grid.GetRange(loEnd, hiStart - 1 - loEnd);
         Grid.RemoveRange(loStart - 1, hiEnd - loStart + 1);
-        Grid.InsertRange(loStart - 1, hiBlock.Concat(loBlock));
+        Grid.InsertRange(loStart - 1, hiBlock.Concat(midBlock).Concat(loBlock));
 
         // The profile filename lives on the first sheet's second row, so it
         // belongs to the file, not the mode: hand it to the new first sheet.

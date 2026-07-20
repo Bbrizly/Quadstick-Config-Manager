@@ -56,6 +56,43 @@ public class ModeEditTests
         Assert.Equal(before, f.ToCsvText());
     }
 
+    // A Preferences sheet lands between two modes as soon as you add prefs and
+    // then a mode, which is the ordinary path. It must not freeze the modes
+    // either side of it: a tester found the first mode stuck exactly this way.
+    static ProfileFile ModePrefsMode() => ProfileFile.Load(
+        "Profile Name,,Driving\n" +
+        "game.csv\n" +
+        "Outputs,Function,usb\n" +
+        "x,normal,lip\n" +
+        "Preferences\n" +
+        ",\n" +
+        "Preference,Value,Units,Description\n" +
+        "Sip_Puff_Threshold,20\n" +
+        "Profile Name,,Aiming\n" +
+        ",,\n" +
+        "Outputs,Function,usb\n" +
+        "circle,normal,right_sip\n");
+
+    [Fact]
+    public void A_preferences_sheet_between_modes_does_not_block_reordering()
+    {
+        var f = ModePrefsMode();
+        var before = f.ToCsvText();
+
+        Assert.True(f.MoveMode(0, 1));
+        Assert.Equal(new[] { "Aiming", "Driving" },
+            f.Document.Sheets.Where(s => s.Type == SheetType.ProfileName)
+                .Select(s => s.ModeName).ToArray());
+        // The Preferences sheet stays where it was, between the two modes.
+        Assert.Equal(SheetType.Preferences, f.Document.Sheets[1].Type);
+        // The filename belongs to the file, so it follows the new first sheet.
+        Assert.Equal("game.csv", f.Document.CsvFileName);
+
+        // Moving back restores the exact original text.
+        Assert.True(f.MoveMode(2, -1));
+        Assert.Equal(before, f.ToCsvText());
+    }
+
     [Fact]
     public void Guards_reject_bad_operations()
     {
