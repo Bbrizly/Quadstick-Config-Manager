@@ -1,6 +1,9 @@
 using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
+using Avalonia.Media;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
@@ -505,6 +508,67 @@ public class ListViewTests
         Assert.Equal("mp_left_puff", file.Document.Sheets[0].Bindings[0].Inputs[0]);
 
         file.Dirty = false;
+        w.Close();
+    }
+
+    // An empty cell must read as empty: its "pick an input" placeholder is
+    // muted and italic, not the same weight as a real value.
+    [AvaloniaFact]
+    public void Empty_cells_look_empty()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            ",normal,lip\n");   // no output: that cell is empty
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        TextBlock Label(string prefix) => (TextBlock)w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith(prefix)).Content!;
+
+        var empty = Label("Output for row 4");
+        Assert.Equal("pick an output", empty.Text);
+        Assert.Contains("muted", empty.Classes);
+        Assert.Equal(FontStyle.Italic, empty.FontStyle);
+
+        // A filled cell stays plain and full strength.
+        var filled = Label("Function for row 4");
+        Assert.Equal("normal", filled.Text);
+        Assert.DoesNotContain("muted", filled.Classes);
+        Assert.Equal(FontStyle.Normal, filled.FontStyle);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // Hovering used to cross-fade the background and border, which read as a
+    // flash when the pointer crossed between neighbouring controls. No brush
+    // transitions anywhere: hover states apply instantly.
+    [AvaloniaFact]
+    public void Hover_states_do_not_cross_fade()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        w.UpdateLayout();
+
+        var presenters = w.GetVisualDescendants().OfType<ContentPresenter>()
+            .Where(c => c.FindAncestorOfType<Button>() is not null).ToList();
+        Assert.NotEmpty(presenters);
+        foreach (var p in presenters)
+            Assert.DoesNotContain(p.Transitions ?? new Transitions(),
+                t => t is BrushTransition);
+
         w.Close();
     }
 

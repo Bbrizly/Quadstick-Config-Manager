@@ -3293,8 +3293,18 @@ public partial class MainWindow : Window
         if (cur.Length > 0 && !all.Contains(cur)) all.Insert(0, cur);
 
         var fly = new Flyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
-        var openLabel = new TextBlock
-        { Text = cur.Length > 0 ? labelFor(cur) : $"pick {pickWord}", TextWrapping = TextWrapping.Wrap };
+        var openLabel = new TextBlock { TextWrapping = TextWrapping.Wrap };
+
+        // An empty cell must read as empty at a glance: the placeholder is
+        // muted and italic, a real value is plain and full strength.
+        void ShowValue(string token)
+        {
+            bool empty = token.Length == 0;
+            openLabel.Text = empty ? $"pick {pickWord}" : labelFor(token);
+            openLabel.FontStyle = empty ? FontStyle.Italic : FontStyle.Normal;
+            openLabel.Classes.Set("muted", empty);
+        }
+        ShowValue(cur);
 
         void Commit(string token)
         {
@@ -3302,7 +3312,7 @@ public partial class MainWindow : Window
             cur = token;
             // Refresh the closed button in place; a commit that rebuilds the
             // whole view just throws this away, which is fine.
-            openLabel.Text = labelFor(token);
+            ShowValue(token);
             commitCell(token);
         }
 

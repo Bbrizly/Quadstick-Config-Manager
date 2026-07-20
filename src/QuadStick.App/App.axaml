@@ -41,15 +41,10 @@
     <Style Selector=":is(Button):pressed">
       <Setter Property="RenderTransform" Value="scale(0.96)"/>
     </Style>
-    <!-- Hover and focus repaints cross-fade instead of cutting. -->
-    <Style Selector=":is(Button) /template/ ContentPresenter">
-      <Setter Property="Transitions">
-        <Transitions>
-          <BrushTransition Property="Background" Duration="0:0:0.12"/>
-          <BrushTransition Property="BorderBrush" Duration="0:0:0.12"/>
-        </Transitions>
-      </Setter>
-    </Style>
+    <!-- No brush transitions on hover. Cross-fading the background and the
+         border meant that dragging the pointer across neighbouring controls
+         read as a flash, which the tester called out as ugly. Hover states
+         land instantly; only the press scale animates. -->
 
     <Style Selector="Button">
       <Setter Property="MinHeight" Value="48"/>

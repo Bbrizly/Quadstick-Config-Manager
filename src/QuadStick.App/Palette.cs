@@ -89,6 +89,11 @@ public static class Palette
         ("Success",       "AppBackground", 4.5),
         ("AccentText",    "AppBackground", 4.5),
         ("TextSecondary", "SurfaceSubtle", 4.5),
+        // An empty picker cell shows its "pick an output" placeholder in the
+        // muted colour, on top of that column's tint.
+        ("TextSecondary", "OutputTint",    4.5),
+        ("TextSecondary", "FunctionTint",  4.5),
+        ("TextSecondary", "InputTint",     4.5),
         ("AccentText",    "SurfaceSubtle", 4.5),
         // NOTE (Codex review): SurfaceBorder is a decorative separator, not a
         // meaningful UI-component boundary or text, so WCAG does not require a
