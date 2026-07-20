@@ -2747,7 +2747,9 @@ public partial class MainWindow : Window
             oldValue + (newValue - oldValue) * progress;
     }
 
-    static Avalonia.Animation.Animation Between(AvaloniaProperty prop, double from, double to,
+    // Internal so the animation regression test can prove this exact helper
+    // moves values on a ticking clock, not a lookalike.
+    internal static Avalonia.Animation.Animation Between(AvaloniaProperty prop, double from, double to,
         Avalonia.Animation.FillMode fill = Avalonia.Animation.FillMode.Backward)
     {
         Avalonia.Styling.Setter S(double v)
