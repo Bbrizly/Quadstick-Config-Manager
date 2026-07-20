@@ -1620,7 +1620,7 @@ public partial class MainWindow : Window
                 body.Children.Add(Labeled("When you", inputsBox));
 
                 // ---- "Press" (game button) and "As" (how it presses) ----
-                body.Children.Add(Labeled("Press", TokenField(b.Row, 0, b.Output, OutputSuggestionsFor(CurrentSheet!),
+                body.Children.Add(Labeled("Press", OutputPicker(b.Row, 0, b.Output, OutputSuggestionsFor(CurrentSheet!),
                     TokenLabel, $"Game button pressed by {ShortInput(zone, b)}", OutputTint)));
                 body.Children.Add(Labeled("As", FunctionCombo(b, zone)));
                 body.Children.Add(Labeled("Note", NoteBox(b.Row, NoteColumn, $"Note for this mapping. Saved in the file, ignored by the QuadStick")));
@@ -3132,6 +3132,191 @@ public partial class MainWindow : Window
         }
 
         ShowCombo();
+        return wrapper;
+    }
+
+    // The Press field. Its option list is ~380 tokens, which as one flat
+    // dropdown meant endless scrolling. Closed, it is a button showing the
+    // current pick. Open, it swaps in place for a search box over category
+    // expanders (Controller, Keyboard, Mouse, ...), so browsing is a few
+    // clicks and typing in the search replaces the categories with flat
+    // matches. Picking commits the cell exactly like TokenField does.
+    Control OutputPicker(int row, int col, string current, IReadOnlyList<string> options,
+                         Func<string, string> labelFor, string accessibleName, string tintKey)
+    {
+        var wrapper = new Border
+        {
+            BorderThickness = new Avalonia.Thickness(2),
+            BorderBrush = Brushes.Transparent,
+            CornerRadius = new Avalonia.CornerRadius(5),
+        };
+        _cellBorders[$"{(char)('A' + col)}{row}"] = wrapper;
+        var cur = (current ?? "").Trim();
+        var all = new List<string>(options);
+        if (cur.Length > 0 && !all.Contains(cur)) all.Insert(0, cur);
+
+        void Commit(string token)
+        {
+            if (_file is null) return;
+            if (token != _file.GetCell(row, col)) _file.SetCell(row, col, token);
+            RebuildDeviceAfterEdit(row, col);
+        }
+
+        Button Item(string token)
+        {
+            var it = new Button
+            {
+                Content = new TextBlock
+                { Text = labelFor(token), FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap },
+                Classes = { "quiet" },
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+            };
+            AutomationProperties.SetName(it, labelFor(token));
+            it.Click += (_, _) => Commit(token);
+            return it;
+        }
+
+        Expander Group(string title, Control content, int count)
+        {
+            var ex = new Expander
+            { Header = title, Content = content, HorizontalAlignment = HorizontalAlignment.Stretch };
+            AutomationProperties.SetName(ex, $"{title}, {count} outputs");
+            return ex;
+        }
+
+        Expander ItemGroup(string title, List<string> tokens)
+        {
+            var inner = new StackPanel { Spacing = 2 };
+            foreach (var t in tokens) inner.Children.Add(Item(t));
+            return Group(title, inner, tokens.Count);
+        }
+
+        void ShowClosed()
+        {
+            var open = new Button
+            {
+                Content = new TextBlock
+                { Text = cur.Length > 0 ? labelFor(cur) : "pick an output", TextWrapping = TextWrapping.Wrap },
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+            };
+            open[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
+            AutomationProperties.SetName(open, $"{accessibleName}. Opens a searchable list.");
+            open.Click += (_, _) => ShowOpen();
+            wrapper.Child = open;
+        }
+
+        void ShowTyping()
+        {
+            var box = new AutoCompleteBox
+            {
+                Text = "", ItemsSource = options, FilterMode = AutoCompleteFilterMode.Contains,
+                MinimumPrefixLength = 0, HorizontalAlignment = HorizontalAlignment.Stretch,
+                Watermark = "type a value, or leave blank to go back",
+            };
+            box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
+            AutomationProperties.SetName(box, accessibleName + ". Type a custom value.");
+            void Done()
+            {
+                var v = (box.Text ?? "").Trim();
+                if (v.Length == 0) { ShowOpen(); return; }
+                Commit(v);
+            }
+            box.LostFocus += (_, _) => Done();
+            box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Done(); };
+            wrapper.Child = box;
+            Dispatcher.UIThread.Post(() => box.Focus(), DispatcherPriority.Loaded);
+        }
+
+        void ShowOpen()
+        {
+            var panel = new StackPanel { Spacing = 6 };
+            var search = new TextBox { Watermark = "Search outputs" };
+            AutomationProperties.SetName(search, "Search all outputs");
+            var body = new StackPanel { Spacing = 2 };
+
+            void ShowCategories()
+            {
+                body.Children.Clear();
+                // The most common pick sits right on top, no digging.
+                if (all.Contains("none")) body.Children.Add(Item("none"));
+                var byCat = all.Where(t => t != "none")
+                    .GroupBy(t => OutputCatalog.Classify(t).Category)
+                    .ToDictionary(g => g.Key, g => g.ToList());
+                foreach (var cat in OutputCatalog.CategoryOrder)
+                {
+                    if (!byCat.TryGetValue(cat, out var tokens)) continue;
+                    if (OutputCatalog.SubOrder.TryGetValue(cat, out var subs))
+                    {
+                        var bySub = tokens.GroupBy(t => OutputCatalog.Classify(t).Sub)
+                            .ToDictionary(g => g.Key, g => g.ToList());
+                        var content = new StackPanel { Spacing = 2 };
+                        foreach (var sub in subs)
+                        {
+                            if (!bySub.TryGetValue(sub, out var st)) continue;
+                            // Alphabetical puts f1, f10, f11 ... f2; sort by number.
+                            if (sub == "Function keys") st = st.OrderBy(t => int.Parse(t.AsSpan(4))).ToList();
+                            content.Children.Add(ItemGroup(sub, st));
+                        }
+                        body.Children.Add(Group(cat, content, tokens.Count));
+                    }
+                    else body.Children.Add(ItemGroup(cat, tokens));
+                }
+            }
+
+            void ShowMatches(string q)
+            {
+                body.Children.Clear();
+                var hits = all.Where(t => t.Contains(q, StringComparison.OrdinalIgnoreCase)
+                                       || labelFor(t).Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+                foreach (var t in hits.Take(40)) body.Children.Add(Item(t));
+                if (hits.Count > 40)
+                    body.Children.Add(new TextBlock
+                    {
+                        Text = $"{hits.Count - 40} more. Keep typing to narrow it down.",
+                        FontSize = Size("SmallSize"), Classes = { "muted" },
+                    });
+                if (hits.Count == 0)
+                    body.Children.Add(new TextBlock
+                    {
+                        Text = "Nothing matches. Try fewer letters, or type your own below.",
+                        FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+                    });
+            }
+
+            search.TextChanged += (_, _) =>
+            {
+                var q = (search.Text ?? "").Trim();
+                if (q.Length == 0) ShowCategories(); else ShowMatches(q);
+            };
+
+            var cancel = new Button { Content = "Cancel", Classes = { "quiet" } };
+            AutomationProperties.SetName(cancel, "Close the output list without changing anything");
+            cancel.Click += (_, _) => { ShowClosed(); (wrapper.Child as Control)?.Focus(); };
+            var typeOwn = new Button { Content = TypeYourOwn, Classes = { "quiet" } };
+            AutomationProperties.SetName(typeOwn, "Type a custom output value");
+            typeOwn.Click += (_, _) => ShowTyping();
+            var footer = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+            footer.Children.Add(cancel);
+            footer.Children.Add(typeOwn);
+
+            panel.Children.Add(search);
+            panel.Children.Add(body);
+            panel.Children.Add(footer);
+            panel.KeyDown += (_, e) =>
+            {
+                if (e.Key != Key.Escape) return;
+                e.Handled = true;
+                ShowClosed();
+                (wrapper.Child as Control)?.Focus();
+            };
+            wrapper.Child = panel;
+            ShowCategories();
+            Dispatcher.UIThread.Post(() => search.Focus(), DispatcherPriority.Loaded);
+        }
+
+        ShowClosed();
         return wrapper;
     }
 

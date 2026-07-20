@@ -210,6 +210,62 @@ public class CardViewTests
         w.Close();
     }
 
+    // The Press dropdown was one ~380-item scroll. It must open as a picker:
+    // a search box on top, category expanders under it, and typing in the
+    // search replaces the categories with flat matches.
+    [AvaloniaFact]
+    public void The_press_field_is_a_searchable_category_picker()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file, cards: false);
+
+        Button Press() => w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Game button pressed by"));
+        void Open()
+        {
+            Press().RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Dispatcher.UIThread.RunJobs();
+            w.UpdateLayout();
+        }
+
+        // Browse: Controller > Buttons > Triangle.
+        Open();
+        var cats = w.GetVisualDescendants().OfType<Expander>()
+            .Select(e => e.Header as string).ToList();
+        Assert.Contains("Controller", cats);
+        Assert.Contains("Keyboard", cats);
+        Assert.Contains("Mouse", cats);
+
+        var controller = w.GetVisualDescendants().OfType<Expander>()
+            .First(e => (e.Header as string) == "Controller");
+        controller.IsExpanded = true;
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        var buttons = controller.GetVisualDescendants().OfType<Expander>()
+            .First(e => (e.Header as string) == "Buttons");
+        buttons.IsExpanded = true;
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        buttons.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Triangle")
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        Assert.Equal("triangle", file.Document.Sheets[0].Bindings[0].Output);
+
+        // Search: typing hides the categories and goes straight to matches.
+        Open();
+        var search = w.GetVisualDescendants().OfType<TextBox>()
+            .First(t => (AutomationProperties.GetName(t) ?? "") == "Search all outputs");
+        search.Text = "squar";
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        Assert.Empty(w.GetVisualDescendants().OfType<Expander>());
+        w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Square")
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Assert.Equal("square", file.Document.Sheets[0].Bindings[0].Output);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
     // The tester found the card's select/drag handle too small to hit, and
     // wants the add-input control to be a round plus button like the list view.
     [AvaloniaFact]
