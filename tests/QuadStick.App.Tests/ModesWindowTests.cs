@@ -62,6 +62,8 @@ public class ModesWindowTests
         w.OpenFile!.Document.Sheets.Where(s => s.Type == SheetType.ProfileName)
             .Select(s => s.ModeName).ToArray();
 
+    // The preferences sheet is a row in this list too, so one press moves one
+    // row: Driving trades places with it, then with Aiming.
     [AvaloniaFact]
     public void The_first_mode_moves_down_past_a_preferences_sheet()
     {
@@ -73,9 +75,39 @@ public class ModesWindowTests
         Tap(modes, "Move Driving down");
         Dispatcher.UIThread.RunJobs();
 
+        Assert.Equal(SheetType.Preferences, w.OpenFile!.Document.Sheets[0].Type);
+        Assert.Equal(new[] { "Driving", "Aiming" }, ModeNames(w));
+
+        Tap(modes, "Move Driving down");
+        Dispatcher.UIThread.RunJobs();
+
         Assert.Equal(new[] { "Aiming", "Driving" }, ModeNames(w));
-        // The Preferences sheet keeps its place; only the modes moved.
+
+        modes.Close();
+        w.OpenFile!.Dirty = false;
+        w.Close();
+    }
+
+    // The preferences sheet moves on its own, which is the whole reason it is
+    // listed here instead of hidden behind a button.
+    [AvaloniaFact]
+    public void The_preferences_sheet_moves_up_like_any_other_row()
+    {
+        var w = Open(ModePrefsMode);
+        var modes = new ModesWindow(w);
+        _ = modes.ShowDialog(w);
+        Dispatcher.UIThread.RunJobs();
+
         Assert.Equal(SheetType.Preferences, w.OpenFile!.Document.Sheets[1].Type);
+
+        Tap(modes, "Move the preferences sheet up");
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal(SheetType.Preferences, w.OpenFile!.Document.Sheets[0].Type);
+        // The profile filename belongs to the file, so it goes to whichever
+        // sheet is now first.
+        Assert.Equal("game.csv", w.OpenFile!.Document.CsvFileName);
+        Assert.Equal(new[] { "Driving", "Aiming" }, ModeNames(w));
 
         modes.Close();
         w.OpenFile!.Dirty = false;
@@ -189,6 +221,8 @@ public class ModesWindowTests
 
         modes.KeyPressQwerty(PhysicalKey.ArrowDown, RawInputModifiers.Alt);
         Dispatcher.UIThread.RunJobs();
+        modes.KeyPressQwerty(PhysicalKey.ArrowDown, RawInputModifiers.Alt);
+        Dispatcher.UIThread.RunJobs();
 
         Assert.Equal(new[] { "Aiming", "Driving" }, ModeNames(w));
 
@@ -215,7 +249,8 @@ public class ModesWindowTests
         Tap(modes, "Delete Aiming");
         Assert.NotNull(Find(modes, "Really delete Aiming"));
 
-        Tap(modes, "Remove the preferences sheet and its device settings");
+        Tap(modes, "Delete the preferences sheet");
+        Tap(modes, "Really delete the preferences sheet");
 
         Assert.Empty(modes.GetVisualDescendants().OfType<Button>()
             .Where(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Really delete")));

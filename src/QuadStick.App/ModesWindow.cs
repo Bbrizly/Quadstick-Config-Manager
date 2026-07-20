@@ -56,7 +56,7 @@ public class ModesWindow : Window
         };
         AutomationProperties.SetName(add, "Add a mode");
         add.Click += (_, _) => AddMode();
-        _prefs.Click += (_, _) => { _prefsClick(); Build(); };
+        _prefs.Click += (_, _) => { _owner.AddPreferencesSheetToFile(); Build(); };
 
         var close = new Button
         {
@@ -118,11 +118,15 @@ public class ModesWindow : Window
 
     static double Size(string tokenKey) => (double)Application.Current!.FindResource(tokenKey)!;
 
+    // The Preferences sheet is listed with the modes, in file order. It is not a
+    // mode, but it is a sheet you can move, and hiding it made its position
+    // invisible: a mode that moved "past" it seemed to jump two slots.
+    // The Infrared sheet stays out; it is not ours to reorder.
     List<(ModeSheet Sheet, int Index)> Modes() =>
         _owner.OpenFile is null ? new()
         : _owner.OpenFile.Document.Sheets
             .Select((s, i) => (Sheet: s, Index: i))
-            .Where(t => t.Sheet.Type == SheetType.ProfileName)
+            .Where(t => t.Sheet.Type != SheetType.Infrared)
             .ToList();
 
     // Rebuilding detaches the name boxes, and a detached box raises LostFocus.
@@ -145,68 +149,74 @@ public class ModesWindow : Window
         _rebuilding = true;
         _rows.Children.Clear();
         var modes = Modes();
+        // A row's position in the list and its number as a mode are two
+        // different things once the preferences sheet sits among them: the
+        // arrows work on the position, the spoken name says "mode 3".
+        int ordinal = 0;
         for (int p = 0; p < modes.Count; p++)
-            _rows.Children.Add(Row(modes[p].Sheet, modes[p].Index, p, modes.Count));
+        {
+            bool isMode = modes[p].Sheet.Type == SheetType.ProfileName;
+            if (isMode) ordinal++;
+            _rows.Children.Add(Row(modes[p].Sheet, modes[p].Index, p, modes.Count, isMode ? ordinal : 0));
+        }
 
         var sheets = _owner.OpenFile?.Document.Sheets;
-        int prefsIndex = sheets?.ToList().FindIndex(s => s.Type == SheetType.Preferences) ?? -1;
-        _prefs.Content = prefsIndex < 0 ? "+ Add a preferences sheet" : "Remove the preferences sheet";
+        // Removing the sheet is now the ✕ on its own row, so this button only
+        // ever adds one, and it hides once the sheet is in the list above.
+        bool hasPrefs = sheets?.Any(s => s.Type == SheetType.Preferences) ?? false;
+        _prefs.Content = "+ Add a preferences sheet";
         _prefs.FontSize = Size("BodySize");
-        _prefs.IsEnabled = sheets != null;
-        AutomationProperties.SetName(_prefs, prefsIndex < 0
-            ? "Add a preferences sheet, where device settings like sip and puff pressure live"
-            : "Remove the preferences sheet and its device settings");
-        _prefsClick = prefsIndex < 0
-            ? _owner.AddPreferencesSheetToFile
-            : () => { _owner.OpenFile!.DeleteMode(prefsIndex); _owner.ModesChanged(0, "Preferences sheet removed. Control Z undoes it."); };
+        _prefs.IsVisible = sheets != null && !hasPrefs;
+        AutomationProperties.SetName(_prefs,
+            "Add a preferences sheet, where device settings like sip and puff pressure live");
         _rebuilding = false;
     }
 
-    Action _prefsClick = () => { };
+    int ModeCount() => Modes().Count(t => t.Sheet.Type == SheetType.ProfileName);
 
-    Control Row(ModeSheet sheet, int sheetIndex, int position, int total)
+    Control Row(ModeSheet sheet, int sheetIndex, int position, int total, int ordinal)
     {
-        var name = sheet.ModeName.Length > 0 ? sheet.ModeName : $"Mode {position + 1}";
+        bool isPrefs = sheet.Type == SheetType.Preferences;
+        var name = isPrefs ? "the preferences sheet"
+            : sheet.ModeName.Length > 0 ? sheet.ModeName : $"Mode {ordinal}";
 
-        var box = new TextBox
-        {
-            Text = sheet.ModeName,
-            Width = 240,
-            // A tester renamed a mode to a whole paragraph; nothing past this
-            // fits the mode picker or the side tube's speech anyway.
-            MaxLength = 40,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-        AutomationProperties.SetName(box, $"Name of mode {position + 1}");
-        // Commit on lost focus, the same rule the editor's cells follow.
-        box.LostFocus += (_, _) => Rename(sheetIndex, box.Text ?? "");
-        box.KeyDown += (_, e) =>
-        {
-            if (e.Key == Key.Enter) Rename(sheetIndex, box.Text ?? "");
-            // Alt with an arrow moves the mode without touching the mouse.
-            else if (e.KeyModifiers == KeyModifiers.Alt && e.Key is Key.Up or Key.Down)
+        // The preferences sheet has no name to type: the device finds it by the
+        // keyword "Preferences" alone. A label sits where the name box would.
+        Control label = isPrefs
+            ? new TextBlock
             {
-                e.Handled = true;
-                Move(sheetIndex, e.Key == Key.Up ? -1 : 1);
+                Text = "Preferences (device settings)",
+                Width = 240,
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = Size("BodySize"),
+                Classes = { "muted" },
             }
-        };
+            : NameBox(sheet, sheetIndex, ordinal);
 
         var up = IconButton("▲", $"Move {name} up", position > 0, () => Move(sheetIndex, -1));
         var down = IconButton("▼", $"Move {name} down", position < total - 1, () => Move(sheetIndex, 1));
-        var copy = IconButton("⧉", $"Make a copy of {name}", true, () => Duplicate(sheetIndex, name));
+        var copy = IconButton("⧉", $"Make a copy of {name}", !isPrefs, () => Duplicate(sheetIndex, name));
+        // Only one preferences sheet is ever read, so a copy of it would be dead
+        // weight in the file. The button stays in place, greyed, so the columns
+        // still line up down the list.
+        copy.IsVisible = !isPrefs;
 
         bool armed = _armedDelete == sheetIndex;
         // The last mode cannot go: a profile with no modes is not a profile.
-        bool canDelete = total > 1;
+        // The preferences sheet is never the last mode, so it always can.
+        bool canDelete = isPrefs || ModeCount() > 1;
         var delete = armed
             ? TextButton("Really delete?", $"Really delete {name}", canDelete, () => Delete(sheetIndex))
             : IconButton("✕", $"Delete {name}", canDelete, () => { _armedDelete = sheetIndex; Build(keepArmed: true); });
         delete.Classes.Add("danger");
 
-        return new StackPanel
+        var row = new StackPanel
         {
             Orientation = Orientation.Horizontal,
             Spacing = 8,
+            // The preferences row has no name box to hold the keyboard, so the
+            // row itself takes focus after a move and keeps Alt+arrow working.
+            Focusable = true,
             Children =
             {
                 new TextBlock
@@ -218,9 +228,36 @@ public class ModesWindow : Window
                     FontSize = Size("BodySize"),
                     Classes = { "muted" },
                 },
-                box, up, down, copy, delete,
+                label, up, down, copy, delete,
             },
         };
+        // Alt with an arrow moves the row from anywhere on it, including the
+        // preferences row, which has no name box to hold the keyboard.
+        row.KeyDown += (_, e) =>
+        {
+            if (e.KeyModifiers != KeyModifiers.Alt || e.Key is not (Key.Up or Key.Down)) return;
+            e.Handled = true;
+            Move(sheetIndex, e.Key == Key.Up ? -1 : 1);
+        };
+        return row;
+    }
+
+    TextBox NameBox(ModeSheet sheet, int sheetIndex, int ordinal)
+    {
+        var box = new TextBox
+        {
+            Text = sheet.ModeName,
+            Width = 240,
+            // A tester renamed a mode to a whole paragraph; nothing past this
+            // fits the mode picker or the side tube's speech anyway.
+            MaxLength = 40,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        AutomationProperties.SetName(box, $"Name of mode {ordinal}");
+        // Commit on lost focus, the same rule the editor's cells follow.
+        box.LostFocus += (_, _) => Rename(sheetIndex, box.Text ?? "");
+        box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Rename(sheetIndex, box.Text ?? ""); };
+        return box;
     }
 
     Button IconButton(string glyph, string spokenName, bool enabled, Action onClick)
@@ -273,14 +310,15 @@ public class ModesWindow : Window
         FocusName(Modes().FindIndex(t => t.Index == landed));
     }
 
-    // MoveMode swaps two mode blocks, so the moved mode now sits where its
-    // neighbour was: the nearest mode in that direction from where it started.
+    // MoveMode swaps two sheet blocks, so the moved sheet now sits where its
+    // neighbour was: the nearest listed sheet in that direction from where it
+    // started. Same skip rule as MoveMode, or the focus lands on the wrong row.
     int FocusedSheetAfterMove(int fromSheetIndex, int delta)
     {
         var sheets = _owner.OpenFile!.Document.Sheets;
         int step = Math.Sign(delta);
         for (int i = fromSheetIndex + step; i >= 0 && i < sheets.Count; i += step)
-            if (sheets[i].Type == SheetType.ProfileName) return i;
+            if (sheets[i].Type != SheetType.Infrared) return i;
         return fromSheetIndex;
     }
 
@@ -297,9 +335,11 @@ public class ModesWindow : Window
     void Delete(int sheetIndex)
     {
         if (_owner.OpenFile is null) return;
+        bool prefs = _owner.OpenFile.Document.Sheets[sheetIndex].Type == SheetType.Preferences;
         if (!_owner.OpenFile.DeleteMode(sheetIndex)) { Build(); return; }
         Build();
-        _owner.ModesChanged(Math.Max(0, sheetIndex - 1), "Mode deleted. Control Z undoes it.");
+        _owner.ModesChanged(Math.Max(0, sheetIndex - 1),
+            prefs ? "Preferences sheet removed. Control Z undoes it." : "Mode deleted. Control Z undoes it.");
     }
 
     void AddMode()
@@ -308,7 +348,7 @@ public class ModesWindow : Window
         // Two modes with the same name are legal but unreadable in the picker,
         // so count past any name already taken.
         var taken = Modes().Select(t => t.Sheet.ModeName).ToHashSet();
-        int n = Modes().Count + 1;
+        int n = ModeCount() + 1;
         while (taken.Contains($"Mode {n}")) n++;
         int idx = _owner.OpenFile.AddModeSheet($"Mode {n}");
         Build();
@@ -326,8 +366,9 @@ public class ModesWindow : Window
         {
             var row = (Control)_rows.Children[position];
             var box = row.GetLogicalDescendants().OfType<TextBox>().FirstOrDefault();
-            box?.Focus();
-            box?.SelectAll();
+            if (box is null) { row.Focus(); return; }
+            box.Focus();
+            box.SelectAll();
         }, DispatcherPriority.Loaded);
     }
 }

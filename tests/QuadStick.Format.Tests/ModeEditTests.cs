@@ -59,6 +59,7 @@ public class ModeEditTests
     // A Preferences sheet lands between two modes as soon as you add prefs and
     // then a mode, which is the ordinary path. It must not freeze the modes
     // either side of it: a tester found the first mode stuck exactly this way.
+    // It is a sheet you can move as well, so a move steps one sheet at a time.
     static ProfileFile ModePrefsMode() => ProfileFile.Load(
         "Profile Name,,Driving\n" +
         "game.csv\n" +
@@ -79,17 +80,20 @@ public class ModeEditTests
         var f = ModePrefsMode();
         var before = f.ToCsvText();
 
+        // Driving trades places with the Preferences sheet, then with Aiming.
         Assert.True(f.MoveMode(0, 1));
-        Assert.Equal(new[] { "Aiming", "Driving" },
-            f.Document.Sheets.Where(s => s.Type == SheetType.ProfileName)
-                .Select(s => s.ModeName).ToArray());
-        // The Preferences sheet stays where it was, between the two modes.
-        Assert.Equal(SheetType.Preferences, f.Document.Sheets[1].Type);
+        Assert.Equal(SheetType.Preferences, f.Document.Sheets[0].Type);
         // The filename belongs to the file, so it follows the new first sheet.
         Assert.Equal("game.csv", f.Document.CsvFileName);
 
-        // Moving back restores the exact original text.
+        Assert.True(f.MoveMode(1, 1));
+        Assert.Equal(new[] { "Aiming", "Driving" },
+            f.Document.Sheets.Where(s => s.Type == SheetType.ProfileName)
+                .Select(s => s.ModeName).ToArray());
+
+        // Moving back the same two steps restores the exact original text.
         Assert.True(f.MoveMode(2, -1));
+        Assert.True(f.MoveMode(1, -1));
         Assert.Equal(before, f.ToCsvText());
     }
 

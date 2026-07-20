@@ -379,24 +379,24 @@ public sealed class ProfileFile
         return true;
     }
 
-    // Move a mode one slot up or down by swapping its whole row block with the
-    // next mode's. delta is +1 (down) or -1 (up).
+    // Move a sheet one slot up or down by swapping its whole row block with the
+    // next sheet's. delta is +1 (down) or -1 (up).
     //
-    // "Next mode" means the nearest mode in that direction, not the neighbouring
-    // sheet. A Preferences or Infrared sheet in between used to freeze both modes
-    // either side of it, which is how a tester ended up unable to move the first
-    // mode at all. Anything sitting between the two modes keeps its place.
+    // Modes and the Preferences sheet both move: they are the rows the Modes
+    // window lists, so one press moves one row, whichever kind it is. Only the
+    // Infrared sheet is stepped over, because it is not shown and not ours to
+    // reorder. Anything stepped over keeps its place.
     public bool MoveMode(int sheetIndex, int delta)
     {
         var sheets = Document.Sheets;
         if (delta == 0) return false;
         if (sheetIndex < 0 || sheetIndex >= sheets.Count) return false;
-        if (sheets[sheetIndex].Type != SheetType.ProfileName) return false;
+        if (sheets[sheetIndex].Type == SheetType.Infrared) return false;
 
         int step = Math.Sign(delta);
         int other = -1;
         for (int i = sheetIndex + step; i >= 0 && i < sheets.Count; i += step)
-            if (sheets[i].Type == SheetType.ProfileName) { other = i; break; }
+            if (sheets[i].Type != SheetType.Infrared) { other = i; break; }
         if (other < 0) return false;
 
         int lo = Math.Min(sheetIndex, other);
