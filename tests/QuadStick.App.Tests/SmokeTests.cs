@@ -1,6 +1,8 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.VisualTree;
 using QuadStick.App;
 using QuadStick.Format;
 using Xunit;
@@ -39,6 +41,34 @@ public class SmokeTests
     {
         var w = NewWindow();
         Assert.Contains("Quadstick: Config Manager", w.Title);
+        w.Close();
+    }
+
+    // The profile name box shows just the name; the .csv extension is ours
+    // to add. Typing it anyway must not double it up.
+    [AvaloniaFact]
+    public void Profile_name_shows_without_csv_and_gets_it_back_on_commit()
+    {
+        var w = NewWindow();
+        var file = ProfileFile.NewFromTemplate("smoke.csv");
+        w.LoadProfile(file);
+        var box = w.GetVisualDescendants().OfType<TextBox>().First(t => t.Name == "FileNameBox");
+        var park = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "SaveButton");
+        Assert.Equal("smoke", box.Text);
+
+        box.Text = "racing";
+        box.Focus();
+        park.Focus(); // commit fires when focus leaves the box
+        Assert.Equal("racing.csv", file.Document.CsvFileName);
+        Assert.Equal("racing", box.Text);
+
+        box.Text = "gta.csv";
+        box.Focus();
+        park.Focus();
+        Assert.Equal("gta.csv", file.Document.CsvFileName);
+        Assert.Equal("gta", box.Text);
+
+        file.Dirty = false;
         w.Close();
     }
 

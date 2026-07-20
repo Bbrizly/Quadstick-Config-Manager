@@ -705,7 +705,7 @@ public partial class MainWindow : Window
         _draftedRevision = -1; // new file: its Revision counter is unrelated to the last one's
         _sheetIndex = 0;
         RepopulateSheetPicker(0);
-        FileNameBox.Text = file.Document.CsvFileName ?? "";
+        FileNameBox.Text = BareName(file.Document.CsvFileName);
         var headerName = file.Document.HeaderName;
         Title = "Quadstick: Config Manager (unofficial) - "
             + (headerName.Length > 0 ? $"{headerName} ({file.Document.CsvFileName})" : file.Document.CsvFileName ?? "untitled");
@@ -1971,13 +1971,21 @@ public partial class MainWindow : Window
 
     bool _closeConfirmed;
 
+    // The box shows the profile name WITHOUT its .csv; the extension is ours
+    // to add back when the name is committed to the file.
+    static string BareName(string? name) =>
+        (name ?? "").EndsWith(".csv", StringComparison.OrdinalIgnoreCase) ? name![..^4] : name ?? "";
+
     void CommitFileName()
     {
         if (_file is null) return;
-        var v = (FileNameBox.Text ?? "").Trim();
-        if (v.Length == 0 || v == _file.Document.CsvFileName) return;
-        _file.SetCell(_file.Document.FileNameCellRow, 0, v);
-        Title = $"Quadstick: Config Manager (unofficial) - {v}";
+        var v = BareName((FileNameBox.Text ?? "").Trim()); // typed extension is fine too
+        if (v.Length == 0) { FileNameBox.Text = BareName(_file.Document.CsvFileName); return; }
+        FileNameBox.Text = v;
+        var full = v + ".csv";
+        if (full == _file.Document.CsvFileName) return;
+        _file.SetCell(_file.Document.FileNameCellRow, 0, full);
+        Title = $"Quadstick: Config Manager (unofficial) - {full}";
         RefreshIssues(); // bad names surface immediately as errors
     }
 
@@ -2035,7 +2043,7 @@ public partial class MainWindow : Window
     void UndoEdit()
     {
         if (_file is null || !_file.Undo()) { Status("Nothing to undo."); return; }
-        FileNameBox.Text = _file.Document.CsvFileName ?? "";
+        FileNameBox.Text = BareName(_file.Document.CsvFileName);
         RefreshEditor();
         Status("Change undone.", StatusKind.Ready);
     }

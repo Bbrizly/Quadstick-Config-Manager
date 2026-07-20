@@ -123,7 +123,7 @@
           <TextBlock Text="Profile" VerticalAlignment="Center" Classes="secondary"/>
           <TextBox x:Name="FileNameBox" Width="230" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold"
                    VerticalAlignment="Center"
-                   AutomationProperties.Name="Profile file name. Edit to rename, must end in .csv"/>
+                   AutomationProperties.Name="Profile name. Edit to rename; .csv is added for you"/>
         </StackPanel>
         <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="10">
           <Button x:Name="SaveButton" Content="Save"
