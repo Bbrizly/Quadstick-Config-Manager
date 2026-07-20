@@ -210,10 +210,11 @@ public class CardViewTests
         w.Close();
     }
 
-    // The Press dropdown was one ~380-item scroll. Its dropdown must hold a
-    // search box on top and category expanders under it, and typing in the
-    // search replaces the categories with flat matches. The field itself
-    // never expands; everything lives in the flyout.
+    // The Press dropdown was one ~380-item scroll. Its dropdown drills down
+    // like a menu: the top level lists categories, tapping one replaces the
+    // list with that category's contents, Back as the first row and the
+    // search always pinned on top. Typing in the search replaces whatever
+    // level you are on with flat matches.
     [AvaloniaFact]
     public void The_press_dropdown_is_a_searchable_category_picker()
     {
@@ -230,39 +231,46 @@ public class CardViewTests
             w.UpdateLayout();
             return (Control)((Flyout)press.Flyout!).Content!;
         }
+        Button? Find(Control panel, string prefix) => panel.GetVisualDescendants().OfType<Button>()
+            .FirstOrDefault(b => (AutomationProperties.GetName(b) ?? "").StartsWith(prefix));
+        void Tap(Control panel, string prefix)
+        {
+            Find(panel, prefix)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Dispatcher.UIThread.RunJobs();
+            w.UpdateLayout();
+        }
 
-        // Browse: Controller > Buttons > Triangle.
+        // Top level: the categories, no Back yet.
         var panel = Open();
-        var cats = panel.GetVisualDescendants().OfType<Expander>()
-            .Select(e => e.Header as string).ToList();
-        Assert.Contains("Controller", cats);
-        Assert.Contains("Keyboard", cats);
-        Assert.Contains("Mouse", cats);
+        Assert.NotNull(Find(panel, "Controller,"));
+        Assert.NotNull(Find(panel, "Keyboard,"));
+        Assert.NotNull(Find(panel, "Mouse,"));
+        Assert.Null(Find(panel, "Back"));
 
-        var controller = panel.GetVisualDescendants().OfType<Expander>()
-            .First(e => (e.Header as string) == "Controller");
-        controller.IsExpanded = true;
-        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
-        var buttons = controller.GetVisualDescendants().OfType<Expander>()
-            .First(e => (e.Header as string) == "Buttons");
-        buttons.IsExpanded = true;
-        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
-        buttons.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "Triangle")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        // Drill in: Controller replaces the list with its subcategories.
+        Tap(panel, "Controller,");
+        Assert.NotNull(Find(panel, "Buttons,"));
+        Assert.NotNull(Find(panel, "Back"));
+        Assert.Null(Find(panel, "Keyboard,"));
+
+        // Back returns to the categories.
+        Tap(panel, "Back");
+        Assert.NotNull(Find(panel, "Keyboard,"));
+
+        // All the way down to an actual output.
+        Tap(panel, "Controller,");
+        Tap(panel, "Buttons,");
+        Tap(panel, "Triangle");
         Assert.Equal("triangle", file.Document.Sheets[0].Bindings[0].Output);
 
-        // Search: typing hides the categories and goes straight to matches.
+        // Search: typing replaces the categories with flat matches.
         panel = Open();
         var search = panel.GetVisualDescendants().OfType<TextBox>()
             .First(t => (AutomationProperties.GetName(t) ?? "") == "Search all outputs");
         search.Text = "squar";
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
-        Assert.Empty(panel.GetVisualDescendants().OfType<Expander>());
-        panel.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "Square")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Assert.Null(Find(panel, "Controller,"));
+        Tap(panel, "Square");
         Assert.Equal("square", file.Document.Sheets[0].Bindings[0].Output);
 
         file.Dirty = false;

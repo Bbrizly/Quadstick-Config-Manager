@@ -3252,59 +3252,94 @@ public partial class MainWindow : Window
             return it;
         }
 
-        Expander Group(string title, Control content, int count)
-        {
-            var ex = new Expander
-            { Header = title, Content = content, HorizontalAlignment = HorizontalAlignment.Stretch };
-            AutomationProperties.SetName(ex, $"{title}, {count} outputs");
-            return ex;
-        }
-
-        Expander ItemGroup(string title, List<string> tokens)
-        {
-            var inner = new StackPanel { Spacing = 2 };
-            foreach (var t in tokens) inner.Children.Add(Item(t));
-            return Group(title, inner, tokens.Count);
-        }
-
-        // The dropdown's content: search on top, results under it, "type your
-        // own" at the bottom. Built once, refilled as the search text changes.
+        // The dropdown's content: search pinned on top, one level of the
+        // menu under it, "type your own" at the bottom. Tapping a category
+        // replaces the whole list with that category's contents, Back as the
+        // first row, like a phone settings menu. One level at a time keeps
+        // every target big and the scroll short.
         var search = new TextBox { Watermark = "Search outputs" };
         AutomationProperties.SetName(search, "Search all outputs");
         var body = new StackPanel { Spacing = 2 };
+        var scroll = new ScrollViewer { Content = body, MaxHeight = 400 };
 
-        void ShowCategories()
+        List<string> TokensIn(string cat, string? sub) => all
+            .Where(t => t != "none" && OutputCatalog.Classify(t) is var c && c.Category == cat
+                     && (sub is null || c.Sub == sub))
+            .ToList();
+
+        Button NavButton(string title, int count, Action go)
+        {
+            var line = new DockPanel();
+            var chevron = Glyph("IconChevron", "TextSecondary");
+            DockPanel.SetDock(chevron, Dock.Right);
+            line.Children.Add(chevron);
+            line.Children.Add(new TextBlock
+            { Text = $"{title} ({count})", FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap });
+            var it = new Button
+            {
+                Content = line, Classes = { "quiet" },
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            };
+            AutomationProperties.SetName(it, $"{title}, {count} outputs. Opens this category.");
+            it.Click += (_, _) => go();
+            return it;
+        }
+
+        void ShowLevel(string? cat, string? sub)
         {
             body.Children.Clear();
-            // The most common pick sits right on top, no digging.
-            if (all.Contains("none")) body.Children.Add(Item("none"));
-            var byCat = all.Where(t => t != "none")
-                .GroupBy(t => OutputCatalog.Classify(t).Category)
-                .ToDictionary(g => g.Key, g => g.ToList());
-            foreach (var cat in OutputCatalog.CategoryOrder)
+            scroll.ScrollToHome(); // a new level always starts at its top
+            if (cat is null)
             {
-                if (!byCat.TryGetValue(cat, out var tokens)) continue;
-                if (OutputCatalog.SubOrder.TryGetValue(cat, out var subs))
+                // Top level: the do-nothing output first, then the categories.
+                if (all.Contains("none")) body.Children.Add(Item("none"));
+                foreach (var c in OutputCatalog.CategoryOrder)
                 {
-                    var bySub = tokens.GroupBy(t => OutputCatalog.Classify(t).Sub)
-                        .ToDictionary(g => g.Key, g => g.ToList());
-                    var content = new StackPanel { Spacing = 2 };
-                    foreach (var sub in subs)
-                    {
-                        if (!bySub.TryGetValue(sub, out var st)) continue;
-                        // Alphabetical puts f1, f10, f11 ... f2; sort by number.
-                        if (sub == "Function keys") st = st.OrderBy(t => int.Parse(t.AsSpan(4))).ToList();
-                        content.Children.Add(ItemGroup(sub, st));
-                    }
-                    body.Children.Add(Group(cat, content, tokens.Count));
+                    var tokens = TokensIn(c, null);
+                    if (tokens.Count == 0) continue;
+                    var name = c;
+                    body.Children.Add(NavButton(name, tokens.Count, () => ShowLevel(name, null)));
                 }
-                else body.Children.Add(ItemGroup(cat, tokens));
+                return;
             }
+
+            var back = new Button
+            {
+                Content = new TextBlock { Text = "‹ Back", FontSize = Size("BodySize") },
+                Classes = { "quiet" },
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+            };
+            AutomationProperties.SetName(back,
+                sub is null ? "Back to all categories" : $"Back to {cat}");
+            back.Click += (_, _) => { if (sub is null) ShowLevel(null, null); else ShowLevel(cat, null); };
+            body.Children.Add(back);
+            body.Children.Add(new TextBlock
+            { Text = sub ?? cat, FontSize = Size("SmallSize"), Classes = { "muted" } });
+
+            if (sub is null && OutputCatalog.SubOrder.TryGetValue(cat, out var subs))
+            {
+                foreach (var s in subs)
+                {
+                    var tokens = TokensIn(cat, s);
+                    if (tokens.Count == 0) continue;
+                    var name = s;
+                    body.Children.Add(NavButton(name, tokens.Count, () => ShowLevel(cat, name)));
+                }
+                return;
+            }
+
+            var items = TokensIn(cat, sub ?? "");
+            // Alphabetical puts f1, f10, f11 ... f2; sort by number.
+            if (sub == "Function keys") items = items.OrderBy(t => int.Parse(t.AsSpan(4))).ToList();
+            foreach (var t in items) body.Children.Add(Item(t));
         }
 
         void ShowMatches(string q)
         {
             body.Children.Clear();
+            scroll.ScrollToHome();
             var hits = all.Where(t => t.Contains(q, StringComparison.OrdinalIgnoreCase)
                                    || labelFor(t).Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
             foreach (var t in hits.Take(40)) body.Children.Add(Item(t));
@@ -3325,7 +3360,7 @@ public partial class MainWindow : Window
         search.TextChanged += (_, _) =>
         {
             var q = (search.Text ?? "").Trim();
-            if (q.Length == 0) ShowCategories(); else ShowMatches(q);
+            if (q.Length == 0) ShowLevel(null, null); else ShowMatches(q);
         };
 
         void ShowTyping()
@@ -3357,18 +3392,16 @@ public partial class MainWindow : Window
 
         var panel = new StackPanel { Spacing = 6, MinWidth = 300 };
         panel.Children.Add(search);
-        panel.Children.Add(new ScrollViewer { Content = body, MaxHeight = 400 });
+        panel.Children.Add(scroll);
         panel.Children.Add(typeOwn);
         fly.Content = panel;
 
-        // The category tree is ~380 buttons; build it when the dropdown first
-        // opens, not for every mapping card on screen.
-        bool built = false;
+        // Every open starts fresh at the top level with an empty search; the
+        // menu builds on open, not for every mapping card on screen.
         fly.Opened += (_, _) =>
         {
             if ((search.Text ?? "").Length > 0) search.Text = ""; // rebuilds via TextChanged
-            else if (!built) ShowCategories();
-            built = true;
+            else ShowLevel(null, null);
             Dispatcher.UIThread.Post(() => search.Focus(), DispatcherPriority.Loaded);
         };
 
