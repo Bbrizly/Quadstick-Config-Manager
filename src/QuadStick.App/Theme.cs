@@ -1,5 +1,6 @@
 // src/QuadStick.App/Theme.cs
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -25,16 +26,9 @@ public static class Settings
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "QuadStickConfigManager", "settings.json");
 
-    // Case-insensitive so old files with lowercase "model"/"theme" still load.
-    static readonly JsonSerializerOptions Opts = new()
-    {
-        IncludeFields = true,
-        PropertyNameCaseInsensitive = true,
-    };
-
     public static AppSettings Load(string? path = null)
     {
-        try { return JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(path ?? DefaultPath), Opts) ?? new(); }
+        try { return JsonSerializer.Deserialize(File.ReadAllText(path ?? DefaultPath), SettingsJsonContext.Default.AppSettings) ?? new(); }
         catch { return new AppSettings(); }
     }
 
@@ -44,11 +38,18 @@ public static class Settings
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(p)!);
-            File.WriteAllText(p, JsonSerializer.Serialize(s, Opts));
+            File.WriteAllText(p, JsonSerializer.Serialize(s, SettingsJsonContext.Default.AppSettings));
         }
         catch { /* settings are a convenience, never fatal */ }
     }
 }
+
+// Compile-time JSON metadata for AppSettings: lets Load/Save run with no
+// reflection, so trimming and NativeAOT keep settings working. Case-insensitive
+// so old files with lowercase "model"/"theme" still load.
+[JsonSourceGenerationOptions(IncludeFields = true, PropertyNameCaseInsensitive = true)]
+[JsonSerializable(typeof(AppSettings))]
+internal partial class SettingsJsonContext : JsonSerializerContext { }
 
 public static class Theme
 {

@@ -1537,7 +1537,9 @@ public partial class MainWindow : Window
                     int deletedIndex = bindings!.IndexOf(b);
                     // The card this trash lives in, measured before the rebuild
                     // destroys it, so the cards below can settle into its place.
-                    double gap = del.FindAncestorOfType<Border>() is { } card ? card.Bounds.Height + 14 : 0;
+                    var card = del.FindAncestorOfType<Border>();
+                    double gap = card is not null ? card.Bounds.Height + 14 : 0;
+                    if (card is not null) GhostRowAway(card, ZoneOverlay); // snapshot while still attached
                     _file!.DeleteRow(b.Row);
                     BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                     // Cards start at child 2: the zone title and blurb sit above.
@@ -2185,6 +2187,9 @@ public partial class MainWindow : Window
             for (int i = 0; i < sh.Bindings.Count && firstIndex < 0; i++)
                 if (_selectedRows.Contains(sh.Bindings[i].Row)) firstIndex = i;
         double gap = rows.Sum(r => _rowPanels.TryGetValue(r, out var rp) ? rp.Bounds.Height + 6 : 0);
+        if (!DeviceContainer.IsVisible) // list view: every doomed row gets a send-off
+            foreach (var r in rows.Take(12)) // ponytail: 12 ghosts max, a mass delete reads fine without full theater
+                if (_rowPanels.TryGetValue(r, out var doomed)) GhostRowAway(doomed, ListOverlay);
         _selectedRows.Clear(); _selAnchor = -1;
         var off = GridScroll.Offset;
         _file.DeleteRows(rows); // one undo step for the whole selection
@@ -2532,6 +2537,7 @@ public partial class MainWindow : Window
     {
         int deletedIndex = CurrentSheet!.Bindings.IndexOf(b);
         double gap = _rowPanels.TryGetValue(b.Row, out var gone) ? gone.Bounds.Height + 6 : 0;
+        if (gone is not null) GhostRowAway(gone, ListOverlay); // snapshot while still attached
         var off = GridScroll.Offset;
         _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
         _file!.DeleteRow(b.Row);
@@ -2729,26 +2735,48 @@ public partial class MainWindow : Window
     // synchronously and these overlays only show where it went. Fire and
     // forget, so headless tests (which never tick the render timer) see the
     // exact same resting state with or without the animation.
-    // One keyframe animation between two values of a double property, run on
-    // whatever Animatable owns it. RenderTransform itself has no public
-    // animator, so the slide runs on a TranslateTransform's Y instead.
-    static Avalonia.Animation.Animation Between(AvaloniaProperty prop, double from, double to) => new()
+    //
+    // Every built-in animator except Opacity's turned out to be internal in
+    // Avalonia 11.1 (Animation.SetAnimator only accepts a CustomAnimatorBase),
+    // and the TransformAnimator path silently animates nothing, so all motion
+    // here runs through this one pinned linear-double animator. Proven live
+    // by ListViewTests.Deleting_a_row_really_slides_the_survivors_up.
+    sealed class LinearDouble : Avalonia.Animation.InterpolatingAnimator<double>
     {
-        Duration = TimeSpan.FromMilliseconds(180),
-        Easing = new Avalonia.Animation.Easings.CubicEaseOut(),
-        Children =
-        {
-            new Avalonia.Animation.KeyFrame
-            { Cue = new Avalonia.Animation.Cue(0), Setters = { new Avalonia.Styling.Setter(prop, from) } },
-            new Avalonia.Animation.KeyFrame
-            { Cue = new Avalonia.Animation.Cue(1), Setters = { new Avalonia.Styling.Setter(prop, to) } },
-        },
-    };
+        public override double Interpolate(double progress, double oldValue, double newValue) =>
+            oldValue + (newValue - oldValue) * progress;
+    }
 
+    static Avalonia.Animation.Animation Between(AvaloniaProperty prop, double from, double to,
+        Avalonia.Animation.FillMode fill = Avalonia.Animation.FillMode.Backward)
+    {
+        Avalonia.Styling.Setter S(double v)
+        {
+            var s = new Avalonia.Styling.Setter(prop, v);
+            Avalonia.Animation.Animation.SetAnimator(s, new LinearDouble());
+            return s;
+        }
+        return new()
+        {
+            Duration = TimeSpan.FromMilliseconds(180),
+            Easing = new Avalonia.Animation.Easings.CubicEaseOut(),
+            FillMode = fill, // Backward: show the start value on frame one, no pop
+            Children =
+            {
+                new Avalonia.Animation.KeyFrame { Cue = new Avalonia.Animation.Cue(0), Setters = { S(from) } },
+                new Avalonia.Animation.KeyFrame { Cue = new Avalonia.Animation.Cue(1), Setters = { S(to) } },
+            },
+        };
+    }
+
+    // The animation must run ON the TranslateTransform (an Animatable): run on
+    // the control, Avalonia routes Y to its internal TransformAnimator, which
+    // does nothing.
     static void SlideFrom(Control c, double dy)
     {
-        c.RenderTransform = new TranslateTransform();
-        _ = Between(TranslateTransform.YProperty, dy, 0).RunAsync(c);
+        var lift = new TranslateTransform();
+        c.RenderTransform = lift;
+        _ = Between(TranslateTransform.YProperty, dy, 0).RunAsync(lift);
     }
 
     // A just-added row or card fades in while rising into place.
@@ -2768,6 +2796,47 @@ public partial class MainWindow : Window
         // ponytail: first 30 children only, offscreen rows need no theater
         foreach (var c in panel.Children.Skip(fromChildIndex).Take(30))
             SlideFrom(c, dy);
+    }
+
+    // The deleted row's send-off: a bitmap snapshot of the real row, floated
+    // over the list at the exact spot the row occupied, fading and drifting
+    // up while the survivors slide into the gap. A snapshot rather than the
+    // live control, so its buttons can never be found or clicked again.
+    // Call BEFORE the delete, while the row is still attached and rendered.
+    // Headless tests have no renderer; the try/catch makes this a no-op there.
+    void GhostRowAway(Control row, Panel overlay)
+    {
+        try
+        {
+            if (row.Bounds.Width <= 0 || row.Bounds.Height <= 0) return;
+            if (row.TranslatePoint(default, overlay) is not { } at) return;
+            var scale = RenderScaling;
+            var shot = new Avalonia.Media.Imaging.RenderTargetBitmap(
+                new PixelSize((int)Math.Ceiling(row.Bounds.Width * scale), (int)Math.Ceiling(row.Bounds.Height * scale)),
+                new Vector(96 * scale, 96 * scale));
+            shot.Render(row);
+            var ghost = new Image
+            {
+                Source = shot, Width = row.Bounds.Width, Height = row.Bounds.Height,
+                HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Avalonia.Thickness(at.X, at.Y, 0, 0), IsHitTestVisible = false,
+            };
+            overlay.Children.Add(ghost);
+            var lift = new TranslateTransform();
+            ghost.RenderTransform = lift;
+            _ = Between(TranslateTransform.YProperty, 0, -8).RunAsync(lift);
+            // Forward fill holds the ghost invisible after the fade until the
+            // timer reclaims it; without it the ghost would pop back solid.
+            _ = Between(OpacityProperty, 1, 0, Avalonia.Animation.FillMode.Forward).RunAsync(ghost);
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+            timer.Tick += (_, _) => { timer.Stop(); overlay.Children.Remove(ghost); shot.Dispose(); };
+            timer.Start();
+        }
+        catch
+        {
+            // No renderer (headless) or a mid-layout surprise: skip the ghost,
+            // the delete itself already happened synchronously.
+        }
     }
 
     // After deleting a List View row, keep focus on the row that slid into
@@ -3136,11 +3205,12 @@ public partial class MainWindow : Window
     }
 
     // The Press field. Its option list is ~380 tokens, which as one flat
-    // dropdown meant endless scrolling. Closed, it is a button showing the
-    // current pick. Open, it swaps in place for a search box over category
-    // expanders (Controller, Keyboard, Mouse, ...), so browsing is a few
-    // clicks and typing in the search replaces the categories with flat
-    // matches. Picking commits the cell exactly like TokenField does.
+    // dropdown meant endless scrolling. The field is a button whose dropdown
+    // (a flyout, so the layout never shifts) holds a search box over category
+    // expanders (Controller, Keyboard, Mouse, ...). Typing in the search
+    // replaces the categories with flat matches. Picking commits the cell
+    // exactly like TokenField does. Reusable for any huge token list: the
+    // grouping comes from OutputCatalog, everything else is generic.
     Control OutputPicker(int row, int col, string current, IReadOnlyList<string> options,
                          Func<string, string> labelFor, string accessibleName, string tintKey)
     {
@@ -3155,8 +3225,11 @@ public partial class MainWindow : Window
         var all = new List<string>(options);
         if (cur.Length > 0 && !all.Contains(cur)) all.Insert(0, cur);
 
+        var fly = new Flyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
+
         void Commit(string token)
         {
+            fly.Hide();
             if (_file is null) return;
             if (token != _file.GetCell(row, col)) _file.SetCell(row, col, token);
             RebuildDeviceAfterEdit(row, col);
@@ -3192,20 +3265,66 @@ public partial class MainWindow : Window
             return Group(title, inner, tokens.Count);
         }
 
-        void ShowClosed()
+        // The dropdown's content: search on top, results under it, "type your
+        // own" at the bottom. Built once, refilled as the search text changes.
+        var search = new TextBox { Watermark = "Search outputs" };
+        AutomationProperties.SetName(search, "Search all outputs");
+        var body = new StackPanel { Spacing = 2 };
+
+        void ShowCategories()
         {
-            var open = new Button
+            body.Children.Clear();
+            // The most common pick sits right on top, no digging.
+            if (all.Contains("none")) body.Children.Add(Item("none"));
+            var byCat = all.Where(t => t != "none")
+                .GroupBy(t => OutputCatalog.Classify(t).Category)
+                .ToDictionary(g => g.Key, g => g.ToList());
+            foreach (var cat in OutputCatalog.CategoryOrder)
             {
-                Content = new TextBlock
-                { Text = cur.Length > 0 ? labelFor(cur) : "pick an output", TextWrapping = TextWrapping.Wrap },
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                HorizontalContentAlignment = HorizontalAlignment.Left,
-            };
-            open[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
-            AutomationProperties.SetName(open, $"{accessibleName}. Opens a searchable list.");
-            open.Click += (_, _) => ShowOpen();
-            wrapper.Child = open;
+                if (!byCat.TryGetValue(cat, out var tokens)) continue;
+                if (OutputCatalog.SubOrder.TryGetValue(cat, out var subs))
+                {
+                    var bySub = tokens.GroupBy(t => OutputCatalog.Classify(t).Sub)
+                        .ToDictionary(g => g.Key, g => g.ToList());
+                    var content = new StackPanel { Spacing = 2 };
+                    foreach (var sub in subs)
+                    {
+                        if (!bySub.TryGetValue(sub, out var st)) continue;
+                        // Alphabetical puts f1, f10, f11 ... f2; sort by number.
+                        if (sub == "Function keys") st = st.OrderBy(t => int.Parse(t.AsSpan(4))).ToList();
+                        content.Children.Add(ItemGroup(sub, st));
+                    }
+                    body.Children.Add(Group(cat, content, tokens.Count));
+                }
+                else body.Children.Add(ItemGroup(cat, tokens));
+            }
         }
+
+        void ShowMatches(string q)
+        {
+            body.Children.Clear();
+            var hits = all.Where(t => t.Contains(q, StringComparison.OrdinalIgnoreCase)
+                                   || labelFor(t).Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+            foreach (var t in hits.Take(40)) body.Children.Add(Item(t));
+            if (hits.Count > 40)
+                body.Children.Add(new TextBlock
+                {
+                    Text = $"{hits.Count - 40} more. Keep typing to narrow it down.",
+                    FontSize = Size("SmallSize"), Classes = { "muted" },
+                });
+            if (hits.Count == 0)
+                body.Children.Add(new TextBlock
+                {
+                    Text = "Nothing matches. Try fewer letters, or type your own below.",
+                    FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+                });
+        }
+
+        search.TextChanged += (_, _) =>
+        {
+            var q = (search.Text ?? "").Trim();
+            if (q.Length == 0) ShowCategories(); else ShowMatches(q);
+        };
 
         void ShowTyping()
         {
@@ -3213,14 +3332,15 @@ public partial class MainWindow : Window
             {
                 Text = "", ItemsSource = options, FilterMode = AutoCompleteFilterMode.Contains,
                 MinimumPrefixLength = 0, HorizontalAlignment = HorizontalAlignment.Stretch,
-                Watermark = "type a value, or leave blank to go back",
+                Watermark = "type a value, or leave blank to cancel",
             };
             box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
             AutomationProperties.SetName(box, accessibleName + ". Type a custom value.");
+            var field = wrapper.Child; // the button to restore on cancel
             void Done()
             {
                 var v = (box.Text ?? "").Trim();
-                if (v.Length == 0) { ShowOpen(); return; }
+                if (v.Length == 0) { wrapper.Child = field; return; }
                 Commit(v);
             }
             box.LostFocus += (_, _) => Done();
@@ -3229,94 +3349,38 @@ public partial class MainWindow : Window
             Dispatcher.UIThread.Post(() => box.Focus(), DispatcherPriority.Loaded);
         }
 
-        void ShowOpen()
+        var typeOwn = new Button { Content = TypeYourOwn, Classes = { "quiet" } };
+        AutomationProperties.SetName(typeOwn, "Type a custom output value");
+        typeOwn.Click += (_, _) => { fly.Hide(); ShowTyping(); };
+
+        var panel = new StackPanel { Spacing = 6, MinWidth = 300 };
+        panel.Children.Add(search);
+        panel.Children.Add(new ScrollViewer { Content = body, MaxHeight = 400 });
+        panel.Children.Add(typeOwn);
+        fly.Content = panel;
+
+        // The category tree is ~380 buttons; build it when the dropdown first
+        // opens, not for every mapping card on screen.
+        bool built = false;
+        fly.Opened += (_, _) =>
         {
-            var panel = new StackPanel { Spacing = 6 };
-            var search = new TextBox { Watermark = "Search outputs" };
-            AutomationProperties.SetName(search, "Search all outputs");
-            var body = new StackPanel { Spacing = 2 };
-
-            void ShowCategories()
-            {
-                body.Children.Clear();
-                // The most common pick sits right on top, no digging.
-                if (all.Contains("none")) body.Children.Add(Item("none"));
-                var byCat = all.Where(t => t != "none")
-                    .GroupBy(t => OutputCatalog.Classify(t).Category)
-                    .ToDictionary(g => g.Key, g => g.ToList());
-                foreach (var cat in OutputCatalog.CategoryOrder)
-                {
-                    if (!byCat.TryGetValue(cat, out var tokens)) continue;
-                    if (OutputCatalog.SubOrder.TryGetValue(cat, out var subs))
-                    {
-                        var bySub = tokens.GroupBy(t => OutputCatalog.Classify(t).Sub)
-                            .ToDictionary(g => g.Key, g => g.ToList());
-                        var content = new StackPanel { Spacing = 2 };
-                        foreach (var sub in subs)
-                        {
-                            if (!bySub.TryGetValue(sub, out var st)) continue;
-                            // Alphabetical puts f1, f10, f11 ... f2; sort by number.
-                            if (sub == "Function keys") st = st.OrderBy(t => int.Parse(t.AsSpan(4))).ToList();
-                            content.Children.Add(ItemGroup(sub, st));
-                        }
-                        body.Children.Add(Group(cat, content, tokens.Count));
-                    }
-                    else body.Children.Add(ItemGroup(cat, tokens));
-                }
-            }
-
-            void ShowMatches(string q)
-            {
-                body.Children.Clear();
-                var hits = all.Where(t => t.Contains(q, StringComparison.OrdinalIgnoreCase)
-                                       || labelFor(t).Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
-                foreach (var t in hits.Take(40)) body.Children.Add(Item(t));
-                if (hits.Count > 40)
-                    body.Children.Add(new TextBlock
-                    {
-                        Text = $"{hits.Count - 40} more. Keep typing to narrow it down.",
-                        FontSize = Size("SmallSize"), Classes = { "muted" },
-                    });
-                if (hits.Count == 0)
-                    body.Children.Add(new TextBlock
-                    {
-                        Text = "Nothing matches. Try fewer letters, or type your own below.",
-                        FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
-                    });
-            }
-
-            search.TextChanged += (_, _) =>
-            {
-                var q = (search.Text ?? "").Trim();
-                if (q.Length == 0) ShowCategories(); else ShowMatches(q);
-            };
-
-            var cancel = new Button { Content = "Cancel", Classes = { "quiet" } };
-            AutomationProperties.SetName(cancel, "Close the output list without changing anything");
-            cancel.Click += (_, _) => { ShowClosed(); (wrapper.Child as Control)?.Focus(); };
-            var typeOwn = new Button { Content = TypeYourOwn, Classes = { "quiet" } };
-            AutomationProperties.SetName(typeOwn, "Type a custom output value");
-            typeOwn.Click += (_, _) => ShowTyping();
-            var footer = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
-            footer.Children.Add(cancel);
-            footer.Children.Add(typeOwn);
-
-            panel.Children.Add(search);
-            panel.Children.Add(body);
-            panel.Children.Add(footer);
-            panel.KeyDown += (_, e) =>
-            {
-                if (e.Key != Key.Escape) return;
-                e.Handled = true;
-                ShowClosed();
-                (wrapper.Child as Control)?.Focus();
-            };
-            wrapper.Child = panel;
-            ShowCategories();
+            if ((search.Text ?? "").Length > 0) search.Text = ""; // rebuilds via TextChanged
+            else if (!built) ShowCategories();
+            built = true;
             Dispatcher.UIThread.Post(() => search.Focus(), DispatcherPriority.Loaded);
-        }
+        };
 
-        ShowClosed();
+        var open = new Button
+        {
+            Content = new TextBlock
+            { Text = cur.Length > 0 ? labelFor(cur) : "pick an output", TextWrapping = TextWrapping.Wrap },
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Left,
+            Flyout = fly,
+        };
+        open[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
+        AutomationProperties.SetName(open, $"{accessibleName}. Opens a searchable list.");
+        wrapper.Child = open;
         return wrapper;
     }
 

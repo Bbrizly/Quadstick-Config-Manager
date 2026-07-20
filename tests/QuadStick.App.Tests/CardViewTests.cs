@@ -210,33 +210,36 @@ public class CardViewTests
         w.Close();
     }
 
-    // The Press dropdown was one ~380-item scroll. It must open as a picker:
-    // a search box on top, category expanders under it, and typing in the
-    // search replaces the categories with flat matches.
+    // The Press dropdown was one ~380-item scroll. Its dropdown must hold a
+    // search box on top and category expanders under it, and typing in the
+    // search replaces the categories with flat matches. The field itself
+    // never expands; everything lives in the flyout.
     [AvaloniaFact]
-    public void The_press_field_is_a_searchable_category_picker()
+    public void The_press_dropdown_is_a_searchable_category_picker()
     {
         var file = TwoLipMappings();
         var w = OpenOnLip(file, cards: false);
 
         Button Press() => w.GetVisualDescendants().OfType<Button>()
             .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Game button pressed by"));
-        void Open()
+        Control Open()
         {
-            Press().RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            var press = Press();
+            press.Flyout!.ShowAt(press);
             Dispatcher.UIThread.RunJobs();
             w.UpdateLayout();
+            return (Control)((Flyout)press.Flyout!).Content!;
         }
 
         // Browse: Controller > Buttons > Triangle.
-        Open();
-        var cats = w.GetVisualDescendants().OfType<Expander>()
+        var panel = Open();
+        var cats = panel.GetVisualDescendants().OfType<Expander>()
             .Select(e => e.Header as string).ToList();
         Assert.Contains("Controller", cats);
         Assert.Contains("Keyboard", cats);
         Assert.Contains("Mouse", cats);
 
-        var controller = w.GetVisualDescendants().OfType<Expander>()
+        var controller = panel.GetVisualDescendants().OfType<Expander>()
             .First(e => (e.Header as string) == "Controller");
         controller.IsExpanded = true;
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
@@ -251,13 +254,13 @@ public class CardViewTests
         Assert.Equal("triangle", file.Document.Sheets[0].Bindings[0].Output);
 
         // Search: typing hides the categories and goes straight to matches.
-        Open();
-        var search = w.GetVisualDescendants().OfType<TextBox>()
+        panel = Open();
+        var search = panel.GetVisualDescendants().OfType<TextBox>()
             .First(t => (AutomationProperties.GetName(t) ?? "") == "Search all outputs");
         search.Text = "squar";
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
-        Assert.Empty(w.GetVisualDescendants().OfType<Expander>());
-        w.GetVisualDescendants().OfType<Button>()
+        Assert.Empty(panel.GetVisualDescendants().OfType<Expander>());
+        panel.GetVisualDescendants().OfType<Button>()
             .First(b => (AutomationProperties.GetName(b) ?? "") == "Square")
             .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Assert.Equal("square", file.Document.Sheets[0].Bindings[0].Output);

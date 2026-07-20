@@ -198,7 +198,9 @@
       <Panel>
         <Border x:Name="GridContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                 BorderThickness="1" CornerRadius="6" Padding="12">
-          <Panel>
+          <!-- Named so a deleted row's ghost snapshot can float over the list
+               while it fades out; clipped so it never escapes the plate. -->
+          <Panel x:Name="ListOverlay" ClipToBounds="True">
             <!-- List-view rows are a horizontal stack of fixed-width cells (output,
                  function, inputs, note, move/delete buttons), so at high interface
                  scale a row can run wider than the window. Auto lets it pan sideways
@@ -251,7 +253,7 @@
               </ScrollViewer>
               <Border Grid.Column="1" Background="{DynamicResource SurfaceSubtleBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                       BorderThickness="1,0,0,0" Padding="18" MinWidth="340">
-                <Panel>
+                <Panel x:Name="ZoneOverlay" ClipToBounds="True">
                   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="ZoneDetailPanel" Spacing="14"/>
                   </ScrollViewer>
