@@ -193,6 +193,19 @@ public partial class MainWindow : Window
         GridScroll.AddHandler(PointerPressedEvent, (_, _) => ClearSelection());
         SelectionDeleteButton.Click += (_, _) => DeleteSelectedRows();
         SelectionClearButton.Click += (_, _) => ClearSelection();
+        DeviceSelectionDeleteButton.Click += (_, _) => DeleteSelectedRows();
+        DeviceSelectionClearButton.Click += (_, _) => ClearSelection();
+
+        // Device view mappings read as plain sentences by default; this flips
+        // to the detailed editor for users who want every field on screen.
+        CardViewButton.Click += (_, _) =>
+        {
+            _settings.DeviceCards = !_settings.DeviceCards;
+            Settings.Save(_settings);
+            UpdateCardViewButton();
+            BuildZoneDetail();
+        };
+        UpdateCardViewButton();
 
         SheetPicker.SelectionChanged += (_, _) =>
         {
@@ -286,6 +299,8 @@ public partial class MainWindow : Window
                 { ShowHelp(); e.Handled = true; }
                 else if (e.Key == Key.Escape && _selectedRows.Count > 0)
                 { ClearSelection(); e.Handled = true; }
+                else if (e.Key == Key.Escape && _expandedMapping >= 0 && DeviceContainer.IsVisible)
+                { _expandedMapping = -1; BuildZoneDetail(); e.Handled = true; }
                 else if (e.Key == Key.Delete && _selectedRows.Count > 0
                          && e.Source is not (TextBox or AutoCompleteBox))
                 { DeleteSelectedRows(); e.Handled = true; }
@@ -533,6 +548,9 @@ public partial class MainWindow : Window
     {
         _deviceView = device;
         _railView = device && rail;
+        // A selection made in the other view would be invisible here, and an
+        // invisible selection must never feed the Delete button.
+        _selectedRows.Clear(); _selAnchor = -1;
         RefreshEditor();
         if (device && _railView)
         {
@@ -1338,6 +1356,7 @@ public partial class MainWindow : Window
         btn.Click += (_, _) =>
         {
             _selectedZone = zoneId;
+            _selectedRows.Clear(); _selAnchor = -1; // cards of another part leave the screen
             BuildDeviceView(); BuildZoneDetail();
             // The click target no longer exists after the rebuild above; refocus
             // its replacement so keyboard/switch users aren't dropped. IsChecked
@@ -1348,9 +1367,107 @@ public partial class MainWindow : Window
         _zoneButtons[zoneId] = btn;
     }
 
+    // Card view state: the one mapping open for editing; -1 = all cards closed.
+    int _expandedMapping = -1;
+
+    void UpdateCardViewButton()
+    {
+        CardViewButton.Content = _settings.DeviceCards ? "Detailed editor" : "Simple cards";
+        AutomationProperties.SetName(CardViewButton, _settings.DeviceCards
+            ? "Mappings read as simple sentence cards. Switch to the detailed editor."
+            : "Mappings show the detailed editor. Switch to simple sentence cards.");
+    }
+
+    // One mapping as a plain sentence: "Decrement mode when you soft puff, as
+    // normal." The output and inputs wear their column colors, the note reads
+    // as a muted second line, and a click opens the detailed editor for just
+    // this mapping. The handle on the left selects and drags, exactly like a
+    // list-view row number.
+    Control SentenceCard(Zone zone, Binding b, int n)
+    {
+        Control Pill(string text, string tint)
+        {
+            var bd = new Border
+            {
+                CornerRadius = new Avalonia.CornerRadius(4), Padding = new Avalonia.Thickness(7, 2),
+                Margin = new Avalonia.Thickness(0, 2), VerticalAlignment = VerticalAlignment.Center,
+                Child = new TextBlock { Text = text, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold },
+            };
+            BindBrush(bd, Border.BackgroundProperty, tint);
+            return bd;
+        }
+        Control Word(string text) => new TextBlock
+        {
+            Text = text, FontSize = Size("BodySize"),
+            VerticalAlignment = VerticalAlignment.Center, Margin = new Avalonia.Thickness(5, 2),
+        };
+
+        // The same Words button styles as everywhere else in device view.
+        string output = b.Output.Length > 0 ? TokenLabel(b.Output) : "(nothing yet)";
+        var inputs = b.Inputs.Count > 0
+            ? b.Inputs.Select(i => _labelStyle == 0 ? i : StripInput(i, zone.Id)).ToList()
+            : new List<string> { "(no input)" };
+        string func = _labelStyle == 0 ? b.Function : b.Function.Replace('_', ' ');
+
+        var line = new WrapPanel();
+        line.Children.Add(Pill(output, OutputTint));
+        line.Children.Add(Word("when you"));
+        for (int i = 0; i < inputs.Count; i++)
+        {
+            if (i > 0) line.Children.Add(Word("and"));
+            line.Children.Add(Pill(inputs[i], InputTint));
+        }
+        if (func.Length > 0)
+        {
+            line.Children.Add(Word("as"));
+            line.Children.Add(Pill(func, FunctionTint));
+        }
+
+        var body = new StackPanel { Spacing = 4, Children = { line } };
+        var note = _file!.GetCell(b.Row, NoteColumn);
+        if (note.Length > 0)
+            body.Children.Add(new TextBlock
+            { Text = note, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
+
+        var open = new Button
+        {
+            Content = body, Classes = { "quiet" },
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Left,
+            Padding = new Avalonia.Thickness(10, 8),
+        };
+        AutomationProperties.SetName(open,
+            $"Mapping {n}: {output} when you {string.Join(" and ", inputs)}" +
+            $"{(func.Length > 0 ? $", as {func}" : "")}. Press Enter to edit.");
+        open.Click += (_, _) =>
+        {
+            _expandedMapping = b.Row;
+            BuildZoneDetail();
+            AfterLayout(() =>
+            {
+                if (_cellBorders.TryGetValue($"C{b.Row}", out var border))
+                { border.BringIntoView(); (border.Child as Control)?.Focus(); }
+            });
+        };
+
+        var handle = WireDragHandle(new Border
+        { Child = Glyph("IconDrag", "TextSecondary"), Padding = new Avalonia.Thickness(4, 8) },
+            b, $"Mapping {n}");
+
+        var p = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        p.Children.Add(handle);
+        Grid.SetColumn(open, 1);
+        p.Children.Add(open);
+        WireRowDrop(p, b);
+        _rowPanels[b.Row] = p;
+        PaintRow(b.Row);
+        return p;
+    }
+
     void BuildZoneDetail()
     {
         ZoneDetailPanel.Children.Clear();
+        _rowPanels.Clear(); // device view owns the selection targets while visible
         var zone = AllZones.FirstOrDefault(z => z.Id == _selectedZone);
         if (zone is null)
         {
@@ -1359,6 +1476,7 @@ public partial class MainWindow : Window
                 Text = "Nothing selected.\n\nPick a part of the QuadStick on the left to see what it does in this mode, change it, or map something new to it.",
                 FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
             });
+            RepaintSelection();
             return;
         }
 
@@ -1378,10 +1496,16 @@ public partial class MainWindow : Window
         if (bindings is { Count: > 0 })
         {
             var zoneInputs = Vocab.Inputs.Where(i => ZoneOf(i) == zone.Id).OrderBy(GroupRank).ThenBy(x => x).ToList();
+            bool cards = _settings.DeviceCards;
             int n = 0;
             foreach (var b in bindings)
             {
                 n++;
+                // Card mode: a closed mapping is one readable sentence. Only
+                // the expanded one (at most one, accordion style) gets the
+                // full editor below.
+                if (cards && b.Row != _expandedMapping)
+                { ZoneDetailPanel.Children.Add(SentenceCard(zone, b, n)); continue; }
                 // One compact card per mapping. A header line carries the number
                 // and a small remove button; the body is three aligned label|field
                 // rows ("When you / Press / As") so a mapping reads like a short
@@ -1409,6 +1533,17 @@ public partial class MainWindow : Window
                 };
                 Grid.SetColumn(del, 1);
                 header.Children.Add(del);
+                if (cards)
+                {
+                    // The way back to the sentence card, next to Remove.
+                    header.ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto");
+                    var done = new Button { Content = "Done", Classes = { "quiet" }, Padding = new Avalonia.Thickness(8, 2) };
+                    AutomationProperties.SetName(done, $"Close the editor for mapping {n} and go back to its card");
+                    done.Click += (_, _) => { _expandedMapping = -1; BuildZoneDetail(); };
+                    Grid.SetColumn(done, 1);
+                    header.Children.Add(done);
+                    Grid.SetColumn(del, 2);
+                }
                 body.Children.Add(header);
 
                 // ---- "When you": one aligned row per input, each removable ----
@@ -1505,6 +1640,7 @@ public partial class MainWindow : Window
                 if (_file is null || CurrentSheet is null) return;
                 int newRow = _file.AddBindingRow(CurrentSheet);
                 _file.SetCell(newRow, 2, zone.DefaultInput);
+                _expandedMapping = newRow; // a brand new mapping opens ready to edit
                 BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                 // Take the user to the mapping they just created (mirrors AddRow in List View).
                 // The new input cell is a ComboBox (TokenField), so focus it as a Control.
@@ -1516,6 +1652,7 @@ public partial class MainWindow : Window
             };
             ZoneDetailPanel.Children.Add(add);
         }
+        RepaintSelection(); // the bars follow whatever rebuilt here
     }
 
     public void LoadProfile(ProfileFile file) => OpenInEditor(file, savePath: null);
@@ -1979,7 +2116,7 @@ public partial class MainWindow : Window
     // a click on empty space clears. Keyed by CSV row on the current sheet.
     readonly HashSet<int> _selectedRows = new();
     int _selAnchor = -1;
-    readonly Dictionary<int, StackPanel> _rowPanels = new();
+    readonly Dictionary<int, Panel> _rowPanels = new();
 
     void PaintRow(int row)
     {
@@ -1987,16 +2124,18 @@ public partial class MainWindow : Window
         bool sel = _selectedRows.Contains(row);
         if (sel) BindBrush(p, Panel.BackgroundProperty, "NewRowTint");
         else p.ClearValue(Panel.BackgroundProperty);
-        if (p.Children[0] is Border h && h.Child is TextBlock num)
+        if (p.Children[0] is Border h && h.Tag is string baseName)
             AutomationProperties.SetName(h,
-                $"Row {num.Text}{(sel ? ", selected" : "")}. Space selects, drag reorders");
+                $"{baseName}{(sel ? ", selected" : "")}. Space selects, drag reorders");
     }
 
     void RepaintSelection()
     {
         foreach (var row in _rowPanels.Keys) PaintRow(row);
-        SelectionBar.IsVisible = _selectedRows.Count > 0;
+        SelectionBar.IsVisible = _selectedRows.Count > 0 && !DeviceContainer.IsVisible;
         SelectionCount.Text = $"{_selectedRows.Count} selected";
+        DeviceSelectionBar.IsVisible = _selectedRows.Count > 0 && DeviceContainer.IsVisible;
+        DeviceSelectionCount.Text = SelectionCount.Text;
     }
 
     void DeleteSelectedRows()
@@ -2006,8 +2145,12 @@ public partial class MainWindow : Window
         _selectedRows.Clear(); _selAnchor = -1;
         var off = GridScroll.Offset;
         _file.DeleteRows(rows); // one undo step for the whole selection
-        RebuildRows();
-        RestoreListScroll(off, () => { });
+        if (DeviceContainer.IsVisible) { BuildDeviceView(); BuildZoneDetail(); RefreshIssues(); }
+        else
+        {
+            RebuildRows();
+            RestoreListScroll(off, () => { });
+        }
         Status($"{rows.Count} row{(rows.Count == 1 ? "" : "s")} deleted. Ctrl+Z brings them back.", StatusKind.Ready);
     }
 
@@ -2039,16 +2182,19 @@ public partial class MainWindow : Window
         RepaintSelection();
     }
 
-    Control DragHandle(Binding b, int number)
+    Control DragHandle(Binding b, int number) =>
+        WireDragHandle(new Border { Child = RowNumberLabel(number) }, b, $"Row {number}");
+
+    // Shared by the list-view row numbers and the device-view card handles:
+    // click selects (with Ctrl/Cmd/Shift), Space selects, a real movement
+    // starts a drag carrying the whole selection.
+    Border WireDragHandle(Border h, Binding b, string baseName)
     {
-        var h = new Border
-        {
-            Child = RowNumberLabel(number),
-            Background = Brushes.Transparent, // hit-testable everywhere
-            Cursor = new Cursor(StandardCursorType.SizeAll),
-            VerticalAlignment = VerticalAlignment.Center,
-            Focusable = true, // Space selects for keyboard and switch users
-        };
+        h.Background = Brushes.Transparent; // hit-testable everywhere
+        h.Cursor = new Cursor(StandardCursorType.SizeAll);
+        h.VerticalAlignment = VerticalAlignment.Center;
+        h.Focusable = true; // Space selects for keyboard and switch users
+        h.Tag = baseName;   // PaintRow appends ", selected" to this
         ToolTip.SetTip(h, "Click to select, drag to reorder");
         bool pressed = false;
         var pressAt = new Avalonia.Point();
@@ -2083,7 +2229,7 @@ public partial class MainWindow : Window
         return h;
     }
 
-    void WireRowDrop(StackPanel p, Binding b)
+    void WireRowDrop(Panel p, Binding b)
     {
         DragDrop.SetAllowDrop(p, true);
         p.AddHandler(DragDrop.DragOverEvent, (_, e) =>
@@ -2098,8 +2244,12 @@ public partial class MainWindow : Window
             var off = GridScroll.Offset;
             _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
             _file!.MoveRows(srcs, b.Row);
-            RebuildRows();
-            RestoreListScroll(off, () => { });
+            if (DeviceContainer.IsVisible) { BuildDeviceView(); BuildZoneDetail(); RefreshIssues(); }
+            else
+            {
+                RebuildRows();
+                RestoreListScroll(off, () => { });
+            }
         });
     }
 

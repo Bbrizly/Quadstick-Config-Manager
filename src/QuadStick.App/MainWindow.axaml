@@ -225,7 +225,7 @@
           <DockPanel>
             <Border x:Name="DeviceHeaderRow" DockPanel.Dock="Top" Padding="14,10"
                     BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,0,1">
-              <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+              <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
                 <ContentControl x:Name="DeviceHeaderStatus" Grid.Column="0" VerticalAlignment="Center"/>
                 <TextBlock x:Name="DeviceHeaderMode" Grid.Column="1" Margin="14,0,0,0" Classes="secondary"
                            VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
@@ -235,6 +235,7 @@
                           AutomationProperties.Name="Which QuadStick model you have"/>
                 <Button x:Name="DeviceHelpButton" Grid.Column="5" Classes="icon" Content="?" Margin="10,0,0,0"
                         AutomationProperties.Name="How device view works, and which parts your model has"/>
+                <Button x:Name="CardViewButton" Grid.Column="6" Classes="quiet" Margin="10,0,0,0"/>
               </Grid>
             </Border>
             <!-- The device diagram owns the larger, left-hand share of the
@@ -246,9 +247,24 @@
               </ScrollViewer>
               <Border Grid.Column="1" Background="{DynamicResource SurfaceSubtleBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                       BorderThickness="1,0,0,0" Padding="18" MinWidth="340">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                  <StackPanel x:Name="ZoneDetailPanel" Spacing="14"/>
-                </ScrollViewer>
+                <DockPanel>
+                  <!-- Same job as SelectionBar in list view, for card selections.
+                       Lives outside the rebuilt panel so a selection click never
+                       destroys the control being dragged. -->
+                  <Border x:Name="DeviceSelectionBar" DockPanel.Dock="Top" IsVisible="False" Margin="0,0,0,10"
+                          CornerRadius="6" Padding="10,6" Background="{DynamicResource NewRowTintBrush}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <TextBlock x:Name="DeviceSelectionCount" VerticalAlignment="Center" FontWeight="Bold"/>
+                      <Button x:Name="DeviceSelectionDeleteButton" Content="Delete" Classes="danger"
+                              AutomationProperties.Name="Delete the selected mappings"/>
+                      <Button x:Name="DeviceSelectionClearButton" Content="Clear" Classes="quiet"
+                              AutomationProperties.Name="Clear the selection"/>
+                    </StackPanel>
+                  </Border>
+                  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="ZoneDetailPanel" Spacing="14"/>
+                  </ScrollViewer>
+                </DockPanel>
               </Border>
             </Grid>
           </DockPanel>

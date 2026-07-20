@@ -12,6 +12,7 @@
   <StreamGeometry x:Key="IconAdd">M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z</StreamGeometry>
   <StreamGeometry x:Key="IconDelete">M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z</StreamGeometry>
   <StreamGeometry x:Key="IconChevron">M8.6 16.6 13.2 12 8.6 7.4 10 6l6 6-6 6z</StreamGeometry>
+  <StreamGeometry x:Key="IconDrag">M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z</StreamGeometry>
   <StreamGeometry x:Key="IconThemeSystem">M21 2H3a2 2 0 00-2 2v12a2 2 0 002 2h7v2H8v2h8v-2h-2v-2h7a2 2 0 002-2V4a2 2 0 00-2-2zm0 14H3V4h18z</StreamGeometry>
   <StreamGeometry x:Key="IconThemeLight">M12 7a5 5 0 100 10 5 5 0 000-10zM2 13h3v-2H2v2zm17 0h3v-2h-3v2zM11 2v3h2V2h-2zm0 17v3h2v-3h-2zM5.6 4.2 4.2 5.6l1.8 1.8 1.4-1.4zM18 16.2l1.8 1.8 1.4-1.4-1.8-1.8zM16.2 6 18 4.2 19.4 5.6l-1.8 1.8zM4.2 18.4 5.6 19.8 7.4 18l-1.4-1.4z</StreamGeometry>
   <StreamGeometry x:Key="IconThemeDark">M12 3a9 9 0 109 9c0-.5 0-.9-.1-1.4A7 7 0 0112 3z</StreamGeometry>

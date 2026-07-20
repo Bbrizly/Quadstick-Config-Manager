@@ -101,6 +101,7 @@ public class ListViewTests
     {
         var s = Settings.Load();
         s.TutorialSeen = true;
+        s.RememberWindow = false; // a late window resize would move the click targets
         Settings.Save(s);
         var w = new MainWindow();
         w.Show();
@@ -153,6 +154,7 @@ public class ListViewTests
     {
         var s = Settings.Load();
         s.TutorialSeen = true;
+        s.RememberWindow = false; // a late window resize would move the click targets
         Settings.Save(s);
         var w = new MainWindow();
         w.Show();

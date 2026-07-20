@@ -15,6 +15,7 @@ public sealed class AppSettings
     public bool ReduceMotion = false;
     public bool RememberWindow = true;
     public bool TutorialSeen = false;
+    public bool DeviceCards = true;            // device view mappings as sentence cards
     public double? WinW, WinH, WinX, WinY;     // null = use window defaults
 }
 
