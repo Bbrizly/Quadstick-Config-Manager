@@ -240,12 +240,16 @@ public class CardViewTests
             w.UpdateLayout();
         }
 
-        // Top level: the categories, no Back yet.
+        // Top level: the categories, no Back yet. A category row is styled
+        // differently from an output row, so "opens more" and "picks this"
+        // are visually distinct.
         var panel = Open();
         Assert.NotNull(Find(panel, "Controller,"));
         Assert.NotNull(Find(panel, "Keyboard,"));
         Assert.NotNull(Find(panel, "Mouse,"));
         Assert.Null(Find(panel, "Back"));
+        Assert.DoesNotContain("quiet", Find(panel, "Controller,")!.Classes);
+        Assert.Contains("quiet", Find(panel, "None")!.Classes);
 
         // Drill in: Controller replaces the list with its subcategories.
         Tap(panel, "Controller,");

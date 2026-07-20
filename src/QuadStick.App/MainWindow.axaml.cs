@@ -3275,9 +3275,12 @@ public partial class MainWindow : Window
             line.Children.Add(chevron);
             line.Children.Add(new TextBlock
             { Text = $"{title} ({count})", FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap });
+            // No "quiet" here on purpose: a category keeps the bordered
+            // button look so "opens more" reads differently from the flat
+            // rows that pick an output.
             var it = new Button
             {
-                Content = line, Classes = { "quiet" },
+                Content = line,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
             };
