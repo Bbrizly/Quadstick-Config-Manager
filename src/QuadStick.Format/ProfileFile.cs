@@ -192,6 +192,18 @@ public sealed class ProfileFile
         Reparse();
     }
 
+    // Delete several rows as one undoable step (the selection's Delete
+    // button). Highest first, so earlier removals cannot shift the rest.
+    public void DeleteRows(IEnumerable<int> rows)
+    {
+        var valid = rows.Where(r => r >= 1 && r <= Grid.Count)
+            .Distinct().OrderByDescending(r => r).ToList();
+        if (valid.Count == 0) return;
+        Snapshot();
+        foreach (var r in valid) Grid.RemoveAt(r - 1);
+        Reparse();
+    }
+
     public void DeleteRow(int row)
     {
         if (row < 1 || row > Grid.Count) return;

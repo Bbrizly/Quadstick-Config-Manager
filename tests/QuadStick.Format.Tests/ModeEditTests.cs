@@ -139,6 +139,26 @@ public class ModeEditTests
     }
 
     [Fact]
+    public void DeleteRows_takes_several_rows_in_one_undo_step()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n" +
+            "square,normal,left_puff\n");
+        var before = f.ToCsvText();
+
+        f.DeleteRows(new[] { 4, 6 });
+        Assert.Equal(new[] { "circle" },
+            f.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+
+        Assert.True(f.Undo()); // one step brings the whole selection back
+        Assert.Equal(before, f.ToCsvText());
+    }
+
+    [Fact]
     public void Preferences_sheet_deletes_and_comes_back()
     {
         var f = ProfileFile.Load(

@@ -146,6 +146,68 @@ public class ListViewTests
         w.Close();
     }
 
+    // While rows are selected a bar says how many and offers Delete and
+    // Clear; the Delete key works too, and one undo restores everything.
+    [AvaloniaFact]
+    public void The_selection_bar_deletes_selected_rows_together()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n" +
+            "square,normal,left_puff\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+        void Click(int n, RawInputModifiers mods = RawInputModifiers.None)
+        {
+            var pt = Handle(n).TranslatePoint(new Point(3, 3), w)!.Value;
+            w.MouseDown(pt, MouseButton.Left, mods);
+            w.MouseUp(pt, MouseButton.Left, mods);
+        }
+        var bar = w.GetVisualDescendants().OfType<Border>().First(x => x.Name == "SelectionBar");
+        var count = w.GetVisualDescendants().OfType<TextBlock>().First(x => x.Name == "SelectionCount");
+
+        Assert.False(bar.IsVisible); // nothing selected, no bar
+
+        Click(1);
+        Click(3, RawInputModifiers.Control);
+        Assert.True(bar.IsVisible);
+        Assert.Equal("2 selected", count.Text);
+
+        w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "SelectionDeleteButton")
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        w.UpdateLayout();
+        Assert.Equal(new[] { "circle" },
+            file.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+        Assert.False(bar.IsVisible); // selection is spent
+
+        Assert.True(file.Undo()); // one step, both rows back
+        Assert.Equal(3, file.Document.Sheets[0].Bindings.Count);
+
+        // The Delete key does the same as the button.
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+        Click(2);
+        w.KeyPressQwerty(PhysicalKey.Delete, RawInputModifiers.None);
+        Assert.Equal(new[] { "x", "square" },
+            file.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+
+        file.Dirty = false;
+        w.Close();
+    }
+
     // The Preferences sheet must show the official template's Units and
     // Description columns; hiding them hid the tester's own setting notes.
     [AvaloniaFact]

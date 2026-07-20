@@ -198,13 +198,27 @@
       <Panel>
         <Border x:Name="GridContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                 BorderThickness="1" CornerRadius="6" Padding="12">
-          <!-- List-view rows are a horizontal stack of fixed-width cells (output,
-               function, inputs, note, move/delete buttons), so at high interface
-               scale a row can run wider than the window. Auto lets it pan sideways
-               instead of clipping columns off the edge unreachably. -->
-          <ScrollViewer x:Name="GridScroll" HorizontalScrollBarVisibility="Auto">
-            <StackPanel x:Name="RowsPanel" Spacing="6"/>
-          </ScrollViewer>
+          <DockPanel>
+            <!-- Appears only while rows are selected: how many, and what can
+                 be done to them. -->
+            <Border x:Name="SelectionBar" DockPanel.Dock="Top" IsVisible="False" Margin="0,0,0,8"
+                    CornerRadius="6" Padding="10,6" Background="{DynamicResource NewRowTintBrush}">
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock x:Name="SelectionCount" VerticalAlignment="Center" FontWeight="Bold"/>
+                <Button x:Name="SelectionDeleteButton" Content="Delete" Classes="danger"
+                        AutomationProperties.Name="Delete the selected rows"/>
+                <Button x:Name="SelectionClearButton" Content="Clear" Classes="quiet"
+                        AutomationProperties.Name="Clear the selection"/>
+              </StackPanel>
+            </Border>
+            <!-- List-view rows are a horizontal stack of fixed-width cells (output,
+                 function, inputs, note, move/delete buttons), so at high interface
+                 scale a row can run wider than the window. Auto lets it pan sideways
+                 instead of clipping columns off the edge unreachably. -->
+            <ScrollViewer x:Name="GridScroll" HorizontalScrollBarVisibility="Auto">
+              <StackPanel x:Name="RowsPanel" Spacing="6"/>
+            </ScrollViewer>
+          </DockPanel>
         </Border>
         <Border x:Name="DeviceContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
                 BorderThickness="1" CornerRadius="6" IsVisible="False">

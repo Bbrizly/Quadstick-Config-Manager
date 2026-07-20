@@ -191,6 +191,8 @@ public partial class MainWindow : Window
         // exactly like a file explorer. Row-number presses mark themselves
         // Handled, so they never reach this.
         GridScroll.AddHandler(PointerPressedEvent, (_, _) => ClearSelection());
+        SelectionDeleteButton.Click += (_, _) => DeleteSelectedRows();
+        SelectionClearButton.Click += (_, _) => ClearSelection();
 
         SheetPicker.SelectionChanged += (_, _) =>
         {
@@ -284,6 +286,9 @@ public partial class MainWindow : Window
                 { ShowHelp(); e.Handled = true; }
                 else if (e.Key == Key.Escape && _selectedRows.Count > 0)
                 { ClearSelection(); e.Handled = true; }
+                else if (e.Key == Key.Delete && _selectedRows.Count > 0
+                         && e.Source is not (TextBox or AutoCompleteBox))
+                { DeleteSelectedRows(); e.Handled = true; }
                 return;
             }
             switch (e.Key)
@@ -1926,6 +1931,7 @@ public partial class MainWindow : Window
                     : "No bindings yet. Click \"Add row\" to connect an input to an output.",
                 FontSize = Size("BodySize"), Classes = { "muted" }, Margin = new Avalonia.Thickness(4, 12),
             });
+        RepaintSelection(); // the prune above may have emptied it; the bar must follow
         RefreshIssues();
     }
 
@@ -1989,6 +1995,20 @@ public partial class MainWindow : Window
     void RepaintSelection()
     {
         foreach (var row in _rowPanels.Keys) PaintRow(row);
+        SelectionBar.IsVisible = _selectedRows.Count > 0;
+        SelectionCount.Text = $"{_selectedRows.Count} selected";
+    }
+
+    void DeleteSelectedRows()
+    {
+        if (_file is null || _selectedRows.Count == 0) return;
+        var rows = _selectedRows.ToList();
+        _selectedRows.Clear(); _selAnchor = -1;
+        var off = GridScroll.Offset;
+        _file.DeleteRows(rows); // one undo step for the whole selection
+        RebuildRows();
+        RestoreListScroll(off, () => { });
+        Status($"{rows.Count} row{(rows.Count == 1 ? "" : "s")} deleted. Ctrl+Z brings them back.", StatusKind.Ready);
     }
 
     void ClearSelection()
