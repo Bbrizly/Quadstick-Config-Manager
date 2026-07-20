@@ -1,6 +1,8 @@
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Input;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using QuadStick.App;
@@ -163,6 +165,61 @@ public class ModesWindowTests
         var box = modes.GetVisualDescendants().OfType<TextBox>()
             .First(t => AutomationProperties.GetName(t) == "Name of mode 3");
         Assert.True(box.IsKeyboardFocusWithin);
+
+        modes.Close();
+        w.OpenFile!.Dirty = false;
+        w.Close();
+    }
+
+    // Alt with an arrow moves the mode from inside its name box. That rebuilds
+    // the list under the box, and the box losing focus used to commit its name
+    // against the row number it had before the move, renaming the mode it just
+    // swapped with.
+    [AvaloniaFact]
+    public void Moving_with_the_keyboard_does_not_rename_the_mode_it_passes()
+    {
+        var w = Open(ModePrefsMode);
+        var modes = new ModesWindow(w);
+        _ = modes.ShowDialog(w);
+        Dispatcher.UIThread.RunJobs();
+
+        modes.GetVisualDescendants().OfType<TextBox>()
+            .First(t => AutomationProperties.GetName(t) == "Name of mode 1").Focus();
+        Dispatcher.UIThread.RunJobs();
+
+        modes.KeyPressQwerty(PhysicalKey.ArrowDown, RawInputModifiers.Alt);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal(new[] { "Aiming", "Driving" }, ModeNames(w));
+
+        modes.Close();
+        w.OpenFile!.Dirty = false;
+        w.Close();
+    }
+
+    // An armed delete is remembered by sheet number, and removing the
+    // preferences sheet renumbers everything below it. The arming must not
+    // survive and point at a different mode.
+    [AvaloniaFact]
+    public void An_armed_delete_does_not_move_to_another_mode()
+    {
+        var w = Open(ModePrefsMode +
+            "Profile Name,,Menus\n" +
+            ",,\n" +
+            "Outputs,Function,usb\n" +
+            "square,normal,left_puff\n");
+        var modes = new ModesWindow(w);
+        _ = modes.ShowDialog(w);
+        Dispatcher.UIThread.RunJobs();
+
+        Tap(modes, "Delete Aiming");
+        Assert.NotNull(Find(modes, "Really delete Aiming"));
+
+        Tap(modes, "Remove the preferences sheet and its device settings");
+
+        Assert.Empty(modes.GetVisualDescendants().OfType<Button>()
+            .Where(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Really delete")));
+        Assert.Equal(new[] { "Driving", "Aiming", "Menus" }, ModeNames(w));
 
         modes.Close();
         w.OpenFile!.Dirty = false;

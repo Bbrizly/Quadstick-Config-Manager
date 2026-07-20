@@ -125,11 +125,24 @@ public class ModesWindow : Window
             .Where(t => t.Sheet.Type == SheetType.ProfileName)
             .ToList();
 
-    // Rebuilt whole after every change: a mode list is a handful of rows, and
-    // rebuilding is the only way a row's position number, its arrows and its
-    // spoken names can never drift from the file.
-    void Build()
+    // Rebuilding detaches the name boxes, and a detached box raises LostFocus.
+    // That would commit its old text against a row number the rebuild has just
+    // changed, renaming whichever mode now wears that number. Nothing commits
+    // while this is true.
+    bool _rebuilding;
+
+    // An armed delete is remembered by sheet number, so any rebuild that can
+    // renumber the sheets has to disarm it, or the confirmation lands on a
+    // different mode than the one it was aimed at. Only the click that arms it
+    // asks to keep it.
+    //
+    // The list is rebuilt whole after every change: it is a handful of rows,
+    // and rebuilding is the only way a row's position number, its arrows and
+    // its spoken names can never drift from the file.
+    void Build(bool keepArmed = false)
     {
+        if (!keepArmed) _armedDelete = -1;
+        _rebuilding = true;
         _rows.Children.Clear();
         var modes = Modes();
         for (int p = 0; p < modes.Count; p++)
@@ -145,7 +158,8 @@ public class ModesWindow : Window
             : "Remove the preferences sheet and its device settings");
         _prefsClick = prefsIndex < 0
             ? _owner.AddPreferencesSheetToFile
-            : () => { _owner.OpenFile!.DeleteMode(prefsIndex); _owner.ModesChanged(0, "Preferences sheet removed. Control Z undoes it."); Build(); };
+            : () => { _owner.OpenFile!.DeleteMode(prefsIndex); _owner.ModesChanged(0, "Preferences sheet removed. Control Z undoes it."); };
+        _rebuilding = false;
     }
 
     Action _prefsClick = () => { };
@@ -186,7 +200,7 @@ public class ModesWindow : Window
         bool canDelete = total > 1;
         var delete = armed
             ? TextButton("Really delete?", $"Really delete {name}", canDelete, () => Delete(sheetIndex))
-            : IconButton("✕", $"Delete {name}", canDelete, () => { _armedDelete = sheetIndex; Build(); });
+            : IconButton("✕", $"Delete {name}", canDelete, () => { _armedDelete = sheetIndex; Build(keepArmed: true); });
         delete.Classes.Add("danger");
 
         return new StackPanel
@@ -239,7 +253,7 @@ public class ModesWindow : Window
 
     void Rename(int sheetIndex, string text)
     {
-        if (_owner.OpenFile is null) return;
+        if (_rebuilding || _owner.OpenFile is null) return;
         if (!_owner.OpenFile.RenameMode(sheetIndex, text)) return;
         _owner.ModesChanged(sheetIndex, "Mode renamed.");
         Build();
@@ -248,13 +262,15 @@ public class ModesWindow : Window
     void Move(int sheetIndex, int delta)
     {
         if (_owner.OpenFile is null) return;
+        // Where the mode lands has to be worked out before the move, while the
+        // old sheet numbers still mean something.
+        int landed = FocusedSheetAfterMove(sheetIndex, delta);
         if (!_owner.OpenFile.MoveMode(sheetIndex, delta)) return;
-        _armedDelete = -1;
-        // The mode kept its rows but not its sheet index: find it again by name
-        // rather than guessing, since a Preferences sheet may have been stepped
-        // over on the way.
         Build();
-        _owner.ModesChanged(FocusedSheetAfterMove(sheetIndex, delta), "Mode moved.");
+        _owner.ModesChanged(landed, "Mode moved.");
+        // Keep the keyboard on the mode that moved, so Alt with an arrow can be
+        // pressed again straight away to move it further.
+        FocusName(Modes().FindIndex(t => t.Index == landed));
     }
 
     // MoveMode swaps two mode blocks, so the moved mode now sits where its
@@ -273,7 +289,6 @@ public class ModesWindow : Window
         if (_owner.OpenFile is null) return;
         int idx = _owner.OpenFile.DuplicateMode(sheetIndex, name + " copy");
         if (idx < 0) return;
-        _armedDelete = -1;
         Build();
         _owner.ModesChanged(idx, "Mode copied.");
         FocusName(Modes().FindIndex(t => t.Index == idx));
@@ -282,7 +297,6 @@ public class ModesWindow : Window
     void Delete(int sheetIndex)
     {
         if (_owner.OpenFile is null) return;
-        _armedDelete = -1;
         if (!_owner.OpenFile.DeleteMode(sheetIndex)) { Build(); return; }
         Build();
         _owner.ModesChanged(Math.Max(0, sheetIndex - 1), "Mode deleted. Control Z undoes it.");
@@ -291,8 +305,12 @@ public class ModesWindow : Window
     void AddMode()
     {
         if (_owner.OpenFile is null) return;
-        int idx = _owner.OpenFile.AddModeSheet($"Mode {Modes().Count + 1}");
-        _armedDelete = -1;
+        // Two modes with the same name are legal but unreadable in the picker,
+        // so count past any name already taken.
+        var taken = Modes().Select(t => t.Sheet.ModeName).ToHashSet();
+        int n = Modes().Count + 1;
+        while (taken.Contains($"Mode {n}")) n++;
+        int idx = _owner.OpenFile.AddModeSheet($"Mode {n}");
         Build();
         _owner.ModesChanged(idx, "Mode added.");
         // No naming dialog: the new row is already there, so put the keyboard
