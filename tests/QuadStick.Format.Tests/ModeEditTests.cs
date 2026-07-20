@@ -93,12 +93,24 @@ public class ModeEditTests
         Assert.Equal(before, f.ToCsvText());
     }
 
+    // The first mode is a mode like any other. It used to be undeletable only
+    // because it happens to carry the profile filename, which belongs to the
+    // file: hand the filename on and the mode can go.
+    [Fact]
+    public void The_first_mode_can_be_deleted_and_the_filename_stays_on_the_file()
+    {
+        var f = ThreeModes();
+        Assert.True(f.DeleteMode(0));
+        Assert.Equal(new[] { "Aiming", "Menus" },
+            f.Document.Sheets.Select(s => s.ModeName).ToArray());
+        Assert.Equal("game.csv", f.Document.CsvFileName);
+    }
+
     [Fact]
     public void Guards_reject_bad_operations()
     {
         var f = ThreeModes();
         Assert.False(f.RenameMode(99, "Nope"));    // rename out of range
-        Assert.False(f.DeleteMode(0));             // sheet 0 holds the filename
         Assert.False(f.MoveMode(0, -1));           // nothing above the first sheet
         Assert.False(f.MoveMode(2, 1));            // last sheet cannot move down
         Assert.Equal(-1, f.DuplicateMode(0, "  ")); // blank name

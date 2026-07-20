@@ -340,19 +340,37 @@ public sealed class ProfileFile
         return Document.Sheets.Count - 1;
     }
 
-    // Delete a mode or the Preferences sheet. Sheet 0 carries the profile
-    // filename and stays, and the profile must keep at least one mode, so
-    // both are refused before snapshot.
+    // Delete a mode or the Preferences sheet. The profile must keep at least
+    // one mode, and the Infrared sheet is not ours to remove, so both are
+    // refused before snapshot. Sheet 0 goes like any other: the profile
+    // filename it carries belongs to the file, so it is handed to whichever
+    // sheet becomes first.
     public bool DeleteMode(int sheetIndex)
     {
-        if (sheetIndex <= 0 || sheetIndex >= Document.Sheets.Count) return false;
+        if (sheetIndex < 0 || sheetIndex >= Document.Sheets.Count) return false;
         var type = Document.Sheets[sheetIndex].Type;
         if (type == SheetType.Infrared) return false;
         if (type == SheetType.ProfileName
             && Document.Sheets.Count(s => s.Type == SheetType.ProfileName) <= 1) return false;
+        // Deleting sheet 0 needs a second row on the incoming first sheet to
+        // carry the filename; a degenerate sheet without one stays put.
+        if (sheetIndex == 0)
+        {
+            if (Document.Sheets.Count < 2) return false;
+            var (nextStart, nextEnd) = SheetRowRange(1);
+            if (nextEnd - nextStart < 1) return false;
+        }
 
         Snapshot();
         var (start, end) = SheetRowRange(sheetIndex);
+        if (sheetIndex == 0)
+        {
+            var fname = end - start >= 1 && Grid[start].Length > 0 ? Grid[start][0] : "";
+            // Row 2 of the sheet that is about to become first.
+            int slot = end + 1;
+            if (Grid[slot].Length == 0) Grid[slot] = new[] { fname };
+            else Grid[slot][0] = fname;
+        }
         Grid.RemoveRange(start - 1, end - start + 1);
         Reparse();
         return true;
