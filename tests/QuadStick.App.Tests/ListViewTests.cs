@@ -460,9 +460,11 @@ public class ListViewTests
         Assert.Contains("danger", del.Classes);
         Assert.IsType<PathIcon>(del.Content);
 
-        // The trash sits right of the plus, in the plus button's old spot.
+        // The trash sits directly UNDER the plus, one shared column, so a
+        // second input's own trash never pushes the note further right.
         Point At(Control c) => c.TranslatePoint(new Point(0, 0), w)!.Value;
-        Assert.True(At(del).X > At(add).X);
+        Assert.Equal(At(add).X, At(del).X);
+        Assert.True(At(del).Y > At(add).Y);
 
         del.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs();

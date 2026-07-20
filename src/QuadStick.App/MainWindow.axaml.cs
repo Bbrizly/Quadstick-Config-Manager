@@ -2400,6 +2400,9 @@ public partial class MainWindow : Window
         }
         p.Children.Add(inputsBox);
 
+        // Plus over trash in ONE column, so a multi-input row's per-input
+        // trashes never push the note and chevrons further right.
+        var rowButtons = new StackPanel { Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
         if (inputCount < 8)
         {
             var addInput = IconButton("IconAdd", $"Add another input to row {b.Row}");
@@ -2419,16 +2422,16 @@ public partial class MainWindow : Window
                 if (nextCol >= 10) addInput.IsVisible = false;
                 ((newBox as Border)!.Child as AutoCompleteBox)!.Focus();
             };
-            p.Children.Add(Mid(addInput));
+            rowButtons.Children.Add(addInput);
         }
 
-        // The whole-row delete: a red trash circle right after the plus, where
-        // the old "Delete row" text button trailed at the far end of the row.
+        // The whole-row delete: a red trash circle under the plus.
         var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
         ToolTip.SetTip(del, "Delete this whole row");
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
         del.Click += (_, _) => DeleteListRow(b);
-        p.Children.Add(Mid(del));
+        rowButtons.Children.Add(del);
+        p.Children.Add(rowButtons);
 
         var note = NoteBox(b.Row, NoteColumn, $"Note for row {b.Row}. Saved in the file, ignored by the QuadStick");
         // p is a horizontal StackPanel with unbounded width, so without a
