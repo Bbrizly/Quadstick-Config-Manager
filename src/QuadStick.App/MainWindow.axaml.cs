@@ -2400,8 +2400,8 @@ public partial class MainWindow : Window
         // Inputs stack DOWN (below), so every other cell centers vertically
         // against the taller stack instead of stretching or hugging the top.
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
-        p.Children.Add(Mid(SuggestBox(b.Row, 0, b.Output, 220, OutputSuggestionsFor(CurrentSheet!), $"Output for row {b.Row}", OutputTint)));
-        p.Children.Add(Mid(SuggestBox(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint)));
+        p.Children.Add(Mid(ListPickerCell(b.Row, 0, b.Output, 220, OutputSuggestionsFor(CurrentSheet!), $"Output for row {b.Row}", OutputTint, OutputCatalog.Catalog, "an output")));
+        p.Children.Add(Mid(ListPickerCell(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint, null, "a function")));
 
         // Extra inputs go UNDER the first one. Sideways growth forced a
         // horizontal scroll, which the tester called out as inaccessible.
@@ -2412,8 +2412,8 @@ public partial class MainWindow : Window
             // Write to each input's REAL column (inputs may have gaps in C..J).
             int col = i < b.InputCols.Count ? b.InputCols[i] : FirstFreeInputColumn(b);
             var line = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-            line.Children.Add(SuggestBox(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "", 240,
-                InputSuggestions, $"Input {i + 1} for row {b.Row}", InputTint));
+            line.Children.Add(ListPickerCell(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "", 240,
+                InputSuggestions, $"Input {i + 1} for row {b.Row}", InputTint, InputCatalog, "an input"));
             // A round remove control beside each real input, so any input
             // can be taken out (not just emptied, and not just the last one).
             if (b.Inputs.Count > 1 && i < b.Inputs.Count)
@@ -2452,9 +2452,9 @@ public partial class MainWindow : Window
             int nextCol = FirstFreeInputColumn(b);
             addInput.Click += (_, _) =>
             {
-                // Add the box directly; the file only changes when a value is committed.
-                var newBox = SuggestBox(b.Row, nextCol, "", 240, InputSuggestions,
-                    $"Input {nextCol - 1} for row {b.Row}", InputTint);
+                // Add the cell directly; the file only changes when a value is committed.
+                var newBox = ListPickerCell(b.Row, nextCol, "", 240, InputSuggestions,
+                    $"Input {nextCol - 1} for row {b.Row}", InputTint, InputCatalog, "an input");
                 // Fixed width + default Stretch centers it against the wider
                 // committed lines (box + trash); pin it to the same left edge.
                 newBox.HorizontalAlignment = HorizontalAlignment.Left;
@@ -2463,7 +2463,7 @@ public partial class MainWindow : Window
                 nextCol++;
                 while (nextCol < 10 && b.InputCols.Contains(nextCol)) nextCol++; // skip occupied cells
                 if (nextCol >= 10) addInput.IsVisible = false;
-                ((newBox as Border)!.Child as AutoCompleteBox)!.Focus();
+                ((newBox as Border)!.Child as Control)!.Focus();
             };
             rowButtons.Children.Add(addInput);
         }
@@ -3206,13 +3206,8 @@ public partial class MainWindow : Window
         return wrapper;
     }
 
-    // The Press field. Its option list is ~380 tokens, which as one flat
-    // dropdown meant endless scrolling. The field is a button whose dropdown
-    // (a flyout, so the layout never shifts) holds a search box over category
-    // expanders (Controller, Keyboard, Mouse, ...). Typing in the search
-    // replaces the categories with flat matches. Picking commits the cell
-    // exactly like TokenField does. Reusable for any huge token list: the
-    // grouping comes from OutputCatalog, everything else is generic.
+    // The Press field in Device View: the drill-down picker committing
+    // through the device rebuild, so the card refreshes and refocuses.
     Control OutputPicker(int row, int col, string current, IReadOnlyList<string> options,
                          Func<string, string> labelFor, string accessibleName, string tintKey)
     {
@@ -3223,18 +3218,92 @@ public partial class MainWindow : Window
             CornerRadius = new Avalonia.CornerRadius(5),
         };
         _cellBorders[$"{(char)('A' + col)}{row}"] = wrapper;
+        return PickerCell(wrapper, current, options, labelFor, accessibleName, tintKey,
+            OutputCatalog.Catalog, "an output", token =>
+            {
+                if (_file is null) return;
+                if (token != _file.GetCell(row, col)) _file.SetCell(row, col, token);
+                RebuildDeviceAfterEdit(row, col);
+            });
+    }
+
+    // Inputs group by the part of the device they live on, in AllZones order.
+    static TokenCatalog? _inputCatalog;
+    static TokenCatalog InputCatalog => _inputCatalog ??= new(
+        t => (AllZones.First(z => z.Id == ZoneOf(t)).Title, ""),
+        AllZones.Select(z => z.Title).ToArray(),
+        new Dictionary<string, string[]>());
+
+    // A List View cell backed by the drill-down picker. Commits like
+    // SuggestBox did: set the cell, refresh issues, and rebuild the rows
+    // when an input appears or disappears (its remove and plus buttons
+    // change with it).
+    Control ListPickerCell(int row, int col, string value, double width, IReadOnlyList<string> options,
+                           string accessibleName, string tintKey, TokenCatalog? catalog, string pickWord)
+    {
+        var wrapper = new Border
+        {
+            // Match the thickness RefreshIssues sets on an errored cell, so
+            // flagging a problem never reflows the row (see SuggestBox).
+            BorderThickness = new Avalonia.Thickness(3),
+            BorderBrush = Brushes.Transparent,
+            CornerRadius = new Avalonia.CornerRadius(5),
+            Width = width,
+        };
+        var key = $"{(char)('A' + col)}{row}";
+        _cellBorders[key] = wrapper;
+        return PickerCell(wrapper, value, options, t => t, accessibleName, tintKey, catalog, pickWord, token =>
+        {
+            if (_file is null) return;
+            var old = _file.GetCell(row, col);
+            if (token == old) return;
+            _file.SetCell(row, col, token);
+            RefreshIssues();
+            // An input appearing or disappearing changes the row's own
+            // controls, so rebuild. Deferred: the flyout is still closing.
+            if (col is >= 2 and < 10 && (old.Length == 0) != (token.Length == 0))
+            {
+                var off = GridScroll.Offset;
+                Dispatcher.UIThread.Post(() =>
+                {
+                    RebuildRows();
+                    RestoreListScroll(off, () =>
+                    {
+                        if (_cellBorders.TryGetValue(key, out var border))
+                        { border.BringIntoView(); (border.Child as Control)?.Focus(); }
+                    });
+                });
+            }
+        });
+    }
+
+    // The drill-down picker every big token list shares. The field is a
+    // button whose dropdown (a flyout, so the layout never shifts) holds a
+    // search box pinned over one level of a menu: categories from the
+    // catalog, Back as the first row inside one, items at the bottom of the
+    // drill. No catalog means the options are few enough to list flat.
+    // Typing in the search replaces whatever level is showing with flat
+    // matches. Picking hands the raw token to commitCell.
+    Control PickerCell(Border wrapper, string current, IReadOnlyList<string> options,
+                       Func<string, string> labelFor, string accessibleName, string tintKey,
+                       TokenCatalog? catalog, string pickWord, Action<string> commitCell)
+    {
         var cur = (current ?? "").Trim();
         var all = new List<string>(options);
         if (cur.Length > 0 && !all.Contains(cur)) all.Insert(0, cur);
 
         var fly = new Flyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
+        var openLabel = new TextBlock
+        { Text = cur.Length > 0 ? labelFor(cur) : $"pick {pickWord}", TextWrapping = TextWrapping.Wrap };
 
         void Commit(string token)
         {
             fly.Hide();
-            if (_file is null) return;
-            if (token != _file.GetCell(row, col)) _file.SetCell(row, col, token);
-            RebuildDeviceAfterEdit(row, col);
+            cur = token;
+            // Refresh the closed button in place; a commit that rebuilds the
+            // whole view just throws this away, which is fine.
+            openLabel.Text = labelFor(token);
+            commitCell(token);
         }
 
         Button Item(string token)
@@ -3252,18 +3321,13 @@ public partial class MainWindow : Window
             return it;
         }
 
-        // The dropdown's content: search pinned on top, one level of the
-        // menu under it, "type your own" at the bottom. Tapping a category
-        // replaces the whole list with that category's contents, Back as the
-        // first row, like a phone settings menu. One level at a time keeps
-        // every target big and the scroll short.
-        var search = new TextBox { Watermark = "Search outputs" };
-        AutomationProperties.SetName(search, "Search all outputs");
+        var search = new TextBox { Watermark = "Search" };
+        AutomationProperties.SetName(search, "Search this list");
         var body = new StackPanel { Spacing = 2 };
         var scroll = new ScrollViewer { Content = body, MaxHeight = 400 };
 
         List<string> TokensIn(string cat, string? sub) => all
-            .Where(t => t != "none" && OutputCatalog.Classify(t) is var c && c.Category == cat
+            .Where(t => t != "none" && catalog!.Classify(t) is var c && c.Cat == cat
                      && (sub is null || c.Sub == sub))
             .ToList();
 
@@ -3284,7 +3348,7 @@ public partial class MainWindow : Window
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
             };
-            AutomationProperties.SetName(it, $"{title}, {count} outputs. Opens this category.");
+            AutomationProperties.SetName(it, $"{title}, {count} options. Opens this category.");
             it.Click += (_, _) => go();
             return it;
         }
@@ -3296,8 +3360,14 @@ public partial class MainWindow : Window
             if (cat is null)
             {
                 // Top level: the do-nothing output first, then the categories.
+                // A short list has no catalog and just shows its items.
                 if (all.Contains("none")) body.Children.Add(Item("none"));
-                foreach (var c in OutputCatalog.CategoryOrder)
+                if (catalog is null)
+                {
+                    foreach (var t in all.Where(t => t != "none")) body.Children.Add(Item(t));
+                    return;
+                }
+                foreach (var c in catalog.CategoryOrder)
                 {
                     var tokens = TokensIn(c, null);
                     if (tokens.Count == 0) continue;
@@ -3321,7 +3391,7 @@ public partial class MainWindow : Window
             body.Children.Add(new TextBlock
             { Text = sub ?? cat, FontSize = Size("SmallSize"), Classes = { "muted" } });
 
-            if (sub is null && OutputCatalog.SubOrder.TryGetValue(cat, out var subs))
+            if (sub is null && catalog!.SubOrder.TryGetValue(cat, out var subs))
             {
                 foreach (var s in subs)
                 {
@@ -3395,7 +3465,7 @@ public partial class MainWindow : Window
         }
 
         var typeOwn = new Button { Content = TypeYourOwn, Classes = { "quiet" } };
-        AutomationProperties.SetName(typeOwn, "Type a custom output value");
+        AutomationProperties.SetName(typeOwn, "Type a custom value");
         // Swap after the flyout has fully closed and given focus back, or
         // the swap and the close fight over focus and the box dies unused.
         typeOwn.Click += (_, _) => { fly.Hide(); Dispatcher.UIThread.Post(ShowTyping); };
@@ -3417,8 +3487,7 @@ public partial class MainWindow : Window
 
         var open = new Button
         {
-            Content = new TextBlock
-            { Text = cur.Length > 0 ? labelFor(cur) : "pick an output", TextWrapping = TextWrapping.Wrap },
+            Content = openLabel,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Left,
             Flyout = fly,

@@ -270,7 +270,7 @@ public class CardViewTests
         // Search: typing replaces the categories with flat matches.
         panel = Open();
         var search = panel.GetVisualDescendants().OfType<TextBox>()
-            .First(t => (AutomationProperties.GetName(t) ?? "") == "Search all outputs");
+            .First(t => (AutomationProperties.GetName(t) ?? "") == "Search this list");
         search.Text = "squar";
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
         Assert.Null(Find(panel, "Controller,"));
@@ -296,7 +296,7 @@ public class CardViewTests
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
         var panel = (Control)((Flyout)press.Flyout!).Content!;
         panel.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "Type a custom output value")
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Type a custom value")
             .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 

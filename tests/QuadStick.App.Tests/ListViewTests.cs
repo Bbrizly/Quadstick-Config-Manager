@@ -42,13 +42,18 @@ public class ListViewTests
         int row = int.Parse(AutomationProperties.GetName(addInput)!.Split(' ')[^1]);
         addInput.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
-        var newBox = w.GetVisualDescendants().OfType<AutoCompleteBox>()
-            .First(b => AutomationProperties.GetName(b) == $"Input 2 for row {row}");
-        newBox.Text = "left_puff";
-        // Commit fires when focus leaves the box, exactly like a user
-        // clicking elsewhere. Park focus outside the rows so the rebuild
-        // never destroys the focused control.
-        w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "AddRowButton").Focus();
+        // The new cell is a picker; search for the value and tap it.
+        var newCell = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith($"Input 2 for row {row}"));
+        newCell.Flyout!.ShowAt(newCell);
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        var panel = (Control)((Flyout)newCell.Flyout!).Content!;
+        panel.GetVisualDescendants().OfType<TextBox>()
+            .First(t => (AutomationProperties.GetName(t) ?? "") == "Search this list").Text = "mp_left_puff";
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        panel.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "mp_left_puff")
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs(); // the rebuild is deferred out of the event
         w.UpdateLayout();
 
@@ -79,7 +84,7 @@ public class ListViewTests
 
         var header = w.GetVisualDescendants().OfType<TextBlock>()
             .First(t => t.Text == "Output (game button)");
-        var cell = w.GetVisualDescendants().OfType<AutoCompleteBox>()
+        var cell = w.GetVisualDescendants().OfType<Button>()
             .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Output for row "));
 
         // Compare the swatch border and the cell border, both in window space.
@@ -405,8 +410,8 @@ public class ListViewTests
         w.SetDeviceViewForPreview(false);
         w.UpdateLayout();
 
-        AutoCompleteBox Box(string name) => w.GetVisualDescendants().OfType<AutoCompleteBox>()
-            .First(b => AutomationProperties.GetName(b) == name);
+        Button Box(string name) => w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith(name + "."));
         Point At(Control c) => c.TranslatePoint(new Point(0, 0), w)!.Value;
 
         var one = At(Box("Input 1 for row 4"));
@@ -432,6 +437,72 @@ public class ListViewTests
         var three = At(Box("Input 3 for row 4"));
         Assert.Equal(one.X, three.X);     // the new one stacks too
         Assert.True(three.Y > two.Y);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // The list view's output, function and input cells open the same
+    // drill-down picker the device view's Press field uses: search pinned
+    // on top, categories that replace the list, flat matches while typing.
+    // Functions are a short list, so they get no categories, just the items.
+    [AvaloniaFact]
+    public void List_cells_open_the_same_drill_down_picker()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        Button Cell(string prefix) => w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith(prefix));
+        Control OpenFly(Button cell)
+        {
+            cell.Flyout!.ShowAt(cell);
+            Dispatcher.UIThread.RunJobs();
+            w.UpdateLayout();
+            return (Control)((Flyout)cell.Flyout!).Content!;
+        }
+        Button? Find(Control panel, string prefix) => panel.GetVisualDescendants().OfType<Button>()
+            .FirstOrDefault(b => (AutomationProperties.GetName(b) ?? "").StartsWith(prefix));
+        void Tap(Control panel, string prefix)
+        {
+            Find(panel, prefix)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Dispatcher.UIThread.RunJobs();
+            w.UpdateLayout();
+        }
+
+        // Output cell: categories, raw token labels, commit updates the file.
+        var panel = OpenFly(Cell("Output for row 4"));
+        Assert.NotNull(Find(panel, "Controller,"));
+        Tap(panel, "Controller,");
+        Tap(panel, "Buttons,");
+        Tap(panel, "circle");
+        Assert.Equal("circle", file.Document.Sheets[0].Bindings[0].Output);
+
+        // Function cell: no categories, just the flat searchable list.
+        panel = OpenFly(Cell("Function for row 4"));
+        Assert.Null(Find(panel, "Controller,"));
+        Assert.Null(Find(panel, "Back"));
+        Tap(panel, "toggle");
+        Assert.Equal("toggle", file.Document.Sheets[0].Bindings[0].Function);
+
+        // Input cell: categories are the parts of the device.
+        panel = OpenFly(Cell("Input 1 for row 4"));
+        Assert.NotNull(Find(panel, "Joystick,"));
+        Tap(panel, "Left mouthpiece hole,");
+        Tap(panel, "mp_left_puff");
+        Assert.Equal("mp_left_puff", file.Document.Sheets[0].Bindings[0].Inputs[0]);
 
         file.Dirty = false;
         w.Close();
@@ -478,8 +549,8 @@ public class ListViewTests
         del.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
-        Assert.DoesNotContain(w.GetVisualDescendants().OfType<AutoCompleteBox>(),
-            b => AutomationProperties.GetName(b) == "Input 1 for row 4");
+        Assert.DoesNotContain(w.GetVisualDescendants().OfType<Button>(),
+            b => (AutomationProperties.GetName(b) ?? "").StartsWith("Input 1 for row 4"));
 
         file.Dirty = false;
         w.Close();

@@ -2,6 +2,14 @@ using System.Text.RegularExpressions;
 
 namespace QuadStick.App;
 
+// Everything a drill-down picker needs to group a token list: how to place
+// one token, which categories exist and in what order, and which categories
+// split further. One instance per kind of list (outputs, inputs, ...).
+public sealed record TokenCatalog(
+    Func<string, (string Cat, string Sub)> Classify,
+    IReadOnlyList<string> CategoryOrder,
+    IReadOnlyDictionary<string, string[]> SubOrder);
+
 // Sorts the ~380 legal output tokens into the categories the Press picker
 // shows. Membership is derived from the token text itself (prefixes plus one
 // short explicit button set), so every token always lands in exactly one
@@ -72,4 +80,6 @@ public static class OutputCatalog
         _ when t is "increment_mode" or "decrement_mode" or "load_file" => ("Mode switching", ""),
         _ => ("Device settings", ""),
     };
+
+    public static readonly TokenCatalog Catalog = new(Classify, CategoryOrder, SubOrder);
 }
