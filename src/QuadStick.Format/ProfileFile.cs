@@ -176,6 +176,29 @@ public sealed class ProfileFile
         Reparse();
     }
 
+    // The Move menu's "to the top" and "to the bottom": land the block just
+    // before or just after an anchor row. The anchor's index is adjusted for
+    // moving rows removed above it, so a selection that already sits partly
+    // above the anchor still lands exactly where asked.
+    public void MoveRowsBefore(IEnumerable<int> fromRows, int anchorRow) =>
+        MoveRowsAt(fromRows, anchorRow, after: false);
+
+    public void MoveRowsAfter(IEnumerable<int> fromRows, int anchorRow) =>
+        MoveRowsAt(fromRows, anchorRow, after: true);
+
+    void MoveRowsAt(IEnumerable<int> fromRows, int anchorRow, bool after)
+    {
+        var moving = fromRows.Where(r => r >= 1 && r <= Grid.Count && r != anchorRow)
+            .Distinct().OrderBy(r => r).ToList();
+        if (moving.Count == 0 || anchorRow < 1 || anchorRow > Grid.Count) return;
+        Snapshot();
+        var block = moving.Select(r => Grid[r - 1]).ToList();
+        for (int i = moving.Count - 1; i >= 0; i--) Grid.RemoveAt(moving[i] - 1);
+        int idx = (anchorRow - 1) - moving.Count(r => r < anchorRow) + (after ? 1 : 0);
+        Grid.InsertRange(Math.Min(idx, Grid.Count), block);
+        Reparse();
+    }
+
     // Swap two whole grid rows, so column-K comments travel with their row.
     public void SwapRows(int rowA, int rowB)
     {

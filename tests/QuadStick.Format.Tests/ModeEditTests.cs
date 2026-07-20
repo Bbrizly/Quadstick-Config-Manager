@@ -165,6 +165,34 @@ public class ModeEditTests
     }
 
     [Fact]
+    public void MoveRowsBefore_and_After_land_the_block_at_top_or_bottom()
+    {
+        static ProfileFile Four() => ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n" +
+            "square,normal,left_puff\n" +
+            "triangle,normal,hard_puff\n");
+        static string[] Order(ProfileFile f) =>
+            f.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray();
+
+        // "To the top": the block lands before the first unselected row,
+        // even when part of the selection already sits above it.
+        var f = Four();
+        f.MoveRowsBefore(new[] { 4, 7 }, 5);
+        Assert.Equal(new[] { "x", "triangle", "circle", "square" }, Order(f));
+        Assert.True(f.Undo()); // one step for the whole move
+        Assert.Equal(new[] { "x", "circle", "square", "triangle" }, Order(f));
+
+        // "To the bottom": after the last unselected row, order kept.
+        f = Four();
+        f.MoveRowsAfter(new[] { 4, 6 }, 7);
+        Assert.Equal(new[] { "circle", "triangle", "x", "square" }, Order(f));
+    }
+
+    [Fact]
     public void DeleteRows_takes_several_rows_in_one_undo_step()
     {
         var f = ProfileFile.Load(
