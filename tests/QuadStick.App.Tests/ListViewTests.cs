@@ -383,4 +383,94 @@ public class ListViewTests
         file.Dirty = false;
         w.Close();
     }
+
+    // The tester does not want sideways scrolling: a row's inputs must stack
+    // under each other, with the output and function cells centered against
+    // the taller stack, and adding one more input grows the row down, not right.
+    [AvaloniaFact]
+    public void Extra_inputs_stack_below_the_first_one()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip,left_puff\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        AutoCompleteBox Box(string name) => w.GetVisualDescendants().OfType<AutoCompleteBox>()
+            .First(b => AutomationProperties.GetName(b) == name);
+        Point At(Control c) => c.TranslatePoint(new Point(0, 0), w)!.Value;
+
+        var one = At(Box("Input 1 for row 4"));
+        var two = At(Box("Input 2 for row 4"));
+        Assert.Equal(one.X, two.X);       // same column
+        Assert.True(two.Y > one.Y);       // below, not beside
+
+        var add = w.GetVisualDescendants().OfType<Button>()
+            .First(b => AutomationProperties.GetName(b) == "Add another input to row 4");
+        add.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        var three = At(Box("Input 3 for row 4"));
+        Assert.Equal(one.X, three.X);     // the new one stacks too
+        Assert.True(three.Y > two.Y);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // "+ input" and "Delete row" become round icon buttons: a plus circle,
+    // then a red trash circle for the whole row right next to it. The trash
+    // must really delete the row.
+    [AvaloniaFact]
+    public void The_row_has_a_round_plus_and_a_red_round_trash()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        Button Find(string name) => w.GetVisualDescendants().OfType<Button>()
+            .First(b => AutomationProperties.GetName(b) == name);
+
+        var add = Find("Add another input to row 4");
+        Assert.Contains("icon", add.Classes);
+        Assert.IsType<PathIcon>(add.Content);
+
+        var del = Find("Delete row 4");
+        Assert.Contains("icon", del.Classes);
+        Assert.Contains("danger", del.Classes);
+        Assert.IsType<PathIcon>(del.Content);
+
+        // The trash sits right of the plus, in the plus button's old spot.
+        Point At(Control c) => c.TranslatePoint(new Point(0, 0), w)!.Value;
+        Assert.True(At(del).X > At(add).X);
+
+        del.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        Assert.DoesNotContain(w.GetVisualDescendants().OfType<AutoCompleteBox>(),
+            b => AutomationProperties.GetName(b) == "Input 1 for row 4");
+
+        file.Dirty = false;
+        w.Close();
+    }
 }

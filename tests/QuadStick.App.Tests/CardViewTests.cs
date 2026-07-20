@@ -209,4 +209,30 @@ public class CardViewTests
         file.Dirty = false;
         w.Close();
     }
+
+    // The tester found the card's select/drag handle too small to hit, and
+    // wants the add-input control to be a round plus button like the list view.
+    [AvaloniaFact]
+    public void The_card_handle_is_big_and_add_input_is_a_round_plus()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file);
+
+        var handle = w.GetVisualDescendants().OfType<Border>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Mapping 1."));
+        Assert.True(handle.Bounds.Width >= 40, $"handle width {handle.Bounds.Width}");
+        Assert.True(handle.Bounds.Height >= 40, $"handle height {handle.Bounds.Height}");
+
+        Card(w, 1)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        var add = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Add another input to mapping 1"));
+        Assert.Contains("icon", add.Classes);
+        Assert.IsType<PathIcon>(add.Content);
+
+        file.Dirty = false;
+        w.Close();
+    }
 }

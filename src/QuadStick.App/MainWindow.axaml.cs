@@ -1452,8 +1452,12 @@ public partial class MainWindow : Window
             });
         };
 
+        // 40x40 is the floor for a click target here (see Button.icon); the
+        // tester found the old 24px-wide strip too small to hit.
+        var dragIcon = Glyph("IconDrag", "TextSecondary");
+        dragIcon.Width = dragIcon.Height = 24;
         var handle = WireDragHandle(new Border
-        { Child = Glyph("IconDrag", "TextSecondary"), Padding = new Avalonia.Thickness(4, 8) },
+        { Child = dragIcon, Padding = new Avalonia.Thickness(10) },
             b, $"Mapping {n}");
 
         var p = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
@@ -1578,9 +1582,9 @@ public partial class MainWindow : Window
                 }
                 if (inputCount < 8)
                 {
-                    var addInput = new Button
-                    { Content = "+ Add another input", Classes = { "quiet" }, HorizontalContentAlignment = HorizontalAlignment.Left };
-                    AutomationProperties.SetName(addInput, $"Add another input to mapping {n}; both inputs must be active together");
+                    var addInput = IconButton("IconAdd", $"Add another input to mapping {n}; both inputs must be active together");
+                    addInput.HorizontalAlignment = HorizontalAlignment.Left;
+                    ToolTip.SetTip(addInput, "Add another input");
                     int nextCol = FirstFreeInputColumn(b);
                     addInput.Click += (_, _) =>
                     {
@@ -2341,7 +2345,8 @@ public partial class MainWindow : Window
         var desc = NoteBox(b.Row, 3, $"Description for row {b.Row}. Saved in the file, ignored by the QuadStick");
         desc.Width = 240;
         p.Children.Add(desc);
-        var del = new Button { Content = "Delete row", Classes = { "danger" } };
+        var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
+        ToolTip.SetTip(del, "Delete this whole row");
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
         del.Click += (_, _) => DeleteListRow(b);
         p.Children.Add(del);
@@ -2355,17 +2360,24 @@ public partial class MainWindow : Window
         WireRowDrop(p, b);
         _rowPanels[b.Row] = p;
         PaintRow(b.Row);
-        p.Children.Add(SuggestBox(b.Row, 0, b.Output, 220, OutputSuggestionsFor(CurrentSheet!), $"Output for row {b.Row}", OutputTint));
-        p.Children.Add(SuggestBox(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint));
+        // Inputs stack DOWN (below), so every other cell centers vertically
+        // against the taller stack instead of stretching or hugging the top.
+        Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
+        p.Children.Add(Mid(SuggestBox(b.Row, 0, b.Output, 220, OutputSuggestionsFor(CurrentSheet!), $"Output for row {b.Row}", OutputTint)));
+        p.Children.Add(Mid(SuggestBox(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint)));
 
+        // Extra inputs go UNDER the first one. Sideways growth forced a
+        // horizontal scroll, which the tester called out as inaccessible.
+        var inputsBox = new StackPanel { Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
         int inputCount = Math.Max(1, b.Inputs.Count);
         for (int i = 0; i < inputCount; i++)
         {
             // Write to each input's REAL column (inputs may have gaps in C..J).
             int col = i < b.InputCols.Count ? b.InputCols[i] : FirstFreeInputColumn(b);
-            p.Children.Add(SuggestBox(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "", 240,
+            var line = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+            line.Children.Add(SuggestBox(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "", 240,
                 InputSuggestions, $"Input {i + 1} for row {b.Row}", InputTint));
-            // A round remove control right after each real input, so any input
+            // A round remove control beside each real input, so any input
             // can be taken out (not just emptied, and not just the last one).
             if (b.Inputs.Count > 1 && i < b.Inputs.Count)
             {
@@ -2382,28 +2394,41 @@ public partial class MainWindow : Window
                         { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); }
                     });
                 };
-                p.Children.Add(rmv);
+                line.Children.Add(Mid(rmv));
             }
+            inputsBox.Children.Add(line);
         }
+        p.Children.Add(inputsBox);
 
         if (inputCount < 8)
         {
-            var addInput = new Button { Content = "+ input", Classes = { "quiet" } };
-            AutomationProperties.SetName(addInput, $"Add another input to row {b.Row}");
+            var addInput = IconButton("IconAdd", $"Add another input to row {b.Row}");
+            ToolTip.SetTip(addInput, "Add another input");
             int nextCol = FirstFreeInputColumn(b);
             addInput.Click += (_, _) =>
             {
                 // Add the box directly; the file only changes when a value is committed.
                 var newBox = SuggestBox(b.Row, nextCol, "", 240, InputSuggestions,
                     $"Input {nextCol - 1} for row {b.Row}", InputTint);
-                p.Children.Insert(p.Children.IndexOf(addInput), newBox);
+                // Fixed width + default Stretch centers it against the wider
+                // committed lines (box + trash); pin it to the same left edge.
+                newBox.HorizontalAlignment = HorizontalAlignment.Left;
+                inputsBox.Children.Add(newBox);
                 nextCol++;
                 while (nextCol < 10 && b.InputCols.Contains(nextCol)) nextCol++; // skip occupied cells
-                if (nextCol >= 10) p.Children.Remove(addInput);
+                if (nextCol >= 10) addInput.IsVisible = false;
                 ((newBox as Border)!.Child as AutoCompleteBox)!.Focus();
             };
-            p.Children.Add(addInput);
+            p.Children.Add(Mid(addInput));
         }
+
+        // The whole-row delete: a red trash circle right after the plus, where
+        // the old "Delete row" text button trailed at the far end of the row.
+        var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
+        ToolTip.SetTip(del, "Delete this whole row");
+        AutomationProperties.SetName(del, $"Delete row {b.Row}");
+        del.Click += (_, _) => DeleteListRow(b);
+        p.Children.Add(Mid(del));
 
         var note = NoteBox(b.Row, NoteColumn, $"Note for row {b.Row}. Saved in the file, ignored by the QuadStick");
         // p is a horizontal StackPanel with unbounded width, so without a
@@ -2411,7 +2436,7 @@ public partial class MainWindow : Window
         // instead of wrapping. The fixed width is what lets it wrap and
         // grow the row taller instead.
         note.Width = 200;
-        p.Children.Add(note);
+        p.Children.Add(Mid(note));
 
         // Reorder within the mode. Both buttons always render (disabled at the
         // edges) so the click targets stay put while a row is walked up or down.
@@ -2424,13 +2449,8 @@ public partial class MainWindow : Window
             move.Tag = (word, b.Row);
             move.IsEnabled = rowIndex + delta >= 0 && rowIndex + delta < CurrentSheet!.Bindings.Count;
             move.Click += (_, _) => MoveListRow(b, delta);
-            p.Children.Add(move);
+            p.Children.Add(Mid(move));
         }
-
-        var del = new Button { Content = "Delete row", Classes = { "danger" } };
-        AutomationProperties.SetName(del, $"Delete row {b.Row}");
-        del.Click += (_, _) => DeleteListRow(b);
-        p.Children.Add(del);
         return p;
     }
 
