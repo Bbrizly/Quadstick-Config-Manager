@@ -281,6 +281,40 @@ public class CardViewTests
         w.Close();
     }
 
+    // Type your own must swap the field for a working text box. It used to
+    // die instantly: the closing flyout gave focus back, the box saw a
+    // LostFocus with empty text and cancelled itself before it was usable.
+    [AvaloniaFact]
+    public void Type_your_own_gives_a_usable_text_box_that_commits()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file, cards: false);
+
+        var press = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Game button pressed by"));
+        press.Flyout!.ShowAt(press);
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        var panel = (Control)((Flyout)press.Flyout!).Content!;
+        panel.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Type a custom output value")
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+
+        // The box is alive, in the field's place, and focused for typing.
+        var box = w.GetVisualDescendants().OfType<AutoCompleteBox>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").EndsWith("Type a custom value."));
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(box.IsKeyboardFocusWithin, "the custom value box should hold focus");
+
+        box.Text = "my_custom_output";
+        w.KeyPressQwerty(PhysicalKey.Enter, RawInputModifiers.None);
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        Assert.Equal("my_custom_output", file.Document.Sheets[0].Bindings[0].Output);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
     // The tester found the card's select/drag handle too small to hit, and
     // wants the add-input control to be a round plus button like the list view.
     [AvaloniaFact]

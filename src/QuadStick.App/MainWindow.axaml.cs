@@ -3383,7 +3383,12 @@ public partial class MainWindow : Window
                 if (v.Length == 0) { wrapper.Child = field; return; }
                 Commit(v);
             }
-            box.LostFocus += (_, _) => Done();
+            // The closing flyout hands focus around; a blur the box never
+            // owned must not count as "left blank, cancel". Only a blur
+            // after the box really held focus does.
+            bool armed = false;
+            box.GotFocus += (_, _) => armed = true;
+            box.LostFocus += (_, _) => { if (armed) Done(); };
             box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Done(); };
             wrapper.Child = box;
             Dispatcher.UIThread.Post(() => box.Focus(), DispatcherPriority.Loaded);
@@ -3391,7 +3396,9 @@ public partial class MainWindow : Window
 
         var typeOwn = new Button { Content = TypeYourOwn, Classes = { "quiet" } };
         AutomationProperties.SetName(typeOwn, "Type a custom output value");
-        typeOwn.Click += (_, _) => { fly.Hide(); ShowTyping(); };
+        // Swap after the flyout has fully closed and given focus back, or
+        // the swap and the close fight over focus and the box dies unused.
+        typeOwn.Click += (_, _) => { fly.Hide(); Dispatcher.UIThread.Post(ShowTyping); };
 
         var panel = new StackPanel { Spacing = 6, MinWidth = 300 };
         panel.Children.Add(search);
