@@ -18,6 +18,51 @@ namespace QuadStick.App.Tests;
 
 public class ListViewTests
 {
+    // "Add row" on a Preferences sheet appeared to do nothing: the row it wrote
+    // was blank in every column, and a blank row is where a sheet ends, so the
+    // reparse threw it away before the list was rebuilt.
+    [AvaloniaFact]
+    public void Add_row_really_adds_a_row_to_a_preferences_sheet()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "Preferences\n" +
+            "\n" +
+            "Preference,Value,Units\n" +
+            "mouse_speed,201\n");
+        w.LoadProfile(file);
+        w.ModesChanged(1, ""); // show the Preferences sheet
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        // One name per row, but a templated cell repeats it on its inner parts.
+        int Rows() => w.GetVisualDescendants().OfType<Control>()
+            .Select(t => AutomationProperties.GetName(t) ?? "")
+            .Where(n => n.StartsWith("Setting name for row ")).Distinct().Count();
+        Assert.Equal(1, Rows());
+
+        w.GetVisualDescendants().OfType<Button>()
+            .First(b => AutomationProperties.GetName(b) == "Add a new binding row to this mode")
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        Assert.Equal(2, Rows());
+        Assert.Equal(2, file.Document.Sheets[1].Bindings.Count);
+
+        file.Dirty = false; // else Close opens the save dialog and waits forever
+        w.Close();
+    }
+
     // The tester added an input with "+ input", typed a value, and got no
     // remove (trash) button until switching views and back. The row must
     // rebuild on commit so the remove button is there right away, and

@@ -94,7 +94,10 @@ public sealed class ProfileFile
     }
 
     static readonly string[] NewBindingRowCells = { "", "normal", "" };
-    static readonly string[] NewPrefsRowCells = { "", "" };
+    // The value cell starts at "0", not blank. A row with nothing in A..J is a
+    // blank line: the device stops reading the sheet there, and the parser drops
+    // it, so an all-blank new row disappeared the moment it was added.
+    static readonly string[] NewPrefsRowCells = { "", "0" };
 
     public int AddBindingRow(ModeSheet sheet)
     {

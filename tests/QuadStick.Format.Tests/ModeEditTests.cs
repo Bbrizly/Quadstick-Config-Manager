@@ -284,6 +284,35 @@ public class ModeEditTests
         Assert.Equal(-1, f.AddPreferencesSheet()); // the device reads only one
     }
 
+    // A row added to a Preferences sheet used to be written with every cell
+    // blank, and a blank row is where the device stops reading a sheet, so the
+    // parser dropped it again: pressing "Add row" looked like it did nothing.
+    [Fact]
+    public void A_row_added_to_a_preferences_sheet_survives_the_reparse()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "Preferences\n" +
+            "\n" +
+            "Preference,Value,Units\n" +
+            "mouse_speed,201\n");
+        var prefs = f.Document.Sheets[1];
+        Assert.Single(prefs.Bindings);
+
+        int row = f.AddBindingRow(prefs);
+        Assert.Equal(2, f.Document.Sheets[1].Bindings.Count);
+        Assert.Equal(row, f.Document.Sheets[1].Bindings[^1].Row);
+
+        // Ready to be typed into: no name yet, and a value the device can read.
+        Assert.Equal("", f.GetCell(row, 0));
+        Assert.Equal("0", f.GetCell(row, 1));
+        // A nameless row sets nothing, so it must not raise an issue on its own.
+        Assert.Empty(f.Issues.Where(i => i.Cell.EndsWith(row.ToString())));
+    }
+
     [Fact]
     public void Column_K_comment_travels_with_a_moved_mode()
     {
