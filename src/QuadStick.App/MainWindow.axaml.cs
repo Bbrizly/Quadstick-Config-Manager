@@ -10,6 +10,7 @@ using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using QuadStick.Format;
 
 namespace QuadStick.App;
@@ -1534,8 +1535,13 @@ public partial class MainWindow : Window
                 del.Click += (_, _) =>
                 {
                     int deletedIndex = bindings!.IndexOf(b);
+                    // The card this trash lives in, measured before the rebuild
+                    // destroys it, so the cards below can settle into its place.
+                    double gap = del.FindAncestorOfType<Border>() is { } card ? card.Bounds.Height + 14 : 0;
                     _file!.DeleteRow(b.Row);
                     BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                    // Cards start at child 2: the zone title and blurb sit above.
+                    AnimateGapClose(ZoneDetailPanel, 2 + deletedIndex, gap);
                     FocusZoneDetailSibling(zone.Id, deletedIndex);
                 };
                 if (cards)
@@ -1604,6 +1610,7 @@ public partial class MainWindow : Window
                         Grid.SetColumn(rmv, 1);
                         row.Children.Add(rmv);
                         inputsBox.Children.Insert(inputsBox.Children.IndexOf(addInput), row);
+                        AnimateIn(row);
                         nextCol++;
                         if (nextCol >= 2 + 8) addInput.IsVisible = false;
                         (newBox as Border)?.Child?.Focus();
@@ -1650,7 +1657,13 @@ public partial class MainWindow : Window
                 AfterLayout(() =>
                 {
                     if (_cellBorders.TryGetValue($"C{newRow}", out var newBorder))
-                    { newBorder.BringIntoView(); (newBorder.Child as Control)?.Focus(); }
+                    {
+                        newBorder.BringIntoView(); (newBorder.Child as Control)?.Focus();
+                        // Rise the whole new mapping card in, not just the cell.
+                        var card = newBorder.GetVisualAncestors().OfType<Border>()
+                            .FirstOrDefault(x => x.Parent == ZoneDetailPanel);
+                        if (card is not null) AnimateIn(card);
+                    }
                 });
             };
             ZoneDetailPanel.Children.Add(add);
@@ -2165,6 +2178,13 @@ public partial class MainWindow : Window
     {
         if (_file is null || _selectedRows.Count == 0) return;
         var rows = _selectedRows.ToList();
+        // Measure the hole before it exists: where the topmost deleted row sat
+        // and how much height leaves, so the survivors can settle into it.
+        int firstIndex = -1;
+        if (CurrentSheet is { } sh)
+            for (int i = 0; i < sh.Bindings.Count && firstIndex < 0; i++)
+                if (_selectedRows.Contains(sh.Bindings[i].Row)) firstIndex = i;
+        double gap = rows.Sum(r => _rowPanels.TryGetValue(r, out var rp) ? rp.Bounds.Height + 6 : 0);
         _selectedRows.Clear(); _selAnchor = -1;
         var off = GridScroll.Offset;
         _file.DeleteRows(rows); // one undo step for the whole selection
@@ -2172,6 +2192,7 @@ public partial class MainWindow : Window
         else
         {
             RebuildRows();
+            AnimateGapClose(RowsPanel, firstIndex + 1, gap); // +1: the header row is child 0
             RestoreListScroll(off, () => { });
         }
         Status($"{rows.Count} row{(rows.Count == 1 ? "" : "s")} deleted. Ctrl+Z brings them back.", StatusKind.Ready);
@@ -2433,6 +2454,7 @@ public partial class MainWindow : Window
                 // committed lines (box + trash); pin it to the same left edge.
                 newBox.HorizontalAlignment = HorizontalAlignment.Left;
                 inputsBox.Children.Add(newBox);
+                AnimateIn(newBox);
                 nextCol++;
                 while (nextCol < 10 && b.InputCols.Contains(nextCol)) nextCol++; // skip occupied cells
                 if (nextCol >= 10) addInput.IsVisible = false;
@@ -2509,10 +2531,12 @@ public partial class MainWindow : Window
     void DeleteListRow(Binding b)
     {
         int deletedIndex = CurrentSheet!.Bindings.IndexOf(b);
+        double gap = _rowPanels.TryGetValue(b.Row, out var gone) ? gone.Bounds.Height + 6 : 0;
         var off = GridScroll.Offset;
         _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
         _file!.DeleteRow(b.Row);
         RebuildRows();
+        AnimateGapClose(RowsPanel, deletedIndex + 1, gap); // +1: the header row is child 0
         RestoreListScroll(off, () => FocusRowSibling(deletedIndex));
     }
 
@@ -2666,6 +2690,7 @@ public partial class MainWindow : Window
                 // A focused AutoCompleteBox is invisible to a mouse-only user
                 // with no cursor to find it, so also flash the row itself.
                 FlashNewRow(row);
+                AnimateIn(row);
             }
         });
     }
@@ -2698,6 +2723,51 @@ public partial class MainWindow : Window
             row.ClearValue(Panel.BackgroundProperty);
         };
         timer.Start();
+    }
+
+    // Motion is feedback, never a gate: every data change below lands
+    // synchronously and these overlays only show where it went. Fire and
+    // forget, so headless tests (which never tick the render timer) see the
+    // exact same resting state with or without the animation.
+    // One keyframe animation between two values of a double property, run on
+    // whatever Animatable owns it. RenderTransform itself has no public
+    // animator, so the slide runs on a TranslateTransform's Y instead.
+    static Avalonia.Animation.Animation Between(AvaloniaProperty prop, double from, double to) => new()
+    {
+        Duration = TimeSpan.FromMilliseconds(180),
+        Easing = new Avalonia.Animation.Easings.CubicEaseOut(),
+        Children =
+        {
+            new Avalonia.Animation.KeyFrame
+            { Cue = new Avalonia.Animation.Cue(0), Setters = { new Avalonia.Styling.Setter(prop, from) } },
+            new Avalonia.Animation.KeyFrame
+            { Cue = new Avalonia.Animation.Cue(1), Setters = { new Avalonia.Styling.Setter(prop, to) } },
+        },
+    };
+
+    static void SlideFrom(Control c, double dy)
+    {
+        c.RenderTransform = new TranslateTransform();
+        _ = Between(TranslateTransform.YProperty, dy, 0).RunAsync(c);
+    }
+
+    // A just-added row or card fades in while rising into place.
+    static void AnimateIn(Control c)
+    {
+        SlideFrom(c, 10);
+        _ = Between(OpacityProperty, 0, 1).RunAsync(c);
+    }
+
+    // After a delete, everything below the gap starts shifted down by the
+    // deleted row's height and settles up into place, so the eye can track
+    // what moved instead of seeing the list teleport.
+    static void AnimateGapClose(Panel panel, int fromChildIndex, double dy)
+    {
+        dy = Math.Min(dy, 120); // a mass delete should settle, not fly
+        if (dy <= 0 || fromChildIndex < 0) return;
+        // ponytail: first 30 children only, offscreen rows need no theater
+        foreach (var c in panel.Children.Skip(fromChildIndex).Take(30))
+            SlideFrom(c, dy);
     }
 
     // After deleting a List View row, keep focus on the row that slid into
