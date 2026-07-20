@@ -378,7 +378,7 @@ public partial class MainWindow : Window
         if (rescues.Count == 0) return;
         var newest = rescues[0];
         HomeStatusText.Text =
-            $"Unsaved work from last time was recovered ({Path.GetFileName(newest)}). " +
+            $"Unsaved work from last time was recovered ({Path.GetFileNameWithoutExtension(newest)}). " +
             "Open it from the button below, or dismiss to discard.";
         HomeStatusText.IsVisible = true;
         RescuePanel.IsVisible = true;
@@ -650,19 +650,20 @@ public partial class MainWindow : Window
     Control ProfileCard(string path, bool onDevice)
     {
         var name = Path.GetFileName(path);
+        var bare = BareName(name); // the user never reads ".csv"
         var subtitle = CardSubtitle(path);
         if (onDevice && name.Equals("default.csv", StringComparison.OrdinalIgnoreCase))
             subtitle += " · the device's fallback file";
 
         var card = new Button { Classes = { "card" } };
         AutomationProperties.SetName(card,
-            $"Open {name}, {subtitle}{(onDevice ? ", stored on the QuadStick" : ", in your profile library")}");
+            $"Open {bare}, {subtitle}{(onDevice ? ", stored on the QuadStick" : ", in your profile library")}");
         card.Content = new StackPanel
         {
             Spacing = 6,
             Children =
             {
-                new TextBlock { Text = name, FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold },
+                new TextBlock { Text = bare, FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold },
                 new TextBlock { Text = subtitle, Classes = { "cardsub" } },
             },
         };
@@ -685,7 +686,7 @@ public partial class MainWindow : Window
             {
                 // Stay on Home: showing an empty editor to display an error
                 // strands the user in a dead view.
-                HomeStatusText.Text = $"Could not open {name}: {ex.Message}";
+                HomeStatusText.Text = $"Could not open {bare}: {ex.Message}";
                 HomeStatusText.IsVisible = true;
             }
         };
@@ -707,8 +708,10 @@ public partial class MainWindow : Window
         RepopulateSheetPicker(0);
         FileNameBox.Text = BareName(file.Document.CsvFileName);
         var headerName = file.Document.HeaderName;
+        var bareTitle = BareName(file.Document.CsvFileName);
+        if (bareTitle.Length == 0) bareTitle = "untitled";
         Title = "Quadstick: Config Manager (unofficial) - "
-            + (headerName.Length > 0 ? $"{headerName} ({file.Document.CsvFileName})" : file.Document.CsvFileName ?? "untitled");
+            + (headerName.Length > 0 ? $"{headerName} ({bareTitle})" : bareTitle);
         _selectedZone = null;
         ShowEditor();
         RefreshEditor(); // RefreshIssues inside sets the status line
@@ -1723,7 +1726,7 @@ public partial class MainWindow : Window
             var pick = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = "Save profile CSV",
-                SuggestedFileName = _file.Document.CsvFileName ?? "profile.csv",
+                SuggestedFileName = BareName(_file.Document.CsvFileName) is { Length: > 0 } sug ? sug : "profile",
                 SuggestedStartLocation = start,
                 DefaultExtension = "csv",
             });
@@ -1985,7 +1988,7 @@ public partial class MainWindow : Window
         var full = v + ".csv";
         if (full == _file.Document.CsvFileName) return;
         _file.SetCell(_file.Document.FileNameCellRow, 0, full);
-        Title = $"Quadstick: Config Manager (unofficial) - {full}";
+        Title = $"Quadstick: Config Manager (unofficial) - {v}";
         RefreshIssues(); // bad names surface immediately as errors
     }
 
@@ -3185,7 +3188,7 @@ public partial class MainWindow : Window
              "New profile gives you the factory default layout, the same one shipped on every QuadStick. The community also shares hundreds of game profiles as Google Sheets: paste any share link on the home screen to import it. Then adjust, rename, save."),
 
             ("Renaming",
-             "The file name box at the top of the editor is the profile's on-device name. It must end in .csv, with no spaces. default.csv is special: it is the device's fallback file and should stay unchanged."),
+             "The name box at the top of the editor is the profile's on-device name. Use no spaces; the .csv file extension is added for you. The profile named default is special: it is the device's fallback file and should stay unchanged."),
 
             ("Installing safely",
              "Plug in the QuadStick; it shows up like a USB drive. Install backs up the old file to QuadStickBackups, writes a temp copy, checks it, then swaps it in. Errors block install. Overwriting default.csv always asks first."),

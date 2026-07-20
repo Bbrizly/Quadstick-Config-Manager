@@ -44,6 +44,28 @@ public class SmokeTests
         w.Close();
     }
 
+    // No .csv anywhere the user reads: home cards and the window title show
+    // the bare profile name.
+    [AvaloniaFact]
+    public void Home_cards_show_names_without_csv()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "qcm-lib-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(dir);
+        File.WriteAllText(Path.Combine(dir, "mygame.csv"),
+            ProfileFile.NewFromTemplate("mygame.csv").ToCsvText());
+        var old = MainWindow.LibraryDir;
+        MainWindow.LibraryDir = dir;
+        try
+        {
+            var w = NewWindow();
+            var texts = w.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text).ToList();
+            Assert.Contains("mygame", texts);
+            Assert.DoesNotContain("mygame.csv", texts);
+            w.Close();
+        }
+        finally { MainWindow.LibraryDir = old; Directory.Delete(dir, recursive: true); }
+    }
+
     // The profile name box shows just the name; the .csv extension is ours
     // to add. Typing it anyway must not double it up.
     [AvaloniaFact]
@@ -77,7 +99,8 @@ public class SmokeTests
     {
         var w = NewWindow();
         w.LoadProfile(ProfileFile.NewFromTemplate("smoke.csv"));
-        Assert.Contains("smoke.csv", w.Title);
+        Assert.Contains("smoke", w.Title);
+        Assert.DoesNotContain(".csv", w.Title); // the extension stays out of sight
 
         // Selecting every part of the device must never throw, mapped or not.
         foreach (var zone in new[]
