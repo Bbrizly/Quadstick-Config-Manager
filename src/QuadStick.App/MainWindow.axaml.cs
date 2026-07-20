@@ -2400,9 +2400,14 @@ public partial class MainWindow : Window
         }
         p.Children.Add(inputsBox);
 
-        // Plus over trash in ONE column, so a multi-input row's per-input
-        // trashes never push the note and chevrons further right.
-        var rowButtons = new StackPanel { Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+        // One input: plus and trash side by side. More than one: they stack
+        // into one column so the per-input trashes never push the note and
+        // chevrons further right.
+        var rowButtons = new StackPanel
+        {
+            Spacing = 6, VerticalAlignment = VerticalAlignment.Center,
+            Orientation = b.Inputs.Count > 1 ? Orientation.Vertical : Orientation.Horizontal,
+        };
         if (inputCount < 8)
         {
             var addInput = IconButton("IconAdd", $"Add another input to row {b.Row}");

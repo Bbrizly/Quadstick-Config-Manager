@@ -414,6 +414,16 @@ public class ListViewTests
         Assert.Equal(one.X, two.X);       // same column
         Assert.True(two.Y > one.Y);       // below, not beside
 
+        // With more than one input the plus and the row trash stack into one
+        // column (plus on top), so the extra per-input trashes do not push
+        // the note further right. A single-input row keeps them side by side.
+        Button Btn(string name) => w.GetVisualDescendants().OfType<Button>()
+            .First(b => AutomationProperties.GetName(b) == name);
+        var plus = At(Btn("Add another input to row 4"));
+        var trash = At(Btn("Delete row 4"));
+        Assert.Equal(plus.X, trash.X);
+        Assert.True(trash.Y > plus.Y);
+
         var add = w.GetVisualDescendants().OfType<Button>()
             .First(b => AutomationProperties.GetName(b) == "Add another input to row 4");
         add.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
@@ -460,11 +470,10 @@ public class ListViewTests
         Assert.Contains("danger", del.Classes);
         Assert.IsType<PathIcon>(del.Content);
 
-        // The trash sits directly UNDER the plus, one shared column, so a
-        // second input's own trash never pushes the note further right.
+        // One input: the trash sits beside the plus, on the same line.
         Point At(Control c) => c.TranslatePoint(new Point(0, 0), w)!.Value;
-        Assert.Equal(At(add).X, At(del).X);
-        Assert.True(At(del).Y > At(add).Y);
+        Assert.True(At(del).X > At(add).X);
+        Assert.Equal(At(add).Y, At(del).Y);
 
         del.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs();
