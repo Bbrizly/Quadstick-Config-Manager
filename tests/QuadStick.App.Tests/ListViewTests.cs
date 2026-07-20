@@ -93,6 +93,59 @@ public class ListViewTests
         w.Close();
     }
 
+    // Rows select like files in a file explorer: click the row number for
+    // one, Shift-click for a range, Ctrl-click to toggle, Escape to clear,
+    // and Space on a focused number for keyboard and switch users.
+    [AvaloniaFact]
+    public void Row_numbers_select_like_a_file_explorer()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n" +
+            "square,normal,left_puff\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+        bool Selected(int n) => AutomationProperties.GetName(Handle(n))!.Contains("selected");
+        void Click(int n, RawInputModifiers mods = RawInputModifiers.None)
+        {
+            var pt = Handle(n).TranslatePoint(new Point(3, 3), w)!.Value;
+            w.MouseDown(pt, MouseButton.Left, mods);
+            w.MouseUp(pt, MouseButton.Left, mods);
+        }
+
+        Click(1);
+        Assert.True(Selected(1));
+
+        Click(3, RawInputModifiers.Shift); // range from the anchor
+        Assert.True(Selected(1) && Selected(2) && Selected(3));
+
+        Click(2, RawInputModifiers.Control); // toggle one out
+        Assert.True(Selected(1) && !Selected(2) && Selected(3));
+
+        w.KeyPressQwerty(PhysicalKey.Escape, RawInputModifiers.None);
+        Assert.True(!Selected(1) && !Selected(2) && !Selected(3));
+
+        Handle(2).Focus();
+        w.KeyPressQwerty(PhysicalKey.Space, RawInputModifiers.None);
+        Assert.True(Selected(2)); // Space selects without a pointer
+
+        file.Dirty = false;
+        w.Close();
+    }
+
     // The Preferences sheet must show the official template's Units and
     // Description columns; hiding them hid the tester's own setting notes.
     [AvaloniaFact]

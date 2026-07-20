@@ -187,6 +187,11 @@ public partial class MainWindow : Window
         AddRowButton.Click += (_, _) => AddRow();
         AddModeButton.Click += async (_, _) => await AddModeAsync();
         ModeMenuButton.Click += (_, _) => ShowModeMenu();
+        // A click that lands on nothing selectable drops the row selection,
+        // exactly like a file explorer. Row-number presses mark themselves
+        // Handled, so they never reach this.
+        GridScroll.AddHandler(PointerPressedEvent, (_, _) => ClearSelection());
+
         SheetPicker.SelectionChanged += (_, _) =>
         {
             if (SheetPicker.SelectedIndex >= 0 && _file != null)
@@ -277,6 +282,8 @@ public partial class MainWindow : Window
             {
                 if (e.Key == Key.F1 && e.Source is not (TextBox or AutoCompleteBox))
                 { ShowHelp(); e.Handled = true; }
+                else if (e.Key == Key.Escape && _selectedRows.Count > 0)
+                { ClearSelection(); e.Handled = true; }
                 return;
             }
             switch (e.Key)
@@ -1898,7 +1905,12 @@ public partial class MainWindow : Window
     {
         RowsPanel.Children.Clear();
         _cellBorders.Clear();
+        _rowPanels.Clear();
         if (CurrentSheet is null) { RefreshIssues(); return; }
+
+        // Selected rows that left the sheet (deleted, or another sheet is
+        // showing now) must not tint whatever row wears their number next.
+        _selectedRows.RemoveWhere(r => CurrentSheet.Bindings.All(x => x.Row != r));
 
         bool prefs = CurrentSheet.Type != SheetType.ProfileName;
         RowsPanel.Children.Add(prefs ? PrefsHeaderRow() : HeaderRow());
@@ -1956,6 +1968,57 @@ public partial class MainWindow : Window
     // dragging is exactly what some QuadStick users cannot do.
     const string RowDragFormat = "qcm-grid-row";
 
+    // Rows selected by clicking their numbers, file-explorer style: click
+    // picks one, Ctrl/Cmd toggles, Shift extends from the anchor, Escape or
+    // a click on empty space clears. Keyed by CSV row on the current sheet.
+    readonly HashSet<int> _selectedRows = new();
+    int _selAnchor = -1;
+    readonly Dictionary<int, StackPanel> _rowPanels = new();
+
+    void PaintRow(int row)
+    {
+        if (!_rowPanels.TryGetValue(row, out var p)) return;
+        bool sel = _selectedRows.Contains(row);
+        if (sel) BindBrush(p, Panel.BackgroundProperty, "NewRowTint");
+        else p.ClearValue(Panel.BackgroundProperty);
+        if (p.Children[0] is Border h && h.Child is TextBlock num)
+            AutomationProperties.SetName(h,
+                $"Row {num.Text}{(sel ? ", selected" : "")}. Space selects, drag reorders");
+    }
+
+    void RepaintSelection()
+    {
+        foreach (var row in _rowPanels.Keys) PaintRow(row);
+    }
+
+    void ClearSelection()
+    {
+        if (_selectedRows.Count == 0) return;
+        _selectedRows.Clear();
+        _selAnchor = -1;
+        RepaintSelection();
+    }
+
+    void SelectFromClick(int row, KeyModifiers mods)
+    {
+        if (mods.HasFlag(KeyModifiers.Control) || mods.HasFlag(KeyModifiers.Meta))
+        { if (!_selectedRows.Remove(row)) _selectedRows.Add(row); _selAnchor = row; }
+        else if (mods.HasFlag(KeyModifiers.Shift) && _selAnchor >= 0 && CurrentSheet is { } sheet)
+        {
+            var rows = sheet.Bindings.Select(x => x.Row).ToList();
+            int a = rows.IndexOf(_selAnchor), z = rows.IndexOf(row);
+            if (a < 0) a = z;
+            _selectedRows.Clear();
+            for (int i = Math.Min(a, z); i <= Math.Max(a, z); i++) _selectedRows.Add(rows[i]);
+        }
+        // A plain click on an already-selected row keeps the whole set, so a
+        // multi-row drag can start from any of its rows.
+        else if (!_selectedRows.Contains(row))
+        { _selectedRows.Clear(); _selectedRows.Add(row); _selAnchor = row; }
+        else _selAnchor = row;
+        RepaintSelection();
+    }
+
     Control DragHandle(Binding b, int number)
     {
         var h = new Border
@@ -1964,13 +2027,36 @@ public partial class MainWindow : Window
             Background = Brushes.Transparent, // hit-testable everywhere
             Cursor = new Cursor(StandardCursorType.SizeAll),
             VerticalAlignment = VerticalAlignment.Center,
+            Focusable = true, // Space selects for keyboard and switch users
         };
-        ToolTip.SetTip(h, "Drag to reorder");
+        ToolTip.SetTip(h, "Click to select, drag to reorder");
+        bool pressed = false;
+        var pressAt = new Avalonia.Point();
         h.PointerPressed += (_, e) =>
         {
+            SelectFromClick(b.Row, e.KeyModifiers);
+            pressed = true;
+            pressAt = e.GetPosition(this);
+            h.Focus();
+            e.Handled = true; // the click-away clear below must not see this press
+        };
+        h.PointerReleased += (_, _) => pressed = false;
+        h.PointerMoved += (_, e) =>
+        {
+            // Only a real movement starts a drag, so a plain click stays a click.
+            var d = e.GetPosition(this) - pressAt;
+            if (!pressed || Math.Abs(d.X) + Math.Abs(d.Y) < 6) return;
+            pressed = false;
             var data = new DataObject();
             data.Set(RowDragFormat, b.Row);
             _ = DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+        };
+        h.KeyDown += (_, e) =>
+        {
+            if (e.Key != Key.Space) return;
+            if (!_selectedRows.Remove(b.Row)) { _selectedRows.Add(b.Row); _selAnchor = b.Row; }
+            RepaintSelection();
+            e.Handled = true;
         };
         return h;
     }
@@ -1982,12 +2068,13 @@ public partial class MainWindow : Window
             e.DragEffects = e.Data.Contains(RowDragFormat) ? DragDropEffects.Move : DragDropEffects.None);
         p.AddHandler(DragDrop.DragEnterEvent, (_, e) =>
         { if (e.Data.Contains(RowDragFormat)) BindBrush(p, Panel.BackgroundProperty, "NewRowTint"); });
-        p.AddHandler(DragDrop.DragLeaveEvent, (_, _) => p.ClearValue(Panel.BackgroundProperty));
+        p.AddHandler(DragDrop.DragLeaveEvent, (_, _) => PaintRow(b.Row)); // restore the selection tint
         p.AddHandler(DragDrop.DropEvent, (_, e) =>
         {
-            p.ClearValue(Panel.BackgroundProperty);
+            PaintRow(b.Row);
             if (e.Data.Get(RowDragFormat) is not int src || src == b.Row) return;
             var off = GridScroll.Offset;
+            _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
             _file!.MoveRow(src, b.Row);
             RebuildRows();
             RestoreListScroll(off, () => { });
@@ -2020,6 +2107,8 @@ public partial class MainWindow : Window
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         p.Children.Add(DragHandle(b, number));
         WireRowDrop(p, b);
+        _rowPanels[b.Row] = p;
+        PaintRow(b.Row);
         p.Children.Add(SuggestBox(b.Row, 0, b.Output, 300, NoSuggestions, $"Setting name for row {b.Row}", OutputTint));
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 160, NoSuggestions, $"Setting value for row {b.Row}", FunctionTint));
         // The official sheet annotates each preference with Units (column C)
@@ -2041,6 +2130,8 @@ public partial class MainWindow : Window
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         p.Children.Add(DragHandle(b, number));
         WireRowDrop(p, b);
+        _rowPanels[b.Row] = p;
+        PaintRow(b.Row);
         p.Children.Add(SuggestBox(b.Row, 0, b.Output, 220, OutputSuggestionsFor(CurrentSheet!), $"Output for row {b.Row}", OutputTint));
         p.Children.Add(SuggestBox(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint));
 
@@ -2133,6 +2224,7 @@ public partial class MainWindow : Window
         if (i < 0 || j < 0 || j >= sheet.Bindings.Count) return;
         int destRow = sheet.Bindings[j].Row;
         var off = GridScroll.Offset;
+        _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
         _file.SwapRows(b.Row, destRow);
         RebuildRows();
         RestoreListScroll(off, () =>
@@ -2156,6 +2248,7 @@ public partial class MainWindow : Window
     {
         int deletedIndex = CurrentSheet!.Bindings.IndexOf(b);
         var off = GridScroll.Offset;
+        _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
         _file!.DeleteRow(b.Row);
         RebuildRows();
         RestoreListScroll(off, () => FocusRowSibling(deletedIndex));
