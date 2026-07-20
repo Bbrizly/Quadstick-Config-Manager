@@ -362,6 +362,7 @@ public partial class MainWindow : Window
                 CrashGuard.DiscardRescues(); // now in the editor: the rescue files on disk are spent, don't re-offer them forever
                 Status("Recovered profile opened. Save it to keep it.", StatusKind.Warning);
                 RescuePanel.IsVisible = false;
+                HomeStatusText.IsVisible = false; // the offer is spent; coming back Home must not still announce it
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             { HomeStatusText.Text = $"Could not open the recovered file: {ex.Message}"; }
@@ -1868,12 +1869,18 @@ public partial class MainWindow : Window
         cancel.Click += (_, _) => dialog.Close();
         await dialog.ShowDialog(this);
 
-        return choice switch
+        switch (choice)
         {
-            "save" => await SaveAsync(), // a blocked or cancelled save must not leave
-            "dontsave" => true,
-            _ => false,
-        };
+            case "save": return await SaveAsync(); // a blocked or cancelled save must not leave
+            case "dontsave":
+                // An explicit "don't save" is a discard: drop the autosave
+                // draft too, or the next launch offers back the exact work
+                // the user just declined to keep.
+                try { File.Delete(DraftPath); } catch { /* best effort */ }
+                _draftedRevision = -1;
+                return true;
+            default: return false;
+        }
     }
 
     void UndoEdit()
