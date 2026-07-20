@@ -1948,7 +1948,8 @@ public partial class MainWindow : Window
 
     // Keeps the header swatches lined up over their columns now that every
     // data row starts with a row-number label.
-    static Control RowNumberHeaderSpacer() => new Border { Width = RowNumberWidth };
+    static Control RowNumberHeaderSpacer() => new Border
+    { Width = RowNumberWidth, Margin = new Avalonia.Thickness(0, 0, 4, 0) }; // same margin as the label
 
     // List View rows reorder by dragging their row number onto another row;
     // the dragged row takes the drop target's place. The move chevrons stay:

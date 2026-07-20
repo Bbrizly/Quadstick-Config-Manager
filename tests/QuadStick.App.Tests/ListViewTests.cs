@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
@@ -57,6 +58,38 @@ public class ListViewTests
         Assert.False(Exists($"Remove input 2 from row {row}")); // really removed from the file
 
         file.Dirty = false; // else Close opens the save dialog and waits forever
+        w.Close();
+    }
+
+    // The tester noticed the column titles sit a little left of the columns
+    // themselves. The row-number label carries a 4px margin its header spacer
+    // did not, so every header swatch was off by exactly that much.
+    [AvaloniaFact]
+    public void Column_headers_line_up_with_their_columns()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.NewFromTemplate("smoke.csv");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        var header = w.GetVisualDescendants().OfType<TextBlock>()
+            .First(t => t.Text == "Output (game button)");
+        var cell = w.GetVisualDescendants().OfType<AutoCompleteBox>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Output for row "));
+
+        // Compare the swatch border and the cell border, both in window space.
+        var swatch = header.FindAncestorOfType<Border>()!;
+        var cellBorder = cell.FindAncestorOfType<Border>()!;
+        double headerX = swatch.TranslatePoint(new Avalonia.Point(0, 0), w)!.Value.X;
+        double cellX = cellBorder.TranslatePoint(new Avalonia.Point(0, 0), w)!.Value.X;
+        Assert.Equal(cellX, headerX);
+
+        file.Dirty = false;
         w.Close();
     }
 
