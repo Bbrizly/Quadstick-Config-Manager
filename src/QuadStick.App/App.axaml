@@ -37,6 +37,11 @@
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="CornerRadius" Value="6"/>
       <Setter Property="Padding" Value="16,10"/>
+      <!-- Short labels like "Clear" sat left of center inside the 48px
+           minimum size; buttons that really want left content set it
+           themselves (ProblemsToggle, card, "+ Add" rows). -->
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style Selector="Button:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
