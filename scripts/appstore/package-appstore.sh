@@ -31,7 +31,7 @@ rm -rf "$OUT"; mkdir -p "$OUT"
 #    them. Native libraries stay loose (not self-extracted), so no sandbox
 #    temp-extraction crash at launch.
 dotnet publish "$ROOT/src/QuadStick.App/QuadStick.App.csproj" -c Release -r "$RID" \
-  --self-contained true -p:PublishSingleFile=true -o "$OUT/pub" --nologo
+  --self-contained true -p:PublishSingleFile=true -p:Version="$VERSION" -o "$OUT/pub" --nologo
 rm -f "$OUT/pub/"*.pdb
 "$ROOT/scripts/make-macos-app.sh" "$OUT/pub" "$VERSION" "$APP"
 
