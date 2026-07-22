@@ -26,6 +26,15 @@ public sealed class ProfileFile
 
     public string ToCsvText() => Csv.Write(Grid);
 
+    // Write via a temp file then rename so a crash or power loss mid-write
+    // can never leave a half-written profile behind. Same pattern Device uses.
+    public static void WriteAtomic(string path, string text)
+    {
+        var tmp = path + ".qscm-tmp";
+        File.WriteAllText(tmp, text);
+        File.Move(tmp, path, overwrite: true);
+    }
+
     readonly List<List<string[]>> _undo = new();
     const int MaxUndo = 200;
 

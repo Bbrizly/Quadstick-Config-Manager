@@ -356,7 +356,7 @@ public partial class MainWindow : Window
                 // grid and rewrite the file every 30s for no reason.
                 if (_file.Revision == _draftedRevision) return;
                 Directory.CreateDirectory(CrashGuard.RescueDir);
-                File.WriteAllText(DraftPath, _file.ToCsvText());
+                ProfileFile.WriteAtomic(DraftPath, _file.ToCsvText());
                 _draftedRevision = _file.Revision;
             }
             else if (_file is not null && File.Exists(DraftPath))
@@ -1623,7 +1623,8 @@ public partial class MainWindow : Window
         try
         {
             _file.EnsureVersionHeader(); // saved files match installed files byte for byte
-            await File.WriteAllTextAsync(_savePath, _file.ToCsvText());
+            var text = _file.ToCsvText();
+            await Task.Run(() => ProfileFile.WriteAtomic(_savePath, text));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         { Status($"Could not save: {ex.Message}", StatusKind.Error); return false; }
@@ -1719,7 +1720,7 @@ public partial class MainWindow : Window
         {
             Directory.CreateDirectory(TemplatesDir);
             _file.EnsureVersionHeader(); // templates match installed files byte for byte
-            await File.WriteAllTextAsync(Path.Combine(TemplatesDir, fileName), _file.ToCsvText());
+            ProfileFile.WriteAtomic(Path.Combine(TemplatesDir, fileName), _file.ToCsvText());
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         { Status($"Could not save the template: {ex.Message}", StatusKind.Error); return; }

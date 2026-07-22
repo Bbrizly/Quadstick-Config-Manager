@@ -64,7 +64,7 @@ public static class CrashGuard
                 // more than once in the same second, and each one must keep
                 // its own snapshot rather than overwrite the last.
                 var path = Path.Combine(RescueDir, $"{name}-rescued-{DateTime.Now:yyyyMMdd-HHmmss}-{DateTime.Now.Ticks % 10000}.csv");
-                File.WriteAllText(path, file.ToCsvText());
+                ProfileFile.WriteAtomic(path, file.ToCsvText());
             }
         }
         catch { /* rescue is best effort; fall through to the log */ }
