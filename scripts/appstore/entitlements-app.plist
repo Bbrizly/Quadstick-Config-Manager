@@ -12,5 +12,10 @@
   <key>com.apple.security.cs.allow-jit</key><true/>
   <!-- User picks the QuadStick volume/CSV via the folder and file pickers. -->
   <key>com.apple.security.files.user-selected.read-write</key><true/>
+  <!-- Sheets import and Drive backup call Google over HTTPS. -->
+  <key>com.apple.security.network.client</key><true/>
+  <!-- Google sign-in redirects the browser to a loopback listener; the
+       sandbox needs the server entitlement for the app to accept it. -->
+  <key>com.apple.security.network.server</key><true/>
 </dict>
 </plist>
