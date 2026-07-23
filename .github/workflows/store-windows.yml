@@ -42,6 +42,12 @@ jobs:
             echo "Add them in Settings > Secrets and variables > Actions." >&2
             exit 1
           fi
+          # The values become C# string literals; only allow characters
+          # Google actually uses so a stray quote cannot break or leak.
+          if printf '%s%s' "$GID" "$GSECRET" | LC_ALL=C grep -q '[^A-Za-z0-9._-]'; then
+            echo "A Google client secret value has unexpected characters; refusing to write source." >&2
+            exit 1
+          fi
           cat > src/QuadStick.App/GoogleClient.Local.cs <<EOF
           namespace QuadStick.App;
 
