@@ -44,15 +44,23 @@ public static class Settings
         catch { return new AppSettings(); }
     }
 
-    public static void Save(AppSettings s, string? path = null)
+    // Best-effort save: a failed write is swallowed. Most callers want this,
+    // because settings are a convenience and never worth crashing over.
+    public static void Save(AppSettings s, string? path = null) => TrySave(s, path);
+
+    // Same write, but reports whether it landed. Restore needs this: a profile
+    // imported but not linked would fork a duplicate sheet on its next save, so
+    // restore rolls back a file whose link state could not be persisted.
+    public static bool TrySave(AppSettings s, string? path = null)
     {
         var p = path ?? DefaultPath;
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(p)!);
             File.WriteAllText(p, JsonSerializer.Serialize(s, SettingsJsonContext.Default.AppSettings));
+            return true;
         }
-        catch { /* settings are a convenience, never fatal */ }
+        catch { return false; }
     }
 }
 

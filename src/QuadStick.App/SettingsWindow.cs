@@ -362,6 +362,15 @@ public class SettingsWindow : Window
         AutomationProperties.SetName(reconnect, "Reconnect to Google");
         section.Children.Add(reconnect);
 
+        // Bulk restore entry point. Enabled only while backup is on; closes
+        // this window and opens the picker so the restored profiles land in
+        // the home library the user returns to.
+        var importDrive = new Button
+        { Content = "Import from Google Drive", IsEnabled = owner.CurrentSettings.DriveBackup };
+        AutomationProperties.SetName(importDrive, "Import your profiles from Google Drive");
+        importDrive.Click += async (_, _) => { Close(); await owner.ShowDrivePickerAsync(preCheck: false); };
+        section.Children.Add(importDrive);
+
         bool suppress = false; // stops the programmatic uncheck below re-triggering this
         CancellationTokenSource? connectCts = null;
 
@@ -379,6 +388,12 @@ public class SettingsWindow : Window
                     suppress = false;
                 }
                 reconnect.IsVisible = owner.CurrentSettings.DriveBackup;
+                importDrive.IsEnabled = owner.CurrentSettings.DriveBackup;
+
+                // The new-machine moment: right after a fresh connect, offer to
+                // pull the backed up profiles down, everything pre-checked.
+                if (ok && await owner.ConfirmRestoreAfterConnectAsync())
+                    await owner.ShowDrivePickerAsync(preCheck: true);
             }
             finally
             {
@@ -395,6 +410,7 @@ public class SettingsWindow : Window
             {
                 owner.DisableDriveBackup();
                 reconnect.IsVisible = false;
+                importDrive.IsEnabled = false;
             }
         };
         cancelConnect.Click += (_, _) => connectCts?.Cancel();

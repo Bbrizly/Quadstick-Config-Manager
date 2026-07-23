@@ -16,7 +16,10 @@ public sealed class DriveBackup
 {
     readonly DriveClient _client;
     readonly Func<AppSettings> _getSettings;
-    readonly Action _saveSettings;
+    // Persist settings, reporting success. Push paths treat it as best-effort
+    // and ignore the result; restore checks it, because an imported-but-unlinked
+    // profile would fork a duplicate sheet on its next save.
+    readonly Func<bool> _trySave;
     // title, body -> the user's pick. MainWindow maps these onto its dialog.
     readonly Func<string, string, Task<ConflictChoice>> _conflictPrompt;
     // title, body -> true recreate as a new sheet, false turn backup off here.
@@ -48,7 +51,7 @@ public sealed class DriveBackup
     public DriveBackup(
         DriveClient client,
         Func<AppSettings> getSettings,
-        Action saveSettings,
+        Func<bool> trySave,
         Func<string, string, Task<ConflictChoice>> conflictPrompt,
         Func<string, string, Task<bool>> recreatePrompt,
         Action<string, bool> status,
@@ -56,7 +59,7 @@ public sealed class DriveBackup
     {
         _client = client;
         _getSettings = getSettings;
-        _saveSettings = saveSettings;
+        _trySave = trySave;
         _conflictPrompt = conflictPrompt;
         _recreatePrompt = recreatePrompt;
         _status = status;
@@ -93,7 +96,7 @@ public sealed class DriveBackup
             var online = await _client.DownloadCsvAsync(link.SpreadsheetId, ct);
             link.LastSeenModifiedTime = current;
             link.BackupDirty = false;
-            _saveSettings();
+            _trySave();
             return new PushResult(PushResultKind.KeptOnline, online);
         }
         catch (DriveApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -119,7 +122,7 @@ public sealed class DriveBackup
         {
             // Turn backup off for this profile: drop the link, nothing dirty.
             _getSettings().DriveLinks.Remove(profilePath);
-            _saveSettings();
+            _trySave();
             return new PushResult(PushResultKind.RecreatedOff);
         }
         try
@@ -150,7 +153,7 @@ public sealed class DriveBackup
             LastSeenModifiedTime = mt,
             BackupDirty = false,
         };
-        _saveSettings();
+        _trySave();
         return new PushResult(PushResultKind.Pushed);
     }
 
@@ -161,7 +164,7 @@ public sealed class DriveBackup
         await _client.PushGridAsync(link.SpreadsheetId, Csv.Parse(csvText), ct);
         link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
         link.BackupDirty = false;
-        _saveSettings();
+        _trySave();
         return new PushResult(PushResultKind.Pushed);
     }
 
@@ -169,7 +172,7 @@ public sealed class DriveBackup
     PushResult FailPending(DriveLink? link)
     {
         if (link != null) link.BackupDirty = true;
-        _saveSettings();
+        _trySave();
         _status(PendingMessage, true);
         return new PushResult(PushResultKind.Failed);
     }
@@ -178,7 +181,7 @@ public sealed class DriveBackup
     PushResult Paused(DriveLink? link)
     {
         if (link != null) link.BackupDirty = true;
-        _saveSettings();
+        _trySave();
         _status(PausedMessage, true);
         return new PushResult(PushResultKind.Paused);
     }
@@ -201,7 +204,7 @@ public sealed class DriveBackup
         if (settings.DriveLinks.Remove(oldPath, out var link))
         {
             settings.DriveLinks[newPath] = link;
-            _saveSettings();
+            _trySave();
         }
     }
 
@@ -260,7 +263,7 @@ public sealed class DriveBackup
                 // save does not see a phantom online edit and prompt a
                 // self-inflicted conflict.
                 link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
-                _saveSettings();
+                _trySave();
             }
             catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException or GoogleAuthRevokedException)
             {
@@ -272,6 +275,176 @@ public sealed class DriveBackup
 
         // Step 5: hand back the URL for the clipboard.
         return new ShareLinkResult(ShareLinkKind.Copied, Url(link.SpreadsheetId), "Link copied.");
+    }
+
+    // ---- Restore (bulk import from Drive) ----
+
+    // List every backup sheet this app created, tagged with whether it is
+    // already linked to a local profile. A sheet counts as linked only when its
+    // mapped local file still exists on disk; a stale entry for a deleted CSV is
+    // ignored AND pruned, so a deleted local file can never grey out the very
+    // sheet restore exists to bring back. Match is by spreadsheetId, so a rename
+    // does not fool it.
+    public async Task<List<DriveSheetInfo>> ListForPickerAsync(CancellationToken ct = default)
+    {
+        var sheets = await _client.ListSpreadsheetsAsync(ct);
+
+        var settings = _getSettings();
+        var linkedIds = new HashSet<string>(StringComparer.Ordinal);
+        var stale = new List<string>();
+        foreach (var (path, link) in settings.DriveLinks)
+        {
+            if (File.Exists(path)) linkedIds.Add(link.SpreadsheetId);
+            else stale.Add(path);
+        }
+        if (stale.Count > 0)
+        {
+            foreach (var p in stale) settings.DriveLinks.Remove(p);
+            _trySave();
+        }
+
+        return sheets
+            .Select(s => new DriveSheetInfo(s.Id, s.Name, s.ModifiedTime, linkedIds.Contains(s.Id)))
+            .ToList();
+    }
+
+    // Import the picked sheets into libraryDir and link each on the spot. Every
+    // per-file failure is recorded and never aborts the batch.
+    public async Task<RestoreSummary> RestoreAsync(
+        IReadOnlyList<(string Id, string Name)> picks, string libraryDir, CancellationToken ct = default)
+    {
+        var settings = _getSettings();
+        var imported = new List<string>();
+        var skipped = new List<(string Name, string Reason)>();
+        var failed = new List<(string Name, string Reason)>();
+
+        // Existing library file names, case-insensitive: a collision is a skip,
+        // never an overwrite. The local file is the source of truth.
+        var onDisk = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (Directory.Exists(libraryDir))
+            foreach (var f in Directory.GetFiles(libraryDir, "*.csv"))
+                onDisk.Add(Path.GetFileName(f));
+        // Names already claimed within this batch, so two picks that sanitize to
+        // the same name get a numbered suffix instead of fighting over one file.
+        var batchNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var pick in picks)
+        {
+            var reportName = Path.GetFileNameWithoutExtension(SafeFileName.ForCsv(pick.Name));
+            try
+            {
+                var csv = await _client.DownloadCsvAsync(pick.Id, ct);
+
+                // Validate by parsing. A sheet with no readable mode sheet is a
+                // per-file failure, not a written-then-broken profile.
+                ProfileFile parsed;
+                try { parsed = ProfileFile.Load(csv); }
+                catch { failed.Add((reportName, "could not read the sheet")); continue; }
+                if (parsed.Document.Sheets.Count == 0)
+                { failed.Add((reportName, "not a valid profile")); continue; }
+
+                var fileName = DedupeName(SafeFileName.ForCsv(pick.Name), batchNames);
+                batchNames.Add(fileName);
+                reportName = Path.GetFileNameWithoutExtension(fileName);
+
+                if (onDisk.Contains(fileName))
+                { skipped.Add((reportName, "already exists")); continue; }
+
+                var dest = Path.Combine(libraryDir, fileName);
+                ProfileFile.WriteAtomic(dest, csv);
+
+                // Link on the spot: future saves push to this sheet instead of
+                // forking a duplicate. modifiedTime is read fresh so the next
+                // save's conflict check compares against a real value.
+                var mt = await _client.GetModifiedTimeAsync(pick.Id, ct);
+                settings.DriveLinks[dest] = new DriveLink
+                {
+                    SpreadsheetId = pick.Id,
+                    LastSeenModifiedTime = mt,
+                    BackupDirty = false,
+                    LinkShared = false,
+                };
+
+                // Imported must mean linked. If the link state cannot be saved,
+                // undo the write so the file cannot silently fork a new sheet.
+                if (!_trySave())
+                {
+                    settings.DriveLinks.Remove(dest);
+                    try { File.Delete(dest); } catch { /* the write may already be gone */ }
+                    failed.Add((reportName, "could not save the link"));
+                    continue;
+                }
+
+                onDisk.Add(fileName);
+                imported.Add(reportName);
+            }
+            catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException or GoogleAuthRevokedException)
+            {
+                failed.Add((reportName, "download failed"));
+            }
+        }
+
+        return new RestoreSummary(imported, skipped, failed);
+    }
+
+    // A file name unique within this batch: append " (2)", " (3)", ... before
+    // the extension until it stops colliding with a name already claimed.
+    static string DedupeName(string fileName, HashSet<string> claimed)
+    {
+        if (!claimed.Contains(fileName)) return fileName;
+        var stem = Path.GetFileNameWithoutExtension(fileName);
+        var ext = Path.GetExtension(fileName);
+        for (int n = 2; ; n++)
+        {
+            var candidate = $"{stem} ({n}){ext}";
+            if (!claimed.Contains(candidate)) return candidate;
+        }
+    }
+}
+
+// One backup sheet as the picker shows it. AlreadyLinked greys it out; the
+// picker never imports one already linked to a local profile on disk.
+public sealed class DriveSheetInfo
+{
+    public string Id { get; }
+    public string Name { get; }
+    public string ModifiedTime { get; }
+    public bool AlreadyLinked { get; }
+
+    public DriveSheetInfo(string id, string name, string modifiedTime, bool alreadyLinked)
+    {
+        Id = id;
+        Name = name;
+        ModifiedTime = modifiedTime;
+        AlreadyLinked = alreadyLinked;
+    }
+}
+
+// What a restore run did. The three lists feed the picker's summary line, and
+// Message is the ready-to-show one-liner ("3 imported, 1 skipped: mygame
+// already exists").
+public sealed class RestoreSummary
+{
+    public IReadOnlyList<string> Imported { get; }
+    public IReadOnlyList<(string Name, string Reason)> Skipped { get; }
+    public IReadOnlyList<(string Name, string Reason)> Failed { get; }
+    public string Message { get; }
+
+    public RestoreSummary(
+        IReadOnlyList<string> imported,
+        IReadOnlyList<(string Name, string Reason)> skipped,
+        IReadOnlyList<(string Name, string Reason)> failed)
+    {
+        Imported = imported;
+        Skipped = skipped;
+        Failed = failed;
+
+        var parts = new List<string> { $"{imported.Count} imported" };
+        if (skipped.Count > 0)
+            parts.Add($"{skipped.Count} skipped: " + string.Join(", ", skipped.Select(s => $"{s.Name} {s.Reason}")));
+        if (failed.Count > 0)
+            parts.Add($"{failed.Count} failed: " + string.Join(", ", failed.Select(f => $"{f.Name} {f.Reason}")));
+        Message = string.Join(", ", parts);
     }
 }
 

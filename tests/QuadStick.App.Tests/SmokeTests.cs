@@ -124,6 +124,17 @@ public class SmokeTests
         w.Close();
     }
 
+    // The home Drive restore button exists but stays hidden until backup is
+    // connected. Fresh settings mean backup off, so it must not be visible.
+    [AvaloniaFact]
+    public void Home_drive_button_hidden_when_backup_off()
+    {
+        var w = NewWindow();
+        var drive = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "HomeDriveButton");
+        Assert.False(drive.IsVisible);
+        w.Close();
+    }
+
     [AvaloniaFact]
     public void New_profile_opens_the_editor_and_every_zone_builds()
     {

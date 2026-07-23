@@ -7,8 +7,9 @@ namespace QuadStick.Format.Tests;
 
 // The backup engine drives a real DriveClient over a fake transport, so these
 // exercise the whole Flow (create, silent push, conflict, 404, revoke, retry)
-// with no Avalonia and no network. Settings live in memory; saveSettings is a
-// no-op because the engine mutates the AppSettings object in place.
+// with no Avalonia and no network. Settings live in memory; trySave defaults to
+// a no-op that reports success, because the engine mutates the AppSettings
+// object in place. Restore tests override it to force the save-failed path.
 public class DriveBackupTests
 {
     class FakeHandler : HttpMessageHandler
@@ -37,12 +38,13 @@ public class DriveBackupTests
         ConflictChoice conflict = ConflictChoice.ReplaceWithMine,
         bool recreate = true,
         Func<CancellationToken, Task<string>>? token = null,
-        bool shareConfirm = true)
+        bool shareConfirm = true,
+        Func<bool>? trySave = null)
     {
         var settings = new AppSettings();
         var client = new DriveClient(new FakeHandler(responder), token ?? (_ => Task.FromResult("tok")));
         var statuses = new List<(string, bool)>();
-        var backup = new DriveBackup(client, () => settings, () => { },
+        var backup = new DriveBackup(client, () => settings, trySave ?? (() => true),
             conflictPrompt: (_, _) => Task.FromResult(conflict),
             recreatePrompt: (_, _) => Task.FromResult(recreate),
             status: (m, w) => statuses.Add((m, w)),
@@ -334,5 +336,170 @@ public class DriveBackupTests
         Assert.Equal(ShareLinkKind.Copied, result.Kind);
         Assert.Equal("https://docs.google.com/spreadsheets/d/s/edit?usp=sharing", result.Url);
         Assert.Equal(0, calls);
+    }
+
+    // ---- Restore (bulk import from Drive) ----
+
+    static bool IsList(HttpRequestMessage r) => r.RequestUri!.AbsoluteUri.Contains("fields=nextPageToken");
+
+    // A guaranteed-valid profile CSV: the factory default the app ships. Restore
+    // validates by parsing, so a random grid would look like a broken sheet.
+    static string ValidProfile() => ProfileFile.NewFromTemplate("game.csv").ToCsvText();
+
+    static string TempLib()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "qcm-restore-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(dir);
+        return dir;
+    }
+
+    [Fact]
+    public async Task Restore_ImportsAndLinks()
+    {
+        var lib = TempLib();
+        try
+        {
+            var (backup, settings, _) = Make(r =>
+            {
+                if (IsDownload(r)) return Csv(ValidProfile());
+                if (IsModified(r)) return Json("{\"modifiedTime\":\"t-restored\"}");
+                return Json("{}");
+            });
+
+            var summary = await backup.RestoreAsync(new[] { ("id1", "mygame") }, lib);
+
+            Assert.Equal(new[] { "mygame" }, summary.Imported);
+            var dest = Path.Combine(lib, "mygame.csv");
+            Assert.True(File.Exists(dest));
+            var link = settings.DriveLinks[dest];
+            Assert.Equal("id1", link.SpreadsheetId);
+            Assert.Equal("t-restored", link.LastSeenModifiedTime);
+            Assert.False(link.BackupDirty);
+        }
+        finally { Directory.Delete(lib, recursive: true); }
+    }
+
+    [Fact]
+    public async Task Restore_NameCollision_SkipsAndReports()
+    {
+        var lib = TempLib();
+        try
+        {
+            // The local file is the source of truth; restore never overwrites it.
+            var dest = Path.Combine(lib, "mygame.csv");
+            File.WriteAllText(dest, "local truth\r\n");
+
+            var (backup, settings, _) = Make(r =>
+            {
+                if (IsDownload(r)) return Csv(ValidProfile());
+                if (IsModified(r)) return Json("{\"modifiedTime\":\"t\"}");
+                return Json("{}");
+            });
+
+            var summary = await backup.RestoreAsync(new[] { ("id1", "mygame") }, lib);
+
+            Assert.Empty(summary.Imported);
+            Assert.Single(summary.Skipped);
+            Assert.Contains("mygame already exists", summary.Message);
+            Assert.Equal("local truth\r\n", File.ReadAllText(dest)); // untouched
+            Assert.False(settings.DriveLinks.ContainsKey(dest));
+        }
+        finally { Directory.Delete(lib, recursive: true); }
+    }
+
+    [Fact]
+    public async Task Restore_TwoPicksSameName_GetNumbered()
+    {
+        var lib = TempLib();
+        try
+        {
+            var (backup, _, _) = Make(r =>
+            {
+                if (IsDownload(r)) return Csv(ValidProfile());
+                if (IsModified(r)) return Json("{\"modifiedTime\":\"t\"}");
+                return Json("{}");
+            });
+
+            var summary = await backup.RestoreAsync(
+                new[] { ("id1", "mygame"), ("id2", "mygame") }, lib);
+
+            Assert.Equal(2, summary.Imported.Count);
+            Assert.True(File.Exists(Path.Combine(lib, "mygame.csv")));
+            Assert.True(File.Exists(Path.Combine(lib, "mygame (2).csv")));
+        }
+        finally { Directory.Delete(lib, recursive: true); }
+    }
+
+    [Fact]
+    public async Task Restore_OneDownloadFails_BatchContinues()
+    {
+        var lib = TempLib();
+        try
+        {
+            var (backup, settings, _) = Make(r =>
+            {
+                // The first sheet's download faults; the second succeeds.
+                if (IsDownload(r))
+                    return r.RequestUri!.AbsoluteUri.Contains("bad")
+                        ? Json("{}", HttpStatusCode.InternalServerError)
+                        : Csv(ValidProfile());
+                if (IsModified(r)) return Json("{\"modifiedTime\":\"t\"}");
+                return Json("{}");
+            });
+
+            var summary = await backup.RestoreAsync(
+                new[] { ("bad", "broken"), ("good", "works") }, lib);
+
+            Assert.Single(summary.Failed);
+            Assert.Equal(new[] { "works" }, summary.Imported);
+            Assert.True(File.Exists(Path.Combine(lib, "works.csv")));
+        }
+        finally { Directory.Delete(lib, recursive: true); }
+    }
+
+    // Imported must mean linked: when the link state cannot be persisted, the
+    // just-written CSV is deleted and the file is reported as failed.
+    [Fact]
+    public async Task Restore_TrySaveFalse_DeletesCsv_ReportsFailed()
+    {
+        var lib = TempLib();
+        try
+        {
+            var (backup, settings, _) = Make(r =>
+            {
+                if (IsDownload(r)) return Csv(ValidProfile());
+                if (IsModified(r)) return Json("{\"modifiedTime\":\"t\"}");
+                return Json("{}");
+            }, trySave: () => false);
+
+            var summary = await backup.RestoreAsync(new[] { ("id1", "mygame") }, lib);
+
+            Assert.Empty(summary.Imported);
+            Assert.Single(summary.Failed);
+            Assert.False(File.Exists(Path.Combine(lib, "mygame.csv")));
+            Assert.Empty(settings.DriveLinks);
+        }
+        finally { Directory.Delete(lib, recursive: true); }
+    }
+
+    // A stale link (mapped local file deleted) must not grey out its sheet, and
+    // the dead entry is pruned so it cannot mislead the next listing either.
+    [Fact]
+    public async Task ListForPicker_StaleLink_NotAlreadyLinked_AndPruned()
+    {
+        var (backup, settings, _) = Make(r =>
+            IsList(r)
+                ? Json("{\"files\":[{\"id\":\"s1\",\"name\":\"mygame\",\"modifiedTime\":\"t\"}]}")
+                : Json("{}"));
+        // The mapped file does not exist on disk.
+        var gonePath = Path.Combine(Path.GetTempPath(), "qcm-gone-" + Guid.NewGuid().ToString("N") + ".csv");
+        settings.DriveLinks[gonePath] = new DriveLink { SpreadsheetId = "s1", LastSeenModifiedTime = "t0" };
+
+        var sheets = await backup.ListForPickerAsync();
+
+        var s1 = Assert.Single(sheets);
+        Assert.Equal("s1", s1.Id);
+        Assert.False(s1.AlreadyLinked);            // the deleted file must not grey it out
+        Assert.False(settings.DriveLinks.ContainsKey(gonePath)); // and the stale entry is pruned
     }
 }

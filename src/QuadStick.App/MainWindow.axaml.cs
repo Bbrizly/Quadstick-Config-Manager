@@ -94,7 +94,7 @@ public partial class MainWindow : Window
         // choice into the body text: Yes = replace with mine / recreate.
         // The engine runs off the UI thread, and dialogs may only be built on
         // it, so both prompts marshal through the dispatcher.
-        _driveBackup = new DriveBackup(client, () => _settings, () => Settings.Save(_settings),
+        _driveBackup = new DriveBackup(client, () => _settings, () => Settings.TrySave(_settings),
             conflictPrompt: async (title, body) =>
                 await Dispatcher.UIThread.InvokeAsync(() => ConfirmAsync(title, body))
                     ? ConflictChoice.ReplaceWithMine : ConflictChoice.KeepOnline,
@@ -190,6 +190,29 @@ public partial class MainWindow : Window
         PersistSettings();
         _driveBackup = null;
     }
+
+    // Open the Drive restore picker. Same guard the share actions use: when
+    // backup is off (Backup() is null) explain and route to Settings rather
+    // than failing silently. preCheck true pre-checks everything (the restore
+    // everything case from onboarding); false starts empty (cherry-pick).
+    public async Task ShowDrivePickerAsync(bool preCheck)
+    {
+        if (!ShareNeedsBackup()) return;
+        await new DrivePickerWindow(this, preCheck).ShowDialog(this);
+    }
+
+    // The picker reaches back through these so its constructor stays (owner,
+    // preCheck). Backup() is non-null here: ShowDrivePickerAsync gated on it.
+    internal Task<List<DriveSheetInfo>> ListDriveSheetsAsync() => Backup()!.ListForPickerAsync();
+    internal Task<RestoreSummary> RestoreFromDriveAsync(IReadOnlyList<(string Id, string Name)> picks) =>
+        Backup()!.RestoreAsync(picks, LibraryDir);
+    internal void RefreshHomeAfterRestore() => RefreshHomeCards();
+
+    // Offered right after a successful connect, the new-machine moment. Public
+    // wrapper because ConfirmAsync is private (same reason ConfirmResetAsync is).
+    public Task<bool> ConfirmRestoreAfterConnectAsync() => ConfirmAsync(
+        "Restore your profiles?",
+        "Copy your backed up profiles from Google Drive to this computer now?");
 
     // The two sharing actions, offered as one pair everywhere: the editor's
     // Share button flyout and each home library card's context menu. path is
@@ -365,6 +388,7 @@ public partial class MainWindow : Window
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
+        HomeDriveButton.Click += async (_, _) => await ShowDrivePickerAsync(preCheck: false);
 
         // Empty-library state offers the same three actions as the Start
         // cards above, so an empty library is never a dead end.
@@ -826,6 +850,12 @@ public partial class MainWindow : Window
 
     void RefreshHomeCards()
     {
+        // Show the Drive restore button only when backup is connected. This is
+        // the ONLY Drive-related work on home load: no files.list runs here.
+        // Home stays a purely local view; the sheet list is fetched only when
+        // the picker opens (spec: "Home stays a local view").
+        HomeDriveButton.IsVisible = _settings.DriveBackup && GoogleAuth.IsConfigured;
+
         LibraryCards.Children.Clear();
         var libraryFiles = Directory.Exists(LibraryDir)
             ? Directory.GetFiles(LibraryDir, "*.csv").OrderBy(Path.GetFileName).ToArray()

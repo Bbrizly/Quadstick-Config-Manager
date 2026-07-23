@@ -84,7 +84,12 @@
 
           <StackPanel Spacing="12">
             <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
-            <TextBlock Classes="section" Text="YOUR PROFILES"/>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <TextBlock Classes="section" Text="YOUR PROFILES" VerticalAlignment="Center"/>
+              <Button x:Name="HomeDriveButton" Content="Google Drive" IsVisible="False"
+                      FontSize="{DynamicResource SmallSize}"
+                      AutomationProperties.Name="Import your profiles from Google Drive"/>
+            </StackPanel>
             <StackPanel x:Name="LibraryEmptyPanel" Spacing="10">
               <TextBlock FontSize="{DynamicResource BodySize}" Classes="secondary"
                          Text="Profiles you save will show up here."/>
