@@ -94,6 +94,19 @@ public class SmokeTests
         w.Close();
     }
 
+    // A greyed ".csv" sits inside the right edge of the name box so users
+    // can see the extension is added for them.
+    [AvaloniaFact]
+    public void Profile_name_box_shows_csv_suffix_hint()
+    {
+        var w = NewWindow();
+        w.LoadProfile(ProfileFile.NewFromTemplate("smoke.csv"));
+        var box = w.GetVisualDescendants().OfType<TextBox>().First(t => t.Name == "FileNameBox");
+        var hint = Assert.IsType<TextBlock>(box.InnerRightContent);
+        Assert.Equal(".csv", hint.Text);
+        w.Close();
+    }
+
     [AvaloniaFact]
     public void New_profile_opens_the_editor_and_every_zone_builds()
     {
