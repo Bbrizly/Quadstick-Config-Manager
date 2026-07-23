@@ -14,6 +14,11 @@ public class GoogleAuth
     // Placeholder until a real Google Cloud client id is pasted in.
     public const string ClientId = "REPLACE-ME.apps.googleusercontent.com";
 
+    // Google's token endpoint requires the client secret for Desktop-type
+    // clients even with PKCE. For installed apps it is not confidential by
+    // design; it ships in the binary like the id does. Left empty in tests.
+    public const string ClientSecret = "";
+
     // False while the placeholder is in place. Callers show "not set up yet".
     public static bool IsConfigured => !ClientId.StartsWith("REPLACE-ME");
 
@@ -176,6 +181,7 @@ public class GoogleAuth
 
     async Task<HttpResponseMessage> PostTokenAsync(Dictionary<string, string> form, CancellationToken ct)
     {
+        if (ClientSecret.Length > 0) form["client_secret"] = ClientSecret;
         var resp = await _http.PostAsync(TokenEndpoint, new FormUrlEncodedContent(form), ct);
         if (resp.IsSuccessStatusCode) return resp;
 

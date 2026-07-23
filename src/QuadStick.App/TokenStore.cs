@@ -104,9 +104,16 @@ public class WindowsDpapiTokenStore : ITokenStore
 
     public string? Load()
     {
-        if (!File.Exists(_path)) return null;
-        var plain = ProtectedData.Unprotect(File.ReadAllBytes(_path), null, DataProtectionScope.CurrentUser);
-        return Encoding.UTF8.GetString(plain);
+        // A corrupt or unreadable token file means "not connected", never a
+        // crash. The user just reconnects.
+        try
+        {
+            if (!File.Exists(_path)) return null;
+            var plain = ProtectedData.Unprotect(File.ReadAllBytes(_path), null, DataProtectionScope.CurrentUser);
+            return Encoding.UTF8.GetString(plain);
+        }
+        catch (Exception ex) when (ex is CryptographicException or IOException or UnauthorizedAccessException)
+        { return null; }
     }
 
     public void Save(string refreshToken)

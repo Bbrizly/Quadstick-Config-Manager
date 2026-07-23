@@ -153,8 +153,11 @@ public class DrivePickerWindow : Window
         try
         {
             var summary = await _owner.RestoreFromDriveAsync(picks);
-            _status.Text = summary.Message;
             _owner.RefreshHomeAfterRestore();
+            // Reload so just-imported sheets grey out, then put the summary
+            // back on top of whatever LoadAsync wrote to the status line.
+            await LoadAsync();
+            _status.Text = summary.Message;
         }
         catch (Exception ex)
         {

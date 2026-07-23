@@ -502,4 +502,49 @@ public class DriveBackupTests
         Assert.False(s1.AlreadyLinked);            // the deleted file must not grey it out
         Assert.False(settings.DriveLinks.ContainsKey(gonePath)); // and the stale entry is pruned
     }
+
+    // Slow transport so two engine calls genuinely overlap in time.
+    class SlowHandler : HttpMessageHandler
+    {
+        readonly Func<HttpRequestMessage, HttpResponseMessage> _responder;
+        public SlowHandler(Func<HttpRequestMessage, HttpResponseMessage> responder) => _responder = responder;
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage req, CancellationToken ct)
+        {
+            await Task.Delay(30, ct);
+            return _responder(req);
+        }
+    }
+
+    // The race the gate exists for: a save's background push and a share-link
+    // copy hit the same unlinked profile at once. Without serialization each
+    // sees "no link" and creates its own sheet, forking a duplicate. Exactly
+    // one create may reach the wire.
+    [Fact]
+    public async Task ConcurrentPushAndShare_CreateExactlyOneSheet()
+    {
+        int creates = 0;
+        var settings = new AppSettings();
+        var handler = new SlowHandler(r =>
+        {
+            if (IsCreate(r)) { Interlocked.Increment(ref creates); return Json("{\"spreadsheetId\":\"only\"}"); }
+            if (IsModified(r)) return Json("{\"modifiedTime\":\"t\"}");
+            return Json("{}"); // clear, update, permissions
+        });
+        var client = new DriveClient(handler, _ => Task.FromResult("tok"));
+        var backup = new DriveBackup(client, () => settings, () => true,
+            conflictPrompt: (_, _) => Task.FromResult(ConflictChoice.ReplaceWithMine),
+            recreatePrompt: (_, _) => Task.FromResult(true),
+            status: (_, _) => { },
+            shareConfirm: () => Task.FromResult(true));
+
+        var pushTask = backup.PushAsync("/lib/race.csv", Grid);
+        var shareTask = backup.GetShareLinkAsync("/lib/race.csv", Grid);
+        var push = await pushTask;
+        var share = await shareTask;
+
+        Assert.Equal(1, creates);
+        Assert.Equal(PushResultKind.Pushed, push.Kind);
+        Assert.Equal(ShareLinkKind.Copied, share.Kind);
+        Assert.Equal("only", settings.DriveLinks["/lib/race.csv"].SpreadsheetId);
+    }
 }

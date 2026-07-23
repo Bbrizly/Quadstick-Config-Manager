@@ -48,6 +48,19 @@ public sealed class DriveBackup
     const string PendingMessage = "Backup pending";
     const string PausedMessage = "Backup paused. Reconnect to Google in Settings.";
 
+    // One Drive operation at a time. A save's background push and a share-link
+    // copy can race on the same unlinked profile and each create its own sheet;
+    // the gate serializes them so the second one sees the first one's link.
+    // ponytail: one global gate, per-profile gates if backups ever feel slow.
+    readonly SemaphoreSlim _gate = new(1, 1);
+
+    async Task<T> Locked<T>(Func<Task<T>> op, CancellationToken ct)
+    {
+        await _gate.WaitAsync(ct);
+        try { return await op(); }
+        finally { _gate.Release(); }
+    }
+
     public DriveBackup(
         DriveClient client,
         Func<AppSettings> getSettings,
@@ -70,7 +83,10 @@ public sealed class DriveBackup
     // Returns a result the caller can act on; KeptOnline carries the sheet CSV
     // because the rescue copy, atomic overwrite, and editor reload need
     // MainWindow state this class does not hold.
-    public async Task<PushResult> PushAsync(string profilePath, string csvText, CancellationToken ct = default)
+    public Task<PushResult> PushAsync(string profilePath, string csvText, CancellationToken ct = default) =>
+        Locked(() => PushCoreAsync(profilePath, csvText, ct), ct);
+
+    async Task<PushResult> PushCoreAsync(string profilePath, string csvText, CancellationToken ct)
     {
         var settings = _getSettings();
         settings.DriveLinks.TryGetValue(profilePath, out var link);
@@ -189,13 +205,14 @@ public sealed class DriveBackup
     // Retry on profile open. No-op unless the link exists and is dirty; then a
     // normal push, which follows the same conflict rules. Returns null when
     // there was nothing to retry so the caller can skip the KeptOnline handling.
-    public async Task<PushResult?> RetryIfDirtyAsync(string profilePath, string csvText)
-    {
-        var settings = _getSettings();
-        if (settings.DriveLinks.TryGetValue(profilePath, out var link) && link.BackupDirty)
-            return await PushAsync(profilePath, csvText);
-        return null;
-    }
+    public Task<PushResult?> RetryIfDirtyAsync(string profilePath, string csvText) =>
+        Locked<PushResult?>(async () =>
+        {
+            var settings = _getSettings();
+            if (settings.DriveLinks.TryGetValue(profilePath, out var link) && link.BackupDirty)
+                return await PushCoreAsync(profilePath, csvText, CancellationToken.None);
+            return null;
+        }, CancellationToken.None);
 
     // Renames done inside the app move the link with the file. Path is the key.
     public void OnRenamed(string oldPath, string newPath)
@@ -221,7 +238,10 @@ public sealed class DriveBackup
     // the local save, is the caller's job: saving is UI and the state map is
     // keyed by path, so the caller saves (which names the file) before this
     // runs. No path, no sheet.
-    public async Task<ShareLinkResult> GetShareLinkAsync(string profilePath, string csvText, CancellationToken ct = default)
+    public Task<ShareLinkResult> GetShareLinkAsync(string profilePath, string csvText, CancellationToken ct = default) =>
+        Locked(() => GetShareLinkCoreAsync(profilePath, csvText, ct), ct);
+
+    async Task<ShareLinkResult> GetShareLinkCoreAsync(string profilePath, string csvText, CancellationToken ct)
     {
         var settings = _getSettings();
         settings.DriveLinks.TryGetValue(profilePath, out var link);
@@ -231,7 +251,7 @@ public sealed class DriveBackup
         // a blank, so a failed first push copies nothing.
         if (link is null)
         {
-            var first = await PushAsync(profilePath, csvText, ct);
+            var first = await PushCoreAsync(profilePath, csvText, ct);
             if (first.Kind != PushResultKind.Pushed)
                 return new ShareLinkResult(ShareLinkKind.Failed, null,
                     "Could not create the Google Sheet, so there is nothing to share yet.");
@@ -242,7 +262,7 @@ public sealed class DriveBackup
         // known good earlier backup beats no link offline.
         else if (link.BackupDirty)
         {
-            var push = await PushAsync(profilePath, csvText, ct);
+            var push = await PushCoreAsync(profilePath, csvText, ct);
             if (push.Kind is PushResultKind.Failed or PushResultKind.Paused)
                 return new ShareLinkResult(ShareLinkKind.CopiedStale, Url(link.SpreadsheetId),
                     "Link copied. Your latest changes are not uploaded yet (backup pending).");
@@ -285,7 +305,10 @@ public sealed class DriveBackup
     // ignored AND pruned, so a deleted local file can never grey out the very
     // sheet restore exists to bring back. Match is by spreadsheetId, so a rename
     // does not fool it.
-    public async Task<List<DriveSheetInfo>> ListForPickerAsync(CancellationToken ct = default)
+    public Task<List<DriveSheetInfo>> ListForPickerAsync(CancellationToken ct = default) =>
+        Locked(() => ListForPickerCoreAsync(ct), ct);
+
+    async Task<List<DriveSheetInfo>> ListForPickerCoreAsync(CancellationToken ct)
     {
         var sheets = await _client.ListSpreadsheetsAsync(ct);
 
@@ -310,8 +333,12 @@ public sealed class DriveBackup
 
     // Import the picked sheets into libraryDir and link each on the spot. Every
     // per-file failure is recorded and never aborts the batch.
-    public async Task<RestoreSummary> RestoreAsync(
-        IReadOnlyList<(string Id, string Name)> picks, string libraryDir, CancellationToken ct = default)
+    public Task<RestoreSummary> RestoreAsync(
+        IReadOnlyList<(string Id, string Name)> picks, string libraryDir, CancellationToken ct = default) =>
+        Locked(() => RestoreCoreAsync(picks, libraryDir, ct), ct);
+
+    async Task<RestoreSummary> RestoreCoreAsync(
+        IReadOnlyList<(string Id, string Name)> picks, string libraryDir, CancellationToken ct)
     {
         var settings = _getSettings();
         var imported = new List<string>();
