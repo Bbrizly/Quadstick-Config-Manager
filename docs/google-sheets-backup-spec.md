@@ -82,11 +82,13 @@ Plain HttpClient against REST, no Google SDK. Endpoints:
    existing import fetch is unauthenticated); everything after the bytes
    arrive (CSV parse, validation, open-in-editor) is the existing import
    code unchanged.
+6. permissions.create (role=reader, type=anyone), once per sheet, the
+   first time the user copies a share link.
 
 ## Linking and state
 
 Settings JSON gains a map: profile file path -> { spreadsheetId,
-lastSeenModifiedTime, backupDirty }. Written with the existing atomic write
+lastSeenModifiedTime, backupDirty, linkShared }. Written with the existing atomic write
 helper; a failed state write surfaces in the status line instead of being
 swallowed.
 
@@ -129,8 +131,59 @@ Drive; the old sheet and any links to it keep working, nothing is lost.
   backup off for this profile.
 - 403/429/5xx: treated as generic failure -> backupDirty + status. No
   backoff machinery; the retry-on-next-event policy is the backoff.
-- Each backed-up profile shows an "Open in Google Sheets" button (plain
-  browser open of the sheet URL) so Share is one click away.
+
+## Sharing
+
+Two actions, offered in the same pair everywhere:
+
+- "Copy share link": puts the sheet's URL on the clipboard, ready to send.
+  The friend pastes it into the app's existing import box, or just opens it
+  in a browser.
+- "Open in Google Sheets": plain browser open of the sheet URL, for looking
+  at the sheet, revision history, or Google's own Share dialog.
+
+Entry points:
+
+- Editor: a Share button in the profile name row opens a small flyout with
+  the two actions.
+- Home: each profile card's menu gets the same two items.
+- When backup is off, the actions still show; choosing one explains and
+  routes to the backup toggle instead of failing silently.
+
+"Copy share link" sequence:
+
+1. Local save first, always. A never-saved profile has no path and the
+   state map is keyed by path, so save (which names the file) before any
+   Drive call. No path, no sheet.
+2. Not yet linked: run the first backup (create + push). If that first
+   push fails, copy nothing and say so; the sheet has never held the
+   profile and sharing it would hand the friend a blank.
+3. Already linked but backupDirty: push. If the push fails, still copy the
+   link but say so: "Link copied. Your latest changes are not uploaded yet
+   (backup pending)." A known-good earlier backup beats no link offline.
+4. Sheet not yet link-shared (no linkShared flag): confirm once per sheet,
+   "Anyone with this link can view this sheet (read only). Turn on link
+   sharing and copy?" On yes: permissions.create with role=reader,
+   type=anyone, allowFileDiscovery=false, set linkShared, then re-read
+   modifiedTime and record it (the grant can bump it; skipping this
+   re-read causes a self-inflicted conflict prompt on the next save). On
+   network failure here, copy nothing; an unshared link is useless.
+5. Copy the URL, toast "Link copied".
+
+Choices made:
+
+- role=reader on purpose. Friends view and import a copy; they never edit
+  the owner's sheet. anyone-with-link reader is exactly what the existing
+  unauthenticated import path and the community template workflow already
+  consume, so a copied link works in the import box with zero sign-in.
+  allowFileDiscovery=false keeps it link-only, never searchable.
+- Revoking a link, sharing with specific people, or granting edit rights
+  all happen in Google's own Share dialog via "Open in Google Sheets". We
+  build no permissions UI beyond the one reader grant.
+- After the one-time grant, "Copy share link" is a pure clipboard write:
+  instant and offline-safe. Ceiling accepted and named: if the user
+  revokes link access inside Google, linkShared is stale and the app
+  copies a dead link; the fix is Google's own Share dialog, not app code.
 
 ## Store packaging risks (verify in week one, before UI work)
 
