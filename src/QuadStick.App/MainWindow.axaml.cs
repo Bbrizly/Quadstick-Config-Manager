@@ -77,6 +77,89 @@ public partial class MainWindow : Window
 
     void SaveModel() { _settings.Model = _model.ToString(); Settings.Save(_settings); }
 
+    // Google Sheets backup engine, built lazily on first use. It stays null
+    // (backup does nothing) unless the user turned backup on, a real client id
+    // shipped, AND a refresh token is stored. Fresh settings default off, so
+    // headless tests never touch the network.
+    DriveBackup? _driveBackup;
+    DriveBackup? Backup()
+    {
+        if (_driveBackup != null) return _driveBackup;
+        if (!_settings.DriveBackup || !GoogleAuth.IsConfigured) return null;
+        var store = TokenStore.Create();
+        if (store.Load() is null) return null;
+        var auth = new GoogleAuth(store);
+        var client = new DriveClient(new HttpClientHandler(), auth.GetAccessTokenAsync);
+        // The dialog buttons are fixed Yes/Cancel, so the engine writes the
+        // choice into the body text: Yes = replace with mine / recreate.
+        // The engine runs off the UI thread, and dialogs may only be built on
+        // it, so both prompts marshal through the dispatcher.
+        _driveBackup = new DriveBackup(client, () => _settings, () => Settings.Save(_settings),
+            conflictPrompt: async (title, body) =>
+                await Dispatcher.UIThread.InvokeAsync(() => ConfirmAsync(title, body))
+                    ? ConflictChoice.ReplaceWithMine : ConflictChoice.KeepOnline,
+            recreatePrompt: (title, body) => Dispatcher.UIThread.InvokeAsync(() => ConfirmAsync(title, body)),
+            status: (msg, warn) => Dispatcher.UIThread.Post(() =>
+                Status(msg, warn ? StatusKind.Warning : StatusKind.Info)));
+        return _driveBackup;
+    }
+
+    // Fire-and-forget the push after a save. Never awaited on the save path.
+    void FireBackupPush(string path, string text) =>
+        RunBackup(path, async b => (PushResult?)await b.PushAsync(path, text));
+
+    // Fire-and-forget the retry when a linked profile opens.
+    void FireBackupRetry(string path, string text) =>
+        RunBackup(path, b => b.RetryIfDirtyAsync(path, text));
+
+    // One wrapper for both: run the op off the UI thread, swallow everything
+    // (nothing from backup may crash the app), and apply a KeptOnline result on
+    // the UI thread. A null backup means backup is off; do nothing.
+    void RunBackup(string path, Func<DriveBackup, Task<PushResult?>> op)
+    {
+        var backup = Backup();
+        if (backup is null) return;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var result = await op(backup);
+                if (result?.Kind == PushResultKind.KeptOnline && result.DownloadedCsv is string online)
+                    await Dispatcher.UIThread.InvokeAsync(() => ApplyKeptOnline(path, online));
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.UIThread.Post(() => Status($"Backup error: {ex.Message}", StatusKind.Warning));
+            }
+        });
+    }
+
+    // Keep online: the local file is never lost. Copy it into the rescue folder
+    // first, then overwrite it with the sheet and reload the editor if the user
+    // is still on this file.
+    void ApplyKeptOnline(string path, string onlineCsv)
+    {
+        try
+        {
+            Directory.CreateDirectory(CrashGuard.RescueDir);
+            if (File.Exists(path))
+            {
+                var name = Path.GetFileNameWithoutExtension(path);
+                var dest = Path.Combine(CrashGuard.RescueDir,
+                    $"{name}-replaced-{DateTime.Now:yyyyMMdd-HHmmss}-{DateTime.Now.Ticks % 10000}.csv");
+                File.Copy(path, dest, overwrite: true);
+            }
+            ProfileFile.WriteAtomic(path, onlineCsv);
+            if (_savePath == path)
+                OpenInEditor(ProfileFile.Load(onlineCsv), path);
+            Status("Loaded the online version of this profile. Your previous local copy is in the rescue folder.", StatusKind.Warning);
+        }
+        catch (Exception ex)
+        {
+            Status($"Could not load the online version: {ex.Message}", StatusKind.Error);
+        }
+    }
+
     readonly Dictionary<string, Border> _cellBorders = new();
     readonly Dictionary<string, Button> _zoneButtons = new(); // Device View zone id -> its button, for focus management
     static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(15) };
@@ -732,6 +815,8 @@ public partial class MainWindow : Window
         _selectedZone = null;
         ShowEditor();
         RefreshEditor(); // RefreshIssues inside sets the status line
+        // A profile opened from a path retries its backup if it was left dirty.
+        if (savePath is not null) FireBackupRetry(savePath, file.ToCsvText());
     }
 
     void RepopulateSheetPicker(int select)
@@ -1620,10 +1705,11 @@ public partial class MainWindow : Window
             _savePath = pick.Path.LocalPath;
         }
 
+        string text;
         try
         {
             _file.EnsureVersionHeader(); // saved files match installed files byte for byte
-            var text = _file.ToCsvText();
+            text = _file.ToCsvText();
             await Task.Run(() => ProfileFile.WriteAtomic(_savePath, text));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -1631,6 +1717,9 @@ public partial class MainWindow : Window
         _file.Dirty = false;
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
         Status($"Saved to {_savePath}.", StatusKind.Ready);
+        // Local save is done. Push to the sheet in the background on the exact
+        // bytes just written; the save path never waits on the network.
+        FireBackupPush(_savePath, text);
         return true;
     }
 
