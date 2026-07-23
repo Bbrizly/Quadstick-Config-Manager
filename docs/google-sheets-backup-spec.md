@@ -190,16 +190,33 @@ Choices made:
 ## Restore (bulk import from Drive)
 
 The point of the whole feature: machine dies, new machine, get everything
-back. An "Import from Google Drive" button lives in settings next to the
-backup toggle, and is offered right after connecting during onboarding.
+back. One picker dialog serves both bulk restore and cherry-picking, from
+three entry points:
+
+- Home: a "Google Drive" button next to the YOUR PROFILES section header
+  (shown once backup is connected). Opens the picker; picked sheets land
+  in Your profiles.
+- Settings: an "Import from Google Drive" button next to the backup
+  toggle.
+- Onboarding: offered right after connecting, the new-machine moment.
+
+Home stays a local view: no Drive call on home load, no third live
+section. The list is fetched when the picker opens. Ceiling accepted: an
+inline always-visible Drive pane can come later if users ask.
 
 - files.list with q = spreadsheet mimeType and trashed=false, paged via
   nextPageToken. Under drive.file this returns exactly the sheets this app
   created: the user's backups, nothing else of theirs.
-- Show the list with checkboxes, all checked, with each sheet's name and
-  last-modified date. Import runs the selected ones through the same
-  authenticated CSV export fetch and the existing parse code, written into
-  the library with the atomic write helper.
+- The picker lists each sheet's name and last-modified date with
+  checkboxes. From onboarding everything is pre-checked (restore); from
+  home or settings nothing is (cherry-pick). Sheets already linked to a
+  local profile (matched by spreadsheetId, so renames don't fool it) show
+  greyed with "already in your profiles". The match counts only if the
+  mapped local file still exists; a stale entry for a deleted local CSV
+  is ignored and pruned, otherwise it would grey out the very sheet
+  restore exists to bring back. Import runs the selected ones
+  through the same authenticated CSV export fetch and the existing parse
+  code, written into the library with the atomic write helper.
 - Sheet names are not safe filenames. The existing SafeTemplateName rule
   covers invalid and path characters but not everything Drive allows, so
   restore extends it: blank becomes Untitled, reserved Windows device
