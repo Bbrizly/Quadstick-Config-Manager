@@ -405,13 +405,16 @@ public sealed class DriveBackup
                 if (onDisk.Contains(fileName))
                 { skipped.Add((reportName, "already exists")); continue; }
 
+                // Read the metadata BEFORE writing the file: every network
+                // failure then lands before the disk has anything to undo, so
+                // a failed import can never leave an unlinked local file.
+                var mt = await _client.GetModifiedTimeAsync(pick.Id, ct);
+
                 var dest = Path.Combine(libraryDir, fileName);
                 ProfileFile.WriteAtomic(dest, csv);
 
                 // Link on the spot: future saves push to this sheet instead of
-                // forking a duplicate. modifiedTime is read fresh so the next
-                // save's conflict check compares against a real value.
-                var mt = await _client.GetModifiedTimeAsync(pick.Id, ct);
+                // forking a duplicate.
                 settings.DriveLinks[dest] = new DriveLink
                 {
                     SpreadsheetId = pick.Id,
