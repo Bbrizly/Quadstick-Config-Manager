@@ -29,12 +29,15 @@ public class DriveBackupTests
     static bool IsCreate(HttpRequestMessage r) =>
         r.Method == HttpMethod.Post && r.RequestUri!.AbsoluteUri == "https://sheets.googleapis.com/v4/spreadsheets";
     static bool IsDownload(HttpRequestMessage r) => r.RequestUri!.AbsoluteUri.Contains("export?format=csv");
+    static bool IsPermissions(HttpRequestMessage r) =>
+        r.Method == HttpMethod.Post && r.RequestUri!.AbsoluteUri.Contains("/permissions");
 
     static (DriveBackup backup, AppSettings settings, List<(string Msg, bool Warn)> statuses) Make(
         Func<HttpRequestMessage, HttpResponseMessage> responder,
         ConflictChoice conflict = ConflictChoice.ReplaceWithMine,
         bool recreate = true,
-        Func<CancellationToken, Task<string>>? token = null)
+        Func<CancellationToken, Task<string>>? token = null,
+        bool shareConfirm = true)
     {
         var settings = new AppSettings();
         var client = new DriveClient(new FakeHandler(responder), token ?? (_ => Task.FromResult("tok")));
@@ -42,7 +45,8 @@ public class DriveBackupTests
         var backup = new DriveBackup(client, () => settings, () => { },
             conflictPrompt: (_, _) => Task.FromResult(conflict),
             recreatePrompt: (_, _) => Task.FromResult(recreate),
-            status: (m, w) => statuses.Add((m, w)));
+            status: (m, w) => statuses.Add((m, w)),
+            shareConfirm: () => Task.FromResult(shareConfirm));
         return (backup, settings, statuses);
     }
 
@@ -226,5 +230,109 @@ public class DriveBackupTests
 
         Assert.False(settings.DriveLinks.ContainsKey("/old.csv"));
         Assert.Equal("s", settings.DriveLinks["/new.csv"].SpreadsheetId);
+    }
+
+    // ---- Share link, the spec's five step sequence ----
+
+    // First share of a never-linked profile: create + push, confirm, grant
+    // reader, then re-read modifiedTime so the grant does not look like an
+    // online edit next save.
+    [Fact]
+    public async Task Share_FirstTime_GrantsReader_RecordsSharedAndTime()
+    {
+        int mt = 0;
+        var (backup, settings, _) = Make(r =>
+        {
+            if (IsCreate(r)) return Json("{\"spreadsheetId\":\"sheetX\"}");
+            if (IsModified(r)) return Json(mt++ == 0 ? "{\"modifiedTime\":\"t-created\"}" : "{\"modifiedTime\":\"t-shared\"}");
+            return Json("{}"); // clear + update + permissions
+        });
+
+        var result = await backup.GetShareLinkAsync("/lib/mygame.csv", Grid);
+
+        Assert.Equal(ShareLinkKind.Copied, result.Kind);
+        Assert.Equal("https://docs.google.com/spreadsheets/d/sheetX/edit?usp=sharing", result.Url);
+        var link = settings.DriveLinks["/lib/mygame.csv"];
+        Assert.True(link.LinkShared);
+        Assert.Equal("t-shared", link.LastSeenModifiedTime); // re-read after the grant
+    }
+
+    // The first backup failing means the sheet never held the profile, so
+    // sharing it would hand a friend a blank: copy nothing.
+    [Fact]
+    public async Task Share_FirstBackupFails_ReturnsFailed_NoUrl()
+    {
+        var (backup, settings, _) = Make(r =>
+            IsCreate(r) ? Json("{}", HttpStatusCode.InternalServerError) : Json("{}"));
+
+        var result = await backup.GetShareLinkAsync("/p.csv", Grid);
+
+        Assert.Equal(ShareLinkKind.Failed, result.Kind);
+        Assert.Null(result.Url);
+        Assert.False(settings.DriveLinks.ContainsKey("/p.csv"));
+    }
+
+    // Linked but dirty and the push fails: still copy the last good link, just
+    // flag it stale.
+    [Fact]
+    public async Task Share_DirtyPushFails_ReturnsStale_WithUrl()
+    {
+        var (backup, settings, _) = Make(r =>
+            IsModified(r) ? Json("{}", HttpStatusCode.InternalServerError) : Json("{}"));
+        settings.DriveLinks["/p.csv"] = new DriveLink
+        { SpreadsheetId = "s", LastSeenModifiedTime = "t0", BackupDirty = true };
+
+        var result = await backup.GetShareLinkAsync("/p.csv", Grid);
+
+        Assert.Equal(ShareLinkKind.CopiedStale, result.Kind);
+        Assert.Equal("https://docs.google.com/spreadsheets/d/s/edit?usp=sharing", result.Url);
+    }
+
+    // Declining the share confirmation copies nothing and leaves the sheet
+    // unshared.
+    [Fact]
+    public async Task Share_ConfirmDeclined_ReturnsCancelled()
+    {
+        var (backup, settings, _) = Make(_ => Json("{}"), shareConfirm: false);
+        settings.DriveLinks["/p.csv"] = new DriveLink { SpreadsheetId = "s", LastSeenModifiedTime = "t0" };
+
+        var result = await backup.GetShareLinkAsync("/p.csv", Grid);
+
+        Assert.Equal(ShareLinkKind.Cancelled, result.Kind);
+        Assert.Null(result.Url);
+        Assert.False(settings.DriveLinks["/p.csv"].LinkShared);
+    }
+
+    // The grant call failing leaves an unshared link, which is useless: copy
+    // nothing.
+    [Fact]
+    public async Task Share_GrantFails_ReturnsFailed_NoUrl()
+    {
+        var (backup, settings, _) = Make(r =>
+            IsPermissions(r) ? Json("{}", HttpStatusCode.InternalServerError) : Json("{}"));
+        settings.DriveLinks["/p.csv"] = new DriveLink { SpreadsheetId = "s", LastSeenModifiedTime = "t0" };
+
+        var result = await backup.GetShareLinkAsync("/p.csv", Grid);
+
+        Assert.Equal(ShareLinkKind.Failed, result.Kind);
+        Assert.Null(result.Url);
+        Assert.False(settings.DriveLinks["/p.csv"].LinkShared);
+    }
+
+    // After the one-time grant, a linked and clean sheet is a pure clipboard
+    // write: not a single HTTP request.
+    [Fact]
+    public async Task Share_AfterGrant_MakesNoHttpRequests()
+    {
+        int calls = 0;
+        var (backup, settings, _) = Make(r => { calls++; return Json("{}"); });
+        settings.DriveLinks["/p.csv"] = new DriveLink
+        { SpreadsheetId = "s", LastSeenModifiedTime = "t0", BackupDirty = false, LinkShared = true };
+
+        var result = await backup.GetShareLinkAsync("/p.csv", Grid);
+
+        Assert.Equal(ShareLinkKind.Copied, result.Kind);
+        Assert.Equal("https://docs.google.com/spreadsheets/d/s/edit?usp=sharing", result.Url);
+        Assert.Equal(0, calls);
     }
 }

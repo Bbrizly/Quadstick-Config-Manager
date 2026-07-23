@@ -107,6 +107,23 @@ public class SmokeTests
         w.Close();
     }
 
+    // The editor Share button opens a flyout with the two sharing actions.
+    // Presence only; we never trigger a network call.
+    [AvaloniaFact]
+    public void Editor_share_button_flyout_has_both_actions()
+    {
+        var w = NewWindow();
+        var file = ProfileFile.NewFromTemplate("smoke.csv");
+        w.LoadProfile(file);
+        var share = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "ShareButton");
+        var flyout = Assert.IsType<MenuFlyout>(share.Flyout);
+        var headers = flyout.Items.OfType<MenuItem>().Select(i => i.Header as string).ToList();
+        Assert.Contains("Copy share link", headers);
+        Assert.Contains("Open in Google Sheets", headers);
+        file.Dirty = false;
+        w.Close();
+    }
+
     [AvaloniaFact]
     public void New_profile_opens_the_editor_and_every_zone_builds()
     {

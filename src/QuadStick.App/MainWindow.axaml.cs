@@ -100,7 +100,10 @@ public partial class MainWindow : Window
                     ? ConflictChoice.ReplaceWithMine : ConflictChoice.KeepOnline,
             recreatePrompt: (title, body) => Dispatcher.UIThread.InvokeAsync(() => ConfirmAsync(title, body)),
             status: (msg, warn) => Dispatcher.UIThread.Post(() =>
-                Status(msg, warn ? StatusKind.Warning : StatusKind.Info)));
+                Status(msg, warn ? StatusKind.Warning : StatusKind.Info)),
+            shareConfirm: () => Dispatcher.UIThread.InvokeAsync(() => ConfirmAsync(
+                "Share this sheet?",
+                "Anyone with this link can view this sheet (read only). Turn on link sharing and copy?")));
         return _driveBackup;
     }
 
@@ -186,6 +189,102 @@ public partial class MainWindow : Window
         _settings.DriveBackup = false;
         PersistSettings();
         _driveBackup = null;
+    }
+
+    // The two sharing actions, offered as one pair everywhere: the editor's
+    // Share button flyout and each home library card's context menu. path is
+    // null for the open editor and a real path for a home card.
+    MenuFlyout ShareMenu(string? path)
+    {
+        var copy = new MenuItem { Header = "Copy share link" };
+        AutomationProperties.SetName(copy, "Copy a link to this profile's Google Sheet");
+        copy.Click += async (_, _) => await CopyShareLinkAsync(path);
+        var open = new MenuItem { Header = "Open in Google Sheets" };
+        AutomationProperties.SetName(open, "Open this profile's Google Sheet in your browser");
+        open.Click += async (_, _) => await OpenInSheetsAsync(path);
+        return new MenuFlyout { Items = { copy, open } };
+    }
+
+    // Sharing needs backup on and connected. When it is off (Backup() is null)
+    // the actions still show, but choosing one explains and opens Settings
+    // rather than failing silently. Returns true when backup is ready.
+    bool ShareNeedsBackup()
+    {
+        if (Backup() is not null) return true;
+        Status("Sharing needs Google Sheets backup. Turn it on in Settings.", StatusKind.Warning);
+        new SettingsWindow(this).ShowDialog(this);
+        return false;
+    }
+
+    // Copy a profile's share link to the clipboard. path null means the open
+    // editor: save first (step 1) so a never-saved file is named and on disk.
+    // A home card passes its path and is already saved. The engine call is
+    // awaited (not fire-and-forget): the async HTTP yields, so the UI thread
+    // stays responsive without a spinner.
+    async Task CopyShareLinkAsync(string? path)
+    {
+        if (!ShareNeedsBackup()) return;
+
+        string csvText;
+        if (path is null)
+        {
+            if (!await SaveAsync()) return; // save names the file and gives a path
+            path = _savePath;
+            if (path is null || _file is null) return;
+            csvText = _file.ToCsvText();
+        }
+        else
+        {
+            try { csvText = File.ReadAllText(path); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Status($"Could not read {BareName(Path.GetFileName(path))}: {ex.Message}", StatusKind.Error);
+                return;
+            }
+        }
+
+        var result = await Backup()!.GetShareLinkAsync(path, csvText);
+        switch (result.Kind)
+        {
+            case ShareLinkKind.Copied:
+            case ShareLinkKind.CopiedStale:
+                if (result.Url is string url && Clipboard is { } cb)
+                {
+                    await cb.SetTextAsync(url);
+                    Status(result.Message, result.Kind == ShareLinkKind.CopiedStale ? StatusKind.Warning : StatusKind.Ready);
+                }
+                break;
+            case ShareLinkKind.Failed:
+                Status(result.Message, StatusKind.Warning);
+                break;
+            case ShareLinkKind.Cancelled:
+                break; // the user backed out; say nothing
+        }
+    }
+
+    // Open a profile's sheet in the browser. No sheet yet means the user must
+    // copy a share link first, which creates it.
+    async Task OpenInSheetsAsync(string? path)
+    {
+        if (!ShareNeedsBackup()) return;
+
+        if (path is null)
+        {
+            if (_savePath is null)
+            {
+                Status("Save this profile first, then copy a share link to create its sheet.", StatusKind.Info);
+                return;
+            }
+            path = _savePath;
+        }
+
+        var url = Backup()!.LinkedSheetUrl(path);
+        if (url is null)
+        {
+            Status("This profile has no Google Sheet yet. Use Copy share link first, which creates it.", StatusKind.Info);
+            return;
+        }
+        await Launcher.LaunchUriAsync(new Uri(url));
     }
 
     readonly Dictionary<string, Border> _cellBorders = new();
@@ -298,6 +397,7 @@ public partial class MainWindow : Window
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
         ModesButton.Click += async (_, _) => await ShowModesAsync();
+        ShareButton.Flyout = ShareMenu(null); // null = the open editor's profile
         // A click that lands on nothing selectable drops the row selection,
         // exactly like a file explorer. Row-number presses mark themselves
         // Handled, so they never reach this.
@@ -818,6 +918,10 @@ public partial class MainWindow : Window
                 HomeStatusText.IsVisible = true;
             }
         };
+        // Library cards get the same two sharing actions as the editor. Right
+        // click, or long-press on touch, opens the menu. Device cards do not:
+        // an on-device file has no library path to key a sheet by.
+        if (!onDevice) card.ContextFlyout = ShareMenu(path);
         return card;
     }
 

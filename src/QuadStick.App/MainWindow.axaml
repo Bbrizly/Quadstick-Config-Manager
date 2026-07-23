@@ -129,6 +129,8 @@
                          FontSize="{DynamicResource SubheadSize}"/>
             </TextBox.InnerRightContent>
           </TextBox>
+          <Button x:Name="ShareButton" Classes="quiet" Content="Share"
+                  AutomationProperties.Name="Share this profile as a Google Sheet"/>
         </StackPanel>
         <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="10">
           <Button x:Name="SaveButton" Content="Save"

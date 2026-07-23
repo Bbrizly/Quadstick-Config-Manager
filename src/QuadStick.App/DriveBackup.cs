@@ -21,6 +21,10 @@ public sealed class DriveBackup
     readonly Func<string, string, Task<ConflictChoice>> _conflictPrompt;
     // title, body -> true recreate as a new sheet, false turn backup off here.
     readonly Func<string, string, Task<bool>> _recreatePrompt;
+    // "Anyone with this link can view (read only). Turn on sharing and copy?"
+    // -> the user's yes/no. Called at most once per sheet, the first time a
+    // share link is copied. Marshalled to the UI thread by the caller.
+    readonly Func<Task<bool>> _shareConfirm;
     // message, isWarning. Marshalled to the UI thread by the caller.
     readonly Action<string, bool> _status;
 
@@ -47,7 +51,8 @@ public sealed class DriveBackup
         Action saveSettings,
         Func<string, string, Task<ConflictChoice>> conflictPrompt,
         Func<string, string, Task<bool>> recreatePrompt,
-        Action<string, bool> status)
+        Action<string, bool> status,
+        Func<Task<bool>> shareConfirm)
     {
         _client = client;
         _getSettings = getSettings;
@@ -55,6 +60,7 @@ public sealed class DriveBackup
         _conflictPrompt = conflictPrompt;
         _recreatePrompt = recreatePrompt;
         _status = status;
+        _shareConfirm = shareConfirm;
     }
 
     // Push one profile's grid to its sheet, following the spec Flow exactly.
@@ -198,6 +204,75 @@ public sealed class DriveBackup
             _saveSettings();
         }
     }
+
+    // The share URL for a linked profile, or null when it has no sheet yet.
+    // Used by "Open in Google Sheets".
+    public string? LinkedSheetUrl(string profilePath) =>
+        _getSettings().DriveLinks.TryGetValue(profilePath, out var link) ? Url(link.SpreadsheetId) : null;
+
+    static string Url(string spreadsheetId) =>
+        $"https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit?usp=sharing";
+
+    // "Copy share link", the spec's five step sequence. Returns the URL to put
+    // on the clipboard plus a message, or a Cancelled/Failed result. Step 1,
+    // the local save, is the caller's job: saving is UI and the state map is
+    // keyed by path, so the caller saves (which names the file) before this
+    // runs. No path, no sheet.
+    public async Task<ShareLinkResult> GetShareLinkAsync(string profilePath, string csvText, CancellationToken ct = default)
+    {
+        var settings = _getSettings();
+        settings.DriveLinks.TryGetValue(profilePath, out var link);
+
+        // Step 2: not linked yet. Run the first backup (create + push) through
+        // the existing path. A sheet that never held the profile would share as
+        // a blank, so a failed first push copies nothing.
+        if (link is null)
+        {
+            var first = await PushAsync(profilePath, csvText, ct);
+            if (first.Kind != PushResultKind.Pushed)
+                return new ShareLinkResult(ShareLinkKind.Failed, null,
+                    "Could not create the Google Sheet, so there is nothing to share yet.");
+            link = settings.DriveLinks[profilePath];
+        }
+        // Step 3: linked but the last backup did not land. Push. If it fails,
+        // still copy the link but say the latest changes are not up yet; a
+        // known good earlier backup beats no link offline.
+        else if (link.BackupDirty)
+        {
+            var push = await PushAsync(profilePath, csvText, ct);
+            if (push.Kind is PushResultKind.Failed or PushResultKind.Paused)
+                return new ShareLinkResult(ShareLinkKind.CopiedStale, Url(link.SpreadsheetId),
+                    "Link copied. Your latest changes are not uploaded yet (backup pending).");
+        }
+
+        // Step 4: share the sheet once. Anyone with the link can view (read
+        // only). The linked-and-clean path reaches here with no network call
+        // yet, so an already shared sheet is a pure clipboard write below.
+        if (!link.LinkShared)
+        {
+            if (!await _shareConfirm())
+                return new ShareLinkResult(ShareLinkKind.Cancelled, null, "");
+            try
+            {
+                await _client.ShareAnyoneReaderAsync(link.SpreadsheetId, ct);
+                link.LinkShared = true;
+                // The grant can bump modifiedTime; re-read it now so the next
+                // save does not see a phantom online edit and prompt a
+                // self-inflicted conflict.
+                link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
+                _saveSettings();
+            }
+            catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException or GoogleAuthRevokedException)
+            {
+                // An unshared link is useless, so copy nothing.
+                return new ShareLinkResult(ShareLinkKind.Failed, null,
+                    "Could not turn on link sharing, so nothing was copied.");
+            }
+        }
+
+        // Step 5: hand back the URL for the clipboard.
+        return new ShareLinkResult(ShareLinkKind.Copied, Url(link.SpreadsheetId), "Link copied.");
+    }
 }
 
 // The user's pick on the conflict prompt.
@@ -217,5 +292,25 @@ public sealed class PushResult
     {
         Kind = kind;
         DownloadedCsv = downloadedCsv;
+    }
+}
+
+// What "Copy share link" ended up doing. Copied and CopiedStale both carry a
+// URL for the clipboard; Cancelled and Failed do not.
+public enum ShareLinkKind { Copied, CopiedStale, Cancelled, Failed }
+
+public sealed class ShareLinkResult
+{
+    public ShareLinkKind Kind { get; }
+    // The share URL to put on the clipboard. Null on Cancelled and Failed.
+    public string? Url { get; }
+    // A ready-to-show line for the status bar.
+    public string Message { get; }
+
+    public ShareLinkResult(ShareLinkKind kind, string? url, string message)
+    {
+        Kind = kind;
+        Url = url;
+        Message = message;
     }
 }
