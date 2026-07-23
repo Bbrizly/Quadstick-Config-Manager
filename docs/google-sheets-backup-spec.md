@@ -84,6 +84,8 @@ Plain HttpClient against REST, no Google SDK. Endpoints:
    code unchanged.
 6. permissions.create (role=reader, type=anyone), once per sheet, the
    first time the user copies a share link.
+7. files.list (spreadsheets only, not trashed, paged) for bulk restore;
+   drive.file scopes it to sheets this app created.
 
 ## Linking and state
 
@@ -184,6 +186,42 @@ Choices made:
   instant and offline-safe. Ceiling accepted and named: if the user
   revokes link access inside Google, linkShared is stale and the app
   copies a dead link; the fix is Google's own Share dialog, not app code.
+
+## Restore (bulk import from Drive)
+
+The point of the whole feature: machine dies, new machine, get everything
+back. An "Import from Google Drive" button lives in settings next to the
+backup toggle, and is offered right after connecting during onboarding.
+
+- files.list with q = spreadsheet mimeType and trashed=false, paged via
+  nextPageToken. Under drive.file this returns exactly the sheets this app
+  created: the user's backups, nothing else of theirs.
+- Show the list with checkboxes, all checked, with each sheet's name and
+  last-modified date. Import runs the selected ones through the same
+  authenticated CSV export fetch and the existing parse code, written into
+  the library with the atomic write helper.
+- Sheet names are not safe filenames. The existing SafeTemplateName rule
+  covers invalid and path characters but not everything Drive allows, so
+  restore extends it: blank becomes Untitled, reserved Windows device
+  names (CON, NUL, ...) get a suffix, trailing dots and spaces are
+  trimmed, length is capped. Duplicates after sanitizing get a numbered
+  suffix. Collision checks happen on the sanitized name.
+- Each imported profile is linked on the spot: record spreadsheetId and
+  modifiedTime, backupDirty=false. Future saves push to the same sheet
+  instead of forking a duplicate. If recording the link state fails, the
+  just-written CSV is deleted and the file is reported as failed; a
+  restored-but-unlinked file would silently fork a duplicate sheet on its
+  next save, so restore keeps the invariant that imported means linked.
+- Name collision with an existing local file: skip it and say so in the
+  result summary ("3 imported, 1 skipped: mygame already exists"). The
+  local file is the source of truth; restore never overwrites it. To take
+  the online copy instead, rename or delete the local file and re-run
+  restore, or paste the sheet's link into the import box.
+- Per-file failures do not abort the batch; the summary lists them.
+- Ceiling accepted and named: drive.file only lists sheets THIS app
+  created. Sheets the user made by hand in Drive are invisible here and
+  come in via the existing paste-link import. Listing all their Drive
+  would need a restricted scope and Google's heavy security review.
 
 ## Store packaging risks (verify in week one, before UI work)
 
