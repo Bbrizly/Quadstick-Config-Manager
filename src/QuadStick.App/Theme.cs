@@ -18,6 +18,18 @@ public sealed class AppSettings
     public bool TutorialSeen = false;
     public bool DeviceCards = true;            // device view mappings as sentence cards
     public double? WinW, WinH, WinX, WinY;     // null = use window defaults
+    public bool DriveBackup = false;
+    public Dictionary<string, DriveLink> DriveLinks = new(); // key: profile file path
+}
+
+// Per-profile Google Sheets backup state. Keyed by profile file path in
+// AppSettings.DriveLinks.
+public sealed class DriveLink
+{
+    public string SpreadsheetId = "";
+    public string LastSeenModifiedTime = "";
+    public bool BackupDirty = false;
+    public bool LinkShared = false;
 }
 
 public static class Settings
@@ -49,6 +61,8 @@ public static class Settings
 // so old files with lowercase "model"/"theme" still load.
 [JsonSourceGenerationOptions(IncludeFields = true, PropertyNameCaseInsensitive = true)]
 [JsonSerializable(typeof(AppSettings))]
+[JsonSerializable(typeof(DriveLink))]
+[JsonSerializable(typeof(Dictionary<string, DriveLink>))]
 internal partial class SettingsJsonContext : JsonSerializerContext { }
 
 public static class Theme

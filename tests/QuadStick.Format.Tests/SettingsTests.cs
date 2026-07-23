@@ -23,6 +23,17 @@ public class SettingsTests
             WinH = 768.25,
             WinX = 12.0,
             WinY = 34.0,
+            DriveBackup = true,
+            DriveLinks = new()
+            {
+                ["/profiles/singleton.qsp"] = new DriveLink
+                {
+                    SpreadsheetId = "sheet-123",
+                    LastSeenModifiedTime = "2026-07-22T00:00:00Z",
+                    BackupDirty = true,
+                    LinkShared = true,
+                },
+            },
         };
 
         Settings.Save(settings, path);
@@ -38,6 +49,12 @@ public class SettingsTests
         Assert.Equal(768.25, loaded.WinH);
         Assert.Equal(12.0, loaded.WinX);
         Assert.Equal(34.0, loaded.WinY);
+        Assert.True(loaded.DriveBackup);
+        var link = Assert.Contains("/profiles/singleton.qsp", loaded.DriveLinks);
+        Assert.Equal("sheet-123", link.SpreadsheetId);
+        Assert.Equal("2026-07-22T00:00:00Z", link.LastSeenModifiedTime);
+        Assert.True(link.BackupDirty);
+        Assert.True(link.LinkShared);
     }
 
     [Fact]
@@ -76,6 +93,8 @@ public class SettingsTests
         Assert.Null(settings.WinH);
         Assert.Null(settings.WinX);
         Assert.Null(settings.WinY);
+        Assert.False(settings.DriveBackup);
+        Assert.Empty(settings.DriveLinks);
     }
 
     [Fact]
