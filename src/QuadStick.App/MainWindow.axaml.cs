@@ -160,6 +160,34 @@ public partial class MainWindow : Window
         }
     }
 
+    // Runs the OAuth sign-in and turns backup on when it succeeds. Called from
+    // the Settings window's Backup checkbox and its Reconnect button, so both
+    // paths share one place that flips the setting and rebuilds the engine.
+    public async Task<bool> ConnectGoogleAsync(CancellationToken ct = default)
+    {
+        if (!GoogleAuth.IsConfigured) return false;
+        try
+        {
+            var auth = new GoogleAuth(TokenStore.Create());
+            await auth.SignInAsync(uri => Launcher.LaunchUriAsync(uri), ct);
+            _settings.DriveBackup = true;
+            PersistSettings();
+            _driveBackup = null; // rebuild next use, now that a token is stored
+            return true;
+        }
+        catch (GoogleAuthException) { return false; }
+        catch (OperationCanceledException) { return false; }
+    }
+
+    // Turns backup off. The stored token is left alone, so reconnecting later
+    // needs no fresh sign-in unless Google revoked it.
+    public void DisableDriveBackup()
+    {
+        _settings.DriveBackup = false;
+        PersistSettings();
+        _driveBackup = null;
+    }
+
     readonly Dictionary<string, Border> _cellBorders = new();
     readonly Dictionary<string, Button> _zoneButtons = new(); // Device View zone id -> its button, for focus management
     static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(15) };

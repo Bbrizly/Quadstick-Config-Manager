@@ -320,7 +320,87 @@ public class SettingsWindow : Window
         };
         panel.Children.Add(model);
 
+        panel.Children.Add(BackupArea(owner));
+
         return Tab(panel);
+    }
+
+    // Back up to Google Sheets: a checkbox that runs the OAuth flow when
+    // turned on, a Cancel for the wait (the spec requires a visible cancel),
+    // and a Reconnect for the revoked-token case.
+    Control BackupArea(MainWindow owner)
+    {
+        var section = new StackPanel { Spacing = 16 };
+        section.Children.Add(Heading("Back up to Google Sheets"));
+
+        var configured = GoogleAuth.IsConfigured;
+        var backupCheck = new CheckBox
+        {
+            Content = "Back up my profiles to Google Sheets",
+            IsChecked = owner.CurrentSettings.DriveBackup,
+            IsEnabled = configured,
+            FontSize = Size("BodySize"),
+        };
+        AutomationProperties.SetName(backupCheck, "Back up my profiles to Google Sheets");
+        section.Children.Add(backupCheck);
+        section.Children.Add(Caption(configured
+            ? "Saves push each profile to your own Google Drive as a sheet."
+            : "This build is not connected to Google yet."));
+
+        var waitingText = new TextBlock
+        { Text = "Waiting for your browser...", FontSize = Size("BodySize"), Classes = { "muted" } };
+        var cancelConnect = new Button { Content = "Cancel" };
+        AutomationProperties.SetName(cancelConnect, "Cancel connecting to Google");
+        var waitingRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 10, IsVisible = false,
+            Children = { waitingText, cancelConnect },
+        };
+        section.Children.Add(waitingRow);
+
+        var reconnect = new Button { Content = "Reconnect", IsVisible = owner.CurrentSettings.DriveBackup };
+        AutomationProperties.SetName(reconnect, "Reconnect to Google");
+        section.Children.Add(reconnect);
+
+        bool suppress = false; // stops the programmatic uncheck below re-triggering this
+        CancellationTokenSource? connectCts = null;
+
+        async Task RunConnectAsync()
+        {
+            connectCts = new CancellationTokenSource();
+            waitingRow.IsVisible = true;
+            try
+            {
+                bool ok = await owner.ConnectGoogleAsync(connectCts.Token);
+                if (!ok)
+                {
+                    suppress = true;
+                    backupCheck.IsChecked = false;
+                    suppress = false;
+                }
+                reconnect.IsVisible = owner.CurrentSettings.DriveBackup;
+            }
+            finally
+            {
+                waitingRow.IsVisible = false;
+                connectCts = null;
+            }
+        }
+
+        backupCheck.IsCheckedChanged += async (_, _) =>
+        {
+            if (suppress) return;
+            if (backupCheck.IsChecked == true) await RunConnectAsync();
+            else
+            {
+                owner.DisableDriveBackup();
+                reconnect.IsVisible = false;
+            }
+        };
+        cancelConnect.Click += (_, _) => connectCts?.Cancel();
+        reconnect.Click += async (_, _) => await RunConnectAsync();
+
+        return section;
     }
 
     Control AdvancedTab(MainWindow owner)
