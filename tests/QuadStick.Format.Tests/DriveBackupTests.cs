@@ -29,7 +29,7 @@ public class DriveBackupTests
     static bool IsModified(HttpRequestMessage r) => r.RequestUri!.AbsoluteUri.Contains("fields=modifiedTime");
     static bool IsCreate(HttpRequestMessage r) =>
         r.Method == HttpMethod.Post && r.RequestUri!.AbsoluteUri == "https://sheets.googleapis.com/v4/spreadsheets";
-    static bool IsDownload(HttpRequestMessage r) => r.RequestUri!.AbsoluteUri.Contains("export?format=csv");
+    static bool IsDownload(HttpRequestMessage r) => r.RequestUri!.AbsoluteUri.Contains("/export?mimeType=");
     static bool IsPermissions(HttpRequestMessage r) =>
         r.Method == HttpMethod.Post && r.RequestUri!.AbsoluteUri.Contains("/permissions");
 

@@ -60,12 +60,15 @@ public class DriveClient
         return doc.RootElement.GetProperty("modifiedTime").GetString()!;
     }
 
-    // Authenticated CSV export of the first worksheet. Everything after the
-    // bytes arrive is the existing unauthenticated import code unchanged.
+    // CSV export of the first worksheet via the Drive API export endpoint, not
+    // the docs.google.com web export. The web endpoint answers an unaccepted
+    // token with 200 and an HTML sign-in page, which then fails to parse as a
+    // profile; this one returns a real 401/403 and never a login page. Works
+    // under drive.file for sheets this app created.
     public async Task<string> DownloadCsvAsync(string id, CancellationToken ct = default)
     {
         using var req = new HttpRequestMessage(HttpMethod.Get,
-            $"https://docs.google.com/spreadsheets/d/{id}/export?format=csv");
+            $"{DriveBase}/{id}/export?mimeType={Uri.EscapeDataString("text/csv")}");
         using var resp = await SendAsync(req, ct);
         return await resp.Content.ReadAsStringAsync(ct);
     }

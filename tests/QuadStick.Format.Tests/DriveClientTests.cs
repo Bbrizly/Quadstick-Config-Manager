@@ -73,6 +73,11 @@ public class DriveClientTests
         var auth = handler.Requests[0].Headers.Authorization!;
         Assert.Equal("Bearer", auth.Scheme);
         Assert.Equal("tok", auth.Parameter);
+        // Must be the Drive API export endpoint, not the docs.google.com web
+        // export, which returns an HTML sign-in page on an unaccepted token.
+        var url = handler.Requests[0].RequestUri!.ToString();
+        Assert.Contains("/drive/v3/files/id/export", url);
+        Assert.DoesNotContain("docs.google.com", url);
     }
 
     [Fact]
