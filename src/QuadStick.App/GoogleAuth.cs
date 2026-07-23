@@ -17,8 +17,12 @@ public class GoogleAuth
     public const string ClientId = GoogleClient.Id;
     public const string ClientSecret = GoogleClient.Secret;
 
-    // False while the placeholder is in place. Callers show "not set up yet".
-    public static bool IsConfigured => !ClientId.StartsWith("REPLACE-ME");
+    // False while the placeholder is in place, and on platforms without a
+    // persistent token store (Linux): connecting there would look fine, then
+    // drop the refresh token on every restart. Callers show "not set up yet".
+    public static bool IsConfigured =>
+        !ClientId.StartsWith("REPLACE-ME")
+        && (OperatingSystem.IsMacOS() || OperatingSystem.IsWindows());
 
     const string AuthEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
     const string TokenEndpoint = "https://oauth2.googleapis.com/token";
