@@ -27,6 +27,31 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
+      # The real Google OAuth client is gitignored (GoogleClient.Local.cs),
+      # so CI recreates it from repo secrets. Failing here is deliberate: a
+      # store package built without it would ship with Google backup silently
+      # disabled.
+      - name: Google client from secrets
+        shell: bash
+        env:
+          GID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GSECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        run: |
+          if [ -z "$GID" ] || [ -z "$GSECRET" ]; then
+            echo "GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET repo secrets are not set." >&2
+            echo "Add them in Settings > Secrets and variables > Actions." >&2
+            exit 1
+          fi
+          cat > src/QuadStick.App/GoogleClient.Local.cs <<EOF
+          namespace QuadStick.App;
+
+          static class GoogleClient
+          {
+              public const string Id = "$GID";
+              public const string Secret = "$GSECRET";
+          }
+          EOF
+
       # Self-contained folder (not single-file): MSIX packs a directory tree.
       - name: Publish
         shell: pwsh

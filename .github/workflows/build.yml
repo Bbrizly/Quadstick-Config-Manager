@@ -59,6 +59,31 @@ jobs:
         shell: bash
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"   # v1.2.3 -> 1.2.3
 
+      # The real Google OAuth client is gitignored (GoogleClient.Local.cs),
+      # so CI recreates it from repo secrets. Failing here is deliberate: a
+      # release built without it would ship with Google backup silently
+      # disabled. Forks without the feature can delete this step.
+      - name: Google client from secrets
+        shell: bash
+        env:
+          GID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GSECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        run: |
+          if [ -z "$GID" ] || [ -z "$GSECRET" ]; then
+            echo "GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET repo secrets are not set." >&2
+            echo "Add them in Settings > Secrets and variables > Actions, or remove this step to release without Google backup." >&2
+            exit 1
+          fi
+          cat > src/QuadStick.App/GoogleClient.Local.cs <<EOF
+          namespace QuadStick.App;
+
+          static class GoogleClient
+          {
+              public const string Id = "$GID";
+              public const string Secret = "$GSECRET";
+          }
+          EOF
+
       - name: Publish
         shell: bash
         run: |
