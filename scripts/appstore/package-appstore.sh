@@ -22,6 +22,11 @@ RID="osx-$(uname -m | sed 's/x86_64/x64/')"
 
 [ -f "$HERE/embedded.provisionprofile" ] || { echo "Missing $HERE/embedded.provisionprofile (Mac App Store profile from developer.apple.com)"; exit 1; }
 
+# The real Google OAuth client is gitignored. Refuse to package without it: a
+# store build from a clean checkout would ship with Google backup silently
+# disabled.
+[ -f "$ROOT/src/QuadStick.App/GoogleClient.Local.cs" ] || { echo "Missing src/QuadStick.App/GoogleClient.Local.cs (real Google client, see GoogleClient.cs)"; exit 1; }
+
 rm -rf "$OUT"; mkdir -p "$OUT"
 
 # 1. Publish single-file and wrap. Single-file embeds the managed dlls and the
