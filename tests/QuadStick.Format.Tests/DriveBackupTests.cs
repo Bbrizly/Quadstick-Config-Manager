@@ -503,6 +503,58 @@ public class DriveBackupTests
         Assert.False(settings.DriveLinks.ContainsKey(gonePath)); // and the stale entry is pruned
     }
 
+    // Create succeeds but the first push fails: the sheet id must already be
+    // recorded (dirty), so the retry pushes to the SAME sheet instead of
+    // creating a second one and orphaning the first.
+    [Fact]
+    public async Task FirstCreate_PushFails_RecordsLink_RetryReusesSheet()
+    {
+        int creates = 0;
+        bool fault = true;
+        var (backup, settings, _) = Make(r =>
+        {
+            if (IsCreate(r)) { creates++; return Json("{\"spreadsheetId\":\"keep\"}"); }
+            if (fault && r.Method == HttpMethod.Post && r.RequestUri!.AbsoluteUri.Contains(":clear"))
+                return Json("{}", HttpStatusCode.InternalServerError);
+            if (IsModified(r)) return Json("{\"modifiedTime\":\"t\"}");
+            return Json("{}");
+        });
+
+        var first = await backup.PushAsync("/lib/p.csv", Grid);
+        Assert.Equal(PushResultKind.Failed, first.Kind);
+        var link = settings.DriveLinks["/lib/p.csv"];
+        Assert.Equal("keep", link.SpreadsheetId);
+        Assert.True(link.BackupDirty);
+
+        fault = false;
+        var retry = await backup.RetryIfDirtyAsync("/lib/p.csv", Grid);
+        Assert.Equal(PushResultKind.Pushed, retry!.Kind);
+        Assert.Equal(1, creates);
+        Assert.False(settings.DriveLinks["/lib/p.csv"].BackupDirty);
+    }
+
+    // A dirty share that hits the conflict prompt and keeps the online version
+    // must hand the sheet CSV back so the caller still replaces the local file,
+    // and the copy still happens: the link points at the version the user kept.
+    [Fact]
+    public async Task Share_DirtyConflict_KeepOnline_CarriesCsv_AndCopies()
+    {
+        var (backup, settings, _) = Make(r =>
+        {
+            if (IsModified(r)) return Json("{\"modifiedTime\":\"tOnline\"}");
+            if (IsDownload(r)) return Csv("online,grid\r\n");
+            return Json("{}");
+        }, conflict: ConflictChoice.KeepOnline);
+        settings.DriveLinks["/p.csv"] = new DriveLink
+        { SpreadsheetId = "s", LastSeenModifiedTime = "tOld", BackupDirty = true, LinkShared = true };
+
+        var result = await backup.GetShareLinkAsync("/p.csv", Grid);
+
+        Assert.Equal(ShareLinkKind.Copied, result.Kind);
+        Assert.Equal("online,grid\r\n", result.DownloadedCsv);
+        Assert.Equal("tOnline", settings.DriveLinks["/p.csv"].LastSeenModifiedTime);
+    }
+
     // Slow transport so two engine calls genuinely overlap in time.
     class SlowHandler : HttpMessageHandler
     {

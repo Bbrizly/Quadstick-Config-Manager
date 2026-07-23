@@ -115,6 +115,12 @@ public partial class MainWindow : Window
     void FireBackupRetry(string path, string text) =>
         RunBackup(path, b => b.RetryIfDirtyAsync(path, text));
 
+    // The last background backup task. Copy share link awaits it so the
+    // just-saved push lands (or marks dirty) before the share flow reads the
+    // link state; otherwise the two race for the engine gate and a clean-
+    // looking link can be copied while the fresh save is still uploading.
+    Task? _backupInFlight;
+
     // One wrapper for both: run the op off the UI thread, swallow everything
     // (nothing from backup may crash the app), and apply a KeptOnline result on
     // the UI thread. A null backup means backup is off; do nothing.
@@ -122,7 +128,7 @@ public partial class MainWindow : Window
     {
         var backup = Backup();
         if (backup is null) return;
-        _ = Task.Run(async () =>
+        _backupInFlight = Task.Run(async () =>
         {
             try
             {
@@ -266,7 +272,18 @@ public partial class MainWindow : Window
             }
         }
 
+        // Let the save's own background push finish first so the share flow
+        // reads settled link state instead of racing it for the engine gate.
+        if (_backupInFlight is Task inFlight)
+            try { await inFlight; } catch { /* RunBackup already reported it */ }
+
         var result = await Backup()!.GetShareLinkAsync(path, csvText);
+
+        // The dirty push inside the share flow can hit the conflict prompt.
+        // Keep online means the local file still gets rescued and replaced,
+        // share or no share.
+        if (result.DownloadedCsv is string kept) ApplyKeptOnline(path, kept);
+
         switch (result.Kind)
         {
             case ShareLinkKind.Copied:

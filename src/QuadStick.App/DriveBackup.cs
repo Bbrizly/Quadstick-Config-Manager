@@ -61,6 +61,14 @@ public sealed class DriveBackup
         finally { _gate.Release(); }
     }
 
+    // A failed settings write surfaces in the status line instead of being
+    // swallowed (spec rule). Restore checks _trySave itself because it must
+    // also undo the file write.
+    void SaveState()
+    {
+        if (!_trySave()) _status("Could not save backup settings.", true);
+    }
+
     public DriveBackup(
         DriveClient client,
         Func<AppSettings> getSettings,
@@ -95,6 +103,12 @@ public sealed class DriveBackup
             if (link is null)
                 return await CreateAndRecordAsync(profilePath, csvText, ct);
 
+            // Persist the dirty flag before any network work. A crash or quit
+            // mid-push then still retries on the next launch; success below
+            // clears it again.
+            link.BackupDirty = true;
+            SaveState();
+
             // Conflict check: read the sheet's modifiedTime before touching it.
             var current = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
             if (current == link.LastSeenModifiedTime)
@@ -112,7 +126,7 @@ public sealed class DriveBackup
             var online = await _client.DownloadCsvAsync(link.SpreadsheetId, ct);
             link.LastSeenModifiedTime = current;
             link.BackupDirty = false;
-            _trySave();
+            SaveState();
             return new PushResult(PushResultKind.KeptOnline, online);
         }
         catch (DriveApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -138,7 +152,7 @@ public sealed class DriveBackup
         {
             // Turn backup off for this profile: drop the link, nothing dirty.
             _getSettings().DriveLinks.Remove(profilePath);
-            _trySave();
+            SaveState();
             return new PushResult(PushResultKind.RecreatedOff);
         }
         try
@@ -161,15 +175,16 @@ public sealed class DriveBackup
     {
         var title = Path.GetFileNameWithoutExtension(profilePath);
         var id = await _client.CreateSpreadsheetAsync(title, ct);
+        // Record the sheet the moment it exists, dirty until the push lands.
+        // If the push or the time read fails past this point, the retry pushes
+        // to THIS sheet instead of creating a second one.
+        var link = new DriveLink { SpreadsheetId = id, BackupDirty = true };
+        _getSettings().DriveLinks[profilePath] = link;
+        SaveState();
         await _client.PushGridAsync(id, Csv.Parse(csvText), ct);
-        var mt = await _client.GetModifiedTimeAsync(id, ct);
-        _getSettings().DriveLinks[profilePath] = new DriveLink
-        {
-            SpreadsheetId = id,
-            LastSeenModifiedTime = mt,
-            BackupDirty = false,
-        };
-        _trySave();
+        link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(id, ct);
+        link.BackupDirty = false;
+        SaveState();
         return new PushResult(PushResultKind.Pushed);
     }
 
@@ -180,7 +195,7 @@ public sealed class DriveBackup
         await _client.PushGridAsync(link.SpreadsheetId, Csv.Parse(csvText), ct);
         link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
         link.BackupDirty = false;
-        _trySave();
+        SaveState();
         return new PushResult(PushResultKind.Pushed);
     }
 
@@ -188,7 +203,7 @@ public sealed class DriveBackup
     PushResult FailPending(DriveLink? link)
     {
         if (link != null) link.BackupDirty = true;
-        _trySave();
+        SaveState();
         _status(PendingMessage, true);
         return new PushResult(PushResultKind.Failed);
     }
@@ -197,7 +212,7 @@ public sealed class DriveBackup
     PushResult Paused(DriveLink? link)
     {
         if (link != null) link.BackupDirty = true;
-        _trySave();
+        SaveState();
         _status(PausedMessage, true);
         return new PushResult(PushResultKind.Paused);
     }
@@ -221,7 +236,7 @@ public sealed class DriveBackup
         if (settings.DriveLinks.Remove(oldPath, out var link))
         {
             settings.DriveLinks[newPath] = link;
-            _trySave();
+            SaveState();
         }
     }
 
@@ -246,6 +261,11 @@ public sealed class DriveBackup
         var settings = _getSettings();
         settings.DriveLinks.TryGetValue(profilePath, out var link);
 
+        // The dirty push below can hit the conflict prompt; Keep online hands
+        // back the sheet CSV, which must reach the caller so the local file
+        // still gets rescued, overwritten, and reloaded even mid-share.
+        string? keptOnlineCsv = null;
+
         // Step 2: not linked yet. Run the first backup (create + push) through
         // the existing path. A sheet that never held the profile would share as
         // a blank, so a failed first push copies nothing.
@@ -263,7 +283,12 @@ public sealed class DriveBackup
         else if (link.BackupDirty)
         {
             var push = await PushCoreAsync(profilePath, csvText, ct);
-            if (push.Kind is PushResultKind.Failed or PushResultKind.Paused)
+            if (push.Kind == PushResultKind.KeptOnline)
+                keptOnlineCsv = push.DownloadedCsv;
+            else if (push.Kind == PushResultKind.RecreatedOff)
+                return new ShareLinkResult(ShareLinkKind.Failed, null,
+                    "Backup was turned off for this profile, so nothing was copied.");
+            else if (push.Kind is PushResultKind.Failed or PushResultKind.Paused)
                 return new ShareLinkResult(ShareLinkKind.CopiedStale, Url(link.SpreadsheetId),
                     "Link copied. Your latest changes are not uploaded yet (backup pending).");
         }
@@ -274,7 +299,7 @@ public sealed class DriveBackup
         if (!link.LinkShared)
         {
             if (!await _shareConfirm())
-                return new ShareLinkResult(ShareLinkKind.Cancelled, null, "");
+                return new ShareLinkResult(ShareLinkKind.Cancelled, null, "", keptOnlineCsv);
             try
             {
                 await _client.ShareAnyoneReaderAsync(link.SpreadsheetId, ct);
@@ -283,18 +308,18 @@ public sealed class DriveBackup
                 // save does not see a phantom online edit and prompt a
                 // self-inflicted conflict.
                 link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
-                _trySave();
+                SaveState();
             }
             catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException or GoogleAuthRevokedException)
             {
                 // An unshared link is useless, so copy nothing.
                 return new ShareLinkResult(ShareLinkKind.Failed, null,
-                    "Could not turn on link sharing, so nothing was copied.");
+                    "Could not turn on link sharing, so nothing was copied.", keptOnlineCsv);
             }
         }
 
         // Step 5: hand back the URL for the clipboard.
-        return new ShareLinkResult(ShareLinkKind.Copied, Url(link.SpreadsheetId), "Link copied.");
+        return new ShareLinkResult(ShareLinkKind.Copied, Url(link.SpreadsheetId), "Link copied.", keptOnlineCsv);
     }
 
     // ---- Restore (bulk import from Drive) ----
@@ -323,7 +348,7 @@ public sealed class DriveBackup
         if (stale.Count > 0)
         {
             foreach (var p in stale) settings.DriveLinks.Remove(p);
-            _trySave();
+            SaveState();
         }
 
         return sheets
@@ -345,12 +370,15 @@ public sealed class DriveBackup
         var skipped = new List<(string Name, string Reason)>();
         var failed = new List<(string Name, string Reason)>();
 
+        // A fresh machine has no library folder yet; restore is exactly the
+        // moment that must not matter.
+        Directory.CreateDirectory(libraryDir);
+
         // Existing library file names, case-insensitive: a collision is a skip,
         // never an overwrite. The local file is the source of truth.
         var onDisk = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        if (Directory.Exists(libraryDir))
-            foreach (var f in Directory.GetFiles(libraryDir, "*.csv"))
-                onDisk.Add(Path.GetFileName(f));
+        foreach (var f in Directory.GetFiles(libraryDir, "*.csv"))
+            onDisk.Add(Path.GetFileName(f));
         // Names already claimed within this batch, so two picks that sanitize to
         // the same name get a numbered suffix instead of fighting over one file.
         var batchNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -408,6 +436,11 @@ public sealed class DriveBackup
             catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException or GoogleAuthRevokedException)
             {
                 failed.Add((reportName, "download failed"));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // A disk failure on one file must not abort the batch either.
+                failed.Add((reportName, "could not write the file"));
             }
         }
 
@@ -506,11 +539,15 @@ public sealed class ShareLinkResult
     public string? Url { get; }
     // A ready-to-show line for the status bar.
     public string Message { get; }
+    // Set when the dirty push hit a conflict and the user kept the online
+    // version: the caller must still rescue and overwrite the local file.
+    public string? DownloadedCsv { get; }
 
-    public ShareLinkResult(ShareLinkKind kind, string? url, string message)
+    public ShareLinkResult(ShareLinkKind kind, string? url, string message, string? downloadedCsv = null)
     {
         Kind = kind;
         Url = url;
         Message = message;
+        DownloadedCsv = downloadedCsv;
     }
 }
