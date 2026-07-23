@@ -43,11 +43,13 @@ jobs:
             exit 1
           fi
           # The values become C# string literals; only allow characters
-          # Google actually uses so a stray quote cannot break or leak.
-          if printf '%s%s' "$GID" "$GSECRET" | LC_ALL=C grep -q '[^A-Za-z0-9._-]'; then
+          # Google actually uses so a stray quote or newline cannot break
+          # or leak. A case glob checks every character, unlike grep,
+          # which works line by line and would let a newline through.
+          case "$GID$GSECRET" in (*[!A-Za-z0-9._-]*)
             echo "A Google client secret value has unexpected characters; refusing to write source." >&2
             exit 1
-          fi
+          esac
           cat > src/QuadStick.App/GoogleClient.Local.cs <<EOF
           namespace QuadStick.App;
 
