@@ -7,17 +7,15 @@ using System.Text.Json;
 namespace QuadStick.App;
 
 // OAuth 2.0 installed-app flow with PKCE against Google.
-// Scope is drive.file only. The client secret is not confidential for
-// installed apps, so only a client id ships.
+// Scope is drive.file only.
 public class GoogleAuth
 {
-    // Placeholder until a real Google Cloud client id is pasted in.
-    public const string ClientId = "REPLACE-ME.apps.googleusercontent.com";
-
-    // Google's token endpoint requires the client secret for Desktop-type
-    // clients even with PKCE. For installed apps it is not confidential by
-    // design; it ships in the binary like the id does. Left empty in tests.
-    public const string ClientSecret = "";
+    // The client id and secret come from GoogleClient: the gitignored
+    // GoogleClient.Local.cs in a connected build, the committed placeholder
+    // otherwise. Google's token endpoint requires the secret for Desktop-type
+    // clients even with PKCE; it is not confidential for installed apps.
+    public const string ClientId = GoogleClient.Id;
+    public const string ClientSecret = GoogleClient.Secret;
 
     // False while the placeholder is in place. Callers show "not set up yet".
     public static bool IsConfigured => !ClientId.StartsWith("REPLACE-ME");

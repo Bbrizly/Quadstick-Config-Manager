@@ -13,4 +13,7 @@ docs/local/
 .claude/
 .gstack/
 scripts/appstore/embedded.provisionprofile
+# Real Google OAuth client id and secret. The committed GoogleClient.cs
+# placeholder keeps the public build compiling without them.
+src/QuadStick.App/GoogleClient.Local.cs
 .context/

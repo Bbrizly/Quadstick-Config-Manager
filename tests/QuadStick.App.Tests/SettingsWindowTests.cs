@@ -66,9 +66,9 @@ public class SettingsWindowTests
         w.Close();
     }
 
-    // The client id shipped in GoogleAuth.cs is still the REPLACE-ME
-    // placeholder, so the backup checkbox must show but stay disabled
-    // instead of letting the user start an OAuth flow that can't work.
+    // The backup checkbox must track GoogleAuth.IsConfigured: disabled on a
+    // placeholder build so the user can't start an OAuth flow that can't
+    // work, enabled on a build with a real client (GoogleClient.Local.cs).
     [AvaloniaFact]
     public void Backup_checkbox_shows_and_is_disabled_when_google_is_not_configured()
     {
@@ -83,8 +83,7 @@ public class SettingsWindowTests
 
         var backupCheck = settings.GetVisualDescendants().OfType<CheckBox>()
             .First(c => AutomationProperties.GetName(c) == "Back up my profiles to Google Sheets");
-        Assert.False(GoogleAuth.IsConfigured);
-        Assert.False(backupCheck.IsEnabled);
+        Assert.Equal(GoogleAuth.IsConfigured, backupCheck.IsEnabled);
 
         settings.Close();
         w.Close();

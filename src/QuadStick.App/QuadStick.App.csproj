@@ -11,6 +11,12 @@
     <ApplicationIcon>Assets/AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <!-- When the gitignored local client file exists, compile out the
+       committed placeholder in GoogleClient.cs. -->
+  <PropertyGroup Condition="Exists('GoogleClient.Local.cs')">
+    <DefineConstants>$(DefineConstants);GOOGLE_CLIENT_LOCAL</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <AvaloniaResource Include="Assets/AppIcon.png" />
   </ItemGroup>
