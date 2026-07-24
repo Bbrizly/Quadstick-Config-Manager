@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using QuadStick.App;
 using QuadStick.Format;
@@ -124,20 +125,43 @@ public class SmokeTests
         w.Close();
     }
 
-    // The home Drive restore button exists but stays hidden until backup is
-    // connected. Fresh settings mean backup off, so it must not be visible.
+    // The home Drive button is the always-present status light: shown on any
+    // build that can reach Google (a real client shipped), hidden only on a
+    // placeholder build where backup could never work.
     [AvaloniaFact]
-    public void Home_drive_button_hidden_when_backup_off()
+    public void Home_drive_button_shows_when_google_is_configured()
     {
-        // Set backup off explicitly: a dev machine with a real client and a
-        // prior connect leaves it on in the saved settings, which would show
-        // the button and make this test read ambient state instead of the rule.
-        var s = Settings.Load();
-        s.DriveBackup = false;
-        Settings.Save(s);
         var w = NewWindow();
         var drive = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "HomeDriveButton");
-        Assert.False(drive.IsVisible);
+        Assert.Equal(GoogleAuth.IsConfigured, drive.IsVisible);
+        w.Close();
+    }
+
+    // The status word matches the real state: off (no client), green (connected),
+    // or yellow (needs sign-in). The coloured dot is the other TextBlock.
+    [AvaloniaFact]
+    public void Home_drive_button_word_matches_the_state()
+    {
+        var w = NewWindow();
+        var drive = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "HomeDriveButton");
+        var word = drive.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text != "●").Text;
+        var expected = !GoogleAuth.IsConfigured ? "Backup off"
+            : w.DriveConnected ? "Backing up to Drive" : "Sign in to back up";
+        Assert.Equal(expected, word);
+        w.Close();
+    }
+
+    // In the yellow (needs sign-in) state one press only arms; the browser opens
+    // on the second press, so a stray click never launches sign-in.
+    [AvaloniaFact]
+    public void Home_drive_button_arms_before_it_signs_in()
+    {
+        var w = NewWindow();
+        if (!GoogleAuth.IsConfigured || w.DriveConnected) { w.Close(); return; } // only the yellow state arms
+        var drive = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "HomeDriveButton");
+        drive.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        var word = drive.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text != "●").Text;
+        Assert.Equal("Press again to sign in", word);
         w.Close();
     }
 

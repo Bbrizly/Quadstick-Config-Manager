@@ -204,6 +204,83 @@ public partial class MainWindow : Window
         _driveBackup = null;
     }
 
+    // The home Drive button is a status light AND the main way to turn backup on.
+    //   green  = connected, backing up (click opens Import)
+    //   yellow = not signed in yet, or the sign-in broke (click signs in)
+    //   red    = this build has no Google connection, so backup can't work
+    // Yellow signs in with two presses so a stray click never launches a browser.
+    bool _driveArmed;
+    DispatcherTimer? _driveArmTimer;
+
+    void RefreshDriveButton()
+    {
+        _driveArmed = false;
+        _driveArmTimer?.Stop();
+
+        if (!GoogleAuth.IsConfigured)
+        {
+            SetDriveButton("Backup off", "Error", enabled: false,
+                "Google Drive backup is not available in this build.");
+            return;
+        }
+        if (DriveConnected)
+            SetDriveButton("Backing up to Drive", "Success", enabled: true,
+                "Backing up to Google Drive. Click to import your other profiles.");
+        else
+            SetDriveButton("Sign in to back up", "Warning", enabled: true,
+                "Click to sign in and back up your profiles to Google Drive.");
+    }
+
+    void SetDriveButton(string text, string colorToken, bool enabled, string help)
+    {
+        HomeDriveButton.IsVisible = true;
+        HomeDriveButton.IsEnabled = enabled;
+        var dot = new TextBlock { Text = "●", VerticalAlignment = VerticalAlignment.Center };
+        BindBrush(dot, TextBlock.ForegroundProperty, colorToken);
+        var label = new TextBlock
+        { Text = text, VerticalAlignment = VerticalAlignment.Center, FontSize = Size("SmallSize") };
+        BindBrush(label, TextBlock.ForegroundProperty, colorToken);
+        HomeDriveButton.Content = new StackPanel
+        { Orientation = Orientation.Horizontal, Spacing = 6, Children = { dot, label } };
+        AutomationProperties.SetName(HomeDriveButton, help);
+        ToolTip.SetTip(HomeDriveButton, help);
+    }
+
+    async void OnDriveButtonClick()
+    {
+        if (!GoogleAuth.IsConfigured) return;
+
+        // Green: connected. The click means "bring my other profiles over".
+        if (DriveConnected) { await ShowDrivePickerAsync(preCheck: false); return; }
+
+        // Yellow, first press: arm and wait for a confirming second press.
+        if (!_driveArmed)
+        {
+            _driveArmed = true;
+            SetDriveButton("Press again to sign in", "Warning", enabled: true,
+                "Press again to open Google sign-in.");
+            _driveArmTimer ??= new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
+            _driveArmTimer.Tick -= DisarmDrive;
+            _driveArmTimer.Tick += DisarmDrive;
+            _driveArmTimer.Start();
+            return;
+        }
+
+        // Yellow, second press: run the sign-in, then offer to pull profiles down.
+        _driveArmed = false;
+        _driveArmTimer?.Stop();
+        bool ok = await ConnectGoogleAsync();
+        RefreshDriveButton();
+        if (ok && await ConfirmRestoreAfterConnectAsync())
+            await ShowDrivePickerAsync(preCheck: true);
+    }
+
+    void DisarmDrive(object? sender, EventArgs e)
+    {
+        _driveArmTimer?.Stop();
+        if (_driveArmed) { _driveArmed = false; RefreshDriveButton(); }
+    }
+
     // Open the Drive restore picker. Same guard the share actions use: when
     // backup is off (Backup() is null) explain and route to Settings rather
     // than failing silently. preCheck true pre-checks everything (the restore
@@ -412,7 +489,7 @@ public partial class MainWindow : Window
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
-        HomeDriveButton.Click += async (_, _) => await ShowDrivePickerAsync(preCheck: false);
+        HomeDriveButton.Click += (_, _) => OnDriveButtonClick();
 
         // Empty-library state offers the same three actions as the Start
         // cards above, so an empty library is never a dead end.
@@ -874,11 +951,11 @@ public partial class MainWindow : Window
 
     void RefreshHomeCards()
     {
-        // Show the Drive restore button only when backup is connected. This is
-        // the ONLY Drive-related work on home load: no files.list runs here.
+        // The Drive button is a live status light, refreshed on every home load.
+        // This is the ONLY Drive work on home load: no files.list runs here.
         // Home stays a purely local view; the sheet list is fetched only when
         // the picker opens (spec: "Home stays a local view").
-        HomeDriveButton.IsVisible = _settings.DriveBackup && GoogleAuth.IsConfigured;
+        RefreshDriveButton();
 
         LibraryCards.Children.Clear();
         var libraryFiles = Directory.Exists(LibraryDir)

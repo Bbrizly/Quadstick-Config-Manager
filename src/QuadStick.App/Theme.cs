@@ -18,7 +18,10 @@ public sealed class AppSettings
     public bool TutorialSeen = false;
     public bool DeviceCards = true;            // device view mappings as sentence cards
     public double? WinW, WinH, WinX, WinY;     // null = use window defaults
-    public bool DriveBackup = false;
+    // On by default: the home button shows a yellow "sign in" until the user
+    // connects. Backup stays inert until then (Backup() needs a stored token),
+    // so default-on never touches the network or a fresh save.
+    public bool DriveBackup = true;
     public Dictionary<string, DriveLink> DriveLinks = new(); // key: profile file path
 }
 
