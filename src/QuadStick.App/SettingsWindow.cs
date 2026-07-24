@@ -157,9 +157,14 @@ public class SettingsWindow : Window
     static TextBlock Label(string text) =>
         new() { Text = text, FontSize = Size("BodySize") };
 
+    // A caption is a subtitle for the control above it, not a control of its own.
+    // The section StackPanel spaces every child 16px apart, which leaves the
+    // caption floating far under its control. The negative top margin pulls it
+    // back so it reads as one unit with the thing it describes.
     static TextBlock Caption(string text) => new()
     {
         Text = text, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+        Margin = new Thickness(0, -10, 0, 0),
     };
 
     // The outer window ScrollViewer allows horizontal scrolling (so zoomed-up
@@ -332,17 +337,17 @@ public class SettingsWindow : Window
     Control BackupArea(MainWindow owner)
     {
         var section = new StackPanel { Spacing = 16 };
-        section.Children.Add(Heading("Back up to Google Sheets"));
+        section.Children.Add(Heading("Google Drive backup"));
 
         var configured = GoogleAuth.IsConfigured;
         var backupCheck = new CheckBox
         {
-            Content = "Back up my profiles to Google Sheets",
+            Content = "Back up my profiles to Google Drive",
             IsChecked = owner.CurrentSettings.DriveBackup,
             IsEnabled = configured,
             FontSize = Size("BodySize"),
         };
-        AutomationProperties.SetName(backupCheck, "Back up my profiles to Google Sheets");
+        AutomationProperties.SetName(backupCheck, "Back up my profiles to Google Drive");
         section.Children.Add(backupCheck);
 
         // At-a-glance connection state: a green line only when backup is truly
@@ -355,6 +360,8 @@ public class SettingsWindow : Window
             FontWeight = FontWeight.SemiBold,
             TextWrapping = TextWrapping.Wrap,
             IsVisible = owner.DriveConnected,
+            // Tuck it right under the checkbox, same reason as Caption.
+            Margin = new Thickness(0, -10, 0, 0),
         };
         // The green comes from a theme dictionary, so bind it dynamically. A
         // plain FindResource at app scope misses theme-scoped brushes and leaves
@@ -365,7 +372,7 @@ public class SettingsWindow : Window
         void RefreshConnected() => connected.IsVisible = owner.DriveConnected;
 
         section.Children.Add(Caption(configured
-            ? "Saves back up to your own Google Drive automatically."
+            ? "Every time you save a profile, a copy goes to your own Google Drive. Import copies them back onto any computer."
             : "This build is not connected to Google yet."));
 
         var waitingText = new TextBlock

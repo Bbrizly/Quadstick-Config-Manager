@@ -82,7 +82,7 @@ public class SettingsWindowTests
         _ = settings.ShowDialog(w);
 
         var backupCheck = settings.GetVisualDescendants().OfType<CheckBox>()
-            .First(c => AutomationProperties.GetName(c) == "Back up my profiles to Google Sheets");
+            .First(c => AutomationProperties.GetName(c) == "Back up my profiles to Google Drive");
         Assert.Equal(GoogleAuth.IsConfigured, backupCheck.IsEnabled);
 
         settings.Close();
