@@ -88,18 +88,109 @@ public sealed class ProfileFile
     public void SetCell(int row, int col, string value)
     {
         Snapshot();
+        Widen(row, col)[col] = value;
+        Reparse();
+    }
+
+    // Grow a row so `col` exists, and hand it back. Callers that write more
+    // than one cell in one undo step take their own Snapshot first.
+    string[] Widen(int row, int col)
+    {
         while (Grid.Count < row) Grid.Add(Array.Empty<string>());
         var r = Grid[row - 1];
-        if (r.Length <= col)
-        {
-            var wider = new string[col + 1];
-            r.CopyTo(wider, 0);
-            for (int i = r.Length; i < wider.Length; i++) wider[i] = "";
-            Grid[row - 1] = wider;
-            r = wider;
-        }
-        r[col] = value;
+        if (r.Length > col) return r;
+        var wider = new string[col + 1];
+        r.CopyTo(wider, 0);
+        for (int i = r.Length; i < wider.Length; i++) wider[i] = "";
+        return Grid[row - 1] = wider;
+    }
+
+    // The profile's own name for a row's output, in column L. Names are per
+    // row, so "Left click" can be Shoot in one mode and Select in another.
+    public const int ActionColumn = Parser.ActionColumn;
+
+    // Longest action name, matching the mode name box's cap.
+    public const int MaxActionName = 40;
+
+    // The sheet a grid row belongs to: the last one whose keyword row is at or
+    // above it. Null for rows above the first sheet, like the version header.
+    ModeSheet? SheetAt(int row) => Document.Sheets.LastOrDefault(s => s.StartRow <= row);
+
+    // A name that reads as a real output token would appear twice in the
+    // picker meaning two different things.
+    public static bool IsLegalActionName(string name)
+    {
+        var t = name.Trim();
+        return t.Length is > 0 and <= MaxActionName && !Vocab.IsKnownOutput(t);
+    }
+
+    /// <summary>Set a binding row's output and its action name together, as one
+    /// undoable change. A blank name clears the row's name, which is what
+    /// picking a plain token does: the old name described an output the row no
+    /// longer has.</summary>
+    public bool SetOutput(int row, string token, string actionName = "")
+    {
+        var name = actionName.Trim();
+        if (name.Length > 0 && !IsLegalActionName(name)) return false;
+        if (name.Length > 0 && SheetAt(row)?.Type != SheetType.ProfileName) return false;
+        // One name, one output. Two rows calling different tokens "Shoot"
+        // would leave the picker's "Shoot" meaning whichever came first.
+        if (name.Length > 0 && NameableBindings()
+                .Any(b => b.Row != row && b.ActionName == name && b.Output != token)) return false;
+        if (GetCell(row, 0) == token && GetCell(row, ActionColumn) == name) return false;
+
+        Snapshot();
+        var r = Widen(row, ActionColumn);
+        r[0] = token;
+        r[ActionColumn] = name;
+        if (name.Length > 0) LabelActionColumn(row);
         Reparse();
+        return true;
+    }
+
+    // Title the column so a shared Google Sheet reads properly. Goes on the
+    // sheet's label row, beside "Function", never on a binding row.
+    void LabelActionColumn(int row)
+    {
+        var sheet = SheetAt(row);
+        if (sheet is null || sheet.Type != SheetType.ProfileName) return;
+        int labelRow = sheet.StartRow + 2;
+        if (labelRow >= row || GetCell(labelRow, ActionColumn).Length > 0) return;
+        Widen(labelRow, ActionColumn)[ActionColumn] = "Action";
+    }
+
+    // Only modes hold action names. A Preferences row's column L is somebody's
+    // spreadsheet note, not a name for an output.
+    IEnumerable<Binding> NameableBindings() => Document.Sheets
+        .Where(s => s.Type == SheetType.ProfileName).SelectMany(s => s.Bindings);
+
+    /// <summary>Every action name in the profile, in the order rows appear.</summary>
+    public IReadOnlyList<string> ActionNames() => NameableBindings()
+        .Select(b => b.ActionName).Where(n => n.Length > 0)
+        .Distinct(StringComparer.Ordinal).ToList();
+
+    /// <summary>The output token each action name stands for. First row wins
+    /// when the same name is used for two different tokens.</summary>
+    public IReadOnlyDictionary<string, string> ActionTokens()
+    {
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var b in NameableBindings())
+            if (b.ActionName.Length > 0 && b.Output.Length > 0) map.TryAdd(b.ActionName, b.Output);
+        return map;
+    }
+
+    /// <summary>Rename an action everywhere it appears, in one undo step.</summary>
+    public bool RenameAction(string oldName, string newName)
+    {
+        var to = newName.Trim();
+        if (oldName.Length == 0 || to == oldName || !IsLegalActionName(to)) return false;
+        var rows = NameableBindings().Where(b => b.ActionName == oldName).Select(b => b.Row).ToList();
+        if (rows.Count == 0) return false;
+
+        Snapshot();
+        foreach (var r in rows) Widen(r, ActionColumn)[ActionColumn] = to;
+        Reparse();
+        return true;
     }
 
     static readonly string[] NewBindingRowCells = { "", "normal", "" };
@@ -228,15 +319,7 @@ public sealed class ProfileFile
         var val = GetCell(row, col);
         if (val.Length == 0 || col is < 2 or > 9) return;
         Snapshot();
-        var r = Grid[row - 1];
-        if (r.Length <= noteCol)
-        {
-            var wider = new string[noteCol + 1];
-            r.CopyTo(wider, 0);
-            for (int i = r.Length; i < wider.Length; i++) wider[i] = "";
-            Grid[row - 1] = wider;
-            r = wider;
-        }
+        var r = Widen(row, noteCol);
         var existing = r[noteCol].Trim();
         r[noteCol] = existing.Length > 0 ? existing + "; " + val : val;
         r[col] = "";
@@ -275,16 +358,7 @@ public sealed class ProfileFile
 
         Snapshot();
         var remaining = binding.Inputs.Where((_, i) => i != inputIndex).ToList();
-        var r = Grid[row - 1];
-        int needed = 2 + remaining.Count;
-        if (r.Length < needed)
-        {
-            var wider = new string[needed];
-            r.CopyTo(wider, 0);
-            for (int i = r.Length; i < needed; i++) wider[i] = "";
-            Grid[row - 1] = wider;
-            r = wider;
-        }
+        var r = Widen(row, 1 + remaining.Count);
         for (int c = 2; c < 10 && c < r.Length; c++)
             r[c] = c - 2 < remaining.Count ? remaining[c - 2] : "";
         Reparse();

@@ -436,6 +436,33 @@ public partial class MainWindow : Window
         return OutputSuggestions;
     }
 
+    // The output picker for the open profile: its own action names under
+    // "Game" first, then that sheet's tokens. Rebuilt per call because naming
+    // a row changes the list.
+    OutputCatalog.ProfileOutputs OutputsFor(ModeSheet s) =>
+        OutputCatalog.ForProfile(_file!, OutputSuggestionsFor(s));
+
+    // What a row's output field shows and commits. A named row reads by its
+    // name; picking one writes the token and the name together.
+    static string OutputFieldValue(Binding b) => b.ActionName.Length > 0 ? b.ActionName : b.Output;
+
+    void CommitOutput(int row, OutputCatalog.ProfileOutputs outputs, string picked)
+    {
+        if (_file is null) return;
+        var (token, name) = outputs.Resolve(picked);
+        _file.SetOutput(row, token, name);
+    }
+
+    // List View builds each row's picker once, so a new name has to reach the
+    // other rows' "Game" lists somehow: rebuild when the naming changed.
+    void CommitOutputFromList(Binding b, OutputCatalog.ProfileOutputs outputs, string picked)
+    {
+        CommitOutput(b.Row, outputs, picked);
+        if (_file is null || _file.GetCell(b.Row, ProfileFile.ActionColumn) == b.ActionName) return;
+        var off = GridScroll.Offset;
+        Dispatcher.UIThread.Post(() => { RebuildRows(); RestoreListScroll(off, () => { }); });
+    }
+
     // The sheet's color language, familiar to every QuadStick user:
     // yellow = outputs, pink = function, blue = inputs. Keys into the theme's
     // <Key>Brush DynamicResource (Palette.cs / Theme.cs), not fixed colors.
@@ -513,6 +540,7 @@ public partial class MainWindow : Window
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
         ModesButton.Click += async (_, _) => await ShowModesAsync();
+        ActionsButton.Click += async (_, _) => await ShowActionsAsync();
         ShareButton.Flyout = ShareMenu(null); // null = the open editor's profile
         // A click that lands on nothing selectable drops the row selection,
         // exactly like a file explorer. Row-number presses mark themselves
@@ -804,6 +832,14 @@ public partial class MainWindow : Window
         _sheetIndex = Math.Clamp(selectSheetIndex, 0, _file.Document.Sheets.Count - 1);
         _selectedZone = null;
         RepopulateSheetPicker(_sheetIndex);
+        RefreshEditor();
+        if (status.Length > 0) Status(status, StatusKind.Ready);
+    }
+
+    // ---- Action names window API: ActionsWindow.cs renames a name across
+    // every row that uses it, so the whole editor is redrawn after. ----
+    public void ActionsChanged(string status)
+    {
         RefreshEditor();
         if (status.Length > 0) Status(status, StatusKind.Ready);
     }
@@ -1137,6 +1173,12 @@ public partial class MainWindow : Window
     {
         if (_file is null) { Status("Open or create a profile first."); return; }
         await new ModesWindow(this).ShowDialog(this);
+    }
+
+    async Task ShowActionsAsync()
+    {
+        if (_file is null) { Status("Open or create a profile first."); return; }
+        await new ActionsWindow(this).ShowDialog(this);
     }
 
     public void AddPreferencesSheetToFile()
@@ -1558,7 +1600,7 @@ public partial class MainWindow : Window
     {
         var spoken = count == 0
             ? "nothing mapped yet"
-            : string.Join(", ", (bindings ?? new()).Take(4).Select(b => $"{ShortInput(z, b)} presses {b.Output}"));
+            : string.Join(", ", (bindings ?? new()).Take(4).Select(b => $"{ShortInput(z, b)} presses {OutputFieldValue(b)}"));
         var warning = foreign ? $" Not available on your {ModelNames[(int)_model]}." : "";
         AutomationProperties.SetName(btn,
             $"{z.Title}. {(selected ? "Selected. " : "")}{count} mapping{(count == 1 ? "" : "s")}. {spoken}.{warning} Press Enter to edit.");
@@ -1616,7 +1658,11 @@ public partial class MainWindow : Window
         };
 
         // The same Words button styles as everywhere else in device view.
-        string output = b.Output.Length > 0 ? TokenLabel(b.Output) : "(nothing yet)";
+        // A named row reads by its name, except in the raw token style, where
+        // the point is to see exactly what the file holds.
+        string output = b.ActionName.Length > 0 && _labelStyle != 0 ? b.ActionName
+            : b.Output.Length > 0 ? TokenLabel(b.Output)
+            : "(nothing yet)";
         var inputs = b.Inputs.Count > 0
             ? b.Inputs.Select(i => _labelStyle == 0 ? i : StripInput(i, zone.Id)).ToList()
             : new List<string> { "(no input)" };
@@ -1829,8 +1875,8 @@ public partial class MainWindow : Window
                 body.Children.Add(Labeled("When you", inputsBox));
 
                 // ---- "Press" (game button) and "As" (how it presses) ----
-                body.Children.Add(Labeled("Press", OutputPicker(b.Row, 0, b.Output, OutputSuggestionsFor(CurrentSheet!),
-                    TokenLabel, $"Game button pressed by {ShortInput(zone, b)}", OutputTint)));
+                body.Children.Add(Labeled("Press", OutputPicker(b, OutputsFor(CurrentSheet!),
+                    $"Game button pressed by {ShortInput(zone, b)}", OutputTint)));
                 body.Children.Add(Labeled("As", FunctionCombo(b, zone)));
                 body.Children.Add(Labeled("Note", NoteBox(b.Row, NoteColumn, $"Note for this mapping. Saved in the file, ignored by the QuadStick")));
 
@@ -2653,7 +2699,9 @@ public partial class MainWindow : Window
         // Inputs stack DOWN (below), so every other cell centers vertically
         // against the taller stack instead of stretching or hugging the top.
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
-        p.Children.Add(Mid(ListPickerCell(b.Row, 0, b.Output, 220, OutputSuggestionsFor(CurrentSheet!), $"Output for row {b.Row}", OutputTint, OutputCatalog.Catalog, "an output")));
+        var outputs = OutputsFor(CurrentSheet!);
+        p.Children.Add(Mid(ListPickerCell(b.Row, 0, OutputFieldValue(b), 220, outputs.Options, $"Output for row {b.Row}", OutputTint, outputs.Catalog, "an output",
+            picked => CommitOutputFromList(b, outputs, picked))));
         p.Children.Add(Mid(ListPickerCell(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint, null, "a function")));
 
         // Extra inputs go UNDER the first one. Sideways growth forced a
@@ -3461,8 +3509,9 @@ public partial class MainWindow : Window
 
     // The Press field in Device View: the drill-down picker committing
     // through the device rebuild, so the card refreshes and refocuses.
-    Control OutputPicker(int row, int col, string current, IReadOnlyList<string> options,
-                         Func<string, string> labelFor, string accessibleName, string tintKey)
+    // An action name is shown as typed; only real tokens get translated.
+    Control OutputPicker(Binding b, OutputCatalog.ProfileOutputs outputs,
+                         string accessibleName, string tintKey)
     {
         var wrapper = new Border
         {
@@ -3470,13 +3519,13 @@ public partial class MainWindow : Window
             BorderBrush = Brushes.Transparent,
             CornerRadius = new Avalonia.CornerRadius(5),
         };
-        _cellBorders[$"{(char)('A' + col)}{row}"] = wrapper;
-        return PickerCell(wrapper, current, options, labelFor, accessibleName, tintKey,
-            OutputCatalog.Catalog, "an output", token =>
+        _cellBorders[$"A{b.Row}"] = wrapper;
+        return PickerCell(wrapper, OutputFieldValue(b), outputs.Options,
+            t => outputs.TokenFor.ContainsKey(t) ? t : TokenLabel(t),
+            accessibleName, tintKey, outputs.Catalog, "an output", picked =>
             {
-                if (_file is null) return;
-                if (token != _file.GetCell(row, col)) _file.SetCell(row, col, token);
-                RebuildDeviceAfterEdit(row, col);
+                CommitOutput(b.Row, outputs, picked);
+                RebuildDeviceAfterEdit(b.Row, 0);
             });
     }
 
@@ -3491,8 +3540,13 @@ public partial class MainWindow : Window
     // SuggestBox did: set the cell, refresh issues, and rebuild the rows
     // when an input appears or disappears (its remove and plus buttons
     // change with it).
+    // setValue replaces the plain "write this cell" commit. The output column
+    // uses it: a pick there writes two cells, and the value on screen is the
+    // row's action name, not the cell's text, so the usual no-op guard would
+    // swallow a pick that only clears the name.
     Control ListPickerCell(int row, int col, string value, double width, IReadOnlyList<string> options,
-                           string accessibleName, string tintKey, TokenCatalog? catalog, string pickWord)
+                           string accessibleName, string tintKey, TokenCatalog? catalog, string pickWord,
+                           Action<string>? setValue = null)
     {
         var wrapper = new Border
         {
@@ -3509,8 +3563,12 @@ public partial class MainWindow : Window
         {
             if (_file is null) return;
             var old = _file.GetCell(row, col);
-            if (token == old) return;
-            _file.SetCell(row, col, token);
+            if (setValue is null)
+            {
+                if (token == old) return;
+                _file.SetCell(row, col, token);
+            }
+            else setValue(token);
             RefreshIssues();
             // An input appearing or disappearing changes the row's own
             // controls, so rebuild. Deferred: the flyout is still closing.

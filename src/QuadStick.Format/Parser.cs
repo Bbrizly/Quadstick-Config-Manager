@@ -8,6 +8,10 @@ public static class Parser
 {
     const int MaxInputColumns = 8; // columns C..J
 
+    // Column L, one past the notes column. The profile's own name for a row's
+    // output lives here; the device and both official converters stop at J.
+    public const int ActionColumn = 11;
+
     public static (ProfileDocument Doc, List<Issue> Issues) Parse(string csvText)
     {
         var grid = Csv.Parse(csvText);
@@ -135,7 +139,8 @@ public static class Parser
                 var v = Cell(grid, r, c).Trim();
                 if (v.Length > 0) { inputs.Add(v); inputCols.Add(c); }
             }
-            sheet.Bindings.Add(new Binding(r + 1, output, Cell(grid, r, 1).Trim(), inputs, inputCols));
+            sheet.Bindings.Add(new Binding(r + 1, output, Cell(grid, r, 1).Trim(), inputs, inputCols,
+                Cell(grid, r, ActionColumn).Trim()));
         }
         return sheet;
     }

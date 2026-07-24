@@ -1,7 +1,7 @@
 # Translation table
 
 Date: 2026-07-24
-Status: designed, not built
+Status: built 2026-07-24
 
 ## What this is
 
@@ -63,7 +63,8 @@ There is no separate table to store. The table is the set of names already
 sitting in column L across the profile.
 
 The Translation Table window reads them, lists them, and lets you rename one.
-A rename updates every row using that name, in one undo step.
+A rename updates every row using that name, in one undo step. It ships as
+"Names..." beside "Modes...", because that is what it holds.
 
 This means an action you have not used yet has nowhere to live, which is fine:
 you name a row when you set it. Ready-made lists of real game controls belong
@@ -103,6 +104,10 @@ Setting a row's output to a plain token clears its action name. Otherwise the
 name would describe an output the row no longer has.
 
 Names are capped at 40 characters, the same cap the mode name box uses.
+
+One name means one output. A name already used for a different token is
+refused, or the picker's "Shoot" would mean whichever row the reader hit
+first. A file hand-edited past this rule still opens; the first row wins.
 
 ## Limits
 

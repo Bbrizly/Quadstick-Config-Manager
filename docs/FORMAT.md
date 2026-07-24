@@ -72,6 +72,13 @@ this basic rarely change between firmware versions.
   `none` equals blank. Nothing past column J is ever read in a profile row,
   which is why columns K+ are safe for comments (they still count against
   the 1024-byte line).
+- This app uses two of those free columns. Column K holds the row's note.
+  Column L holds the row's action name: the profile's own name for the output
+  in column A, so the editor can say "Shoot" where the file says `mouse_left`.
+  The name is per row, so the same token reads differently in two modes. The
+  label row of each mode carries "Action" in column L so a shared spreadsheet
+  reads properly. Older versions of this app and both official converters
+  ignore both columns.
 - Limits: 16 profiles, 128 binding rows each; extras are read and discarded
   without any indication.
 - Preferences segment: two lines skipped (`prefs.csv,,` and

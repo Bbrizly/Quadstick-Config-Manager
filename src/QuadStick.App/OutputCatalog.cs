@@ -82,4 +82,32 @@ public static class OutputCatalog
     };
 
     public static readonly TokenCatalog Catalog = new(Classify, CategoryOrder, SubOrder);
+
+    // The output picker for one open profile: the names that profile gives its
+    // own outputs, listed first under "Game", then the real tokens. Names are
+    // per profile, so this cannot be the static catalog above.
+    public sealed record ProfileOutputs(
+        TokenCatalog Catalog,
+        IReadOnlyList<string> Options,
+        IReadOnlyDictionary<string, string> TokenFor)
+    {
+        // What a picked entry means: a name commits its token plus itself,
+        // a plain token commits itself and clears any name.
+        public (string Token, string Name) Resolve(string picked) =>
+            TokenFor.TryGetValue(picked, out var token) ? (token, picked) : (picked, "");
+    }
+
+    public static ProfileOutputs ForProfile(QuadStick.Format.ProfileFile file, IReadOnlyList<string> tokens)
+    {
+        var tokenFor = file.ActionTokens();
+        if (tokenFor.Count == 0)
+            return new ProfileOutputs(Catalog, tokens, tokenFor);
+
+        var options = file.ActionNames().Concat(tokens).ToList();
+        var catalog = new TokenCatalog(
+            t => tokenFor.ContainsKey(t) ? ("Game", "") : Classify(t),
+            new[] { "Game" }.Concat(CategoryOrder).ToArray(),
+            SubOrder);
+        return new ProfileOutputs(catalog, options, tokenFor);
+    }
 }

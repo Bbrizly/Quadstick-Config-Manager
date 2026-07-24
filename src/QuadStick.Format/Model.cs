@@ -14,8 +14,10 @@ public sealed record Issue(Severity Severity, string Cell, string Message, strin
 }
 
 /// <summary>One binding row. InputCols carries each input's real 0-based grid
-/// column, because inputs may sit in any of columns C..J with gaps between.</summary>
-public sealed record Binding(int Row, string Output, string Function, IReadOnlyList<string> Inputs, IReadOnlyList<int> InputCols);
+/// column, because inputs may sit in any of columns C..J with gaps between.
+/// ActionName is the profile's own name for this row's output, held in column
+/// L where the device never looks.</summary>
+public sealed record Binding(int Row, string Output, string Function, IReadOnlyList<string> Inputs, IReadOnlyList<int> InputCols, string ActionName = "");
 
 public sealed class ModeSheet
 {
