@@ -375,7 +375,12 @@ public class SettingsWindow : Window
         };
         section.Children.Add(waitingRow);
 
-        var reconnect = new Button { Content = "Reconnect", IsVisible = owner.CurrentSettings.DriveBackup };
+        // Reconnect is a recovery action, not a normal-state button: show it
+        // only when backup is on but not actually connected (sign-in never
+        // finished, or Google dropped the link). When connected it stays hidden
+        // so the user is not told to reconnect something that already works.
+        var reconnect = new Button
+        { Content = "Reconnect", IsVisible = owner.CurrentSettings.DriveBackup && !owner.DriveConnected };
         AutomationProperties.SetName(reconnect, "Reconnect to Google");
         section.Children.Add(reconnect);
 
@@ -404,7 +409,7 @@ public class SettingsWindow : Window
                     backupCheck.IsChecked = false;
                     suppress = false;
                 }
-                reconnect.IsVisible = owner.CurrentSettings.DriveBackup;
+                reconnect.IsVisible = owner.CurrentSettings.DriveBackup && !owner.DriveConnected;
                 importDrive.IsEnabled = owner.CurrentSettings.DriveBackup;
                 RefreshConnected();
 
