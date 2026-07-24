@@ -25,6 +25,12 @@ public static class TestAppBuilder
 // on every push, so a crash-on-click can never ship unnoticed again.
 public class SmokeTests
 {
+    // The Drive button label lives on its Content StackPanel [dot, label], set
+    // in RefreshDriveButton. Read it there, not the visual tree: when Google is
+    // not configured the button is hidden, so no visual descendants are realized.
+    static string DriveButtonWord(Button b) =>
+        ((StackPanel)b.Content!).Children.OfType<TextBlock>().First(t => t.Text != "●").Text!;
+
     static MainWindow NewWindow()
     {
         // A fresh CI machine has no settings file, which would auto-start
@@ -144,7 +150,7 @@ public class SmokeTests
     {
         var w = NewWindow();
         var drive = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "HomeDriveButton");
-        var word = drive.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text != "●").Text;
+        var word = DriveButtonWord(drive);
         var expected = !GoogleAuth.IsConfigured ? "Backup off"
             : w.DriveConnected ? "Backing up to Drive" : "Sign in to back up";
         Assert.Equal(expected, word);
@@ -160,7 +166,7 @@ public class SmokeTests
         if (!GoogleAuth.IsConfigured || w.DriveConnected) { w.Close(); return; } // only the yellow state arms
         var drive = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "HomeDriveButton");
         drive.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-        var word = drive.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text != "●").Text;
+        var word = DriveButtonWord(drive);
         Assert.Equal("Press again to sign in", word);
         w.Close();
     }

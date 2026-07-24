@@ -212,6 +212,7 @@ public partial class MainWindow : Window
         _driveArmed = false;
         _driveArmTimer?.Stop();
 
+        HomeDriveButton.IsVisible = GoogleAuth.IsConfigured;
         if (!GoogleAuth.IsConfigured)
         {
             SetDriveButton("Backup off", "Error", enabled: false,
@@ -228,7 +229,6 @@ public partial class MainWindow : Window
 
     void SetDriveButton(string text, string colorToken, bool enabled, string help)
     {
-        HomeDriveButton.IsVisible = true;
         HomeDriveButton.IsEnabled = enabled;
         var dot = new TextBlock { Text = "●", VerticalAlignment = VerticalAlignment.Center };
         BindBrush(dot, TextBlock.ForegroundProperty, colorToken);
