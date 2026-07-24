@@ -137,7 +137,14 @@ public partial class MainWindow : Window
                 if (result?.Kind == PushResultKind.KeptOnline && result.DownloadedCsv is string online)
                     await Dispatcher.UIThread.InvokeAsync(() => ApplyKeptOnline(path, online));
                 else if (result?.Kind == PushResultKind.Pushed)
-                    Dispatcher.UIThread.Post(() => Status("Backed up to Google Drive.", StatusKind.Ready));
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        Status("Backed up to Google Drive.", StatusKind.Ready);
+                        // The push writes the Drive link that draws a card's
+                        // "on Google Drive" line. Home may already be on screen
+                        // by the time it lands, so redraw it.
+                        if (HomeView.IsVisible) RefreshHomeCards();
+                    });
             }
             catch (Exception ex)
             {
