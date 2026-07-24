@@ -93,7 +93,7 @@ public class SettingsTests
         Assert.Null(settings.WinH);
         Assert.Null(settings.WinX);
         Assert.Null(settings.WinY);
-        Assert.False(settings.DriveBackup);
+        Assert.True(settings.DriveBackup); // on by default, even for old files; inert until sign-in
         Assert.Empty(settings.DriveLinks);
     }
 
