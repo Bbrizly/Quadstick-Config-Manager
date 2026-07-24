@@ -173,17 +173,22 @@
     <Style Selector="TextBox">
       <Setter Property="MinHeight" Value="48"/>
       <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style Selector="ComboBox">
       <Setter Property="MinHeight" Value="48"/>
       <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style Selector="AutoCompleteBox">
       <Setter Property="MinHeight" Value="48"/>
       <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
     </Style>
+    <!-- No MinHeight or Padding: the Fluent template pins the glyph in a
+         Top-aligned Height=32 box no setter can move. The default MinHeight
+         (32) already lines glyph and text up, so making the control taller
+         only pushes the text and leaves the glyph stuck at the top. -->
     <Style Selector="CheckBox">
-      <Setter Property="MinHeight" Value="48"/>
       <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
     </Style>
 
