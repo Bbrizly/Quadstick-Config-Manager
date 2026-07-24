@@ -157,15 +157,24 @@ public class SettingsWindow : Window
     static TextBlock Label(string text) =>
         new() { Text = text, FontSize = Size("BodySize") };
 
-    // A caption is a subtitle for the control above it, not a control of its own.
-    // The section StackPanel spaces every child 16px apart, which leaves the
-    // caption floating far under its control. The negative top margin pulls it
-    // back so it reads as one unit with the thing it describes.
     static TextBlock Caption(string text) => new()
     {
         Text = text, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
-        Margin = new Thickness(0, -10, 0, 0),
     };
+
+    // A field is one unit: a title, its control, and an optional caption, packed
+    // tight (4px) so they read as one thing. The tab's own 16px spacing then
+    // sits between whole fields, not between a title and the box it labels. This
+    // is what stops labels floating far above their control and captions far
+    // below it. Extra controls (a preview row, a second button) can ride along.
+    static Control Field(string label, string? caption, params Control[] controls)
+    {
+        var group = new StackPanel { Spacing = 4 };
+        group.Children.Add(Label(label));
+        foreach (var c in controls) group.Children.Add(c);
+        if (!string.IsNullOrWhiteSpace(caption)) group.Children.Add(Caption(caption));
+        return group;
+    }
 
     // The outer window ScrollViewer allows horizontal scrolling (so zoomed-up
     // content is reachable), which means it measures tab content at infinite
@@ -198,7 +207,6 @@ public class SettingsWindow : Window
         var panel = new StackPanel { Margin = new Thickness(24), Spacing = 16 };
         panel.Children.Add(Heading("General"));
 
-        panel.Children.Add(Label("Appearance"));
         var appearance = new ComboBox
         {
             ItemsSource = new[] { "System", "Light", "Dark" },
@@ -210,9 +218,8 @@ public class SettingsWindow : Window
         {
             if (appearance.SelectedItem is string choice) owner.ApplyTheme(choice);
         };
-        panel.Children.Add(appearance);
+        panel.Children.Add(Field("Appearance", null, appearance));
 
-        panel.Children.Add(Label("Interface size"));
         var scalePercents = MainWindow.ValidScalePercents;
         int scaleIndex = Array.IndexOf(scalePercents, owner.CurrentSettings.InterfaceScalePercent);
         var scale = new ComboBox
@@ -309,10 +316,8 @@ public class SettingsWindow : Window
             Orientation = Orientation.Horizontal, Spacing = 10,
             Children = { scale, saveSize, countdown },
         };
-        panel.Children.Add(scaleRow);
-        panel.Children.Add(Caption("Makes all text and controls larger or smaller."));
+        panel.Children.Add(Field("Interface size", "Makes all text and controls larger or smaller.", scaleRow));
 
-        panel.Children.Add(Label("Default QuadStick model"));
         var model = new ComboBox
         {
             ItemsSource = MainWindow.ModelDisplayNames,
@@ -324,7 +329,7 @@ public class SettingsWindow : Window
         {
             if (model.SelectedIndex >= 0) owner.SetDefaultModel(model.SelectedIndex);
         };
-        panel.Children.Add(model);
+        panel.Children.Add(Field("Default QuadStick model", null, model));
 
         panel.Children.Add(BackupArea(owner));
 
@@ -348,7 +353,10 @@ public class SettingsWindow : Window
             FontSize = Size("BodySize"),
         };
         AutomationProperties.SetName(backupCheck, "Back up my profiles to Google Drive");
-        section.Children.Add(backupCheck);
+        // Checkbox, the Connected line, and the caption are one field: pack them
+        // tight so the status and the explanation sit right under the checkbox.
+        var group = new StackPanel { Spacing = 4 };
+        group.Children.Add(backupCheck);
 
         // At-a-glance connection state: a green line only when backup is truly
         // live (on, real client, token stored). RefreshConnected keeps it in
@@ -360,20 +368,19 @@ public class SettingsWindow : Window
             FontWeight = FontWeight.SemiBold,
             TextWrapping = TextWrapping.Wrap,
             IsVisible = owner.DriveConnected,
-            // Tuck it right under the checkbox, same reason as Caption.
-            Margin = new Thickness(0, -10, 0, 0),
         };
         // The green comes from a theme dictionary, so bind it dynamically. A
         // plain FindResource at app scope misses theme-scoped brushes and leaves
         // the text unpainted (present but invisible).
         connected[!TextBlock.ForegroundProperty] = new DynamicResourceExtension("SuccessBrush");
         AutomationProperties.SetName(connected, "Connected to Google Drive");
-        section.Children.Add(connected);
+        group.Children.Add(connected);
         void RefreshConnected() => connected.IsVisible = owner.DriveConnected;
 
-        section.Children.Add(Caption(configured
+        group.Children.Add(Caption(configured
             ? "Every time you save a profile, a copy goes to your own Google Drive. Import copies them back onto any computer."
             : "This build is not connected to Google yet."));
+        section.Children.Add(group);
 
         var waitingText = new TextBlock
         { Text = "Waiting for your browser...", FontSize = Size("BodySize"), Classes = { "muted" } };
@@ -463,8 +470,11 @@ public class SettingsWindow : Window
         { Content = "Reduce motion", IsChecked = owner.CurrentSettings.ReduceMotion, FontSize = Size("BodySize") };
         AutomationProperties.SetName(reduceMotion, "Reduce motion");
         reduceMotion.IsCheckedChanged += (_, _) => owner.SetReduceMotion(reduceMotion.IsChecked == true);
-        panel.Children.Add(reduceMotion);
-        panel.Children.Add(Caption("Turns off the tutorial fade animation."));
+        panel.Children.Add(new StackPanel
+        {
+            Spacing = 4,
+            Children = { reduceMotion, Caption("Turns off the tutorial fade animation.") },
+        });
 
         var rememberWindow = new CheckBox
         {
