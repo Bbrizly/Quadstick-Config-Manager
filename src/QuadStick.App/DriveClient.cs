@@ -5,16 +5,14 @@ using System.Text.Json;
 
 namespace QuadStick.App;
 
-// Plain REST against Drive and Sheets, no Google SDK. It does not touch
-// GoogleAuth: the access token arrives through the provider, so the two stay
-// separable. A fresh token is fetched per request via the provider.
+// Plain REST against Drive and Sheets, no Google SDK. No dependency on
+// GoogleAuth: the access token comes through the provider, fetched per request.
 public class DriveClient
 {
     const string SheetsBase = "https://sheets.googleapis.com/v4/spreadsheets";
     const string DriveBase = "https://www.googleapis.com/drive/v3/files";
 
-    // Wide bounded range with no sheet prefix. Profiles are a few hundred cells,
-    // so this covers any grid while still targeting the first visible sheet.
+    // Wide range, no sheet prefix, so it covers any profile grid on the first sheet.
     const string ClearRange = "A1:ZZ10000";
 
     readonly HttpClient _http;
@@ -36,9 +34,8 @@ public class DriveClient
         return doc.RootElement.GetProperty("spreadsheetId").GetString()!;
     }
 
-    // A range in A1 notation with no sheet prefix targets the spreadsheet's
-    // first visible sheet, which is exactly the spec's "first worksheet only"
-    // rule. Clear happens before update so a shrunken profile leaves no stale cells.
+    // A1 range with no sheet prefix hits the first visible sheet (spec: first
+    // worksheet only). Clear before update so a shrunken profile leaves no stale cells.
     public async Task PushGridAsync(string id, List<string[]> rows, CancellationToken ct = default)
     {
         using (var clear = new HttpRequestMessage(HttpMethod.Post, $"{SheetsBase}/{id}/values/{ClearRange}:clear")
@@ -60,11 +57,9 @@ public class DriveClient
         return doc.RootElement.GetProperty("modifiedTime").GetString()!;
     }
 
-    // CSV export of the first worksheet via the Drive API export endpoint, not
-    // the docs.google.com web export. The web endpoint answers an unaccepted
-    // token with 200 and an HTML sign-in page, which then fails to parse as a
-    // profile; this one returns a real 401/403 and never a login page. Works
-    // under drive.file for sheets this app created.
+    // CSV export via the Drive API export endpoint, not docs.google.com. The web
+    // endpoint returns 200 with an HTML sign-in page on a bad token; this returns
+    // a real 401/403. Works under drive.file for sheets this app created.
     public async Task<string> DownloadCsvAsync(string id, CancellationToken ct = default)
     {
         using var req = new HttpRequestMessage(HttpMethod.Get,

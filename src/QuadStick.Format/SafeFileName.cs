@@ -1,7 +1,7 @@
 namespace QuadStick.Format;
 
-// Google Sheets names are arbitrary. This turns one into a CSV file name
-// that is safe on both macOS and Windows, for Drive restore.
+// Turn an arbitrary Google Sheets name into a CSV file name that is safe
+// on both macOS and Windows.
 public static class SafeFileName
 {
     static readonly HashSet<string> ReservedWindowsNames = new(StringComparer.OrdinalIgnoreCase)
@@ -13,9 +13,8 @@ public static class SafeFileName
 
     const int MaxBaseLength = 100;
 
-    // Invalid chars this platform rejects, plus path separators and the
-    // drive colon that are legal on macOS but break a synced file on
-    // Windows. This app runs on both, so a name must be safe on both.
+    // Chars this platform rejects, plus / \ : which are legal on macOS but
+    // break a synced file on Windows. Must be safe on both.
     static readonly HashSet<char> InvalidChars = Path.GetInvalidFileNameChars()
         .Concat(new[] { '/', '\\', ':' }).ToHashSet();
 
@@ -35,8 +34,7 @@ public static class SafeFileName
 
         if (ReservedWindowsNames.Contains(baseName)) baseName += "_file";
 
-        // The cap can cut right after a dot or space; trim again so the
-        // shortened name stays legal on Windows.
+        // The cap can cut after a dot or space, so trim again.
         if (baseName.Length > MaxBaseLength) baseName = baseName[..MaxBaseLength].TrimEnd('.', ' ');
         if (baseName.Length == 0) baseName = "Untitled";
 

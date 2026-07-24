@@ -77,10 +77,9 @@ public partial class MainWindow : Window
 
     void SaveModel() { _settings.Model = _model.ToString(); Settings.Save(_settings); }
 
-    // Google Sheets backup engine, built lazily on first use. It stays null
-    // (backup does nothing) unless the user turned backup on, a real client id
-    // shipped, AND a refresh token is stored. Fresh settings default off, so
-    // headless tests never touch the network.
+    // Google Sheets backup engine, built lazily. Null (backup does nothing)
+    // unless backup is on, a real client id shipped, and a token is stored.
+    // Settings default off, so headless tests never touch the network.
     DriveBackup? _driveBackup;
     DriveBackup? Backup()
     {
@@ -90,10 +89,9 @@ public partial class MainWindow : Window
         if (store.Load() is null) return null;
         var auth = new GoogleAuth(store);
         var client = new DriveClient(new HttpClientHandler(), auth.GetAccessTokenAsync);
-        // The dialog buttons are fixed Yes/Cancel, so the engine writes the
-        // choice into the body text: Yes = replace with mine / recreate.
-        // The engine runs off the UI thread, and dialogs may only be built on
-        // it, so both prompts marshal through the dispatcher.
+        // Buttons are fixed Yes/Cancel, so the choice lives in the body text
+        // (Yes = replace with mine / recreate). The engine runs off the UI
+        // thread and dialogs build only on it, so prompts marshal through it.
         _driveBackup = new DriveBackup(client, () => _settings, () => Settings.TrySave(_settings),
             conflictPrompt: async (title, body) =>
                 await Dispatcher.UIThread.InvokeAsync(() => ConfirmAsync(title, body))
@@ -107,9 +105,8 @@ public partial class MainWindow : Window
         return _driveBackup;
     }
 
-    // True only when backup is fully live: turned on, a real client shipped, and
-    // a refresh token is stored. Settings and the home cards read this for the
-    // "Connected" state, so all three agree.
+    // True only when backup is fully live (on, real client, token stored).
+    // Settings and home cards read this so all three agree on "Connected".
     public bool DriveConnected => Backup() is not null;
 
     // Fire-and-forget the push after a save. Never awaited on the save path.
@@ -121,14 +118,13 @@ public partial class MainWindow : Window
         RunBackup(path, b => b.RetryIfDirtyAsync(path, text));
 
     // The last background backup task. Copy share link awaits it so the
-    // just-saved push lands (or marks dirty) before the share flow reads the
-    // link state; otherwise the two race for the engine gate and a clean-
-    // looking link can be copied while the fresh save is still uploading.
+    // just-saved push settles before the share flow reads link state,
+    // instead of racing it for the engine gate.
     Task? _backupInFlight;
 
-    // One wrapper for both: run the op off the UI thread, swallow everything
-    // (nothing from backup may crash the app), and apply a KeptOnline result on
-    // the UI thread. A null backup means backup is off; do nothing.
+    // One wrapper for both: run off the UI thread, swallow everything (backup
+    // must never crash the app), apply a KeptOnline result on the UI thread.
+    // A null backup means backup is off; do nothing.
     void RunBackup(string path, Func<DriveBackup, Task<PushResult?>> op)
     {
         var backup = Backup();
@@ -150,9 +146,8 @@ public partial class MainWindow : Window
         });
     }
 
-    // Keep online: the local file is never lost. Copy it into the rescue folder
-    // first, then overwrite it with the sheet and reload the editor if the user
-    // is still on this file.
+    // Keep online: the local file is never lost. Copy it to the rescue folder
+    // first, then overwrite with the sheet and reload if still on this file.
     void ApplyKeptOnline(string path, string onlineCsv)
     {
         try
@@ -176,9 +171,9 @@ public partial class MainWindow : Window
         }
     }
 
-    // Runs the OAuth sign-in and turns backup on when it succeeds. Called from
-    // the Settings window's Backup checkbox and its Reconnect button, so both
-    // paths share one place that flips the setting and rebuilds the engine.
+    // Runs OAuth sign-in and turns backup on when it succeeds. Shared by the
+    // Settings Backup checkbox and Reconnect button: one place that flips the
+    // setting and rebuilds the engine.
     public async Task<bool> ConnectGoogleAsync(CancellationToken ct = default)
     {
         if (!GoogleAuth.IsConfigured) return false;
@@ -195,8 +190,8 @@ public partial class MainWindow : Window
         catch (OperationCanceledException) { return false; }
     }
 
-    // Turns backup off. The stored token is left alone, so reconnecting later
-    // needs no fresh sign-in unless Google revoked it.
+    // Turns backup off. The stored token is left alone, so reconnecting needs
+    // no fresh sign-in unless Google revoked it.
     public void DisableDriveBackup()
     {
         _settings.DriveBackup = false;
@@ -204,11 +199,11 @@ public partial class MainWindow : Window
         _driveBackup = null;
     }
 
-    // The home Drive button is a status light AND the main way to turn backup on.
-    //   green  = connected, backing up (click opens Import)
-    //   yellow = not signed in yet, or the sign-in broke (click signs in)
-    //   red    = this build has no Google connection, so backup can't work
-    // Yellow signs in with two presses so a stray click never launches a browser.
+    // The home Drive button is a status light and the main way to turn backup on.
+    //   green  = connected (click opens Import)
+    //   yellow = not signed in, or sign-in broke (click signs in)
+    //   red    = this build has no Google connection
+    // Yellow needs two presses so a stray click never launches a browser.
     bool _driveArmed;
     DispatcherTimer? _driveArmTimer;
 
@@ -250,10 +245,10 @@ public partial class MainWindow : Window
     {
         if (!GoogleAuth.IsConfigured) return;
 
-        // Green: connected. The click means "bring my other profiles over".
+        // Green, connected: the click brings other profiles over.
         if (DriveConnected) { await ShowDrivePickerAsync(preCheck: false); return; }
 
-        // Yellow, first press: arm and wait for a confirming second press.
+        // Yellow, first press: arm and wait for a second press.
         if (!_driveArmed)
         {
             _driveArmed = true;
@@ -266,7 +261,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        // Yellow, second press: run the sign-in, then offer to pull profiles down.
+        // Yellow, second press: sign in, then offer to pull profiles down.
         _driveArmed = false;
         _driveArmTimer?.Stop();
         bool ok = await ConnectGoogleAsync();
@@ -281,32 +276,31 @@ public partial class MainWindow : Window
         if (_driveArmed) { _driveArmed = false; RefreshDriveButton(); }
     }
 
-    // Open the Drive restore picker. Same guard the share actions use: when
-    // backup is off (Backup() is null) explain and route to Settings rather
-    // than failing silently. preCheck true pre-checks everything (the restore
-    // everything case from onboarding); false starts empty (cherry-pick).
+    // Open the Drive restore picker. Same guard as the share actions: when
+    // backup is off, explain and route to Settings. preCheck true pre-checks
+    // everything (restore-all from onboarding); false starts empty (cherry-pick).
     public async Task ShowDrivePickerAsync(bool preCheck)
     {
         if (!ShareNeedsBackup()) return;
         await new DrivePickerWindow(this, preCheck).ShowDialog(this);
     }
 
-    // The picker reaches back through these so its constructor stays (owner,
-    // preCheck). Backup() is non-null here: ShowDrivePickerAsync gated on it.
+    // The picker reaches back through these. Backup() is non-null here:
+    // ShowDrivePickerAsync gated on it.
     internal Task<List<DriveSheetInfo>> ListDriveSheetsAsync() => Backup()!.ListForPickerAsync();
     internal Task<RestoreSummary> RestoreFromDriveAsync(IReadOnlyList<(string Id, string Name)> picks) =>
         Backup()!.RestoreAsync(picks, LibraryDir);
     internal void RefreshHomeAfterRestore() => RefreshHomeCards();
 
-    // Offered right after a successful connect, the new-machine moment. Public
-    // wrapper because ConfirmAsync is private (same reason ConfirmResetAsync is).
+    // Offered right after a connect, the new-machine moment. Public wrapper
+    // because ConfirmAsync is private (like ConfirmResetAsync).
     public Task<bool> ConfirmRestoreAfterConnectAsync() => ConfirmAsync(
         "Restore your profiles?",
         "Copy your backed up profiles from Google Drive to this computer now?");
 
-    // The two sharing actions, offered as one pair everywhere: the editor's
-    // Share button flyout and each home library card's context menu. path is
-    // null for the open editor and a real path for a home card.
+    // The two sharing actions, one pair everywhere: the editor's Share flyout
+    // and each home card's context menu. path is null for the open editor,
+    // a real path for a home card.
     MenuFlyout ShareMenu(string? path)
     {
         var copy = new MenuItem { Header = "Copy share link" };
@@ -318,9 +312,8 @@ public partial class MainWindow : Window
         return new MenuFlyout { Items = { copy, open } };
     }
 
-    // Sharing needs backup on and connected. When it is off (Backup() is null)
-    // the actions still show, but choosing one explains and opens Settings
-    // rather than failing silently. Returns true when backup is ready.
+    // Sharing needs backup on and connected. When off, the actions still show,
+    // but choosing one explains and opens Settings. True when backup is ready.
     bool ShareNeedsBackup()
     {
         if (Backup() is not null) return true;
@@ -329,11 +322,10 @@ public partial class MainWindow : Window
         return false;
     }
 
-    // Copy a profile's share link to the clipboard. path null means the open
-    // editor: save first (step 1) so a never-saved file is named and on disk.
-    // A home card passes its path and is already saved. The engine call is
-    // awaited (not fire-and-forget): the async HTTP yields, so the UI thread
-    // stays responsive without a spinner.
+    // Copy a profile's share link. path null means the open editor: save first
+    // so a never-saved file is named and on disk. A home card passes its path,
+    // already saved. Awaited (not fire-and-forget): async HTTP yields, so the
+    // UI stays responsive without a spinner.
     async Task CopyShareLinkAsync(string? path)
     {
         if (!ShareNeedsBackup()) return;
@@ -356,16 +348,15 @@ public partial class MainWindow : Window
             }
         }
 
-        // Let the save's own background push finish first so the share flow
-        // reads settled link state instead of racing it for the engine gate.
+        // Let the save's background push finish first, so the share flow reads
+        // settled link state instead of racing it for the engine gate.
         if (_backupInFlight is Task inFlight)
             try { await inFlight; } catch { /* RunBackup already reported it */ }
 
         var result = await Backup()!.GetShareLinkAsync(path, csvText);
 
-        // The dirty push inside the share flow can hit the conflict prompt.
-        // Keep online means the local file still gets rescued and replaced,
-        // share or no share.
+        // The dirty push here can hit the conflict prompt. Keep online still
+        // rescues and replaces the local file, share or no share.
         if (result.DownloadedCsv is string kept) ApplyKeptOnline(path, kept);
 
         switch (result.Kind)
@@ -386,8 +377,8 @@ public partial class MainWindow : Window
         }
     }
 
-    // Open a profile's sheet in the browser. No sheet yet means the user must
-    // copy a share link first, which creates it.
+    // Open a profile's sheet in the browser. No sheet yet means copy a share
+    // link first, which creates it.
     async Task OpenInSheetsAsync(string? path)
     {
         if (!ShareNeedsBackup()) return;
@@ -952,9 +943,8 @@ public partial class MainWindow : Window
     void RefreshHomeCards()
     {
         // The Drive button is a live status light, refreshed on every home load.
-        // This is the ONLY Drive work on home load: no files.list runs here.
-        // Home stays a purely local view; the sheet list is fetched only when
-        // the picker opens (spec: "Home stays a local view").
+        // The only Drive work here: no files.list runs. Home stays a local view;
+        // the sheet list is fetched only when the picker opens.
         RefreshDriveButton();
 
         LibraryCards.Children.Clear();
@@ -1013,9 +1003,8 @@ public partial class MainWindow : Window
         var subtitle = CardSubtitle(path);
         if (onDevice && name.Equals("default.csv", StringComparison.OrdinalIgnoreCase))
             subtitle += " · the device's fallback file";
-        // Tell the user this profile has a copy on Drive. A link means its sheet
-        // exists; kept out of CardSubtitle's cache since link state changes on
-        // its own (connect, restore, turn off).
+        // Show that this profile has a copy on Drive. Kept out of CardSubtitle's
+        // cache since link state changes on its own (connect, restore, turn off).
         if (!onDevice && _settings.DriveLinks.ContainsKey(path))
             subtitle += " · on Google Drive";
 
@@ -1054,9 +1043,9 @@ public partial class MainWindow : Window
                 HomeStatusText.IsVisible = true;
             }
         };
-        // Library cards get the same two sharing actions as the editor. Right
-        // click, or long-press on touch, opens the menu. Device cards do not:
-        // an on-device file has no library path to key a sheet by.
+        // Library cards get the same two sharing actions as the editor (right
+        // click or long-press opens the menu). Device cards do not: an on-device
+        // file has no library path to key a sheet by.
         if (!onDevice) card.ContextFlyout = ShareMenu(path);
         return card;
     }
@@ -1985,8 +1974,8 @@ public partial class MainWindow : Window
         _file.Dirty = false;
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
         Status($"Saved to {_savePath}.", StatusKind.Ready);
-        // Local save is done. Push to the sheet in the background on the exact
-        // bytes just written; the save path never waits on the network.
+        // Local save is done. Push the exact bytes just written to the sheet in
+        // the background; the save path never waits on the network.
         FireBackupPush(_savePath, text);
         return true;
     }

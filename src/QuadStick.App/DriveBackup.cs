@@ -3,30 +3,27 @@ using QuadStick.Format;
 
 namespace QuadStick.App;
 
-// The background backup engine. UI-free on purpose: it holds no Avalonia
-// reference so tests run without a windowing stack. MainWindow owns the
-// prompts, the status line, and the rescue-and-reload work; this class owns
-// the Drive calls and the per-profile link state.
+// Background backup engine. No Avalonia reference, so tests run without a
+// windowing stack. MainWindow owns the prompts, status line, and
+// rescue-and-reload; this class owns the Drive calls and link state.
 //
-// One rule runs through every path here: a local save must never wait on the
-// network and a backup failure must never reach the save. So every failure is
-// swallowed into backupDirty plus a status message, and the flag retries on
-// the next save, on open, and on Reconnect.
+// One rule: a local save never waits on the network, and a backup failure
+// never reaches the save. Failures set backupDirty plus a status message and
+// retry on the next save, on open, and on Reconnect.
 public sealed class DriveBackup
 {
     readonly DriveClient _client;
     readonly Func<AppSettings> _getSettings;
-    // Persist settings, reporting success. Push paths treat it as best-effort
-    // and ignore the result; restore checks it, because an imported-but-unlinked
-    // profile would fork a duplicate sheet on its next save.
+    // Save settings, returning success. Push paths ignore the result (best
+    // effort); restore checks it, since an imported-but-unlinked profile would
+    // fork a duplicate sheet on its next save.
     readonly Func<bool> _trySave;
-    // title, body -> the user's pick. MainWindow maps these onto its dialog.
+    // title, body -> the user's pick.
     readonly Func<string, string, Task<ConflictChoice>> _conflictPrompt;
-    // title, body -> true recreate as a new sheet, false turn backup off here.
+    // title, body -> true recreate as a new sheet, false turn backup off.
     readonly Func<string, string, Task<bool>> _recreatePrompt;
-    // "Anyone with this link can view (read only). Turn on sharing and copy?"
-    // -> the user's yes/no. Called at most once per sheet, the first time a
-    // share link is copied. Marshalled to the UI thread by the caller.
+    // Share confirm yes/no. Called at most once per sheet, on first copy.
+    // Marshalled to the UI thread by the caller.
     readonly Func<Task<bool>> _shareConfirm;
     // message, isWarning. Marshalled to the UI thread by the caller.
     readonly Action<string, bool> _status;
@@ -48,9 +45,9 @@ public sealed class DriveBackup
     const string PendingMessage = "Backup pending";
     const string PausedMessage = "Backup paused. Reconnect to Google in Settings.";
 
-    // One Drive operation at a time. A save's background push and a share-link
-    // copy can race on the same unlinked profile and each create its own sheet;
-    // the gate serializes them so the second one sees the first one's link.
+    // One Drive op at a time. A background push and a share-link copy can race
+    // on the same unlinked profile and each create a sheet; the gate serializes
+    // them so the second sees the first one's link.
     // ponytail: one global gate, per-profile gates if backups ever feel slow.
     readonly SemaphoreSlim _gate = new(1, 1);
 
@@ -61,9 +58,8 @@ public sealed class DriveBackup
         finally { _gate.Release(); }
     }
 
-    // A failed settings write surfaces in the status line instead of being
-    // swallowed (spec rule). Restore checks _trySave itself because it must
-    // also undo the file write.
+    // A failed settings write shows in the status line, not swallowed (spec
+    // rule). Restore checks _trySave itself, since it must also undo the write.
     void SaveState()
     {
         if (!_trySave()) _status("Could not save backup settings.", true);
@@ -87,10 +83,8 @@ public sealed class DriveBackup
         _shareConfirm = shareConfirm;
     }
 
-    // Push one profile's grid to its sheet, following the spec Flow exactly.
-    // Returns a result the caller can act on; KeptOnline carries the sheet CSV
-    // because the rescue copy, atomic overwrite, and editor reload need
-    // MainWindow state this class does not hold.
+    // Push one profile's grid to its sheet. KeptOnline carries the sheet CSV,
+    // since the rescue, overwrite, and reload need MainWindow state we lack.
     public Task<PushResult> PushAsync(string profilePath, string csvText, CancellationToken ct = default) =>
         Locked(() => PushCoreAsync(profilePath, csvText, ct), ct);
 
@@ -103,13 +97,12 @@ public sealed class DriveBackup
             if (link is null)
                 return await CreateAndRecordAsync(profilePath, csvText, ct);
 
-            // Persist the dirty flag before any network work. A crash or quit
-            // mid-push then still retries on the next launch; success below
-            // clears it again.
+            // Set dirty before any network work, so a crash mid-push still
+            // retries on next launch. Success below clears it.
             link.BackupDirty = true;
             SaveState();
 
-            // Conflict check: read the sheet's modifiedTime before touching it.
+            // Conflict check: read modifiedTime before touching the sheet.
             var current = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
             if (current == link.LastSeenModifiedTime)
                 return await PushAndRecordAsync(link, csvText, ct);
@@ -119,10 +112,9 @@ public sealed class DriveBackup
             if (choice == ConflictChoice.ReplaceWithMine)
                 return await PushAndRecordAsync(link, csvText, ct);
 
-            // Keep online: download the sheet and hand the bytes back. The
-            // caller rescues the local file, overwrites it, and reloads. Record
-            // the online time now so the next local save pushes without a
-            // second, self-inflicted conflict prompt. Mapping stays put.
+            // Keep online: download and hand the bytes back for the caller to
+            // rescue, overwrite, and reload. Record the online time now so the
+            // next save does not fire a self-inflicted conflict prompt.
             var online = await _client.DownloadCsvAsync(link.SpreadsheetId, ct);
             link.LastSeenModifiedTime = current;
             link.BackupDirty = false;
@@ -150,7 +142,7 @@ public sealed class DriveBackup
         var recreate = await _recreatePrompt(RecreateTitle, RecreateBody);
         if (!recreate)
         {
-            // Turn backup off for this profile: drop the link, nothing dirty.
+            // Turn backup off: drop the link, nothing dirty.
             _getSettings().DriveLinks.Remove(profilePath);
             SaveState();
             return new PushResult(PushResultKind.RecreatedOff);
@@ -169,15 +161,14 @@ public sealed class DriveBackup
         }
     }
 
-    // First backup of a profile: create the sheet named after the file, push
-    // the grid, then read back our own write's modifiedTime and record it.
+    // First backup: create the sheet named after the file, push the grid, then
+    // read back and record our own write's modifiedTime.
     async Task<PushResult> CreateAndRecordAsync(string profilePath, string csvText, CancellationToken ct)
     {
         var title = Path.GetFileNameWithoutExtension(profilePath);
         var id = await _client.CreateSpreadsheetAsync(title, ct);
-        // Record the sheet the moment it exists, dirty until the push lands.
-        // If the push or the time read fails past this point, the retry pushes
-        // to THIS sheet instead of creating a second one.
+        // Record the sheet the moment it exists, dirty until the push lands, so
+        // a failure past here retries to THIS sheet, not a second one.
         var link = new DriveLink { SpreadsheetId = id, BackupDirty = true };
         _getSettings().DriveLinks[profilePath] = link;
         SaveState();
@@ -188,8 +179,8 @@ public sealed class DriveBackup
         return new PushResult(PushResultKind.Pushed);
     }
 
-    // Silent push to an existing sheet, then re-read modifiedTime so the next
-    // conflict check compares against our own write, not the stale value.
+    // Push to an existing sheet, then re-read modifiedTime so the next conflict
+    // check compares against our own write, not the stale value.
     async Task<PushResult> PushAndRecordAsync(DriveLink link, string csvText, CancellationToken ct)
     {
         await _client.PushGridAsync(link.SpreadsheetId, Csv.Parse(csvText), ct);
@@ -218,8 +209,8 @@ public sealed class DriveBackup
     }
 
     // Retry on profile open. No-op unless the link exists and is dirty; then a
-    // normal push, which follows the same conflict rules. Returns null when
-    // there was nothing to retry so the caller can skip the KeptOnline handling.
+    // normal push with the same conflict rules. Returns null when there was
+    // nothing to retry, so the caller can skip the KeptOnline handling.
     public Task<PushResult?> RetryIfDirtyAsync(string profilePath, string csvText) =>
         Locked<PushResult?>(async () =>
         {
@@ -248,11 +239,10 @@ public sealed class DriveBackup
     static string Url(string spreadsheetId) =>
         $"https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit?usp=sharing";
 
-    // "Copy share link", the spec's five step sequence. Returns the URL to put
-    // on the clipboard plus a message, or a Cancelled/Failed result. Step 1,
-    // the local save, is the caller's job: saving is UI and the state map is
-    // keyed by path, so the caller saves (which names the file) before this
-    // runs. No path, no sheet.
+    // "Copy share link", the spec's five step sequence. Returns the clipboard
+    // URL plus a message, or a Cancelled/Failed result. Step 1 (the local save)
+    // is the caller's job, since the state map is keyed by path: no path, no
+    // sheet.
     public Task<ShareLinkResult> GetShareLinkAsync(string profilePath, string csvText, CancellationToken ct = default) =>
         Locked(() => GetShareLinkCoreAsync(profilePath, csvText, ct), ct);
 
@@ -263,12 +253,11 @@ public sealed class DriveBackup
 
         // The dirty push below can hit the conflict prompt; Keep online hands
         // back the sheet CSV, which must reach the caller so the local file
-        // still gets rescued, overwritten, and reloaded even mid-share.
+        // still gets rescued, overwritten, and reloaded mid-share.
         string? keptOnlineCsv = null;
 
-        // Step 2: not linked yet. Run the first backup (create + push) through
-        // the existing path. A sheet that never held the profile would share as
-        // a blank, so a failed first push copies nothing.
+        // Step 2: not linked yet. Run the first backup (create + push). A blank
+        // sheet would share as blank, so a failed first push copies nothing.
         if (link is null)
         {
             var first = await PushCoreAsync(profilePath, csvText, ct);
@@ -278,8 +267,8 @@ public sealed class DriveBackup
             link = settings.DriveLinks[profilePath];
         }
         // Step 3: linked but the last backup did not land. Push. If it fails,
-        // still copy the link but say the latest changes are not up yet; a
-        // known good earlier backup beats no link offline.
+        // still copy the link but say the latest changes are not up yet: a
+        // good earlier backup beats no link offline.
         else if (link.BackupDirty)
         {
             var push = await PushCoreAsync(profilePath, csvText, ct);
@@ -293,9 +282,8 @@ public sealed class DriveBackup
                     "Link copied. Your latest changes are not uploaded yet (backup pending).");
         }
 
-        // Step 4: share the sheet once. Anyone with the link can view (read
-        // only). The linked-and-clean path reaches here with no network call
-        // yet, so an already shared sheet is a pure clipboard write below.
+        // Step 4: share the sheet once (anyone with the link can view). An
+        // already shared sheet skips this and is a pure clipboard write below.
         if (!link.LinkShared)
         {
             if (!await _shareConfirm())
@@ -305,8 +293,7 @@ public sealed class DriveBackup
                 await _client.ShareAnyoneReaderAsync(link.SpreadsheetId, ct);
                 link.LinkShared = true;
                 // The grant can bump modifiedTime; re-read it now so the next
-                // save does not see a phantom online edit and prompt a
-                // self-inflicted conflict.
+                // save does not see a phantom edit and prompt a conflict.
                 link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
                 SaveState();
             }
@@ -324,12 +311,11 @@ public sealed class DriveBackup
 
     // ---- Restore (bulk import from Drive) ----
 
-    // List every backup sheet this app created, tagged with whether it is
-    // already linked to a local profile. A sheet counts as linked only when its
-    // mapped local file still exists on disk; a stale entry for a deleted CSV is
-    // ignored AND pruned, so a deleted local file can never grey out the very
-    // sheet restore exists to bring back. Match is by spreadsheetId, so a rename
-    // does not fool it.
+    // List every backup sheet this app made, tagged linked or not. Linked only
+    // counts when the mapped local file still exists; a stale entry for a
+    // deleted CSV is ignored AND pruned, so a deleted file can never grey out
+    // the sheet restore exists to bring back. Matched by spreadsheetId, so a
+    // rename does not fool it.
     public Task<List<DriveSheetInfo>> ListForPickerAsync(CancellationToken ct = default) =>
         Locked(() => ListForPickerCoreAsync(ct), ct);
 
@@ -356,8 +342,8 @@ public sealed class DriveBackup
             .ToList();
     }
 
-    // Import the picked sheets into libraryDir and link each on the spot. Every
-    // per-file failure is recorded and never aborts the batch.
+    // Import the picked sheets into libraryDir and link each. Per-file failures
+    // are recorded and never abort the batch.
     public Task<RestoreSummary> RestoreAsync(
         IReadOnlyList<(string Id, string Name)> picks, string libraryDir, CancellationToken ct = default) =>
         Locked(() => RestoreCoreAsync(picks, libraryDir, ct), ct);
@@ -370,17 +356,17 @@ public sealed class DriveBackup
         var skipped = new List<(string Name, string Reason)>();
         var failed = new List<(string Name, string Reason)>();
 
-        // A fresh machine has no library folder yet; restore is exactly the
-        // moment that must not matter.
+        // A fresh machine has no library folder yet, and restore is exactly the
+        // moment that must still work.
         Directory.CreateDirectory(libraryDir);
 
-        // Existing library file names, case-insensitive: a collision is a skip,
-        // never an overwrite. The local file is the source of truth.
+        // Existing file names, case-insensitive: a collision is a skip, never an
+        // overwrite. The local file is the source of truth.
         var onDisk = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var f in Directory.GetFiles(libraryDir, "*.csv"))
             onDisk.Add(Path.GetFileName(f));
-        // Names already claimed within this batch, so two picks that sanitize to
-        // the same name get a numbered suffix instead of fighting over one file.
+        // Names claimed within this batch, so two picks that sanitize to the
+        // same name get a numbered suffix instead of fighting over one file.
         var batchNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var pick in picks)
@@ -390,8 +376,8 @@ public sealed class DriveBackup
             {
                 var csv = await _client.DownloadCsvAsync(pick.Id, ct);
 
-                // Validate by parsing. A sheet with no readable mode sheet is a
-                // per-file failure, not a written-then-broken profile.
+                // Validate by parsing, so a bad sheet is a per-file failure,
+                // not a written-then-broken profile.
                 ProfileFile parsed;
                 try { parsed = ProfileFile.Load(csv); }
                 catch { failed.Add((reportName, "could not read the sheet")); continue; }
@@ -405,15 +391,15 @@ public sealed class DriveBackup
                 if (onDisk.Contains(fileName))
                 { skipped.Add((reportName, "already exists")); continue; }
 
-                // Read the metadata BEFORE writing the file: every network
-                // failure then lands before the disk has anything to undo, so
-                // a failed import can never leave an unlinked local file.
+                // Read metadata BEFORE writing the file, so a network failure
+                // lands before the disk has anything to undo: a failed import
+                // can never leave an unlinked local file.
                 var mt = await _client.GetModifiedTimeAsync(pick.Id, ct);
 
                 var dest = Path.Combine(libraryDir, fileName);
                 ProfileFile.WriteAtomic(dest, csv);
 
-                // Link on the spot: future saves push to this sheet instead of
+                // Link now, so future saves push to this sheet instead of
                 // forking a duplicate.
                 settings.DriveLinks[dest] = new DriveLink
                 {
@@ -423,8 +409,8 @@ public sealed class DriveBackup
                     LinkShared = false,
                 };
 
-                // Imported must mean linked. If the link state cannot be saved,
-                // undo the write so the file cannot silently fork a new sheet.
+                // Imported must mean linked. If the link cannot be saved, undo
+                // the write so the file cannot silently fork a new sheet.
                 if (!_trySave())
                 {
                     settings.DriveLinks.Remove(dest);

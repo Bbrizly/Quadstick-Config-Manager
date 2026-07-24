@@ -18,15 +18,13 @@ public sealed class AppSettings
     public bool TutorialSeen = false;
     public bool DeviceCards = true;            // device view mappings as sentence cards
     public double? WinW, WinH, WinX, WinY;     // null = use window defaults
-    // On by default: the home button shows a yellow "sign in" until the user
-    // connects. Backup stays inert until then (Backup() needs a stored token),
-    // so default-on never touches the network or a fresh save.
+    // On by default, but inert until a token is stored, so it never touches
+    // the network until the user signs in.
     public bool DriveBackup = true;
     public Dictionary<string, DriveLink> DriveLinks = new(); // key: profile file path
 }
 
-// Per-profile Google Sheets backup state. Keyed by profile file path in
-// AppSettings.DriveLinks.
+// Per-profile backup state, keyed by profile file path.
 public sealed class DriveLink
 {
     public string SpreadsheetId = "";
@@ -47,13 +45,12 @@ public static class Settings
         catch { return new AppSettings(); }
     }
 
-    // Best-effort save: a failed write is swallowed. Most callers want this,
-    // because settings are a convenience and never worth crashing over.
+    // Best-effort: a failed write is swallowed. Settings are a convenience,
+    // never worth crashing over.
     public static void Save(AppSettings s, string? path = null) => TrySave(s, path);
 
-    // Same write, but reports whether it landed. Restore needs this: a profile
-    // imported but not linked would fork a duplicate sheet on its next save, so
-    // restore rolls back a file whose link state could not be persisted.
+    // Same write, but reports if it landed. Restore rolls back an import whose
+    // link state could not be saved, else its next save forks a duplicate sheet.
     public static bool TrySave(AppSettings s, string? path = null)
     {
         var p = path ?? DefaultPath;

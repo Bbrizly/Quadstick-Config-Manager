@@ -162,11 +162,9 @@ public class SettingsWindow : Window
         Text = text, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
     };
 
-    // A field is one unit: a title, its control, and an optional caption, packed
-    // tight (4px) so they read as one thing. The tab's own 16px spacing then
-    // sits between whole fields, not between a title and the box it labels. This
-    // is what stops labels floating far above their control and captions far
-    // below it. Extra controls (a preview row, a second button) can ride along.
+    // A field is title + control + optional caption, packed tight (4px) so they
+    // read as one unit. The tab's 16px spacing then sits between fields, not
+    // between a title and its box. Extra controls can ride along.
     static Control Field(string label, string? caption, params Control[] controls)
     {
         var group = new StackPanel { Spacing = 4 };
@@ -336,9 +334,8 @@ public class SettingsWindow : Window
         return Tab(panel);
     }
 
-    // Back up to Google Sheets: a checkbox that runs the OAuth flow when
-    // turned on, a Cancel for the wait (the spec requires a visible cancel),
-    // and a Reconnect for the revoked-token case.
+    // Backup checkbox: runs OAuth when turned on, Cancel for the wait,
+    // Reconnect for a revoked token.
     Control BackupArea(MainWindow owner)
     {
         var section = new StackPanel { Spacing = 16 };
@@ -353,14 +350,13 @@ public class SettingsWindow : Window
             FontSize = Size("BodySize"),
         };
         AutomationProperties.SetName(backupCheck, "Back up my profiles to Google Drive");
-        // Checkbox, the Connected line, and the caption are one field: pack them
-        // tight so the status and the explanation sit right under the checkbox.
+        // Checkbox, Connected line, and caption are one field: pack tight so
+        // status and explanation sit right under the checkbox.
         var group = new StackPanel { Spacing = 4 };
         group.Children.Add(backupCheck);
 
-        // At-a-glance connection state: a green line only when backup is truly
-        // live (on, real client, token stored). RefreshConnected keeps it in
-        // step with connect, reconnect, and turn-off.
+        // Green line only when backup is truly live (on, real client, token
+        // stored). RefreshConnected keeps it in step.
         var connected = new TextBlock
         {
             Text = "Connected to Google Drive",
@@ -369,9 +365,8 @@ public class SettingsWindow : Window
             TextWrapping = TextWrapping.Wrap,
             IsVisible = owner.DriveConnected,
         };
-        // The green comes from a theme dictionary, so bind it dynamically. A
-        // plain FindResource at app scope misses theme-scoped brushes and leaves
-        // the text unpainted (present but invisible).
+        // Bind dynamically: the brush lives in a theme dictionary, and a plain
+        // FindResource misses theme-scoped brushes (text stays invisible).
         connected[!TextBlock.ForegroundProperty] = new DynamicResourceExtension("SuccessBrush");
         AutomationProperties.SetName(connected, "Connected to Google Drive");
         group.Children.Add(connected);
@@ -393,18 +388,16 @@ public class SettingsWindow : Window
         };
         section.Children.Add(waitingRow);
 
-        // Reconnect is a recovery action, not a normal-state button: show it
-        // only when backup is on but not actually connected (sign-in never
-        // finished, or Google dropped the link). When connected it stays hidden
-        // so the user is not told to reconnect something that already works.
+        // Recovery action: show only when backup is on but not connected
+        // (sign-in unfinished, or Google dropped the link). Hidden when
+        // connected so we don't tell the user to fix what works.
         var reconnect = new Button
         { Content = "Reconnect", IsVisible = owner.CurrentSettings.DriveBackup && !owner.DriveConnected };
         AutomationProperties.SetName(reconnect, "Reconnect to Google");
         section.Children.Add(reconnect);
 
-        // Bulk restore entry point. Enabled only while backup is on; closes
-        // this window and opens the picker so the restored profiles land in
-        // the home library the user returns to.
+        // Bulk restore. On only while backup is on; closes this window and
+        // opens the picker so restored profiles land in the home library.
         var importDrive = new Button
         { Content = "Import from Google Drive", IsEnabled = owner.CurrentSettings.DriveBackup };
         AutomationProperties.SetName(importDrive, "Import your profiles from Google Drive");
@@ -431,8 +424,8 @@ public class SettingsWindow : Window
                 importDrive.IsEnabled = owner.CurrentSettings.DriveBackup;
                 RefreshConnected();
 
-                // The new-machine moment: right after a fresh connect, offer to
-                // pull the backed up profiles down, everything pre-checked.
+                // New-machine moment: right after a fresh connect, offer to
+                // pull the backups down, all pre-checked.
                 if (ok && await owner.ConfirmRestoreAfterConnectAsync())
                     await owner.ShowDrivePickerAsync(preCheck: true);
             }

@@ -6,20 +6,16 @@ using System.Text.Json;
 
 namespace QuadStick.App;
 
-// OAuth 2.0 installed-app flow with PKCE against Google.
-// Scope is drive.file only.
+// OAuth 2.0 installed-app flow with PKCE. Scope: drive.file only.
 public class GoogleAuth
 {
-    // The client id and secret come from GoogleClient: the gitignored
-    // GoogleClient.Local.cs in a connected build, the committed placeholder
-    // otherwise. Google's token endpoint requires the secret for Desktop-type
-    // clients even with PKCE; it is not confidential for installed apps.
+    // From GoogleClient (local file if present, else placeholder).
+    // Google needs the secret for Desktop clients even with PKCE. Not confidential for installed apps.
     public const string ClientId = GoogleClient.Id;
     public const string ClientSecret = GoogleClient.Secret;
 
-    // False while the placeholder is in place, and on platforms without a
-    // persistent token store (Linux): connecting there would look fine, then
-    // drop the refresh token on every restart. Callers show "not set up yet".
+    // False on the placeholder and on Linux (no persistent store: it would
+    // drop the refresh token every restart). Callers show "not set up yet".
     public static bool IsConfigured =>
         !ClientId.StartsWith("REPLACE-ME")
         && (OperatingSystem.IsMacOS() || OperatingSystem.IsWindows());
@@ -40,7 +36,7 @@ public class GoogleAuth
         _http = new HttpClient(handler ?? new HttpClientHandler());
     }
 
-    // PKCE verifier: 32 random bytes, base64url. Yields a 43-char string.
+    // PKCE verifier: 32 random bytes, base64url (43 chars).
     public static string CreateVerifier() => Base64Url(RandomNumberGenerator.GetBytes(32));
 
     // S256 challenge: base64url(SHA256(ASCII(verifier))).
@@ -50,8 +46,8 @@ public class GoogleAuth
     static string Base64Url(byte[] bytes) =>
         Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
-    // Interactive sign-in. The launcher opens the system browser (Google blocks
-    // embedded webviews). ct lets the UI cancel; a 2-minute cap backs it up.
+    // Interactive sign-in. Launcher opens the system browser (Google blocks
+    // embedded webviews). ct cancels; 2-minute cap backs it up.
     public async Task SignInAsync(Func<Uri, Task> launcher, CancellationToken ct = default)
     {
         var verifier = CreateVerifier();
@@ -103,8 +99,8 @@ public class GoogleAuth
             "prompt=consent",
         });
 
-    // Wait for the browser redirect, validate state, return the code.
-    // A mismatched or missing state is rejected. ct cancellation stops the listener.
+    // Wait for the redirect, check state, return the code.
+    // Bad or missing state is rejected. ct stops the listener.
     public static async Task<string> AwaitCodeAsync(HttpListener listener, string expectedState, CancellationToken ct)
     {
         using var reg = ct.Register(() => { try { listener.Stop(); } catch { } });

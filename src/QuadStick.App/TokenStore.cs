@@ -18,15 +18,15 @@ public static class TokenStore
     const string Service = "QuadStick Config Manager";
     const string Account = "google-drive";
 
-    // The right store for the current OS.
+    // Store for the current OS.
     public static ITokenStore Create() =>
         OperatingSystem.IsMacOS() ? new MacKeychainTokenStore(Service, Account)
         : OperatingSystem.IsWindows() ? new WindowsDpapiTokenStore()
         : new InMemoryTokenStore();
 }
 
-// macOS Keychain via the legacy generic-password API. Far less interop than
-// the CFDictionary path and fine for one secret.
+// macOS Keychain via the legacy generic-password API. Less interop than
+// the CFDictionary path, fine for one secret.
 public class MacKeychainTokenStore : ITokenStore
 {
     const string Sec = "/System/Library/Frameworks/Security.framework/Security";
@@ -104,8 +104,8 @@ public class WindowsDpapiTokenStore : ITokenStore
 
     public string? Load()
     {
-        // A corrupt or unreadable token file means "not connected", never a
-        // crash. The user just reconnects.
+        // Corrupt or unreadable file means "not connected", never a crash.
+        // The user just reconnects.
         try
         {
             if (!File.Exists(_path)) return null;

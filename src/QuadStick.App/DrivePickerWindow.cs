@@ -8,14 +8,11 @@ using Avalonia.Media;
 
 namespace QuadStick.App;
 
-// The Drive restore picker: one dialog serves bulk restore and cherry-picking
-// from all three entry points (home, settings, onboarding). Follows the app's
-// code-behind dialog idiom (see SettingsWindow): a plain Window, ShowDialog
-// from the caller, Esc closes, AutomationProperties on every control.
+// Drive restore picker. One dialog for bulk restore and cherry-pick, from
+// home, settings, and onboarding. Same idiom as SettingsWindow.
 //
-// The sheet list is fetched AFTER the window opens, not in the constructor:
-// Home stays a local view and no Drive call happens until the picker is up. A
-// network failure shows in the status line, never a crash.
+// Sheets load after the window opens, not in the ctor, so home stays local
+// and a Drive failure shows in the status line instead of crashing.
 public class DrivePickerWindow : Window
 {
     readonly MainWindow _owner;
@@ -91,14 +88,12 @@ public class DrivePickerWindow : Window
 
         Content = MainWindow.ZoomWrap(panel, owner.UiScale);
 
-        // Pull the keyboard into this window so Esc works from the first press,
-        // the same fix SettingsWindow uses.
+        // Focus a control so Esc works from the first press.
         Opened += (_, _) => cancel.Focus();
         Opened += async (_, _) => await LoadAsync();
     }
 
-    // A freshly opened dialog can have no focused element, so handle Escape on
-    // the window itself, matching SettingsWindow.
+    // A fresh dialog may have no focused element, so handle Esc on the window.
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
@@ -154,8 +149,8 @@ public class DrivePickerWindow : Window
         {
             var summary = await _owner.RestoreFromDriveAsync(picks);
             _owner.RefreshHomeAfterRestore();
-            // Reload so just-imported sheets grey out, then put the summary
-            // back on top of whatever LoadAsync wrote to the status line.
+            // Reload to grey out imported sheets, then show the summary
+            // (LoadAsync overwrites the status line, so set it after).
             await LoadAsync();
             _status.Text = summary.Message;
         }
@@ -167,11 +162,11 @@ public class DrivePickerWindow : Window
         {
             _import.IsEnabled = _rows.Any(r => r.Check.IsEnabled);
         }
-        // The window stays open so the user reads the result and can pick more.
+        // Stay open so the user reads the result and can pick more.
     }
 
-    // Drive returns an RFC3339 timestamp; show the user a plain local short
-    // date. If it will not parse, show it as-is rather than nothing.
+    // Drive gives an RFC3339 timestamp. Show a local short date, or the
+    // raw string if it will not parse.
     static string ShortDate(string modifiedTime)
     {
         if (DateTimeOffset.TryParse(modifiedTime, out var dt))

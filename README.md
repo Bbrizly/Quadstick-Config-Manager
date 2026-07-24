@@ -14,7 +14,7 @@ Windows, macOS, and Linux. Not affiliated with QuadStick or Fred Davison.
 [![Release](https://img.shields.io/github/v/release/Bbrizly/Quadstick-Config-Manager?label=download)](https://github.com/Bbrizly/Quadstick-Config-Manager/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-[Website](https://bbrizly.github.io/Quadstick-Config-Manager/) &middot; [Download](https://github.com/Bbrizly/Quadstick-Config-Manager/releases) &middot; [QuadStick.com](https://www.quadstick.com/) &middot; [User manual](https://www.quadstick.com/online-user-manual)
+[Website](https://bbrizly.github.io/Quadstick-Config-Manager/) &middot; [Download](https://github.com/Bbrizly/Quadstick-Config-Manager/releases) &middot; [Mac App Store](https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12) &middot; [Microsoft Store](https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&gl=EG&ocid=pdpshare) &middot; [QuadStick.com](https://www.quadstick.com/) &middot; [User manual](https://www.quadstick.com/online-user-manual)
 
 </div>
 
@@ -38,7 +38,9 @@ This is a plain editor that catches those mistakes before anything reaches the d
 
 ## Download
 
-Grab the latest build from [Releases](https://github.com/Bbrizly/Quadstick-Config-Manager/releases):
+Also on the [Mac App Store](https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12) and [Microsoft Store](https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&gl=EG&ocid=pdpshare).
+
+Or grab the latest build from [Releases](https://github.com/Bbrizly/Quadstick-Config-Manager/releases):
 
 | File | For |
 |------|-----|

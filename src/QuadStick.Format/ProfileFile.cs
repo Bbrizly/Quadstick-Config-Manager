@@ -26,8 +26,8 @@ public sealed class ProfileFile
 
     public string ToCsvText() => Csv.Write(Grid);
 
-    // Write via a temp file then rename so a crash or power loss mid-write
-    // can never leave a half-written profile behind. Same pattern Device uses.
+    // Temp file then rename, so a crash mid-write can't leave a half-written
+    // profile. Same pattern Device uses.
     public static void WriteAtomic(string path, string text)
     {
         var tmp = path + ".qscm-tmp";
