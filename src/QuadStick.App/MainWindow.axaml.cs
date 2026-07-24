@@ -416,6 +416,27 @@ public partial class MainWindow : Window
     // (savePath null), so editing and installing never touches the template.
     public static string TemplatesDir => Path.Combine(LibraryDir, "Templates");
 
+    // Home already lists the library folder, so a recent card there would be a
+    // duplicate. Compared on the folder, not the path, so a file moved into the
+    // library stops being "recent" without any bookkeeping.
+    static bool InLibrary(string path) => string.Equals(
+        Path.GetDirectoryName(Path.GetFullPath(path)), Path.GetFullPath(LibraryDir),
+        StringComparison.OrdinalIgnoreCase);
+
+    const int MaxRecents = 8;
+
+    // Newest first, no duplicates. Called on every open and save that has a
+    // real path behind it, which is what makes a file findable again later.
+    void RememberRecent(string path)
+    {
+        var full = Path.GetFullPath(path);
+        _settings.Recents.RemoveAll(p => string.Equals(p, full, StringComparison.OrdinalIgnoreCase));
+        _settings.Recents.Insert(0, full);
+        if (_settings.Recents.Count > MaxRecents)
+            _settings.Recents.RemoveRange(MaxRecents, _settings.Recents.Count - MaxRecents);
+        Settings.TrySave(_settings);
+    }
+
     static readonly HashSet<string> JoystickDirs = new(StringComparer.OrdinalIgnoreCase)
     { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
 
@@ -991,6 +1012,15 @@ public partial class MainWindow : Window
         foreach (var path in libraryFiles)
             LibraryCards.Children.Add(ProfileCard(path, onDevice: false));
 
+        // A recent that has since been moved into the library, deleted, or
+        // saved to a temp folder the system wiped just drops off the list.
+        RecentCards.Children.Clear();
+        var recents = _settings.Recents.Where(p => !InLibrary(p) && File.Exists(p)).ToList();
+        RecentSection.IsVisible = recents.Count > 0;
+        foreach (var path in recents)
+            RecentCards.Children.Add(ProfileCard(path, onDevice: false,
+                note: $" · in {Path.GetFileName(Path.GetDirectoryName(path))}"));
+
         DeviceCards.Children.Clear();
         // A yanked USB stick between FindCandidates and GetFiles is routine
         // for this hardware; it must never crash the home screen.
@@ -1032,11 +1062,11 @@ public partial class MainWindow : Window
         return sub;
     }
 
-    Control ProfileCard(string path, bool onDevice)
+    Control ProfileCard(string path, bool onDevice, string note = "")
     {
         var name = Path.GetFileName(path);
         var bare = BareName(name); // the user never reads ".csv"
-        var subtitle = CardSubtitle(path);
+        var subtitle = CardSubtitle(path) + note;
         if (onDevice && name.Equals("default.csv", StringComparison.OrdinalIgnoreCase))
             subtitle += " · the device's fallback file";
         // Show that this profile has a copy on Drive. Kept out of CardSubtitle's
@@ -1109,7 +1139,7 @@ public partial class MainWindow : Window
         ShowEditor();
         RefreshEditor(); // RefreshIssues inside sets the status line
         // A profile opened from a path retries its backup if it was left dirty.
-        if (savePath is not null) FireBackupRetry(savePath, file.ToCsvText());
+        if (savePath is not null) { RememberRecent(savePath); FireBackupRetry(savePath, file.ToCsvText()); }
     }
 
     void RepopulateSheetPicker(int select)
@@ -1928,6 +1958,13 @@ public partial class MainWindow : Window
 
     public void LoadProfile(ProfileFile file) => OpenInEditor(file, savePath: null);
 
+    // Opening a real path is what feeds the recents list, so a test needs the
+    // path seam, not just LoadProfile's in-memory one.
+    public void OpenPathForPreview(string path) =>
+        OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path);
+
+    public void ShowHomeForPreview() => ShowHome();
+
     public void SelectZoneForPreview(string zoneId)
     { _selectedZone = zoneId; BuildDeviceView(); BuildZoneDetail(); }
 
@@ -2040,6 +2077,7 @@ public partial class MainWindow : Window
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         { Status($"Could not save: {ex.Message}", StatusKind.Error); return false; }
         _file.Dirty = false;
+        RememberRecent(_savePath); // Save As invents a path that no open ever saw
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
         Status($"Saved to {_savePath}.", StatusKind.Ready);
         // Local save is done. Push the exact bytes just written to the sheet in

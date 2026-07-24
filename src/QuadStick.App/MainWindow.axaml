@@ -105,6 +105,14 @@
             <WrapPanel x:Name="LibraryCards"/>
           </StackPanel>
 
+          <!-- Files opened from elsewhere on the computer. Hidden until there
+               is one, so a first run stays as simple as it is today. -->
+          <StackPanel x:Name="RecentSection" Spacing="12" IsVisible="False">
+            <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
+            <TextBlock Classes="section" Text="OPENED FROM YOUR COMPUTER"/>
+            <WrapPanel x:Name="RecentCards"/>
+          </StackPanel>
+
           <StackPanel Spacing="12">
             <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
             <TextBlock Classes="section" Text="ON YOUR QUADSTICK"/>

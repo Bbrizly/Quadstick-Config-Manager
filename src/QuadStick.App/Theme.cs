@@ -22,6 +22,10 @@ public sealed class AppSettings
     // the network until the user signs in.
     public bool DriveBackup = true;
     public Dictionary<string, DriveLink> DriveLinks = new(); // key: profile file path
+    // Profiles opened from outside the library folder, newest first. Without
+    // this they leave no trace in the app: Save writes them back where they
+    // came from and Home only ever lists the library.
+    public List<string> Recents = new();
 }
 
 // Per-profile backup state, keyed by profile file path.
