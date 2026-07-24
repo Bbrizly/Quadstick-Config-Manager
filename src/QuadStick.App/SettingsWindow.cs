@@ -343,8 +343,25 @@ public class SettingsWindow : Window
         };
         AutomationProperties.SetName(backupCheck, "Back up my profiles to Google Sheets");
         section.Children.Add(backupCheck);
+
+        // At-a-glance connection state: a green line only when backup is truly
+        // live (on, real client, token stored). RefreshConnected keeps it in
+        // step with connect, reconnect, and turn-off.
+        var connected = new TextBlock
+        {
+            Text = "Connected to Google Drive",
+            FontSize = Size("BodySize"),
+            FontWeight = FontWeight.SemiBold,
+            TextWrapping = TextWrapping.Wrap,
+            Foreground = Application.Current!.FindResource("SuccessBrush") as IBrush,
+            IsVisible = owner.DriveConnected,
+        };
+        AutomationProperties.SetName(connected, "Connected to Google Drive");
+        section.Children.Add(connected);
+        void RefreshConnected() => connected.IsVisible = owner.DriveConnected;
+
         section.Children.Add(Caption(configured
-            ? "Saves push each profile to your own Google Drive as a sheet."
+            ? "Saves back up to your own Google Drive automatically."
             : "This build is not connected to Google yet."));
 
         var waitingText = new TextBlock
@@ -389,6 +406,7 @@ public class SettingsWindow : Window
                 }
                 reconnect.IsVisible = owner.CurrentSettings.DriveBackup;
                 importDrive.IsEnabled = owner.CurrentSettings.DriveBackup;
+                RefreshConnected();
 
                 // The new-machine moment: right after a fresh connect, offer to
                 // pull the backed up profiles down, everything pre-checked.
@@ -411,6 +429,7 @@ public class SettingsWindow : Window
                 owner.DisableDriveBackup();
                 reconnect.IsVisible = false;
                 importDrive.IsEnabled = false;
+                RefreshConnected();
             }
         };
         cancelConnect.Click += (_, _) => connectCts?.Cancel();

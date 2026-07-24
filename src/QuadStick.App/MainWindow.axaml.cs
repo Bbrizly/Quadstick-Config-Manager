@@ -107,6 +107,11 @@ public partial class MainWindow : Window
         return _driveBackup;
     }
 
+    // True only when backup is fully live: turned on, a real client shipped, and
+    // a refresh token is stored. Settings and the home cards read this for the
+    // "Connected" state, so all three agree.
+    public bool DriveConnected => Backup() is not null;
+
     // Fire-and-forget the push after a save. Never awaited on the save path.
     void FireBackupPush(string path, string text) =>
         RunBackup(path, async b => (PushResult?)await b.PushAsync(path, text));
@@ -135,6 +140,8 @@ public partial class MainWindow : Window
                 var result = await op(backup);
                 if (result?.Kind == PushResultKind.KeptOnline && result.DownloadedCsv is string online)
                     await Dispatcher.UIThread.InvokeAsync(() => ApplyKeptOnline(path, online));
+                else if (result?.Kind == PushResultKind.Pushed)
+                    Dispatcher.UIThread.Post(() => Status("Backed up to Google Drive.", StatusKind.Ready));
             }
             catch (Exception ex)
             {
@@ -929,6 +936,11 @@ public partial class MainWindow : Window
         var subtitle = CardSubtitle(path);
         if (onDevice && name.Equals("default.csv", StringComparison.OrdinalIgnoreCase))
             subtitle += " · the device's fallback file";
+        // Tell the user this profile has a copy on Drive. A link means its sheet
+        // exists; kept out of CardSubtitle's cache since link state changes on
+        // its own (connect, restore, turn off).
+        if (!onDevice && _settings.DriveLinks.ContainsKey(path))
+            subtitle += " · on Google Drive";
 
         var card = new Button { Classes = { "card" } };
         AutomationProperties.SetName(card,

@@ -88,4 +88,27 @@ public class SettingsWindowTests
         settings.Close();
         w.Close();
     }
+
+    // The green "Connected to Google Drive" line must show only when backup is
+    // truly live. On a placeholder or disconnected build it stays hidden, so a
+    // user never reads "connected" while nothing is set up.
+    [AvaloniaFact]
+    public void Connected_line_tracks_the_drive_connection_state()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+
+        var settings = new SettingsWindow(w);
+        _ = settings.ShowDialog(w);
+
+        var line = settings.GetVisualDescendants().OfType<TextBlock>()
+            .First(t => t.Text == "Connected to Google Drive");
+        Assert.Equal(w.DriveConnected, line.IsVisible);
+
+        settings.Close();
+        w.Close();
+    }
 }
