@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Layout;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Threading;
 
@@ -353,9 +354,12 @@ public class SettingsWindow : Window
             FontSize = Size("BodySize"),
             FontWeight = FontWeight.SemiBold,
             TextWrapping = TextWrapping.Wrap,
-            Foreground = Application.Current!.FindResource("SuccessBrush") as IBrush,
             IsVisible = owner.DriveConnected,
         };
+        // The green comes from a theme dictionary, so bind it dynamically. A
+        // plain FindResource at app scope misses theme-scoped brushes and leaves
+        // the text unpainted (present but invisible).
+        connected[!TextBlock.ForegroundProperty] = new DynamicResourceExtension("SuccessBrush");
         AutomationProperties.SetName(connected, "Connected to Google Drive");
         section.Children.Add(connected);
         void RefreshConnected() => connected.IsVisible = owner.DriveConnected;
