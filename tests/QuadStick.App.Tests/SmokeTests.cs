@@ -129,6 +129,12 @@ public class SmokeTests
     [AvaloniaFact]
     public void Home_drive_button_hidden_when_backup_off()
     {
+        // Set backup off explicitly: a dev machine with a real client and a
+        // prior connect leaves it on in the saved settings, which would show
+        // the button and make this test read ambient state instead of the rule.
+        var s = Settings.Load();
+        s.DriveBackup = false;
+        Settings.Save(s);
         var w = NewWindow();
         var drive = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "HomeDriveButton");
         Assert.False(drive.IsVisible);
