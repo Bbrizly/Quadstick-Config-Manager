@@ -231,8 +231,13 @@ contains default.csv, with a manual folder picker as fallback.
    identify files; empty is display-cosmetic there.
 3. The complete list of default.csv values that disable flash access on
    CURRENT firmware (mechanism confirmed in S6; PS4-era values postdate it).
-4. Multi-tab Sheets import: QMP converts every tab via xlsx export; this app
-   currently imports the linked tab only and says so in-app.
+4. ~~Multi-tab Sheets import~~ CLOSED 2026-07-24: the app now imports every
+   tab the same way QMP does, by reading the workbook's xlsx export
+   (`src/QuadStick.Format/Xlsx.cs`), and opens .xlsx files directly. Tabs are
+   concatenated in tab order, minus the helper names above. Tab names are
+   dropped, as they are by QMP: the CSV has nowhere to put them. A published
+   link (`/d/e/.../pub`) still gives one tab only, so that path falls back to
+   the CSV export and says so in-app.
 5. ~~Preference value column B vs C~~ CLOSED 2026-07-08 (Fred): it depends
    on the sheet. A Preferences sheet puts the value in column B; a mode-sheet
    preference override puts it in column C (B is ignored there). The app now

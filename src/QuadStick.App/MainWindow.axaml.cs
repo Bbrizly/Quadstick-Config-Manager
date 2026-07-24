@@ -1910,13 +1910,35 @@ public partial class MainWindow : Window
         var picks = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Open QuadStick profile",
-            FileTypeFilter = new[] { new FilePickerFileType("QuadStick profile CSV") { Patterns = new[] { "*.csv" } } },
+            FileTypeFilter = new[]
+            {
+                new FilePickerFileType("QuadStick profile") { Patterns = new[] { "*.csv", "*.xlsx" } },
+            },
         });
         if (picks.Count == 0) return;
+        var path = picks[0].Path.LocalPath;
         try
         {
-            OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(picks[0].Path.LocalPath)), picks[0].Path.LocalPath);
+            // A workbook is an import, not a file we own: it opens unsaved so
+            // the first save writes a .csv instead of overwriting the .xlsx.
+            if (path.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+            {
+                string text;
+                using (var stream = File.OpenRead(path)) text = Xlsx.ToCsv(stream);
+                var imported = ProfileFile.Load(text);
+                if (imported.Document.Sheets.Count == 0)
+                {
+                    Status($"{picks[0].Name} has no profile tab. A profile tab starts with \"Profile Name\", \"Preferences\" or \"Infrared\" in cell A1.", StatusKind.Error);
+                    return;
+                }
+                OpenInEditor(imported, savePath: null);
+                Status($"Imported {imported.Document.Sheets.Count} mode(s) from {picks[0].Name}. Save to keep it as a profile.", StatusKind.Ready);
+                return;
+            }
+            OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), path);
         }
+        catch (InvalidDataException)
+        { Status($"Could not read {picks[0].Name}. It is not a readable spreadsheet.", StatusKind.Error); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         { Status($"Could not open {picks[0].Name}: {ex.Message}", StatusKind.Error); }
     }
@@ -1991,18 +2013,37 @@ public partial class MainWindow : Window
         HomeStatusText.IsVisible = false;
 
         var pasted = SheetsUrlBox.Text ?? "";
-        if (!SheetsUrl.TryGetCsvExportUrl(pasted, out var url))
+        if (!SheetsUrl.TryGetXlsxExportUrl(pasted, out var workbookUrl)
+            || !SheetsUrl.TryGetCsvExportUrl(pasted, out var csvUrl))
         { HomeError("That does not look like a Google Sheets link. Paste the full link from your browser's address bar."); return; }
         try
         {
-            var text = await Http.GetStringAsync(url);
+            // Ask for the whole workbook first, so a profile split across mode
+            // tabs arrives whole. Published links can only give one tab as CSV;
+            // they answer with something that is not a workbook, so fall back.
+            var bytes = await Http.GetByteArrayAsync(workbookUrl);
+            var wholeWorkbook = Xlsx.LooksLikeXlsx(bytes);
+            string text;
+            if (wholeWorkbook)
+            {
+                using var stream = new MemoryStream(bytes);
+                text = Xlsx.ToCsv(stream);
+            }
+            else text = await Http.GetStringAsync(csvUrl);
+
             if (text.TrimStart().StartsWith('<'))
             { HomeError("Google returned a web page instead of the profile. The sheet is probably not shared publicly (File > Share > Anyone with the link)."); return; }
             var imported = ProfileFile.Load(text);
+            if (imported.Document.Sheets.Count == 0)
+            { HomeError("That spreadsheet has no profile tab. A profile tab starts with \"Profile Name\", \"Preferences\" or \"Infrared\" in cell A1."); return; }
             OpenInEditor(imported, savePath: null);
-            if (imported.Document.Sheets.Count == 1)
-                Status("Imported this spreadsheet's linked tab. If the profile has more mode tabs, they are not included yet; importing every tab is coming.", StatusKind.Warning);
+            if (!wholeWorkbook && imported.Document.Sheets.Count == 1)
+                Status("Imported this spreadsheet's linked tab. A published link only gives one tab; share the sheet with \"Anyone with the link\" instead to import every mode tab.", StatusKind.Warning);
+            else if (imported.Document.Sheets.Count > 1)
+                Status($"Imported {imported.Document.Sheets.Count} modes from the spreadsheet's tabs.", StatusKind.Ready);
         }
+        catch (InvalidDataException)
+        { HomeError("Could not read that spreadsheet. Download it as .xlsx and open it with the Open button instead."); }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         { HomeError($"Could not download the sheet: {(ex is TaskCanceledException ? "the connection timed out after 15 seconds" : ex.Message)}. Check your internet connection and the link."); }
     }
@@ -3840,7 +3881,7 @@ public partial class MainWindow : Window
              "Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_sip). …_soft variants trigger on gentle pressure. right_sip / right_puff are the side tube. lip is the lip switch. left/right/up/down and N/NE/… are the joystick. Several inputs on one row must all be active together."),
 
             ("Start from a working profile, not from scratch",
-             "New profile gives you the factory default layout, the same one shipped on every QuadStick. The community also shares hundreds of game profiles as Google Sheets: paste any share link on the home screen to import it. Then adjust, rename, save."),
+             "New profile gives you the factory default layout, the same one shipped on every QuadStick. The community also shares hundreds of game profiles as Google Sheets: paste any share link on the home screen to import it. Profiles that keep each mode on its own tab come in whole, every tab as a mode. Open also takes a downloaded .xlsx workbook. Then adjust, rename, save."),
 
             ("Renaming",
              "The name box at the top of the editor is the profile's on-device name. Use no spaces; the .csv file extension is added for you. The profile named default is special: it is the device's fallback file and should stay unchanged."),
