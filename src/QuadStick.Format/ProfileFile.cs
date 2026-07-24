@@ -72,15 +72,49 @@ public sealed class ProfileFile
         Issues = parseIssues.Concat(Validator.Validate(doc)).ToList();
     }
 
-    // QMP puts a version header on every file it writes; match that on save/install.
-    public void EnsureVersionHeader()
+    // Shape the grid the way the device reads it. Two rules, both from the
+    // firmware (S6, Configuration.c):
+    //
+    // 1. QMP puts a version header on every file it writes, and the device
+    //    rejects a file whose first line does not start with "QuadStick".
+    // 2. A segment ends ONLY at a line whose first byte is \n or \r
+    //    (`line_buffer[0] != '\n' && line_buffer[0] != '\r'`, the binding loop
+    //    and the preferences loop both). A row of commas is not a blank line
+    //    there, and a sheet keyword row is not a terminator either: its output
+    //    cell simply matches nothing and the row is skipped. So without an
+    //    EMPTY row before it, a sheet's bindings are read as part of the sheet
+    //    above, up to the 128-row cap, and the sheet itself never loads.
+    //
+    // Both edits shift row numbers, so callers rebind their views afterwards.
+    public void NormalizeForDeviceCsv()
     {
-        if (Document.HasVersionHeader) return;
+        if (Document.HasVersionHeader && SheetsMissingSeparator().Count == 0) return;
         Snapshot();
-        var name = Path.GetFileNameWithoutExtension(Document.CsvFileName ?? "config");
-        Grid.Insert(0, new[] { "QuadStick Configuration", "Version 1.5", "", name });
+        if (!Document.HasVersionHeader)
+        {
+            var name = Path.GetFileNameWithoutExtension(Document.CsvFileName ?? "config");
+            Grid.Insert(0, new[] { "QuadStick Configuration", "Version 1.5", "", name });
+            Reparse();
+        }
+        // Bottom up, so inserting a row cannot move the rows still to fix.
+        foreach (var row in SheetsMissingSeparator().OrderByDescending(r => r))
+        {
+            // An all-blank row is already the separator, just written with
+            // commas; emptying it keeps the user's row count. Anything else
+            // means there is no separator at all.
+            if (Grid[row - 2].All(c => c.Trim().Length == 0)) Grid[row - 2] = Array.Empty<string>();
+            else Grid.Insert(row - 1, Array.Empty<string>());
+        }
         Reparse();
     }
+
+    // 1-based keyword rows of every sheet after the first whose preceding row
+    // is not an empty line to the firmware.
+    List<int> SheetsMissingSeparator() =>
+        Document.Sheets.Skip(1)
+            .Select(s => s.StartRow)
+            .Where(row => row >= 2 && Grid[row - 2].Length > 0)
+            .ToList();
 
     public string GetCell(int row, int col) =>
         row >= 1 && row <= Grid.Count && col < Grid[row - 1].Length ? Grid[row - 1][col].Trim() : "";

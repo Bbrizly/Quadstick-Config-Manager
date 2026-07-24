@@ -248,7 +248,7 @@ public class SmokeTests
         w.LoadProfile(f);
         var b = f.Document.Sheets[0].Bindings[0];
         f.SetCell(b.Row, 0, "circle");          // edit an output
-        f.EnsureVersionHeader();                 // the P0 case: rows shift
+        f.NormalizeForDeviceCsv();               // the P0 case: rows shift
         w.LoadProfile(f);                        // window must rebind cleanly
         w.SelectZoneForPreview("mp_left");
         Assert.True(f.Document.HasVersionHeader);

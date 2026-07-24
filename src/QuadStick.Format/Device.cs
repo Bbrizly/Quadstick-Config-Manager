@@ -88,7 +88,7 @@ public static class Device
 
         // Clone so the open editor isn't touched.
         var toWrite = ProfileFile.Load(file.ToCsvText());
-        toWrite.EnsureVersionHeader();
+        toWrite.NormalizeForDeviceCsv();
         var text = toWrite.ToCsvText();
         var tmp = target + ".qscm-tmp";
         try

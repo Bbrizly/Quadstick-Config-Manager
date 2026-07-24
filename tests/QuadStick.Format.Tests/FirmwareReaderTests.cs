@@ -210,4 +210,103 @@ public class FirmwareReaderTests
         var issues = All(text);
         Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
     }
+
+    // The binding loop and the preferences loop both end on `line_buffer[0]`
+    // being \n or \r, nothing else. Every sheet after the first needs an EMPTY
+    // line above it or its rows are eaten by the sheet above. The real
+    // config.csv in the firmware tree is shaped exactly this way.
+    static string[] SheetLines(string csv) =>
+        csv.Replace("\r\n", "\n").Split('\n');
+
+    // The first sheet sits right under the version header; every later one
+    // needs the empty line, or the segment above never ends.
+    static void AssertEverySheetHasAnEmptyLineAboveIt(string csv, string context = "")
+    {
+        var lines = SheetLines(csv);
+        var first = true;
+        for (int i = 0; i < lines.Length; i++)
+        {
+            if (!Vocab.IsSheetKeyword(lines[i].Split(',')[0].Trim())) continue;
+            if (first) { first = false; continue; }
+            Assert.True(lines[i - 1].Length == 0,
+                $"{context}line {i + 1} \"{lines[i]}\" needs an empty line above it, found \"{lines[i - 1]}\"");
+        }
+    }
+
+    [Fact]
+    public void Normalize_puts_an_empty_line_before_every_sheet_after_the_first()
+    {
+        var f = ProfileFile.Load(Head + "x,normal,lip\n" + Head.Replace("Left joy", "Mouse"));
+        Assert.Equal(2, f.Document.Sheets.Count);
+
+        f.NormalizeForDeviceCsv();
+
+        AssertEverySheetHasAnEmptyLineAboveIt(f.ToCsvText());
+        Assert.Equal(2, f.Document.Sheets.Count); // the separator is not a sheet
+        Assert.Empty(f.Issues.Where(i => i.Severity == Severity.Error));
+    }
+
+    [Fact]
+    public void Normalize_empties_a_separator_row_that_is_only_commas()
+    {
+        // A row of commas reads as a blank row to this app and to both
+        // converters, but line_buffer[0] is ',' so the device runs straight
+        // through it. Every corpus file written by hand looks like this.
+        var f = ProfileFile.Load(File.ReadAllText(Path.Combine("corpus", "device-style.csv")));
+        Assert.Contains(",,,,,,,,,", f.ToCsvText());
+
+        f.NormalizeForDeviceCsv();
+
+        AssertEverySheetHasAnEmptyLineAboveIt(f.ToCsvText());
+        Assert.Equal(3, f.Document.Sheets.Count); // no rows gained or lost
+    }
+
+    [Fact]
+    public void Normalize_fixes_the_shape_every_multi_sheet_edit_produces()
+    {
+        foreach (var (label, edit) in new (string, Action<ProfileFile>)[]
+        {
+            ("add a mode", f => f.AddModeSheet("Driving")),
+            ("duplicate a mode", f => f.DuplicateMode(0, "Copy")),
+            ("move a mode down", f => f.MoveMode(0, +1)),
+        })
+        {
+            var f = ProfileFile.Load(File.ReadAllText(Path.Combine("corpus", "device-style.csv")));
+            edit(f);
+            f.NormalizeForDeviceCsv();
+            AssertEverySheetHasAnEmptyLineAboveIt(f.ToCsvText(), $"after \"{label}\": ");
+        }
+    }
+
+    [Fact]
+    public void Normalize_is_idempotent_and_undoable_in_one_step()
+    {
+        var f = ProfileFile.Load(File.ReadAllText(Path.Combine("corpus", "device-style.csv")));
+        var before = f.ToCsvText();
+
+        f.NormalizeForDeviceCsv();
+        var once = f.ToCsvText();
+        Assert.NotEqual(before, once);
+
+        f.NormalizeForDeviceCsv();
+        Assert.Equal(once, f.ToCsvText());
+
+        Assert.True(f.Undo());
+        Assert.Equal(before, f.ToCsvText());
+    }
+
+    [Fact]
+    public void An_imported_workbook_is_device_shaped_once_normalized()
+    {
+        using var stream = File.OpenRead(Path.Combine("corpus", "multi-tab.xlsx"));
+        var f = ProfileFile.Load(Xlsx.ToCsv(stream));
+        Assert.Equal(4, f.Document.Sheets.Count);
+
+        f.NormalizeForDeviceCsv();
+
+        AssertEverySheetHasAnEmptyLineAboveIt(f.ToCsvText());
+        Assert.StartsWith("QuadStick Configuration,Version 1.5", f.ToCsvText());
+        Assert.Equal(4, f.Document.Sheets.Count);
+        Assert.Empty(f.Issues.Where(i => i.Severity == Severity.Error));
+    }
 }

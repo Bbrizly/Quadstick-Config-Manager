@@ -36,6 +36,13 @@ question with Fred.
 After the header: each sheet's grid, in tab order, separated by one blank
 line (S2: `lines.append("")`, "blank line separates sheets in csv file").
 
+The separator must be an EMPTY line, not a row of empty cells. The firmware
+tests the first byte of the line (S6, below), so `,,,,,,,,,` runs straight
+through and the next sheet's rows are read as part of the sheet above. The
+real `config.csv` in the firmware tree writes true empty lines. This app
+normalizes both cases on save and install
+(`ProfileFile.NormalizeForDeviceCsv`).
+
 ## The firmware's own reader (S6, Configuration.c)
 
 How the device actually reads default.csv (and any file chosen via
@@ -56,6 +63,15 @@ this basic rarely change between firmware versions.
   unknown words fall back to usb). Binding rows follow until the first
   BLANK LINE (or 128 rows). A row whose output cell matches nothing is
   skipped, not a terminator; the row simply does nothing.
+- "Blank line" means the FIRST BYTE of the line is `\n` or `\r`. Both row
+  loops are written `while (f_gets(...) && line_buffer[0] != '\n' &&
+  line_buffer[0] != '\r' && i < MAX)`. Nothing else ends a segment, so a
+  row of commas does not, and neither does the next sheet's keyword row:
+  that row's output cell matches nothing and gets skipped like any other.
+  Without an empty line, a sheet's bindings load into the sheet above and
+  the sheet itself never loads. Reading a 4-tab workbook import with no
+  separators gives 1 profile of 128 rows instead of 3 profiles plus prefs.
+  The preferences loop is written the same way.
 - Words are split by any character that is not alphanumeric or `_ . space -`
   (so commas, tabs and quotes all split; keywords may contain spaces).
   A word longer than 64 chars kills its row; a line longer than the

@@ -180,13 +180,13 @@ public class ProfileFileTests
         var f = ProfileFile.Load(Load("gta-mode1.csv"));
         Assert.False(f.Document.HasVersionHeader);
 
-        f.EnsureVersionHeader();
+        f.NormalizeForDeviceCsv();
         Assert.True(f.Document.HasVersionHeader);
         Assert.StartsWith("QuadStick Configuration,Version 1.5,,gta", f.ToCsvText());
         Assert.Empty(f.Issues.Where(i => i.Severity == Severity.Error));
 
         var once = f.ToCsvText();
-        f.EnsureVersionHeader(); // second call is a no-op
+        f.NormalizeForDeviceCsv(); // second call is a no-op
         Assert.Equal(once, f.ToCsvText());
 
         Assert.True(f.Undo());

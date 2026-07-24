@@ -2033,7 +2033,7 @@ public partial class MainWindow : Window
         string text;
         try
         {
-            _file.EnsureVersionHeader(); // saved files match installed files byte for byte
+            _file.NormalizeForDeviceCsv(); // saved files match installed files byte for byte
             text = _file.ToCsvText();
             await Task.Run(() => ProfileFile.WriteAtomic(_savePath, text));
         }
@@ -2152,12 +2152,12 @@ public partial class MainWindow : Window
         try
         {
             Directory.CreateDirectory(TemplatesDir);
-            _file.EnsureVersionHeader(); // templates match installed files byte for byte
+            _file.NormalizeForDeviceCsv(); // templates match installed files byte for byte
             ProfileFile.WriteAtomic(Path.Combine(TemplatesDir, fileName), _file.ToCsvText());
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         { Status($"Could not save the template: {ex.Message}", StatusKind.Error); return; }
-        RefreshEditor(); // EnsureVersionHeader may have shifted rows
+        RefreshEditor(); // NormalizeForDeviceCsv may have shifted rows
         Status($"Saved template {fileName}. Find it under Use template on the home screen.", StatusKind.Ready);
     }
 
