@@ -157,6 +157,17 @@ public partial class MainWindow : Window
     // first, then overwrite with the sheet and reload if still on this file.
     void ApplyKeptOnline(string path, string onlineCsv)
     {
+        // Read the sheet BEFORE touching the local file. Someone can empty or
+        // wreck a sheet in the browser, and that must never be able to replace
+        // a working profile. Same validity check restore uses.
+        ProfileFile? online = null;
+        try { online = ProfileFile.Load(onlineCsv); } catch { }
+        if (online is null || online.Document.Sheets.Count == 0)
+        {
+            Status("The online copy of this profile is empty or unreadable, so your version on this computer was kept. Your next save replaces the sheet.", StatusKind.Warning);
+            return;
+        }
+
         try
         {
             Directory.CreateDirectory(CrashGuard.RescueDir);
@@ -169,7 +180,7 @@ public partial class MainWindow : Window
             }
             ProfileFile.WriteAtomic(path, onlineCsv);
             if (_savePath == path)
-                OpenInEditor(ProfileFile.Load(onlineCsv), path);
+                OpenInEditor(online, path);
             Status("Loaded the online version of this profile. Your previous local copy is in the rescue folder.", StatusKind.Warning);
         }
         catch (Exception ex)
@@ -191,19 +202,28 @@ public partial class MainWindow : Window
             _settings.DriveBackup = true;
             PersistSettings();
             _driveBackup = null; // rebuild next use, now that a token is stored
-            return true;
         }
-        catch (GoogleAuthException) { return false; }
-        catch (OperationCanceledException) { return false; }
+        // Sign-in runs a browser, a socket, and a keychain write, and any of
+        // them can throw something we did not name. Failing to connect means
+        // "not connected", never a crash on top of it.
+        catch (Exception) { return false; }
+
+        // Reconnect means catch up: the open profile's failed backup goes now
+        // rather than waiting for the next save.
+        if (_savePath is not null && _file is not null)
+            FireBackupRetry(_savePath, _file.ToCsvText());
+        return true;
     }
 
-    // Turns backup off. The stored token is left alone, so reconnecting needs
-    // no fresh sign-in unless Google revoked it.
+    // Turns backup off and forgets the Google account. Off has to mean off: a
+    // token left in the keychain is a connection the user thinks they ended,
+    // and it is also the only way to sign in as somebody else.
     public void DisableDriveBackup()
     {
         _settings.DriveBackup = false;
         PersistSettings();
         _driveBackup = null;
+        try { TokenStore.Create().Delete(); } catch { /* nothing left to do about it */ }
     }
 
     // The home Drive button is a status light and the main way to turn backup on.
@@ -591,6 +611,8 @@ public partial class MainWindow : Window
             BuildZoneDetail();
         };
         UpdateCardViewButton();
+
+        UnusedButton.Click += (_, _) => ShowUnusedInputs();
 
         SheetPicker.SelectionChanged += (_, _) =>
         {
@@ -1078,8 +1100,10 @@ public partial class MainWindow : Window
             subtitle += " · the device's fallback file";
         // Show that this profile has a copy on Drive. Kept out of CardSubtitle's
         // cache since link state changes on its own (connect, restore, turn off).
-        if (!onDevice && _settings.DriveLinks.ContainsKey(path))
-            subtitle += " · on Google Drive";
+        // A dirty link means the last backup never landed: say so, or the card
+        // tells someone their profile is safe when it is not.
+        if (!onDevice && _settings.DriveLinks.TryGetValue(path, out var driveLink))
+            subtitle += driveLink.BackupDirty ? " · backup pending" : " · on Google Drive";
 
         var card = new Button { Classes = { "card" } };
         AutomationProperties.SetName(card,
@@ -1393,6 +1417,91 @@ public partial class MainWindow : Window
             _ => true,
         });
 
+    // Inputs this mode has nothing mapped to. A force_off row does not count as
+    // using its input: it only turns off an output that toggle or delayed_latch
+    // left on, so the input is still free for a real mapping.
+    IEnumerable<string> UnusedInputs()
+    {
+        var used = (CurrentSheet?.Bindings ?? [])
+            .Where(b => !b.Function.StartsWith("force_off", StringComparison.Ordinal))
+            .SelectMany(b => b.Inputs)
+            .ToHashSet(StringComparer.Ordinal);
+        // Same zone filter as the device view, so a Singleton is not told its
+        // missing holes are free and the usb_* tokens stay out unless used.
+        var zones = VisibleZones(BindingsByZone()).Select(z => z.Id).ToHashSet(StringComparer.Ordinal);
+        return Vocab.Inputs
+            .Where(i => !used.Contains(i) && zones.Contains(ZoneOf(i)))
+            .OrderBy(GroupRank).ThenBy(x => x, StringComparer.Ordinal);
+    }
+
+    // Chip text: the short form, since the zone heading above it already says
+    // which part it is on. Combos are the exception. All four hole pairings
+    // strip to the same word, so a combo chip has to name its pairing.
+    static string ChipLabel(string token, string zoneId) => zoneId != "combo"
+        ? StripInput(token, zoneId)
+        : (token.StartsWith("mp_triple_", StringComparison.Ordinal) ? "all 3 "
+            : token.StartsWith("mp_left_center_", StringComparison.Ordinal) ? "L+C "
+            : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "R+C " : "L+R ")
+          + StripInput(token, zoneId);
+
+    // A dropdown, not a docked panel: this is something you glance at when
+    // deciding what to map next, so it must not take a column away from the
+    // editor for the rest of the session. Chips wrap in rows under a heading
+    // per part, which keeps a list of ~45 free inputs about a dozen rows tall
+    // instead of one long token per line.
+    void ShowUnusedInputs()
+    {
+        var free = UnusedInputs().ToList();
+        var body = new StackPanel
+        {
+            Spacing = 4, MaxWidth = 360, Margin = new Avalonia.Thickness(4),
+            Focusable = true, // focus lands here so a screen reader reads the list, not silence
+        };
+        body.Children.Add(new TextBlock
+        {
+            Text = free.Count == 0
+                ? "Every input on your QuadStick is used in this mode."
+                : $"{free.Count} input{(free.Count == 1 ? "" : "s")} not used yet",
+            FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap,
+        });
+        foreach (var zone in AllZones)
+        {
+            var inZone = free.Where(i => ZoneOf(i) == zone.Id).ToList();
+            if (inZone.Count == 0) continue;
+            body.Children.Add(new TextBlock
+            {
+                Text = zone.Title, Margin = new Avalonia.Thickness(0, 8, 0, 2),
+                Classes = { "secondary" }, FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap,
+            });
+            var chips = new WrapPanel();
+            foreach (var token in inZone)
+            {
+                var text = new TextBlock { Text = ChipLabel(token, zone.Id), FontSize = Size("SmallSize") };
+                var chip = new Border
+                {
+                    Child = text, CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1),
+                    Padding = new Thickness(8, 2), Margin = new Thickness(0, 0, 4, 4),
+                };
+                BindBrush(chip, Border.BackgroundProperty, "Surface");
+                BindBrush(chip, Border.BorderBrushProperty, "SurfaceBorder");
+                // The raw token is what the tester types into a cell and reads
+                // in the sheet, so it stays one hover (or one screen reader
+                // stop) away even though the chip shows the short form.
+                ToolTip.SetTip(chip, token);
+                AutomationProperties.SetName(chip, $"{token}, not used in this mode");
+                chips.Children.Add(chip);
+            }
+            body.Children.Add(chips);
+        }
+        var flyout = new Flyout
+        {
+            Content = new ScrollViewer { Content = body, MaxHeight = 420 },
+            Placement = PlacementMode.BottomEdgeAlignedRight,
+        };
+        flyout.Opened += (_, _) => body.Focus();
+        flyout.ShowAt(UnusedButton);
+    }
+
     void RefreshEditor()
     {
         bool device = _deviceView && CurrentSheet?.Type == SheetType.ProfileName;
@@ -1417,6 +1526,21 @@ public partial class MainWindow : Window
             BuildDeviceView(); BuildZoneDetail();
         }
         else RebuildRows();
+        // Preferences and Infrared sheets have no inputs, so the button only
+        // exists on a mode. The count rides on the label, so the number is
+        // there at a glance without opening anything. Refreshed here, the one
+        // place every edit already funnels through, so it is never stale.
+        bool mode = CurrentSheet?.Type == SheetType.ProfileName;
+        UnusedButton.IsVisible = mode;
+        if (mode)
+        {
+            int free = UnusedInputs().Count();
+            UnusedButton.Content = $"Unused ({free})";
+            // Mirror the live count into the name, so a screen reader never
+            // reads a stale label while the eye sees the number.
+            AutomationProperties.SetName(UnusedButton,
+                $"{free} input{(free == 1 ? "" : "s")} not used yet. Opens the list.");
+        }
         RefreshIssues();
     }
 
@@ -1981,6 +2105,8 @@ public partial class MainWindow : Window
     public void SetDeviceViewForPreview(bool device) => SetDeviceView(device);
 
     public void CycleLabelStyleForPreview() => ToggleLabelStyle();
+
+    public void ShowUnusedForPreview() => ShowUnusedInputs();
 
     public void ShowProblemsForPreview()
     { if (!_problemsExpanded) ToggleProblems(); }

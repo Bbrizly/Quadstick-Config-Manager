@@ -50,6 +50,13 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
         w.SelectZoneForPreview("mp_left");
     });
 
+    Capture($"{suffix}-7-unused-inputs", w =>
+    {
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SetDeviceViewForPreview(false);
+        w.ShowUnusedForPreview();
+    });
+
     Capture($"{suffix}-6-singleton", w =>
     {
         w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
