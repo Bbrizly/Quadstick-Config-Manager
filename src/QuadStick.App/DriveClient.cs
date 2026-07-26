@@ -38,13 +38,7 @@ public class DriveClient
         return doc.RootElement.GetProperty("spreadsheetId").GetString()!;
     }
 
-    // A1 range with no sheet prefix hits the first visible sheet (spec: first
-    // worksheet only).
-    //
-    // Write first, clear the leftovers second. Clearing first leaves the sheet
-    // blank for as long as the update takes, so a dropped connection between
-    // the two wipes the only copy the user has off this computer. A backup is
-    // allowed to be stale; it is never allowed to be empty.
+    // Write first, clear stale cells second. Never leave the sheet blank mid-push.
     public async Task PushGridAsync(string id, List<string[]> rows, CancellationToken ct = default)
     {
         // Every row padded to one width, so a binding that lost an input has

@@ -220,6 +220,10 @@ public partial class MainWindow
         // the target's on-screen rect is final.
         Dispatcher.UIThread.Post(() =>
         {
+            // The toolbars wrap now, so a target can sit on a second line that
+            // is scrolled or clipped out of view at a narrow window. Bring it
+            // in first, or the spotlight rings empty space.
+            _tourSteps[_tourIndex].Target()?.BringIntoView();
             PositionSpotlight();
             if (!_reduceMotion) _tourCallout.Opacity = 1;
             _tourNext.Focus(); // land keyboard/screen-reader users on the callout

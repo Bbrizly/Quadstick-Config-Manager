@@ -50,6 +50,24 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
         w.SelectZoneForPreview("mp_left");
     });
 
+    // The two tight cases. Every toolbar control has to stay on screen in
+    // both, so these two renders are the responsiveness check. The scaled one
+    // is the harsher of the pair: scale divides the width the layout gets, so
+    // a normal window at 200% is narrower than the smallest window we allow.
+    Capture($"{suffix}-8-narrow", w =>
+    {
+        w.Width = 760; w.Height = 560;
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SetDeviceViewForPreview(false);
+    });
+
+    Capture($"{suffix}-9-scaled-200", w =>
+    {
+        w.ApplyInterfaceScale(200);
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SetDeviceViewForPreview(false);
+    });
+
     Capture($"{suffix}-7-unused-inputs", w =>
     {
         w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));

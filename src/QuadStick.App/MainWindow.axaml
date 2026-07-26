@@ -128,46 +128,53 @@
     <!-- ============ EDITOR ============ -->
     <DockPanel x:Name="EditorView" Margin="16,16" IsVisible="False">
 
-      <!-- Row 1: back + compact profile name on the left, primary actions on the right. -->
-      <Grid DockPanel.Dock="Top" Margin="0,0,0,10" ColumnDefinitions="Auto,Auto,*,Auto">
-        <Button x:Name="HomeButton" Grid.Column="0" Content="← Home"
+      <!-- Row 1: back, which profile, then what to do with it.
+           A WrapPanel, not a Grid. Interface scale divides the width the layout
+           actually gets (ScaleContent.Width = window / scale), so a 1180px
+           window at 200% lays out in 590 logical px. A row that cannot wrap
+           does not shrink there, it pushes its last buttons off the edge of
+           the window where nobody can reach them at all. Wrapping keeps every
+           command on screen and keeps its label, which matters more here than
+           a tidy line: this app is driven by mouth joysticks and switches, so
+           icon-only toolbars and side-scrolling are both hostile. -->
+      <WrapPanel DockPanel.Dock="Top" Classes="toolbar" Margin="0,0,0,4">
+        <Button x:Name="HomeButton" Content="← Home"
                 AutomationProperties.Name="Go back to the home screen"/>
-        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="14,0,0,0" VerticalAlignment="Center">
-          <TextBlock Text="Profile" VerticalAlignment="Center" Classes="secondary"/>
-          <TextBox x:Name="FileNameBox" Width="230" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold"
-                   VerticalAlignment="Center"
-                   AutomationProperties.Name="Profile name. Edit to rename; .csv is added for you">
-            <TextBox.InnerRightContent>
-              <TextBlock Text=".csv" Classes="secondary" VerticalAlignment="Center" Margin="0,0,8,0"
-                         FontSize="{DynamicResource SubheadSize}"/>
-            </TextBox.InnerRightContent>
-          </TextBox>
-          <Button x:Name="ShareButton" Classes="quiet" Content="Share"
-                  AutomationProperties.Name="Share this profile as a Google Sheet"/>
-        </StackPanel>
-        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="10">
-          <Button x:Name="SaveButton" Content="Save"
-                  AutomationProperties.Name="Save this profile. Shortcut Control S"/>
-          <Button x:Name="UndoButton" Content="Undo"
-                  AutomationProperties.Name="Undo the last change. Shortcut Control Z"/>
-          <Button x:Name="SaveTemplateButton" Content="Save as template"
-                  AutomationProperties.Name="Save this profile as a reusable template you can start new profiles from"/>
-          <Button x:Name="InstallButton" Content="Install to QuadStick" Classes="primary"
-                  AutomationProperties.Name="Install this profile onto a connected QuadStick. Shortcut Control I"/>
-          <Button x:Name="HelpButton" Content="Help"
-                  AutomationProperties.Name="Open the quick guide. Shortcut Control H or F1"/>
-          <Button x:Name="EditorSettingsButton" Classes="icon" Content="⚙" FontSize="20"
-                  AutomationProperties.Name="Open Settings"/>
-        </StackPanel>
-      </Grid>
+        <TextBlock Text="Profile" VerticalAlignment="Center" Classes="secondary"/>
+        <TextBox x:Name="FileNameBox" Width="230" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold"
+                 VerticalAlignment="Center"
+                 AutomationProperties.Name="Profile name. Edit to rename; .csv is added for you">
+          <TextBox.InnerRightContent>
+            <TextBlock Text=".csv" Classes="secondary" VerticalAlignment="Center" Margin="0,0,8,0"
+                       FontSize="{DynamicResource SubheadSize}"/>
+          </TextBox.InnerRightContent>
+        </TextBox>
+        <Button x:Name="ShareButton" Classes="quiet" Content="Share"
+                AutomationProperties.Name="Share this profile as a Google Sheet"/>
+        <!-- Which profile | what to do with it. The gap used to do this job,
+             before the actions stopped being pinned to the right edge. -->
+        <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
+        <Button x:Name="SaveButton" Content="Save"
+                AutomationProperties.Name="Save this profile. Shortcut Control S"/>
+        <Button x:Name="UndoButton" Content="Undo"
+                AutomationProperties.Name="Undo the last change. Shortcut Control Z"/>
+        <Button x:Name="SaveTemplateButton" Content="Save as template"
+                AutomationProperties.Name="Save this profile as a reusable template you can start new profiles from"/>
+        <Button x:Name="InstallButton" Content="Install to QuadStick" Classes="primary"
+                AutomationProperties.Name="Install this profile onto a connected QuadStick. Shortcut Control I"/>
+        <Button x:Name="HelpButton" Content="Help"
+                AutomationProperties.Name="Open the quick guide. Shortcut Control H or F1"/>
+        <Button x:Name="EditorSettingsButton" Classes="icon" Content="⚙" FontSize="20"
+                AutomationProperties.Name="Open Settings"/>
+      </WrapPanel>
 
       <ContentControl x:Name="StatusHost" DockPanel.Dock="Top" Margin="0,0,0,10"/>
 
-      <!-- Row 2: which mode (with a plain-language explainer), how to view it, add a row. -->
-      <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
-      <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+      <!-- Row 2: which mode (with a plain-language explainer), how to view it,
+           add a row, what is still free. Wraps, for the same reason as row 1. -->
+      <WrapPanel DockPanel.Dock="Top" Classes="toolbar" Margin="0,0,0,4">
         <TextBlock Text="Mode" VerticalAlignment="Center" FontSize="{DynamicResource BodySize}"/>
-        <ComboBox x:Name="SheetPicker" MinWidth="210"
+        <ComboBox x:Name="SheetPicker" MinWidth="180"
                   AutomationProperties.Name="Select which mode to edit"/>
         <Button x:Name="ModeHelpButton" Classes="icon" Content="?"
                 AutomationProperties.Name="What is a mode, and why is there only one?"/>
@@ -195,13 +202,11 @@
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
         <Button x:Name="AddRowButton" Content="+ Add row"
                 AutomationProperties.Name="Add a new binding row to this mode"/>
-      </StackPanel>
-      <!-- Pinned to the right of the row, not appended to the stack: this row
-           already fills the default window, so an appended button falls off
-           the edge. Content is set in code so it can carry the live count. -->
-      <Button x:Name="UnusedButton" Grid.Column="1" Classes="quiet" Margin="10,0,0,0" VerticalAlignment="Center"
-              AutomationProperties.Name="List the inputs this mode has not used yet"/>
-      </Grid>
+        <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
+        <!-- Content is set in code so the button can carry the live count. -->
+        <Button x:Name="UnusedButton" Classes="quiet"
+                AutomationProperties.Name="List the inputs this mode has not used yet"/>
+      </WrapPanel>
 
       <!-- Problems: collapsed to a single bar by default so it never eats the
            editor; the full list expands above the bar on demand. When the file
@@ -258,18 +263,20 @@
           <DockPanel>
             <Border x:Name="DeviceHeaderRow" DockPanel.Dock="Top" Padding="14,10"
                     BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,0,1">
-              <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
-                <ContentControl x:Name="DeviceHeaderStatus" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBlock x:Name="DeviceHeaderMode" Grid.Column="1" Margin="14,0,0,0" Classes="secondary"
+              <!-- Wraps for the same reason as the rows above: a fixed Grid here
+                   pushed the model picker and the card toggle off the edge. -->
+              <WrapPanel Classes="toolbar">
+                <ContentControl x:Name="DeviceHeaderStatus" VerticalAlignment="Center"/>
+                <TextBlock x:Name="DeviceHeaderMode" Classes="secondary"
                            VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
-                <TextBlock Grid.Column="3" Text="Your QuadStick" Classes="secondary" VerticalAlignment="Center"
-                           Margin="0,0,8,0" FontSize="{DynamicResource SmallSize}"/>
-                <ComboBox x:Name="ModelPicker" Grid.Column="4" MinWidth="180"
+                <TextBlock Text="Your QuadStick" Classes="secondary" VerticalAlignment="Center"
+                           FontSize="{DynamicResource SmallSize}"/>
+                <ComboBox x:Name="ModelPicker" MinWidth="180"
                           AutomationProperties.Name="Which QuadStick model you have"/>
-                <Button x:Name="DeviceHelpButton" Grid.Column="5" Classes="icon" Content="?" Margin="10,0,0,0"
+                <Button x:Name="DeviceHelpButton" Classes="icon" Content="?"
                         AutomationProperties.Name="How device view works, and which parts your model has"/>
-                <Button x:Name="CardViewButton" Grid.Column="6" Classes="quiet" Margin="10,0,0,0"/>
-              </Grid>
+                <Button x:Name="CardViewButton" Classes="quiet"/>
+              </WrapPanel>
             </Border>
             <!-- The device diagram owns the larger, left-hand share of the
                  editor so its parts sit at a comfortable size. The mappings

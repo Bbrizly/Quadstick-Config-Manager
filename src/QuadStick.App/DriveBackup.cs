@@ -270,10 +270,7 @@ public sealed class DriveBackup
                 return new ShareLinkResult(ShareLinkKind.CopiedStale, Url(link.SpreadsheetId),
                     "Link copied. Your latest changes are not uploaded yet (backup pending).");
 
-            // That push may have answered a 404 by building a whole new sheet.
-            // Read the link back, or the steps below share and copy the dead
-            // one: a link to a deleted sheet, or an unshared new sheet whose
-            // LinkShared flag came from the old one.
+            // Re-read link: a 404 push may have created a new sheet.
             link = settings.DriveLinks[profilePath];
         }
 

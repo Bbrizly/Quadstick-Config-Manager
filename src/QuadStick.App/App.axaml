@@ -130,6 +130,16 @@
 
     <!-- Round icon button used for the "?" help dots and the compact delete
          control, so no user-visible control is ever a bare capital letter. -->
+    <!-- Toolbar rows are WrapPanels so no command can be pushed off the edge
+         of a narrow (or scaled-up) window. Avalonia 11.1's WrapPanel has no
+         Spacing, so the gap is a margin on each child: the right half is the
+         gap along a line, the bottom half is the gap between wrapped lines.
+         A child with its own Margin in the XAML (the thin separators) keeps
+         it, since a local value beats a style setter. -->
+    <Style Selector="WrapPanel.toolbar > :is(Control)">
+      <Setter Property="Margin" Value="0,0,10,6"/>
+    </Style>
+
     <!-- Rocker-switch bank: the three view-mode buttons share one track so
          the mutual-exclusivity reads visually, not just via the "primary"
          fill on whichever is active. -->

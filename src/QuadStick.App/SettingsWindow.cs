@@ -345,10 +345,7 @@ public class SettingsWindow : Window
         var backupCheck = new CheckBox
         {
             Content = "Back up my profiles to Google Drive",
-            // Ticked means backing up, not "would like to". The setting alone
-            // is on by default and says nothing about whether anything is
-            // actually being saved to Drive, so a fresh install used to open
-            // this window already ticked with no account behind it.
+            // Ticked only when a token is stored, not from the default setting.
             IsChecked = owner.DriveConnected,
             IsEnabled = configured,
             FontSize = Size("BodySize"),
@@ -392,12 +389,7 @@ public class SettingsWindow : Window
         };
         section.Children.Add(waitingRow);
 
-        // Recovery action, and the only way to sign in as a different Google
-        // account. Shown whenever backup is on, because "connected" here just
-        // means a token is stored: a token Google has since revoked still
-        // reads as connected, and hiding Reconnect then left the one message
-        // that names it ("Backup paused. Reconnect to Google in Settings.")
-        // pointing at a button that was not there.
+        // Shown whenever backup is on. Also used to switch Google accounts.
         var reconnect = new Button { Content = "Reconnect", IsVisible = configured && owner.CurrentSettings.DriveBackup };
         AutomationProperties.SetName(reconnect, "Reconnect to Google");
         section.Children.Add(reconnect);

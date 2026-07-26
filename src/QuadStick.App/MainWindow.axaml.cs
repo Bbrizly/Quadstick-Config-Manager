@@ -816,8 +816,23 @@ public partial class MainWindow : Window
         if (Array.IndexOf(ValidScalePercents, pct) < 0) pct = 100;
         _uiScale = pct / 100.0;
         ZoomHost.LayoutTransform = _uiScale == 1.0 ? null : new ScaleTransform(_uiScale, _uiScale);
+        ApplyScaledMinimums();
         EnsureWindowFitsScale();
         UpdateScaleSize();
+    }
+
+    // Min size grows with scale so toolbar rows do not clip. Capped to screen.
+    void ApplyScaledMinimums()
+    {
+        double capW = double.PositiveInfinity, capH = double.PositiveInfinity;
+        if ((Screens?.ScreenFromWindow(this) ?? Screens?.Primary) is { } screen)
+        {
+            var scaling = screen.Scaling <= 0 ? 1 : screen.Scaling;
+            capW = screen.WorkingArea.Width / scaling;
+            capH = screen.WorkingArea.Height / scaling;
+        }
+        MinWidth = Math.Min(760 * _uiScale, capW);
+        MinHeight = Math.Min(560 * _uiScale, capH);
     }
 
     // Bigger scale needs a bigger window or the fixed-height Problems dock
@@ -1417,13 +1432,23 @@ public partial class MainWindow : Window
             _ => true,
         });
 
+    // A function cell holds its parameters too ("force_off 500", "delay 250"),
+    // so the name is the first word. Matching on a prefix instead would let a
+    // typo like "force_offf" pass for the real thing.
+    static string FunctionName(string function)
+    {
+        var f = (function ?? "").Trim();
+        int sp = f.IndexOf(' ');
+        return sp < 0 ? f : f[..sp];
+    }
+
     // Inputs this mode has nothing mapped to. A force_off row does not count as
     // using its input: it only turns off an output that toggle or delayed_latch
     // left on, so the input is still free for a real mapping.
     IEnumerable<string> UnusedInputs()
     {
         var used = (CurrentSheet?.Bindings ?? [])
-            .Where(b => !b.Function.StartsWith("force_off", StringComparison.Ordinal))
+            .Where(b => FunctionName(b.Function) != "force_off")
             .SelectMany(b => b.Inputs)
             .ToHashSet(StringComparer.Ordinal);
         // Same zone filter as the device view, so a Singleton is not told its
@@ -1444,14 +1469,11 @@ public partial class MainWindow : Window
             : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "R+C " : "L+R ")
           + StripInput(token, zoneId);
 
-    // A dropdown, not a docked panel: this is something you glance at when
-    // deciding what to map next, so it must not take a column away from the
-    // editor for the rest of the session. Chips wrap in rows under a heading
-    // per part, which keeps a list of ~45 free inputs about a dozen rows tall
-    // instead of one long token per line.
+    // Flyout list grouped by part. Does not take editor space.
     void ShowUnusedInputs()
     {
         var free = UnusedInputs().ToList();
+        var flyout = new Flyout { Placement = PlacementMode.BottomEdgeAlignedRight };
         var body = new StackPanel
         {
             Spacing = 4, MaxWidth = 360, Margin = new Avalonia.Thickness(4),
@@ -1468,11 +1490,36 @@ public partial class MainWindow : Window
         {
             var inZone = free.Where(i => ZoneOf(i) == zone.Id).ToList();
             if (inZone.Count == 0) continue;
-            body.Children.Add(new TextBlock
+            var headLine = new DockPanel();
+            var chevron = Glyph("IconChevron", "TextSecondary");
+            DockPanel.SetDock(chevron, Dock.Right);
+            headLine.Children.Add(chevron);
+            headLine.Children.Add(new TextBlock
             {
-                Text = zone.Title, Margin = new Avalonia.Thickness(0, 8, 0, 2),
-                Classes = { "secondary" }, FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap,
+                Text = zone.Title, Classes = { "secondary" },
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap,
             });
+            var head = new Button
+            {
+                Content = headLine,
+                Classes = { "quiet" },
+                Margin = new Avalonia.Thickness(0, 8, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            };
+            AutomationProperties.SetName(head,
+                $"{zone.Title}, {inZone.Count} not used. Opens this part in device view.");
+            var zoneId = zone.Id;
+            head.Click += (_, _) =>
+            {
+                flyout.Hide();
+                // Focus the zone button after the diagram rebuilds.
+                SetDeviceView(true);
+                SelectZoneForPreview(zoneId);
+                AfterLayout(() => _zoneButtons.GetValueOrDefault(zoneId)?.Focus());
+            };
+            body.Children.Add(head);
             var chips = new WrapPanel();
             foreach (var token in inZone)
             {
@@ -1493,11 +1540,7 @@ public partial class MainWindow : Window
             }
             body.Children.Add(chips);
         }
-        var flyout = new Flyout
-        {
-            Content = new ScrollViewer { Content = body, MaxHeight = 420 },
-            Placement = PlacementMode.BottomEdgeAlignedRight,
-        };
+        flyout.Content = new ScrollViewer { Content = body, MaxHeight = 420 };
         flyout.Opened += (_, _) => body.Focus();
         flyout.ShowAt(UnusedButton);
     }
@@ -2057,34 +2100,82 @@ public partial class MainWindow : Window
             ZoneDetailPanel.Children.Add(new TextBlock
             { Text = "Nothing mapped here yet.", FontSize = Size("BodySize"), Classes = { "muted" } });
 
+        // What this part can still do. The toolbar list answers "what is free
+        // anywhere"; this answers "what is free right here", which is the
+        // question you actually have while looking at one part. Each one is a
+        // full-width button rather than a chip because these are aim targets,
+        // and this app gets aimed at with a mouth stick.
         if (zone.Id != "unset")
         {
+            var freeHere = UnusedInputs().Where(i => ZoneOf(i) == zone.Id).ToList();
+            if (freeHere.Count > 0)
+            {
+                ZoneDetailPanel.Children.Add(new TextBlock
+                {
+                    Text = $"Not used yet on this part ({freeHere.Count})",
+                    FontSize = Size("SmallSize"), Classes = { "secondary" },
+                    Margin = new Avalonia.Thickness(0, 6, 0, 0), TextWrapping = TextWrapping.Wrap,
+                });
+                foreach (var token in freeHere)
+                {
+                    var line = new DockPanel();
+                    var raw = new TextBlock
+                    {
+                        Text = token, Classes = { "muted" }, FontSize = Size("SmallSize"),
+                        VerticalAlignment = VerticalAlignment.Center, Margin = new Avalonia.Thickness(8, 0, 0, 0),
+                    };
+                    DockPanel.SetDock(raw, Dock.Right);
+                    line.Children.Add(raw);
+                    line.Children.Add(new TextBlock
+                    {
+                        Text = ChipLabel(token, zone.Id), FontSize = Size("BodySize"),
+                        VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap,
+                    });
+                    var free = new Button
+                    {
+                        Content = line, Classes = { "quiet" },
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                    };
+                    AutomationProperties.SetName(free, $"Map {token} to a new mapping on the {zone.Title}");
+                    ToolTip.SetTip(free, $"Start a new mapping on {token}");
+                    var t = token;
+                    free.Click += (_, _) => AddMappingWithInput(t, inputWasChosen: true);
+                    ZoneDetailPanel.Children.Add(free);
+                }
+            }
             var add = new Button { Content = "+ Map something to this", Classes = { "quiet" } };
             AutomationProperties.SetName(add, $"Add a new mapping for the {zone.Title}");
-            add.Click += (_, _) =>
-            {
-                if (_file is null || CurrentSheet is null) return;
-                int newRow = _file.AddBindingRow(CurrentSheet);
-                _file.SetCell(newRow, 2, zone.DefaultInput);
-                _expandedMapping = newRow; // a brand new mapping opens ready to edit
-                BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
-                // Take the user to the mapping they just created (mirrors AddRow in List View).
-                // The new input cell is a ComboBox (TokenField), so focus it as a Control.
-                AfterLayout(() =>
-                {
-                    if (_cellBorders.TryGetValue($"C{newRow}", out var newBorder))
-                    {
-                        newBorder.BringIntoView(); (newBorder.Child as Control)?.Focus();
-                        // Rise the whole new mapping card in, not just the cell.
-                        var card = newBorder.GetVisualAncestors().OfType<Border>()
-                            .FirstOrDefault(x => x.Parent == ZoneDetailPanel);
-                        if (card is not null) AnimateIn(card);
-                    }
-                });
-            };
+            add.Click += (_, _) => AddMappingWithInput(zone.DefaultInput);
             ZoneDetailPanel.Children.Add(add);
         }
         RepaintSelection(); // the bars follow whatever rebuilt here
+    }
+
+    // inputWasChosen: focus output cell (C). Else focus input cell (A).
+    void AddMappingWithInput(string input, bool inputWasChosen = false)
+    {
+        if (_file is null || CurrentSheet is null) return;
+        int newRow = _file.AddBindingRow(CurrentSheet);
+        _file.SetCell(newRow, 2, input);
+        _expandedMapping = newRow; // a brand new mapping opens ready to edit
+        // Follow the input to its own part, so seeding a combo token from the
+        // combo card does not leave the detail panel showing a different one.
+        _selectedZone = ZoneOf(input);
+        BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+        // Take the user to the mapping they just created (mirrors AddRow in List View).
+        // The cells are ComboBox-backed (TokenField), so focus them as Controls.
+        AfterLayout(() =>
+        {
+            if (_cellBorders.TryGetValue($"{(inputWasChosen ? 'A' : 'C')}{newRow}", out var newBorder))
+            {
+                newBorder.BringIntoView(); (newBorder.Child as Control)?.Focus();
+                // Rise the whole new mapping card in, not just the cell.
+                var card = newBorder.GetVisualAncestors().OfType<Border>()
+                    .FirstOrDefault(x => x.Parent == ZoneDetailPanel);
+                if (card is not null) AnimateIn(card);
+            }
+        });
     }
 
     public void LoadProfile(ProfileFile file) => OpenInEditor(file, savePath: null);
@@ -2107,6 +2198,8 @@ public partial class MainWindow : Window
     public void CycleLabelStyleForPreview() => ToggleLabelStyle();
 
     public void ShowUnusedForPreview() => ShowUnusedInputs();
+
+    public ModeSheet? CurrentSheetForPreview => CurrentSheet;
 
     public void ShowProblemsForPreview()
     { if (!_problemsExpanded) ToggleProblems(); }
