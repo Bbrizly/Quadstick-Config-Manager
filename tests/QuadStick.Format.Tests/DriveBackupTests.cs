@@ -222,18 +222,6 @@ public class DriveBackupTests
         Assert.Contains(statuses, s => s.Msg.Contains("Reconnect"));
     }
 
-    [Fact]
-    public void OnRenamed_MovesLink()
-    {
-        var (backup, settings, _) = Make(_ => Json("{}"));
-        settings.DriveLinks["/old.csv"] = new DriveLink { SpreadsheetId = "s", LastSeenModifiedTime = "t0" };
-
-        backup.OnRenamed("/old.csv", "/new.csv");
-
-        Assert.False(settings.DriveLinks.ContainsKey("/old.csv"));
-        Assert.Equal("s", settings.DriveLinks["/new.csv"].SpreadsheetId);
-    }
-
     // ---- Share link, the spec's five step sequence ----
 
     // First share of a never-linked profile: create + push, confirm, grant
@@ -336,6 +324,36 @@ public class DriveBackupTests
         Assert.Equal(ShareLinkKind.Copied, result.Kind);
         Assert.Equal("https://docs.google.com/spreadsheets/d/s/edit?usp=sharing", result.Url);
         Assert.Equal(0, calls);
+    }
+
+    // A dirty share whose push finds the sheet gone and rebuilds it must copy
+    // the NEW sheet, and must share it. Reusing the pre-push link hands a
+    // friend a link to a deleted sheet, or to a sheet nobody granted them.
+    [Fact]
+    public async Task Share_DirtyPush404Recreates_CopiesAndSharesNewSheet()
+    {
+        int mt = 0;
+        var (backup, settings, _) = Make(r =>
+        {
+            if (IsCreate(r)) return Json("{\"spreadsheetId\":\"fresh\"}");
+            if (IsModified(r))
+                // The dead sheet 404s; every read after the rebuild works.
+                return r.RequestUri!.AbsoluteUri.Contains("/dead")
+                    ? Json("{}", HttpStatusCode.NotFound)
+                    : Json(mt++ == 0 ? "{\"modifiedTime\":\"t-new\"}" : "{\"modifiedTime\":\"t-shared\"}");
+            return Json("{}");
+        }, recreate: true);
+        // Shared once already, so a stale link would skip the grant entirely.
+        settings.DriveLinks["/p.csv"] = new DriveLink
+        { SpreadsheetId = "dead", LastSeenModifiedTime = "t0", BackupDirty = true, LinkShared = true };
+
+        var result = await backup.GetShareLinkAsync("/p.csv", Grid);
+
+        Assert.Equal(ShareLinkKind.Copied, result.Kind);
+        Assert.Equal("https://docs.google.com/spreadsheets/d/fresh/edit?usp=sharing", result.Url);
+        var link = settings.DriveLinks["/p.csv"];
+        Assert.Equal("fresh", link.SpreadsheetId);
+        Assert.True(link.LinkShared); // the new sheet got its own grant
     }
 
     // ---- Restore (bulk import from Drive) ----
@@ -482,10 +500,12 @@ public class DriveBackupTests
         finally { Directory.Delete(lib, recursive: true); }
     }
 
-    // A stale link (mapped local file deleted) must not grey out its sheet, and
-    // the dead entry is pruned so it cannot mislead the next listing either.
+    // A link whose local file is missing must not grey out its sheet. The entry
+    // itself stays: missing can mean an unmounted drive or a folder mid-sync,
+    // and dropping the link would fork a duplicate sheet the moment that file
+    // came back and got saved.
     [Fact]
-    public async Task ListForPicker_StaleLink_NotAlreadyLinked_AndPruned()
+    public async Task ListForPicker_MissingFile_NotAlreadyLinked_LinkKept()
     {
         var (backup, settings, _) = Make(r =>
             IsList(r)
@@ -499,8 +519,8 @@ public class DriveBackupTests
 
         var s1 = Assert.Single(sheets);
         Assert.Equal("s1", s1.Id);
-        Assert.False(s1.AlreadyLinked);            // the deleted file must not grey it out
-        Assert.False(settings.DriveLinks.ContainsKey(gonePath)); // and the stale entry is pruned
+        Assert.False(s1.AlreadyLinked);           // the missing file must not grey it out
+        Assert.True(settings.DriveLinks.ContainsKey(gonePath)); // but the link survives
     }
 
     // Create succeeds but the first push fails: the sheet id must already be
@@ -514,7 +534,7 @@ public class DriveBackupTests
         var (backup, settings, _) = Make(r =>
         {
             if (IsCreate(r)) { creates++; return Json("{\"spreadsheetId\":\"keep\"}"); }
-            if (fault && r.Method == HttpMethod.Post && r.RequestUri!.AbsoluteUri.Contains(":clear"))
+            if (fault && r.Method == HttpMethod.Put)
                 return Json("{}", HttpStatusCode.InternalServerError);
             if (IsModified(r)) return Json("{\"modifiedTime\":\"t\"}");
             return Json("{}");

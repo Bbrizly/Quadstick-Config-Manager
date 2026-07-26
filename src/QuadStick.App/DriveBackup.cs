@@ -220,17 +220,6 @@ public sealed class DriveBackup
             return null;
         }, CancellationToken.None);
 
-    // Renames done inside the app move the link with the file. Path is the key.
-    public void OnRenamed(string oldPath, string newPath)
-    {
-        var settings = _getSettings();
-        if (settings.DriveLinks.Remove(oldPath, out var link))
-        {
-            settings.DriveLinks[newPath] = link;
-            SaveState();
-        }
-    }
-
     // The share URL for a linked profile, or null when it has no sheet yet.
     // Used by "Open in Google Sheets".
     public string? LinkedSheetUrl(string profilePath) =>
@@ -280,6 +269,12 @@ public sealed class DriveBackup
             else if (push.Kind is PushResultKind.Failed or PushResultKind.Paused)
                 return new ShareLinkResult(ShareLinkKind.CopiedStale, Url(link.SpreadsheetId),
                     "Link copied. Your latest changes are not uploaded yet (backup pending).");
+
+            // That push may have answered a 404 by building a whole new sheet.
+            // Read the link back, or the steps below share and copy the dead
+            // one: a link to a deleted sheet, or an unshared new sheet whose
+            // LinkShared flag came from the old one.
+            link = settings.DriveLinks[profilePath];
         }
 
         // Step 4: share the sheet once (anyone with the link can view). An
@@ -312,10 +307,14 @@ public sealed class DriveBackup
     // ---- Restore (bulk import from Drive) ----
 
     // List every backup sheet this app made, tagged linked or not. Linked only
-    // counts when the mapped local file still exists; a stale entry for a
-    // deleted CSV is ignored AND pruned, so a deleted file can never grey out
-    // the sheet restore exists to bring back. Matched by spreadsheetId, so a
-    // rename does not fool it.
+    // counts when the mapped local file still exists, so a deleted CSV can
+    // never grey out the sheet restore exists to bring back. Matched by
+    // spreadsheetId, so a rename does not fool it.
+    //
+    // Missing does not mean deleted: an unmounted drive, a folder being synced,
+    // a permissions blip. So the entry is ignored for this listing and left
+    // alone. Dropping it would fork a duplicate sheet the moment the file came
+    // back and got saved.
     public Task<List<DriveSheetInfo>> ListForPickerAsync(CancellationToken ct = default) =>
         Locked(() => ListForPickerCoreAsync(ct), ct);
 
@@ -325,17 +324,8 @@ public sealed class DriveBackup
 
         var settings = _getSettings();
         var linkedIds = new HashSet<string>(StringComparer.Ordinal);
-        var stale = new List<string>();
         foreach (var (path, link) in settings.DriveLinks)
-        {
             if (File.Exists(path)) linkedIds.Add(link.SpreadsheetId);
-            else stale.Add(path);
-        }
-        if (stale.Count > 0)
-        {
-            foreach (var p in stale) settings.DriveLinks.Remove(p);
-            SaveState();
-        }
 
         return sheets
             .Select(s => new DriveSheetInfo(s.Id, s.Name, s.ModifiedTime, linkedIds.Contains(s.Id)))
