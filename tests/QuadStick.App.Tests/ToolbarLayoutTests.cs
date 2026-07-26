@@ -10,6 +10,8 @@ using Xunit;
 namespace QuadStick.App.Tests;
 
 // Toolbar buttons must stay on screen at narrow width and at 200% scale.
+// The headless window is a fixed 1024x768 and ignores Width, so scale is the
+// only lever here: the layout gets window / scale, so 200% means 512 px.
 public class ToolbarLayoutTests
 {
     static readonly string[] EditorButtons =

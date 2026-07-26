@@ -2152,7 +2152,8 @@ public partial class MainWindow : Window
         RepaintSelection(); // the bars follow whatever rebuilt here
     }
 
-    // inputWasChosen: focus output cell (C). Else focus input cell (A).
+    // Column A is the output, C is the input. A chosen input needs an output
+    // picked, so focus A. A guessed input needs changing, so focus C.
     void AddMappingWithInput(string input, bool inputWasChosen = false)
     {
         if (_file is null || CurrentSheet is null) return;
