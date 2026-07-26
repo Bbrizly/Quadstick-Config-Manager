@@ -21,6 +21,7 @@ public static class Vocab
         var known = new HashSet<string>(OutputsPs3, StringComparer.Ordinal);
         known.UnionWith(OutputsXbox);
         KnownOutputs = known;
+        KnownOutputsLoose = new HashSet<string>(known, StringComparer.OrdinalIgnoreCase);
 
         var fnNames = Set(root.GetProperty("functions"));
         FunctionArity = FunctionParams.Where(kv => fnNames.Contains(kv.Key))
@@ -31,6 +32,11 @@ public static class Vocab
     public static readonly IReadOnlySet<string> OutputsPs3;
     public static readonly IReadOnlySet<string> OutputsXbox;
     public static readonly IReadOnlySet<string> KnownOutputs;
+
+    // The same outputs, matched loosely, for UI rules that hold a name a human
+    // typed against a token. Never for validating a file: the device itself
+    // reads its keywords case-sensitively, so KnownOutputs is the truth there.
+    public static readonly IReadOnlySet<string> KnownOutputsLoose;
 
     public static readonly IReadOnlyDictionary<string, (int Min, int Max)> FunctionArity;
 

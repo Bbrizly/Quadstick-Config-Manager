@@ -59,22 +59,34 @@ switch and every binding below it errors out.
 
 ## The table
 
-There is no separate table to store. The table is the set of names already
-sitting in column L across the profile.
+"Custom output names" sits at the end of the mode picker, past the real sheets.
+It is not a sheet in the file: selecting it is exactly "no sheet selected", so
+`CurrentSheet` is null and every path that edits a sheet already bails. It shows
+two columns, an output picker and a name box, and adds rows with the same "Add
+row" button the modes use (`CustomNames.cs`).
 
-The Translation Table window reads them, lists them, and lets you rename one.
-A rename updates every row using that name, in one undo step. It ships as
-"Names..." beside "Modes...", because that is what it holds.
+Editing a name renames it on every row carrying it. Editing the output moves
+every row carrying the name. Deleting drops the name from those rows and leaves
+their output alone, so a mapping never breaks because a label was removed. Each
+is one undo step (`RenameAction`, `RetargetAction`, `ClearAction`).
 
-This means an action you have not used yet has nowhere to live, which is fine:
-you name a row when you set it. Ready-made lists of real game controls belong
-in the app later, not in every profile file.
+A name that is on a row is stored on that row, in column L, and travels with the
+file. A name defined here and not used yet has no row to live on, so it waits in
+settings under the profile's path (`AppSettings.CustomNames`). Those drafts do
+not travel with a shared copy, which is the price of not putting anything in the
+CSV that the device could see. Names actually in use do travel, and those are
+the ones that matter to a reader.
 
 ## The picker
 
-`OutputCatalog` gains "Game" as the first category. The picker's item list
-becomes the profile's action names plus the normal tokens, and `Classify` puts
-an action name in ("Game", "").
+`OutputCatalog` gains "Custom" as the first category. The picker's item list
+becomes the table's names plus the normal tokens, and `Classify` puts a name in
+("Custom", ""). A name with no output yet is listed too, so the names can be
+laid out first and the outputs filled in after. Picking one on a row that
+already has an output makes that output what the name stands for, everywhere.
+Naming a button you already picked is the easy way round, and it never empties
+column A. On a row with no output either, the row stays blank and the problems
+list says which name still needs a button.
 
 Because the names are per profile, the catalog has to be built per profile
 instead of using the static one. Two call sites pass the static catalog today
@@ -97,8 +109,18 @@ way to see the truth.
 
 ## Rules
 
-An action name is rejected if it matches a real output token. Otherwise "x" or
-"mouse_left" would appear twice in the picker meaning different things.
+An action name is rejected if it reads as a real output. Matched the way the
+picker shows a token, not the way the file spells it: the list says "Triangle"
+for `triangle` and "Mouse left" for `mouse_left`, so case and the
+space-for-underscore swap both count as the same word. Otherwise the list would
+hold two entries that read identically and mean different things.
+
+Names are one name whatever their case, everywhere: the table lists "Shoot" and
+"shoot" once, and a rename moves both rows. Re-spelling a name in another case
+is still a real edit, so it is not refused as a clash with itself.
+
+A refused name says which rule it hit. Putting the old text back with no word
+for it reads as the app being broken.
 
 Setting a row's output to a plain token clears its action name. Otherwise the
 name would describe an output the row no longer has.
@@ -130,17 +152,18 @@ QCM ignore the column instead of choking on it.
 
 ## Tests
 
-One format test: a profile with names in column L round trips through
-`ToCsvText` unchanged, the names do not become bindings, and a name long enough
-to pass 1023 bytes is flagged.
+Format tests: names in column L round trip through `ToCsvText` unchanged, the
+names do not become bindings, a name long enough to pass 1023 bytes is flagged,
+and retarget and clear each move every row carrying the name in one undo step.
 
-One app test: picking a Game entry writes both cells, the row displays the
-name, the raw label style still shows the token, and changing the output to a
-plain token clears the name.
+App tests: picking a Custom entry writes both cells, the row displays the name,
+the raw label style still shows the token, changing the output to a plain token
+clears the name, and the whole table loop works, define a name against an output
+with no mapping, then pick it from a mapping's output list.
 
 ## Later
 
 Let people choose which column holds notes and which holds the action name.
 
-Ship ready-made action lists for real games in the app, which is where the
-"Game" section gets its content once presets exist.
+Ship ready-made name lists for real games, which the table could load in one
+click.

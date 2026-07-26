@@ -18,7 +18,7 @@ public class ToolbarLayoutTests
     {
         "HomeButton", "ShareButton", "SaveButton", "UndoButton", "SaveTemplateButton",
         "InstallButton", "HelpButton", "EditorSettingsButton", "ModeHelpButton",
-        "ModesButton", "ActionsButton", "DeviceViewButton", "RailViewButton",
+        "ModesButton", "DeviceViewButton", "RailViewButton",
         "ListViewButton", "AddRowButton", "UnusedButton",
     };
 

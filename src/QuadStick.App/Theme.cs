@@ -26,6 +26,11 @@ public sealed class AppSettings
     // this they leave no trace in the app: Save writes them back where they
     // came from and Home only ever lists the library.
     public List<string> Recents = new();
+    // Names from the Custom output names table that no mapping uses yet, keyed
+    // by profile file path, then name -> output token. A name that IS on a
+    // mapping lives in that row's column L and travels with the file; these
+    // have no row to live on, so they wait here.
+    public Dictionary<string, Dictionary<string, string>> CustomNames = new();
 }
 
 // Per-profile backup state, keyed by profile file path.

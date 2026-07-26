@@ -89,6 +89,45 @@ public class ActionNameTests
         Assert.Equal("Shoot", f.Document.Sheets[0].Bindings[0].ActionName);
     }
 
+    // The picker shows a token by its friendly label: "triangle" reads as
+    // "Triangle" and "mouse_left" as "Mouse left". So the refusal has to be
+    // loose about case and underscores, or the list holds two entries that
+    // read identically and mean different things.
+    [Theory]
+    [InlineData("circle")]
+    [InlineData("Circle")]
+    [InlineData("CIRCLE")]
+    [InlineData("Triangle")]
+    [InlineData("Mouse left")]
+    [InlineData("Kb_R")]
+    public void A_name_that_reads_as_a_real_output_is_refused_whatever_its_case(string name)
+        => Assert.False(ProfileFile.IsLegalActionName(name));
+
+    [Theory]
+    [InlineData("Shoot")]
+    [InlineData("shoot")]
+    [InlineData("Sprint left")]
+    public void A_name_that_reads_as_nothing_on_the_device_is_allowed(string name)
+        => Assert.True(ProfileFile.IsLegalActionName(name));
+
+    // One name means one output, and "Shoot" and "shoot" are one name to a
+    // reader. Every row carrying it has to move together.
+    [Fact]
+    public void A_name_is_one_name_whatever_its_case()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Combat\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb,,,,,,,,,Action\n" +
+            "mouse_left,normal,lip,,,,,,,,,Shoot\n" +
+            "mouse_left,turbo,hard_puff,,,,,,,,,shoot\n");
+
+        Assert.Equal(new[] { "Shoot" }, f.ActionNames().ToArray());
+        Assert.True(f.RenameAction("Shoot", "Fire"));
+        Assert.Equal(new[] { "Fire", "Fire" },
+            f.Document.Sheets[0].Bindings.Select(b => b.ActionName).ToArray());
+    }
+
     [Fact]
     public void Naming_a_row_titles_the_column_on_the_sheets_label_row()
     {
@@ -123,6 +162,89 @@ public class ActionNameTests
         Assert.False(f.CanUndo);
         Assert.Equal(new[] { "Shoot", "Shoot", "Jump" },
             f.Document.Sheets[0].Bindings.Select(b => b.ActionName).ToArray());
+    }
+
+    // The names table gives one name one output, so changing the output there
+    // has to move every row carrying the name, not just the first.
+    [Fact]
+    public void Retargeting_an_action_moves_every_row_using_it_in_one_step()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Combat\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb,,,,,,,,,Action\n" +
+            "mouse_left,normal,lip,,,,,,,,,Shoot\n" +
+            "mouse_left,turbo,hard_puff,,,,,,,,,Shoot\n" +
+            "circle,normal,left_sip,,,,,,,,,Jump\n");
+        f.ClearUndo();
+
+        Assert.True(f.RetargetAction("Shoot", "kb_r"));
+        Assert.Equal(new[] { "kb_r", "kb_r", "circle" },
+            f.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+        Assert.Equal(new[] { "Shoot", "Shoot", "Jump" },
+            f.Document.Sheets[0].Bindings.Select(b => b.ActionName).ToArray());
+
+        Assert.True(f.Undo());
+        Assert.False(f.CanUndo);
+        Assert.Equal("mouse_left", f.Document.Sheets[0].Bindings[0].Output);
+    }
+
+    // Deleting a name from the table must not touch what the row does. The
+    // mapping keeps its output and goes back to showing the real token.
+    [Fact]
+    public void Clearing_an_action_leaves_every_row_on_its_output()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Combat\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb,,,,,,,,,Action\n" +
+            "mouse_left,normal,lip,,,,,,,,,Shoot\n" +
+            "circle,normal,left_sip,,,,,,,,,Jump\n");
+        f.ClearUndo();
+
+        Assert.True(f.ClearAction("Shoot"));
+        Assert.Equal(new[] { "mouse_left", "circle" },
+            f.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+        Assert.Equal(new[] { "", "Jump" },
+            f.Document.Sheets[0].Bindings.Select(b => b.ActionName).ToArray());
+        Assert.False(f.ClearAction("Shoot")); // gone, so nothing left to undo
+
+        Assert.True(f.Undo());
+        Assert.False(f.CanUndo);
+        Assert.Equal("Shoot", f.Document.Sheets[0].Bindings[0].ActionName);
+    }
+
+    // Picking a name whose button is not set yet is still an error, the row
+    // does nothing on the device. But the row HAS been told what it does, so
+    // the message names the missing piece instead of asking for a pick the
+    // user already made.
+    [Fact]
+    public void A_row_named_after_an_output_that_is_not_set_yet_says_so()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Combat\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb,,,,,,,,,Action\n" +
+            ",normal,lip,,,,,,,,,Punch\n");
+
+        var issue = Assert.Single(f.Issues, i => i.Cell == "A4");
+        Assert.Equal(Severity.Error, issue.Severity);
+        Assert.Contains("Punch", issue.Message);
+        Assert.Contains("Custom output names", issue.Fix);
+        Assert.DoesNotContain("has no output name", issue.Message);
+    }
+
+    [Fact]
+    public void A_row_with_no_output_and_no_name_still_asks_for_an_output()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Combat\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            ",normal,lip\n");
+
+        var issue = Assert.Single(f.Issues, i => i.Cell == "A4");
+        Assert.Contains("has no output name", issue.Message);
     }
 
     [Fact]

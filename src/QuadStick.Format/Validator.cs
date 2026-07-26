@@ -178,9 +178,17 @@ public static class Validator
     {
         if (b.Output.Length == 0)
         {
-            issues.Add(new Issue(Severity.Error, $"A{b.Row}",
-                "This row has no output name. The device skips it and both official converters delete it, so the row does nothing.",
-                "Pick the game button or action this row controls, e.g. \"x\" or \"left_trigger\"."));
+            // Still an error: blank column A does nothing on the device either
+            // way. But a row set to one of the profile's own names has already
+            // been told what it does, so pointing at the output cell would read
+            // as the app losing the pick. Point at the name instead.
+            issues.Add(b.ActionName.Length > 0
+                ? new Issue(Severity.Error, $"A{b.Row}",
+                    $"\"{b.ActionName}\" has no button behind it yet, so this row does nothing on the QuadStick.",
+                    $"Open Custom output names and pick the button \"{b.ActionName}\" stands for.")
+                : new Issue(Severity.Error, $"A{b.Row}",
+                    "This row has no output name. The device skips it and both official converters delete it, so the row does nothing.",
+                    "Pick the game button or action this row controls, e.g. \"x\" or \"left_trigger\"."));
             return;
         }
         if (!Vocab.IsKnownOutput(b.Output))

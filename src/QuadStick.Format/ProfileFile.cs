@@ -150,13 +150,23 @@ public sealed class ProfileFile
     // above it. Null for rows above the first sheet, like the version header.
     ModeSheet? SheetAt(int row) => Document.Sheets.LastOrDefault(s => s.StartRow <= row);
 
-    // A name that reads as a real output token would appear twice in the
-    // picker meaning two different things.
+    // A name that reads as a real output would appear twice in the picker
+    // meaning two different things. Matched the way the picker shows a token,
+    // not the way the file spells it: the list says "Triangle" for `triangle`
+    // and "Mouse left" for `mouse_left`, so case and the space-for-underscore
+    // swap both have to count as the same word.
     public static bool IsLegalActionName(string name)
     {
         var t = name.Trim();
-        return t.Length is > 0 and <= MaxActionName && !Vocab.IsKnownOutput(t);
+        return t.Length is > 0 and <= MaxActionName
+            && !Vocab.KnownOutputsLoose.Contains(t.Replace(' ', '_'));
     }
+
+    // Two rows spelling one name differently still mean one name to whoever
+    // reads them, so every lookup over names ignores case.
+    static readonly StringComparer NameComparer = StringComparer.OrdinalIgnoreCase;
+
+    static bool SameName(string a, string b) => NameComparer.Equals(a, b);
 
     /// <summary>Set a binding row's output and its action name together, as one
     /// undoable change. A blank name clears the row's name, which is what
@@ -170,7 +180,7 @@ public sealed class ProfileFile
         // One name, one output. Two rows calling different tokens "Shoot"
         // would leave the picker's "Shoot" meaning whichever came first.
         if (name.Length > 0 && NameableBindings()
-                .Any(b => b.Row != row && b.ActionName == name && b.Output != token)) return false;
+                .Any(b => b.Row != row && SameName(b.ActionName, name) && b.Output != token)) return false;
         if (GetCell(row, 0) == token && GetCell(row, ActionColumn) == name) return false;
 
         Snapshot();
@@ -201,16 +211,46 @@ public sealed class ProfileFile
     /// <summary>Every action name in the profile, in the order rows appear.</summary>
     public IReadOnlyList<string> ActionNames() => NameableBindings()
         .Select(b => b.ActionName).Where(n => n.Length > 0)
-        .Distinct(StringComparer.Ordinal).ToList();
+        .Distinct(NameComparer).ToList();
 
     /// <summary>The output token each action name stands for. First row wins
     /// when the same name is used for two different tokens.</summary>
     public IReadOnlyDictionary<string, string> ActionTokens()
     {
-        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+        var map = new Dictionary<string, string>(NameComparer);
         foreach (var b in NameableBindings())
             if (b.ActionName.Length > 0 && b.Output.Length > 0) map.TryAdd(b.ActionName, b.Output);
         return map;
+    }
+
+    /// <summary>Point every row carrying this name at a different output, in
+    /// one undo step. One name means one output, so changing the output in the
+    /// names table has to move every row that carries the name.</summary>
+    public bool RetargetAction(string name, string token)
+    {
+        if (name.Length == 0 || token.Length == 0) return false;
+        var rows = NameableBindings().Where(b => SameName(b.ActionName, name) && b.Output != token)
+            .Select(b => b.Row).ToList();
+        if (rows.Count == 0) return false;
+
+        Snapshot();
+        foreach (var r in rows) Widen(r, 0)[0] = token;
+        Reparse();
+        return true;
+    }
+
+    /// <summary>Take a name off every row carrying it, in one undo step. Those
+    /// rows keep their output and go back to showing its real token.</summary>
+    public bool ClearAction(string name)
+    {
+        if (name.Length == 0) return false;
+        var rows = NameableBindings().Where(b => SameName(b.ActionName, name)).Select(b => b.Row).ToList();
+        if (rows.Count == 0) return false;
+
+        Snapshot();
+        foreach (var r in rows) Widen(r, ActionColumn)[ActionColumn] = "";
+        Reparse();
+        return true;
     }
 
     /// <summary>Rename an action everywhere it appears, in one undo step.</summary>
@@ -218,7 +258,7 @@ public sealed class ProfileFile
     {
         var to = newName.Trim();
         if (oldName.Length == 0 || to == oldName || !IsLegalActionName(to)) return false;
-        var rows = NameableBindings().Where(b => b.ActionName == oldName).Select(b => b.Row).ToList();
+        var rows = NameableBindings().Where(b => SameName(b.ActionName, oldName)).Select(b => b.Row).ToList();
         if (rows.Count == 0) return false;
 
         Snapshot();

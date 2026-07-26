@@ -1,0 +1,208 @@
+using Avalonia;
+using Avalonia.Automation;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Layout;
+using Avalonia.Media;
+using QuadStick.Format;
+
+namespace QuadStick.App;
+
+// The Custom output names table: your own word for an output, like Shoot for
+// the left mouse click. It sits in the mode list beside the real modes, but it
+// is NOT a sheet in the file and never reaches the device. A name in use lives
+// in its own row's column L, which the parser, the device and both official
+// converters all ignore, so a shared copy reads back the same.
+//
+// Names with no mapping yet have no row to live on, so those wait in settings
+// under the profile's path (AppSettings.CustomNames).
+public partial class MainWindow
+{
+    const string CustomNamesLabel = "Custom output names";
+
+    // "Shoot" and "shoot" are one name to whoever reads them, so the table
+    // matches names the way ProfileFile does, ignoring case.
+    static readonly StringComparer NameComparer = StringComparer.OrdinalIgnoreCase;
+
+    // Names defined in the table that no mapping uses yet. Everything else is
+    // read off the profile's rows, so this holds only what the file cannot.
+    Dictionary<string, string> _drafts = new(NameComparer);
+
+    // The names table is the last entry in the mode picker, past the real
+    // sheets, so landing on it is exactly "no sheet selected".
+    bool OnCustomNames => _file is not null && _sheetIndex >= _file.Document.Sheets.Count;
+
+    void LoadDrafts(string? path) =>
+        _drafts = path is not null && _settings.CustomNames.TryGetValue(path, out var saved)
+            ? new Dictionary<string, string>(saved, NameComparer)
+            : new Dictionary<string, string>(NameComparer);
+
+    // Called after every table edit, and again after a Save As, which is where
+    // an untitled profile's drafts finally get a path to be filed under.
+    void PersistDrafts()
+    {
+        if (_savePath is null) return; // no path yet: they keep until the first save
+        if (_drafts.Count == 0) _settings.CustomNames.Remove(_savePath);
+        else _settings.CustomNames[_savePath] = new Dictionary<string, string>(_drafts);
+        Settings.TrySave(_settings);
+    }
+
+    /// <summary>The whole table: names already on rows first, in row order,
+    /// then the ones defined but not used yet.</summary>
+    public List<(string Name, string Token)> CustomNameRows()
+    {
+        var rows = new List<(string, string)>();
+        var seen = new HashSet<string>(NameComparer);
+        if (_file is not null)
+            foreach (var kv in _file.ActionTokens())
+                if (seen.Add(kv.Key)) rows.Add((kv.Key, kv.Value));
+        foreach (var kv in _drafts)
+            if (seen.Add(kv.Key)) rows.Add((kv.Key, kv.Value));
+        return rows;
+    }
+
+    /// <summary>Test and preview hook: show the names table.</summary>
+    public void SelectCustomNamesForPreview()
+    {
+        if (_file is not null) SheetPicker.SelectedIndex = _file.Document.Sheets.Count;
+    }
+
+    void BuildCustomNameRows()
+    {
+        var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        header.Children.Add(RowNumberHeaderSpacer());
+        header.Children.Add(Swatch("Output (real button)", 220, OutputTint));
+        header.Children.Add(Swatch("Your name for it", 240, FunctionTint));
+        RowsPanel.Children.Add(header);
+
+        var rows = CustomNameRows();
+        int number = 1;
+        foreach (var (name, token) in rows) RowsPanel.Children.Add(CustomNameRow(name, token, number++));
+
+        if (rows.Count == 0)
+            RowsPanel.Children.Add(new TextBlock
+            {
+                Text = "No names yet. Click \"Add row\", pick an output, and type your own word for it. "
+                     + "That word then shows up at the top of every output picker, under Custom. "
+                     + "The file still holds the real button, so the QuadStick works the same.",
+                TextWrapping = TextWrapping.Wrap, MaxWidth = 640,
+                FontSize = Size("BodySize"), Classes = { "muted" }, Margin = new Thickness(4, 12),
+            });
+    }
+
+    Control CustomNameRow(string name, string token, int number)
+    {
+        var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        p.Children.Add(RowNumberLabel(number));
+
+        // The plain output picker, not the profile one: a name cannot stand for
+        // another name.
+        var wrapper = new Border
+        {
+            BorderThickness = new Thickness(3), BorderBrush = Brushes.Transparent,
+            CornerRadius = new CornerRadius(5), Width = 220,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        // Humanize, not TokenLabel: the raw/Xbox word toggle belongs to Device
+        // View, and this table must not change wording when someone flips it.
+        p.Children.Add(PickerCell(wrapper, token, OutputSuggestions, Humanize,
+            $"Output that {name} stands for", OutputTint, OutputCatalog.Catalog, "an output",
+            picked => RetargetCustomName(name, picked)));
+
+        var box = new TextBox
+        {
+            Text = name, Width = 240, MaxLength = ProfileFile.MaxActionName,
+            FontSize = Size("BodySize"), VerticalAlignment = VerticalAlignment.Center,
+        };
+        AutomationProperties.SetName(box, token.Length > 0
+            ? $"Your name for {Humanize(token)}" : "Your name for this output");
+        void Commit() { if (!_rebuildingRows) RenameCustomName(name, box.Text ?? ""); }
+        box.LostFocus += (_, _) => Commit();
+        box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
+        p.Children.Add(box);
+
+        var del = new Button
+        {
+            Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error"),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        ToolTip.SetTip(del, "Remove this name");
+        AutomationProperties.SetName(del, $"Remove the name {name}");
+        del.Click += (_, _) => DeleteCustomName(name);
+        p.Children.Add(del);
+
+        int used = UsedBy(name);
+        p.Children.Add(new TextBlock
+        {
+            Text = used == 0 ? "not used yet" : $"on {used} mapping{(used == 1 ? "" : "s")}",
+            FontSize = Size("SmallSize"), Classes = { "muted" },
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        return p;
+    }
+
+    int UsedBy(string name) => _file is null ? 0 : _file.Document.Sheets
+        .Where(s => s.Type == SheetType.ProfileName)
+        .SelectMany(s => s.Bindings).Count(b => NameComparer.Equals(b.ActionName, name));
+
+    void AddCustomName()
+    {
+        if (_file is null) { Status("Open or create a profile first."); return; }
+        var taken = CustomNameRows().Select(r => r.Name).ToHashSet(NameComparer);
+        var name = "New name";
+        for (int i = 2; taken.Contains(name); i++) name = $"New name {i}";
+        _drafts[name] = "";
+        PersistDrafts();
+        RebuildRows();
+        Status("Pick the output, then type your own name for it.");
+    }
+
+    void RenameCustomName(string oldName, string typed)
+    {
+        var name = typed.Trim();
+        if (name == oldName) return;
+        // Refusing silently reads as the app being broken, so say which rule
+        // it hit. Redrawing puts the old text back in the box. Re-spelling a
+        // name in another case is a real edit, so the clash check skips the
+        // row being renamed.
+        if (name.Length == 0 || name.Length > ProfileFile.MaxActionName)
+        { RebuildRows(); Status($"A name has to be 1 to {ProfileFile.MaxActionName} characters.", StatusKind.Warning); return; }
+        if (!ProfileFile.IsLegalActionName(name))
+        { RebuildRows(); Status($"\"{name}\" is already what the QuadStick calls one of its own buttons. Pick a different word.", StatusKind.Warning); return; }
+        if (CustomNameRows().Any(r => NameComparer.Equals(r.Name, name) && !NameComparer.Equals(r.Name, oldName)))
+        { RebuildRows(); Status($"This profile already has a name called \"{name}\".", StatusKind.Warning); return; }
+
+        _file?.RenameAction(oldName, name); // no-op when no mapping carries it
+        if (_drafts.Remove(oldName, out var token)) _drafts[name] = token;
+        PersistDrafts();
+        CustomNamesChanged($"Renamed {oldName} to {name}.");
+    }
+
+    void RetargetCustomName(string name, string token)
+    {
+        if (token.Length == 0) return;
+        _file?.RetargetAction(name, token); // moves every mapping carrying the name
+        if (_drafts.ContainsKey(name)) _drafts[name] = token;
+        PersistDrafts();
+        CustomNamesChanged($"{name} is now {Humanize(token)}.");
+    }
+
+    void DeleteCustomName(string name)
+    {
+        int used = UsedBy(name);
+        _file?.ClearAction(name); // those mappings keep their output, lose the word
+        _drafts.Remove(name);
+        PersistDrafts();
+        CustomNamesChanged(used == 0
+            ? $"Removed {name}."
+            : $"Removed {name}. {used} mapping{(used == 1 ? "" : "s")} now show the real button.");
+    }
+
+    // A name can sit on rows in any mode, so the whole editor is redrawn, not
+    // just the table.
+    void CustomNamesChanged(string status)
+    {
+        RefreshEditor();
+        if (status.Length > 0) Status(status, StatusKind.Ready);
+    }
+}

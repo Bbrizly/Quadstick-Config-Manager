@@ -484,11 +484,11 @@ public partial class MainWindow : Window
         return OutputSuggestions;
     }
 
-    // The output picker for the open profile: its own action names under
-    // "Game" first, then that sheet's tokens. Rebuilt per call because naming
-    // a row changes the list.
+    // The output picker for the open profile: its own names under "Custom"
+    // first, then that sheet's tokens. Rebuilt per call because editing the
+    // names table changes the list.
     OutputCatalog.ProfileOutputs OutputsFor(ModeSheet s) =>
-        OutputCatalog.ForProfile(_file!, OutputSuggestionsFor(s));
+        OutputCatalog.ForProfile(CustomNameRows(), OutputSuggestionsFor(s));
 
     // What a row's output field shows and commits. A named row reads by its
     // name; picking one writes the token and the name together.
@@ -498,7 +498,20 @@ public partial class MainWindow : Window
     {
         if (_file is null) return;
         var (token, name) = outputs.Resolve(picked);
+        if (name.Length > 0 && token.Length == 0)
+        {
+            // A name with no button behind it yet takes the one this row is
+            // already on, instead of emptying column A and leaving the row
+            // doing nothing. Rows that carry the name are blank too, so they
+            // move with it, or SetOutput refuses the pick as one name meaning
+            // two outputs.
+            token = _file.GetCell(row, 0);
+            if (token.Length > 0) _file.RetargetAction(name, token);
+        }
         _file.SetOutput(row, token, name);
+        // The name now lives on the row and travels with the file, so the copy
+        // waiting in settings is not needed.
+        if (token.Length > 0 && _drafts.Remove(name)) PersistDrafts();
     }
 
     // List View builds each row's picker once, so a new name has to reach the
@@ -588,7 +601,6 @@ public partial class MainWindow : Window
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
         ModesButton.Click += async (_, _) => await ShowModesAsync();
-        ActionsButton.Click += async (_, _) => await ShowActionsAsync();
         ShareButton.Flyout = ShareMenu(null); // null = the open editor's profile
         // A click that lands on nothing selectable drops the row selection,
         // exactly like a file explorer. Row-number presses mark themselves
@@ -901,14 +913,6 @@ public partial class MainWindow : Window
         if (status.Length > 0) Status(status, StatusKind.Ready);
     }
 
-    // ---- Action names window API: ActionsWindow.cs renames a name across
-    // every row that uses it, so the whole editor is redrawn after. ----
-    public void ActionsChanged(string status)
-    {
-        RefreshEditor();
-        if (status.Length > 0) Status(status, StatusKind.Ready);
-    }
-
     bool _pickerSyncing; // stops the header/settings pickers re-triggering each other
 
     public void ApplyTheme(string choice)
@@ -1172,6 +1176,7 @@ public partial class MainWindow : Window
     {
         _file = file;
         _savePath = savePath;
+        LoadDrafts(savePath);
         _draftedRevision = -1; // new file: its Revision counter is unrelated to the last one's
         _sheetIndex = 0;
         RepopulateSheetPicker(0);
@@ -1191,9 +1196,13 @@ public partial class MainWindow : Window
     void RepopulateSheetPicker(int select)
     {
         if (_file is null) return;
-        SheetPicker.ItemsSource = _file.Document.Sheets
+        var items = _file.Document.Sheets
             .Select((s, i) => $"{i + 1}: {(s.ModeName.Length > 0 ? s.ModeName : s.Type.ToString())}")
             .ToList();
+        // Last, and without a number: it is a view onto column L, not a sheet
+        // in the file. See CustomNames.cs.
+        items.Add(CustomNamesLabel);
+        SheetPicker.ItemsSource = items;
         SheetPicker.SelectedIndex = select;
     }
 
@@ -1249,12 +1258,6 @@ public partial class MainWindow : Window
     {
         if (_file is null) { Status("Open or create a profile first."); return; }
         await new ModesWindow(this).ShowDialog(this);
-    }
-
-    async Task ShowActionsAsync()
-    {
-        if (_file is null) { Status("Open or create a profile first."); return; }
-        await new ActionsWindow(this).ShowDialog(this);
     }
 
     public void AddPreferencesSheetToFile()
@@ -1553,6 +1556,13 @@ public partial class MainWindow : Window
         DeviceViewButton.Classes.Set("primary", device && !_railView);
         RailViewButton.Classes.Set("primary", device && _railView);
         ListViewButton.Classes.Set("primary", !device);
+        // The names table has no mappings to draw on the device, so the three
+        // view keys would be dead there. Disabled beats silently doing nothing.
+        DeviceViewButton.IsEnabled = RailViewButton.IsEnabled = ListViewButton.IsEnabled = !OnCustomNames;
+        AddRowButton.Content = OnCustomNames ? "+ Add name" : "+ Add row";
+        AutomationProperties.SetName(AddRowButton, OnCustomNames
+            ? "Add a row to the custom output names table"
+            : "Add a new binding row to this mode");
         // The words toggle only changes Device View labels; List View already
         // shows the raw names, so hide it there rather than offer a dead control.
         LabelStyleButton.IsVisible = device;
@@ -2200,6 +2210,10 @@ public partial class MainWindow : Window
 
     public void ShowUnusedForPreview() => ShowUnusedInputs();
 
+    public void AddRowForPreview() => AddRow();
+
+    public void SelectSheetForPreview(int index) => SheetPicker.SelectedIndex = index;
+
     public ModeSheet? CurrentSheetForPreview => CurrentSheet;
 
     public void ShowProblemsForPreview()
@@ -2305,6 +2319,7 @@ public partial class MainWindow : Window
         { Status($"Could not save: {ex.Message}", StatusKind.Error); return false; }
         _file.Dirty = false;
         RememberRecent(_savePath); // Save As invents a path that no open ever saw
+        PersistDrafts();           // and gives an untitled profile's names somewhere to live
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
         Status($"Saved to {_savePath}.", StatusKind.Ready);
         // Local save is done. Push the exact bytes just written to the sheet in
@@ -2633,11 +2648,19 @@ public partial class MainWindow : Window
     ModeSheet? CurrentSheet =>
         _file != null && _sheetIndex < _file.Document.Sheets.Count ? _file.Document.Sheets[_sheetIndex] : null;
 
+    // Clearing the panel detaches every box in it, and a detached box raises
+    // LostFocus. Without this its commit would run against a list that has
+    // just changed. Same guard ModesWindow uses, for the same reason.
+    bool _rebuildingRows;
+
     void RebuildRows()
     {
+        _rebuildingRows = true;
         RowsPanel.Children.Clear();
         _cellBorders.Clear();
         _rowPanels.Clear();
+        _rebuildingRows = false;
+        if (OnCustomNames) { BuildCustomNameRows(); RefreshIssues(); return; }
         if (CurrentSheet is null) { RefreshIssues(); return; }
 
         // Selected rows that left the sheet (deleted, or another sheet is
@@ -3233,6 +3256,7 @@ public partial class MainWindow : Window
 
     void AddRow()
     {
+        if (OnCustomNames) { AddCustomName(); return; }
         if (_file is null || CurrentSheet is null) { Status("Open or create a profile first."); return; }
         int newRow = _file.AddBindingRow(CurrentSheet); // already reparses
         if (DeviceContainer.IsVisible)

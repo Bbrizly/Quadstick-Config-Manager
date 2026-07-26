@@ -84,7 +84,7 @@ public static class OutputCatalog
     public static readonly TokenCatalog Catalog = new(Classify, CategoryOrder, SubOrder);
 
     // The output picker for one open profile: the names that profile gives its
-    // own outputs, listed first under "Game", then the real tokens. Names are
+    // own outputs, listed first under "Custom", then the real tokens. Names are
     // per profile, so this cannot be the static catalog above.
     public sealed record ProfileOutputs(
         TokenCatalog Catalog,
@@ -97,16 +97,25 @@ public static class OutputCatalog
             TokenFor.TryGetValue(picked, out var token) ? (token, picked) : (picked, "");
     }
 
-    public static ProfileOutputs ForProfile(QuadStick.Format.ProfileFile file, IReadOnlyList<string> tokens)
+    // customNames is the profile's names table: the name you typed against the
+    // output token it stands for. A name with no output yet is listed too, so
+    // you can plan the names first and fill the outputs in after. Picking one
+    // leaves the row without an output, which the problems list already calls
+    // out in plain words.
+    public static ProfileOutputs ForProfile(
+        IReadOnlyList<(string Name, string Token)> customNames, IReadOnlyList<string> tokens)
     {
-        var tokenFor = file.ActionTokens();
+        // Ignoring case, like the rest of the naming: two rows spelling one
+        // name differently must not both reach the list.
+        var tokenFor = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (name, token) in customNames) tokenFor.TryAdd(name, token);
         if (tokenFor.Count == 0)
             return new ProfileOutputs(Catalog, tokens, tokenFor);
 
-        var options = file.ActionNames().Concat(tokens).ToList();
+        var options = tokenFor.Keys.Concat(tokens).ToList();
         var catalog = new TokenCatalog(
-            t => tokenFor.ContainsKey(t) ? ("Game", "") : Classify(t),
-            new[] { "Game" }.Concat(CategoryOrder).ToArray(),
+            t => tokenFor.ContainsKey(t) ? ("Custom", "") : Classify(t),
+            new[] { "Custom" }.Concat(CategoryOrder).ToArray(),
             SubOrder);
         return new ProfileOutputs(catalog, options, tokenFor);
     }

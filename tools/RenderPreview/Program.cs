@@ -75,6 +75,13 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
         w.ShowUnusedForPreview();
     });
 
+    Capture($"{suffix}-10-custom-names", w =>
+    {
+        w.LoadProfile(ProfileFile.Load(File.ReadAllText(Path.Combine(corpus, "gta-mode1.csv"))));
+        w.SelectCustomNamesForPreview();
+        w.AddRowForPreview();
+    });
+
     Capture($"{suffix}-6-singleton", w =>
     {
         w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));

@@ -180,8 +180,6 @@
                 AutomationProperties.Name="What is a mode, and why is there only one?"/>
         <Button x:Name="ModesButton" Classes="quiet" Content="Modes..."
                 AutomationProperties.Name="Add, rename, reorder and delete modes"/>
-        <Button x:Name="ActionsButton" Classes="quiet" Content="Names..."
-                AutomationProperties.Name="See and rename the names this profile gives its buttons"/>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
         <!-- These three are one mutually-exclusive choice, so they sit in a
              shared track like a rocker switch bank rather than as loose,
