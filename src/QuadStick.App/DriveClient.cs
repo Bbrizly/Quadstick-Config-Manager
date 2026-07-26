@@ -41,9 +41,13 @@ public class DriveClient
     // Write first, clear stale cells second. Never leave the sheet blank mid-push.
     public async Task PushGridAsync(string id, List<string[]> rows, CancellationToken ct = default)
     {
+        // A blank grid writes nothing, so the clear below would sweep the whole
+        // sheet. An empty or truncated local file must never empty the backup.
+        if (!rows.Any(r => r.Any(c => !string.IsNullOrWhiteSpace(c)))) return;
+
         // Every row padded to one width, so a binding that lost an input has
         // that cell blanked by the write instead of keeping its old value.
-        int width = rows.Count == 0 ? 0 : rows.Max(r => r.Length);
+        int width = rows.Max(r => r.Length);
         var grid = rows
             .Select(r => r.Length == width ? r : r.Concat(Enumerable.Repeat("", width - r.Length)).ToArray())
             .ToList();

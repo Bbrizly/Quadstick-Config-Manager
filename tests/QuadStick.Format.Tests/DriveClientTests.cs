@@ -80,6 +80,25 @@ public class DriveClientTests
         Assert.Equal("", rows[1][2].GetString());
     }
 
+    // A truncated local file parses to nothing. Clearing on that would empty
+    // the sheet, which is the one copy the user still has.
+    [Fact]
+    public async Task PushGrid_DoesNothingWhenThereIsNoData()
+    {
+        var handler = new RecordingHandler(_ => Json("{}"));
+        await Client(handler).PushGridAsync("id", new List<string[]>());
+        Assert.Empty(handler.Requests);
+    }
+
+    // A file of one stray newline parses to a single blank cell, not nothing.
+    [Fact]
+    public async Task PushGrid_DoesNothingWhenEveryCellIsBlank()
+    {
+        var handler = new RecordingHandler(_ => Json("{}"));
+        await Client(handler).PushGridAsync("id", new List<string[]> { new[] { "" }, new[] { " ", "" } });
+        Assert.Empty(handler.Requests);
+    }
+
     [Fact]
     public async Task GetModifiedTime_Parses()
     {
