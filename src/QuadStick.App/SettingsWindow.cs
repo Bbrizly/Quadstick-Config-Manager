@@ -334,8 +334,8 @@ public class SettingsWindow : Window
         return Tab(panel);
     }
 
-    // Backup checkbox: runs OAuth when turned on, Cancel for the wait,
-    // Reconnect for a revoked token.
+    // Backup checkbox: runs OAuth when turned on, signs out when turned off,
+    // Cancel for the wait, Reconnect for a revoked token.
     Control BackupArea(MainWindow owner)
     {
         var section = new StackPanel { Spacing = 16 };
@@ -345,7 +345,11 @@ public class SettingsWindow : Window
         var backupCheck = new CheckBox
         {
             Content = "Back up my profiles to Google Drive",
-            IsChecked = owner.CurrentSettings.DriveBackup,
+            // Ticked means backing up, not "would like to". The setting alone
+            // is on by default and says nothing about whether anything is
+            // actually being saved to Drive, so a fresh install used to open
+            // this window already ticked with no account behind it.
+            IsChecked = owner.DriveConnected,
             IsEnabled = configured,
             FontSize = Size("BodySize"),
         };
@@ -388,11 +392,13 @@ public class SettingsWindow : Window
         };
         section.Children.Add(waitingRow);
 
-        // Recovery action: show only when backup is on but not connected
-        // (sign-in unfinished, or Google dropped the link). Hidden when
-        // connected so we don't tell the user to fix what works.
-        var reconnect = new Button
-        { Content = "Reconnect", IsVisible = owner.CurrentSettings.DriveBackup && !owner.DriveConnected };
+        // Recovery action, and the only way to sign in as a different Google
+        // account. Shown whenever backup is on, because "connected" here just
+        // means a token is stored: a token Google has since revoked still
+        // reads as connected, and hiding Reconnect then left the one message
+        // that names it ("Backup paused. Reconnect to Google in Settings.")
+        // pointing at a button that was not there.
+        var reconnect = new Button { Content = "Reconnect", IsVisible = configured && owner.CurrentSettings.DriveBackup };
         AutomationProperties.SetName(reconnect, "Reconnect to Google");
         section.Children.Add(reconnect);
 
@@ -420,7 +426,7 @@ public class SettingsWindow : Window
                     backupCheck.IsChecked = false;
                     suppress = false;
                 }
-                reconnect.IsVisible = owner.CurrentSettings.DriveBackup && !owner.DriveConnected;
+                reconnect.IsVisible = configured && owner.CurrentSettings.DriveBackup;
                 importDrive.IsEnabled = owner.CurrentSettings.DriveBackup;
                 RefreshConnected();
 
@@ -442,6 +448,8 @@ public class SettingsWindow : Window
             if (backupCheck.IsChecked == true) await RunConnectAsync();
             else
             {
+                // Off signs out too, so the account is forgotten rather than
+                // sitting in the keychain behind an unticked box.
                 owner.DisableDriveBackup();
                 reconnect.IsVisible = false;
                 importDrive.IsEnabled = false;
