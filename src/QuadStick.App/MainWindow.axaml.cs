@@ -1160,10 +1160,41 @@ public partial class MainWindow : Window
             }
         };
         // Library cards get the same two sharing actions as the editor (right
-        // click or long-press opens the menu). Device cards do not: an on-device
-        // file has no library path to key a sheet by.
-        if (!onDevice) card.ContextFlyout = ShareMenu(path);
+        // click or long-press opens the menu), plus Delete. Device cards do not:
+        // an on-device file has no library path to key a sheet by, and the only
+        // safe way to change what is on the QuadStick is Install.
+        if (!onDevice)
+        {
+            var menu = ShareMenu(path);
+            var del = new MenuItem { Header = "Delete profile" };
+            AutomationProperties.SetName(del, $"Delete {bare} from your profile library");
+            del.Click += async (_, _) => await DeleteProfileAsync(path, bare);
+            menu.Items.Add(new Separator());
+            menu.Items.Add(del);
+            card.ContextFlyout = menu;
+        }
         return card;
+    }
+
+    // The Google Sheet copy is deliberately left alone. It may be shared with
+    // someone else by now, and nothing here should reach into another person's
+    // Drive.
+    async Task DeleteProfileAsync(string path, string bare)
+    {
+        if (!await ConfirmAsync($"Delete {bare}?",
+            $"{Path.GetFileName(path)} is removed from this computer for good. "
+            + "A copy on your QuadStick or in Google Sheets is not touched."))
+            return;
+        try { File.Delete(path); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            HomeStatusText.Text = $"Could not delete {bare}: {ex.Message}";
+            HomeStatusText.IsVisible = true;
+            return;
+        }
+        RefreshHomeCards();
+        HomeStatusText.Text = $"Deleted {bare}.";
+        HomeStatusText.IsVisible = true;
     }
 
     void NewFromTemplate() => OpenInEditor(ProfileFile.NewFromTemplate(DefaultNewName), savePath: null);
@@ -2299,13 +2330,19 @@ public partial class MainWindow : Window
                 DefaultExtension = "csv",
             });
             if (pick is null) return false;
-            var pickedDir = Path.GetDirectoryName(pick.Path.LocalPath);
+            // Type a bare name in the macOS save panel and it hands the path
+            // back without the extension, DefaultExtension or not. The device
+            // only reads .csv and home only lists .csv, so a profile saved as
+            // "mygame" would look like it vanished.
+            var picked = pick.Path.LocalPath;
+            if (!picked.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)) picked += ".csv";
+            var pickedDir = Path.GetDirectoryName(picked);
             if (pickedDir is not null && Device.IsInstallTarget(pickedDir))
             {
                 Status("That folder is a QuadStick drive. Use Install to write to the device safely.", StatusKind.Warning);
                 return false;
             }
-            _savePath = pick.Path.LocalPath;
+            _savePath = picked;
         }
 
         string text;
