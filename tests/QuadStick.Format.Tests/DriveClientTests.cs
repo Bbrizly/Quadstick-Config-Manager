@@ -38,20 +38,46 @@ public class DriveClientTests
         Assert.Equal("sheet123", id);
     }
 
+    // The write has to land before the clear. The other order blanks the sheet
+    // for the length of the update, so an update that fails leaves the user's
+    // only off-machine copy empty.
     [Fact]
-    public async Task PushGrid_ClearsThenUpdatesRaw()
+    public async Task PushGrid_UpdatesRawThenClearsLeftovers()
     {
         var handler = new RecordingHandler(_ => Json("{}"));
         await Client(handler).PushGridAsync("id", new List<string[]> { new[] { "a", "b" } });
 
         Assert.Equal(2, handler.Requests.Count);
-        // Clear first.
-        Assert.Equal(HttpMethod.Post, handler.Requests[0].Method);
-        Assert.Contains(":clear", handler.Requests[0].RequestUri!.ToString());
-        // Then update, RAW.
-        Assert.Equal(HttpMethod.Put, handler.Requests[1].Method);
-        Assert.Contains("valueInputOption=RAW", handler.Requests[1].RequestUri!.ToString());
-        Assert.Contains("\"values\"", handler.Bodies[1]);
+        // Update first, RAW.
+        Assert.Equal(HttpMethod.Put, handler.Requests[0].Method);
+        Assert.Contains("valueInputOption=RAW", handler.Requests[0].RequestUri!.ToString());
+        Assert.Contains("\"values\"", handler.Bodies[0]);
+        // Then sweep only what sits outside the block just written.
+        Assert.Equal(HttpMethod.Post, handler.Requests[1].Method);
+        Assert.Contains(":batchClear", handler.Requests[1].RequestUri!.ToString());
+        using var doc = JsonDocument.Parse(handler.Bodies[1]);
+        var ranges = doc.RootElement.GetProperty("ranges").EnumerateArray().Select(r => r.GetString()).ToList();
+        Assert.Contains("A2:ZZ10000", ranges); // the rows under one row of data
+        Assert.Contains("C1:ZZ10000", ranges); // the columns right of two columns
+    }
+
+    // A binding that lost an input leaves a short row. Without padding, the
+    // write skips that cell and the sheet keeps the value the user removed.
+    [Fact]
+    public async Task PushGrid_PadsShortRowsSoDroppedCellsAreBlanked()
+    {
+        var handler = new RecordingHandler(_ => Json("{}"));
+        await Client(handler).PushGridAsync("id", new List<string[]>
+        {
+            new[] { "a", "b", "c" },
+            new[] { "d" },
+        });
+
+        using var doc = JsonDocument.Parse(handler.Bodies[0]);
+        var rows = doc.RootElement.GetProperty("values").EnumerateArray().ToList();
+        Assert.Equal(3, rows[1].GetArrayLength());
+        Assert.Equal("", rows[1][1].GetString());
+        Assert.Equal("", rows[1][2].GetString());
     }
 
     [Fact]

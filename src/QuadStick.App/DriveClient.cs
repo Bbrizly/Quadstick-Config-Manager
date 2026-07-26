@@ -12,8 +12,12 @@ public class DriveClient
     const string SheetsBase = "https://sheets.googleapis.com/v4/spreadsheets";
     const string DriveBase = "https://www.googleapis.com/drive/v3/files";
 
-    // Wide range, no sheet prefix, so it covers any profile grid on the first sheet.
-    const string ClearRange = "A1:ZZ10000";
+    // Last cell of the wide range the leftover clears sweep. No sheet prefix,
+    // so it covers any profile grid on the first sheet.
+    // ponytail: a profile past 10000 rows keeps its stale tail; nothing near
+    // that exists, and the data written is still correct.
+    const int LastColumn = 702; // ZZ
+    const int LastRow = 10000;
 
     readonly HttpClient _http;
     readonly Func<CancellationToken, Task<string>> _accessToken;
@@ -35,18 +39,51 @@ public class DriveClient
     }
 
     // A1 range with no sheet prefix hits the first visible sheet (spec: first
-    // worksheet only). Clear before update so a shrunken profile leaves no stale cells.
+    // worksheet only).
+    //
+    // Write first, clear the leftovers second. Clearing first leaves the sheet
+    // blank for as long as the update takes, so a dropped connection between
+    // the two wipes the only copy the user has off this computer. A backup is
+    // allowed to be stale; it is never allowed to be empty.
     public async Task PushGridAsync(string id, List<string[]> rows, CancellationToken ct = default)
     {
-        using (var clear = new HttpRequestMessage(HttpMethod.Post, $"{SheetsBase}/{id}/values/{ClearRange}:clear")
-        { Content = new StringContent("{}", Encoding.UTF8, "application/json") })
-            (await SendAsync(clear, ct)).Dispose();
+        // Every row padded to one width, so a binding that lost an input has
+        // that cell blanked by the write instead of keeping its old value.
+        int width = rows.Count == 0 ? 0 : rows.Max(r => r.Length);
+        var grid = rows
+            .Select(r => r.Length == width ? r : r.Concat(Enumerable.Repeat("", width - r.Length)).ToArray())
+            .ToList();
 
         // RAW so a pasted "=..." cell is stored as text, never evaluated.
-        var body = JsonSerializer.Serialize(new { values = rows });
+        var body = JsonSerializer.Serialize(new { values = grid });
         using var update = new HttpRequestMessage(HttpMethod.Put, $"{SheetsBase}/{id}/values/A1?valueInputOption=RAW")
         { Content = new StringContent(body, Encoding.UTF8, "application/json") };
         (await SendAsync(update, ct)).Dispose();
+
+        // Whatever a bigger earlier profile left outside the block just
+        // written: the rows under it and the columns right of it.
+        var ranges = new List<string>();
+        if (grid.Count < LastRow) ranges.Add($"A{grid.Count + 1}:ZZ{LastRow}");
+        if (width < LastColumn) ranges.Add($"{ColumnName(width + 1)}1:ZZ{LastRow}");
+        if (ranges.Count == 0) return;
+
+        var clearBody = JsonSerializer.Serialize(new { ranges });
+        using var clear = new HttpRequestMessage(HttpMethod.Post, $"{SheetsBase}/{id}/values:batchClear")
+        { Content = new StringContent(clearBody, Encoding.UTF8, "application/json") };
+        (await SendAsync(clear, ct)).Dispose();
+    }
+
+    // A1 column name: 1 -> A, 27 -> AA.
+    static string ColumnName(int index)
+    {
+        var name = "";
+        while (index > 0)
+        {
+            index -= 1;
+            name = (char)('A' + index % 26) + name;
+            index /= 26;
+        }
+        return name;
     }
 
     public async Task<string> GetModifiedTimeAsync(string id, CancellationToken ct = default)
