@@ -31,7 +31,8 @@ This is a plain editor that catches those mistakes before anything reaches the d
 - **Two ways to edit.** Map inputs on a picture of the hardware, or work in a spreadsheet view. Autocomplete knows the real input, output, and function names from Fred's validation data.
 - **Plain-English validation.** When something is wrong you get which cell, what is off, and how to fix it. Bad cells turn red. Errors block install.
 - **Safe install.** Backs up the old file, writes a temp copy, reads it back, then swaps it in. Overwriting `default.csv` always asks first.
-- **Import from Sheets.** Paste a Google Sheets link on the home screen to pull in a community profile. Every mode tab comes in, the way most shared profiles are laid out. Open takes a downloaded `.xlsx` workbook too.
+- **Google Drive backup.** Connect once and every save backs itself up to a Sheet in your Drive. The save never waits on the network, and a failed backup retries on the next one. New machine or a wiped USB stick: restore everything from Drive.
+- **Share and import.** Copy a share link for any profile, or paste someone else's link on the home screen to pull theirs in. Every mode tab comes in, the way most shared profiles are laid out. Open takes a downloaded `.xlsx` workbook too.
 - **Built for access.** Big buttons, keyboard shortcuts, and screen reader labels throughout. Light and dark themes, following your system or set by hand.
 
 ![Spreadsheet view catching two bad cells, dark theme](docs/screenshot-errors-dark.png)
