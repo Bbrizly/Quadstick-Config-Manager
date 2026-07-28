@@ -60,6 +60,37 @@ jobs:
           }
           EOF
 
+      # Same arrangement as the Google client above, and the same step as the
+      # release workflow. Without it the committed placeholder's empty token
+      # compiles in and the Store package is silent, which would leave the
+      # numbers looking like nobody on Windows uses this app. A missing secret
+      # is a warning rather than a failure: a package with no analytics is
+      # fine, a package that leaks is not.
+      - name: PostHog token from secrets
+        shell: bash
+        env:
+          PHTOKEN: ${{ secrets.POSTHOG_PROJECT_TOKEN }}
+        run: |
+          if [ -z "$PHTOKEN" ]; then
+            echo "POSTHOG_PROJECT_TOKEN is not set; building with analytics disabled." >&2
+            exit 0
+          fi
+          # The value becomes a C# string literal. A case glob checks every
+          # character, unlike grep, which works line by line and would let a
+          # newline through.
+          case "$PHTOKEN" in (*[!A-Za-z0-9_-]*)
+            echo "POSTHOG_PROJECT_TOKEN has unexpected characters; refusing to write source." >&2
+            exit 1
+          esac
+          cat > src/QuadStick.App/TelemetryToken.Local.cs <<EOF
+          namespace QuadStick.App;
+
+          static class TelemetryToken
+          {
+              public const string Value = "$PHTOKEN";
+          }
+          EOF
+
       # Self-contained folder (not single-file): MSIX packs a directory tree.
       - name: Publish
         shell: pwsh

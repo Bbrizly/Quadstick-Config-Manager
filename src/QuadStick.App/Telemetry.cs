@@ -161,9 +161,42 @@ public static partial class Telemetry
         _ = Task.Run(async () => { try { await c.DisposeAsync(); } catch { /* going away anyway */ } });
     }
 
-    /// <summary>Release on exit. Deliberately does not block: losing one queued event beats hanging the close.</summary>
+    // Capture only queues. The SDK flushes on a 5 second timer or at 100
+    // events, so in a short session almost nothing has left the machine yet.
+    //
+    // Task.Run is what makes the blocking wait safe: it detaches from the UI
+    // SynchronizationContext, so waiting here cannot deadlock the dispatcher
+    // the way blocking on an inline await would. The timeout caps the damage
+    // when the network is slow; the flush keeps running behind us either way.
+    //
+    // A completed flush does NOT prove delivery. Verified against 2.12.0:
+    // FlushAsync returns successfully after the server answers 500, and after
+    // three failed retries to an unroutable host. It means "the queue was
+    // drained and we stopped trying", which is as much as this SDK will say.
+    static bool Flush(TimeSpan wait)
+    {
+        var c = _client;
+        if (c is null) return false;
+        try { return Task.Run(() => c.FlushAsync()).Wait(wait); }
+        catch { return false; }
+    }
+
+    static readonly TimeSpan ShutdownFlush = TimeSpan.FromSeconds(2);
+
+    // Shared by the two paths where the user presses a button and then loses
+    // their only copy: a crash report is deleted once it is "sent", and the
+    // feedback box is cleared. Both wait for the flush rather than the enqueue.
+    static readonly TimeSpan SendFlush = TimeSpan.FromSeconds(5);
+
+    /// <summary>Release on exit, pushing the queue first so a short session is not a silent one.</summary>
     public static void Shutdown()
     {
+        // Before _usage goes false, not after. Scrub drops every queued event
+        // once the flag is down, and the dispose drain runs through Scrub, so
+        // clearing it first would throw away exactly the events this exists to
+        // deliver. Two seconds is the most a close will ever wait, and only
+        // when something is actually queued.
+        Flush(ShutdownFlush);
         lock (Gate) { _usage = false; Stop(); }
     }
 
@@ -194,9 +227,11 @@ public static partial class Telemetry
     // Rebuilt as an allowlist rather than filtered as a blocklist: a blocklist
     // fails open on the next SDK version, an allowlist fails closed.
     //
-    // IMPORTANT, verified against 2.12.0 by capturing real events through
-    // BeforeSend: the SDK adds four properties of its own that this filter
-    // CANNOT remove, because they are attached after BeforeSend returns.
+    // IMPORTANT, verified against 2.12.0 by pointing the client at a local
+    // listener and reading the bytes it posted: the SDK adds four properties
+    // of its own that this filter cannot remove. They are visible here on the
+    // way in, but dropping them changes nothing, because the SDK puts them
+    // back after BeforeSend returns.
     //
     //   distinct_id       the install ID, which we send deliberately anyway
     //   $lib              "posthog-dotnet"
@@ -208,6 +243,10 @@ public static partial class Telemetry
     // $geoip_disable = true is good news: it tells PostHog not to derive a
     // location from the IP. $is_server does NOT appear, because IsServer is
     // set to false above.
+    //
+    // Not visible here at all, and so not removable either: the User-Agent
+    // header, which carries the library, .NET and OS versions and the
+    // processor architecture. BeforeSend never sees headers. Also disclosed.
     static bool Allowed(string eventName, string key) =>
         EnvelopeKeys.Contains(key) || (eventName, key) switch
         {
@@ -349,8 +388,14 @@ public static partial class Telemetry
     {
         text = (text ?? "").Trim();
         if (text.Length == 0) return false;
-        return Track(TelemetryEvent.FeedbackSubmitted, "text",
-                     text.Length <= MaxFeedbackChars ? text : text[..MaxFeedbackChars]);
+        if (!Track(TelemetryEvent.FeedbackSubmitted, "text",
+                   text.Length <= MaxFeedbackChars ? text : text[..MaxFeedbackChars])) return false;
+
+        // The caller clears the box on true, so an enqueue is not enough: the
+        // one outcome worse than no button is throwing away what someone typed
+        // and telling them it arrived. Same ceiling as the crash path, a
+        // completed flush is all this SDK will confirm.
+        return Flush(SendFlush);
     }
 
     // PostHog's error tracking groups on $exception_list. The SDK builds this
@@ -432,8 +477,17 @@ public static partial class Telemetry
             var props = ExceptionProperties(payload);
             props[CrashConsentMarker] = true;   // stripped again inside Scrub
 
-            return c.Capture(_distinctId, "$exception", props,
-                             groups: null, flags: null, timestamp: null);
+            if (!c.Capture(_distinctId, "$exception", props,
+                           groups: null, flags: null, timestamp: null)) return false;
+
+            // The caller deletes the user's only copy on true, so true has to
+            // mean the batch went out, not that a queue accepted it and the
+            // next process exit discarded it.
+            // ponytail: a completed flush is the strongest signal this SDK
+            // offers, and it stays silent about a rejected batch. If a false
+            // "sent" ever matters, POST to /i/v0/e/ directly and read the
+            // status code instead of using the client here.
+            return Flush(SendFlush);
         }
         catch { return false; /* a report that cannot be sent is dropped; the local log keeps it */ }
     }
