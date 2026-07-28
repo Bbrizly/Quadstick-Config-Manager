@@ -17,6 +17,8 @@ File.Copy(Path.Combine(corpus, "gta-mode1.csv"), Path.Combine(lib, "gta.csv"));
 File.Copy(Path.Combine(corpus, "default.csv"), Path.Combine(lib, "rocket-league.csv"));
 MainWindow.LibraryDir = lib;
 
+Environment.SetEnvironmentVariable("QSCM_TELEMETRY", "0");   // screenshots never send
+
 AppBuilder.Configure<App>()
     .UseSkia()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })

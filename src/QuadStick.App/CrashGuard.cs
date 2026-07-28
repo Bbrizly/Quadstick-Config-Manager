@@ -17,9 +17,15 @@ public static class CrashGuard
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "QuadStickConfigManager", "rescue");
 
-    public static string CrashLogPath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "QuadStickConfigManager", "crash-log.txt");
+    // Follows the rescue override. A test that drives the crash path has to be
+    // able to redirect every file it writes, not most of them: without this,
+    // a test exception ends up appended to the developer's own crash log,
+    // message and all.
+    public static string CrashLogPath => RescueDirOverride is { } dir
+        ? Path.Combine(dir, "crash-log.txt")
+        : Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "QuadStickConfigManager", "crash-log.txt");
 
     /// <summary>Set by MainWindow so the net always knows what to rescue.</summary>
     public static Func<ProfileFile?>? CurrentFile { get; set; }
@@ -75,7 +81,20 @@ public static class CrashGuard
                 $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {where}: {ex}\n\n");
         }
         catch { /* the safety net must never itself throw */ }
+
+        // Third independent step: a report the user can be asked about on the
+        // next launch. Nothing is sent here. The process may be dying, the
+        // network may be gone, and consent has not been given for this
+        // particular crash yet.
+        try
+        {
+            CrashReport.Write(where, ex);
+        }
+        catch { /* the safety net must never itself throw */ }
     }
+
+    /// <summary>Test seam: drives the same path the three hooks drive.</summary>
+    internal static void ReportForTest(string where, Exception? ex) => TryRescue(where, ex);
 
     static string Sanitize(string name)
     {

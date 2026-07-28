@@ -17,6 +17,12 @@
     <DefineConstants>$(DefineConstants);GOOGLE_CLIENT_LOCAL</DefineConstants>
   </PropertyGroup>
 
+  <!-- Same arrangement for the PostHog project token. Without the local file
+       the placeholder's empty token compiles in and telemetry stays off. -->
+  <PropertyGroup Condition="Exists('TelemetryToken.Local.cs')">
+    <DefineConstants>$(DefineConstants);TELEMETRY_TOKEN_LOCAL</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <AvaloniaResource Include="Assets/AppIcon.png" />
   </ItemGroup>
@@ -29,6 +35,7 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.3" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.3" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <PackageReference Include="PostHog" Version="2.12.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../QuadStick.Format/QuadStick.Format.csproj" />

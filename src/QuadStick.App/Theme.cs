@@ -31,6 +31,23 @@ public sealed class AppSettings
     // mapping lives in that row's column L and travels with the file; these
     // have no row to live on, so they wait here.
     public Dictionary<string, Dictionary<string, string>> CustomNames = new();
+
+    // Telemetry is inert until the notice has been shown, the same way
+    // DriveBackup is on but inert until a token is stored. Bump the version to
+    // re-prompt when what gets sent materially changes; a reset drops it to 0
+    // and the app goes quiet until the user has been told again.
+    public int TelemetryNoticeVersion = 0;   // 0 = never shown
+    public bool UsageAnalytics = false;      // off until an explicit yes
+
+    // Not a consent flag. Crash reports are agreed to one at a time, when the
+    // report exists and the user can read it. This only suppresses the
+    // question for someone tired of being asked.
+    public bool AskAboutCrashes = true;
+
+    // A random GUID, made once, never derived from anything about the machine
+    // or the user. This is what makes "active installs" a real number instead
+    // of a launch count, and what makes a deletion request findable.
+    public string InstallId = "";            // "" = not yet generated
 }
 
 // Per-profile backup state, keyed by profile file path.
