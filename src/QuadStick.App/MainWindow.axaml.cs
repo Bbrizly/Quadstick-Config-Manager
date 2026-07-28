@@ -2065,10 +2065,15 @@ public partial class MainWindow : Window
                     // editor must write to each input's REAL column, or an
                     // edit lands on a blank cell and duplicates the input.
                     int col = i < b.InputCols.Count ? b.InputCols[i] : FirstFreeInputColumn(b);
-                    var inputBox = TokenField(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "",
-                        i == 0 && zoneInputs.Count > 0 ? zoneInputs : InputSuggestions,
-                        t => InputOptionLabel(t, zone.Id),
-                        $"Input {i + 1} for this {zone.Display} mapping", InputTint);
+                    var value = i < b.Inputs.Count ? b.Inputs[i] : "";
+                    var name = $"Input {i + 1} for this {zone.Display} mapping";
+                    // The first input belongs to the part you are looking at, so
+                    // a short dropdown covers it. Inputs after it can be any
+                    // token on the device, which needs the searchable picker.
+                    var inputBox = i == 0 && zoneInputs.Count > 0
+                        ? TokenField(b.Row, col, value, zoneInputs,
+                            t => InputOptionLabel(t, zone.Id), name, InputTint)
+                        : DeviceInputPicker(b.Row, col, value, name, zone.Id);
                     Grid.SetColumn(inputBox, 0);
                     row.Children.Add(inputBox);
                     // Every committed input gets a trash. Removing the last one
@@ -2098,8 +2103,8 @@ public partial class MainWindow : Window
                     addInput.Click += (_, _) =>
                     {
                         var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
-                        var newBox = TokenField(b.Row, nextCol, "", InputSuggestions,
-                            t => InputOptionLabel(t, zone.Id), $"Extra input for mapping {n}", InputTint);
+                        var newBox = DeviceInputPicker(b.Row, nextCol, "",
+                            $"Extra input for mapping {n}", zone.Id);
                         Grid.SetColumn(newBox, 0);
                         row.Children.Add(newBox);
                         // The new row isn't committed until a value is picked, so its
@@ -3852,6 +3857,27 @@ public partial class MainWindow : Window
             {
                 CommitOutput(b.Row, outputs, picked);
                 RebuildDeviceAfterEdit(b.Row, 0);
+            });
+    }
+
+    // An input field in Device View that is not tied to the part on screen:
+    // the same drill-down picker with search the List View uses, grouped by
+    // part, so a second input can reach anything on the device.
+    Control DeviceInputPicker(int row, int col, string current, string accessibleName, string cardZone)
+    {
+        var wrapper = new Border
+        {
+            BorderThickness = new Avalonia.Thickness(2),
+            BorderBrush = Brushes.Transparent,
+            CornerRadius = new Avalonia.CornerRadius(5),
+        };
+        _cellBorders[$"{(char)('A' + col)}{row}"] = wrapper;
+        return PickerCell(wrapper, current, InputSuggestions, t => InputOptionLabel(t, cardZone),
+            accessibleName, InputTint, InputCatalog, "an input", token =>
+            {
+                if (_file is null || token == _file.GetCell(row, col)) return;
+                _file.SetCell(row, col, token);
+                RebuildDeviceAfterEdit(row, col);
             });
     }
 

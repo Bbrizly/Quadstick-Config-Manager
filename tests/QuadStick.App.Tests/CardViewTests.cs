@@ -340,4 +340,31 @@ public class CardViewTests
         file.Dirty = false;
         w.Close();
     }
+
+    // The first input belongs to the part on screen, so a short dropdown fits.
+    // The second can be anything on the device, so it gets the searchable
+    // picker the List View uses.
+    [AvaloniaFact]
+    public void Second_input_uses_the_searchable_picker()
+    {
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip,mp_center_puff\n");
+        var w = OpenOnLip(file, cards: false);
+
+        static string Name(Control c) => AutomationProperties.GetName(c) ?? "";
+        var first = w.GetVisualDescendants().OfType<Control>()
+            .First(c => Name(c).StartsWith("Input 1 for this"));
+        var second = w.GetVisualDescendants().OfType<Control>()
+            .First(c => Name(c).StartsWith("Input 2 for this"));
+
+        Assert.IsType<ComboBox>(first);
+        Assert.IsType<Button>(second);
+        Assert.EndsWith("Opens a searchable list.", Name(second));
+
+        file.Dirty = false;
+        w.Close();
+    }
 }
