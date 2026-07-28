@@ -261,4 +261,158 @@ public class CrashReportTests
             Directory.Delete(rescue, true);
         }
     }
+
+    // ---------- what comes back off disk is not trusted ----------
+
+    static string PlantedJson(string function) => $$"""
+    {
+      "schema": 1, "where": "task", "app": "1.5.0", "os": "macos",
+      "osVersion": "Darwin", "isDebug": false, "utc": "2026-07-28T00:00:00Z",
+      "chain": [ { "type": "System.Exception",
+                   "frames": [ { "function": {{System.Text.Json.JsonSerializer.Serialize(function)}}, "inApp": true } ] } ]
+    }
+    """;
+
+    [Theory]
+    [InlineData("/Users/bassam/Documents/secret-profile.csv")]
+    [InlineData(@"C:\Users\Bassam\Desktop\gta.csv")]
+    [InlineData("https://docs.google.com/spreadsheets/d/1AbCdEf")]
+    [InlineData("bassam@example.com")]
+    public void APlantedFileLosesTheSeparatorsThatMakeItReadable(string planted)
+    {
+        var p = CrashReport.FromJson(PlantedJson(planted));
+        Assert.NotNull(p);
+        var got = p!.Chain[0].Frames[0].Function;
+
+        // The separators are what make a path a path, a URL a URL, and an
+        // address an address. This is the whole of what the filter promises.
+        Assert.DoesNotContain('/', got);
+        Assert.DoesNotContain('\\', got);
+        Assert.DoesNotContain(':', got);
+        Assert.DoesNotContain('@', got);
+        Assert.DoesNotContain(' ', got);
+    }
+
+    // The limitation, written down so nobody reads the test above as more than
+    // it is. A token is letters, digits and dots, which is also what a
+    // qualified method name is, so no character rule separates them. This only
+    // matters if someone edits a pending report by hand before pressing Send.
+    // If it is ever closed, this test fails and says so.
+    [Theory]
+    [InlineData("ya29.a0AfH6SMBxxxxxxxxToken")]
+    [InlineData("phc_obvLLiziKVVPkLF56J266VzubpMcGDK3h4QgvWHWvg")]
+    public void ASecretWithNoSeparatorsInItSurvivesTheFilterIntact(string planted)
+    {
+        var p = CrashReport.FromJson(PlantedJson(planted));
+        Assert.NotNull(p);
+        Assert.Equal(planted, p!.Chain[0].Frames[0].Function);
+    }
+
+    [Fact]
+    public void APlantedFileWithTheWrongSchemaIsRefusedOutright() =>
+        Assert.Null(CrashReport.FromJson(PlantedJson("x").Replace("\"schema\": 1", "\"schema\": 99")));
+
+    [Fact]
+    public void AHugeFileIsRefusedBeforeItIsParsed() =>
+        Assert.Null(CrashReport.FromJson(new string('x', 600 * 1024)));
+
+    [Fact]
+    public void ChainAndFrameCountsAreClamped()
+    {
+        // Over both caps but under the size limit, so the counts are what
+        // rejects it rather than the byte check in front of them.
+        var frames = string.Join(",", Enumerable.Repeat("""{"function":"A.B","inApp":true}""", 250));
+        var one = $$"""{"type":"System.Exception","frames":[{{frames}}]}""";
+        var json = $$"""
+        {
+          "schema": 1, "where": "task", "app": "1.5.0", "os": "macos",
+          "osVersion": "Darwin", "isDebug": false, "utc": "2026-07-28T00:00:00Z",
+          "chain": [{{string.Join(",", Enumerable.Repeat(one, 30))}}]
+        }
+        """;
+        Assert.True(json.Length < 512 * 1024);
+        var p = CrashReport.FromJson(json);
+        Assert.NotNull(p);
+        Assert.Equal(CrashReport.MaxChain, p!.Chain.Count);
+        Assert.Equal(CrashReport.MaxFrames, p.Chain[0].Frames.Count);
+    }
+
+    [Fact]
+    public void RealReportsSurviveTheSanitiserUnchanged()
+    {
+        var dir = TempDir();
+        CrashReport.PendingDirOverride = dir;
+        try
+        {
+            CrashReport.Write("ui-thread", new InvalidOperationException("boom"));
+            var p = CrashReport.FromJson(File.ReadAllText(CrashReport.Pending()[0]));
+            Assert.NotNull(p);
+            Assert.Equal("ui-thread", p!.Where);
+            Assert.Equal("System.InvalidOperationException", p.Chain[0].Type);
+            // Method names keep the shapes the runtime puts in them.
+            Assert.All(p.Chain[0].Frames, f => Assert.DoesNotContain('_', f.Function[..1]));
+        }
+        finally { CrashReport.PendingDirOverride = null; Directory.Delete(dir, true); }
+    }
+
+    // ---------- half-written files ----------
+
+    [Fact]
+    public void AnInterruptedWriteIsSweptRatherThanKeptForever()
+    {
+        var dir = TempDir();
+        CrashReport.PendingDirOverride = dir;
+        try
+        {
+            // What a crash between WriteAllText and the rename leaves behind.
+            File.WriteAllText(Path.Combine(dir, "crash-20200101-000000-abc.json.tmp"), "{}");
+            File.SetLastWriteTimeUtc(Path.Combine(dir, "crash-20200101-000000-abc.json.tmp"),
+                                     DateTime.UtcNow.AddDays(-CrashReport.MaxAgeDays - 1));
+
+            CrashReport.Write("task", new IOException("y"));   // calls Trim
+
+            Assert.Empty(Directory.GetFiles(dir, "*.tmp"));
+        }
+        finally { CrashReport.PendingDirOverride = null; Directory.Delete(dir, true); }
+    }
+
+    [Fact]
+    public void DiscardTakesTheHalfWrittenOnesToo()
+    {
+        var dir = TempDir();
+        CrashReport.PendingDirOverride = dir;
+        try
+        {
+            CrashReport.Write("task", new IOException("y"));
+            File.WriteAllText(Path.Combine(dir, "crash-20260101-000000-abc.json.tmp"), "{}");
+
+            CrashReport.Discard();
+
+            // A reset promises a clean slate, and a .tmp holds the same thing
+            // a finished report does.
+            Assert.Empty(Directory.GetFiles(dir, "crash-*"));
+        }
+        finally { CrashReport.PendingDirOverride = null; Directory.Delete(dir, true); }
+    }
+
+    [Fact]
+    public void DiscardingOneReportLeavesTheRest()
+    {
+        var dir = TempDir();
+        CrashReport.PendingDirOverride = dir;
+        try
+        {
+            CrashReport.Write("task", new IOException("older"));
+            CrashReport.Write("ui-thread", new InvalidOperationException("newer"));
+            var all = CrashReport.Pending();
+            Assert.Equal(2, all.Count);
+
+            CrashReport.Discard(all[^1]);   // only the one the user was shown
+
+            var left = CrashReport.Pending();
+            Assert.Single(left);
+            Assert.Equal(all[0], left[0]);
+        }
+        finally { CrashReport.PendingDirOverride = null; Directory.Delete(dir, true); }
+    }
 }

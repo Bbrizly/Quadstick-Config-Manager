@@ -150,21 +150,40 @@ public static partial class CrashReport
         catch { return Array.Empty<string>(); }
     }
 
+    /// <summary>Throw away everything waiting. Used by a reset and by "stop asking".</summary>
     public static void Discard()
     {
         try
         {
-            foreach (var f in Directory.GetFiles(PendingDir, "crash-*.json"))
+            // Half-written files too. They hold the same contents and nothing
+            // else would ever remove them, so a reset that left one behind
+            // would not be the clean slate it promises.
+            foreach (var f in Directory.GetFiles(PendingDir, "crash-*"))
                 try { File.Delete(f); } catch { /* one locked file must not stop the rest */ }
         }
         catch { /* nothing to discard */ }
+    }
+
+    /// <summary>Throw away one report, the one the user was actually shown and agreed to send.</summary>
+    public static void Discard(string path)
+    {
+        try { File.Delete(path); } catch { /* it stays, and the next launch asks again */ }
     }
 
     static void Trim()
     {
         try
         {
-            var files = Directory.GetFiles(PendingDir, "crash-*.json")
+            // A crash between the write and the rename leaves a .tmp that the
+            // cap and the expiry would otherwise never see, so it is swept
+            // rather than kept forever. Only once it is far too old to be a
+            // write still in flight, though: a second process can be part way
+            // through its own .tmp right now, and deleting that one under it
+            // makes its File.Move fail and loses the report it was saving.
+            var inFlight = DateTime.UtcNow.AddMinutes(-5);
+            var files = Directory.GetFiles(PendingDir, "crash-*")
+                .Where(f => !f.EndsWith(".tmp", StringComparison.Ordinal)
+                            || File.GetLastWriteTimeUtc(f) < inFlight)
                 .OrderBy(File.GetLastWriteTimeUtc).ToList();
 
             var cutoff = DateTime.UtcNow.AddDays(-MaxAgeDays);
@@ -184,11 +203,80 @@ public static partial class CrashReport
     public static string ToJson(CrashPayload p) =>
         JsonSerializer.Serialize(p, CrashJsonContext.Default.CrashPayload);
 
+    // Caps for anything read back off disk. Nothing this app writes comes
+    // close to them: a .NET stack is tens of frames, a type name is tens of
+    // characters, and a chain is a handful of exceptions.
+    public const int MaxChain = 20;
+    public const int MaxFrames = 200;
+    public const int MaxNameChars = 300;
+
+    // What comes back from disk is not what was written. A pending file is an
+    // ordinary file in the user's own folder, so anything on the machine can
+    // edit it, and every string in it goes on the wire once Send is pressed.
+    // Trusting the record shape alone would make PRIVACY.md's promise that
+    // file paths are never sent depend on nobody having touched the file.
+    //
+    // So the whole payload is rebuilt here: counts clamped, strings clamped,
+    // and function and type names held to the characters a .NET identifier
+    // actually uses. A path, a URL, or a token cannot survive that.
     public static CrashPayload? FromJson(string json)
     {
-        try { return JsonSerializer.Deserialize(json, CrashJsonContext.Default.CrashPayload); }
+        try
+        {
+            if (json.Length > 512 * 1024) return null;   // ours are a few KB
+            var p = JsonSerializer.Deserialize(json, CrashJsonContext.Default.CrashPayload);
+            if (p is null || p.Schema != SchemaVersion) return null;
+
+            var chain = new List<CrashException>();
+            foreach (var ex in (p.Chain ?? []).Take(MaxChain))
+            {
+                var frames = (ex.Frames ?? [])
+                    .Take(MaxFrames)
+                    .Select(f => new CrashFrame(Identifier(f.Function), f.InApp))
+                    .ToList();
+                chain.Add(new CrashException(Identifier(ex.Type), frames));
+            }
+
+            return p with
+            {
+                Where = Identifier(p.Where),
+                App = Identifier(p.App),
+                Os = Identifier(p.Os),
+                OsVersion = Truncate(Printable(p.OsVersion), 80),
+                Chain = chain,
+            };
+        }
         catch { return null; }
     }
+
+    // Namespace, type, method, and the shapes the runtime adds around them:
+    // generics, local functions, lambdas, explicit interface implementations.
+    // The hyphen is here for the three Where labels ("ui-thread"), which are
+    // not identifiers. Anything else becomes '_'.
+    //
+    // What this buys, and only this: the separators are gone. No slash,
+    // backslash, colon, space, or @ survives, so a file path, a URL with a
+    // scheme, and an email address all come out as runs of underscores.
+    //
+    // It is NOT a secret filter, and it cannot be one. An OAuth token, a Sheets
+    // ID, and a bare filename are letters, digits, dots and hyphens, which is
+    // exactly what a namespace-qualified method name is: no character rule can
+    // tell them apart. Nothing this app writes puts such a string here, so the
+    // only way one arrives is someone hand-editing a pending report before
+    // pressing Send, which is their own data and their own choice. If that ever
+    // needs to be stopped, match the frame against a real identifier grammar
+    // and drop what fails, do not widen this filter.
+    static string Identifier(string? s) =>
+        string.IsNullOrEmpty(s) ? ""
+            : new string(Truncate(s, MaxNameChars)
+                .Select(c => char.IsLetterOrDigit(c) || c is '.' or '_' or '+' or '-' or '<' or '>'
+                             or '`' or '[' or ']' or ',' or '|' ? c : '_').ToArray());
+
+    // OS descriptions are prose ("Darwin 25.5.0 Darwin Kernel Version ..."),
+    // so they keep spaces and punctuation but lose control characters.
+    static string Printable(string? s) =>
+        string.IsNullOrEmpty(s) ? ""
+            : new string(s.Where(c => !char.IsControl(c)).ToArray());
 }
 
 // Source-generated so the report survives trimming, matching how AppSettings

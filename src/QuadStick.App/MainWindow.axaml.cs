@@ -768,11 +768,13 @@ public partial class MainWindow : Window
         if (!_settings.TutorialSeen) Opened += StartTutorialOnce;
         Opened += TelemetryOnceOnOpen;
 
-        // Nothing queued at exit is worth holding a window open for, so this
-        // starts the dispose and returns. Blocking here on the network queue
-        // is the classic dispatcher deadlock, and a lost final event costs
-        // nobody anything.
-        Closing += (_, _) => Telemetry.Shutdown();
+        // Only on a close that is really happening. The unsaved-work handler
+        // above cancels the close to ask, and every Closing handler still runs
+        // when it does, so shutting down here unconditionally would leave a
+        // window that stays open with telemetry dead for the rest of the
+        // session. Shutdown pushes the queue first and waits at most two
+        // seconds for it.
+        Closing += (_, e) => { if (!e.Cancel) Telemetry.Shutdown(); };
     }
 
     // ---------- telemetry consent ----------
@@ -882,7 +884,8 @@ public partial class MainWindow : Window
     }
 
     /// <summary>Fail closed: an answer that could not be written to disk is treated as no.</summary>
-    internal void ApplyTelemetryAnswer(bool usage)
+    /// <returns>True when the answer reached disk. False means nothing is sent now, but the file is unchanged.</returns>
+    internal bool ApplyTelemetryAnswer(bool usage)
     {
         _settings.UsageAnalytics = usage;
         _settings.TelemetryNoticeVersion = Telemetry.NoticeVersion;
@@ -893,11 +896,16 @@ public partial class MainWindow : Window
             _settings.TelemetryNoticeVersion = 0;
             Telemetry.ApplyConsent(0, usage: false);
             Telemetry.SetInstallId("");
-            Status("Could not save that preference. Usage data stays off.", StatusKind.Warning);
-            return;
+            // "Stays off" was only true of this session. The file still holds
+            // whatever it held, so a failed turn-off comes back on next launch
+            // unless the caller shows that.
+            Status("Could not save that preference. Nothing is sent now, but the change did not stick.",
+                   StatusKind.Warning);
+            return false;
         }
 
         ApplyStoredConsent();
+        return true;
     }
 
     // Asked once per launch, about the newest report only. Pressing Send is
@@ -907,12 +915,26 @@ public partial class MainWindow : Window
     {
         if (!_settings.AskAboutCrashes) return;
 
-        var pending = CrashReport.Pending();
-        if (pending.Count == 0) return;
+        // Newest first, skipping anything that will not parse. A file that
+        // cannot be read is a file that cannot be sent, and keeping it would
+        // make it the newest forever and bury every good report behind it.
+        // It is also not something to show a user, so it goes.
+        string? details = null, newest = null;
+        foreach (var path in CrashReport.Pending().Reverse())
+        {
+            string text;
+            try { text = File.ReadAllText(path); }
+            catch { continue; }   // locked right now: leave it for next time
 
-        string details;
-        try { details = File.ReadAllText(pending[^1]); }
-        catch { return; }   // unreadable: leave it on disk rather than guess
+            if (CrashReport.FromJson(text) is { Chain.Count: > 0 })
+            {
+                details = text;
+                newest = path;
+                break;
+            }
+            CrashReport.Discard(path);
+        }
+        if (details is null || newest is null) return;
 
         var send = new Button { Content = "Send report", MinWidth = 140 };
         var later = new Button { Content = "Not now", MinWidth = 140, IsDefault = true, IsCancel = true };
@@ -981,11 +1003,13 @@ public partial class MainWindow : Window
                 if (Telemetry.InstallId(_settings) is { Length: > 0 } id)
                 {
                     Telemetry.SetInstallId(id);
-                    // Delete only what was accepted. A queue that refused it
-                    // keeps the file so the next launch can ask again.
+                    // Only the one file the user was shown and agreed to. The
+                    // older reports were never on screen, so consent to this
+                    // one is not consent to delete those: they stay, and the
+                    // next launch offers the next one down.
                     if (Telemetry.SendCrashReport(details))
                     {
-                        CrashReport.Discard();
+                        CrashReport.Discard(newest);
                         Status("Crash report sent. Thank you.", StatusKind.Info);
                     }
                     else Status("Could not send the crash report. It is still on your computer.", StatusKind.Warning);

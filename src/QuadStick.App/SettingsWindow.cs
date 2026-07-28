@@ -31,6 +31,12 @@ public class SettingsWindow : Window
     // it builds and holds its own LayoutTransformControl instead.
     readonly LayoutTransformControl _zoom;
 
+    // The feedback button rides on the usage-data consent, and that consent is
+    // toggled on a different tab of this same window. Held here so the toggle
+    // can reach it: without this the button keeps whatever state it had when
+    // the window opened, so turning usage data on leaves it stuck disabled.
+    Button? _feedbackSend;
+
     // A pending interface-size preview: the timer counts down and _revertSize
     // puts the size back unless the user confirms. Null when nothing is pending.
     DispatcherTimer? _sizeTimer;
@@ -571,25 +577,55 @@ public class SettingsWindow : Window
             catch { /* best effort */ }
         };
 
+        // What is actually on disk, same rule as the crash box below. Reading
+        // it back off CurrentSettings does not work: ApplyTelemetryAnswer has
+        // already overwritten that, and on a failed save it forces false, so
+        // turning the box off with a read-only settings file used to look like
+        // it worked while the file still said true and the next launch turned
+        // telemetry back on with nobody told.
+        var savedUsage = s.UsageAnalytics;
         usage.IsCheckedChanged += (_, _) =>
         {
-            // Fail closed: an answer that could not be written to disk is not
-            // in force, so the box goes back to what is actually saved.
-            owner.ApplyTelemetryAnswer(usage.IsChecked == true);
-            var saved = owner.CurrentSettings.UsageAnalytics;
-            if (usage.IsChecked != saved) usage.IsChecked = saved;
+            var want = usage.IsChecked == true;
+            if (want == savedUsage) return;   // our own revert, or nothing changed
 
+            if (owner.ApplyTelemetryAnswer(want)) savedUsage = want;
+            else usage.IsChecked = savedUsage;   // re-enters once, then the guard above stops it
+
+            // These follow the runtime, not the file: a failed save leaves
+            // nothing being sent even though the box shows the stored answer.
+            var live = owner.CurrentSettings.UsageAnalytics;
             idText.Text = owner.CurrentSettings.InstallId.Length == 0
                 ? "No install ID yet. One is made the first time something is sent."
                 : $"Install ID: {owner.CurrentSettings.InstallId}";
             copyId.IsEnabled = owner.CurrentSettings.InstallId.Length > 0;
+            if (_feedbackSend is not null) _feedbackSend.IsEnabled = live;
         };
 
+        // What is actually on disk. Reverting to a remembered value gives the
+        // handler a fixed point, so the revert re-enters once and stops. The
+        // old code assigned the negation instead, which alternates forever: on
+        // a settings file that keeps failing to write (read-only folder, full
+        // disk) it recursed until the stack overflowed and killed the app.
+        var savedAsk = s.AskAboutCrashes;
         askCrashes.IsCheckedChanged += (_, _) =>
         {
-            owner.CurrentSettings.AskAboutCrashes = askCrashes.IsChecked == true;
+            var want = askCrashes.IsChecked == true;
+            if (want == savedAsk) return;   // our own revert, or nothing changed
+
+            owner.CurrentSettings.AskAboutCrashes = want;
             if (!Settings.TrySave(owner.CurrentSettings))
-                askCrashes.IsChecked = !askCrashes.IsChecked;
+            {
+                owner.CurrentSettings.AskAboutCrashes = savedAsk;
+                askCrashes.IsChecked = savedAsk;
+                return;
+            }
+            savedAsk = want;
+
+            // Turning the asking off is also the moment to stop keeping the
+            // reports. The "Stop asking" button in the crash dialog does this
+            // too, and a user who switches it off here means the same thing.
+            if (!want) CrashReport.Discard();
         };
 
         return new StackPanel
@@ -670,9 +706,9 @@ public class SettingsWindow : Window
         { FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, IsVisible = false, Classes = { "muted" } };
         AutomationProperties.SetLiveSetting(status, AutomationLiveSetting.Polite);
 
-        var on = owner.CurrentSettings.UsageAnalytics;
-        var send = new Button { Content = "Send feedback", IsEnabled = on };
+        var send = new Button { Content = "Send feedback", IsEnabled = owner.CurrentSettings.UsageAnalytics };
         AutomationProperties.SetName(send, "Send feedback");
+        _feedbackSend = send;   // so the Advanced tab's toggle can follow it
 
         send.Click += (_, _) =>
         {
@@ -699,9 +735,10 @@ public class SettingsWindow : Window
                     Text = "Send feedback", FontSize = Size("SubheadSize"),
                     FontWeight = FontWeight.Bold, Margin = new Thickness(0, 8, 0, 0),
                 },
-                Caption(on
-                    ? "Goes to the developer with your anonymous install ID and nothing else."
-                    : "Turn on usage data in Advanced to use this, or use the email link above."),
+                // One sentence that is true whichever way the toggle sits, so
+                // there is no second piece of state to keep in step with it.
+                Caption("Goes to the developer with your anonymous install ID and nothing else. "
+                      + "Needs usage data turned on, under Advanced. The email link above always works."),
                 box,
                 send,
                 status,

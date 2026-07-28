@@ -75,10 +75,19 @@ public static class Settings
     // never worth crashing over.
     public static void Save(AppSettings s, string? path = null) => TrySave(s, path);
 
+    /// <summary>Test seam, same pattern as CrashReport.PendingDirOverride. Makes every save fail.</summary>
+    /// <remarks>
+    /// The fail-closed branches only run on a read-only folder or a full disk,
+    /// and the alternative way to reach them in a test is to break the real
+    /// per-user settings file on the machine running it.
+    /// </remarks>
+    public static bool FailSavesForTest { get; set; }
+
     // Same write, but reports if it landed. Restore rolls back an import whose
     // link state could not be saved, else its next save forks a duplicate sheet.
     public static bool TrySave(AppSettings s, string? path = null)
     {
+        if (FailSavesForTest) return false;
         var p = path ?? DefaultPath;
         try
         {
