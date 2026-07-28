@@ -17,3 +17,4 @@ scripts/appstore/embedded.provisionprofile
 # placeholder keeps the public build compiling without them.
 src/QuadStick.App/GoogleClient.Local.cs
 .context/
+docs/superpowers/private/

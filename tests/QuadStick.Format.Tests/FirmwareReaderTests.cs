@@ -172,6 +172,26 @@ public class FirmwareReaderTests
     }
 
     [Fact]
+    public void Preference_description_columns_may_exceed_64_chars()
+    {
+        // The official prefs.csv keeps a sentence of description in the columns
+        // after the value. The device never reads past column B on these rows.
+        var longText = new string('d', 100);
+        var issues = All(Head + "x,normal,lip\n\n" +
+            $"Preferences\nprefs.csv\nPreference,Value,\nsip_threshold,20,,{longText}\n");
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+    }
+
+    [Fact]
+    public void A_preference_name_longer_than_64_chars_is_still_an_error()
+    {
+        var longName = new string('p', 70);
+        var issues = All(Head + "x,normal,lip\n\n" +
+            $"Preferences\nprefs.csv\nPreference,Value,\n{longName},20\n");
+        Assert.Contains(issues, i => i.Severity == Severity.Error && i.Message.Contains("64"));
+    }
+
+    [Fact]
     public void Comment_columns_past_J_may_exceed_64_chars()
     {
         var longComment = new string('c', 100); // well under the line limit

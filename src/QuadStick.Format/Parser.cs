@@ -73,14 +73,22 @@ public static class Parser
     // in the data columns kills its row.
     static void CheckDeviceLineLimits(List<string[]> grid, List<Issue> issues)
     {
+        bool inPrefs = false;
         for (int r = 0; r < grid.Count; r++)
         {
+            if (Vocab.IsSheetKeyword(Cell(grid, r, 0).Trim()) && IsHeaderRow(grid, r))
+                inPrefs = Vocab.KeywordToType(Cell(grid, r, 0).Trim()) == SheetType.Preferences;
+
             var line = Csv.Write(new[] { grid[r] });
             if (System.Text.Encoding.UTF8.GetByteCount(line) > 1023)
                 issues.Add(new Issue(Severity.Error, $"A{r + 1}",
                     $"Row {r + 1} is longer than 1023 characters including comments. The device reads lines into a 1024-byte buffer and would misread this row and every row after it.",
                     "Shorten the row's comments."));
-            for (int c = 0; c < 10 && c < grid[r].Length; c++)
+            // A preferences row is name,value: the device stops after column B,
+            // so the long descriptions the official prefs.csv keeps in C and
+            // beyond are as safe as a profile's comment columns.
+            int keywordCols = inPrefs ? 2 : 10;
+            for (int c = 0; c < keywordCols && c < grid[r].Length; c++)
                 if (grid[r][c].Length > 64 && !(r == 0 && grid[r].Length > 0 && grid[r][0].StartsWith("QuadStick", StringComparison.Ordinal)))
                     issues.Add(new Issue(Severity.Error, $"{(char)('A' + c)}{r + 1}",
                         $"This cell is longer than 64 characters, the device's keyword limit. The device gives up on the row here.",
