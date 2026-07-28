@@ -192,7 +192,7 @@ jobs:
           fail_on_unmatched_files: true
           prerelease: ${{ contains(github.ref_name, '-') }}
           body: |
-            Download the file for your computer, unzip, and run. No installer, works offline (except Sheets import).
+            Download the file for your computer, unzip, and run. No installer, works offline (except Sheets import, Drive backup, and optional usage data).
 
             | File | Computer |
             |------|----------|

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy · Quadstick: Config Manager</title>
-<meta name="description" content="Quadstick: Config Manager collects no data. Privacy policy for the free, open-source QuadStick profile editor.">
+<meta name="description" content="Privacy policy for Quadstick: Config Manager, the free, open-source QuadStick profile editor. No accounts, no ads, and usage data only if you turn it on.">
 
 <!-- favicon: the QuadStick glyph, same as the home page -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3QgeD0iMSIgeT0iMSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiByeD0iOSIgZmlsbD0iIzFBMTcxNCIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTIiIHI9IjMuNCIgZmlsbD0iI0RBRTZGNyIvPjxyZWN0IHg9IjguNSIgeT0iMTkiIHdpZHRoPSI2IiBoZWlnaHQ9IjUuMiIgcng9IjIiIGZpbGw9IiNGNUU5QzYiLz48cmVjdCB4PSIxNy41IiB5PSIxOSIgd2lkdGg9IjYiIGhlaWdodD0iNS4yIiByeD0iMiIgZmlsbD0iI0Y1RDlFMiIvPjwvc3ZnPg==">
@@ -82,21 +82,34 @@
   <div class="wrap">
     <span class="kicker">Privacy</span>
     <h1 class="display">Privacy Policy</h1>
-    <p class="updated">Last updated 15 July 2026</p>
+    <p class="updated">Last updated 28 July 2026</p>
 
-    <p class="lede">Quadstick: Config Manager does not collect, store, or share any personal information. There are no accounts, no analytics, and no tracking.</p>
+    <p class="lede">Quadstick: Config Manager has no accounts and no advertising. It runs on your computer and works with the profile files you choose. Nothing about you or your profiles is sold or shared with anyone.</p>
 
-    <h2>What the app does with your data</h2>
-    <p>The app runs entirely on your own computer and works with the profile files you choose to open. It does not create an account, it does not sign you in, and it does not send anything about you or your files anywhere.</p>
+    <h2>What the app can send, and when</h2>
+    <p>Three things use the network, and each one only after you ask for it.</p>
+    <p><b>Google Sheets and Drive.</b> When you paste a Sheets link, the app fetches that sheet and nothing else. When you turn on Google Drive backup, it saves your profiles to your own Drive under your own account.</p>
+    <p><b>Usage data, off unless you turn it on.</b> The first time you open the app it asks. If you say yes, it sends a small event when the app opens, when a profile is opened or saved, when installing to a QuadStick is tried and whether that worked, and when one of the optional features is used. Each event carries your operating system, the app version, and a random install ID. While this is on, those events are sent as they happen. You can turn it off any time in Settings, under Advanced.</p>
+    <p><b>Crash reports, one at a time.</b> If the app crashes it saves a report on your computer and sends nothing. The next time you open the app it shows you that report and asks. Nothing leaves your computer unless you press Send.</p>
 
-    <h2>The one time it uses the network</h2>
-    <p>The only feature that touches the internet is the optional Google Sheets import. When <b>you</b> paste a Google Sheets link, the app fetches that sheet so it can bring the profile into the editor. It requests the sheet you asked for and nothing else. If you never use that feature, the app never uses the network at all.</p>
+    <h2>What is never sent</h2>
+    <p>Your profiles and their contents. File names and file paths. Anything you type, apart from the feedback box, which is only sent when you press Send on it. Your Google account, tokens, sheet IDs, or share links. Your name, your user name, or your computer's name. A crash report carries the type of error and the list of functions it happened in, never the error message, because a message can quote your own data back.</p>
 
-    <h2>Analytics and tracking</h2>
-    <p>None. There is no telemetry, no usage reporting, no advertising, and no third-party SDK collecting data in the background.</p>
+    <h2>The install ID</h2>
+    <p>A random identifier made once and stored on your computer. It is not derived from anything about you or your machine, and it is only made when you first turn usage data on or press Send on a crash report. It exists so that a count of installs is a real number rather than a count of launches, and so a deletion request can find your data. You can see it and copy it in Settings, under Advanced.</p>
+
+    <h2>Who processes it</h2>
+    <p>Usage data and crash reports are processed by PostHog on servers in the United States. The reporting library also attaches its own name and version, and tells PostHog not to work out a location from your IP address. Every request carries the library version, the .NET version, your operating system version, and whether the processor is Intel or ARM. If you are outside the United States, this means the data is stored outside your country.</p>
+
+    <h2>Turning it off</h2>
+    <p>Settings, then Advanced. Turning off usage data stops it immediately. Turning off crash reports also deletes any report waiting on your computer, and so does resetting settings.</p>
+    <p>Setting the environment variable <code>QSCM_TELEMETRY=0</code> before the app starts means nothing is ever sent and you are never asked. A crash still writes its report to your own computer, the same as the crash log the app has always kept, and with that variable set nothing ever offers to send it. A build made from source sends nothing at all.</p>
+
+    <h2>Deleting your data</h2>
+    <p>Open an issue with your install ID and it will be deleted.</p>
 
     <h2>Children</h2>
-    <p>The app is safe for all ages and collects no data from anyone, including children.</p>
+    <p>The app is suitable for all ages. It collects nothing beyond what is described above, and only after someone has said yes.</p>
 
     <h2>Changes</h2>
     <p>If this policy ever changes, the updated version will be posted on this page.</p>

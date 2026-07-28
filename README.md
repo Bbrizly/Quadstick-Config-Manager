@@ -50,7 +50,8 @@ Or grab the latest build from [Releases](https://github.com/Bbrizly/Quadstick-Co
 | `QuadStickConfigManager-macOS-Intel.zip` | Intel Mac |
 | `QuadStickConfigManager-Linux-x64.tar.gz` | Linux, 64-bit |
 
-Unzip and run. No installer. Works offline except for Sheets import.
+Unzip and run. No installer. Works offline except for Sheets import, Drive
+backup, and the optional usage data you can turn on or leave off.
 
 **Windows:** SmartScreen may warn on first launch (not code-signed). Click More info, then Run anyway.
 
