@@ -20,10 +20,21 @@ public partial class MainWindow
 {
     async Task RunInstallFlowAsync()
     {
-        if (_file is null) { Status("Open a profile first."); return; }
+        // Every exit below is one reason, so the funnel says where installs
+        // actually die rather than only that they did.
+        Telemetry.Track(TelemetryEvent.InstallAttempted);
+
+        if (_file is null)
+        {
+            Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.NoProfile);
+            Status("Open a profile first."); return;
+        }
         _file.Reparse();
         if (_file.HasErrors)
-        { Status("Fix the errors in the Problems list before installing.", StatusKind.Error); RefreshIssues(); return; }
+        {
+            Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.HasErrors);
+            Status("Fix the errors in the Problems list before installing.", StatusKind.Error); RefreshIssues(); return;
+        }
 
         var candidates = Device.FindCandidates();
         string? root;
@@ -32,7 +43,11 @@ public partial class MainWindow
             root = await PickDeviceRootAsync(candidates);
             // Cancelling the drive choice cancels the install; it must not
             // fall through to a folder picker the user did not ask for.
-            if (root is null) { Status("Install cancelled."); return; }
+            if (root is null)
+            {
+                Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledDevice);
+                Status("Install cancelled."); return;
+            }
         }
         else if (candidates.Count == 1)
         {
@@ -43,12 +58,17 @@ public partial class MainWindow
             Status("No QuadStick drive found (a drive with default.csv on it). Pick the drive or a folder manually.");
             var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
             { Title = "Choose the QuadStick drive" });
-            if (folders.Count == 0) return;
+            if (folders.Count == 0)
+            {
+                Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledFolder);
+                return;
+            }
             root = folders[0].Path.LocalPath;
         }
 
         if (!Device.IsInstallTarget(root))
         {
+            Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.NotAQuadstick);
             Status("That folder does not look like a QuadStick (no default.csv at its root).", StatusKind.Error);
             return;
         }
@@ -59,7 +79,11 @@ public partial class MainWindow
             confirmDefault = await ConfirmAsync(
                 "Overwrite default.csv?",
                 "A wrong default.csv can disable flash-drive access, and recovery needs a physical force-erase. A backup will be made first. Continue?");
-            if (!confirmDefault) { Status("Install cancelled."); return; }
+            if (!confirmDefault)
+            {
+                Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledDefault);
+                Status("Install cancelled."); return;
+            }
         }
 
         await RunInstallDialogAsync(_file, root, confirmDefault);
@@ -130,6 +154,7 @@ public partial class MainWindow
             });
             close.Focus();
 
+            Telemetry.Track(TelemetryEvent.InstallSucceeded);
             Status($"Installed {Path.GetFileName(result.InstalledPath)} to {root}.", StatusKind.Ready);
         }
         catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException)
@@ -138,6 +163,7 @@ public partial class MainWindow
             // distinguishes "the device was not modified" (readback failure)
             // from "restored from backup" (mid-swap failure), and inventing a
             // blanket "unchanged" here would misstate the mid-swap case.
+            Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.IoError);
             SetContent(new StackPanel
             {
                 Spacing = 12,

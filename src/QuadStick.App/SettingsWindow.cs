@@ -50,7 +50,7 @@ public class SettingsWindow : Window
                 new TabItem { Header = "General", Content = GeneralTab(owner) },
                 new TabItem { Header = "Advanced", Content = AdvancedTab(owner) },
                 new TabItem { Header = "Help", Content = HelpTab(owner) },
-                new TabItem { Header = "Contact", Content = ContactTab() },
+                new TabItem { Header = "Contact", Content = ContactTab(owner) },
             },
         };
 
@@ -469,6 +469,8 @@ public class SettingsWindow : Window
             Children = { reduceMotion, Caption("Turns off the tutorial fade animation.") },
         });
 
+        panel.Children.Add(PrivacyArea(owner));
+
         var rememberWindow = new CheckBox
         {
             Content = "Remember window size and position",
@@ -539,7 +541,85 @@ public class SettingsWindow : Window
         return Tab(panel);
     }
 
-    Control ContactTab()
+    // Everything the app may send, and the switches for it, in one place. The
+    // install ID is shown because a deletion request needs it: without it
+    // there is no way to point at your own data.
+    Control PrivacyArea(MainWindow owner)
+    {
+        var s = owner.CurrentSettings;
+
+        var usage = new CheckBox
+        { Content = "Share anonymous usage data", IsChecked = s.UsageAnalytics, FontSize = Size("BodySize") };
+        AutomationProperties.SetName(usage, "Share anonymous usage data");
+
+        var askCrashes = new CheckBox
+        { Content = "Ask before sending a crash report", IsChecked = s.AskAboutCrashes, FontSize = Size("BodySize") };
+        AutomationProperties.SetName(askCrashes, "Ask before sending a crash report");
+
+        var idText = new TextBlock
+        {
+            Text = s.InstallId.Length == 0 ? "No install ID yet. One is made the first time something is sent."
+                                           : $"Install ID: {s.InstallId}",
+            FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
+        };
+
+        var copyId = new Button { Content = "Copy install ID", IsEnabled = s.InstallId.Length > 0 };
+        AutomationProperties.SetName(copyId, "Copy the install ID to the clipboard");
+        copyId.Click += async (_, _) =>
+        {
+            try { if (Clipboard is { } c) await c.SetTextAsync(owner.CurrentSettings.InstallId); }
+            catch { /* best effort */ }
+        };
+
+        usage.IsCheckedChanged += (_, _) =>
+        {
+            // Fail closed: an answer that could not be written to disk is not
+            // in force, so the box goes back to what is actually saved.
+            owner.ApplyTelemetryAnswer(usage.IsChecked == true);
+            var saved = owner.CurrentSettings.UsageAnalytics;
+            if (usage.IsChecked != saved) usage.IsChecked = saved;
+
+            idText.Text = owner.CurrentSettings.InstallId.Length == 0
+                ? "No install ID yet. One is made the first time something is sent."
+                : $"Install ID: {owner.CurrentSettings.InstallId}";
+            copyId.IsEnabled = owner.CurrentSettings.InstallId.Length > 0;
+        };
+
+        askCrashes.IsCheckedChanged += (_, _) =>
+        {
+            owner.CurrentSettings.AskAboutCrashes = askCrashes.IsChecked == true;
+            if (!Settings.TrySave(owner.CurrentSettings))
+                askCrashes.IsChecked = !askCrashes.IsChecked;
+        };
+
+        return new StackPanel
+        {
+            Spacing = 8,
+            Margin = new Thickness(0, 8, 0, 0),
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = "Privacy", FontSize = Size("SubheadSize"),
+                    FontWeight = FontWeight.Bold, Margin = new Thickness(0, 8, 0, 0),
+                },
+                usage,
+                Caption("Which screens get used and whether installing worked. Never your profiles, "
+                      + "file names, paths, anything you type, or your Google account."),
+                askCrashes,
+                Caption("A crash saves a report on your computer. Nothing is sent until you see it and press Send."),
+                idText,
+                copyId,
+                // Reachable from the toggles themselves, not just from the
+                // notice at first launch, which most people will never see again.
+                LinkButton("Read the privacy policy",
+                           MainWindow.PrivacyPolicyUrl,
+                           "Read the privacy policy, opens in your browser"),
+            },
+        };
+    }
+
+    Control ContactTab(MainWindow owner)
     {
         var panel = new StackPanel { Margin = new Thickness(24), Spacing = 16 };
         panel.Children.Add(Heading("Contact"));
@@ -566,7 +646,67 @@ public class SettingsWindow : Window
             "mailto:bassamkamal.py@gmail.com",
             "Send an email, opens your mail app"));
 
+        panel.Children.Add(FeedbackArea(owner));
         return Tab(panel);
+    }
+
+    // The one place free text is sent, and only because the user typed it into
+    // a box that says where it goes. Disabled unless usage data is on, because
+    // that is the consent it rides on.
+    Control FeedbackArea(MainWindow owner)
+    {
+        var box = new TextBox
+        {
+            AcceptsReturn = true,
+            TextWrapping = TextWrapping.Wrap,
+            Height = 90,
+            MaxLength = Telemetry.MaxFeedbackChars,
+            Watermark = "What would make this app better?",
+            FontSize = Size("BodySize"),
+        };
+        AutomationProperties.SetName(box, "Your feedback");
+
+        var status = new TextBlock
+        { FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, IsVisible = false, Classes = { "muted" } };
+        AutomationProperties.SetLiveSetting(status, AutomationLiveSetting.Polite);
+
+        var on = owner.CurrentSettings.UsageAnalytics;
+        var send = new Button { Content = "Send feedback", IsEnabled = on };
+        AutomationProperties.SetName(send, "Send feedback");
+
+        send.Click += (_, _) =>
+        {
+            // Only clear the box on a send that was actually accepted. Saying
+            // "thanks, sent" and throwing the text away when nothing left the
+            // machine is the one outcome that is worse than no button at all.
+            if (Telemetry.SendFeedback(box.Text ?? ""))
+            {
+                box.Text = "";
+                status.Text = "Thank you. That was sent.";
+            }
+            else status.Text = "That could not be sent. The email link above always works.";
+            status.IsVisible = true;
+        };
+
+        return new StackPanel
+        {
+            Spacing = 8,
+            Margin = new Thickness(0, 16, 0, 0),
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = "Send feedback", FontSize = Size("SubheadSize"),
+                    FontWeight = FontWeight.Bold, Margin = new Thickness(0, 8, 0, 0),
+                },
+                Caption(on
+                    ? "Goes to the developer with your anonymous install ID and nothing else."
+                    : "Turn on usage data in Advanced to use this, or use the email link above."),
+                box,
+                send,
+                status,
+            },
+        };
     }
 
     Button LinkButton(string text, string url, string accessibleName)

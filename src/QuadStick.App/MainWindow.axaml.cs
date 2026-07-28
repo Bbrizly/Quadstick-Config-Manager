@@ -128,7 +128,10 @@ public partial class MainWindow : Window
     void RunBackup(string path, Func<DriveBackup, Task<PushResult?>> op)
     {
         var backup = Backup();
+        // Tracked here, not at the call site: FireBackupPush runs after every
+        // save, and only this line knows whether Drive is actually connected.
         if (backup is null) return;
+        Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.DriveBackup);
         _backupInFlight = Task.Run(async () =>
         {
             try
@@ -180,7 +183,7 @@ public partial class MainWindow : Window
             }
             ProfileFile.WriteAtomic(path, onlineCsv);
             if (_savePath == path)
-                OpenInEditor(online, path);
+                OpenInEditor(online, path, ProfileSource.Drive);
             Status("Loaded the online version of this profile. Your previous local copy is in the rescue folder.", StatusKind.Warning);
         }
         catch (Exception ex)
@@ -308,6 +311,7 @@ public partial class MainWindow : Window
     // everything (restore-all from onboarding); false starts empty (cherry-pick).
     public async Task ShowDrivePickerAsync(bool preCheck)
     {
+        Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.DriveRestore);
         if (!ShareNeedsBackup()) return;
         await new DrivePickerWindow(this, preCheck).ShowDialog(this);
     }
@@ -355,6 +359,7 @@ public partial class MainWindow : Window
     // UI stays responsive without a spinner.
     async Task CopyShareLinkAsync(string? path)
     {
+        Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.ShareLink);
         if (!ShareNeedsBackup()) return;
 
         string csvText;
@@ -433,6 +438,11 @@ public partial class MainWindow : Window
     readonly Dictionary<string, Button> _zoneButtons = new(); // Device View zone id -> its button, for focus management
     static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(15) };
     const string DefaultNewName = "mygame.csv";
+
+    // The same page the store listings declare. bbrizly.github.io still
+    // redirects here, so old links keep working.
+    internal const string PrivacyPolicyUrl =
+        "https://bassamkamal.dev/Quadstick-Config-Manager/privacy.html";
 
     public static string LibraryDir { get; set; } =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "QuadStick Profiles");
@@ -756,7 +766,247 @@ public partial class MainWindow : Window
         ShowHome();
         OfferRescueIfAny();
         if (!_settings.TutorialSeen) Opened += StartTutorialOnce;
+        Opened += TelemetryOnceOnOpen;
+
+        // Nothing queued at exit is worth holding a window open for, so this
+        // starts the dispose and returns. Blocking here on the network queue
+        // is the classic dispatcher deadlock, and a lost final event costs
+        // nobody anything.
+        Closing += (_, _) => Telemetry.Shutdown();
     }
+
+    // ---------- telemetry consent ----------
+
+    // Both dialogs live behind one Opened handler so they cannot overlap, and
+    // so the crash prompt is never shown to someone who has not yet been told
+    // what this app sends.
+    async void TelemetryOnceOnOpen(object? sender, EventArgs e)
+    {
+        Opened -= TelemetryOnceOnOpen;
+        // Nothing can be sent, so there is nothing to ask about. This is also
+        // what keeps a headless test run from opening a modal it cannot close.
+        if (Telemetry.DisabledByEnvironment) return;
+        try
+        {
+            if (_settings.TelemetryNoticeVersion < Telemetry.NoticeVersion)
+                await ShowTelemetryNoticeAsync();
+            else
+                ApplyStoredConsent();
+
+            await OfferPendingCrashReportAsync();
+        }
+        catch { /* a consent dialog that fails must not take the app down */ }
+    }
+
+    /// <summary>Push the saved answer into Telemetry. The only place standing consent starts a client.</summary>
+    void ApplyStoredConsent()
+    {
+        Telemetry.ApplyConsent(_settings.TelemetryNoticeVersion, _settings.UsageAnalytics);
+        if (_settings.UsageAnalytics)
+        {
+            // Minted here rather than at the notice: someone who said no never
+            // gets an identifier at all.
+            Telemetry.SetInstallId(Telemetry.InstallId(_settings));
+            Telemetry.Track(TelemetryEvent.AppLaunched);
+        }
+        else Telemetry.SetInstallId("");
+    }
+
+    internal async Task ShowTelemetryNoticeAsync()
+    {
+        var yes = new Button { Content = "Yes, share usage data", MinWidth = 180 };
+        var no = new Button { Content = "No thanks", MinWidth = 140, IsDefault = true, IsCancel = true };
+        AutomationProperties.SetName(yes, "Yes, share anonymous usage data");
+        AutomationProperties.SetName(no, "No thanks, do not share usage data");
+
+        // Deliberately not "nothing is ever sent automatically", which stops
+        // being true the moment the toggle is on. Say what each answer does.
+        const string body =
+            "This app can send anonymous usage data: which screens get used, whether "
+            + "installing to a QuadStick worked, and nothing else. While it is on, those "
+            + "events are sent as they happen.\n\n"
+            + "Never sent, whatever you pick: your profiles, file names, file paths, "
+            + "anything you type, your Google account, and your name or machine name.\n\n"
+            + "Crash reports are separate. If the app ever crashes, it saves a report on "
+            + "your computer and asks you the next time you open it. You see it before it "
+            + "goes anywhere.\n\n"
+            + "What is sent goes to PostHog, on servers in the United States.\n\n"
+            + "You can change this any time in Settings, under Advanced.";
+
+        // Someone deciding here has to be able to read the whole policy here,
+        // not hunt for it after the fact. The short version above is the only
+        // thing most people will read, so the link is what carries the rest:
+        // retention, the processor, and how to have the data deleted.
+        var policy = new Button
+        {
+            Content = "Read the privacy policy",
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+        };
+        AutomationProperties.SetName(policy, "Read the privacy policy, opens in your browser");
+        policy.Click += async (_, _) =>
+        {
+            try { await Launcher.LaunchUriAsync(new Uri(PrivacyPolicyUrl)); }
+            catch { /* best effort: the notice already says what matters */ }
+        };
+
+        var dialog = new Window
+        {
+            Title = "Help improve QuadStick Config Manager",
+            SizeToContent = SizeToContent.WidthAndHeight,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = ZoomWrap(new StackPanel
+            {
+                Margin = new Avalonia.Thickness(24),
+                Spacing = 16,
+                MaxWidth = 520,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = "Help improve QuadStick Config Manager",
+                        FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap,
+                    },
+                    new TextBlock { Text = body, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize"), LineHeight = 22 },
+                    policy,
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { yes, no } },
+                },
+            }, _uiScale),
+        };
+
+        var said = false;
+        yes.Click += (_, _) => { said = true; dialog.Close(); };
+        no.Click += (_, _) => dialog.Close();
+        await dialog.ShowDialog(this);
+
+        ApplyTelemetryAnswer(said);
+    }
+
+    /// <summary>Fail closed: an answer that could not be written to disk is treated as no.</summary>
+    internal void ApplyTelemetryAnswer(bool usage)
+    {
+        _settings.UsageAnalytics = usage;
+        _settings.TelemetryNoticeVersion = Telemetry.NoticeVersion;
+
+        if (!Settings.TrySave(_settings))
+        {
+            _settings.UsageAnalytics = false;
+            _settings.TelemetryNoticeVersion = 0;
+            Telemetry.ApplyConsent(0, usage: false);
+            Telemetry.SetInstallId("");
+            Status("Could not save that preference. Usage data stays off.", StatusKind.Warning);
+            return;
+        }
+
+        ApplyStoredConsent();
+    }
+
+    // Asked once per launch, about the newest report only. Pressing Send is
+    // the consent for that crash: there is no standing setting that sends one,
+    // which is why nothing was sent at crash time in the first place.
+    internal async Task OfferPendingCrashReportAsync()
+    {
+        if (!_settings.AskAboutCrashes) return;
+
+        var pending = CrashReport.Pending();
+        if (pending.Count == 0) return;
+
+        string details;
+        try { details = File.ReadAllText(pending[^1]); }
+        catch { return; }   // unreadable: leave it on disk rather than guess
+
+        var send = new Button { Content = "Send report", MinWidth = 140 };
+        var later = new Button { Content = "Not now", MinWidth = 140, IsDefault = true, IsCancel = true };
+        var never = new Button { Content = "Stop asking", MinWidth = 140 };
+        AutomationProperties.SetName(send, "Send this crash report");
+        AutomationProperties.SetName(later, "Not now, keep the report and ask again later");
+        AutomationProperties.SetName(never, "Stop asking about crash reports");
+
+        var box = new TextBox
+        {
+            Text = details,
+            IsReadOnly = true,
+            AcceptsReturn = true,
+            TextWrapping = TextWrapping.NoWrap,
+            FontFamily = new FontFamily("monospace"),
+            FontSize = Size("SmallSize"),
+            Height = 220,
+        };
+        AutomationProperties.SetName(box, "Crash details used to build the report");
+
+        // Not "these are the exact bytes". Sending converts this into
+        // PostHog's error format and the SDK adds an install ID and its own
+        // version. Claiming otherwise would be a lie the user cannot check.
+        const string note =
+            "The app crashed last time. These are the crash details it saved. There is no "
+            + "message text and no file paths in here, on purpose: only the type of error and "
+            + "the list of functions it happened in.\n\n"
+            + "Sending converts this into the crash reporter's own format and adds your "
+            + "anonymous install ID and the reporting library's version. Nothing else is added.";
+
+        var dialog = new Window
+        {
+            Title = "Send a crash report?",
+            SizeToContent = SizeToContent.WidthAndHeight,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = ZoomWrap(new StackPanel
+            {
+                Margin = new Avalonia.Thickness(24),
+                Spacing = 16,
+                MaxWidth = 620,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = "Send a crash report?",
+                        FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap,
+                    },
+                    new TextBlock { Text = note, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize"), LineHeight = 22 },
+                    box,
+                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { send, later, never } },
+                },
+            }, _uiScale),
+        };
+
+        var choice = CrashChoice.Later;
+        send.Click += (_, _) => { choice = CrashChoice.Send; dialog.Close(); };
+        later.Click += (_, _) => dialog.Close();
+        never.Click += (_, _) => { choice = CrashChoice.Never; dialog.Close(); };
+        await dialog.ShowDialog(this);
+
+        switch (choice)
+        {
+            case CrashChoice.Send:
+                // Minted only now for someone who never turned usage data on:
+                // pressing Send is the first act that needs an identity.
+                if (Telemetry.InstallId(_settings) is { Length: > 0 } id)
+                {
+                    Telemetry.SetInstallId(id);
+                    // Delete only what was accepted. A queue that refused it
+                    // keeps the file so the next launch can ask again.
+                    if (Telemetry.SendCrashReport(details))
+                    {
+                        CrashReport.Discard();
+                        Status("Crash report sent. Thank you.", StatusKind.Info);
+                    }
+                    else Status("Could not send the crash report. It is still on your computer.", StatusKind.Warning);
+                }
+                else Status("Could not send the crash report. It is still on your computer.", StatusKind.Warning);
+                break;
+
+            case CrashChoice.Never:
+                _settings.AskAboutCrashes = false;
+                CrashReport.Discard();
+                if (!Settings.TrySave(_settings))
+                    Status("Could not save that. You may be asked again next time.", StatusKind.Warning);
+                break;
+
+            case CrashChoice.Later:
+            default:
+                break;   // the files stay, and the next launch asks again
+        }
+    }
+
+    enum CrashChoice { Send, Later, Never }
 
     // ---------- autosave drafts and crash recovery ----------
 
@@ -803,7 +1053,7 @@ public partial class MainWindow : Window
         {
             try
             {
-                OpenInEditor(ProfileFile.Load(File.ReadAllText(newest)), savePath: null);
+                OpenInEditor(ProfileFile.Load(File.ReadAllText(newest)), savePath: null, ProfileSource.Rescue);
                 if (_file is not null) _file.Dirty = true; // unsaved recovery: leaving must warn, not silently drop it
                 CrashGuard.DiscardRescues(); // now in the editor: the rescue files on disk are spent, don't re-offer them forever
                 Status("Recovered profile opened. Save it to keep it.", StatusKind.Warning);
@@ -960,8 +1210,16 @@ public partial class MainWindow : Window
 
     public void ResetSettings()
     {
+        // Silence first, persist second. If the write fails the old settings
+        // come back next launch, but this session is already quiet, and the
+        // user is told rather than left believing the reset took.
+        Telemetry.ApplyConsent(0, usage: false);
+        Telemetry.SetInstallId("");
+        CrashReport.Discard();
+
         _settings = new AppSettings();
-        Settings.Save(_settings);
+        if (!Settings.TrySave(_settings))
+            Status("Could not save the reset. The old settings may come back next time.", StatusKind.Warning);
         QuadStick.App.Theme.Apply(_settings.Theme);
         AppearancePicker.SelectedIndex = 0;
         _reduceMotion = _settings.ReduceMotion;
@@ -1147,7 +1405,8 @@ public partial class MainWindow : Window
                 // Device files open as a working copy (no save path): Save
                 // routes to the library, and only Install, with its backup and
                 // verification, ever writes back to the QuadStick.
-                OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), onDevice ? null : path);
+                OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), onDevice ? null : path,
+                    onDevice ? ProfileSource.Device : ProfileSource.Library);
                 if (onDevice)
                     Status("Opened from your QuadStick. Save keeps a copy in your library; use Install to put changes back on the device.", StatusKind.Warning);
             }
@@ -1197,14 +1456,17 @@ public partial class MainWindow : Window
         HomeStatusText.IsVisible = true;
     }
 
-    void NewFromTemplate() => OpenInEditor(ProfileFile.NewFromTemplate(DefaultNewName), savePath: null);
+    void NewFromTemplate() => OpenInEditor(ProfileFile.NewFromTemplate(DefaultNewName), savePath: null, ProfileSource.New);
 
     /// <summary>First empty input cell (column C..J) on a binding row; 9 when the row is full.</summary>
     static int FirstFreeInputColumn(Binding b) =>
         Enumerable.Range(2, 8).FirstOrDefault(c => !b.InputCols.Contains(c), 9);
 
-    void OpenInEditor(ProfileFile file, string? savePath)
+    // source defaults to File because that is what an unlabelled open is: a
+    // profile that came off disk. The sites that know better say so.
+    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source = ProfileSource.File)
     {
+        Telemetry.Track(TelemetryEvent.ProfileOpened, source);
         _file = file;
         _savePath = savePath;
         LoadDrafts(savePath);
@@ -2363,6 +2625,7 @@ public partial class MainWindow : Window
         RememberRecent(_savePath); // Save As invents a path that no open ever saw
         PersistDrafts();           // and gives an untitled profile's names somewhere to live
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
+        Telemetry.Track(TelemetryEvent.ProfileSaved);
         Status($"Saved to {_savePath}.", StatusKind.Ready);
         // Local save is done. Push the exact bytes just written to the sheet in
         // the background; the save path never waits on the network.
@@ -2372,6 +2635,7 @@ public partial class MainWindow : Window
 
     async Task ImportAsync()
     {
+        Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
         void HomeError(string message)
         {
             HomeStatusText.Text = message;
@@ -2601,7 +2865,7 @@ public partial class MainWindow : Window
         {
             // savePath null: the copy is unsaved, so Save prompts for a new
             // location and the template file is never overwritten.
-            OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), savePath: null);
+            OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), savePath: null, ProfileSource.New);
             Status($"Started from template {Path.GetFileNameWithoutExtension(path)}. Save to keep this as its own profile.", StatusKind.Ready);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)

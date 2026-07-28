@@ -109,6 +109,9 @@ public static partial class Telemetry
 
     static bool KillSwitch => Environment.GetEnvironmentVariable("QSCM_TELEMETRY") == "0";
 
+    /// <summary>True when QSCM_TELEMETRY=0. There is nothing to consent to, so do not ask.</summary>
+    public static bool DisabledByEnvironment => KillSwitch;
+
     /// <summary>The only way standing consent reaches the client.</summary>
     public static void ApplyConsent(int noticeVersion, bool usage)
     {
@@ -418,7 +421,9 @@ public static partial class Telemetry
         try
         {
             var payload = CrashReport.FromJson(json);
-            if (payload is null || _distinctId.Length == 0) return false;
+            // An empty chain would send an $exception with nothing to group on,
+            // and the caller would then delete the file believing it landed.
+            if (payload is null || payload.Chain.Count == 0 || _distinctId.Length == 0) return false;
 
             lock (Gate) { Start(); }
             var c = _client;
@@ -432,6 +437,9 @@ public static partial class Telemetry
         }
         catch { return false; /* a report that cannot be sent is dropped; the local log keeps it */ }
     }
+
+    /// <summary>Test seam: what Track would send as the identity, so a test can prove a reset cleared it.</summary>
+    internal static string DistinctIdForTest => _distinctId;
 
     /// <summary>Test seam: drop the client and the flags between tests.</summary>
     /// <param name="usage">Stands in for standing consent, so Scrub can be tested without a client.</param>
