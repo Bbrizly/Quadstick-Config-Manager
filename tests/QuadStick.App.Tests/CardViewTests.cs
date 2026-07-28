@@ -52,7 +52,7 @@ public class CardViewTests
         var file = TwoLipMappings();
         var w = OpenOnLip(file);
 
-        Assert.StartsWith("Mapping 1: X when you lip, as normal.",
+        Assert.StartsWith("Mapping 1: press X when you lip, as normal.",
             AutomationProperties.GetName(Card(w, 1)!));
         Assert.NotNull(Card(w, 2));
 
@@ -336,6 +336,66 @@ public class CardViewTests
             .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Add another input to mapping 1"));
         Assert.Contains("icon", add.Classes);
         Assert.IsType<PathIcon>(add.Content);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // Cards read "Press X when you lip", and the pills sit on shared columns
+    // so every card's output starts at the same X and so does every input,
+    // however wide the card above it was.
+    [AvaloniaFact]
+    public void Card_sentences_line_up_column_by_column()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file);
+        w.UpdateLayout();
+
+        double X(int n, string text) => w.GetVisualDescendants().OfType<TextBlock>()
+            .First(t => t.Text == text && t.GetVisualAncestors().Contains(Card(w, n)!))
+            .TranslatePoint(new Point(0, 0), w)!.Value.X;
+
+        Assert.Equal("Press", w.GetVisualDescendants().OfType<TextBlock>()
+            .First(t => t.GetVisualAncestors().Contains(Card(w, 1)!)).Text);
+        Assert.Equal(X(1, "X"), X(2, "Circle"), 1);           // outputs aligned
+        Assert.Equal(X(1, "lip"), X(2, "lip"), 1);            // inputs aligned
+        Assert.Equal(X(1, "normal"), X(2, "turbo"), 1);       // and the functions
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // The add-input plus used to hang under the rows. It sits in the last
+    // input row now, left of that row's trash, and every trash stays in one
+    // column down the card.
+    [AvaloniaFact]
+    public void Add_input_sits_left_of_the_last_rows_trash()
+    {
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip,mp_center_puff\n");
+        var w = OpenOnLip(file, cards: false);
+
+        var add = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Add another input to mapping 1"));
+        var row = Assert.IsType<Grid>(add.Parent);
+        var trash = row.Children.OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Remove this input"));
+        Assert.Equal(1, Grid.GetColumn(add));
+        Assert.Equal(2, Grid.GetColumn(trash));
+        Assert.True(add.Bounds.X < trash.Bounds.X, "the plus goes left of the trash");
+
+        // It rides down to whatever row is last, and the trashes stay aligned.
+        add.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        var rows = w.GetVisualDescendants().OfType<Button>()
+            .Where(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Remove this "))
+            .Select(b => b.TranslatePoint(new Point(0, 0), w)!.Value.X).ToList();
+        Assert.Equal(3, rows.Count);
+        Assert.All(rows, x => Assert.Equal(rows[0], x, 1));
+        Assert.NotSame(row, add.Parent);
 
         file.Dirty = false;
         w.Close();

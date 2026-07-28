@@ -2177,7 +2177,14 @@ public partial class MainWindow : Window
             {
                 CornerRadius = new Avalonia.CornerRadius(4), Padding = new Avalonia.Thickness(7, 2),
                 Margin = new Avalonia.Thickness(0, 2), VerticalAlignment = VerticalAlignment.Center,
-                Child = new TextBlock { Text = text, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold },
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Child = new TextBlock
+                {
+                    Text = text, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold,
+                    // The columns are fixed shares, so a long name wraps inside
+                    // its pill instead of running over the next column.
+                    TextWrapping = TextWrapping.Wrap,
+                },
             };
             BindBrush(bd, Border.BackgroundProperty, tint);
             return bd;
@@ -2199,18 +2206,30 @@ public partial class MainWindow : Window
             : new List<string> { "(no input)" };
         string func = _labelStyle == 0 ? b.Function : b.Function.Replace('_', ' ');
 
-        var line = new WrapPanel();
-        line.Children.Add(Pill(output, OutputTint));
-        line.Children.Add(Word("when you"));
+        // Every card uses the same column widths, so the outputs line up under
+        // each other and so do the inputs: reading a list of cards is then
+        // reading down two columns, not chasing text across ragged lines. The
+        // shares are fixed (not Auto) precisely so one long name in one card
+        // cannot shift the card below it.
+        var line = new Grid
+        { ColumnDefinitions = new ColumnDefinitions("Auto,3*,Auto,3*,4*") };
+        void Cell(Control c, int col) { Grid.SetColumn(c, col); line.Children.Add(c); }
+        Cell(Word("Press"), 0);
+        Cell(Pill(output, OutputTint), 1);
+        Cell(Word("when you"), 2);
+        var inputPills = new WrapPanel();
         for (int i = 0; i < inputs.Count; i++)
         {
-            if (i > 0) line.Children.Add(Word("and"));
-            line.Children.Add(Pill(inputs[i], InputTint));
+            if (i > 0) inputPills.Children.Add(Word("and"));
+            inputPills.Children.Add(Pill(inputs[i], InputTint));
         }
+        Cell(inputPills, 3);
         if (func.Length > 0)
         {
-            line.Children.Add(Word("as"));
-            line.Children.Add(Pill(func, FunctionTint));
+            var asFunc = new StackPanel { Orientation = Orientation.Horizontal };
+            asFunc.Children.Add(Word("as"));
+            asFunc.Children.Add(Pill(func, FunctionTint));
+            Cell(asFunc, 4);
         }
 
         var body = new StackPanel { Spacing = 4, Children = { line } };
@@ -2223,11 +2242,13 @@ public partial class MainWindow : Window
         {
             Content = body, Classes = { "quiet" },
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            HorizontalContentAlignment = HorizontalAlignment.Left,
+            // Stretch, not Left: the sentence grid needs the card's full width
+            // for its column shares to come out the same on every card.
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
             Padding = new Avalonia.Thickness(10, 8),
         };
         AutomationProperties.SetName(open,
-            $"Mapping {n}: {output} when you {string.Join(" and ", inputs)}" +
+            $"Mapping {n}: press {output} when you {string.Join(" and ", inputs)}" +
             $"{(func.Length > 0 ? $", as {func}" : "")}. Press Enter to edit.");
         open.Click += (_, _) =>
         {
@@ -2344,9 +2365,12 @@ public partial class MainWindow : Window
                 // ---- "When you": one aligned row per input, each removable ----
                 var inputsBox = new StackPanel { Spacing = 6 };
                 int inputCount = Math.Max(1, b.Inputs.Count);
+                Grid? lastInputRow = null;
                 for (int i = 0; i < inputCount && i < 8; i++)
                 {
-                    var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                    // Third column holds the add button on the last row, so the
+                    // trash icons stay in one line down the card.
+                    var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto") };
                     // Inputs can sit in any of columns C..J with gaps; the
                     // editor must write to each input's REAL column, or an
                     // edit lands on a blank cell and duplicates the input.
@@ -2375,20 +2399,29 @@ public partial class MainWindow : Window
                             BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                             FocusZoneDetailSibling(zone.Id, bindings!.IndexOf(b));
                         };
-                        Grid.SetColumn(rmv, 1);
+                        Grid.SetColumn(rmv, 2);
                         row.Children.Add(rmv);
                     }
                     inputsBox.Children.Add(row);
+                    lastInputRow = row;
                 }
                 if (inputCount < 8)
                 {
                     var addInput = IconButton("IconAdd", $"Add another input to mapping {n}; both inputs must be active together");
-                    addInput.HorizontalAlignment = HorizontalAlignment.Left;
+                    addInput.Margin = new Avalonia.Thickness(8, 0, 0, 0);
                     ToolTip.SetTip(addInput, "Add another input");
                     int nextCol = FirstFreeInputColumn(b);
+                    // The add button rides in the last input row, left of that
+                    // row's trash, instead of hanging under the rows on its own.
+                    void MoveAddTo(Grid row)
+                    {
+                        (addInput.Parent as Grid)?.Children.Remove(addInput);
+                        Grid.SetColumn(addInput, 1);
+                        row.Children.Add(addInput);
+                    }
                     addInput.Click += (_, _) =>
                     {
-                        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto") };
                         var newBox = DeviceInputPicker(b.Row, nextCol, "",
                             $"Extra input for mapping {n}", zone.Id);
                         Grid.SetColumn(newBox, 0);
@@ -2397,16 +2430,24 @@ public partial class MainWindow : Window
                         // trash just drops the row instead of editing the file.
                         var rmv = IconButton("IconDelete", $"Remove this empty input from mapping {n}");
                         rmv.Margin = new Avalonia.Thickness(8, 0, 0, 0);
-                        rmv.Click += (_, _) => inputsBox.Children.Remove(row);
-                        Grid.SetColumn(rmv, 1);
+                        rmv.Click += (_, _) =>
+                        {
+                            // This row carries the add button, so hand it back to
+                            // the row above before the row goes away.
+                            int at = inputsBox.Children.IndexOf(row);
+                            if (at > 0 && inputsBox.Children[at - 1] is Grid prev) MoveAddTo(prev);
+                            inputsBox.Children.Remove(row);
+                        };
+                        Grid.SetColumn(rmv, 2);
                         row.Children.Add(rmv);
-                        inputsBox.Children.Insert(inputsBox.Children.IndexOf(addInput), row);
+                        inputsBox.Children.Add(row);
+                        MoveAddTo(row);
                         AnimateIn(row);
                         nextCol++;
                         if (nextCol >= 2 + 8) addInput.IsVisible = false;
                         (newBox as Border)?.Child?.Focus();
                     };
-                    inputsBox.Children.Add(addInput);
+                    MoveAddTo(lastInputRow!);
                 }
                 body.Children.Add(Labeled("When you", inputsBox));
 
