@@ -18,9 +18,11 @@ scripts/appstore/embedded.provisionprofile
 src/QuadStick.App/GoogleClient.Local.cs
 .context/
 # Working design notes. Drafts, not documentation: they name unreleased
-# features, quote real tokens, and go stale the moment the code lands. The
-# four older files stay in history because they were already public, but
-# nothing new from this folder gets committed.
+# features, quote real tokens, and go stale the moment the code lands. This
+# rule only stops NEW files here from being added: the four older plans and
+# specs were already tracked and stay tracked, because a gitignore entry has
+# no effect on a file git already knows about. Do not git rm them to "apply"
+# this rule, that just deletes public project history.
 docs/superpowers/
 
 # Real PostHog project token. The committed TelemetryToken.cs placeholder
