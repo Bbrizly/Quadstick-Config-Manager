@@ -351,15 +351,89 @@ public class CardViewTests
         var w = OpenOnLip(file);
         w.UpdateLayout();
 
-        double X(int n, string text) => w.GetVisualDescendants().OfType<TextBlock>()
-            .First(t => t.Text == text && t.GetVisualAncestors().Contains(Card(w, n)!))
-            .TranslatePoint(new Point(0, 0), w)!.Value.X;
+        // The pills are centered in their columns, so it is their middles that
+        // have to agree, not their left edges.
+        TextBlock Text(int n, string text) => w.GetVisualDescendants().OfType<TextBlock>()
+            .First(t => t.Text == text && t.GetVisualAncestors().Contains(Card(w, n)!));
+        double Left(int n, string text) => Text(n, text).TranslatePoint(new Point(0, 0), w)!.Value.X;
+        double X(int n, string text) => Left(n, text) + Text(n, text).Bounds.Width / 2;
 
         Assert.Equal("Press", w.GetVisualDescendants().OfType<TextBlock>()
             .First(t => t.GetVisualAncestors().Contains(Card(w, 1)!)).Text);
         Assert.Equal(X(1, "X"), X(2, "Circle"), 1);           // outputs aligned
         Assert.Equal(X(1, "lip"), X(2, "lip"), 1);            // inputs aligned
-        Assert.Equal(X(1, "normal"), X(2, "turbo"), 1);       // and the functions
+        // The function reads as "as <what>", so that pair keeps a left edge.
+        Assert.Equal(Left(1, "as"), Left(2, "as"), 1);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // A mapping with two inputs is two lines tall in the input column. The rest
+    // of the sentence has to sit on that block's middle, not at its top.
+    [AvaloniaFact]
+    public void A_two_input_card_centers_the_rest_on_the_middle()
+    {
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip,mp_center_puff\n");
+        var w = OpenOnLip(file);
+        w.Width = 1180;  // room for the one-line sentence; narrow stacks instead
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        double MiddleY(string text)
+        {
+            var t = w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text == text);
+            return t.TranslatePoint(new Point(0, 0), w)!.Value.Y + t.Bounds.Height / 2;
+        }
+        // The two input pills straddle the sentence: one above the middle, one
+        // below, with the output and the function on the middle itself.
+        double middle = (MiddleY("lip") + MiddleY("puff")) / 2;
+        Assert.Equal(middle, MiddleY("X"), 1);
+        Assert.Equal(middle, MiddleY("normal"), 1);
+        Assert.Equal(middle, MiddleY("Press"), 1);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // Squeezed narrow, one line per phrase would leave every name an ellipsis,
+    // so the sentence stacks instead: the words down the left, the pills in one
+    // centered column under each other.
+    [AvaloniaFact]
+    public void A_narrow_panel_stacks_the_sentence()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file);
+        w.Width = 760;
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        Point At(string text)
+        {
+            var t = w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text == text);
+            var p = t.TranslatePoint(new Point(0, 0), w)!.Value;
+            return new Point(p.X + t.Bounds.Width / 2, p.Y + t.Bounds.Height / 2);
+        }
+
+        Assert.True(At("X").Y < At("lip").Y, "the input goes under the output");
+        Assert.True(At("lip").Y < At("normal").Y, "and the function under that");
+        // One centered column of pills. A pill and its text can round a pixel
+        // apart, so this is "same column", not "same coordinate".
+        Assert.True(Math.Abs(At("X").X - At("lip").X) <= 2, "input under output");
+        Assert.True(Math.Abs(At("X").X - At("normal").X) <= 2, "function under both");
+        double LeftOf(string text)
+        {
+            var t = w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text == text);
+            return t.TranslatePoint(new Point(0, 0), w)!.Value.X;
+        }
+        Assert.Equal(LeftOf("Press"), LeftOf("when you"), 1); // words down one left edge
+        Assert.Equal(LeftOf("Press"), LeftOf("as"), 1);
 
         file.Dirty = false;
         w.Close();

@@ -571,6 +571,16 @@ public partial class MainWindow : Window
                 Position = new PixelPoint((int)winX, (int)winY);
         }
         RootPanel.PropertyChanged += (_, e) => { if (e.Property == Visual.BoundsProperty) UpdateScaleSize(); };
+        // Sentence cards lay out one way with room and another without it, so
+        // the panel has to say which it has. Only a crossing rebuilds, and a
+        // rebuild cannot change this width, so this settles in one pass.
+        ZoneDetailPanel.SizeChanged += (_, e) =>
+        {
+            bool narrow = NarrowCards(e.NewSize.Width);
+            if (narrow == _narrowCards) return;
+            _narrowCards = narrow;
+            if (_settings.DeviceCards) BuildZoneDetail();
+        };
         Opened += (_, _) => ClampToScreen();
 
         HomeNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
@@ -2156,6 +2166,18 @@ public partial class MainWindow : Window
     // Card view state: the one mapping open for editing; -1 = all cards closed.
     int _expandedMapping = -1;
 
+    // Below this the sentence needs two lines. Picked from the tightest real
+    // case: the smallest window the app allows, in raw token style, where the
+    // one-line version left the names nothing but an ellipsis.
+    const double NarrowCardWidth = 470;
+    bool _narrowCards;
+
+    // Width 0 is "not laid out yet", which reads as roomy: the first build
+    // happens before the panel has a size, and the resize below corrects it.
+    // No hysteresis needed, the scroll bar here floats over the content, so a
+    // rebuild cannot change the width that decided it.
+    bool NarrowCards(double width) => width > 0 && width < NarrowCardWidth;
+
     void UpdateCardViewButton()
     {
         CardViewButton.Content = _settings.DeviceCards ? "Detailed editor" : "Simple cards";
@@ -2177,22 +2199,30 @@ public partial class MainWindow : Window
             {
                 CornerRadius = new Avalonia.CornerRadius(4), Padding = new Avalonia.Thickness(7, 2),
                 Margin = new Avalonia.Thickness(0, 2), VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Left,
+                HorizontalAlignment = HorizontalAlignment.Center,
                 Child = new TextBlock
                 {
                     Text = text, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold,
-                    // The columns are fixed shares, so a long name wraps inside
-                    // its pill instead of running over the next column.
-                    TextWrapping = TextWrapping.Wrap,
+                    // The columns are fixed shares, so in a narrow window a long
+                    // name has to give way. Trimming keeps every card one line
+                    // tall; wrapping used to stack it one letter per line. The
+                    // whole name stays one hover (or one click) away.
+                    TextTrimming = TextTrimming.CharacterEllipsis,
                 },
             };
             BindBrush(bd, Border.BackgroundProperty, tint);
+            ToolTip.SetTip(bd, text);
             return bd;
         }
-        Control Word(string text) => new TextBlock
+        // The joining words are grey and small on purpose: they are the same on
+        // every card, so they should read as grammar and leave the width to the
+        // names, which are the part you are actually scanning for.
+        Control Word(string text, bool left = false) => new TextBlock
         {
-            Text = text, FontSize = Size("BodySize"),
+            Text = text, FontSize = Size("SmallSize"), Classes = { "muted" },
             VerticalAlignment = VerticalAlignment.Center, Margin = new Avalonia.Thickness(5, 2),
+            // Stacked lines read down a left edge; a single line does not care.
+            HorizontalAlignment = left ? HorizontalAlignment.Left : HorizontalAlignment.Stretch,
         };
 
         // The same Words button styles as everywhere else in device view.
@@ -2210,26 +2240,67 @@ public partial class MainWindow : Window
         // each other and so do the inputs: reading a list of cards is then
         // reading down two columns, not chasing text across ragged lines. The
         // shares are fixed (not Auto) precisely so one long name in one card
-        // cannot shift the card below it.
-        var line = new Grid
-        { ColumnDefinitions = new ColumnDefinitions("Auto,3*,Auto,3*,4*") };
-        void Cell(Control c, int col) { Grid.SetColumn(c, col); line.Children.Add(c); }
-        Cell(Word("Press"), 0);
-        Cell(Pill(output, OutputTint), 1);
-        Cell(Word("when you"), 2);
-        var inputPills = new WrapPanel();
+        // cannot shift the card below it. In a narrow panel the sentence takes
+        // two lines instead of squeezing every name down to an ellipsis.
+        var line = _narrowCards
+            ? new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("Auto,*"),
+                RowDefinitions = new RowDefinitions("Auto,Auto,Auto"),
+            }
+            : new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,4*,Auto,3*,4*") };
+        void Cell(Control c, int col, int row = 0)
+        {
+            Grid.SetColumn(c, col); Grid.SetRow(c, row);
+            line.Children.Add(c);
+        }
+
+        // Centered in their columns, across and down: the pills read as tidy
+        // stacks instead of ragged edges, and a card with two inputs keeps them
+        // on its middle line rather than hanging from the top.
+        var inputPills = new WrapPanel
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
         for (int i = 0; i < inputs.Count; i++)
         {
             if (i > 0) inputPills.Children.Add(Word("and"));
             inputPills.Children.Add(Pill(inputs[i], InputTint));
         }
-        Cell(inputPills, 3);
-        if (func.Length > 0)
+
+        if (_narrowCards)
         {
-            var asFunc = new StackPanel { Orientation = Orientation.Horizontal };
-            asFunc.Children.Add(Word("as"));
-            asFunc.Children.Add(Pill(func, FunctionTint));
-            Cell(asFunc, 4);
+            // One phrase per line, words left, pills sharing one centered
+            // column. Everything still lines up, and a long name has the whole
+            // card to itself instead of a quarter of it.
+            Cell(Word("Press"), 0); Cell(Pill(output, OutputTint), 1);
+            Cell(Word("when you", left: true), 0, row: 1); Cell(inputPills, 1, row: 1);
+            if (func.Length > 0)
+            { Cell(Word("as", left: true), 0, row: 2); Cell(Pill(func, FunctionTint), 1, row: 2); }
+        }
+        else
+        {
+            Cell(Word("Press"), 0);
+            Cell(Pill(output, OutputTint), 1);
+            Cell(Word("when you"), 2);
+            Cell(inputPills, 3);
+            if (func.Length > 0)
+            {
+                // "as" keeps its own width so it lands in the same place on
+                // every card; the pill takes the rest and trims if it must.
+                var asFunc = new Grid
+                {
+                    ColumnDefinitions = new ColumnDefinitions("Auto,*"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                asFunc.Children.Add(Word("as"));
+                var funcPill = Pill(func, FunctionTint);
+                funcPill.HorizontalAlignment = HorizontalAlignment.Left; // sits against "as", not adrift
+                Grid.SetColumn(funcPill, 1);
+                asFunc.Children.Add(funcPill);
+                Cell(asFunc, 4);
+            }
         }
 
         var body = new StackPanel { Spacing = 4, Children = { line } };
@@ -2281,6 +2352,9 @@ public partial class MainWindow : Window
 
     void BuildZoneDetail()
     {
+        // Read the width now rather than trust the last resize: the first build
+        // can land before the panel has ever been measured.
+        _narrowCards = NarrowCards(ZoneDetailPanel.Bounds.Width);
         ZoneDetailPanel.Children.Clear();
         _rowPanels.Clear(); // device view owns the selection targets while visible
         var zone = AllZones.FirstOrDefault(z => z.Id == _selectedZone);
