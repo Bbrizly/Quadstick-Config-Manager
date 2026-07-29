@@ -710,18 +710,27 @@ public class SettingsWindow : Window
         AutomationProperties.SetName(send, "Send feedback");
         _feedbackSend = send;   // so the Advanced tab's toggle can follow it
 
-        send.Click += (_, _) =>
+        send.Click += async (_, _) =>
         {
-            // Only clear the box on a send that was actually accepted. Saying
-            // "thanks, sent" and throwing the text away when nothing left the
-            // machine is the one outcome that is worse than no button at all.
-            if (Telemetry.SendFeedback(box.Text ?? ""))
-            {
-                box.Text = "";
-                status.Text = "Thank you. That was sent.";
-            }
-            else status.Text = "That could not be sent. The email link above always works.";
+            // Disabled while it is in flight. The await frees the UI thread, so
+            // without this the button stays live and a second press queues the
+            // same feedback again.
+            send.IsEnabled = false;
+            status.Text = "Sending...";
             status.IsVisible = true;
+            try
+            {
+                // Only clear the box on a send that was actually accepted. Saying
+                // "thanks, sent" and throwing the text away when nothing left the
+                // machine is the one outcome that is worse than no button at all.
+                if (await Telemetry.SendFeedbackAsync(box.Text ?? ""))
+                {
+                    box.Text = "";
+                    status.Text = "Thank you. That was sent.";
+                }
+                else status.Text = "That could not be sent. The email link above always works.";
+            }
+            finally { send.IsEnabled = owner.CurrentSettings.UsageAnalytics; }
         };
 
         return new StackPanel

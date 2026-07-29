@@ -128,10 +128,7 @@ public partial class MainWindow : Window
     void RunBackup(string path, Func<DriveBackup, Task<PushResult?>> op)
     {
         var backup = Backup();
-        // Tracked here, not at the call site: FireBackupPush runs after every
-        // save, and only this line knows whether Drive is actually connected.
         if (backup is null) return;
-        Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.DriveBackup);
         _backupInFlight = Task.Run(async () =>
         {
             try
@@ -142,6 +139,11 @@ public partial class MainWindow : Window
                 else if (result?.Kind == PushResultKind.Pushed)
                     Dispatcher.UIThread.Post(() =>
                     {
+                        // Tracked on a real push, not on entry. FireBackupPush
+                        // runs after every save, so counting attempts here
+                        // would report backup as used by anyone who saved once
+                        // with Drive connected, working or not.
+                        Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.DriveBackup);
                         Status("Backed up to Google Drive.", StatusKind.Ready);
                         // The push writes the Drive link that draws a card's
                         // "on Google Drive" line. Home may already be on screen
@@ -311,7 +313,6 @@ public partial class MainWindow : Window
     // everything (restore-all from onboarding); false starts empty (cherry-pick).
     public async Task ShowDrivePickerAsync(bool preCheck)
     {
-        Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.DriveRestore);
         if (!ShareNeedsBackup()) return;
         await new DrivePickerWindow(this, preCheck).ShowDialog(this);
     }
@@ -319,8 +320,16 @@ public partial class MainWindow : Window
     // The picker reaches back through these. Backup() is non-null here:
     // ShowDrivePickerAsync gated on it.
     internal Task<List<DriveSheetInfo>> ListDriveSheetsAsync() => Backup()!.ListForPickerAsync();
-    internal Task<RestoreSummary> RestoreFromDriveAsync(IReadOnlyList<(string Id, string Name)> picks) =>
-        Backup()!.RestoreAsync(picks, LibraryDir);
+
+    internal async Task<RestoreSummary> RestoreFromDriveAsync(IReadOnlyList<(string Id, string Name)> picks)
+    {
+        var summary = await Backup()!.RestoreAsync(picks, LibraryDir);
+        // Opening the picker is not using restore. Someone who browses it and
+        // closes it, or picks sheets that all fail, has restored nothing.
+        if (summary.Imported.Count > 0)
+            Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.DriveRestore);
+        return summary;
+    }
     internal void RefreshHomeAfterRestore() => RefreshHomeCards();
 
     // Offered right after a connect, the new-machine moment. Public wrapper
@@ -398,6 +407,10 @@ public partial class MainWindow : Window
                 if (result.Url is string url && Clipboard is { } cb)
                 {
                     await cb.SetTextAsync(url);
+                    // On the clipboard is the only point where the user got
+                    // what they asked for. Cancelled and Failed both land in
+                    // the arms below and must not count as a share.
+                    Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.ShareLink);
                     Status(result.Message, result.Kind == ShareLinkKind.CopiedStale ? StatusKind.Warning : StatusKind.Ready);
                 }
                 break;
@@ -810,6 +823,8 @@ public partial class MainWindow : Window
         catch { /* a consent dialog that fails must not take the app down */ }
     }
 
+    static bool _launchTracked;   // static: one launch per process, not per window
+
     /// <summary>Push the saved answer into Telemetry. The only place standing consent starts a client.</summary>
     void ApplyStoredConsent()
     {
@@ -819,7 +834,16 @@ public partial class MainWindow : Window
             // Minted here rather than at the notice: someone who said no never
             // gets an identifier at all.
             Telemetry.SetInstallId(Telemetry.InstallId(_settings));
-            Telemetry.Track(TelemetryEvent.AppLaunched);
+
+            // Once per process. ApplyStoredConsent also runs whenever the
+            // Settings toggle is saved, so without this a user who flips it
+            // off and on three times reports four launches and every
+            // per-launch rate is wrong.
+            if (!_launchTracked)
+            {
+                _launchTracked = true;
+                Telemetry.Track(TelemetryEvent.AppLaunched);
+            }
         }
         else Telemetry.SetInstallId("");
     }
@@ -837,8 +861,10 @@ public partial class MainWindow : Window
             "This app can send anonymous usage data: which screens get used, whether "
             + "installing to a QuadStick worked, and nothing else. While it is on, those "
             + "events are sent as they happen.\n\n"
-            + "Never sent, whatever you pick: your profiles, file names, file paths, "
-            + "anything you type, your Google account, and your name or machine name.\n\n"
+            + "Never sent, whatever you pick: your profiles, file names, file paths, your "
+            + "Google account, and your name or machine name. Nothing you type is sent "
+            + "either, apart from the feedback box in Settings, which only sends when you "
+            + "press Send on it.\n\n"
             + "Crash reports are separate. If the app ever crashes, it saves a report on "
             + "your computer and asks you the next time you open it. You see it before it "
             + "goes anywhere.\n\n"
@@ -966,14 +992,19 @@ public partial class MainWindow : Window
         AutomationProperties.SetName(box, "Crash details used to build the report");
 
         // Not "these are the exact bytes". Sending converts this into
-        // PostHog's error format and the SDK adds an install ID and its own
-        // version. Claiming otherwise would be a lie the user cannot check.
+        // PostHog's error format and the SDK adds more than the install ID:
+        // its own name and version go in the payload, and the request's
+        // User-Agent carries the .NET version, the full OS description
+        // including the kernel build, and whether the CPU is Intel or ARM.
+        // Verified against 2.12.0 by capturing a real send. "Nothing else is
+        // added" was here before and was simply false.
         const string note =
             "The app crashed last time. These are the crash details it saved. There is no "
             + "message text and no file paths in here, on purpose: only the type of error and "
             + "the list of functions it happened in.\n\n"
-            + "Sending converts this into the crash reporter's own format and adds your "
-            + "anonymous install ID and the reporting library's version. Nothing else is added.";
+            + "Sending converts this into the crash reporter's own format. It also adds your "
+            + "anonymous install ID, the reporting library's version, your .NET and operating "
+            + "system versions, and whether your processor is Intel or ARM.";
 
         var dialog = new Window
         {
@@ -1017,7 +1048,7 @@ public partial class MainWindow : Window
                     // older reports were never on screen, so consent to this
                     // one is not consent to delete those: they stay, and the
                     // next launch offers the next one down.
-                    if (Telemetry.SendCrashReport(details))
+                    if (await Telemetry.SendCrashReportAsync(details))
                     {
                         CrashReport.Discard(newest);
                         Status("Crash report sent. Thank you.", StatusKind.Info);
@@ -1498,7 +1529,10 @@ public partial class MainWindow : Window
 
     // source defaults to File because that is what an unlabelled open is: a
     // profile that came off disk. The sites that know better say so.
-    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source = ProfileSource.File)
+    // No default on source. It used to be File, which silently mislabelled the
+    // Sheets import for anyone who forgot to pass one, and a wrong source is
+    // worse than no source: it reads as a real measurement.
+    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source)
     {
         Telemetry.Track(TelemetryEvent.ProfileOpened, source);
         _file = file;
@@ -2626,12 +2660,12 @@ public partial class MainWindow : Window
         });
     }
 
-    public void LoadProfile(ProfileFile file) => OpenInEditor(file, savePath: null);
+    public void LoadProfile(ProfileFile file) => OpenInEditor(file, savePath: null, ProfileSource.File);
 
     // Opening a real path is what feeds the recents list, so a test needs the
     // path seam, not just LoadProfile's in-memory one.
     public void OpenPathForPreview(string path) =>
-        OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path);
+        OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path, ProfileSource.File);
 
     public void ShowHomeForPreview() => ShowHome();
 
@@ -2692,11 +2726,11 @@ public partial class MainWindow : Window
                     Status($"{picks[0].Name} has no profile tab. A profile tab starts with \"Profile Name\", \"Preferences\" or \"Infrared\" in cell A1.", StatusKind.Error);
                     return;
                 }
-                OpenInEditor(imported, savePath: null);
+                OpenInEditor(imported, savePath: null, ProfileSource.File);
                 Status($"Imported {imported.Document.Sheets.Count} mode(s) from {picks[0].Name}. Save to keep it as a profile.", StatusKind.Ready);
                 return;
             }
-            OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), path);
+            OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), path, ProfileSource.File);
         }
         catch (InvalidDataException)
         { Status($"Could not read {picks[0].Name}. It is not a readable spreadsheet.", StatusKind.Error); }
@@ -2774,7 +2808,6 @@ public partial class MainWindow : Window
 
     async Task ImportAsync()
     {
-        Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
         void HomeError(string message)
         {
             HomeStatusText.Text = message;
@@ -2807,7 +2840,12 @@ public partial class MainWindow : Window
             var imported = ProfileFile.Load(text);
             if (imported.Document.Sheets.Count == 0)
             { HomeError("That spreadsheet has no profile tab. A profile tab starts with \"Profile Name\", \"Preferences\" or \"Infrared\" in cell A1."); return; }
-            OpenInEditor(imported, savePath: null);
+            // Tracked here, not on entry: a bad URL, an unshared sheet, and a
+            // workbook with no profile tab all return above, and counting those
+            // as "used the Sheets import" would make the feature look healthy
+            // exactly when it is failing.
+            Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
+            OpenInEditor(imported, savePath: null, ProfileSource.Sheets);
             if (!wholeWorkbook && imported.Document.Sheets.Count == 1)
                 Status("Imported this spreadsheet's linked tab. A published link only gives one tab; share the sheet with \"Anyone with the link\" instead to import every mode tab.", StatusKind.Warning);
             else if (imported.Document.Sheets.Count > 1)

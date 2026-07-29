@@ -181,6 +181,27 @@ public static partial class Telemetry
         catch { return false; }
     }
 
+    // Same wait, without blocking the caller's thread. The two send buttons use
+    // this: blocking the UI thread for five seconds is bad anywhere and worse
+    // here, where someone driving the app with a sip-puff straw cannot even
+    // cancel a frozen window. Shutdown still uses the blocking one, because
+    // there the app really is going away and has nothing left to stay live for.
+    static async Task<bool> FlushAsync(TimeSpan wait)
+    {
+        var c = _client;
+        if (c is null) return false;
+        try
+        {
+            var flush = c.FlushAsync();
+            // FlushAsync takes no cancellation token, so a timeout stops us
+            // waiting on it, not it working. It keeps draining behind us.
+            if (await Task.WhenAny(flush, Task.Delay(wait)).ConfigureAwait(false) != flush) return false;
+            await flush.ConfigureAwait(false);   // observe a fault instead of leaving it unobserved
+            return true;
+        }
+        catch { return false; }
+    }
+
     static readonly TimeSpan ShutdownFlush = TimeSpan.FromSeconds(2);
 
     // Shared by the two paths where the user presses a button and then loses
@@ -384,7 +405,7 @@ public static partial class Telemetry
     public static bool Track(TelemetryEvent e, AppFeature f) => Track(e, "feature", Wire(f));
 
     /// <summary>Returns false when nothing was sent, so the UI never claims otherwise.</summary>
-    public static bool SendFeedback(string text)
+    public static async Task<bool> SendFeedbackAsync(string text)
     {
         text = (text ?? "").Trim();
         if (text.Length == 0) return false;
@@ -395,7 +416,7 @@ public static partial class Telemetry
         // one outcome worse than no button is throwing away what someone typed
         // and telling them it arrived. Same ceiling as the crash path, a
         // completed flush is all this SDK will confirm.
-        return Flush(SendFlush);
+        return await FlushAsync(SendFlush);
     }
 
     // PostHog's error tracking groups on $exception_list. The SDK builds this
@@ -461,7 +482,7 @@ public static partial class Telemetry
     }
 
     /// <summary>Send one stored report. Pressing Send is the consent, so this needs no standing flag.</summary>
-    public static bool SendCrashReport(string json)
+    public static async Task<bool> SendCrashReportAsync(string json)
     {
         try
         {
@@ -487,7 +508,7 @@ public static partial class Telemetry
             // offers, and it stays silent about a rejected batch. If a false
             // "sent" ever matters, POST to /i/v0/e/ directly and read the
             // status code instead of using the client here.
-            return Flush(SendFlush);
+            return await FlushAsync(SendFlush);
         }
         catch { return false; /* a report that cannot be sent is dropped; the local log keeps it */ }
     }

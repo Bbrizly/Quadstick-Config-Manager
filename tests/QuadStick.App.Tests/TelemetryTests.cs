@@ -286,14 +286,14 @@ public class TelemetryTests
     }
 
     [Fact]
-    public void FeedbackIsCappedAndRefusesToClaimAnUnsentSend()
+    public async Task FeedbackIsCappedAndRefusesToClaimAnUnsentSend()
     {
         Telemetry.ResetForTest();
         // Nothing is live, so it must report failure rather than let the UI
         // say "sent" and throw the user's text away.
-        Assert.False(Telemetry.SendFeedback("the sip sensor is too sensitive"));
-        Assert.False(Telemetry.SendFeedback("   "));
-        Assert.False(Telemetry.SendFeedback(new string('x', Telemetry.MaxFeedbackChars * 2)));
+        Assert.False(await Telemetry.SendFeedbackAsync("the sip sensor is too sensitive"));
+        Assert.False(await Telemetry.SendFeedbackAsync("   "));
+        Assert.False(await Telemetry.SendFeedbackAsync(new string('x', Telemetry.MaxFeedbackChars * 2)));
     }
 
     [Fact]
@@ -351,7 +351,7 @@ public class TelemetryTests
     }
 
     [Fact]
-    public void SendingACrashReportWithNoConsentDoesNotThrow()
+    public async Task SendingACrashReportWithNoConsentDoesNotThrow()
     {
         // Pressing Send IS the consent. It must not require the usage toggle,
         // and it must report honestly that nothing went out.
@@ -359,8 +359,8 @@ public class TelemetryTests
         Telemetry.ApplyConsent(Telemetry.NoticeVersion, usage: false);
         Assert.False(Telemetry.IsLive);
 
-        Assert.False(Telemetry.SendCrashReport("not valid json"));
-        Assert.False(Telemetry.SendCrashReport(
+        Assert.False(await Telemetry.SendCrashReportAsync("not valid json"));
+        Assert.False(await Telemetry.SendCrashReportAsync(
             CrashReport.ToJson(CrashReport.Build("task", new IOException("x")))));
     }
 
