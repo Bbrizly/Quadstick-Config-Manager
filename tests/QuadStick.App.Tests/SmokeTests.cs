@@ -42,6 +42,9 @@ public class SmokeTests
         s.TutorialSeen = true;
         Settings.Save(s);
         var w = new MainWindow();
+        // Every import ends in a modal review, and nothing here would close it.
+        // What the import HANDS the review is still recorded, in LastImportReview.
+        w.ShowImportReview = (_, _) => Task.CompletedTask;
         w.Show();
         return w;
     }
@@ -425,8 +428,32 @@ public class SmokeTests
         Assert.Equal(2, handler.Urls.Count);
         Assert.Contains("format=xlsx", handler.Urls[0]);
         Assert.Contains("format=csv&gid=7", handler.Urls[1]);
-        Assert.True(ShowsStatus(w, "only gives one tab"));
+        // The one thing this window could get most wrong. Only one tab of the
+        // spreadsheet was ever sent, so the review has to be told that before
+        // it counts anything: without it a profile missing four of its five
+        // modes would be reported as a clean import.
+        var review = w.LastImportReview;
+        Assert.NotNull(review);
+        Assert.NotNull(review!.Value.Limitation);
+        Assert.Contains("only ever gives a single tab", review.Value.Limitation);
         w.OpenFile.Dirty = false;
+        w.Close();
+    }
+
+    // The other half of that: a real workbook came in whole, so the review is
+    // told there was no limitation and is free to call the import clean.
+    [AvaloniaFact]
+    public async Task A_whole_workbook_import_tells_the_review_it_saw_everything()
+    {
+        using var http = new HttpClient(new FakeSheets(_ => Body(Workbook("Walking"))));
+        var w = NewWindow();
+
+        await w.ImportSheetsAsync(SheetLink, http);
+
+        var review = w.LastImportReview;
+        Assert.NotNull(review);
+        Assert.Null(review!.Value.Limitation);
+        w.OpenFile!.Dirty = false;
         w.Close();
     }
 

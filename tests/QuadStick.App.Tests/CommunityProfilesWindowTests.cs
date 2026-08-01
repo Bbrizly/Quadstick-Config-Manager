@@ -84,6 +84,8 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         s.RememberWindow = false;
         Settings.Save(s);
         var w = new MainWindow();
+        // Every import ends in a modal review, and nothing here would close it.
+        w.ShowImportReview = (_, _) => Task.CompletedTask;
         w.Show();
         Dispatcher.UIThread.RunJobs();
         return w;

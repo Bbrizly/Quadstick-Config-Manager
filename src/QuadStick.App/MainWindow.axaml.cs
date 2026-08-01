@@ -2540,7 +2540,7 @@ public partial class MainWindow : Window
                 }
                 if (inputCount < 8)
                 {
-                    var addInput = IconButton("IconAdd", $"Add another input to mapping {n}; both inputs must be active together");
+                    var addInput = IconButton("IconAdd", $"Add another input to mapping {n}; you do the inputs one after the other, left to right");
                     addInput.Margin = new Avalonia.Thickness(8, 0, 0, 0);
                     ToolTip.SetTip(addInput, "Add another input");
                     int nextCol = FirstFreeInputColumn(b);
@@ -2744,7 +2744,7 @@ public partial class MainWindow : Window
             if (path.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
             {
                 string text;
-                IReadOnlyList<string> skipped;
+                IReadOnlyList<SkippedTab> skipped;
                 using (var stream = File.OpenRead(path)) text = Xlsx.ToCsv(stream, out skipped);
                 var imported = ProfileFile.Load(text);
                 if (imported.Document.Sheets.Count == 0)
@@ -2753,10 +2753,9 @@ public partial class MainWindow : Window
                     return;
                 }
                 OpenInEditor(imported, savePath: null, ProfileSource.File);
-                Status(skipped.Count > 0
-                        ? $"Imported {imported.Document.Sheets.Count} mode(s) from {picks[0].Name}. {SkippedTabsMessage(skipped)}"
-                        : $"Imported {imported.Document.Sheets.Count} mode(s) from {picks[0].Name}. Save to keep it as a profile.",
-                    skipped.Count > 0 ? StatusKind.Warning : StatusKind.Ready);
+                Status($"Imported {Modes(imported)} from {picks[0].Name}. Save to keep it as a profile.",
+                    StatusKind.Ready);
+                await ShowImportReviewAsync(imported, picks[0].Name, skipped);
                 return;
             }
             OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), path, ProfileSource.File);
@@ -2837,14 +2836,37 @@ public partial class MainWindow : Window
 
     Task ImportAsync() => ImportSheetsAsync(SheetsUrlBox.Text ?? "");
 
-    /// <summary>Names the tabs that hold bindings but did not import, and says
-    /// why in the one place the user can act on: cell A1. Both import paths
-    /// share it so the wording cannot drift apart.</summary>
-    internal static string SkippedTabsMessage(IReadOnlyList<string> skipped) =>
-        $"The tab{(skipped.Count == 1 ? "" : "s")} {string.Join(", ", skipped.Select(t => $"\"{t}\""))} "
-        + $"look{(skipped.Count == 1 ? "s" : "")} like a mode but did not come in, because cell A1 does not start with "
-        + "\"Profile\", \"Preferences\" or \"Infrared\". The QuadStick reads A1 the same way, so it would skip "
-        + $"{(skipped.Count == 1 ? "that tab" : "those tabs")} too. Fix A1 in the spreadsheet and import again.";
+    static string Modes(ProfileFile f) =>
+        $"{f.Document.Sheets.Count} mode{(f.Document.Sheets.Count == 1 ? "" : "s")}";
+
+    /// <summary>The import review. Every import ends here, clean or not: the
+    /// user handed us a spreadsheet that already works on their QuadStick, and
+    /// the app has to show what it made of it rather than leave a correct
+    /// import looking like a broken one.
+    /// <paramref name="limitation"/> is set when the import could not see the
+    /// whole workbook, so a partial read is never called a clean one.
+    /// <paramref name="dialogOwner"/> is whichever window is actually on top;
+    /// a dialog owned by a MainWindow that a modal is already covering would
+    /// open behind it.</summary>
+    internal async Task ShowImportReviewAsync(ProfileFile file, string source,
+        IReadOnlyList<SkippedTab> skipped, string? limitation = null, Window? dialogOwner = null)
+    {
+        LastImportReview = (source, skipped, limitation);
+        await ShowImportReview(new ImportReviewWindow(this, file, source, skipped, limitation),
+            dialogOwner ?? this);
+    }
+
+    /// <summary>How the review gets on screen. Tests swap it out, the same way
+    /// the community window swaps out OpenUri: a modal dialog with nothing to
+    /// close it would hang a headless run forever. The window's own behaviour
+    /// is covered directly in ImportReviewWindowTests.</summary>
+    internal Func<ImportReviewWindow, Window, Task> ShowImportReview =
+        (dialog, owner) => dialog.ShowDialog(owner);
+
+    /// <summary>What the last import handed the review, so a test can check the
+    /// thing the review cannot check about itself: whether the import path told
+    /// it the truth about how much of the workbook it actually saw.</summary>
+    internal (string Source, IReadOnlyList<SkippedTab> Skipped, string? Limitation)? LastImportReview;
 
     /// <summary>The one Sheets import. The pasted link on Home and a pick from
     /// the community catalog both land here, so the app has a single workbook
@@ -2853,7 +2875,8 @@ public partial class MainWindow : Window
     /// <paramref name="onError"/> takes the failure message instead of Home when
     /// the caller is another window, so the words land where the user is
     /// looking.</summary>
-    internal async Task ImportSheetsAsync(string pasted, HttpClient? http = null, Action<string>? onError = null)
+    internal async Task ImportSheetsAsync(string pasted, HttpClient? http = null, Action<string>? onError = null,
+        Window? dialogOwner = null)
     {
         var client = http ?? Http;
         void HomeError(string message)
@@ -2876,7 +2899,7 @@ public partial class MainWindow : Window
             var bytes = await client.GetByteArrayAsync(workbookUrl);
             var wholeWorkbook = Xlsx.LooksLikeXlsx(bytes);
             string text;
-            IReadOnlyList<string> skipped = Array.Empty<string>();
+            IReadOnlyList<SkippedTab> skipped = Array.Empty<SkippedTab>();
             if (wholeWorkbook)
             {
                 using var stream = new MemoryStream(bytes);
@@ -2895,14 +2918,19 @@ public partial class MainWindow : Window
             // exactly when it is failing.
             Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
             OpenInEditor(imported, savePath: null, ProfileSource.Sheets);
-            // A named tab that did not come in outranks the other two notes:
-            // it is the only one that means the profile is missing something.
-            if (skipped.Count > 0)
-                Status($"Imported {imported.Document.Sheets.Count} mode(s). {SkippedTabsMessage(skipped)}", StatusKind.Warning);
-            else if (!wholeWorkbook && imported.Document.Sheets.Count == 1)
-                Status("Imported this spreadsheet's linked tab. A published link only gives one tab; share the sheet with \"Anyone with the link\" instead to import every mode tab.", StatusKind.Warning);
-            else if (imported.Document.Sheets.Count > 1)
-                Status($"Imported {imported.Document.Sheets.Count} modes from the spreadsheet's tabs.", StatusKind.Ready);
+            Status($"Imported {Modes(imported)} from the spreadsheet.", StatusKind.Ready);
+            // A published link hands back one tab and no way to ask for the
+            // rest, so the review has to say that before it counts anything.
+            // Without it, a profile missing four of its five modes would be
+            // reported as a clean import, which is the worst thing this window
+            // could ever say.
+            await ShowImportReviewAsync(imported, "This spreadsheet", skipped,
+                wholeWorkbook ? null
+                    : "This link is a published one, and a published link only ever gives a single tab. "
+                    + "Any other mode tabs in the spreadsheet were not sent to us at all, so we cannot say "
+                    + "what is in them. To bring the whole profile in, share the sheet with \"Anyone with "
+                    + "the link\" in Google Sheets and import it again.",
+                dialogOwner);
         }
         catch (InvalidDataException)
         { HomeError("Could not read that spreadsheet. Download it as .xlsx and open it with the Open button instead."); }
@@ -4770,7 +4798,7 @@ public partial class MainWindow : Window
              "  delayed_latch [ms]: short activation = normal press, long activation = latch. Two behaviors from one input.\n" +
              "  tap / delay_on: split one input into two outputs by press length.\n" +
              "  force_off: releases another latched output. greater_than / less_than: threshold triggers. duty, increment_value, decrement_value: analog control.\n" +
-             "Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_sip). …_soft variants trigger on gentle pressure. right_sip / right_puff are the side tube. lip is the lip switch. left/right/up/down and N/NE/… are the joystick. Several inputs on one row must all be active together."),
+             "Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_sip). …_soft variants trigger on gentle pressure. right_sip / right_puff are the side tube. lip is the lip switch. left/right/up/down and N/NE/… are the joystick. Several inputs on one row are a sequence: you do them one after the other, left to right, and the last one fires the output."),
 
             ("Start from a working profile, not from scratch",
              "New profile gives you the factory default layout, the same one shipped on every QuadStick. The community also shares hundreds of game profiles as Google Sheets: paste any share link on the home screen to import it. Profiles that keep each mode on its own tab come in whole, every tab as a mode. Open also takes a downloaded .xlsx workbook. Then adjust, rename, save."),

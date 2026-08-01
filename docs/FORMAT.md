@@ -13,7 +13,7 @@ Sources, in order of authority:
 | S3 | github.com/fdavison/QMP-4 (`xlsx2csv.py`, `qsflash.py`, `microterm.py`) | QMP's converter, prefs.csv, serial protocol, device detection |
 | S4 | Fred's email, 2026-07-02 | Links to all of the above, firmware repo offer, serial console capability |
 | S5 | quadstick.com product pages and user manual | Hardware per model, function parameter meanings, sheet layout rules |
-| S6 | Firmware source snapshot (quadstick-master, FW_VERSION 1476, 2014) | The device's own CSV reader: Configuration.c + keyword tables. Final authority on parsing mechanics; its keyword lists are OLDER than S1 |
+| S6 | Firmware source snapshot (quadstick-master, FW_VERSION 1476, 2014) | The device's own CSV reader: Configuration.c + keyword tables, plus DataFlow.c for what the parsed bindings then MEAN at runtime. Final authority on parsing mechanics and on match semantics; its keyword lists are OLDER than S1 |
 
 Fred's script sources are kept locally in `docs/google_apps_script_projects/`
 and deliberately not committed (his code, not ours to publish).
@@ -123,8 +123,30 @@ this basic rarely change between firmware versions.
   PlayStation/XBox naming, S1's `updateValidation`), "Function" in B3, and
   the communication channel in C3.
 - Binding rows from row 4: column A = output, column B = function with
-  optional numeric parameters, columns C..J = up to 8 inputs that must all
-  be active together.
+  optional numeric parameters, columns C..J = up to 8 inputs.
+- Those 8 input cells are a SEQUENCE in time, not a set held down together
+  (S6). The device only ever has one input active at a time: the scan in
+  `DataFlow.c` breaks at "the first active input to prevent _CENTER from
+  always winning". It keeps `previous_active_inputs[8]`, a shift register of
+  the last 8 distinct inputs with the newest at index 0, and matches a row
+  with "compare this input pattern list with the last sequence of inputs, if
+  match, bingo!".
+  The column order maps onto that backwards, twice, which cancels out.
+  `Configuration.c` reads column C+l into `primary_inputs[7-l]`, so C lands
+  at index 7 and J at index 0, then compacts the gaps out downward. The
+  result is that `primary_inputs[0]` is the RIGHTMOST filled column, and it
+  is compared against the most recent input. So the sheet reads left to
+  right in the order the user performs them: C first, then D, and the
+  rightmost filled cell last.
+  Two consequences worth stating. `input_id = primary_inputs[0]` means the
+  output follows the state of the LAST input in the row; the earlier cells
+  only gate it. And a row with just C filled skips sequence matching
+  entirely, because `if (!matched && (input_pattern[1] != _NONE))` leaves a
+  one-input pattern's state alone. One input is a plain trigger; two or more
+  is a sequence.
+  Do not confuse this with the combo INPUT NAMES (`mp_left_center_sip`).
+  Those are single keywords for two or three holes used at once, and they do
+  sit in one cell.
 - Only the first 10 columns exist to the converters (S2: `MAXCOLUMN = 10`,
   S3 same). Columns after J are comments and never export.
 - The first row with a blank output after row 3 ends the sheet for both

@@ -321,7 +321,10 @@ public class CommunityProfilesWindow : Window
             // screen next to the paste box, which nobody would see from here,
             // so they come back through the callback and land on this window's
             // own status line instead.
-            await _owner.ImportSheetsAsync(EditUrl(picked), _importHttp, message => failure = message);
+            // The import review opens over THIS window, not over MainWindow:
+            // this one is modal, so a dialog owned by the main window would
+            // open behind a window the user cannot click.
+            await _owner.ImportSheetsAsync(EditUrl(picked), _importHttp, message => failure = message, this);
         }
         catch (Exception ex)
         {
