@@ -69,10 +69,16 @@ public sealed class CommunityCatalogClient
         _cachePath = cachePath;
     }
 
+    // The redirector lands on Google Apps Script, which answers 403 with an HTML
+    // page when the request carries no User-Agent, and HttpClient sends none by
+    // default. Any value is accepted; ours names the app in Fred's logs. Without
+    // this the catalog never loads, while the Sheets export used by import is
+    // unaffected, so import kept working and only this list looked broken.
     static HttpClient NewHttpClient(HttpMessageHandler handler) => new(handler)
     {
         Timeout = TimeSpan.FromSeconds(15),
         MaxResponseContentBufferSize = MaxReplyBytes,
+        DefaultRequestHeaders = { { "User-Agent", "QuadStickConfigManager" } },
     };
 
     /// <summary>Reads the catalog. Without <paramref name="refresh"/> a usable

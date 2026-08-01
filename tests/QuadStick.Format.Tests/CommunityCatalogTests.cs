@@ -81,6 +81,18 @@ public sealed class CommunityCatalogTests : IDisposable
         Assert.Equal("https://bvhbml89uymwxubx.quadstick.com/", handler.Requests[0].RequestUri!.ToString());
     }
 
+    // Apps Script answers 403 to a request with no User-Agent, and HttpClient
+    // sends none unless it is asked to. Dropping this header breaks the catalog
+    // for everyone while every test with a fake handler still passes.
+    [Fact]
+    public async Task Load_SendsAUserAgent()
+    {
+        var handler = Serving(GoodBody);
+        await Client(handler).LoadAsync();
+
+        Assert.NotEmpty(handler.Requests[0].Headers.UserAgent);
+    }
+
     [Fact]
     public async Task Load_ParsesFullAndMinimumRows()
     {
