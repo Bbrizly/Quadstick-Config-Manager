@@ -548,13 +548,34 @@ public class ImportReviewWindow : Window
     // buttons, a drag) lands in the same state afterwards: the profile behind
     // this window knows, the newest change is the one Undo reverses, and the
     // window is rebuilt so the warnings and counts tell the truth again.
-    void ApplyGridEdit(string what, Func<bool> edit)
+    void ApplyGridEdit(int row, string what, Func<bool> edit)
     {
+        bool hadInput = BindingAt(row) is { Inputs.Count: > 0 };
         if (!edit()) return;
+        what += Consequence(row, hadInput);
         _lastGridEdit = what;
         _undoable = null; // one undo stack, so only the newest change offers one
         _owner.ModesChanged(SheetIndexOf(_selected?.Row ?? 1), what);
         Rebuild();
+    }
+
+    Binding? BindingAt(int row) =>
+        _file.Document.Sheets.SelectMany(s => s.Bindings).FirstOrDefault(b => b.Row == row);
+
+    // A row that keeps its output but loses its last input still reads as fine.
+    // The factory template ships twelve rows shaped exactly like that on purpose
+    // ("dpad_N,normal," and the rest), so nothing in the finished file marks
+    // this one as broken and the Problems list stays quiet. Only the edit knows
+    // an input used to be there, so the edit is the only thing that can say so.
+    //
+    // A settings row is left alone: its column C is a value, not an input, and
+    // emptying it already has its own warning that says the device reads 0.
+    string Consequence(int row, bool hadInput)
+    {
+        if (!hadInput || BindingAt(row) is not { } b) return "";
+        if (b.Inputs.Count > 0 || b.Output.Trim().Length == 0) return "";
+        if (Vocab.IsPreferenceOverride(b.Output, b.Function)) return "";
+        return $" Nothing presses \"{b.Output}\" now, so the QuadStick will not fire it.";
     }
 
     // Rebuild without throwing the reader back to the top of a 400 row grid, or
@@ -662,7 +683,7 @@ public class ImportReviewWindow : Window
         var text = _inspectorValue.Text ?? "";
         if (text == _file.GetCell(at.Row, at.Col)) return;
         var where = $"{ColumnLetter(at.Col)}{at.Row}";
-        ApplyGridEdit(
+        ApplyGridEdit(at.Row,
             text.Trim().Length == 0 ? $"Emptied {where}." : $"Set {where} to \"{text.Trim()}\".",
             () => { _file.SetCell(at.Row, at.Col, text); return true; });
     }
@@ -706,7 +727,9 @@ public class ImportReviewWindow : Window
             if (!can()) return;
             var b = new Button { Content = label, MinWidth = 130, Margin = new Thickness(0, 0, 8, 0) };
             AutomationProperties.SetName(b, spoken);
-            b.Click += (_, _) => run(ApplyGridEdit);
+            // Every action here works on the picked cell, so the row is bound
+            // once rather than threaded through each caller.
+            b.Click += (_, _) => run((what, edit) => ApplyGridEdit(at.Row, what, edit));
             _inspectorActions.Children.Add(b);
         }
 
@@ -892,7 +915,7 @@ public class ImportReviewWindow : Window
                 // An empty cell has nothing to clear, and clearing it anyway
                 // would push an undo step that undoes nothing visible.
                 if (_file.GetCell(r, c).Length > 0)
-                    ApplyGridEdit($"Emptied {ColumnLetter(c)}{r}.",
+                    ApplyGridEdit(r, $"Emptied {ColumnLetter(c)}{r}.",
                         () => { _file.SetCell(r, c, ""); return true; });
                 e.Handled = true;
                 return;
@@ -942,7 +965,7 @@ public class ImportReviewWindow : Window
             var src = (int[])e.Data.Get(CellDragFormat)!;
             var word = _file.GetCell(src[0], src[1]);
             Select(row, col);
-            ApplyGridEdit(
+            ApplyGridEdit(row,
                 $"Moved \"{word}\" from {ColumnLetter(src[1])}{src[0]} to {ColumnLetter(col)}{row}.",
                 () => _file.MoveCell(row, src[1], col));
         });

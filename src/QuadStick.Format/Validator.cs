@@ -421,6 +421,15 @@ public static class Validator
 
     static void ValidateInputs(Binding b, List<Issue> issues)
     {
+        // A row with an output and no input never fires, but it is NOT flagged
+        // here. The factory template ships twelve of them on purpose (dpad_N
+        // through dpad_NW and the right stick, all "output,normal," waiting for
+        // the user to choose an input), so a file-level warning would open every
+        // new profile with twelve complaints. A row left inputless by an edit is
+        // byte-identical to those placeholders, so the file cannot tell them
+        // apart and neither can this function. The edit knows, so the advanced
+        // grid says it there instead: see ImportReviewWindow.Consequence.
+
         // Point the issue at the input's REAL column (C..J), not always C, so
         // Fix First and the cell highlight land on the offending input instead
         // of the first one when the bad token sits in a later column.
