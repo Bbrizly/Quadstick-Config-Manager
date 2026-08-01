@@ -664,4 +664,149 @@ public class ListViewTests
         file.Dirty = false;
         w.Close();
     }
+
+    // The device reads the same setting names in three places and means
+    // something different each time. All three had the same faceless grid, so
+    // nothing on screen said whether a change was device-wide or not.
+    static MainWindow ShowSheet(string csv, int sheetIndex, out ProfileFile file)
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        file = ProfileFile.Load(csv);
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        if (sheetIndex > 0)
+            w.GetVisualDescendants().OfType<ComboBox>()
+                .First(c => c.Name == "SheetPicker").SelectedIndex = sheetIndex;
+        w.UpdateLayout();
+        return w;
+    }
+
+    static bool SaysAnywhere(MainWindow w, string phrase) =>
+        w.GetVisualDescendants().OfType<TextBlock>().Any(t => t.Text == phrase)
+        && w.GetVisualDescendants().OfType<Control>()
+            .Any(c => (AutomationProperties.GetName(c) ?? "").Contains(phrase, StringComparison.Ordinal));
+
+    [AvaloniaFact]
+    public void A_standalone_prefs_file_says_it_is_device_wide()
+    {
+        var w = ShowSheet("Preferences\nprefs.csv\nPreference,Value\nvolume,40\n", 0, out var file);
+
+        Assert.True(SaysAnywhere(w, "Device-wide settings"));
+        Assert.False(SaysAnywhere(w, "Active while this profile is loaded"));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void An_embedded_preferences_sheet_says_it_lasts_while_the_profile_is_loaded()
+    {
+        var w = ShowSheet(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n" +
+            "Preferences\n\nPreference,Value\nvolume,40\n", 1, out var file);
+
+        Assert.True(SaysAnywhere(w, "Active while this profile is loaded"));
+        Assert.False(SaysAnywhere(w, "Device-wide settings"));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void A_mode_sheet_override_row_says_it_only_applies_in_that_mode()
+    {
+        var w = ShowSheet(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\n" +
+            "x,normal,lip\nvolume,,40\n", 0, out var file);
+
+        Assert.True(SaysAnywhere(w, "Active only in this mode"));
+
+        // The plain binding row above it is not an override and gets no badge.
+        Assert.Single(w.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.Text == "Active only in this mode"));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // Preferences rows used to offer no suggestions at all: you had to already
+    // know every setting name the device understands.
+    [AvaloniaFact]
+    public void A_preferences_row_suggests_catalog_names_and_still_takes_a_typed_one()
+    {
+        var w = ShowSheet("Preferences\nprefs.csv\nPreference,Value\nvolume,40\n", 0, out var file);
+
+        var nameBox = w.GetVisualDescendants().OfType<AutoCompleteBox>()
+            .First(b => AutomationProperties.GetName(b) == "Setting name for row 4");
+        var offered = ((IEnumerable<string>)nameBox.ItemsSource!).ToList();
+        Assert.Contains("mouse_speed", offered);
+        Assert.Contains("bluetooth_device_mode", offered);
+
+        // Free text survives: a name from firmware newer than this app.
+        nameBox.Text = "some_future_setting";
+        nameBox.RaiseEvent(new RoutedEventArgs(InputElement.LostFocusEvent));
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("some_future_setting", file.GetCell(4, 0));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // A mode sheet's output column also takes preference names, but only the
+    // ones the firmware honors per mode, and picking one is a plain token, not
+    // a custom action name.
+    [AvaloniaFact]
+    public void A_mode_output_offers_override_settings_without_writing_an_action_name()
+    {
+        var w = ShowSheet(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n", 0, out var file);
+
+        var cell = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Output for row 4"));
+        cell.Flyout!.ShowAt(cell);
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        var panel = (Control)((Flyout)cell.Flyout!).Content!;
+        panel.GetVisualDescendants().OfType<TextBox>()
+            .First(t => (AutomationProperties.GetName(t) ?? "") == "Search this list").Text = "volume";
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        panel.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "volume")
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+
+        Assert.Equal("volume", file.GetCell(4, 0));
+        Assert.Equal("", file.GetCell(4, ProfileFile.ActionColumn)); // never an action name
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void A_standalone_only_setting_is_not_offered_as_a_mode_override()
+    {
+        var w = ShowSheet(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n", 0, out var file);
+
+        var cell = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Output for row 4"));
+        cell.Flyout!.ShowAt(cell);
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+        var panel = (Control)((Flyout)cell.Flyout!).Content!;
+        panel.GetVisualDescendants().OfType<TextBox>()
+            .First(t => (AutomationProperties.GetName(t) ?? "") == "Search this list").Text = "sip_puff_delay";
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+
+        var hits = panel.GetVisualDescendants().OfType<Button>()
+            .Select(b => AutomationProperties.GetName(b) ?? "").ToList();
+        Assert.Contains("sip_puff_delay_soft", hits);      // honored per mode
+        Assert.DoesNotContain("sip_puff_delay_hard", hits); // standalone only
+
+        file.Dirty = false;
+        w.Close();
+    }
 }

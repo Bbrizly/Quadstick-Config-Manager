@@ -490,9 +490,9 @@ public partial class MainWindow : Window
     static readonly HashSet<string> JoystickDirs = new(StringComparer.OrdinalIgnoreCase)
     { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
 
-    static readonly List<string> OutputSuggestions = Vocab.KnownOutputs.OrderBy(x => x).ToList();
-    static readonly List<string> OutputSuggestionsPs = Vocab.OutputsPs3.OrderBy(x => x).ToList();
-    static readonly List<string> OutputSuggestionsXbox = Vocab.OutputsXbox.OrderBy(x => x).ToList();
+    static readonly List<string> OutputSuggestions = WithModeOverrides(Vocab.KnownOutputs);
+    static readonly List<string> OutputSuggestionsPs = WithModeOverrides(Vocab.OutputsPs3);
+    static readonly List<string> OutputSuggestionsXbox = WithModeOverrides(Vocab.OutputsXbox);
     static readonly List<string> FunctionSuggestions = Vocab.FunctionArity.Keys.OrderBy(x => x).ToList();
     static readonly List<string> InputSuggestions = Vocab.Inputs.OrderBy(GroupRank).ThenBy(x => x).ToList();
     static readonly List<string> NoSuggestions = new();
@@ -3431,41 +3431,6 @@ public partial class MainWindow : Window
         return p;
     }
 
-    Control PrefsHeaderRow()
-    {
-        var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(RowNumberHeaderSpacer());
-        p.Children.Add(Swatch("Setting", 300, OutputTint));
-        p.Children.Add(Swatch("Value", 160, FunctionTint));
-        p.Children.Add(Swatch("Units", 100, InputTint));
-        p.Children.Add(Swatch("Description", 240, InputTint));
-        return p;
-    }
-
-    Control PrefsRow(Binding b, int number)
-    {
-        var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(DragHandle(b, number));
-        WireRowDrop(p, b);
-        _rowPanels[b.Row] = p;
-        PaintRow(b.Row);
-        p.Children.Add(SuggestBox(b.Row, 0, b.Output, 300, NoSuggestions, $"Setting name for row {b.Row}", OutputTint));
-        p.Children.Add(SuggestBox(b.Row, 1, b.Function, 160, NoSuggestions, $"Setting value for row {b.Row}", FunctionTint));
-        // The official sheet annotates each preference with Units (column C)
-        // and a Description (column D). The device ignores both, but hiding
-        // them here hid the tester's own notes about what each setting does.
-        p.Children.Add(SuggestBox(b.Row, 2, _file!.GetCell(b.Row, 2), 100, NoSuggestions, $"Units for row {b.Row}", InputTint));
-        var desc = NoteBox(b.Row, 3, $"Description for row {b.Row}. Saved in the file, ignored by the QuadStick");
-        desc.Width = 240;
-        p.Children.Add(desc);
-        var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
-        ToolTip.SetTip(del, "Delete this whole row");
-        AutomationProperties.SetName(del, $"Delete row {b.Row}");
-        del.Click += (_, _) => DeleteListRow(b);
-        p.Children.Add(del);
-        return p;
-    }
-
     Control BindingRow(Binding b, int number)
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
@@ -3575,6 +3540,20 @@ public partial class MainWindow : Window
             move.Click += (_, _) => MoveListRow(b, delta);
             p.Children.Add(Mid(move));
         }
+
+        // A mode row whose output is a setting name is a per-mode override, so
+        // it says so. Last in the row, after the chevrons, so the columns of
+        // every other row stay lined up under their headers.
+        if (IsModePreferenceOverride(b))
+        {
+            var badge = new TextBlock
+            {
+                Text = ModeScope, FontSize = Size("SmallSize"), Classes = { "secondary" },
+                TextWrapping = TextWrapping.Wrap, Width = 130,
+            };
+            AutomationProperties.SetName(badge, $"Row {b.Row} scope: {ModeScope}");
+            p.Children.Add(Mid(badge));
+        }
         return p;
     }
 
@@ -3637,7 +3616,11 @@ public partial class MainWindow : Window
             thenFocus();
         }, DispatcherPriority.Loaded);
 
-    Control SuggestBox(int row, int col, string value, double width, List<string> suggestions, string accessibleName, string tintKey)
+    // alsoRebuild lets a caller ask for the same deferred row rebuild on its own
+    // terms (old value, new value). A preference name uses it: a different
+    // setting needs a different control under it.
+    Control SuggestBox(int row, int col, string value, double width, List<string> suggestions,
+                       string accessibleName, string tintKey, Func<string, string, bool>? alsoRebuild = null)
     {
         var box = new AutoCompleteBox
         {
@@ -3645,7 +3628,10 @@ public partial class MainWindow : Window
             ItemsSource = suggestions,
             FilterMode = AutoCompleteFilterMode.Contains,
             MinimumPrefixLength = 0,
-            Width = width,
+            // The width belongs to the wrapper below, the way ListPickerCell
+            // does it: the wrapper's own border is what has to add up to the
+            // column header's width, or every column sits 6px right of it.
+            HorizontalAlignment = HorizontalAlignment.Stretch,
         };
         box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
         AutomationProperties.SetName(box, accessibleName);
@@ -3672,7 +3658,8 @@ public partial class MainWindow : Window
             // the same trap TokenField defers around. Only refocus when the
             // box was focused (Enter commit); a click-away commit must not
             // steal the click's focus back.
-            if (col is >= 2 and < 10 && (old.Length == 0) != (v.Length == 0))
+            if ((col is >= 2 and < 10 && (old.Length == 0) != (v.Length == 0))
+                || (alsoRebuild?.Invoke(old, v) ?? false))
             {
                 bool refocus = box.IsFocused;
                 box.IsDropDownOpen = false;
@@ -3700,6 +3687,7 @@ public partial class MainWindow : Window
             BorderThickness = new Avalonia.Thickness(3),
             BorderBrush = Brushes.Transparent,
             CornerRadius = new Avalonia.CornerRadius(5),
+            Width = width,
         };
         _cellBorders[$"{(char)('A' + col)}{row}"] = wrapper;
         return wrapper;
