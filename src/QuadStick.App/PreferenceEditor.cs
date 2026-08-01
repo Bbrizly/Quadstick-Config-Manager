@@ -89,6 +89,11 @@ public partial class MainWindow
     // The same rule Validator uses: a mode row whose output is a preference
     // name sets that preference for the mode, unless increment_value or
     // decrement_value makes it a live binding that adjusts the setting instead.
+    // The same rule read straight off the grid, for the moments before the
+    // file has been reparsed into bindings.
+    bool IsSettingRow(int row) =>
+        _file is not null && Vocab.IsPreferenceOverride(_file.GetCell(row, 0), _file.GetCell(row, 1));
+
     static bool IsModePreferenceOverride(Binding b) =>
         Vocab.IsPreferenceOverride(b.Output, b.Function);
 
@@ -133,7 +138,7 @@ public partial class MainWindow
         // friendly control could not show as it stands, keeps the plain row.
         var def = Definition(b.Output);
         var value = _file!.GetCell(b.Row, 1);
-        bool typed = def is not null && CanRepresent(def, value);
+        bool typed = def is not null && CanRepresent(def, value, 1);
 
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
 
@@ -213,10 +218,16 @@ public partial class MainWindow
     // What a control can show without changing it. Anything else keeps the raw
     // text box, so an out-of-range or oddly written value stays exactly as the
     // file has it until someone edits it on purpose.
-    static bool CanRepresent(PreferenceDefinition def, string value) => def.Editor switch
+    // col matters for one reason: a mode row's value is read with a bare atoi
+    // (Configuration.c:495), while a settings sheet's goes through a switch
+    // that has keyword tables for the bluetooth settings (:598-621). So a
+    // dropdown of words belongs on a settings sheet and nowhere else. Offering
+    // one on a mode row would let a click write "keyboard" into a cell the
+    // device turns into 0.
+    static bool CanRepresent(PreferenceDefinition def, string value, int col) => def.Editor switch
     {
         PreferenceEditor.Toggle => value is "0" or "1",
-        PreferenceEditor.Choice => def.Options.Contains(value, StringComparer.Ordinal),
+        PreferenceEditor.Choice => col == 1 && def.Options.Contains(value, StringComparer.Ordinal),
         PreferenceEditor.Integer =>
             int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var n)
             // "007", "+8" and " 8 " all parse, but showing them in a spinner

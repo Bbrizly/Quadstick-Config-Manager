@@ -2333,6 +2333,10 @@ public partial class MainWindow : Window
         string output = b.ActionName.Length > 0 && _labelStyle != 0 ? b.ActionName
             : b.Output.Length > 0 ? TokenLabel(b.Output)
             : "(nothing yet)";
+        // A settings row has no inputs: its column C is the value. Reading it
+        // as "50 presses mouse_speed" was backwards, and it is the sentence a
+        // screen reader user hears before deciding whether to open the row.
+        bool setting = IsModePreferenceOverride(b);
         var inputs = b.Inputs.Count > 0
             ? b.Inputs.Select(i => _labelStyle == 0 ? i : StripInput(i, zone.Id)).ToList()
             : new List<string> { "(no input)" };
@@ -2367,7 +2371,11 @@ public partial class MainWindow : Window
         };
         for (int i = 0; i < inputs.Count; i++)
         {
-            if (i > 0) inputPills.Children.Add(Word("and"));
+            // "then", not "and": several inputs on one row are done one after
+            // the other, and the card's spoken sentence says so. Leaving the
+            // pills saying "and" only moved the contradiction from the screen
+            // reader to the screen.
+            if (i > 0) inputPills.Children.Add(Word("then"));
             inputPills.Children.Add(Pill(inputs[i], InputTint));
         }
 
@@ -2425,10 +2433,12 @@ public partial class MainWindow : Window
         // first, so they have to be done one after the other. The tooltip and
         // the help already say that. A screen reader user was still being told
         // the opposite, which is the one place it costs the most.
-        AutomationProperties.SetName(open,
-            $"Mapping {n}: press {output} when you {string.Join(", then ", inputs)}" +
-            $"{(inputs.Count > 1 ? ", one after the other" : "")}" +
-            $"{(func.Length > 0 ? $", as {func}" : "")}. Press Enter to edit.");
+        AutomationProperties.SetName(open, setting
+            ? $"Setting {n}: while this mode runs, set {b.Output} to "
+              + $"{(_file!.GetCell(b.Row, 2).Trim() is { Length: > 0 } v ? v : "nothing yet")}. Press Enter to edit."
+            : $"Mapping {n}: press {output} when you {string.Join(", then ", inputs)}"
+              + $"{(inputs.Count > 1 ? ", one after the other" : "")}"
+              + $"{(func.Length > 0 ? $", as {func}" : "")}. Press Enter to edit.");
         open.Click += (_, _) =>
         {
             _expandedMapping = b.Row;
@@ -2545,6 +2555,29 @@ public partial class MainWindow : Window
                 body.Children.Add(header);
 
                 // ---- "When you": one aligned row per input, each removable ----
+                // A mode row whose output is a setting name has no inputs at
+                // all: the device skips column B and reads column C as the
+                // value with a bare atoi. List View learned this first, and
+                // this is the view the app actually opens in.
+                if (IsModePreferenceOverride(b))
+                {
+                    var prefDef = Definition(b.Output);
+                    var prefValue = _file!.GetCell(b.Row, 2);
+                    bool prefTyped = prefDef is not null && CanRepresent(prefDef, prefValue, 2);
+                    body.Children.Add(Labeled("Setting", OutputPicker(b, OutputsFor(CurrentSheet!),
+                        $"Setting changed by this row", OutputTint)));
+                    body.Children.Add(Labeled("Set it to", PrefsValueCell(b, prefTyped ? prefDef : null, 2)));
+                    if (prefDef is not null
+                        && PreferenceInfoLine(b, prefDef, prefTyped ? _cellBorders.GetValueOrDefault($"C{b.Row}") : null, 2) is { } prefInfo)
+                        body.Children.Add(prefInfo);
+                    body.Children.Add(Labeled("Note", NoteBox(b.Row, NoteColumn,
+                        "Note for this row. Saved in the file, ignored by the QuadStick")));
+                    body.Children.Add(ScopeBanner(ModeScope,
+                        "This row sets a QuadStick setting instead of pressing a button. It applies while this mode is running."));
+                    ZoneDetailPanel.Children.Add(MappingCard(body));
+                    continue;
+                }
+
                 var inputsBox = new StackPanel { Spacing = 6 };
                 int inputCount = Math.Max(1, b.Inputs.Count);
                 Grid? lastInputRow = null;
@@ -2639,16 +2672,7 @@ public partial class MainWindow : Window
                 body.Children.Add(Labeled("As", FunctionCombo(b, zone)));
                 body.Children.Add(Labeled("Note", NoteBox(b.Row, NoteColumn, $"Note for this mapping. Saved in the file, ignored by the QuadStick")));
 
-                var mappingCard = new Border
-                {
-                    BorderThickness = new Avalonia.Thickness(1),
-                    CornerRadius = new Avalonia.CornerRadius(6),
-                    Padding = new Avalonia.Thickness(14),
-                    Child = body,
-                };
-                BindBrush(mappingCard, Border.BackgroundProperty, "Surface");
-                BindBrush(mappingCard, Border.BorderBrushProperty, "SurfaceBorder");
-                ZoneDetailPanel.Children.Add(mappingCard);
+                ZoneDetailPanel.Children.Add(MappingCard(body));
             }
         }
         else
@@ -3581,14 +3605,38 @@ public partial class MainWindow : Window
         {
             var prefDef = Definition(b.Output);
             var prefValue = _file!.GetCell(b.Row, 2);
-            bool prefTyped = prefDef is not null && CanRepresent(prefDef, prefValue);
-            p.Children.Add(Mid(PrefsValueCell(b, prefTyped ? prefDef : null, 2)));
-            RowTail(p, b, new StackPanel
+            bool prefTyped = prefDef is not null && CanRepresent(prefDef, prefValue, 2);
+            var prefCell = PrefsValueCell(b, prefTyped ? prefDef : null, 2);
+            // The value control is narrower than an input picker, and this row
+            // has no "add another input" button. Both gaps are held open, or
+            // the note, chevrons and delete on this one row sit a hundred
+            // pixels left of every other row's and the eye loses the column.
+            p.Children.Add(Mid(new Border
+            {
+                Width = 240, HorizontalAlignment = HorizontalAlignment.Left, Child = prefCell,
+            }));
+            // The gap where "add another input" sits on every other row, held
+            // open by the button itself rather than by a guessed width, so it
+            // stays right if the icon or the padding ever changes. Invisible
+            // and unreachable: a settings row has no inputs to add.
+            var ghost = IconButton("IconAdd", "");
+            ghost.Opacity = 0;
+            ghost.IsHitTestVisible = false;
+            ghost.IsTabStop = false;
+            AutomationProperties.SetAccessibilityView(ghost, Avalonia.Automation.AccessibilityView.Raw);
+            var prefButtons = new StackPanel
             {
                 Spacing = 6, VerticalAlignment = VerticalAlignment.Center,
                 Orientation = Orientation.Horizontal,
-            });
-            return p;
+                Children = { ghost },
+            };
+            RowTail(p, b, prefButtons);
+            // The way to a value the manager's own slider will not reach, and
+            // the sentence explaining what the setting does. The settings sheet
+            // has carried both for every row; a mode override had neither.
+            if (prefDef is null) return p;
+            var prefInfo = PreferenceInfoLine(b, prefDef, prefTyped ? prefCell : null, 2);
+            return prefInfo is null ? p : new StackPanel { Spacing = 4, Children = { p, prefInfo } };
         }
 
         // Extra inputs go UNDER the first one. Sideways growth forced a
@@ -4225,6 +4273,22 @@ public partial class MainWindow : Window
     // A compact aligned row: a short muted label in a fixed-width first column,
     // the field filling the rest. Collapses the old label-above-field pairs so a
     // mapping reads across in far less vertical space.
+    // The box one expanded mapping sits in. Shared so a settings row, which
+    // has no inputs to show, comes out looking like every other card.
+    Border MappingCard(Control body)
+    {
+        var card = new Border
+        {
+            BorderThickness = new Avalonia.Thickness(1),
+            CornerRadius = new Avalonia.CornerRadius(6),
+            Padding = new Avalonia.Thickness(14),
+            Child = body,
+        };
+        BindBrush(card, Border.BackgroundProperty, "Surface");
+        BindBrush(card, Border.BorderBrushProperty, "SurfaceBorder");
+        return card;
+    }
+
     static Control Labeled(string label, Control field)
     {
         var g = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
@@ -4504,6 +4568,7 @@ public partial class MainWindow : Window
         {
             if (_file is null) return;
             var old = _file.GetCell(row, col);
+            bool wasSetting = IsSettingRow(row);
             if (setValue is null)
             {
                 if (token == old) return;
@@ -4513,7 +4578,14 @@ public partial class MainWindow : Window
             RefreshIssues();
             // An input appearing or disappearing changes the row's own
             // controls, so rebuild. Deferred: the flyout is still closing.
-            if (col is >= 2 and < 10 && (old.Length == 0) != (token.Length == 0))
+            //
+            // So does column A or B flipping the row between a binding and a
+            // setting, because the two put different controls on column C.
+            // Without this the row kept the editor for what it used to be: a
+            // number spinner left over an input cell wrote a bare number into
+            // it on the next click.
+            if ((col is >= 2 and < 10 && (old.Length == 0) != (token.Length == 0))
+                || (col is 0 or 1 && IsSettingRow(row) != wasSetting))
             {
                 var off = GridScroll.Offset;
                 Dispatcher.UIThread.Post(() =>

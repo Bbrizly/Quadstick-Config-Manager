@@ -550,7 +550,7 @@ public class ImportReviewWindow : Window
     // window is rebuilt so the warnings and counts tell the truth again.
     void ApplyGridEdit(int row, string what, Func<bool> edit)
     {
-        bool hadInput = BindingAt(row) is { Inputs.Count: > 0 };
+        bool hadInput = BindingAt(row) is { } before && Fires(before);
         if (!edit()) return;
         what += Consequence(row, hadInput);
         _lastGridEdit = what;
@@ -573,10 +573,17 @@ public class ImportReviewWindow : Window
     string Consequence(int row, bool hadInput)
     {
         if (!hadInput || BindingAt(row) is not { } b) return "";
-        if (b.Inputs.Count > 0 || b.Output.Trim().Length == 0) return "";
+        if (Fires(b) || b.Output.Trim().Length == 0) return "";
         if (Vocab.IsPreferenceOverride(b.Output, b.Function)) return "";
         return $" Nothing presses \"{b.Output}\" now, so the QuadStick will not fire it.";
     }
+
+    // An input the device would actually match. "none" is its own word for a
+    // blank, and a word it has never heard of is skipped, so a row holding only
+    // those never fired and losing them costs nothing worth announcing.
+    static bool Fires(Binding b) =>
+        b.Inputs.Any(i => i != Vocab.NoneInput
+            && (Vocab.Inputs.Contains(i) || Vocab.LegacyInputs.Contains(i)));
 
     // Rebuild without throwing the reader back to the top of a 400 row grid, or
     // losing the cell they were working on.
