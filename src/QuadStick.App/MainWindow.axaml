@@ -56,6 +56,13 @@
                   <TextBlock Text="Edit a profile CSV from anywhere" Classes="cardsub"/>
                 </StackPanel>
               </Button>
+              <Button x:Name="HomeCommunityButton" Classes="card"
+                      AutomationProperties.Name="Browse the community list of shared game profiles and import one">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="Community profiles" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
+                  <TextBlock Text="Search game profiles people have shared online" Classes="cardsub"/>
+                </StackPanel>
+              </Button>
               <Button x:Name="HomeHelpButton" Classes="card"
                       AutomationProperties.Name="Open the quick guide that explains profiles, outputs, functions, and inputs">
                 <StackPanel Spacing="6">

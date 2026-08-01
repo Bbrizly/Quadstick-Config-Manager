@@ -317,6 +317,11 @@ public partial class MainWindow : Window
         await new DrivePickerWindow(this, preCheck).ShowDialog(this);
     }
 
+    // The community list is fetched from here and nowhere else. Startup and a
+    // home refresh never touch it, so the app opens with no network at all.
+    public async Task ShowCommunityProfilesAsync() =>
+        await new CommunityProfilesWindow(this).ShowDialog(this);
+
     // The picker reaches back through these. Backup() is non-null here:
     // ShowDrivePickerAsync gated on it.
     internal Task<List<DriveSheetInfo>> ListDriveSheetsAsync() => Backup()!.ListForPickerAsync();
@@ -599,6 +604,7 @@ public partial class MainWindow : Window
         HomeNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
         HomeTemplateButton.Click += async (_, _) => await UseTemplateAsync();
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
+        HomeCommunityButton.Click += async (_, _) => await ShowCommunityProfilesAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
         HomeDriveButton.Click += (_, _) => OnDriveButtonClick();
@@ -2811,12 +2817,16 @@ public partial class MainWindow : Window
     /// <summary>The one Sheets import. The pasted link on Home and a pick from
     /// the community catalog both land here, so the app has a single workbook
     /// conversion. Returns once the profile is open in the editor or the error
-    /// is on screen. It never saves and never installs.</summary>
-    internal async Task ImportSheetsAsync(string pasted, HttpClient? http = null)
+    /// is on screen. It never saves and never installs.
+    /// <paramref name="onError"/> takes the failure message instead of Home when
+    /// the caller is another window, so the words land where the user is
+    /// looking.</summary>
+    internal async Task ImportSheetsAsync(string pasted, HttpClient? http = null, Action<string>? onError = null)
     {
         var client = http ?? Http;
         void HomeError(string message)
         {
+            if (onError is not null) { onError(message); return; }
             HomeStatusText.Text = message;
             HomeStatusText.IsVisible = true;
             SheetsUrlBox.Focus();
@@ -4727,6 +4737,9 @@ public partial class MainWindow : Window
 
             ("Start from a working profile, not from scratch",
              "New profile gives you the factory default layout, the same one shipped on every QuadStick. The community also shares hundreds of game profiles as Google Sheets: paste any share link on the home screen to import it. Profiles that keep each mode on its own tab come in whole, every tab as a mode. Open also takes a downloaded .xlsx workbook. Then adjust, rename, save."),
+
+            ("Community profiles",
+             "The Community profiles card on the home screen searches the shared list of game profiles. Opening that window, and pressing Refresh in it, downloads the list from quadstick.com. Nothing about you is sent, and the last list is kept on this computer so the window still opens with no internet. Import opens the profile in the editor, the same as pasting its link. It never writes to your QuadStick: that still takes the Install button, and errors still block it."),
 
             ("Renaming",
              "The name box at the top of the editor is the profile's on-device name. Use no spaces; the .csv file extension is added for you. The profile named default is special: it is the device's fallback file and should stay unchanged."),

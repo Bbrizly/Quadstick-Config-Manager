@@ -6,11 +6,18 @@ profiles is sold or shared with anyone.
 
 ## What the app can send, and when
 
-Three things use the network, and each one only after you ask for it.
+Four things use the network, and each one only after you ask for it.
 
 **Google Sheets and Drive.** When you paste a Sheets link, the app fetches that
 sheet and nothing else. When you turn on Google Drive backup, it saves your
 profiles to your own Drive under your own account.
+
+**The community profile list.** When you open Community profiles, the app asks
+quadstick.com for the shared list of game profiles, and Refresh in that window
+asks again. That is the only time it is fetched: opening the app and using the
+home screen never ask for it. The request carries nothing about you or your
+profiles, and the last list is saved on your computer so the window still opens
+without internet.
 
 **Usage data, off unless you turn it on.** The first time you open the app it
 asks. If you say yes, it sends a small event when the app opens, when a profile
