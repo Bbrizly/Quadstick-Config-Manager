@@ -1,3 +1,6 @@
+using System.IO.Compression;
+using System.Net;
+using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
@@ -256,6 +259,236 @@ public class SmokeTests
         // user to answer it headlessly (that guard doing its job is exactly
         // why it hangs). Mark saved so Close proceeds.
         f.Dirty = false;
+        w.Close();
+    }
+
+    // ---- The one Sheets import ----
+    //
+    // ImportSheetsAsync is the single workbook conversion in the app: the
+    // pasted link on Home and a pick from the community catalog both call it.
+    // These drive it directly with a fake HttpClient, so the real behaviour
+    // (workbook first, CSV fallback, each scoped error, the multi-tab status)
+    // is pinned without ever touching the network.
+
+    // Answers from a script keyed by URL and records what was asked for.
+    sealed class FakeSheets : HttpMessageHandler
+    {
+        public readonly List<string> Urls = new();
+        readonly Func<string, HttpResponseMessage> _reply;
+        public FakeSheets(Func<string, HttpResponseMessage> reply) => _reply = reply;
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            var url = request.RequestUri!.ToString();
+            Urls.Add(url);
+            return Task.FromResult(_reply(url));
+        }
+    }
+
+    static HttpResponseMessage Body(byte[] bytes) =>
+        new(HttpStatusCode.OK) { Content = new ByteArrayContent(bytes) };
+
+    static HttpResponseMessage Body(string text) => Body(Encoding.UTF8.GetBytes(text));
+
+    const string SheetLink = "https://docs.google.com/spreadsheets/d/1AbCdEfGhIjKlMnOpQrStUvWxYz012345/edit#gid=7";
+
+    // One mode tab, the smallest thing ProfileFile.Load calls a profile.
+    static string[][] ModeTab(string name) => new[]
+    {
+        new[] { "Profile Name", "", name },
+        new[] { "catalog.csv" },
+        new[] { "PlayStation Outputs", "Function", "usb" },
+        new[] { "dpad_N", "normal", "right_sip" },
+    };
+
+    // A real .xlsx: a zip of the three parts Xlsx.cs reads. Built here rather
+    // than copied from a corpus so the App tests stay free of fixture files.
+    static byte[] Workbook(params string[] tabNames)
+    {
+        static string Xml(string raw) => raw.Replace("&", "&amp;").Replace("<", "&lt;");
+        var buffer = new MemoryStream();
+        using (var zip = new ZipArchive(buffer, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            void Put(string path, string content)
+            {
+                using var writer = new StreamWriter(zip.CreateEntry(path).Open(), new UTF8Encoding(false));
+                writer.Write(content);
+            }
+
+            var sheets = new StringBuilder();
+            var rels = new StringBuilder();
+            for (int i = 0; i < tabNames.Length; i++)
+            {
+                sheets.Append($"<sheet name=\"{Xml(tabNames[i])}\" sheetId=\"{i + 1}\" r:id=\"rId{i + 1}\"/>");
+                rels.Append($"<Relationship Id=\"rId{i + 1}\" Target=\"worksheets/sheet{i + 1}.xml\"/>");
+
+                var data = new StringBuilder();
+                var rows = ModeTab(tabNames[i]);
+                for (int r = 0; r < rows.Length; r++)
+                {
+                    data.Append($"<row r=\"{r + 1}\">");
+                    for (int c = 0; c < rows[r].Length; c++)
+                    {
+                        if (rows[r][c].Length == 0) continue; // empty cells are absent in a real workbook
+                        data.Append($"<c r=\"{(char)('A' + c)}{r + 1}\" t=\"inlineStr\"><is><t>{Xml(rows[r][c])}</t></is></c>");
+                    }
+                    data.Append("</row>");
+                }
+                Put($"xl/worksheets/sheet{i + 1}.xml",
+                    "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData>"
+                    + data + "</sheetData></worksheet>");
+            }
+
+            Put("xl/workbook.xml",
+                "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""
+                + " xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"><sheets>"
+                + sheets + "</sheets></workbook>");
+            Put("xl/_rels/workbook.xml.rels",
+                "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
+                + rels + "</Relationships>");
+        }
+        return buffer.ToArray();
+    }
+
+    static string HomeError(MainWindow w) =>
+        w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Name == "HomeStatusText").Text ?? "";
+
+    static bool ShowsStatus(MainWindow w, string fragment)
+    {
+        w.UpdateLayout();
+        return w.GetVisualDescendants().OfType<TextBlock>().Any(t => t.Text?.Contains(fragment) == true);
+    }
+
+    // The workbook comes first so a profile split across mode tabs arrives
+    // whole. Every tab becomes a mode and the status says how many.
+    [AvaloniaFact]
+    public async Task Import_takes_the_whole_workbook_and_reports_every_mode()
+    {
+        var handler = new FakeSheets(_ => Body(Workbook("Walking", "Driving")));
+        using var http = new HttpClient(handler);
+        var w = NewWindow();
+
+        await w.ImportSheetsAsync(SheetLink, http);
+
+        Assert.Equal(2, w.OpenFile!.Document.Sheets.Count);
+        Assert.Equal("Walking", w.OpenFile.Document.Sheets[0].ModeName);
+        Assert.Equal("Driving", w.OpenFile.Document.Sheets[1].ModeName);
+        // One request, for the whole workbook: the gid names one tab, so it goes.
+        Assert.Equal(
+            new[] { "https://docs.google.com/spreadsheets/d/1AbCdEfGhIjKlMnOpQrStUvWxYz012345/export?format=xlsx" },
+            handler.Urls);
+        Assert.True(ShowsStatus(w, "Imported 2 modes"));
+        w.OpenFile.Dirty = false;
+        w.Close();
+    }
+
+    // Importing opens the profile and stops there. Nothing is written to the
+    // library and nothing is installed, so a catalog pick can never reach the
+    // device by itself.
+    [AvaloniaFact]
+    public async Task Import_opens_the_profile_without_saving_it()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "qcm-import-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(dir);
+        var old = MainWindow.LibraryDir;
+        MainWindow.LibraryDir = dir;
+        try
+        {
+            var handler = new FakeSheets(_ => Body(Workbook("Walking")));
+            using var http = new HttpClient(handler);
+            var w = NewWindow();
+
+            await w.ImportSheetsAsync(SheetLink, http);
+
+            Assert.NotNull(w.OpenFile);
+            Assert.Empty(Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories));
+            w.OpenFile!.Dirty = false;
+            w.Close();
+        }
+        finally { MainWindow.LibraryDir = old; Directory.Delete(dir, recursive: true); }
+    }
+
+    // A published link cannot serve a workbook, so the import falls back to the
+    // single linked tab as CSV and says so.
+    [AvaloniaFact]
+    public async Task Import_falls_back_to_csv_when_the_answer_is_not_a_workbook()
+    {
+        const string csv = "Profile Name,,Mouse Mode\r\ncatalog.csv\r\nPlayStation Outputs,Function,usb\r\ndpad_N,normal,right_sip\r\n";
+        var handler = new FakeSheets(url => Body(url.Contains("format=csv") ? csv : "not a workbook"));
+        using var http = new HttpClient(handler);
+        var w = NewWindow();
+
+        await w.ImportSheetsAsync(SheetLink, http);
+
+        Assert.Single(w.OpenFile!.Document.Sheets);
+        Assert.Equal("Mouse Mode", w.OpenFile.Document.Sheets[0].ModeName);
+        // Workbook first, then the CSV for the linked tab.
+        Assert.Equal(2, handler.Urls.Count);
+        Assert.Contains("format=xlsx", handler.Urls[0]);
+        Assert.Contains("format=csv&gid=7", handler.Urls[1]);
+        Assert.True(ShowsStatus(w, "only gives one tab"));
+        w.OpenFile.Dirty = false;
+        w.Close();
+    }
+
+    // Google answers an unshared link with its sign-in page. The error names
+    // the fix instead of showing HTML.
+    [AvaloniaFact]
+    public async Task Import_of_an_unshared_sheet_names_the_sharing_fix()
+    {
+        var handler = new FakeSheets(_ => Body("<html>sign in</html>"));
+        using var http = new HttpClient(handler);
+        var w = NewWindow();
+
+        await w.ImportSheetsAsync(SheetLink, http);
+
+        Assert.Null(w.OpenFile);
+        Assert.Contains("not shared publicly", HomeError(w));
+        w.Close();
+    }
+
+    // A workbook with no profile tab is not an error worth a stack trace.
+    [AvaloniaFact]
+    public async Task Import_of_a_sheet_with_no_profile_tab_says_so()
+    {
+        var handler = new FakeSheets(_ => Body("Shopping list\r\nmilk,eggs\r\n"));
+        using var http = new HttpClient(handler);
+        var w = NewWindow();
+
+        await w.ImportSheetsAsync(SheetLink, http);
+
+        Assert.Null(w.OpenFile);
+        Assert.Contains("no profile tab", HomeError(w));
+        w.Close();
+    }
+
+    // A link that is not a Sheets link is caught before any request goes out.
+    [AvaloniaFact]
+    public async Task Import_of_a_link_that_is_not_a_sheet_asks_nothing()
+    {
+        var handler = new FakeSheets(_ => Body("never asked"));
+        using var http = new HttpClient(handler);
+        var w = NewWindow();
+
+        await w.ImportSheetsAsync("my spreadsheet", http);
+
+        Assert.Null(w.OpenFile);
+        Assert.Empty(handler.Urls);
+        Assert.Contains("does not look like a Google Sheets link", HomeError(w));
+        w.Close();
+    }
+
+    // A dead connection is reported in the user's words, not the exception's.
+    [AvaloniaFact]
+    public async Task Import_reports_a_download_failure_without_throwing()
+    {
+        var handler = new FakeSheets(_ => throw new HttpRequestException("no network"));
+        using var http = new HttpClient(handler);
+        var w = NewWindow();
+
+        await w.ImportSheetsAsync(SheetLink, http);
+
+        Assert.Null(w.OpenFile);
+        Assert.Contains("Could not download the sheet", HomeError(w));
         w.Close();
     }
 }

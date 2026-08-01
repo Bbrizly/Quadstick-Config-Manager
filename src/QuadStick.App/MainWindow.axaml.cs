@@ -2806,8 +2806,15 @@ public partial class MainWindow : Window
         return true;
     }
 
-    async Task ImportAsync()
+    Task ImportAsync() => ImportSheetsAsync(SheetsUrlBox.Text ?? "");
+
+    /// <summary>The one Sheets import. The pasted link on Home and a pick from
+    /// the community catalog both land here, so the app has a single workbook
+    /// conversion. Returns once the profile is open in the editor or the error
+    /// is on screen. It never saves and never installs.</summary>
+    internal async Task ImportSheetsAsync(string pasted, HttpClient? http = null)
     {
+        var client = http ?? Http;
         void HomeError(string message)
         {
             HomeStatusText.Text = message;
@@ -2816,7 +2823,6 @@ public partial class MainWindow : Window
         }
         HomeStatusText.IsVisible = false;
 
-        var pasted = SheetsUrlBox.Text ?? "";
         if (!SheetsUrl.TryGetXlsxExportUrl(pasted, out var workbookUrl)
             || !SheetsUrl.TryGetCsvExportUrl(pasted, out var csvUrl))
         { HomeError("That does not look like a Google Sheets link. Paste the full link from your browser's address bar."); return; }
@@ -2825,7 +2831,7 @@ public partial class MainWindow : Window
             // Ask for the whole workbook first, so a profile split across mode
             // tabs arrives whole. Published links can only give one tab as CSV;
             // they answer with something that is not a workbook, so fall back.
-            var bytes = await Http.GetByteArrayAsync(workbookUrl);
+            var bytes = await client.GetByteArrayAsync(workbookUrl);
             var wholeWorkbook = Xlsx.LooksLikeXlsx(bytes);
             string text;
             if (wholeWorkbook)
@@ -2833,7 +2839,7 @@ public partial class MainWindow : Window
                 using var stream = new MemoryStream(bytes);
                 text = Xlsx.ToCsv(stream);
             }
-            else text = await Http.GetStringAsync(csvUrl);
+            else text = await client.GetStringAsync(csvUrl);
 
             if (text.TrimStart().StartsWith('<'))
             { HomeError("Google returned a web page instead of the profile. The sheet is probably not shared publicly (File > Share > Anyone with the link)."); return; }
