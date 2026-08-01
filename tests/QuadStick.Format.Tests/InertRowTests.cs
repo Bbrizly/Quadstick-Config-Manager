@@ -48,6 +48,27 @@ public class InertRowTests
         Assert.False(f.HasErrors, "an unreadable input keyword is skipped, not fatal");
     }
 
+    // The row that started this, from a real user's BF6 sheet on 2026-07-30.
+    // The label sits in column H, four columns past the input it describes, and
+    // the app refused to install the whole profile over it.
+    [Fact]
+    public void The_bf6_row_that_blocked_a_real_users_install()
+    {
+        var f = WithRow("left_trigger,normal,mp_center_sip,,,,,aim");
+
+        var issue = Assert.Single(f.Issues);
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.Equal("H5", issue.Cell);
+        Assert.Equal(IssueKind.UnknownInput, issue.Kind);
+        Assert.False(f.HasErrors);
+
+        // The binding itself is intact: the device gets left_trigger on a
+        // centre sip whatever the label says.
+        var b = Assert.Single(f.Document.Sheets[0].Bindings, x => x.Output == "left_trigger");
+        Assert.Equal("normal", b.Function);
+        Assert.Contains("mp_center_sip", b.Inputs);
+    }
+
     [Fact]
     public void An_unknown_function_does_not_block_install()
     {

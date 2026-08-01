@@ -365,6 +365,26 @@ public sealed class ProfileFile
         return Document.Sheets.Count - 1;
     }
 
+    /// <summary>Append a whole sheet's rows as one undoable step, for a mode
+    /// that came out of the same workbook but was left behind. The rows have to
+    /// begin with a sheet keyword, because that is the only thing that makes
+    /// them a sheet to the parser and to the device. Returns the new sheet's
+    /// index, or -1 when the rows are not a sheet.</summary>
+    public int AppendSheetRows(IReadOnlyList<string[]> rows)
+    {
+        if (rows.Count == 0 || rows[0].Length == 0 || !Vocab.IsSheetKeyword(rows[0][0].Trim()))
+            return -1;
+        Snapshot();
+        // Blank separator first: without it the parser reads a keyword row as a
+        // dead binding and the device runs the new mode's rows on as part of
+        // the sheet above. NormalizeForDeviceCsv repairs this on the way out
+        // too, but not until save, and the editor shows the grid before that.
+        if (Grid.Count > 0) Grid.Add(Array.Empty<string>());
+        Grid.AddRange(rows.Select(r => (string[])r.Clone()));
+        Reparse();
+        return Document.Sheets.Count - 1;
+    }
+
     // Append a Preferences sheet shaped like the official template: keyword
     // row, blank slot row, then the annotated column header. Refused when one
     // already exists; the device only reads one.
@@ -458,6 +478,41 @@ public sealed class ProfileFile
         r[noteCol] = existing.Length > 0 ? existing + "; " + val : val;
         r[col] = "";
         Reparse();
+    }
+
+    // The other half of that habit: a word in an input column that is not a
+    // note but the profile's own name for the row, like "aim" beside a trigger.
+    // Column L holds those, and the device ignores it as thoroughly as it
+    // ignores the stray input, so this loses nothing and keeps the word.
+    //
+    // Same rules as SetOutput's name argument, because the name lands in the
+    // same cell: legal, in a mode and not Preferences, not already taken by a
+    // row with a different output, and not overwriting a name already there.
+    public bool CanMoveInputToActionName(int row, int col) =>
+        MoveInputToActionName(row, col, apply: false);
+
+    public bool MoveInputToActionName(int row, int col) =>
+        MoveInputToActionName(row, col, apply: true);
+
+    bool MoveInputToActionName(int row, int col, bool apply)
+    {
+        var val = GetCell(row, col).Trim();
+        if (val.Length == 0 || col is < 2 or > 9) return false;
+        if (!IsLegalActionName(val)) return false;
+        if (SheetAt(row)?.Type != SheetType.ProfileName) return false;
+        if (GetCell(row, ActionColumn).Trim().Length > 0) return false;
+        var output = GetCell(row, 0);
+        if (NameableBindings().Any(b => b.Row != row && SameName(b.ActionName, val) && b.Output != output))
+            return false;
+        if (!apply) return true;
+
+        Snapshot();
+        var r = Widen(row, ActionColumn);
+        r[ActionColumn] = val;
+        r[col] = "";
+        LabelActionColumn(row);
+        Reparse();
+        return true;
     }
 
     // Delete several rows as one undoable step (the selection's Delete

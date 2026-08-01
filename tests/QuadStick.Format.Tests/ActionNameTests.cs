@@ -301,4 +301,62 @@ public class ActionNameTests
         Assert.Equal("pick note; typed a note here", f.GetCell(row, 10));
         Assert.Equal("Select", f.GetCell(row, ProfileFile.ActionColumn));
     }
+
+    // The real case this exists for: a profile that works on the device and
+    // carries "aim" in an input column, where the user meant it as their own
+    // word for the row, not as an input the QuadStick has ever heard of.
+    static ProfileFile StrayWordInAnInputColumn() => ProfileFile.Load(
+        "Profile Name,,Left joy\n" +
+        "game.csv\n" +
+        "Outputs,Function,usb\n" +
+        "left_trigger,normal,mp_center_sip,,,,,aim\n");
+
+    [Fact]
+    public void A_stray_word_can_become_the_rows_name_instead_of_being_dropped()
+    {
+        var f = StrayWordInAnInputColumn();
+
+        Assert.True(f.CanMoveInputToActionName(4, 7));
+        Assert.True(f.MoveInputToActionName(4, 7));
+
+        Assert.Equal("aim", f.GetCell(4, ProfileFile.ActionColumn));
+        Assert.Equal("", f.GetCell(4, 7));
+        var b = f.Document.Sheets[0].Bindings[0];
+        Assert.Equal("aim", b.ActionName);
+        Assert.Equal("left_trigger", b.Output);
+        Assert.Equal(new[] { "mp_center_sip" }, b.Inputs);
+        // The column gets its title so a shared sheet reads properly.
+        Assert.Equal("Action", f.GetCell(3, ProfileFile.ActionColumn));
+        Assert.True(f.Undo());
+        Assert.Equal("aim", f.GetCell(4, 7));
+    }
+
+    // A word that is really an output would show up twice in the picker, and
+    // Preferences rows have no names at all: column L there is a note.
+    [Fact]
+    public void A_word_that_cannot_be_a_name_is_refused_not_mangled()
+    {
+        var f = StrayWordInAnInputColumn();
+        f.SetCell(4, 7, "triangle");
+        Assert.False(f.CanMoveInputToActionName(4, 7));
+        Assert.False(f.MoveInputToActionName(4, 7));
+        Assert.Equal("triangle", f.GetCell(4, 7));
+
+        var prefs = ProfileFile.Load("Preferences\nprefs.csv\nName,Value\nvolume,5,,,,,aim\n");
+        Assert.False(prefs.CanMoveInputToActionName(4, 6));
+    }
+
+    [Fact]
+    public void A_name_already_in_the_row_is_never_overwritten()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Left joy\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb,,,,,,,,,Action\n" +
+            "left_trigger,normal,mp_center_sip,,,,,aim,,,,Fire\n");
+
+        Assert.False(f.CanMoveInputToActionName(4, 7));
+        Assert.Equal("Fire", f.GetCell(4, ProfileFile.ActionColumn));
+        Assert.Equal("aim", f.GetCell(4, 7));
+    }
 }

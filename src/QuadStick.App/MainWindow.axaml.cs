@@ -2744,7 +2744,8 @@ public partial class MainWindow : Window
             if (path.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
             {
                 string text;
-                using (var stream = File.OpenRead(path)) text = Xlsx.ToCsv(stream);
+                IReadOnlyList<string> skipped;
+                using (var stream = File.OpenRead(path)) text = Xlsx.ToCsv(stream, out skipped);
                 var imported = ProfileFile.Load(text);
                 if (imported.Document.Sheets.Count == 0)
                 {
@@ -2752,7 +2753,10 @@ public partial class MainWindow : Window
                     return;
                 }
                 OpenInEditor(imported, savePath: null, ProfileSource.File);
-                Status($"Imported {imported.Document.Sheets.Count} mode(s) from {picks[0].Name}. Save to keep it as a profile.", StatusKind.Ready);
+                Status(skipped.Count > 0
+                        ? $"Imported {imported.Document.Sheets.Count} mode(s) from {picks[0].Name}. {SkippedTabsMessage(skipped)}"
+                        : $"Imported {imported.Document.Sheets.Count} mode(s) from {picks[0].Name}. Save to keep it as a profile.",
+                    skipped.Count > 0 ? StatusKind.Warning : StatusKind.Ready);
                 return;
             }
             OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), path, ProfileSource.File);
@@ -2833,6 +2837,15 @@ public partial class MainWindow : Window
 
     Task ImportAsync() => ImportSheetsAsync(SheetsUrlBox.Text ?? "");
 
+    /// <summary>Names the tabs that hold bindings but did not import, and says
+    /// why in the one place the user can act on: cell A1. Both import paths
+    /// share it so the wording cannot drift apart.</summary>
+    internal static string SkippedTabsMessage(IReadOnlyList<string> skipped) =>
+        $"The tab{(skipped.Count == 1 ? "" : "s")} {string.Join(", ", skipped.Select(t => $"\"{t}\""))} "
+        + $"look{(skipped.Count == 1 ? "s" : "")} like a mode but did not come in, because cell A1 does not start with "
+        + "\"Profile\", \"Preferences\" or \"Infrared\". The QuadStick reads A1 the same way, so it would skip "
+        + $"{(skipped.Count == 1 ? "that tab" : "those tabs")} too. Fix A1 in the spreadsheet and import again.";
+
     /// <summary>The one Sheets import. The pasted link on Home and a pick from
     /// the community catalog both land here, so the app has a single workbook
     /// conversion. Returns once the profile is open in the editor or the error
@@ -2863,10 +2876,11 @@ public partial class MainWindow : Window
             var bytes = await client.GetByteArrayAsync(workbookUrl);
             var wholeWorkbook = Xlsx.LooksLikeXlsx(bytes);
             string text;
+            IReadOnlyList<string> skipped = Array.Empty<string>();
             if (wholeWorkbook)
             {
                 using var stream = new MemoryStream(bytes);
-                text = Xlsx.ToCsv(stream);
+                text = Xlsx.ToCsv(stream, out skipped);
             }
             else text = await client.GetStringAsync(csvUrl);
 
@@ -2881,7 +2895,11 @@ public partial class MainWindow : Window
             // exactly when it is failing.
             Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
             OpenInEditor(imported, savePath: null, ProfileSource.Sheets);
-            if (!wholeWorkbook && imported.Document.Sheets.Count == 1)
+            // A named tab that did not come in outranks the other two notes:
+            // it is the only one that means the profile is missing something.
+            if (skipped.Count > 0)
+                Status($"Imported {imported.Document.Sheets.Count} mode(s). {SkippedTabsMessage(skipped)}", StatusKind.Warning);
+            else if (!wholeWorkbook && imported.Document.Sheets.Count == 1)
                 Status("Imported this spreadsheet's linked tab. A published link only gives one tab; share the sheet with \"Anyone with the link\" instead to import every mode tab.", StatusKind.Warning);
             else if (imported.Document.Sheets.Count > 1)
                 Status($"Imported {imported.Document.Sheets.Count} modes from the spreadsheet's tabs.", StatusKind.Ready);

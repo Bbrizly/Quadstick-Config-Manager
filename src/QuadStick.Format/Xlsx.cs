@@ -16,6 +16,12 @@ namespace QuadStick.Format;
 // name is cell C1, same as every other sheet.
 //
 // xlsx is a zip of XML, so this is stdlib only. No spreadsheet library.
+/// <summary>A tab that holds bindings but did not import, with the cells read
+/// from it. The device skips it for the same reason the app does, so this is
+/// not a parsing failure: it is a mode the user has already lost and does not
+/// know about.</summary>
+public sealed record SkippedTab(string Name, IReadOnlyList<string[]> Rows);
+
 public static class Xlsx
 {
     // Never exported by QMP or the Sheets add-on, whatever their A1 says.
@@ -34,19 +40,30 @@ public static class Xlsx
     /// <summary>Every mode tab in the workbook, concatenated into profile CSV
     /// text. Throws InvalidDataException when the file is not a readable
     /// workbook; returns "" when it holds no profile tab at all.</summary>
-    public static string ToCsv(Stream xlsx)
+    public static string ToCsv(Stream xlsx) => ToCsv(xlsx, out _);
+
+    /// <summary>As above, and <paramref name="skippedTabs"/> reports the tabs
+    /// that hold bindings but were not imported because their A1 does not say
+    /// what kind of sheet they are. Skipping them is correct, since the device
+    /// reads A1 the same way, but a caller has to be able to say so: one
+    /// overwritten A1 costs the user a whole mode, and silence makes that look
+    /// like a parsing bug. The cells come back with the name so the caller can
+    /// show what was left behind and offer to repair A1, rather than only
+    /// naming the loss.</summary>
+    public static string ToCsv(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs)
     {
         // A half-downloaded workbook unzips but does not parse. Both are the
         // same thing to the caller: this file is not readable.
-        try { return Read(xlsx); }
+        try { return Read(xlsx, out skippedTabs); }
         catch (System.Xml.XmlException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
     }
 
-    static string Read(Stream xlsx)
+    static string Read(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs)
     {
         using var zip = new ZipArchive(xlsx, ZipArchiveMode.Read);
         var shared = SharedStrings(zip);
         var rows = new List<string[]>();
+        var skipped = new List<SkippedTab>();
         foreach (var (name, part) in SheetParts(zip))
         {
             if (HelperTabs.Contains(name.Trim())) continue;
@@ -55,9 +72,34 @@ public static class Xlsx
             // workbook (Inputs, Outputs, notes, scratch) is not a profile.
             if (grid.Count > 0 && grid[0].Length > 0 && Vocab.IsSheetKeyword(grid[0][0].Trim()))
                 rows.AddRange(grid);
+            else if (LooksLikeBindings(grid)) skipped.Add(new SkippedTab(name, grid));
         }
+        skippedTabs = skipped;
         return Csv.Write(rows);
     }
+
+    /// <summary>The tab's rows as a mode the app and the device would both
+    /// read: A1 given the keyword it is missing, and the tab's own name used
+    /// as the mode name when the sheet does not carry one. Nothing else is
+    /// touched, so what comes in is the user's own layout.</summary>
+    public static List<string[]> RepairedAsMode(SkippedTab tab)
+    {
+        var rows = tab.Rows.Select(r => (string[])r.Clone()).ToList();
+        if (rows.Count == 0) return rows;
+        var first = rows[0];
+        if (first.Length < 3) { Array.Resize(ref first, 3); rows[0] = first; }
+        for (int c = 0; c < first.Length; c++) first[c] ??= "";
+        first[0] = "Profile Name";
+        if (first[2].Trim().Length == 0) first[2] = tab.Name;
+        return rows;
+    }
+
+    // Rows with a real function in column B are what a mode is made of, and a
+    // reference card or a scratch tab has none. Three is enough to tell them
+    // apart without naming every stray tab on every import, which would just
+    // teach people to ignore the message.
+    static bool LooksLikeBindings(List<string[]> grid) =>
+        grid.Count(r => r.Length > 1 && Vocab.FunctionArity.ContainsKey(r[1].Trim())) >= 3;
 
     // Every worksheet in tab order, hidden ones included: QMP exports by tab
     // name and A1, not by whether the tab is showing, and an import that
