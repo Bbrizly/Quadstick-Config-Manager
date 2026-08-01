@@ -96,7 +96,12 @@ this basic rarely change between firmware versions.
   reads properly. Older versions of this app and both official converters
   ignore both columns.
 - Limits: 16 profiles, 128 binding rows each; extras are read and discarded
-  without any indication.
+  without any indication. Only rows the device accepts spend a slot. The
+  binding loop's own `i++` sits after the `continue` it takes when the
+  output cell matches neither an output nor a preference keyword, so a
+  blank or misspelled output costs nothing. Counting every row instead
+  warns about a limit the file is nowhere near: 12 of the 309 public
+  profiles used to get that warning wrongly.
 - Preferences segment: two lines skipped (`prefs.csv,,` and
   `Preference,Value,`), then `name,value` rows until a blank line. Values
   are atoi except `bluetooth_device_mode` (none/keyboard/game_pad/mouse/
@@ -110,6 +115,34 @@ this basic rarely change between firmware versions.
   on the drive is compared with flash and, if different, auto-flashed with
   a reboot. default.csv and prefs.csv are polled ~every 2 s by timestamp
   and reloaded when they change.
+
+## What the app straightens out on the way to the device
+
+Two things a spreadsheet treats as harmless are not, because the device has
+no CSV parser at all. It reads one line into a 1024-byte buffer and scans it
+for separators. `ProfileFile.ToCsvText` fixes both on the way out, and the
+validator still sees the grid as typed so it can say what changed.
+
+- **Trailing spaces in columns A..J.** `search_for_keyword` skips LEADING
+  whitespace only, then compares the whole word, so an output written `x `
+  throws its row away and an input written `lip ` is dropped from the
+  binding. Every spreadsheet shows a working row either way. Trimming those
+  cells on write touched 3,129 cells across the 309 public profiles.
+- **A newline inside a quoted cell.** A cell holding several lines is one
+  row to every spreadsheet and several lines to `f_gets`. If one of them is
+  blank, the binding loop reads it as the end of the mode and drops every
+  row below. One published profile loses thirty bindings to a paragraph
+  break in a comment. The app joins those lines back into one on write and
+  warns, because it is changing the user's own text.
+
+Neither is a judgement call any more. `tests/QuadStick.Format.Tests/FirmwareOracle.cs`
+is a transcription of the reader described above, with its keyword tables
+generated from the firmware headers by `scripts/dump-firmware-keywords.py`.
+`DeviceAgreementTests.cs` holds the rule it exists for: wherever the app's
+view of a profile differs from what the device ends up with, the app must
+say so on that row. Disagreeing is allowed, disagreeing in silence is not.
+Before writing "the device does X" anywhere, including in this file, add the
+case there and let the oracle answer.
 
 ## Sheet structure
 
@@ -154,8 +187,10 @@ this basic rarely change between firmware versions.
   firmware is softer: it skips a blank-output row and stops only at a blank
   LINE (S6). Either way the row is dead weight, and a stray row after a
   blank is silently ignored on the device (or, if it happens to start with
-  a sheet keyword, read as a phantom sheet). This app treats such rows as
-  errors that block installing.
+  a sheet keyword, read as a phantom sheet). This app reports such a row as
+  a warning and still installs: the device reads the file correctly, the row
+  just does nothing. Error is reserved for a row the device MISREADS
+  (`tests/QuadStick.Format.Tests/InertRowTests.cs`).
 - Sheets named `Inputs`, `Outputs`, `Voice`, or `Reference Card` are helper
   sheets and never export (S2, S3).
 - The add-on writes each row only up to its last used cell, with a trailing
@@ -289,3 +324,23 @@ contains default.csv, with a manual folder picker as fallback.
    on the sheet. A Preferences sheet puts the value in column B; a mode-sheet
    preference override puts it in column C (B is ignored there). The app now
    branches on sheet type in `ValidatePreferencesSheet`.
+6. Which firmware a given user is actually running. The app offers 28 names
+   the 1476 tables do not have, most of them Xbox Adaptive Controller
+   outputs, which reads as S1 being newer than S6 rather than as a mistake.
+   Nothing in the app reads the connected device's version, so it cannot
+   tell a user their stick is too old for a name they picked. The 28 are
+   pinned by `The_only_names_the_two_disagree_on_are_the_ones_we_know_about`
+   so the list cannot grow unnoticed. Closing this needs a device to read a
+   version off and a decision about which firmware to target.
+
+7. What the workbook reader drops without naming it. The import review window
+   can only report the tabs `Xlsx.ToCsv` hands back, and that list is the tabs
+   holding at least three rows with a known function in column B. Everything
+   else leaves no trace: a real mode with only one or two recognised bindings,
+   any tab called Inputs, Outputs, Voice or Reference Card whatever is in it,
+   a tab whose workbook relationship will not resolve, and a formula cell with
+   no cached value, which reads as empty. None of that is new (the app has
+   always worked this way) but the review window now says out loud what came
+   in, so a silent drop reads as a lie where it used to read as nothing.
+   Closing this means `Xlsx` returning every tab it saw with what it decided
+   about each one, instead of only the ones it half recognised.

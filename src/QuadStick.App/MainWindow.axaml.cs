@@ -4962,8 +4962,14 @@ public partial class MainWindow : Window
             ("Renaming",
              "The name box at the top of the editor is the profile's on-device name. Use no spaces; the .csv file extension is added for you. The profile named default is special: it is the device's fallback file and should stay unchanged."),
 
+            ("Device settings",
+             "prefs.csv is the QuadStick's own settings file, not a game profile: it changes how the whole device behaves, not just one game. A setting the app recognizes gets a real control, a number box, a checkbox, or a dropdown, so you cannot type a value the device would reject. A setting it does not recognize, or a value already in the file an exact control could not show without changing it, keeps a plain text box and is left exactly as it was. Installing prefs.csv back to the device always asks first, and backs up the file already there."),
+
             ("Installing safely",
              "Plug in the QuadStick; it shows up like a USB drive. Install backs up the old file to QuadStickBackups, writes a temp copy, checks it, then swaps it in. Errors block install. Overwriting default.csv always asks first."),
+
+            ("Managing files on your QuadStick",
+             "The Manage files card, under On your QuadStick, works on a mounted QuadStick: its drive has to show up like a USB stick in Finder or File Explorer. From there you can copy a file to your library, open the Google Sheet it is linked to, or delete it; deleting backs it up to QuadStickBackups first. default.csv and prefs.csv are protected and cannot be deleted from this app. If the drive does not show up at all, this app has no other way to reach it; see QuadStick not showing up below."),
 
             ("QuadStick not showing up?",
              "If the device is in PS4 boot mode, or virtual XBox / Dualshock controller emulation is enabled, the flash drive does not appear on the computer. Turn those off (in QMP or your prefs) and replug. On a Mac, the volume is named \"QUAD STICK\" in Finder."),
