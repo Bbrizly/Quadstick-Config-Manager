@@ -24,26 +24,44 @@ public sealed class ProfileFile
         return file;
     }
 
-    // The device matches a keyword with strncmp after skipping LEADING spaces
-    // only (search_for_keyword, Configuration.c), so a trailing space stops the
-    // match: an output like "x " throws the whole row away and an input like
-    // "lip " is dropped from the binding. The app trims every cell when it
-    // parses, so it showed a working binding either way. Trim columns A..J on
-    // the way out and the two agree. Columns K on are the user's own text and
-    // the device never reads them, so they go back exactly as typed.
-    public string ToCsvText() => Csv.Write(Grid.Select(TrimKeywordCells));
+    /// <summary>The file as it goes to disk and to the device. Two things are
+    /// straightened out on the way, both because the device has no CSV parser
+    /// at all: it reads a line at a time and scans it for separators.
+    ///
+    /// 1. Columns A..J are trimmed. search_for_keyword skips LEADING spaces
+    ///    only and then compares the whole word, so an output like "x " throws
+    ///    the row away and an input like "lip " is dropped from the binding.
+    ///    The app trims every cell when it parses, so it showed a working
+    ///    binding either way.
+    ///
+    /// 2. Newlines inside a cell become spaces. A quoted cell holding several
+    ///    lines is one row to every spreadsheet and several lines to f_gets,
+    ///    and if one of them is blank the binding loop treats it as the end of
+    ///    the mode and drops every row below. One published community profile
+    ///    loses thirty bindings to a paragraph break in a comment.</summary>
+    public string ToCsvText() => Csv.Write(Grid.Select(DeviceSafe));
 
-    static string[] TrimKeywordCells(string[] row)
+    // The grid exactly as the user has it. The parser and the validator read
+    // this, so they still see what ToCsvText straightens out and can say so.
+    string RawCsvText() => Csv.Write(Grid);
+
+    static readonly char[] NewLines = { '\n', '\r' };
+
+    static string[] DeviceSafe(string[] row)
     {
-        string[]? trimmed = null;
-        for (int c = 0; c < Parser.KeywordColumns && c < row.Length; c++)
+        string[]? fixedUp = null;
+        for (int c = 0; c < row.Length; c++)
         {
-            var t = row[c].Trim();
-            if (t == row[c]) continue;
-            trimmed ??= (string[])row.Clone();
-            trimmed[c] = t;
+            var v = row[c];
+            if (c < Parser.KeywordColumns) v = v.Trim();
+            if (v.AsSpan().IndexOfAny(NewLines) >= 0)
+                v = string.Join(" ", v.Split(NewLines, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(part => part.Trim())).Trim();
+            if (v == row[c]) continue;
+            fixedUp ??= (string[])row.Clone();
+            fixedUp[c] = v;
         }
-        return trimmed ?? row;
+        return fixedUp ?? row;
     }
 
     // Temp file then rename, so a crash mid-write can't leave a half-written
@@ -87,7 +105,7 @@ public sealed class ProfileFile
 
     public void Reparse()
     {
-        var (doc, parseIssues) = Parser.Parse(ToCsvText());
+        var (doc, parseIssues) = Parser.Parse(RawCsvText());
         Document = doc;
         Issues = parseIssues.Concat(Validator.Validate(doc)).ToList();
     }
@@ -97,6 +115,12 @@ public sealed class ProfileFile
     //
     // 1. QMP puts a version header on every file it writes, and the device
     //    rejects a file whose first line does not start with "QuadStick".
+    //    It compares those nine bytes case sensitively, so a hand-typed
+    //    "quadstick configuration" is not a header to the device at all: it
+    //    ignores the whole file and boots its built-in configuration. The
+    //    parser is deliberately case insensitive so such a file still opens
+    //    and still shows its modes, which means the casing has to be put
+    //    back here, on the way out.
     // 2. A segment ends ONLY at a line whose first byte is \n or \r
     //    (`line_buffer[0] != '\n' && line_buffer[0] != '\r'`, the binding loop
     //    and the preferences loop both). A row of commas is not a blank line
@@ -108,13 +132,20 @@ public sealed class ProfileFile
     // Both edits shift row numbers, so callers rebind their views afterwards.
     public void NormalizeForDeviceCsv()
     {
-        if (Document.HasVersionHeader && SheetsMissingSeparator().Count == 0) return;
+        var wrongCase = Document.HasVersionHeader && !HeaderCasedForDevice();
+        if (Document.HasVersionHeader && !wrongCase && SheetsMissingSeparator().Count == 0) return;
         Snapshot();
         if (!Document.HasVersionHeader)
         {
             var name = Path.GetFileNameWithoutExtension(Document.CsvFileName ?? "config");
             Grid.Insert(0, new[] { "QuadStick Configuration", "Version 1.5", "", name });
             Reparse();
+        }
+        else if (wrongCase)
+        {
+            var rest = Grid[0][0].TrimStart()[HeaderKeyword.Length..];
+            Grid[0] = (string[])Grid[0].Clone();
+            Grid[0][0] = HeaderKeyword + rest;
         }
         // Bottom up, so inserting a row cannot move the rows still to fix.
         foreach (var row in SheetsMissingSeparator().OrderByDescending(r => r))
@@ -127,6 +158,15 @@ public sealed class ProfileFile
         }
         Reparse();
     }
+
+    const string HeaderKeyword = "QuadStick Configuration";
+
+    // The header as the device needs it: the line has to BEGIN with the
+    // keyword, spelled this way. ToCsvText trims the cell, so leading spaces
+    // are already gone by the time the file is written.
+    bool HeaderCasedForDevice() =>
+        Grid.Count > 0 && Grid[0].Length > 0
+        && Grid[0][0].TrimStart().StartsWith(HeaderKeyword, StringComparison.Ordinal);
 
     // 1-based keyword rows of every sheet after the first whose preceding row
     // is not an empty line to the firmware.

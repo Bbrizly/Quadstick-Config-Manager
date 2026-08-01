@@ -108,6 +108,17 @@ public static class Parser
                 sheetStart = r;
             }
 
+            // The device has no idea that a quoted cell can hold more than one
+            // line: f_gets hands the binding loop each line separately, so the
+            // extra lines arrive as rows of their own, and a blank one among
+            // them ends the mode and drops every row below it. Saving joins
+            // them back into one line, which is worth saying out loud because
+            // it changes the user's own text.
+            if (grid[r].Any(c => c.AsSpan().IndexOfAny('\n', '\r') >= 0))
+                issues.Add(new Issue(Severity.Warning, $"A{r + 1}",
+                    $"Row {r + 1} has a cell holding more than one line. The device reads each line as a separate row, and a blank line among them stops it reading the rest of this mode, so saving joins them into one line.",
+                    "Keep a note on a single line."));
+
             var line = Csv.Write(new[] { grid[r] });
             if (System.Text.Encoding.UTF8.GetByteCount(line) > MaxLineBytes)
                 issues.Add(new Issue(Severity.Error, $"A{r + 1}",
@@ -227,7 +238,14 @@ public static class Parser
 
     // A line the device sees as empty: one that writes back as nothing at all,
     // so f_gets hands the binding loop a buffer starting with '\n' or '\r'.
-    static bool IsBlankLine(string[] row) => row.Length == 0 || (row.Length == 1 && row[0].Length == 0);
+    //
+    // The cell is trimmed first because that is what ToCsvText does to it on
+    // the way out. A single cell holding spaces, or a quoted cell holding only
+    // a newline, looks like a row in every spreadsheet and used to read as one
+    // here too, then went to the device as an empty line and ended the mode.
+    // A row of two empty cells is different: it still writes a comma.
+    static bool IsBlankLine(string[] row) =>
+        row.Length == 0 || (row.Length == 1 && row[0].Trim().Length == 0);
 
     static string Cell(List<string[]> grid, int r, int c) =>
         r < grid.Count && c < grid[r].Length ? grid[r][c] : "";

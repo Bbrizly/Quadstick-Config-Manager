@@ -132,6 +132,11 @@ public class DeviceAgreementTests
     [InlineData("x,normal,lip\n,,\ncircle,normal,mp_center_sip\n")]
     // A function cell that only starts with a keyword.
     [InlineData("x,toggled,lip\n")]
+    // A row holding one cell of spaces. Every spreadsheet shows a row there,
+    // and the app read it as one too, but saving trims the cell to nothing and
+    // the line goes to the device empty, which ends the mode.
+    [InlineData("x,normal,lip\n \ncircle,normal,mp_center_sip\n")]
+    [InlineData("x,normal,lip\n\"\r\n\"\ncircle,normal,mp_center_sip\n")]
     // The plain cases, which must stay silent because there is nothing to say.
     [InlineData("x,normal,lip\n")]
     [InlineData("left_trigger,delay_on 200,mp_left_sip_soft,mp_center_sip\n")]
@@ -142,6 +147,17 @@ public class DeviceAgreementTests
     [InlineData("x,normal,none,lip\n")]
     public void The_app_never_disagrees_with_the_device_in_silence(string rows) =>
         AssertNothingSilent(Head + rows);
+
+    // The device compares the first nine bytes of the file case sensitively and
+    // ignores the whole file when they are not exactly "QuadStick", falling back
+    // to its built-in configuration. The app read the header case insensitively,
+    // so a hand-typed one looked fine and installed a file the device threw away.
+    [Theory]
+    [InlineData("quadstick configuration,Version 1.5,,game\n")]
+    [InlineData("QUADSTICK CONFIGURATION,Version 1.5,,game\n")]
+    [InlineData("QuadStick Configuration,Version 1.5,,game\n")]
+    public void A_header_in_the_wrong_case_still_reaches_the_device(string header) =>
+        AssertNothingSilent(header + Head + "x,normal,lip\n");
 
     [Fact]
     public void A_whole_profile_of_awkward_rows_stays_honest()
