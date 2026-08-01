@@ -21,6 +21,14 @@ public static class Device
         return _cache;
     }
 
+    // An explicit Refresh must not wait out the TTL. Drop the cache so the very
+    // next cached lookup enumerates drives again.
+    public static void InvalidateCandidateCache()
+    {
+        _cache = null;
+        _cacheAtUtc = default;
+    }
+
     public static List<string> FindCandidates()
     {
         var found = new List<string>();
@@ -75,16 +83,7 @@ public static class Device
         // 1. Backup any existing file.
         string? backup = null;
         if (File.Exists(target))
-        {
-            Directory.CreateDirectory(backupDir);
-            // Millisecond stamp plus a counter: two installs in the same
-            // instant must both keep their backups, never throw.
-            var stamp = $"{DateTime.Now:yyyyMMdd-HHmmss-fff}";
-            backup = Path.Combine(backupDir, $"{stamp}-{name}");
-            for (int n = 2; File.Exists(backup); n++)
-                backup = Path.Combine(backupDir, $"{stamp}-{n}-{name}");
-            File.Copy(target, backup, overwrite: false);
-        }
+            backup = BackupExisting(target, backupDir);
 
         // Clone so the open editor isn't touched.
         var toWrite = ProfileFile.Load(file.ToCsvText());
@@ -120,6 +119,111 @@ public static class Device
         }
         return new InstallResult(target, backup);
     }
+
+    // The one backup primitive. Install and DeleteProfile both go through it so
+    // there is a single naming rule and a single place that can fail.
+    // Millisecond stamp plus a counter: two backups of the same name in the
+    // same instant must both survive, never throw, never overwrite.
+    static string BackupExisting(string path, string backupDir)
+    {
+        Directory.CreateDirectory(backupDir);
+        var name = Path.GetFileName(path);
+        var stamp = $"{DateTime.Now:yyyyMMdd-HHmmss-fff}";
+        var backup = Path.Combine(backupDir, $"{stamp}-{name}");
+        for (int n = 2; File.Exists(backup); n++)
+            backup = Path.Combine(backupDir, $"{stamp}-{n}-{name}");
+        File.Copy(path, backup, overwrite: false);
+        return backup;
+    }
+
+    public sealed record DeleteResult(string DeletedPath, string BackupPath);
+
+    // Deleting from someone's device is irreversible, so every rule lives here
+    // and not in the window that calls it. The UI cannot pass its way around
+    // any of these checks. Order matters: a protected name is refused before
+    // anything is copied or removed.
+    public static DeleteResult DeleteProfile(string deviceRoot, string fileName, string backupDir)
+    {
+        if (string.IsNullOrWhiteSpace(fileName) || fileName != Path.GetFileName(fileName))
+            throw new InvalidOperationException(
+                "Only a plain file name on the device root can be deleted, not a path.");
+
+        if (!fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Only .csv profiles can be deleted.");
+
+        if (string.Equals(fileName, "default.csv", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(fileName, "prefs.csv", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                $"{fileName} is protected and cannot be deleted. " +
+                "Removing it can leave the device unusable.");
+
+        if (!IsInstallTarget(deviceRoot))
+            throw new InvalidOperationException(
+                "That folder does not look like a QuadStick drive (no default.csv at its root). " +
+                "Pick the USB volume that appears when the device is plugged in.");
+
+        // Belt and braces after the file-name check: resolve both paths and
+        // prove the target still sits directly in the device root.
+        var root = Path.TrimEndingDirectorySeparator(Path.GetFullPath(deviceRoot));
+        var target = Path.GetFullPath(Path.Combine(root, fileName));
+        var targetDir = Path.TrimEndingDirectorySeparator(Path.GetDirectoryName(target) ?? string.Empty);
+        var compare = OperatingSystem.IsWindows()
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+        if (!string.Equals(targetDir, root, compare))
+            throw new InvalidOperationException(
+                "That file is not directly on the device root, so it was not deleted.");
+
+        if (!File.Exists(target))
+            throw new InvalidOperationException(
+                $"{fileName} is no longer on the device. Refresh the list and try again.");
+
+        // Backup first. If the copy throws, the source is still there and we
+        // have deleted nothing.
+        var backup = BackupExisting(target, backupDir);
+        File.Delete(target);
+        return new DeleteResult(target, backup);
+    }
+
+    // The order the device steps through files when you cycle profiles.
+    // prefs.csv is settings, not a profile, so it is never selectable.
+    public static IReadOnlyList<string> SelectionOrder(IEnumerable<string> fileNames)
+    {
+        var csv = fileNames
+            .Where(n => !string.IsNullOrWhiteSpace(n))
+            .Where(n => n.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            .Where(n => !string.Equals(n, "prefs.csv", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var ordered = new List<string>();
+        var first = csv.FirstOrDefault(n => string.Equals(n, "default.csv", StringComparison.OrdinalIgnoreCase));
+        if (first is not null) ordered.Add(first);
+        ordered.AddRange(csv
+            .Where(n => !string.Equals(n, "default.csv", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(n => n, StringComparer.OrdinalIgnoreCase));
+        return ordered;
+    }
+
+    // The audited QuadStick Manager Program table, copied as data. Five lights,
+    // left to right, for file numbers 1 to 32. There is no rule to infer here
+    // and nothing past 32 is documented, so nothing is extrapolated.
+    const string P = "purple", G = "grey", B = "blue", R = "red";
+    static readonly string[][] _ledPatterns =
+    [
+        [P, G, G, G, G], [G, P, G, G, G], [G, G, P, G, G], [G, G, G, P, G],
+        [G, G, G, G, P], [P, G, G, G, P], [G, P, G, G, P], [G, G, P, G, P],
+        [G, G, G, P, P], [G, G, G, G, B], [P, G, G, G, B], [G, P, G, G, B],
+        [G, G, P, G, B], [G, G, G, P, B], [G, G, G, G, R], [P, G, G, G, R],
+        [G, P, G, G, R], [G, G, P, G, R], [G, G, G, P, R], [B, B, B, B, B],
+        [P, B, B, B, B], [B, P, B, B, B], [B, B, P, B, B], [B, B, B, P, B],
+        [B, B, B, B, P], [P, B, B, B, P], [B, P, B, B, P], [B, B, P, B, P],
+        [B, B, B, P, P], [R, R, R, R, P], [P, R, R, R, R], [R, P, R, R, R],
+    ];
+
+    public static IReadOnlyList<string> LedPattern(int fileNumber) =>
+        fileNumber >= 1 && fileNumber <= _ledPatterns.Length
+            ? [.. _ledPatterns[fileNumber - 1]] // copy so the table stays read-only
+            : [];
 
     public static string DefaultBackupDir() =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),

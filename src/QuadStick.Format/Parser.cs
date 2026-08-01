@@ -24,6 +24,8 @@ public static class Parser
         if (Cell(grid, 0, 0).TrimStart().StartsWith("QuadStick Configuration", StringComparison.OrdinalIgnoreCase))
         {
             doc.HasVersionHeader = true;
+            doc.HeaderVersion = Cell(grid, 0, 1).Trim(); // e.g. "Version 1.5"
+            doc.HeaderSource = Cell(grid, 0, 2).Trim();  // the source sheet URL or id
             doc.HeaderName = Cell(grid, 0, 3).Trim(); // the human name, e.g. "Grand Theft Auto"
             scanFrom = 1;
         }

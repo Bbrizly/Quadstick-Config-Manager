@@ -36,7 +36,11 @@ public sealed class ProfileDocument
     public string? CsvFileName => Sheets.Count > 0 ? Sheets[0].CsvFileName : null;
     public int FileNameCellRow => Sheets.Count > 0 ? Sheets[0].StartRow + 1 : 2;
     public bool HasVersionHeader { get; set; }
+    public string HeaderVersion { get; set; } = "";
+    public string HeaderSource { get; set; } = "";
     public string HeaderName { get; set; } = "";
     public bool IsDefaultConfig =>
         string.Equals(CsvFileName, "default.csv", StringComparison.OrdinalIgnoreCase);
+    public bool IsDevicePreferences =>
+        string.Equals(CsvFileName, "prefs.csv", StringComparison.OrdinalIgnoreCase);
 }

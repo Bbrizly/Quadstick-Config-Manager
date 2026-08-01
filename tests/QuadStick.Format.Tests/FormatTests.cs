@@ -57,6 +57,40 @@ public class CorpusTests
         var reparsed = Csv.Parse(written);
         Assert.Equal("a\rb", reparsed[0][0]);
     }
+
+    [Fact]
+    public void Device_style_header_fills_version_source_and_name_from_columns_B_C_D()
+    {
+        var (doc, _) = Parser.Parse(Load("device-style.csv"));
+        Assert.True(doc.HasVersionHeader);
+        Assert.Equal("Version 1.5", doc.HeaderVersion);
+        Assert.Equal("142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds", doc.HeaderSource);
+        Assert.Equal("QuadStick", doc.HeaderName);
+    }
+
+    [Fact]
+    public void Profile_without_a_version_header_leaves_header_fields_empty()
+    {
+        var (doc, _) = Parser.Parse(Load("default.csv"));
+        Assert.False(doc.HasVersionHeader);
+        Assert.Equal("", doc.HeaderVersion);
+        Assert.Equal("", doc.HeaderSource);
+        Assert.Equal("", doc.HeaderName);
+    }
+
+    [Fact]
+    public void Device_style_header_row_survives_parse_and_write_unchanged()
+    {
+        // Reading the header metadata must not normalize or rewrite the raw
+        // row: byte stability is the whole point of this parser.
+        var text = Load("device-style.csv");
+        var once = Csv.Write(Csv.Parse(text));
+        var twice = Csv.Write(Csv.Parse(once));
+        Assert.Equal(once, twice);
+        Assert.StartsWith(
+            "QuadStick Configuration,Version 1.5,142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds,QuadStick",
+            once);
+    }
 }
 
 public class ValidatorGoldenTests
@@ -160,5 +194,62 @@ public class ValidatorGoldenTests
     {
         var issues = All("Profile Name,,L\ndefault.csv\nOutputs,Function,usb\nx,normal,lip\n");
         Assert.Contains(issues, i => i.Severity == Severity.Warning && i.Message.Contains("force-erase"));
+    }
+}
+
+// Named to match this project's "~FormatTests" test filter, alongside the
+// SheetsUrlTests in EditInstallTests.cs.
+public class FormatTests
+{
+    const string Id = "142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds";
+    const string Url14 = "https://docs.google.com/spreadsheets/d/142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds/edit#gid=229002792";
+    const string CanonicalEditUrl = "https://docs.google.com/spreadsheets/d/142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds/edit";
+
+    [Fact]
+    public void Version_1_4_header_resolves_the_pasted_url_to_the_canonical_edit_link()
+    {
+        Assert.True(SheetsUrl.TryGetEditUrlFromHeader("Version 1.4", Url14, out var url));
+        Assert.Equal(CanonicalEditUrl, url);
+    }
+
+    [Fact]
+    public void Version_1_5_header_resolves_the_bare_id_to_the_same_canonical_edit_link()
+    {
+        Assert.True(SheetsUrl.TryGetEditUrlFromHeader("Version 1.5", Id, out var url));
+        Assert.Equal(CanonicalEditUrl, url);
+    }
+
+    [Theory]
+    [InlineData("", "")]
+    [InlineData("Version 1.5", "")]
+    [InlineData("", Id)]
+    public void Missing_version_or_source_is_rejected(string version, string source)
+        => Assert.False(SheetsUrl.TryGetEditUrlFromHeader(version, source, out _));
+
+    [Fact]
+    public void Unknown_version_is_rejected()
+        => Assert.False(SheetsUrl.TryGetEditUrlFromHeader("Version 2.0", Url14, out _));
+
+    [Fact]
+    public void Version_1_4_with_a_non_google_host_is_rejected()
+        => Assert.False(SheetsUrl.TryGetEditUrlFromHeader(
+            "Version 1.4", $"https://example.com/spreadsheets/d/{Id}/edit", out _));
+
+    [Fact]
+    public void Version_1_4_with_a_malformed_url_is_rejected()
+        => Assert.False(SheetsUrl.TryGetEditUrlFromHeader("Version 1.4", "not a url", out _));
+
+    [Fact]
+    public void Version_1_5_with_an_invalid_id_is_rejected()
+    {
+        Assert.False(SheetsUrl.TryGetEditUrlFromHeader("Version 1.5", "too-short", out _));
+        Assert.False(SheetsUrl.TryGetEditUrlFromHeader("Version 1.5", Id + "!", out _));
+    }
+
+    [Fact]
+    public void Malformed_header_never_throws()
+    {
+        var ex = Record.Exception(() => SheetsUrl.TryGetEditUrlFromHeader(null!, null!, out _));
+        Assert.Null(ex);
     }
 }

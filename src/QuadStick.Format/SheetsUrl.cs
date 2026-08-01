@@ -16,6 +16,47 @@ public static partial class SheetsUrl
     public static bool TryGetCsvExportUrl(string pasted, out string exportUrl) =>
         TryGetExportUrl(pasted, "csv", wholeWorkbook: false, out exportUrl);
 
+    /// <summary>The Sheet a device-written header points at, as a canonical edit
+    /// link. Version 1.4 headers carry the full URL (the add-on's format);
+    /// Version 1.5 headers carry the bare id (QMP's format). Never throws:
+    /// a missing or malformed version/source just fails the parse.</summary>
+    public static bool TryGetEditUrlFromHeader(string version, string source, out string url)
+    {
+        url = "";
+        if (string.IsNullOrWhiteSpace(version) || string.IsNullOrWhiteSpace(source)) return false;
+
+        string? id = version.Trim() switch
+        {
+            "Version 1.4" => IdFromUrl(source.Trim()),
+            "Version 1.5" => IdFromBareId(source.Trim()),
+            _ => null,
+        };
+        if (id is null) return false;
+
+        url = $"https://docs.google.com/spreadsheets/d/{id}/edit";
+        return true;
+    }
+
+    // Version 1.4: the source is a pasted Sheets URL. Reuse IdPattern to pull
+    // the id out of it, same as the export-url path, but also require the
+    // Google host so a lookalike link on another domain is rejected.
+    static string? IdFromUrl(string source)
+    {
+        if (!Uri.TryCreate(source, UriKind.Absolute, out var uri)) return null;
+        if (!string.Equals(uri.Host, "docs.google.com", StringComparison.OrdinalIgnoreCase)) return null;
+        return IdPattern().Match(source) is { Success: true } m ? m.Groups[1].Value : null;
+    }
+
+    // Version 1.5: the source IS the id, nothing to extract it from. Reuse the
+    // same id character class by matching it in the shape IdPattern expects,
+    // then require the match to consume the whole string so trailing garbage
+    // after a valid-looking prefix is rejected rather than silently dropped.
+    static string? IdFromBareId(string source)
+    {
+        var m = IdPattern().Match("/spreadsheets/d/" + source);
+        return m.Success && m.Groups[1].Value.Length == source.Length ? m.Groups[1].Value : null;
+    }
+
     static bool TryGetExportUrl(string pasted, string format, bool wholeWorkbook, out string exportUrl)
     {
         exportUrl = "";
