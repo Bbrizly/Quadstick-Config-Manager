@@ -152,6 +152,11 @@ public class DeviceAgreementTests
     // the line goes to the device empty, which ends the mode.
     [InlineData("x,normal,lip\n \ncircle,normal,mp_center_sip\n")]
     [InlineData("x,normal,lip\n\"\r\n\"\ncircle,normal,mp_center_sip\n")]
+    // The app reads this as a binding that nudges a setting; firmware 1476 has
+    // no such function and reads column C as the setting's value. A real
+    // disagreement, so the app has to say something on the row.
+    [InlineData("mouse_speed,increment_value 5,right_sip\n")]
+    [InlineData("volume,decrement_value 1,lip\n")]
     // The plain cases, which must stay silent because there is nothing to say.
     [InlineData("x,normal,lip\n")]
     [InlineData("left_trigger,delay_on 200,mp_left_sip_soft,mp_center_sip\n")]

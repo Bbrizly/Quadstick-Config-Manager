@@ -80,6 +80,7 @@ public static class Validator
                     ValidatePreferenceOverride(b, issues);
                     continue;
                 }
+                WarnIfFirmwareReadsThisAsASetting(b, issues);
                 ValidateOutput(b, issues);
                 ValidateFunction(b, issues);
                 ValidateInputs(b, issues);
@@ -105,6 +106,30 @@ public static class Validator
     static bool IsPreferenceOverride(Binding b) =>
         Vocab.IsPreferenceOverride(b.Output, b.Function);
 
+    // The one row the app and firmware 1476 genuinely read differently.
+    //
+    // increment_value and decrement_value are on the validation endpoint's
+    // function list, so the app treats such a row as a live binding that
+    // adjusts a setting. Firmware 1476 has neither in its 12 entry
+    // function_keywords table, and takes the preference branch on the output
+    // NAME alone, so it skips column B and reads column C with atoi: the row
+    // sets the preference to 0 and binds nothing.
+    //
+    // The app cannot tell which firmware is plugged in and will not guess, so
+    // it says what it does not know. Silence here would break the rule the
+    // whole device agreement suite exists to hold: disagree if you must, but
+    // never disagree quietly.
+    static void WarnIfFirmwareReadsThisAsASetting(Binding b, List<Issue> issues)
+    {
+        if (!Vocab.PreferenceOverrides.Contains(b.Output)) return;
+        if (Vocab.IsPreferenceOverride(b.Output, b.Function)) return; // read as a setting anyway
+        var word = b.Function.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+        issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+            $"\"{b.Output}\" is a device setting name, and older firmware does not know \"{word}\". "
+            + "Such a QuadStick ignores column B here and reads column C as the setting's value instead of as an input.",
+            "If your QuadStick does not answer this row, set the value with a plain settings row instead."));
+    }
+
     static void ValidatePreferenceOverride(Binding b, List<Issue> issues)
     {
         // The firmware reads the VALUE from the third column (it skips the
@@ -115,12 +140,19 @@ public static class Validator
         if (valueInC != null)
         {
             var rejected = false;
+            // No word-value exception here, unlike a Preferences sheet. The
+            // firmware reads a preferences FILE with a switch that has keyword
+            // tables for the bluetooth settings (Configuration.c:598-621), and
+            // reads a MODE row with a bare atoi and nothing else
+            // (Configuration.c:495). So "keyboard" is a real value in column B
+            // of a settings sheet and is zero in column C of a mode row.
             if (!long.TryParse(valueInC, System.Globalization.NumberStyles.Integer,
-                               System.Globalization.CultureInfo.InvariantCulture, out _)
-                && !IsWordValuedPreference(b.Output))
+                               System.Globalization.CultureInfo.InvariantCulture, out _))
             {
                 issues.Add(new Issue(Severity.Error, $"C{b.Row}",
-                    $"\"{valueInC}\" is not a whole number. \"{b.Output}\" is a device setting; this cell is its value.",
+                    IsWordValuedPreference(b.Output)
+                        ? $"\"{valueInC}\" is a word. \"{b.Output}\" takes a word on the settings sheet, but a mode row's value is read as a number, so the device sets it to 0 here."
+                        : $"\"{valueInC}\" is not a whole number. \"{b.Output}\" is a device setting; this cell is its value.",
                     "Replace it with a whole number, e.g. \"50\"."));
                 rejected = true;
             }
