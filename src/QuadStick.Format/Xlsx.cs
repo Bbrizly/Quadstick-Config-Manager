@@ -28,6 +28,17 @@ public static class Xlsx
     static readonly HashSet<string> HelperTabs = new(StringComparer.OrdinalIgnoreCase)
     { "Inputs", "Outputs", "Voice", "Reference Card" };
 
+    // Where a cell stops being profile and starts being junk. The shipped
+    // template is 1000 rows per tab and the device reads 128 binding rows per
+    // mode, so nothing real lives past 20,000. Google Sheets leaves a stray
+    // cell at the bottom of a sheet after a paste and delete, and honouring one
+    // at r="1048576" turned a twenty row profile into a million blank rows and
+    // a two megabyte file. XFD is Excel's own last column; past it the
+    // unchecked arithmetic in ColumnIndex wraps, and a reference like
+    // "ZZZZZZ1" asks for a third of a billion cells on one row.
+    const int MaxColumn = 16383; // XFD, zero-based
+    const int MaxRows = 20_000;
+
     static readonly XNamespace Main = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     static readonly XNamespace Rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
     static readonly XNamespace Pkg = "http://schemas.openxmlformats.org/package/2006/relationships";
@@ -54,8 +65,16 @@ public static class Xlsx
     {
         // A half-downloaded workbook unzips but does not parse. Both are the
         // same thing to the caller: this file is not readable.
+        //
+        // FormatException and OverflowException belong here too. A row or cell
+        // whose r="..." is not a number reaches the int conversion below, and
+        // the two import paths both catch InvalidDataException and neither
+        // catches those, so a corrupt sheet took the app down instead of
+        // saying it could not be read.
         try { return Read(xlsx, out skippedTabs); }
         catch (System.Xml.XmlException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
+        catch (FormatException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
+        catch (OverflowException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
     }
 
     static string Read(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs)
@@ -147,6 +166,7 @@ public static class Xlsx
             // Blank rows are skipped in the file too, and a blank row means
             // "mode ends here" to the device, so their positions must survive.
             int number = (int?)row.Attribute("r") ?? rows.Count + 1;
+            if (number > MaxRows || number < 1) continue;
             while (rows.Count < number - 1) rows.Add(Array.Empty<string>());
             rows.Add(cells.ToArray());
         }
@@ -188,6 +208,9 @@ public static class Xlsx
             if (ch is >= 'A' and <= 'Z') n = n * 26 + (ch - 'A' + 1);
             else if (ch is >= 'a' and <= 'z') n = n * 26 + (ch - 'a' + 1);
             else break;
+            // Stop before the arithmetic wraps. Anything past XFD is not a
+            // column Excel can write, so there is no real cell to lose here.
+            if (n > MaxColumn + 1) return MaxColumn;
         }
         return n > 0 ? n - 1 : 0;
     }
