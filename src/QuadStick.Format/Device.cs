@@ -110,11 +110,25 @@ public static class Device
             {
                 File.Move(tmp, target, overwrite: true);
             }
-            catch (IOException) when (backup != null && !File.Exists(target))
+            // Any failure, not just an IOException. The guard that matters is
+            // the second one: the old file is gone, so whatever the exception
+            // type was, the device is sitting there without the profile it had
+            // a moment ago. A USB volume can raise UnauthorizedAccessException
+            // on the same half-finished swap, and catching only IOException
+            // left the user's working profile deleted with nothing put back.
+            catch (Exception) when (backup != null && !File.Exists(target))
             {
-                // The swap died between delete and rename. Put the old file back
-                // so the device is never left without the profile.
-                File.Copy(backup, target, overwrite: true);
+                // Putting it back can fail too, on the same full or unplugged
+                // volume that broke the swap. That is the one case where the
+                // user has actually lost something, so it says where the copy
+                // is instead of reporting a restore that did not happen.
+                try { File.Copy(backup, target, overwrite: true); }
+                catch (Exception restore)
+                {
+                    throw new InvalidOperationException(
+                        $"Writing failed mid-swap and {name} could not be put back on the QuadStick. " +
+                        $"Your previous version is safe at {backup}. Copy it onto the device by hand.", restore);
+                }
                 throw new InvalidOperationException(
                     $"Writing failed mid-swap; the previous version of {name} was restored from backup. The device is unchanged.");
             }
