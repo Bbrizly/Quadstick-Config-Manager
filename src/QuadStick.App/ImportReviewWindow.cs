@@ -55,7 +55,23 @@ public class ImportReviewWindow : Window
     // live: the newest change is the only one that can be reversed without
     // silently taking a newer one with it.
     string? _lastGridEdit;
-    readonly Dictionary<(int Row, int Col), (Border Box, bool Warn, string? Tint)> _cells = new();
+
+    // One per drawn cell, kept so an edit repaints instead of rebuilding.
+    sealed class CellView
+    {
+        public required Border Box;
+        public required TextBlock Label;
+        public bool Warn;
+        public string? Tint;
+    }
+
+    readonly Dictionary<(int Row, int Col), CellView> _cells = new();
+    readonly Dictionary<string, Control> _skippedGrids = new();
+    readonly StackPanel _advancedHost;
+    Control? _fileGrid;
+    StackPanel? _undoLine;
+    TextBlock _undoSaid = null!;
+    Button _undoButton = null!;
     (int Row, int Col)? _selected;
     ScrollViewer _scroll = null!;
     TextBlock _inspectorHead = null!;
@@ -97,11 +113,16 @@ public class ImportReviewWindow : Window
         top.Children.Add(_advancedButton);
 
         _body = new StackPanel { Spacing = 18, Margin = new Thickness(0, 18, 0, 0) };
+        // The grid lives in its own container, next to the prose rather than
+        // inside it. Clearing _body on every edit would detach and re-attach
+        // thousands of cells, and it is that re-layout, not making the controls,
+        // that cost over a second on an ordinary profile.
+        _advancedHost = new StackPanel { Spacing = 14, Margin = new Thickness(0, 18, 0, 0), IsVisible = false };
         _scroll = new ScrollViewer
         {
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Content = _body,
+            Content = new StackPanel { Children = { _body, _advancedHost } },
         };
 
         // Both, deliberately: every decision has already been applied and shown,
@@ -150,8 +171,6 @@ public class ImportReviewWindow : Window
     void Build()
     {
         _firstDecision = null;
-        _cells.Clear();
-        _gridHost = null;
         var open = OpenIssues();
         var errors = open.Where(i => i.Severity == Severity.Error).ToList();
         var warnings = open.Where(i => i.Severity == Severity.Warning).ToList();
@@ -200,7 +219,9 @@ public class ImportReviewWindow : Window
 
         _body.Children.Add(Section("What came in", new[] { ModeTable() }));
 
-        if (_advanced) _body.Children.Add(AdvancedView());
+        _advancedHost.IsVisible = _advanced;
+        if (_advanced && _advancedHost.Children.Count == 0) AdvancedView();
+        if (_advanced) { RefreshInspector(); RefreshUndoLine(); }
     }
 
     // Issues the user has not already answered. A decision that ends in "leave
@@ -432,9 +453,14 @@ public class ImportReviewWindow : Window
     // The editor behind this window works in bindings, which cannot say "this
     // word is in the wrong column" at all. Only the raw grid can, so only the
     // raw grid can fix it.
-    Control AdvancedView()
+    // The grid controls are made once and then kept. Rebuilding them on every
+    // edit cost more than a second on a 150 row profile, which is an ordinary
+    // size, and that is per keystroke committed. The prose above them is cheap
+    // and is rebuilt every time; only the thousands of cells are reused, and
+    // RefreshGridInPlace repaints them.
+    void AdvancedView()
     {
-        var panel = new StackPanel { Spacing = 14 };
+        var panel = _advancedHost;
         panel.Children.Add(new TextBlock
         {
             Text = "Your spreadsheet, with what we read marked on it. A tinted cell is one the QuadStick "
@@ -445,9 +471,10 @@ public class ImportReviewWindow : Window
         });
         panel.Children.Add(Legend());
         panel.Children.Add(Inspector());
-        panel.Children.Add(RawGrid(_file.Grid, dimmed: false, editable: true));
-        foreach (var tab in _skipped)
+        panel.Children.Add(_fileGrid ??= RawGrid(_file.Grid, dimmed: false, editable: true));
+        for (int i = 0; i < _skipped.Count; i++)
         {
+            var tab = _skipped[i];
             panel.Children.Add(new TextBlock
             {
                 Text = $"\"{tab.Name}\", left out because cell A1 does not name a kind of sheet:",
@@ -455,10 +482,65 @@ public class ImportReviewWindow : Window
             });
             // Read only: these rows are not in the profile, so there is nothing
             // here an edit could change. Bring the tab in first, above.
-            panel.Children.Add(RawGrid(tab.Rows, dimmed: true, editable: false));
+            if (!_skippedGrids.TryGetValue(tab.Name, out var g))
+                _skippedGrids[tab.Name] = g = RawGrid(tab.Rows, dimmed: true, editable: false);
+            panel.Children.Add(g);
         }
-        return panel;
     }
+
+    // Anything that changes the SHAPE of the grid, rather than the contents of
+    // a cell, needs the controls made again: adding a mode, undoing one, a row
+    // growing past the last column there was.
+    void InvalidateAdvanced()
+    {
+        _advancedHost.Children.Clear();
+        _fileGrid = null;
+        _skippedGrids.Clear();
+        _cells.Clear();
+        _gridHost = null;
+        _undoLine = null;
+    }
+
+    bool GridShapeChanged()
+    {
+        if (_fileGrid is null) return true;
+        int rows = Math.Min(_file.Grid.Count, MaxAdvancedRows);
+        int cols = Math.Max(Parser.ActionColumn + 1,
+            rows == 0 ? 0 : _file.Grid.Take(rows).Max(r => r.Length));
+        return rows != _gridRows || cols != _gridCols || _skippedGrids.Count != _skipped.Count;
+    }
+
+    // Repaint the kept cells from the reparsed file: text, tint, warning border
+    // and the spoken description all follow the edit without a single control
+    // being made.
+    void RefreshGridInPlace()
+    {
+        var bindingRows = _file.Document.Sheets.SelectMany(s => s.Bindings).Select(b => b.Row).ToHashSet();
+        var warned = _file.Issues.Select(i => ParseCell(i.Cell)).Where(x => x.Row > 0)
+            .Select(x => (x.Row, x.Col)).ToHashSet();
+
+        foreach (var (at, cell) in _cells)
+        {
+            var text = RawCell(at.Row, at.Col);
+            bool isBinding = bindingRows.Contains(at.Row);
+            bool warn = warned.Contains(at);
+            var tint = isBinding ? TintFor(at.Col) : null;
+
+            cell.Label.Text = text;
+            cell.Warn = warn;
+            cell.Tint = tint;
+            if (tint is null) cell.Box.Background = null;
+            else BindBrush(cell.Box, Border.BackgroundProperty, tint);
+            AutomationProperties.SetName(cell.Box, Describe(at.Row, at.Col, text, isBinding, warn, dimmed: false));
+            PaintCell(at);
+        }
+    }
+
+    // The grid holds rows exactly as they were written, so read them untrimmed
+    // here; GetCell trims, and the point of this view is what is actually there.
+    string RawCell(int row, int col) =>
+        row >= 1 && row <= _file.Grid.Count && col < _file.Grid[row - 1].Length
+            ? _file.Grid[row - 1][col] ?? "" : "";
 
     // ---- editing the grid ----
 
@@ -480,7 +562,10 @@ public class ImportReviewWindow : Window
     void Rebuild()
     {
         var offset = _scroll.Offset;
+        bool reshape = GridShapeChanged();
+        if (reshape) InvalidateAdvanced();
         Build();
+        if (_advanced && !reshape) RefreshGridInPlace();
         Dispatcher.UIThread.Post(() =>
         {
             var maxY = Math.Max(0, _scroll.Extent.Height - _scroll.Viewport.Height);
@@ -538,27 +623,37 @@ public class ImportReviewWindow : Window
         panel.Children.Add(valueRow);
         panel.Children.Add(_inspectorActions);
 
-        if (_lastGridEdit is not null)
+        // Made once and shown or hidden, like everything else in here, so an
+        // edit never detaches a control that the grid is laid out beside.
+        _undoSaid = new TextBlock { FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center };
+        BindBrush(_undoSaid, TextBlock.ForegroundProperty, "Success");
+        _undoButton = new Button { Content = "Undo", MinWidth = 90 };
+        _undoButton.Click += (_, _) =>
         {
-            var undoLine = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
-            var said = new TextBlock { Text = _lastGridEdit, FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center };
-            BindBrush(said, TextBlock.ForegroundProperty, "Success");
-            var undo = new Button { Content = "Undo", MinWidth = 90 };
-            AutomationProperties.SetName(undo, $"Undo this change: {_lastGridEdit}");
-            undo.Click += (_, _) =>
-            {
-                if (!_file.Undo()) return;
-                _lastGridEdit = null;
-                _owner.ModesChanged(0, "Undid the last cell change.");
-                Rebuild();
-            };
-            undoLine.Children.Add(said);
-            undoLine.Children.Add(undo);
-            panel.Children.Add(undoLine);
-        }
+            if (!_file.Undo()) return;
+            _lastGridEdit = null;
+            _owner.ModesChanged(0, "Undid the last cell change.");
+            Rebuild();
+        };
+        _undoLine = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 10, IsVisible = false,
+            Children = { _undoSaid, _undoButton },
+        };
+        panel.Children.Add(_undoLine);
 
         RefreshInspector();
+        RefreshUndoLine();
         return panel;
+    }
+
+    void RefreshUndoLine()
+    {
+        if (_undoLine is null) return;
+        _undoLine.IsVisible = _lastGridEdit is not null;
+        if (_lastGridEdit is null) return;
+        _undoSaid.Text = _lastGridEdit;
+        AutomationProperties.SetName(_undoButton, $"Undo this change: {_lastGridEdit}");
     }
 
     void CommitInspector()
@@ -579,6 +674,11 @@ public class ImportReviewWindow : Window
     {
         _inspectorActions.Children.Clear();
 
+        // A rebuild can leave the pick pointing past the end: clearing the only
+        // cell in a far column takes that column off the grid with it.
+        if (_selected is { } pick && _gridCols > 0 && pick.Col >= _gridCols)
+            _selected = (pick.Row, _gridCols - 1);
+
         if (_selected is not { } at || at.Row < 1 || at.Row > _file.Grid.Count)
         {
             _selected = null;
@@ -592,12 +692,14 @@ public class ImportReviewWindow : Window
         var where = $"{ColumnLetter(at.Col)}{at.Row}";
         var value = _file.GetCell(at.Row, at.Col);
         var issue = _file.Issues.FirstOrDefault(i => ParseCell(i.Cell) == at);
+        bool isBinding = _file.Document.Sheets.SelectMany(s => s.Bindings).Any(b => b.Row == at.Row);
+        var meaning = CellMeaning(at.Row, at.Col, isBinding);
         _inspectorHead.Text = issue is null
-            ? $"{where}   {ColumnMeaning(at.Col)}"
-            : $"{where}   {ColumnMeaning(at.Col)}   {issue.Message}";
+            ? $"{where}   {meaning}"
+            : $"{where}   {meaning}   {issue.Message}";
         _inspectorValue.IsEnabled = true;
         _inspectorValue.Text = value;
-        AutomationProperties.SetName(_inspectorValue, $"Contents of cell {where}, {ColumnMeaning(at.Col)}");
+        AutomationProperties.SetName(_inspectorValue, $"Contents of cell {where}, {meaning}");
 
         void Action(string label, string spoken, Func<bool> can, Action<Action<string, Func<bool>>> run)
         {
@@ -722,22 +824,16 @@ public class ImportReviewWindow : Window
                 var text = c < rows[r].Length ? rows[r][c] ?? "" : "";
                 var warn = warned.Contains((rowNumber, c));
                 var tint = isBinding && !dimmed ? TintFor(c) : null;
-                // Colour alone cannot carry any of this, so the accessible name
-                // spells out the cell, its text, and what the device does with
-                // it. Reading down a column that way is how this view works
-                // without sight.
-                var described = $"{ColumnLetter(c)}{rowNumber}, "
-                    + (text.Length > 0 ? $"\"{text}\", " : "empty, ")
-                    + (dimmed ? "not read, this tab was left out"
-                       : warn ? $"{ColumnMeaning(c)}, the QuadStick does not know this word"
-                       : isBinding ? ColumnMeaning(c)
-                       : "not a binding row");
-                var cell = CellBox(text, tint, warn, described, muted: dimmed);
+                var cell = CellBox(text, tint, warn, Describe(rowNumber, c, text, isBinding, warn, dimmed),
+                    muted: dimmed);
                 Grid.SetRow(cell, r + 1); Grid.SetColumn(cell, c + 1);
                 grid.Children.Add(cell);
                 if (editable)
                 {
-                    _cells[(rowNumber, c)] = (cell, warn, tint);
+                    _cells[(rowNumber, c)] = new CellView
+                    {
+                        Box = cell, Label = (TextBlock)cell.Child!, Warn = warn, Tint = tint,
+                    };
                     WireCell(cell, rowNumber, c);
                 }
             }
@@ -877,6 +973,52 @@ public class ImportReviewWindow : Window
         _ => "never read by the QuadStick",
     };
 
+    // What a cell actually is, which is not the same as what its column would
+    // be on a binding row. The three rows that open a mode carry the keyword,
+    // the file name and the labels, and calling the first of those "output"
+    // would be a lie told right where it costs most: overwrite it and the whole
+    // mode leaves the profile.
+    string CellMeaning(int row, int col, bool isBinding)
+    {
+        var sheet = _file.Document.Sheets.LastOrDefault(s => s.StartRow <= row);
+        bool prefsSheet = sheet?.Type == SheetType.Preferences;
+
+        if (sheet is not null && sheet.StartRow == row)
+            return prefsSheet
+                ? "the word that makes this the settings sheet"
+                : col switch
+                {
+                    0 => "the word that makes this a mode. Change it and the mode leaves the profile",
+                    2 => "this mode's name",
+                    _ => "part of the row that opens a mode",
+                };
+
+        if (!isBinding) return "not a binding row, so the QuadStick reads nothing here";
+
+        // A settings sheet reuses the same columns for something else, and so
+        // does a settings row parked inside a mode. Calling either one's value
+        // an "input" would be wrong in the one place it costs most: this is the
+        // cell somebody would drag away thinking the device never reads it.
+        if (prefsSheet)
+            return col switch
+            {
+                0 => "the setting's name",
+                1 => "the setting's value",
+                _ => "not read on a settings sheet",
+            };
+
+        if (Vocab.PreferenceOverrides.Contains(_file.GetCell(row, 0)))
+            return col switch
+            {
+                0 => "a setting's name, used here to override it for this mode",
+                1 => "skipped by the QuadStick on a settings row",
+                2 => "the setting's value",
+                _ => "not read on a settings row",
+            };
+
+        return ColumnMeaning(col);
+    }
+
     static string? TintFor(int col) => col switch
     {
         0 => OutputTint,
@@ -908,6 +1050,16 @@ public class ImportReviewWindow : Window
         AutomationProperties.SetName(border, accessibleName);
         return border;
     }
+
+    // Colour alone cannot carry any of this, so the accessible name spells out
+    // the cell, its text, and what the device does with it. Reading down a
+    // column that way is how this view works without sight.
+    string Describe(int row, int col, string text, bool isBinding, bool warn, bool dimmed) =>
+        $"{ColumnLetter(col)}{row}, "
+        + (text.Length > 0 ? $"\"{text}\", " : "empty, ")
+        + (dimmed ? "not read, this tab was left out"
+           : warn ? $"{CellMeaning(row, col, isBinding)}, the QuadStick does not know this word"
+           : CellMeaning(row, col, isBinding));
 
     // A, B, ... Z, AA, AB. Spreadsheets number columns this way and so does
     // every issue this app reports, so the header has to match.

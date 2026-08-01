@@ -417,6 +417,70 @@ public class ImportReviewWindowTests
         Done(owner, review);
     }
 
+    // Editing is only safe if the worst edit is survivable. Typing over the
+    // keyword that opens the only mode leaves a profile with no modes at all,
+    // which nothing else in the app can produce, so nothing else had to cope
+    // with it. The grid can, so everything downstream has to.
+    [AvaloniaFact]
+    public void Wiping_the_last_mode_keyword_is_survivable_and_undoable()
+    {
+        var (owner, file, review) = Open(AimCsv);
+        Press(review, "Advanced");
+        GoTo(review, 1, 0);
+
+        // A1 says "Profile Name". Without it there is no mode left.
+        var box = CellBox(review);
+        box.Text = "my notes";
+        box.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Enter, Source = box });
+        Dispatcher.UIThread.RunJobs();
+        review.UpdateLayout();
+
+        Assert.Empty(file.Document.Sheets);
+        // And the way back is right there.
+        Press(review, "Undo");
+        Assert.Single(file.Document.Sheets);
+        Assert.Equal("Profile Name", file.GetCell(1, 0));
+
+        Done(owner, review);
+    }
+
+    // The same cell, before it is touched: the window has to say what it is,
+    // because "output" is what its column would mean on a binding row and that
+    // is exactly the wrong thing to believe here.
+    [AvaloniaFact]
+    public void The_cell_that_opens_a_mode_says_so_instead_of_calling_itself_an_output()
+    {
+        var (owner, _, review) = Open(AimCsv);
+        Press(review, "Advanced");
+        GoTo(review, 1, 0);
+
+        Assert.True(Says(review, "the word that makes this a mode"));
+        Assert.False(Says(review, "A1   output"));
+
+        Done(owner, review);
+    }
+
+    // A settings sheet reuses columns A and B for something else entirely. If
+    // the window called B "function" there, it would be inviting somebody to
+    // drag away the value of a setting on the promise that nothing reads it.
+    [AvaloniaFact]
+    public void A_settings_value_is_not_described_as_a_function()
+    {
+        var (owner, _, review) = Open(
+            "Profile Name,,Walking\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+            "dpad_N,normal,right_sip\r\n" +
+            "\r\n" +
+            "Preferences\r\nprefs.csv\r\nPreference,Value,Units,Description\r\n" +
+            "mouse_speed,60\r\n");
+        Press(review, "Advanced");
+
+        GoTo(review, 9, 1);
+        Assert.Equal("60", CellBox(review).Text);
+        Assert.True(Says(review, "the setting's value"));
+
+        Done(owner, review);
+    }
+
     [AvaloniaFact]
     public void A_tab_that_did_not_import_is_shown_but_never_editable()
     {
