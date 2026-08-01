@@ -23,7 +23,7 @@ public enum ProfileSource { New, File, Library, Device, Sheets, Drive, Rescue }
 public enum InstallFailure
 {
     HasErrors, NoProfile, NotAQuadstick,
-    CancelledDevice, CancelledFolder, CancelledDefault, IoError,
+    CancelledDevice, CancelledFolder, CancelledDefault, CancelledPreferences, IoError,
 }
 
 public enum AppFeature { SheetsImport, DriveBackup, DriveRestore, ShareLink }
@@ -66,13 +66,14 @@ public static partial class Telemetry
 
     internal static string Wire(InstallFailure f) => f switch
     {
-        InstallFailure.HasErrors        => "has_errors",
-        InstallFailure.NoProfile        => "no_profile",
-        InstallFailure.NotAQuadstick    => "not_a_quadstick",
-        InstallFailure.CancelledDevice  => "cancelled_device",
-        InstallFailure.CancelledFolder  => "cancelled_folder",
-        InstallFailure.CancelledDefault => "cancelled_default",
-        InstallFailure.IoError          => "io_error",
+        InstallFailure.HasErrors            => "has_errors",
+        InstallFailure.NoProfile            => "no_profile",
+        InstallFailure.NotAQuadstick        => "not_a_quadstick",
+        InstallFailure.CancelledDevice      => "cancelled_device",
+        InstallFailure.CancelledFolder      => "cancelled_folder",
+        InstallFailure.CancelledDefault     => "cancelled_default",
+        InstallFailure.CancelledPreferences => "cancelled_preferences",
+        InstallFailure.IoError              => "io_error",
         _ => throw new ArgumentOutOfRangeException(nameof(f), f, "no wire name"),
     };
 

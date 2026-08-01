@@ -86,11 +86,28 @@ public partial class MainWindow
             }
         }
 
-        await RunInstallDialogAsync(_file, root, confirmDefault);
+        // prefs.csv is the device's settings file, not one game's profile, so it
+        // gets its own confirmation naming the file, the drive, and the reach of
+        // the change. Nothing is written until this comes back true.
+        bool confirmPrefs = false;
+        if (_file.Document.IsDevicePreferences)
+        {
+            confirmPrefs = await ConfirmAsync(
+                "Install prefs.csv to this QuadStick?",
+                $"prefs.csv holds the device's own settings, so this changes how the QuadStick behaves in every " +
+                $"profile on {root}, not just one game. The prefs.csv already on the drive is backed up first. Continue?");
+            if (!confirmPrefs)
+            {
+                Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledPreferences);
+                Status("Install cancelled."); return;
+            }
+        }
+
+        await RunInstallDialogAsync(_file, root, confirmDefault, confirmPrefs);
     }
 
     // Drives the modal itself: target drive -> progress -> receipt/failure.
-    async Task RunInstallDialogAsync(ProfileFile file, string root, bool confirmDefault)
+    async Task RunInstallDialogAsync(ProfileFile file, string root, bool confirmDefault, bool confirmPrefs)
     {
         var host = new StackPanel { Margin = new Thickness(24), Spacing = 16, MinWidth = 420, MaxWidth = 480 };
         var dialog = new Window
@@ -136,7 +153,7 @@ public partial class MainWindow
             // Device.Install does synchronous file I/O; keep it off the UI
             // thread. Avalonia's SynchronizationContext resumes the
             // continuation on the UI thread, so the content swap below is safe.
-            var result = await Task.Run(() => Device.Install(file, root, Device.DefaultBackupDir(), confirmDefault));
+            var result = await Task.Run(() => Device.Install(file, root, Device.DefaultBackupDir(), confirmDefault, confirmPrefs));
 
             SetContent(new StackPanel
             {

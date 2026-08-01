@@ -58,7 +58,8 @@ public static class Device
     public sealed record InstallResult(string InstalledPath, string? BackupPath);
 
     public static InstallResult Install(
-        ProfileFile file, string deviceRoot, string backupDir, bool confirmDefaultCsv = false)
+        ProfileFile file, string deviceRoot, string backupDir,
+        bool confirmDefaultCsv = false, bool confirmPreferencesCsv = false)
     {
         if (file.HasErrors)
             throw new InvalidOperationException(
@@ -72,6 +73,15 @@ public static class Device
             throw new InvalidOperationException(
                 "Refusing to overwrite default.csv without explicit confirmation. " +
                 "A wrong default.csv can disable flash-drive access.");
+
+        // prefs.csv is the device's own settings file, so it changes every
+        // profile at once. The gate lives here and not in the window that calls
+        // it, so no caller can write one by accident. A Preferences sheet inside
+        // a normal game CSV is not this file and stays on the normal path.
+        if (file.Document.IsDevicePreferences && !confirmPreferencesCsv)
+            throw new InvalidOperationException(
+                "Refusing to overwrite prefs.csv without explicit confirmation. " +
+                "prefs.csv holds device-wide settings, and a wrong one can leave the QuadStick unusable.");
 
         if (!IsInstallTarget(deviceRoot))
             throw new InvalidOperationException(

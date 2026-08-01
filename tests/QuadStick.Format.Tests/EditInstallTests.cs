@@ -292,6 +292,59 @@ public class DeviceTests : IDisposable
         Assert.True(File.Exists(result.InstalledPath));
     }
 
+    // prefs.csv is device-wide settings. The refusal has to come from the core,
+    // so a caller that skips the dialog still cannot write one.
+    [Fact]
+    public void Install_refuses_prefs_csv_without_confirmation_then_allows_with_it()
+    {
+        var f = Valid("prefs.csv");
+        Assert.True(f.Document.IsDevicePreferences);
+
+        var ex = Assert.Throws<InvalidOperationException>(() => Device.Install(f, _drive, _backups));
+        Assert.Contains("prefs.csv", ex.Message);
+        // Refused means nothing was touched: no file, no temp, no backup.
+        Assert.False(File.Exists(Path.Combine(_drive, "prefs.csv")));
+        Assert.Empty(Directory.GetFiles(_drive, "*.qscm-tmp"));
+        Assert.Empty(Directory.GetFiles(_backups));
+
+        var result = Device.Install(f, _drive, _backups, confirmPreferencesCsv: true);
+        Assert.True(File.Exists(result.InstalledPath));
+        Assert.Equal("prefs.csv", Path.GetFileName(result.InstalledPath));
+    }
+
+    // The two gates are separate switches. Confirming one must never unlock the
+    // other, in either direction.
+    [Fact]
+    public void The_prefs_and_default_confirmations_do_not_unlock_each_other()
+    {
+        Assert.Throws<InvalidOperationException>(
+            () => Device.Install(Valid("default.csv"), _drive, _backups, confirmPreferencesCsv: true));
+        Assert.Throws<InvalidOperationException>(
+            () => Device.Install(Valid("prefs.csv"), _drive, _backups, confirmDefaultCsv: true));
+    }
+
+    // An ordinary profile is unaffected by the new argument.
+    [Fact]
+    public void Install_of_a_normal_profile_needs_no_prefs_confirmation()
+    {
+        var result = Device.Install(Valid(), _drive, _backups);
+        Assert.True(File.Exists(result.InstalledPath));
+    }
+
+    // A Preferences sheet inside a game CSV is not the standalone settings file.
+    // It takes the normal profile path with no extra confirmation.
+    [Fact]
+    public void Embedded_preferences_sheet_installs_on_the_normal_path()
+    {
+        var f = ProfileFile.Load(File.ReadAllText(Path.Combine("corpus", "device-style.csv")));
+        Assert.Contains(f.Document.Sheets, s => s.Type == SheetType.Preferences);
+        Assert.False(f.Document.IsDevicePreferences);
+
+        var result = Device.Install(f, _drive, _backups);
+        Assert.Equal("mygame.csv", Path.GetFileName(result.InstalledPath));
+        Assert.True(File.Exists(result.InstalledPath));
+    }
+
     [Fact]
     public void Install_adds_the_QMP_version_header_when_missing()
     {
