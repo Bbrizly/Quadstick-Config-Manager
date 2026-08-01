@@ -47,21 +47,29 @@ public class AnimationTests
         var row = rowsPanel.Children[1];
         var lift = new TranslateTransform();
         row.RenderTransform = lift;
-        _ = MainWindow.Between(TranslateTransform.YProperty, 56, 0).RunAsync(lift);
+        // 10s, not the shipping 180ms: the first headless tick has cost up to
+        // 600ms on a loaded machine, which used to end the real animation
+        // before the first sample and made this test flaky.
+        _ = MainWindow.Between(TranslateTransform.YProperty, 56, 0, ms: 10_000).RunAsync(lift);
 
-        bool sawMidFlight = false;
-        for (int i = 0; i < 10 && !sawMidFlight; i++)
+        var seen = new System.Collections.Generic.List<double>();
+        for (int i = 0; i < 10; i++)
         {
             System.Threading.Thread.Sleep(20);
             AvaloniaHeadlessPlatform.ForceRenderTimerTick();
             Dispatcher.UIThread.RunJobs();
-            if (lift.Y > 0.5) sawMidFlight = true;
+            seen.Add(lift.Y);
         }
 
         file.Dirty = false; // else Close opens the save dialog and waits forever
         w.Close();
-        Assert.True(sawMidFlight,
-            "Between() never produced a mid-flight value: the pinned animator is not animating (the old TransformAnimator silent no-op is back)");
+        string samples = string.Join(" ", seen.Select(y => y.ToString("0.###")));
+        // Catches the silent no-op two ways: a dead animator leaves Y at 0, and
+        // one that only applies the Backward fill leaves it pinned at 56.
+        Assert.True(seen[0] > 0.5,
+            $"Between() never applied its start value, so nothing is animating (Y stayed at 0). Samples: {samples}");
+        Assert.True(seen[^1] < seen[0],
+            $"Between() held its start value instead of interpolating toward the end. Samples: {samples}");
     }
 
     [AvaloniaFact]

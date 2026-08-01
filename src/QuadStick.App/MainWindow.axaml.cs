@@ -4017,9 +4017,11 @@ public partial class MainWindow : Window
     }
 
     // Internal so the animation regression test can prove this exact helper
-    // moves values on a ticking clock, not a lookalike.
+    // moves values on a ticking clock, not a lookalike. The test overrides ms
+    // because the first headless render tick can cost longer than 180ms, which
+    // would end the animation before the test ever sampled it.
     internal static Avalonia.Animation.Animation Between(AvaloniaProperty prop, double from, double to,
-        Avalonia.Animation.FillMode fill = Avalonia.Animation.FillMode.Backward)
+        Avalonia.Animation.FillMode fill = Avalonia.Animation.FillMode.Backward, double ms = 180)
     {
         Avalonia.Styling.Setter S(double v)
         {
@@ -4029,7 +4031,7 @@ public partial class MainWindow : Window
         }
         return new()
         {
-            Duration = TimeSpan.FromMilliseconds(180),
+            Duration = TimeSpan.FromMilliseconds(ms),
             Easing = new Avalonia.Animation.Easings.CubicEaseOut(),
             FillMode = fill, // Backward: show the start value on frame one, no pop
             Children =
