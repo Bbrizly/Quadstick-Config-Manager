@@ -11,5 +11,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Templates/default-template.csv" LogicalName="DefaultTemplate" />
     <EmbeddedResource Include="Data/validation.json" LogicalName="ValidationJson" />
+    <EmbeddedResource Include="Data/preferences.json" LogicalName="PreferencesJson" />
   </ItemGroup>
 </Project>

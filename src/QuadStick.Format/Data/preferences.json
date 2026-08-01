@@ -1,0 +1,522 @@
+[
+  {
+    "name": "joystick_deflection_minimum",
+    "label": "Joystick center dead zone",
+    "category": "Joystick",
+    "editor": "integer",
+    "default": "8",
+    "minimum": 0,
+    "maximum": 20,
+    "description": "Center dead zone for the analog stick, as a percent of full travel. Set it high enough to stop a wandering mouse or joystick. This is a separate thing from the D-Pad rings.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_NEUTRAL (0..20) and its tooltip; qsflash.py defaults '8'"
+  },
+  {
+    "name": "joystick_deflection_maximum",
+    "label": "Joystick full deflection",
+    "category": "Joystick",
+    "editor": "integer",
+    "default": "25",
+    "minimum": 10,
+    "maximum": 50,
+    "description": "How far the stick has to move for a full signal. QMP takes the largest of its four direction sliders.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_UP/DOWN/LEFT/RIGHT (10..50) and calculate_joystick_preferences; qsflash.py defaults '25'"
+  },
+  {
+    "name": "deflection_multiplier_up",
+    "label": "Up deflection multiplier",
+    "category": "Joystick",
+    "editor": "integer",
+    "default": "140",
+    "unit": "percent",
+    "description": "Scales the up direction so it reaches a full signal at the same point as the other directions.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py calculate_joystick_preferences computes max*100/slider, so it has no fixed range; qsflash.py defaults '140'"
+  },
+  {
+    "name": "deflection_multiplier_down",
+    "label": "Down deflection multiplier",
+    "category": "Joystick",
+    "editor": "integer",
+    "default": "130",
+    "unit": "percent",
+    "description": "Scales the down direction so it reaches a full signal at the same point as the other directions.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py calculate_joystick_preferences computes max*100/slider, so it has no fixed range; qsflash.py defaults '130'"
+  },
+  {
+    "name": "deflection_multiplier_left",
+    "label": "Left deflection multiplier",
+    "category": "Joystick",
+    "editor": "integer",
+    "default": "100",
+    "unit": "percent",
+    "description": "Scales the left direction so it reaches a full signal at the same point as the other directions.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py calculate_joystick_preferences computes max*100/slider, so it has no fixed range; qsflash.py defaults '100'"
+  },
+  {
+    "name": "deflection_multiplier_right",
+    "label": "Right deflection multiplier",
+    "category": "Joystick",
+    "editor": "integer",
+    "default": "100",
+    "unit": "percent",
+    "description": "Scales the right direction so it reaches a full signal at the same point as the other directions.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py calculate_joystick_preferences computes max*100/slider, so it has no fixed range; qsflash.py defaults '100'"
+  },
+  {
+    "name": "joystick_D_Pad_inner",
+    "label": "Inner D-Pad ring",
+    "category": "Joystick",
+    "editor": "integer",
+    "default": "25",
+    "minimum": 10,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Percent of full deflection, measured from the center, where the inner D-Pad ring starts. It only fires after a short delay, so you can move through it on the way out without triggering it. Half this value is where a direction stops being held.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_D_Pad_inner_ring (10..100) and its tooltip; qsflash.py defaults '25'. Firmware 1476 Configuration.c:306-316 converts it with (value * 1023) / 100, so it is a percent of full deflection from the center, and DataFlow.c:610 uses half of it as the release threshold."
+  },
+  {
+    "name": "joystick_D_Pad_outer",
+    "label": "Outer D-Pad ring",
+    "category": "Joystick",
+    "editor": "integer",
+    "default": "80",
+    "minimum": 10,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Percent of full deflection, measured from the center, where the outer D-Pad ring starts. Past this line a direction fires straight away.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_D_Pad_outer_ring (10..100) and its tooltip; qsflash.py defaults '80'. Firmware 1476 Preferences.h defaults to 65, but that snapshot is older than QMP-4. Configuration.c:306-316 converts it with (value * 1023) / 100, so it is a percent of full deflection from the center."
+  },
+  {
+    "name": "joystick_dead_zone_shape",
+    "label": "Circular dead zone",
+    "category": "Joystick",
+    "editor": "toggle",
+    "default": "1",
+    "description": "Use a round center dead zone instead of a square one.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py checkbox_circular_deadzone writes '1' or '0'; qsflash.py defaults '1'"
+  },
+  {
+    "name": "anti_dead_zone",
+    "label": "Anti dead zone",
+    "category": "Joystick",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h ANTI_DEAD_ZONE, read in DataFlow.c. No current control or range is known, so the value is left as typed."
+  },
+  {
+    "name": "joystick_warning",
+    "label": "Joystick warning deflection",
+    "category": "Joystick",
+    "editor": "text",
+    "description": "Deflection past which firmware 1476 warns the user about moving the stick too far.",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h JOYSTICK_WARN_DEFLECTION, compared in DataFlow.c. No current control or range is known, so the value is left as typed."
+  },
+  {
+    "name": "joystick_alarm",
+    "label": "Joystick alarm deflection",
+    "category": "Joystick",
+    "editor": "text",
+    "description": "Deflection past which firmware 1476 sounds an alarm tone.",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h JOYSTICK_ALARM_DEFLECTION, compared in DataFlow.c. No current control or range is known, so the value is left as typed."
+  },
+  {
+    "name": "enable_auto_zero",
+    "label": "Auto zero the sensors",
+    "category": "Joystick",
+    "editor": "toggle",
+    "default": "0",
+    "modeOverride": true,
+    "source": "QMP-4 has no control for this setting. Its qsflash.py defaults '0' and QuadStick.py SavePreferences writes '0'; the 0/1 domain comes from the firmware 1476 keyword table, preference_keywords.h ENABLE_AUTO_ZERO. Nothing beyond that shape and that default is sourced."
+  },
+  {
+    "name": "sip_puff_threshold_soft",
+    "label": "Soft sip/puff threshold",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "8",
+    "minimum": 5,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Pressure or vacuum level that begins a soft sip or puff.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_SP_low (5..100) and its tooltip; qsflash.py defaults '8'"
+  },
+  {
+    "name": "sip_puff_threshold",
+    "label": "Hard sip/puff threshold",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "40",
+    "minimum": 10,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Pressure at which to trigger the output.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_SP_high (10..100) and its tooltip; qsflash.py defaults '40'"
+  },
+  {
+    "name": "sip_puff_maximum",
+    "label": "Sip/puff maximum pressure",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "70",
+    "minimum": 10,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Maximum pressure to scale to a full signal.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_SP_max (10..100) and its tooltip; qsflash.py defaults '70'"
+  },
+  {
+    "name": "sip_puff_delay_soft",
+    "label": "Soft sip/puff delay",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "1300",
+    "minimum": 100,
+    "maximum": 3000,
+    "unit": "milliseconds",
+    "description": "Soft sip and puff signals are sensed after this short delay.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py spin_ctrl_SP_low_delay (min 100, max 3000) and its tooltip; qsflash.py defaults '1300'"
+  },
+  {
+    "name": "sip_puff_delay_hard",
+    "label": "Hard sip/puff delay",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "2400",
+    "minimum": 1000,
+    "maximum": 3000,
+    "unit": "milliseconds",
+    "description": "How long a hard sip or puff is held before it counts as a long signal.",
+    "modeOverride": false,
+    "source": "QMP-4 QuadStick.py spin_ctrl_SP_high_delay (min 1000, max 3000); qsflash.py defaults '2400'. It is absent from firmware 1476 preference_keywords.h, so it is not offered as a mode override."
+  },
+  {
+    "name": "enable_left_side_tube",
+    "label": "Use the left side tube",
+    "category": "Sip and puff",
+    "editor": "text",
+    "description": "Uses the left tube for mode control by swapping it with the right tube.",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h ENABLE_LEFT_SIDE_TUBE, read in DataFlow.c. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "lip_position_minimum",
+    "label": "Lip sensor minimum",
+    "category": "Lip sensor",
+    "editor": "integer",
+    "default": "8",
+    "minimum": 5,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Percent lip sensor position that activates the signal.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_Lip_min (5..100) and its tooltip; qsflash.py defaults '8'"
+  },
+  {
+    "name": "lip_position_maximum",
+    "label": "Lip sensor maximum",
+    "category": "Lip sensor",
+    "editor": "integer",
+    "default": "35",
+    "minimum": 5,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Percent of lip sensor movement that gives a full signal.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_Lip_max (5..100) and its tooltip; qsflash.py defaults '35'"
+  },
+  {
+    "name": "mouse_speed",
+    "label": "Mouse speed",
+    "category": "Mouse",
+    "editor": "integer",
+    "default": "100",
+    "minimum": 0,
+    "maximum": 250,
+    "description": "Mouse speed relative to joystick movement.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_mouse_speed (0..250) and its tooltip; qsflash.py defaults '100'"
+  },
+  {
+    "name": "mouse_response_curve",
+    "label": "Mouse response curve",
+    "category": "Mouse",
+    "editor": "choice",
+    "default": "1",
+    "options": ["0", "1", "2"],
+    "description": "0 is linear, 1 is mixed, 2 is parabolic.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py choice_mouse_response ['Linear','Mixed','Parabolic'] saved as the chosen index; qsflash.py defaults '1'"
+  },
+  {
+    "name": "volume",
+    "label": "Speaker volume",
+    "category": "Sound and lights",
+    "editor": "integer",
+    "default": "40",
+    "minimum": 0,
+    "maximum": 100,
+    "description": "Speaker volume.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_volume (0..100) and its tooltip; qsflash.py defaults '40'. Firmware 1476 Preferences.h defaults to 25, but that snapshot is older than QMP-4."
+  },
+  {
+    "name": "brightness",
+    "label": "LED brightness",
+    "category": "Sound and lights",
+    "editor": "integer",
+    "default": "75",
+    "minimum": 0,
+    "maximum": 100,
+    "description": "LED brightness.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py slider_brightness (0..100) and its tooltip; qsflash.py defaults '75'"
+  },
+  {
+    "name": "enable_rumble",
+    "label": "Rumble",
+    "category": "Sound and lights",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h ENABLE_RUMBLE, read in Joystick.c. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "bluetooth_device_mode",
+    "label": "Bluetooth device mode",
+    "category": "Bluetooth",
+    "editor": "choice",
+    "default": "none",
+    "options": ["none", "keyboard", "game_pad", "mouse", "combo", "joystick", "ssp"],
+    "description": "What the QuadStick pretends to be over Bluetooth.",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h bluetooth_device_mode_keywords; QMP-4 QuadStick.py choice_BT_device_mode has the same seven tokens; qsflash.py defaults 'none'"
+  },
+  {
+    "name": "bluetooth_authentication_mode",
+    "label": "Bluetooth authentication mode",
+    "category": "Bluetooth",
+    "editor": "choice",
+    "default": "4",
+    "options": ["0", "1", "2", "4"],
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py choice_BT_auth_mode offers 0, 1, 2 and 4; qsflash.py defaults '4'"
+  },
+  {
+    "name": "bluetooth_connection_mode",
+    "label": "Bluetooth connection mode",
+    "category": "Bluetooth",
+    "editor": "choice",
+    "default": "pair",
+    "options": ["slave", "master", "trigger", "auto", "dtr", "any", "pair"],
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h bluetooth_connection_mode_keywords; qsflash.py defaults 'pair'"
+  },
+  {
+    "name": "bluetooth_remote_address",
+    "label": "Bluetooth remote address",
+    "category": "Bluetooth",
+    "editor": "text",
+    "default": "",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h BLUETOOTH_REMOTE_ADDRESS; QMP-4 qsflash.py defaults to an empty string. No address format is confirmed, so the value is left as typed."
+  },
+  {
+    "name": "bluetooth_remote_adapter",
+    "label": "Bluetooth remote adapter",
+    "category": "Bluetooth",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h BLUETOOTH_REMOTE_ADAPTER, read in Joystick.c. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "bluetooth_throttle",
+    "label": "Bluetooth throttle",
+    "category": "Bluetooth",
+    "editor": "text",
+    "description": "Firmware 1476 skips a transmission when not enough time has passed since the last one.",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h BLUETOOTH_THROTTLE, compared in Bluetooth.c. No current control or range is known, so the value is left as typed."
+  },
+  {
+    "name": "digital_out_1",
+    "label": "Digital output 1",
+    "category": "Inputs and outputs",
+    "editor": "toggle",
+    "default": "0",
+    "description": "The device matches this name as an output before it reaches the preference table, so it is a device setting only, never a mode override.",
+    "modeOverride": false,
+    "source": "QMP-4 QuadStick.py checkbox_do_1 writes '1' or '0'; qsflash.py defaults '0'; firmware 1476 output_keywords match first"
+  },
+  {
+    "name": "digital_out_2",
+    "label": "Digital output 2",
+    "category": "Inputs and outputs",
+    "editor": "toggle",
+    "default": "0",
+    "description": "The device matches this name as an output before it reaches the preference table, so it is a device setting only, never a mode override.",
+    "modeOverride": false,
+    "source": "QMP-4 QuadStick.py checkbox_do_2 writes '1' or '0'; qsflash.py defaults '0'; firmware 1476 output_keywords match first"
+  },
+  {
+    "name": "digital_out_3",
+    "label": "Digital output 3",
+    "category": "Inputs and outputs",
+    "editor": "text",
+    "description": "The device matches this name as an output before it reaches the preference table, so it is a device setting only, never a mode override.",
+    "modeOverride": false,
+    "source": "firmware 1476 preference_keywords.h DIGITAL_OUT_3. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "digital_out_4",
+    "label": "Digital output 4",
+    "category": "Inputs and outputs",
+    "editor": "text",
+    "description": "The device matches this name as an output before it reaches the preference table, so it is a device setting only, never a mode override.",
+    "modeOverride": false,
+    "source": "firmware 1476 preference_keywords.h DIGITAL_OUT_4. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "enable_swap_inputs",
+    "label": "Swap inputs with the side tube",
+    "category": "Inputs and outputs",
+    "editor": "toggle",
+    "default": "0",
+    "description": "Swap the inputs using the side tube.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py checkbox_swap writes '1' or '0'; qsflash.py defaults '0'. Firmware 1476 Preferences.h defaults to 1, but that snapshot is older than QMP-4."
+  },
+  {
+    "name": "enable_select_files",
+    "label": "Select files with the side tube",
+    "category": "Inputs and outputs",
+    "editor": "toggle",
+    "default": "1",
+    "description": "Select a file using the side tube.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py checkbox_select_files writes '1' or '0'; qsflash.py defaults '1'"
+  },
+  {
+    "name": "enable_usb_a_device",
+    "label": "USB-A device mode",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "risk": "This picks which USB port the QuadStick presents itself on. Firmware 1476 reconnects USB when it changes, so a wrong value can leave the device unseen by a console or computer. QMP writes a different name, enable_usb_a_host, and the two are not proven to be the same setting. Change it only on advice from QuadStick support.",
+    "source": "firmware 1476 preference_keywords.h ENABLE_USB_A_DEVICE, passed to USB_Init and USB_Connect in Joystick.c and Configuration.c; QMP-4 QuadStick.py writes enable_usb_a_host instead"
+  },
+  {
+    "name": "enable_DS3_emulation",
+    "label": "USB emulation mode",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "risk": "The name says DS3, but firmware 1476 reads it as a USB emulation mode with several numbered values, not an on or off switch. The current value map is not confirmed, so QCM keeps whatever is typed and claims nothing about it. Change it only on advice from QuadStick support.",
+    "source": "firmware 1476 preference_keywords.h maps it to USB_EMULATION_MODE, switched on in Joystick.c, DataFlow.c and Descriptors.c; QMP-4 QuadStick.py checkbox_ps4_boot_mode treats it as a checkbox"
+  },
+  {
+    "name": "enable_usb_comm",
+    "label": "Voice commands over USB",
+    "category": "USB and compatibility",
+    "editor": "toggle",
+    "default": "0",
+    "description": "Enable voice commands over USB.",
+    "modeOverride": true,
+    "source": "QMP-4 QuadStick.py checkbox_enable_usb_comm writes '1' or '0'; qsflash.py defaults '0'"
+  },
+  {
+    "name": "usb_1_multiplier_up",
+    "label": "USB 1 up multiplier",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h USB_1_MULTIPLIER_UP. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "usb_1_multiplier_down",
+    "label": "USB 1 down multiplier",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h USB_1_MULTIPLIER_DOWN. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "usb_1_multiplier_left",
+    "label": "USB 1 left multiplier",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h USB_1_MULTIPLIER_LEFT. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "usb_1_multiplier_right",
+    "label": "USB 1 right multiplier",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h USB_1_MULTIPLIER_RIGHT. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "usb_2_multiplier_up",
+    "label": "USB 2 up multiplier",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h USB_2_MULTIPLIER_UP. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "usb_2_multiplier_down",
+    "label": "USB 2 down multiplier",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h USB_2_MULTIPLIER_DOWN. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "usb_2_multiplier_left",
+    "label": "USB 2 left multiplier",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h USB_2_MULTIPLIER_LEFT. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "usb_2_multiplier_right",
+    "label": "USB 2 right multiplier",
+    "category": "USB and compatibility",
+    "editor": "text",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h USB_2_MULTIPLIER_RIGHT. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "watchdog_disable",
+    "label": "Disable the watchdog",
+    "category": "Advanced",
+    "editor": "toggle",
+    "default": "0",
+    "modeOverride": true,
+    "risk": "Firmware 1476 runs a two minute hardware watchdog that restarts the device if it stops responding. Nothing in that snapshot reads this setting, so what it does on current firmware is unconfirmed.",
+    "source": "QMP-4 qsflash.py defaults '0'; firmware 1476 preference_keywords.h DISABLE_WATCHDOG and the watchdog set up in Joystick.c"
+  },
+  {
+    "name": "debug",
+    "label": "Debug output level",
+    "category": "Advanced",
+    "editor": "text",
+    "description": "Firmware 1476 turns its console on when this is above zero.",
+    "modeOverride": true,
+    "source": "firmware 1476 preference_keywords.h DEBUG_VERBOSITY, read in Configuration.c. It is a level, not an on or off, so the value is left as typed."
+  }
+]

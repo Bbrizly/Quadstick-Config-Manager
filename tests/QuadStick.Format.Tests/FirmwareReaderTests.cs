@@ -102,9 +102,217 @@ public class FirmwareReaderTests
     public void Preferences_sheet_bluetooth_word_value_is_clean()
     {
         // bluetooth_* preferences take word values, so a non-number is fine.
-        var issues = All(PrefsHead + "bluetooth_device_mode,PS4\n");
+        var issues = All(PrefsHead + "bluetooth_device_mode,game_pad\n");
         Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
         Assert.DoesNotContain(issues, i => i.Cell == "B9");
+    }
+
+    // Catalog-aware checks. The catalog's bounds come from the sliders in the
+    // official manager, which are recommendations, so a value outside them is
+    // a Warning. Its toggle and choice values come from the firmware's own
+    // keyword tables, so a value outside those is an Error.
+
+    [Fact]
+    public void Unknown_preference_name_warns_and_never_blocks()
+    {
+        // Firmware newer than this app has preferences this app cannot know.
+        var issues = All(PrefsHead + "future_setting,5\n");
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning
+            && i.Cell == "A9" && i.Message.Contains("future_setting"));
+    }
+
+    [Fact]
+    public void Known_preference_name_does_not_warn()
+    {
+        Assert.DoesNotContain(All(PrefsHead + "volume,40\n"), i => i.Cell == "A9");
+    }
+
+    [Fact]
+    public void Value_above_the_catalog_maximum_warns_but_does_not_block()
+    {
+        var issues = All(PrefsHead + "mouse_speed,900\n"); // catalogued 0..250
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning
+            && i.Cell == "B9" && i.Message.Contains("above 250"));
+    }
+
+    [Fact]
+    public void Value_below_the_catalog_minimum_warns_but_does_not_block()
+    {
+        var issues = All(PrefsHead + "sip_puff_threshold_soft,1\n"); // catalogued 5..100
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning
+            && i.Cell == "B9" && i.Message.Contains("below 5"));
+    }
+
+    [Fact]
+    public void Values_on_the_catalog_bounds_are_clean()
+    {
+        Assert.DoesNotContain(All(PrefsHead + "mouse_speed,250\n"), i => i.Cell == "B9");
+        Assert.DoesNotContain(All(PrefsHead + "mouse_speed,0\n"), i => i.Cell == "B9");
+    }
+
+    [Fact]
+    public void An_integer_preference_with_no_catalogued_bounds_is_not_range_checked()
+    {
+        // deflection_multiplier_up has no proven range, so nothing is claimed.
+        Assert.DoesNotContain(All(PrefsHead + "deflection_multiplier_up,9000\n"), i => i.Cell == "B9");
+    }
+
+    // PREF-07: a legacy toggle value the firmware would still read is a Warning.
+    // The firmware treats a toggle as a number and coerces a stray one, so
+    // blocking the install would keep a working file off the device.
+    [Fact]
+    public void A_toggle_that_is_not_0_or_1_warns_but_does_not_block()
+    {
+        var issues = All(PrefsHead + "watchdog_disable,2\n");
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning
+            && i.Cell == "B9" && i.Message.Contains("on/off"));
+    }
+
+    // The other half of the same split: a choice word outside the firmware's
+    // keyword table is not coerced, the lookup fails and the device lands on a
+    // different mode, so that one still blocks.
+    [Fact]
+    public void An_odd_toggle_warns_where_an_unknown_choice_still_blocks()
+    {
+        var toggle = All(PrefsHead + "watchdog_disable,2\n");
+        Assert.Empty(toggle.Where(i => i.Severity == Severity.Error));
+
+        var choice = All(PrefsHead + "bluetooth_device_mode,PS4\n");
+        Assert.Contains(choice, i => i.Severity == Severity.Error
+            && i.Cell == "B9" && i.Message.Contains("bluetooth_device_mode"));
+    }
+
+    // "PS4" is a plausible thing to type and it is not a firmware keyword. The
+    // keyword lookup does not fall back, so the device would come up in some
+    // other device mode. That is worth blocking an install for.
+    [Fact]
+    public void An_unknown_bluetooth_device_mode_word_is_a_blocking_error()
+    {
+        var issues = All(PrefsHead + "bluetooth_device_mode,PS4\n");
+        Assert.Contains(issues, i => i.Severity == Severity.Error
+            && i.Cell == "B9" && i.Message.Contains("PS4"));
+    }
+
+    [Fact]
+    public void A_toggle_set_to_0_or_1_is_clean()
+    {
+        Assert.DoesNotContain(All(PrefsHead + "watchdog_disable,0\n"), i => i.Cell == "B9");
+        Assert.DoesNotContain(All(PrefsHead + "watchdog_disable,1\n"), i => i.Cell == "B9");
+    }
+
+    [Fact]
+    public void A_toggle_with_a_word_value_reports_one_issue_not_two()
+    {
+        // The whole-number error already says what is wrong; the toggle check
+        // must not pile a second issue onto the same cell.
+        var issues = All(PrefsHead + "watchdog_disable,off\n");
+        var cell = issues.Where(i => i.Cell == "B9").ToList();
+        Assert.Single(cell);
+        Assert.Equal(Severity.Error, cell[0].Severity);
+    }
+
+    [Fact]
+    public void A_choice_value_outside_the_firmware_keywords_is_an_error()
+    {
+        var numbered = All(PrefsHead + "mouse_response_curve,7\n"); // 0, 1 or 2
+        Assert.Contains(numbered, i => i.Severity == Severity.Error
+            && i.Cell == "B9" && i.Message.Contains("mouse_response_curve"));
+
+        var worded = All(PrefsHead + "bluetooth_connection_mode,handshake\n");
+        Assert.Contains(worded, i => i.Severity == Severity.Error
+            && i.Cell == "B9" && i.Message.Contains("bluetooth_connection_mode"));
+    }
+
+    [Fact]
+    public void A_choice_value_in_the_firmware_keywords_is_clean()
+    {
+        Assert.DoesNotContain(All(PrefsHead + "mouse_response_curve,2\n"), i => i.Cell == "B9");
+        Assert.DoesNotContain(All(PrefsHead + "bluetooth_connection_mode,pair\n"), i => i.Cell == "B9");
+    }
+
+    [Fact]
+    public void A_text_preference_takes_any_value_the_device_might_read()
+    {
+        // enable_DS3_emulation and the addresses stay raw until a current
+        // source proves their values, so the catalog claims nothing about them.
+        Assert.DoesNotContain(All(PrefsHead + "bluetooth_remote_address,001122334455\n"),
+            i => i.Cell == "B9");
+        Assert.DoesNotContain(All(PrefsHead + "enable_DS3_emulation,3\n"), i => i.Cell == "B9");
+    }
+
+    // The four orderings the sources establish. Each warns only when both
+    // rows are present and both are whole numbers.
+
+    [Theory]
+    [InlineData("sip_puff_threshold_soft,39\nsip_puff_threshold,40\n")]
+    [InlineData("sip_puff_threshold,40\nsip_puff_maximum,41\n")]
+    [InlineData("lip_position_minimum,30\nlip_position_maximum,34\n")]
+    [InlineData("joystick_D_Pad_inner,25\njoystick_D_Pad_outer,26\n")]
+    public void Preferences_too_close_together_warn(string rows)
+    {
+        var issues = All(PrefsHead + rows);
+        Assert.Empty(issues.Where(i => i.Severity == Severity.Error));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning
+            && i.Cell == "B10" && i.Message.Contains("between them"));
+    }
+
+    [Theory]
+    [InlineData("sip_puff_threshold_soft,38\nsip_puff_threshold,40\n")]
+    [InlineData("sip_puff_threshold,40\nsip_puff_maximum,42\n")]
+    [InlineData("lip_position_minimum,30\nlip_position_maximum,35\n")]
+    [InlineData("joystick_D_Pad_inner,25\njoystick_D_Pad_outer,27\n")]
+    public void Preferences_exactly_the_required_gap_apart_are_clean(string rows)
+    {
+        Assert.DoesNotContain(All(PrefsHead + rows), i => i.Message.Contains("between them"));
+    }
+
+    [Fact]
+    public void One_preference_of_a_pair_on_its_own_says_nothing()
+    {
+        // The other value lives on the device, where this app cannot see it.
+        Assert.DoesNotContain(All(PrefsHead + "sip_puff_threshold,40\n"),
+            i => i.Message.Contains("between them"));
+        Assert.DoesNotContain(All(PrefsHead + "sip_puff_threshold_soft,90\n"),
+            i => i.Message.Contains("between them"));
+    }
+
+    [Fact]
+    public void A_pair_check_is_skipped_when_a_value_is_not_a_whole_number()
+    {
+        var issues = All(PrefsHead + "sip_puff_threshold_soft,high\nsip_puff_threshold,40\n");
+        Assert.DoesNotContain(issues, i => i.Message.Contains("between them"));
+    }
+
+    [Fact]
+    public void A_pair_check_is_skipped_when_a_value_is_missing()
+    {
+        var issues = All(PrefsHead + "sip_puff_threshold_soft,\nsip_puff_threshold,40\n");
+        Assert.DoesNotContain(issues, i => i.Message.Contains("between them"));
+    }
+
+    [Fact]
+    public void Mode_override_values_are_checked_against_the_catalog_too()
+    {
+        var far = All(Head + "mouse_speed,,900\n");
+        Assert.Empty(far.Where(i => i.Severity == Severity.Error));
+        Assert.Contains(far, i => i.Severity == Severity.Warning
+            && i.Cell == "C4" && i.Message.Contains("above 250"));
+
+        var wrongToken = All(Head + "mouse_response_curve,,7\n");
+        Assert.Contains(wrongToken, i => i.Severity == Severity.Error && i.Cell == "C4");
+    }
+
+    [Fact]
+    public void The_catalog_checks_follow_the_column_each_sheet_really_uses()
+    {
+        // A mode sheet reads column C, a Preferences sheet reads column B. A
+        // number in the other column is a misplaced value, not a value to check.
+        Assert.DoesNotContain(All(Head + "mouse_speed,900\n"), i => i.Message.Contains("above 250"));
+        Assert.DoesNotContain(All(PrefsHead + "mouse_speed,,900\n"), i => i.Message.Contains("above 250"));
     }
 
     [Fact]

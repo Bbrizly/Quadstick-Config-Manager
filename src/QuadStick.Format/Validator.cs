@@ -73,12 +73,22 @@ public static class Validator
             ? b.Inputs[0] : null;
         if (valueInC != null)
         {
+            var rejected = false;
             if (!long.TryParse(valueInC, System.Globalization.NumberStyles.Integer,
                                System.Globalization.CultureInfo.InvariantCulture, out _)
                 && !IsWordValuedPreference(b.Output))
+            {
                 issues.Add(new Issue(Severity.Error, $"C{b.Row}",
                     $"\"{valueInC}\" is not a whole number. \"{b.Output}\" is a device setting; this cell is its value.",
                     "Replace it with a whole number, e.g. \"50\"."));
+                rejected = true;
+            }
+            // A mode override reads its value from column C, so that is the
+            // cell the catalog checks point at. The name itself came from
+            // Vocab.PreferenceOverrides, so it is never unknown here; a name
+            // the app has never heard of is validated as an output instead.
+            if (valueInC.Length > 0 && PreferenceCatalog.TryGet(b.Output, out var def))
+                ValidateAgainstCatalog(def, valueInC, $"C{b.Row}", rejected, issues);
             return;
         }
         if (b.Function.Length > 0)
@@ -100,11 +110,25 @@ public static class Validator
     // Preferences sheet is the human Units/Description annotation, not data.
     static void ValidatePreferencesSheet(ModeSheet sheet, List<Issue> issues)
     {
+        // Whole-number values seen on this sheet, so the pair-order checks
+        // below can compare two rows. A repeated name keeps the last row, the
+        // way the device's own sequential read does.
+        var numbers = new Dictionary<string, (int Value, int Row)>(StringComparer.Ordinal);
+
         foreach (var b in sheet.Bindings)
         {
             if (b.Output.Length == 0) continue; // blank name sets nothing
             var value = b.Function; // column B is the value here
             var valueInC = b.InputCols.Count > 0 && b.InputCols[0] == 2 ? b.Inputs[0] : null;
+
+            // A name the catalog has never heard of is a Warning and never an
+            // error: firmware newer than this app has preferences this app
+            // cannot know, and the row must survive untouched either way.
+            PreferenceDefinition? def = PreferenceCatalog.TryGet(b.Output, out var found) ? found : null;
+            if (def is null)
+                issues.Add(new Issue(Severity.Warning, $"A{b.Row}",
+                    $"\"{b.Output}\" is not a preference this app knows. It is written back exactly as it is, in case your device understands it.",
+                    "Check the spelling against the preferences your device already has."));
 
             if (value.Length == 0)
             {
@@ -123,12 +147,101 @@ public static class Validator
             // mode-sheet override path and ValidateFunction: the device's atoi
             // reads it as 0, so the preference is simply wrong. (A number in the
             // wrong form would be a Warning, but there's no such form here.)
+            var rejected = false;
             if (!long.TryParse(value, System.Globalization.NumberStyles.Integer,
                                System.Globalization.CultureInfo.InvariantCulture, out _)
                 && !IsWordValuedPreference(b.Output))
+            {
                 issues.Add(new Issue(Severity.Error, $"B{b.Row}",
                     $"\"{value}\" in column B is the value of \"{b.Output}\" but is not a whole number.",
                     "Most preferences take a whole number, e.g. \"50\"."));
+                rejected = true;
+            }
+
+            if (int.TryParse(value, System.Globalization.NumberStyles.Integer,
+                             System.Globalization.CultureInfo.InvariantCulture, out var small))
+                numbers[b.Output] = (small, b.Row);
+
+            // On a Preferences sheet the value is in column B, so that is the
+            // cell the catalog checks point at.
+            if (def is not null) ValidateAgainstCatalog(def, value, $"B{b.Row}", rejected, issues);
+        }
+
+        ValidatePreferenceOrder(numbers, issues);
+    }
+
+    // What the catalog can prove about one value. Bounds come from the sliders
+    // in the official manager, which are recommendations rather than device
+    // limits, so being outside them is only a Warning. A toggle is a number to
+    // the firmware, so an odd value is coerced, not misread, and that is a
+    // Warning too. A choice is the one blocking case: its words come from the
+    // firmware's own keyword table, and a word outside it selects the wrong
+    // mode on the device instead of failing.
+    static void ValidateAgainstCatalog(
+        PreferenceDefinition def, string value, string cell, bool alreadyRejected, List<Issue> issues)
+    {
+        switch (def.Editor)
+        {
+            case PreferenceEditor.Integer:
+                if (!long.TryParse(value, System.Globalization.NumberStyles.Integer,
+                                   System.Globalization.CultureInfo.InvariantCulture, out var n))
+                    return; // not a number: the whole-number error above covers it
+                if (def.Minimum is int min && n < min)
+                    issues.Add(new Issue(Severity.Warning, cell,
+                        $"\"{value}\" is below {min}, the lowest value the official manager offers for \"{def.Name}\". The device still takes it, but it is outside the tested range.",
+                        $"Use {min} or more."));
+                else if (def.Maximum is int max && n > max)
+                    issues.Add(new Issue(Severity.Warning, cell,
+                        $"\"{value}\" is above {max}, the highest value the official manager offers for \"{def.Name}\". The device still takes it, but it is outside the tested range.",
+                        $"Use {max} or less."));
+                return;
+
+            case PreferenceEditor.Toggle:
+                if (alreadyRejected || value == "0" || value == "1") return;
+                // A toggle is read as a number, so a stray whole number is
+                // coerced rather than misread. The file still installs.
+                issues.Add(new Issue(Severity.Warning, cell,
+                    $"\"{value}\" is not an on/off value for \"{def.Name}\". The device reads it as a number, so anything other than 0 counts as on.",
+                    "Use 1 for on or 0 for off."));
+                return;
+
+            case PreferenceEditor.Choice:
+                if (alreadyRejected || def.Options.Contains(value, StringComparer.Ordinal)) return;
+                issues.Add(new Issue(Severity.Error, cell,
+                    $"\"{value}\" is not one of the values \"{def.Name}\" accepts.",
+                    $"Use one of: {string.Join(", ", def.Options)}."));
+                return;
+
+            default: // Text: nothing is proven about its range, so nothing is claimed
+                return;
+        }
+    }
+
+    // The four orderings the sources actually establish, as plain pairs. There
+    // is no rule language behind this on purpose: a preference file is not a
+    // program, and an invented constraint can cost a disabled user the input
+    // they rely on.
+    static readonly (string Lower, string Upper, int Gap)[] OrderedPairs =
+    {
+        ("sip_puff_threshold_soft", "sip_puff_threshold", 2),
+        ("sip_puff_threshold", "sip_puff_maximum", 2),
+        ("lip_position_minimum", "lip_position_maximum", 5),
+        ("joystick_D_Pad_inner", "joystick_D_Pad_outer", 2),
+    };
+
+    // Only runs when both preferences are present on the sheet and both are
+    // whole numbers. One of a pair on its own says nothing: the other value
+    // lives on the device, where this app cannot see it.
+    static void ValidatePreferenceOrder(Dictionary<string, (int Value, int Row)> numbers, List<Issue> issues)
+    {
+        foreach (var (lower, upper, gap) in OrderedPairs)
+        {
+            if (!numbers.TryGetValue(lower, out var lo)) continue;
+            if (!numbers.TryGetValue(upper, out var hi)) continue;
+            if ((long)lo.Value + gap <= hi.Value) continue;
+            issues.Add(new Issue(Severity.Warning, $"B{hi.Row}",
+                $"\"{upper}\" is {hi.Value} and \"{lower}\" is {lo.Value}. The two need at least {gap} between them, or the settings run into each other.",
+                $"Raise \"{upper}\" to {(long)lo.Value + gap} or more, or lower \"{lower}\"."));
         }
     }
 
