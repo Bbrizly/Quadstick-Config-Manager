@@ -132,7 +132,10 @@ public static class Vocab
     // the cell blank.
     public const string NoneInput = "none";
 
+    // connections_keywords[] in the firmware, and the device matches it the way
+    // it matches every other keyword: the whole word, case sensitively, with usb
+    // as the fallback. So "Bluetooth" and "usb bluetooth" are not two ways of
+    // saying something, they are two ways of getting usb without being told.
     public static readonly IReadOnlySet<string> Channels =
-        new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        { "none", "usb", "bluetooth", "usb bluetooth", "bluetooth usb" };
+        new HashSet<string>(StringComparer.Ordinal) { "none", "usb", "bluetooth" };
 }

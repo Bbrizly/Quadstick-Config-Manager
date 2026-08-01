@@ -55,6 +55,15 @@ public class DeviceAgreementTests
             var got = device[m].Bindings;
             int d = 0;
 
+            // The channel sits in the label row, and search_for_keyword takes
+            // it whole: anything that is not exactly none, usb or bluetooth
+            // falls back to usb. A mode that says "usb bluetooth" is one the
+            // device runs on usb alone.
+            var channel = app[m].Channel.Trim();
+            if (channel.Length > 0 && channel != device[m].Channel)
+                diffs.Add((app[m].StartRow + 2,
+                    $"the app shows the channel \"{channel}\", the device uses \"{device[m].Channel}\"", false));
+
             foreach (var b in shown)
             {
                 if (d < got.Count && got[d].Output == b.Output)
@@ -158,6 +167,19 @@ public class DeviceAgreementTests
     [InlineData("QuadStick Configuration,Version 1.5,,game\n")]
     public void A_header_in_the_wrong_case_still_reaches_the_device(string header) =>
         AssertNothingSilent(header + Head + "x,normal,lip\n");
+
+    // search_for_keyword takes the channel cell whole and case sensitively, so
+    // anything that is not exactly none, usb or bluetooth falls back to usb.
+    [Theory]
+    [InlineData("usb bluetooth")]
+    [InlineData("bluetooth usb")]
+    [InlineData("Bluetooth")]
+    [InlineData("BLUETOOTH")]
+    [InlineData("bluetooth")]
+    [InlineData("usb")]
+    [InlineData("none")]
+    public void A_channel_the_device_will_not_match_is_not_passed_off_as_working(string channel) =>
+        AssertNothingSilent($"Profile Name,,Left joy\ngame.csv\nOutputs,Function,{channel}\nx,normal,lip\n");
 
     [Fact]
     public void A_whole_profile_of_awkward_rows_stays_honest()

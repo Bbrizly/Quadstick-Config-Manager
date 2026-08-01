@@ -326,8 +326,8 @@ public static class Validator
     {
         if (sheet.Channel.Length > 0 && !Vocab.Channels.Contains(sheet.Channel))
             issues.Add(new Issue(Severity.Warning, $"C{sheet.StartRow + 2}",
-                $"\"{sheet.Channel}\" is not a recognized channel.",
-                "Expected \"usb\" or \"bluetooth\"."));
+                $"The device does not match \"{sheet.Channel}\" as a channel, so this mode connects over USB instead.",
+                "Use \"usb\", \"bluetooth\", or \"none\", in lower case."));
     }
 
     static void ValidateOutput(Binding b, List<Issue> issues)
