@@ -1246,7 +1246,13 @@ public partial class MainWindow : Window
     public void ModesChanged(int selectSheetIndex, string status)
     {
         if (_file is null) return;
-        _sheetIndex = Math.Clamp(selectSheetIndex, 0, _file.Document.Sheets.Count - 1);
+        // A profile can have no modes at all: the advanced grid can type over
+        // the keyword that opens the last one. Clamp would throw on an empty
+        // range, and index 0 lands on the custom names table, which is the only
+        // thing left to show.
+        _sheetIndex = _file.Document.Sheets.Count == 0
+            ? 0
+            : Math.Clamp(selectSheetIndex, 0, _file.Document.Sheets.Count - 1);
         _selectedZone = null;
         RepopulateSheetPicker(_sheetIndex);
         RefreshEditor();
