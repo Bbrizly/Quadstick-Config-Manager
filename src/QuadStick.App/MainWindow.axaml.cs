@@ -322,6 +322,24 @@ public partial class MainWindow : Window
     public async Task ShowCommunityProfilesAsync() =>
         await new CommunityProfilesWindow(this).ShowDialog(this);
 
+    // Managing what is already on the QuadStick. Everything it does is file
+    // work on a mounted drive; nothing here talks to the device any other way.
+    public async Task ShowDeviceFilesAsync()
+    {
+        await new DeviceFilesWindow(this).ShowDialog(this);
+        // Copying or deleting on the device changes what Home shows.
+        if (HomeView.IsVisible) RefreshHomeCards();
+    }
+
+    // The device manager opens a file the same way a home card does: a working
+    // copy with no save path, so Save goes to the library and only Install,
+    // with its backup and verification, ever writes back to the QuadStick.
+    internal void OpenDeviceProfile(ProfileFile file)
+    {
+        OpenInEditor(file, null, ProfileSource.Device);
+        Status("Opened from your QuadStick. Save keeps a copy in your library; use Install to put changes back on the device.", StatusKind.Warning);
+    }
+
     // The picker reaches back through these. Backup() is non-null here:
     // ShowDrivePickerAsync gated on it.
     internal Task<List<DriveSheetInfo>> ListDriveSheetsAsync() => Backup()!.ListForPickerAsync();
@@ -605,6 +623,7 @@ public partial class MainWindow : Window
         HomeTemplateButton.Click += async (_, _) => await UseTemplateAsync();
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
         HomeCommunityButton.Click += async (_, _) => await ShowCommunityProfilesAsync();
+        HomeDeviceFilesButton.Click += async (_, _) => await ShowDeviceFilesAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
         HomeDriveButton.Click += (_, _) => OnDriveButtonClick();
@@ -1404,9 +1423,9 @@ public partial class MainWindow : Window
         var deviceFiles = Device.FindCandidatesCached()
             .SelectMany(root =>
             {
-                try { return Directory.GetFiles(root, "*.csv"); }
+                try { return Directory.GetFiles(root, "*.csv").Where(p => Device.IsProfileFileName(Path.GetFileName(p))); }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
-                { return Array.Empty<string>(); }
+                { return Enumerable.Empty<string>(); }
             })
             .OrderBy(Path.GetFileName)
             .ToArray();

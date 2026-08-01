@@ -122,7 +122,12 @@
 
           <StackPanel Spacing="12">
             <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
-            <TextBlock Classes="section" Text="ON YOUR QUADSTICK"/>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <TextBlock Classes="section" Text="ON YOUR QUADSTICK" VerticalAlignment="Center"/>
+              <Button x:Name="HomeDeviceFilesButton" Content="Manage files"
+                      FontSize="{DynamicResource SmallSize}"
+                      AutomationProperties.Name="Manage the profile files on your QuadStick: copy, delete, and see the file selection order"/>
+            </StackPanel>
             <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
                        Text="Plug in your QuadStick and its profiles will show up here. (In PS4 boot mode or controller emulation? The drive won't appear.)"/>
             <WrapPanel x:Name="DeviceCards"/>

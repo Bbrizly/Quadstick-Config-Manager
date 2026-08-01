@@ -197,11 +197,21 @@ public static class Device
 
     // The order the device steps through files when you cycle profiles.
     // prefs.csv is settings, not a profile, so it is never selectable.
+    // A QuadStick drive is FAT formatted, so macOS drops AppleDouble sidecars
+    // like ._Racing.csv next to any file it copies there. They are metadata, not
+    // profiles, and they must never reach the file list, the selection guide, or
+    // delete. Dot files are hidden by every OS that writes them, so the name is
+    // enough. ponytail: name check only, sniffing the AppleDouble magic bytes
+    // would force every caller to open the file first.
+    public static bool IsProfileFileName(string fileName) =>
+        !string.IsNullOrWhiteSpace(fileName)
+        && fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)
+        && !fileName.StartsWith('.');
+
     public static IReadOnlyList<string> SelectionOrder(IEnumerable<string> fileNames)
     {
         var csv = fileNames
-            .Where(n => !string.IsNullOrWhiteSpace(n))
-            .Where(n => n.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            .Where(IsProfileFileName)
             .Where(n => !string.Equals(n, "prefs.csv", StringComparison.OrdinalIgnoreCase))
             .ToList();
 

@@ -234,6 +234,36 @@ public class DeviceFileManagementTests
         Assert.Empty(Device.SelectionOrder(new[] { "prefs.csv" }));
     }
 
+    // Found on a real FAT volume, not in a temp directory. A QuadStick drive is
+    // FAT, so macOS leaves ._Racing.csv beside every file it copies there. Those
+    // sidecars are binary metadata. Listing them would put phantom entries in the
+    // LED guide and offer ._prefs.csv for deletion, since it does not match the
+    // exact protected name.
+    [Fact]
+    public void SelectionOrder_ignores_the_sidecar_files_macos_writes_to_fat_drives()
+    {
+        var names = new[]
+        {
+            "default.csv", "._default.csv", "._prefs.csv", "._Racing.csv", "Racing.csv",
+        };
+
+        Assert.Equal(new[] { "default.csv", "Racing.csv" }, Device.SelectionOrder(names));
+    }
+
+    [Theory]
+    [InlineData("Racing.csv", true)]
+    [InlineData("default.csv", true)]
+    [InlineData("prefs.csv", true)]
+    [InlineData("._Racing.csv", false)]
+    [InlineData("._prefs.csv", false)]
+    [InlineData(".hidden.csv", false)]
+    [InlineData("notes.txt", false)]
+    [InlineData("", false)]
+    public void IsProfileFileName_accepts_only_visible_csv_names(string name, bool expected)
+    {
+        Assert.Equal(expected, Device.IsProfileFileName(name));
+    }
+
     [Theory]
     [InlineData(1, "purple", "grey", "grey", "grey", "grey")]
     [InlineData(5, "grey", "grey", "grey", "grey", "purple")]
