@@ -2420,8 +2420,14 @@ public partial class MainWindow : Window
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
             Padding = new Avalonia.Thickness(10, 8),
         };
+        // "and" would say a chord, and several inputs on one row are a sequence
+        // in time: the device matches them against the last inputs used, newest
+        // first, so they have to be done one after the other. The tooltip and
+        // the help already say that. A screen reader user was still being told
+        // the opposite, which is the one place it costs the most.
         AutomationProperties.SetName(open,
-            $"Mapping {n}: press {output} when you {string.Join(" and ", inputs)}" +
+            $"Mapping {n}: press {output} when you {string.Join(", then ", inputs)}" +
+            $"{(inputs.Count > 1 ? ", one after the other" : "")}" +
             $"{(func.Length > 0 ? $", as {func}" : "")}. Press Enter to edit.");
         open.Click += (_, _) =>
         {
