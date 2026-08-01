@@ -130,7 +130,7 @@
             </StackPanel>
             <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
                        Text="Plug in your QuadStick and its profiles will show up here. (In PS4 boot mode or controller emulation? The drive won't appear.)"/>
-            <WrapPanel x:Name="DeviceCards"/>
+            <StackPanel x:Name="DeviceCards" Spacing="6"/>
           </StackPanel>
 
         </StackPanel>

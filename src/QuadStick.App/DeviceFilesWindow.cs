@@ -170,7 +170,9 @@ public class DeviceFilesWindow : Window
     // The drive's own name where the system gives us one, so the user reads
     // "QUADSTICK" and not a mount path. The exact path is always shown next to
     // it, because that is the thing an action actually touches.
-    static string LabelFor(string root)
+    // Home shows the same name over its own per-drive groups, so this stays the
+    // one place that decides what a drive is called.
+    internal static string LabelFor(string root)
     {
         try
         {

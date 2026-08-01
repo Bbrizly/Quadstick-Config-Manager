@@ -1399,6 +1399,10 @@ public partial class MainWindow : Window
         });
     }
 
+    // Test seam, same shape as the one in DeviceFilesWindow. A test cannot mount
+    // two QuadSticks, and grouping is only visible when it can.
+    internal Func<IReadOnlyList<string>> FindDeviceRoots { get; set; } = () => Device.FindCandidatesCached();
+
     void RefreshHomeCards()
     {
         // The Drive button is a live status light, refreshed on every home load.
@@ -1424,21 +1428,54 @@ public partial class MainWindow : Window
                 note: $" · in {Path.GetFileName(Path.GetDirectoryName(path))}"));
 
         DeviceCards.Children.Clear();
-        // A yanked USB stick between FindCandidates and GetFiles is routine
-        // for this hardware; it must never crash the home screen.
-        var deviceFiles = Device.FindCandidatesCached()
-            .SelectMany(root =>
-            {
-                try { return Directory.GetFiles(root, "*.csv").Where(p => Device.IsProfileFileName(Path.GetFileName(p))); }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
-                { return Enumerable.Empty<string>(); }
-            })
-            .OrderBy(Path.GetFileName)
+        var drives = FindDeviceRoots()
+            .Select(root => (Root: root, Files: ProfileFilesOn(root)))
+            .Where(d => d.Files.Length > 0)
+            .OrderBy(d => d.Root, StringComparer.OrdinalIgnoreCase)
             .ToArray();
-        DeviceEmptyText.IsVisible = deviceFiles.Length == 0;
-        foreach (var path in deviceFiles)
-            DeviceCards.Children.Add(ProfileCard(path, onDevice: true));
+        DeviceEmptyText.IsVisible = drives.Length == 0;
+
+        foreach (var (root, files) in drives)
+        {
+            // One QuadStick is the normal case and a heading over the only group
+            // is just noise. With two plugged in the files interleave by name, so
+            // without a heading there is nothing to say whose profiles are whose.
+            if (drives.Length > 1) DeviceCards.Children.Add(DriveHeading(root));
+
+            var cards = new WrapPanel();
+            foreach (var path in files)
+                cards.Children.Add(ProfileCard(path, onDevice: true));
+            DeviceCards.Children.Add(cards);
+        }
     }
+
+    // A yanked USB stick between FindCandidates and GetFiles is routine for this
+    // hardware; it must never crash the home screen. That drive drops off the
+    // list and the others still show.
+    static string[] ProfileFilesOn(string root)
+    {
+        try
+        {
+            return Directory.GetFiles(root, "*.csv")
+                .Where(p => Device.IsProfileFileName(Path.GetFileName(p)))
+                .OrderBy(Path.GetFileName)
+                .ToArray();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
+        {
+            return Array.Empty<string>();
+        }
+    }
+
+    // The drive's own name, with the path beside it, matching how the Manage
+    // files window names a drive. The path is what tells two identically
+    // labelled QuadSticks apart.
+    static TextBlock DriveHeading(string root) => new()
+    {
+        Text = $"{DeviceFilesWindow.LabelFor(root)}  ({root})",
+        FontWeight = FontWeight.SemiBold,
+        Margin = new Thickness(0, 4, 0, 2),
+    };
 
     // ShowHome re-reads and re-parses every library + device file on each visit
     // just to show "N sheets, M bindings". Cache it by path + last-write time so
