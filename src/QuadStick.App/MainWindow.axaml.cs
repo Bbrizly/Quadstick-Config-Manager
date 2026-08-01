@@ -3564,6 +3564,27 @@ public partial class MainWindow : Window
             picked => CommitOutputFromList(b, outputs, picked))));
         p.Children.Add(Mid(ListPickerCell(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint, null, "a function")));
 
+        // A mode row whose output is a setting name is not a binding: the
+        // device skips column B and reads column C as the setting's VALUE.
+        // The row already carried a scope badge saying so, and then handed the
+        // user an input picker on that same cell, with the whole input catalog
+        // in it. Picking "lip" there sets the value to 0 on the hardware. So
+        // the value gets the same control the settings sheet gives it, at
+        // column C, and no way to add a second input to a row that has none.
+        if (IsModePreferenceOverride(b))
+        {
+            var prefDef = Definition(b.Output);
+            var prefValue = _file!.GetCell(b.Row, 2);
+            bool prefTyped = prefDef is not null && CanRepresent(prefDef, prefValue);
+            p.Children.Add(Mid(PrefsValueCell(b, prefTyped ? prefDef : null, 2)));
+            RowTail(p, b, new StackPanel
+            {
+                Spacing = 6, VerticalAlignment = VerticalAlignment.Center,
+                Orientation = Orientation.Horizontal,
+            });
+            return p;
+        }
+
         // Extra inputs go UNDER the first one. Sideways growth forced a
         // horizontal scroll, which the tester called out as inaccessible.
         var inputsBox = new StackPanel { Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
@@ -3629,6 +3650,18 @@ public partial class MainWindow : Window
             rowButtons.Children.Add(addInput);
         }
 
+        RowTail(p, b, rowButtons);
+        return p;
+    }
+
+    // Everything a row ends with, whatever its middle held: the whole-row
+    // delete, the note, the reorder chevrons, and the scope badge on a settings
+    // row. Shared because a preference override row has no inputs to add and
+    // still has to end the same way, lined up under the same headers.
+    void RowTail(StackPanel p, Binding b, StackPanel rowButtons)
+    {
+        Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
+
         // The whole-row delete: a red trash circle under the plus.
         var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
         ToolTip.SetTip(del, "Delete this whole row");
@@ -3662,17 +3695,14 @@ public partial class MainWindow : Window
         // A mode row whose output is a setting name is a per-mode override, so
         // it says so. Last in the row, after the chevrons, so the columns of
         // every other row stay lined up under their headers.
-        if (IsModePreferenceOverride(b))
+        if (!IsModePreferenceOverride(b)) return;
+        var badge = new TextBlock
         {
-            var badge = new TextBlock
-            {
-                Text = ModeScope, FontSize = Size("SmallSize"), Classes = { "secondary" },
-                TextWrapping = TextWrapping.Wrap, Width = 130,
-            };
-            AutomationProperties.SetName(badge, $"Row {b.Row} scope: {ModeScope}");
-            p.Children.Add(Mid(badge));
-        }
-        return p;
+            Text = ModeScope, FontSize = Size("SmallSize"), Classes = { "secondary" },
+            TextWrapping = TextWrapping.Wrap, Width = 130,
+        };
+        AutomationProperties.SetName(badge, $"Row {b.Row} scope: {ModeScope}");
+        p.Children.Add(Mid(badge));
     }
 
     // Swap this row with its neighbor in the same mode's binding list. After

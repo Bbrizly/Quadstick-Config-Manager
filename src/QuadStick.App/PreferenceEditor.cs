@@ -138,7 +138,7 @@ public partial class MainWindow
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
 
         p.Children.Add(PrefsNameCell(b, def));
-        var valueCell = PrefsValueCell(b, typed ? def : null);
+        var valueCell = PrefsValueCell(b, typed ? def : null, 1);
         p.Children.Add(Mid(valueCell));
         // The official sheet annotates each preference with Units (column C)
         // and a Description (column D). The device ignores both, but hiding
@@ -154,7 +154,7 @@ public partial class MainWindow
         p.Children.Add(Mid(del));
 
         var heading = def is null ? null : CategoryHeadingFor(b, def);
-        var info = def is null ? null : PreferenceInfoLine(b, def, typed ? valueCell : null);
+        var info = def is null ? null : PreferenceInfoLine(b, def, typed ? valueCell : null, 1);
         if (heading is null && info is null) return p;
 
         // Heading and notes travel inside the row's own control, so RowsPanel
@@ -227,7 +227,10 @@ public partial class MainWindow
     };
 
     // The value column. def is null here whenever the row has to stay raw.
-    Border PrefsValueCell(Binding b, PreferenceDefinition? def)
+    // col is where the value lives: B on a settings sheet, C on a mode row
+    // that overrides one setting for that mode. The device reads a different
+    // column in each case, so the control has to be told which.
+    Border PrefsValueCell(Binding b, PreferenceDefinition? def, int col)
     {
         var name = $"Setting value for row {b.Row}";
         var wrapper = new Border
@@ -239,37 +242,37 @@ public partial class MainWindow
             CornerRadius = new Avalonia.CornerRadius(5),
             Width = PrefsValueWidth,
         };
-        _cellBorders[$"B{b.Row}"] = wrapper;
+        _cellBorders[$"{(char)('A' + col)}{b.Row}"] = wrapper;
         wrapper.Child = def is null
-            ? RawValueBox(b.Row, name)
-            : TypedValueControl(b.Row, def, _file!.GetCell(b.Row, 1), name);
+            ? RawValueBox(b.Row, col, name)
+            : TypedValueControl(b.Row, col, def, _file!.GetCell(b.Row, col), name);
         return wrapper;
     }
 
-    Control TypedValueControl(int row, PreferenceDefinition def, string value, string name) => def.Editor switch
+    Control TypedValueControl(int row, int col, PreferenceDefinition def, string value, string name) => def.Editor switch
     {
-        PreferenceEditor.Toggle => ToggleValueControl(row, value, name),
-        PreferenceEditor.Choice => ChoiceValueControl(row, def, value, name),
-        _ => IntegerValueControl(row, def, value, name),
+        PreferenceEditor.Toggle => ToggleValueControl(row, col, value, name),
+        PreferenceEditor.Choice => ChoiceValueControl(row, col, def, value, name),
+        _ => IntegerValueControl(row, col, def, value, name),
     };
 
     // On/off. The device stores 0 or 1 and nothing else, so that is exactly
     // what this writes. The state is spelled out in words next to the box, so
     // it never depends on seeing a tick.
-    Control ToggleValueControl(int row, string value, string name)
+    Control ToggleValueControl(int row, int col, string value, string name)
     {
         var box = new CheckBox { IsChecked = value == "1", VerticalAlignment = VerticalAlignment.Center };
         void Paint() => box.Content = new TextBlock
         { Text = box.IsChecked == true ? "On (1)" : "Off (0)", FontSize = Size("BodySize") };
         Paint();
         AutomationProperties.SetName(box, name);
-        box.IsCheckedChanged += (_, _) => { Paint(); CommitPreferenceValue(row, box.IsChecked == true ? "1" : "0"); };
+        box.IsCheckedChanged += (_, _) => { Paint(); CommitPreferenceValue(row, col, box.IsChecked == true ? "1" : "0"); };
         return box;
     }
 
     // A fixed set of device keywords. The list holds the exact tokens, so
     // picking one writes the token the firmware reads, letter for letter.
-    Control ChoiceValueControl(int row, PreferenceDefinition def, string value, string name)
+    Control ChoiceValueControl(int row, int col, PreferenceDefinition def, string value, string name)
     {
         var combo = new ComboBox
         {
@@ -281,7 +284,7 @@ public partial class MainWindow
         combo[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(FunctionTint + "Brush");
         AutomationProperties.SetName(combo, name);
         combo.SelectionChanged += (_, _) =>
-        { if (combo.SelectedItem is string token) CommitPreferenceValue(row, token); };
+        { if (combo.SelectedItem is string token) CommitPreferenceValue(row, col, token); };
         return combo;
     }
 
@@ -289,7 +292,7 @@ public partial class MainWindow
     // the spinner stops where that program stops. Typing past them is refused
     // rather than clamped, and "Type an exact value" below the row is the way
     // out for anyone who really wants an untested number.
-    Control IntegerValueControl(int row, PreferenceDefinition def, string value, string name)
+    Control IntegerValueControl(int row, int col, PreferenceDefinition def, string value, string name)
     {
         var box = new NumericUpDown
         {
@@ -308,18 +311,18 @@ public partial class MainWindow
         {
             // Half-typed or refused text leaves the cell alone.
             if (e.NewValue is not decimal d || d != decimal.Truncate(d)) return;
-            CommitPreferenceValue(row, ((int)d).ToString(CultureInfo.InvariantCulture));
+            CommitPreferenceValue(row, col, ((int)d).ToString(CultureInfo.InvariantCulture));
         };
         return box;
     }
 
     // The plain editor every preference cell used to be, and still is for
     // unknown settings, free-text settings, and values no control can show.
-    Control RawValueBox(int row, string name)
+    Control RawValueBox(int row, int col, string name)
     {
         var box = new AutoCompleteBox
         {
-            Text = _file!.GetCell(row, 1),
+            Text = _file!.GetCell(row, col),
             ItemsSource = NoSuggestions,
             FilterMode = AutoCompleteFilterMode.Contains,
             MinimumPrefixLength = 0,
@@ -327,7 +330,7 @@ public partial class MainWindow
         };
         box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(FunctionTint + "Brush");
         AutomationProperties.SetName(box, name);
-        void Commit() => CommitPreferenceValue(row, (box.Text ?? "").Trim());
+        void Commit() => CommitPreferenceValue(row, col, (box.Text ?? "").Trim());
         box.LostFocus += (_, _) => Commit();
         box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
         return box;
@@ -335,10 +338,10 @@ public partial class MainWindow
 
     // One control, one cell. Units, descriptions, notes, unknown rows and row
     // order are never touched from here.
-    void CommitPreferenceValue(int row, string exact)
+    void CommitPreferenceValue(int row, int col, string exact)
     {
-        if (_file is null || exact == _file.GetCell(row, 1)) return;
-        _file.SetCell(row, 1, exact);
+        if (_file is null || exact == _file.GetCell(row, col)) return;
+        _file.SetCell(row, col, exact);
         RefreshIssues();
     }
 
@@ -349,7 +352,7 @@ public partial class MainWindow
     // The default is sourced from the QuadStick Manager Program, not from a
     // device, and the firmware snapshot disagrees with it in places. So it is
     // named as the manager's value, never as what the hardware ships with.
-    Control? PreferenceInfoLine(Binding b, PreferenceDefinition def, Border? typedCell)
+    Control? PreferenceInfoLine(Binding b, PreferenceDefinition def, Border? typedCell, int col)
     {
         var line = new StackPanel
         {
@@ -385,14 +388,14 @@ public partial class MainWindow
             line.Children.Add(risk);
         }
 
-        if (typedCell is not null) line.Children.Add(ExactValueButton(b.Row, def, typedCell));
+        if (typedCell is not null) line.Children.Add(ExactValueButton(b.Row, col, def, typedCell));
         return line.Children.Count > 0 ? line : null;
     }
 
     // The way back to plain typing. The friendly controls only offer what the
     // official manager offers, and the device itself takes more than that, so
     // no value is ever locked away behind them. A button, not a right-click.
-    Button ExactValueButton(int row, PreferenceDefinition def, Border cell)
+    Button ExactValueButton(int row, int col, PreferenceDefinition def, Border cell)
     {
         var button = new Button
         {
@@ -403,7 +406,7 @@ public partial class MainWindow
         ToolTip.SetTip(button, "Swap the control for a plain box, for a value outside the tested range.");
         button.Click += (_, _) =>
         {
-            var box = RawValueBox(row, $"Setting value for row {row}");
+            var box = RawValueBox(row, col, $"Setting value for row {row}");
             cell.Child = box;
             button.IsVisible = false;
             Dispatcher.UIThread.Post(() => box.Focus(), DispatcherPriority.Loaded);
