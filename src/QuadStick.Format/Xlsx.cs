@@ -28,15 +28,21 @@ public static class Xlsx
     static readonly HashSet<string> HelperTabs = new(StringComparer.OrdinalIgnoreCase)
     { "Inputs", "Outputs", "Voice", "Reference Card" };
 
-    // Where a cell stops being profile and starts being junk. The shipped
-    // template is 1000 rows per tab and the device reads 128 binding rows per
-    // mode, so nothing real lives past 20,000. Google Sheets leaves a stray
-    // cell at the bottom of a sheet after a paste and delete, and honouring one
-    // at r="1048576" turned a twenty row profile into a million blank rows and
-    // a two megabyte file. XFD is Excel's own last column; past it the
-    // unchecked arithmetic in ColumnIndex wraps, and a reference like
-    // "ZZZZZZ1" asks for a third of a billion cells on one row.
-    const int MaxColumn = 16383; // XFD, zero-based
+    // Where a cell stops being profile and starts being junk, in both
+    // directions. Cells past these are dropped, not clamped: clamping stacks
+    // them all onto the boundary, which is its own kind of wrong.
+    //
+    // Rows: the shipped template is 1000 per tab and the device reads 128
+    // binding rows per mode. Google Sheets leaves a stray cell at the bottom of
+    // a sheet after a paste and a delete, and honouring one at r="1048576"
+    // turned a twenty row profile into a million blank rows and a two megabyte
+    // file.
+    //
+    // Columns: L is the last one a profile means anything by, and the widest
+    // real community workbook in the corpus reaches Z. Excel's own last column
+    // was useless as a bound, because 16,383 blanks per stray cell times a
+    // thousand rows is still sixteen million strings.
+    const int MaxColumn = 63; // BL, zero-based
     const int MaxRows = 20_000;
 
     static readonly XNamespace Main = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -150,6 +156,7 @@ public static class Xlsx
         var rows = new List<string[]>();
         if (Xml(zip, part) is not XDocument doc) return rows;
 
+        int lastNumber = 0;
         foreach (var row in doc.Root!.Descendants(Main + "row"))
         {
             var cells = new List<string>();
@@ -158,6 +165,7 @@ public static class Xlsx
                 // Empty cells are skipped in the file, so place each one by its
                 // own reference (C4 -> index 2) instead of counting.
                 int col = ColumnIndex((string?)c.Attribute("r") ?? "");
+                if (col > MaxColumn) continue; // debris: nothing out there is read
                 while (cells.Count < col) cells.Add("");
                 cells.Add(Value(c, shared));
             }
@@ -165,7 +173,14 @@ public static class Xlsx
 
             // Blank rows are skipped in the file too, and a blank row means
             // "mode ends here" to the device, so their positions must survive.
-            int number = (int?)row.Attribute("r") ?? rows.Count + 1;
+            //
+            // The r attribute is optional, and the fallback has to count the
+            // rows that were skipped as well as the ones that were kept.
+            // Counting kept rows alone let a bare <row> that followed a skipped
+            // one land back inside the profile: junk from the bottom of the
+            // sheet arrived as a live binding a few rows down.
+            int number = (int?)row.Attribute("r") ?? lastNumber + 1;
+            lastNumber = number;
             if (number > MaxRows || number < 1) continue;
             while (rows.Count < number - 1) rows.Add(Array.Empty<string>());
             rows.Add(cells.ToArray());
@@ -208,9 +223,9 @@ public static class Xlsx
             if (ch is >= 'A' and <= 'Z') n = n * 26 + (ch - 'A' + 1);
             else if (ch is >= 'a' and <= 'z') n = n * 26 + (ch - 'a' + 1);
             else break;
-            // Stop before the arithmetic wraps. Anything past XFD is not a
-            // column Excel can write, so there is no real cell to lose here.
-            if (n > MaxColumn + 1) return MaxColumn;
+            // Stop before the arithmetic wraps, and answer with a column the
+            // caller drops rather than one it pads out to.
+            if (n > MaxColumn + 1) return MaxColumn + 1;
         }
         return n > 0 ? n - 1 : 0;
     }

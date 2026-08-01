@@ -121,4 +121,48 @@ public class XlsxJunkTests
         Assert.Equal("game.csv", file.Document.CsvFileName);
         Assert.Equal("lip", Assert.Single(sheet.Bindings).Inputs[0]);
     }
+
+    [Fact]
+    public void A_row_after_a_skipped_one_does_not_land_back_inside_the_profile()
+    {
+        // The r attribute is optional. Bounding the sheet by skipping far rows
+        // made the fallback for a bare <row> count only the rows that were
+        // kept, so junk from the bottom of the sheet arrived as a live binding
+        // four rows down, which is worse than the padding it replaced.
+        using var wb = Workbook(RealRows +
+            "<row r=\"30000\">" + Cell("A30000", "junk_far_below") + "</row>" +
+            "<row>" + Cell("A1", "kb_z") + Cell("B1", "normal") + Cell("C1", "lip") + "</row>");
+        var file = ProfileFile.Load(Xlsx.ToCsv(wb));
+
+        var sheet = Assert.Single(file.Document.Sheets);
+        var binding = Assert.Single(sheet.Bindings);
+        Assert.Equal("mouse_left", binding.Output);
+        Assert.DoesNotContain(file.Document.Sheets.SelectMany(s => s.Bindings), b => b.Output == "kb_z");
+    }
+
+    [Fact]
+    public void One_far_right_cell_per_row_does_not_blow_the_file_up()
+    {
+        // Clamping a stray reference to the last column instead of dropping it
+        // still built 16,383 blanks for every one of them.
+        var sheet = new System.Text.StringBuilder(RealRows);
+        for (int r = 5; r <= 200; r++)
+            sheet.Append($"<row r=\"{r}\">" + Cell($"XFD{r}", "x") + "</row>");
+        using var wb = Workbook(sheet.ToString());
+        var csv = Xlsx.ToCsv(wb);
+
+        Assert.True(csv.Length < 5_000, $"csv is {csv.Length} characters");
+        Assert.Contains("mouse_left", csv);
+    }
+
+    [Fact]
+    public void The_widest_real_workbook_still_keeps_every_column_it_uses()
+    {
+        // multi-tab.xlsx is a real community workbook and reaches column Z, so
+        // the column bound must be nowhere near it.
+        using var stream = File.OpenRead(Path.Combine("corpus", "multi-tab.xlsx"));
+        var file = ProfileFile.Load(Xlsx.ToCsv(stream));
+        Assert.Equal(4, file.Document.Sheets.Count);
+        Assert.Equal("kb_w", file.Document.Sheets[0].Bindings[0].Output);
+    }
 }
