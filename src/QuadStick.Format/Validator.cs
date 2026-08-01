@@ -1,6 +1,32 @@
 namespace QuadStick.Format;
 
-// Checks a parsed profile against the format rules. Errors block install.
+// Checks a parsed profile against the format rules.
+//
+// Errors block install, so Error means one thing only: the device would misread
+// the FILE, past the row that caused it. A row the device skips, or reads
+// differently from what it says, is a Warning: reported, but not standing
+// between the user and their profile. Half the public catalog was unusable
+// while the two meant the same thing.
+//
+// Every "the device does X" below is read off the firmware source
+// (Configuration.c, FW_VERSION 1476), not inferred. The binding loop is
+// Load_Configuration_File_Segment; the four rules that decide severity here:
+//
+//   output   search_for_keyword(keyword, output_keywords, ..., NONE), then
+//            preference_keywords, then `continue` on NONE. The `continue`
+//            skips the loop's own i++, so an unrecognized output does not
+//            even consume one of the 128 binding slots.
+//   function search_for_keyword_with_parameter(..., function_keywords, ..., 0)
+//            and 0 is NORMAL, so an unrecognized function IS normal. It reads
+//            at most two parameters through atoi and ignores anything past
+//            them; atoi of a word is 0.
+//   inputs   search_for_keyword(..., input_keywords, ..., NONE) per column,
+//            then a shift-down loop that drops every NONE. So a word the
+//            device has never heard of is removed, and the real inputs beside
+//            it close up and still work.
+//   rows     the loop ends at `line_buffer[0] != '\n' && != '\r'`. Rows after
+//            a blank line fall back to the outer loop, match no segment
+//            keyword, and are skipped.
 public static class Validator
 {
     static readonly System.Buffers.SearchValues<char> InvalidFileNameChars =
@@ -33,9 +59,17 @@ public static class Validator
                 issues.Add(new Issue(Severity.Warning, $"A{sheet.StartRow}",
                     "The device supports 16 modes; it ignores this mode and any after it.",
                     "Remove modes until there are at most 16."));
-            if (sheet.Bindings.Count > 128)
-                issues.Add(new Issue(Severity.Warning, $"A{sheet.Bindings[128].Row}",
-                    $"This mode has {sheet.Bindings.Count} rows; the device reads the first 128 and ignores the rest.",
+            // The binding loop's own i++ sits after the `continue` it takes
+            // when the output cell matches neither an output nor a preference
+            // keyword, so a blank or misspelled output costs no slot at all.
+            // Counting every parsed row instead warned 12 of the 309 public
+            // profiles about a limit they were nowhere near.
+            var counted = sheet.Bindings
+                .Where(b => Vocab.IsKnownOutput(b.Output) || Vocab.PreferenceOverrides.Contains(b.Output))
+                .ToList();
+            if (counted.Count > 128)
+                issues.Add(new Issue(Severity.Warning, $"A{counted[128].Row}",
+                    $"This mode has {counted.Count} rows with an output name; the device reads the first 128 and ignores the rest.",
                     "Trim the mode to 128 rows."));
 
             ValidateChannel(sheet, issues);
@@ -57,8 +91,17 @@ public static class Validator
     // A mode-sheet row whose output cell is a preference name sets that
     // preference for the mode (firmware: output lookup misses, preference
     // lookup hits, next cell is skipped, the cell after that is the value).
-    // With increment_value/decrement_value it's instead a live binding that
-    // adjusts the setting from an input, so it validates as a binding.
+    //
+    // The increment_value/decrement_value exception is NOT what firmware 1476
+    // does. Its function_keywords table has 12 entries and neither of these is
+    // among them, and the preference branch is taken on the output name alone,
+    // so 1476 would skip the function cell and read column C through atoi: a
+    // row like "mouse_speed,increment_value 5,right_sip" sets mouse_speed to 0.
+    // Fred's validation endpoint does list both, so a firmware newer than the
+    // source at hand may well have them. Left as it is deliberately: no profile
+    // in the public catalog uses either keyword, so there is nothing to gain by
+    // guessing, and treating them as live bindings is the reading that does not
+    // silently zero somebody's mouse speed. Revisit against newer firmware.
     static bool IsPreferenceOverride(Binding b) =>
         Vocab.PreferenceOverrides.Contains(b.Output)
         && !b.Function.StartsWith("increment_value", StringComparison.Ordinal)
@@ -291,15 +334,17 @@ public static class Validator
     {
         if (b.Output.Length == 0)
         {
-            // Still an error: blank column A does nothing on the device either
-            // way. But a row set to one of the profile's own names has already
-            // been told what it does, so pointing at the output cell would read
-            // as the app losing the pick. Point at the name instead.
+            // A blank column A does nothing on the device either way, so this
+            // is a warning: the community sheets ship a thousand pre-filled
+            // rows and every unused one lands here. A row set to one of the
+            // profile's own names has already been told what it does, so
+            // pointing at the output cell would read as the app losing the
+            // pick. Point at the name instead.
             issues.Add(b.ActionName.Length > 0
-                ? new Issue(Severity.Error, $"A{b.Row}",
+                ? new Issue(Severity.Warning, $"A{b.Row}",
                     $"\"{b.ActionName}\" has no button behind it yet, so this row does nothing on the QuadStick.",
                     $"Open Custom output names and pick the button \"{b.ActionName}\" stands for.")
-                : new Issue(Severity.Error, $"A{b.Row}",
+                : new Issue(Severity.Warning, $"A{b.Row}",
                     "This row has no output name. The device skips it and both official converters delete it, so the row does nothing.",
                     "Pick the game button or action this row controls, e.g. \"x\" or \"left_trigger\"."));
             return;
@@ -324,8 +369,16 @@ public static class Validator
         }
         if (!Vocab.FunctionArity.TryGetValue(parts[0], out var arity))
         {
-            issues.Add(new Issue(Severity.Error, $"B{b.Row}",
-                $"\"{parts[0]}\" is not a documented output function.",
+            // search_for_keyword_with_parameter matches on the LENGTH of each
+            // table entry, so a cell only has to START with a keyword: the
+            // device reads "toggled" as toggle, not as normal. Only a cell that
+            // matches no entry at all falls back to code 0, "normal".
+            var prefix = Vocab.FunctionsInFirmwareOrder
+                .FirstOrDefault(f => b.Function.StartsWith(f, StringComparison.Ordinal));
+            issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+                prefix is null
+                    ? $"\"{parts[0]}\" is not a documented output function, so the device falls back to \"normal\" for this row."
+                    : $"\"{parts[0]}\" is not a documented output function. It starts with \"{prefix}\", and the device stops matching there, so this row acts as \"{prefix}\".",
                 $"Use one of: {string.Join(", ", Vocab.FunctionArity.Keys)}."));
             return;
         }
@@ -334,8 +387,8 @@ public static class Validator
         // Only MORE than the documented maximum is an error.
         var args = parts.Skip(1).ToArray();
         if (args.Length > arity.Max)
-            issues.Add(new Issue(Severity.Error, $"B{b.Row}",
-                $"\"{parts[0]}\" takes at most {arity.Max} parameter(s), found {args.Length}.",
+            issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+                $"\"{parts[0]}\" takes at most {arity.Max} parameter(s), found {args.Length}. The device reads the ones it knows and drops the rest.",
                 "Remove the extra values."));
         // The device converts parameters with atoi: whole, non-negative
         // integers. The first parameter is stored in 14 bits (max 16383).
@@ -352,8 +405,9 @@ public static class Validator
                         $"\"{args[i]}\" has a decimal part. The device reads whole numbers only, so it acts as \"{args[i].Split('.')[0]}\".",
                         "Use a whole number."));
                 else
-                    issues.Add(new Issue(Severity.Error, $"B{b.Row}",
-                        $"\"{args[i]}\" is not a number. Parameters to \"{parts[0]}\" must be whole numbers.",
+                    // atoi on a word gives 0. Wrong timing, not a broken file.
+                    issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+                        $"\"{args[i]}\" is not a number. Parameters to \"{parts[0]}\" must be whole numbers, and the device reads this one as 0.",
                         "Replace it with a whole number, e.g. \"repeat 4\"."));
             }
             else if (n < 0)
@@ -383,9 +437,12 @@ public static class Validator
                     $"\"{input}\" is a legacy input name: the firmware knows it but the current official list does not include it.",
                     "It should still work; prefer a current name if one exists."));
             else
-                issues.Add(new Issue(Severity.Error, $"{(char)('A' + col)}{b.Row}",
-                    $"\"{input}\" is not a documented input name.",
-                    "Pick an input from the Inputs dropdown list, e.g. \"mp_left_sip\" or \"lip\".",
+                // Usually a note somebody typed beside a binding ("Aim",
+                // "Comments"). The device does not match the keyword and moves
+                // on, so the binding still works and the file still installs.
+                issues.Add(new Issue(Severity.Warning, $"{(char)('A' + col)}{b.Row}",
+                    $"\"{input}\" is not a documented input name, so the device ignores it.",
+                    "Pick an input from the Inputs dropdown list, e.g. \"mp_left_sip\" or \"lip\", or move the text to the notes column.",
                     IssueKind.UnknownInput));
         }
     }

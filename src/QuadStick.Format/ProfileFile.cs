@@ -24,7 +24,27 @@ public sealed class ProfileFile
         return file;
     }
 
-    public string ToCsvText() => Csv.Write(Grid);
+    // The device matches a keyword with strncmp after skipping LEADING spaces
+    // only (search_for_keyword, Configuration.c), so a trailing space stops the
+    // match: an output like "x " throws the whole row away and an input like
+    // "lip " is dropped from the binding. The app trims every cell when it
+    // parses, so it showed a working binding either way. Trim columns A..J on
+    // the way out and the two agree. Columns K on are the user's own text and
+    // the device never reads them, so they go back exactly as typed.
+    public string ToCsvText() => Csv.Write(Grid.Select(TrimKeywordCells));
+
+    static string[] TrimKeywordCells(string[] row)
+    {
+        string[]? trimmed = null;
+        for (int c = 0; c < Parser.KeywordColumns && c < row.Length; c++)
+        {
+            var t = row[c].Trim();
+            if (t == row[c]) continue;
+            trimmed ??= (string[])row.Clone();
+            trimmed[c] = t;
+        }
+        return trimmed ?? row;
+    }
 
     // Temp file then rename, so a crash mid-write can't leave a half-written
     // profile. Same pattern Device uses.

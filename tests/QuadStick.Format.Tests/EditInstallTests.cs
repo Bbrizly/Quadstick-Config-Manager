@@ -25,9 +25,9 @@ public class ProfileFileTests
         var f = ProfileFile.Load(Load("gta-mode1.csv"));
         var row = f.Document.Sheets[0].Bindings[0].Row;
         f.SetCell(row, 1, "blink");
-        Assert.True(f.HasErrors);
+        Assert.Contains(f.Issues, i => i.Cell == $"B{row}" && i.Message.Contains("blink"));
         f.SetCell(row, 1, "toggle");
-        Assert.False(f.HasErrors);
+        Assert.DoesNotContain(f.Issues, i => i.Cell == $"B{row}");
         Assert.Equal("toggle", f.Document.Sheets[0].Bindings[0].Function);
     }
 
@@ -152,7 +152,7 @@ public class ProfileFileTests
         f.AddBindingRow(f.Document.Sheets[0]);
         f.Reparse();
         Assert.Equal(before + 1, f.Document.Sheets[0].Bindings.Count);
-        Assert.Contains(f.Issues, i => i.Severity == Severity.Error && i.Message.Contains("no output name"));
+        Assert.Contains(f.Issues, i => i.Message.Contains("no output name"));
     }
 
     [Fact]
@@ -278,7 +278,12 @@ public class DeviceTests : IDisposable
     [Fact]
     public void Install_refuses_profiles_with_errors()
     {
-        var bad = ProfileFile.Load("Profile Name,,L\ngame.csv\nOutputs,Function,usb\nx,blink,lip\n");
+        // A row past the device's 1023-character line buffer. The overflow
+        // comes back as if it were the next row, so the damage can reach past
+        // this row and end the mode early. That is what an error means.
+        var bad = ProfileFile.Load(
+            "Profile Name,,L\ngame.csv\nOutputs,Function,usb\nx,normal,lip,,,,,,,," + new string('c', 1100) + "\n");
+        Assert.True(bad.HasErrors);
         Assert.Throws<InvalidOperationException>(() => Device.Install(bad, _drive, _backups));
         Assert.False(File.Exists(Path.Combine(_drive, "game.csv")));
     }

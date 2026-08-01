@@ -228,7 +228,7 @@ public class ActionNameTests
             ",normal,lip,,,,,,,,,Punch\n");
 
         var issue = Assert.Single(f.Issues, i => i.Cell == "A4");
-        Assert.Equal(Severity.Error, issue.Severity);
+        Assert.Equal(Severity.Warning, issue.Severity);
         Assert.Contains("Punch", issue.Message);
         Assert.Contains("Custom output names", issue.Fix);
         Assert.DoesNotContain("has no output name", issue.Message);

@@ -26,7 +26,21 @@ public static class Vocab
         var fnNames = Set(root.GetProperty("functions"));
         FunctionArity = FunctionParams.Where(kv => fnNames.Contains(kv.Key))
             .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.Ordinal);
+        FunctionsInFirmwareOrder = FirmwareFunctionOrder.Where(FunctionArity.ContainsKey).ToArray();
     }
+
+    // function_keywords[] in preference_keywords.h, in the order the firmware
+    // lists it. search_for_keyword_with_parameter walks the table in order and
+    // compares only the first strlen(entry) characters, so a cell that starts
+    // with one of these gets that function whatever follows it. Order decides
+    // the winner when two entries share a prefix.
+    static readonly string[] FirmwareFunctionOrder =
+    {
+        "normal", "toggle", "repeat", "pulse", "duty", "greater_than",
+        "less_than", "force_off", "delayed_latch", "delay_off", "delay_on", "tap",
+    };
+
+    public static readonly IReadOnlyList<string> FunctionsInFirmwareOrder;
 
     public static readonly IReadOnlySet<string> Inputs;
     public static readonly IReadOnlySet<string> OutputsPs3;

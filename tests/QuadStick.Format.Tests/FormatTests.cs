@@ -127,17 +127,25 @@ public class ValidatorGoldenTests
     }
 
     [Fact]
-    public void Content_after_blank_row_is_an_error_because_the_device_reads_blanks_as_sheet_breaks()
+    public void Content_after_blank_row_is_reported_because_the_device_reads_blanks_as_sheet_breaks()
     {
-        var issues = All("Profile Name,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n,,\ncircle,normal,lip\n");
-        Assert.Contains(issues, i => i.Severity == Severity.Error && i.Message.Contains("after a blank row"));
+        // Reported, not blocking: the device stops reading the mode there, so
+        // the row does nothing, but the rest of the file is read normally.
+        // The break has to be a genuinely empty line. A row of commas starts
+        // with ',', which the binding loop reads like any other row.
+        var issues = All("Profile Name,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n\ncircle,normal,lip\n");
+        Assert.Contains(issues, i => i.Severity == Severity.Warning && i.Message.Contains("after a blank row"));
+
+        Assert.DoesNotContain(
+            All("Profile Name,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n,,\ncircle,normal,lip\n"),
+            i => i.Message.Contains("after a blank row"));
     }
 
     [Fact]
-    public void Unknown_input_is_an_error()
+    public void Unknown_input_is_reported_without_blocking_the_file()
     {
         var issues = All("Profile Name,,Left joy\ngame.csv\nOutputs,Function,usb\nx,normal,left_sip\n");
-        Assert.Contains(issues, i => i.Severity == Severity.Error && i.Message.Contains("left_sip"));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning && i.Message.Contains("left_sip"));
     }
 
     [Fact]
@@ -146,7 +154,7 @@ public class ValidatorGoldenTests
         // "lip" (C, valid) then "bogus" (D, invalid): the issue must land on D4
         // so Fix First and the highlight reach the bad input, not the first one.
         var issues = All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,normal,lip,bogus\n");
-        Assert.Contains(issues, i => i.Severity == Severity.Error && i.Message.Contains("bogus") && i.Cell == "D4");
+        Assert.Contains(issues, i => i.Message.Contains("bogus") && i.Cell == "D4");
     }
 
     [Fact]
@@ -177,14 +185,16 @@ public class ValidatorGoldenTests
     }
 
     [Fact]
-    public void Unknown_function_is_an_error_and_bad_params_are_errors()
+    public void Unknown_function_and_bad_params_are_reported_without_blocking_the_file()
     {
+        // The firmware falls back to "normal" and reads a word parameter as 0.
+        // The row misbehaves; the file is still readable, so none of these block.
         Assert.Contains(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,blink,lip\n"),
-            i => i.Severity == Severity.Error && i.Message.Contains("blink"));
+            i => i.Severity == Severity.Warning && i.Message.Contains("blink"));
         Assert.Contains(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,repeat fast,lip\n"),
-            i => i.Severity == Severity.Error && i.Message.Contains("fast"));
+            i => i.Severity == Severity.Warning && i.Message.Contains("fast"));
         Assert.Contains(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,repeat 5 2000 9,lip\n"),
-            i => i.Severity == Severity.Error && i.Message.Contains("at most"));
+            i => i.Severity == Severity.Warning && i.Message.Contains("at most"));
         Assert.Empty(All("Profile Name,,L\ng.csv\nOutputs,Function,usb\nx,repeat 5 2000,lip\n")
             .Where(i => i.Severity == Severity.Error));
     }

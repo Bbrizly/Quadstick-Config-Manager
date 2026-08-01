@@ -49,7 +49,7 @@ public class FirmwareReaderTests
         Assert.Empty(ok.Where(i => i.Severity == Severity.Error));
 
         var bad = All(Head + "mouse_speed,increment_value 5,not_an_input\n");
-        Assert.Contains(bad, i => i.Severity == Severity.Error && i.Message.Contains("not_an_input"));
+        Assert.Contains(bad, i => i.Kind == IssueKind.UnknownInput && i.Message.Contains("not_an_input"));
     }
 
     // A Preferences sheet is not a mode sheet: the value lives in column B,
@@ -334,10 +334,11 @@ public class FirmwareReaderTests
     }
 
     [Fact]
-    public void Non_numeric_parameter_is_still_an_error()
+    public void Non_numeric_parameter_is_still_reported()
     {
+        // atoi reads "fast" as 0, so the timing is wrong but the file is fine.
         var issues = All(Head + "x,repeat fast,lip\n");
-        Assert.Contains(issues, i => i.Severity == Severity.Error && i.Message.Contains("fast"));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning && i.Message.Contains("fast"));
     }
 
     [Fact]
@@ -372,11 +373,13 @@ public class FirmwareReaderTests
     }
 
     [Fact]
-    public void Cell_longer_than_the_64_char_keyword_limit_is_an_error()
+    public void Cell_longer_than_the_64_char_keyword_limit_is_reported()
     {
+        // next_word gives up after 64 characters and stops advancing, so the
+        // row reads as empty from here on. Row-local, so a warning.
         var longName = new string('x', 70);
         var issues = All(Head + $"{longName},normal,lip\n");
-        Assert.Contains(issues, i => i.Severity == Severity.Error && i.Message.Contains("64"));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning && i.Message.Contains("after 64"));
     }
 
     [Fact]
@@ -391,12 +394,12 @@ public class FirmwareReaderTests
     }
 
     [Fact]
-    public void A_preference_name_longer_than_64_chars_is_still_an_error()
+    public void A_preference_name_longer_than_64_chars_is_still_reported()
     {
         var longName = new string('p', 70);
         var issues = All(Head + "x,normal,lip\n\n" +
             $"Preferences\nprefs.csv\nPreference,Value,\n{longName},20\n");
-        Assert.Contains(issues, i => i.Severity == Severity.Error && i.Message.Contains("64"));
+        Assert.Contains(issues, i => i.Severity == Severity.Warning && i.Message.Contains("after 64"));
     }
 
     [Fact]
@@ -536,5 +539,123 @@ public class FirmwareReaderTests
         Assert.StartsWith("QuadStick Configuration,Version 1.5", f.ToCsvText());
         Assert.Equal(4, f.Document.Sheets.Count);
         Assert.Empty(f.Issues.Where(i => i.Severity == Severity.Error));
+    }
+
+    // search_for_keyword skips LEADING spaces (`while (isspace(*keyword))
+    // ++keyword;`) and then runs strncmp against the whole word, so a trailing
+    // space stops the match. The app trims every cell when it parses, so it
+    // showed a working binding while the device threw the row or the input
+    // away. One real profile in the public catalog does this today.
+    [Fact]
+    public void A_trailing_space_on_an_input_is_written_back_trimmed()
+    {
+        var f = ProfileFile.Load(Head + "left_2,force_off,mp_left_center_puff \n");
+
+        Assert.Contains("left_2,force_off,mp_left_center_puff\r\n", f.ToCsvText());
+    }
+
+    [Fact]
+    public void A_trailing_space_on_an_output_is_written_back_trimmed()
+    {
+        var f = ProfileFile.Load(Head + "left_2 ,normal,lip\n");
+
+        Assert.Contains("left_2,normal,lip\r\n", f.ToCsvText());
+    }
+
+    [Fact]
+    public void The_comments_columns_keep_the_spacing_the_user_typed()
+    {
+        // The device stops reading at column J, so columns K and beyond are the
+        // user's own text and are written back byte for byte.
+        var f = ProfileFile.Load(Head + "x,normal,lip,,,,,,,,  a note  \n");
+
+        Assert.Contains("x,normal,lip,,,,,,,,  a note  \r\n", f.ToCsvText());
+    }
+
+    // next_word ends a field at any character that is not alphanumeric, '_',
+    // '.', ' ' or '-'. So one cell holding "Aim (ADS)" becomes two fields to
+    // the device and shifts every column after it along by one.
+    [Theory]
+    [InlineData("x,normal,Aim (ADS)", "C4")]
+    [InlineData("x,normal,lip,on/off", "D4")]
+    [InlineData("kb_a+b,normal,lip", "A4")]
+    public void A_cell_the_device_would_split_in_two_is_reported(string row, string cell)
+    {
+        var issues = All(Head + row + "\n");
+
+        Assert.Contains(issues, i => i.Cell == cell && i.Message.Contains("reads it as two"));
+    }
+
+    [Fact]
+    public void An_ordinary_binding_row_is_not_reported_as_splittable()
+    {
+        // Underscores, dots, spaces and hyphens are all part of a word to the
+        // device, so nothing in normal use should trip the check.
+        Assert.DoesNotContain(All(Head + "left_trigger,delay_on 200,mp_left_sip_soft\n"),
+            i => i.Message.Contains("reads it as two"));
+    }
+
+    // The binding loop ends only at `line_buffer[0] != '\n' && != '\r'`, which
+    // is a line with nothing at all on it. A row of commas, or a note parked in
+    // the comments columns, is a row the device reads and skips.
+    [Fact]
+    public void A_note_in_the_comments_columns_does_not_end_the_mode()
+    {
+        var f = ProfileFile.Load(Head +
+            "x,normal,lip\n" +
+            ",,,,,,,,,,Everything below here still counts\n" +
+            "circle,normal,mp_center_sip\n");
+
+        Assert.Equal(2, f.Document.Sheets[0].Bindings.Count);
+        Assert.DoesNotContain(f.Issues, i => i.Message.Contains("appears after a blank row"));
+    }
+
+    [Fact]
+    public void A_truly_empty_line_still_ends_the_mode()
+    {
+        var f = ProfileFile.Load(Head + "x,normal,lip\n\ncircle,normal,mp_center_sip\n");
+
+        Assert.Single(f.Document.Sheets[0].Bindings);
+        Assert.Contains(f.Issues, i => i.Message.Contains("appears after a blank row"));
+    }
+
+    // The loop's own i++ sits after a `continue` taken whenever the output cell
+    // matches neither an output nor a preference keyword, so a blank or
+    // misspelled output never uses one of the 128 slots.
+    [Fact]
+    public void Rows_the_device_skips_do_not_use_up_the_128_slots()
+    {
+        var rows = string.Concat(Enumerable.Repeat(",normal,\n", 40))
+            + string.Concat(Enumerable.Repeat("x,normal,lip\n", 100));
+
+        Assert.DoesNotContain(All(Head + rows), i => i.Message.Contains("first 128"));
+    }
+
+    [Fact]
+    public void More_than_128_real_bindings_is_still_reported()
+    {
+        var rows = string.Concat(Enumerable.Repeat("x,normal,lip\n", 130));
+
+        Assert.Contains(All(Head + rows), i => i.Message.Contains("first 128"));
+    }
+
+    // search_for_keyword_with_parameter matches on the LENGTH of each table
+    // entry, so a function cell only has to START with a keyword. "toggled"
+    // is toggle on the device, not normal.
+    [Fact]
+    public void A_function_that_starts_with_a_keyword_is_reported_as_that_keyword()
+    {
+        var issues = All(Head + "x,toggled,lip\n");
+
+        var issue = Assert.Single(issues, i => i.Cell == "B4");
+        Assert.Contains("toggle", issue.Message);
+        Assert.DoesNotContain("falls back to \"normal\"", issue.Message);
+    }
+
+    [Fact]
+    public void A_function_matching_no_keyword_at_all_still_falls_back_to_normal()
+    {
+        Assert.Contains(All(Head + "x,wobble,lip\n"),
+            i => i.Cell == "B4" && i.Message.Contains("falls back to \"normal\""));
     }
 }
