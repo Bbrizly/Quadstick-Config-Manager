@@ -122,6 +122,20 @@ public static class Vocab
         "bluetooth_remote_address", "bluetooth_remote_adapter",
     };
 
+    // A mode row whose output cell is a preference name sets that preference
+    // for the mode instead of binding a button, so its column C is a value and
+    // not an input. increment_value and decrement_value are the exception:
+    // those rows adjust the setting live, so they stay real bindings.
+    //
+    // Every place that has to tell the two apart calls this. They used to each
+    // carry their own copy of the rule and one of them dropped the exception,
+    // which left the same cell reading as a setting's value in one view and as
+    // a physical input in another.
+    public static bool IsPreferenceOverride(string output, string function) =>
+        PreferenceOverrides.Contains(output)
+        && !function.StartsWith("increment_value", StringComparison.Ordinal)
+        && !function.StartsWith("decrement_value", StringComparison.Ordinal);
+
     // Input names present in the firmware's own keyword table (1476) but
     // absent from the current validation endpoint. Old profiles use them and
     // the device parses them; the app accepts them with a warning.

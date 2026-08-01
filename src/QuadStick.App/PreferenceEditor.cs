@@ -90,9 +90,7 @@ public partial class MainWindow
     // name sets that preference for the mode, unless increment_value or
     // decrement_value makes it a live binding that adjusts the setting instead.
     static bool IsModePreferenceOverride(Binding b) =>
-        Vocab.PreferenceOverrides.Contains(b.Output)
-        && !b.Function.StartsWith("increment_value", StringComparison.Ordinal)
-        && !b.Function.StartsWith("decrement_value", StringComparison.Ordinal);
+        Vocab.IsPreferenceOverride(b.Output, b.Function);
 
     Control PrefsHeaderRow()
     {

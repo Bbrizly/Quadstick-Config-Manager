@@ -103,9 +103,7 @@ public static class Validator
     // guessing, and treating them as live bindings is the reading that does not
     // silently zero somebody's mouse speed. Revisit against newer firmware.
     static bool IsPreferenceOverride(Binding b) =>
-        Vocab.PreferenceOverrides.Contains(b.Output)
-        && !b.Function.StartsWith("increment_value", StringComparison.Ordinal)
-        && !b.Function.StartsWith("decrement_value", StringComparison.Ordinal);
+        Vocab.IsPreferenceOverride(b.Output, b.Function);
 
     static void ValidatePreferenceOverride(Binding b, List<Issue> issues)
     {

@@ -68,7 +68,13 @@ public class DeviceAgreementTests
             {
                 if (d < got.Count && got[d].Output == b.Output)
                 {
-                    if (Vocab.PreferenceOverrides.Contains(b.Output))
+                    // The app's own rule, not a second copy of it. Matching on
+                    // the name alone made this branch swallow the one row the
+                    // two really do disagree about: on an increment_value row
+                    // the app binds an input, firmware 1476 reads that same
+                    // cell as the setting's value, and comparing the cell to
+                    // itself here called that agreement.
+                    if (Vocab.IsPreferenceOverride(b.Output, b.Function))
                     {
                         // The device skips the function cell here and reads
                         // column C as the value, so the app holds the value in

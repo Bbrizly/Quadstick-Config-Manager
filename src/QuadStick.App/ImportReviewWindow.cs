@@ -1007,7 +1007,7 @@ public class ImportReviewWindow : Window
                 _ => "not read on a settings sheet",
             };
 
-        if (Vocab.PreferenceOverrides.Contains(_file.GetCell(row, 0)))
+        if (Vocab.IsPreferenceOverride(_file.GetCell(row, 0), _file.GetCell(row, 1)))
             return col switch
             {
                 0 => "a setting's name, used here to override it for this mode",
