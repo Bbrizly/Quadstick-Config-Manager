@@ -347,8 +347,15 @@ public static class Validator
                     "Pick the game button or action this row controls, e.g. \"x\" or \"left_trigger\"."));
             return;
         }
-        if (!Vocab.IsKnownOutput(b.Output))
-            issues.Add(new Issue(Severity.Warning, $"A{b.Row}",
+        if (Vocab.IsKnownOutput(b.Output)) return;
+        // The device's own table still has these, so the row works. Saying
+        // "not documented, pick another" would send someone to change a name
+        // their QuadStick already answers to.
+        issues.Add(Vocab.LegacyOutputs.Contains(b.Output)
+            ? new Issue(Severity.Warning, $"A{b.Row}",
+                $"\"{b.Output}\" is a legacy output name: the firmware knows it but the current official list does not include it.",
+                "It should still work; prefer a current name if one exists, e.g. \"gyroscope_z_cw\".")
+            : new Issue(Severity.Warning, $"A{b.Row}",
                 $"\"{b.Output}\" is not a documented output name (PlayStation or XBox convention).",
                 "Pick an output from the editor's list, e.g. \"x\", \"left_trigger\", or \"mouse_up\"."));
     }

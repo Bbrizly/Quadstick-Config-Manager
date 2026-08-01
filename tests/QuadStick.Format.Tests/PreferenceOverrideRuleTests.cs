@@ -45,4 +45,29 @@ public class PreferenceOverrideRuleTests
         // setting after all.
         Assert.DoesNotContain(f.Issues, i => i.Message.Contains("whole number"));
     }
+
+    // Firmware 1476's output table still has the unaxed gyroscope aliases, so a
+    // profile using one works. The app used to tell its owner to pick a
+    // different name, and FORMAT.md already said it did the opposite.
+    [Theory]
+    [InlineData("gyroscope_cw")]
+    [InlineData("gyroscope_ccw")]
+    public void A_legacy_output_name_is_called_legacy_and_not_wrong(string output)
+    {
+        var f = ProfileFile.Load(
+            $"Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\n{output},normal,lip\n");
+        var issue = Assert.Single(f.Issues, i => i.Cell == "A4");
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.Contains("legacy output name", issue.Message);
+        Assert.DoesNotContain("not a documented output name", issue.Message);
+    }
+
+    [Fact]
+    public void A_name_nothing_knows_is_still_called_undocumented()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nnot_a_real_output,normal,lip\n");
+        var issue = Assert.Single(f.Issues, i => i.Cell == "A4");
+        Assert.Contains("not a documented output name", issue.Message);
+    }
 }

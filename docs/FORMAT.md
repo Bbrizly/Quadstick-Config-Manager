@@ -176,9 +176,11 @@ outputs, 14 functions. Notes:
   `kb_crsel_andprops`, `kb_sisreq`) are canon and must match exactly.
 - `lip_soft` is absent from S1's current lists, but the 1476 firmware
   defines it, along with `push`, `right_sip_long`, `right_puff_long` and
-  `bluetooth_status`, plus output aliases `gyroscope_cw`/`gyroscope_ccw`
-  (S6). Old profiles use these and the device parses them; the app accepts
-  them with a "legacy name" warning instead of an error.
+  `bluetooth_status` (S6, `Vocab.LegacyInputs`), plus the output aliases
+  `gyroscope_cw`/`gyroscope_ccw`, which 1476 keeps unaxed while the endpoint
+  only lists `gyroscope_x_cw` and friends (S6, `Vocab.LegacyOutputs`). Old
+  profiles use these and the device parses them; the app accepts them with a
+  "legacy name" warning instead of telling the owner to pick another name.
 - `none` is a real input keyword on the device, equivalent to blank (S6).
 - Preference names (`mouse_speed`, `sip_puff_threshold`, ...) are valid
   OUTPUTS: with `increment_value`/`decrement_value` an input can adjust a

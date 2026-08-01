@@ -142,6 +142,13 @@ public static class Vocab
     public static readonly IReadOnlySet<string> LegacyInputs = new HashSet<string>(StringComparer.Ordinal)
     { "push", "lip_soft", "right_sip_long", "right_puff_long", "bluetooth_status" };
 
+    // The same story on the output side. Firmware 1476's output table has these
+    // two unaxed aliases; the current validation endpoint only lists the axed
+    // forms (gyroscope_x_cw and friends). A profile using one works on the
+    // device, so telling its owner to replace it would be wrong.
+    public static readonly IReadOnlySet<string> LegacyOutputs = new HashSet<string>(StringComparer.Ordinal)
+    { "gyroscope_cw", "gyroscope_ccw" };
+
     // "none" is a real input keyword on the device, equivalent to leaving
     // the cell blank.
     public const string NoneInput = "none";
