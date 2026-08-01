@@ -116,7 +116,7 @@ public static class Device
             // a moment ago. A USB volume can raise UnauthorizedAccessException
             // on the same half-finished swap, and catching only IOException
             // left the user's working profile deleted with nothing put back.
-            catch (Exception) when (backup != null && !File.Exists(target))
+            catch (Exception swap) when (backup != null && !File.Exists(target))
             {
                 // Putting it back can fail too, on the same full or unplugged
                 // volume that broke the swap. That is the one case where the
@@ -129,8 +129,11 @@ public static class Device
                         $"Writing failed mid-swap and {name} could not be put back on the QuadStick. " +
                         $"Your previous version is safe at {backup}. Copy it onto the device by hand.", restore);
                 }
+                // The cause travels with it. Now that any exception can land
+                // here, dropping it would leave a crash report with nothing in
+                // it about what actually broke.
                 throw new InvalidOperationException(
-                    $"Writing failed mid-swap; the previous version of {name} was restored from backup. The device is unchanged.");
+                    $"Writing failed mid-swap; the previous version of {name} was restored from backup. The device is unchanged.", swap);
             }
         }
         finally
