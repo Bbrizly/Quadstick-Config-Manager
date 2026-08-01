@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
+using Avalonia.Threading;
 using QuadStick.Format;
 
 namespace QuadStick.App;
@@ -49,6 +50,21 @@ public class ImportReviewWindow : Window
     bool _advanced;
     Control? _firstDecision;
 
+    // ---- advanced view state ----
+    // ProfileFile's undo is one stack, so at most one of these two is ever
+    // live: the newest change is the only one that can be reversed without
+    // silently taking a newer one with it.
+    string? _lastGridEdit;
+    readonly Dictionary<(int Row, int Col), (Border Box, bool Warn, string? Tint)> _cells = new();
+    (int Row, int Col)? _selected;
+    ScrollViewer _scroll = null!;
+    TextBlock _inspectorHead = null!;
+    TextBox _inspectorValue = null!;
+    Panel _inspectorActions = null!;
+    Border? _gridHost;
+    int _gridRows, _gridCols;
+    const string CellDragFormat = "quadstick/cell";
+
     /// <param name="source">What was imported, named the way the user named it.</param>
     /// <param name="limitation">Set when the import could not see the whole
     /// workbook, so the window never calls a partial read a clean one.</param>
@@ -81,7 +97,7 @@ public class ImportReviewWindow : Window
         top.Children.Add(_advancedButton);
 
         _body = new StackPanel { Spacing = 18, Margin = new Thickness(0, 18, 0, 0) };
-        var scroll = new ScrollViewer
+        _scroll = new ScrollViewer
         {
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -107,7 +123,7 @@ public class ImportReviewWindow : Window
         DockPanel.SetDock(buttons, Dock.Bottom);
         panel.Children.Add(top);
         panel.Children.Add(buttons);
-        panel.Children.Add(scroll);
+        panel.Children.Add(_scroll);
 
         Content = MainWindow.ZoomWrap(panel, owner.UiScale);
         Resize();
@@ -134,6 +150,8 @@ public class ImportReviewWindow : Window
     void Build()
     {
         _firstDecision = null;
+        _cells.Clear();
+        _gridHost = null;
         var open = OpenIssues();
         var errors = open.Where(i => i.Severity == Severity.Error).ToList();
         var warnings = open.Where(i => i.Severity == Severity.Warning).ToList();
@@ -300,6 +318,7 @@ public class ImportReviewWindow : Window
     {
         _settled[key] = (text, restore);
         _undoable = touchedTheFile ? key : null;
+        _lastGridEdit = null; // this decision is now the newest thing on the stack
     }
 
     Control SettledRow(string key)
@@ -407,6 +426,12 @@ public class ImportReviewWindow : Window
     // uses: a tint means the device reads that cell. No tint means it never
     // looks there, which is the whole point of the notes and name columns and
     // of everything past column L.
+    //
+    // It is also editable, because the alternative is sending someone back to
+    // the spreadsheet, and not having to go back there is the point of the app.
+    // The editor behind this window works in bindings, which cannot say "this
+    // word is in the wrong column" at all. Only the raw grid can, so only the
+    // raw grid can fix it.
     Control AdvancedView()
     {
         var panel = new StackPanel { Spacing = 14 };
@@ -414,11 +439,13 @@ public class ImportReviewWindow : Window
         {
             Text = "Your spreadsheet, with what we read marked on it. A tinted cell is one the QuadStick "
                  + "reads. A plain cell is one it never looks at, so notes and your own names for rows are "
-                 + "safe there. Nothing here is editable; the editor behind this window is.",
+                 + "safe there. Click any cell to change it, or drag it to another column in the same row. "
+                 + "Every change here is a change to the profile open behind this window.",
             FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
         });
         panel.Children.Add(Legend());
-        panel.Children.Add(RawGrid(_file.Grid, dimmed: false));
+        panel.Children.Add(Inspector());
+        panel.Children.Add(RawGrid(_file.Grid, dimmed: false, editable: true));
         foreach (var tab in _skipped)
         {
             panel.Children.Add(new TextBlock
@@ -426,9 +453,178 @@ public class ImportReviewWindow : Window
                 Text = $"\"{tab.Name}\", left out because cell A1 does not name a kind of sheet:",
                 FontSize = Size("BodySize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
             });
-            panel.Children.Add(RawGrid(tab.Rows, dimmed: true));
+            // Read only: these rows are not in the profile, so there is nothing
+            // here an edit could change. Bring the tab in first, above.
+            panel.Children.Add(RawGrid(tab.Rows, dimmed: true, editable: false));
         }
         return panel;
+    }
+
+    // ---- editing the grid ----
+
+    // The one place a cell is changed, so every route (typing, Clear, the Move
+    // buttons, a drag) lands in the same state afterwards: the profile behind
+    // this window knows, the newest change is the one Undo reverses, and the
+    // window is rebuilt so the warnings and counts tell the truth again.
+    void ApplyGridEdit(string what, Func<bool> edit)
+    {
+        if (!edit()) return;
+        _lastGridEdit = what;
+        _undoable = null; // one undo stack, so only the newest change offers one
+        _owner.ModesChanged(SheetIndexOf(_selected?.Row ?? 1), what);
+        Rebuild();
+    }
+
+    // Rebuild without throwing the reader back to the top of a 400 row grid, or
+    // losing the cell they were working on.
+    void Rebuild()
+    {
+        var offset = _scroll.Offset;
+        Build();
+        Dispatcher.UIThread.Post(() =>
+        {
+            var maxY = Math.Max(0, _scroll.Extent.Height - _scroll.Viewport.Height);
+            _scroll.Offset = new Vector(offset.X, Math.Min(offset.Y, maxY));
+            _gridHost?.Focus();
+        }, DispatcherPriority.Loaded);
+    }
+
+    void Select(int row, int col)
+    {
+        var was = _selected;
+        _selected = (row, col);
+        if (was is { } w) PaintCell(w);
+        PaintCell((row, col));
+        RefreshInspector();
+    }
+
+    void PaintCell((int Row, int Col) at)
+    {
+        if (!_cells.TryGetValue(at, out var c)) return;
+        bool selected = _selected == at;
+        c.Box.BorderThickness = new Thickness(selected ? 3 : c.Warn ? 2 : 1);
+        BindBrush(c.Box, Border.BorderBrushProperty,
+            selected ? "Accent" : c.Warn ? "Warning" : "SurfaceBorder");
+    }
+
+    // The strip under the legend. Editing happens here rather than inside the
+    // cell: a labelled text box is something a screen reader can announce and
+    // a keyboard can reach, and an in-place editor in a grid of this size is
+    // neither.
+    Control Inspector()
+    {
+        var panel = new StackPanel { Spacing = 8 };
+
+        _inspectorHead = new TextBlock { FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap };
+        AutomationProperties.SetLiveSetting(_inspectorHead, AutomationLiveSetting.Polite);
+        panel.Children.Add(_inspectorHead);
+
+        _inspectorValue = new TextBox { MinWidth = 220, MaxWidth = 360, HorizontalAlignment = HorizontalAlignment.Left };
+        // Enter commits, Esc puts back what was there. Nothing commits on its
+        // own: a half typed word must never reach the file because focus moved.
+        _inspectorValue.KeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Enter) { e.Handled = true; CommitInspector(); }
+            else if (e.Key == Key.Escape) { e.Handled = true; RefreshInspector(); _gridHost?.Focus(); }
+        };
+
+        var commit = new Button { Content = "Save cell", MinWidth = 110 };
+        commit.Click += (_, _) => CommitInspector();
+
+        _inspectorActions = new WrapPanel();
+        var valueRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        valueRow.Children.Add(_inspectorValue);
+        valueRow.Children.Add(commit);
+        panel.Children.Add(valueRow);
+        panel.Children.Add(_inspectorActions);
+
+        if (_lastGridEdit is not null)
+        {
+            var undoLine = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
+            var said = new TextBlock { Text = _lastGridEdit, FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center };
+            BindBrush(said, TextBlock.ForegroundProperty, "Success");
+            var undo = new Button { Content = "Undo", MinWidth = 90 };
+            AutomationProperties.SetName(undo, $"Undo this change: {_lastGridEdit}");
+            undo.Click += (_, _) =>
+            {
+                if (!_file.Undo()) return;
+                _lastGridEdit = null;
+                _owner.ModesChanged(0, "Undid the last cell change.");
+                Rebuild();
+            };
+            undoLine.Children.Add(said);
+            undoLine.Children.Add(undo);
+            panel.Children.Add(undoLine);
+        }
+
+        RefreshInspector();
+        return panel;
+    }
+
+    void CommitInspector()
+    {
+        if (_selected is not { } at) return;
+        var text = _inspectorValue.Text ?? "";
+        if (text == _file.GetCell(at.Row, at.Col)) return;
+        var where = $"{ColumnLetter(at.Col)}{at.Row}";
+        ApplyGridEdit(
+            text.Trim().Length == 0 ? $"Emptied {where}." : $"Set {where} to \"{text.Trim()}\".",
+            () => { _file.SetCell(at.Row, at.Col, text); return true; });
+    }
+
+    // What the selected cell is, what the device does with it, and the moves
+    // that are legal from here. Rebuilt on every selection change and after
+    // every edit, because a move that was legal a moment ago may not be now.
+    void RefreshInspector()
+    {
+        _inspectorActions.Children.Clear();
+
+        if (_selected is not { } at || at.Row < 1 || at.Row > _file.Grid.Count)
+        {
+            _selected = null;
+            _inspectorHead.Text = "No cell picked. Click one, or press Tab to the sheet and use the arrow keys.";
+            _inspectorValue.Text = "";
+            _inspectorValue.IsEnabled = false;
+            AutomationProperties.SetName(_inspectorValue, "No cell picked");
+            return;
+        }
+
+        var where = $"{ColumnLetter(at.Col)}{at.Row}";
+        var value = _file.GetCell(at.Row, at.Col);
+        var issue = _file.Issues.FirstOrDefault(i => ParseCell(i.Cell) == at);
+        _inspectorHead.Text = issue is null
+            ? $"{where}   {ColumnMeaning(at.Col)}"
+            : $"{where}   {ColumnMeaning(at.Col)}   {issue.Message}";
+        _inspectorValue.IsEnabled = true;
+        _inspectorValue.Text = value;
+        AutomationProperties.SetName(_inspectorValue, $"Contents of cell {where}, {ColumnMeaning(at.Col)}");
+
+        void Action(string label, string spoken, Func<bool> can, Action<Action<string, Func<bool>>> run)
+        {
+            if (!can()) return;
+            var b = new Button { Content = label, MinWidth = 130, Margin = new Thickness(0, 0, 8, 0) };
+            AutomationProperties.SetName(b, spoken);
+            b.Click += (_, _) => run(ApplyGridEdit);
+            _inspectorActions.Children.Add(b);
+        }
+
+        Action("Clear it", $"Empty cell {where}",
+            () => value.Length > 0,
+            apply => apply($"Emptied {where}.", () => { _file.SetCell(at.Row, at.Col, ""); return true; }));
+
+        // Named for the picked cell, because the simple view's own "Move to
+        // notes" for the same warning is on screen right above this.
+        Action("Move this to the note column",
+            $"Move \"{value}\" from {where} into the note column, where the QuadStick never looks",
+            () => _file.CanMoveCell(at.Row, at.Col, ProfileFile.NoteColumn),
+            apply => apply($"Moved \"{value}\" from {where} into the note column.",
+                () => _file.MoveCell(at.Row, at.Col, ProfileFile.NoteColumn)));
+
+        Action("Make this the row's name",
+            $"Keep \"{value}\" as this row's own name, in column L, where the QuadStick never looks",
+            () => _file.CanMoveCell(at.Row, at.Col, ProfileFile.ActionColumn),
+            apply => apply($"Moved \"{value}\" from {where} into this row's name.",
+                () => _file.MoveCell(at.Row, at.Col, ProfileFile.ActionColumn)));
     }
 
     Control Legend()
@@ -483,7 +679,7 @@ public class ImportReviewWindow : Window
     // nobody could read on screen anyway.
     const int MaxAdvancedRows = 400;
 
-    Control RawGrid(IReadOnlyList<string[]> rows, bool dimmed)
+    Control RawGrid(IReadOnlyList<string[]> rows, bool dimmed, bool editable)
     {
         int shown = Math.Min(rows.Count, MaxAdvancedRows);
         int cols = Math.Max(Parser.ActionColumn + 1,
@@ -539,18 +735,136 @@ public class ImportReviewWindow : Window
                 var cell = CellBox(text, tint, warn, described, muted: dimmed);
                 Grid.SetRow(cell, r + 1); Grid.SetColumn(cell, c + 1);
                 grid.Children.Add(cell);
+                if (editable)
+                {
+                    _cells[(rowNumber, c)] = (cell, warn, tint);
+                    WireCell(cell, rowNumber, c);
+                }
             }
         }
 
-        if (rows.Count <= shown) return grid;
-        var wrapper = new StackPanel { Spacing = 8 };
-        wrapper.Children.Add(grid);
-        wrapper.Children.Add(new TextBlock
+        Control content = grid;
+        if (rows.Count > shown)
         {
-            Text = $"Showing the first {shown} rows of {rows.Count}. The rest imported the same way.",
-            FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+            var wrapper = new StackPanel { Spacing = 8 };
+            wrapper.Children.Add(grid);
+            wrapper.Children.Add(new TextBlock
+            {
+                Text = $"Showing the first {shown} rows of {rows.Count}. The rest imported the same way.",
+                FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+            });
+            content = wrapper;
+        }
+        if (!editable) return content;
+
+        // One tab stop for the whole sheet, then arrow keys inside it. Making
+        // every cell its own tab stop would put thousands of stops between the
+        // legend and the Done button.
+        _gridRows = shown;
+        _gridCols = cols;
+        var host = new Border { Focusable = true, Child = content, Padding = new Thickness(2) };
+        AutomationProperties.SetName(host,
+            "Your spreadsheet. Arrow keys pick a cell, Enter edits it, Delete empties it.");
+        host.KeyDown += (_, e) => GridKey(e);
+        host.GotFocus += (_, _) => { if (_selected is null && _gridRows > 0) Select(1, 0); };
+        _gridHost = host;
+        // A rebuild throws away every control, so put the highlight back on
+        // whatever cell the user was working on.
+        if (_selected is { } at) PaintCell(at);
+        return host;
+    }
+
+    void GridKey(KeyEventArgs e)
+    {
+        if (_selected is not { } at) return;
+        int r = at.Row, c = at.Col;
+        switch (e.Key)
+        {
+            case Key.Left: c--; break;
+            case Key.Right: c++; break;
+            case Key.Up: r--; break;
+            case Key.Down: r++; break;
+            case Key.Home: c = 0; break;
+            case Key.End: c = _gridCols - 1; break;
+            case Key.Enter:
+                _inspectorValue.Focus();
+                _inspectorValue.SelectAll();
+                e.Handled = true;
+                return;
+            case Key.Delete:
+            case Key.Back:
+                // An empty cell has nothing to clear, and clearing it anyway
+                // would push an undo step that undoes nothing visible.
+                if (_file.GetCell(r, c).Length > 0)
+                    ApplyGridEdit($"Emptied {ColumnLetter(c)}{r}.",
+                        () => { _file.SetCell(r, c, ""); return true; });
+                e.Handled = true;
+                return;
+            default: return;
+        }
+        Select(Math.Clamp(r, 1, Math.Max(1, _gridRows)), Math.Clamp(c, 0, Math.Max(0, _gridCols - 1)));
+        e.Handled = true;
+    }
+
+    // Click to pick, drag to move. The drag is the accelerator; everything it
+    // can do, the inspector's buttons can do from the keyboard.
+    void WireCell(Border box, int row, int col)
+    {
+        bool pressed = false;
+        var pressAt = default(Point);
+
+        box.PointerPressed += (_, e) =>
+        {
+            pressed = true;
+            pressAt = e.GetPosition(this);
+            Select(row, col);
+            _gridHost?.Focus();
+        };
+        box.PointerReleased += (_, _) => pressed = false;
+        box.PointerMoved += (_, e) =>
+        {
+            // Only a real movement starts a drag, so a plain click stays a click.
+            var d = e.GetPosition(this) - pressAt;
+            if (!pressed || Math.Abs(d.X) + Math.Abs(d.Y) < 6) return;
+            pressed = false;
+            if (_file.GetCell(row, col).Length == 0) return; // nothing to carry
+            var data = new DataObject();
+            data.Set(CellDragFormat, new[] { row, col });
+            _ = DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+        };
+
+        DragDrop.SetAllowDrop(box, true);
+        box.AddHandler(DragDrop.DragOverEvent, (_, e) =>
+            e.DragEffects = CanDrop(e, row, col) ? DragDropEffects.Move : DragDropEffects.None);
+        box.AddHandler(DragDrop.DragEnterEvent, (_, e) =>
+        { if (CanDrop(e, row, col)) BindBrush(box, Border.BackgroundProperty, "SelectionTint"); });
+        box.AddHandler(DragDrop.DragLeaveEvent, (_, _) => RestoreTint((row, col)));
+        box.AddHandler(DragDrop.DropEvent, (_, e) =>
+        {
+            RestoreTint((row, col));
+            if (!CanDrop(e, row, col)) return;
+            var src = (int[])e.Data.Get(CellDragFormat)!;
+            var word = _file.GetCell(src[0], src[1]);
+            Select(row, col);
+            ApplyGridEdit(
+                $"Moved \"{word}\" from {ColumnLetter(src[1])}{src[0]} to {ColumnLetter(col)}{row}.",
+                () => _file.MoveCell(row, src[1], col));
         });
-        return wrapper;
+    }
+
+    // Same row only, and only where the move is legal anyway. A drop onto
+    // another row would rewrite a different binding, which is never what
+    // "this word is in the wrong column" means.
+    bool CanDrop(DragEventArgs e, int row, int col) =>
+        e.Data.Get(CellDragFormat) is int[] { Length: 2 } src
+        && src[0] == row
+        && _file.CanMoveCell(row, src[1], col);
+
+    void RestoreTint((int Row, int Col) at)
+    {
+        if (!_cells.TryGetValue(at, out var c)) return;
+        if (c.Tint is null) c.Box.Background = null;
+        else BindBrush(c.Box, Border.BackgroundProperty, c.Tint);
     }
 
     static string ColumnMeaning(int col) => col switch
@@ -571,7 +885,7 @@ public class ImportReviewWindow : Window
         _ => null,
     };
 
-    Control CellBox(string text, string? tintKey, bool warn, string accessibleName, bool bold = false, bool muted = false)
+    Border CellBox(string text, string? tintKey, bool warn, string accessibleName, bool bold = false, bool muted = false)
     {
         var label = new TextBlock
         {

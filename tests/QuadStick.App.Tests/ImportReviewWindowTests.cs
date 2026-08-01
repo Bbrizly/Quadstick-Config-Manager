@@ -1,6 +1,8 @@
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -306,6 +308,128 @@ public class ImportReviewWindowTests
         Assert.Equal(2, file.Document.Sheets.Count);
         Assert.True(Says(review, "1 tab did not come in"));
         Assert.NotNull(Find(review, "Add it as a working mode"));
+
+        Done(owner, review);
+    }
+
+    // ---- editing the grid ----
+    //
+    // The advanced view is the only place in the app that can say "this word is
+    // in the wrong column", so it is the only place that can fix it. What is
+    // pinned here is that a fix actually reaches the file, that the window stops
+    // complaining once it has, and that nothing offers to edit rows that are not
+    // in the profile at all.
+
+    const int H = 7;
+
+    static Border GridHost(Window w) =>
+        w.GetVisualDescendants().OfType<Border>().First(b =>
+            (AutomationProperties.GetName(b) ?? "").StartsWith("Your spreadsheet."));
+
+    static TextBox CellBox(Window w) =>
+        w.GetVisualDescendants().OfType<TextBox>().First(t =>
+            (AutomationProperties.GetName(t) ?? "").StartsWith("Contents of cell"));
+
+    // Walk the selection from A1, which is where focus lands, to a named cell.
+    static void GoTo(Window w, int row, int col)
+    {
+        GridHost(w).Focus();
+        Dispatcher.UIThread.RunJobs();
+        for (int i = 1; i < row; i++) w.KeyPressQwerty(PhysicalKey.ArrowDown, RawInputModifiers.None);
+        for (int i = 0; i < col; i++) w.KeyPressQwerty(PhysicalKey.ArrowRight, RawInputModifiers.None);
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+    }
+
+    [AvaloniaFact]
+    public void The_keyboard_can_pick_a_cell_and_the_window_says_what_it_is()
+    {
+        var (owner, _, review) = Open(AimCsv);
+        Press(review, "Advanced");
+
+        GoTo(review, 4, H);
+
+        // The reference, the column's job, and the reason it is flagged.
+        Assert.True(Says(review, "H4"));
+        Assert.True(Says(review, "input"));
+        Assert.Equal("aim", CellBox(review).Text);
+
+        Done(owner, review);
+    }
+
+    [AvaloniaFact]
+    public void Moving_a_stray_word_out_of_an_input_column_settles_its_warning()
+    {
+        var (owner, file, review) = Open(AimCsv);
+        Press(review, "Advanced");
+        GoTo(review, 4, H);
+
+        Press(review, "Move this to the note column");
+
+        Assert.Equal("", file.GetCell(4, H));
+        Assert.Equal("aim", file.GetCell(4, ProfileFile.NoteColumn));
+        // The row still does exactly what it did on the device, and the window
+        // has stopped asking about it.
+        Assert.Equal(new[] { "mp_center_sip" }, file.Document.Sheets[0].Bindings[0].Inputs);
+        Assert.DoesNotContain(file.Issues, i => i.Kind == IssueKind.UnknownInput);
+        Assert.True(Says(review, "Moved \"aim\" from H4 into the note column."));
+
+        Done(owner, review);
+    }
+
+    [AvaloniaFact]
+    public void Typing_a_new_value_into_the_cell_box_reaches_the_file()
+    {
+        var (owner, file, review) = Open(AimCsv);
+        Press(review, "Advanced");
+        GoTo(review, 4, H);
+
+        var box = CellBox(review);
+        box.Text = "lip";
+        box.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = Key.Enter, Source = box });
+        Dispatcher.UIThread.RunJobs();
+        review.UpdateLayout();
+
+        // A real input name, so the device now reads two of them on this row.
+        Assert.Equal("lip", file.GetCell(4, H));
+        Assert.Equal(new[] { "mp_center_sip", "lip" }, file.Document.Sheets[0].Bindings[0].Inputs);
+        Assert.DoesNotContain(file.Issues, i => i.Kind == IssueKind.UnknownInput);
+
+        Done(owner, review);
+    }
+
+    [AvaloniaFact]
+    public void Delete_empties_the_picked_cell_and_Undo_puts_it_back()
+    {
+        var (owner, file, review) = Open(AimCsv);
+        Press(review, "Advanced");
+        GoTo(review, 4, H);
+
+        review.KeyPressQwerty(PhysicalKey.Delete, RawInputModifiers.None);
+        Dispatcher.UIThread.RunJobs();
+        review.UpdateLayout();
+        Assert.Equal("", file.GetCell(4, H));
+        Assert.True(Says(review, "Emptied H4."));
+
+        Press(review, "Undo");
+        Assert.Equal("aim", file.GetCell(4, H));
+
+        Done(owner, review);
+    }
+
+    [AvaloniaFact]
+    public void A_tab_that_did_not_import_is_shown_but_never_editable()
+    {
+        var (owner, _, review) = Open(AimCsv, new[] { Dpad() });
+        Press(review, "Advanced");
+
+        // Its rows are on screen, so the user can see what was left behind.
+        Assert.True(Says(review, "dpad_N"));
+        // But nothing in it accepts a drop, because none of it is in the file.
+        var leftOut = review.GetVisualDescendants().OfType<Border>().Where(b =>
+            (AutomationProperties.GetName(b) ?? "").Contains("this tab was left out")).ToList();
+        Assert.NotEmpty(leftOut);
+        Assert.All(leftOut, b => Assert.False(DragDrop.GetAllowDrop(b)));
 
         Done(owner, review);
     }

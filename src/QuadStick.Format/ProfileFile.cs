@@ -203,6 +203,10 @@ public sealed class ProfileFile
     // row, so "Left click" can be Shoot in one mode and Select in another.
     public const int ActionColumn = Parser.ActionColumn;
 
+    // Column K, the first one past the inputs. The device never reads it, so it
+    // is where a word that is really a comment belongs.
+    public const int NoteColumn = Parser.KeywordColumns;
+
     // Longest action name, matching the mode name box's cap.
     public const int MaxActionName = 40;
 
@@ -469,13 +473,12 @@ public sealed class ProfileFile
     // the notes area (column K, which the device ignores) and clear the cell.
     public void MoveInputToNotes(int row, int col)
     {
-        const int noteCol = 10;
         var val = GetCell(row, col);
         if (val.Length == 0 || col is < 2 or > 9) return;
         Snapshot();
-        var r = Widen(row, noteCol);
-        var existing = r[noteCol].Trim();
-        r[noteCol] = existing.Length > 0 ? existing + "; " + val : val;
+        var r = Widen(row, NoteColumn);
+        var existing = r[NoteColumn].Trim();
+        r[NoteColumn] = existing.Length > 0 ? existing + "; " + val : val;
         r[col] = "";
         Reparse();
     }
@@ -494,16 +497,21 @@ public sealed class ProfileFile
     public bool MoveInputToActionName(int row, int col) =>
         MoveInputToActionName(row, col, apply: true);
 
+    // The rules for parking a word in column L, shared by every route that puts
+    // one there, so the advanced grid's drag cannot make a name the editor's
+    // own name box would have refused.
+    bool CanNameRow(int row, string val) =>
+        IsLegalActionName(val)
+        && SheetAt(row)?.Type == SheetType.ProfileName
+        && GetCell(row, ActionColumn).Trim().Length == 0
+        && !NameableBindings().Any(b =>
+            b.Row != row && SameName(b.ActionName, val) && b.Output != GetCell(row, 0));
+
     bool MoveInputToActionName(int row, int col, bool apply)
     {
         var val = GetCell(row, col).Trim();
         if (val.Length == 0 || col is < 2 or > 9) return false;
-        if (!IsLegalActionName(val)) return false;
-        if (SheetAt(row)?.Type != SheetType.ProfileName) return false;
-        if (GetCell(row, ActionColumn).Trim().Length > 0) return false;
-        var output = GetCell(row, 0);
-        if (NameableBindings().Any(b => b.Row != row && SameName(b.ActionName, val) && b.Output != output))
-            return false;
+        if (!CanNameRow(row, val)) return false;
         if (!apply) return true;
 
         Snapshot();
@@ -511,6 +519,44 @@ public sealed class ProfileFile
         r[ActionColumn] = val;
         r[col] = "";
         LabelActionColumn(row);
+        Reparse();
+        return true;
+    }
+
+    // The general form of the two healers above: move a cell's text to another
+    // column in the SAME row. This is what the advanced grid's drag runs on,
+    // and what its Move buttons call.
+    //
+    // Same row only, deliberately. A cross-row move rewrites a different
+    // binding, and "this word is sitting in the wrong column" never means
+    // "give it to another output".
+    //
+    // The note column absorbs, joining with "; ". Every other target has to be
+    // empty first. Overwriting silently is how a working config gets wrecked by
+    // a slipped drag, and the user cannot see what was lost afterwards.
+    public bool CanMoveCell(int row, int fromCol, int toCol) =>
+        MoveCell(row, fromCol, toCol, apply: false);
+
+    public bool MoveCell(int row, int fromCol, int toCol) =>
+        MoveCell(row, fromCol, toCol, apply: true);
+
+    bool MoveCell(int row, int fromCol, int toCol, bool apply)
+    {
+        if (fromCol == toCol || fromCol < 0 || toCol < 0) return false;
+        if (row < 1 || row > Grid.Count) return false;
+        var val = GetCell(row, fromCol).Trim();
+        if (val.Length == 0) return false;
+
+        var target = GetCell(row, toCol).Trim();
+        if (toCol == ActionColumn && !CanNameRow(row, val)) return false;
+        if (target.Length > 0 && toCol != NoteColumn) return false;
+        if (!apply) return true;
+
+        Snapshot();
+        var r = Widen(row, Math.Max(fromCol, toCol));
+        r[toCol] = toCol == NoteColumn && target.Length > 0 ? target + "; " + val : val;
+        r[fromCol] = "";
+        if (toCol == ActionColumn) LabelActionColumn(row);
         Reparse();
         return true;
     }
