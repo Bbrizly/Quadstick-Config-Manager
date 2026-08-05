@@ -353,7 +353,17 @@ public partial class MainWindow : Window
             Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.DriveRestore);
         return summary;
     }
-    internal void RefreshHomeAfterRestore() => RefreshHomeCards();
+    // Called by the Manage files window after every copy and delete. That
+    // window is careful to keep its own file work off the UI thread, and this
+    // undid it: RefreshHomeCards rescans the drives, lists the device, and
+    // parses every profile on it to build each card's subtitle, all inline. On a
+    // spun down stick that is seconds of frozen window, and it ran even with the
+    // editor on screen and the cards it was rebuilding not visible at all.
+    // ShowDeviceFilesAsync has always had this guard; the way back in did not.
+    internal void RefreshHomeAfterRestore()
+    {
+        if (HomeView.IsVisible) RefreshHomeCards();
+    }
 
     // Offered right after a connect, the new-machine moment. Public wrapper
     // because ConfirmAsync is private (like ConfirmResetAsync).
@@ -1379,7 +1389,7 @@ public partial class MainWindow : Window
         }
         else if (CurrentSheet?.Bindings.FirstOrDefault()?.Row is int firstRow
                  && _cellBorders.TryGetValue($"A{firstRow}", out var border))
-        { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); }
+        { border.BringIntoView(); (border.Child as Control)?.Focus(); }
         else AddRowButton.Focus();
     }
 
@@ -1730,6 +1740,8 @@ public partial class MainWindow : Window
             "External adaptive switches plugged into the 3.5 mm jacks on the back of the QuadStick (up to 4)."),
         new("other", "USB devices", "USB devices", "usb_1_button_1",
             "Extra USB joysticks or controllers plugged into the QuadStick's USB-A port."),
+        new("settings", "Mode settings", "Settings", "",
+            "Device settings this mode changes while it is running, like mouse speed or volume. They are not something you press, so they have no input: each one is a name and a value."),
         new("unset", "No input yet", "No input yet", "",
             "Rows that press a game button but have nothing triggering them yet. Give each one an input, or delete it."),
     };
@@ -1850,8 +1862,15 @@ public partial class MainWindow : Window
         var map = new Dictionary<string, List<Binding>>();
         foreach (var b in CurrentSheet?.Bindings ?? [])
         {
-            var zones = b.Inputs.Count > 0
-                ? b.Inputs.Select(ZoneOf).Distinct()
+            // A settings row's column C is its value, not an input, so filing it
+            // by ZoneOf put every per mode setting under a piece of hardware it
+            // has nothing to do with: "50" matches no input, so it fell through
+            // to "other", which is titled USB devices and described as extra
+            // controllers plugged into the USB-A port. Its own zone says what it
+            // is, and stays hidden in the profiles that have none.
+            IEnumerable<string> zones =
+                IsModePreferenceOverride(b) ? new[] { "settings" }
+                : b.Inputs.Count > 0 ? b.Inputs.Select(ZoneOf).Distinct()
                 : new[] { "unset" };
             foreach (var z in zones)
             {
@@ -1871,7 +1890,9 @@ public partial class MainWindow : Window
             // profile actually maps them, so nothing is ever hidden-but-live.
             "mp_left" or "mp_right" or "combo" or "side" =>
                 _model != QsModel.Singleton || byZone.ContainsKey(z.Id),
-            "other" or "unset" => byZone.ContainsKey(z.Id),
+            // Not parts of the QuadStick, so they appear only when the profile
+            // actually has rows in them.
+            "other" or "unset" or "settings" => byZone.ContainsKey(z.Id),
             _ => true,
         });
 
@@ -2350,7 +2371,13 @@ public partial class MainWindow : Window
         bool setting = IsModePreferenceOverride(b);
         var inputs = b.Inputs.Count > 0
             ? b.Inputs.Select(i => _labelStyle == 0 ? i : StripInput(i, zone.Id)).ToList()
-            : new List<string> { "(no input)" };
+            : new List<string> { setting ? "(no value)" : "(no input)" };
+        // The words the pills sit between. The spoken sentence was fixed to say
+        // "set X to 50" and the visible one was left saying "Press mouse_speed
+        // when you 50", so the card on screen and the card in a screen reader
+        // disagreed about the same row. Same fix, other direction.
+        string verb = setting ? "Set" : "Press";
+        string joiner = setting ? "to" : "when you";
         string func = _labelStyle == 0 ? b.Function : b.Function.Replace('_', ' ');
 
         // Every card uses the same column widths, so the outputs line up under
@@ -2395,16 +2422,16 @@ public partial class MainWindow : Window
             // One phrase per line, words left, pills sharing one centered
             // column. Everything still lines up, and a long name has the whole
             // card to itself instead of a quarter of it.
-            Cell(Word("Press"), 0); Cell(Pill(output, OutputTint), 1);
-            Cell(Word("when you", left: true), 0, row: 1); Cell(inputPills, 1, row: 1);
+            Cell(Word(verb), 0); Cell(Pill(output, OutputTint), 1);
+            Cell(Word(joiner, left: true), 0, row: 1); Cell(inputPills, 1, row: 1);
             if (func.Length > 0)
             { Cell(Word("as", left: true), 0, row: 2); Cell(Pill(func, FunctionTint), 1, row: 2); }
         }
         else
         {
-            Cell(Word("Press"), 0);
+            Cell(Word(verb), 0);
             Cell(Pill(output, OutputTint), 1);
-            Cell(Word("when you"), 2);
+            Cell(Word(joiner), 2);
             Cell(inputPills, 3);
             if (func.Length > 0)
             {
@@ -2539,7 +2566,13 @@ public partial class MainWindow : Window
                 delIcon.Width = delIcon.Height = 32; // double the usual 16, per the tester
                 var del = new Button { Classes = { "danger", "quiet" }, Padding = new Avalonia.Thickness(8, 2), Content = delIcon };
                 ToolTip.SetTip(del, "Remove this mapping");
-                AutomationProperties.SetName(del, $"Remove the {ShortInput(zone, b)} mapping");
+                // ShortInput reads column C, which on a settings row is the
+                // value, so the destructive control in the card announced
+                // "Remove the 50 mapping" while the card above it had already
+                // been fixed to call the row a setting.
+                AutomationProperties.SetName(del, IsModePreferenceOverride(b)
+                    ? $"Remove the {b.Output} setting"
+                    : $"Remove the {ShortInput(zone, b)} mapping");
                 del.Click += (_, _) =>
                 {
                     int deletedIndex = bindings!.IndexOf(b);
@@ -3675,7 +3708,7 @@ public partial class MainWindow : Window
                     RestoreListScroll(off, () =>
                     {
                         if (_cellBorders.TryGetValue($"A{b.Row}", out var border))
-                        { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); }
+                        { border.BringIntoView(); (border.Child as Control)?.Focus(); }
                     });
                 };
                 line.Children.Add(Mid(rmv));
@@ -3795,7 +3828,7 @@ public partial class MainWindow : Window
             if (moveButton is { IsEnabled: true })
             { moveButton.BringIntoView(); moveButton.Focus(); }
             else if (_cellBorders.TryGetValue($"A{destRow}", out var border))
-            { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); }
+            { border.BringIntoView(); (border.Child as Control)?.Focus(); }
         });
     }
 
@@ -3962,7 +3995,7 @@ public partial class MainWindow : Window
             if (!_cellBorders.TryGetValue($"A{newRow}", out var border)) return;
 
             border.BringIntoView();
-            (border.Child as AutoCompleteBox)?.Focus();
+            (border.Child as Control)?.Focus();
 
             // BringIntoView alone is not reliable here: ZoomHost scales the whole
             // tree with a LayoutTransform, and at some zoom levels the request
@@ -4123,6 +4156,13 @@ public partial class MainWindow : Window
         }
     }
 
+    // A cell's border holds whatever control that column needs: an
+    // AutoCompleteBox on most rows, but a Button behind a picker and, since the
+    // settings editor landed, a NumericUpDown, a CheckBox or a ComboBox. These
+    // used to cast to AutoCompleteBox, so on exactly the rows this release
+    // added, "jump to the problem" repainted the border and moved focus
+    // nowhere. Control covers all of them.
+
     // After deleting a List View row, keep focus on the row that slid into
     // its place instead of dropping it (mirrors AddRow's "take the user
     // there" logic in reverse).
@@ -4133,7 +4173,7 @@ public partial class MainWindow : Window
             int idx = Math.Min(deletedIndex, sheet.Bindings.Count - 1);
             var targetRow = sheet.Bindings[idx].Row;
             if (_cellBorders.TryGetValue($"A{targetRow}", out var border))
-            { border.BringIntoView(); (border.Child as AutoCompleteBox)?.Focus(); return; }
+            { border.BringIntoView(); (border.Child as Control)?.Focus(); return; }
         }
         AddRowButton.Focus(); // no rows left; hand focus to the control that adds one
     }
@@ -4200,7 +4240,7 @@ public partial class MainWindow : Window
         if (_cellBorders.TryGetValue(issue.Cell, out var border))
         {
             border.BringIntoView();
-            (border.Child as AutoCompleteBox)?.Focus();
+            (border.Child as Control)?.Focus();
         }
     }
 
@@ -4582,6 +4622,7 @@ public partial class MainWindow : Window
             if (_file is null) return;
             var old = _file.GetCell(row, col);
             bool wasSetting = IsSettingRow(row);
+            var wasDefinition = SettingDefinition(row);
             if (setValue is null)
             {
                 if (token == old) return;
@@ -4597,8 +4638,18 @@ public partial class MainWindow : Window
             // Without this the row kept the editor for what it used to be: a
             // number spinner left over an input cell wrote a bare number into
             // it on the next click.
+            //
+            // And so does one setting becoming another, which the flip test
+            // above cannot see because both sides stay true. Column C would keep
+            // the control built for the preference before: a spinner bounded 0
+            // to 250 left over a toggle writes an out of range number into a 0
+            // or 1 setting. The output picker offers game buttons only, so
+            // nothing can reach this today; it is here because the Preferences
+            // sheet has had the same guard since it was written and two rules
+            // for the same thing are how they drift apart.
             if ((col is >= 2 and < 10 && (old.Length == 0) != (token.Length == 0))
-                || (col is 0 or 1 && IsSettingRow(row) != wasSetting))
+                || (col is 0 or 1 && (IsSettingRow(row) != wasSetting
+                                      || SettingDefinition(row) != wasDefinition)))
             {
                 var off = GridScroll.Offset;
                 Dispatcher.UIThread.Post(() =>

@@ -94,6 +94,12 @@ public partial class MainWindow
     bool IsSettingRow(int row) =>
         _file is not null && Vocab.IsPreferenceOverride(_file.GetCell(row, 0), _file.GetCell(row, 1));
 
+    // Which preference a settings row is for, or null when the row is not one.
+    // Column C's control is built for a particular definition, so a row that
+    // stays a setting but becomes a different one needs its control made again.
+    PreferenceDefinition? SettingDefinition(int row) =>
+        IsSettingRow(row) ? Definition(_file!.GetCell(row, 0)) : null;
+
     static bool IsModePreferenceOverride(Binding b) =>
         Vocab.IsPreferenceOverride(b.Output, b.Function);
 
@@ -354,6 +360,12 @@ public partial class MainWindow
         if (_file is null || exact == _file.GetCell(row, col)) return;
         _file.SetCell(row, col, exact);
         RefreshIssues();
+        // In Device View the card's sentence reads this value back, so leaving
+        // it at the old text made the card disagree with the control the user
+        // had just used. Only the Device View needs telling: the List View
+        // control it was typed into is already showing what was typed.
+        if (!_deviceView) return;
+        BuildZoneDetail();
     }
 
     // What the catalog knows about this setting, under its row: what it does,

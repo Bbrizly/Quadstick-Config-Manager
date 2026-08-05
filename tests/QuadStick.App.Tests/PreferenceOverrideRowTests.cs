@@ -123,7 +123,12 @@ public class PreferenceOverrideRowTests
         opened = ProfileFile.Load(csv);
         opened.Dirty = false;
         w.LoadProfile(opened);
-        w.SelectZoneForPreview("other");
+        // Settings live in their own zone. They used to be filed by their value,
+        // which matches no input, so every one of them fell through to "other",
+        // a zone titled USB devices and described as extra controllers plugged
+        // into the USB-A port. These tests had to navigate there to find them,
+        // which is how the tests came to encode the bug.
+        w.SelectZoneForPreview("settings");
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         return w;
@@ -236,6 +241,62 @@ public class PreferenceOverrideRowTests
         // Row 5 is the settings row, between two ordinary bindings.
         Assert.Equal(NoteX(4), NoteX(5), 0);
         Assert.Equal(NoteX(4), NoteX(6), 0);
+
+        f.Dirty = false;
+        w.Close();
+    }
+
+    // Filing a settings row by ZoneOf(column C) sent every one of them to a zone
+    // titled USB devices, described as extra controllers plugged into the USB-A
+    // port. Device View is the view the app opens in, so that is where a user
+    // met their mode settings.
+    [AvaloniaFact]
+    public void A_settings_row_is_not_filed_under_a_piece_of_hardware()
+    {
+        var w = OpenCards(Header + "mouse_speed,,50\n", out var f);
+
+        w.SelectZoneForPreview("other");
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        Assert.DoesNotContain(Names(w), n => n.Contains("mouse_speed"));
+
+        f.Dirty = false;
+        w.Close();
+    }
+
+    // The spoken sentence was fixed and the visible one was not, so the card on
+    // screen and the card in a screen reader described the same row two
+    // different ways.
+    [AvaloniaFact]
+    public void The_card_a_person_reads_says_set_and_not_press()
+    {
+        var w = OpenCards(Header + "mouse_speed,,50\n", out var f);
+
+        var words = w.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text ?? "").ToArray();
+        Assert.Contains("Set", words);
+        Assert.Contains("to", words);
+        Assert.DoesNotContain("when you", words);
+
+        f.Dirty = false;
+        w.Close();
+    }
+
+    // The delete button reads column C for its name, which on a settings row is
+    // the value: "Remove the 50 mapping", on the one control in the card that
+    // destroys something.
+    [AvaloniaFact]
+    public void The_delete_button_on_a_settings_row_names_the_setting()
+    {
+        var w = OpenCards(Header + "mouse_speed,,50\n", out var f);
+        var card = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Setting 1:"));
+        card.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        var said = Names(w);
+        Assert.Contains(said, n => n == "Remove the mouse_speed setting");
+        Assert.DoesNotContain(said, n => n.Contains("Remove the 50"));
 
         f.Dirty = false;
         w.Close();
