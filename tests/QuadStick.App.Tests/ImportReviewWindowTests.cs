@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
@@ -518,4 +519,76 @@ public class ImportReviewWindowTests
     [InlineData("the whole file")]
     public void Text_that_does_not_name_a_cell_is_not_read_as_one(string reference) =>
         Assert.Equal(0, ImportReviewWindow.ParseCell(reference).Row);
+
+    // Only the grid edit path used to rebuild, so a decision taken with the
+    // grid open left it showing the answer to the question before. The tab's
+    // rows went on sitting under "left out because cell A1 does not name a kind
+    // of sheet" after the user had just added it as a mode, which is a plain
+    // untruth about what is now in their profile, and toggling the view did not
+    // clear it either.
+    [AvaloniaFact]
+    public void A_decision_taken_with_the_grid_open_repaints_the_grid()
+    {
+        var (owner, _, review) = Open(CleanCsv, new[] { Dpad() });
+        Press(review, "Advanced");
+        Assert.True(Says(review, "left out because cell A1"));
+
+        Press(review, "Add it as a working mode");
+
+        Assert.False(Says(review, "left out because cell A1"),
+            "the grid still calls a mode that is now in the profile a tab that was left out");
+        Done(owner, review);
+    }
+
+    // Build clears the panel, which destroys the button that was just pressed.
+    // Nothing put focus anywhere afterwards, so the next Tab restarted from the
+    // top of the window, and nothing said what had happened either: three of
+    // the decisions change neither the heading nor the subheading, so a screen
+    // reader user pressed a button and heard silence.
+    [AvaloniaFact]
+    public void A_decision_says_what_it_did_and_leaves_focus_somewhere_real()
+    {
+        var (owner, _, review) = Open(CleanCsv, new[] { Dpad() });
+
+        Press(review, "Leave it out");
+
+        Assert.True(Says(review, "was left out"));
+        var focused = review.FocusManager?.GetFocusedElement() as Visual;
+        Assert.NotNull(focused);
+        Assert.Contains(focused!, review.GetVisualDescendants());
+        Done(owner, review);
+    }
+
+    // The live region is what makes the sentence above reach a screen reader.
+    [AvaloniaFact]
+    public void What_a_decision_did_is_announced_politely_but_assertively()
+    {
+        var (owner, _, review) = Open(CleanCsv, new[] { Dpad() });
+
+        Press(review, "Leave it out");
+
+        var announced = review.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => AutomationProperties.GetLiveSetting(t) == AutomationLiveSetting.Assertive)
+            .Select(t => t.Text ?? "")
+            .ToArray();
+        Assert.Contains(announced, t => t.Contains("was left out"));
+        Done(owner, review);
+    }
+
+    // An answer that changed nothing used to retire the Undo offered for a real
+    // change made a moment before, whose snapshot was still the newest on the
+    // stack. The affordance vanished and the only way back was Ctrl+Z in the
+    // editor behind the window.
+    [AvaloniaFact]
+    public void An_answer_that_changed_nothing_keeps_the_undo_for_one_that_did()
+    {
+        var (owner, _, review) = Open(AimCsv, new[] { Dpad() });
+
+        Press(review, "Move to notes");   // a real change, Undo appears
+        Assert.NotNull(Find(review, "Undo"));
+        Press(review, "Leave it out");    // an answer that changes nothing
+
+        Assert.NotNull(Find(review, "Undo"));
+        Done(owner, review);
+    }
 }

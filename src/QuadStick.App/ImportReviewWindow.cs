@@ -44,6 +44,11 @@ public class ImportReviewWindow : Window
     readonly StackPanel _body;
     readonly TextBlock _heading;
     readonly TextBlock _subheading;
+    // What the last decision did, said out loud. Three of the decisions change
+    // nothing in the heading or the subheading, so a screen reader had nothing
+    // to read back after a button was pressed: the panel was rebuilt, the button
+    // was gone, and the window was silent about whether anything had happened.
+    readonly TextBlock _announce;
     readonly Button _advancedButton;
     readonly Button _done;
     string? _undoable; // the one decision Undo would reverse, newest first
@@ -66,7 +71,7 @@ public class ImportReviewWindow : Window
     }
 
     readonly Dictionary<(int Row, int Col), CellView> _cells = new();
-    readonly Dictionary<string, Control> _skippedGrids = new();
+    readonly Dictionary<int, Control> _skippedGrids = new();
     readonly StackPanel _advancedHost;
     Control? _fileGrid;
     StackPanel? _undoLine;
@@ -103,9 +108,19 @@ public class ImportReviewWindow : Window
         _advancedButton = new Button { MinWidth = 130, VerticalAlignment = VerticalAlignment.Top };
         _advancedButton.Click += (_, _) => { _advanced = !_advanced; Resize(); Build(); _advancedButton.Focus(); };
 
+        _announce = new TextBlock
+        {
+            Text = "",
+            FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
+            Margin = new Thickness(0, 4, 0, 0),
+            IsVisible = false,
+        };
+        AutomationProperties.SetLiveSetting(_announce, AutomationLiveSetting.Assertive);
+
         var titles = new StackPanel();
         titles.Children.Add(_heading);
         titles.Children.Add(_subheading);
+        titles.Children.Add(_announce);
         var top = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
         Grid.SetColumn(titles, 0);
         Grid.SetColumn(_advancedButton, 1);
@@ -261,7 +276,7 @@ public class ImportReviewWindow : Window
                 $"\"{tab.Name}\" is now a mode in this profile. Its cell A1 says \"Profile Name\" where your text was.",
                 () => _skipped.Add(tab), touchedTheFile: true);
             _owner.ModesChanged(index, $"Added the \"{tab.Name}\" tab as a mode.");
-            Build();
+            AfterDecision($"\"{tab.Name}\" was added as a mode.");
         };
 
         var leave = new Button { Content = "Leave it out", MinWidth = 130 };
@@ -271,7 +286,7 @@ public class ImportReviewWindow : Window
             _skipped.Remove(tab);
             Settle($"tab:{tab.Name}", $"\"{tab.Name}\" was left out, the same as your QuadStick does today.",
                 () => _skipped.Add(tab), touchedTheFile: false);
-            Build();
+            AfterDecision($"\"{tab.Name}\" was left out.");
         };
 
         return Line(
@@ -303,7 +318,7 @@ public class ImportReviewWindow : Window
                 if (!_file.MoveInputToActionName(row, col)) return;
                 Settle(IssueKey(issue), $"{issue.Cell}   \"{word}\" is now this row's own name, in column L.", () => { }, touchedTheFile: true);
                 _owner.ModesChanged(SheetIndexOf(row), $"\"{word}\" is now this row's name.");
-                Build();
+                AfterDecision($"\"{word}\" is now this row's own name, in column L.");
             };
             buttons.Add(name);
         }
@@ -312,10 +327,10 @@ public class ImportReviewWindow : Window
         AutomationProperties.SetName(note, $"Move \"{word}\" into the notes column, where the QuadStick never looks");
         note.Click += (_, _) =>
         {
-            _file.MoveInputToNotes(row, col);
+            if (!_file.MoveInputToNotes(row, col)) return;
             Settle(IssueKey(issue), $"{issue.Cell}   \"{word}\" moved into the notes column.", () => { }, touchedTheFile: true);
             _owner.ModesChanged(SheetIndexOf(row), $"Moved \"{word}\" into the notes column.");
-            Build();
+            AfterDecision($"\"{word}\" moved into the notes column.");
         };
         buttons.Add(note);
 
@@ -324,7 +339,7 @@ public class ImportReviewWindow : Window
         leave.Click += (_, _) =>
         {
             Settle(IssueKey(issue), $"{issue.Cell}   \"{word}\" left as it is. The QuadStick ignores it.", () => { }, touchedTheFile: false);
-            Build();
+            AfterDecision($"\"{word}\" was left where it is.");
         };
         buttons.Add(leave);
 
@@ -338,8 +353,14 @@ public class ImportReviewWindow : Window
     void Settle(string key, string text, Action restore, bool touchedTheFile)
     {
         _settled[key] = (text, restore);
-        _undoable = touchedTheFile ? key : null;
-        _lastGridEdit = null; // this decision is now the newest thing on the stack
+        // Only a decision that changed the file becomes the newest thing on the
+        // stack. One that changed nothing used to retire the Undo offered for a
+        // real change made a moment earlier, whose snapshot was still there and
+        // still the newest: the affordance went and the user had to close the
+        // window and reach for Ctrl+Z in the editor instead.
+        if (!touchedTheFile) return;
+        _undoable = key;
+        _lastGridEdit = null;
     }
 
     Control SettledRow(string key)
@@ -361,7 +382,7 @@ public class ImportReviewWindow : Window
                 _undoable = null;
                 restore();
                 _owner.ModesChanged(0, "Undid the last import change.");
-                Build();
+                AfterDecision("That change was undone.");
             };
             panel.Children.Add(undo);
         }
@@ -482,8 +503,14 @@ public class ImportReviewWindow : Window
             });
             // Read only: these rows are not in the profile, so there is nothing
             // here an edit could change. Bring the tab in first, above.
-            if (!_skippedGrids.TryGetValue(tab.Name, out var g))
-                _skippedGrids[tab.Name] = g = RawGrid(tab.Rows, dimmed: true, editable: false);
+            //
+            // Keyed by position, not by the tab's name. Nothing in a workbook
+            // stops two worksheets sharing a name, and when they did, the second
+            // one found the first one's control in here and added that same
+            // instance to the panel again, which Avalonia refuses because it
+            // already has a parent.
+            if (!_skippedGrids.TryGetValue(i, out var g))
+                _skippedGrids[i] = g = RawGrid(tab.Rows, dimmed: true, editable: false);
             panel.Children.Add(g);
         }
     }
@@ -505,10 +532,15 @@ public class ImportReviewWindow : Window
     {
         if (_fileGrid is null) return true;
         int rows = Math.Min(_file.Grid.Count, MaxAdvancedRows);
-        int cols = Math.Max(Parser.ActionColumn + 1,
-            rows == 0 ? 0 : _file.Grid.Take(rows).Max(r => r.Length));
-        return rows != _gridRows || cols != _gridCols || _skippedGrids.Count != _skipped.Count;
+        return rows != _gridRows || ColumnsFor(_file.Grid, rows) != _gridCols
+            || _skippedGrids.Count != _skipped.Count;
     }
+
+    // One rule for how wide the grid is, so the shape check and the grid itself
+    // cannot drift apart and report a reshape on every single edit.
+    static int ColumnsFor(IReadOnlyList<string[]> rows, int shown) =>
+        Math.Clamp(shown == 0 ? 0 : rows.Take(shown).Max(r => r.Length),
+                   Parser.ActionColumn + 1, MaxAdvancedColumns);
 
     // Repaint the kept cells from the reparsed file: text, tint, warning border
     // and the spoken description all follow the edit without a single control
@@ -587,7 +619,9 @@ public class ImportReviewWindow : Window
 
     // Rebuild without throwing the reader back to the top of a 400 row grid, or
     // losing the cell they were working on.
-    void Rebuild()
+    void Rebuild() => Rebuild(focusGrid: true);
+
+    void Rebuild(bool focusGrid)
     {
         var offset = _scroll.Offset;
         bool reshape = GridShapeChanged();
@@ -598,8 +632,29 @@ public class ImportReviewWindow : Window
         {
             var maxY = Math.Max(0, _scroll.Extent.Height - _scroll.Viewport.Height);
             _scroll.Offset = new Vector(offset.X, Math.Min(offset.Y, maxY));
-            _gridHost?.Focus();
+            // A grid edit came from the grid, so focus belongs back there. A
+            // decision came from a button that no longer exists, so focus goes
+            // to the next thing that needs a person instead of nowhere at all.
+            if (focusGrid) _gridHost?.Focus();
+            else (_firstDecision ?? _done).Focus();
         }, DispatcherPriority.Loaded);
+    }
+
+    // Every decision ends here: the file changed, so the advanced grid has to
+    // follow it, focus has to land somewhere, and what happened has to be said.
+    //
+    // Only the grid edit path used to rebuild. Pressing "Add it as a working
+    // mode" with the grid open left that tab's rows sitting under the heading
+    // "left out because cell A1 does not name a kind of sheet", which is a plain
+    // untruth about a mode that is now in the profile, and "Move to notes" left
+    // the moved word tinted in its old column with its spoken description still
+    // calling it a word the QuadStick does not know. Toggling the view did not
+    // clear it either, so the window went on saying it until the next grid edit.
+    void AfterDecision(string announcement)
+    {
+        _announce.Text = announcement;
+        _announce.IsVisible = announcement.Length > 0;
+        Rebuild(focusGrid: false);
     }
 
     void Select(int row, int col)
@@ -811,11 +866,17 @@ public class ImportReviewWindow : Window
     // nobody could read on screen anyway.
     const int MaxAdvancedRows = 400;
 
+    // The rows were capped and the columns were not, so the width came straight
+    // off the file: a published sheet reaching Excel's last column would have
+    // asked for sixteen thousand controls per row. Column L is the last one a
+    // profile means anything by, and the widest real community workbook reaches
+    // Z, so this is already far past what anyone reads across.
+    const int MaxAdvancedColumns = 64;
+
     Control RawGrid(IReadOnlyList<string[]> rows, bool dimmed, bool editable)
     {
         int shown = Math.Min(rows.Count, MaxAdvancedRows);
-        int cols = Math.Max(Parser.ActionColumn + 1,
-            shown == 0 ? 0 : rows.Take(shown).Max(r => r.Length));
+        int cols = ColumnsFor(rows, shown);
 
         var grid = new Grid();
         grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Auto)); // row numbers
@@ -950,6 +1011,15 @@ public class ImportReviewWindow : Window
         box.PointerMoved += (_, e) =>
         {
             // Only a real movement starts a drag, so a plain click stays a click.
+            //
+            // The button state is checked as well as the flag. The cell does not
+            // capture the pointer, so pressing here and releasing anywhere else
+            // never cleared the flag, and simply hovering back over this cell
+            // later began a drag with nothing held down. For someone driving
+            // this with a mouth stick or a head pointer, a drag that starts on
+            // hover is exactly the kind of input noise the window is meant to
+            // protect them from.
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) pressed = false;
             var d = e.GetPosition(this) - pressAt;
             if (!pressed || Math.Abs(d.X) + Math.Abs(d.Y) < 6) return;
             pressed = false;

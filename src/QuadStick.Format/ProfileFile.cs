@@ -484,16 +484,21 @@ public sealed class ProfileFile
 
     // Heal the "note kept in an input column" habit: move the cell's text into
     // the notes area (column K, which the device ignores) and clear the cell.
-    public void MoveInputToNotes(int row, int col)
+    /// <summary>True when the word was moved. The caller has to know: the
+    /// import review used to claim the move happened either way and arm an Undo
+    /// for it, and because no snapshot had been taken that Undo would have
+    /// reversed a different, earlier change instead.</summary>
+    public bool MoveInputToNotes(int row, int col)
     {
         var val = GetCell(row, col);
-        if (val.Length == 0 || col is < 2 or > 9) return;
+        if (val.Length == 0 || col is < 2 or > 9) return false;
         Snapshot();
         var r = Widen(row, NoteColumn);
         var existing = r[NoteColumn].Trim();
         r[NoteColumn] = existing.Length > 0 ? existing + "; " + val : val;
         r[col] = "";
         Reparse();
+        return true;
     }
 
     // The other half of that habit: a word in an input column that is not a
