@@ -141,9 +141,15 @@ public static class Device
             // app can tell someone. Say what actually happened instead.
             catch (Exception swap) when (backup != null && !File.Exists(target) && !Directory.Exists(deviceRoot))
             {
+                // Careful about what this claims. The mount point going away
+                // does not prove the old directory entry survived: the rename
+                // may already have removed it before the volume disappeared. So
+                // it says what is certainly true, keeps the backup, and asks the
+                // user to look rather than promising them nothing happened.
                 throw new InvalidOperationException(
                     $"The QuadStick was disconnected while {name} was being written. " +
-                    "Nothing on the device was changed. Plug it back in and install again.", swap);
+                    $"Your previous version is safe at {backup}. Plug the device back in, check whether "
+                    + $"{name} is still on it, and install again.", swap);
             }
             catch (Exception swap) when (backup != null && !File.Exists(target))
             {

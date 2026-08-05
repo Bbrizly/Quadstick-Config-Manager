@@ -146,4 +146,76 @@ public class SkippedTabTests
 
         Assert.Contains("dpad_N", Xlsx.ToCsv(wb));
     }
+
+    // Tabs used to be stacked straight onto each other. The device ends a mode
+    // at a blank line and only looks for the next sheet keyword on the line
+    // after one, so without a separator a second tab's rows were read as more
+    // bindings of the first mode. A tab whose A1 only loosely matches was then
+    // folded in silently rather than named as a sheet the device will skip, so
+    // a whole mode could go missing without a word.
+    [Fact]
+    public void A_second_tab_the_device_would_skip_is_still_reported()
+    {
+        using var wb = TwoTabs("Profile Name", "GTA Profile");
+
+        var file = ProfileFile.Load(Xlsx.ToCsv(wb));
+
+        Assert.Equal(2, file.Document.Sheets.Count);
+        Assert.Contains(file.Issues, i => i.Message.Contains("does not START with"));
+    }
+
+    // And an ordinary second tab keeps both its rows and its own identity.
+    [Fact]
+    public void A_second_tab_lands_as_its_own_mode()
+    {
+        using var wb = TwoTabs("Profile Name", "Profile Name");
+
+        var file = ProfileFile.Load(Xlsx.ToCsv(wb));
+
+        Assert.Equal(2, file.Document.Sheets.Count);
+        Assert.All(file.Document.Sheets, s => Assert.Single(s.Bindings));
+        Assert.DoesNotContain(file.Issues, i => i.Message.Contains("does not START with"));
+    }
+
+    static MemoryStream TwoTabs(string firstA1, string secondA1)
+    {
+        string Tab(string a1, string output) =>
+            $"<row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>{a1}</t></is></c>"
+            + "<c r=\"C1\" t=\"inlineStr\"><is><t>Solo</t></is></c></row>"
+            + "<row r=\"2\"><c r=\"A2\" t=\"inlineStr\"><is><t>game.csv</t></is></c></row>"
+            + "<row r=\"3\"><c r=\"A3\" t=\"inlineStr\"><is><t>Outputs</t></is></c>"
+            + "<c r=\"B3\" t=\"inlineStr\"><is><t>Function</t></is></c>"
+            + "<c r=\"C3\" t=\"inlineStr\"><is><t>usb</t></is></c></row>"
+            + $"<row r=\"4\"><c r=\"A4\" t=\"inlineStr\"><is><t>{output}</t></is></c>"
+            + "<c r=\"B4\" t=\"inlineStr\"><is><t>normal</t></is></c>"
+            + "<c r=\"C4\" t=\"inlineStr\"><is><t>lip</t></is></c></row>";
+
+        var ms = new MemoryStream();
+        using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            void Put(string path, string body)
+            {
+                using var w = new StreamWriter(zip.CreateEntry(path).Open(), new UTF8Encoding(false));
+                w.Write(body);
+            }
+            Put("xl/workbook.xml",
+                "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" " +
+                "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">" +
+                "<sheets><sheet name=\"One\" sheetId=\"1\" r:id=\"rId1\"/>" +
+                "<sheet name=\"Two\" sheetId=\"2\" r:id=\"rId2\"/></sheets></workbook>");
+            Put("xl/_rels/workbook.xml.rels",
+                "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
+                "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet1.xml\"/>" +
+                "<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet2.xml\"/>" +
+                "</Relationships>");
+            Put("xl/worksheets/sheet1.xml",
+                "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData>"
+                + Tab(firstA1, "mouse_left") + "</sheetData></worksheet>");
+            Put("xl/worksheets/sheet2.xml",
+                "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData>"
+                + Tab(secondA1, "circle") + "</sheetData></worksheet>");
+        }
+        ms.Position = 0;
+        return ms;
+    }
 }

@@ -127,7 +127,12 @@ public sealed class CommunityCatalogClient
             // header. JSON is UTF-8 by definition, and bytes that are not decode
             // to replacement characters and fail as JSON, which is handled.
             var bytes = await resp.Content.ReadAsByteArrayAsync(ct).ConfigureAwait(false);
-            body = Encoding.UTF8.GetString(bytes);
+            // The byte order mark has to go by hand. ReadAsStringAsync used to
+            // detect and drop it, and GetString keeps it, and JsonDocument
+            // refuses a document that starts with one. Apps Script can emit it,
+            // so leaving it in would have swapped one way of never loading the
+            // list for another.
+            body = Encoding.UTF8.GetString(bytes).TrimStart('﻿');
         }
         // The user asked to stop. Never quietly hand back the cache instead.
         catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }

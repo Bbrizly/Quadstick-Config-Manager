@@ -130,7 +130,19 @@ public static class Xlsx
             // A tab is a mode only if its A1 says so. Everything else in the
             // workbook (Inputs, Outputs, notes, scratch) is not a profile.
             if (grid.Count > 0 && grid[0].Length > 0 && Vocab.IsSheetKeyword(grid[0][0].Trim()))
+            {
+                // A blank line between tabs, because that is what the device
+                // needs: it ends a mode at an empty line and only looks for the
+                // next sheet keyword on the line after one. Stacking the tabs
+                // straight onto each other left the second tab's rows being read
+                // as more bindings of the first mode, and a tab whose A1 only
+                // loosely matches ("GTA Profile") was then folded in without a
+                // word instead of being named as a sheet the device will skip.
+                // Saving used to put this line in; putting it in at import means
+                // what the app shows is what the device would read.
+                if (rows.Count > 0) rows.Add(Array.Empty<string>());
                 rows.AddRange(grid);
+            }
             else if (LooksLikeBindings(grid)) skipped.Add(new SkippedTab(name, grid));
             else continue; // nothing was retained, so nothing was spent
 

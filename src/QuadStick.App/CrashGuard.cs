@@ -96,6 +96,23 @@ public static class CrashGuard
     /// <summary>Test seam: drives the same path the three hooks drive.</summary>
     internal static void ReportForTest(string where, Exception? ex) => TryRescue(where, ex);
 
+    /// <summary>Record something that was caught and handled, so the reason
+    /// reaches the log even though the app carried on. A caught bug that only
+    /// shows the user a gentle sentence is a bug nobody ever hears about.
+    ///
+    /// The log only: no rescue copy and no crash report. Nothing crashed, and
+    /// offering to restore work or to send a report over a handled error would
+    /// say something false about what just happened.</summary>
+    public static void Note(Exception ex, string where)
+    {
+        try
+        {
+            File.AppendAllText(CrashLogPath,
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] handled, {where}: {ex}\n\n");
+        }
+        catch { /* the safety net must never itself throw */ }
+    }
+
     static string Sanitize(string name)
     {
         foreach (var c in Path.GetInvalidFileNameChars()) name = name.Replace(c, '_');

@@ -284,8 +284,14 @@ public class DeviceFilesWindow : Window
         {
             subtitle = "could not be read just now";
         }
-        catch (Exception)
+        // Anything else is the parser itself failing on a file it should have
+        // handled, which is a bug here and not a bad file on the stick. The
+        // subtitle stays gentle because this list is only a description and
+        // never gates an action, but the crash log gets the real reason instead
+        // of the app quietly blaming a file the user can open and edit.
+        catch (Exception ex)
         {
+            CrashGuard.Note(ex, $"reading {name} for the device file list");
             subtitle = "could not be read as a profile";
         }
 

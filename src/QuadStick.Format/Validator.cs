@@ -237,7 +237,11 @@ public static class Validator
                     "Most preferences take a whole number, e.g. \"50\"."));
                 rejected = true;
             }
-            else if (isNumber && TooBigForDevice(parsed))
+            // Only where the device really does use atoi. A bluetooth remote
+            // address is all digits and twelve characters long, and the firmware
+            // strncpy's it rather than converting it, so bounding it to 32 bits
+            // blocked an install over a perfectly good address.
+            else if (isNumber && !IsWordValuedPreference(b.Output) && TooBigForDevice(parsed))
             {
                 issues.Add(new Issue(Severity.Error, $"B{b.Row}",
                     $"\"{value}\" is too big for the device to read. {DeviceIntegerRange}",
@@ -332,20 +336,26 @@ public static class Validator
         }
     }
 
-    // A preference the device reads as a word rather than a number, so "not a
-    // whole number" would be the wrong thing to say about it.
+    // The only three preferences the device does not read with atoi, taken from
+    // the switch in Load_Preferences_File (Configuration.c, firmware 1476).
+    // Everything else in that switch falls through to the default branch, which
+    // is a bare atoi, so a word there is zero.
     //
-    // This was name.StartsWith("bluetooth_"), with a comment naming three
-    // preferences while the rule actually covered six. The catalog already
-    // records what each one takes, so ask it instead of guessing from the name:
-    // a choice is a set of tokens and a text preference is whatever the user
-    // typed, and both are checked properly further down. A name the catalog has
-    // never heard of is still expected to be a number, which is what the
-    // device's atoi assumes of anything it does not have a keyword table for.
-    static bool IsWordValuedPreference(string name) =>
-        PreferenceCatalog.TryGet(name, out var definition)
-            ? definition.Editor is PreferenceEditor.Text or PreferenceEditor.Choice
-            : name.StartsWith("bluetooth_", StringComparison.Ordinal);
+    // This has been wrong twice. It was name.StartsWith("bluetooth_"), which
+    // also exempted bluetooth_authentication_mode, bluetooth_remote_adapter and
+    // bluetooth_throttle, all of which the device reads as numbers. Asking the
+    // catalog instead was worse in the other direction: its "text" editor means
+    // only that no range has been proven for a setting, so anti_dead_zone and
+    // debug stopped being checked at all. The firmware is the only thing that
+    // actually knows, so this is its list, with the reason beside each one.
+    static readonly HashSet<string> WordValuedPreferences = new(StringComparer.Ordinal)
+    {
+        "bluetooth_device_mode",     // search_for_keyword, bluetooth_device_mode_keywords
+        "bluetooth_connection_mode", // search_for_keyword, bluetooth_connection_mode_keywords
+        "bluetooth_remote_address",  // strncpy(RA, value_str, 16), never a number
+    };
+
+    static bool IsWordValuedPreference(string name) => WordValuedPreferences.Contains(name);
 
     // The device reads a value with atoi, which is 32 bits wide. long.TryParse
     // accepted anything up to 63 bits and said nothing, so a ten digit value

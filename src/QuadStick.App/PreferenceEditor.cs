@@ -8,6 +8,7 @@ using Avalonia.Layout;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using QuadStick.Format;
 
 namespace QuadStick.App;
@@ -365,7 +366,20 @@ public partial class MainWindow
         // had just used. Only the Device View needs telling: the List View
         // control it was typed into is already showing what was typed.
         if (!_deviceView) return;
+        // Rebuilding the card destroys the control the edit came from, so the
+        // focus it had has to be put back on its replacement. Without this a
+        // keyboard or switch user lost focus after one spinner step or one
+        // toggle and had to navigate back into the card to make the next.
+        var wasFocused = AutomationProperties.GetName(
+            TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() as Control ?? new Border());
         BuildZoneDetail();
+        if (string.IsNullOrEmpty(wasFocused)) return;
+        Dispatcher.UIThread.Post(() =>
+        {
+            var again = this.GetVisualDescendants().OfType<Control>()
+                .FirstOrDefault(c => AutomationProperties.GetName(c) == wasFocused);
+            again?.Focus();
+        }, DispatcherPriority.Loaded);
     }
 
     // What the catalog knows about this setting, under its row: what it does,

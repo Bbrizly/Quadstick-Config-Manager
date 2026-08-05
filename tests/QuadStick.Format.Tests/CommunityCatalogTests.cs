@@ -476,4 +476,22 @@ public sealed class CommunityCatalogTests : IDisposable
         await Assert.ThrowsAsync<TaskCanceledException>(
             () => Client(Serving(GoodBody)).LoadAsync(refresh: true, cts.Token));
     }
+
+    // ReadAsStringAsync used to detect and drop a byte order mark. GetString
+    // keeps it, and JsonDocument refuses a document that starts with one, so
+    // reading bytes swapped one way of never loading the list for another.
+    [Fact]
+    public async Task A_reply_that_starts_with_a_byte_order_mark_still_parses()
+    {
+        var withBom = new byte[] { 0xEF, 0xBB, 0xBF }.Concat(Encoding.UTF8.GetBytes(GoodBody)).ToArray();
+        var handler = new RecordingHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(withBom),
+        });
+
+        var result = await Client(handler).LoadAsync(refresh: true);
+
+        Assert.False(result.FromCache, "a good reply fell back to the cache over a byte order mark");
+        Assert.Equal(2, result.Profiles.Count);
+    }
 }

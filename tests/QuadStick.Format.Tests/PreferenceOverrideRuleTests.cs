@@ -94,26 +94,52 @@ public class PreferenceOverrideRuleTests
         Assert.Contains(f.Issues, i => i.Cell == "C4" && i.Message.Contains("too big for the device"));
     }
 
-    // Which preferences take a word is the catalog's business. The rule used to
-    // be a "bluetooth_" name prefix, which covered three more than the comment
-    // beside it claimed and would have gone on covering whatever else was named
-    // that way later.
+    // Which preferences take a word is the firmware's business, not the
+    // catalog's. Load_Preferences_File has a switch with exactly three cases:
+    // two keyword tables and one strncpy. Everything else falls through to a
+    // bare atoi, so a word there is zero and the app has to say so.
+    //
+    // The rule has been wrong twice. A "bluetooth_" name prefix also exempted
+    // bluetooth_authentication_mode, bluetooth_remote_adapter and
+    // bluetooth_throttle, which the device reads as numbers. Asking the catalog
+    // was worse: its "text" editor means only that no range has been proven, so
+    // anti_dead_zone and debug stopped being checked at all.
     [Theory]
-    [InlineData("bluetooth_device_mode", "keyboard")] // choice: a word is right here
-    [InlineData("bluetooth_remote_adapter", "not-a-mac")] // text: left as typed
-    public void A_preference_the_catalog_calls_a_word_is_not_asked_to_be_a_number(string name, string value)
+    [InlineData("bluetooth_device_mode", "keyboard")]      // keyword table
+    [InlineData("bluetooth_connection_mode", "pair")]      // keyword table
+    [InlineData("bluetooth_remote_address", "00110022ab")] // strncpy, never a number
+    public void A_preference_the_firmware_reads_as_a_word_is_not_asked_to_be_a_number(string name, string value)
     {
         var f = ProfileFile.Load($"Preferences\nprefs.csv\nName,Value\n{name},{value}\n");
 
         Assert.DoesNotContain(f.Issues, i => i.Message.Contains("is not a whole number"));
     }
 
-    // And one the catalog calls a number still has to be one.
-    [Fact]
-    public void A_preference_the_catalog_calls_a_number_still_has_to_be_one()
+    // Everything else in that switch is an atoi, whatever the catalog says it
+    // looks like in the editor.
+    [Theory]
+    [InlineData("volume", "wibble")]
+    [InlineData("anti_dead_zone", "wibble")]
+    [InlineData("debug", "wibble")]
+    [InlineData("bluetooth_throttle", "wibble")]
+    [InlineData("bluetooth_remote_adapter", "wibble")]
+    [InlineData("bluetooth_authentication_mode", "wibble")]
+    public void A_preference_the_firmware_reads_with_atoi_still_has_to_be_a_number(string name, string value)
     {
-        var f = ProfileFile.Load("Preferences\nprefs.csv\nName,Value\nvolume,wibble\n");
+        var f = ProfileFile.Load($"Preferences\nprefs.csv\nName,Value\n{name},{value}\n");
 
         Assert.Contains(f.Issues, i => i.Message.Contains("is not a whole number"));
+    }
+
+    // A remote address is twelve digits and is strncpy'd, not converted, so the
+    // 32 bit bound must not touch it. Bounding it blocked an install over an
+    // address that was perfectly fine.
+    [Fact]
+    public void A_bluetooth_address_of_all_digits_is_not_bounded_like_a_number()
+    {
+        var f = ProfileFile.Load(
+            "Preferences\nprefs.csv\nName,Value\nbluetooth_remote_address,123456789012\n");
+
+        Assert.DoesNotContain(f.Issues, i => i.Message.Contains("too big for the device"));
     }
 }
