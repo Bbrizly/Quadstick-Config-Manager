@@ -174,7 +174,14 @@ public partial class MainWindow
             Telemetry.Track(TelemetryEvent.InstallSucceeded);
             Status($"Installed {Path.GetFileName(result.InstalledPath)} to {root}.", StatusKind.Ready);
         }
-        catch (Exception ex) when (ex is InvalidOperationException or IOException or UnauthorizedAccessException)
+        // Anything at all, not a named few. The panel on screen while the
+        // install runs holds no button: `close` is only put in the tree by the
+        // two branches here. So an exception this filter did not name escaped
+        // an async void click handler, CrashGuard swallowed it to keep the app
+        // alive, and the user was left looking at "Backing up and installing..."
+        // for ever with no way out but the title bar, and the reason for it only
+        // in a crash log. Whatever went wrong, saying so beats hanging.
+        catch (Exception ex)
         {
             // Show the exception message verbatim: Device.Install already
             // distinguishes "the device was not modified" (readback failure)
