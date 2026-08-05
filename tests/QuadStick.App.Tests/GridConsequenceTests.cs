@@ -266,4 +266,41 @@ public class GridConsequenceTests
 
         Done(owner, review);
     }
+
+    // A swap works from either side, so an empty cell beside a full one offered
+    // "Move it later" and then moved the NEIGHBOUR earlier: the label described
+    // the opposite of what happened.
+    [AvaloniaFact]
+    public void A_blank_cell_is_not_offered_a_place_in_the_sequence()
+    {
+        var (owner, _, review) = Open(
+            "Profile Name,,Left joy\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+            "left_trigger,normal,,lip\r\n");
+        Advanced(review);
+        GoTo(review, 4, 2); // C4, blank, with lip in D4 beside it
+
+        Assert.DoesNotContain(review.GetVisualDescendants().OfType<Button>(),
+            b => (b.Content as string) is "Move it earlier" or "Move it later");
+
+        Done(owner, review);
+    }
+
+    // On a settings row column C is the value and D onward are ignored, so a
+    // swap takes the value out of C and the device reads whatever lands there
+    // with atoi, quietly applying a different setting. A move refused this only
+    // because the target happened to be occupied.
+    [AvaloniaFact]
+    public void A_settings_rows_value_is_never_offered_as_part_of_a_sequence()
+    {
+        var (owner, _, review) = Open(
+            "Profile Name,,Left joy\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+            "mouse_speed,,50,leftover\r\n");
+        Advanced(review);
+        GoTo(review, 4, 2); // C4, the setting's value, with something in D4
+
+        Assert.DoesNotContain(review.GetVisualDescendants().OfType<Button>(),
+            b => (b.Content as string) is "Move it earlier" or "Move it later");
+
+        Done(owner, review);
+    }
 }

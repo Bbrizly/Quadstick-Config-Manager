@@ -845,8 +845,27 @@ public class ImportReviewWindow : Window
 
         const int FirstInput = 2;                             // C
         const int LastInput = Parser.KeywordColumns - 1;      // J
-        if (at.Col is > FirstInput and <= LastInput) Nudge("Move it earlier", "earlier", at.Col - 1);
-        if (at.Col is >= FirstInput and < LastInput) Nudge("Move it later", "later", at.Col + 1);
+
+        // Two things have to be true before either button appears.
+        //
+        // The picked cell has to hold something. A swap works from either side,
+        // so an empty cell beside a full one offered "Move it later" and then
+        // moved the neighbour EARLIER: the label described the opposite of what
+        // happened.
+        //
+        // And the row has to be a sequence of inputs at all. On a settings row
+        // column C is the value and D onward are ignored, so swapping there
+        // takes the value out of C and the device reads whatever lands in it
+        // with atoi, quietly applying a different setting. A move used to refuse
+        // this because the target was occupied; a swap is exactly the case that
+        // rule was accidentally covering.
+        bool reorderable = value.Trim().Length > 0
+            && !Vocab.IsPreferenceOverride(_file.GetCell(at.Row, 0), _file.GetCell(at.Row, 1));
+
+        if (reorderable && at.Col is > FirstInput and <= LastInput)
+            Nudge("Move it earlier", "earlier", at.Col - 1);
+        if (reorderable && at.Col is >= FirstInput and < LastInput)
+            Nudge("Move it later", "later", at.Col + 1);
     }
 
     Control Legend()
