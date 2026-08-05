@@ -69,8 +69,21 @@ public sealed class ProfileFile
     public static void WriteAtomic(string path, string text)
     {
         var tmp = path + ".qscm-tmp";
-        File.WriteAllText(tmp, text);
-        File.Move(tmp, path, overwrite: true);
+        try
+        {
+            File.WriteAllText(tmp, text);
+            File.Move(tmp, path, overwrite: true);
+        }
+        finally
+        {
+            // A full disk, or a target another program is holding open, leaves
+            // the temp behind. Nothing lists it and nothing reads it, so it just
+            // accumulates in the user's own folder next to the profiles they
+            // recognise. A successful move already consumed it, so this is a
+            // no-op on the way through. Best effort: failing to clear the temp
+            // must not replace the real error with a tidying one.
+            try { if (File.Exists(tmp)) File.Delete(tmp); } catch { /* leave the stray temp */ }
+        }
     }
 
     readonly List<List<string[]>> _undo = new();

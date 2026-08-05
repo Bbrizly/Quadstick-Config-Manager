@@ -275,6 +275,41 @@ public class DeviceTests : IDisposable
         Assert.Equal("old", File.ReadAllText(result.BackupPath!));
     }
 
+    // Windows resolves NUL, CON, LPT1 and friends to devices whatever
+    // extension follows, so the write succeeds, the readback comes back empty,
+    // and the user was told verification failed rather than that the profile
+    // cannot be called that.
+    // A control character used to pass the file name check and then throw out
+    // of File.WriteAllText, where the install dialog neither caught it nor had
+    // a way out of the progress panel. A reserved Windows name got further
+    // still: the write appeared to work, the readback came back empty, and the
+    // user was told verification failed rather than what to change.
+    //
+    // Both belong in the problems list, where the user can see the one thing
+    // they can act on, and neither reaches the device.
+    [Theory]
+    [InlineData("NUL.csv")]
+    [InlineData("con.csv")]
+    [InlineData("LPT1.csv")]
+    [InlineData("my\0game.csv")]
+    public void A_name_the_device_cannot_hold_is_a_problem_and_never_installs(string name)
+    {
+        var f = Valid(name);
+
+        Assert.True(f.HasErrors);
+        Assert.Throws<InvalidOperationException>(() => Device.Install(f, _drive, _backups));
+        Assert.Empty(Directory.GetFiles(_drive).Where(p => !p.EndsWith("default.csv", StringComparison.Ordinal)));
+    }
+
+    // The temp file and the restore copy are both scratch. Neither belongs on
+    // the stick once the install is done.
+    [Fact]
+    public void Install_leaves_no_scratch_files_on_the_device()
+    {
+        Device.Install(Valid(), _drive, _backups);
+        Assert.Empty(Directory.GetFiles(_drive, "*.qscm-*"));
+    }
+
     [Fact]
     public void Install_refuses_profiles_with_errors()
     {

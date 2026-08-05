@@ -18,6 +18,13 @@ public static class SafeFileName
     static readonly HashSet<char> InvalidChars = Path.GetInvalidFileNameChars()
         .Concat(new[] { '/', '\\', ':' }).ToHashSet();
 
+    // Windows resolves these to devices whatever extension follows them, so
+    // "NUL.csv" is not a file at all: the write succeeds, the readback comes
+    // back empty, and the user is told verification failed rather than that
+    // their profile cannot be called that.
+    public static bool IsReservedOnWindows(string? fileName) =>
+        ReservedWindowsNames.Contains(Path.GetFileNameWithoutExtension(fileName ?? ""));
+
     public static string ForCsv(string? name)
     {
         var trimmed = (name ?? "").Trim();

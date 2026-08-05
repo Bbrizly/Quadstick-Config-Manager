@@ -88,6 +88,24 @@ public static class Device
                 "That folder does not look like a QuadStick drive (no default.csv at its root). " +
                 "Pick the USB volume that appears when the device is plugged in.");
 
+        // The name comes out of cell A2 of a file that may have arrived from
+        // anywhere: a download, a shared workbook, a community profile.
+        // ValidateFileName already refuses separators, so the first test cannot
+        // fire today. It is here because Path.Combine hands back the second
+        // argument whole when it is rooted, and one character class check in
+        // another assembly should not be the only thing standing between an
+        // imported sheet and an arbitrary write target. DeleteProfile has had
+        // the same guard since it was written.
+        //
+        // The other two are live: a control character passes ValidateFileName
+        // and then throws out of File.WriteAllText, and a name Windows reserves
+        // writes to a device instead of a file, so the readback comes back empty
+        // and the user is told verification failed.
+        if (name != Path.GetFileName(name) || name.Any(char.IsControl) || SafeFileName.IsReservedOnWindows(name))
+            throw new InvalidOperationException(
+                $"\"{name}\" is not a plain file name the QuadStick can hold, so nothing was written. " +
+                "Change cell A2 to a simple name like \"mygame.csv\".");
+
         var target = Path.Combine(deviceRoot, name);
 
         // 1. Backup any existing file.
@@ -116,15 +134,41 @@ public static class Device
             // a moment ago. A USB volume can raise UnauthorizedAccessException
             // on the same half-finished swap, and catching only IOException
             // left the user's working profile deleted with nothing put back.
+            // A pulled stick makes File.Exists(target) false because the mount
+            // point went away, not because the swap deleted anything. The old
+            // profile is still on the device, untouched, so the copy-it-by-hand
+            // message below would be a false alarm about the scariest thing the
+            // app can tell someone. Say what actually happened instead.
+            catch (Exception swap) when (backup != null && !File.Exists(target) && !Directory.Exists(deviceRoot))
+            {
+                throw new InvalidOperationException(
+                    $"The QuadStick was disconnected while {name} was being written. " +
+                    "Nothing on the device was changed. Plug it back in and install again.", swap);
+            }
             catch (Exception swap) when (backup != null && !File.Exists(target))
             {
-                // Putting it back can fail too, on the same full or unplugged
-                // volume that broke the swap. That is the one case where the
-                // user has actually lost something, so it says where the copy
-                // is instead of reporting a restore that did not happen.
-                try { File.Copy(backup, target, overwrite: true); }
+                // Putting it back has to be as careful as putting it there. A
+                // straight copy onto the profile's own path can be cut short by
+                // the same full volume that broke the swap, and a half written
+                // profile is worse than a missing one: the device reads until
+                // the first blank line, so it loads a truncated file without
+                // complaint and silently drops every binding past the cut, while
+                // the message below swears the file is not there at all. Write
+                // beside it and move it into place, so the profile either is the
+                // old one or is not there, never something in between.
+                var back = target + ".qscm-restore";
+                try
+                {
+                    File.Copy(backup, back, overwrite: true);
+                    File.Move(back, target, overwrite: true);
+                }
                 catch (Exception restore)
                 {
+                    // Best effort: a leftover partial copy is litter, but it
+                    // must not be mistaken for the profile. The target is left
+                    // alone because the move either put the old file there or
+                    // never ran, and it is never a partial write.
+                    try { if (File.Exists(back)) File.Delete(back); } catch { /* leave the stray copy */ }
                     throw new InvalidOperationException(
                         $"Writing failed mid-swap and {name} could not be put back on the QuadStick. " +
                         $"Your previous version is safe at {backup}. Copy it onto the device by hand.", restore);
