@@ -472,7 +472,18 @@ public partial class MainWindow : Window
 
     readonly Dictionary<string, Border> _cellBorders = new();
     readonly Dictionary<string, Button> _zoneButtons = new(); // Device View zone id -> its button, for focus management
-    static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(15) };
+    // A workbook is a spreadsheet of a few hundred rows. Sheets will happily
+    // export a ten million cell document, and this had no size cap at all while
+    // the catalog client next to it did, so a community row could name a sheet
+    // big enough to run the app out of memory on Import. Going over fails the
+    // download, which the import path already reports.
+    internal const int MaxWorkbookBytes = 32 * 1024 * 1024;
+
+    static readonly HttpClient Http = new()
+    {
+        Timeout = TimeSpan.FromSeconds(15),
+        MaxResponseContentBufferSize = MaxWorkbookBytes,
+    };
     const string DefaultNewName = "mygame.csv";
 
     // The same page the store listings declare. bbrizly.github.io still

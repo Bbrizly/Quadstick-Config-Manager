@@ -32,6 +32,12 @@ public class CommunityProfilesWindow : Window
     readonly Button _refresh;
 
     readonly List<CommunityProfile> _all = new();
+    // Closing the window stops the fetch. The client has taken a token since it
+    // was written and no caller ever gave it one, so a close left up to fifteen
+    // seconds of request nobody wanted, finishing by writing the cache and
+    // touching controls that were already gone.
+    readonly CancellationTokenSource _closing = new();
+    bool _closed;
     Task _loaded = Task.CompletedTask;
 
     /// <summary>The load started when the window opened. Tests await it; nothing
@@ -94,9 +100,13 @@ public class CommunityProfilesWindow : Window
         _list = new ListBox { SelectionMode = SelectionMode.Single };
         AutomationProperties.SetName(_list, "Community profiles, use the arrow keys");
         _list.SelectionChanged += (_, _) => OnSelectionChanged();
+        // Enter goes through the same gate the button does. ImportAsync turns
+        // the button off while it runs, which stopped a second click but not a
+        // second key press, so holding Enter through the download started two
+        // imports and the later one replaced the earlier in the editor.
         _list.KeyDown += (_, e) =>
         {
-            if (e.Key == Key.Enter) { e.Handled = true; _ = ImportAsync(); }
+            if (e.Key == Key.Enter) { e.Handled = true; StartImport(); }
         };
         _search.KeyDown += (_, e) =>
         {
@@ -104,7 +114,7 @@ public class CommunityProfilesWindow : Window
             // picked, so the whole window works from the search box. A list is
             // not focusable itself; its rows are.
             if (e.Key == Key.Down && _list.ItemCount > 0) { FocusSelectedRow(); e.Handled = true; }
-            else if (e.Key == Key.Enter) { e.Handled = true; _ = ImportAsync(); }
+            else if (e.Key == Key.Enter) { e.Handled = true; StartImport(); }
         };
         var scroll = new ScrollViewer
         {
@@ -179,6 +189,15 @@ public class CommunityProfilesWindow : Window
         if (!e.Handled && e.Key == Key.Escape) { e.Handled = true; Close(); }
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        // Not disposed: the request in flight still holds this token, and the
+        // source holds no timer or handle worth reclaiming by hand.
+        _closed = true;
+        _closing.Cancel();
+        base.OnClosed(e);
+    }
+
     /// <summary>The Google Sheets link for a profile. Built from the ID, never
     /// from a URL the catalog supplied, so a row cannot point the import
     /// somewhere else.</summary>
@@ -186,6 +205,12 @@ public class CommunityProfilesWindow : Window
         $"https://docs.google.com/spreadsheets/d/{profile.SheetId}/edit";
 
     CommunityProfile? Selected => (_list.SelectedItem as ListBoxItem)?.Tag as CommunityProfile;
+
+    // The keyboard's way in to the import, past the same guard as the button.
+    void StartImport()
+    {
+        if (_import.IsEnabled) _ = ImportAsync();
+    }
 
     // Keyboard focus lands on a row, so the arrows walk the list from there.
     void FocusSelectedRow()
@@ -201,12 +226,22 @@ public class CommunityProfilesWindow : Window
         _status.Text = refresh ? "Checking quadstick.com for new profiles..." : "Loading the community list...";
         try
         {
-            var result = await _catalog.LoadAsync(refresh);
+            var result = await _catalog.LoadAsync(refresh, _closing.Token);
             _all.Clear();
             _all.AddRange(result.Profiles);
             _summary.Text = Describe(result);
-            _status.Text = "";
+            // A refresh that quietly fell back to the saved copy used to clear
+            // the status line, which is what a successful refresh does, so a
+            // permanently broken endpoint looked exactly like a healthy offline
+            // open. The user pressed a button and deserves to know it did not
+            // reach quadstick.com.
+            _status.Text = refresh && result.FromCache
+                ? "Could not reach quadstick.com, so this is still the copy saved on this computer."
+                : "";
         }
+        // The window was closed while the request was in flight. Nothing to say
+        // and nothing left to say it to.
+        catch (OperationCanceledException) { return; }
         catch (CommunityCatalogException)
         {
             // Nothing downloaded and nothing saved. Say so plainly and leave
@@ -218,8 +253,11 @@ public class CommunityProfilesWindow : Window
         }
         finally
         {
-            _refresh.IsEnabled = true;
-            ApplyFilter(keepStatus: true);
+            if (!_closed)
+            {
+                _refresh.IsEnabled = true;
+                ApplyFilter(keepStatus: true);
+            }
         }
     }
 

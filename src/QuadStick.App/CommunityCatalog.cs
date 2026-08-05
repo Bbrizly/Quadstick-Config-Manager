@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using QuadStick.Format;
 
@@ -44,14 +45,32 @@ public sealed class CommunityCatalogClient
     // the last good cache is used instead.
     public const int MaxReplyBytes = 4 * 1024 * 1024;
 
+    // The byte cap bounds the transfer and nothing else. Every row becomes
+    // controls in the list, rebuilt on each keystroke in the search box, so a
+    // reply that is small enough to arrive can still be far too big to draw:
+    // tens of thousands of minimal rows fit inside the cap, as does a single
+    // name four megabytes long. The live catalog holds about 311 games with
+    // short names, so these are already far past anything real.
+    public const int MaxRows = 5_000;
+    public const int MaxFieldChars = 2_000;
+
     // One HttpClient for the whole app. The community window builds a catalog
     // client every time it opens, and an HttpClient of its own each time would
     // hold sockets and timers until the collector got round to them. Sharing
     // one costs nothing while the window is closed and needs no disposing.
     //
-    // The endpoint is a redirector. The default handler follows redirects but
-    // refuses an https to http downgrade, which is what we want.
-    static readonly HttpClient Shared = NewHttpClient(new HttpClientHandler());
+    // The endpoint is a redirector, so following redirects is load bearing and
+    // cannot be turned off. The handler refuses an https to http downgrade,
+    // which is what we want. The hop limit is the default 50 cut to something a
+    // real redirector never needs, and the connection lifetime is there because
+    // a process wide client with no lifetime never re-resolves DNS: a desktop
+    // app left open across a network change kept failing against a stale
+    // address until it was restarted.
+    static readonly HttpClient Shared = NewHttpClient(new SocketsHttpHandler
+    {
+        MaxAutomaticRedirections = 5,
+        PooledConnectionLifetime = TimeSpan.FromMinutes(15),
+    });
 
     readonly HttpClient _http;
     readonly string _cachePath;
@@ -98,11 +117,22 @@ public sealed class CommunityCatalogClient
             // an HttpRequestException before it is ever held in full.
             using var resp = await _http.SendAsync(req, ct).ConfigureAwait(false);
             resp.EnsureSuccessStatusCode();
-            body = await resp.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+            // Read as bytes and decode here rather than letting HttpClient pick
+            // the encoding from the Content-Type header. A charset .NET cannot
+            // resolve, "utf-99" or any other typo at the endpoint, made
+            // ReadAsStringAsync throw InvalidOperationException, which is not an
+            // HttpRequestException and so escaped the whole method: the window
+            // sat on "Loading the community list..." for ever with a perfectly
+            // good cache on disk, and Refresh reported a crash for a server
+            // header. JSON is UTF-8 by definition, and bytes that are not decode
+            // to replacement characters and fail as JSON, which is handled.
+            var bytes = await resp.Content.ReadAsByteArrayAsync(ct).ConfigureAwait(false);
+            body = Encoding.UTF8.GetString(bytes);
         }
         // The user asked to stop. Never quietly hand back the cache instead.
         catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
-        catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or IOException)
+        catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException
+                                         or IOException or InvalidOperationException)
         {
             return await CacheOrThrowAsync(ex).ConfigureAwait(false);
         }
@@ -172,6 +202,9 @@ public sealed class CommunityCatalogClient
             var skipped = 0;
             foreach (var row in games.EnumerateArray())
             {
+                // Everything past the cap is counted, not silently dropped, so
+                // the window can still say how much it did not show.
+                if (profiles.Count >= MaxRows) { skipped++; continue; }
                 var profile = TryReadRow(row);
                 if (profile is null) skipped++;
                 else profiles.Add(profile);
@@ -196,7 +229,17 @@ public sealed class CommunityCatalogClient
         if (!IsSheetId(sheetId)) return null;
         if (!SafeFileName.ForCsv(csvName).Equals(csvName, StringComparison.OrdinalIgnoreCase)) return null;
 
-        return new CommunityProfile(name, sheetId, csvName, Text(row, 4), Text(row, 5), Text(row, 6));
+        var profile = new CommunityProfile(name, sheetId, csvName, Text(row, 4), Text(row, 5), Text(row, 6));
+
+        // The ID and the file name are already held to a shape. The rest is free
+        // text that goes straight into wrapping labels, so one row with a four
+        // megabyte name could fit inside the reply cap and still hang the list.
+        // A game called that is not a game, so the row is dropped and counted.
+        if (profile.Name.Length > MaxFieldChars || profile.Connection.Length > MaxFieldChars
+            || profile.Notes.Length > MaxFieldChars || profile.Pointer.Length > MaxFieldChars)
+            return null;
+
+        return profile;
     }
 
     static string Text(JsonElement row, int index) =>

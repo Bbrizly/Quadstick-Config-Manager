@@ -395,4 +395,85 @@ public sealed class CommunityCatalogTests : IDisposable
 
         Assert.Equal(expected, CommunityCatalogClient.DefaultCachePath);
     }
+
+    // A charset .NET cannot resolve made ReadAsStringAsync throw
+    // InvalidOperationException, which is not an HttpRequestException, so it
+    // escaped the whole method: the window sat on "Loading the community
+    // list..." for ever with a good cache on disk, and Refresh wrote a crash
+    // report for what is a typo in a server header.
+    [Fact]
+    public async Task A_reply_with_a_charset_nobody_recognises_still_falls_back_to_the_cache()
+    {
+        SeedCache(GoodBody);
+        var handler = new RecordingHandler(_ =>
+        {
+            var reply = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(Encoding.UTF8.GetBytes(GoodBody)),
+            };
+            reply.Content.Headers.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-99");
+            return reply;
+        });
+
+        var result = await Client(handler).LoadAsync(refresh: true);
+
+        Assert.Equal(2, result.Profiles.Count);
+    }
+
+    // Bytes that are not UTF-8 at all decode to replacement characters and fail
+    // as JSON, which is a handled failure rather than an escaping one.
+    [Fact]
+    public async Task A_reply_that_is_not_utf8_falls_back_to_the_cache()
+    {
+        SeedCache(GoodBody);
+        var handler = new RecordingHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(new byte[] { 0xFF, 0xFE, 0xFD, 0xFC }),
+        });
+
+        var result = await Client(handler).LoadAsync(refresh: true);
+
+        Assert.Equal(2, result.Profiles.Count);
+        Assert.True(result.FromCache);
+    }
+
+    // The byte cap bounds the transfer, not the drawing. Tens of thousands of
+    // valid rows fit well inside four megabytes, and every one of them becomes
+    // controls that are rebuilt on each keystroke in the search box.
+    [Fact]
+    public async Task More_rows_than_the_list_can_show_are_capped_and_counted()
+    {
+        var rows = string.Join(",", Enumerable.Range(0, CommunityCatalogClient.MaxRows + 250)
+            .Select(i => $"[\"Game {i}\",\"{IdA}\",\"Game.csv\"]"));
+
+        var result = await Client(Serving($"[[{rows}],[]]")).LoadAsync(refresh: true);
+
+        Assert.Equal(CommunityCatalogClient.MaxRows, result.Profiles.Count);
+        Assert.Equal(250, result.SkippedRows);
+    }
+
+    // One row whose name is megabytes long fits inside the reply cap and then
+    // goes into a wrapping label and an automation name.
+    [Fact]
+    public async Task A_row_with_an_absurdly_long_field_is_dropped_and_counted()
+    {
+        var huge = new string('a', CommunityCatalogClient.MaxFieldChars + 1);
+
+        var result = await Client(Serving($"[[[\"{huge}\",\"{IdA}\",\"Game.csv\"]],[]]")).LoadAsync(refresh: true);
+
+        Assert.Empty(result.Profiles);
+        Assert.Equal(1, result.SkippedRows);
+    }
+
+    // The client has taken a token since it was written and the window never
+    // gave it one, so closing the window left the request running.
+    [Fact]
+    public async Task Closing_the_window_mid_request_stops_the_fetch()
+    {
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        await Assert.ThrowsAsync<TaskCanceledException>(
+            () => Client(Serving(GoodBody)).LoadAsync(refresh: true, cts.Token));
+    }
 }
