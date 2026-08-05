@@ -210,4 +210,30 @@ public class GridConsequenceTests
         f.Dirty = false;
         w.Close();
     }
+
+    // C to J are a sequence done left to right, so which column an input sits in
+    // is the order it happens in. The drag could move a word to any free column
+    // in its row; the inspector's buttons could only reach the note and the name
+    // columns, so reordering a sequence was mouse only, in a window whose own
+    // text teaches that the order is what makes it a sequence.
+    [AvaloniaFact]
+    public void The_keyboard_can_move_an_input_along_the_sequence()
+    {
+        var (owner, file, review) = Open(
+            "Profile Name,,Left joy\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+            "left_trigger,normal,,lip\r\n");
+        Advanced(review);
+        GoTo(review, 4, 3); // D4, the only input, with C4 free beside it
+
+        review.GetVisualDescendants().OfType<Button>()
+            .First(b => (b.Content as string) == "Move it earlier")
+            .RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        review.UpdateLayout();
+
+        Assert.Equal("lip", file.GetCell(4, 2));
+        Assert.Equal("", file.GetCell(4, 3));
+
+        Done(owner, review);
+    }
 }

@@ -802,6 +802,27 @@ public class ImportReviewWindow : Window
             () => _file.CanMoveCell(at.Row, at.Col, ProfileFile.ActionColumn),
             apply => apply($"Moved \"{value}\" from {where} into this row's name.",
                 () => _file.MoveCell(at.Row, at.Col, ProfileFile.ActionColumn)));
+
+        // C to J are a sequence, done left to right, so which column an input
+        // sits in is the order it happens in. The drag could move a word to any
+        // free column in its row and these buttons could only reach the note and
+        // name columns, so reordering a sequence was mouse only, in a window
+        // whose own text teaches that the order is what makes a sequence. For
+        // someone driving this with a mouth stick that is not a shortcut they
+        // are missing, it is the whole operation.
+        void Nudge(string label, string direction, int target)
+        {
+            Action(label, $"Move \"{value}\" from {where} to {ColumnLetter(target)}{at.Row}, "
+                        + $"one step {direction} in this row's sequence of inputs",
+                () => _file.CanMoveCell(at.Row, at.Col, target),
+                apply => apply($"Moved \"{value}\" from {where} to {ColumnLetter(target)}{at.Row}.",
+                    () => _file.MoveCell(at.Row, at.Col, target)));
+        }
+
+        const int FirstInput = 2;                             // C
+        const int LastInput = Parser.KeywordColumns - 1;      // J
+        if (at.Col is > FirstInput and <= LastInput) Nudge("Move it earlier", "earlier", at.Col - 1);
+        if (at.Col is >= FirstInput and < LastInput) Nudge("Move it later", "later", at.Col + 1);
     }
 
     Control Legend()
