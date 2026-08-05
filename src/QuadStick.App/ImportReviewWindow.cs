@@ -822,13 +822,25 @@ public class ImportReviewWindow : Window
         // whose own text teaches that the order is what makes a sequence. For
         // someone driving this with a mouth stick that is not a shortcut they
         // are missing, it is the whole operation.
+        // A swap, not a move. MoveCell refuses an occupied destination, which is
+        // right for a move and useless for a reorder: two inputs side by side is
+        // the ordinary shape, so "move this earlier" appeared only when there
+        // happened to be a gap to slide into, which is the one case where the
+        // order does not change at all. Swapping with the neighbour is the
+        // operation people actually want, and the only one the keyboard has.
         void Nudge(string label, string direction, int target)
         {
-            Action(label, $"Move \"{value}\" from {where} to {ColumnLetter(target)}{at.Row}, "
-                        + $"one step {direction} in this row's sequence of inputs",
-                () => _file.CanMoveCell(at.Row, at.Col, target),
-                apply => apply($"Moved \"{value}\" from {where} to {ColumnLetter(target)}{at.Row}.",
-                    () => _file.MoveCell(at.Row, at.Col, target)));
+            var neighbour = _file.GetCell(at.Row, target).Trim();
+            var spoken = neighbour.Length > 0
+                ? $"Swap \"{value}\" with \"{neighbour}\", moving it one step {direction} in this row's sequence of inputs"
+                : $"Move \"{value}\" to {ColumnLetter(target)}{at.Row}, one step {direction} in this row's sequence of inputs";
+            Action(label, spoken,
+                () => _file.CanSwapInputs(at.Row, at.Col, target),
+                apply => apply(
+                    neighbour.Length > 0
+                        ? $"Swapped \"{value}\" and \"{neighbour}\" in row {at.Row}."
+                        : $"Moved \"{value}\" from {where} to {ColumnLetter(target)}{at.Row}.",
+                    () => _file.SwapInputs(at.Row, at.Col, target)));
         }
 
         const int FirstInput = 2;                             // C

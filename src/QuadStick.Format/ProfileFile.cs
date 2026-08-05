@@ -552,6 +552,35 @@ public sealed class ProfileFile
     // The note column absorbs, joining with "; ". Every other target has to be
     // empty first. Overwriting silently is how a working config gets wrecked by
     // a slipped drag, and the user cannot see what was lost afterwards.
+    /// <summary>Swap two input cells in one row, so a sequence can be
+    /// reordered. MoveCell refuses an occupied destination, which is right for
+    /// a move and useless for a reorder: adjacent inputs are the ordinary case,
+    /// so "move this one earlier" was offered only when there happened to be a
+    /// gap to move into. Both columns must be inputs (C to J) and at least one
+    /// must hold something.</summary>
+    public bool CanSwapInputs(int row, int a, int b) => SwapInputs(row, a, b, apply: false);
+
+    public bool SwapInputs(int row, int a, int b) => SwapInputs(row, a, b, apply: true);
+
+    bool SwapInputs(int row, int a, int b, bool apply)
+    {
+        const int FirstInput = 2;                        // C
+        const int LastInput = Parser.KeywordColumns - 1; // J
+        if (a == b || row < 1 || row > Grid.Count) return false;
+        if (a < FirstInput || a > LastInput || b < FirstInput || b > LastInput) return false;
+
+        var left = GetCell(row, a);
+        var right = GetCell(row, b);
+        if (left.Trim().Length == 0 && right.Trim().Length == 0) return false;
+        if (!apply) return true;
+
+        Snapshot();
+        var r = Widen(row, Math.Max(a, b));
+        (r[a], r[b]) = (right, left);
+        Reparse();
+        return true;
+    }
+
     public bool CanMoveCell(int row, int fromCol, int toCol) =>
         MoveCell(row, fromCol, toCol, apply: false);
 

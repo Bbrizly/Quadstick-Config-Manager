@@ -374,12 +374,15 @@ public partial class MainWindow
         var wasFocused = focused is null ? null : AutomationProperties.GetName(focused);
         BuildZoneDetail();
         // The name is what survives the rebuild; the control itself does not.
-        // Names on these rows carry their row number, so they are unique on
-        // screen, and a name that finds nothing simply leaves focus alone.
+        // Scoped to the card that was just rebuilt, because List View's rows
+        // stay in the visual tree while hidden and name their cells the same
+        // way: searching the whole window could find the hidden twin first,
+        // whose Focus() does nothing, leaving the visible control unfocused.
+        // A name that finds nothing simply leaves focus where it is.
         if (string.IsNullOrEmpty(wasFocused)) return;
         Dispatcher.UIThread.Post(() =>
         {
-            var again = this.GetVisualDescendants().OfType<Control>()
+            var again = ZoneDetailPanel.GetVisualDescendants().OfType<Control>()
                 .FirstOrDefault(c => AutomationProperties.GetName(c) == wasFocused);
             again?.Focus();
         }, DispatcherPriority.Loaded);

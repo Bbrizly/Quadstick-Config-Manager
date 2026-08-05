@@ -216,14 +216,43 @@ public class GridConsequenceTests
     // in its row; the inspector's buttons could only reach the note and the name
     // columns, so reordering a sequence was mouse only, in a window whose own
     // text teaches that the order is what makes it a sequence.
+    //
+    // Two inputs side by side is the ordinary shape, and a move refuses an
+    // occupied destination, so the first version of this offered the button only
+    // when there was a gap to slide into, which is the one case where the order
+    // does not change. It has to swap with the neighbour.
     [AvaloniaFact]
-    public void The_keyboard_can_move_an_input_along_the_sequence()
+    public void The_keyboard_can_reorder_two_inputs_that_sit_side_by_side()
+    {
+        var (owner, file, review) = Open(
+            "Profile Name,,Left joy\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+            "left_trigger,normal,lip,mp_center_sip\r\n");
+        Advanced(review);
+        GoTo(review, 4, 3); // D4, the second of two adjacent inputs
+
+        review.GetVisualDescendants().OfType<Button>()
+            .First(b => (b.Content as string) == "Move it earlier")
+            .RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        review.UpdateLayout();
+
+        Assert.Equal("mp_center_sip", file.GetCell(4, 2));
+        Assert.Equal("lip", file.GetCell(4, 3));
+        Assert.Equal(new[] { "mp_center_sip", "lip" }, file.Document.Sheets[0].Bindings[0].Inputs);
+
+        Done(owner, review);
+    }
+
+    // And it still slides into a gap when there is one, without inventing a
+    // second input out of the blank it came from.
+    [AvaloniaFact]
+    public void The_keyboard_can_move_an_input_into_a_gap_beside_it()
     {
         var (owner, file, review) = Open(
             "Profile Name,,Left joy\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
             "left_trigger,normal,,lip\r\n");
         Advanced(review);
-        GoTo(review, 4, 3); // D4, the only input, with C4 free beside it
+        GoTo(review, 4, 3); // D4, with C4 free beside it
 
         review.GetVisualDescendants().OfType<Button>()
             .First(b => (b.Content as string) == "Move it earlier")
@@ -233,6 +262,7 @@ public class GridConsequenceTests
 
         Assert.Equal("lip", file.GetCell(4, 2));
         Assert.Equal("", file.GetCell(4, 3));
+        Assert.Equal(new[] { "lip" }, file.Document.Sheets[0].Bindings[0].Inputs);
 
         Done(owner, review);
     }

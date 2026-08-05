@@ -135,4 +135,52 @@ public class MoveCellTests
         Assert.Equal(before, f.ToCsvText());
         Assert.Equal("aim", f.GetCell(4, H));
     }
+
+    // Reordering a sequence is a swap, not a move: MoveCell refuses an occupied
+    // destination, which is right for a move and leaves two adjacent inputs,
+    // the ordinary shape, with no way to change their order at all.
+    [Fact]
+    public void Swapping_two_inputs_changes_their_order_and_nothing_else()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nleft_trigger,normal,lip,mp_center_sip,,,,,,,note\n");
+
+        Assert.True(f.SwapInputs(4, 2, 3));
+
+        Assert.Equal("mp_center_sip", f.GetCell(4, 2));
+        Assert.Equal("lip", f.GetCell(4, 3));
+        Assert.Equal(new[] { "mp_center_sip", "lip" }, f.Document.Sheets[0].Bindings[0].Inputs);
+        // Output, function and the note are untouched.
+        Assert.Equal("left_trigger", f.GetCell(4, 0));
+        Assert.Equal("normal", f.GetCell(4, 1));
+        Assert.Equal("note", f.GetCell(4, 10));
+    }
+
+    [Fact]
+    public void Swapping_is_one_undo_step()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nleft_trigger,normal,lip,mp_center_sip\n");
+
+        f.SwapInputs(4, 2, 3);
+        Assert.True(f.Undo());
+
+        Assert.Equal("lip", f.GetCell(4, 2));
+        Assert.Equal("mp_center_sip", f.GetCell(4, 3));
+    }
+
+    // Only the input columns, and never two blanks.
+    [Theory]
+    [InlineData(0, 2)]  // the output column
+    [InlineData(2, 10)] // the note column
+    [InlineData(2, 11)] // the row's own name
+    [InlineData(4, 5)]  // two empty inputs
+    public void Swapping_refuses_anything_that_is_not_two_input_cells(int a, int b)
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nleft_trigger,normal,lip,mp_center_sip\n");
+
+        Assert.False(f.CanSwapInputs(4, a, b));
+        Assert.False(f.SwapInputs(4, a, b));
+    }
 }
