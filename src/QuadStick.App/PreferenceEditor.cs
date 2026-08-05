@@ -370,9 +370,12 @@ public partial class MainWindow
         // focus it had has to be put back on its replacement. Without this a
         // keyboard or switch user lost focus after one spinner step or one
         // toggle and had to navigate back into the card to make the next.
-        var wasFocused = AutomationProperties.GetName(
-            TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() as Control ?? new Border());
+        var focused = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() as Control;
+        var wasFocused = focused is null ? null : AutomationProperties.GetName(focused);
         BuildZoneDetail();
+        // The name is what survives the rebuild; the control itself does not.
+        // Names on these rows carry their row number, so they are unique on
+        // screen, and a name that finds nothing simply leaves focus alone.
         if (string.IsNullOrEmpty(wasFocused)) return;
         Dispatcher.UIThread.Post(() =>
         {
