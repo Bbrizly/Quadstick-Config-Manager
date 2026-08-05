@@ -303,4 +303,40 @@ public class GridConsequenceTests
 
         Done(owner, review);
     }
+
+    // C to J only mean "a sequence of inputs" on a binding row of a mode sheet.
+    // The keyword row keeps the mode name in C and the label row keeps the
+    // channel there, so offering to reorder either would move a structural value
+    // out of the one column the device goes looking for it in.
+    [AvaloniaTheory]
+    [InlineData(1)] // the keyword row: C1 is the mode name
+    [InlineData(2)] // the filename row
+    [InlineData(3)] // the label row: C3 is the channel
+    public void A_row_that_opens_a_mode_is_not_offered_a_sequence(int row)
+    {
+        var (owner, _, review) = Open(OneMapping);
+        Advanced(review);
+        GoTo(review, row, 2); // C on that row
+
+        Assert.DoesNotContain(review.GetVisualDescendants().OfType<Button>(),
+            b => (b.Content as string) is "Move it earlier" or "Move it later");
+
+        Done(owner, review);
+    }
+
+    // A Preferences sheet keeps the value in B and reads nothing from C onward,
+    // so its rows have no sequence either.
+    [AvaloniaFact]
+    public void A_preferences_sheet_row_is_not_offered_a_sequence()
+    {
+        var (owner, _, review) = Open(
+            "Preferences\r\nprefs.csv\r\nName,Value\r\nvolume,50,percent,How loud it is\r\n");
+        Advanced(review);
+        GoTo(review, 4, 2); // C4, the units column on a settings sheet
+
+        Assert.DoesNotContain(review.GetVisualDescendants().OfType<Button>(),
+            b => (b.Content as string) is "Move it earlier" or "Move it later");
+
+        Done(owner, review);
+    }
 }

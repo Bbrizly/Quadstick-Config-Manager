@@ -846,20 +846,29 @@ public class ImportReviewWindow : Window
         const int FirstInput = 2;                             // C
         const int LastInput = Parser.KeywordColumns - 1;      // J
 
-        // Two things have to be true before either button appears.
+        // Three things have to be true before either button appears.
         //
         // The picked cell has to hold something. A swap works from either side,
         // so an empty cell beside a full one offered "Move it later" and then
         // moved the neighbour EARLIER: the label described the opposite of what
         // happened.
         //
-        // And the row has to be a sequence of inputs at all. On a settings row
-        // column C is the value and D onward are ignored, so swapping there
-        // takes the value out of C and the device reads whatever lands in it
-        // with atoi, quietly applying a different setting. A move used to refuse
-        // this because the target was occupied; a swap is exactly the case that
-        // rule was accidentally covering.
+        // The row has to be one the device reads as a binding, on a mode sheet.
+        // C to J only mean "a sequence of inputs" there. A keyword row keeps the
+        // mode name in C, a label row keeps the channel in C, a filename row and
+        // anything below a blank line are read as nothing at all, and a
+        // Preferences sheet keeps the value in B with C onward unread. Offering
+        // to reorder any of those would move a structural value out of the one
+        // column the device goes looking for it in.
+        //
+        // And it must not be a settings row, where column C is the value: a swap
+        // takes the value out of C and the device reads whatever lands there
+        // with atoi, quietly applying a different setting. A move refused that
+        // only because the target happened to be occupied.
+        var sheetOfRow = _file.Document.Sheets.ElementAtOrDefault(SheetIndexOf(at.Row));
         bool reorderable = value.Trim().Length > 0
+            && isBinding
+            && sheetOfRow?.Type == SheetType.ProfileName
             && !Vocab.IsPreferenceOverride(_file.GetCell(at.Row, 0), _file.GetCell(at.Row, 1));
 
         if (reorderable && at.Col is > FirstInput and <= LastInput)
