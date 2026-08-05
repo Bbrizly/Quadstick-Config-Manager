@@ -165,8 +165,23 @@ public class DeviceAgreementTests
     [InlineData("x,normal,aim\n")]
     [InlineData("x,wobble,lip\n")]
     [InlineData("x,normal,none,lip\n")]
+    // A note, and a binding row whose output begins with the keyword. The
+    // device dispatches sheets only between segments, so inside a mode both are
+    // rows with no matching output: skipped, and the mode carries on. Reading
+    // either as a sheet ate the two rows below it as a filename and a label row.
+    [InlineData("x,normal,lip\nSee the other profile for aiming\ncircle,normal,mp_center_sip\ntriangle,normal,mp_left_sip\n")]
+    [InlineData("x,normal,lip\nProfile switch,normal,lip\ncircle,normal,mp_center_sip\ntriangle,normal,mp_left_sip\n")]
     public void The_app_never_disagrees_with_the_device_in_silence(string rows) =>
         AssertNothingSilent(Head + rows);
+
+    // The two rows under a keyword row are skipped whole by the device, so
+    // neither can open a sheet however it is spelled.
+    [Theory]
+    [InlineData("my profile.csv")]
+    [InlineData("Profile.csv")]
+    public void A_filename_row_that_reads_like_a_keyword_stays_a_filename_row(string name) =>
+        AssertNothingSilent($"Profile Name,,Left joy\n{name}\nOutputs,Function,usb\n"
+            + "x,normal,lip\ncircle,normal,mp_center_sip\n");
 
     // The device compares the first nine bytes of the file case sensitively and
     // ignores the whole file when they are not exactly "QuadStick", falling back

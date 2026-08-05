@@ -217,4 +217,85 @@ public class InertRowTests
         Assert.Single(f.Document.Sheets);
         Assert.Equal(2, f.Document.Sheets[0].Bindings.Count);
     }
+
+    // The same word in a note, with nothing beside it. The device only looks
+    // for sheets between segments; inside one it reads this as a row whose
+    // output matches nothing, skips it, and carries on down the mode. The app
+    // used to open a sheet here and swallow the two rows below as that sheet's
+    // filename and label rows, so two working bindings left the profile and
+    // nothing said so.
+    [Fact]
+    public void A_note_containing_the_word_profile_does_not_split_the_file()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Main\n" +
+            "mygame.csv,,\n" +
+            "PlayStation Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "See the other profile for aiming\n" +
+            "circle,normal,mp_center_sip\n" +
+            "triangle,normal,mp_left_sip\n");
+
+        Assert.Single(f.Document.Sheets);
+        Assert.Contains(f.Document.Sheets[0].Bindings, b => b.Output == "circle");
+        Assert.Contains(f.Document.Sheets[0].Bindings, b => b.Output == "triangle");
+    }
+
+    // And the same again where the row begins with the keyword exactly. Still
+    // an ordinary row to the device, for the same reason.
+    [Fact]
+    public void A_binding_row_starting_with_the_word_profile_does_not_split_the_file()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Main\n" +
+            "mygame.csv,,\n" +
+            "PlayStation Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "Profile switch,normal,lip\n" +
+            "circle,normal,mp_center_sip\n" +
+            "triangle,normal,mp_left_sip\n");
+
+        Assert.Single(f.Document.Sheets);
+        Assert.Contains(f.Document.Sheets[0].Bindings, b => b.Output == "circle");
+        Assert.Contains(f.Document.Sheets[0].Bindings, b => b.Output == "triangle");
+    }
+
+    // The filename row is skipped whole by the device, so what it is called
+    // cannot open a sheet. Both spellings used to.
+    [Theory]
+    [InlineData("my profile.csv")]
+    [InlineData("Profile.csv")]
+    public void A_filename_row_that_reads_like_a_keyword_does_not_split_the_file(string name)
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Main\n" +
+            name + ",,\n" +
+            "PlayStation Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,mp_center_sip\n");
+
+        Assert.Single(f.Document.Sheets);
+        Assert.Equal(2, f.Document.Sheets[0].Bindings.Count);
+    }
+
+    // A header the user wrote without the blank line above it still opens a
+    // sheet. The device merges it into the mode above, which is why saving puts
+    // the blank line back, and reading the sheet is what makes that repair
+    // possible.
+    [Fact]
+    public void A_real_header_without_its_separator_still_opens_a_sheet()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Main\n" +
+            "mygame.csv,,\n" +
+            "PlayStation Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "Profile Name,,Aiming\n" +
+            ",,\n" +
+            "PlayStation Outputs,Function,usb\n" +
+            "circle,normal,mp_center_sip\n");
+
+        Assert.Equal(2, f.Document.Sheets.Count);
+        Assert.Equal("Aiming", f.Document.Sheets[1].ModeName);
+    }
 }

@@ -36,10 +36,7 @@ public static class Parser
 
         // Split the grid into sheet sections on A1 keyword rows.
         // QMP rule: A1 must CONTAIN "Profile", or equal Preferences/Infrared.
-        var sectionStarts = new List<int>();
-        for (int r = scanFrom; r < grid.Count; r++)
-            if (Vocab.IsSheetKeyword(Cell(grid, r, 0).Trim()) && IsHeaderRow(grid, r))
-                sectionStarts.Add(r);
+        var sectionStarts = FindSectionStarts(grid, scanFrom);
 
         if (sectionStarts.Count == 0)
         {
@@ -69,7 +66,7 @@ public static class Parser
                     "Begin the cell with the sheet keyword, e.g. \"Profile Name\"."));
         }
 
-        CheckDeviceLineLimits(grid, issues);
+        CheckDeviceLineLimits(grid, sectionStarts, issues);
         return (doc, issues);
     }
 
@@ -96,13 +93,17 @@ public static class Parser
     const int MaxKeywordLength = 64; // fields must be shorter than this
     const int MaxLineBytes = 1023;   // f_gets keeps len-1 characters
 
-    static void CheckDeviceLineLimits(List<string[]> grid, List<Issue> issues)
+    static void CheckDeviceLineLimits(List<string[]> grid, List<int> sectionStarts, List<Issue> issues)
     {
+        // The same sheet boundaries the parse used. Working them out again here
+        // with a looser rule is how the two disagreed about which rows belong
+        // to which sheet, and the 64 character rule is scoped per sheet type.
+        var starts = new HashSet<int>(sectionStarts);
         var sheet = SheetType.ProfileName;
         int sheetStart = 0;
         for (int r = 0; r < grid.Count; r++)
         {
-            if (Vocab.IsSheetKeyword(Cell(grid, r, 0).Trim()) && IsHeaderRow(grid, r))
+            if (starts.Contains(r))
             {
                 sheet = Vocab.KeywordToType(Cell(grid, r, 0).Trim());
                 sheetStart = r;
@@ -164,6 +165,69 @@ public static class Parser
         return null;
     }
 
+    // Where the sheets begin, found the way the device finds them.
+    //
+    // The firmware dispatches sheets in exactly one place: the top level loop
+    // in Load_Configuration_File, which only runs BETWEEN segments. Once a
+    // segment opens, Load_Configuration_File_Segment reads rows until a line
+    // whose first byte is '\n' or '\r', and nothing else ends it. A row whose
+    // output name matches no keyword is skipped with `continue`, not read as a
+    // new sheet. So a note like "See the other profile for aiming", or a
+    // binding row whose output happens to begin with "Profile", is an ordinary
+    // row of the mode it sits in. Splitting the file there invented a sheet,
+    // and the two rows under it were swallowed as that phantom sheet's
+    // filename and label rows: they left the profile without a word said.
+    static List<int> FindSectionStarts(List<string[]> grid, int scanFrom)
+    {
+        var starts = new List<int>();
+        bool insideSheet = false;
+        int sheetStart = -1;
+        for (int r = scanFrom; r < grid.Count; r++)
+        {
+            if (insideSheet)
+            {
+                // The device skips the two rows under a keyword row whole: two
+                // f_gets calls with nothing tested on either, so neither can
+                // open a sheet however it happens to be spelled. A mode named
+                // in a file called "Profile.csv" used to split the file here.
+                if (r <= sheetStart + 2) continue;
+                if (IsBlankLine(grid[r])) { insideSheet = false; continue; }
+            }
+
+            if (!Vocab.IsSheetKeyword(Cell(grid, r, 0).Trim())) continue;
+            if (!(insideSheet ? OpensSheetMidMode(grid, r) : IsHeaderRow(grid, r))) continue;
+
+            starts.Add(r);
+            insideSheet = true;
+            sheetStart = r;
+        }
+        return starts;
+    }
+
+    // Mid mode the device is never looking for a sheet, so the app only reads
+    // one where the user plainly wrote a header: a header written without the
+    // blank line above it. The device merges such a sheet into the mode above;
+    // NormalizeForDeviceCsv puts the blank line back on save, and reading the
+    // sheet here is what makes that repair possible.
+    //
+    // "Preferences" and "Infrared" name themselves: the whole cell is the
+    // keyword, so anything beside it is a label, which is how community IR tabs
+    // are written ("Infrared,Samsung Most Models - Set #: 595"). "Profile" is
+    // matched on its start, so the function column has to be empty. That is the
+    // one thing that tells a header apart from a binding row whose output
+    // happens to begin with the word, like "Profile switch,normal,lip", which
+    // the device reads and skips without ever ending the mode.
+    static bool OpensSheetMidMode(List<string[]> grid, int r)
+    {
+        var a1 = Cell(grid, r, 0);
+        if (!Vocab.FirmwareAcceptsSheetKeyword(a1)) return false;
+        var word = a1.Trim();
+        return word.Equals("Preferences", StringComparison.Ordinal)
+            || word.Equals("Infrared", StringComparison.Ordinal)
+            || Cell(grid, r, 1).Trim().Length == 0;
+    }
+
+    // Between segments, where the device really is dispatching on A1.
     static bool IsHeaderRow(List<string[]> grid, int r)
     {
         // The device splits sections on the START of the raw line and never
