@@ -10,24 +10,29 @@ public static class Device
     // spun-down USB stick can stall on. A short TTL collapses the burst.
     // ponytail: 3s cache, tune up if a freshly plugged device is slow to show
     // on Home. Install always uses the live FindCandidates() below.
-    static List<string>? _cache;
-    static DateTime _cacheAtUtc;
+    //
+    // The value and its timestamp travel together in one reference, because two
+    // fields are read and written from two threads here: the Manage files window
+    // does its scanning inside a Task.Run and Home does it on the UI thread. Two
+    // separate fields could be read half updated, giving a fresh list a stale
+    // time or the other way about. One record swapped in a single assignment
+    // cannot be, and the list inside it is never mutated after it is built.
+    sealed record Scan(List<string> Roots, DateTime AtUtc);
+
+    static Scan? _cache;
+
     public static List<string> FindCandidatesCached()
     {
-        if (_cache is not null && DateTime.UtcNow - _cacheAtUtc < TimeSpan.FromSeconds(3))
-            return _cache;
-        _cache = FindCandidates();
-        _cacheAtUtc = DateTime.UtcNow;
-        return _cache;
+        if (_cache is { } seen && DateTime.UtcNow - seen.AtUtc < TimeSpan.FromSeconds(3))
+            return seen.Roots;
+        var fresh = new Scan(FindCandidates(), DateTime.UtcNow);
+        _cache = fresh;
+        return fresh.Roots;
     }
 
     // An explicit Refresh must not wait out the TTL. Drop the cache so the very
     // next cached lookup enumerates drives again.
-    public static void InvalidateCandidateCache()
-    {
-        _cache = null;
-        _cacheAtUtc = default;
-    }
+    public static void InvalidateCandidateCache() => _cache = null;
 
     public static List<string> FindCandidates()
     {

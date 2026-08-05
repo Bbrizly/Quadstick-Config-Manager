@@ -144,14 +144,26 @@ public class ImportReviewWindow : Window
         // so Enter and Esc mean the same safe thing, which is "I am finished
         // looking". Neither one can silently commit something unseen.
         _done = new Button { Content = "Done", Classes = { "primary" }, MinWidth = 140, IsDefault = true, IsCancel = true };
-        AutomationProperties.SetName(_done, "Close the import review");
+        AutomationProperties.SetName(_done,
+            "Close the import review. Every answer you gave has already been applied to the profile behind it");
         _done.Click += (_, _) => Close();
+        // Esc closes as well as Enter, and neither one is a cancel: a decision
+        // is applied the moment it is pressed. Someone reaching for Esc to back
+        // out deserves to have been told that before they press it, and where
+        // the way back actually is.
+        var closingNote = new TextBlock
+        {
+            Text = "Your answers are already part of the profile. Nothing is saved to disk yet, "
+                 + "and Control Z in the editor undoes any of it.",
+            FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
+            VerticalAlignment = VerticalAlignment.Center, MaxWidth = 520,
+        };
         var buttons = new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 12,
             HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new Thickness(0, 16, 0, 0),
-            Children = { _done },
+            Children = { closingNote, _done },
         };
 
         var panel = new DockPanel { LastChildFill = true, Margin = new Thickness(24) };
