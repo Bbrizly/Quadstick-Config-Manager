@@ -165,6 +165,13 @@ public class DeviceAgreementTests
     [InlineData("x,normal,aim\n")]
     [InlineData("x,wobble,lip\n")]
     [InlineData("x,normal,none,lip\n")]
+    // A gap between inputs. The device squeezes the empty slots out and refills
+    // the tail (Configuration.c: "fill out blank cells with None's"), so a gap
+    // is spacing and nothing else. That is what makes reordering a sequence by
+    // swapping a cell with a blank neighbour safe: the set and the order of the
+    // inputs the device matches do not move with it.
+    [InlineData("x,normal,,lip\n")]
+    [InlineData("x,normal,lip,,mp_center_sip\n")]
     // A note, and a binding row whose output begins with the keyword. The
     // device dispatches sheets only between segments, so inside a mode both are
     // rows with no matching output: skipped, and the mode carries on. Reading
