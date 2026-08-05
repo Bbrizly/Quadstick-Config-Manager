@@ -70,4 +70,50 @@ public class PreferenceOverrideRuleTests
         var issue = Assert.Single(f.Issues, i => i.Cell == "A4");
         Assert.Contains("not a documented output name", issue.Message);
     }
+
+    // The device reads a value with atoi, which is 32 bits. long.TryParse
+    // accepted anything up to 63 bits and said nothing, so a ten digit value
+    // passed and then arrived on the device as an entirely different number.
+    [Fact]
+    public void A_value_too_big_for_the_devices_atoi_is_reported()
+    {
+        var f = ProfileFile.Load(
+            "Preferences\nprefs.csv\nName,Value\ndeflection_multiplier_up,4294967296\n");
+
+        var issue = Assert.Single(f.Issues, i => i.Message.Contains("too big for the device"));
+        Assert.Equal(Severity.Error, issue.Severity);
+    }
+
+    // Same rule on a mode row, which reads its value from column C.
+    [Fact]
+    public void A_mode_override_value_too_big_for_the_device_is_reported()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nmouse_speed,,4294967296\n");
+
+        Assert.Contains(f.Issues, i => i.Cell == "C4" && i.Message.Contains("too big for the device"));
+    }
+
+    // Which preferences take a word is the catalog's business. The rule used to
+    // be a "bluetooth_" name prefix, which covered three more than the comment
+    // beside it claimed and would have gone on covering whatever else was named
+    // that way later.
+    [Theory]
+    [InlineData("bluetooth_device_mode", "keyboard")] // choice: a word is right here
+    [InlineData("bluetooth_remote_adapter", "not-a-mac")] // text: left as typed
+    public void A_preference_the_catalog_calls_a_word_is_not_asked_to_be_a_number(string name, string value)
+    {
+        var f = ProfileFile.Load($"Preferences\nprefs.csv\nName,Value\n{name},{value}\n");
+
+        Assert.DoesNotContain(f.Issues, i => i.Message.Contains("is not a whole number"));
+    }
+
+    // And one the catalog calls a number still has to be one.
+    [Fact]
+    public void A_preference_the_catalog_calls_a_number_still_has_to_be_one()
+    {
+        var f = ProfileFile.Load("Preferences\nprefs.csv\nName,Value\nvolume,wibble\n");
+
+        Assert.Contains(f.Issues, i => i.Message.Contains("is not a whole number"));
+    }
 }

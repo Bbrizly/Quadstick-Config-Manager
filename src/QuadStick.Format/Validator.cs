@@ -147,13 +147,20 @@ public static class Validator
             // (Configuration.c:495). So "keyboard" is a real value in column B
             // of a settings sheet and is zero in column C of a mode row.
             if (!long.TryParse(valueInC, System.Globalization.NumberStyles.Integer,
-                               System.Globalization.CultureInfo.InvariantCulture, out _))
+                               System.Globalization.CultureInfo.InvariantCulture, out var parsedInC))
             {
                 issues.Add(new Issue(Severity.Error, $"C{b.Row}",
                     IsWordValuedPreference(b.Output)
                         ? $"\"{valueInC}\" is a word. \"{b.Output}\" takes a word on the settings sheet, but a mode row's value is read as a number, so the device sets it to 0 here."
                         : $"\"{valueInC}\" is not a whole number. \"{b.Output}\" is a device setting; this cell is its value.",
                     "Replace it with a whole number, e.g. \"50\"."));
+                rejected = true;
+            }
+            else if (TooBigForDevice(parsedInC))
+            {
+                issues.Add(new Issue(Severity.Error, $"C{b.Row}",
+                    $"\"{valueInC}\" is too big for the device to read. {DeviceIntegerRange}",
+                    "Use a value inside that range."));
                 rejected = true;
             }
             // A mode override reads its value from column C, so that is the
@@ -221,13 +228,20 @@ public static class Validator
             // reads it as 0, so the preference is simply wrong. (A number in the
             // wrong form would be a Warning, but there's no such form here.)
             var rejected = false;
-            if (!long.TryParse(value, System.Globalization.NumberStyles.Integer,
-                               System.Globalization.CultureInfo.InvariantCulture, out _)
-                && !IsWordValuedPreference(b.Output))
+            var isNumber = long.TryParse(value, System.Globalization.NumberStyles.Integer,
+                                         System.Globalization.CultureInfo.InvariantCulture, out var parsed);
+            if (!isNumber && !IsWordValuedPreference(b.Output))
             {
                 issues.Add(new Issue(Severity.Error, $"B{b.Row}",
                     $"\"{value}\" in column B is the value of \"{b.Output}\" but is not a whole number.",
                     "Most preferences take a whole number, e.g. \"50\"."));
+                rejected = true;
+            }
+            else if (isNumber && TooBigForDevice(parsed))
+            {
+                issues.Add(new Issue(Severity.Error, $"B{b.Row}",
+                    $"\"{value}\" is too big for the device to read. {DeviceIntegerRange}",
+                    "Use a value inside that range."));
                 rejected = true;
             }
 
@@ -318,10 +332,29 @@ public static class Validator
         }
     }
 
-    // bluetooth_device_mode, bluetooth_connection_mode and
-    // bluetooth_remote_address take word values on the device.
+    // A preference the device reads as a word rather than a number, so "not a
+    // whole number" would be the wrong thing to say about it.
+    //
+    // This was name.StartsWith("bluetooth_"), with a comment naming three
+    // preferences while the rule actually covered six. The catalog already
+    // records what each one takes, so ask it instead of guessing from the name:
+    // a choice is a set of tokens and a text preference is whatever the user
+    // typed, and both are checked properly further down. A name the catalog has
+    // never heard of is still expected to be a number, which is what the
+    // device's atoi assumes of anything it does not have a keyword table for.
     static bool IsWordValuedPreference(string name) =>
-        name.StartsWith("bluetooth_", StringComparison.Ordinal);
+        PreferenceCatalog.TryGet(name, out var definition)
+            ? definition.Editor is PreferenceEditor.Text or PreferenceEditor.Choice
+            : name.StartsWith("bluetooth_", StringComparison.Ordinal);
+
+    // The device reads a value with atoi, which is 32 bits wide. long.TryParse
+    // accepted anything up to 63 bits and said nothing, so a ten digit value
+    // passed validation and then arrived on the device as a different number.
+    static bool TooBigForDevice(long value) => value is < int.MinValue or > int.MaxValue;
+
+    const string DeviceIntegerRange =
+        "The device reads a value with a 32 bit atoi, so anything outside "
+        + "-2147483648 to 2147483647 arrives as a different number.";
 
     static void ValidateFileName(ProfileDocument doc, List<Issue> issues)
     {
@@ -336,12 +369,25 @@ public static class Validator
         }
         if (!name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)
             || name.Length <= 4
-            || name.AsSpan().ContainsAny(InvalidFileNameChars))
+            || name.AsSpan().ContainsAny(InvalidFileNameChars)
+            // A control character is not in the list above, so it passed here
+            // and then threw out of File.WriteAllText during the install, where
+            // it was neither caught nor explained. It belongs in the problems
+            // list with everything else that stops a profile installing.
+            || name.Any(char.IsControl))
         {
             issues.Add(new Issue(Severity.Error, cell,
                 $"\"{name}\" is not a valid configuration filename.",
                 "Use the form \"something.csv\" with no spaces or special characters."));
         }
+        // Windows resolves these to devices whatever extension follows, so the
+        // write appears to work and the file reads back empty. The install said
+        // "readback verification failed", which points at the device rather than
+        // at the one thing the user can actually change.
+        if (SafeFileName.IsReservedOnWindows(name))
+            issues.Add(new Issue(Severity.Error, cell,
+                $"\"{name}\" is a name Windows reserves for hardware, so it cannot be a file there.",
+                "Pick another name, for example \"game.csv\"."));
         if (string.Equals(name, "prefs.csv", StringComparison.OrdinalIgnoreCase))
             issues.Add(new Issue(Severity.Warning, cell,
                 "prefs.csv is the device preferences file, not a game configuration.",
