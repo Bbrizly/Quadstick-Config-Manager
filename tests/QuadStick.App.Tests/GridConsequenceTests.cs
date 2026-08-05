@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using QuadStick.App;
+using Avalonia.Interactivity;
 using QuadStick.Format;
 using Xunit;
 
@@ -132,5 +133,81 @@ public class GridConsequenceTests
         Assert.Contains(file.Issues, i => i.Cell == "C4" && i.Message.Contains("sets it to 0"));
 
         Done(owner, review);
+    }
+
+    // The import review is a one-shot window. The editors are where people
+    // actually work, and taking the last input off a row there said nothing at
+    // all: the row went on naming an output that nothing could press, and the
+    // problems list could not tell it from the factory template's placeholders.
+    static MainWindow OpenEditor(string csv, bool deviceView, out ProfileFile opened)
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        s.Model = "FPS";
+        s.DeviceCards = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        opened = ProfileFile.Load(csv);
+        opened.Dirty = false;
+        w.LoadProfile(opened);
+        w.SetDeviceViewForPreview(deviceView);
+        if (deviceView) w.SelectZoneForPreview("lip");
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        return w;
+    }
+
+    static bool WindowSays(Window w, string fragment)
+    {
+        w.UpdateLayout();
+        return w.GetVisualDescendants().OfType<TextBlock>().Any(t => (t.Text ?? "").Contains(fragment));
+    }
+
+    // The remove control beside an input only appears once a row has more than
+    // one. "none" is the device's own word for a blank, so a row left holding
+    // only that presses nothing, and taking the real input off it is exactly
+    // the edit worth a word about. It was the one edit that said nothing.
+    [AvaloniaFact]
+    public void List_View_says_when_an_edit_leaves_a_row_nothing_can_press()
+    {
+        var w = OpenEditor(
+            "Profile Name,,Left joy\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+            "left_trigger,normal,lip,none\r\n", deviceView: false, out var f);
+
+        w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Remove input 1 from row 4")
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(WindowSays(w, "Nothing presses \"left_trigger\" now"));
+
+        f.Dirty = false;
+        w.Close();
+    }
+
+    // Device View is the view the app opens in, so a fix that only reached the
+    // list would have been half a fix.
+    [AvaloniaFact]
+    public void Device_View_says_when_an_edit_leaves_a_row_nothing_can_press()
+    {
+        var w = OpenEditor(OneMapping, deviceView: true, out var f);
+
+        // The inputs and their remove controls live inside the expanded card.
+        w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Mapping 1:"))
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+
+        w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Remove this input from mapping"))
+            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(WindowSays(w, "Nothing presses \"left_trigger\" now"));
+
+        f.Dirty = false;
+        w.Close();
     }
 }

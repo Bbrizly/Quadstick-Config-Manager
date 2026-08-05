@@ -2656,6 +2656,7 @@ public partial class MainWindow : Window
                         {
                             _file!.RemoveInput(b.Row, idx);
                             BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                            SayIfNothingFiresIt(b.Row);
                             FocusZoneDetailSibling(zone.Id, bindings!.IndexOf(b));
                         };
                         Grid.SetColumn(rmv, 2);
@@ -3705,6 +3706,7 @@ public partial class MainWindow : Window
                     var off = GridScroll.Offset;
                     _file!.RemoveInput(b.Row, idx);
                     RebuildRows();
+                    SayIfNothingFiresIt(b.Row);
                     RestoreListScroll(off, () =>
                     {
                         if (_cellBorders.TryGetValue($"A{b.Row}", out var border))
@@ -4630,6 +4632,12 @@ public partial class MainWindow : Window
             }
             else setValue(token);
             RefreshIssues();
+            // The remove control beside an input only appears when a row has
+            // more than one, so the LAST input is taken off through this picker,
+            // by emptying it or by choosing the device's own word for nothing.
+            // That is the edit most worth a word, and it was the one edit that
+            // said nothing.
+            if (col is >= 2 and < 10) SayIfNothingFiresIt(row);
             // An input appearing or disappearing changes the row's own
             // controls, so rebuild. Deferred: the flyout is still closing.
             //
@@ -4987,6 +4995,20 @@ public partial class MainWindow : Window
             "decrement_value" => "Nudges a device setting down, like mouse speed.",
             _ => "",
         };
+    }
+
+    // Taking the last input off a row leaves it naming an output that nothing
+    // can press. The finished file cannot be told from a correct one, because
+    // the factory template ships twelve rows shaped exactly like that, so the
+    // problems list will never mention it: only the edit knows an input used to
+    // be there. The import review has said so since it was written and the two
+    // editors, where people actually work, said nothing at all.
+    void SayIfNothingFiresIt(int row)
+    {
+        if (_file is null) return;
+        var b = _file.Document.Sheets.SelectMany(s => s.Bindings).FirstOrDefault(x => x.Row == row);
+        if (b is null || !Vocab.NothingFiresIt(b)) return;
+        Status($"Nothing presses \"{b.Output}\" now, so the QuadStick will not fire it.", StatusKind.Warning);
     }
 
     void Status(string text, StatusKind kind = StatusKind.Info)

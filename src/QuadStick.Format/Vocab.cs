@@ -153,6 +153,26 @@ public static class Vocab
     // the cell blank.
     public const string NoneInput = "none";
 
+    /// <summary>True when a row still names an output but nothing left on it
+    /// can make the device fire it.
+    ///
+    /// The validator cannot say this and never will: the factory template ships
+    /// twelve rows shaped exactly like this on purpose ("dpad_N,normal," and the
+    /// rest), so a finished file holding one is indistinguishable from a correct
+    /// one. Only the edit knows an input used to be there, so only the edit can
+    /// mention it. The import review has said so since it was written; the two
+    /// editors, where people actually live, said nothing at all.
+    ///
+    /// "none" is the device's own word for a blank and a word it has never heard
+    /// of is skipped, so a row holding only those never fired and losing them
+    /// costs nothing worth announcing. A settings row is left alone too: its
+    /// column C is a value, not an input, and emptying it already has its own
+    /// warning saying the device reads 0.</summary>
+    public static bool NothingFiresIt(Binding b) =>
+        b.Output.Trim().Length > 0
+        && !IsPreferenceOverride(b.Output, b.Function)
+        && !b.Inputs.Any(i => i != NoneInput && (Inputs.Contains(i) || LegacyInputs.Contains(i)));
+
     // connections_keywords[] in the firmware, and the device matches it the way
     // it matches every other keyword: the whole word, case sensitively, with usb
     // as the fallback. So "Bluetooth" and "usb bluetooth" are not two ways of
