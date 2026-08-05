@@ -1,4 +1,6 @@
+using System.Globalization;
 using System.IO.Compression;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace QuadStick.Format;
@@ -45,6 +47,37 @@ public static class Xlsx
     const int MaxColumn = 63; // BL, zero-based
     const int MaxRows = 20_000;
 
+    // The three bounds above are per sheet, which left the workbook itself
+    // unbounded: the cost of a tab is paid once per tab, and workbook.xml is so
+    // repetitive that naming hundreds of them costs almost nothing to compress.
+    // A 25 KB download expanded into gigabytes of strings that way, and many
+    // <sheet> entries are allowed to point at the same part, so the same grid
+    // could be built over and over.
+    //
+    // A real workbook is one tab per mode and the device loads 16 profiles, so
+    // these are already far past anything a profile does.
+    const int MaxSheets = 64;
+    const int MaxWorkbookRows = 30_000;
+
+    // The uncompressed size the archive declares for a part, read from the
+    // central directory without inflating a byte. A sheet that expands to
+    // hundreds of megabytes out of a few hundred kilobytes is not a profile:
+    // one 408 KB file reached 120 MB and 1.2 GB of DOM.
+    const long MaxPartBytes = 32L * 1024 * 1024;
+
+    // The same bound again, in the units the XML reader counts, so a part that
+    // lies about its size in the zip header is still stopped. MaxCharactersFrom-
+    // Entities and Prohibit are what keep a DTD from being the way around it;
+    // XDocument.Load(Stream) does not use the hardened reader defaults, so the
+    // safety here was resting on nothing written down.
+    static readonly XmlReaderSettings PartLimits = new()
+    {
+        DtdProcessing = DtdProcessing.Prohibit,
+        MaxCharactersInDocument = 40_000_000,
+        MaxCharactersFromEntities = 0,
+        XmlResolver = null,
+    };
+
     static readonly XNamespace Main = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     static readonly XNamespace Rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
     static readonly XNamespace Pkg = "http://schemas.openxmlformats.org/package/2006/relationships";
@@ -89,6 +122,7 @@ public static class Xlsx
         var shared = SharedStrings(zip);
         var rows = new List<string[]>();
         var skipped = new List<SkippedTab>();
+        int kept = 0;
         foreach (var (name, part) in SheetParts(zip))
         {
             if (HelperTabs.Contains(name.Trim())) continue;
@@ -98,6 +132,13 @@ public static class Xlsx
             if (grid.Count > 0 && grid[0].Length > 0 && Vocab.IsSheetKeyword(grid[0][0].Trim()))
                 rows.AddRange(grid);
             else if (LooksLikeBindings(grid)) skipped.Add(new SkippedTab(name, grid));
+            else continue; // nothing was retained, so nothing was spent
+
+            // Skipped tabs are held on to as well as imported ones, so both
+            // count against the workbook's budget. Stopping here rather than
+            // part way through a tab keeps every mode that did come in whole.
+            kept += grid.Count;
+            if (kept >= MaxWorkbookRows) break;
         }
         skippedTabs = skipped;
         return Csv.Write(rows);
@@ -140,14 +181,20 @@ public static class Xlsx
             if ((string?)r.Attribute("Id") is string id && (string?)r.Attribute("Target") is string t)
                 targets[id] = t;
 
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        int count = 0;
         foreach (var sheet in wb.Root!.Descendants(Main + "sheet"))
         {
             if ((string?)sheet.Attribute(Rel + "id") is not string id) continue;
             if (!targets.TryGetValue(id, out var target)) continue;
             target = target.TrimStart('/');
-            yield return (
-                (string?)sheet.Attribute("name") ?? "",
-                target.StartsWith("xl/", StringComparison.Ordinal) ? target : "xl/" + target);
+            var part = target.StartsWith("xl/", StringComparison.Ordinal) ? target : "xl/" + target;
+            // Nothing stops a workbook naming the same part from many <sheet>
+            // entries, and each one used to be read and kept all over again.
+            // One part is one sheet however many times it is listed.
+            if (!seen.Add(part)) continue;
+            if (++count > MaxSheets) yield break;
+            yield return ((string?)sheet.Attribute("name") ?? "", part);
         }
     }
 
@@ -160,14 +207,28 @@ public static class Xlsx
         foreach (var row in doc.Root!.Descendants(Main + "row"))
         {
             var cells = new List<string>();
+            int nextCol = 0;
             foreach (var c in row.Elements(Main + "c"))
             {
                 // Empty cells are skipped in the file, so place each one by its
                 // own reference (C4 -> index 2) instead of counting.
-                int col = ColumnIndex((string?)c.Attribute("r") ?? "");
+                //
+                // Padding forward and appending was only right while the cells
+                // arrived in order. The format asks for that and nothing
+                // enforces it, so a workbook from another writer could hand back
+                // C4, B4, A4 and land them as A4, B4, C4 reversed: the row's
+                // output moved into an input column and the binding read as
+                // something else entirely. Writing at the index says where each
+                // cell goes whatever order they come in, and a repeated
+                // reference overwrites, which is what a spreadsheet does too.
+                var reference = (string?)c.Attribute("r") ?? "";
+                int col = reference.Length > 0 && char.IsAsciiLetter(reference[0])
+                    ? ColumnIndex(reference)
+                    : nextCol; // no reference: the column after the one before it
+                nextCol = col + 1;
                 if (col > MaxColumn) continue; // debris: nothing out there is read
-                while (cells.Count < col) cells.Add("");
-                cells.Add(Value(c, shared));
+                while (cells.Count <= col) cells.Add("");
+                cells[col] = Value(c, shared);
             }
             while (cells.Count > 0 && cells[^1].Length == 0) cells.RemoveAt(cells.Count - 1);
 
@@ -179,11 +240,22 @@ public static class Xlsx
             // Counting kept rows alone let a bare <row> that followed a skipped
             // one land back inside the profile: junk from the bottom of the
             // sheet arrived as a live binding a few rows down.
+            //
+            // Placed by number, for the same reason the cells are placed by
+            // reference. Appending trusted the rows to arrive in order twice
+            // over: a descending r put a row at the end and left blanks in the
+            // middle, and a blank row is where the device stops reading a mode,
+            // so every binding under the gap went inert. Appending also meant
+            // the row cap counted the row NUMBER and never the rows themselves,
+            // so a file that repeated r="5" grew without limit: 1.8 MB of zip
+            // became three million rows and a hundred seconds on the UI thread.
+            // Writing at the index bounds the count by the cap, whatever the
+            // file says.
             int number = (int?)row.Attribute("r") ?? lastNumber + 1;
             lastNumber = number;
             if (number > MaxRows || number < 1) continue;
-            while (rows.Count < number - 1) rows.Add(Array.Empty<string>());
-            rows.Add(cells.ToArray());
+            while (rows.Count < number) rows.Add(Array.Empty<string>());
+            rows[number - 1] = cells.ToArray();
         }
 
         // The template ships 1000 rows per tab; only the used ones matter.
@@ -197,7 +269,8 @@ public static class Xlsx
         if (type == "inlineStr") return Text(cell.Element(Main + "is"));
         if (cell.Element(Main + "v") is not XElement v) return "";
         if (type == "s")
-            return int.TryParse(v.Value, out var i) && i >= 0 && i < shared.Length ? shared[i] : "";
+            return int.TryParse(v.Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i)
+                && i >= 0 && i < shared.Length ? shared[i] : "";
         if (type == "b") return v.Value == "1" ? "TRUE" : "FALSE";
         // ponytail: numbers come through raw, which is what profile values are
         // (130, 45, 0.5). A date cell would import as its serial number;
@@ -233,7 +306,15 @@ public static class Xlsx
     static XDocument? Xml(ZipArchive zip, string path)
     {
         if (zip.GetEntry(path) is not ZipArchiveEntry entry) return null;
+        // Checked before a byte is inflated. The whole grid was bounded and the
+        // DOM under it was not, so the guards could only ever run after the
+        // memory had already been spent.
+        if (entry.Length > MaxPartBytes)
+            throw new InvalidDataException(
+                $"That spreadsheet holds a part of {entry.Length / (1024 * 1024)} MB, far larger than any "
+                + "profile, so it was not read.");
         using var stream = entry.Open();
-        return XDocument.Load(stream);
+        using var reader = XmlReader.Create(stream, PartLimits);
+        return XDocument.Load(reader);
     }
 }

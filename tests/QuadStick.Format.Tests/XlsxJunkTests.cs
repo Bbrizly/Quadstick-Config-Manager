@@ -165,4 +165,153 @@ public class XlsxJunkTests
         Assert.Equal(4, file.Document.Sheets.Count);
         Assert.Equal("kb_w", file.Document.Sheets[0].Bindings[0].Output);
     }
+
+    // The row cap used to bound the row NUMBER and never the number of rows, so
+    // a file that said r="5" over and over grew without any limit at all: 1.8 MB
+    // of zip became three million rows and a hundred seconds of frozen window.
+    [Fact]
+    public void A_row_number_repeated_over_and_over_does_not_grow_the_grid()
+    {
+        var sheet = new StringBuilder(RealRows);
+        for (int i = 0; i < 100_000; i++)
+            sheet.Append("<row r=\"5\">" + Cell("A5", "circle") + "</row>");
+        using var wb = Workbook(sheet.ToString());
+
+        var csv = Xlsx.ToCsv(wb);
+
+        Assert.True(csv.Length < 5_000, $"csv is {csv.Length} characters");
+        Assert.Contains("mouse_left", csv);
+    }
+
+    // OOXML asks for cells in order and nothing enforces it. Padding forward and
+    // appending read C4,B4,A4 back as A4,B4,C4 reversed, which moved the row's
+    // output into an input column and made the binding something else entirely.
+    [Fact]
+    public void Cells_that_arrive_out_of_order_still_land_in_their_own_columns()
+    {
+        using var wb = Workbook(
+            RealRows.Replace(
+                "<row r=\"4\"><c r=\"A4\" t=\"inlineStr\"><is><t>mouse_left</t></is></c>" +
+                "<c r=\"B4\" t=\"inlineStr\"><is><t>normal</t></is></c>" +
+                "<c r=\"C4\" t=\"inlineStr\"><is><t>lip</t></is></c></row>",
+                "<row r=\"4\">" + Cell("C4", "lip") + Cell("B4", "normal") + Cell("A4", "mouse_left") + "</row>"));
+
+        var file = ProfileFile.Load(Xlsx.ToCsv(wb));
+
+        var binding = Assert.Single(file.Document.Sheets[0].Bindings);
+        Assert.Equal("mouse_left", binding.Output);
+        Assert.Equal(new[] { "lip" }, binding.Inputs);
+    }
+
+    // Same again for rows. A descending r put the row at the end and left blanks
+    // where it should have been, and a blank row is where the device stops
+    // reading a mode, so every binding under the gap went inert.
+    [Fact]
+    public void A_row_that_arrives_out_of_order_still_lands_at_its_own_number()
+    {
+        using var wb = Workbook(
+            RealRows
+            + "<row r=\"6\">" + Cell("A6", "triangle") + Cell("B6", "normal") + Cell("C6", "lip") + "</row>"
+            + "<row r=\"5\">" + Cell("A5", "circle") + Cell("B5", "normal") + Cell("C5", "lip") + "</row>");
+
+        var file = ProfileFile.Load(Xlsx.ToCsv(wb));
+
+        Assert.Equal(
+            new[] { "mouse_left", "circle", "triangle" },
+            file.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+    }
+
+    // A part that inflates to hundreds of megabytes out of a few hundred
+    // kilobytes is not a profile. The zip says how big it will be before a byte
+    // is inflated, and that was never read: every bound in this file could only
+    // run after the whole DOM had already been built.
+    [Fact]
+    public void A_part_far_bigger_than_any_profile_is_refused_before_it_is_read()
+    {
+        var ms = new MemoryStream();
+        using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            using var w = new StreamWriter(zip.CreateEntry("xl/workbook.xml").Open(), new UTF8Encoding(false));
+            w.Write("<workbook><sheets>");
+            // Compresses to almost nothing, which is the whole point of the file.
+            var filler = new string(' ', 64 * 1024);
+            for (int i = 0; i < 40 * 16; i++) w.Write(filler);
+            w.Write("</sheets></workbook>");
+        }
+        ms.Position = 0;
+
+        var ex = Assert.Throws<InvalidDataException>(() => Xlsx.ToCsv(ms));
+        Assert.Contains("far larger than any", ex.Message);
+    }
+
+    // Nothing stops a workbook naming the same part from hundreds of <sheet>
+    // entries, and each one was read and kept all over again: workbook.xml is so
+    // repetitive that 25 KB of zip reached 1.6 GB of strings that way.
+    [Fact]
+    public void A_workbook_naming_one_part_hundreds_of_times_reads_it_once()
+    {
+        var sheets = new StringBuilder();
+        for (int i = 1; i <= 400; i++)
+            sheets.Append($"<sheet name=\"Tab{i}\" sheetId=\"{i}\" r:id=\"rId1\"/>");
+
+        var ms = new MemoryStream();
+        using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            void Put(string path, string body)
+            {
+                using var w = new StreamWriter(zip.CreateEntry(path).Open(), new UTF8Encoding(false));
+                w.Write(body);
+            }
+            Put("xl/workbook.xml",
+                "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" " +
+                "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">" +
+                "<sheets>" + sheets + "</sheets></workbook>");
+            Put("xl/_rels/workbook.xml.rels",
+                "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
+                "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet1.xml\"/>" +
+                "</Relationships>");
+            Put("xl/worksheets/sheet1.xml",
+                "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData>" +
+                RealRows + "</sheetData></worksheet>");
+        }
+        ms.Position = 0;
+
+        var csv = Xlsx.ToCsv(ms);
+
+        Assert.True(csv.Length < 5_000, $"csv is {csv.Length} characters");
+        Assert.Single(ProfileFile.Load(csv).Document.Sheets);
+    }
+
+    // XDocument.Load(Stream) does not use the hardened reader defaults, so a
+    // DTD was processed and its entities expanded. Real workbooks have no DTD.
+    [Fact]
+    public void A_spreadsheet_carrying_a_dtd_is_not_read()
+    {
+        // Everything else about this workbook is valid, so without the reader
+        // settings it imports cleanly and the DTD goes unnoticed.
+        var ms = new MemoryStream();
+        using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            void Put(string path, string body)
+            {
+                using var w = new StreamWriter(zip.CreateEntry(path).Open(), new UTF8Encoding(false));
+                w.Write(body);
+            }
+            Put("xl/workbook.xml",
+                "<!DOCTYPE workbook [<!ENTITY tabname \"Solo\">]>" +
+                "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" " +
+                "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">" +
+                "<sheets><sheet name=\"&tabname;\" sheetId=\"1\" r:id=\"rId1\"/></sheets></workbook>");
+            Put("xl/_rels/workbook.xml.rels",
+                "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
+                "<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet1.xml\"/>" +
+                "</Relationships>");
+            Put("xl/worksheets/sheet1.xml",
+                "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData>" +
+                RealRows + "</sheetData></worksheet>");
+        }
+        ms.Position = 0;
+
+        Assert.Throws<InvalidDataException>(() => Xlsx.ToCsv(ms));
+    }
 }
