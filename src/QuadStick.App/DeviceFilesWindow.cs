@@ -279,7 +279,8 @@ public class DeviceFilesWindow : Window
             var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
             subtitle = doc.IsDevicePreferences
                 ? "the device's own settings file"
-                : $"{modes.Count} mode sheet(s), {modes.Sum(s => s.Bindings.Count)} binding(s)";
+                : MainWindow.TitleNote(doc, path)
+                    + $"{modes.Count} mode sheet(s), {modes.Sum(s => s.Bindings.Count)} binding(s)";
             if (SheetsUrl.TryGetEditUrlFromHeader(doc.HeaderVersion, doc.HeaderSource, out var url))
                 sheetUrl = url;
         }

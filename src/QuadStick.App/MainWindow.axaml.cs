@@ -1508,6 +1508,21 @@ public partial class MainWindow : Window
     // A slow USB still costs one read the first time it's seen; that's inherent.
     static readonly Dictionary<string, (long Stamp, string Sub)> _cardCache = new();
 
+    // File names on the QuadStick decide the order the profile switch steps
+    // through them, so people keep them short and numbered and then cannot tell
+    // one from another. The name inside the file is free of that job, so every
+    // list that names a file leads with it. Skipped when it only repeats the
+    // file name, and never in place of the file name: that is what gets typed,
+    // renamed and installed.
+    internal static string TitleNote(ProfileDocument doc, string path)
+    {
+        var title = doc.Title;
+        return title.Length > 0
+            && !title.Equals(Path.GetFileNameWithoutExtension(path), StringComparison.OrdinalIgnoreCase)
+            ? $"{title} · "
+            : "";
+    }
+
     static string CardSubtitle(string path)
     {
         long stamp;
@@ -1522,7 +1537,8 @@ public partial class MainWindow : Window
             // mode nor a set of bindings, and counting them here said a profile
             // had one more mode than the device would ever run.
             var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
-            sub = $"{modes.Count} mode sheet(s), {modes.Sum(s => s.Bindings.Count)} binding(s)";
+            sub = TitleNote(doc, path)
+                + $"{modes.Count} mode sheet(s), {modes.Sum(s => s.Bindings.Count)} binding(s)";
         }
         catch { sub = "Could not read this file"; }
         _cardCache[path] = (stamp, sub);

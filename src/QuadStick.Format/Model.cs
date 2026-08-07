@@ -39,6 +39,13 @@ public sealed class ProfileDocument
     public string HeaderVersion { get; set; } = "";
     public string HeaderSource { get; set; } = "";
     public string HeaderName { get; set; } = "";
+    /// <summary>The profile's own name, which is not its file name: the sheet
+    /// title from the version header, or failing that the first mode's name.
+    /// The device reads neither, so this name cannot change the order the
+    /// profile switch steps through files. Empty when the file says nothing.</summary>
+    public string Title => HeaderName.Length > 0
+        ? HeaderName
+        : Sheets.FirstOrDefault(s => s.Type == SheetType.ProfileName)?.ModeName ?? "";
     public bool IsDefaultConfig =>
         string.Equals(CsvFileName, "default.csv", StringComparison.OrdinalIgnoreCase);
     public bool IsDevicePreferences =>

@@ -722,4 +722,23 @@ public sealed class DeviceFilesWindowTests : IDisposable
         win.Close();
         w.Close();
     }
+
+    // Numbered file names are how the profile switch order is set, so on a full
+    // stick they are all the row has to tell one file from another. The name
+    // inside the file goes on the row, in front of the counts.
+    [AvaloniaFact]
+    public async Task A_row_leads_with_the_name_inside_the_file()
+    {
+        var root = Root("stick", "3.csv");
+        File.WriteAllText(Path.Combine(root, "3.csv"), Linked("3.csv"));
+        var w = NewWindow();
+        var (win, _) = await OpenAsync(w, root);
+
+        Assert.True(Says(win, "Racing · "));
+        // default.csv has no header name, so its first mode's name stands in.
+        Assert.True(Says(win, "Walking · "));
+
+        win.Close();
+        w.Close();
+    }
 }
