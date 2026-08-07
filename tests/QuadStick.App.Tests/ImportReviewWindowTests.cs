@@ -367,6 +367,26 @@ public class ImportReviewWindowTests
         Done(owner, review);
     }
 
+    // Switching views used to grow the window out from under the pointer. A
+    // window that jumps moves every button somebody just found, and it throws
+    // away a size they had dragged to fit their screen.
+    [AvaloniaFact]
+    public void Switching_to_the_advanced_view_leaves_the_window_where_it_was()
+    {
+        var (owner, _, review) = Open(AimCsv, new[] { Dpad() });
+        double w = review.Width, h = review.Height;
+
+        Press(review, "Advanced");
+        Assert.Equal(w, review.Width);
+        Assert.Equal(h, review.Height);
+
+        Press(review, "Simple view");
+        Assert.Equal(w, review.Width);
+        Assert.Equal(h, review.Height);
+
+        Done(owner, review);
+    }
+
     [AvaloniaFact]
     public void The_advanced_view_shows_the_grid_and_teaches_the_columns()
     {

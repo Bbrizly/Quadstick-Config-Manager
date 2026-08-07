@@ -106,7 +106,7 @@ public class ImportReviewWindow : Window
         AutomationProperties.SetLiveSetting(_subheading, AutomationLiveSetting.Polite);
 
         _advancedButton = new Button { MinWidth = 130, VerticalAlignment = VerticalAlignment.Top };
-        _advancedButton.Click += (_, _) => { _advanced = !_advanced; Resize(); Build(); _advancedButton.Focus(); };
+        _advancedButton.Click += (_, _) => { _advanced = !_advanced; Build(); _advancedButton.Focus(); };
 
         _announce = new TextBlock
         {
@@ -187,10 +187,14 @@ public class ImportReviewWindow : Window
         if (!e.Handled && e.Key == Key.Escape) { e.Handled = true; Close(); }
     }
 
+    // Once, at open. The Advanced view used to grow the window under the
+    // pointer, which moves every button the reader had just found and throws
+    // away a size the user set by hand. One size holds both views: wide enough
+    // for the grid, and the prose view simply has room to spare.
     void Resize()
     {
-        Width = Math.Min((_advanced ? 900 : 600) * _owner.UiScale, 1400);
-        Height = Math.Min((_advanced ? 700 : 540) * _owner.UiScale, 900);
+        Width = Math.Min(860 * _owner.UiScale, 1400);
+        Height = Math.Min(660 * _owner.UiScale, 900);
     }
 
     // Everything here is derived from the live profile, so a decision that
