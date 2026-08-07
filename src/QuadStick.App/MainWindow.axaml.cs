@@ -22,6 +22,10 @@ public partial class MainWindow : Window
     static void BindBrush(Control target, AvaloniaProperty property, string tokenKey) =>
         target[!property] = new DynamicResourceExtension(tokenKey + "Brush");
 
+    /// <summary>The same binding, for the gallery, which is not a MainWindow.</summary>
+    internal static void BindBrushTo(Control target, AvaloniaProperty property, string tokenKey) =>
+        BindBrush(target, property, tokenKey);
+
     // Type scale doesn't change with theme, so a one-time resource read is fine
     // here (same reasoning as the icon Data lookup below).
     static double Size(string tokenKey) => (double)Application.Current!.FindResource(tokenKey)!;

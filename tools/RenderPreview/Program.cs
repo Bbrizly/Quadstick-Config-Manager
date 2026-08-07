@@ -1,11 +1,14 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using QuadStick.App;
 using QuadStick.Format;
 
-// Renders MainWindow to PNGs for docs. Usage: RenderPreview [out-dir] [corpus-dir]
+// Renders MainWindow to PNGs for docs, and the appearance gallery beside them,
+// so a change to Style.cs or Palette.cs can be looked at in both themes without
+// launching anything. Usage: RenderPreview [out-dir] [corpus-dir]
 
 var outDir = args.Length > 0 ? args[0] : "/tmp/qscm-renders";
 var corpus = args.Length > 1 ? args[1] : "tests/QuadStick.Format.Tests/corpus";
@@ -27,6 +30,12 @@ AppBuilder.Configure<App>()
 foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) })
 {
     Application.Current!.RequestedThemeVariant = variant;
+
+    // The specimen sheet first: it is the page you compare against after a
+    // token changes, and it needs no profile at all.
+    // Tall on purpose: on screen the sheet scrolls, but a render that stops
+    // at the fold hides the colours, which are the half most worth comparing.
+    CaptureWindow($"{suffix}-0-gallery", new GalleryWindow { Height = 2300 });
 
     Capture($"{suffix}-1-home", _ => { });
 
@@ -101,6 +110,12 @@ void Capture(string name, Action<MainWindow> setup)
     win.Show();
     Dispatcher.UIThread.RunJobs();
     setup(win);
+    CaptureWindow(name, win, shown: true);
+}
+
+void CaptureWindow(string name, Window win, bool shown = false)
+{
+    if (!shown) { win.Show(); }
     Dispatcher.UIThread.RunJobs();
     AvaloniaHeadlessPlatform.ForceRenderTimerTick();
     using var frame = win.CaptureRenderedFrame()

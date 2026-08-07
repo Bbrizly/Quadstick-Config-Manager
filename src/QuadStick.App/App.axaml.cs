@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
@@ -16,13 +17,20 @@ public class App : Application
         Style.RegisterInto(this);
     }
 
+    /// <summary>Which window the app opens with. --gallery opens the
+    /// appearance workbench instead: a tool for working on the look, not a
+    /// screen of the program. Nothing in the app links to it and no user is
+    /// ever handed it.</summary>
+    internal static Window WindowFor(IReadOnlyList<string>? args) =>
+        args is not null && args.Contains("--gallery") ? new GalleryWindow() : new MainWindow();
+
     public override void OnFrameworkInitializationCompleted()
     {
         CrashGuard.Install(); // before ANY window exists: nothing runs uncovered
         Theme.RegisterInto(this);
         Theme.Apply(Settings.Load().Theme);
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.MainWindow = new MainWindow();
+            desktop.MainWindow = WindowFor(desktop.Args);
         base.OnFrameworkInitializationCompleted();
     }
 }

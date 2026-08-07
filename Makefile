@@ -1,4 +1,4 @@
-# make test | run | build | package | release VERSION=x.y.z | clean
+# make test | run | gallery | build | package | release VERSION=x.y.z | clean
 
 SLN := QuadStick.sln
 APP := src/QuadStick.App/QuadStick.App.csproj
@@ -6,7 +6,7 @@ DIST := dist
 # The Mac this is run on: builds the bundle you can actually launch to test.
 HOSTRID := osx-$(shell uname -m | sed 's/x86_64/x64/')
 
-.PHONY: all test run build package release clean
+.PHONY: all test run gallery build package release clean
 
 all: test build
 
@@ -15,6 +15,12 @@ test:
 
 run:
 	dotnet run --project $(APP)
+
+# The appearance workbench: every button, text style, field and colour token on
+# one page, with sliders and hex boxes that move the real app while it runs.
+# Copy the numbers it prints into Style.cs or Palette.cs.
+gallery:
+	dotnet run --project $(APP) -- --gallery
 
 build:
 	dotnet build $(SLN) -c Release --nologo
