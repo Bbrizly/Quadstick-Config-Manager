@@ -3390,17 +3390,63 @@ public partial class MainWindow : Window
     }
 
     // A tinted, rounded column header used by both the bindings and preferences
-    // header rows.
-    static Control Swatch(string text, double width, string tintKey)
+    // header rows. No width of its own: the row's columns own that.
+    static Control Swatch(string text, string tintKey)
     {
         var border = new Border
         {
-            Width = width, CornerRadius = new Avalonia.CornerRadius(5),
+            CornerRadius = new Avalonia.CornerRadius(5),
             Padding = new Avalonia.Thickness(8, 4),
-            Child = new TextBlock { Text = text, FontWeight = FontWeight.Bold, FontSize = Size("SmallSize") },
+            Child = new TextBlock
+            {
+                Text = text, FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"),
+                TextWrapping = TextWrapping.Wrap,
+            },
         };
         BindBrush(border, Border.BackgroundProperty, tintKey);
         return border;
+    }
+
+    // Every list row lays its cells on one set of columns, so a cell always
+    // sits under its own header. The cells that can give ground are a share of
+    // the row rather than a pixel count, because the row has to fit whatever
+    // width the window has: scrolling sideways to reach a column is a thing a
+    // mouth stick cannot reasonably do, and at 125% interface scale the old
+    // fixed widths ran off the edge of a full-screen window.
+    static Grid ListGrid(string columns) => new()
+    { ColumnDefinitions = new ColumnDefinitions(columns) };
+
+    // A round icon button, and the gap between two of them stacked. Written
+    // down because the columns that hold them have to be a fixed size: an Auto
+    // column is only as wide as the row that fills it, so a row with two
+    // buttons side by side and a row with them stacked would share out the
+    // remaining width differently and their cells would stop lining up.
+    const double IconButtonSize = 40; // Button.icon, App.axaml
+    const double IconButtonGap = 6;
+
+    // The gap between cells, which At() puts on the cell and every fixed
+    // column has to allow for: a column narrower than the cell plus its margin
+    // grows to fit, and a column that grows in some rows and not others is the
+    // thing this whole layout exists to avoid.
+    const double CellGap = 8;
+    static double Fixed(double content) => content + CellGap;
+
+    // handle, output, function, inputs, add/delete, note, up, down.
+    static string BindingColumns =>
+        $"{RowNumberWidth + 4},2.2*,1.8*,2.4*,{Fixed(IconButtonSize * 2 + IconButtonGap)},2*,{Fixed(IconButtonSize)},{Fixed(IconButtonSize)}";
+
+    // Puts a cell in its column, with the gap that used to be the panel's
+    // Spacing. Added to whatever margin the cell already carries, and called
+    // once per cell.
+    static Control At(Control c, int column)
+    {
+        Grid.SetColumn(c, column);
+        if (column > 0)
+        {
+            var m = c.Margin;
+            c.Margin = new Avalonia.Thickness(m.Left + CellGap, m.Top, m.Right, m.Bottom);
+        }
+        return c;
     }
 
     // How wide the row-number column is, in RowNumberLabel and its matching
@@ -3638,18 +3684,18 @@ public partial class MainWindow : Window
 
     Control HeaderRow()
     {
-        var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(RowNumberHeaderSpacer());
-        p.Children.Add(Swatch("Output (game button)", 220, OutputTint));
-        p.Children.Add(Swatch("Function (behavior)", 180, FunctionTint));
-        p.Children.Add(Swatch("Inputs (sips, puffs, joystick)", 240, InputTint));
+        var p = ListGrid(BindingColumns);
+        p.Children.Add(At(RowNumberHeaderSpacer(), 0));
+        p.Children.Add(At(Swatch("Output (game button)", OutputTint), 1));
+        p.Children.Add(At(Swatch("Function (behavior)", FunctionTint), 2));
+        p.Children.Add(At(Swatch("Inputs (sips, puffs, joystick)", InputTint), 3));
         return p;
     }
 
     Control BindingRow(Binding b, int number)
     {
-        var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(DragHandle(b, number));
+        var p = ListGrid(BindingColumns);
+        p.Children.Add(At(DragHandle(b, number), 0));
         WireRowDrop(p, b);
         _rowPanels[b.Row] = p;
         PaintRow(b.Row);
@@ -3657,9 +3703,9 @@ public partial class MainWindow : Window
         // against the taller stack instead of stretching or hugging the top.
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
         var outputs = OutputsFor(CurrentSheet!);
-        p.Children.Add(Mid(ListPickerCell(b.Row, 0, OutputFieldValue(b), 220, outputs.Options, $"Output for row {b.Row}", OutputTint, outputs.Catalog, "an output",
-            picked => CommitOutputFromList(b, outputs, picked))));
-        p.Children.Add(Mid(ListPickerCell(b.Row, 1, b.Function, 180, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint, null, "a function")));
+        p.Children.Add(At(Mid(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, $"Output for row {b.Row}", OutputTint, outputs.Catalog, "an output",
+            picked => CommitOutputFromList(b, outputs, picked))), 1));
+        p.Children.Add(At(Mid(ListPickerCell(b.Row, 1, b.Function, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint, null, "a function")), 2));
 
         // A mode row whose output is a setting name is not a binding: the
         // device skips column B and reads column C as the setting's VALUE.
@@ -3674,14 +3720,10 @@ public partial class MainWindow : Window
             var prefValue = _file!.GetCell(b.Row, 2);
             bool prefTyped = prefDef is not null && CanRepresent(prefDef, prefValue, 2);
             var prefCell = PrefsValueCell(b, prefTyped ? prefDef : null, 2);
-            // The value control is narrower than an input picker, and this row
-            // has no "add another input" button. Both gaps are held open, or
-            // the note, chevrons and delete on this one row sit a hundred
-            // pixels left of every other row's and the eye loses the column.
-            p.Children.Add(Mid(new Border
-            {
-                Width = 240, HorizontalAlignment = HorizontalAlignment.Left, Child = prefCell,
-            }));
+            // The value sits in the inputs column, because that is the column
+            // the device reads it from. It keeps that column's whole width so
+            // the note, chevrons and delete stay lined up with every other row.
+            p.Children.Add(At(Mid(prefCell), 3));
             // The gap where "add another input" sits on every other row, held
             // open by the button itself rather than by a guessed width, so it
             // stays right if the icon or the padding ever changes. Invisible
@@ -3698,12 +3740,18 @@ public partial class MainWindow : Window
                 Children = { ghost },
             };
             RowTail(p, b, prefButtons);
-            // The way to a value the manager's own slider will not reach, and
-            // the sentence explaining what the setting does. The settings sheet
-            // has carried both for every row; a mode override had neither.
-            if (prefDef is null) return p;
-            var prefInfo = PreferenceInfoLine(b, prefDef, prefTyped ? prefCell : null, 2);
-            return prefInfo is null ? p : new StackPanel { Spacing = 4, Children = { p, prefInfo } };
+            // Under the row, not at the end of it: a badge in the row would
+            // need a column of its own that every other row leaves empty, and
+            // an empty column is what knocks the cells out from under their
+            // headers. The way to a value the manager's own slider will not
+            // reach, and the sentence explaining what the setting does, follow
+            // it. The settings sheet has carried both for every row; a mode
+            // override had neither.
+            var under = new StackPanel { Spacing = 4, Children = { p, ScopeBadge(b) } };
+            if (prefDef is null) return under;
+            if (PreferenceInfoLine(b, prefDef, prefTyped ? prefCell : null, 2) is { } prefInfo)
+                under.Children.Add(prefInfo);
+            return under;
         }
 
         // Extra inputs go UNDER the first one. Sideways growth forced a
@@ -3714,9 +3762,10 @@ public partial class MainWindow : Window
         {
             // Write to each input's REAL column (inputs may have gaps in C..J).
             int col = i < b.InputCols.Count ? b.InputCols[i] : FirstFreeInputColumn(b);
-            var line = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-            line.Children.Add(ListPickerCell(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "", 240,
-                InputSuggestions, $"Input {i + 1} for row {b.Row}", InputTint, InputCatalog, "an input"));
+            // The picker takes the column, the remove control sits beside it.
+            var line = ListGrid("*,Auto");
+            line.Children.Add(At(ListPickerCell(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "",
+                InputSuggestions, $"Input {i + 1} for row {b.Row}", InputTint, InputCatalog, "an input"), 0));
             // A round remove control beside each real input, so any input
             // can be taken out (not just emptied, and not just the last one).
             if (b.Inputs.Count > 1 && i < b.Inputs.Count)
@@ -3735,11 +3784,11 @@ public partial class MainWindow : Window
                         { border.BringIntoView(); (border.Child as Control)?.Focus(); }
                     });
                 };
-                line.Children.Add(Mid(rmv));
+                line.Children.Add(At(Mid(rmv), 1));
             }
             inputsBox.Children.Add(line);
         }
-        p.Children.Add(inputsBox);
+        p.Children.Add(At(inputsBox, 3));
 
         // One input: plus and trash side by side. More than one: they stack
         // into one column so the per-input trashes never push the note and
@@ -3757,12 +3806,13 @@ public partial class MainWindow : Window
             addInput.Click += (_, _) =>
             {
                 // Add the cell directly; the file only changes when a value is committed.
-                var newBox = ListPickerCell(b.Row, nextCol, "", 240, InputSuggestions,
+                // In its own line, on the same columns as the committed inputs,
+                // so an empty picker lines up with the ones above it.
+                var newBox = ListPickerCell(b.Row, nextCol, "", InputSuggestions,
                     $"Input {nextCol - 1} for row {b.Row}", InputTint, InputCatalog, "an input");
-                // Fixed width + default Stretch centers it against the wider
-                // committed lines (box + trash); pin it to the same left edge.
-                newBox.HorizontalAlignment = HorizontalAlignment.Left;
-                inputsBox.Children.Add(newBox);
+                var newLine = ListGrid("*,Auto");
+                newLine.Children.Add(At(newBox, 0));
+                inputsBox.Children.Add(newLine);
                 AnimateIn(newBox);
                 nextCol++;
                 while (nextCol < 10 && b.InputCols.Contains(nextCol)) nextCol++; // skip occupied cells
@@ -3780,7 +3830,7 @@ public partial class MainWindow : Window
     // delete, the note, the reorder chevrons, and the scope badge on a settings
     // row. Shared because a preference override row has no inputs to add and
     // still has to end the same way, lined up under the same headers.
-    void RowTail(StackPanel p, Binding b, StackPanel rowButtons)
+    void RowTail(Grid p, Binding b, StackPanel rowButtons)
     {
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
 
@@ -3790,19 +3840,18 @@ public partial class MainWindow : Window
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
         del.Click += (_, _) => DeleteListRow(b);
         rowButtons.Children.Add(del);
-        p.Children.Add(rowButtons);
+        p.Children.Add(At(rowButtons, 4));
 
+        // The note wraps inside its column and grows the row taller, which is
+        // the trade the whole layout makes: taller rows over a row that runs
+        // off the side of the window.
         var note = NoteBox(b.Row, NoteColumn, $"Note for row {b.Row}. Saved in the file, ignored by the QuadStick");
-        // p is a horizontal StackPanel with unbounded width, so without a
-        // fixed Width the wrapped note would just grow sideways forever
-        // instead of wrapping. The fixed width is what lets it wrap and
-        // grow the row taller instead.
-        note.Width = 200;
-        p.Children.Add(Mid(note));
+        p.Children.Add(At(Mid(note), 5));
 
         // Reorder within the mode. Both buttons always render (disabled at the
         // edges) so the click targets stay put while a row is walked up or down.
         int rowIndex = CurrentSheet!.Bindings.IndexOf(b);
+        int column = 6;
         foreach (var (delta, word, angle) in new[] { (-1, "up", 180.0), (+1, "down", 0.0) })
         {
             var move = IconButton("IconChevron", $"Move row {b.Row} {word}");
@@ -3811,20 +3860,22 @@ public partial class MainWindow : Window
             move.Tag = (word, b.Row);
             move.IsEnabled = rowIndex + delta >= 0 && rowIndex + delta < CurrentSheet!.Bindings.Count;
             move.Click += (_, _) => MoveListRow(b, delta);
-            p.Children.Add(Mid(move));
+            p.Children.Add(At(Mid(move), column++));
         }
+    }
 
-        // A mode row whose output is a setting name is a per-mode override, so
-        // it says so. Last in the row, after the chevrons, so the columns of
-        // every other row stay lined up under their headers.
-        if (!IsModePreferenceOverride(b)) return;
+    // A mode row whose output is a setting name is a per-mode override, so it
+    // says so, on its own line under the row.
+    Control ScopeBadge(Binding b)
+    {
         var badge = new TextBlock
         {
             Text = ModeScope, FontSize = Size("SmallSize"), Classes = { "secondary" },
-            TextWrapping = TextWrapping.Wrap, Width = 130,
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Avalonia.Thickness(RowNumberWidth + 4, 0, 0, 0),
         };
         AutomationProperties.SetName(badge, $"Row {b.Row} scope: {ModeScope}");
-        p.Children.Add(Mid(badge));
+        return badge;
     }
 
     // Swap this row with its neighbor in the same mode's binding list. After
@@ -3846,8 +3897,9 @@ public partial class MainWindow : Window
         RestoreListScroll(off, () =>
         {
             var key = (delta < 0 ? "up" : "down", destRow);
-            var moveButton = RowsPanel.Children.OfType<StackPanel>()
-                .SelectMany(row => row.Children.OfType<Button>())
+            // Down the whole panel, not one level into each row: a row is a
+            // grid, and a settings-override row wraps that grid in a stack.
+            var moveButton = RowsPanel.GetVisualDescendants().OfType<Button>()
                 .FirstOrDefault(x => x.Tag is ValueTuple<string, int> t && t.Equals(key));
             if (moveButton is { IsEnabled: true })
             { moveButton.BringIntoView(); moveButton.Focus(); }
@@ -3889,7 +3941,7 @@ public partial class MainWindow : Window
     // alsoRebuild lets a caller ask for the same deferred row rebuild on its own
     // terms (old value, new value). A preference name uses it: a different
     // setting needs a different control under it.
-    Control SuggestBox(int row, int col, string value, double width, List<string> suggestions,
+    Control SuggestBox(int row, int col, string value, List<string> suggestions,
                        string accessibleName, string tintKey, Func<string, string, bool>? alsoRebuild = null)
     {
         var box = new AutoCompleteBox
@@ -3957,7 +4009,6 @@ public partial class MainWindow : Window
             BorderThickness = new Avalonia.Thickness(3),
             BorderBrush = Brushes.Transparent,
             CornerRadius = new Avalonia.CornerRadius(5),
-            Width = width,
         };
         _cellBorders[$"{(char)('A' + col)}{row}"] = wrapper;
         return wrapper;
@@ -4626,7 +4677,7 @@ public partial class MainWindow : Window
     // uses it: a pick there writes two cells, and the value on screen is the
     // row's action name, not the cell's text, so the usual no-op guard would
     // swallow a pick that only clears the name.
-    Control ListPickerCell(int row, int col, string value, double width, IReadOnlyList<string> options,
+    Control ListPickerCell(int row, int col, string value, IReadOnlyList<string> options,
                            string accessibleName, string tintKey, TokenCatalog? catalog, string pickWord,
                            Action<string>? setValue = null)
     {
@@ -4637,7 +4688,6 @@ public partial class MainWindow : Window
             BorderThickness = new Avalonia.Thickness(3),
             BorderBrush = Brushes.Transparent,
             CornerRadius = new Avalonia.CornerRadius(5),
-            Width = width,
         };
         var key = $"{(char)('A' + col)}{row}";
         _cellBorders[key] = wrapper;

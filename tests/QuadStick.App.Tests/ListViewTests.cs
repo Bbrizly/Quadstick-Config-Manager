@@ -18,6 +18,113 @@ namespace QuadStick.App.Tests;
 
 public class ListViewTests
 {
+    // The one thing the row layout owes a mouth-stick user: a row that fits the
+    // window it is in. Panning sideways to reach the note or the delete button
+    // is not a movement this app can ask for, and the fixed-width cells used to
+    // need 1102px on a bindings sheet, so a narrowed window, a laptop screen or
+    // 125% interface scale all put a column out of reach.
+    //
+    // Pinned at the narrowest the window can be, on both kinds of sheet, and
+    // with a mode override row, whose value cell is built by a different path.
+    [AvaloniaFact]
+    public void A_row_fits_the_window_however_narrow_it_is()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip,left_puff\n" +
+            "square,normal,hard_sip\n" +
+            "sip_threshold,,40\n" +
+            "Preferences\n" +
+            "\n" +
+            "Preference,Value,Units\n" +
+            "volume,40,percent\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        var scroll = w.GetVisualDescendants().OfType<ScrollViewer>().First(x => x.Name == "GridScroll");
+        foreach (var sheet in new[] { 0, 1 })
+        {
+            w.SelectSheetForPreview(sheet);
+            foreach (var width in new double[] { 1180, 900, 760 })
+            {
+                w.Width = width;
+                Dispatcher.UIThread.RunJobs();
+                w.UpdateLayout();
+                Assert.True(scroll.Extent.Width <= scroll.Viewport.Width,
+                    $"sheet {sheet} at {width}: needs {scroll.Extent.Width}, has {scroll.Viewport.Width}");
+            }
+        }
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // And a row that fits is only half of it: every row has to lay its cells on
+    // the same columns, or the header stops naming what is under it. The cells
+    // that hold buttons are the ones that used to break this, being as wide as
+    // whichever row happened to fill them most.
+    [AvaloniaFact]
+    public void Every_row_puts_its_cells_in_the_same_columns()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip,left_puff\n" +   // two inputs: the buttons stack
+            "square,normal,hard_sip\n" +   // one: they sit side by side
+            "sip_threshold,,40\n" +        // an override row, wrapped in a stack
+            "Preferences\n" +
+            "\n" +
+            "Preference,Value,Units\n" +
+            "volume,40,percent\n" +        // a spinner, whose own minimum is wide
+            "made_up_setting,x\n");        // and a plain box beside it
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        var rows = w.GetVisualDescendants().OfType<StackPanel>().First(p => p.Name == "RowsPanel");
+        // Narrow too: a squeezed column is where a control's own minimum size
+        // can push past its share and drag the row out of line again.
+        foreach (var sheet in new[] { 0, 1 })
+        {
+            w.SelectSheetForPreview(sheet);
+            foreach (var width in new double[] { 1180, 760 })
+            {
+                w.Width = width;
+                Dispatcher.UIThread.RunJobs();
+                w.UpdateLayout();
+                // A row that carries a heading, a scope badge or an explaining
+                // line wraps its grid in a stack, so look one level in too.
+                static Grid? RowGrid(Control c) =>
+                    c as Grid ?? (c as StackPanel)?.Children.OfType<Grid>().FirstOrDefault();
+                var widths = rows.Children.OfType<Control>().Select(RowGrid).OfType<Grid>()
+                    .Select(g => string.Join(",", g.ColumnDefinitions.Select(c => c.ActualWidth)))
+                    .Distinct().ToList();
+                Assert.Single(widths); // the header and every row, one set of columns
+            }
+        }
+
+        file.Dirty = false;
+        w.Close();
+    }
+
     // "Add row" on a Preferences sheet appeared to do nothing: the row it wrote
     // was blank in every column, and a blank row is where a sheet ends, so the
     // reparse threw it away before the list was rebuilt.
@@ -456,6 +563,10 @@ public class ListViewTests
             "x,normal,lip,left_puff\n");
         w.LoadProfile(file);
         w.SetDeviceViewForPreview(false);
+        // Settle first. Cells share the window's width now, so a measurement
+        // taken before the window has finished sizing reads a narrower row
+        // than the one on screen a moment later.
+        Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
         Button Box(string name) => w.GetVisualDescendants().OfType<Button>()

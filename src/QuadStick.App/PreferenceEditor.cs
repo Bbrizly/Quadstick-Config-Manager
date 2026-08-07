@@ -113,14 +113,18 @@ public partial class MainWindow
     string NameColumn => Infrared ? "Command" : "Setting";
     string ValueColumn => Infrared ? "Hex code" : "Value";
 
+    // handle, name, value, units, description, delete.
+    static string PrefsColumns =>
+        $"{RowNumberWidth + 4},3*,1.6*,1*,2.4*,{Fixed(IconButtonSize)}";
+
     Control PrefsHeaderRow()
     {
-        var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(RowNumberHeaderSpacer());
-        p.Children.Add(Swatch(NameColumn, 300, OutputTint));
-        p.Children.Add(Swatch(ValueColumn, PrefsValueWidth, FunctionTint));
-        p.Children.Add(Swatch(Infrared ? "Notes" : "Units", 100, InputTint));
-        p.Children.Add(Swatch(Infrared ? "" : "Description", 240, InputTint));
+        var p = ListGrid(PrefsColumns);
+        p.Children.Add(At(RowNumberHeaderSpacer(), 0));
+        p.Children.Add(At(Swatch(NameColumn, OutputTint), 1));
+        p.Children.Add(At(Swatch(ValueColumn, FunctionTint), 2));
+        p.Children.Add(At(Swatch(Infrared ? "Notes" : "Units", InputTint), 3));
+        p.Children.Add(At(Swatch(Infrared ? "" : "Description", InputTint), 4));
         if (CurrentSheet?.Type != SheetType.Preferences) return p;
 
         // The banner rides inside the header control rather than as its own
@@ -140,12 +144,10 @@ public partial class MainWindow
         };
     }
 
-    const double PrefsValueWidth = 160;
-
     Control PrefsRow(Binding b, int number)
     {
-        var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(DragHandle(b, number));
+        var p = ListGrid(PrefsColumns);
+        p.Children.Add(At(DragHandle(b, number), 0));
         WireRowDrop(p, b);
         _rowPanels[b.Row] = p;
         PaintRow(b.Row);
@@ -158,23 +160,22 @@ public partial class MainWindow
 
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
 
-        p.Children.Add(PrefsNameCell(b, def));
+        p.Children.Add(At(PrefsNameCell(b, def), 1));
         var valueCell = PrefsValueCell(b, typed ? def : null, 1);
-        p.Children.Add(Mid(valueCell));
+        p.Children.Add(At(Mid(valueCell), 2));
         // The official sheet annotates each preference with Units (column C)
         // and a Description (column D). The device ignores both, but hiding
         // them here hid the tester's own notes about what each setting does.
-        p.Children.Add(Mid(SuggestBox(b.Row, 2, _file!.GetCell(b.Row, 2), 100, NoSuggestions,
-            $"{(Infrared ? "Notes" : "Units")} for row {b.Row}", InputTint)));
+        p.Children.Add(At(Mid(SuggestBox(b.Row, 2, _file!.GetCell(b.Row, 2), NoSuggestions,
+            $"{(Infrared ? "Notes" : "Units")} for row {b.Row}", InputTint)), 3));
         var desc = NoteBox(b.Row, 3,
             $"{(Infrared ? "Notes" : "Description")} for row {b.Row}. Saved in the file, ignored by the QuadStick");
-        desc.Width = 240;
-        p.Children.Add(Mid(desc));
+        p.Children.Add(At(Mid(desc), 4));
         var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
         ToolTip.SetTip(del, "Delete this whole row");
         AutomationProperties.SetName(del, $"Delete row {b.Row}");
         del.Click += (_, _) => DeleteListRow(b);
-        p.Children.Add(Mid(del));
+        p.Children.Add(At(Mid(del), 5));
 
         var heading = def is null ? null : CategoryHeadingFor(b, def);
         var info = def is null ? null : PreferenceInfoLine(b, def, typed ? valueCell : null, 1);
@@ -217,7 +218,7 @@ public partial class MainWindow
     // The friendly label sits above it for people who do not think in tokens.
     Control PrefsNameCell(Binding b, PreferenceDefinition? def)
     {
-        var box = SuggestBox(b.Row, 0, b.Output, 300, PreferenceNameSuggestions,
+        var box = SuggestBox(b.Row, 0, b.Output, PreferenceNameSuggestions,
             $"{NameColumn} name for row {b.Row}", OutputTint,
             (before, after) => Definition(before) != Definition(after));
         if (def is null) return box;
@@ -225,9 +226,9 @@ public partial class MainWindow
         var label = new TextBlock
         {
             Text = def.Label, FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"),
-            // Capped at the Setting column's width so a long label wraps
-            // instead of pushing the Value column out from under its header.
-            TextWrapping = TextWrapping.Wrap, MaxWidth = 300,
+            // Wraps inside the Setting column rather than pushing the Value
+            // column out from under its header.
+            TextWrapping = TextWrapping.Wrap,
         };
         AutomationProperties.SetName(label, $"{def.Label}, written as {def.Name}");
         return new StackPanel { Spacing = 2, Children = { label, box } };
@@ -269,7 +270,6 @@ public partial class MainWindow
             BorderThickness = new Avalonia.Thickness(3),
             BorderBrush = Brushes.Transparent,
             CornerRadius = new Avalonia.CornerRadius(5),
-            Width = PrefsValueWidth,
         };
         _cellBorders[$"{(char)('A' + col)}{b.Row}"] = wrapper;
         wrapper.Child = def is null

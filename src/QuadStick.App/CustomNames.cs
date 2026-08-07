@@ -69,10 +69,10 @@ public partial class MainWindow
 
     void BuildCustomNameRows()
     {
-        var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        header.Children.Add(RowNumberHeaderSpacer());
-        header.Children.Add(Swatch("Output (real button)", 220, OutputTint));
-        header.Children.Add(Swatch("Your name for it", 240, FunctionTint));
+        var header = ListGrid(CustomNameColumns);
+        header.Children.Add(At(RowNumberHeaderSpacer(), 0));
+        header.Children.Add(At(Swatch("Output (real button)", OutputTint), 1));
+        header.Children.Add(At(Swatch("Your name for it", FunctionTint), 2));
         RowsPanel.Children.Add(header);
 
         var rows = CustomNameRows();
@@ -90,28 +90,32 @@ public partial class MainWindow
             });
     }
 
+    // handle, output, your name, delete, where it is used.
+    static string CustomNameColumns =>
+        $"{RowNumberWidth + 4},2.2*,2.4*,{Fixed(IconButtonSize)},1.4*";
+
     Control CustomNameRow(string name, string token, int number)
     {
-        var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        p.Children.Add(RowNumberLabel(number));
+        var p = ListGrid(CustomNameColumns);
+        p.Children.Add(At(RowNumberLabel(number), 0));
 
         // The plain output picker, not the profile one: a name cannot stand for
         // another name.
         var wrapper = new Border
         {
             BorderThickness = new Thickness(3), BorderBrush = Brushes.Transparent,
-            CornerRadius = new CornerRadius(5), Width = 220,
+            CornerRadius = new CornerRadius(5),
             VerticalAlignment = VerticalAlignment.Center,
         };
         // Humanize, not TokenLabel: the raw/Xbox word toggle belongs to Device
         // View, and this table must not change wording when someone flips it.
-        p.Children.Add(PickerCell(wrapper, token, OutputSuggestions, Humanize,
+        p.Children.Add(At(PickerCell(wrapper, token, OutputSuggestions, Humanize,
             $"Output that {name} stands for", OutputTint, OutputCatalog.Catalog, "an output",
-            picked => RetargetCustomName(name, picked)));
+            picked => RetargetCustomName(name, picked)), 1));
 
         var box = new TextBox
         {
-            Text = name, Width = 240, MaxLength = ProfileFile.MaxActionName,
+            Text = name, MaxLength = ProfileFile.MaxActionName,
             FontSize = Size("BodySize"), VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(box, token.Length > 0
@@ -119,7 +123,7 @@ public partial class MainWindow
         void Commit() { if (!_rebuildingRows) RenameCustomName(name, box.Text ?? ""); }
         box.LostFocus += (_, _) => Commit();
         box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
-        p.Children.Add(box);
+        p.Children.Add(At(box, 2));
 
         var del = new Button
         {
@@ -129,15 +133,15 @@ public partial class MainWindow
         ToolTip.SetTip(del, "Remove this name");
         AutomationProperties.SetName(del, $"Remove the name {name}");
         del.Click += (_, _) => DeleteCustomName(name);
-        p.Children.Add(del);
+        p.Children.Add(At(del, 3));
 
         int used = UsedBy(name);
-        p.Children.Add(new TextBlock
+        p.Children.Add(At(new TextBlock
         {
             Text = used == 0 ? "not used yet" : $"on {used} mapping{(used == 1 ? "" : "s")}",
             FontSize = Size("SmallSize"), Classes = { "muted" },
             VerticalAlignment = VerticalAlignment.Center,
-        });
+        }, 4));
         return p;
     }
 
