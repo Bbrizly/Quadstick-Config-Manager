@@ -125,6 +125,43 @@ public class ListViewTests
         w.Close();
     }
 
+    // Rows sat in 6px of daylight each, which cost a row of height every nine
+    // rows and made each one read as its own card. They touch now, parted by a
+    // hairline, so the list reads as a table and more of it fits on a screen.
+    [AvaloniaFact]
+    public void Rows_touch_each_other_with_a_line_between()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "square,normal,hard_sip\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        var rows = w.GetVisualDescendants().OfType<StackPanel>().First(p => p.Name == "RowsPanel");
+        var children = rows.Children.OfType<Control>().ToList();
+        for (int i = 1; i < children.Count; i++)
+            Assert.Equal(children[i - 1].Bounds.Bottom, children[i].Bounds.Y);
+
+        // And the line is really there, spanning the row it closes.
+        var line = children.Last().GetVisualDescendants().OfType<Border>()
+            .First(b => b.Height == 1);
+        Assert.False(line.IsHitTestVisible);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
     // "Add row" on a Preferences sheet appeared to do nothing: the row it wrote
     // was blank in every column, and a blank row is where a sheet ends, so the
     // reparse threw it away before the list was rebuilt.

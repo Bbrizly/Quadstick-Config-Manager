@@ -250,7 +250,7 @@
                  sideways to reach a column is not something a mouth stick can
                  reasonably do, so the row wraps and grows taller instead. -->
             <ScrollViewer x:Name="GridScroll" HorizontalScrollBarVisibility="Disabled">
-              <StackPanel x:Name="RowsPanel" Spacing="6"/>
+              <StackPanel x:Name="RowsPanel"/>
             </ScrollViewer>
             <!-- Appears only while rows are selected: how many, and what can
                  be done to them. Floats over the bottom-left corner so

@@ -3413,8 +3413,22 @@ public partial class MainWindow : Window
     // width the window has: scrolling sideways to reach a column is a thing a
     // mouth stick cannot reasonably do, and at 125% interface scale the old
     // fixed widths ran off the edge of a full-screen window.
-    static Grid ListGrid(string columns) => new()
-    { ColumnDefinitions = new ColumnDefinitions(columns) };
+    // Rows touch, with a hairline between them, the way a spreadsheet's do.
+    // The gap they used to sit in cost a row's worth of height every nine rows
+    // and made each row read as its own card rather than a line in a table.
+    static Grid ListGrid(string columns)
+    {
+        var g = new Grid { ColumnDefinitions = new ColumnDefinitions(columns) };
+        var line = new Border
+        {
+            Height = 1, VerticalAlignment = VerticalAlignment.Bottom,
+            IsHitTestVisible = false, // never in front of the cell above it
+        };
+        Grid.SetColumnSpan(line, g.ColumnDefinitions.Count);
+        BindBrush(line, Border.BackgroundProperty, "SurfaceBorder");
+        g.Children.Add(line);
+        return g;
+    }
 
     // A round icon button, and the gap between two of them stacked. Written
     // down because the columns that hold them have to be a fixed size: an Auto
@@ -3499,7 +3513,9 @@ public partial class MainWindow : Window
         bool sel = _selectedRows.Contains(row);
         if (sel) BindBrush(p, Panel.BackgroundProperty, "SelectionTint");
         else p.ClearValue(Panel.BackgroundProperty);
-        if (p.Children[0] is Border h && h.Tag is string baseName)
+        // By tag, not by position: a row grid also holds the hairline that
+        // separates it from the next one.
+        if (p.Children.OfType<Border>().FirstOrDefault(x => x.Tag is string) is { Tag: string baseName } h)
             AutomationProperties.SetName(h,
                 $"{baseName}{(sel ? ", selected" : "")}. Space selects, drag reorders");
     }
@@ -3523,7 +3539,7 @@ public partial class MainWindow : Window
         if (CurrentSheet is { } sh)
             for (int i = 0; i < sh.Bindings.Count && firstIndex < 0; i++)
                 if (_selectedRows.Contains(sh.Bindings[i].Row)) firstIndex = i;
-        double gap = rows.Sum(r => _rowPanels.TryGetValue(r, out var rp) ? rp.Bounds.Height + 6 : 0);
+        double gap = rows.Sum(r => _rowPanels.TryGetValue(r, out var rp) ? rp.Bounds.Height : 0);
         if (!DeviceContainer.IsVisible) // list view: every doomed row gets a send-off
             foreach (var r in rows.Take(12)) // ponytail: 12 ghosts max, a mass delete reads fine without full theater
                 if (_rowPanels.TryGetValue(r, out var doomed)) GhostRowAway(doomed, ListOverlay);
@@ -3915,7 +3931,7 @@ public partial class MainWindow : Window
     void DeleteListRow(Binding b)
     {
         int deletedIndex = CurrentSheet!.Bindings.IndexOf(b);
-        double gap = _rowPanels.TryGetValue(b.Row, out var gone) ? gone.Bounds.Height + 6 : 0;
+        double gap = _rowPanels.TryGetValue(b.Row, out var gone) ? gone.Bounds.Height : 0;
         if (gone is not null) GhostRowAway(gone, ListOverlay); // snapshot while still attached
         var off = GridScroll.Offset;
         _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
