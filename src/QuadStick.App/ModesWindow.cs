@@ -177,6 +177,11 @@ public class ModesWindow : Window
     Control Row(ModeSheet sheet, int sheetIndex, int position, int total, int ordinal)
     {
         bool isPrefs = sheet.Type == SheetType.Preferences;
+        // Two modes are allowed to share a name, and the device tells them apart
+        // by their order alone. The number is not repeated into every button
+        // label here because the row already carries it twice: the position sits
+        // in the first column, and the name box announces itself as "Name of
+        // mode N" and takes focus before any of these buttons.
         var name = isPrefs ? "the preferences sheet"
             : sheet.ModeName.Length > 0 ? sheet.ModeName : $"Mode {ordinal}";
 

@@ -154,6 +154,117 @@ public class ImportReviewWindowTests
         Done(owner, review);
     }
 
+    // The tab QMP writes for you to read. It has never been importable and the
+    // app used to pass over it without a word, which is half of what a real
+    // user reported as "reference card sheet will not import".
+    static SkippedTab ReferenceCard() =>
+        new("Reference Card", Array.Empty<string[]>(), SkippedTabKind.Helper);
+
+    [AvaloniaFact]
+    public void A_helper_tab_is_named_as_a_fact_and_never_offered_as_a_mode()
+    {
+        var (owner, _, review) = Open(CleanCsv, new[] { ReferenceCard() });
+
+        Assert.True(Says(review, "1 tab is not profile data"));
+        Assert.True(Says(review, "\"Reference Card\""));
+        Assert.True(Says(review, "never loads it"));
+        // No decision, because there is no mode here to take back. Offering one
+        // would invent a mode out of documentation.
+        Assert.Null(Find(review, "Add it as a working mode"));
+        Assert.Null(Find(review, "Leave it out"));
+
+        Done(owner, review);
+    }
+
+    // Every workbook QMP writes carries a Reference Card. If one counted against
+    // the import, no import would ever be clean and the word would stop meaning
+    // anything.
+    [AvaloniaFact]
+    public void A_helper_tab_does_not_stop_an_import_from_being_clean()
+    {
+        var (owner, _, review) = Open(CleanCsv, new[] { ReferenceCard() });
+
+        Assert.True(Says(review, "came in clean"));
+
+        Done(owner, review);
+    }
+
+    // Two tabs, both named "Left  Joystick" in C1, which is the workbook a real
+    // user imported on 2026-08-01. Both modes come in and the device runs both;
+    // it counts modes by their order and never reads the name. The report was
+    // that only one had imported, because the list showed the same words twice
+    // and nothing else.
+    const string SameNameCsv =
+        "Profile Name,,Left  Joystick\r\ncrewmotorfest.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+        "dpad_N,normal,right_sip\r\n" +
+        "\r\n" +
+        "Profile Name,,Left  Joystick\r\n,,\r\nPlayStation Outputs,Function,usb\r\n" +
+        "dpad_S,normal,lip\r\n";
+
+    [AvaloniaFact]
+    public void Two_modes_sharing_a_name_are_numbered_and_the_repeat_is_explained()
+    {
+        var (owner, _, review) = Open(SameNameCsv);
+
+        Assert.True(Says(review, "2 modes"));
+        // The number is the only thing that tells them apart, so it leads.
+        Assert.True(Says(review, "Mode 1: Left  Joystick"));
+        Assert.True(Says(review, "Mode 2: Left  Joystick"));
+        // And the repeat is named, so the second one does not read as missing.
+        Assert.True(Says(review, "More than one mode is named"));
+        Assert.True(Says(review, "by their order in the file, not by their name"));
+
+        Done(owner, review);
+    }
+
+    // The note is for a real repeat only. Saying it on every import would teach
+    // people to skip the one place that explains the thing.
+    [AvaloniaFact]
+    public void Modes_with_their_own_names_are_still_numbered_but_not_explained()
+    {
+        var (owner, _, review) = Open(CleanCsv);
+
+        Assert.True(Says(review, "Mode 1: Walking"));
+        Assert.True(Says(review, "Mode 2: Driving"));
+        Assert.False(Says(review, "More than one mode is named"));
+
+        Done(owner, review);
+    }
+
+    // The firmware's dispatch loop increments its profile counter on "Profile"
+    // alone. "Preferences" and "Infrared" each run their own reader and leave
+    // the counter where it was, so an infrared sheet between two modes does not
+    // push the second one to three. Numbering it as a mode would have made
+    // every number under it name the wrong mode on the device, which is worse
+    // than not numbering at all.
+    const string InfraredCsv =
+        "Profile Name,,Walking\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+        "dpad_N,normal,right_sip\r\n" +
+        "\r\n" +
+        "Infrared,Samsung Most Models - Set #: 595,Comments\r\n" +
+        ",http://irdb.globalcache.com/\r\nCommand Name,Hex Code\r\n" +
+        "ir_tv_on_off,0000 006D 0000 0022 00AA 00AA\r\n" +
+        "\r\n" +
+        "Profile Name,,Driving\r\n,,\r\nPlayStation Outputs,Function,usb\r\n" +
+        "dpad_S,normal,lip\r\n";
+
+    [AvaloniaFact]
+    public void An_infrared_sheet_does_not_take_a_mode_number()
+    {
+        var (owner, _, review) = Open(InfraredCsv);
+
+        Assert.True(Says(review, "Mode 1: Walking"));
+        Assert.True(Says(review, "Mode 2: Driving"));
+        Assert.False(Says(review, "Mode 3"));
+        // Listed all the same. It came in, and a sheet that vanishes from this
+        // list is the exact reading the window exists to prevent.
+        Assert.True(Says(review, "Infrared commands"));
+        // And it is not a mode in the count either.
+        Assert.True(Says(review, "2 modes"));
+
+        Done(owner, review);
+    }
+
     [AvaloniaFact]
     public void Adding_a_skipped_tab_makes_it_a_real_mode_and_says_what_it_changed()
     {
@@ -270,6 +381,53 @@ public class ImportReviewWindowTests
         Assert.True(Says(review, "left_trigger"));
         Assert.True(Says(review, "dpad_N"));
         Assert.NotNull(Find(review, "Simple view"));
+
+        Done(owner, review);
+    }
+
+    // The advanced view draws each left-out tab under a heading that says why
+    // it was left out. A helper tab was never left out over its A1 and carries
+    // no cells, so that heading was a false reason above an empty grid offered
+    // as proof of it. Named once in the simple view is the whole story.
+    [AvaloniaFact]
+    public void The_advanced_view_does_not_blame_a_helper_tab_on_its_A1()
+    {
+        var (owner, _, review) = Open(AimCsv, new[] { ReferenceCard(), Dpad() });
+
+        Press(review, "Advanced");
+
+        Assert.False(Says(review, "\"Reference Card\", left out because cell A1"));
+        // The tab that really was left out over its A1 still says so.
+        Assert.True(Says(review, "\"Dpad\", left out because cell A1"));
+        Assert.True(Says(review, "dpad_N"));
+
+        Done(owner, review);
+    }
+
+    // The advanced view reuses its controls between rebuilds and only makes them
+    // again when the shape changes. It counted every skipped tab against the
+    // grids it had drawn, and it no longer draws helper tabs, so a reference
+    // card plus a repaired tab made the two numbers agree by accident: the tab
+    // was a mode now and was still on screen under "left out".
+    // Long enough that the advanced grid is already at its display cap, so the
+    // row count cannot notice the repair and the skipped-tab count is the only
+    // signal left. That is the case the count was getting wrong.
+    static string LongCsv() =>
+        "Profile Name,,Left joy\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+        string.Concat(Enumerable.Range(0, 500).Select(_ => "left_trigger,normal,mp_center_sip\r\n"));
+
+    [AvaloniaFact]
+    public void A_repaired_tab_leaves_the_advanced_view_even_with_a_helper_beside_it()
+    {
+        var (owner, file, review) = Open(LongCsv(), new[] { ReferenceCard(), Dpad() });
+
+        Press(review, "Advanced");
+        Assert.True(Says(review, "\"Dpad\", left out because cell A1"));
+
+        Press(review, "Add it as a working mode");
+
+        Assert.Equal(2, file.Document.Sheets.Count);
+        Assert.False(Says(review, "\"Dpad\", left out because cell A1"));
 
         Done(owner, review);
     }

@@ -352,4 +352,43 @@ public class PreferenceUiTests
         file.Dirty = false;
         w.Close();
     }
+
+    // An infrared sheet is the same shape as a preferences sheet, so it shares
+    // this editor, and it was borrowing the preferences words along with the
+    // layout: a hex code sat under "Value" with a "Units" column beside it.
+    // Reading a sheet correctly and then calling it something else is the same
+    // failure as not reading it, one step later.
+    [AvaloniaFact]
+    public void An_infrared_sheet_is_labelled_as_commands_not_as_settings()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Infrared,Samsung Most Models - Set #: 595,Comments\n" +
+            ",http://irdb.globalcache.com/\n" +
+            "Command Name,Hex Code\n" +
+            "ir_tv_on_off,0000 006D 0000 0022 00AA 00AA\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        var text = w.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text ?? "").ToList();
+        Assert.Contains("Command", text);
+        Assert.Contains("Hex code", text);
+        Assert.DoesNotContain("Setting", text);
+        Assert.DoesNotContain("Units", text);
+        // The rows follow the header, so the same words are read aloud.
+        var names = w.GetVisualDescendants().OfType<Control>()
+            .Select(AutomationProperties.GetName).Where(n => !string.IsNullOrEmpty(n)).ToList();
+        Assert.Contains(names, n => n!.StartsWith("Command name for row"));
+        Assert.Contains(names, n => n!.StartsWith("Hex code for row"));
+        Assert.DoesNotContain(names, n => n!.StartsWith("Setting name for row"));
+
+        file.Dirty = false;
+        w.Close();
+    }
 }

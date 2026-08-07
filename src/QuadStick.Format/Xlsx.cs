@@ -18,15 +18,36 @@ namespace QuadStick.Format;
 // name is cell C1, same as every other sheet.
 //
 // xlsx is a zip of XML, so this is stdlib only. No spreadsheet library.
-/// <summary>A tab that holds bindings but did not import, with the cells read
-/// from it. The device skips it for the same reason the app does, so this is
-/// not a parsing failure: it is a mode the user has already lost and does not
-/// know about.</summary>
-public sealed record SkippedTab(string Name, IReadOnlyList<string[]> Rows);
+/// <summary>Why a tab did not import. The two reasons need different words and
+/// different offers: one is a mode the user has lost, the other is a tab that
+/// was never a mode and never will be.</summary>
+public enum SkippedTabKind
+{
+    /// <summary>A1 does not say what kind of sheet this is, so neither the app
+    /// nor the device reads it. Repairing A1 turns it into a mode.</summary>
+    UnreadableA1,
+
+    /// <summary>A tab QMP and the Sheets add-on write as documentation, never
+    /// as profile data. Repairing it would invent a mode the user never had.
+    /// </summary>
+    Helper,
+}
+
+/// <summary>A tab that did not import, with the cells read from it. The device
+/// skips it for the same reason the app does, so this is not a parsing failure:
+/// it is either a mode the user has already lost and does not know about, or a
+/// tab that was never profile data. Silence is what makes both look like a bug,
+/// so both are reported.</summary>
+public sealed record SkippedTab(
+    string Name,
+    IReadOnlyList<string[]> Rows,
+    SkippedTabKind Kind = SkippedTabKind.UnreadableA1);
 
 public static class Xlsx
 {
-    // Never exported by QMP or the Sheets add-on, whatever their A1 says.
+    // The names QMP and the Sheets add-on give the tabs they write as
+    // documentation. A hint about what a tab holds, not a verdict: a tab whose
+    // A1 names a kind of sheet is a mode however it is titled.
     static readonly HashSet<string> HelperTabs = new(StringComparer.OrdinalIgnoreCase)
     { "Inputs", "Outputs", "Voice", "Reference Card" };
 
@@ -92,15 +113,27 @@ public static class Xlsx
     /// workbook; returns "" when it holds no profile tab at all.</summary>
     public static string ToCsv(Stream xlsx) => ToCsv(xlsx, out _);
 
-    /// <summary>As above, and <paramref name="skippedTabs"/> reports the tabs
-    /// that hold bindings but were not imported because their A1 does not say
-    /// what kind of sheet they are. Skipping them is correct, since the device
-    /// reads A1 the same way, but a caller has to be able to say so: one
+    /// <summary>As above, and <paramref name="skippedTabs"/> reports every tab
+    /// that did not import, of both kinds. Skipping them is correct, since the
+    /// device reads A1 the same way, but a caller has to be able to say so: one
     /// overwritten A1 costs the user a whole mode, and silence makes that look
-    /// like a parsing bug. The cells come back with the name so the caller can
-    /// show what was left behind and offer to repair A1, rather than only
-    /// naming the loss.</summary>
-    public static string ToCsv(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs)
+    /// like a parsing bug.
+    ///
+    /// <see cref="SkippedTabKind.UnreadableA1"/> tabs come back with their cells,
+    /// so the caller can show what was left behind and offer to repair A1 rather
+    /// than only naming the loss. <see cref="SkippedTabKind.Helper"/> tabs come
+    /// back by name only: they are documentation, there is nothing to offer, and
+    /// the caller's job is to stop the user hunting for a mode that was never
+    /// there.</summary>
+    public static string ToCsv(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs) =>
+        ToCsv(xlsx, out skippedTabs, out _);
+
+    /// <summary>As above, and <paramref name="limitation"/> is set when the
+    /// workbook's own bounds stopped the read before the last tab, so the
+    /// caller can say a partial import is partial. A tab that comes in short a
+    /// mode and is called clean is the worst thing this import can do, and the
+    /// bounds used to stop reading without a word.</summary>
+    public static string ToCsv(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs, out string? limitation)
     {
         // A half-downloaded workbook unzips but does not parse. Both are the
         // same thing to the caller: this file is not readable.
@@ -110,26 +143,91 @@ public static class Xlsx
         // the two import paths both catch InvalidDataException and neither
         // catches those, so a corrupt sheet took the app down instead of
         // saying it could not be read.
-        try { return Read(xlsx, out skippedTabs); }
+        try { return Read(xlsx, out skippedTabs, out limitation); }
         catch (System.Xml.XmlException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
         catch (FormatException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
         catch (OverflowException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
     }
 
-    static string Read(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs)
+    static string Read(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs, out string? limitation)
     {
         using var zip = new ZipArchive(xlsx, ZipArchiveMode.Read);
         var shared = SharedStrings(zip);
         var rows = new List<string[]>();
         var skipped = new List<SkippedTab>();
         int kept = 0;
-        foreach (var (name, part) in SheetParts(zip))
+
+        // Listed up front rather than read one at a time, so a tab that is
+        // never reached can still be counted. Names and part paths only, one
+        // past the cap so the cap itself can be seen, which keeps a workbook
+        // that lists a hundred thousand tabs from being listed a hundred
+        // thousand times.
+        var parts = SheetParts(zip).Take(MaxSheets + 1).ToList();
+        string? limit = null;
+        if (parts.Count > MaxSheets)
         {
-            if (HelperTabs.Contains(name.Trim())) continue;
-            var grid = Sheet(zip, part, shared);
+            limit = Truncated($"This spreadsheet has more than {MaxSheets} tabs, and we read the first "
+                + $"{MaxSheets}.", "Every tab past that was");
+            parts.RemoveAt(parts.Count - 1);
+        }
+
+        for (int i = 0; i < parts.Count; i++)
+        {
+            var (name, part) = parts[i];
+            bool named = HelperTabs.Contains(name.Trim());
+
+            // A tab that will not open only sinks the whole import when it
+            // might have been a mode. Asking A1 first means the part is opened
+            // now, and every workbook QMP writes carries a Reference Card, so a
+            // corrupt or enormous one would have cost the user every mode in
+            // the file over a tab that was never going to import anyway.
+            List<string[]> grid;
+            bool lostRows;
+            try { grid = Sheet(zip, part, shared, out lostRows); }
+            catch (Exception ex) when (named && ex is InvalidDataException or System.Xml.XmlException)
+            {
+                skipped.Add(new SkippedTab(name, Array.Empty<string[]>(), SkippedTabKind.Helper));
+                continue;
+            }
+
+            // A cell holding something, below the row where this reader stops.
+            // A profile is under two hundred rows and the device reads 128 per
+            // mode, so this is not a shape a real workbook has; it is still a
+            // read that did not finish, and one of those has to say so.
+            if (lostRows)
+                limit ??= $"The tab \"{name}\" has cells below row {MaxRows:N0}, far past where any "
+                    + "profile ends, so we stopped reading that tab there and cannot say what is under "
+                    + "it. If that is a stray cell left behind by a paste, deleting the empty rows at "
+                    + "the bottom of the tab and importing again will clear this.";
+
             // A tab is a mode only if its A1 says so. Everything else in the
             // workbook (Inputs, Outputs, notes, scratch) is not a profile.
-            if (grid.Count > 0 && grid[0].Length > 0 && Vocab.IsSheetKeyword(grid[0][0].Trim()))
+            bool keyword = grid.Count > 0 && grid[0].Length > 0 && Vocab.IsSheetKeyword(grid[0][0].Trim());
+
+            // Named, not passed over. Skipping these is right, but doing it in
+            // silence is what made a correct import read as a broken one: a user
+            // whose workbook held Left Analog, Drive and Reference Card reported
+            // that the second and third tabs "will not import", and the app had
+            // said nothing about either one.
+            //
+            // A1 is asked first, because the tab name is a hint and A1 is the
+            // truth. "Voice" is a fine name for a mode, the CSV has nowhere to
+            // put a tab name and the device never sees one, so a tab that says
+            // "Profile Name" comes in whatever it is called. Deciding by name
+            // alone would have thrown a real mode away and told the user in the
+            // same breath that nothing was lost.
+            //
+            // The name is recorded and the cells are dropped. Nothing is ever
+            // offered from a helper tab, so its rows are not counted against the
+            // workbook's budget below, where documentation could truncate a real
+            // mode further down the file.
+            if (!keyword && named)
+            {
+                skipped.Add(new SkippedTab(name, Array.Empty<string[]>(), SkippedTabKind.Helper));
+                continue;
+            }
+
+            if (keyword)
             {
                 // A blank line between tabs, because that is what the device
                 // needs: it ends a mode at an empty line and only looks for the
@@ -150,16 +248,43 @@ public static class Xlsx
             // count against the workbook's budget. Stopping here rather than
             // part way through a tab keeps every mode that did come in whole.
             kept += grid.Count;
-            if (kept >= MaxWorkbookRows) break;
+            if (kept < MaxWorkbookRows) continue;
+            // Said, not just done. The bounds exist because a 25 KB download
+            // could expand into gigabytes, but a stop with nothing said is how
+            // a profile arrives short a mode and the import still gets called
+            // clean, which is the worst thing this window can tell a user.
+            int left = parts.Count - 1 - i;
+            if (left > 0)
+                limit = Truncated(
+                    $"This spreadsheet is larger than {MaxWorkbookRows:N0} rows, far larger than any "
+                    + "profile, so we stopped reading part way through.",
+                    // A count would be a lie when the tab cap has already
+                    // fired: the tabs past that one are not in this list to be
+                    // counted, so the message names none rather than too few.
+                    limit is not null ? "Every tab from there on was"
+                    : left == 1 ? "One more tab was" : $"{left} more tabs were");
+            break;
         }
+
         skippedTabs = skipped;
+        limitation = limit;
         return Csv.Write(rows);
     }
+
+    // The same ending on both bounds, because the user's question is the same
+    // one either way: what am I missing, and what do I do about it.
+    static string Truncated(string cause, string missed) =>
+        $"{cause} {missed} not read at all, so we cannot say what is in there. Split the modes you need "
+        + "across smaller spreadsheets and import them one at a time.";
 
     /// <summary>The tab's rows as a mode the app and the device would both
     /// read: A1 given the keyword it is missing, and the tab's own name used
     /// as the mode name when the sheet does not carry one. Nothing else is
-    /// touched, so what comes in is the user's own layout.</summary>
+    /// touched, so what comes in is the user's own layout.
+    ///
+    /// Only <see cref="SkippedTabKind.UnreadableA1"/> tabs have anything to
+    /// repair. A helper tab carries no cells, so this returns nothing for one
+    /// and cannot invent a mode out of documentation.</summary>
     public static List<string[]> RepairedAsMode(SkippedTab tab)
     {
         var rows = tab.Rows.Select(r => (string[])r.Clone()).ToList();
@@ -194,7 +319,6 @@ public static class Xlsx
                 targets[id] = t;
 
         var seen = new HashSet<string>(StringComparer.Ordinal);
-        int count = 0;
         foreach (var sheet in wb.Root!.Descendants(Main + "sheet"))
         {
             if ((string?)sheet.Attribute(Rel + "id") is not string id) continue;
@@ -205,13 +329,24 @@ public static class Xlsx
             // entries, and each one used to be read and kept all over again.
             // One part is one sheet however many times it is listed.
             if (!seen.Add(part)) continue;
-            if (++count > MaxSheets) yield break;
+            // MaxSheets is applied by the caller, not here: a cap that stops
+            // this enumerator cannot tell anyone how many tabs it stopped
+            // short of, and an unread tab has to be counted to be reported.
+            // The list is still bounded, because a part is only listed once.
             yield return ((string?)sheet.Attribute("name") ?? "", part);
         }
     }
 
-    static List<string[]> Sheet(ZipArchive zip, string part, string[] shared)
+    static List<string[]> Sheet(ZipArchive zip, string part, string[] shared) =>
+        Sheet(zip, part, shared, out _);
+
+    /// <param name="lostRows">True when a row holding something was dropped for
+    /// sitting past the row cap. A stray cell left at the bottom of a Google
+    /// sheet is dropped too and does not count: it is blank, nothing was in it,
+    /// and saying so on every ordinary import would be noise.</param>
+    static List<string[]> Sheet(ZipArchive zip, string part, string[] shared, out bool lostRows)
     {
+        lostRows = false;
         var rows = new List<string[]>();
         if (Xml(zip, part) is not XDocument doc) return rows;
 
@@ -265,7 +400,11 @@ public static class Xlsx
             // file says.
             int number = (int?)row.Attribute("r") ?? lastNumber + 1;
             lastNumber = number;
-            if (number > MaxRows || number < 1) continue;
+            if (number > MaxRows || number < 1)
+            {
+                if (cells.Count > 0) lostRows = true;
+                continue;
+            }
             while (rows.Count < number) rows.Add(Array.Empty<string>());
             rows[number - 1] = cells.ToArray();
         }

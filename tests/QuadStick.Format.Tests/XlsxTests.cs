@@ -41,6 +41,31 @@ public class XlsxTests
         Assert.DoesNotContain("PS3 D-Pad Button North", csv);   // the Outputs tab
     }
 
+    // Not modes, and not silent either. A user who can see two tabs in their own
+    // workbook and only one list in the app has no way to tell a skipped
+    // reference tab from a failed import, and reported the second as the first.
+    [Fact]
+    public void ReferenceTabsAreNamedAsHelpers()
+    {
+        using var stream = File.OpenRead(Path.Combine("corpus", "multi-tab.xlsx"));
+        Xlsx.ToCsv(stream, out var skipped);
+
+        Assert.Equal(new[] { "Inputs", "Outputs" }, skipped.Select(t => t.Name));
+        Assert.All(skipped, t => Assert.Equal(SkippedTabKind.Helper, t.Kind));
+    }
+
+    // The tabs QMP keeps for its own use carry no bindings, so they are passed
+    // over without a word. Naming every stray tab on every import is the noise
+    // that teaches people to stop reading the one message that matters.
+    [Fact]
+    public void QmpsOwnMachineryTabsStaySilent()
+    {
+        using var stream = File.OpenRead(Path.Combine("corpus", "single-tab.xlsx"));
+        Xlsx.ToCsv(stream, out var skipped);
+
+        Assert.Empty(skipped); // allowedinputs, allowedoutputs, IRCommands
+    }
+
     [Fact]
     public void PreferencesValuesAndCommentsSurvive()
     {

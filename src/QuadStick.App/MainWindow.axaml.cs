@@ -1514,8 +1514,11 @@ public partial class MainWindow : Window
         try
         {
             var doc = Parser.Parse(File.ReadAllText(path)).Doc;
-            var bindings = doc.Sheets.Sum(s => s.Bindings.Count);
-            sub = $"{doc.Sheets.Count} mode sheet(s), {bindings} binding(s)";
+            // Modes, not sheets. A preferences or infrared sheet is neither a
+            // mode nor a set of bindings, and counting them here said a profile
+            // had one more mode than the device would ever run.
+            var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
+            sub = $"{modes.Count} mode sheet(s), {modes.Sum(s => s.Bindings.Count)} binding(s)";
         }
         catch { sub = "Could not read this file"; }
         _cardCache[path] = (stamp, sub);
@@ -1646,9 +1649,17 @@ public partial class MainWindow : Window
     void RepopulateSheetPicker(int select)
     {
         if (_file is null) return;
-        var items = _file.Document.Sheets
-            .Select((s, i) => $"{i + 1}: {(s.ModeName.Length > 0 ? s.ModeName : s.Type.ToString())}")
-            .ToList();
+        // Numbered the way the device numbers them, and the way the modes list
+        // and the import review both do: only a mode takes a number. Numbering
+        // the rows instead put "2: Preferences" above "3: Drive" while every
+        // other screen called that same sheet mode 2.
+        int mode = 0;
+        var items = _file.Document.Sheets.Select(s => s.Type switch
+        {
+            SheetType.Preferences => "Preferences",
+            SheetType.Infrared => "Infrared",
+            _ => $"{++mode}: {(s.ModeName.Length > 0 ? s.ModeName : "(unnamed mode)")}",
+        }).ToList();
         // Last, and without a number: it is a view onto column L, not a sheet
         // in the file. See CustomNames.cs.
         items.Add(CustomNamesLabel);
@@ -2863,7 +2874,8 @@ public partial class MainWindow : Window
             {
                 string text;
                 IReadOnlyList<SkippedTab> skipped;
-                using (var stream = File.OpenRead(path)) text = Xlsx.ToCsv(stream, out skipped);
+                string? tooLarge;
+                using (var stream = File.OpenRead(path)) text = Xlsx.ToCsv(stream, out skipped, out tooLarge);
                 var imported = ProfileFile.Load(text);
                 if (imported.Document.Sheets.Count == 0)
                 {
@@ -2873,7 +2885,7 @@ public partial class MainWindow : Window
                 OpenInEditor(imported, savePath: null, ProfileSource.File);
                 Status($"Imported {Modes(imported)} from {picks[0].Name}. Save to keep it as a profile.",
                     StatusKind.Ready);
-                await ShowImportReviewAsync(imported, picks[0].Name, skipped);
+                await ShowImportReviewAsync(imported, picks[0].Name, skipped, tooLarge);
                 return;
             }
             OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), path, ProfileSource.File);
@@ -2954,8 +2966,14 @@ public partial class MainWindow : Window
 
     Task ImportAsync() => ImportSheetsAsync(SheetsUrlBox.Text ?? "");
 
-    static string Modes(ProfileFile f) =>
-        $"{f.Document.Sheets.Count} mode{(f.Document.Sheets.Count == 1 ? "" : "s")}";
+    // Sheets, not modes: preferences and infrared are sheets the device reads
+    // on their own keywords, and counting them made an import of one mode plus
+    // a preferences sheet announce itself as two modes.
+    static string Modes(ProfileFile f)
+    {
+        int n = f.Document.Sheets.Count(s => s.Type == SheetType.ProfileName);
+        return $"{n} mode{(n == 1 ? "" : "s")}";
+    }
 
     /// <summary>The import review. Every import ends here, clean or not: the
     /// user handed us a spreadsheet that already works on their QuadStick, and
@@ -3018,10 +3036,11 @@ public partial class MainWindow : Window
             var wholeWorkbook = Xlsx.LooksLikeXlsx(bytes);
             string text;
             IReadOnlyList<SkippedTab> skipped = Array.Empty<SkippedTab>();
+            string? tooLarge = null;
             if (wholeWorkbook)
             {
                 using var stream = new MemoryStream(bytes);
-                text = Xlsx.ToCsv(stream, out skipped);
+                text = Xlsx.ToCsv(stream, out skipped, out tooLarge);
             }
             else text = await client.GetStringAsync(csvUrl);
 
@@ -3043,7 +3062,7 @@ public partial class MainWindow : Window
             // reported as a clean import, which is the worst thing this window
             // could ever say.
             await ShowImportReviewAsync(imported, "This spreadsheet", skipped,
-                wholeWorkbook ? null
+                wholeWorkbook ? tooLarge
                     : "This link is a published one, and a published link only ever gives a single tab. "
                     + "Any other mode tabs in the spreadsheet were not sent to us at all, so we cannot say "
                     + "what is in them. To bring the whole profile in, share the sheet with \"Anyone with "
@@ -3358,9 +3377,12 @@ public partial class MainWindow : Window
         if (CurrentSheet.Bindings.Count == 0)
             RowsPanel.Children.Add(new TextBlock
             {
-                Text = prefs
-                    ? "No settings on this sheet yet. Click \"Add row\" to add one."
-                    : "No bindings yet. Click \"Add row\" to connect an input to an output.",
+                Text = CurrentSheet.Type switch
+                {
+                    SheetType.Infrared => "No commands on this sheet yet. Click \"Add row\" to add one.",
+                    SheetType.Preferences => "No settings on this sheet yet. Click \"Add row\" to add one.",
+                    _ => "No bindings yet. Click \"Add row\" to connect an input to an output.",
+                },
                 FontSize = Size("BodySize"), Classes = { "muted" }, Margin = new Avalonia.Thickness(4, 12),
             });
         RepaintSelection(); // the prune above may have emptied it; the bar must follow

@@ -274,9 +274,12 @@ public class DeviceFilesWindow : Window
         try
         {
             var doc = Parser.Parse(File.ReadAllText(path)).Doc;
+            // Modes, not sheets: a preferences or infrared sheet is neither a
+            // mode nor a set of bindings.
+            var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
             subtitle = doc.IsDevicePreferences
                 ? "the device's own settings file"
-                : $"{doc.Sheets.Count} mode sheet(s), {doc.Sheets.Sum(s => s.Bindings.Count)} binding(s)";
+                : $"{modes.Count} mode sheet(s), {modes.Sum(s => s.Bindings.Count)} binding(s)";
             if (SheetsUrl.TryGetEditUrlFromHeader(doc.HeaderVersion, doc.HeaderSource, out var url))
                 sheetUrl = url;
         }

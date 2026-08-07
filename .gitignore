@@ -28,3 +28,6 @@ docs/superpowers/
 # Real PostHog project token. The committed TelemetryToken.cs placeholder
 # keeps the public build compiling, and silent, without it.
 src/QuadStick.App/TelemetryToken.Local.cs
+
+# My own working notes for the AI tools. Not documentation for anyone else.
+CLAUDE.md

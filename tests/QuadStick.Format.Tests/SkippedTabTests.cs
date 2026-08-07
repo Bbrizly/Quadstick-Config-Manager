@@ -126,9 +126,15 @@ public class SkippedTabTests
         Assert.Empty(skipped);
     }
 
-    // The named helper tabs are deliberately never modes, whatever is in A1.
+    // The named helper tabs are documentation, and their A1 says so too.
+    // They used to be passed over in silence, which is what a real user hit on
+    // 2026-08-01: a workbook of Left Analog, Drive and Reference Card, reported
+    // as "second sheet and reference card sheet will not import". The Reference
+    // Card had never been importable and the app had never said so, so a
+    // correct import read as a broken one. Named now, as a fact and not as a
+    // decision.
     [Fact]
-    public void The_known_helper_tabs_are_not_reported()
+    public void The_known_helper_tabs_are_reported_as_helpers()
     {
         using var wb = Workbook(
             ("Left Analog", ModeRows("Profile Name")),
@@ -136,7 +142,205 @@ public class SkippedTabTests
 
         Xlsx.ToCsv(wb, out var skipped);
 
+        var tab = Assert.Single(skipped);
+        Assert.Equal("Outputs", tab.Name);
+        Assert.Equal(SkippedTabKind.Helper, tab.Kind);
+    }
+
+    // The tab name is a hint, A1 is the truth. "Voice" is a fine name for a
+    // mode, and the device would read this one: the CSV has nowhere to put a
+    // tab name, so by the time the file reaches the QuadStick the title is
+    // gone. Deciding by the title alone threw the mode away and said in the
+    // same breath that nothing had been lost.
+    [Fact]
+    public void A_mode_titled_like_a_helper_tab_still_imports()
+    {
+        using var wb = Workbook(
+            ("Left Analog", ModeRows("Profile Name")),
+            ("Voice", ModeRows("Profile Name")));
+
+        var file = ProfileFile.Load(Xlsx.ToCsv(wb, out var skipped));
+
+        Assert.Equal(2, file.Document.Sheets.Count);
         Assert.Empty(skipped);
+    }
+
+    // A helper tab is named, never offered. Its cells are dropped rather than
+    // kept: there is nothing to repair, and counting them would spend the
+    // workbook's row budget on documentation and could truncate a real mode
+    // further down.
+    [Fact]
+    public void A_helper_tab_carries_no_cells_and_cannot_be_repaired_into_a_mode()
+    {
+        using var wb = Workbook(
+            ("Left Analog", ModeRows("Profile Name")),
+            ("Reference Card", ModeRows("Reference Card")));
+
+        Xlsx.ToCsv(wb, out var skipped);
+
+        var tab = Assert.Single(skipped);
+        Assert.Empty(tab.Rows);
+        Assert.Empty(Xlsx.RepairedAsMode(tab));
+    }
+
+    // The two kinds travel together and stay apart. One is a mode the user has
+    // lost and can take back; the other never was one.
+    [Fact]
+    public void A_lost_mode_and_a_helper_tab_are_reported_as_different_kinds()
+    {
+        using var wb = Workbook(
+            ("Left Analog", ModeRows("Profile Name")),
+            ("Dpad", ModeRows("pasted chat over A1")),
+            ("Reference Card", ModeRows("Reference Card")));
+
+        Xlsx.ToCsv(wb, out var skipped);
+
+        Assert.Equal(
+            new[] { ("Dpad", SkippedTabKind.UnreadableA1), ("Reference Card", SkippedTabKind.Helper) },
+            skipped.Select(t => (t.Name, t.Kind)));
+    }
+
+    // The shape of the real workbook from the report: three tabs, two of them
+    // modes that happen to share a name, one of them the reference card. Both
+    // modes come in. Only the card is skipped, and it is named.
+    [Fact]
+    public void The_reported_workbook_shape_imports_both_modes_and_names_the_card()
+    {
+        using var wb = Workbook(
+            ("Left Analog", ModeRows("Profile Name")),
+            ("Drive", ModeRows("Profile Name")),
+            ("Reference Card", ModeRows("Reference Card")));
+
+        var file = ProfileFile.Load(Xlsx.ToCsv(wb, out var skipped));
+
+        Assert.Equal(2, file.Document.Sheets.Count);
+        Assert.All(file.Document.Sheets, s => Assert.Equal("Some mode", s.ModeName));
+        Assert.Equal(new[] { "Reference Card" }, skipped.Select(t => t.Name));
+    }
+
+    // The bounds are right: a 25 KB download really can expand into gigabytes,
+    // and this import runs on the UI thread. Stopping without a word is what
+    // was wrong. A profile that arrives short four of its five modes was being
+    // called a clean import, which is the worst thing this window can say.
+    [Fact]
+    public void A_workbook_of_more_tabs_than_we_read_says_it_stopped()
+    {
+        var tabs = Enumerable.Range(1, 66)
+            .Select(i => ($"Mode {i}", ModeRows("Profile Name")))
+            .ToArray();
+        using var wb = Workbook(tabs);
+
+        var file = ProfileFile.Load(Xlsx.ToCsv(wb, out _, out var limitation));
+
+        Assert.Equal(64, file.Document.Sheets.Count);
+        Assert.NotNull(limitation);
+        Assert.Contains("more than 64 tabs", limitation);
+        Assert.Contains("not read at all", limitation);
+    }
+
+    [Fact]
+    public void A_workbook_of_more_rows_than_we_read_says_it_stopped()
+    {
+        // Two tabs past the workbook's row budget between them, and a third
+        // that is never reached at all.
+        var fat = ModeRows("Profile Name")
+            .Concat(Enumerable.Repeat(new[] { "dpad_N", "normal", "mp_center_puff" }, 18_000))
+            .ToArray();
+        using var wb = Workbook(("One", fat), ("Two", fat), ("Three", ModeRows("Profile Name")));
+
+        Xlsx.ToCsv(wb, out _, out var limitation);
+
+        Assert.NotNull(limitation);
+        Assert.Contains("30,000 rows", limitation);
+        Assert.Contains("One more tab was not read at all", limitation);
+    }
+
+    // Asking A1 first means the part is opened before we know it is a helper,
+    // and every workbook QMP writes carries a Reference Card. A corrupt or
+    // enormous one would have cost the user every mode in the file over a tab
+    // that was never going to import.
+    [Fact]
+    public void A_helper_tab_that_will_not_open_does_not_sink_the_import()
+    {
+        using var wb = BrokenSecondTab("Reference Card");
+
+        var file = ProfileFile.Load(Xlsx.ToCsv(wb, out var skipped, out _));
+
+        Assert.Single(file.Document.Sheets);
+        var tab = Assert.Single(skipped);
+        Assert.Equal(SkippedTabKind.Helper, tab.Kind);
+    }
+
+    // The same tab under any other name might have been a mode, and quietly
+    // taking a mode is what this whole file is about. That one still stops the
+    // import, which is what the caller already handles.
+    [Fact]
+    public void A_mode_tab_that_will_not_open_still_stops_the_import()
+    {
+        using var wb = BrokenSecondTab("Dpad");
+
+        Assert.Throws<InvalidDataException>(() => Xlsx.ToCsv(wb));
+    }
+
+    // A workbook whose second worksheet part is not XML at all.
+    static MemoryStream BrokenSecondTab(string name)
+    {
+        var ms = Workbook(
+            ("Left Analog", ModeRows("Profile Name")),
+            (name, ModeRows("Profile Name")));
+        var bytes = ms.ToArray();
+        var rebuilt = new MemoryStream(bytes.Length);
+        rebuilt.Write(bytes);
+        rebuilt.Position = 0;
+        using (var zip = new ZipArchive(rebuilt, ZipArchiveMode.Update, leaveOpen: true))
+        {
+            zip.GetEntry("xl/worksheets/sheet2.xml")!.Delete();
+            using var w = new StreamWriter(zip.CreateEntry("xl/worksheets/sheet2.xml").Open());
+            w.Write("<worksheet><sheetData><row>");  // never closed
+        }
+        rebuilt.Position = 0;
+        return rebuilt;
+    }
+
+    // A cell holding something below the row this reader stops at. Not a shape
+    // a real profile has, and still a read that did not finish, so it says so.
+    // A stray blank cell at the bottom of a Google sheet is dropped the same way
+    // and must not say anything, or every ordinary import would claim to be
+    // partial.
+    [Fact]
+    public void A_cell_below_the_last_row_we_read_is_reported_and_a_blank_one_is_not()
+    {
+        using var loud = Workbook(("Left Analog", Deep("dpad_N")));
+        Xlsx.ToCsv(loud, out _, out var said);
+        Assert.NotNull(said);
+        Assert.Contains("below row 20,000", said);
+
+        using var quiet = Workbook(("Left Analog", Deep("")));
+        Xlsx.ToCsv(quiet, out _, out var silent);
+        Assert.Null(silent);
+    }
+
+    // A mode, then one cell at row 30,000 holding whatever is passed in.
+    static string[][] Deep(string value)
+    {
+        var rows = ModeRows("Profile Name").ToList();
+        while (rows.Count < 29_999) rows.Add(Array.Empty<string>());
+        rows.Add(new[] { value });
+        return rows.ToArray();
+    }
+
+    // The bound has to hold when it costs nothing to say so, or the message
+    // becomes noise: a workbook that fits is not a partial read.
+    [Fact]
+    public void A_workbook_that_fits_reports_no_limitation()
+    {
+        using var wb = Workbook(
+            ("Left Analog", ModeRows("Profile Name")),
+            ("Reference Card", ModeRows("Reference Card")));
+
+        Xlsx.ToCsv(wb, out _, out var limitation);
+
+        Assert.Null(limitation);
     }
 
     [Fact]

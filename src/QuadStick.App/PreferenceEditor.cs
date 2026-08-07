@@ -104,14 +104,23 @@ public partial class MainWindow
     static bool IsModePreferenceOverride(Binding b) =>
         Vocab.IsPreferenceOverride(b.Output, b.Function);
 
+    // Two sheets share this editor because they are the same shape: a name in
+    // column A, a value in column B, and two columns the device never reads.
+    // They are not the same words. An infrared sheet holds command names and
+    // hex codes, and calling a hex code a Value with Units beside it was the
+    // app describing a sheet it had read perfectly well as something else.
+    bool Infrared => CurrentSheet?.Type == SheetType.Infrared;
+    string NameColumn => Infrared ? "Command" : "Setting";
+    string ValueColumn => Infrared ? "Hex code" : "Value";
+
     Control PrefsHeaderRow()
     {
         var p = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         p.Children.Add(RowNumberHeaderSpacer());
-        p.Children.Add(Swatch("Setting", 300, OutputTint));
-        p.Children.Add(Swatch("Value", PrefsValueWidth, FunctionTint));
-        p.Children.Add(Swatch("Units", 100, InputTint));
-        p.Children.Add(Swatch("Description", 240, InputTint));
+        p.Children.Add(Swatch(NameColumn, 300, OutputTint));
+        p.Children.Add(Swatch(ValueColumn, PrefsValueWidth, FunctionTint));
+        p.Children.Add(Swatch(Infrared ? "Notes" : "Units", 100, InputTint));
+        p.Children.Add(Swatch(Infrared ? "" : "Description", 240, InputTint));
         if (CurrentSheet?.Type != SheetType.Preferences) return p;
 
         // The banner rides inside the header control rather than as its own
@@ -155,8 +164,10 @@ public partial class MainWindow
         // The official sheet annotates each preference with Units (column C)
         // and a Description (column D). The device ignores both, but hiding
         // them here hid the tester's own notes about what each setting does.
-        p.Children.Add(Mid(SuggestBox(b.Row, 2, _file!.GetCell(b.Row, 2), 100, NoSuggestions, $"Units for row {b.Row}", InputTint)));
-        var desc = NoteBox(b.Row, 3, $"Description for row {b.Row}. Saved in the file, ignored by the QuadStick");
+        p.Children.Add(Mid(SuggestBox(b.Row, 2, _file!.GetCell(b.Row, 2), 100, NoSuggestions,
+            $"{(Infrared ? "Notes" : "Units")} for row {b.Row}", InputTint)));
+        var desc = NoteBox(b.Row, 3,
+            $"{(Infrared ? "Notes" : "Description")} for row {b.Row}. Saved in the file, ignored by the QuadStick");
         desc.Width = 240;
         p.Children.Add(Mid(desc));
         var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
@@ -207,7 +218,7 @@ public partial class MainWindow
     Control PrefsNameCell(Binding b, PreferenceDefinition? def)
     {
         var box = SuggestBox(b.Row, 0, b.Output, 300, PreferenceNameSuggestions,
-            $"Setting name for row {b.Row}", OutputTint,
+            $"{NameColumn} name for row {b.Row}", OutputTint,
             (before, after) => Definition(before) != Definition(after));
         if (def is null) return box;
 
@@ -250,7 +261,7 @@ public partial class MainWindow
     // column in each case, so the control has to be told which.
     Border PrefsValueCell(Binding b, PreferenceDefinition? def, int col)
     {
-        var name = $"Setting value for row {b.Row}";
+        var name = $"{(Infrared ? "Hex code" : "Setting value")} for row {b.Row}";
         var wrapper = new Border
         {
             // Match the thickness RefreshIssues sets on an errored cell, so

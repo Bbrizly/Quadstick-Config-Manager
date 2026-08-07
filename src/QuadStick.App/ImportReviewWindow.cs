@@ -201,9 +201,20 @@ public class ImportReviewWindow : Window
         var open = OpenIssues();
         var errors = open.Where(i => i.Severity == Severity.Error).ToList();
         var warnings = open.Where(i => i.Severity == Severity.Warning).ToList();
+
+        // Two kinds, two headings. A lost mode is a decision the user has to
+        // make; a reference card is a fact they only need told once. Filing
+        // them together would put a button next to a tab that must never
+        // become a mode.
+        var lost = _skipped.Where(t => t.Kind == SkippedTabKind.UnreadableA1).ToList();
+        var helpers = _skipped.Where(t => t.Kind == SkippedTabKind.Helper).ToList();
+
         // A partial read is never clean, however few issues the part that
-        // arrived happens to have.
-        bool clean = _limitation is null && _skipped.Count == 0 && open.Count == 0;
+        // arrived happens to have. A helper tab is not counted against it:
+        // every workbook QMP writes has a Reference Card, so counting it would
+        // mean no import is ever clean and the word would stop meaning
+        // anything.
+        bool clean = _limitation is null && lost.Count == 0 && open.Count == 0;
 
         _heading.Text = clean ? "Your sheet came in clean." : "We read your sheet.";
         _subheading.Text = clean
@@ -225,10 +236,15 @@ public class ImportReviewWindow : Window
                 Count(errors.Count, "line the QuadStick would not read", "lines the QuadStick would not read"),
                 errors.Select(i => Line($"{i.Cell}   {i.Message}", i.Fix))));
 
-        if (_skipped.Count > 0)
+        if (lost.Count > 0)
             _body.Children.Add(Section(
-                Count(_skipped.Count, "tab did not come in", "tabs did not come in"),
-                _skipped.Select(SkippedRow)));
+                Count(lost.Count, "tab did not come in", "tabs did not come in"),
+                lost.Select(SkippedRow)));
+
+        if (helpers.Count > 0)
+            _body.Children.Add(Section(
+                Count(helpers.Count, "tab is not profile data", "tabs are not profile data"),
+                new[] { Line(HelperTabText(helpers), null) }));
 
         // One heading for every warning, because the messages already say which
         // way each one goes. Splitting "ignores it" from "reads it as something
@@ -261,7 +277,11 @@ public class ImportReviewWindow : Window
     string Summary()
     {
         var modes = _file.Document.Sheets.Count(s => s.Type == SheetType.ProfileName);
-        var bindings = _file.Document.Sheets.Sum(s => s.Bindings.Count);
+        // Bindings on modes only. A preference is a setting and an infrared row
+        // is a command, and folding both into one binding count made a profile
+        // look like it had rows the device would never fire.
+        var bindings = _file.Document.Sheets
+            .Where(s => s.Type == SheetType.ProfileName).Sum(s => s.Bindings.Count);
         var prefs = _file.Document.Sheets.Any(s => s.Type == SheetType.Preferences) ? ", and your preferences" : "";
         return $"{Count(modes, "mode", "modes")} and {Count(bindings, "binding", "bindings")}{prefs}.";
     }
@@ -269,6 +289,21 @@ public class ImportReviewWindow : Window
     static string Count(int n, string one, string many) => $"{n} {(n == 1 ? one : many)}";
 
     // ---- decisions ----
+
+    // No buttons on this one. QMP writes these tabs as documentation and the
+    // QuadStick has never read them, so there is no decision to make and the
+    // only useful thing to do is stop the user looking for a mode that was
+    // never there. The sentence says the device's name, not the app's, because
+    // "the app skipped it" is the reading we are trying to correct.
+    static string HelperTabText(IReadOnlyList<SkippedTab> helpers)
+    {
+        var names = string.Join(", ", helpers.Select(t => $"\"{t.Name}\""));
+        var subject = helpers.Count == 1 ? "This tab is" : "These tabs are";
+        var it = helpers.Count == 1 ? "it" : "them";
+        return $"{names}   {subject} notes, not bindings. QMP and the Sheets add-on write "
+            + $"{(helpers.Count == 1 ? "this tab" : "these tabs")} for you to read, and your QuadStick "
+            + $"never loads {it}. Nothing was lost by leaving {it} out.";
+    }
 
     Control SkippedRow(SkippedTab tab)
     {
@@ -441,6 +476,18 @@ public class ImportReviewWindow : Window
         return panel;
     }
 
+    // Every mode is numbered, because that is the only thing that tells two of
+    // them apart on the device. The firmware counts "Profile Name" segments as
+    // it reads the file and never looks at the name in C1, so two modes may
+    // share a name and still be two modes. A user whose workbook named both
+    // tabs "Left Joystick" read the second one's absence from this list as a
+    // failed import; it had been here all along, under the same words.
+    //
+    // Preferences and Infrared are not numbered. The firmware's loop increments
+    // only on "Profile"; "Preferences" and "Infrared" each run their own
+    // reader and leave the counter alone. Numbering an infrared sheet as a mode
+    // would have shifted every mode under it by one, so the numbers on screen
+    // would have named the wrong modes on the device.
     Control ModeTable()
     {
         var grid = new Grid
@@ -448,19 +495,31 @@ public class ImportReviewWindow : Window
             ColumnDefinitions = new ColumnDefinitions("Auto,Auto"),
             Margin = new Thickness(12, 0, 0, 0),
         };
-        int r = 0;
+        int r = 0, mode = 0;
         foreach (var s in _file.Document.Sheets)
         {
             grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-            bool prefs = s.Type == SheetType.Preferences;
+            bool isMode = s.Type == SheetType.ProfileName;
+            if (isMode) mode++;
             var name = new TextBlock
             {
-                Text = prefs ? "Preferences" : DisplayName(s),
+                Text = s.Type switch
+                {
+                    SheetType.Preferences => "Preferences",
+                    SheetType.Infrared => "Infrared commands",
+                    _ => $"Mode {mode}: {DisplayName(s)}",
+                },
                 FontSize = Size("BodySize"), Margin = new Thickness(0, 0, 24, 4), TextWrapping = TextWrapping.Wrap,
+            };
+            var (one, many) = s.Type switch
+            {
+                SheetType.Preferences => ("setting", "settings"),
+                SheetType.Infrared => ("command", "commands"),
+                _ => ("binding", "bindings"),
             };
             var count = new TextBlock
             {
-                Text = Count(s.Bindings.Count, prefs ? "setting" : "binding", prefs ? "settings" : "bindings"),
+                Text = Count(s.Bindings.Count, one, many),
                 FontSize = Size("BodySize"), Classes = { "muted" }, Margin = new Thickness(0, 0, 0, 4),
             };
             Grid.SetRow(name, r); Grid.SetColumn(name, 0);
@@ -469,7 +528,44 @@ public class ImportReviewWindow : Window
             grid.Children.Add(count);
             r++;
         }
-        return grid;
+
+        var repeated = RepeatedModeNames();
+        if (repeated.Count == 0) return grid;
+
+        var panel = new StackPanel();
+        panel.Children.Add(grid);
+        panel.Children.Add(new TextBlock
+        {
+            Text = RepeatedModeText(repeated),
+            FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
+            Margin = new Thickness(12, 10, 0, 0),
+        });
+        return panel;
+    }
+
+    /// <summary>Names carried by more than one mode, in the order they first
+    /// appear. Trimmed and case-insensitive, because "Drive" and "drive " are
+    /// the same word to a person reading a list and the device reads neither.
+    /// </summary>
+    List<string> RepeatedModeNames()
+    {
+        var seen = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var order = new List<string>();
+        foreach (var s in _file.Document.Sheets.Where(s => s.Type == SheetType.ProfileName))
+        {
+            var name = DisplayName(s);
+            if (!seen.TryAdd(name, 1)) { if (seen[name]++ == 1) order.Add(name); }
+        }
+        return order;
+    }
+
+    static string RepeatedModeText(IReadOnlyList<string> repeated)
+    {
+        var names = string.Join(", ", repeated.Select(n => $"\"{n}\""));
+        var subject = repeated.Count == 1 ? "More than one mode is named" : "More than one mode each carry the names";
+        return $"{subject} {names}. That is allowed: your QuadStick tells modes apart by their "
+            + "order in the file, not by their name, so these are separate modes and all of them came in. "
+            + "Rename them in Modes if you want to tell them apart on screen.";
     }
 
     static string DisplayName(ModeSheet s) => s.ModeName.Trim().Length > 0 ? s.ModeName.Trim() : "(unnamed mode)";
@@ -508,6 +604,12 @@ public class ImportReviewWindow : Window
         for (int i = 0; i < _skipped.Count; i++)
         {
             var tab = _skipped[i];
+            // Helper tabs are named in the simple view and stop there. They
+            // carry no cells, so there is nothing to draw, and the heading below
+            // would tell the user their reference card was left out over a bad
+            // A1 and then offer an empty grid as proof of it. The index is still
+            // the key, so the grids stay with the tabs they were built from.
+            if (tab.Kind != SkippedTabKind.UnreadableA1) continue;
             panel.Children.Add(new TextBlock
             {
                 Text = $"\"{tab.Name}\", left out because cell A1 does not name a kind of sheet:",
@@ -544,8 +646,13 @@ public class ImportReviewWindow : Window
     {
         if (_fileGrid is null) return true;
         int rows = Math.Min(_file.Grid.Count, MaxAdvancedRows);
+        // Against the tabs that are drawn, not every tab that was skipped. The
+        // advanced view leaves helper tabs out, so counting them here made an
+        // ordinary import reshape on every edit, and worse, one helper plus one
+        // repaired tab could make the two numbers agree by accident and leave a
+        // tab that is now a mode still on screen under "left out".
         return rows != _gridRows || ColumnsFor(_file.Grid, rows) != _gridCols
-            || _skippedGrids.Count != _skipped.Count;
+            || _skippedGrids.Count != _skipped.Count(t => t.Kind == SkippedTabKind.UnreadableA1);
     }
 
     // One rule for how wide the grid is, so the shape check and the grid itself
