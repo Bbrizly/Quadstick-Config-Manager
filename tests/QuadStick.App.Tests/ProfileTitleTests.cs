@@ -68,6 +68,44 @@ public class ProfileTitleTests
         finally { MainWindow.LibraryDir = old; Directory.Delete(lib, recursive: true); }
     }
 
+    // The other half of telling twenty numbered files apart: which push of the
+    // profile switch lands on this one. The Manage files window has always had
+    // that list; Home showed nothing, so the count had to be done by hand.
+    [AvaloniaFact]
+    public void A_device_card_carries_its_number_in_the_profile_switch_order()
+    {
+        var stick = TempDir();
+        foreach (var f in new[] { "default.csv", "B21.csv", "prefs.csv" })
+            File.WriteAllText(Path.Combine(stick, f), $"Profile Name,,Solo\n{f}\n");
+        var lib = TempDir();
+        var old = MainWindow.LibraryDir;
+        MainWindow.LibraryDir = lib;
+        try
+        {
+            var w = NewWindow();
+            w.FindDeviceRoots = () => new[] { stick };
+            w.ShowHomeForPreview();
+            Dispatcher.UIThread.RunJobs();
+            w.UpdateLayout();
+
+            var texts = w.GetVisualDescendants().OfType<StackPanel>().First(p => p.Name == "DeviceCards")
+                .GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text ?? "").ToList();
+            // default.csv is always the first file the switch reaches, however
+            // late its name sorts, and prefs.csv is settings rather than a
+            // profile so it is never in the count. The cards are laid out in
+            // that order too: numbers that jump about read as a bug.
+            var headings = texts.Where(t => !t.Contains("mode sheet(s)")).ToList();
+            Assert.Equal(new[] { "1. default", "2. B21", "prefs" }, headings);
+            w.Close();
+        }
+        finally
+        {
+            MainWindow.LibraryDir = old;
+            Directory.Delete(lib, recursive: true);
+            Directory.Delete(stick, recursive: true);
+        }
+    }
+
     // The title is a second name, not a replacement: repeating the file name
     // back would just take up the line that says what is in the file.
     [Fact]

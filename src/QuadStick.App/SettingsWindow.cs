@@ -17,7 +17,7 @@ namespace QuadStick.App;
 //
 // Every control here reads its starting value from owner.CurrentSettings and
 // calls straight back into a MainWindow method that applies the change live
-// and persists it — MainWindow.AppSettings (_settings) stays the single
+// and persists it. MainWindow.AppSettings (_settings) stays the single
 // source of truth, this window never keeps its own copy.
 public class SettingsWindow : Window
 {

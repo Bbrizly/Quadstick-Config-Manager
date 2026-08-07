@@ -400,7 +400,7 @@ public class DeviceTests : IDisposable
     [Fact]
     public void Install_failure_leaves_the_existing_file_untouched()
     {
-        // read-only dir — install must fail without touching the existing file
+        // read-only dir, install must fail without touching the existing file
         if (OperatingSystem.IsWindows()) return;
         var existing = Path.Combine(_drive, "game.csv");
         File.WriteAllText(existing, "old");

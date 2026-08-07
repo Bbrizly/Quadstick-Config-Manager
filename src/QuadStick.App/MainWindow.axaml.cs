@@ -792,7 +792,7 @@ public partial class MainWindow : Window
         {
             // The tutorial overlay owns the keyboard while it's up: its Next/Skip
             // (Enter/Esc) still work, but app shortcuts like Ctrl+O must not fire
-            // behind it — Ctrl+O would swap in a real profile that teardown then
+            // behind it. Ctrl+O would swap in a real profile that teardown then
             // discards. Returning without Handled leaves Enter/Esc to the callout.
             if (_tourOverlay?.IsVisible == true) return;
             if (!e.KeyModifiers.HasFlag(KeyModifiers.Control) && !e.KeyModifiers.HasFlag(KeyModifiers.Meta))
@@ -1144,7 +1144,7 @@ public partial class MainWindow : Window
             else if (_file is not null && File.Exists(DraftPath))
             {
                 // A file is open and clean (just saved): its draft is stale, drop it.
-                // When NO file is open we must NOT delete — on startup after a crash
+                // When NO file is open we must NOT delete. On startup after a crash
                 // that draft is the unopened recovery still offered on the Home screen,
                 // and the 30s timer would otherwise erase it out from under the user.
                 File.Delete(DraftPath);
@@ -1467,9 +1467,19 @@ public partial class MainWindow : Window
             // without a heading there is nothing to say whose profiles are whose.
             if (drives.Length > 1) DeviceCards.Children.Add(DriveHeading(root));
 
+            // The number the profile switch counts to reach this file, from the
+            // same order the selection guide draws. prefs.csv is not selectable
+            // and gets no number.
+            var order = Device.SelectionOrder(files.Select(Path.GetFileName)!).ToList();
             var cards = new WrapPanel();
-            foreach (var path in files)
-                cards.Children.Add(ProfileCard(path, onDevice: true));
+            // Laid out in that same order, not by file name. Numbers that jump
+            // about the screen read as a bug, and default.csv is always number
+            // one however late its name sorts. prefs.csv has no number, so it
+            // goes last rather than in the middle of the count.
+            foreach (var (path, position) in files
+                .Select(p => (Path: p, Position: order.IndexOf(Path.GetFileName(p)) + 1))
+                .OrderBy(x => x.Position == 0 ? int.MaxValue : x.Position))
+                cards.Children.Add(ProfileCard(path, onDevice: true, position: position));
             DeviceCards.Children.Add(cards);
         }
     }
@@ -1545,10 +1555,14 @@ public partial class MainWindow : Window
         return sub;
     }
 
-    Control ProfileCard(string path, bool onDevice, string note = "")
+    Control ProfileCard(string path, bool onDevice, string note = "", int position = 0)
     {
         var name = Path.GetFileName(path);
         var bare = BareName(name); // the user never reads ".csv"
+        // "3." the way the selection guide writes it: the number of pushes of
+        // the profile switch that lands on this file. Only files on a QuadStick
+        // have one, and prefs.csv is not in the count.
+        var heading = position > 0 ? $"{position}. {bare}" : bare;
         var subtitle = CardSubtitle(path) + note;
         if (onDevice && name.Equals("default.csv", StringComparison.OrdinalIgnoreCase))
             subtitle += " · the device's fallback file";
@@ -1561,13 +1575,14 @@ public partial class MainWindow : Window
 
         var card = new Button { Classes = { "card" } };
         AutomationProperties.SetName(card,
-            $"Open {bare}, {subtitle}{(onDevice ? ", stored on the QuadStick" : ", in your profile library")}");
+            $"Open {bare}, {subtitle}{(onDevice ? ", stored on the QuadStick" : ", in your profile library")}"
+            + (position > 0 ? $", number {position} in the profile switch order" : ""));
         card.Content = new StackPanel
         {
             Spacing = 6,
             Children =
             {
-                new TextBlock { Text = bare, FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold },
+                new TextBlock { Text = heading, FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold },
                 new TextBlock { Text = subtitle, Classes = { "cardsub" } },
             },
         };
@@ -2090,7 +2105,7 @@ public partial class MainWindow : Window
     }
 
     // The "refactor": NOT an incremental diff engine. Device View still rebuilds
-    // from truth on every edit (small profiles, blur-triggered commits — a diff
+    // from truth on every edit (small profiles, blur-triggered commits, and a diff
     // would only add stale-UI and focus bugs). What was missing is focus: after
     // a rebuild the control the user just used is gone, so keyboard/switch users
     // were dropped. Rebuild, then refocus the same cell's replacement control.
@@ -2218,7 +2233,7 @@ public partial class MainWindow : Window
             HorizontalAlignment = HorizontalAlignment.Center,
         });
 
-        // One clean status line — a count, never a truncated dump of bindings.
+        // One clean status line: a count, never a truncated dump of bindings.
         // The full, editable list lives in the detail panel, opened on select.
         var countLabel = new TextBlock
         {
@@ -2677,7 +2692,7 @@ public partial class MainWindow : Window
                     Grid.SetColumn(inputBox, 0);
                     row.Children.Add(inputBox);
                     // Every committed input gets a trash. Removing the last one
-                    // leaves an empty box on purpose — that IS the "no input" state.
+                    // leaves an empty box on purpose. That IS the "no input" state.
                     if (i < b.Inputs.Count)
                     {
                         int idx = i;
@@ -4555,7 +4570,7 @@ public partial class MainWindow : Window
 
         // Register the function cell like the input/output fields so a function
         // error (bad name, too many params) can be highlighted and focused here
-        // too — without the wrapper, B{row} lives nowhere in _cellBorders.
+        // too. Without the wrapper, B{row} lives nowhere in _cellBorders.
         // RefreshIssues mirrors the wrapper child's accessible name onto the
         // highlight; the panel needs the combo's name or an error reads as nothing.
         var stack = new StackPanel { Children = { combo, paramsBox } };

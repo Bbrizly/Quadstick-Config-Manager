@@ -97,7 +97,7 @@ public static class Palette
         ("AccentText",    "SurfaceSubtle", 4.5),
         // NOTE (Codex review): SurfaceBorder is a decorative separator, not a
         // meaningful UI-component boundary or text, so WCAG does not require a
-        // contrast floor for it. Do NOT add it to the gate — #D8D6D2 on white
+        // contrast floor for it. Do NOT add it to the gate. #D8D6D2 on white
         // is ~1.3:1 and would fail a bogus assertion.
     };
 }

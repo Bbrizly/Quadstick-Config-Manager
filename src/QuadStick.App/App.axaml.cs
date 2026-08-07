@@ -10,17 +10,14 @@ public class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-        // Here, not in OnFrameworkInitializationCompleted: the headless test
-        // host and the render tool both load the XAML and then build windows
-        // without ever completing initialization, and a style that cannot
-        // find its own numbers throws on the first control it touches.
+        // Here, not in OnFrameworkInitializationCompleted: the headless test host
+        // and the render tool build windows without ever reaching that, and a
+        // style that cannot find its numbers throws on the first control.
         Style.RegisterInto(this);
     }
 
-    /// <summary>Which window the app opens with. --gallery opens the
-    /// appearance workbench instead: a tool for working on the look, not a
-    /// screen of the program. Nothing in the app links to it and no user is
-    /// ever handed it.</summary>
+    /// <summary>Which window the app opens with. --gallery opens the appearance
+    /// workbench, a build tool. Nothing in the app links to it.</summary>
     internal static Window WindowFor(IReadOnlyList<string>? args) =>
         args is not null && args.Contains("--gallery") ? new GalleryWindow() : new MainWindow();
 

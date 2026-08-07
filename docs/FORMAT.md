@@ -1,7 +1,7 @@
 # QuadStick Format Reference
 
 Notes on how the CSV files work. Pulled from Fred Davison's validation
-endpoint, his Apps Script and QMP converter code, and quadstick.com — mostly
+endpoint, his Apps Script and QMP converter code, and quadstick.com, mostly
 from an email thread in July 2026. If something's still fuzzy, it's marked.
 
 Sources, in order of authority:

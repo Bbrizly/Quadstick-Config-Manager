@@ -35,7 +35,7 @@ package: build
 	scripts/make-macos-app.sh $(DIST)/pub 0.0.0-dev "$(DIST)/Quadstick Config Manager.app"
 	@echo "Open '$(DIST)/Quadstick Config Manager.app' to test it."
 
-# Ship a release: verify, tag, push. That is the whole process — pushing the
+# Ship a release: verify, tag, push. That is the whole process. Pushing the
 # tag triggers CI, which builds every download and publishes the release.
 #   make release VERSION=1.2.3
 release:

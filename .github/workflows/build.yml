@@ -1,7 +1,7 @@
 name: CI
 
 # Tests run on every push and PR. Pushing a version tag (vX.Y.Z) additionally
-# builds a download for each platform and publishes a GitHub Release — the tag
+# builds a download for each platform and publishes a GitHub Release. The tag
 # is the only thing you create; everything below is automatic.
 on:
   push:
@@ -201,7 +201,7 @@ jobs:
             | `QuadStickConfigManager-macOS-Intel.zip` | Intel Mac |
             | `QuadStickConfigManager-Linux-x64.tar.gz` | Linux, 64-bit |
 
-            **Windows:** SmartScreen may warn on first launch (the app isn't code-signed) — click **More info -> Run anyway**.
+            **Windows:** SmartScreen may warn on first launch (the app isn't code-signed). Click **More info -> Run anyway**.
 
             **macOS:** the app isn't notarized yet, so the first launch needs **right-click the app -> Open -> Open**. If macOS says it "is damaged", run this in Terminal, then open it:
             ```

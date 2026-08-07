@@ -7,11 +7,8 @@ using Xunit;
 
 namespace QuadStick.App.Tests;
 
-// Style.cs claims to be the one place the app's look is decided. That claim is
-// only true while every token it lists is really registered and really reaches
-// the controls, so both halves are pinned here: a token that goes missing, or
-// a style that quietly stops reading one, fails a test instead of failing a
-// slider in the gallery hours later.
+// Style.cs is only the one place the look is decided while every token it lists
+// is registered and reaches the controls. Both halves are pinned here.
 public class StyleTokenTests
 {
     [AvaloniaFact]

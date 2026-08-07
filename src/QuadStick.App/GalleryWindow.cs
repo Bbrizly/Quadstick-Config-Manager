@@ -1,4 +1,3 @@
-// src/QuadStick.App/GalleryWindow.cs
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -10,23 +9,10 @@ using Avalonia.Styling;
 
 namespace QuadStick.App;
 
-// The workbench for the app's own appearance. Every button, every piece of
-// text, every field and every colour token on one page, with the numbers and
-// the colours editable while it runs.
-//
-// It exists because the look was only ever visible in situ: to judge a corner
-// radius you had to find a screen that used it, and to judge a colour you had
-// to find a state that showed it. Half the styles were never seen side by side
-// at all, so they drifted (eight different corner radii, at the last count).
-//
-// It is not a screen of the program. Nothing links to it and users never meet
-// it. Open it with:  dotnet run --project src/QuadStick.App -- --gallery
-// or  make gallery.
-//
-// The loop it is for: turn the knobs until it looks right, press "Copy the
-// numbers", paste the block into Style.cs or Palette.cs. Nothing here writes
-// to those files, because a tool that edits its own source while you are
-// looking at it is a tool you cannot trust.
+// Every control, text style and colour token on one page, editable live.
+// Not a screen of the program: nothing links to it. Open with `make gallery`.
+// Turn the knobs, then paste what it prints into Style.cs or Palette.cs. It
+// never writes to those files itself.
 public class GalleryWindow : Window
 {
     readonly StackPanel _specimens = new() { Spacing = 28 };

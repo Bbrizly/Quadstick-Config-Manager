@@ -31,10 +31,8 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
 {
     Application.Current!.RequestedThemeVariant = variant;
 
-    // The specimen sheet first: it is the page you compare against after a
-    // token changes, and it needs no profile at all.
-    // Tall on purpose: on screen the sheet scrolls, but a render that stops
-    // at the fold hides the colours, which are the half most worth comparing.
+    // The specimen sheet: what you compare against after a token changes.
+    // Tall on purpose, or the render stops at the fold and hides the colours.
     CaptureWindow($"{suffix}-0-gallery", new GalleryWindow { Height = 2300 });
 
     Capture($"{suffix}-1-home", _ => { });
@@ -61,10 +59,8 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
         w.SelectZoneForPreview("mp_left");
     });
 
-    // The two tight cases. Every toolbar control has to stay on screen in
-    // both, so these two renders are the responsiveness check. The scaled one
-    // is the harsher of the pair: scale divides the width the layout gets, so
-    // a normal window at 200% is narrower than the smallest window we allow.
+    // The two tight cases: every toolbar control has to stay on screen in both.
+    // Scaled is the harsher one, since scale divides the width the layout gets.
     Capture($"{suffix}-8-narrow", w =>
     {
         w.Width = 760; w.Height = 560;

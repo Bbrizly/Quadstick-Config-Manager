@@ -1,22 +1,13 @@
-// src/QuadStick.App/Style.cs
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 
 namespace QuadStick.App;
 
-// Every number that decides how the app looks, in one place, the way Palette
-// holds every colour. Nothing here is a colour and nothing in Palette is a
-// number, so between the two files the whole look is one edit away.
-//
-// These are real resources, so App.axaml and the C# views both read them with
-// {DynamicResource Key} / Size(key), and setting one at runtime repaints
-// everything bound to it. That is what the gallery's sliders do: turn a knob,
-// watch the whole app move, then write the number you liked down here.
-//
-// The two heights are not taste. 48 and 40 are click-target floors for people
-// aiming with a mouth stick or a head mouse, so they are the one pair to leave
-// alone unless somebody has tested smaller ones with the people who use them.
+// Every number the look depends on, beside Palette.cs which holds every colour.
+// Registered as resources, so setting one at runtime repaints what reads it.
+// ControlHeight 48 and IconButton 40 are click-target floors for mouth stick
+// and head mouse users. Do not shrink them without testing on those users.
 public static class Style
 {
     public static readonly IReadOnlyDictionary<string, double> Numbers = new Dictionary<string, double>

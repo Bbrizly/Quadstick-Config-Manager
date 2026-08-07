@@ -10,13 +10,9 @@ using Xunit;
 
 namespace QuadStick.App.Tests;
 
-// The gallery is only worth opening while it is complete. A style class added
-// to App.axaml, or a colour token added to Palette, that never reaches the
-// gallery is a piece of the app nobody is looking at, and the drift it exists
-// to catch starts there.
-//
-// So the list is not written down twice. Both halves are read off the live
-// app: the style classes off Application.Styles, the tokens off Palette.
+// A style or token missing from the gallery is one nobody looks at, which is
+// where the drift starts. So the list is never written down twice: classes are
+// read off Application.Styles, tokens off Palette.
 public class GalleryWindowTests
 {
     static GalleryWindow Open()
@@ -79,10 +75,8 @@ public class GalleryWindowTests
         w.Close();
     }
 
-    // The readout is what you paste into the source files, so it must only ever
-    // list what somebody actually changed. Every hex box raises a change event
-    // when it is first drawn, which had the gallery hand back the whole palette
-    // as if it were an edit.
+    // The readout is what you paste, so it must list only real edits. Every hex
+    // box fires a change event when first drawn, which reported the lot as edited.
     [AvaloniaFact]
     public void A_gallery_nobody_has_touched_reports_no_edits()
     {

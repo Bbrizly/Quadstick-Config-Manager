@@ -23,7 +23,7 @@ public class InstallCleanupTests
     // filename), by making the target path an existing directory: File.Exists(target)
     // is false so the backup step is skipped, the tmp write/readback succeed, but
     // File.Move(tmp, target) throws because target is a directory. The restore-from-
-    // backup catch clause requires backup != null, so it doesn't apply here — this is
+    // backup catch clause requires backup != null, so it doesn't apply here. This is
     // exactly the case the try/finally must still catch to avoid orphaning the tmp file.
     [Fact]
     public void Install_move_failure_with_no_backup_still_cleans_up_tmp()

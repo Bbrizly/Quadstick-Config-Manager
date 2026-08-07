@@ -144,8 +144,8 @@
 
   <rect class="soft" x="20" y="180" width="430" height="86"/>
   <text x="40" y="208" class="bold">Why this matters</text>
-  <text x="40" y="230" class="small">Anything the app does not understand — comments after column J, unusual spacing,</text>
-  <text x="40" y="248" class="small">extra cells — passes through untouched. Undo restores a full snapshot of the grid.</text>
+  <text x="40" y="230" class="small">Anything the app does not understand (comments after column J, unusual spacing,</text>
+  <text x="40" y="248" class="small">extra cells) passes through untouched. Undo restores a full snapshot of the grid.</text>
 </svg>
 <figcaption>Edits go grid-first, the view is rebuilt after each change, and saving writes the grid back out. Your file is never "translated", so nothing is ever lost in translation.</figcaption>
 </figure>
@@ -214,7 +214,7 @@
   <line class="arrow" x1="545" y1="70" x2="606" y2="48"/>
   <line class="arrow" x1="545" y1="100" x2="606" y2="124"/>
 </svg>
-<figcaption>One source of truth, used twice. If a name is not in the list, the Problems panel tells you the exact cell and what to pick instead — and errors block installing.</figcaption>
+<figcaption>One source of truth, used twice. If a name is not in the list, the Problems panel tells you the exact cell and what to pick instead, and errors block installing.</figcaption>
 </figure>
 
 <h2>7. Finding your way around the app</h2>
@@ -268,7 +268,7 @@
 <tr><td>Big targets, scalable UI</td><td>44px minimum hit targets; the whole interface scales from Settings; motion can be reduced.</td><td class="ok">Review sweep</td></tr>
 <tr><td>Mistakes are cheap</td><td>Undo everywhere (Ctrl/Cmd+Z), unsaved-work warnings on every exit path, and installs that back up first.</td><td class="ok">Automated tests</td></tr>
 </table>
-<p><b>Honest remainders:</b> real screen-reader testing (VoiceOver/NVDA) by actual users hasn't happened yet — that is what the beta ask is for. Sync file reads on the UI thread can briefly freeze the window with a slow USB stick (logged, low risk, on the list).</p>
+<p><b>Honest remainders:</b> real screen-reader testing (VoiceOver/NVDA) by actual users hasn't happened yet. That is what the beta ask is for. Sync file reads on the UI thread can briefly freeze the window with a slow USB stick (logged, low risk, on the list).</p>
 
 <h2>10. Where things live</h2>
 <table aria-label="Project layout">
