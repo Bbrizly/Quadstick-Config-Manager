@@ -44,6 +44,52 @@ public class GalleryWindowTests
         Assert.IsType<GalleryWindow>(App.WindowFor(new[] { "--gallery" }));
     }
 
+    // The order is the point of the page. Actions are what a user presses all
+    // day, so they open it; colour and shape are checked, not worked on, so
+    // they close it. Left to drift, the sheet sorts itself by what was easiest
+    // to draw and the first screenful stops being the part that matters.
+    [AvaloniaFact]
+    public void The_most_used_controls_come_first()
+    {
+        var w = Open();
+        var sections = w.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.Classes.Contains("section"))
+            .Select(t => t.Text ?? "")
+            .Where(t => t is "ACTIONS" or "ITEMS" or "FIELDS" or "TEXT" or "SURFACES AND TINTS" or "SHAPE")
+            .ToList();
+
+        Assert.Equal(
+            new[] { "ACTIONS", "ITEMS", "FIELDS", "TEXT", "SURFACES AND TINTS", "SHAPE" },
+            sections);
+
+        w.Close();
+    }
+
+    // A specimen without a name and a job is a picture. Two button styles look
+    // alike until something says what each is for, and that line is the only
+    // thing that tells a deliberate difference from drift.
+    [AvaloniaFact]
+    public void Every_specimen_says_what_it_is_and_what_it_is_for()
+    {
+        var w = Open();
+        var names = new[]
+        {
+            "default", "primary", "quiet", "danger", "icon", "icon danger", "disabled",
+            "toolbar", "card", "switchtrack + switchkey", "zone", "zone checked",
+        };
+        var text = w.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text ?? "").ToList();
+
+        foreach (var n in names)
+        {
+            var i = text.IndexOf(n);
+            Assert.True(i >= 0, $"No specimen named \"{n}\".");
+            Assert.True(i + 1 < text.Count && text[i + 1].Length > 20,
+                $"\"{n}\" has no line saying what it is for.");
+        }
+
+        w.Close();
+    }
+
     [AvaloniaFact]
     public void Every_styled_class_in_the_app_has_a_specimen()
     {

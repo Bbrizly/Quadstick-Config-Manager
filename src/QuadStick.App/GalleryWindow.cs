@@ -247,40 +247,63 @@ public class GalleryWindow : Window
 
     // ---- the specimens ----
 
+    // Ordered by what a user touches, not by what is easy to draw. Buttons are
+    // the app's whole surface, so they come first and the most pressed ones
+    // come first inside them. Colour and shape are last: they are checked, not
+    // worked on, once the controls are right.
     void BuildSpecimens()
     {
         _specimens.Children.Clear();
-        _specimens.Children.Add(Section("Text", TypeSpecimens()));
-        _specimens.Children.Add(Section("Buttons", ButtonSpecimens()));
-        _specimens.Children.Add(Section("Fields", FieldSpecimens()));
-        _specimens.Children.Add(Section("Surfaces and tints", SurfaceSpecimens()));
-        _specimens.Children.Add(Section("Shape", ShapeSpecimens()));
+        _specimens.Children.Add(Section("Actions",
+            "Press it and something happens. Nothing here holds a state.",
+            ActionSpecimens()));
+        _specimens.Children.Add(Section("Items",
+            "Press it and something is now chosen. Every one of these has an on "
+            + "state and an off state, so both are shown side by side.",
+            ItemSpecimens()));
+        _specimens.Children.Add(Section("Fields", "Somewhere to type or pick a value.", FieldSpecimens()));
+        _specimens.Children.Add(Section("Text", "The type scale and the meaning classes.", TypeSpecimens()));
+        _specimens.Children.Add(Section("Surfaces and tints", "Every colour token, named.", SurfaceSpecimens()));
+        _specimens.Children.Add(Section("Shape", "Every radius, side by side.", ShapeSpecimens()));
     }
 
-    static Control Section(string title, Control body)
+    static Control Section(string title, string subtitle, Control body)
     {
         var head = new TextBlock { Text = title.ToUpperInvariant(), Classes = { "section" } };
-        var rule = new Border { Height = 1, Margin = new Thickness(0, 6, 0, 10) };
+        var sub = new TextBlock
+        {
+            Text = subtitle, FontSize = Size("SmallSize"), Classes = { "muted" },
+            TextWrapping = TextWrapping.Wrap, MaxWidth = 640,
+            HorizontalAlignment = HorizontalAlignment.Left,
+        };
+        var rule = new Border { Height = 1, Margin = new Thickness(0, 8, 0, 12) };
         MainWindow.BindBrushTo(rule, Border.BackgroundProperty, "SurfaceBorder");
-        return new StackPanel { Children = { head, rule, body } };
+        return new StackPanel { Children = { head, sub, rule, body } };
     }
 
     static Control Row(params Control[] items)
     {
         var wrap = new WrapPanel();
-        foreach (var c in items) { c.Margin = new Thickness(0, 0, 12, 12); wrap.Children.Add(c); }
+        foreach (var c in items) { c.Margin = new Thickness(0, 0, 16, 16); wrap.Children.Add(c); }
         return wrap;
     }
 
-    static Control Labelled(string label, Control c) => new StackPanel
+    // Name and job under every specimen. Two styles that look alike in
+    // isolation are told apart by what they are for, and that line is what
+    // says whether a difference on screen is deliberate or drift.
+    static Control Spec(string name, string job, Control c, double width = 250) => new StackPanel
     {
-        Spacing = 4,
+        Spacing = 3, HorizontalAlignment = HorizontalAlignment.Left, MaxWidth = width,
         Children =
         {
-            c,
-            new TextBlock { Text = label, FontSize = 11, Classes = { "muted" } },
+            new StackPanel { Children = { c }, HorizontalAlignment = HorizontalAlignment.Left },
+            new TextBlock { Text = name, FontSize = 12, FontWeight = FontWeight.Bold },
+            new TextBlock
+            {
+                Text = job, FontSize = 11, Classes = { "muted" },
+                TextWrapping = TextWrapping.Wrap,
+            },
         },
-        HorizontalAlignment = HorizontalAlignment.Left,
     };
 
     Control TypeSpecimens()
@@ -302,64 +325,135 @@ public class GalleryWindow : Window
         return stack;
     }
 
-    Control ButtonSpecimens()
+    static Button Btn(string text, params string[] classes)
     {
-        var stack = new StackPanel { Spacing = 12 };
-        stack.Children.Add(Row(
-            Labelled("default", new Button { Content = "Save" }),
-            Labelled("primary", new Button { Content = "Install to QuadStick", Classes = { "primary" } }),
-            Labelled("quiet", new Button { Content = "Modes...", Classes = { "quiet" } }),
-            Labelled("danger", new Button { Content = "Delete", Classes = { "danger" } }),
-            Labelled("disabled", new Button { Content = "Undo", IsEnabled = false }),
-            Labelled("icon", new Button { Classes = { "icon" }, Content = "?" }),
-            Labelled("icon danger", new Button { Classes = { "icon", "danger" }, Content = "x" })));
+        var b = new Button { Content = text };
+        foreach (var c in classes) b.Classes.Add(c);
+        return b;
+    }
 
-        var track = new Border { Classes = { "switchtrack" } };
-        var keys = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
-        foreach (var (word, primary) in new[] { ("Device view", true), ("Parts list", false), ("List view", false) })
-            keys.Children.Add(new Button
-            { Content = word, Classes = { "switchkey", primary ? "primary" : "switchkey" } });
-        track.Child = keys;
-        stack.Children.Add(Labelled("switchtrack + switchkey", track));
-
-        var card = new Button { Classes = { "card" } };
-        card.Content = new StackPanel
+    // The same word on every kind, in one row. Each specimen below carries its
+    // own real wording, which is what it needs to be judged, but it also means
+    // no two are ever the same size: this row is the only place the styles can
+    // be compared with nothing else changing.
+    static Control SameWord()
+    {
+        var wrap = new WrapPanel();
+        foreach (var cls in new[] { "primary", "", "quiet", "danger" })
         {
-            Spacing = 6,
-            Children =
-            {
-                new TextBlock { Text = "New profile", FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold },
-                new TextBlock { Text = "Start from the factory default layout", Classes = { "cardsub" } },
-            },
-        };
-        stack.Children.Add(Labelled("card", card));
+            var b = cls.Length == 0 ? Btn("Install") : Btn("Install", cls);
+            b.Margin = new Thickness(0, 0, 10, 0);
+            wrap.Children.Add(b);
+        }
+        return wrap;
+    }
 
-        // The device diagram's parts. Selection here is an outline and a wash,
-        // never a solid fill, so both states have to be seen together.
+    Control ActionSpecimens()
+    {
+        var stack = new StackPanel { Spacing = 16 };
+        // Wide on purpose: the comparison only works while all four are on one
+        // line, so this one is not held to the specimen column width.
+        stack.Children.Add(Spec("the four kinds, one word",
+            "Same label on each, so the only difference left is the style.", SameWord(), 640));
+
+        // Most pressed first. Save and the toolbar commands are the ordinary
+        // button; the row icons are pressed more often than anything, once per
+        // edit; primary appears once a screen and danger almost never.
         stack.Children.Add(Row(
-            Labelled("zone", new ToggleButton
-            { Classes = { "zone" }, Content = "Lip", MinWidth = 120, MinHeight = 72 }),
-            Labelled("zone checked", new ToggleButton
-            { Classes = { "zone" }, Content = "Hard sip", IsChecked = true, MinWidth = 120, MinHeight = 72 })));
+            Spec("default", "Save, Open, and most toolbar commands. The ordinary one.",
+                Btn("Save")),
+            Spec("primary", "Install to QuadStick. One a screen at most: it is the thing to do next.",
+                Btn("Install to QuadStick", "primary")),
+            Spec("icon", "Add and delete on every editor row, so it is pressed more than any other. 40px floor.",
+                Btn("+", "icon")),
+            Spec("quiet", "A command that must not compete with Save, like Modes or Advanced.",
+                Btn("Modes...", "quiet")),
+            Spec("icon danger", "Delete one row. Red only where the thing is gone for good.",
+                Btn("x", "icon", "danger")),
+            Spec("danger", "Delete a profile. Rare, deliberate, never what focus lands on first.",
+                Btn("Delete", "danger")),
+            Spec("disabled", "Nothing to undo yet. It stays on screen and says so, rather than vanishing.",
+                new Button { Content = "Undo", IsEnabled = false })));
 
         // A toolbar is a wrap panel whose children carry their own gap, so the
         // spacing between commands is a style, not a container property.
         var toolbar = new WrapPanel { Classes = { "toolbar" } };
         foreach (var word in new[] { "Save", "Undo", "Help" })
-            toolbar.Children.Add(new Button { Content = word });
-        stack.Children.Add(Labelled("toolbar", toolbar));
+            toolbar.Children.Add(Btn(word));
+        stack.Children.Add(Spec("toolbar", "Holds the actions. The gap is a style on the children, not the panel.",
+            toolbar));
         return stack;
     }
 
+    // Everything here is a Button or a ToggleButton too, which is the point of
+    // keeping it apart: it presses like a button and it means something else.
+    // Press Save twice and it saves twice; press a zone twice and you are back
+    // where you started. On and off are shown together because a state you
+    // cannot compare to its opposite cannot be judged.
+    Control ItemSpecimens()
+    {
+        var stack = new StackPanel { Spacing = 16 };
+
+        stack.Children.Add(Row(
+            Spec("card", "A profile on the home screen. The first thing pressed in a session.",
+                Card("Walking", false)),
+            Spec("card, pointer over it", "Only the border moves. A card is content, so it must not look armed.",
+                Card("Driving", true))));
+
+        var track = new Border { Classes = { "switchtrack" } };
+        var keys = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
+        foreach (var (word, on) in new[] { ("Device view", true), ("Parts list", false), ("List view", false) })
+            keys.Children.Add(on ? Btn(word, "switchkey", "primary") : Btn(word, "switchkey"));
+        track.Child = keys;
+        stack.Children.Add(Spec("switchtrack + switchkey",
+            "Which editor you are in. One key is always on, and the on one is the primary style.", track));
+
+        // Selection is an outline and a wash, never a solid fill: a filled zone
+        // reads as a button that is about to fire, and the device diagram has
+        // to be readable at a glance without colour doing the work alone.
+        stack.Children.Add(Row(
+            Spec("zone", "A part of the device, unselected.",
+                Zone("Lip", false)),
+            Spec("zone checked", "The same part, selected. An outline and a wash, never a fill.",
+                Zone("Hard sip", true))));
+        return stack;
+    }
+
+    // The hover state is set, not drawn. A specimen that only claims to be
+    // hovered would go on looking right after the style behind it changed,
+    // which is the one thing the gallery exists to stop.
+    static Control Card(string name, bool over)
+    {
+        var card = new Button { Classes = { "card" } };
+        if (over) ((IPseudoClasses)card.Classes).Set(":pointerover", true);
+        card.Content = new StackPanel
+        {
+            Spacing = 6,
+            Children =
+            {
+                new TextBlock { Text = name, FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold },
+                new TextBlock { Text = "12 bindings, 3 modes", Classes = { "cardsub" } },
+            },
+        };
+        return card;
+    }
+
+    static Control Zone(string name, bool on) => new ToggleButton
+    { Classes = { "zone" }, Content = name, IsChecked = on, MinWidth = 120, MinHeight = 72 };
+
     Control FieldSpecimens() => Row(
-        Labelled("TextBox", new TextBox { Text = "walking.csv", Width = 220 }),
-        Labelled("TextBox empty", new TextBox { Watermark = "note", Width = 160 }),
-        Labelled("ComboBox", new ComboBox
-        { ItemsSource = new[] { "1: Walking", "2: Driving" }, SelectedIndex = 0, Width = 200 }),
-        Labelled("AutoCompleteBox", new AutoCompleteBox
-        { ItemsSource = new[] { "sip_threshold" }, Text = "sip_threshold", Width = 200 }),
-        Labelled("CheckBox", new CheckBox { Content = "Back up to Google Sheets", IsChecked = true }),
-        Labelled("NumericUpDown", new NumericUpDown { Value = 40, Width = 160 }));
+        Spec("TextBox", "A name, a note, a value. The 48px height is a target floor, not a look.",
+            new TextBox { Text = "walking.csv", Width = 220 }),
+        Spec("TextBox, empty", "The watermark says what belongs here without filling it in for anyone.",
+            new TextBox { Watermark = "note", Width = 160 }),
+        Spec("ComboBox", "A closed list, like which mode a binding is on.",
+            new ComboBox { ItemsSource = new[] { "1: Walking", "2: Driving" }, SelectedIndex = 0, Width = 200 }),
+        Spec("AutoCompleteBox", "An open list: the device's names, typed or picked.",
+            new AutoCompleteBox { ItemsSource = new[] { "sip_threshold" }, Text = "sip_threshold", Width = 200 }),
+        Spec("CheckBox", "One setting, on or off.",
+            new CheckBox { Content = "Back up to Google Sheets", IsChecked = true }),
+        Spec("NumericUpDown", "A number with arrows. It never rounds what somebody typed.",
+            new NumericUpDown { Value = 40, Width = 160 }));
 
     Control SurfaceSpecimens()
     {
