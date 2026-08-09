@@ -11,7 +11,20 @@ public static class SafeFileName
         "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
     };
 
-    const int MaxBaseLength = 100;
+    // Firmware 2373 keeps the root file list in `char files[NUM_FILES][32]` and
+    // fills each slot with strncpy(..., 32), which leaves no null terminator
+    // when the name is 32 characters or longer. The device then prints and
+    // opens one run-on string, so the file selector shows garbage and the
+    // profile cannot be loaded at all. 31 characters is the longest name that
+    // still ends inside its slot. Firmware 1476 used a 255 byte slot, so a long
+    // name that works today stops working after the user updates the device.
+    public const int MaxDeviceFileNameLength = 31;
+
+    // ".csv" spends four of the 31.
+    const int MaxBaseLength = MaxDeviceFileNameLength - 4;
+
+    public static bool IsTooLongForDevice(string? fileName) =>
+        (fileName ?? "").Length > MaxDeviceFileNameLength;
 
     // Chars this platform rejects, plus / \ : which are legal on macOS but
     // break a synced file on Windows. Must be safe on both.
@@ -46,5 +59,30 @@ public static class SafeFileName
         if (baseName.Length == 0) baseName = "Untitled";
 
         return baseName + ".csv";
+    }
+
+    // Same thing, but never hands back a name already in `taken`. Cutting the
+    // base to 27 characters makes two different sheet names land on the same
+    // file far more often than the old 100 character cut did, and two profiles
+    // that share a first 27 characters are still two profiles. The number has
+    // to come out of the 27, not be added on top, or the unique name is the one
+    // that no longer fits on the device. Matching ignores case because the
+    // device lowercases every name before it stores or compares it.
+    public static string ForCsv(string? name, IEnumerable<string> taken)
+    {
+        var claimed = new HashSet<string>(taken, StringComparer.OrdinalIgnoreCase);
+        var first = ForCsv(name);
+        if (!claimed.Contains(first)) return first;
+
+        var stem = first[..^4];
+        for (int n = 2; ; n++)
+        {
+            var suffix = $" ({n})";
+            var room = MaxBaseLength - suffix.Length;
+            var head = (stem.Length > room ? stem[..room] : stem).TrimEnd('.', ' ');
+            if (head.Length == 0) head = "Untitled";
+            var candidate = head + suffix + ".csv";
+            if (!claimed.Contains(candidate)) return candidate;
+        }
     }
 }

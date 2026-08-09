@@ -38,6 +38,11 @@ public static class Vocab
     {
         "normal", "toggle", "repeat", "pulse", "duty", "greater_than",
         "less_than", "force_off", "delayed_latch", "delay_off", "delay_on", "tap",
+        // Added by firmware 2373, at the end of the table. Safe there because no
+        // entry in the 14 is a prefix of any other, so the order cannot decide
+        // anything for these two. The table has room for 15: the function code
+        // is unpacked as `binding.function & 0x0F` in DataFlow.c.
+        "increment_value", "decrement_value",
     };
 
     public static readonly IReadOnlyList<string> FunctionsInFirmwareOrder;
@@ -80,7 +85,7 @@ public static class Vocab
 
     /// <summary>The firmware's reader is stricter than IsSheetKeyword: it
     /// dispatches sheets by strncmp on the START of the raw line, case
-    /// sensitively (Configuration.c, firmware 1476). A sheet whose A1 merely
+    /// sensitively (Configuration.c, firmware 2373). A sheet whose A1 merely
     /// CONTAINS "Profile" is silently skipped by the device.</summary>
     public static bool FirmwareAcceptsSheetKeyword(string rawA1) =>
         rawA1.StartsWith("Profile", StringComparison.Ordinal)
@@ -95,14 +100,20 @@ public static class Vocab
     public static bool IsKnownOutput(string name) => KnownOutputs.Contains(name);
 
     // Preference names legal in a mode sheet's output column: the firmware
-    // (Configuration.c, 1476) tries preference_keywords when the output name
+    // (Configuration.c, 2373) tries preference_keywords when the output name
     // doesn't match, and reads the row as "set this preference for this mode".
     // digital_out_1..4 are excluded: they match output_keywords FIRST on the
     // device, so they are outputs there, never preference overrides.
     public static readonly IReadOnlySet<string> PreferenceOverrides = new HashSet<string>(StringComparer.Ordinal)
     {
         "sip_puff_threshold_soft", "sip_puff_threshold", "sip_puff_maximum",
-        "sip_puff_delay_soft", "joystick_deflection_minimum",
+        "sip_puff_delay_soft", "sip_puff_delay_hard",
+        // Sip and puff split apart, so a sip and a puff can have their own
+        // thresholds. Zero on any of these means the matching sip_puff_ setting
+        // still applies to that direction.
+        "sip_threshold_soft", "sip_threshold", "sip_maximum",
+        "puff_threshold_soft", "puff_threshold", "puff_maximum",
+        "joystick_deflection_minimum",
         "joystick_deflection_maximum", "joystick_warning", "joystick_alarm",
         "joystick_D_Pad_inner", "joystick_D_Pad_outer",
         "joystick_dead_zone_shape", "anti_dead_zone", "volume", "brightness",
@@ -116,36 +127,54 @@ public static class Vocab
         "usb_1_multiplier_down", "usb_1_multiplier_up",
         "usb_2_multiplier_right", "usb_2_multiplier_left",
         "usb_2_multiplier_down", "usb_2_multiplier_up",
-        "enable_usb_a_device", "enable_swap_inputs", "enable_select_files",
+        "usb_1_dead_zone", "usb_2_dead_zone",
+        "enable_usb_a_device", "enable_usb_a_host", "enable_swap_inputs",
+        "enable_select_files",
         "enable_DS3_emulation", "enable_auto_zero", "enable_left_side_tube",
         "enable_usb_comm", "enable_rumble", "bluetooth_throttle",
-        "bluetooth_remote_address", "bluetooth_remote_adapter",
+        "bluetooth_remote_address", "bluetooth_remote_adapter", "titan_two",
     };
 
     // A mode row whose output cell is a preference name sets that preference
     // for the mode instead of binding a button, so its column C is a value and
-    // not an input. increment_value and decrement_value are the exception:
-    // those rows adjust the setting live, so they stay real bindings.
+    // not an input. The function cell plays no part in deciding this.
     //
-    // Every place that has to tell the two apart calls this. They used to each
-    // carry their own copy of the rule and one of them dropped the exception,
-    // which left the same cell reading as a setting's value in one view and as
-    // a physical input in another.
+    // This used to carve out increment_value and decrement_value, on the theory
+    // that such a row adjusts the setting live. Firmware 2373 settled it and the
+    // theory was wrong. Configuration.c takes the preference branch on the
+    // output NAME alone and then skips the function cell unconditionally:
+    //
+    //     binding.output += 1024;
+    //     next_word(line_buffer, &k);                        // skip "function"
+    //     binding.function = atoi(next_word(line_buffer, &k));
+    //
+    // There is no function lookup on that path in either firmware, so
+    // "mouse_speed,increment_value 5,right_sip" sets mouse_speed to
+    // atoi("right_sip"), which is 0, on a 2025 device exactly as on a 2017 one.
+    //
+    // The two functions are real, they just belong on real outputs: they step an
+    // output channel's analog value 0..1023 and latch it (DataFlow.c), so
+    // "left_joy_up,increment_value 5,mp_center_puff" raises the stick 5% a puff
+    // and holds it. The switch that runs them is guarded by
+    // `if (output_id <= KEYBOARD_RIGHT_GUI)`, which a preference id (biased by
+    // +1024) can never satisfy.
+    //
+    // Every place that has to tell the two apart calls this.
     public static bool IsPreferenceOverride(string output, string function) =>
-        PreferenceOverrides.Contains(output)
-        && !function.StartsWith("increment_value", StringComparison.Ordinal)
-        && !function.StartsWith("decrement_value", StringComparison.Ordinal);
+        PreferenceOverrides.Contains(output);
 
-    // Input names present in the firmware's own keyword table (1476) but
-    // absent from the current validation endpoint. Old profiles use them and
-    // the device parses them; the app accepts them with a warning.
+    // Input names present in the firmware's own keyword table but absent from
+    // the current validation endpoint. "Legacy" is about the endpoint, not the
+    // device: 2373 still has all five, so a profile using one still works and
+    // the app accepts it with a warning rather than telling its owner to change
+    // a name their QuadStick answers to.
     public static readonly IReadOnlySet<string> LegacyInputs = new HashSet<string>(StringComparer.Ordinal)
     { "push", "lip_soft", "right_sip_long", "right_puff_long", "bluetooth_status" };
 
-    // The same story on the output side. Firmware 1476's output table has these
-    // two unaxed aliases; the current validation endpoint only lists the axed
-    // forms (gyroscope_x_cw and friends). A profile using one works on the
-    // device, so telling its owner to replace it would be wrong.
+    // The same story on the output side. The firmware's output table still has
+    // these two unaxed aliases in 2373; the current validation endpoint only
+    // lists the axed forms (gyroscope_x_cw and friends). A profile using one
+    // works on the device, so telling its owner to replace it would be wrong.
     public static readonly IReadOnlySet<string> LegacyOutputs = new HashSet<string>(StringComparer.Ordinal)
     { "gyroscope_cw", "gyroscope_ccw" };
 
@@ -177,6 +206,12 @@ public static class Vocab
     // it matches every other keyword: the whole word, case sensitively, with usb
     // as the fallback. So "Bluetooth" and "usb bluetooth" are not two ways of
     // saying something, they are two ways of getting usb without being told.
+    //
+    // "both" is new in 2373, where the channel is a bitmask (USB 1, BLUETOOTH 2,
+    // USB_AND_BLUETOOTH 3) and the mode runs on either. A 2017 device does not
+    // know the word, so it falls back to usb and, because that firmware tests
+    // the channel with == rather than a mask, the mode loses Bluetooth with
+    // nothing said. See BothChannelNeedsNewFirmware in the validator.
     public static readonly IReadOnlySet<string> Channels =
-        new HashSet<string>(StringComparer.Ordinal) { "none", "usb", "bluetooth" };
+        new HashSet<string>(StringComparer.Ordinal) { "none", "usb", "bluetooth", "both" };
 }

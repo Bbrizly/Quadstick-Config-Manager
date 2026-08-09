@@ -148,14 +148,133 @@ public class PreferenceCatalogTests
         Assert.False(p.ModeOverride);
     }
 
-    // QMP's conflicting name and the values the spec refuses to guess stay out
-    // of the catalog, so a file carrying them is preserved as unknown text.
-    [Theory]
-    [InlineData("enable_usb_a_host")]
-    [InlineData("titan_two")]
-    public void Unproven_names_are_not_catalogued(string name)
+    // The app models firmware 2373, so every name in that device's preference
+    // table has an entry. A real preference must never reach the editor with
+    // nothing known about it.
+    [Fact]
+    public void Every_firmware_2373_preference_is_catalogued()
     {
-        Assert.False(PreferenceCatalog.TryGet(name, out _));
+        foreach (var name in FirmwareOracle.Preferences)
+            Assert.True(PreferenceCatalog.TryGet(name, out _),
+                $"{name} is in firmware 2373 but not in the catalog.");
+    }
+
+    // And nothing the other way: the catalog never names a preference the
+    // device does not have.
+    [Fact]
+    public void The_catalog_invents_no_preference_names()
+    {
+        foreach (var p in PreferenceCatalog.All)
+            Assert.Contains(p.Name, FirmwareOracle.Preferences);
+    }
+
+    // Firmware 2373 added these four. Defaults are the device's own, from
+    // Preferences.h, not a guess.
+    [Theory]
+    [InlineData("usb_1_dead_zone", PreferenceEditor.Integer, "20", "raw axis counts")]
+    [InlineData("usb_2_dead_zone", PreferenceEditor.Integer, "20", "raw axis counts")]
+    [InlineData("enable_usb_a_host", PreferenceEditor.Toggle, "1", "")]
+    [InlineData("titan_two", PreferenceEditor.Toggle, "0", "")]
+    public void Firmware_2373_names_are_catalogued(
+        string name, PreferenceEditor editor, string def, string unit)
+    {
+        Assert.True(PreferenceCatalog.TryGet(name, out var p), $"{name} is missing from the catalog.");
+        Assert.Equal(editor, p.Editor);
+        Assert.Equal(def, p.Default);
+        Assert.Equal(unit, p.Unit);
+        Assert.True(p.ModeOverride, $"{name} is in the 2373 preference table, so a mode row reaches it.");
+        Assert.Contains("2373", p.Source, StringComparison.Ordinal);
+        // Someone on older firmware needs to know the name is new.
+        Assert.Contains("firmware 2373", p.Description, StringComparison.Ordinal);
+    }
+
+    // The USB dead zone counts raw steps of a host controller's axis byte, not
+    // percent, and nothing states a range, so none may be claimed.
+    [Theory]
+    [InlineData("usb_1_dead_zone")]
+    [InlineData("usb_2_dead_zone")]
+    public void USB_dead_zones_claim_no_range(string name)
+    {
+        Assert.True(PreferenceCatalog.TryGet(name, out var p));
+        Assert.Null(p.Minimum);
+        Assert.Null(p.Maximum);
+    }
+
+    // Firmware 2373 has sip_puff_delay_hard in its preference table, so a mode
+    // row can set it, and the device's own default is 2000 ms, not QMP's 2400.
+    [Fact]
+    public void Hard_sip_puff_delay_is_a_mode_override_of_2000_ms()
+    {
+        Assert.True(PreferenceCatalog.TryGet("sip_puff_delay_hard", out var p));
+        Assert.True(p.ModeOverride);
+        Assert.Equal("2000", p.Default);
+        Assert.Equal("milliseconds", p.Unit);
+    }
+
+    // Three defaults moved between firmware 1476 and 2373. The catalog follows
+    // the device.
+    [Fact]
+    public void Firmware_2373_default_changes_are_carried()
+    {
+        Assert.True(PreferenceCatalog.TryGet("bluetooth_authentication_mode", out var auth));
+        Assert.Equal("2", auth.Default);
+        Assert.Contains("2", auth.Options);
+
+        // Text, so the new default of 5 is recorded in prose rather than
+        // written into anybody's file.
+        Assert.True(PreferenceCatalog.TryGet("bluetooth_throttle", out var throttle));
+        Assert.Equal(PreferenceEditor.Text, throttle.Editor);
+        Assert.Null(throttle.Default);
+        Assert.Contains("defaults to 5", throttle.Source, StringComparison.Ordinal);
+
+        Assert.True(PreferenceCatalog.TryGet("enable_auto_zero", out var zero));
+        Assert.Equal("0", zero.Default);
+    }
+
+    // A name the device parses and then throws away is still something the app
+    // knows, so it has to say so instead of leaving the setting looking live.
+    [Theory]
+    [InlineData("usb_2_dead_zone")]
+    [InlineData("enable_auto_zero")]
+    public void Settings_the_device_ignores_say_so(string name)
+    {
+        Assert.True(PreferenceCatalog.TryGet(name, out var p));
+        Assert.Contains("ignores", p.Description, StringComparison.Ordinal);
+    }
+
+    // Value 5 meant PC only, no joystick on firmware 1476 and means a Nintendo
+    // Switch Pro Controller on 2373, so the same file behaves differently after
+    // an update. The description names every value and says that out loud. It
+    // stays text: a choice would raise an Error on any off list value and turn
+    // valid files red.
+    [Fact]
+    public void USB_emulation_mode_documents_every_value()
+    {
+        Assert.True(PreferenceCatalog.TryGet("enable_DS3_emulation", out var p));
+        Assert.Equal(PreferenceEditor.Text, p.Editor);
+        Assert.Empty(p.Options);
+        Assert.Null(p.Default);
+        foreach (var meaning in new[]
+                 {
+                     "QuadStick native", "DualShock 3", "x360ce", "Xbox 360",
+                     "Nintendo Switch Pro Controller", "no USB drive", "DS4 wireless",
+                 })
+            Assert.Contains(meaning, p.Description, StringComparison.Ordinal);
+        Assert.Contains("1476", p.Description, StringComparison.Ordinal);
+        Assert.NotEqual("", p.Risk);
+    }
+
+    // No entry may still say a name is missing from the device's table when
+    // firmware 2373 has it. These sentences used to drive modeOverride.
+    [Fact]
+    public void No_entry_claims_a_catalogued_name_is_absent()
+    {
+        foreach (var p in PreferenceCatalog.All)
+        {
+            var prose = $"{p.Source} {p.Description} {p.Risk}";
+            Assert.DoesNotContain("absent from firmware", prose, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("has no such name", prose, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     [Theory]
@@ -204,10 +323,6 @@ public class PreferenceCatalogTests
         Assert.Equal("140", mult.Default);
         Assert.Null(mult.Minimum);
         Assert.Null(mult.Maximum);
-
-        // Not in the firmware keyword table, so it is device wide only.
-        Assert.True(PreferenceCatalog.TryGet("sip_puff_delay_hard", out var hard));
-        Assert.False(hard.ModeOverride);
     }
 
     [Fact]

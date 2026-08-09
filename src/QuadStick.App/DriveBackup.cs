@@ -371,7 +371,7 @@ public sealed class DriveBackup
                 if (parsed.Document.Sheets.Count == 0)
                 { failed.Add((reportName, "not a valid profile")); continue; }
 
-                var fileName = DedupeName(SafeFileName.ForCsv(pick.Name), batchNames);
+                var fileName = SafeFileName.ForCsv(pick.Name, batchNames);
                 batchNames.Add(fileName);
                 reportName = Path.GetFileNameWithoutExtension(fileName);
 
@@ -421,20 +421,6 @@ public sealed class DriveBackup
         }
 
         return new RestoreSummary(imported, skipped, failed);
-    }
-
-    // A file name unique within this batch: append " (2)", " (3)", ... before
-    // the extension until it stops colliding with a name already claimed.
-    static string DedupeName(string fileName, HashSet<string> claimed)
-    {
-        if (!claimed.Contains(fileName)) return fileName;
-        var stem = Path.GetFileNameWithoutExtension(fileName);
-        var ext = Path.GetExtension(fileName);
-        for (int n = 2; ; n++)
-        {
-            var candidate = $"{stem} ({n}){ext}";
-            if (!claimed.Contains(candidate)) return candidate;
-        }
     }
 }
 

@@ -66,6 +66,18 @@ public static class Device
         ProfileFile file, string deviceRoot, string backupDir,
         bool confirmDefaultCsv = false, bool confirmPreferencesCsv = false)
     {
+        // Before the generic error dump, because this one has a single fix and
+        // the user needs to read it. The device holds each root file name in a
+        // 31 character slot, so a longer name copies onto the stick fine, then
+        // cannot be opened, and runs into the next name in the device's own
+        // list so the file after it reads as garbage too.
+        var declared = file.Document.CsvFileName;
+        if (declared is not null && SafeFileName.IsTooLongForDevice(declared))
+            throw new InvalidOperationException(
+                $"\"{declared}\" is too long for the QuadStick to load, so nothing was written. " +
+                $"A profile name can be {SafeFileName.MaxDeviceFileNameLength} characters at most, counting \".csv\", " +
+                $"and this one is {declared.Length}. Shorten the name in cell A2 and install again.");
+
         if (file.HasErrors)
             throw new InvalidOperationException(
                 "This profile has validation errors and cannot be installed:\n" +

@@ -88,10 +88,11 @@ public partial class MainWindow
     }
 
     // The same rule Validator uses: a mode row whose output is a preference
-    // name sets that preference for the mode, unless increment_value or
-    // decrement_value makes it a live binding that adjusts the setting instead.
-    // The same rule read straight off the grid, for the moments before the
-    // file has been reparsed into bindings.
+    // name sets that preference for the mode, whatever the function cell says.
+    // The device skips that cell without reading it, so increment_value does
+    // not make such a row a live binding on any firmware.
+    // Read straight off the grid, for the moments before the file has been
+    // reparsed into bindings.
     bool IsSettingRow(int row) =>
         _file is not null && Vocab.IsPreferenceOverride(_file.GetCell(row, 0), _file.GetCell(row, 1));
 

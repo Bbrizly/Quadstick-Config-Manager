@@ -21,12 +21,12 @@ public class DeviceAgreementTests
 {
     const string Head = "Profile Name,,Left joy\ngame.csv\nOutputs,Function,usb\n";
 
-    // A name the app offers that firmware 1476 has never heard of. The app's
+    // A name the app offers that the firmware has never heard of. The app's
     // vocabulary comes from Fred's validation endpoint, which tracks whatever
-    // firmware is current, and the source we hold is 1476, so the two are
-    // allowed to differ. What is NOT allowed is the list growing without
-    // anybody noticing, which is what The_only_names_the_two_disagree_on pins.
-    static bool BeyondFirmware1476(string name) =>
+    // firmware is current, so the two are allowed to differ. What is NOT
+    // allowed is the list growing without anybody noticing, which is what
+    // The_only_names_the_two_disagree_on pins.
+    static bool BeyondFirmware(string name) =>
         !FirmwareOracle.Outputs.Contains(name)
         && !FirmwareOracle.Inputs.Contains(name)
         && !FirmwareOracle.Preferences.Contains(name);
@@ -99,7 +99,7 @@ public class DeviceAgreementTests
                     if (!wanted.SequenceEqual(got[d].Inputs, StringComparer.Ordinal))
                         diffs.Add((b.Row, $"the app shows inputs [{string.Join(", ", wanted)}], "
                             + $"the device gets [{string.Join(", ", got[d].Inputs)}]",
-                            wanted.Except(got[d].Inputs).All(BeyondFirmware1476)));
+                            wanted.Except(got[d].Inputs).All(BeyondFirmware)));
                     d++;
                 }
                 else
@@ -108,7 +108,7 @@ public class DeviceAgreementTests
                     // the app reports once for the whole mode rather than on
                     // every row below it.
                     diffs.Add((b.Row, $"the app shows a binding for \"{b.Output}\" that the device never reads",
-                        BeyondFirmware1476(b.Output) || got.Count >= FirmwareOracle.MaxBindings));
+                        BeyondFirmware(b.Output) || got.Count >= FirmwareOracle.MaxBindings));
                 }
             }
 
@@ -152,9 +152,11 @@ public class DeviceAgreementTests
     // the line goes to the device empty, which ends the mode.
     [InlineData("x,normal,lip\n \ncircle,normal,mp_center_sip\n")]
     [InlineData("x,normal,lip\n\"\r\n\"\ncircle,normal,mp_center_sip\n")]
-    // The app reads this as a binding that nudges a setting; firmware 1476 has
-    // no such function and reads column C as the setting's value. A real
-    // disagreement, so the app has to say something on the row.
+    // A setting name in column A with increment_value in column B. The app used
+    // to read this as a binding that nudges the setting and the device never
+    // did: it skips column B and reads column C as the value. The app agrees
+    // now, and the row still has to be spoken for, because column C holds an
+    // input name where the device wants a number.
     [InlineData("mouse_speed,increment_value 5,right_sip\n")]
     [InlineData("volume,decrement_value 1,lip\n")]
     // The plain cases, which must stay silent because there is nothing to say.
@@ -287,11 +289,14 @@ public class DeviceAgreementTests
             + string.Join("\n  ", broken.Take(30)));
     }
 
-    // The whole of the disagreement we are knowingly living with. These are
-    // names the app offers that firmware 1476 does not have, so on a device
-    // running that firmware the row does nothing and the app does not say so.
-    // Almost certainly they exist in newer firmware, which is why they are on
-    // Fred's list, but the app cannot tell which firmware is plugged in.
+    // The whole of the disagreement we are knowingly living with, and on 2373
+    // there is none: every name the app offers is in the device's own tables.
+    //
+    // It used to hold 34 names, all of them things Fred's validation endpoint
+    // listed and the 2017 source did not: the Xbox Adaptive Controller outputs,
+    // the six that split sip from puff, mp_right_mode_*, any_direction. 2373
+    // has all 34. The endpoint was never wrong, it was just ahead of the source
+    // we could read.
     //
     // If this test fails, the app's vocabulary moved. Either a newer firmware
     // source has arrived and the tables under corpus/ need re-dumping, or a
@@ -300,41 +305,36 @@ public class DeviceAgreementTests
     public void The_only_names_the_two_disagree_on_are_the_ones_we_know_about()
     {
         var appNames = Vocab.Inputs.Concat(Vocab.KnownOutputs).Concat(Vocab.PreferenceOverrides);
-        var beyond = appNames.Where(BeyondFirmware1476).OrderBy(n => n, StringComparer.Ordinal).ToArray();
+        var beyond = appNames.Where(BeyondFirmware).OrderBy(n => n, StringComparer.Ordinal).ToArray();
 
-        Assert.Equal(new[]
-        {
-            "any_direction",
-            "capture",
-            "kb_application",
-            "mp_right_mode_puff",
-            "mp_right_mode_puff_soft",
-            "mp_right_mode_sip",
-            "mp_right_mode_sip_soft",
-            "reset_quadstick",
-            "usb_1_button_16",
-            "usb_1_dead_zone",
-            "usb_2_button_16",
-            "usb_2_dead_zone",
-            // The Xbox Adaptive Controller outputs, which 1476 does not have at
-            // all. On their own they say the endpoint's list is simply newer.
-            "xac_left_A",
-            "xac_left_B",
-            "xac_left_LB",
-            "xac_left_LS",
-            "xac_left_down",
-            "xac_left_menu",
-            "xac_left_up",
-            "xac_left_view",
-            "xac_right_RB",
-            "xac_right_RS",
-            "xac_right_X",
-            "xac_right_Y",
-            "xac_right_down",
-            "xac_right_menu",
-            "xac_right_up",
-            "xac_right_view",
-        }, beyond);
+        Assert.Equal(Array.Empty<string>(), beyond);
+    }
+
+    // What licenses modelling 2373 alone. The app cannot read the firmware off
+    // an attached device, so it has to pick one to describe, and it picks the
+    // current one. That is only safe because 2373 took nothing away: every
+    // keyword a 2017 device knows, a 2025 device still knows, so no profile
+    // written against the old firmware can break on the new one.
+    //
+    // If this fails, that stopped being true and the app owes its users a
+    // warning it does not currently have.
+    [Theory]
+    [InlineData("outputs")]
+    [InlineData("inputs")]
+    [InlineData("preferences")]
+    [InlineData("functions")]
+    public void The_new_firmware_took_nothing_away(string table)
+    {
+        static string[] Read(int version, string table) =>
+            System.Text.Json.JsonDocument
+                .Parse(File.ReadAllBytes(Path.Combine("corpus", $"firmware-{version}.json")))
+                .RootElement.GetProperty(table)
+                .EnumerateArray().Select(x => x.GetString()!).ToArray();
+
+        var dropped = Read(1476, table).Except(Read(2373, table), StringComparer.Ordinal)
+            .OrderBy(n => n, StringComparer.Ordinal).ToArray();
+
+        Assert.Equal(Array.Empty<string>(), dropped);
     }
 
     // The oracle is only worth anything if it really is the firmware's reader,

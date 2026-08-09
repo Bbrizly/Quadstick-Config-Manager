@@ -42,14 +42,21 @@ public class FirmwareReaderTests
         Assert.Contains(issues, i => i.Severity == Severity.Warning && i.Cell.StartsWith('B'));
     }
 
+    // A setting name in column A wins whatever column B says. The device takes
+    // the preference branch on the name and then skips the function cell
+    // without reading it, so column C is the value and never an input. Firmware
+    // 2373 has increment_value in its function table and still does this.
     [Fact]
-    public void Preference_name_with_increment_value_is_a_live_binding_and_validates_inputs()
+    public void Preference_name_with_increment_value_is_still_read_as_a_setting()
     {
-        var ok = All(Head + "mouse_speed,increment_value 5,right_sip\n");
-        Assert.Empty(ok.Where(i => i.Severity == Severity.Error));
+        // "right_sip" is an input name, not a number, so the device stores 0.
+        var issues = All(Head + "mouse_speed,increment_value 5,right_sip\n");
+        Assert.Contains(issues, i =>
+            i.Cell == "C4" && i.Severity == Severity.Error && i.Message.Contains("whole number"));
 
+        // And it is not treated as an input, so no unknown-input complaint.
         var bad = All(Head + "mouse_speed,increment_value 5,not_an_input\n");
-        Assert.Contains(bad, i => i.Kind == IssueKind.UnknownInput && i.Message.Contains("not_an_input"));
+        Assert.DoesNotContain(bad, i => i.Kind == IssueKind.UnknownInput);
     }
 
     // A Preferences sheet is not a mode sheet: the value lives in column B,

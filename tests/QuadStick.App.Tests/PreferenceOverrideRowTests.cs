@@ -66,13 +66,20 @@ public class PreferenceOverrideRowTests
     }
 
     [AvaloniaFact]
-    public void An_increment_value_row_is_still_a_binding_with_an_input()
+    // This row used to be shown as a live binding, on the guess that a firmware
+    // newer than the 2017 source would honour increment_value on a setting
+    // name. Firmware 2373 says otherwise: the device takes the preference
+    // branch on the name and skips the function cell without reading it, so
+    // column C is the setting's value. Showing an input picker here told the
+    // owner they had bound their sip, when what they had was mouse_speed set
+    // to zero.
+    public void An_increment_value_row_on_a_setting_name_is_shown_as_a_setting()
     {
         var w = Open(Header + "mouse_speed,increment_value 5,right_sip\n", out var f);
         var said = Spoken(w, 4);
 
-        Assert.Contains(said, n => n.StartsWith("Input 1 for row 4"));
-        Assert.DoesNotContain($"Setting value for row 4", said);
+        Assert.Contains("Setting value for row 4", said);
+        Assert.DoesNotContain(said, n => n.StartsWith("Input 1 for row 4"));
 
         f.Dirty = false;
         w.Close();

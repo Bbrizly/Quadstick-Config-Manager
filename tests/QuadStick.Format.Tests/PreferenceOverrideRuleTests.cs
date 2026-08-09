@@ -4,21 +4,24 @@ using Xunit;
 namespace QuadStick.Format.Tests;
 
 // One rule for "is this row a setting or a binding", in one place. Three copies
-// of it used to live in three files and one had dropped the increment_value
-// exception, so the same cell read as a setting's value in the import review
-// and as a physical input in the editor next to it.
+// of it used to live in three files and they had drifted apart, so the same
+// cell read as a setting's value in the import review and as a physical input
+// in the editor next to it.
 public class PreferenceOverrideRuleTests
 {
     [Theory]
     [InlineData("mouse_speed", "", true)]
     [InlineData("mouse_speed", "normal", true)]
     [InlineData("volume", "", true)]
-    // These two adjust the setting live, so the row really is a binding and
-    // column C really is an input.
-    [InlineData("mouse_speed", "increment_value 5", false)]
-    [InlineData("mouse_speed", "decrement_value 5", false)]
+    // The function cell does not get a say. The device takes the preference
+    // branch on the output name and then skips column B without reading it, so
+    // whatever is written there changes nothing.
+    [InlineData("mouse_speed", "increment_value 5", true)]
+    [InlineData("mouse_speed", "decrement_value 5", true)]
+    [InlineData("mouse_speed", "wibble", true)]
     // Not a setting name at all.
     [InlineData("left_trigger", "", false)]
+    [InlineData("left_trigger", "increment_value 5", false)]
     [InlineData("", "", false)]
     public void A_settings_row_is_told_from_a_binding_by_name_and_function(
         string output, string function, bool isSetting) =>
@@ -33,22 +36,42 @@ public class PreferenceOverrideRuleTests
             i.Cell == "C4" && i.Severity == Severity.Error && i.Message.Contains("whole number"));
     }
 
+    // The app used to read this row as a live binding, on the theory that a
+    // newer firmware than the 2017 source would honour increment_value here.
+    // Firmware 2373 arrived and it does not: the preference branch skips column
+    // B without looking at it and runs atoi over column C, so this row sets
+    // mouse_speed to atoi("right_sip"), which is zero.
+    //
+    // Quietly zeroing somebody's mouse speed is exactly the failure this app
+    // exists to prevent, so the row has to be called what it is.
     [Fact]
-    public void An_increment_value_row_keeps_its_input_and_is_not_read_as_a_value()
+    public void An_increment_value_row_on_a_setting_name_is_still_read_as_a_value()
     {
         var f = ProfileFile.Load(
             "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nmouse_speed,increment_value 5,right_sip\n");
+
+        Assert.True(Vocab.IsPreferenceOverride("mouse_speed", "increment_value 5"));
+        Assert.Contains(f.Issues, i =>
+            i.Cell == "C4" && i.Severity == Severity.Error && i.Message.Contains("whole number"));
+    }
+
+    // The two functions are real, they just belong on a real output. There the
+    // device does run them, stepping the channel's analog value and latching it.
+    [Fact]
+    public void An_increment_value_row_on_a_real_output_is_a_binding()
+    {
+        var f = ProfileFile.Load(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nleft_joy_up,increment_value 5,mp_center_puff\n");
         var b = Assert.Single(f.Document.Sheets[0].Bindings);
-        Assert.Equal(new[] { "right_sip" }, b.Inputs);
-        // "right_sip" is a real input, so nothing here complains that it is not
-        // a whole number. That complaint would mean the row had been read as a
-        // setting after all.
+
+        Assert.False(Vocab.IsPreferenceOverride("left_joy_up", "increment_value 5"));
+        Assert.Equal(new[] { "mp_center_puff" }, b.Inputs);
         Assert.DoesNotContain(f.Issues, i => i.Message.Contains("whole number"));
     }
 
-    // Firmware 1476's output table still has the unaxed gyroscope aliases, so a
-    // profile using one works. The app used to tell its owner to pick a
-    // different name, and FORMAT.md already said it did the opposite.
+    // The firmware's output table still has the unaxed gyroscope aliases in
+    // 2373, so a profile using one works. The app used to tell its owner to pick
+    // a different name, and FORMAT.md already said it did the opposite.
     [Theory]
     [InlineData("gyroscope_cw")]
     [InlineData("gyroscope_ccw")]

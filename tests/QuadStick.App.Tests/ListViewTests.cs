@@ -935,7 +935,10 @@ public class ListViewTests
     }
 
     [AvaloniaFact]
-    public void A_standalone_only_setting_is_not_offered_as_a_mode_override()
+    // Both halves of the hard sip/puff delay are honored per mode on firmware
+    // 2373. The hard one used to be offered on a Preferences sheet only,
+    // because the 2017 source had no such preference name at all to honor.
+    public void The_hard_sip_puff_delay_is_offered_as_a_mode_override()
     {
         var w = ShowSheet(
             "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n", 0, out var file);
@@ -951,8 +954,8 @@ public class ListViewTests
 
         var hits = panel.GetVisualDescendants().OfType<Button>()
             .Select(b => AutomationProperties.GetName(b) ?? "").ToList();
-        Assert.Contains("sip_puff_delay_soft", hits);      // honored per mode
-        Assert.DoesNotContain("sip_puff_delay_hard", hits); // standalone only
+        Assert.Contains("sip_puff_delay_soft", hits);
+        Assert.Contains("sip_puff_delay_hard", hits);
 
         file.Dirty = false;
         w.Close();

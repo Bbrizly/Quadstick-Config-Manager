@@ -16,8 +16,7 @@ import re
 import sys
 from pathlib import Path
 
-OUT = Path(__file__).resolve().parent.parent / \
-    "tests/QuadStick.Format.Tests/corpus/firmware-1476.json"
+CORPUS = Path(__file__).resolve().parent.parent / "tests/QuadStick.Format.Tests/corpus"
 
 
 def table(path, name):
@@ -58,13 +57,15 @@ def main():
         "functions": table(root / "preference_keywords.h", "function_keywords"),
     }
 
-    OUT.write_text(json.dumps(data, indent=1) + "\n")
-    print(f"wrote {OUT.name}: firmware {version}, "
+    # Named after the version it came from, so a newer firmware can never
+    # overwrite an older dump and quietly change what the tests call the truth.
+    out = CORPUS / f"firmware-{version}.json"
+    out.write_text(json.dumps(data, indent=1) + "\n")
+    print(f"wrote {out.name}: firmware {version}, "
           + ", ".join(f"{len(data[k])} {k}" for k in
                       ("outputs", "inputs", "preferences", "functions")))
-    if OUT.name != f"firmware-{version}.json":
-        print(f"NOTE: firmware is {version} but the file is {OUT.name}. "
-              "Rename it and update FirmwareOracle if the version really moved.")
+    print("Point FirmwareOracle at it if this is the firmware to model, and keep "
+          "the older dump: DeviceAgreementTests proves the new one removed nothing.")
 
 
 if __name__ == "__main__":

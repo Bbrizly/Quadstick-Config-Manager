@@ -9,7 +9,7 @@ namespace QuadStick.Format;
 // while the two meant the same thing.
 //
 // Every "the device does X" below is read off the firmware source
-// (Configuration.c, FW_VERSION 1476), not inferred. The binding loop is
+// (Configuration.c, FW_VERSION 2373), not inferred. The binding loop is
 // Load_Configuration_File_Segment; the four rules that decide severity here:
 //
 //   output   search_for_keyword(keyword, output_keywords, ..., NONE), then
@@ -73,18 +73,31 @@ public static class Validator
                     "Trim the mode to 128 rows."));
 
             ValidateChannel(sheet, issues);
+
+            // A mode sets preferences too, from its own rows, and the device
+            // applies them on the way into the mode. So the orderings have to
+            // hold here as well: two equal sip thresholds divide by zero on the
+            // device whether they arrived from a Preferences sheet or from this
+            // one. Column C is where a mode row keeps its value.
+            var modeNumbers = new Dictionary<string, (int Value, int Row)>(StringComparer.Ordinal);
+
             foreach (var b in sheet.Bindings)
             {
                 if (IsPreferenceOverride(b))
                 {
                     ValidatePreferenceOverride(b, issues);
+                    var v = b.InputCols.Count > 0 && b.InputCols[0] == 2 ? b.Inputs[0] : null;
+                    if (v is not null && int.TryParse(v.Trim(), out var n))
+                        modeNumbers[b.Output] = (n, b.Row);
                     continue;
                 }
-                WarnIfFirmwareReadsThisAsASetting(b, issues);
                 ValidateOutput(b, issues);
+                WarnAboutResettingTheDevice(b, issues);
                 ValidateFunction(b, issues);
                 ValidateInputs(b, issues);
             }
+
+            ValidatePreferenceOrder(modeNumbers, "C", issues);
         }
         return issues;
     }
@@ -93,48 +106,20 @@ public static class Validator
     // preference for the mode (firmware: output lookup misses, preference
     // lookup hits, next cell is skipped, the cell after that is the value).
     //
-    // The increment_value/decrement_value exception is NOT what firmware 1476
-    // does. Its function_keywords table has 12 entries and neither of these is
-    // among them, and the preference branch is taken on the output name alone,
-    // so 1476 would skip the function cell and read column C through atoi: a
-    // row like "mouse_speed,increment_value 5,right_sip" sets mouse_speed to 0.
-    // Fred's validation endpoint does list both, so a firmware newer than the
-    // source at hand may well have them. Left as it is deliberately: no profile
-    // in the public catalog uses either keyword, so there is nothing to gain by
-    // guessing, and treating them as live bindings is the reading that does not
-    // silently zero somebody's mouse speed. Revisit against newer firmware.
+    // This used to carry an exception for increment_value and decrement_value,
+    // guessing that a firmware newer than the 2017 source would honour them
+    // here. Firmware 2373 arrived and it does not: the preference branch is
+    // taken on the output name alone and the function cell is skipped without
+    // being read, on both firmwares. The exception, and the warning that
+    // apologised for it, are gone. See Vocab.IsPreferenceOverride.
     static bool IsPreferenceOverride(Binding b) =>
         Vocab.IsPreferenceOverride(b.Output, b.Function);
-
-    // The one row the app and firmware 1476 genuinely read differently.
-    //
-    // increment_value and decrement_value are on the validation endpoint's
-    // function list, so the app treats such a row as a live binding that
-    // adjusts a setting. Firmware 1476 has neither in its 12 entry
-    // function_keywords table, and takes the preference branch on the output
-    // NAME alone, so it skips column B and reads column C with atoi: the row
-    // sets the preference to 0 and binds nothing.
-    //
-    // The app cannot tell which firmware is plugged in and will not guess, so
-    // it says what it does not know. Silence here would break the rule the
-    // whole device agreement suite exists to hold: disagree if you must, but
-    // never disagree quietly.
-    static void WarnIfFirmwareReadsThisAsASetting(Binding b, List<Issue> issues)
-    {
-        if (!Vocab.PreferenceOverrides.Contains(b.Output)) return;
-        if (Vocab.IsPreferenceOverride(b.Output, b.Function)) return; // read as a setting anyway
-        var word = b.Function.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
-        issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-            $"\"{b.Output}\" is a device setting name, and older firmware does not know \"{word}\". "
-            + "Such a QuadStick ignores column B here and reads column C as the setting's value instead of as an input.",
-            "If your QuadStick does not answer this row, set the value with a plain settings row instead."));
-    }
 
     static void ValidatePreferenceOverride(Binding b, List<Issue> issues)
     {
         // The firmware reads the VALUE from the third column (it skips the
         // function column). Files in the wild also carry the value in column
-        // B; firmware 1476 would read those as 0, so flag them.
+        // B, which the device reads as 0, so flag them.
         var valueInC = b.Inputs.Count > 0 && b.InputCols.Count > 0 && b.InputCols[0] == 2
             ? b.Inputs[0] : null;
         if (valueInC != null)
@@ -142,9 +127,9 @@ public static class Validator
             var rejected = false;
             // No word-value exception here, unlike a Preferences sheet. The
             // firmware reads a preferences FILE with a switch that has keyword
-            // tables for the bluetooth settings (Configuration.c:598-621), and
+            // tables for the bluetooth settings (Load_Preferences_File), and
             // reads a MODE row with a bare atoi and nothing else
-            // (Configuration.c:495). So "keyboard" is a real value in column B
+            // (Load_Configuration_File_Segment). So "keyboard" is a real value in column B
             // of a settings sheet and is zero in column C of a mode row.
             if (!long.TryParse(valueInC, System.Globalization.NumberStyles.Integer,
                                System.Globalization.CultureInfo.InvariantCulture, out var parsedInC))
@@ -169,6 +154,7 @@ public static class Validator
             // the app has never heard of is validated as an output instead.
             if (valueInC.Length > 0 && PreferenceCatalog.TryGet(b.Output, out var def))
                 ValidateAgainstCatalog(def, valueInC, $"C{b.Row}", rejected, issues);
+            WarnIfTheDeviceIgnoresIt(b.Output, valueInC, $"C{b.Row}", issues);
             return;
         }
         if (b.Function.Length > 0)
@@ -267,9 +253,10 @@ public static class Validator
             // On a Preferences sheet the value is in column B, so that is the
             // cell the catalog checks point at.
             if (def is not null) ValidateAgainstCatalog(def, value, $"B{b.Row}", rejected, issues);
+            WarnIfTheDeviceIgnoresIt(b.Output, value, $"B{b.Row}", issues);
         }
 
-        ValidatePreferenceOrder(numbers, issues);
+        ValidatePreferenceOrder(numbers, "B", issues);
     }
 
     // What the catalog can prove about one value. Bounds come from the sliders
@@ -331,20 +318,97 @@ public static class Validator
         ("joystick_D_Pad_inner", "joystick_D_Pad_outer", 2),
     };
 
+    // Firmware 2373 split sip from puff, so each direction now has its own trio
+    // and the same ordering has to hold within it. A zero means "use the shared
+    // sip_puff_ value for this direction", which is why the effective value is
+    // what gets compared rather than the cell.
+    //
+    // This is not a tidiness rule. sipuff_hysteresis divides by
+    // (maximum - threshold) and by (threshold - soft threshold), on every scan
+    // and with no guard, so a trio with two equal members is a divide by zero
+    // on a device somebody breathes through.
+    static readonly (string Soft, string Hard, string Max, string Direction)[] SipPuffTrios =
+    {
+        ("sip_threshold_soft", "sip_threshold", "sip_maximum", "sip"),
+        ("puff_threshold_soft", "puff_threshold", "puff_maximum", "puff"),
+    };
+
     // Only runs when both preferences are present on the sheet and both are
     // whole numbers. One of a pair on its own says nothing: the other value
     // lives on the device, where this app cannot see it.
-    static void ValidatePreferenceOrder(Dictionary<string, (int Value, int Row)> numbers, List<Issue> issues)
+    // valueColumn is B on a Preferences sheet and C on a mode sheet, because
+    // that is where each form keeps the number.
+    static void ValidatePreferenceOrder(
+        Dictionary<string, (int Value, int Row)> numbers, string valueColumn, List<Issue> issues)
     {
         foreach (var (lower, upper, gap) in OrderedPairs)
         {
             if (!numbers.TryGetValue(lower, out var lo)) continue;
             if (!numbers.TryGetValue(upper, out var hi)) continue;
             if ((long)lo.Value + gap <= hi.Value) continue;
-            issues.Add(new Issue(Severity.Warning, $"B{hi.Row}",
+            issues.Add(new Issue(Severity.Warning, $"{valueColumn}{hi.Row}",
                 $"\"{upper}\" is {hi.Value} and \"{lower}\" is {lo.Value}. The two need at least {gap} between them, or the settings run into each other.",
                 $"Raise \"{upper}\" to {(long)lo.Value + gap} or more, or lower \"{lower}\"."));
         }
+
+        foreach (var (soft, hard, max, direction) in SipPuffTrios)
+        {
+            CheckSipPuffPair(numbers, valueColumn, soft, hard, direction, issues);
+            CheckSipPuffPair(numbers, valueColumn, hard, max, direction, issues);
+        }
+    }
+
+    // One step of a direction's trio. Both ends have to be knowable from this
+    // sheet: a per-direction cell if it is set, otherwise the shared value if
+    // the sheet carries it. When neither is here the other number lives on the
+    // device, where this app cannot see it, and saying anything would be a
+    // guess.
+    static void CheckSipPuffPair(
+        Dictionary<string, (int Value, int Row)> numbers, string valueColumn,
+        string lowerName, string upperName, string direction, List<Issue> issues)
+    {
+        if (!Effective(numbers, lowerName, out var lo)) return;
+        if (!Effective(numbers, upperName, out var hi)) return;
+        if ((long)lo.Value + 2 <= hi.Value) return;
+
+        // Name the rows that really carry these numbers, not the per-direction
+        // names: when a direction is left at 0 the value comes from the shared
+        // sip_puff_ row, and telling somebody to change a row their file does
+        // not have is worse than saying nothing.
+        issues.Add(new Issue(Severity.Warning, $"{valueColumn}{hi.Row}",
+            $"The {direction} thresholds run into each other: \"{hi.Name}\" is {hi.Value} and \"{lo.Name}\" is {lo.Value}. "
+            + (lo.Value == hi.Value
+                ? "Two equal thresholds make the device divide by zero every time it reads the tube."
+                : "The two need at least 2 between them.")
+            + (hi.Name != upperName || lo.Name != lowerName
+                ? $" (A {direction} setting left at 0 uses the shared sip_puff_ value instead.)"
+                : ""),
+            $"Raise \"{hi.Name}\" to {(long)lo.Value + 2} or more, or lower \"{lo.Name}\"."));
+    }
+
+    // The value a direction really ends up with, and the row that supplies it:
+    // the per-direction setting if it is set, otherwise the shared sip_puff_
+    // one. False when the file settles neither, because then the other number
+    // is on the device where this app cannot see it.
+    static bool Effective(
+        Dictionary<string, (int Value, int Row)> numbers, string own,
+        out (string Name, int Value, int Row) found)
+    {
+        if (numbers.TryGetValue(own, out var mine) && mine.Value != 0)
+        {
+            found = (own, mine.Value, mine.Row);
+            return true;
+        }
+        var shared = "sip_puff_" + (own.EndsWith("maximum", StringComparison.Ordinal) ? "maximum"
+            : own.EndsWith("_soft", StringComparison.Ordinal) ? "threshold_soft"
+            : "threshold");
+        if (numbers.TryGetValue(shared, out var fallback))
+        {
+            found = (shared, fallback.Value, fallback.Row);
+            return true;
+        }
+        found = ("", 0, 0);
+        return false;
     }
 
     // The only three preferences the device does not read with atoi, taken from
@@ -367,6 +431,35 @@ public static class Validator
     };
 
     static bool IsWordValuedPreference(string name) => WordValuedPreferences.Contains(name);
+
+    // Settings the firmware still parses and stores and then never reads. Each
+    // one was live once, which is why files in the wild carry them, and each is
+    // dead in 2373 with the reason beside it. Asking for one of these and being
+    // told nothing is the exact shape of bug this app exists to catch: the file
+    // looks right, the device does nothing, and nobody says which.
+    static readonly Dictionary<string, string> IgnoredByTheDevice = new(StringComparer.Ordinal)
+    {
+        ["enable_auto_zero"] =
+            "the firmware sets it back to 0 after every load, and the code that used it is commented out",
+        ["usb_2_dead_zone"] =
+            "nothing in the firmware ever reads it",
+        ["joystick_warning"] =
+            "the tone it used to trigger is commented out",
+        ["joystick_alarm"] =
+            "the tone it used to trigger is commented out",
+    };
+
+    // Only when the value asks for something. Writing 0 lines up with what the
+    // device does anyway, so there is nothing to warn about.
+    static void WarnIfTheDeviceIgnoresIt(string name, string value, string cell, List<Issue> issues)
+    {
+        if (!IgnoredByTheDevice.TryGetValue(name, out var why)) return;
+        if (!int.TryParse(value.Trim(), out var n) || n == 0) return;
+
+        issues.Add(new Issue(Severity.Warning, cell,
+            $"\"{name}\" does nothing on current firmware: {why}. The row is saved exactly as you wrote it.",
+            "Remove the row, or leave it for an older QuadStick that still answers to it."));
+    }
 
     // The device reads a value with atoi, which is 32 bits wide. long.TryParse
     // accepted anything up to 63 bits and said nothing, so a ten digit value
@@ -409,6 +502,15 @@ public static class Validator
             issues.Add(new Issue(Severity.Error, cell,
                 $"\"{name}\" is a name Windows reserves for hardware, so it cannot be a file there.",
                 "Pick another name, for example \"game.csv\"."));
+        // The device keeps each file name in a 31 character slot and reads past
+        // the end of a longer one, so the profile cannot be opened and the name
+        // after it in the device's own list reads as garbage as well. An error,
+        // not a warning: the file installs and then never loads.
+        if (SafeFileName.IsTooLongForDevice(name))
+            issues.Add(new Issue(Severity.Error, cell,
+                $"\"{name}\" is too long, so the QuadStick will not be able to load it. "
+                + $"A profile name can be {SafeFileName.MaxDeviceFileNameLength} characters at most, counting \".csv\", and this one is {name.Length}.",
+                $"Shorten it to {SafeFileName.MaxDeviceFileNameLength} characters or fewer, for example \"game.csv\"."));
         if (string.Equals(name, "prefs.csv", StringComparison.OrdinalIgnoreCase))
             issues.Add(new Issue(Severity.Warning, cell,
                 "prefs.csv is the device preferences file, not a game configuration.",
@@ -424,7 +526,40 @@ public static class Validator
         if (sheet.Channel.Length > 0 && !Vocab.Channels.Contains(sheet.Channel))
             issues.Add(new Issue(Severity.Warning, $"C{sheet.StartRow + 2}",
                 $"The device does not match \"{sheet.Channel}\" as a channel, so this mode connects over USB instead.",
-                "Use \"usb\", \"bluetooth\", or \"none\", in lower case."));
+                "Use \"usb\", \"bluetooth\", \"both\", or \"none\", in lower case."));
+
+        // "both" only exists in firmware 2373, where the channel is a bitmask.
+        // Older firmware does not have the word, falls back to usb, and then
+        // tests the channel with == rather than a mask, so the mode runs on USB
+        // and its Bluetooth side is gone with nothing said. That is worth saying
+        // out loud: the symptom is "the wireless half of my controller stopped".
+        if (sheet.Channel == "both")
+            issues.Add(new Issue(Severity.Warning, $"C{sheet.StartRow + 2}",
+                "\"both\" needs firmware from 2025 or newer. A QuadStick on older firmware does not know the word, "
+                + "runs this mode over USB only, and says nothing about the Bluetooth half.",
+                "Keep it if your QuadStick is up to date. If it is not, use \"usb\" or \"bluetooth\" and pick one."));
+    }
+
+    // reset_quadstick restarts the device. force_reset waits 300 ms and then,
+    // if the mouthpiece push switch is still closed, jumps into the serial ISP
+    // bootloader instead of rebooting: the QuadStick stops being a controller
+    // until somebody power-cycles it. Somebody who drives everything through
+    // this device may not be able to do that themselves, so the row is worth a
+    // word even though it is doing exactly what it says.
+    static void WarnAboutResettingTheDevice(Binding b, List<Issue> issues)
+    {
+        if (b.Output != "reset_quadstick") return;
+
+        var withPush = b.Inputs.Contains("push", StringComparer.Ordinal);
+        issues.Add(new Issue(Severity.Warning, $"A{b.Row}",
+            withPush
+                ? "\"reset_quadstick\" restarts the QuadStick, and this row fires it from the mouthpiece push switch. "
+                  + "If push is still held when the restart lands, the device goes into its firmware loader and stops "
+                  + "working as a controller until it is unplugged and plugged back in."
+                : "\"reset_quadstick\" restarts the QuadStick. Whatever you are playing loses the controller for a few seconds.",
+            withPush
+                ? "Fire it from something other than push, or from a combination push cannot hold on its own."
+                : "Keep it if that is what you want, and prefer an input that is hard to trigger by accident."));
     }
 
     static void ValidateOutput(Binding b, List<Issue> issues)
@@ -447,6 +582,11 @@ public static class Validator
             return;
         }
         if (Vocab.IsKnownOutput(b.Output)) return;
+        // A preference name never reaches here: the caller sends it to
+        // ValidatePreferenceOverride first. That was not true while
+        // increment_value carved an exception out of IsPreferenceOverride,
+        // and a settings row the device reads perfectly well came through
+        // here and got called an undocumented name.
         // The device's own table still has these, so the row works. Saying
         // "not documented, pick another" would send someone to change a name
         // their QuadStick already answers to.

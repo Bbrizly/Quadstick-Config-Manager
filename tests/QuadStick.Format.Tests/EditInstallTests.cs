@@ -301,6 +301,40 @@ public class DeviceTests : IDisposable
         Assert.Empty(Directory.GetFiles(_drive).Where(p => !p.EndsWith("default.csv", StringComparison.Ordinal)));
     }
 
+    // Firmware 2373 keeps each root file name in a 31 character slot and copies
+    // it in with strncpy(..., 32), which leaves no terminator on a longer name.
+    // The device then reads past the slot, so the profile cannot be opened and
+    // the name after it in the device's own list prints as garbage. The problems
+    // list has to say so, and nothing reaches the stick.
+    [Fact]
+    public void A_name_too_long_for_the_device_is_a_problem_and_never_installs()
+    {
+        var f = Valid(new string('a', 28) + ".csv"); // 32 characters
+
+        Assert.True(f.HasErrors);
+        Assert.Contains(f.Issues, i => i.Severity == Severity.Error
+            && i.Message.Contains("the QuadStick will not be able to load it"));
+
+        // Install says it itself rather than dumping the problems list, because
+        // this failure has one fix and the user has to be able to read it.
+        var ex = Assert.Throws<InvalidOperationException>(() => Device.Install(f, _drive, _backups));
+        Assert.Contains("too long for the QuadStick to load, so nothing was written", ex.Message);
+        Assert.Contains("31 characters at most", ex.Message);
+        Assert.Empty(Directory.GetFiles(_drive).Where(p => !p.EndsWith("default.csv", StringComparison.Ordinal)));
+    }
+
+    // The other side of the boundary. 31 characters including ".csv" is the
+    // longest name the device can still open, so it must install.
+    [Fact]
+    public void A_name_that_exactly_fills_the_device_slot_installs()
+    {
+        var f = Valid(new string('a', 27) + ".csv"); // 31 characters
+
+        Assert.False(f.HasErrors);
+        var result = Device.Install(f, _drive, _backups);
+        Assert.True(File.Exists(result.InstalledPath));
+    }
+
     // The temp file and the restore copy are both scratch. Neither belongs on
     // the stick once the install is done.
     [Fact]

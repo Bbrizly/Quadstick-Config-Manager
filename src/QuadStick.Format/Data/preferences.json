@@ -7,9 +7,9 @@
     "default": "8",
     "minimum": 0,
     "maximum": 20,
-    "description": "Center dead zone for the analog stick, as a percent of full travel. Set it high enough to stop a wandering mouse or joystick. This is a separate thing from the D-Pad rings.",
+    "description": "Center dead zone for the analog stick, as a percent of full travel. Set it high enough to stop a wandering mouse or joystick. This is a separate thing from the D-Pad rings. On firmware 2373 a value of 0 no longer means no dead zone: the device substitutes 129 raw counts instead, and it redoes that on every scan, so it wins over the value worked out when the file was loaded.",
     "modeOverride": true,
-    "source": "QMP-4 QuadStick.py slider_NEUTRAL (0..20) and its tooltip; qsflash.py defaults '8'"
+    "source": "QMP-4 QuadStick.py slider_NEUTRAL (0..20) and its tooltip; qsflash.py defaults '8'. Firmware 2373 Preferences.h:97 also defaults to 8, and DataFlow.c:997 is where 0 becomes 129 raw counts, overriding Configuration.c:376."
   },
   {
     "name": "joystick_deflection_maximum",
@@ -78,7 +78,7 @@
     "unit": "percent",
     "description": "Percent of full deflection, measured from the center, where the inner D-Pad ring starts. It only fires after a short delay, so you can move through it on the way out without triggering it. Half this value is where a direction stops being held.",
     "modeOverride": true,
-    "source": "QMP-4 QuadStick.py slider_D_Pad_inner_ring (10..100) and its tooltip; qsflash.py defaults '25'. Firmware 1476 Configuration.c:306-316 converts it with (value * 1023) / 100, so it is a percent of full deflection from the center, and DataFlow.c:610 uses half of it as the release threshold."
+    "source": "QMP-4 QuadStick.py slider_D_Pad_inner_ring (10..100) and its tooltip; qsflash.py defaults '25'. Firmware 2373 Configuration.c:367-372 converts it with (value * 1023) / 100, so it is a percent of full deflection from the center, and takes half of it as the release threshold. Preferences.h:101 also defaults to 25."
   },
   {
     "name": "joystick_D_Pad_outer",
@@ -91,7 +91,7 @@
     "unit": "percent",
     "description": "Percent of full deflection, measured from the center, where the outer D-Pad ring starts. Past this line a direction fires straight away.",
     "modeOverride": true,
-    "source": "QMP-4 QuadStick.py slider_D_Pad_outer_ring (10..100) and its tooltip; qsflash.py defaults '80'. Firmware 1476 Preferences.h defaults to 65, but that snapshot is older than QMP-4. Configuration.c:306-316 converts it with (value * 1023) / 100, so it is a percent of full deflection from the center."
+    "source": "QMP-4 QuadStick.py slider_D_Pad_outer_ring (10..100) and its tooltip; qsflash.py defaults '80'. Firmware 2373 Configuration.c:367-372 converts it with (value * 1023) / 100, so it is a percent of full deflection from the center. The device's own default is 65 (Preferences.h:102), which is what it uses when a file leaves this out; 80 is what QMP-4 writes."
   },
   {
     "name": "joystick_dead_zone_shape",
@@ -109,25 +109,25 @@
     "category": "Joystick",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h ANTI_DEAD_ZONE, read in DataFlow.c. No current control or range is known, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h ANTI_DEAD_ZONE, read in DataFlow.c:1187 when it is above zero. Preferences.h:104 defaults to 0. No control or range is known, so the value is left as typed."
   },
   {
     "name": "joystick_warning",
     "label": "Joystick warning deflection",
     "category": "Joystick",
     "editor": "text",
-    "description": "Deflection past which firmware 1476 warns the user about moving the stick too far.",
+    "description": "Deflection past which firmware 1476 warned the user about moving the stick too far. Firmware 2373 still accepts the name but ignores it: the check is commented out.",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h JOYSTICK_WARN_DEFLECTION, compared in DataFlow.c. No current control or range is known, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h JOYSTICK_WARN_DEFLECTION; the only use, DataFlow.c:414, is commented out. Firmware 1476 DataFlow.c:399 did compare it. No control or range is known, so the value is left as typed."
   },
   {
     "name": "joystick_alarm",
     "label": "Joystick alarm deflection",
     "category": "Joystick",
     "editor": "text",
-    "description": "Deflection past which firmware 1476 sounds an alarm tone.",
+    "description": "Deflection past which firmware 1476 sounded an alarm tone. Firmware 2373 still accepts the name but ignores it: the check is commented out.",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h JOYSTICK_ALARM_DEFLECTION, compared in DataFlow.c. No current control or range is known, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h JOYSTICK_ALARM_DEFLECTION; the only use, DataFlow.c:418, is commented out. Firmware 1476 DataFlow.c:403 did sound the tone. No control or range is known, so the value is left as typed."
   },
   {
     "name": "enable_auto_zero",
@@ -135,8 +135,9 @@
     "category": "Joystick",
     "editor": "toggle",
     "default": "0",
+    "description": "Firmware 2373 ignores this. It forces the setting back to 0 after every configuration load and both places that would have read it are commented out, so turning it on changes nothing, in a mode row or on the device.",
     "modeOverride": true,
-    "source": "QMP-4 has no control for this setting. Its qsflash.py defaults '0' and QuadStick.py SavePreferences writes '0'; the 0/1 domain comes from the firmware 1476 keyword table, preference_keywords.h ENABLE_AUTO_ZERO. Nothing beyond that shape and that default is sourced."
+    "source": "firmware 2373 preference_keywords.h ENABLE_AUTO_ZERO; Preferences.h:139 defaults to 0, where firmware 1476 defaulted to 1. Configuration.c:469 sets it to 0 after the preferences file and the workbook Preferences segment and before the backup copy is taken, and the two reads in DataFlow.c, near :1061 and :1286, are commented out. QMP-4 has no control for it; qsflash.py also defaults '0'."
   },
   {
     "name": "sip_puff_threshold_soft",
@@ -195,13 +196,91 @@
     "label": "Hard sip/puff delay",
     "category": "Sip and puff",
     "editor": "integer",
-    "default": "2400",
+    "default": "2000",
     "minimum": 1000,
     "maximum": 3000,
     "unit": "milliseconds",
-    "description": "How long a hard sip or puff is held before it counts as a long signal.",
-    "modeOverride": false,
-    "source": "QMP-4 QuadStick.py spin_ctrl_SP_high_delay (min 1000, max 3000); qsflash.py defaults '2400'. It is absent from firmware 1476 preference_keywords.h, so it is not offered as a mode override."
+    "description": "How long a hard sip or puff is held before it counts as a long signal. The clock starts once the hard threshold is crossed, not when the pressure first moves. 0 does not mean unset, it means the long signal fires at once.",
+    "modeOverride": true,
+    "source": "firmware 2373 preference_keywords.h SIP_PUFF_DELAY_HARD, so a mode row can set it. Preferences.h:96 defaults to 2000 ms, and DataFlow.c:349-352 counts from the moment state 2 is reached. The 1000..3000 bounds are QMP-4 QuadStick.py spin_ctrl_SP_high_delay; qsflash.py writes '2400'. Firmware 1476 had no such keyword."
+  },
+  {
+    "name": "sip_threshold_soft",
+    "label": "Soft sip threshold",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "0",
+    "minimum": 0,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Vacuum level that begins a soft sip, since firmware 2373. At 0 the soft sip/puff threshold still applies to sips; any other value replaces it for sips only.",
+    "modeOverride": true,
+    "source": "QuadStick Google Group, Fred Davison, 2026-08-09, announcing the firmware that splits sip from puff: six new preferences, all default 0, 0 means the matching sip_puff_* setting is in effect. Percent and the default are his; the 0..100 bounds are the unit's own scale. Firmware 2373 preference_keywords.h carries all six and DataFlow.c:290-317 confirms both halves of that: each one is used only when it is not zero, and it scales with the same (value * range) / 100 expression as the combined setting, so the percent means the same thing. Firmware 1476 predates them."
+  },
+  {
+    "name": "sip_threshold",
+    "label": "Hard sip threshold",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "0",
+    "minimum": 0,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Vacuum level that triggers a hard sip, since firmware 2373. At 0 the hard sip/puff threshold still applies to sips; any other value replaces it for sips only.",
+    "modeOverride": true,
+    "source": "QuadStick Google Group, Fred Davison, 2026-08-09, announcing the firmware that splits sip from puff: six new preferences, all default 0, 0 means the matching sip_puff_* setting is in effect. Percent and the default are his; the 0..100 bounds are the unit's own scale. Firmware 2373 preference_keywords.h carries all six and DataFlow.c:290-317 confirms both halves of that: each one is used only when it is not zero, and it scales with the same (value * range) / 100 expression as the combined setting, so the percent means the same thing. Firmware 1476 predates them."
+  },
+  {
+    "name": "sip_maximum",
+    "label": "Sip maximum vacuum",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "0",
+    "minimum": 0,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Vacuum that scales to a full signal on a sip, since firmware 2373. At 0 the sip/puff maximum still applies to sips; any other value replaces it for sips only.",
+    "modeOverride": true,
+    "source": "QuadStick Google Group, Fred Davison, 2026-08-09, announcing the firmware that splits sip from puff: six new preferences, all default 0, 0 means the matching sip_puff_* setting is in effect. Percent and the default are his; the 0..100 bounds are the unit's own scale. Firmware 2373 preference_keywords.h carries all six and DataFlow.c:290-317 confirms both halves of that: each one is used only when it is not zero, and it scales with the same (value * range) / 100 expression as the combined setting, so the percent means the same thing. Firmware 1476 predates them."
+  },
+  {
+    "name": "puff_threshold_soft",
+    "label": "Soft puff threshold",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "0",
+    "minimum": 0,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Pressure that begins a soft puff, since firmware 2373. At 0 the soft sip/puff threshold still applies to puffs; any other value replaces it for puffs only.",
+    "modeOverride": true,
+    "source": "QuadStick Google Group, Fred Davison, 2026-08-09, announcing the firmware that splits sip from puff: six new preferences, all default 0, 0 means the matching sip_puff_* setting is in effect. Percent and the default are his; the 0..100 bounds are the unit's own scale. Firmware 2373 preference_keywords.h carries all six and DataFlow.c:290-317 confirms both halves of that: each one is used only when it is not zero, and it scales with the same (value * range) / 100 expression as the combined setting, so the percent means the same thing. Firmware 1476 predates them."
+  },
+  {
+    "name": "puff_threshold",
+    "label": "Hard puff threshold",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "0",
+    "minimum": 0,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Pressure that triggers a hard puff, since firmware 2373. At 0 the hard sip/puff threshold still applies to puffs; any other value replaces it for puffs only.",
+    "modeOverride": true,
+    "source": "QuadStick Google Group, Fred Davison, 2026-08-09, announcing the firmware that splits sip from puff: six new preferences, all default 0, 0 means the matching sip_puff_* setting is in effect. Percent and the default are his; the 0..100 bounds are the unit's own scale. Firmware 2373 preference_keywords.h carries all six and DataFlow.c:290-317 confirms both halves of that: each one is used only when it is not zero, and it scales with the same (value * range) / 100 expression as the combined setting, so the percent means the same thing. Firmware 1476 predates them."
+  },
+  {
+    "name": "puff_maximum",
+    "label": "Puff maximum pressure",
+    "category": "Sip and puff",
+    "editor": "integer",
+    "default": "0",
+    "minimum": 0,
+    "maximum": 100,
+    "unit": "percent",
+    "description": "Pressure that scales to a full signal on a puff, since firmware 2373. At 0 the sip/puff maximum still applies to puffs; any other value replaces it for puffs only.",
+    "modeOverride": true,
+    "source": "QuadStick Google Group, Fred Davison, 2026-08-09, announcing the firmware that splits sip from puff: six new preferences, all default 0, 0 means the matching sip_puff_* setting is in effect. Percent and the default are his; the 0..100 bounds are the unit's own scale. Firmware 2373 preference_keywords.h carries all six and DataFlow.c:290-317 confirms both halves of that: each one is used only when it is not zero, and it scales with the same (value * range) / 100 expression as the combined setting, so the percent means the same thing. Firmware 1476 predates them."
   },
   {
     "name": "enable_left_side_tube",
@@ -210,7 +289,7 @@
     "editor": "text",
     "description": "Uses the left tube for mode control by swapping it with the right tube.",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h ENABLE_LEFT_SIDE_TUBE, read in DataFlow.c. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h ENABLE_LEFT_SIDE_TUBE, read in DataFlow.c:983. Preferences.h:140 defaults to 0. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "lip_position_minimum",
@@ -271,7 +350,7 @@
     "maximum": 100,
     "description": "Speaker volume.",
     "modeOverride": true,
-    "source": "QMP-4 QuadStick.py slider_volume (0..100) and its tooltip; qsflash.py defaults '40'. Firmware 1476 Preferences.h defaults to 25, but that snapshot is older than QMP-4."
+    "source": "QMP-4 QuadStick.py slider_volume (0..100) and its tooltip; qsflash.py defaults '40'. The device's own default is still 25 on firmware 2373 (Preferences.h:105), which is what it uses when a file leaves this out; 40 is what QMP-4 writes."
   },
   {
     "name": "brightness",
@@ -291,7 +370,7 @@
     "category": "Sound and lights",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h ENABLE_RUMBLE, read in Joystick.c. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h ENABLE_RUMBLE, read in Joystick.c:1074. Preferences.h:142 defaults to 0. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "bluetooth_device_mode",
@@ -302,17 +381,17 @@
     "options": ["none", "keyboard", "game_pad", "mouse", "combo", "joystick", "ssp"],
     "description": "What the QuadStick pretends to be over Bluetooth.",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h bluetooth_device_mode_keywords; QMP-4 QuadStick.py choice_BT_device_mode has the same seven tokens; qsflash.py defaults 'none'"
+    "source": "firmware 2373 preference_keywords.h bluetooth_device_mode_keywords, the same seven tokens as firmware 1476; QMP-4 QuadStick.py choice_BT_device_mode has them too; qsflash.py defaults 'none'"
   },
   {
     "name": "bluetooth_authentication_mode",
     "label": "Bluetooth authentication mode",
     "category": "Bluetooth",
     "editor": "choice",
-    "default": "4",
+    "default": "2",
     "options": ["0", "1", "2", "4"],
     "modeOverride": true,
-    "source": "QMP-4 QuadStick.py choice_BT_auth_mode offers 0, 1, 2 and 4; qsflash.py defaults '4'"
+    "source": "QMP-4 QuadStick.py choice_BT_auth_mode offers 0, 1, 2 and 4, and its qsflash.py writes '4'. Firmware 2373 Preferences.h:113 defaults to 2, where firmware 1476 Preferences.h:94 defaulted to 4, so the device's own default changed. It is sent to the radio as the SA command in Bluetooth.c:267."
   },
   {
     "name": "bluetooth_connection_mode",
@@ -322,7 +401,7 @@
     "default": "pair",
     "options": ["slave", "master", "trigger", "auto", "dtr", "any", "pair"],
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h bluetooth_connection_mode_keywords; qsflash.py defaults 'pair'"
+    "source": "firmware 2373 preference_keywords.h bluetooth_connection_mode_keywords, the same seven tokens as firmware 1476; qsflash.py defaults 'pair'"
   },
   {
     "name": "bluetooth_remote_address",
@@ -331,7 +410,7 @@
     "editor": "text",
     "default": "",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h BLUETOOTH_REMOTE_ADDRESS; QMP-4 qsflash.py defaults to an empty string. No address format is confirmed, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h BLUETOOTH_REMOTE_ADDRESS, given its own parsing in Configuration.c:662-671 and used in Bluetooth.c:304; QMP-4 qsflash.py defaults to an empty string. No address format is confirmed, so the value is left as typed."
   },
   {
     "name": "bluetooth_remote_adapter",
@@ -339,16 +418,16 @@
     "category": "Bluetooth",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h BLUETOOTH_REMOTE_ADAPTER, read in Joystick.c. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h BLUETOOTH_REMOTE_ADAPTER, read in Joystick.c:344. Preferences.h:145 defaults to 0. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "bluetooth_throttle",
     "label": "Bluetooth throttle",
     "category": "Bluetooth",
     "editor": "text",
-    "description": "Firmware 1476 skips a transmission when not enough time has passed since the last one.",
+    "description": "The device skips a Bluetooth transmission when not enough time has passed since the last one.",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h BLUETOOTH_THROTTLE, compared in Bluetooth.c. No current control or range is known, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h BLUETOOTH_THROTTLE, compared in Bluetooth.c:423, :505, :507, :561 and :592. Preferences.h:143 defaults to 5, where firmware 1476 Preferences.h:121 defaulted to 15. No control or range is known and the unit is not stated, so the value is left as typed."
   },
   {
     "name": "digital_out_1",
@@ -358,7 +437,7 @@
     "default": "0",
     "description": "The device matches this name as an output before it reaches the preference table, so it is a device setting only, never a mode override.",
     "modeOverride": false,
-    "source": "QMP-4 QuadStick.py checkbox_do_1 writes '1' or '0'; qsflash.py defaults '0'; firmware 1476 output_keywords match first"
+    "source": "QMP-4 QuadStick.py checkbox_do_1 writes '1' or '0'; qsflash.py defaults '0'; firmware 2373 output_keywords still match first, and Configuration.c:380 sets the relay from it"
   },
   {
     "name": "digital_out_2",
@@ -368,7 +447,7 @@
     "default": "0",
     "description": "The device matches this name as an output before it reaches the preference table, so it is a device setting only, never a mode override.",
     "modeOverride": false,
-    "source": "QMP-4 QuadStick.py checkbox_do_2 writes '1' or '0'; qsflash.py defaults '0'; firmware 1476 output_keywords match first"
+    "source": "QMP-4 QuadStick.py checkbox_do_2 writes '1' or '0'; qsflash.py defaults '0'; firmware 2373 output_keywords still match first, and Configuration.c:381 sets the relay from it"
   },
   {
     "name": "digital_out_3",
@@ -377,7 +456,7 @@
     "editor": "text",
     "description": "The device matches this name as an output before it reaches the preference table, so it is a device setting only, never a mode override.",
     "modeOverride": false,
-    "source": "firmware 1476 preference_keywords.h DIGITAL_OUT_3. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h DIGITAL_OUT_3; Configuration.c:383 only switches relay 3 into relay mode when it is not zero. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "digital_out_4",
@@ -386,7 +465,7 @@
     "editor": "text",
     "description": "The device matches this name as an output before it reaches the preference table, so it is a device setting only, never a mode override.",
     "modeOverride": false,
-    "source": "firmware 1476 preference_keywords.h DIGITAL_OUT_4. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h DIGITAL_OUT_4; Configuration.c:384 only switches relay 4 into relay mode when it is not zero. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "enable_swap_inputs",
@@ -396,7 +475,7 @@
     "default": "0",
     "description": "Swap the inputs using the side tube.",
     "modeOverride": true,
-    "source": "QMP-4 QuadStick.py checkbox_swap writes '1' or '0'; qsflash.py defaults '0'. Firmware 1476 Preferences.h defaults to 1, but that snapshot is older than QMP-4."
+    "source": "QMP-4 QuadStick.py checkbox_swap writes '1' or '0'; qsflash.py defaults '0'. The device's own default is still 1 on firmware 2373 (Preferences.h:136), which is what it uses when a file leaves this out; 0 is what QMP-4 writes. DataFlow.c:1328 is the read."
   },
   {
     "name": "enable_select_files",
@@ -414,17 +493,28 @@
     "category": "USB and compatibility",
     "editor": "text",
     "modeOverride": true,
-    "risk": "This picks which USB port the QuadStick presents itself on. Firmware 1476 reconnects USB when it changes, so a wrong value can leave the device unseen by a console or computer. QMP writes a different name, enable_usb_a_host, and the two are not proven to be the same setting. Change it only on advice from QuadStick support.",
-    "source": "firmware 1476 preference_keywords.h ENABLE_USB_A_DEVICE, passed to USB_Init and USB_Connect in Joystick.c and Configuration.c; QMP-4 QuadStick.py writes enable_usb_a_host instead"
+    "risk": "This picks which USB port the QuadStick presents itself on. The device tears USB down and reconnects when it changes, so a wrong value can leave it unseen by a console or computer. It also beats enable_usb_a_host: while this is set, the USB-A host stack is shut down whatever the host setting says. Change it only on advice from QuadStick support.",
+    "source": "firmware 2373 preference_keywords.h ENABLE_USB_A_DEVICE, passed to USB_Init and USB_Connect in Joystick.c:599 and :630 and Configuration.c:354-357, and checked first in JoystickHost.c:590. Preferences.h:134 defaults to 0. QMP-4 QuadStick.py writes the separate enable_usb_a_host instead."
+  },
+  {
+    "name": "enable_usb_a_host",
+    "label": "USB-A host mode",
+    "category": "USB and compatibility",
+    "editor": "toggle",
+    "default": "1",
+    "description": "Since firmware 2373. With this on and USB-A device mode off, the device runs a USB host on the USB-A port, so a controller plugged in there feeds the usb_1 input channels. Turn it off, or turn USB-A device mode on, and the host is torn down. USB-A device mode wins.",
+    "modeOverride": true,
+    "source": "firmware 2373 preference_keywords.h ENABLE_USB_A_HOST; Preferences.h:135 defaults to 1. JoystickHost.c:590 is the only read: the host is de-enumerated when enable_usb_a_device is set or this one is clear. Firmware 1476 has no such keyword, though QMP-4 QuadStick.py already wrote the name."
   },
   {
     "name": "enable_DS3_emulation",
     "label": "USB emulation mode",
     "category": "USB and compatibility",
     "editor": "text",
+    "description": "Which USB device the QuadStick pretends to be. On firmware 2373: 0 QuadStick native, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 for a PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 with no USB drive, 7 straight DS4 wireless. Value 5 meant PC only, no joystick on firmware 1476, so a file carrying 5 behaves completely differently once the device is updated.",
     "modeOverride": true,
-    "risk": "The name says DS3, but firmware 1476 reads it as a USB emulation mode with several numbered values, not an on or off switch. The current value map is not confirmed, so QCM keeps whatever is typed and claims nothing about it. Change it only on advice from QuadStick support.",
-    "source": "firmware 1476 preference_keywords.h maps it to USB_EMULATION_MODE, switched on in Joystick.c, DataFlow.c and Descriptors.c; QMP-4 QuadStick.py checkbox_ps4_boot_mode treats it as a checkbox"
+    "risk": "The name says DS3, but the device reads it as a USB emulation mode with eight numbered values, not an on or off switch. What 5 means changed between firmware 1476 and 2373, and a number the running firmware does not know leaves the device on an emulation nobody asked for. QCM keeps whatever is typed and refuses nothing, because a value that is wrong for one firmware is right for another. Change it only on advice from QuadStick support.",
+    "source": "firmware 2373 preference_keywords.h maps it to USB_EMULATION_MODE; Descriptors.c:1292 switches on all eight values, DescriptorsDS4.c:803 and :807 tell 6 (no USB drive) from 7 (straight DS4 wireless), and Joystick.c and DataFlow.c switch on the same numbers. Firmware 1476 Descriptors.c:1523 had 5 as PC only, no joystick. Preferences.h:138 defaults to 0. QMP-4 QuadStick.py checkbox_ps4_boot_mode treats it as a checkbox."
   },
   {
     "name": "enable_usb_comm",
@@ -442,7 +532,7 @@
     "category": "USB and compatibility",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h USB_1_MULTIPLIER_UP. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_UP; Preferences.h:127 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "usb_1_multiplier_down",
@@ -450,7 +540,7 @@
     "category": "USB and compatibility",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h USB_1_MULTIPLIER_DOWN. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_DOWN; Preferences.h:126 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "usb_1_multiplier_left",
@@ -458,7 +548,7 @@
     "category": "USB and compatibility",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h USB_1_MULTIPLIER_LEFT. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_LEFT; Preferences.h:125 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "usb_1_multiplier_right",
@@ -466,7 +556,7 @@
     "category": "USB and compatibility",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h USB_1_MULTIPLIER_RIGHT. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_RIGHT; Preferences.h:124 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "usb_2_multiplier_up",
@@ -474,7 +564,7 @@
     "category": "USB and compatibility",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h USB_2_MULTIPLIER_UP. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_UP; Preferences.h:131 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "usb_2_multiplier_down",
@@ -482,7 +572,7 @@
     "category": "USB and compatibility",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h USB_2_MULTIPLIER_DOWN. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_DOWN; Preferences.h:130 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "usb_2_multiplier_left",
@@ -490,7 +580,7 @@
     "category": "USB and compatibility",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h USB_2_MULTIPLIER_LEFT. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_LEFT; Preferences.h:129 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
   },
   {
     "name": "usb_2_multiplier_right",
@@ -498,7 +588,39 @@
     "category": "USB and compatibility",
     "editor": "text",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h USB_2_MULTIPLIER_RIGHT. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_RIGHT; Preferences.h:128 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
+  },
+  {
+    "name": "usb_1_dead_zone",
+    "label": "USB 1 dead zone",
+    "category": "USB and compatibility",
+    "editor": "integer",
+    "default": "20",
+    "unit": "raw axis counts",
+    "description": "Since firmware 2373. Center dead zone for a controller plugged into the USB-A host port, counted in raw steps of that controller's centered axis byte, not in percent. Under the value the axis reads 0; over it the value is taken off so travel starts from zero, and the result is held to plus or minus 100. At 0 the axis passes through untouched. A centered axis byte only reaches about 127 either way, so 128 or more kills the axis.",
+    "modeOverride": true,
+    "source": "firmware 2373 preference_keywords.h USB_1_DEAD_ZONE; Preferences.h:132 defaults to 20. JoystickHost.c:242-250 is the subtractive dead zone, fed the axis bytes with 128 taken off at :354-357, :374-377, :481-482 and :500-503, and written out again at :304-311 and :329-336. No source states a range, so none is claimed here."
+  },
+  {
+    "name": "usb_2_dead_zone",
+    "label": "USB 2 dead zone",
+    "category": "USB and compatibility",
+    "editor": "integer",
+    "default": "20",
+    "unit": "raw axis counts",
+    "description": "Since firmware 2373, but the device ignores it. The name is legal and files carry it, yet nothing in the firmware reads the value: every USB host axis uses the USB 1 dead zone. Setting it in a mode row does nothing either.",
+    "modeOverride": true,
+    "source": "firmware 2373 preference_keywords.h USB_2_DEAD_ZONE; Preferences.h:133 defaults to 20. That line, the Preferences.h:60 enum entry, the keyword table and the Configuration.c:153 default table are the only four places the name appears in the firmware tree, so nothing reads it."
+  },
+  {
+    "name": "titan_two",
+    "label": "Titan Two adapter",
+    "category": "USB and compatibility",
+    "editor": "toggle",
+    "default": "0",
+    "description": "Since firmware 2373. Tells the device it is reaching a PS4 through a Titan Two rather than plugged straight into the console. It then skips the DS4 authentication handshake and stops the periodic forced USB reconnect.",
+    "modeOverride": true,
+    "source": "firmware 2373 preference_keywords.h TITAN_TWO; Preferences.h:146 defaults to 0. JoystickHost.c:570 skips the DS4 authentication state machine when it is set, and Joystick.c:862 and DataFlow.c:2842 both zero the PS4 reset timer. The firmware's own comment at Joystick.c:862 says a T2 makes the QuadStick think it is directly connected to a PS4 when it is not, so that reset is never needed."
   },
   {
     "name": "watchdog_disable",
@@ -507,16 +629,16 @@
     "editor": "toggle",
     "default": "0",
     "modeOverride": true,
-    "risk": "Firmware 1476 runs a two minute hardware watchdog that restarts the device if it stops responding. Nothing in that snapshot reads this setting, so what it does on current firmware is unconfirmed.",
-    "source": "QMP-4 qsflash.py defaults '0'; firmware 1476 preference_keywords.h DISABLE_WATCHDOG and the watchdog set up in Joystick.c"
+    "risk": "The device runs a two minute hardware watchdog that restarts it if it stops responding. Nothing in firmware 1476 or 2373 reads this setting, so on either one it does nothing, and what a later firmware might do with it is unknown.",
+    "source": "QMP-4 qsflash.py defaults '0'; firmware 2373 preference_keywords.h DISABLE_WATCHDOG, with the two minute watchdog set up in Joystick.c:569-573. Preferences.h:111 defaults to 0. The keyword table, the enum, the default macro and the Configuration.c:131 default table are the only places the name appears."
   },
   {
     "name": "debug",
     "label": "Debug output level",
     "category": "Advanced",
     "editor": "text",
-    "description": "Firmware 1476 turns its console on when this is above zero.",
+    "description": "The device turns its console on when this is above zero.",
     "modeOverride": true,
-    "source": "firmware 1476 preference_keywords.h DEBUG_VERBOSITY, read in Configuration.c. It is a level, not an on or off, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h DEBUG_VERBOSITY, read in Configuration.c:375. Preferences.h:119 defaults to 1. It is a level, not an on or off, so the value is left as typed."
   }
 ]

@@ -1,0 +1,231 @@
+using QuadStick.Format;
+using Xunit;
+
+namespace QuadStick.Format.Tests;
+
+// The rules that came out of reading firmware 2373 against 1476. Every one of
+// them exists because the device does something a file cannot show you.
+public class Firmware2373RuleTests
+{
+    const string Head = "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\n";
+
+    static List<Issue> Load(string csv) => ProfileFile.Load(csv).Issues;
+
+    // "both" is a real channel on 2373, so it must stop being reported as a
+    // word the device cannot match.
+    [Fact]
+    public void Both_is_a_channel_the_device_knows()
+    {
+        var issues = Load("Profile Name,,Solo\ngame.csv\nOutputs,Function,both\nx,normal,lip\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("does not match"));
+    }
+
+    // But an older QuadStick drops the Bluetooth half of that mode without a
+    // word, so the app has to supply the word.
+    [Fact]
+    public void Both_says_it_needs_recent_firmware()
+    {
+        var issues = Load("Profile Name,,Solo\ngame.csv\nOutputs,Function,both\nx,normal,lip\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("firmware from 2025"));
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.Contains("USB only", issue.Message);
+    }
+
+    [Fact]
+    public void A_channel_the_device_really_cannot_match_is_still_reported()
+    {
+        var issues = Load("Profile Name,,Solo\ngame.csv\nOutputs,Function,wibble\nx,normal,lip\n");
+
+        Assert.Contains(issues, i => i.Message.Contains("does not match"));
+    }
+
+    // A setting name is a legal output cell. The binding-slot count always knew
+    // that; the output check did not, so a row the device reads perfectly was
+    // called an undocumented name.
+    [Theory]
+    [InlineData("titan_two")]
+    [InlineData("enable_usb_a_host")]
+    [InlineData("usb_1_dead_zone")]
+    public void A_setting_name_in_the_output_column_is_not_undocumented(string name)
+    {
+        var issues = Load(Head + $"{name},,1\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("not a documented output name"));
+    }
+
+    // Four settings the firmware parses, stores, and never reads.
+    [Theory]
+    [InlineData("enable_auto_zero", "1")]
+    [InlineData("usb_2_dead_zone", "20")]
+    [InlineData("joystick_warning", "400")]
+    [InlineData("joystick_alarm", "500")]
+    public void A_setting_the_device_ignores_says_so(string name, string value)
+    {
+        var issues = Load($"Preferences\nprefs.csv\nName,Value\n{name},{value}\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("does nothing on current firmware"));
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.Contains(name, issue.Message);
+    }
+
+    // Same on a mode row, where the value lives in column C.
+    [Fact]
+    public void A_dead_setting_as_a_mode_override_says_so_too()
+    {
+        var issues = Load(Head + "enable_auto_zero,,1\n");
+
+        Assert.Contains(issues, i =>
+            i.Cell == "C4" && i.Message.Contains("does nothing on current firmware"));
+    }
+
+    // Writing 0 asks for nothing, which is what the device does anyway.
+    [Fact]
+    public void A_dead_setting_left_at_zero_is_not_worth_a_word()
+    {
+        var issues = Load("Preferences\nprefs.csv\nName,Value\nenable_auto_zero,0\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("does nothing on current firmware"));
+    }
+
+    // The catalog and Vocab have to agree in BOTH directions, or the editor
+    // offers a name in a mode sheet that the device will not honor there.
+    // PreferenceCatalogTests holds the Vocab-to-catalog half. This is the other
+    // one: a setting the catalog calls standalone-only must not be in the set
+    // the mode-sheet picker draws from.
+    //
+    // Only digital_out_1..4 are standalone-only today, and they are excluded
+    // for a second reason as well: they match output_keywords first on the
+    // device, so a mode sheet reads them as outputs and never as settings.
+    [Fact]
+    public void A_standalone_only_setting_is_never_a_mode_override()
+    {
+        var standaloneOnly = PreferenceCatalog.All.Where(d => !d.ModeOverride).Select(d => d.Name).ToList();
+
+        Assert.NotEmpty(standaloneOnly); // the rule would be vacuous otherwise
+        foreach (var name in standaloneOnly)
+            Assert.False(Vocab.PreferenceOverrides.Contains(name),
+                $"{name} is standalone only in the catalog but Vocab offers it as a mode override.");
+    }
+
+    // The per-direction thresholds have to keep their order for the same reason
+    // the shared ones do, and for one worse one: the firmware divides by the
+    // gap between them on every scan, with no guard.
+    [Fact]
+    public void Two_equal_sip_thresholds_are_reported_as_a_divide_by_zero()
+    {
+        var issues = Load(
+            "Preferences\nprefs.csv\nName,Value\nsip_threshold_soft,40\nsip_threshold,40\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("divide by zero"));
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.Contains("sip", issue.Message);
+    }
+
+    [Fact]
+    public void Sip_thresholds_out_of_order_are_reported()
+    {
+        var issues = Load(
+            "Preferences\nprefs.csv\nName,Value\nsip_threshold,60\nsip_maximum,50\n");
+
+        Assert.Contains(issues, i => i.Message.Contains("thresholds run into each other"));
+    }
+
+    // A zero means "use the shared value", so the comparison has to be made
+    // against that, not against the zero.
+    [Fact]
+    public void A_zero_falls_back_to_the_shared_value_before_comparing()
+    {
+        // puff_threshold_soft is 0, so the effective soft threshold is the
+        // shared 40, which collides with the puff-only hard threshold of 40.
+        var issues = Load(
+            "Preferences\nprefs.csv\nName,Value\nsip_puff_threshold_soft,40\npuff_threshold_soft,0\npuff_threshold,40\n");
+
+        Assert.Contains(issues, i => i.Message.Contains("divide by zero"));
+    }
+
+    // A mode sets preferences from its own rows too, and the device applies
+    // them going into the mode. The divide by zero does not care which sheet
+    // the numbers came from, so neither can the check.
+    [Fact]
+    public void Two_equal_sip_thresholds_set_by_a_mode_are_reported_too()
+    {
+        var issues = Load(Head + "sip_threshold_soft,,40\nsip_threshold,,40\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("divide by zero"));
+        Assert.StartsWith("C", issue.Cell); // a mode row keeps its value in column C
+    }
+
+    [Fact]
+    public void A_mode_that_orders_its_thresholds_properly_passes()
+    {
+        var issues = Load(Head + "sip_threshold_soft,,10\nsip_threshold,,40\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("run into each other"));
+    }
+
+    // Naming a row the file does not have sends the reader somewhere they
+    // cannot go, so the message has to name whichever row carries the number.
+    [Fact]
+    public void The_warning_names_the_row_that_really_holds_the_value()
+    {
+        var issues = Load(
+            "Preferences\nprefs.csv\nName,Value\nsip_puff_threshold_soft,40\npuff_threshold,40\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("divide by zero"));
+        Assert.Contains("sip_puff_threshold_soft", issue.Message);
+        Assert.Contains("sip_puff_threshold_soft", issue.Fix);
+        // puff_threshold_soft is not in the file, so it must not be the thing
+        // the reader is told to change.
+        Assert.DoesNotContain("\"puff_threshold_soft\"", issue.Fix);
+    }
+
+    // The other value may be sitting on the device, where this app cannot see
+    // it, and guessing about it would be worse than saying nothing.
+    [Fact]
+    public void One_threshold_on_its_own_says_nothing()
+    {
+        var issues = Load("Preferences\nprefs.csv\nName,Value\nsip_threshold,40\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("run into each other"));
+        Assert.DoesNotContain(issues, i => i.Message.Contains("divide by zero"));
+    }
+
+    [Fact]
+    public void Sip_and_puff_thresholds_that_are_far_enough_apart_pass()
+    {
+        var issues = Load(
+            "Preferences\nprefs.csv\nName,Value\nsip_threshold_soft,10\nsip_threshold,40\nsip_maximum,70\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("run into each other"));
+    }
+
+    // Restarting the device is legal, and on the push switch it can leave the
+    // QuadStick in its firmware loader until somebody unplugs it.
+    [Fact]
+    public void Resetting_the_device_from_push_names_the_firmware_loader()
+    {
+        var issues = Load(Head + "reset_quadstick,normal,push\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("firmware loader"));
+        Assert.Equal(Severity.Warning, issue.Severity);
+    }
+
+    [Fact]
+    public void Resetting_the_device_from_anything_else_is_a_milder_word()
+    {
+        var issues = Load(Head + "reset_quadstick,normal,mp_center_sip\n");
+
+        Assert.Contains(issues, i => i.Message.Contains("restarts the QuadStick"));
+        Assert.DoesNotContain(issues, i => i.Message.Contains("firmware loader"));
+    }
+
+    [Fact]
+    public void An_ordinary_binding_says_nothing_about_restarting()
+    {
+        var issues = Load(Head + "x,normal,push\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("restarts the QuadStick"));
+    }
+}

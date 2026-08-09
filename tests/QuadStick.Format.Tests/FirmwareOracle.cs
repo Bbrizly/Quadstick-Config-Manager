@@ -8,8 +8,13 @@ namespace QuadStick.Format.Tests;
 /// description of it: next_word, search_for_keyword,
 /// search_for_keyword_with_parameter and the three segment loaders from
 /// Joystick/Configuration.c, plus f_gets from Joystick/fatfs/ff.c
-/// (FW_VERSION 1476). Its keyword tables are corpus/firmware-1476.json, dumped
+/// (FW_VERSION 2373). Its keyword tables are corpus/firmware-2373.json, dumped
 /// straight out of the firmware headers.
+///
+/// Moving from 1476 to 2373 needed no re-transcription: every function below is
+/// byte for byte the same in both sources, and all four limits are unchanged.
+/// 2373 only grew the keyword tables, which is why corpus/firmware-1476.json is
+/// still here for The_new_firmware_took_nothing_away to check against.
 ///
 /// Nothing in here may be "improved". If it disagrees with the app, the app is
 /// what changes. If the firmware changes, re-dump the tables and re-transcribe
@@ -34,7 +39,7 @@ public static class FirmwareOracle
     static FirmwareOracle()
     {
         using var doc = JsonDocument.Parse(File.ReadAllBytes(
-            Path.Combine("corpus", "firmware-1476.json")));
+            Path.Combine("corpus", "firmware-2373.json")));
         static string[] List(JsonElement e, string name) =>
             e.GetProperty(name).EnumerateArray().Select(x => x.GetString()!).ToArray();
         Outputs = List(doc.RootElement, "outputs");
