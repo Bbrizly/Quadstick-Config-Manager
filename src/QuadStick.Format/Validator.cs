@@ -538,6 +538,35 @@ public static class Validator
                 "\"both\" needs firmware from 2025 or newer. A QuadStick on older firmware does not know the word, "
                 + "runs this mode over USB only, and says nothing about the Bluetooth half.",
                 "Keep it if your QuadStick is up to date. If it is not, use \"usb\" or \"bluetooth\" and pick one."));
+
+        WarnAboutMouseAndKeyboardOffUsb(sheet, issues);
+    }
+
+    // Joystick.c gates the USB mouse and keyboard reports on the mode's channel
+    // carrying USB: "if (!(Connections[(active_mode-1) * 2] & USB)) return
+    // false;". The gamepad half sits in the other branch and is not gated. So a
+    // mode on "bluetooth" plugged in by cable still moves the sticks while every
+    // mouse move and key press goes nowhere. That line is commented out in the
+    // 2017 firmware, which means these modes worked and stop working after an
+    // update, with the file unchanged and nothing said.
+    static void WarnAboutMouseAndKeyboardOffUsb(ModeSheet sheet, List<Issue> issues)
+    {
+        if (sheet.Channel is not ("bluetooth" or "none")) return;
+
+        // mouse_speed is a preference, not an output, so the override rows go first.
+        var rows = sheet.Bindings
+            .Where(b => !IsPreferenceOverride(b)
+                && (b.Output.StartsWith("mouse_", StringComparison.Ordinal)
+                    || b.Output.StartsWith("kb_", StringComparison.Ordinal)))
+            .ToList();
+        if (rows.Count == 0) return;
+
+        issues.Add(new Issue(Severity.Warning, $"C{sheet.StartRow + 2}",
+            $"This mode is on \"{sheet.Channel}\", and it has {rows.Count} mouse or keyboard "
+            + $"{(rows.Count == 1 ? "row" : "rows")}, the first on row {rows[0].Row}. Firmware from 2025 or newer only "
+            + "sends mouse and keyboard over USB when the channel includes USB, so over a cable those rows do nothing "
+            + "while the gamepad half of the mode keeps working. Older firmware sent them anyway.",
+            "Use \"both\" so the mode works on either connection, or \"usb\" if it is only ever plugged in."));
     }
 
     // reset_quadstick restarts the device. force_reset waits 300 ms and then,

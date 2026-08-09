@@ -221,6 +221,52 @@ public class Firmware2373RuleTests
         Assert.DoesNotContain(issues, i => i.Message.Contains("firmware loader"));
     }
 
+    // 2373 gates the USB mouse and keyboard reports on the channel and leaves
+    // the gamepad ungated, so half a Bluetooth mode quietly stops on a cable.
+    // Four profiles in the catalog are a "Mouse Mode" on bluetooth.
+    [Theory]
+    [InlineData("bluetooth")]
+    [InlineData("none")]
+    public void A_mode_off_usb_says_its_mouse_and_keyboard_rows_go_quiet(string channel)
+    {
+        var issues = Load($"Profile Name,,Solo\ngame.csv\nOutputs,Function,{channel}\n"
+            + "mouse_left,normal,mp_left_sip\nkb_a,normal,lip\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("mouse and keyboard over USB"));
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.Equal("C3", issue.Cell);
+        Assert.Contains("2 mouse or keyboard rows, the first on row 4", issue.Message);
+    }
+
+    [Theory]
+    [InlineData("usb")]
+    [InlineData("both")]
+    public void A_mode_that_keeps_usb_says_nothing_about_it(string channel)
+    {
+        var issues = Load($"Profile Name,,Solo\ngame.csv\nOutputs,Function,{channel}\n"
+            + "mouse_left,normal,mp_left_sip\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("mouse and keyboard over USB"));
+    }
+
+    [Fact]
+    public void A_bluetooth_mode_with_no_mouse_or_keyboard_row_says_nothing()
+    {
+        var issues = Load("Profile Name,,Solo\ngame.csv\nOutputs,Function,bluetooth\nx,normal,lip\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("mouse and keyboard over USB"));
+    }
+
+    // mouse_speed is a preference name, not a mouse output. The device takes
+    // the preference branch on it and never reaches the HID gate.
+    [Fact]
+    public void A_mouse_speed_row_is_not_counted_as_a_mouse_binding()
+    {
+        var issues = Load("Profile Name,,Solo\ngame.csv\nOutputs,Function,bluetooth\nmouse_speed,,40\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("mouse and keyboard over USB"));
+    }
+
     [Fact]
     public void An_ordinary_binding_says_nothing_about_restarting()
     {
