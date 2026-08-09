@@ -1777,7 +1777,7 @@ public partial class MainWindow : Window
         new("mp_right", "Right mouthpiece hole", "Right", "mp_right_sip",
             "Sip or puff on the right mouthpiece hole. A gentle sip or puff can do something different (the soft variants)."),
         new("combo", "Hole combos", "Combos", "mp_left_center_sip",
-            "Two or more holes used at the same time, or all three together. Good for actions you never want to trigger by accident."),
+            "Two or more holes used at the same time, all three together, or the right hole with the side tube. Good for actions you never want to trigger by accident."),
         new("side", "Side tube", "Side tube", "right_sip",
             "Sip or puff on the side tube. A long hard sip here normally switches profiles, but you can map it too."),
         new("lip", "Lip switch", "Lip switch", "lip",
@@ -1792,11 +1792,16 @@ public partial class MainWindow : Window
             "Rows that press a game button but have nothing triggering them yet. Give each one an input, or delete it."),
     };
 
-    static string ZoneOf(string input) => input switch
+    // mp_right_mode_* is the right hole and the side tube together: the firmware
+    // calls the side tube the "mode" tube, and its sensor map (DataFlow.c) gives
+    // the pairing both bits. It is a combo, not something on the Right hole, so
+    // it has to be caught before the mp_right arm below.
+    internal static string ZoneOf(string input) => input switch
     {
         "" => "unset",
         _ when input.StartsWith("mp_left_center") || input.StartsWith("mp_right_center")
-            || input.StartsWith("mp_left_right") || input.StartsWith("mp_triple") => "combo",
+            || input.StartsWith("mp_left_right") || input.StartsWith("mp_triple")
+            || input.StartsWith("mp_right_mode") => "combo",
         _ when input.StartsWith("mp_left") => "mp_left",
         _ when input.StartsWith("mp_center") => "mp_center",
         _ when input.StartsWith("mp_right") => "mp_right",
@@ -1829,13 +1834,15 @@ public partial class MainWindow : Window
     // The friendly short form of one input token, scoped to the part it lives
     // on: on the Left hole "mp_left_puff_soft" becomes "soft puff". Shared by
     // ShortInput and the Device View dropdown labels.
-    static string StripInput(string input, string zoneId)
+    internal static string StripInput(string input, string zoneId)
     {
         // Avalonia calls item templates with a null item during measure, so a
         // null token can reach here before any real value is bound.
         if (string.IsNullOrEmpty(input)) return "(no input)";
         var s = input;
-        foreach (var prefix in new[] { "mp_left_center_", "mp_right_center_", "mp_left_right_", "mp_triple_", "mp_left_", "mp_center_", "mp_right_", "right_" })
+        // Longest first: "mp_right_mode_" has to be tried before "mp_right_",
+        // or the loop breaks on the short one and leaves the word "mode".
+        foreach (var prefix in new[] { "mp_left_center_", "mp_right_center_", "mp_left_right_", "mp_triple_", "mp_right_mode_", "mp_left_", "mp_center_", "mp_right_", "right_" })
             if (zoneId is not ("joystick" or "other") && s.StartsWith(prefix)) { s = s[prefix.Length..]; break; }
         if (s.EndsWith("_soft")) s = "soft " + s[..^5];
         return s.Replace('_', ' ');
@@ -1888,16 +1895,9 @@ public partial class MainWindow : Window
         var bare = Humanize(StripInput(token, tz));
         if (bare.Length == 0) return bare;
         var low = $"{char.ToLowerInvariant(bare[0])}{bare[1..]}";
-        // Four hole pairings all strip to the same word ("sip"), so a combo
-        // token must always name its pairing or the list reads as duplicates.
-        if (tz == "combo")
-        {
-            var pair = token.StartsWith("mp_triple_") ? "All three"
-                : token.StartsWith("mp_left_center_") ? "Left + Center"
-                : token.StartsWith("mp_right_center_") ? "Right + Center"
-                : token.StartsWith("mp_left_right_") ? "Left + Right" : "Combo";
-            return $"{pair} · {low}";
-        }
+        // Every pairing strips to the same word ("sip"), so a combo token must
+        // always name its pairing or the list reads as duplicates.
+        if (tz == "combo") return $"{ComboPair(token)} · {low}";
         if (tz == cardZone || tz is "other" or "unset") return bare;
         var disp = AllZones.FirstOrDefault(z => z.Id == tz)?.Display ?? tz;
         return $"{disp} · {low}";
@@ -1969,14 +1969,25 @@ public partial class MainWindow : Window
             .OrderBy(GroupRank).ThenBy(x => x, StringComparer.Ordinal);
     }
 
+    // Which parts a combo token needs at once, in the words the zone cards use.
+    // "Side tube" because mp_right_mode_* is the right hole plus the side tube,
+    // which the firmware names the mode tube.
+    internal static string ComboPair(string token) =>
+        token.StartsWith("mp_triple_", StringComparison.Ordinal) ? "All three"
+        : token.StartsWith("mp_left_center_", StringComparison.Ordinal) ? "Left + Center"
+        : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "Right + Center"
+        : token.StartsWith("mp_right_mode_", StringComparison.Ordinal) ? "Right + Side tube"
+        : token.StartsWith("mp_left_right_", StringComparison.Ordinal) ? "Left + Right" : "Combo";
+
     // Chip text: the short form, since the zone heading above it already says
-    // which part it is on. Combos are the exception. All four hole pairings
-    // strip to the same word, so a combo chip has to name its pairing.
-    static string ChipLabel(string token, string zoneId) => zoneId != "combo"
+    // which part it is on. Combos are the exception. Every pairing strips to
+    // the same word, so a combo chip has to name its pairing.
+    internal static string ChipLabel(string token, string zoneId) => zoneId != "combo"
         ? StripInput(token, zoneId)
         : (token.StartsWith("mp_triple_", StringComparison.Ordinal) ? "all 3 "
             : token.StartsWith("mp_left_center_", StringComparison.Ordinal) ? "L+C "
-            : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "R+C " : "L+R ")
+            : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "R+C "
+            : token.StartsWith("mp_right_mode_", StringComparison.Ordinal) ? "R+S " : "L+R ")
           + StripInput(token, zoneId);
 
     // Flyout list grouped by part. Does not take editor space.
@@ -5097,7 +5108,7 @@ public partial class MainWindow : Window
     // Plain words for what a Function does, keyed on its first token so
     // "repeat 5 2000" still explains. Empty when blank or unknown, so the
     // note only appears once a behavior is actually chosen.
-    static string FunctionExplain(string function)
+    internal static string FunctionExplain(string function)
     {
         var name = (function ?? "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
         return name switch
@@ -5114,8 +5125,12 @@ public partial class MainWindow : Window
             "greater_than" => "Fires once your input passes a set strength.",
             "less_than" => "Fires while your input stays under a set strength.",
             "duty" => "Presses in a repeating on and off cycle.",
-            "increment_value" => "Nudges a device setting up, like mouse speed.",
-            "decrement_value" => "Nudges a device setting down, like mouse speed.",
+            // Not device settings: the device runs these only for real output
+            // channels (DataFlow.c gates the whole function switch on the output
+            // id). A row whose output is a setting name is read as a plain
+            // setting override and its function cell is ignored.
+            "increment_value" => "Steps an analog output up a notch and leaves it there, like a trigger or a stick axis.",
+            "decrement_value" => "Steps an analog output down a notch and leaves it there, like a trigger or a stick axis.",
             _ => "",
         };
     }
@@ -5149,7 +5164,7 @@ public partial class MainWindow : Window
              "One CSV file that tells the QuadStick which sip, puff, lip press, or joystick move presses which game button. A profile has one or more mode sheets: full control layouts you switch between while playing (walking layout, driving layout, menus). Sip or puff the side tube, or bind increment_mode / decrement_mode, to switch modes in-game."),
 
             ("The three columns (same colors as the official spreadsheets)",
-             "Yellow, OUTPUT: the game button or action. PlayStation names (x, circle, left_1), Xbox names (A, B, left_trigger), mouse (mouse_up, mouse_left_button), keyboard (kb_space), and even device settings like mouse_speed, which increment_value can adjust mid-game.\n" +
+             "Yellow, OUTPUT: the game button or action. PlayStation names (x, circle, left_1), Xbox names (A, B, left_trigger), mouse (mouse_up, mouse_left_button), keyboard (kb_space), and device setting names like mouse_speed. A setting name here sets that setting for the whole mode: the device ignores the function cell and reads the next cell as the value, not as an input.\n" +
              "Pink, FUNCTION: how the press behaves.\n" +
              "  normal: pressed while your input is active.\n" +
              "  toggle: one activation latches it on, the next releases it. Great for aiming without holding a sip.\n" +
