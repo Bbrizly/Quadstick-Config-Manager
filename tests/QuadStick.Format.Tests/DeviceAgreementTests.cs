@@ -323,6 +323,7 @@ public class DeviceAgreementTests
     [InlineData("inputs")]
     [InlineData("preferences")]
     [InlineData("functions")]
+    [InlineData("connections")]
     public void The_new_firmware_took_nothing_away(string table)
     {
         static string[] Read(int version, string table) =>
@@ -354,6 +355,30 @@ public class DeviceAgreementTests
     {
         Assert.Equal("lip", FirmwareOracle.Match("  lip", FirmwareOracle.Inputs));
         Assert.Null(FirmwareOracle.Match("lip ", FirmwareOracle.Inputs));
+    }
+
+    // The channel was the one table the oracle wrote out by hand, so it stayed
+    // on the 2017 list of three while everything else moved to 2373. A mode on
+    // "both" read as "usb", which is a real disagreement with a real device
+    // reported as agreement, and the catalog sweep only stayed green because
+    // the app's own "both needs 2025 firmware" warning happens to sit on that
+    // same row and masked it.
+    [Fact]
+    public void The_oracle_knows_the_channel_the_new_firmware_added()
+    {
+        Assert.Equal(new[] { "none", "usb", "bluetooth", "both" }, FirmwareOracle.Connections);
+
+        var modes = FirmwareOracle.Read("QuadStick\nProfile Name,,Solo\ngame.csv\nOutputs,Function,both\nx,normal,lip\n");
+
+        Assert.Equal("both", Assert.Single(modes).Channel);
+    }
+
+    [Fact]
+    public void The_oracle_still_falls_back_to_usb_on_a_word_the_device_cannot_match()
+    {
+        var modes = FirmwareOracle.Read("QuadStick\nProfile Name,,Solo\ngame.csv\nOutputs,Function,wibble\nx,normal,lip\n");
+
+        Assert.Equal("usb", Assert.Single(modes).Channel);
     }
 
     [Fact]

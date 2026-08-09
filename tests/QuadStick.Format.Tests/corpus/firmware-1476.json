@@ -552,5 +552,10 @@
   "delay_off",
   "delay_on",
   "tap"
+ ],
+ "connections": [
+  "none",
+  "usb",
+  "bluetooth"
  ]
 }

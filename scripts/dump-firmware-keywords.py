@@ -55,6 +55,10 @@ def main():
         "inputs": table(root / "input_keywords.h", "input_keywords"),
         "preferences": table(root / "preference_keywords.h", "preference_keywords"),
         "functions": table(root / "preference_keywords.h", "function_keywords"),
+        # The third line of a mode sheet. Left out of the first dump, so the
+        # oracle kept a hand written list and stayed on the 2017 one after the
+        # rest of it moved to 2373.
+        "connections": table(root / "preference_keywords.h", "connections_keywords"),
     }
 
     # Named after the version it came from, so a newer firmware can never
@@ -63,7 +67,7 @@ def main():
     out.write_text(json.dumps(data, indent=1) + "\n")
     print(f"wrote {out.name}: firmware {version}, "
           + ", ".join(f"{len(data[k])} {k}" for k in
-                      ("outputs", "inputs", "preferences", "functions")))
+                      ("outputs", "inputs", "preferences", "functions", "connections")))
     print("Point FirmwareOracle at it if this is the firmware to model, and keep "
           "the older dump: DeviceAgreementTests proves the new one removed nothing.")
 

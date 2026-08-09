@@ -591,5 +591,11 @@
   "tap",
   "increment_value",
   "decrement_value"
+ ],
+ "connections": [
+  "none",
+  "usb",
+  "bluetooth",
+  "both"
  ]
 }

@@ -35,6 +35,7 @@ public static class FirmwareOracle
     public static readonly IReadOnlyList<string> Inputs;
     public static readonly IReadOnlyList<string> Preferences;
     public static readonly IReadOnlyList<string> Functions;
+    public static readonly IReadOnlyList<string> Connections;
 
     static FirmwareOracle()
     {
@@ -46,6 +47,7 @@ public static class FirmwareOracle
         Inputs = List(doc.RootElement, "inputs");
         Preferences = List(doc.RootElement, "preferences");
         Functions = List(doc.RootElement, "functions");
+        Connections = List(doc.RootElement, "connections");
     }
 
     // ff.c f_gets, with _USE_STRFUNC 1 (Joystick/fatfs/ffconf.h), so '\r' is
@@ -172,7 +174,11 @@ public static class FirmwareOracle
         int k = 0;
         NextWord(labels, ref k);                // skip "Output or Function"
         NextWord(labels, ref k);                // skip "Function"
-        var channel = Match(NextWord(labels, ref k), new[] { "usb", "bluetooth", "none" }) ?? "usb";
+        // connections_keywords, defaulting to USB, exactly like the rest of the
+        // tables. It used to be written out by hand here, which is how the
+        // oracle stayed on the 2017 list of three after everything else moved
+        // to 2373 and its fourth word, "both".
+        var channel = Match(NextWord(labels, ref k), Connections) ?? "usb";
 
         var bindings = new List<Binding>();
         int i = 0;
