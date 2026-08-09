@@ -94,7 +94,7 @@
   <text x="40" y="270" class="small">Format library, so the same safety checks run no matter which button you clicked.</text>
   <text x="40" y="288" class="small">Save writes only to your library. Only Install may write to the QuadStick.</text>
 </svg>
-<figcaption>Two layers. The window is everything you see. The Format library is the careful part: it is pure logic with 82 automated tests and the strictest compiler checks, because a bug there could break someone's controller setup.</figcaption>
+<figcaption>Two layers. The window is everything you see. The Format library is the careful part: it is pure logic with 640 automated tests and the strictest compiler checks, because a bug there could break someone's controller setup.</figcaption>
 </figure>
 
 <h2>3. What a profile file looks like</h2>
@@ -251,7 +251,7 @@
 
 <h2>8. Files, settings, and the community catalog</h2>
 <p>Three more things this app can do, and all three only work when a QuadStick is <b>mounted</b>: its drive shows up like a USB stick in Finder or File Explorer. There is no serial or HID connection anywhere in this app, only file access, so if the drive is hidden (PS4 boot mode, or controller emulation switched on) the app cannot see the device at all. Turning mass storage back on needs QMP or the device's own prefs, not this app; there is no other way in from here.</p>
-<p><b>Device settings.</b> <code>prefs.csv</code> holds the QuadStick's own settings, not a game profile. On its Preferences sheet, a setting the app recognizes (51 of them are embedded in the app) gets a real control instead of a plain cell: a number box, a checkbox, or a dropdown, each one only offering values the device actually accepts. A setting the app does not recognize, or a value already in the file that a real control could not show without changing it, keeps the plain text box it always had, untouched. Installing <code>prefs.csv</code> back to the device asks first, because it changes every profile at once, not just the one open.</p>
+<p><b>Device settings.</b> <code>prefs.csv</code> holds the QuadStick's own settings, not a game profile. On its Preferences sheet, a setting the app recognizes (61 of them are embedded in the app) gets a real control instead of a plain cell: a number box, a checkbox, or a dropdown, each one only offering values the device actually accepts. A setting the app does not recognize, or a value already in the file that a real control could not show without changing it, keeps the plain text box it always had, untouched. Installing <code>prefs.csv</code> back to the device asks first, because it changes every profile at once, not just the one open.</p>
 <p><b>Manage files.</b> This window lists the <code>.csv</code> files on every mounted QuadStick drive, grouped by drive. From there you can copy a file into your library, open the Google Sheet it is linked to, or delete it. Deleting backs the file up to the same <code>QuadStickBackups</code> folder Install uses (see section 5) before removing it from the device. <code>default.csv</code> and <code>prefs.csv</code> cannot be deleted from this window: the app refuses before anything is copied or removed. The window also shows the order the device steps through its files when the profile switch is pressed, and the light colour for each position, because that table only exists in the maker's own documentation, not in any file on the device.</p>
 <p><b>Community profiles.</b> This window searches the QuadStick maker's own catalog of shared game profiles. Nothing is fetched over the network until this window is opened or Refresh is pressed in it; the last successful list is cached on this computer, so the window still opens with no network at all. Importing a profile opens it in the editor the same way pasting a share link does. This app does not flash firmware, load or run a profile on the device directly, or do live calibration. The only thing it ever writes to a QuadStick is a profile file, through the same safe install pipeline in section 5.</p>
 
@@ -275,9 +275,9 @@
 <tr><th style="width:320px">Path</th><th>What it is</th></tr>
 <tr><td class="mono">src/QuadStick.Format/</td><td>The careful layer: CSV parser, validator, lossless editor, safe installer, vocabulary. Pure logic, no UI, strictest compiler checks.</td></tr>
 <tr><td class="mono">src/QuadStick.Format/Data/validation.json</td><td>The maker's legal-names list, embedded verbatim.</td></tr>
-<tr><td class="mono">src/QuadStick.Format/Data/preferences.json</td><td>What the app knows about 51 device settings: type, range, and where each applies. A setting missing here still round-trips as plain text.</td></tr>
+<tr><td class="mono">src/QuadStick.Format/Data/preferences.json</td><td>What the app knows about 61 device settings: type, range, and where each applies. A setting missing here still round-trips as plain text.</td></tr>
 <tr><td class="mono">src/QuadStick.App/</td><td>The window: home, device view, list view, install flow, settings, tutorial, theme and contrast tokens, plus the Manage files and Community profiles windows.</td></tr>
-<tr><td class="mono">tests/</td><td>82 automated tests, including real community profiles as fixtures and the contrast gate.</td></tr>
+<tr><td class="mono">tests/</td><td>1013 automated tests, including real community profiles as fixtures, a transcription of the device's own file reader, and the contrast gate.</td></tr>
 <tr><td class="mono">tools/RenderPreview/</td><td>Takes screenshots of the real window without a display, so UI changes are reviewed by looking, not hoping.</td></tr>
 <tr><td class="mono">docs/FORMAT.md</td><td>The file-format ground truth, every statement tied to its source.</td></tr>
 </table>
