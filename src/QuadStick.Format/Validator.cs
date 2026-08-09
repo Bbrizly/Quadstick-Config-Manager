@@ -206,9 +206,20 @@ public static class Validator
             // cannot know, and the row must survive untouched either way.
             PreferenceDefinition? def = PreferenceCatalog.TryGet(b.Output, out var found) ? found : null;
             if (def is null)
+            {
+                // Say whose list it is missing from. The old wording put the app
+                // at the centre ("not a preference this app knows"), so a user
+                // read a true report about their device as this app failing, and
+                // "in case your device understands it" hedged past what the
+                // firmware plainly does: an unrecognised name is skipped by the
+                // read loop, so the setting does nothing at all.
+                var near = PreferenceCatalog.Closest(b.Output);
                 issues.Add(new Issue(Severity.Warning, $"A{b.Row}",
-                    $"\"{b.Output}\" is not a preference this app knows. It is written back exactly as it is, in case your device understands it.",
-                    "Check the spelling against the preferences your device already has."));
+                    $"The QuadStick has no preference called \"{b.Output}\", so it skips this row and the setting does nothing. It is saved exactly as you wrote it.",
+                    near is not null
+                        ? $"Did you mean \"{near}\"? (If your QuadStick's firmware is newer than this app, it may know \"{b.Output}\" and this warning is safe to ignore.)"
+                        : "Check the spelling against the preferences your device already has. (Firmware newer than this app will have names it has never heard of.)"));
+            }
 
             if (value.Length == 0)
             {

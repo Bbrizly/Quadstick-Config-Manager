@@ -75,6 +75,69 @@ public static class PreferenceCatalog
     public static bool TryGet(string name, [MaybeNullWhen(false)] out PreferenceDefinition definition) =>
         ByName.TryGetValue(name ?? "", out definition);
 
+    /// <summary>The catalog name an unknown one was most likely meant to be, or
+    /// null when nothing is near enough to name. Only ever quoted back in a
+    /// warning: nothing in this app rewrites a name on the strength of it.
+    /// </summary>
+    // A dropped or added word beats a typo, because the reported cases are
+    // whole words rather than slips: "puff_threshold" for "sip_puff_threshold",
+    // written by hand or by an older tool. Distance alone would answer
+    // "joystick_warning" for "joystick_alarm", which is a different setting
+    // spelled correctly, so the containment pass runs first and the distance
+    // pass is kept tight enough that no two real preferences reach each other.
+    public static string? Closest(string name)
+    {
+        name = (name ?? "").Trim();
+        if (name.Length == 0 || ByName.ContainsKey(name)) return null;
+
+        var contains = All
+            .Where(d => d.Name.Contains(name, StringComparison.OrdinalIgnoreCase)
+                     || name.Contains(d.Name, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(d => Math.Abs(d.Name.Length - name.Length))
+            .ThenBy(d => d.Name, StringComparer.Ordinal)
+            .FirstOrDefault();
+        if (contains is not null) return contains.Name;
+
+        // Two edits, and never more than a quarter of what was typed, so a
+        // short name cannot reach a different short name: "volume" and
+        // "brightness" stay apart, and so do the four deflection_multiplier_*.
+        int budget = Math.Min(2, name.Length / 4);
+        if (budget == 0) return null;
+
+        var best = All
+            .Select(d => (d.Name, Distance: Distance(name, d.Name, budget)))
+            .Where(x => x.Distance <= budget)
+            .OrderBy(x => x.Distance)
+            .ThenBy(x => x.Name, StringComparer.Ordinal)
+            .FirstOrDefault();
+        return best.Name;
+    }
+
+    // Levenshtein, stopped as soon as it passes the budget: the catalog is
+    // walked once per unknown name and most candidates are nowhere near.
+    static int Distance(string a, string b, int budget)
+    {
+        if (Math.Abs(a.Length - b.Length) > budget) return budget + 1;
+        var prev = new int[b.Length + 1];
+        var cur = new int[b.Length + 1];
+        for (int j = 0; j <= b.Length; j++) prev[j] = j;
+
+        for (int i = 1; i <= a.Length; i++)
+        {
+            cur[0] = i;
+            int rowBest = cur[0];
+            for (int j = 1; j <= b.Length; j++)
+            {
+                int cost = char.ToLowerInvariant(a[i - 1]) == char.ToLowerInvariant(b[j - 1]) ? 0 : 1;
+                cur[j] = Math.Min(Math.Min(cur[j - 1] + 1, prev[j] + 1), prev[j - 1] + cost);
+                rowBest = Math.Min(rowBest, cur[j]);
+            }
+            if (rowBest > budget) return budget + 1;
+            (prev, cur) = (cur, prev);
+        }
+        return prev[b.Length];
+    }
+
     internal static IReadOnlyList<PreferenceDefinition> Parse(Stream json)
     {
         using var doc = JsonDocument.Parse(json);
