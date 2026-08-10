@@ -3500,9 +3500,12 @@ public partial class MainWindow : Window
 
         bool prefs = CurrentSheet.Type != SheetType.ProfileName;
         RowsPanel.Children.Add(prefs ? PrefsHeaderRow() : HeaderRow());
-        int number = 1;
+        // The sheet row, not the line's place in the list. The user's other copy
+        // of this profile is a spreadsheet, and every conversation about a
+        // binding is "row 14". The screen reader was already saying b.Row while
+        // the label beside it said 1.
         foreach (var b in CurrentSheet.Bindings)
-            RowsPanel.Children.Add(prefs ? PrefsRow(b, number++) : BindingRow(b, number++));
+            RowsPanel.Children.Add(prefs ? PrefsRow(b, b.Row) : BindingRow(b, b.Row));
 
         if (CurrentSheet.Bindings.Count == 0)
             RowsPanel.Children.Add(new TextBlock
@@ -3598,9 +3601,11 @@ public partial class MainWindow : Window
     // Output swatch no matter how many digits the row number has.
     const double RowNumberWidth = 34;
 
-    // The line's position in the visible list (1, 2, 3...), shown at the left
-    // edge. Not the CSV grid row: bindings start three header lines down, so
-    // the raw row would begin at 4 and read as wrong.
+    // The row this line is on in the spreadsheet, shown at the left edge. On a
+    // standard mode sheet the first binding is row 4, because three header
+    // lines sit above it. Counting from 1 instead made the label disagree with
+    // the user's own Google Sheet, with the cell references in every warning,
+    // and with what the screen reader was already reading out.
     static Control RowNumberLabel(int number) => new TextBlock
     {
         Text = number.ToString(), FontSize = Size("SmallSize"), Classes = { "muted" },

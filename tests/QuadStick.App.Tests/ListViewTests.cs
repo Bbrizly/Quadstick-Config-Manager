@@ -18,6 +18,39 @@ namespace QuadStick.App.Tests;
 
 public class ListViewTests
 {
+    // The number beside a row is the row it is on in the spreadsheet, not its
+    // place in the list. The user's other copy of this profile is a Google
+    // Sheet, every warning in the app names a cell like "C7", and the screen
+    // reader was already saying "row 4" while the label beside it said "1".
+    [AvaloniaFact]
+    public void Row_numbers_are_the_sheet_rows_not_one_two_three()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        w.LoadProfile(ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n"));
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        var numbers = w.GetVisualDescendants().OfType<TextBlock>()
+            .Select(t => t.Text ?? "")
+            .Where(t => t is "1" or "2" or "3" or "4" or "5")
+            .ToList();
+
+        Assert.Contains("4", numbers);
+        Assert.Contains("5", numbers);
+        Assert.DoesNotContain("1", numbers);
+        w.Close();
+    }
+
     // The one thing the row layout owes a mouth-stick user: a row that fits the
     // window it is in. Panning sideways to reach the note or the delete button
     // is not a movement this app can ask for, and the fixed-width cells used to
@@ -313,9 +346,11 @@ public class ListViewTests
         w.SetDeviceViewForPreview(false);
         w.UpdateLayout();
 
+        // n is the nth binding; the label on it is its sheet row, and three
+        // header lines sit above the first one.
         Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
-            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
-                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3}."));
         bool Selected(int n) => AutomationProperties.GetName(Handle(n))!.Contains("selected");
         void Click(int n, RawInputModifiers mods = RawInputModifiers.None)
         {
@@ -366,9 +401,11 @@ public class ListViewTests
         w.SetDeviceViewForPreview(false);
         w.UpdateLayout();
 
+        // n is the nth binding; the label on it is its sheet row, and three
+        // header lines sit above the first one.
         Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
-            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
-                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3}."));
         void Click(int n, RawInputModifiers mods = RawInputModifiers.None)
         {
             var pt = Handle(n).TranslatePoint(new Point(3, 3), w)!.Value;
@@ -430,9 +467,11 @@ public class ListViewTests
         w.SetDeviceViewForPreview(false);
         w.UpdateLayout();
 
+        // n is the nth binding; the label on it is its sheet row, and three
+        // header lines sit above the first one.
         Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
-            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
-                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3}."));
         bool Selected(int n) => AutomationProperties.GetName(Handle(n))!.Contains("selected");
         void Click(int n, RawInputModifiers mods = RawInputModifiers.None)
         {
@@ -473,9 +512,11 @@ public class ListViewTests
         w.SetDeviceViewForPreview(false);
         w.UpdateLayout();
 
+        // n is the nth binding; the label on it is its sheet row, and three
+        // header lines sit above the first one.
         Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
-            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
-                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3}."));
 
         double before = Handle(1).TranslatePoint(new Point(0, 0), w)!.Value.Y;
         var pt = Handle(1).TranslatePoint(new Point(3, 3), w)!.Value;
@@ -512,9 +553,11 @@ public class ListViewTests
         w.SetDeviceViewForPreview(false);
         w.UpdateLayout();
 
+        // n is the nth binding; the label on it is its sheet row, and three
+        // header lines sit above the first one.
         Border Handle(int n) => w.GetVisualDescendants().OfType<Border>()
-            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n},")
-                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n}."));
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3}."));
         void Click(int n, RawInputModifiers mods = RawInputModifiers.None)
         {
             var pt = Handle(n).TranslatePoint(new Point(3, 3), w)!.Value;
