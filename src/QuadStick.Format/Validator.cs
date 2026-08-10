@@ -155,6 +155,7 @@ public static class Validator
             if (valueInC.Length > 0 && PreferenceCatalog.TryGet(b.Output, out var def))
                 ValidateAgainstCatalog(def, valueInC, $"C{b.Row}", rejected, issues);
             WarnIfTheDeviceIgnoresIt(b.Output, valueInC, $"C{b.Row}", issues);
+            WarnIfItNeedsNewFirmware(b.Output, $"A{b.Row}", issues);
             return;
         }
         if (b.Function.Length > 0)
@@ -254,6 +255,7 @@ public static class Validator
             // cell the catalog checks point at.
             if (def is not null) ValidateAgainstCatalog(def, value, $"B{b.Row}", rejected, issues);
             WarnIfTheDeviceIgnoresIt(b.Output, value, $"B{b.Row}", issues);
+            WarnIfItNeedsNewFirmware(b.Output, $"A{b.Row}", issues);
         }
 
         ValidatePreferenceOrder(numbers, "B", issues);
@@ -412,7 +414,7 @@ public static class Validator
     }
 
     // The only three preferences the device does not read with atoi, taken from
-    // the switch in Load_Preferences_File (Configuration.c, firmware 1476).
+    // the switch in Load_Preferences_File (Configuration.c, firmware 2373).
     // Everything else in that switch falls through to the default branch, which
     // is a bare atoi, so a word there is zero.
     //
@@ -459,6 +461,44 @@ public static class Validator
         issues.Add(new Issue(Severity.Warning, cell,
             $"\"{name}\" does nothing on current firmware: {why}. The row is saved exactly as you wrote it.",
             "Remove the row, or leave it for an older QuadStick that still answers to it."));
+    }
+
+    // The ten preferences firmware 2373 added that a 2017 QuadStick has never
+    // heard of. Its read loop skips a name it cannot match, so the row does
+    // nothing and nothing is said, which is the same silence as a misspelling
+    // and impossible to tell apart from one by looking at the file.
+    //
+    // The six sip and puff names matter most. Older firmware has only the
+    // sip_puff_ pair, one setting covering both directions, so somebody who
+    // splits them gets the device's defaults in both directions instead. That
+    // has already reached a real user, who was told the names were wrong when
+    // in fact they are right on current firmware and skipped on his.
+    static readonly Dictionary<string, string?> NewInFirmware2373 = new(StringComparer.Ordinal)
+    {
+        ["sip_threshold_soft"] = "sip_puff_threshold_soft",
+        ["sip_threshold"] = "sip_puff_threshold",
+        ["sip_maximum"] = "sip_puff_maximum",
+        ["puff_threshold_soft"] = "sip_puff_threshold_soft",
+        ["puff_threshold"] = "sip_puff_threshold",
+        ["puff_maximum"] = "sip_puff_maximum",
+        ["sip_puff_delay_hard"] = null,
+        ["usb_1_dead_zone"] = null,
+        ["enable_usb_a_host"] = null,
+        ["titan_two"] = null,
+        // usb_2_dead_zone is new in 2373 as well, but no firmware ever reads
+        // it, so IgnoredByTheDevice has the truer thing to say about it.
+    };
+
+    static void WarnIfItNeedsNewFirmware(string name, string cell, List<Issue> issues)
+    {
+        if (!NewInFirmware2373.TryGetValue(name, out var older)) return;
+
+        issues.Add(new Issue(Severity.Warning, cell,
+            $"\"{name}\" needs firmware from 2025 or newer. A QuadStick on older firmware has no preference by that name, "
+            + "so it skips the row and uses its own default instead, without saying so. The row is saved exactly as you wrote it.",
+            older is not null
+                ? $"Keep it if your QuadStick is up to date. If it is not, older firmware has \"{older}\", which is one setting covering both sip and puff."
+                : "Keep it if your QuadStick is up to date. If you are not sure, check the firmware version on the device."));
     }
 
     // The device reads a value with atoi, which is 32 bits wide. long.TryParse
