@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using QuadStick.Format;
 
 namespace QuadStick.App;
@@ -115,7 +116,7 @@ public sealed class DriveBackup
             // Keep online: download and hand the bytes back for the caller to
             // rescue, overwrite, and reload. Record the online time now so the
             // next save does not fire a self-inflicted conflict prompt.
-            var online = await _client.DownloadCsvAsync(link.SpreadsheetId, ct);
+            var online = await DownloadProfileAsync(link.SpreadsheetId, ct);
             link.LastSeenModifiedTime = current;
             link.BackupDirty = false;
             SaveState();
@@ -128,6 +129,16 @@ public sealed class DriveBackup
         catch (GoogleAuthRevokedException)
         {
             return Paused(link);
+        }
+        // Keep online, and then the sheet did not read as a profile. The local
+        // file is left exactly as it is: an unreadable download is the one
+        // thing that must never be written over somebody's bindings.
+        catch (InvalidDataException)
+        {
+            if (link != null) link.BackupDirty = true;
+            SaveState();
+            _status("The Google Sheet could not be read as a profile, so nothing here was changed.", true);
+            return new PushResult(PushResultKind.Failed);
         }
         catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException)
         {
@@ -172,7 +183,7 @@ public sealed class DriveBackup
         var link = new DriveLink { SpreadsheetId = id, BackupDirty = true };
         _getSettings().DriveLinks[profilePath] = link;
         SaveState();
-        await _client.PushGridAsync(id, Csv.Parse(csvText), ct);
+        await _client.PushTabsAsync(id, Tabs(csvText), ct);
         link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(id, ct);
         link.BackupDirty = false;
         SaveState();
@@ -183,11 +194,28 @@ public sealed class DriveBackup
     // check compares against our own write, not the stale value.
     async Task<PushResult> PushAndRecordAsync(DriveLink link, string csvText, CancellationToken ct)
     {
-        await _client.PushGridAsync(link.SpreadsheetId, Csv.Parse(csvText), ct);
+        await _client.PushTabsAsync(link.SpreadsheetId, Tabs(csvText), ct);
         link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
         link.BackupDirty = false;
         SaveState();
         return new PushResult(PushResultKind.Pushed);
+    }
+
+    // One worksheet tab per mode, which is how the community writes a profile
+    // and the only shape this app's own Sheets import reads back.
+    static IReadOnlyList<ProfileTab> Tabs(string csvText) => SheetTabs.Split(ProfileFile.Load(csvText));
+
+    // The sheet as profile CSV. Downloaded as a workbook, because a CSV export
+    // is the first tab alone and both callers write the result over the user's
+    // local file. A sheet somebody replaced with something that is not a
+    // workbook comes back as its own bytes, so the parse below still gets to
+    // say what is wrong with it.
+    async Task<string> DownloadProfileAsync(string id, CancellationToken ct)
+    {
+        var bytes = await _client.DownloadWorkbookAsync(id, ct);
+        if (!Xlsx.LooksLikeXlsx(bytes)) return Encoding.UTF8.GetString(bytes);
+        using var stream = new MemoryStream(bytes);
+        return Xlsx.ToCsv(stream);
     }
 
     // 403/429/5xx/network: generic failure. Mark dirty, save, show pending.
@@ -219,6 +247,20 @@ public sealed class DriveBackup
                 return await PushCoreAsync(profilePath, csvText, CancellationToken.None);
             return null;
         }, CancellationToken.None);
+
+    /// <summary>This app made that sheet, so it can be read with the token
+    /// instead of over the public web. A link the user copied one second ago is
+    /// the commonest thing they paste into Import, and the anonymous export of
+    /// a sheet is only readable once link sharing is on and has settled.</summary>
+    public bool Knows(string spreadsheetId) =>
+        _getSettings().DriveLinks.Values.Any(l =>
+            string.Equals(l.SpreadsheetId, spreadsheetId, StringComparison.Ordinal));
+
+    /// <summary>The sheet as profile CSV, read with the app's own token. Throws
+    /// the same exceptions as any other Drive call, plus InvalidDataException
+    /// when what comes back is not a workbook.</summary>
+    public Task<string> ReadProfileAsync(string spreadsheetId, CancellationToken ct = default) =>
+        Locked(() => DownloadProfileAsync(spreadsheetId, ct), ct);
 
     // The share URL for a linked profile, or null when it has no sheet yet.
     // Used by "Open in Google Sheets".
@@ -361,7 +403,7 @@ public sealed class DriveBackup
             var reportName = Path.GetFileNameWithoutExtension(SafeFileName.ForCsv(pick.Name));
             try
             {
-                var csv = await _client.DownloadCsvAsync(pick.Id, ct);
+                var csv = await DownloadProfileAsync(pick.Id, ct);
 
                 // Validate by parsing, so a bad sheet is a per-file failure,
                 // not a written-then-broken profile.
@@ -412,6 +454,11 @@ public sealed class DriveBackup
             catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException or GoogleAuthRevokedException)
             {
                 failed.Add((reportName, "download failed"));
+            }
+            // The download arrived and is not a workbook this reader can open.
+            catch (InvalidDataException)
+            {
+                failed.Add((reportName, "could not read the sheet"));
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {

@@ -30,6 +30,7 @@ public class DriveBackupTests
     static bool IsCreate(HttpRequestMessage r) =>
         r.Method == HttpMethod.Post && r.RequestUri!.AbsoluteUri == "https://sheets.googleapis.com/v4/spreadsheets";
     static bool IsDownload(HttpRequestMessage r) => r.RequestUri!.AbsoluteUri.Contains("/export?mimeType=");
+    static bool IsValuesUpdate(HttpRequestMessage r) => r.RequestUri!.AbsoluteUri.Contains("values:batchUpdate");
     static bool IsPermissions(HttpRequestMessage r) =>
         r.Method == HttpMethod.Post && r.RequestUri!.AbsoluteUri.Contains("/permissions");
 
@@ -534,7 +535,7 @@ public class DriveBackupTests
         var (backup, settings, _) = Make(r =>
         {
             if (IsCreate(r)) { creates++; return Json("{\"spreadsheetId\":\"keep\"}"); }
-            if (fault && r.Method == HttpMethod.Put)
+            if (fault && IsValuesUpdate(r))
                 return Json("{}", HttpStatusCode.InternalServerError);
             if (IsModified(r)) return Json("{\"modifiedTime\":\"t\"}");
             return Json("{}");
@@ -618,5 +619,57 @@ public class DriveBackupTests
         Assert.Equal(PushResultKind.Pushed, push.Kind);
         Assert.Equal(ShareLinkKind.Copied, share.Kind);
         Assert.Equal("only", settings.DriveLinks["/lib/race.csv"].SpreadsheetId);
+    }
+
+    // Copy share link, paste that link into Import: the whole chain, from the
+    // bytes the backup puts on the wire to the profile the importer makes of
+    // them. The user's own profile used to come back as "no profile tab".
+    [Fact]
+    public async Task WhatTheBackupPushes_ImportsBackAsTheSameProfile()
+    {
+        string? pushed = null;
+        var (backup, _, _) = Make(r =>
+        {
+            if (IsCreate(r)) return Json("{\"spreadsheetId\":\"s\"}");
+            if (IsModified(r)) return Json("{\"modifiedTime\":\"t\"}");
+            if (IsValuesUpdate(r)) pushed = LastBody(r);
+            return Json("{}");
+        });
+        var saved = ProfileFile.NewFromTemplate("mygame.csv");
+        saved.NormalizeForDeviceCsv();
+
+        await backup.PushAsync("/lib/mygame.csv", saved.ToCsvText());
+
+        Assert.NotNull(pushed);
+        using var workbook = WorkbookFrom(pushed!);
+        var imported = ProfileFile.Load(Xlsx.ToCsv(workbook));
+
+        Assert.Equal(saved.Document.Sheets.Count, imported.Document.Sheets.Count);
+        Assert.Equal("mygame.csv", imported.Document.CsvFileName);
+        Assert.Equal(
+            saved.Document.Sheets[0].Bindings.Select(b => b.Output),
+            imported.Document.Sheets[0].Bindings.Select(b => b.Output));
+    }
+
+    // The handler hands back a response, not the body, so read it here. The
+    // content is already buffered by the time SendAsync returns.
+    static string LastBody(HttpRequestMessage r) =>
+        r.Content is null ? "" : r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+    // Turn a values:batchUpdate body back into the workbook Google would export
+    // from it: one tab per range, named by the range's own tab name.
+    static MemoryStream WorkbookFrom(string valuesBatchUpdate)
+    {
+        using var doc = System.Text.Json.JsonDocument.Parse(valuesBatchUpdate);
+        var tabs = doc.RootElement.GetProperty("data").EnumerateArray().Select(d =>
+        {
+            var range = d.GetProperty("range").GetString()!;
+            var title = range[1..range.LastIndexOf("'!", StringComparison.Ordinal)].Replace("''", "'");
+            var rows = d.GetProperty("values").EnumerateArray()
+                .Select(row => row.EnumerateArray().Select(c => c.GetString() ?? "").ToArray())
+                .ToArray();
+            return (title, rows);
+        }).ToArray();
+        return TestWorkbook.Build(tabs);
     }
 }
