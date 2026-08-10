@@ -518,6 +518,10 @@ public partial class MainWindow : Window
         Timeout = TimeSpan.FromSeconds(15),
         MaxResponseContentBufferSize = MaxWorkbookBytes,
     };
+
+    /// <summary>The app's one HTTP client, for windows that need it. Settings
+    /// uses it for the update check.</summary>
+    internal HttpClient HttpClient => Http;
     const string DefaultNewName = "mygame.csv";
 
     // The same page the store listings declare. bbrizly.github.io still

@@ -336,8 +336,56 @@ public class SettingsWindow : Window
         panel.Children.Add(Field("Default QuadStick model", null, model));
 
         panel.Children.Add(BackupArea(owner));
+        panel.Children.Add(UpdateArea(owner));
 
         return Tab(panel);
+    }
+
+    // Asks GitHub, says what it found, and opens the release page. It never
+    // downloads or replaces anything: an unsigned self-update teaches people to
+    // click through the warning their computer is right to show them.
+    Control UpdateArea(MainWindow owner)
+    {
+        var version = UpdateCheck.CurrentVersion;
+        var line = new TextBlock
+        {
+            Text = $"You are on {version}.",
+            FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
+        };
+        AutomationProperties.SetLiveSetting(line, AutomationLiveSetting.Polite);
+
+        var check = new Button { Content = "Check for updates" };
+        AutomationProperties.SetName(check, "Check for updates");
+
+        var download = new Button { Content = "Open the download page", IsVisible = false };
+        AutomationProperties.SetName(download, "Open the download page in your browser");
+        string? url = null;
+        download.Click += async (_, _) =>
+        {
+            if (url is null) return;
+            try { await Launcher.LaunchUriAsync(new Uri(url)); } catch { /* best effort */ }
+        };
+
+        check.Click += async (_, _) =>
+        {
+            check.IsEnabled = false;
+            line.Text = "Checking...";
+            var result = await UpdateCheck.LatestAsync(owner.HttpClient, version);
+            line.Text = result.Message;
+            url = result.DownloadUrl;
+            // The button is shown for a newer version only. Offering a download
+            // to someone already on the newest is a question with no answer.
+            download.IsVisible = result.IsNewer && url is not null;
+            check.IsEnabled = true;
+        };
+
+        return Field("Updates", "This app does not update itself and never checks on its own.",
+            new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 10,
+                Children = { check, download },
+            },
+            line);
     }
 
     // Backup checkbox: runs OAuth when turned on, signs out when turned off,
