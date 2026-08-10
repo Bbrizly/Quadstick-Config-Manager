@@ -267,69 +267,24 @@ public class Firmware2373RuleTests
         Assert.DoesNotContain(issues, i => i.Message.Contains("mouse and keyboard over USB"));
     }
 
-    // A real user was told sip_threshold and puff_threshold were misspellings of
-    // sip_puff_threshold. They are not: 2373 added them as separate per
-    // direction settings. On his older firmware they really were skipped, so
-    // the symptom was right and the diagnosis was wrong, and the app has to be
-    // able to tell those two apart for him.
+    // The app was built on the 2017 list, so it told a real user his QuadStick
+    // had no setting called "puff_threshold" and that he had been running on
+    // defaults for months. 2373 added the six split sip and puff settings and
+    // his rows were fine. A wrong name is the worst thing this app can say: it
+    // sends somebody to change a file that was already right.
     [Theory]
-    [InlineData("sip_threshold_soft", "sip_puff_threshold_soft")]
-    [InlineData("sip_threshold", "sip_puff_threshold")]
-    [InlineData("sip_maximum", "sip_puff_maximum")]
-    [InlineData("puff_threshold_soft", "sip_puff_threshold_soft")]
-    [InlineData("puff_threshold", "sip_puff_threshold")]
-    [InlineData("puff_maximum", "sip_puff_maximum")]
-    public void A_split_sip_or_puff_setting_is_real_and_names_the_older_one(string name, string older)
+    [InlineData("sip_threshold_soft")]
+    [InlineData("sip_threshold")]
+    [InlineData("sip_maximum")]
+    [InlineData("puff_threshold_soft")]
+    [InlineData("puff_threshold")]
+    [InlineData("puff_maximum")]
+    public void A_split_sip_or_puff_setting_is_a_real_name_and_draws_no_warning(string name)
     {
         var issues = Load($"Preferences\nprefs.csv\nName,Value\n{name},40\n");
 
-        Assert.DoesNotContain(issues, i => i.Message.Contains("has no preference called"));
-        var issue = Assert.Single(issues, i => i.Message.Contains("needs firmware from 2025"));
-        Assert.Equal(Severity.Warning, issue.Severity);
-        Assert.Equal("A4", issue.Cell);
-        Assert.Contains(older, issue.Fix);
-    }
-
-    [Theory]
-    [InlineData("sip_puff_delay_hard")]
-    [InlineData("usb_1_dead_zone")]
-    [InlineData("enable_usb_a_host")]
-    [InlineData("titan_two")]
-    public void The_other_new_settings_say_it_too_without_an_older_name(string name)
-    {
-        var issues = Load($"Preferences\nprefs.csv\nName,Value\n{name},1\n");
-
-        var issue = Assert.Single(issues, i => i.Message.Contains("needs firmware from 2025"));
-        Assert.DoesNotContain("older firmware has", issue.Fix);
-    }
-
-    // Same row on a mode sheet, where the value lives in column C.
-    [Fact]
-    public void A_new_setting_on_a_mode_row_says_it_as_well()
-    {
-        var issues = Load("Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\npuff_threshold,,40\n");
-
-        var issue = Assert.Single(issues, i => i.Message.Contains("needs firmware from 2025"));
-        Assert.Equal("A4", issue.Cell);
-    }
-
-    [Fact]
-    public void A_setting_both_firmwares_have_says_nothing_about_firmware()
-    {
-        var issues = Load("Preferences\nprefs.csv\nName,Value\nsip_puff_threshold,40\n");
-
-        Assert.DoesNotContain(issues, i => i.Message.Contains("needs firmware from 2025"));
-    }
-
-    // usb_2_dead_zone is new in 2373 too, but no firmware reads it, so the
-    // deader fact wins and the row must not carry both warnings.
-    [Fact]
-    public void A_setting_no_firmware_reads_is_called_dead_and_not_new()
-    {
-        var issues = Load("Preferences\nprefs.csv\nName,Value\nusb_2_dead_zone,5\n");
-
-        Assert.Contains(issues, i => i.Message.Contains("does nothing on current firmware"));
-        Assert.DoesNotContain(issues, i => i.Message.Contains("needs firmware from 2025"));
+        // Row 4 is the setting. Nothing at all to say about it.
+        Assert.Empty(issues.Where(i => i.Cell.EndsWith('4')));
     }
 
     [Fact]
