@@ -317,7 +317,7 @@ public partial class MainWindow : Window
     // everything (restore-all from onboarding); false starts empty (cherry-pick).
     public async Task ShowDrivePickerAsync(bool preCheck)
     {
-        if (!ShareNeedsBackup()) return;
+        if (!await ReadyForDriveAsync("Import from Google Drive")) return;
         await new DrivePickerWindow(this, preCheck).ShowDialog(this);
     }
 
@@ -390,23 +390,39 @@ public partial class MainWindow : Window
     }
 
     // Sharing needs backup on and connected. When off, the actions still show,
-    // but choosing one explains and opens Settings. True when backup is ready.
-    bool ShareNeedsBackup()
+    // and choosing one opens the setup wizard rather than dropping the user in
+    // Settings with a one line status behind it. True when the caller may go
+    // ahead: either backup was already live, or the user walked the wizard to
+    // its last step.
+    //
+    // The wizard never shares anything itself. Its last button closes it and
+    // the caller runs the action the user originally asked for, so there is
+    // only ever one copy of what share does.
+    internal async Task<bool> ReadyForDriveAsync(string finishLabel, bool needsSave = false)
     {
         if (Backup() is not null) return true;
-        Status("Sharing needs Google Sheets backup. Turn it on in Settings.", StatusKind.Warning);
-        new SettingsWindow(this).ShowDialog(this);
-        return false;
+        var wizard = new ShareSetupWindow(this, finishLabel, needsSave);
+        await wizard.ShowDialog(this);
+        return wizard.Completed && Backup() is not null;
     }
+
+    /// <summary>Whether the open profile has somewhere on disk to be saved to.
+    /// The share wizard asks, because a sheet is named after the file and an
+    /// unsaved profile has no name yet.</summary>
+    internal bool ProfileIsSaved => _savePath is not null;
+
+    /// <summary>Save the open profile, for the share wizard's second step.
+    /// </summary>
+    internal Task<bool> SaveProfileAsync() => SaveAsync();
 
     // Copy a profile's share link. path null means the open editor: save first
     // so a never-saved file is named and on disk. A home card passes its path,
     // already saved. Awaited (not fire-and-forget): async HTTP yields, so the
     // UI stays responsive without a spinner.
-    async Task CopyShareLinkAsync(string? path)
+    internal async Task CopyShareLinkAsync(string? path)
     {
         Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.ShareLink);
-        if (!ShareNeedsBackup()) return;
+        if (!await ReadyForDriveAsync("Copy share link", needsSave: path is null && _savePath is null)) return;
 
         string csvText;
         if (path is null)
@@ -431,6 +447,9 @@ public partial class MainWindow : Window
         if (_backupInFlight is Task inFlight)
             try { await inFlight; } catch { /* RunBackup already reported it */ }
 
+        // A share now writes one tab per mode and colours the new ones, so it
+        // is several requests, and the window looked idle for all of them.
+        Status("Putting this profile in Google Sheets...", StatusKind.Info);
         var result = await Backup()!.GetShareLinkAsync(path, csvText);
 
         // The dirty push here can hit the conflict prompt. Keep online still
@@ -463,7 +482,8 @@ public partial class MainWindow : Window
     // link first, which creates it.
     async Task OpenInSheetsAsync(string? path)
     {
-        if (!ShareNeedsBackup()) return;
+        if (!await ReadyForDriveAsync("Open in Google Sheets",
+            needsSave: path is null && _savePath is null)) return;
 
         if (path is null)
         {
