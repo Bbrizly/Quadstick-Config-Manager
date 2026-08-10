@@ -81,6 +81,60 @@ public class Firmware2373RuleTests
             i.Cell == "C4" && i.Message.Contains("does nothing on current firmware"));
     }
 
+    // Two values the device still accepts and now acts on differently. The file
+    // is unchanged and valid on both firmwares, so nothing in it can show that
+    // updating the QuadStick changed what it does. Only the app can say it.
+    //
+    // enable_DS3_emulation 5 was "PC only, no joystick" on 1476
+    // (Descriptors.c:1523) and is the Nintendo Switch Pro Controller on 2373
+    // (Descriptors.c:1574), so the device stops being the controller the game
+    // expects.
+    [Fact]
+    public void Emulation_mode_five_says_the_two_firmwares_disagree()
+    {
+        var issues = Load("Preferences\nprefs.csv\nName,Value\nenable_DS3_emulation,5\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("means something different"));
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.Contains("Nintendo", issue.Message);
+    }
+
+    // joystick_deflection_minimum 0 meant no dead zone on 1476
+    // (DataFlow.c:978, a plain multiply). 2373 substitutes 129 raw counts
+    // instead (DataFlow.c:997), so a stick set to move at the slightest touch
+    // gains a dead zone the file never asked for.
+    [Fact]
+    public void A_zero_dead_zone_says_the_two_firmwares_disagree()
+    {
+        var issues = Load("Preferences\nprefs.csv\nName,Value\njoystick_deflection_minimum,0\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("means something different"));
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.Contains("129", issue.Message);
+    }
+
+    // Same on a mode row, where the value lives in column C.
+    [Fact]
+    public void A_value_the_firmwares_disagree_on_says_so_on_a_mode_row_too()
+    {
+        var issues = Load(Head + "enable_DS3_emulation,,5\n");
+
+        Assert.Contains(issues, i =>
+            i.Cell == "C4" && i.Message.Contains("means something different"));
+    }
+
+    // Only the one value changed meaning. Every other value means what it always
+    // meant, and warning on those would train people to ignore the warning.
+    [Theory]
+    [InlineData("enable_DS3_emulation", "4")]
+    [InlineData("joystick_deflection_minimum", "8")]
+    public void A_value_the_two_firmwares_agree_on_is_not_worth_a_word(string name, string value)
+    {
+        var issues = Load($"Preferences\nprefs.csv\nName,Value\n{name},{value}\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("means something different"));
+    }
+
     // Writing 0 asks for nothing, which is what the device does anyway.
     [Fact]
     public void A_dead_setting_left_at_zero_is_not_worth_a_word()

@@ -155,6 +155,7 @@ public static class Validator
             if (valueInC.Length > 0 && PreferenceCatalog.TryGet(b.Output, out var def))
                 ValidateAgainstCatalog(def, valueInC, $"C{b.Row}", rejected, issues);
             WarnIfTheDeviceIgnoresIt(b.Output, valueInC, $"C{b.Row}", issues);
+            WarnIfTheFirmwaresDisagree(b.Output, valueInC, $"C{b.Row}", issues);
             return;
         }
         if (b.Function.Length > 0)
@@ -254,6 +255,7 @@ public static class Validator
             // cell the catalog checks point at.
             if (def is not null) ValidateAgainstCatalog(def, value, $"B{b.Row}", rejected, issues);
             WarnIfTheDeviceIgnoresIt(b.Output, value, $"B{b.Row}", issues);
+            WarnIfTheFirmwaresDisagree(b.Output, value, $"B{b.Row}", issues);
         }
 
         ValidatePreferenceOrder(numbers, "B", issues);
@@ -461,6 +463,35 @@ public static class Validator
         issues.Add(new Issue(Severity.Warning, cell,
             $"\"{name}\" does nothing on current firmware: {why}. The row is saved exactly as you wrote it.",
             "Remove the row, or leave it for an older QuadStick that still answers to it."));
+    }
+
+    // One setting, one value, two firmwares that act on it differently. Both
+    // read the file the same way and both accept the value, so the file is
+    // correct on either and cannot show that updating the device changed what
+    // it does. Nothing but the app is in a position to say it.
+    //
+    // Keyed on the value, not just the name, because warning on a whole setting
+    // when one value moved would put a warning on rows that are fine and teach
+    // people to scroll past it.
+    static readonly Dictionary<(string Name, int Value), string> MeaningChangedIn2373 = new()
+    {
+        [("enable_DS3_emulation", 5)] =
+            "5 was \"PC only, no joystick\" until 2025 and is the Nintendo Switch Pro Controller now, "
+            + "so an updated QuadStick shows up to the console or PC as a different controller entirely",
+        [("joystick_deflection_minimum", 0)] =
+            "0 used to mean no dead zone at all, and firmware from 2025 substitutes 129 raw counts instead, "
+            + "so the stick gains a small dead zone this file never asked for",
+    };
+
+    static void WarnIfTheFirmwaresDisagree(string name, string value, string cell, List<Issue> issues)
+    {
+        if (!int.TryParse(value.Trim(), out var n)) return;
+        if (!MeaningChangedIn2373.TryGetValue((name, n), out var what)) return;
+
+        issues.Add(new Issue(Severity.Warning, cell,
+            $"\"{name}\" set to {n} means something different depending on the QuadStick's firmware: {what}. "
+            + "The row is saved exactly as you wrote it.",
+            "Check which firmware your QuadStick runs before relying on this row."));
     }
 
     // The device reads a value with atoi, which is 32 bits wide. long.TryParse
