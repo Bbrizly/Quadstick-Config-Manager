@@ -55,12 +55,13 @@ public class Firmware2373RuleTests
         Assert.DoesNotContain(issues, i => i.Message.Contains("not a documented output name"));
     }
 
-    // Four settings the firmware parses, stores, and never reads.
+    // Five settings the firmware parses, stores, and never reads.
     [Theory]
     [InlineData("enable_auto_zero", "1")]
     [InlineData("usb_2_dead_zone", "20")]
     [InlineData("joystick_warning", "400")]
     [InlineData("joystick_alarm", "500")]
+    [InlineData("watchdog_disable", "1")]
     public void A_setting_the_device_ignores_says_so(string name, string value)
     {
         var issues = Load($"Preferences\nprefs.csv\nName,Value\n{name},{value}\n");

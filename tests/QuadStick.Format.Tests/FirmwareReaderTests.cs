@@ -204,11 +204,14 @@ public class FirmwareReaderTests
             && i.Cell == "B9" && i.Message.Contains("PS4"));
     }
 
+    // enable_select_files rather than watchdog_disable: the device really reads
+    // this one, so 1 stays clean. watchdog_disable is parsed and never read, and
+    // setting it now draws the warning that says so.
     [Fact]
     public void A_toggle_set_to_0_or_1_is_clean()
     {
-        Assert.DoesNotContain(All(PrefsHead + "watchdog_disable,0\n"), i => i.Cell == "B9");
-        Assert.DoesNotContain(All(PrefsHead + "watchdog_disable,1\n"), i => i.Cell == "B9");
+        Assert.DoesNotContain(All(PrefsHead + "enable_select_files,0\n"), i => i.Cell == "B9");
+        Assert.DoesNotContain(All(PrefsHead + "enable_select_files,1\n"), i => i.Cell == "B9");
     }
 
     [Fact]

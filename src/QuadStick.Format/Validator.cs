@@ -447,6 +447,8 @@ public static class Validator
             "the tone it used to trigger is commented out",
         ["joystick_alarm"] =
             "the tone it used to trigger is commented out",
+        ["watchdog_disable"] =
+            "it reaches the keyword table and the settings array and nothing else, so the two minute watchdog runs either way",
     };
 
     // Only when the value asks for something. Writing 0 lines up with what the
