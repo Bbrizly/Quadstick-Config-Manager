@@ -57,6 +57,21 @@ public static partial class SheetsUrl
         return m.Success && m.Groups[1].Value.Length == source.Length ? m.Groups[1].Value : null;
     }
 
+    /// <summary>The spreadsheet id in a pasted link, so a caller can ask
+    /// whether it already knows that sheet. A published link carries a
+    /// different kind of id and is not one.</summary>
+    public static bool TryGetId(string pasted, out string id)
+    {
+        id = "";
+        if (string.IsNullOrWhiteSpace(pasted)) return false;
+        pasted = pasted.Trim();
+        if (PublishedPattern().Match(pasted).Success) return false;
+        var m = IdPattern().Match(pasted) is { Success: true } x ? x : KeyPattern().Match(pasted);
+        if (!m.Success) return false;
+        id = m.Groups[1].Value;
+        return true;
+    }
+
     static bool TryGetExportUrl(string pasted, string format, bool wholeWorkbook, out string exportUrl)
     {
         exportUrl = "";

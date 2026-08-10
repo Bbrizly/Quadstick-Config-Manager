@@ -2918,20 +2918,19 @@ public partial class MainWindow : Window
             // the first save writes a .csv instead of overwriting the .xlsx.
             if (path.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
             {
-                string text;
-                IReadOnlyList<SkippedTab> skipped;
-                string? tooLarge;
-                using (var stream = File.OpenRead(path)) text = Xlsx.ToCsv(stream, out skipped, out tooLarge);
-                var imported = ProfileFile.Load(text);
+                XlsxImport read;
+                using (var stream = File.OpenRead(path)) read = Xlsx.Import(stream);
+                var imported = ProfileFile.Load(read.Csv);
                 if (imported.Document.Sheets.Count == 0)
                 {
-                    Status($"{picks[0].Name} has no profile tab. A profile tab starts with \"Profile Name\", \"Preferences\" or \"Infrared\" in cell A1.", StatusKind.Error);
+                    Status($"{picks[0].Name}: {NoProfileTab(read.Csv, read.Skipped)}", StatusKind.Error);
                     return;
                 }
                 OpenInEditor(imported, savePath: null, ProfileSource.File);
                 Status($"Imported {Modes(imported)} from {picks[0].Name}. Save to keep it as a profile.",
                     StatusKind.Ready);
-                await ShowImportReviewAsync(imported, picks[0].Name, skipped, tooLarge);
+                await ShowImportReviewAsync(imported, picks[0].Name, read.Skipped, read.Limitation,
+                    renamed: read.Renamed);
                 return;
             }
             OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), path, ProfileSource.File);
@@ -3031,10 +3030,11 @@ public partial class MainWindow : Window
     /// a dialog owned by a MainWindow that a modal is already covering would
     /// open behind it.</summary>
     internal async Task ShowImportReviewAsync(ProfileFile file, string source,
-        IReadOnlyList<SkippedTab> skipped, string? limitation = null, Window? dialogOwner = null)
+        IReadOnlyList<SkippedTab> skipped, string? limitation = null, Window? dialogOwner = null,
+        IReadOnlyList<TabRename>? renamed = null)
     {
-        LastImportReview = (source, skipped, limitation);
-        await ShowImportReview(new ImportReviewWindow(this, file, source, skipped, limitation),
+        LastImportReview = (source, skipped, limitation, renamed ?? Array.Empty<TabRename>());
+        await ShowImportReview(new ImportReviewWindow(this, file, source, skipped, limitation, renamed),
             dialogOwner ?? this);
     }
 
@@ -3048,7 +3048,8 @@ public partial class MainWindow : Window
     /// <summary>What the last import handed the review, so a test can check the
     /// thing the review cannot check about itself: whether the import path told
     /// it the truth about how much of the workbook it actually saw.</summary>
-    internal (string Source, IReadOnlyList<SkippedTab> Skipped, string? Limitation)? LastImportReview;
+    internal (string Source, IReadOnlyList<SkippedTab> Skipped, string? Limitation,
+        IReadOnlyList<TabRename> Renamed)? LastImportReview;
 
     /// <summary>The one Sheets import. The pasted link on Home and a pick from
     /// the community catalog both land here, so the app has a single workbook
@@ -3070,36 +3071,65 @@ public partial class MainWindow : Window
         }
         HomeStatusText.IsVisible = false;
 
+        void Progress(string message)
+        {
+            if (onError is not null) return; // another window owns its own line
+            HomeStatusText.Text = message;
+            HomeStatusText.IsVisible = true;
+        }
+
         if (!SheetsUrl.TryGetXlsxExportUrl(pasted, out var workbookUrl)
             || !SheetsUrl.TryGetCsvExportUrl(pasted, out var csvUrl))
         { HomeError("That does not look like a Google Sheets link. Paste the full link from your browser's address bar."); return; }
         try
         {
-            // Ask for the whole workbook first, so a profile split across mode
-            // tabs arrives whole. Published links can only give one tab as CSV;
-            // they answer with something that is not a workbook, so fall back.
-            var bytes = await client.GetByteArrayAsync(workbookUrl);
-            var wholeWorkbook = Xlsx.LooksLikeXlsx(bytes);
+            Progress("Downloading the spreadsheet...");
+            // A sheet this app made is read with the app's own token. The link
+            // the user pastes is most often the one they copied from this very
+            // profile a second ago, and the anonymous export below only answers
+            // for a sheet whose link sharing is on.
+            string? ours = null;
+            if (SheetsUrl.TryGetId(pasted, out var sheetId)
+                && Backup() is DriveBackup backup && backup.Knows(sheetId))
+                try { ours = await backup.ReadProfileAsync(sheetId); }
+                catch (Exception ex) when (ex is DriveApiException or GoogleAuthRevokedException
+                    or HttpRequestException or TaskCanceledException or InvalidDataException)
+                { ours = null; } // fall through to the public export
+
             string text;
+            bool wholeWorkbook = true;
             IReadOnlyList<SkippedTab> skipped = Array.Empty<SkippedTab>();
+            IReadOnlyList<TabRename> renamed = Array.Empty<TabRename>();
             string? tooLarge = null;
-            if (wholeWorkbook)
+            if (ours is not null) text = ours;
+            else
             {
-                using var stream = new MemoryStream(bytes);
-                text = Xlsx.ToCsv(stream, out skipped, out tooLarge);
+                // Ask for the whole workbook first, so a profile split across
+                // mode tabs arrives whole. Published links can only give one tab
+                // as CSV; they answer with something that is not a workbook, so
+                // fall back.
+                var bytes = await client.GetByteArrayAsync(workbookUrl);
+                wholeWorkbook = Xlsx.LooksLikeXlsx(bytes);
+                if (wholeWorkbook)
+                {
+                    using var stream = new MemoryStream(bytes);
+                    var read = Xlsx.Import(stream);
+                    (text, skipped, tooLarge, renamed) = (read.Csv, read.Skipped, read.Limitation, read.Renamed);
+                }
+                else text = await client.GetStringAsync(csvUrl);
             }
-            else text = await client.GetStringAsync(csvUrl);
 
             if (text.TrimStart().StartsWith('<'))
             { HomeError("Google returned a web page instead of the profile. The sheet is probably not shared publicly (File > Share > Anyone with the link)."); return; }
             var imported = ProfileFile.Load(text);
             if (imported.Document.Sheets.Count == 0)
-            { HomeError("That spreadsheet has no profile tab. A profile tab starts with \"Profile Name\", \"Preferences\" or \"Infrared\" in cell A1."); return; }
+            { HomeError(NoProfileTab(text, skipped)); return; }
             // Tracked here, not on entry: a bad URL, an unshared sheet, and a
             // workbook with no profile tab all return above, and counting those
             // as "used the Sheets import" would make the feature look healthy
             // exactly when it is failing.
             Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
+            HomeStatusText.IsVisible = false; // the progress line has done its job
             OpenInEditor(imported, savePath: null, ProfileSource.Sheets);
             Status($"Imported {Modes(imported)} from the spreadsheet.", StatusKind.Ready);
             // A published link hands back one tab and no way to ask for the
@@ -3113,13 +3143,43 @@ public partial class MainWindow : Window
                     + "Any other mode tabs in the spreadsheet were not sent to us at all, so we cannot say "
                     + "what is in them. To bring the whole profile in, share the sheet with \"Anyone with "
                     + "the link\" in Google Sheets and import it again.",
-                dialogOwner);
+                dialogOwner, renamed);
         }
         catch (InvalidDataException)
         { HomeError("Could not read that spreadsheet. Download it as .xlsx and open it with the Open button instead."); }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         { HomeError($"Could not download the sheet: {(ex is TaskCanceledException ? "the connection timed out after 15 seconds" : ex.Message)}. Check your internet connection and the link."); }
     }
+
+    /// <summary>Why an import found no profile, in the words of what was
+    /// actually there. "That spreadsheet has no profile tab" was the same
+    /// sentence for an empty download, a sheet of somebody's notes, and this
+    /// app's own share link, and the user could not tell which they had.</summary>
+    internal static string NoProfileTab(string text, IReadOnlyList<SkippedTab> skipped)
+    {
+        var start = "A profile tab starts with \"Profile Name\", \"Preferences\" or \"Infrared\" in cell A1.";
+        // Asked before the empty check, because a workbook whose every tab was
+        // passed over converts to nothing, and "came back empty" would send the
+        // user looking at their connection instead of at cell A1.
+        if (skipped.Count > 0)
+            return $"No tab in that spreadsheet is a profile. {Naming(skipped)} {start}";
+
+        if (text.Trim().Length == 0)
+            return "That spreadsheet came back empty. If you have just shared it, wait a moment and try again.";
+
+        var a1 = Csv.Parse(text) is { Count: > 0 } grid && grid[0].Length > 0 ? grid[0][0].Trim() : "";
+        return a1.Length == 0
+            ? $"That spreadsheet has no profile tab: cell A1 is empty. {start}"
+            : $"That spreadsheet has no profile tab: cell A1 says \"{Shortened(a1)}\". {start}";
+    }
+
+    static string Naming(IReadOnlyList<SkippedTab> skipped) =>
+        skipped.Count == 1
+            ? $"The tab \"{skipped[0].Name}\" was passed over."
+            : "These tabs were passed over: " + string.Join(", ", skipped.Select(t => $"\"{t.Name}\"")) + ".";
+
+    // A1 can hold a paragraph somebody pasted. Enough of it to recognise.
+    static string Shortened(string value) => value.Length <= 60 ? value : value[..57] + "...";
 
     // Strip characters that are illegal in a file name and force a .csv
     // extension, so a template named "My FPS / v2" cannot escape TemplatesDir
