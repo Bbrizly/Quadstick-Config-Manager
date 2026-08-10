@@ -401,12 +401,17 @@ public partial class MainWindow
     }
 
     // What the catalog knows about this setting, under its row: what it does,
-    // what it is measured in, what the official manager uses for it, and
-    // anything worth reading before changing it.
+    // what it is measured in, the value it usually carries, and anything worth
+    // reading before changing it.
     //
-    // The default is sourced from the QuadStick Manager Program, not from a
-    // device, and the firmware snapshot disagrees with it in places. So it is
-    // named as the manager's value, never as what the hardware ships with.
+    // That value is not attributed to anybody here. It used to be named as the
+    // QuadStick Manager Program's, which was true while every default came from
+    // QMP-4. It no longer does: where firmware 2373 and QMP-4 disagree the
+    // catalog follows the device for some settings (sip_puff_delay_hard is
+    // 2000 ms, not QMP's 2400) and QMP for others (volume is 40, not the
+    // device's 25). One sentence cannot name a source for a mixed field without
+    // being wrong about half of it, and the entry's Source string is where the
+    // provenance actually lives.
     Control? PreferenceInfoLine(Binding b, PreferenceDefinition def, Border? typedCell, int col)
     {
         var line = new StackPanel
@@ -418,7 +423,7 @@ public partial class MainWindow
         if (def.Description.Length > 0) parts.Add(def.Description);
         if (def.Unit.Length > 0) parts.Add($"Measured in {def.Unit}.");
         if (def.Default is { Length: > 0 } suggested)
-            parts.Add($"The QuadStick Manager Program uses {suggested}. Your device may hold something else.");
+            parts.Add($"This is usually set to {suggested}. Your device may hold something else.");
         if (parts.Count > 0)
         {
             var about = string.Join(" ", parts);

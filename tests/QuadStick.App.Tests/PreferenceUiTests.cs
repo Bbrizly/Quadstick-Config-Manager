@@ -215,10 +215,12 @@ public class PreferenceUiTests
         var texts = w.GetVisualDescendants().OfType<TextBlock>()
             .Select(t => t.Text ?? "").ToList();
         Assert.Contains("Speaker volume", texts);                                 // friendly label
-        // The default is the official manager's value, not a reading off the
-        // hardware, and the line has to say so.
+        // The catalog's default for volume is QMP-4's 40, where the device's own
+        // is 25. The line carries the number without claiming it was read off
+        // the hardware, because for other settings the catalog follows the
+        // device instead and one sentence cannot name both sources.
         Assert.Contains(texts, t => t.Contains("Speaker volume.", StringComparison.Ordinal)
-                                    && t.Contains("QuadStick Manager Program uses 40", StringComparison.Ordinal));
+                                    && t.Contains("usually set to 40", StringComparison.Ordinal));
         Assert.DoesNotContain(texts, t => t.Contains("device ships with", StringComparison.Ordinal));
         Assert.Equal("volume", w.GetVisualDescendants().OfType<AutoCompleteBox>()
             .First(b => AutomationProperties.GetName(b) == "Setting name for row 4").Text); // raw token
