@@ -13,9 +13,11 @@ namespace QuadStick.Format;
 // is just concatenation, and QMP does the same thing from the same xlsx
 // export (FORMAT.md, "Sheet structure").
 //
-// Tab names are a spreadsheet convenience: the CSV has nowhere to put them
-// and the device never sees them, so they are dropped here too. A tab's mode
-// name is cell C1, same as every other sheet.
+// A tab's mode name is cell C1, same as every other sheet. The tab title is
+// not part of the profile: the CSV has nowhere to put it and the device never
+// sees one. But the community keeps its names on the tabs and leaves C1 as the
+// template wrote it, so a tab title is copied into C1 when C1 says nothing of
+// its own (NameModesFromTabs), and every such naming is reported.
 //
 // xlsx is a zip of XML, so this is stdlib only. No spreadsheet library.
 /// <summary>Why a tab did not import. The two reasons need different words and
@@ -43,7 +45,19 @@ public sealed record SkippedTab(
     IReadOnlyList<string[]> Rows,
     SkippedTabKind Kind = SkippedTabKind.UnreadableA1);
 
-public static class Xlsx
+/// <summary>A mode this reader named after its sheet tab, and what cell C1 said
+/// before. Reported, never done quietly: the name is the one thing the user
+/// recognises a mode by.</summary>
+public sealed record TabRename(int ModeNumber, string TabName, string CellC1);
+
+/// <summary>Everything one workbook import produced.</summary>
+public sealed record XlsxImport(
+    string Csv,
+    IReadOnlyList<SkippedTab> Skipped,
+    string? Limitation,
+    IReadOnlyList<TabRename> Renamed);
+
+public static partial class Xlsx
 {
     // The names QMP and the Sheets add-on give the tabs they write as
     // documentation. A hint about what a tab holds, not a verdict: a tab whose
@@ -135,6 +149,17 @@ public static class Xlsx
     /// bounds used to stop reading without a word.</summary>
     public static string ToCsv(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs, out string? limitation)
     {
+        var result = Import(xlsx);
+        skippedTabs = result.Skipped;
+        limitation = result.Limitation;
+        return result.Csv;
+    }
+
+    /// <summary>The whole import: the CSV, both kinds of skipped tab, the
+    /// limitation when the read stopped short, and every mode this reader named
+    /// after its sheet tab.</summary>
+    public static XlsxImport Import(Stream xlsx)
+    {
         // A half-downloaded workbook unzips but does not parse. Both are the
         // same thing to the caller: this file is not readable.
         //
@@ -143,18 +168,22 @@ public static class Xlsx
         // the two import paths both catch InvalidDataException and neither
         // catches those, so a corrupt sheet took the app down instead of
         // saying it could not be read.
-        try { return Read(xlsx, out skippedTabs, out limitation); }
+        try { return Read(xlsx); }
         catch (System.Xml.XmlException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
         catch (FormatException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
         catch (OverflowException ex) { throw new InvalidDataException("Not a readable spreadsheet.", ex); }
     }
 
-    static string Read(Stream xlsx, out IReadOnlyList<SkippedTab> skippedTabs, out string? limitation)
+    static XlsxImport Read(Stream xlsx)
     {
         using var zip = new ZipArchive(xlsx, ZipArchiveMode.Read);
         var shared = SharedStrings(zip);
         var rows = new List<string[]>();
         var skipped = new List<SkippedTab>();
+        // Where each mode's keyword row landed in rows, what its tab was
+        // called, and what its C1 said. Named after the loop, because whether a
+        // name is worth replacing depends on the other tabs in the workbook.
+        var modes = new List<(int Row, string Tab, string C1)>();
         int kept = 0;
 
         // Listed up front rather than read one at a time, so a tab that is
@@ -204,6 +233,14 @@ public static class Xlsx
             // workbook (Inputs, Outputs, notes, scratch) is not a profile.
             bool keyword = grid.Count > 0 && grid[0].Length > 0 && Vocab.IsSheetKeyword(grid[0][0].Trim());
 
+            // Or the whole file, written flat onto one tab: A1 is the version
+            // header line, and the sheet keywords are further down. This app's
+            // own backup wrote that shape, so a user who copied their share
+            // link and pasted it into Import got their profile back as "no
+            // profile tab". The device reads such a file without complaint.
+            bool flatProfile = !keyword && grid.Count > 0 && grid[0].Length > 0
+                && Vocab.IsFileHeader(grid[0][0]);
+
             // Named, not passed over. Skipping these is right, but doing it in
             // silence is what made a correct import read as a broken one: a user
             // whose workbook held Left Analog, Drive and Reference Card reported
@@ -221,13 +258,13 @@ public static class Xlsx
             // offered from a helper tab, so its rows are not counted against the
             // workbook's budget below, where documentation could truncate a real
             // mode further down the file.
-            if (!keyword && named)
+            if (!keyword && !flatProfile && named)
             {
                 skipped.Add(new SkippedTab(name, Array.Empty<string[]>(), SkippedTabKind.Helper));
                 continue;
             }
 
-            if (keyword)
+            if (keyword || flatProfile)
             {
                 // A blank line between tabs, because that is what the device
                 // needs: it ends a mode at an empty line and only looks for the
@@ -239,7 +276,12 @@ public static class Xlsx
                 // Saving used to put this line in; putting it in at import means
                 // what the app shows is what the device would read.
                 if (rows.Count > 0) rows.Add(Array.Empty<string>());
+                int keywordRow = rows.Count;
                 rows.AddRange(grid);
+                // A flat tab is the whole file and its title is the file name,
+                // so only a mode tab is a candidate for its own tab's name.
+                if (keyword && Vocab.KeywordToType(grid[0][0].Trim()) == SheetType.ProfileName)
+                    modes.Add((keywordRow, name.Trim(), grid[0].Length > 2 ? grid[0][2].Trim() : ""));
             }
             else if (LooksLikeBindings(grid)) skipped.Add(new SkippedTab(name, grid));
             else continue; // nothing was retained, so nothing was spent
@@ -266,10 +308,71 @@ public static class Xlsx
             break;
         }
 
-        skippedTabs = skipped;
-        limitation = limit;
-        return Csv.Write(rows);
+        // Names go in before the CSV is written from the rows.
+        var renamed = NameModesFromTabs(rows, modes);
+        return new XlsxImport(Csv.Write(rows), skipped, limit, renamed);
     }
+
+    /// <summary>Where the community keeps a mode's name: on the sheet tab. C1
+    /// is the template's leftover ("Left Joystick" on every tab of a workbook
+    /// whose tabs say Menu, Driving, Shooting), and it is what both this app
+    /// and the device read, so a profile full of real names listed as three
+    /// copies of one wrong one.
+    ///
+    /// C1 is written, not just displayed. A name shown in the editor and gone
+    /// again on the next save would be its own kind of lying, and this cell is
+    /// a label: the device reads it as the mode's name and nothing else, so no
+    /// binding and no behaviour turns on it. Every rename is reported, and the
+    /// user's own undo covers it like any other edit.
+    ///
+    /// A name the user chose is never touched: a tab whose C1 says something of
+    /// its own keeps it.</summary>
+    static List<TabRename> NameModesFromTabs(List<string[]> rows, List<(int Row, string Tab, string C1)> modes)
+    {
+        var renames = new List<TabRename>();
+        // Two tabs with one C1 is the copy-paste that leaves a whole workbook
+        // named after whichever mode was duplicated first.
+        var shared = modes.GroupBy(m => m.C1, StringComparer.OrdinalIgnoreCase)
+            .Where(g => g.Count() > 1).Select(g => g.Key)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        for (int i = 0; i < modes.Count; i++)
+        {
+            var (row, tab, c1) = modes[i];
+            bool worthReplacing = c1.Length == 0 || GenericModeNames.Contains(c1) || shared.Contains(c1);
+            if (!worthReplacing) continue;
+            if (tab.Length == 0 || GenericTabName(tab) || tab.Equals(c1, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var cells = (string[])rows[row].Clone();
+            if (cells.Length < 3)
+            {
+                Array.Resize(ref cells, 3);
+                for (int c = 0; c < cells.Length; c++) cells[c] ??= "";
+            }
+            cells[2] = tab;
+            rows[row] = cells;
+            renames.Add(new TabRename(i + 1, tab, c1));
+        }
+        return renames;
+    }
+
+    // The names a mode carries because nobody changed them: the shipped
+    // template's, and the ones the community workbooks copy around.
+    static readonly HashSet<string> GenericModeNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Left Joystick", "Right Joystick", "Mouse Mode", "Left joy", "Right joy",
+        "Solo", "Mode", "Profile", "Profile Name", "Sheet1",
+    };
+
+    // A tab nobody has named either. Replacing "Solo" with "Profile", or
+    // "Left Joystick" with "Sheet2", is a worse name, not a truer one.
+    static bool GenericTabName(string tab) =>
+        SheetNumberPattern().IsMatch(tab) || GenericModeNames.Contains(tab.Trim());
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"^\s*(sheet|tab|page)\s*\d*\s*$",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
+    private static partial System.Text.RegularExpressions.Regex SheetNumberPattern();
 
     // The same ending on both bounds, because the user's question is the same
     // one either way: what am I missing, and what do I do about it.

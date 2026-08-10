@@ -15,58 +15,9 @@ namespace QuadStick.Format.Tests;
 // is not.
 public class SkippedTabTests
 {
-    // A minimal workbook built here rather than checked in as a fixture, so the
-    // shape under test is readable in the diff. Inline strings only: no
-    // sharedStrings part to keep in step.
-    static MemoryStream Workbook(params (string Tab, string[][] Rows)[] tabs)
-    {
-        var ms = new MemoryStream();
-        using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
-        {
-            void Write(string path, string xml)
-            {
-                using var w = new StreamWriter(zip.CreateEntry(path).Open(), new UTF8Encoding(false));
-                w.Write(xml);
-            }
+    static MemoryStream Workbook(params (string Tab, string[][] Rows)[] tabs) => TestWorkbook.Build(tabs);
 
-            var sheetTags = string.Concat(tabs.Select((t, i) =>
-                $"<sheet name=\"{Esc(t.Tab)}\" sheetId=\"{i + 1}\" r:id=\"rId{i + 1}\"/>"));
-            Write("xl/workbook.xml",
-                "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" "
-                + "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"
-                + $"<sheets>{sheetTags}</sheets></workbook>");
-
-            var relTags = string.Concat(tabs.Select((_, i) =>
-                $"<Relationship Id=\"rId{i + 1}\" Target=\"worksheets/sheet{i + 1}.xml\" "
-                + "Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\"/>"));
-            Write("xl/_rels/workbook.xml.rels",
-                "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
-                + relTags + "</Relationships>");
-
-            for (int i = 0; i < tabs.Length; i++)
-            {
-                var sb = new StringBuilder(
-                    "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData>");
-                for (int r = 0; r < tabs[i].Rows.Length; r++)
-                {
-                    sb.Append($"<row r=\"{r + 1}\">");
-                    for (int c = 0; c < tabs[i].Rows[r].Length; c++)
-                    {
-                        var v = tabs[i].Rows[r][c];
-                        if (v.Length == 0) continue;
-                        sb.Append($"<c r=\"{(char)('A' + c)}{r + 1}\" t=\"inlineStr\"><is><t>{Esc(v)}</t></is></c>");
-                    }
-                    sb.Append("</row>");
-                }
-                Write($"xl/worksheets/sheet{i + 1}.xml", sb.Append("</sheetData></worksheet>").ToString());
-            }
-        }
-        ms.Position = 0;
-        return ms;
-    }
-
-    static string Esc(string s) => s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;")
-        .Replace("\"", "&quot;");
+    static string Esc(string s) => TestWorkbook.Esc(s);
 
     static string[][] ModeRows(string a1) =>
     [
@@ -214,7 +165,9 @@ public class SkippedTabTests
         var file = ProfileFile.Load(Xlsx.ToCsv(wb, out var skipped));
 
         Assert.Equal(2, file.Document.Sheets.Count);
-        Assert.All(file.Document.Sheets, s => Assert.Equal("Some mode", s.ModeName));
+        // Both tabs carry the same copy-pasted C1, so both take their own tab's
+        // name instead of coming in as two modes called the same thing.
+        Assert.Equal(new[] { "Left Analog", "Drive" }, file.Document.Sheets.Select(s => s.ModeName));
         Assert.Equal(new[] { "Reference Card" }, skipped.Select(t => t.Name));
     }
 

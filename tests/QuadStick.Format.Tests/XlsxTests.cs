@@ -14,12 +14,16 @@ public class XlsxTests
         return Xlsx.ToCsv(stream);
     }
 
+    // Three tabs called Main, Flight and Mouse, and cell C1 on every one of
+    // them still says "Mouse Mode" from whichever tab was copied first. The
+    // names the user reads in their own spreadsheet are the tab titles, so
+    // those are the names the modes get, and the import review says so.
     [Fact]
     public void EveryModeTabBecomesAMode()
     {
         var file = ProfileFile.Load(ToCsv("multi-tab.xlsx"));
         Assert.Equal(
-            new[] { "Mouse Mode", "Mouse Mode", "Mouse Mode", "" },
+            new[] { "Main", "Flight", "Mouse", "" },
             file.Document.Sheets.Select(s => s.ModeName).ToArray());
         Assert.Equal(
             new[] { SheetType.ProfileName, SheetType.ProfileName, SheetType.ProfileName, SheetType.Preferences },

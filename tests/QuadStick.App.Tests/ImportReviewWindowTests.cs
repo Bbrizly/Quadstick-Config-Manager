@@ -54,14 +54,15 @@ public class ImportReviewWindowTests
     // The review always edits the profile the editor is showing, so the test
     // opens it there first, exactly as an import does.
     static (MainWindow Owner, ProfileFile File, ImportReviewWindow Review) Open(
-        string csv, IReadOnlyList<SkippedTab>? skipped = null, string? limitation = null)
+        string csv, IReadOnlyList<SkippedTab>? skipped = null, string? limitation = null,
+        IReadOnlyList<TabRename>? renamed = null)
     {
         var owner = NewOwner();
         owner.OpenDeviceProfile(ProfileFile.Load(csv));
         Dispatcher.UIThread.RunJobs();
         var file = owner.OpenFile!;
         var review = new ImportReviewWindow(owner, file, "Their sheet",
-            skipped ?? Array.Empty<SkippedTab>(), limitation);
+            skipped ?? Array.Empty<SkippedTab>(), limitation, renamed);
         _ = review.ShowDialog(owner);
         Dispatcher.UIThread.RunJobs();
         review.UpdateLayout();
@@ -767,6 +768,32 @@ public class ImportReviewWindowTests
         Press(review, "Leave it out");    // an answer that changes nothing
 
         Assert.NotNull(Find(review, "Undo"));
+        Done(owner, review);
+    }
+
+    // A mode named after its sheet tab is a name the app put there rather than
+    // read. Not a loss, so the import is still clean, but never quiet: the name
+    // is the whole of how a user picks a mode out of a list.
+    [AvaloniaFact]
+    public void A_mode_named_from_its_tab_is_said_out_loud()
+    {
+        var (owner, _, review) = Open(CleanCsv, renamed: new[]
+        {
+            new TabRename(2, "Driving", "Left Joystick"),
+        });
+
+        Assert.True(Says(review, "named after"));
+        Assert.True(Says(review, "\"Driving\""));
+        Assert.True(Says(review, "\"Left Joystick\""));
+        Done(owner, review);
+    }
+
+    [AvaloniaFact]
+    public void A_mode_whose_name_cell_was_empty_says_that_instead()
+    {
+        var (owner, _, review) = Open(CleanCsv, renamed: new[] { new TabRename(1, "Menu", "") });
+
+        Assert.True(Says(review, "name cell was empty"));
         Done(owner, review);
     }
 }

@@ -36,6 +36,7 @@ public class ImportReviewWindow : Window
     readonly string _source;
     readonly string? _limitation;
     readonly List<SkippedTab> _skipped;
+    readonly IReadOnlyList<TabRename> _renamed;
     // decision key -> what we did, and how to put the question back. Undoing
     // the file is only half of it: a tab that came out of the skipped list has
     // to go back on it, or its rows would vanish from the window with nothing
@@ -89,14 +90,19 @@ public class ImportReviewWindow : Window
     /// <param name="source">What was imported, named the way the user named it.</param>
     /// <param name="limitation">Set when the import could not see the whole
     /// workbook, so the window never calls a partial read a clean one.</param>
+    /// <param name="renamed">Modes the import named after their sheet tab. The
+    /// name is what a user recognises a mode by, so a name that came from
+    /// somewhere other than the cell they can see has to be said out loud.</param>
     public ImportReviewWindow(MainWindow owner, ProfileFile file, string source,
-        IReadOnlyList<SkippedTab> skipped, string? limitation = null)
+        IReadOnlyList<SkippedTab> skipped, string? limitation = null,
+        IReadOnlyList<TabRename>? renamed = null)
     {
         _owner = owner;
         _file = file;
         _source = source;
         _limitation = limitation;
         _skipped = skipped.ToList();
+        _renamed = renamed ?? Array.Empty<TabRename>();
 
         Title = "Import review";
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -250,6 +256,14 @@ public class ImportReviewWindow : Window
                 Count(helpers.Count, "tab is not profile data", "tabs are not profile data"),
                 new[] { Line(HelperTabText(helpers), null) }));
 
+        // Not a loss and not an error, so it does not make the import unclean.
+        // It is still a name the app put there rather than read, and the name
+        // is the whole of how a mode is recognised.
+        if (_renamed.Count > 0)
+            _body.Children.Add(Section(
+                Count(_renamed.Count, "mode is named after its sheet tab", "modes are named after their sheet tabs"),
+                _renamed.Select(r => Line(RenameText(r), null))));
+
         // One heading for every warning, because the messages already say which
         // way each one goes. Splitting "ignores it" from "reads it as something
         // else" under separate headings would need every issue in the format
@@ -308,6 +322,15 @@ public class ImportReviewWindow : Window
             + $"{(helpers.Count == 1 ? "this tab" : "these tabs")} for you to read, and your QuadStick "
             + $"never loads {it}. Nothing was lost by leaving {it} out.";
     }
+
+    // Says where the name came from and what it replaced, so the user can put
+    // the old one back by hand if the tab was the wrong one to trust.
+    static string RenameText(TabRename r) =>
+        r.CellC1.Length == 0
+            ? $"Mode {r.ModeNumber} is called \"{r.TabName}\", after its sheet tab. That mode's name cell "
+              + "was empty."
+            : $"Mode {r.ModeNumber} is called \"{r.TabName}\", after its sheet tab. Its name cell said "
+              + $"\"{r.CellC1}\", which is the name the template comes with or a copy of another mode's.";
 
     Control SkippedRow(SkippedTab tab)
     {

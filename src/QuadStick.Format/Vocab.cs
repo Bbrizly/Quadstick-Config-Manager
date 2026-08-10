@@ -83,6 +83,14 @@ public static class Vocab
         || a1.Trim().Equals("Preferences", StringComparison.OrdinalIgnoreCase)
         || a1.Trim().Equals("Infrared", StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>The file's own first line, which is not a sheet: "QuadStick
+    /// Configuration,Version 1.5,&lt;sheet id&gt;,&lt;name&gt;". A worksheet whose A1
+    /// says this is a whole profile written flat, not a mode.</summary>
+    public static bool IsFileHeader(string a1) =>
+        a1.TrimStart().StartsWith(FileHeaderKeyword, StringComparison.OrdinalIgnoreCase);
+
+    public const string FileHeaderKeyword = "QuadStick Configuration";
+
     /// <summary>The firmware's reader is stricter than IsSheetKeyword: it
     /// dispatches sheets by strncmp on the START of the raw line, case
     /// sensitively (Configuration.c, firmware 2373). A sheet whose A1 merely

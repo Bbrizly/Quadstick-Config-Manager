@@ -25,7 +25,7 @@ public static class Parser
         // Device CSVs written by QMP start with a version header line:
         // "QuadStick Configuration,Version 1.5,<sheet id>,<name>". Preserve it.
         int scanFrom = 0;
-        if (Cell(grid, 0, 0).TrimStart().StartsWith("QuadStick Configuration", StringComparison.OrdinalIgnoreCase))
+        if (Vocab.IsFileHeader(Cell(grid, 0, 0)))
         {
             doc.HasVersionHeader = true;
             doc.HeaderVersion = Cell(grid, 0, 1).Trim(); // e.g. "Version 1.5"
