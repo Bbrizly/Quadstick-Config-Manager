@@ -523,6 +523,25 @@ public class SettingsWindow : Window
             Children = { reduceMotion, Caption("Turns off the tutorial fade animation.") },
         });
 
+        var grouping = new ComboBox
+        {
+            ItemsSource = MainWindow.PickerGroupings,
+            SelectedIndex = Math.Max(0, Array.IndexOf(MainWindow.PickerGroupings,
+                owner.CurrentSettings.PickerGrouping)),
+            MinWidth = 220,
+        };
+        AutomationProperties.SetName(grouping,
+            "Picker grouping: Detailed, Wide, or Flat lists in the output and input pickers");
+        grouping.SelectionChanged += (_, _) =>
+        {
+            if (grouping.SelectedItem is string choice) owner.SetPickerGrouping(choice);
+        };
+        panel.Children.Add(Field("Picker grouping",
+            "Detailed files outputs under a category and then a group inside it. Wide shows every "
+            + "output in a category at once. Flat is one searchable list. Search works the same in "
+            + "all three.",
+            grouping));
+
         panel.Children.Add(PrivacyArea(owner));
 
         var rememberWindow = new CheckBox

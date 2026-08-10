@@ -17,6 +17,10 @@ public sealed class AppSettings
     public bool RememberWindow = true;
     public bool TutorialSeen = false;
     public bool DeviceCards = true;            // device view mappings as sentence cards
+    // How deep the output and input pickers file their choices. Detailed is
+    // the drill-down; someone who knows the token they want should not have to
+    // walk two levels to reach it.
+    public string PickerGrouping = "Detailed"; // Detailed | Wide | Flat
     public double? WinW, WinH, WinX, WinY;     // null = use window defaults
     // On by default, but inert until a token is stored, so it never touches
     // the network until the user signs in.

@@ -1339,6 +1339,21 @@ public partial class MainWindow : Window
         RefreshTourMotion();
     }
 
+    /// <summary>How deep the output and input pickers file their choices.
+    /// Detailed drills a category and then a group inside it; Wide stops at
+    /// the category; Flat is one searchable list.</summary>
+    public static readonly string[] PickerGroupings = { "Detailed", "Wide", "Flat" };
+
+    public void SetPickerGrouping(string choice)
+    {
+        if (!PickerGroupings.Contains(choice) || _settings.PickerGrouping == choice) return;
+        _settings.PickerGrouping = choice;
+        Settings.Save(_settings);
+        // The pickers are built per row, so the open editor has to be rebuilt
+        // before the setting is anything the user can see.
+        RefreshEditor();
+    }
+
     public void SetDefaultModel(int index)
     {
         if (_pickerSyncing || index < 0 || index >= ModelNames.Length) return;
@@ -4982,6 +4997,12 @@ public partial class MainWindow : Window
             return it;
         }
 
+        // Flat files nothing: one searchable list, the way somebody who already
+        // knows the token wants it. Wide keeps the categories and drops the
+        // level under them.
+        var grouping = _settings.PickerGrouping;
+        if (grouping == "Flat") catalog = null;
+
         void ShowLevel(string? cat, string? sub)
         {
             body.Children.Clear();
@@ -5020,7 +5041,7 @@ public partial class MainWindow : Window
             body.Children.Add(new TextBlock
             { Text = sub ?? cat, FontSize = Size("SmallSize"), Classes = { "muted" } });
 
-            if (sub is null && catalog!.SubOrder.TryGetValue(cat, out var subs))
+            if (grouping == "Detailed" && sub is null && catalog!.SubOrder.TryGetValue(cat, out var subs))
             {
                 foreach (var s in subs)
                 {
@@ -5032,7 +5053,9 @@ public partial class MainWindow : Window
                 return;
             }
 
-            var items = TokensIn(cat, sub ?? "");
+            // Wide never opens a subcategory, so a category shows everything
+            // under it, not only the tokens filed directly on it.
+            var items = TokensIn(cat, grouping == "Wide" ? null : sub ?? "");
             // Alphabetical puts f1, f10, f11 ... f2; sort by number.
             if (sub == "Function keys") items = items.OrderBy(t => int.Parse(t.AsSpan(4))).ToList();
             foreach (var t in items) body.Children.Add(Item(t));
