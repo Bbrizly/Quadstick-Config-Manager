@@ -65,7 +65,7 @@ public static partial class SheetsUrl
         id = "";
         if (string.IsNullOrWhiteSpace(pasted)) return false;
         pasted = pasted.Trim();
-        if (PublishedPattern().Match(pasted).Success) return false;
+        if (PublishedPattern().IsMatch(pasted)) return false;
         var m = IdPattern().Match(pasted) is { Success: true } x ? x : KeyPattern().Match(pasted);
         if (!m.Success) return false;
         id = m.Groups[1].Value;

@@ -22,8 +22,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
 
@@ -124,7 +124,7 @@ jobs:
           New-Item -ItemType Directory -Force dist | Out-Null
           & $makeappx.FullName pack /d staging /p "dist/QuadstickConfigManager-${{ inputs.version }}.msix" /o
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: msix
           path: dist/*.msix

@@ -30,8 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
       - run: dotnet test QuadStick.sln --nologo
@@ -55,8 +55,8 @@ jobs:
           - { os: ubuntu-latest,  rid: linux-x64, label: Linux-x64,          kind: linux   }
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
 
@@ -165,7 +165,7 @@ jobs:
           rm -f publish/*.pdb
           tar -C publish -czf "dist/QuadStickConfigManager-${{ matrix.label }}.tar.gz" .
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.label }}
           path: dist/*
@@ -180,7 +180,7 @@ jobs:
     permissions:
       contents: write   # create the release and upload the downloads
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           path: dist
           merge-multiple: true
