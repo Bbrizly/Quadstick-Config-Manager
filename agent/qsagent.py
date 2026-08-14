@@ -73,7 +73,10 @@ def call_model(system, messages, tools, max_tokens=1500):
     key = hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()[:32]
     path = os.path.join(CACHE, key + ".json")
 
-    if os.path.exists(path):
+    # live asks the model even when the answer is already recorded, which is how
+    # a recording gets refreshed and how anyone can check that the cache is not
+    # what is doing the thinking.
+    if os.path.exists(path) and MODE != "live":
         with open(path) as f:
             return json.load(f), "cache"
     if MODE == "replay":
