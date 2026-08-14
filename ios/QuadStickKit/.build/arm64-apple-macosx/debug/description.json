@@ -1,0 +1,752 @@
+{
+  "builtTestProducts" : [
+    {
+      "binaryPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.xctest/Contents/MacOS/QuadStickKitPackageTests",
+      "packagePath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit",
+      "productName" : "QuadStickKitPackageTests"
+    }
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.QuadStickKit-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/sources",
+      "importPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Catalog.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/DeviceFile.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Firmware.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Model.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Repository.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/SampleData.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Validation.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "QuadStickKit",
+      "moduleOutputPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules/QuadStickKit.swiftmodule",
+      "objects" : [
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Catalog.swift.o",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/DeviceFile.swift.o",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Firmware.swift.o",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Model.swift.o",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Repository.swift.o",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/SampleData.swift.o",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Validation.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/include/QuadStickKit-Swift.h",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "quadstickkit"
+      ],
+      "outputFileMapPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Catalog.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/DeviceFile.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Firmware.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Model.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Repository.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/SampleData.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Validation.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules/QuadStickKit.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Catalog.swift",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/DeviceFile.swift",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Firmware.swift",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Model.swift",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Repository.swift",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/SampleData.swift",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Validation.swift"
+      ],
+      "tempsPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.QuadStickKitPackageTests-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/sources",
+      "importPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.derived/runner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules/QuadStickKitTests.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "QuadStickKitPackageTests",
+      "moduleOutputPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules/QuadStickKitPackageTests.swiftmodule",
+      "objects" : [
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/runner.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/include/QuadStickKitPackageTests-Swift.h",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "quadstickkit"
+      ],
+      "outputFileMapPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules/QuadStickKitPackageTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.derived/runner.swift"
+      ],
+      "tempsPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.QuadStickKitTests-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitTests.build/sources",
+      "importPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Tests/QuadStickKitTests/KitTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules/QuadStickKit.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "QuadStickKitTests",
+      "moduleOutputPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules/QuadStickKitTests.swiftmodule",
+      "objects" : [
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitTests.build/KitTests.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-swift-version",
+        "5",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "quadstickkit"
+      ],
+      "outputFileMapPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitTests.build/KitTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules/QuadStickKitTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Tests/QuadStickKitTests/KitTests.swift"
+      ],
+      "tempsPath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitTests.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "QuadStickKit" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "QuadStickKit",
+      "-package-name",
+      "quadstickkit",
+      "-c",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Catalog.swift",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/DeviceFile.swift",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Firmware.swift",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Model.swift",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Repository.swift",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/SampleData.swift",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Validation.swift",
+      "-I",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/include/QuadStickKit-Swift.h",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "quadstickkit",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "QuadStickKitPackageTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "QuadStickKitPackageTests",
+      "-package-name",
+      "quadstickkit",
+      "-c",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.derived/runner.swift",
+      "-I",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/include/QuadStickKitPackageTests-Swift.h",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "quadstickkit",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "QuadStickKitTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "QuadStickKitTests",
+      "-package-name",
+      "quadstickkit",
+      "-c",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Tests/QuadStickKitTests/KitTests.swift",
+      "-I",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-swift-version",
+      "5",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "quadstickkit",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "QuadStickKit" : [
+
+    ],
+    "QuadStickKitPackageTests" : [
+      "QuadStickKitTests",
+      "QuadStickKit"
+    ],
+    "QuadStickKitTests" : [
+      "QuadStickKit"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+    "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.derived/runner.swift" : {
+      "inputs" : [
+
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.derived/runner.swift"
+        }
+      ]
+    }
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Catalog.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/DeviceFile.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Firmware.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Model.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Repository.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/SampleData.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Validation.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/sources"
+    },
+    "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.derived/runner.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/sources"
+    },
+    "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Catalog.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/DeviceFile.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Firmware.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Model.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Repository.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/SampleData.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Validation.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitTests.build/KitTests.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitPackageTests.product/Objects.LinkFileList"
+    },
+    "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Tests/QuadStickKitTests/KitTests.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKitTests.build/sources"
+    },
+    "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

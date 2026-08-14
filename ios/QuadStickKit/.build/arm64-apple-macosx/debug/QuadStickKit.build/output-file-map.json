@@ -1,0 +1,54 @@
+{
+  "": {
+    "swift-dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/master.swiftdeps"
+  },
+  "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Catalog.swift": {
+    "dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Catalog.d",
+    "object": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Catalog.swift.o",
+    "swiftmodule": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Catalog~partial.swiftmodule",
+    "swift-dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Catalog.swiftdeps",
+    "diagnostics": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Catalog.dia"
+  },
+  "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/DeviceFile.swift": {
+    "dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/DeviceFile.d",
+    "object": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/DeviceFile.swift.o",
+    "swiftmodule": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/DeviceFile~partial.swiftmodule",
+    "swift-dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/DeviceFile.swiftdeps",
+    "diagnostics": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/DeviceFile.dia"
+  },
+  "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Firmware.swift": {
+    "dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Firmware.d",
+    "object": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Firmware.swift.o",
+    "swiftmodule": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Firmware~partial.swiftmodule",
+    "swift-dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Firmware.swiftdeps",
+    "diagnostics": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Firmware.dia"
+  },
+  "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Model.swift": {
+    "dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Model.d",
+    "object": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Model.swift.o",
+    "swiftmodule": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Model~partial.swiftmodule",
+    "swift-dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Model.swiftdeps",
+    "diagnostics": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Model.dia"
+  },
+  "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Repository.swift": {
+    "dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Repository.d",
+    "object": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Repository.swift.o",
+    "swiftmodule": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Repository~partial.swiftmodule",
+    "swift-dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Repository.swiftdeps",
+    "diagnostics": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Repository.dia"
+  },
+  "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/SampleData.swift": {
+    "dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/SampleData.d",
+    "object": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/SampleData.swift.o",
+    "swiftmodule": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/SampleData~partial.swiftmodule",
+    "swift-dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/SampleData.swiftdeps",
+    "diagnostics": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/SampleData.dia"
+  },
+  "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/Sources/QuadStickKit/Validation.swift": {
+    "dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Validation.d",
+    "object": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Validation.swift.o",
+    "swiftmodule": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Validation~partial.swiftmodule",
+    "swift-dependencies": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Validation.swiftdeps",
+    "diagnostics": "/Users/adptivai/Documents/GitHub/Quadstick-Config-Manager/ios/QuadStickKit/.build/arm64-apple-macosx/debug/QuadStickKit.build/Validation.dia"
+  }
+}
