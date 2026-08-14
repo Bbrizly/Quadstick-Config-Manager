@@ -1,0 +1,924 @@
+{
+  "author": "Silas P.",
+  "source": "https://bvhbml89uymwxubx.quadstick.com",
+  "profiles": [
+    {
+      "game": "007 - First Light x360",
+      "csvFileName": "007FirstLight.csv",
+      "sheetId": "1NfU7uvp3EZFWCTizgdQDEM7cFl4xe7Wu5VnpToJ8B8E",
+      "channel": "USB",
+      "file": "agent/corpus/silas/007---First-Light-x360.xlsx"
+    },
+    {
+      "game": "A Plague Tale 1+2",
+      "csvFileName": "PlagueTale.csv",
+      "sheetId": "1H-BEo678Amwp9JwEH9Ek3mhR26fdvGoS81ulqWGmftc",
+      "channel": "USB",
+      "file": "agent/corpus/silas/A-Plague-Tale-1-2.xlsx"
+    },
+    {
+      "game": "A Way Out",
+      "csvFileName": "AWayOut.csv",
+      "sheetId": "1Gw6ydYt1-Jn5qJCzo0Q7YhMTuZKg7GhItYrJA4ApeaU",
+      "channel": "USB",
+      "file": "agent/corpus/silas/A-Way-Out.xlsx"
+    },
+    {
+      "game": "ARC Raiders x360",
+      "csvFileName": "ARCRaiders.csv",
+      "sheetId": "1j-7sSCQxk7AGqaBTKWZ0Jek3WGV56BjXANZNWaJTNHI",
+      "channel": "USB",
+      "file": "agent/corpus/silas/ARC-Raiders-x360.xlsx"
+    },
+    {
+      "game": "Alan Wake II",
+      "csvFileName": "AlanWakeII.csv",
+      "sheetId": "10u6sdeXQrGstrgyEd9F0vVVlNhZbO7Mpa6eV3Csw04w",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Alan-Wake-II.xlsx"
+    },
+    {
+      "game": "Apex x360",
+      "csvFileName": "apex360.csv",
+      "sheetId": "1b31Tna8v829uzOD0Lmo79ysbbF2lP8aAdw_0C6UmTG8",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Apex-x360.xlsx"
+    },
+    {
+      "game": "Apex",
+      "csvFileName": "apex.csv",
+      "sheetId": "1ZEkfoeMHQrfYr7earcSgU1xCqgngHSEmL2tXz7Q_CjY",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Apex.xlsx"
+    },
+    {
+      "game": "Assassin's Creed IV - Black Flag Resynced",
+      "csvFileName": "AC4BFR.csv",
+      "sheetId": "1ssATHDzzXmztD72iqOSQV4QZ4k_TXx3DdOhQaaiP4bw",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Assassin-s-Creed-IV---Black-Flag-Resynced.xlsx"
+    },
+    {
+      "game": "Assassin's Creed Unity",
+      "csvFileName": "ACUnity.csv",
+      "sheetId": "1N37L5cvv4Ys7XiA8Khx7XaQCrMaQdsJQmDgou9NvZTA",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Assassin-s-Creed-Unity.xlsx"
+    },
+    {
+      "game": "Avatar - Frontiers of Pandora",
+      "csvFileName": "AFOP.csv",
+      "sheetId": "1c9vz84_v9iX2Wk3Dagz6Ek7SZSpUiz5f8Xfbq2gD7y8",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Avatar---Frontiers-of-Pandora.xlsx"
+    },
+    {
+      "game": "Baldurs Gate 3",
+      "csvFileName": "BaldursGate3.csv",
+      "sheetId": "1JbWzWfFS2PUDTub6HubE7g92A3BPififiOBgOAlUdTE",
+      "channel": "BlueTooth",
+      "file": "agent/corpus/silas/Baldurs-Gate-3.xlsx"
+    },
+    {
+      "game": "Batman Arkham City",
+      "csvFileName": "BatmanArkhamCity.csv",
+      "sheetId": "1FR4vZQKxkJmP4Us-DWljjs19xrzc_cQWsCdzTdt61FU",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Batman-Arkham-City.xlsx"
+    },
+    {
+      "game": "BattleBit Remastered PC",
+      "csvFileName": "BattleBitPC.csv",
+      "sheetId": "1avRnDQFKaYxDyeCy_4zgpHG4sgwEDbxgnZYF2Fn0bdg",
+      "channel": "USB",
+      "file": "agent/corpus/silas/BattleBit-Remastered-PC.xlsx"
+    },
+    {
+      "game": "Battlefield 2042 QMP4",
+      "csvFileName": "BF2042.csv",
+      "sheetId": "1DtlwQonmFcQA_j6mVQnJzG-UjQln7MwbYq4s7AQBiVw",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Battlefield-2042-QMP4.xlsx"
+    },
+    {
+      "game": "Battlefield 6 x360",
+      "csvFileName": "BF6.csv",
+      "sheetId": "1h-0w0iTHO4oXhp5SS2XmfuKLZc2uCEF_DW64qkWPsNM",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Battlefield-6-x360.xlsx"
+    },
+    {
+      "game": "Battlefield V PC",
+      "csvFileName": "BFV.csv",
+      "sheetId": "1qC6MbVyGxbGCEqhAwPuCWwTA3uDdduh3zbEjpvOZSEI",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Battlefield-V-PC.xlsx"
+    },
+    {
+      "game": "Chained together",
+      "csvFileName": "Chainedtogether.csv",
+      "sheetId": "1pJ2nN-BChvORwOW7hqFJB9FQHbOKBlMSl8ItPs2OIds",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Chained-together.xlsx"
+    },
+    {
+      "game": "CoD BOCW x360 MP",
+      "csvFileName": "BOCWxboxmp.csv",
+      "sheetId": "1obdIB9mXtT3LVMWaylADG3Ay6hh4GPcwZktzCSmBfTY",
+      "channel": "USB",
+      "file": "agent/corpus/silas/CoD-BOCW-x360-MP.xlsx"
+    },
+    {
+      "game": "CoD Black Ops 6 - MP/Zombies x360 (QMP4)",
+      "csvFileName": "zzCoDZBO6.csv",
+      "sheetId": "1Neb8ihhZ2_Pkd_fFTywtnVa6-6NJI6ofdeR4sCBOa8s",
+      "channel": "USB",
+      "file": "agent/corpus/silas/CoD-Black-Ops-6---MP-Zombies-x360-QMP4.xlsx"
+    },
+    {
+      "game": "CoD Black Ops 6 - Single Player x360 (QMP4)",
+      "csvFileName": "zzCoDBO6SP.csv",
+      "sheetId": "19BUAl_q8GHpsQiBYeLw0dcw4dDt67BmO4nmbmpxVh-w",
+      "channel": "USB",
+      "file": "agent/corpus/silas/CoD-Black-Ops-6---Single-Player-x360-QMP4.xlsx"
+    },
+    {
+      "game": "CoD Black Ops 6 - TEST WZ 2.0 x360 (QMP4)",
+      "csvFileName": "zzCoDWZBO6.csv",
+      "sheetId": "14Q2FNcWSbXmQKaFssQOEySsZ5ZDZ3lVlsJk6SejRfsQ",
+      "channel": "USB",
+      "file": "agent/corpus/silas/CoD-Black-Ops-6---TEST-WZ-2.0-x360-QMP4.xlsx"
+    },
+    {
+      "game": "CoD Black Ops 6 - WZ 2.0 x360 (QMP4)",
+      "csvFileName": "zzCoDWZBO6.csv",
+      "sheetId": "1OEhv6k4G7UpUWSJ6uIbB6HbOfw5bvufCOxFlwRTjdXc",
+      "channel": "USB",
+      "file": "agent/corpus/silas/CoD-Black-Ops-6---WZ-2.0-x360-QMP4.xlsx"
+    },
+    {
+      "game": "CoD Modern Warfare II - WZ 2.0 x360 (QMP4)",
+      "csvFileName": "zzCoDWZMP2.csv",
+      "sheetId": "1EMjzgjjIG47P-904Jip9bqOUEBTmoeJoDkpChdU1Puo",
+      "channel": "USB",
+      "file": "agent/corpus/silas/CoD-Modern-Warfare-II---WZ-2.0-x360-QMP4.xlsx"
+    },
+    {
+      "game": "CoD Modern Warfare II Story x360 (QMP4)",
+      "csvFileName": "zzCoDTestingx360.csv",
+      "sheetId": "1X1Atq6Jerfj4klh8GpyG7dXvgRb-bD4wyZW_sNAh2c4",
+      "channel": "USB",
+      "file": "agent/corpus/silas/CoD-Modern-Warfare-II-Story-x360-QMP4.xlsx"
+    },
+    {
+      "game": "CoD Modern Warfare III - WZ 2.0 x360 (QMP4)",
+      "csvFileName": "zzCoDWZMP3.csv",
+      "sheetId": "1eSkMSW4EAAjzR_Bisgjj0m-RRPhJ24XMvwDkHDzTZC8",
+      "channel": "USB",
+      "file": "agent/corpus/silas/CoD-Modern-Warfare-III---WZ-2.0-x360-QMP4.xlsx"
+    },
+    {
+      "game": "Construction-Simulator",
+      "csvFileName": "ConstructionSim.csv",
+      "sheetId": "1vuug3D-TykDBeZsNet1cLpgiIsHqFzV6HJ2Mk_rIfmw",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Construction-Simulator.xlsx"
+    },
+    {
+      "game": "Control",
+      "csvFileName": "Control.csv",
+      "sheetId": "1UN9s3MlNWSrDpkH2sniLMEjgHoEOkVvukMSQyOgZFEY",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Control.xlsx"
+    },
+    {
+      "game": "Cooking Simulator",
+      "csvFileName": "cooking.csv",
+      "sheetId": "17jvrVGvfI1HnUBzwG7VtXgG4zNl6cFvSXRrY5j3Rzyc",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Cooking-Simulator.xlsx"
+    },
+    {
+      "game": "Copy of Flight Simulator 20",
+      "csvFileName": "fs2020.csv",
+      "sheetId": "1EaItmqYCPUmKiZo9qTN5JDBc5yq9u1YnGy3yCbW7NJA",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Copy-of-Flight-Simulator-20.xlsx"
+    },
+    {
+      "game": "Cyberpunk 2077 Controller",
+      "csvFileName": "Cyberpunk.csv",
+      "sheetId": "1xgeJK9MdQ-e5TfoFXC1fypyoQqCV4jCHI_2XukUbJzQ",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Cyberpunk-2077-Controller.xlsx"
+    },
+    {
+      "game": "Cyberpunk 2077 PC KO",
+      "csvFileName": "CyberPunkKO.csv",
+      "sheetId": "169Z5ZDN_tt_Nk-06OB7NVKif-rQdQDlNfFv-J-9ZvlU",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Cyberpunk-2077-PC-KO.xlsx"
+    },
+    {
+      "game": "Cyberpunk 2077 PC QMP4",
+      "csvFileName": "CyberPunk.csv",
+      "sheetId": "1-V2CO92PWVJw0OB_LfyCCgrQIit4MQvLgnTAjTf17Tk",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Cyberpunk-2077-PC-QMP4.xlsx"
+    },
+    {
+      "game": "Dead Space Rem PC",
+      "csvFileName": "DeadSpace.csv",
+      "sheetId": "1hebQa5_ULEVIKfTU9nYBg9kMwSZL1WlGGaSgWhe-X-4",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Dead-Space-Rem-PC.xlsx"
+    },
+    {
+      "game": "Dead Space Rem x360 (QMP4)",
+      "csvFileName": "DeadSpacex360.csv",
+      "sheetId": "1EAKy4QzOnqirw99vqmSFOC6VwK-TNTQENPq0KcCibB8",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Dead-Space-Rem-x360-QMP4.xlsx"
+    },
+    {
+      "game": "Deep Rock Galactic: Survivor",
+      "csvFileName": "DeepRockSurvivor.csv",
+      "sheetId": "1exH00SUYKmG5ecrh4pk4eLW7IRUQNb5tF-FCZryA40o",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Deep-Rock-Galactic-Survivor.xlsx"
+    },
+    {
+      "game": "DeepRock",
+      "csvFileName": "DeepRock.csv",
+      "sheetId": "1KoYF9fnW9oe8Dmdg_xFGKT1yTzlniSvhgaCShyQF0Lk",
+      "channel": "USB",
+      "file": "agent/corpus/silas/DeepRock.xlsx"
+    },
+    {
+      "game": "Default Shooter Profile",
+      "csvFileName": "example.csv",
+      "sheetId": "1g6ZoZx3l9fRBOZn5V-gKRPljb8UqSxElpbKpH9b9b94",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Default-Shooter-Profile.xlsx"
+    },
+    {
+      "game": "Default Shooter x360",
+      "csvFileName": "example2.csv",
+      "sheetId": "1ixKvp1I7hnSTCxip9N3BITqRzxiVqUXQ2auzYQpzEXw",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Default-Shooter-x360.xlsx"
+    },
+    {
+      "game": "Deliver At All Costs",
+      "csvFileName": "DeliverAtAllCosts.csv",
+      "sheetId": "1KwQPwEljy-Pr4hUaojmsI1BVfuJkZUtMF79Ij8wPiog",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Deliver-At-All-Costs.xlsx"
+    },
+    {
+      "game": "Denshattack",
+      "csvFileName": "Denshattack.csv",
+      "sheetId": "1cejbrI7y7HyY7H9LVqum6adXiRUbcoiSS18gGGR2YUQ",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Denshattack.xlsx"
+    },
+    {
+      "game": "Divinity Original Sin II",
+      "csvFileName": "DivinityII.csv",
+      "sheetId": "1koueOeAvLoSw_P6SQnL50G46Vc-KXjdiePo3G_FedDw",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Divinity-Original-Sin-II.xlsx"
+    },
+    {
+      "game": "Doom",
+      "csvFileName": "doom.csv",
+      "sheetId": "18H90AlTF2gLjoG6H1QYiFnOC5ZaiTWQ0Uc72QLM7IOM",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Doom.xlsx"
+    },
+    {
+      "game": "Enshrouded",
+      "csvFileName": "Enshrouded.csv",
+      "sheetId": "1jDxHP_SIoWuSiV33EuFAzYJwMPa0PoZyKdreXSS6THU",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Enshrouded.xlsx"
+    },
+    {
+      "game": "Eurotruck Simulator 2",
+      "csvFileName": "Ets2.csv",
+      "sheetId": "1ahAn9pJFb_4eRSlsPkB-tQy3pUtOlZbIt8xk0JtzEIA",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Eurotruck-Simulator-2.xlsx"
+    },
+    {
+      "game": "FSX/P3D",
+      "csvFileName": "fsx.csv",
+      "sheetId": "1REebj5PEBOYgY72BAWqxbluikm04CCL-s_htF0AH9-0",
+      "channel": "USB",
+      "file": "agent/corpus/silas/FSX-P3D.xlsx"
+    },
+    {
+      "game": "Far Cry 3 PC",
+      "csvFileName": "fc3pc.csv",
+      "sheetId": "14Wu6gM8SGU8Yd11IQw8RvGLSfcVgRbmhWbxXHZNDyDA",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Far-Cry-3-PC.xlsx"
+    },
+    {
+      "game": "Far Cry 4 PC",
+      "csvFileName": "fc4pc.csv",
+      "sheetId": "1eVkzxsTS4fW-BK7y3OCP0YMdK4OewhhRmqrO10vzgeg",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Far-Cry-4-PC.xlsx"
+    },
+    {
+      "game": "Far Cry 5 PC",
+      "csvFileName": "fc5pc.csv",
+      "sheetId": "1pk_POZlw-oUN2iPXkQQotn0G0KwyC8-1aNfWE6aVFxs",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Far-Cry-5-PC.xlsx"
+    },
+    {
+      "game": "Far Cry 6 PC",
+      "csvFileName": "fc6pc.csv",
+      "sheetId": "1_e_EeCCK1oqTBX0-NzCJq14ccEEFPjgS1LBw0Ifyftg",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Far-Cry-6-PC.xlsx"
+    },
+    {
+      "game": "Farming Simulator 17",
+      "csvFileName": "FS17.csv",
+      "sheetId": "1H4l1Bn6veSrsSofLhrLY6JCvLoqnwKi2oejWLB6N1l8",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Farming-Simulator-17.xlsx"
+    },
+    {
+      "game": "Flight Simulator 20",
+      "csvFileName": "fs2020.csv",
+      "sheetId": "1zPsLY_dECZsaBDINfBUMaxciuaaa8ghlYk9UJV5qgjM",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Flight-Simulator-20.xlsx"
+    },
+    {
+      "game": "Flight Simulator 24",
+      "csvFileName": "fs2024.csv",
+      "sheetId": "1nnljEgobdSer46u8tl_sirSDFZJ6MxOfi7BzoLHf8OI",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Flight-Simulator-24.xlsx"
+    },
+    {
+      "game": "Forza Horizon 4",
+      "csvFileName": "Forza4.csv",
+      "sheetId": "1-fXz7Uazyok9o5EGzDGS8W__zpGZgwJ5qCJEtm1xTRc",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Forza-Horizon-4.xlsx"
+    },
+    {
+      "game": "GTA IV",
+      "csvFileName": "GTAIV.csv",
+      "sheetId": "1nGuH55WN7QiRDbTg2Ovec9f1Vm_0OQm6ASE0iwpzI1U",
+      "channel": "USB",
+      "file": "agent/corpus/silas/GTA-IV.xlsx"
+    },
+    {
+      "game": "GTA V FiveM 2",
+      "csvFileName": "GTAVFiveM.csv",
+      "sheetId": "1W0Drr2pAvjEfoIyyF83bRYJvbMVoY19ZQXLt0nT2MKc",
+      "channel": "USB",
+      "file": "agent/corpus/silas/GTA-V-FiveM-2.xlsx"
+    },
+    {
+      "game": "GTA V Redone (FiveM optimized)",
+      "csvFileName": "GTAV.csv",
+      "sheetId": "1o9FChx_Mz2Vjc-GQM9EWOT6U5K89ocWJFnKECPKPPiY",
+      "channel": "USB",
+      "file": "agent/corpus/silas/GTA-V-Redone-FiveM-optimized.xlsx"
+    },
+    {
+      "game": "GTA V",
+      "csvFileName": "gta5test.csv",
+      "sheetId": "1aEzDToS8IrLfdTpFECgtcpSmdG0szkd2djNlVnmiGls",
+      "channel": "USB",
+      "file": "agent/corpus/silas/GTA-V.xlsx"
+    },
+    {
+      "game": "Gardians of the Galaxy BETA",
+      "csvFileName": "GardiansGalaxy.csv",
+      "sheetId": "1DZPX6DxypeULr8P3bVUMkgw4CdkdDOwMZ82efahhlng",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Gardians-of-the-Galaxy-BETA.xlsx"
+    },
+    {
+      "game": "Ghost Recon Wildlands",
+      "csvFileName": "wildlands.csv",
+      "sheetId": "1DYEpmgqINMeUBvxCpKxay6Wdr7RK_mENIej7zhs7LLE",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Ghost-Recon-Wildlands.xlsx"
+    },
+    {
+      "game": "Ghostrunner",
+      "csvFileName": "Ghostrunner.csv",
+      "sheetId": "1tG7i4ErITtE3kJ1kR1SoZ22IQtunHY7EHRSQxUrXUeg",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Ghostrunner.xlsx"
+    },
+    {
+      "game": "Goat Simulator 3",
+      "csvFileName": "Goat3.csv",
+      "sheetId": "1LxeoVUgPcUUplSdqWbyQg6sqfVBoGtT8-5kegkRIqpo",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Goat-Simulator-3.xlsx"
+    },
+    {
+      "game": "Halo Infinite PC",
+      "csvFileName": "HaloInfinitePC.csv",
+      "sheetId": "1V-Lwk3-rA0mckKtR8mwSZN6XfDVqMr5RzmHPf9zqgOs",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Halo-Infinite-PC.xlsx"
+    },
+    {
+      "game": "Helldivers II",
+      "csvFileName": "Helldivers II.csv",
+      "sheetId": "1TJ2tPevqx6VV8rDVJ9Bj8kfo7iEyTwuez1gHBn1TUuc",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Helldivers-II.xlsx"
+    },
+    {
+      "game": "High on Life PC",
+      "csvFileName": "HighOnLife.csv",
+      "sheetId": "1kT3z3T4FKAM_TWb3EfuOToryGUtdNkf0Z9iY_-DwLUE",
+      "channel": "USB",
+      "file": "agent/corpus/silas/High-on-Life-PC.xlsx"
+    },
+    {
+      "game": "Hogwarts Legacy",
+      "csvFileName": "HogwartsLegacy.csv",
+      "sheetId": "1mvv_0ugmjygvsVQzj00uvAuy3loJIrybIZBNXIe2fK4",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Hogwarts-Legacy.xlsx"
+    },
+    {
+      "game": "Horizon Zero Dawn",
+      "csvFileName": "HorizonZeroDawn.csv",
+      "sheetId": "1hhc_QZ17rB2V01hXQ6jBQ81bFuvmoF958-wE2wjHHyM",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Horizon-Zero-Dawn.xlsx"
+    },
+    {
+      "game": "Hunt: Showdown",
+      "csvFileName": "HuntShowdown.csv",
+      "sheetId": "1bWHewoqFhR5UbttJAw4rFexc_Ah4zAymVnJZM3hBIM0",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Hunt-Showdown.xlsx"
+    },
+    {
+      "game": "Hytale",
+      "csvFileName": "Hytale.csv",
+      "sheetId": "1_-9k7oBiZsGGMNTL85rE8onTY196Mihv3atKOO3uh3o",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Hytale.xlsx"
+    },
+    {
+      "game": "Indiana Jones and the Great Circle",
+      "csvFileName": "IndianaJonesAtGC.csv",
+      "sheetId": "13plpK5hQjUYomSLeXn7uzQKoGDiGgFDsDdExmX-PbuM",
+      "channel": "BlueTooth",
+      "file": "agent/corpus/silas/Indiana-Jones-and-the-Great-Circle.xlsx"
+    },
+    {
+      "game": "It takes two",
+      "csvFileName": "ItTakesTwo.csv",
+      "sheetId": "1nFfFBJ9xgPqu5MB4OhC-Al2fVHNVT4TUBszzwdiqQCQ",
+      "channel": "USB",
+      "file": "agent/corpus/silas/It-takes-two.xlsx"
+    },
+    {
+      "game": "Just Cause 2",
+      "csvFileName": "JustCause2.csv",
+      "sheetId": "1MFjqTjF4Y32pCIhECkEre-gPgaXLtg3_wzGOK6RgMqw",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Just-Cause-2.xlsx"
+    },
+    {
+      "game": "Kingdom Come Deliverance II",
+      "csvFileName": "KingdomCome2.csv",
+      "sheetId": "1fWSvI0yr9nfWafsMFoNLgKoy3hUaiAXrOEM1AAs5z40",
+      "channel": "BlueTooth",
+      "file": "agent/corpus/silas/Kingdom-Come-Deliverance-II.xlsx"
+    },
+    {
+      "game": "Lego Fortnite",
+      "csvFileName": "LegoFortnite.csv",
+      "sheetId": "1cxHQSWFEsKnOqvL0ZKc8OUKGKR9TOsiWnMAbP8iGuV4",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Lego-Fortnite.xlsx"
+    },
+    {
+      "game": "Lethal Company",
+      "csvFileName": "LethalCompany.csv",
+      "sheetId": "1-CzP9i-T9z6YvoKVLa7PafmshB6JrkiSsLR_Ph__vP8",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Lethal-Company.xlsx"
+    },
+    {
+      "game": "Maus Bluetooth",
+      "csvFileName": "0default.csv",
+      "sheetId": "1DJodDoqLX8MynmWTTEpIQwR-PXs9q9v53KlvezDs2Ss",
+      "channel": "BlueTooth",
+      "file": "agent/corpus/silas/Maus-Bluetooth.xlsx"
+    },
+    {
+      "game": "Maus",
+      "csvFileName": "default.csv",
+      "sheetId": "1IgKZbbHze_ub8Hq708GBamlwoRTbIYXQbRU1QuBRHxA",
+      "channel": "BlueTooth",
+      "file": "agent/corpus/silas/Maus.xlsx"
+    },
+    {
+      "game": "Maus2 TV",
+      "csvFileName": "default1.csv",
+      "sheetId": "13_iRbQCq1OY5RUsQrQBYYcvTyc7oJKJg6gwBDATuWAE",
+      "channel": "BlueTooth",
+      "file": "agent/corpus/silas/Maus2-TV.xlsx"
+    },
+    {
+      "game": "Max Payne 3",
+      "csvFileName": "MaxPayne3.csv",
+      "sheetId": "1j9ud1kPYXCsY6DrM5ZMMKA1gURUfXLP-r8XOBAE_4zI",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Max-Payne-3.xlsx"
+    },
+    {
+      "game": "Metal Gear Snake Eater",
+      "csvFileName": "MetalGearSE.csv",
+      "sheetId": "1nMMkPHaEJ92uMN8kKmKy3-SFIg8KOCBbRFbCIurLYQE",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Metal-Gear-Snake-Eater.xlsx"
+    },
+    {
+      "game": "Minecraft",
+      "csvFileName": "Mc.csv",
+      "sheetId": "1lY5kjL9I5rToU5-dj28Lt5Zyndemn6fgZASw1C5DgTY",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Minecraft.xlsx"
+    },
+    {
+      "game": "Monitor Control - Samsung G8",
+      "csvFileName": "MonRem.csv",
+      "sheetId": "1kWsQQjk93BiFt9BsLWQNXfh4rHizI9rZ3ZB0wOrxG-U",
+      "channel": "BlueTooth",
+      "file": "agent/corpus/silas/Monitor-Control---Samsung-G8.xlsx"
+    },
+    {
+      "game": "My Current Preferences",
+      "csvFileName": "MyCurrentPreferences.csv",
+      "sheetId": "1MMtLV2dhDcJFaNgSqx3WrDznnNhxiBLoLcj2GIKkeVw",
+      "channel": "USB",
+      "file": "agent/corpus/silas/My-Current-Preferences.xlsx"
+    },
+    {
+      "game": "Need for Speed - Heat",
+      "csvFileName": "NfSHeat.csv",
+      "sheetId": "1tzBf62nX51i4lfui-Yk-Ep7qUjh3gcx8KLUPjwRt5WI",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Need-for-Speed---Heat.xlsx"
+    },
+    {
+      "game": "PS2  Need for Speed Carbon (QMP4)",
+      "csvFileName": "PS2_NFSC.csv",
+      "sheetId": "1kj74D9IuKKJDgec5DVDSBJUsKuW7xcSfNUiaFp7R6lo",
+      "channel": "USB",
+      "file": "agent/corpus/silas/PS2-Need-for-Speed-Carbon-QMP4.xlsx"
+    },
+    {
+      "game": "Path of Exile II x360",
+      "csvFileName": "PathofExileII.csv",
+      "sheetId": "1CgvoZXE67qvRp6gXd4Pnw8sOIVajQDo4CBi4nGvS-7M",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Path-of-Exile-II-x360.xlsx"
+    },
+    {
+      "game": "Payday 2",
+      "csvFileName": "PD2.csv",
+      "sheetId": "1a9eyYBfPF4KGqkeyGS-bIY01DAkfQU7oHDHjAYiGMuo",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Payday-2.xlsx"
+    },
+    {
+      "game": "Payday 3",
+      "csvFileName": "Payday3.csv",
+      "sheetId": "1iQEMlou7q3lAyXs8GqC-d8UspKrmiJefQnemGXhVjuQ",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Payday-3.xlsx"
+    },
+    {
+      "game": "PlanetSide 2",
+      "csvFileName": "planetside2.csv",
+      "sheetId": "1vxvq4q0VN6GB4PIYG9g5TL4ntmB0Jfvp_nPFMf87rOA",
+      "channel": "USB",
+      "file": "agent/corpus/silas/PlanetSide-2.xlsx"
+    },
+    {
+      "game": "Police Simulator: Patrol Officers PC",
+      "csvFileName": "Police.csv",
+      "sheetId": "1Z9N0bPvsG24jg6h3wsrs4ps9xpJzgKKMjxbMeTkJ1s4",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Police-Simulator-Patrol-Officers-PC.xlsx"
+    },
+    {
+      "game": "Raft",
+      "csvFileName": "Raft.csv",
+      "sheetId": "1GnMWGnnOgdA0KjMzzfzYdMYZu0sA5T160vtvsAB5atc",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Raft.xlsx"
+    },
+    {
+      "game": "Red Dead Redemption II - RedM",
+      "csvFileName": "RedDeadRedemptionIIRedM.csv",
+      "sheetId": "1rPul7lBH6xX-DwGFI6ek2ZCzkmAeAHlGabI8KHI1CdY",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Red-Dead-Redemption-II---RedM.xlsx"
+    },
+    {
+      "game": "Red Dead Redemption II",
+      "csvFileName": "RedDeadRedemptionII.csv",
+      "sheetId": "1xjW0oUI3ld1tRrwgHgfhPPdNVu4LQ_Ot8UlxVzAK5D8",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Red-Dead-Redemption-II.xlsx"
+    },
+    {
+      "game": "Satisfactory",
+      "csvFileName": "satisfactory.csv",
+      "sheetId": "1raPi-3ezaWA5bLGWdJyzcWFkoayaAbPdt45pf3p2saA",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Satisfactory.xlsx"
+    },
+    {
+      "game": "Schedule I",
+      "csvFileName": "Schedule I.csv",
+      "sheetId": "1gjB0ywmx9cuHd63rHTSYs9XmssmK4oSxMbxNtCpTxsM",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Schedule-I.xlsx"
+    },
+    {
+      "game": "Screen Saver",
+      "csvFileName": "screensaver.csv",
+      "sheetId": "15vlxHRd1fGymHyb4Qcl-_R_ZSqrWMQZI4K9K9xxwfdQ",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Screen-Saver.xlsx"
+    },
+    {
+      "game": "Sea of Thieves",
+      "csvFileName": "SeaofThieves.csv",
+      "sheetId": "187aOfdN5nd-JO7s2xcjIlpB97EXC7K_qGBA0SM3q2xM",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Sea-of-Thieves.xlsx"
+    },
+    {
+      "game": "Shadow Warrior 3",
+      "csvFileName": "ShadowWarrior3.csv",
+      "sheetId": "1z0ql9pCrIRbvj0fDUARduvfMYbwknoUt4gZHEK92mg0",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Shadow-Warrior-3.xlsx"
+    },
+    {
+      "game": "ShatterlinePC",
+      "csvFileName": "ShatterlinePC.csv",
+      "sheetId": "1Bgo68cyJWQS3Gfr94eVCE8uoRd7rEV3HNqyR-pPpSI8",
+      "channel": "USB",
+      "file": "agent/corpus/silas/ShatterlinePC.xlsx"
+    },
+    {
+      "game": "Shooter default PS5",
+      "csvFileName": "zzCoDPS5.csv",
+      "sheetId": "18892WT0W98N3PEXGMl-v0RjoI0kPIr3VbFMNLHHjKKM",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Shooter-default-PS5.xlsx"
+    },
+    {
+      "game": "Six Days In Fallujah",
+      "csvFileName": "SixDaysInFallujah.csv",
+      "sheetId": "1pyy8RCtgsqcKaxcz8JdlzeRQH_RlRSq_HrTxQxYrYsk",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Six-Days-In-Fallujah.xlsx"
+    },
+    {
+      "game": "Sniper Elite 3",
+      "csvFileName": "se3.csv",
+      "sheetId": "1P3mRIdjE5D3DNkRiahIXTO7nrHZyAMvL-ngkSP7PTZ4",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Sniper-Elite-3.xlsx"
+    },
+    {
+      "game": "Sniper Elite 4",
+      "csvFileName": "se4.csv",
+      "sheetId": "1a_boZsd3AQh14pvqIJEgl1bptZamFMiuNcDobNV_WRE",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Sniper-Elite-4.xlsx"
+    },
+    {
+      "game": "Sniper Elite 5",
+      "csvFileName": "se5.csv",
+      "sheetId": "104YnqX1wboP9EIrzun4HBmZBdMkqg8JgUGAhN_i_lzY",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Sniper-Elite-5.xlsx"
+    },
+    {
+      "game": "Sniper Ghost Warrior 2",
+      "csvFileName": "SGW2.csv",
+      "sheetId": "1KsfIAu-nZf_cBJptGG2lZcuIKFK_b4M6uQ-hiLp4dNU",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Sniper-Ghost-Warrior-2.xlsx"
+    },
+    {
+      "game": "Spindle",
+      "csvFileName": "Spindle.csv",
+      "sheetId": "1GpU47j5Oa68IGLtEvZlZi64ZLk4ff_ySZIorRuOB5Jk",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Spindle.xlsx"
+    },
+    {
+      "game": "Split Fiction",
+      "csvFileName": "SplitFiction.csv",
+      "sheetId": "1nYEp6ue5_LbdQfuWtZ7KEc7lUO9DI1SGZDE4Fexd2zY",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Split-Fiction.xlsx"
+    },
+    {
+      "game": "Splitgate (betatest) x360",
+      "csvFileName": "Splitgate.csv",
+      "sheetId": "1ItLzZubgqt3t6Ja4H-4V9bJZCM0SmG_7CZmFojoBrsA",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Splitgate-betatest-x360.xlsx"
+    },
+    {
+      "game": "Star Wars - Jedi Fallen Order PC",
+      "csvFileName": "JediFallenOrder.csv",
+      "sheetId": "1GT7lNcvrXdhSMv0447lZ2uQ6dhGDfXMYAezsSRxbA7I",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Star-Wars---Jedi-Fallen-Order-PC.xlsx"
+    },
+    {
+      "game": "StarCitizen",
+      "csvFileName": "StarCitizen.csv",
+      "sheetId": "19_MZUi1vrrAvcPyYMKs3s9V2NWNR6pELQm8R_aY-KE8",
+      "channel": "USB",
+      "file": "agent/corpus/silas/StarCitizen.xlsx"
+    },
+    {
+      "game": "Starfield",
+      "csvFileName": "Starfield.csv",
+      "sheetId": "1RQHLLmiQbU5V35Vybfkj4JKcXSVMTC0D6LwkiNg2c1A",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Starfield.xlsx"
+    },
+    {
+      "game": "The Last of Us Part II",
+      "csvFileName": "TheLastOfUsII.csv",
+      "sheetId": "195oQ56RWrCN6UIyWCcOluT0kcUojij3Hv8aSO-vkM5I",
+      "channel": "USB",
+      "file": "agent/corpus/silas/The-Last-of-Us-Part-II.xlsx"
+    },
+    {
+      "game": "The Last of Us",
+      "csvFileName": "TheLastOfUs.csv",
+      "sheetId": "1h7rR7if8nedFt6hOrAw83rGHpdqjClgExActZGrSAoo",
+      "channel": "USB",
+      "file": "agent/corpus/silas/The-Last-of-Us.xlsx"
+    },
+    {
+      "game": "Tiny Tinas Wonderlands",
+      "csvFileName": "TinyTinasWonderlands.csv",
+      "sheetId": "1e-A7_8lt2SYfSt-WtTZ3AeIuZoo9PtpYtPaIbRP_3Nc",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Tiny-Tinas-Wonderlands.xlsx"
+    },
+    {
+      "game": "Titanfall 2",
+      "csvFileName": "Titanfall2.csv",
+      "sheetId": "11COcj9LSFmCyvZW68WKqxT68_EtPQRnuMSl-unn04ok",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Titanfall-2.xlsx"
+    },
+    {
+      "game": "Tomb Raider 1",
+      "csvFileName": "Tombraider1.csv",
+      "sheetId": "1AT8kHoKi09UVtIgTgr-pneYj3eqh3kY1Dm88Xslm5bM",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Tomb-Raider-1.xlsx"
+    },
+    {
+      "game": "Tomb Raider 2 - Rise of the Tomb Raider",
+      "csvFileName": "Tombraider2.csv",
+      "sheetId": "1HTw9r3V8RGUVHxMxo7_XbTe52N586cVys4TJDnGszbQ",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Tomb-Raider-2---Rise-of-the-Tomb-Raider.xlsx"
+    },
+    {
+      "game": "Tomb Raider 3 - Shadow of the Tomb Raider",
+      "csvFileName": "Tombraider3.csv",
+      "sheetId": "1wElQ_s-7YjNTYch0Zgr2UqcCHp1VtXc7TwDZbvKw7eo",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Tomb-Raider-3---Shadow-of-the-Tomb-Raider.xlsx"
+    },
+    {
+      "game": "Tony Hawk",
+      "csvFileName": "Hawkskate.csv",
+      "sheetId": "1YERuZoXEhwrnpFwem8l5BtEurnfpPv1JFp7IGL76tos",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Tony-Hawk.xlsx"
+    },
+    {
+      "game": "Trepang 2",
+      "csvFileName": "Trepang2.csv",
+      "sheetId": "1KxeZdoIX-iQIlNPFCJPjzphZ0fp4zaOX921gX_AilXE",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Trepang-2.xlsx"
+    },
+    {
+      "game": "Tunic",
+      "csvFileName": "tunic.csv",
+      "sheetId": "1GKpBkxmMTNZhEQJ0ksnNbaa5m6r5DO1DRrCJCkaQ83Q",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Tunic.xlsx"
+    },
+    {
+      "game": "Valheim",
+      "csvFileName": "Valheim.csv",
+      "sheetId": "1frB8sCPwxNKvDbn0bncoR1zxtHzWA2RGE53t8EAJico",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Valheim.xlsx"
+    },
+    {
+      "game": "Warhammer 40k - Darktide",
+      "csvFileName": "W40kDarktide.csv",
+      "sheetId": "1UtCK_yeJdrcU32kI70HVLqyw4eiCUsOloHrHGAamO08",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Warhammer-40k---Darktide.xlsx"
+    },
+    {
+      "game": "Warhammer 40k - Space Marine 2",
+      "csvFileName": "W40kSpaceMarine2.csv",
+      "sheetId": "1kvbvy13xe6Ist6xC2_9UCGZRr-BCGIbcdia-ERymFeI",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Warhammer-40k---Space-Marine-2.xlsx"
+    },
+    {
+      "game": "Way of the Hunter",
+      "csvFileName": "WotHunter.csv",
+      "sheetId": "1rMbrrEhgRtdzp7tGETVVuF5iRriWIvA-zzaYnM97OPc",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Way-of-the-Hunter.xlsx"
+    },
+    {
+      "game": "Witcher III PC",
+      "csvFileName": "witcher.csv",
+      "sheetId": "1wj5D5UdQ_bEA1d1k-SKwPDm8sPmYUXMHmgdLAGtTqlQ",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Witcher-III-PC.xlsx"
+    },
+    {
+      "game": "World of Tanks",
+      "csvFileName": "WorldofTanks.csv",
+      "sheetId": "1l4gpyV0GimPRY1H7a13Xue_R7PkYpYR_VYhJQszptIg",
+      "channel": "USB",
+      "file": "agent/corpus/silas/World-of-Tanks.xlsx"
+    },
+    {
+      "game": "XDefiant x360 (QMP4)",
+      "csvFileName": "XDefiant.csv",
+      "sheetId": "1eDKxfLRtNOl7iZ00j5yGAiSY22JTfo-LGWpje_dSnqA",
+      "channel": "USB",
+      "file": "agent/corpus/silas/XDefiant-x360-QMP4.xlsx"
+    },
+    {
+      "game": "Zelda Breath of the Wild",
+      "csvFileName": "ZeldaBotW.csv",
+      "sheetId": "1lVd4H23afFmXZdvVnCRK65CHagIfJes7P4H4TzsCSkM",
+      "channel": "USB",
+      "file": "agent/corpus/silas/Zelda-Breath-of-the-Wild.xlsx"
+    },
+    {
+      "game": "skate.",
+      "csvFileName": "skate.csv",
+      "sheetId": "1dCGn3KGnVFqzVX7QF2SMuNkXQTkt6s1iD3WoChu1nQk",
+      "channel": "USB",
+      "file": "agent/corpus/silas/skate..xlsx"
+    },
+    {
+      "game": "the Finals",
+      "csvFileName": "theFinals.csv",
+      "sheetId": "1Wuw6JOyKBHtRdQlafGWFMtRw9Ze_vUK098rTN73qTLo",
+      "channel": "USB",
+      "file": "agent/corpus/silas/the-Finals.xlsx"
+    },
+    {
+      "game": "theHunter CotW",
+      "csvFileName": "thunCotW.csv",
+      "sheetId": "1a5TmCr6TaVpMZAfPG1yOjtfwZ0lxgGqPMUxFm6Hrmiw",
+      "channel": "USB",
+      "file": "agent/corpus/silas/theHunter-CotW.xlsx"
+    }
+  ],
+  "failed": []
+}
