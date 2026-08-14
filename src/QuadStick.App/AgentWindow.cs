@@ -51,42 +51,57 @@ public class AgentWindow : Window
     /// a bridge over a scripted stream so no model and no network are involved.</summary>
     internal Func<IReadOnlyList<string>, IAgentRun>? StartWith { get; set; }
 
-    public AgentWindow(MainWindow owner) : this(owner, AgentBridge.FindAgentRoot()) { }
+    readonly bool _changing;
 
-    internal AgentWindow(MainWindow owner, string? root)
+    public AgentWindow(MainWindow owner, bool changing = false)
+        : this(owner, AgentBridge.FindAgentRoot(), changing) { }
+
+    internal AgentWindow(MainWindow owner, string? root, bool changing = false)
     {
         _owner = owner;
         _root = root ?? "";
+        _changing = changing;
         OpenWritten = path => _owner.OpenPath(path);
-        Title = "Set up a game";
+        Title = changing ? "Ask for a change" : "Set up a game";
         Width = Math.Min(760 * owner.UiScale, 1100);
         Height = Math.Min(700 * owner.UiScale, 900);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
         var heading = new TextBlock
         {
-            Text = "Set up a game",
+            Text = changing ? "Ask for a change" : "Set up a game",
             FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold,
         };
         var explain = new TextBlock
         {
-            Text = "Name any game or app. It reads how that game is controlled, then works out "
-                 + "what each control should be on your QuadStick from the profiles you have "
-                 + "already built. It asks you about anything your own profiles do not settle, "
-                 + "and it writes nothing until you say so.",
+            Text = changing
+                ? "Say what you want changed, in your own words. It finds the row you mean, "
+                + "changes only that row, and shows you the exact cell it would change. "
+                + "Nothing is changed until you say so."
+                : "Name any game or app. It reads how that game is controlled, then works out "
+                + "what each control should be on your QuadStick from the profiles you have "
+                + "already built. It asks you about anything your own profiles do not settle, "
+                + "and it writes nothing until you say so.",
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         };
 
         _ask = new TextBox
         {
-            Watermark = "A game, or a change to make: Hollow Knight Silksong",
+            Watermark = changing ? "make sprint a hard puff instead"
+                                 : "Hollow Knight Silksong",
             HorizontalAlignment = HorizontalAlignment.Stretch,
         };
-        AutomationProperties.SetName(_ask, "The game to set up");
+        AutomationProperties.SetName(_ask, changing ? "The change you want made"
+                                                    : "The game to set up");
         _ask.KeyDown += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; Begin(); } };
 
-        _go = new Button { Content = "Set it up", Classes = { "primary" }, MinWidth = 130 };
-        AutomationProperties.SetName(_go, "Start setting up the game you named");
+        _go = new Button
+        {
+            Content = changing ? "Work it out" : "Set it up",
+            Classes = { "primary" }, MinWidth = 130,
+        };
+        AutomationProperties.SetName(_go, changing ? "Work out what to change"
+                                                  : "Start setting up the game you named");
         _go.Click += (_, _) => Begin();
 
         _replay = new CheckBox { Content = "From the recording", IsChecked = false };
@@ -104,7 +119,11 @@ public class AgentWindow : Window
 
         _status = new TextBlock
         {
-            Text = _root.Length > 0 ? "" : "The agent files are not next to this app, so nothing can run.",
+            Text = _root.Length == 0
+                ? "The agent files are not next to this app, so nothing can run."
+                : changing && owner.CurrentProfilePath is null
+                    ? "Save this profile first. A change is made to the file on disk, so there has to be one."
+                    : "",
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         };
         AutomationProperties.SetLiveSetting(_status, AutomationLiveSetting.Polite);
@@ -169,11 +188,12 @@ public class AgentWindow : Window
 
     /// <summary>What the person typed, as arguments. A sentence about a profile
     /// that is already open is a change to it; anything else names a game.</summary>
-    internal IReadOnlyList<string> Arguments(string said, string? openProfile, bool replay)
+    internal IReadOnlyList<string> Arguments(string said, string? openProfile, bool replay,
+                                             bool changing = false)
     {
         var words = said.Trim();
         var list = new List<string>();
-        if (openProfile is not null && LooksLikeAChange(words))
+        if (openProfile is not null && (changing || LooksLikeAChange(words)))
         {
             list.Add("--edit"); list.Add(openProfile);
             list.Add("--request"); list.Add(words);
@@ -200,7 +220,18 @@ public class AgentWindow : Window
     {
         if (_running) return;
         var said = (_ask.Text ?? "").Trim();
-        if (said.Length == 0) { Say("Type a game first, then press Set it up."); _ask.Focus(); return; }
+        if (said.Length == 0)
+        {
+            Say(_changing ? "Say what you want changed first."
+                          : "Type a game first, then press Set it up.");
+            _ask.Focus();
+            return;
+        }
+        if (_changing && _owner.CurrentProfilePath is null)
+        {
+            Say("Save this profile first. A change is made to the file on disk, so there has to be one.");
+            return;
+        }
         if (_root.Length == 0 && StartWith is null)
         {
             Say("The agent files are not next to this app, so nothing can run.");
@@ -213,9 +244,10 @@ public class AgentWindow : Window
         _running = true;
         _go.IsEnabled = false;
         _ask.IsEnabled = false;
-        Say($"Setting up {said}...");
+        Say(_changing ? $"Working out what \"{said}\" means..." : $"Setting up {said}...");
 
-        var arguments = Arguments(said, _owner.CurrentProfilePath, _replay.IsChecked == true);
+        var arguments = Arguments(said, _changing ? _owner.CurrentProfilePath : null,
+                                  _replay.IsChecked == true, _changing);
         try
         {
             _bridge = StartWith is not null ? StartWith(arguments)

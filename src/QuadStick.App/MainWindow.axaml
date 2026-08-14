@@ -168,6 +168,8 @@
                        FontSize="{DynamicResource SubheadSize}"/>
           </TextBox.InnerRightContent>
         </TextBox>
+        <Button x:Name="AgentButton" Classes="quiet" Content="Ask for a change"
+                AutomationProperties.Name="Describe a change in plain words and have it made to this profile. Nothing is changed until you approve it."/>
         <Button x:Name="ShareButton" Classes="quiet" Content="Share"
                 AutomationProperties.Name="Share this profile as a Google Sheet"/>
         <!-- Which profile | what to do with it. The gap used to do this job,

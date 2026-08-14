@@ -292,6 +292,37 @@ public sealed class AgentWindowTests
         Assert.Contains("--replay", window.Arguments("Elden Ring", null, true));
     }
 
+    // Asking for a change needs a file on disk to change. Saying so beats
+    // quietly building a whole new profile because there was no path.
+    [AvaloniaFact]
+    public void AskingForAChangeWithNothingSavedSaysSo()
+    {
+        var main = new MainWindow();
+        main.Show();
+        var run = new Scripted();
+        var window = new AgentWindow(main, root: "/nowhere", changing: true) { StartWith = _ => run };
+        window.Show();
+        run.Watching = window;
+        Assert.Null(main.CurrentProfilePath);
+        Assert.Contains("Save this profile first", Words(window));
+
+        Type(window, "make sprint a hard puff");
+        Press(window, "Work it out");
+        // Nothing started, so nothing could have been written.
+        Assert.Contains("Save this profile first", Words(window));
+    }
+
+    // In change mode every sentence is a change, verb or not. The guessing
+    // only exists for the one window that could mean either.
+    [AvaloniaFact]
+    public void InChangeModeEverySentenceIsAChange()
+    {
+        var main = new MainWindow();
+        var window = new AgentWindow(main, root: "/nowhere", changing: true);
+        Assert.Equal(new[] { "--edit", "/tmp/mine.csv", "--request", "sprint should be lighter" },
+                     window.Arguments("sprint should be lighter", "/tmp/mine.csv", false, changing: true));
+    }
+
     // Closing the window closes the agent's pipe, which stops it at its next
     // question rather than leaving it writing for nobody.
     [AvaloniaFact]

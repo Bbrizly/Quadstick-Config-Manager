@@ -324,7 +324,7 @@ public partial class MainWindow : Window
     // Naming a game and having a profile built for it. Not modal: the agent can
     // ask a question that takes real thought, and a window that pins the whole
     // app while somebody decides what crouch should be is the wrong shape.
-    public void ShowAgent() => new AgentWindow(this).Show(this);
+    public void ShowAgent(bool changing = false) => new AgentWindow(this, changing).Show(this);
 
     // The community list is fetched from here and nowhere else. Startup and a
     // home refresh never touch it, so the app opens with no network at all.
@@ -677,6 +677,7 @@ public partial class MainWindow : Window
         HomeTemplateButton.Click += async (_, _) => await UseTemplateAsync();
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
         HomeAgentButton.Click += (_, _) => ShowAgent();
+        AgentButton.Click += (_, _) => ShowAgent(changing: true);
         HomeCommunityButton.Click += async (_, _) => await ShowCommunityProfilesAsync();
         HomeDeviceFilesButton.Click += async (_, _) => await ShowDeviceFilesAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
