@@ -202,5 +202,39 @@ PY
 check "an edit changes one row and leaves the rest of it alone" \
   "True True True delay_on 500 16000 | kb_left_shift | 1 True" "$(cat "$TMP/edit.txt")"
 
+# --- the one process the app talks to -------------------------------------
+
+# Approval is the literal true. "false" as a string, 1 and {} are all truthy
+# in Python, and every one of them would authorise a write nobody approved.
+python3 - <<'PY' > "$TMP/approve.txt"
+import io, json, sys; sys.path.insert(0, "agent")
+import run
+def says(value):
+    sys.stdin = io.StringIO(json.dumps({"id": "c1", "write": value}) + "\n")
+    return run.approved("c1")
+print(says(True), says("false"), says(1), says({}), says(None))
+PY
+check "only a real yes authorises a write" "True False False False False" "$(cat "$TMP/approve.txt")"
+
+# Starting a run must not write anything. The deterministic pass used to build
+# straight into the destination, so opening the window wrote a file.
+rm -f "$TMP/never.csv"
+printf '' | python3 agent/run.py --game "cyberpunk 2077" --hold-out --replay \
+  --out "$TMP/never.csv" > "$TMP/never.log" 2>&1
+check "a run nobody answered writes nothing at all" "absent" \
+  "$([ -f "$TMP/never.csv" ] && echo present || echo absent)"
+check "and it says why it stopped" "yes" \
+  "$(grep -q '"event": "failed"' "$TMP/never.log" && echo yes || echo no)"
+
+# The default name never lands on a profile that already exists.
+touch "$TMP/taken.csv"
+python3 - "$TMP/taken.csv" <<'PY' > /dev/null 2> "$TMP/free.err"
+import sys; sys.path.insert(0, "agent")
+import run
+picked = run.free_name(sys.argv[1])
+sys.stderr.write(str(picked.endswith("taken-2.csv")))
+PY
+check "a name already in use is never written over" "True" "$(cat "$TMP/free.err")"
+
 [ "$fails" -eq 0 ] && echo "the whole pipeline holds" || echo "$fails check(s) failed"
 exit "$fails"

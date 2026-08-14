@@ -42,6 +42,10 @@ public class AgentWindow : Window
     IAgentRun? _bridge;
     string? _written;
     bool _running;
+    // Whether the run has already accounted for itself. Sniffing the status
+    // line for this got it wrong the moment the wording changed, and getting it
+    // wrong means a run that died in silence stays silent.
+    bool _spoke;
 
     /// <summary>Test seam: what a finished run does with the profile it wrote.
     /// The app opens it in the editor; a test just records the path.</summary>
@@ -241,6 +245,7 @@ public class AgentWindow : Window
         _stream.Children.Clear();
         _cards.Clear();
         _written = null;
+        _spoke = false;
         _running = true;
         _go.IsEnabled = false;
         _ask.IsEnabled = false;
@@ -273,10 +278,10 @@ public class AgentWindow : Window
         _ask.IsEnabled = true;
         // A run that ends without having said why is the one thing this window
         // must never do quietly, so the exit code is turned into a sentence.
-        if (code != 0 && _written is null && _status.Text?.StartsWith("Setting up") == true)
-            Say("The run stopped before it finished, and nothing was written.");
-        else if (_written is null && _status.Text?.StartsWith("Setting up") == true)
-            Say("The run finished without writing anything.");
+        if (_spoke) return;
+        Say(code != 0
+            ? "The run stopped before it finished, and nothing was written."
+            : "The run finished without writing anything.");
     }
 
     void Say(string message)
@@ -314,8 +319,14 @@ public class AgentWindow : Window
             case "rows": Rows(e); break;
             case "question": Question(e); break;
             case "confirm": Confirm(e); break;
-            case "done": Written(e); break;
-            case "failed": Failed(e); break;
+            // Both of these are the run accounting for itself, which is what
+            // stops the ending from being narrated twice.
+            case "done": _spoke = true; Written(e); break;
+            case "failed": _spoke = true; Failed(e); break;
+            // Anything this version does not recognise is still something the
+            // agent said. Dropping it would be the window quietly deciding
+            // what the person is allowed to know.
+            default: Note(e.Raw, muted: true); break;
         }
     }
 
@@ -614,10 +625,18 @@ public class AgentWindow : Window
 
     void Failed(AgentEvent e)
     {
+        // A run can fail after it has already replaced a file. Saying nothing
+        // was written would send someone away believing their profile is
+        // untouched when it is not.
+        var wrote = e.List("wrote").Select(w => w.GetString())
+                     .Where(w => !string.IsNullOrEmpty(w)).ToList();
         var panel = new StackPanel { Spacing = 6 };
         panel.Children.Add(new TextBlock
         {
-            Text = "Stopped. Nothing was written.",
+            Text = wrote.Count == 0
+                ? "Stopped. Nothing was written."
+                : $"Stopped, but {string.Join(", ", wrote.Select(Path.GetFileName))} "
+                + "had already been written by then. Check it before using it.",
             FontSize = Size("BodySize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
         });
         panel.Children.Add(new TextBlock
@@ -625,7 +644,10 @@ public class AgentWindow : Window
             Text = e.Str("message"), FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         });
         Add(Panel(panel, "SurfaceSubtleBrush"));
-        Say("Stopped. Nothing was written.");
+        Say(wrote.Count == 0
+            ? "Stopped. Nothing was written."
+            : $"Stopped after writing {string.Join(", ", wrote.Select(Path.GetFileName))}.");
+        if (wrote.Count > 0) _written = wrote[0];
     }
 
     // ---- the look ---------------------------------------------------------

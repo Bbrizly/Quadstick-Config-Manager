@@ -236,6 +236,70 @@ public sealed class AgentWindowTests
         Assert.Contains("stopped before it finished", Words(window));
     }
 
+    // A run that already said how it ended is not made to say it twice, and
+    // that has to hold whatever the status line happened to say on the way in.
+    [AvaloniaFact]
+    public void ARunThatAlreadySaidHowItEndedIsNotContradicted()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"done","profile":"/tmp/x.csv","written":3,"errors":0,"warnings":0,"issues":[],"open":[],"untouched":[]}""");
+        run.End(0);
+        Assert.Contains("Written to /tmp/x.csv", Words(window));
+        Assert.DoesNotContain("finished without writing anything", Words(window));
+
+        var (_, changing, run2) = OpenChanging();
+        run2.Say("""{"event":"failed","message":"the change was refused"}""");
+        run2.End(1);
+        Assert.Contains("the change was refused", Words(changing));
+        Assert.DoesNotContain("stopped before it finished", Words(changing));
+    }
+
+    static (MainWindow main, AgentWindow window, Scripted run) OpenChanging()
+    {
+        var main = new MainWindow();
+        main.Show();
+        main.OpenPath(SavedProfile());
+        var run = new Scripted();
+        var window = new AgentWindow(main, root: "/nowhere", changing: true) { StartWith = _ => run };
+        window.Show();
+        run.Watching = window;
+        Type(window, "make sprint a hard puff");
+        Press(window, "Work it out");
+        window.UpdateLayout();
+        return (main, window, run);
+    }
+
+    static string SavedProfile()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"qcm-agent-{Guid.NewGuid():N}.csv");
+        File.WriteAllText(path,
+            "Profile Name,,Walking\r\nmine.csv\r\nPlayStation Outputs,Function,usb\r\ndpad_N,normal,right_sip\r\n");
+        return path;
+    }
+
+    // A run can fail after it has already replaced a file. Telling someone
+    // nothing was written would send them away believing a profile they now
+    // depend on is untouched.
+    [AvaloniaFact]
+    public void AFailureAfterAWriteSaysWhatWasWritten()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"failed","message":"the diff could not be read","wrote":["/tmp/mine.csv"]}""");
+        var words = Words(window);
+        Assert.Contains("mine.csv", words);
+        Assert.Contains("had already been written", words);
+        Assert.DoesNotContain("Nothing was written", words);
+    }
+
+    // An event this version does not know is still something the agent said.
+    [AvaloniaFact]
+    public void AnEventThisVersionDoesNotKnowIsStillShown()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"something_new","detail":"a thing that happened"}""");
+        Assert.Contains("a thing that happened", Words(window));
+    }
+
     // Output that is not an event is still the agent trying to speak, so it is
     // shown rather than dropped.
     [AvaloniaFact]

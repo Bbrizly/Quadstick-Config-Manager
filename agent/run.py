@@ -72,22 +72,35 @@ class Stopped(Exception):
 
 # ---- the model's own calls, as something a person can read ----------------
 
+def words(value):
+    """A list of names as one phrase, whatever shape it actually arrived in."""
+    if isinstance(value, list):
+        return " + ".join(str(v) for v in value)
+    return "" if value is None else str(value)
+
+
 def describe(name, args, result):
-    """One tool call as a title, a subtitle and how it went."""
+    """One tool call as a title, a subtitle and how it went.
+
+    Everything here is defensive on purpose. This runs on what a model sent,
+    and a card that cannot be built is a step the person never sees.
+    """
     args = args if isinstance(args, dict) else {}
-    failed = isinstance(result, dict) and "error" in result
+    result = result if isinstance(result, dict) else {}
+    name = str(name)
+    failed = "error" in result
     if name == "read_habits":
         controls = args.get("controls") or []
         return (f"Read his habit for {len(controls)} control{'' if len(controls) == 1 else 's'}",
                 ", ".join(str(c) for c in controls[:6]), failed)
     if name == "find_output":
-        found = (result or {}).get("matches") or []
+        found = result.get("matches") or []
         return (f"Looked up the device's name for “{args.get('query', '')}”",
                 f"{len(found)} match{'' if len(found) == 1 else 'es'}: "
                 f"{', '.join(found[:5])}", failed)
     if name == "propose_binding":
         return (f"Settled {args.get('output', '')}",
-                f"{' + '.join(args.get('inputs') or [])}, {args.get('function', '')}"
+                f"{words(args.get('inputs'))}, {args.get('function', '')}"
                 f"  [{args.get('confidence', 'inferred')}]", failed)
     if name == "ask_user":
         return (f"Will ask about {args.get('output', '')}",
@@ -96,20 +109,19 @@ def describe(name, args, result):
         return ("Finished deciding", args.get("summary", ""), failed)
     if name == "read_profile":
         asked = args.get("match") or ""
-        shown = len((result or {}).get("rows") or [])
+        shown = len(result.get("rows") or [])
         return (f"Read the profile for “{asked}”" if asked else "Read the whole profile",
-                f"{shown} of {(result or {}).get('of', 0)} rows", failed)
+                f"{shown} of {result.get('of', 0)} rows", failed)
     if name == "find_input":
-        found = (result or {}).get("matches") or []
+        found = result.get("matches") or []
         return (f"Looked up the device's input for “{args.get('query', '')}”",
                 f"{len(found)} match{'' if len(found) == 1 else 'es'}: "
                 f"{', '.join(found[:5])}", failed)
     if name == "change_row":
-        was = (result or {}).get("from", "")
+        was = result.get("from", "")
         return (f"Changed row {args.get('row', '')}",
                 f"{args.get('output', '')}, {args.get('function', '')}, "
-                f"{' + '.join(args.get('inputs') or [])}"
-                + (f"   was {was}" if was else ""), failed)
+                f"{words(args.get('inputs'))}" + (f"   was {was}" if was else ""), failed)
     return (name, "", failed)
 
 
@@ -126,13 +138,14 @@ def watcher():
             seen[0] += 1
             ident = f"m{seen[0]}"
             title, subtitle, failed = describe(
-                fields["name"], fields.get("input"), fields.get("result"))
+                fields.get("name", "a step"), fields.get("input"), fields.get("result"))
             emit("tool", id=ident, title=title, subtitle=subtitle,
                  detail=fields.get("input"), state="running",
                  origin=fields.get("origin"))
+            result = fields.get("result")
             emit("tool_done", id=ident, state="failed" if failed else "ok",
-                 summary=(fields.get("result") or {}).get("error", "") if failed else subtitle,
-                 detail=fields.get("result"))
+                 summary=result.get("error", "") if failed and isinstance(result, dict) else subtitle,
+                 detail=result)
     return on_event
 
 
@@ -170,7 +183,13 @@ def chart_for(game, replay):
     return done["path"], done["chart"]
 
 
-def create(args):
+def create(args, work):
+    """Everything up to the point a person is asked to approve it.
+
+    The deterministic profile is built at `work`, never at the destination.
+    Building straight into the destination meant that starting a run wrote a
+    file, which is a write nobody approved.
+    """
     game = args.game
     emit("stage", key="research", title=f"How {game} is controlled")
     chart_path, chart = chart_for(game, args.replay)
@@ -179,7 +198,7 @@ def create(args):
     emit("tool", id="predict", title="Matched this game against every profile he has built",
          subtitle="no model involved, evidence only", state="running",
          detail={"corpus": args.corpus, "heldOut": args.hold_out})
-    built = predict.build(args.out, corpus=args.corpus, chart=chart_path,
+    built = predict.build(work, corpus=args.corpus, chart=chart_path,
                           exclude_family=research.slugify(game) if args.hold_out else None,
                           log=lambda *_: None)
     if not built["ok"]:
@@ -205,7 +224,7 @@ def create(args):
 
     if not plan["asks"]:
         emit("note", text="his own profiles settled every control this game needs.")
-        return plan["decided"] and confirm_and_write(args.out, [], [], []), plan
+        return qsagent.new_context(plan, []), plan
 
     emit("stage", key="agent", title="What the evidence could not settle")
     ctx = qsagent.new_context(plan, [a["output"] for a in plan["asks"]])
@@ -328,13 +347,16 @@ def edit_tool(name, args, ctx):
 def rows_of(path):
     """Every binding row in the profile, as the device reads it."""
     read = finalize.qsf("inspect", path)
+    if not isinstance(read, dict) or not isinstance(read.get("profiles"), list):
+        raise Stopped(f"{os.path.basename(path)} could not be read as a profile, "
+                      f"so nothing was changed.")
     rows = []
     for profile in read["profiles"]:
-        for mode in profile["modes"]:
-            for b in mode["bindings"]:
-                rows.append({"row": b["row"], "mode": mode["name"],
-                             "output": b["output"], "function": b["function"] or "normal",
-                             "inputs": b["inputs"]})
+        for mode in profile.get("modes") or []:
+            for b in mode.get("bindings") or []:
+                rows.append({"row": b["row"], "mode": mode.get("name", ""),
+                             "output": b["output"], "function": b.get("function") or "normal",
+                             "inputs": b.get("inputs") or []})
     return rows
 
 
@@ -343,7 +365,12 @@ def edit(args):
     emit("tool", id="read", title=f"Read {os.path.basename(args.edit)}",
          subtitle="every row, as the device reads it", state="running",
          detail={"path": args.edit})
-    rows = rows_of(args.edit)
+    try:
+        rows = rows_of(args.edit)
+    except Stopped:
+        emit("tool_done", id="read", state="failed",
+             summary="this file could not be read as a profile")
+        raise
     emit("tool_done", id="read", state="ok", summary=f"{len(rows)} bindings",
          detail={"rows": rows[:12]})
 
@@ -365,8 +392,12 @@ def edit(args):
     return ctx
 
 
-def apply_changes(path, changes, out):
-    """Every change as one qsf batch, on a copy, all of them or none."""
+def apply_changes(path, changes, out, committed=None):
+    """Every change as one qsf batch, on a copy, all of them or none.
+
+    `committed` is set the instant the new file replaces the old one, so a
+    failure after that point cannot be reported as "nothing was written".
+    """
     ops = [{"op": "set_binding", "row": c["row"], "output": c["output"],
             "function": c["function"], "inputs": c["inputs"], "why": c["why"]}
            for c in changes]
@@ -383,6 +414,8 @@ def apply_changes(path, changes, out):
         # read off the two files rather than described from the ops.
         changed = finalize.qsf("diff", path, work, ok=(0, 1))
         os.replace(work, out)
+        if committed is not None:
+            committed.append(out)
     finally:
         if os.path.exists(work):
             os.remove(work)
@@ -414,13 +447,28 @@ def interview(questions):
     return answers
 
 
-def confirm_and_write(profile, settled, open_questions, untouched, out=None):
-    """Show the whole list, write it only if they say so."""
+def approved(ident):
+    """Exactly the boolean true, and nothing that merely looks like it.
+
+    "false" as a string, 1, and an empty object are all truthy in Python, and
+    each of them would authorise a write nobody approved.
+    """
+    return listen(ident).get("write") is True
+
+
+def confirm_and_write(profile, settled, open_questions, untouched, out=None, shown=None):
+    """Show the whole list, write it only if they say so.
+
+    `shown` is what the person is approving, which for a new profile is every
+    row it will contain. `settled` is only the part still to be applied on top
+    of what the deterministic pass already put in the working copy.
+    """
     out = out or profile
-    emit("confirm", id="c1", profile=out, rows=settled, open=[
-        {"output": q["output"], "question": q["question"]} for q in open_questions],
-        untouched=list(untouched))
-    if not listen("c1").get("write"):
+    emit("confirm", id="c1", profile=out,
+         rows=shown if shown is not None else settled,
+         open=[{"output": q["output"], "question": q["question"]} for q in open_questions],
+         untouched=list(untouched))
+    if not approved("c1"):
         raise Stopped("nothing was written, and the profile is exactly as it was")
 
     done = finalize.apply_settled(profile, settled, out, log=lambda text: emit("note", text=text))
@@ -436,6 +484,26 @@ def confirm_and_write(profile, settled, open_questions, untouched, out=None):
          open=[{"output": q["output"], "question": q["question"]} for q in open_questions],
          untouched=list(untouched))
     return True
+
+
+def free_name(path):
+    """A name nothing is using yet.
+
+    Setting up a game they have set up before must not quietly overwrite the
+    profile they already tuned. Only the default name goes through here; a path
+    they asked for by name is theirs and is used as given.
+    """
+    if not os.path.exists(path):
+        return path
+    stem, ext = os.path.splitext(path)
+    for n in range(2, 200):
+        candidate = f"{stem}-{n}{ext}"
+        if not os.path.exists(candidate):
+            emit("note", text=f"{os.path.basename(path)} already exists and was left "
+                              f"alone, so this one is {os.path.basename(candidate)}.")
+            return candidate
+    raise Stopped(f"there are already 200 files named like {os.path.basename(path)}. "
+                  f"Move some of them, or say where to write with --out.")
 
 
 def main():
@@ -457,11 +525,24 @@ def main():
         emit("failed", message="give either --game, or --edit with --request")
         return 2
 
+    committed = []
     try:
         if args.edit:
             args.out = args.out or args.edit
             ctx = edit(args)
             answers = interview(ctx["questions"])
+            # A question left unanswered takes its row back off the list. The
+            # model may have changed a row and then asked which row was meant;
+            # writing its first guess after they declined to confirm it is
+            # filling in an unanswered question.
+            for q in ctx["questions"]:
+                if q["output"] in answers:
+                    continue
+                dropped = [c for c in ctx["changes"] if c["was"]["output"] == q["output"]]
+                if dropped:
+                    ctx["changes"] = [c for c in ctx["changes"] if c not in dropped]
+                    emit("note", text=f"{q['output']} was left alone, so the change to "
+                                      f"row {dropped[0]['row']} was dropped.")
             # An answered question is a change too, and it outranks anything the
             # model proposed for that row.
             for output, choice in answers.items():
@@ -483,9 +564,9 @@ def main():
                  "was": f"{c['was']['output']}, {c['was']['function']}, "
                         f"{' + '.join(c['was']['inputs'])}", "row": c["row"]}
                 for c in ctx["changes"]], open=[], untouched=[])
-            if not listen("c1").get("write"):
+            if not approved("c1"):
                 raise Stopped("nothing was written, and the profile is exactly as it was")
-            done = apply_changes(args.edit, ctx["changes"], args.out)
+            done = apply_changes(args.edit, ctx["changes"], args.out, committed)
             if not done["ok"]:
                 emit("failed", message="the change was refused, so the profile is exactly "
                                        "as it was", detail=done)
@@ -495,32 +576,50 @@ def main():
                  issues=[], open=[], untouched=[], diff=done["diff"])
             return 0
 
-        args.out = args.out or os.path.join(
-            os.path.expanduser("~/Documents"), research.slugify(args.game) + ".csv")
-        ctx, plan = create(args)
-        result = qsagent.brief(ctx)
-        answers = interview(result["questions"])
-        settled = [p for p in result["proposals"] if p["output"] not in answers]
-        settled += [{"output": output, "inputs": choice["inputs"],
-                     "function": choice["function"], "confidence": "chosen by them",
-                     "why": "they answered the question about this control"}
-                    for output, choice in answers.items()]
-        still_open = [q for q in result["questions"] if q["output"] not in answers]
-        confirm_and_write(args.out, settled, still_open, result["untouched"])
+        args.out = args.out or free_name(os.path.join(
+            os.path.expanduser("~/Documents"), research.slugify(args.game) + ".csv"))
+        work = os.path.join(os.environ.get("TMPDIR", "/tmp"),
+                            f"qs-building-{os.getpid()}.csv")
+        try:
+            ctx, plan = create(args, work)
+            result = qsagent.brief(ctx)
+            answers = interview(result["questions"])
+            asked = {q["output"] for q in result["questions"]}
+            # A proposal for a control that was also asked about is dropped
+            # unless they answered it. The agent cannot do both any more, but a
+            # profile is not the place to rely on that: an unanswered question
+            # must never come out of this as a written row.
+            settled = [p for p in result["proposals"]
+                       if p["output"] not in asked and p["output"] not in answers]
+            settled += [{"output": output, "inputs": choice["inputs"],
+                         "function": choice["function"], "confidence": "chosen by them",
+                         "why": "they answered the question about this control"}
+                        for output, choice in answers.items()]
+            still_open = [q for q in result["questions"] if q["output"] not in answers]
+            already = [{"output": d["output"], "inputs": d["inputs"], "function": d["function"],
+                        "confidence": "evidenced",
+                        "why": f"{d['seenIn']} of {d['ofGames']} of his profiles do this "
+                               f"({d['share']:.0%}); nearest example {d['evidence']}"}
+                       for d in plan["decided"]]
+            confirm_and_write(work, settled, still_open, result["untouched"],
+                              out=args.out, shown=already + settled)
+        finally:
+            if os.path.exists(work):
+                os.remove(work)
         return 0
     except Stopped as why:
-        emit("failed", message=str(why))
+        emit("failed", message=str(why), wrote=committed or None)
         return 1
     # SystemExit is how the pieces below report a condition they cannot carry
     # on from, and it is not an Exception, so without this the window would go
     # quiet and the message would land on a stderr nobody is reading.
     except SystemExit as why:
-        emit("failed", message=str(why) or "the run stopped")
+        emit("failed", message=str(why) or "the run stopped", wrote=committed or None)
         return 1
     except Exception as crash:                             # noqa: BLE001
         # A traceback on the app's stderr is a run that ended with the window
         # showing nothing. Whatever broke, it says so in the stream first.
-        emit("failed", message=f"{type(crash).__name__}: {crash}")
+        emit("failed", message=f"{type(crash).__name__}: {crash}", wrote=committed or None)
         return 1
 
 
