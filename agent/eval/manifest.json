@@ -1,0 +1,70 @@
+{
+  "registered": "2026-08-14",
+  "why": "Registered before any held-out result was produced. Everything a result could be tuned against is fixed here: what is held out, what counts as a hit, which bindings are the easy ones, and what the system has to beat. Exploratory work done before this point was on cross-game stability of the corpus as a whole, never on a held-out prediction.",
+
+  "corpus": {
+    "author": "Silas P.",
+    "source": "https://bvhbml89uymwxubx.quadstick.com",
+    "what": "Every profile this author has published in the official community catalog, the same list the shipped app's Community Profiles window shows.",
+    "files": 131,
+    "bindings": 35029,
+    "hashes": "agent/corpus/silas/bindings.json carries a sha256 per file",
+    "read_by": "tools/qsf inspect, which is the shipped app's own parser"
+  },
+
+  "split": {
+    "unit": "game family, never a single file",
+    "why": "Cyberpunk has three files and Call of Duty eight. Rebuilding one variant while holding its siblings is copying, not personalising.",
+    "rule": "The FAMILIES table in agent/index_corpus.py, applied before any result was seen.",
+    "protocol": "leave-one-family-out over every family in the corpus",
+    "held_out_families": "all of them, in turn. No family is chosen, so none can be chosen for being easy.",
+    "training_set": "every profile whose family differs from the held-out family",
+    "leakage_guard": "The held-out profile's own cells are never read by the predictor. Only its list of output tokens is used, to ask what the system would bind each one to."
+  },
+
+  "binding_classes": {
+    "why": "A profile is mostly rig setup that never changes between games. Scoring it together with the game's actual buttons would report a high number that means nothing.",
+    "rig": {
+      "definition": "output token is the joystick-to-mouse mapping, a mouse or deflection tuning value, or the mode switch",
+      "tokens": [
+        "mouse_up", "mouse_down", "mouse_left", "mouse_right",
+        "mouse_pan_left", "mouse_pan_right", "mouse_speed", "mouse_response_curve",
+        "increment_mode", "decrement_mode"
+      ],
+      "prefixes": ["deflection_multiplier_", "joystick_deflection_", "bluetooth_", "digital_out"],
+      "expectation": "close to fully predictable, and reported separately for exactly that reason"
+    },
+    "gameplay": "every other output token. This is the headline."
+  },
+
+  "metrics": {
+    "unit": "one output token in the held-out profile, with the physical inputs and the function keyword bound to it",
+    "inputs_compared": "as an ordered tuple, because several inputs on a row are a sequence and not a set",
+    "function_compared": "keyword only, parameters ignored",
+    "top1_exact": "predicted inputs AND function keyword both match the held-out profile",
+    "top1_inputs": "predicted inputs match, function ignored",
+    "coverage": "share of the held-out profile's output tokens the system predicted anything at all for",
+    "abstention": "share it declined to predict. Declining is not counted as a miss; it is counted here.",
+    "headline": "macro-averaged top1_exact over gameplay bindings, averaged per family so a 550-binding profile cannot outweigh a 60-binding one",
+    "not_used": "raw cell equality against the held-out file, which these profiles' boilerplate would inflate"
+  },
+
+  "baselines": {
+    "global": "for each output token, the inputs and function this author uses most often across the training profiles",
+    "nearest": "copy the single training profile sharing the most output tokens with the held-out one",
+    "bar": "the agent has to beat BOTH. An agent that cannot beat copying the closest profile you already own has added nothing."
+  },
+
+  "agent_sample": {
+    "why": "Baselines run over all families for free. The agent costs a model call per step, so it runs on a sample.",
+    "seed": 20260815,
+    "families": 12,
+    "chosen_by": "random.Random(seed).sample of the family list sorted alphabetically, drawn at run time from this seed and reported in full"
+  },
+
+  "what_this_does_not_claim": [
+    "That the held-out profile is the only correct configuration. It is what one expert built at one time.",
+    "That a firmware-valid profile is a usable one. Validity is necessary and nowhere near sufficient.",
+    "That any accuracy figure here predicts whether this author would accept the result. Only he can say that."
+  ]
+}
