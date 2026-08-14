@@ -50,6 +50,12 @@ def main():
     mine = [r for r in rows if r[0].startswith(author)]
     print(f"{len(mine)} of {len(rows)} catalog profiles are by {author}", flush=True)
 
+    # A name that matches nobody used to write an empty index over a real one,
+    # which is how a corpus disappears. A run that found nothing changes nothing.
+    if not mine:
+        print(f"nothing by '{author}', so {outdir} was left alone.", flush=True)
+        return 1
+
     index, failed = [], []
     for i, row in enumerate(mine, 1):
         title, sheet_id, csv_name = row[0], row[1], row[2]

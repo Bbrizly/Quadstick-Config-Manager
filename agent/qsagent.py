@@ -290,11 +290,21 @@ TOOLS = [
             "Stop and ask. Correct whenever the evidence does not decide it. An "
             "unasked question that turns into a wrong binding is worse than a "
             "question: this is a control someone plays and works through with their "
-            "mouth. Offer their own past choices as the options."),
+            "mouth. Offer their own past choices as the options. Every option is "
+            "bound exactly as you write it, so it carries real device tokens, not a "
+            "description of them, and the label is what gets read aloud to them."),
         "input_schema": {"type": "object", "properties": {
             "output": {"type": "string"},
-            "question": {"type": "string"},
-            "options": {"type": "array", "items": {"type": "string"}}},
+            "question": {"type": "string", "description": "plain words, no device jargon"},
+            "options": {"type": "array", "description":
+                        "each one ready to bind as it stands, best first", "items": {
+                            "type": "object", "properties": {
+                                "inputs": {"type": "array", "items": {"type": "string"}},
+                                "function": {"type": "string"},
+                                "label": {"type": "string", "description":
+                                          "how they will hear it read out, with the "
+                                          "share and the game and row it came from"}},
+                            "required": ["inputs", "function", "label"]}}},
             "required": ["output", "question", "options"]},
     },
     {

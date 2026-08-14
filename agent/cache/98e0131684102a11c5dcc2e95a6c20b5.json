@@ -1,0 +1,1 @@
+{"content": [{"type": "tool_use", "id": "77cc06a4-5211-4be2-8ed2-afc43a16b375-0", "name": "read_habits", "input": {"controls": ["kb_a", "kb_s", "kb_left_shift", "kb_c", "kb_left_control", "kb_q", "kb_f", "kb_y", "dpad_E", "dpad_W", "dpad_N", "dpad_S", "kb_z", "kb_e", "kb_f2", "right_trigger", "left_trigger", "Y", "right_bumper", "left_bumper", "X"]}}]}

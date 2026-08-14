@@ -66,5 +66,26 @@ check "an unanswered question is left open, not filled in" "yes" \
 check "the reason is written beside the binding" "yes" \
   "$(grep -q 'Shift to sprint' "$TMP/good.csv" && echo yes || echo no)"
 
+# Answering a question is only worth anything if the answer can be bound as
+# shown, and if "leave it alone" really leaves it alone.
+cat > "$TMP/ask.json" <<'EOF'
+{"game":"t","steps":1,"finished":true,"summary":"","proposals":[],
+ "questions":[
+  {"output":"kb_c","question":"hold or toggle?","options":[
+    {"inputs":["mp_left_sip"],"function":"toggle","label":"Left sip, toggle - 42% of profiles"}]},
+  {"output":"kb_z","question":"no evidence at all here","options":[
+    {"inputs":[],"function":"normal","label":"Leave this unbound for now"}]}]}
+EOF
+cp "$TMP/p.csv" "$TMP/asked.csv"
+printf '1\n1\ny\n' | python3 agent/finalize.py --profile "$TMP/asked.csv" \
+  --decisions "$TMP/ask.json" --interactive > "$TMP/ask.log" 2>&1
+check "an answer is bound exactly as it was shown" "yes" \
+  "$(grep -q 'mp_left_sip' "$TMP/asked.csv" && echo yes || echo no)"
+check "choosing leave-unbound writes no row" \
+  "$(grep -o 'kb_z' "$TMP/p.csv" | wc -l | tr -d ' ')" \
+  "$(grep -o 'kb_z' "$TMP/asked.csv" | wc -l | tr -d ' ')"
+check "and it is reported as still open" "yes" \
+  "$(grep -q 'still open' "$TMP/ask.log" && echo yes || echo no)"
+
 [ "$fails" -eq 0 ] && echo "the whole pipeline holds" || echo "$fails check(s) failed"
 exit "$fails"

@@ -37,11 +37,72 @@ def write_ops(ops, tag):
     return path
 
 
+def ask(prompt, valid):
+    """Read one answer. Anything unrecognised is asked again rather than assumed."""
+    while True:
+        try:
+            said = input(prompt).strip().lower()
+        except EOFError:
+            return "s"
+        if said in valid:
+            return said
+        print(f"   please answer one of: {', '.join(valid)}")
+
+
+def interview(report):
+    """Put the agent's questions to the person, and take their answers as final.
+
+    Every option carries the device tokens it will be bound to, so what they
+    choose is written exactly as it was shown to them. Nothing is filled in for
+    a question they skip. This is read aloud by some of the people using it, so
+    it is numbered plain text and never signals anything by colour or position
+    alone.
+    """
+    answers, questions = {}, report.get("questions", [])
+    if report.get("proposals"):
+        print(f"\n{len(report['proposals'])} controls it settled from your own profiles:\n")
+        for p in report["proposals"]:
+            print(f"   {p['output']:18} {' + '.join(p['inputs'])}, {p.get('function', 'normal')}")
+            print(f"   {'':18} because {p['why'][:150]}\n")
+
+    if questions:
+        print(f"{len(questions)} it will not guess at. Answer, or press s to leave one unbound.\n")
+    for n, q in enumerate(questions, 1):
+        usable = [o for o in q["options"] if isinstance(o, dict)]
+        print(f"[{n} of {len(questions)}] {q['output']}")
+        print(f"   {q['question']}")
+        for i, o in enumerate(usable, 1):
+            print(f"     {i}. {o['label']}")
+        for o in q["options"]:
+            if not isinstance(o, dict):
+                print(f"     -  {o}   (recorded before options carried tokens, cannot be applied)")
+        if not usable:
+            print("   nothing here can be bound as written, so it is being left alone.\n")
+            continue
+        choice = ask("   which one, or s to skip: ",
+                     [str(i) for i in range(1, len(usable) + 1)] + ["s"])
+        if choice == "s":
+            print("   left unbound.\n")
+            continue
+        picked = usable[int(choice) - 1]
+        # An option with nothing to trigger it is the agent offering to leave the
+        # control alone, which is what its label says. Writing it would put an
+        # output in the file that nothing can ever fire.
+        if not picked["inputs"]:
+            print("   left unbound.\n")
+            continue
+        answers[q["output"]] = {"inputs": picked["inputs"], "function": picked["function"]}
+        print(f"   {q['output']} -> {' + '.join(picked['inputs'])}, {picked['function']}\n")
+    return answers
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--profile", required=True, help="what predict.py wrote")
     ap.add_argument("--decisions", required=True, help="what qsagent.py reported")
     ap.add_argument("--answers", help='{"kb_c": {"inputs": [...], "function": "toggle"}}')
+    ap.add_argument("--interactive", action="store_true",
+                    help="put the agent's questions to the person at the keyboard")
     ap.add_argument("--out", help="defaults to editing the profile in place")
     ap.add_argument("--open", action="store_true", help="open the result in QuadStick Config Manager")
     args = ap.parse_args()
@@ -49,6 +110,8 @@ def main():
     out = args.out or args.profile
     report = json.load(open(args.decisions))
     answers = json.load(open(args.answers)) if args.answers else {}
+    if args.interactive:
+        answers.update(interview(report))
 
     settled = list(report["proposals"])
     # A question the person answered is theirs, and it outranks any proposal.
@@ -63,6 +126,20 @@ def main():
     if not settled:
         print("nothing to apply")
         return 0
+
+    # Nothing is written until they say so. The list they approve is the list
+    # that gets written, and it is shown in full rather than summarised.
+    if args.interactive:
+        print(f"\nAbout to write {len(settled)} bindings into {os.path.basename(out)}:\n")
+        for p in settled:
+            print(f"   {p['output']:18} {' + '.join(p['inputs'])}, {p.get('function', 'normal')}"
+                  f"   [{p.get('confidence', 'inferred')}]")
+        if unanswered:
+            print(f"\n   {len(unanswered)} left unbound, untouched: "
+                  f"{', '.join(q['output'] for q in unanswered)}")
+        if ask("\nwrite it? [y/n]: ", ["y", "n"]) != "y":
+            print("nothing written, the profile is exactly as it was")
+            return 0
 
     # Rows have to be made before they can be bound, which is two passes, which
     # means a refusal in the second one would otherwise leave the empty rows the
@@ -108,13 +185,19 @@ def main():
         for q in unanswered:
             print(f"   {q['output']}: {q['question']}")
             for option in q["options"]:
-                print(f"      - {option}")
+                print(f"      - {option['label'] if isinstance(option, dict) else option}")
 
     if args.open:
         # The person's own app, on the file that was just built. Opening is as
         # far as this goes: nothing installs anything onto a device from here.
-        subprocess.run(["open", "-a", "QuadStick Config Manager", out], check=False)
-        print(f"\nopened {out} in QuadStick Config Manager")
+        built = os.path.join(os.path.dirname(HERE), "dist/QuadStick Config Manager.app")
+        app = built if os.path.isdir(built) else "QuadStick Config Manager"
+        done = subprocess.run(["open", "-a", app, out], capture_output=True, text=True)
+        if done.returncode == 0:
+            print(f"\nopened {out} in QuadStick Config Manager")
+        else:
+            print(f"\ncould not open QuadStick Config Manager ({done.stderr.strip()[:120]}).\n"
+                  f"The profile is written and valid at {out}; run `make package` to build the app.")
     return 0 if check["errors"] == 0 else 1
 
 
