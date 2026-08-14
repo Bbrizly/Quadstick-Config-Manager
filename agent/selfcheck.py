@@ -105,11 +105,43 @@ ctx = fresh_ctx()
 steps, finished, _ = run(scripted({"content": []}), ctx)
 check("an empty reply ends the loop cleanly", (1, False), (steps, finished))
 
+# A tool call missing an argument is sent back, not half-recorded. The CLI
+# backend cannot constrain each tool's arguments, so this is what stands in.
+ctx = fresh_ctx()
+run(scripted(
+    use("propose_binding", output="kb_c", inputs=["mp_left_sip"], function="toggle"),
+    use("finish", summary="gave up"),
+), ctx)
+check("a proposal with no reason is refused, not recorded", 0, len(ctx["proposals"]))
+
 # Nothing the model says can become a cell here. The agent produces proposals;
-# a separate pass turns them into qsf ops, and qsf refuses the bad ones.
+# a separate pass turns them into qsf ops, and qsf refuses the bad ones. The one
+# process it does start is the model itself, and that is checked by running it.
 source = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "qsagent.py")).read()
-check("the agent never writes a profile itself", (False, False),
-      (".csv" in source, "import subprocess" in source))
+check("the agent never names a profile file", False, ".csv" in source)
+
+seen = {}
+
+
+def fake_run(command, **kwargs):
+    seen["command"] = command
+    return type("R", (), {"returncode": 0, "stdout": json.dumps({
+        "is_error": False, "uuid": "u1", "result": "{}",
+        "structured_output": {"calls": [{"tool": "finish", "input": {"summary": "done"}}]}}), "stderr": ""})
+
+
+qsagent.subprocess.run = fake_run
+reply = qsagent.call_cli("sys", [{"role": "user", "content": "task"}], qsagent.TOOLS)
+check("the only process the agent starts is the model", True,
+      seen["command"][0] == qsagent.CLAUDE_BIN and "-p" in seen["command"])
+check("and it hands that process no file to touch", (True, False),
+      ("--tools" in seen["command"], any(".csv" in str(a) for a in seen["command"])))
+check("a structured reply becomes a real tool call", ("tool_use", "finish"),
+      (reply["content"][0]["type"], reply["content"][0]["name"]))
+
+# A reply naming no tool must stop the loop rather than be guessed at.
+check("an unparseable reply becomes text, not a binding", "text",
+      qsagent.shape({"result": "I am not sure what to do"})["content"][0]["type"])
 
 print("\nall agent checks passed" if not fails else f"\n{len(fails)} check(s) failed")
 sys.exit(len(fails))

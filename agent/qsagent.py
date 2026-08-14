@@ -17,6 +17,9 @@ What it cannot do: write a cell directly, invent a token, or keep going. The
 loop is bounded, the write path is qsf, and qsf refuses anything the device
 would not read. No amount of confident wrong reasoning reaches the file.
 
+The model is reached through the Claude Code CLI, which is already signed in,
+so this needs no API key. Set ANTHROPIC_API_KEY to use the API instead.
+
     python3 agent/qsagent.py --plan plan.json --report decisions.json
     QSF_MODEL_MODE=replay python3 agent/qsagent.py ...   # demo, from cache only
 """
@@ -25,7 +28,9 @@ import hashlib
 import json
 import os
 import random
+import shutil
 import ssl
+import subprocess
 import sys
 import time
 import urllib.error
@@ -34,8 +39,15 @@ import urllib.request
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "cache")
 API = "https://api.anthropic.com/v1/messages"
+CLAUDE_BIN = os.environ.get("QSF_CLAUDE_BIN") or shutil.which("claude") or "claude"
 MODEL = os.environ.get("QSF_MODEL", "claude-sonnet-5")
 MODE = os.environ.get("QSF_MODEL_MODE", "auto")   # auto | replay | live
+
+# Two ways to reach the model, and no key is the normal case. The Claude Code
+# CLI is already signed in to a subscription, so `claude -p` is the default and
+# an ANTHROPIC_API_KEY is only an alternative, never a requirement.
+BACKEND = os.environ.get("QSF_MODEL_BACKEND") or (
+    "api" if os.environ.get("ANTHROPIC_API_KEY") else "cli")
 
 MAX_STEPS = 20            # the loop is bounded because a runaway loop on stage
 MAX_REPAIRS = 2           # is worse than an unfinished profile
@@ -52,7 +64,12 @@ def call_model(system, messages, tools, max_tokens=1500):
     which is the point: a stale hit would be worse than a miss.
     """
     payload = {"model": MODEL, "max_tokens": max_tokens, "system": system,
-               "messages": messages, "tools": tools}
+               "messages": messages, "tools": tools, "backend": BACKEND}
+    if BACKEND == "cli":
+        # The reply protocol is part of the request. Replaying an answer given
+        # under a different one would be a stale hit wearing a fresh answer's
+        # clothes, which is the one thing this cache must not do.
+        payload["protocol"] = PROTOCOL
     key = hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()[:32]
     path = os.path.join(CACHE, key + ".json")
 
@@ -66,11 +83,16 @@ def call_model(system, messages, tools, max_tokens=1500):
             f"QSF_MODEL_MODE=live to record it, or check that the plan file "
             f"and the corpus are the ones the recording was made from.")
 
+    if BACKEND == "cli":
+        reply = call_cli(system, messages, tools)
+        record(path, reply)
+        return reply, "live"
+
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        raise SystemExit("no ANTHROPIC_API_KEY set, and nothing cached for this request.")
+        raise SystemExit("QSF_MODEL_BACKEND=api was asked for, but no ANTHROPIC_API_KEY is set.")
 
-    body = json.dumps(payload).encode()
+    body = json.dumps({k: v for k, v in payload.items() if k != "backend"}).encode()
     request = urllib.request.Request(API, data=body, method="POST", headers={
         "x-api-key": api_key,
         "anthropic-version": "2023-06-01",
@@ -82,9 +104,7 @@ def call_model(system, messages, tools, max_tokens=1500):
             with urllib.request.urlopen(request, timeout=120,
                                         context=ssl.create_default_context()) as r:
                 reply = json.loads(r.read())
-            os.makedirs(CACHE, exist_ok=True)
-            with open(path, "w") as f:
-                json.dump(reply, f)
+            record(path, reply)
             return reply, "live"
         except urllib.error.HTTPError as e:
             last = f"HTTP {e.code}: {e.read()[:200].decode(errors='replace')}"
@@ -96,6 +116,132 @@ def call_model(system, messages, tools, max_tokens=1500):
         print(f"    model call failed ({last}); retrying in {wait:.1f}s", flush=True)
         time.sleep(wait)
     raise SystemExit(f"the model did not answer after 5 tries. Last error: {last}")
+
+
+def record(path, reply):
+    os.makedirs(CACHE, exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(reply, f)
+
+
+# ---- the same model, reached through the signed-in CLI --------------------
+#
+# `claude -p` has no tool-schema argument, so the tools are described in the
+# system prompt and the reply is constrained with --json-schema to one call at
+# a time. What comes back is reshaped into the API's own tool_use block, so the
+# loop below cannot tell the two backends apart and neither can its tests.
+
+def render(messages):
+    """Flatten the conversation into the transcript the CLI is given."""
+    lines = []
+    for message in messages:
+        content = message["content"]
+        if isinstance(content, str):
+            lines.append(content)
+            continue
+        for block in content:
+            kind = block.get("type")
+            if kind == "text":
+                lines.append(block["text"])
+            elif kind == "tool_use":
+                lines.append(f"\nYou called {block['name']}({json.dumps(block['input'])})")
+            elif kind == "tool_result":
+                lines.append(f"It returned: {block['content']}")
+    return "\n".join(lines)
+
+
+def tool_manual(tools):
+    parts = ["The tools you may call. Each reply calls exactly one of them."]
+    for tool in tools:
+        parts.append(f"\n{tool['name']}\n  {tool['description']}\n"
+                     f"  input: {json.dumps(tool['input_schema'])}")
+    return "\n".join(parts)
+
+
+# One reply carries every call the model is ready to make. Not a nicety: 21
+# unsettled controls cannot be settled one per reply inside a 20 step budget,
+# and every reply is a fresh process. Batching is also what the API backend
+# does natively, so the two stay the same shape.
+#
+# The contract is stated here rather than through --json-schema on purpose.
+# That flag makes the CLI answer in prose first and reformat afterwards, which
+# measured at 131s and 11,500 output tokens for a step that costs 2.6s and 144
+# this way. Same JSON either way.
+PROTOCOL = """
+
+REPLY FORMAT. Your entire reply is one JSON object and nothing else. No prose \
+around it, no markdown fence:
+{"calls": [{"tool": "<name>", "input": {...}}, ...]}
+Put every call you are making now in that list."""
+
+
+def cli_system(system, tools):
+    return system + "\n\n" + tool_manual(tools) + PROTOCOL
+
+
+def call_cli(system, messages, tools):
+    command = [
+        CLAUDE_BIN, "-p", render(messages) + (
+            "\n\nDecide what to do now. Settle or ask about as many controls as "
+            "you can in this one reply."),
+        "--model", MODEL,
+        "--output-format", "json",
+        "--system-prompt", cli_system(system, tools),
+        # The CLI's own tools, skills and MCP servers are not this agent's tools,
+        # and leaving them on costs 40k tokens of context it must not act on.
+        "--tools", "",
+        "--disable-slash-commands",
+        "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
+        # Every reply is a fresh process, so this machine's hooks, plugins and
+        # CLAUDE.md would otherwise load into each one. The agent's context has
+        # to be only what this file put there.
+        "--safe-mode",
+        "--no-session-persistence",
+    ]
+    last = None
+    for attempt in range(4):
+        try:
+            done = subprocess.run(command, capture_output=True, text=True, timeout=300)
+            if done.returncode == 0:
+                answer = json.loads(done.stdout)
+                if not answer.get("is_error"):
+                    return shape(answer)
+                last = str(answer.get("result"))[:200]
+            else:
+                last = (done.stderr or done.stdout)[:200]
+        except (subprocess.TimeoutExpired, json.JSONDecodeError, ValueError) as e:
+            last = str(e)[:200]
+        wait = min(2 ** attempt + random.random(), 20)
+        print(f"    the CLI did not answer ({last}); retrying in {wait:.1f}s", flush=True)
+        time.sleep(wait)
+    raise SystemExit(
+        f"`claude -p` did not answer after 4 tries. Last error: {last}\n"
+        f"Check that {CLAUDE_BIN} runs and is signed in.")
+
+
+def shape(answer):
+    """Turn one CLI reply into the API's message shape, or into plain text.
+
+    A reply that names no tool becomes a text block, which stops the loop
+    cleanly. Guessing at what a malformed answer meant is how a wrong binding
+    gets written, so nothing is guessed here.
+    """
+    reply = answer.get("structured_output")
+    if not isinstance(reply, dict):
+        text = (answer.get("result") or "").strip()
+        if text.startswith("```"):           # asked for no fence, sometimes fenced anyway
+            text = text.split("```")[1].removeprefix("json").strip()
+        try:
+            reply = json.loads(text)
+        except (json.JSONDecodeError, TypeError):
+            reply = None
+    calls = reply.get("calls") if isinstance(reply, dict) else None
+    blocks = [{"type": "tool_use", "id": f"{answer.get('uuid', 'cli')}-{i}",
+               "name": c["tool"], "input": c.get("input") or {}}
+              for i, c in enumerate(calls or []) if isinstance(c, dict) and c.get("tool")]
+    if not blocks:
+        return {"content": [{"type": "text", "text": str(answer.get("result", ""))[:2000]}]}
+    return {"content": blocks}
 
 
 # ---- what the agent is allowed to do -------------------------------------
@@ -178,11 +324,21 @@ How to decide one:
   whole, so a near miss is silently dead rather than wrong.
 - Do not change something they did not ask you to change.
 
-Work one control at a time. When each has a proposal or a question, call finish."""
+Read habits first, then settle or ask about every control you can in each reply.
+When each one has a proposal or a question, call finish."""
+
+
+REQUIRED = {t["name"]: t["input_schema"].get("required", []) for t in TOOLS}
 
 
 def run_tool(name, args, ctx):
     """The tools are plain lookups over data the caller already has."""
+    # A half-filled call is sent back to be redone rather than half-recorded. A
+    # proposal missing its reason would otherwise reach the file with no reason.
+    missing = [k for k in REQUIRED.get(name, []) if k not in args]
+    if missing:
+        return {"error": f"{name} needs {', '.join(missing)}, which you left out. "
+                         f"Call it again with all of them."}
     if name == "read_habits":
         out = {}
         for control in args["controls"][:12]:
@@ -272,7 +428,8 @@ def main():
         + "\n\nRead their habits, then settle each one or ask about it."
     )
 
-    print(f"{len(unresolved)} controls the evidence did not settle. Model: {MODEL}, mode: {MODE}")
+    print(f"{len(unresolved)} controls the evidence did not settle. "
+          f"Model: {MODEL} via {BACKEND}, mode: {MODE}")
     steps, finished = agent_loop(task, ctx)
     print(f"\n{steps} steps, {'finished' if finished else 'hit the step budget'}: "
           f"{len(ctx['proposals'])} proposed, {len(ctx['questions'])} to ask")
