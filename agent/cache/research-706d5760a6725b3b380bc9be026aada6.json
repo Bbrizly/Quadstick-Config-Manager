@@ -1,0 +1,109 @@
+{
+  "game": "Elden Ring",
+  "platform": "xbox",
+  "controls": {
+    "left_joy_up": {
+      "action": "Move character forward",
+      "critical": true
+    },
+    "left_joy_down": {
+      "action": "Move character backward",
+      "critical": true
+    },
+    "left_joy_left": {
+      "action": "Move character left",
+      "critical": true
+    },
+    "left_joy_right": {
+      "action": "Move character right",
+      "critical": true
+    },
+    "right_joy_up": {
+      "action": "Move camera up",
+      "critical": true
+    },
+    "right_joy_down": {
+      "action": "Move camera down",
+      "critical": true
+    },
+    "right_joy_left": {
+      "action": "Move camera left",
+      "critical": true
+    },
+    "right_joy_right": {
+      "action": "Move camera right",
+      "critical": true
+    },
+    "left_stick": {
+      "action": "Crouch / Stand up (L3 click)",
+      "critical": false
+    },
+    "right_stick": {
+      "action": "Reset camera / Lock-on target / Remove target (R3 click)",
+      "critical": true
+    },
+    "right_bumper": {
+      "action": "Attack with right-hand or two-handed armament",
+      "critical": true
+    },
+    "right_trigger": {
+      "action": "Strong attack with right-hand or two-handed armament",
+      "critical": true
+    },
+    "left_bumper": {
+      "action": "Guard with left-hand armament",
+      "critical": true
+    },
+    "left_trigger": {
+      "action": "Use equipped weapon skill (Ash of War)",
+      "critical": true
+    },
+    "B": {
+      "action": "Backstep / Dodge roll / Dash",
+      "critical": true
+    },
+    "A": {
+      "action": "Jump",
+      "critical": true
+    },
+    "X": {
+      "action": "Use item",
+      "critical": true
+    },
+    "Y": {
+      "action": "Event action (examine, open, interact, pick up); also hold with LB/LT or RB/RT to toggle two-handing",
+      "critical": true
+    },
+    "dpad_W": {
+      "action": "Switch left-hand armament",
+      "critical": true
+    },
+    "dpad_E": {
+      "action": "Switch right-hand armament",
+      "critical": true
+    },
+    "dpad_N": {
+      "action": "Switch sorcery/incantation",
+      "critical": true
+    },
+    "dpad_S": {
+      "action": "Switch item",
+      "critical": true
+    },
+    "start": {
+      "action": "Open main menu",
+      "critical": false
+    },
+    "back": {
+      "action": "Open map",
+      "critical": false
+    }
+  },
+  "disputed": {
+    "Y": "Also functions as a hold-modifier combined with left_bumper/left_trigger (switch left-hand weapon to two-handed) or right_bumper/right_trigger (switch right-hand weapon to two-handed); this two-handing combo cannot be represented as a single distinct control in the given naming scheme."
+  },
+  "source": {
+    "url": "https://eldenring.wiki.fextralife.com/Controls",
+    "note": "Cross-checked against https://game8.co/games/Elden-Ring/archives/351883 (Game8 Controller Layout and Button Settings guide); both sources agree on all Xbox Series X/S default button mappings listed above."
+  }
+}

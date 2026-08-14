@@ -13,19 +13,20 @@ cd "$(dirname "$0")/.."
 export DOTNET_ROOT="${DOTNET_ROOT:-$HOME/.dotnet}"
 
 GAME="${1:-}"
-[ -z "$GAME" ] && { echo "usage: agent/setup.sh <game-slug> [--replay] [--hold-out]"; exit 2; }
+[ -z "$GAME" ] && { echo "usage: agent/setup.sh \"<game or app>\" [--replay] [--hold-out]"; exit 2; }
 shift
 
-CHART="agent/charts/$GAME.json"
-CONTROLS="agent/eval/controls-${GAME%%-*}.json"
-[ -f "$CHART" ] || { echo "no control chart at $CHART. Charts live in agent/charts/."; exit 2; }
-[ -f "$CONTROLS" ] || { echo "no control list at $CONTROLS."; exit 2; }
+# Whatever they typed, reduced to a filename. "Elden Ring" and "elden-ring"
+# have to land on the same chart or the same game gets researched twice.
+SLUG=$(printf '%s' "$GAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]\{1,\}/-/g; s/^-//; s/-$//')
+CHART="agent/charts/$SLUG.json"
+WORK="${TMPDIR:-/tmp}/qs-$SLUG"
 
-HOLD=() ; MODE="auto" ; WORK="${TMPDIR:-/tmp}/qs-$GAME"
+HOLD=() ; MODE="auto" ; RESEARCH=()
 for arg in "$@"; do
   case "$arg" in
-    --replay)  MODE="replay" ;;
-    --hold-out) HOLD=(--exclude-family "$GAME") ;;
+    --replay)  MODE="replay"; RESEARCH=(--replay) ;;
+    --hold-out) HOLD=(--exclude-family "$SLUG") ;;
     *) echo "unknown option $arg"; exit 2 ;;
   esac
 done
@@ -33,9 +34,21 @@ mkdir -p "$WORK"
 
 dotnet build tools/qsf/qsf.csproj -v q --nologo >/dev/null || exit 1
 
+if [ ! -f "$CHART" ]; then
+  echo
+  echo "== nobody has charted $GAME, so reading how it is controlled =="
+  python3 agent/research.py "$GAME" ${RESEARCH[@]+"${RESEARCH[@]}"} --out "$CHART" || exit 1
+fi
+
+# A hand written control list wins when one exists, because a person checked it.
+CONTROLS_ARG=()
+for candidate in "agent/eval/controls-$SLUG.json" "agent/eval/controls-${SLUG%%-*}.json"; do
+  [ -f "$candidate" ] && { CONTROLS_ARG=(--controls "$candidate"); break; }
+done
+
 echo
 echo "== what their own profiles already answer =="
-python3 agent/predict.py --controls "$CONTROLS" --chart "$CHART" "${HOLD[@]}" \
+python3 agent/predict.py ${CONTROLS_ARG[@]+"${CONTROLS_ARG[@]}"} --chart "$CHART" ${HOLD[@]+"${HOLD[@]}"} \
   --out "$WORK/profile.csv" --trace "$WORK/plan.json" || exit 1
 
 echo

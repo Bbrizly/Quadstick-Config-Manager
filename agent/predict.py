@@ -104,17 +104,42 @@ def load_chart(path):
     if not path:
         return {"meanings": {}, "disputed": {}}
     chart = json.load(open(path))
+    # A hand written chart lists the candidates it is torn between; a researched
+    # one says in a sentence why it would not commit. Both are a reason to ask.
+    disputed = {}
+    for name, why in (chart.get("disputed") or {}).items():
+        disputed[name] = why["candidates"] if isinstance(why, dict) and "candidates" in why \
+            else ([why] if isinstance(why, str) else why)
     return {
-        "meanings": {k: v["action"] for k, v in chart["controls"].items()},
-        "disputed": {k: v["candidates"] for k, v in chart.get("disputed", {}).items()},
+        "meanings": {k: (v["action"] if isinstance(v, dict) else v)
+                     for k, v in chart["controls"].items()},
+        "disputed": disputed,
         "source": chart.get("source"),
     }
 
 
+def controls_for(chart_path, profiles, floor=0.6):
+    """What a profile for this game needs: its controls, plus their own rig.
+
+    The game's chart says which buttons the game has. It says nothing about how
+    this person drives a mouse, switches modes or tunes their joystick, and that
+    part is theirs and nearly identical in every profile they have ever built.
+    So the rig is taken from what they actually do rather than asked about.
+    """
+    wanted = list(json.load(open(chart_path))["controls"])
+    seen = {}
+    for p in profiles:
+        for output in {b["output"] for m in p["modes"] for b in m["bindings"]}:
+            seen[output] = seen.get(output, 0) + 1
+    rig = [o for o, n in seen.items() if n >= floor * len(profiles) and o not in wanted]
+    return wanted + sorted(rig)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--controls", required=True,
-                    help="JSON: {game, csvFileName, controls: [output token, ...]}")
+    ap.add_argument("--controls", default=None,
+                    help="JSON: {game, csvFileName, controls: [output token, ...]}. "
+                         "Left out, the list is taken from the chart plus their own rig.")
     ap.add_argument("--out", required=True)
     ap.add_argument("--corpus", default=CORPUS)
     ap.add_argument("--exclude-family", default=None,
@@ -126,9 +151,18 @@ def main():
     ap.add_argument("--trace", default=None)
     args = ap.parse_args()
 
-    spec = json.load(open(args.controls))
     profiles = json.load(open(args.corpus))["profiles"]
     train = [p for p in profiles if p["family"] != args.exclude_family]
+    if args.controls:
+        spec = json.load(open(args.controls))
+    elif args.chart:
+        chart = json.load(open(args.chart))
+        spec = {"game": chart.get("game", "unknown"),
+                "csvFileName": chart.get("family", "profile") + ".csv",
+                "controls": controls_for(args.chart, train)}
+    else:
+        raise SystemExit("give either --controls or --chart, so there is a list of "
+                         "controls to build.")
     if args.exclude_family:
         print(f"holding out family '{args.exclude_family}': "
               f"{len(profiles) - len(train)} profiles withheld, {len(train)} left to learn from")

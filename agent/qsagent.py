@@ -204,7 +204,10 @@ def call_cli(system, messages, tools):
     last = None
     for attempt in range(4):
         try:
-            done = subprocess.run(command, capture_output=True, text=True, timeout=300)
+            # DEVNULL because the person's answers may be arriving on stdin;
+            # the model must never eat a keystroke meant for them.
+            done = subprocess.run(command, capture_output=True, text=True,
+                                  timeout=300, stdin=subprocess.DEVNULL)
             if done.returncode == 0:
                 answer = json.loads(done.stdout)
                 if not answer.get("is_error"):

@@ -1,0 +1,160 @@
+{
+  "game": "Hollow Knight: Silksong",
+  "family": "hollow-knight-silksong",
+  "platform": "xbox",
+  "source": {
+    "url": "https://hollowknight.wiki/w/Controls_(Silksong)",
+    "note": "Cross-checked against hollowknightsilksong.wiki.fextralife.com/Controls, destructoid.com control guide, and shacknews.com control guide. All four independently agreed on Right Bumper = Skill/Tool and Right Trigger = Sprint (one outlier source, game8.co, had these reversed and was treated as an error). Keyboard bindings were consistent across all sources checked.",
+    "method": "read from the web by agent/research.py",
+    "verified_by_hand": false
+  },
+  "confidence": "researched, not checked by a person",
+  "controls": {
+    "kb_left_arrow": {
+      "action": "Move left",
+      "critical": true
+    },
+    "kb_right_arrow": {
+      "action": "Move right",
+      "critical": true
+    },
+    "kb_up_arrow": {
+      "action": "Look up / climb up (ladders, vines, pole)",
+      "critical": true
+    },
+    "kb_down_arrow": {
+      "action": "Look down / crouch / climb down",
+      "critical": true
+    },
+    "kb_z": {
+      "action": "Jump",
+      "critical": true
+    },
+    "kb_x": {
+      "action": "Attack with needle",
+      "critical": true
+    },
+    "kb_c": {
+      "action": "Sprint / dash",
+      "critical": true
+    },
+    "kb_a": {
+      "action": "Bind (heal using Silk)",
+      "critical": true
+    },
+    "kb_s": {
+      "action": "Harpoon (Silk-based traversal tool, e.g. Harpoon Dash)",
+      "critical": true
+    },
+    "kb_d": {
+      "action": "Needolin (play instrument)",
+      "critical": false
+    },
+    "kb_f": {
+      "action": "Use equipped Skill/Tool",
+      "critical": true
+    },
+    "kb_v": {
+      "action": "Challenge (special context move, PC only)",
+      "critical": false
+    },
+    "kb_i": {
+      "action": "Open Inventory (Tools/Crests)",
+      "critical": false
+    },
+    "kb_m": {
+      "action": "Open full Map",
+      "critical": false
+    },
+    "kb_tab": {
+      "action": "Quick Map overlay",
+      "critical": false
+    },
+    "kb_q": {
+      "action": "Crest (switch equipped Crest)",
+      "critical": false
+    },
+    "kb_j": {
+      "action": "Open Journal (bestiary)",
+      "critical": false
+    },
+    "kb_t": {
+      "action": "Open Tasks (quest log)",
+      "critical": false
+    },
+    "kb_escape": {
+      "action": "Pause menu",
+      "critical": false
+    },
+    "A": {
+      "action": "Jump",
+      "critical": true
+    },
+    "X": {
+      "action": "Attack with needle",
+      "critical": true
+    },
+    "B": {
+      "action": "Bind (heal using Silk)",
+      "critical": true
+    },
+    "Y": {
+      "action": "Needolin (play instrument)",
+      "critical": false
+    },
+    "left_bumper": {
+      "action": "Quick Map overlay",
+      "critical": false
+    },
+    "right_bumper": {
+      "action": "Use equipped Skill/Tool (double-tap opens full Map)",
+      "critical": true
+    },
+    "left_trigger": {
+      "action": "Harpoon (Silk-based traversal tool)",
+      "critical": true
+    },
+    "right_trigger": {
+      "action": "Sprint / dash",
+      "critical": true
+    },
+    "back": {
+      "action": "Open Inventory (labeled 'View' on Xbox controllers)",
+      "critical": false
+    },
+    "start": {
+      "action": "Pause menu",
+      "critical": false
+    },
+    "left_joy_left": {
+      "action": "Move left",
+      "critical": true
+    },
+    "left_joy_right": {
+      "action": "Move right",
+      "critical": true
+    },
+    "left_joy_up": {
+      "action": "Climb up (ladders, vines, poles)",
+      "critical": true
+    },
+    "left_joy_down": {
+      "action": "Crouch / climb down",
+      "critical": true
+    },
+    "right_joy_up": {
+      "action": "Look up (camera pan)",
+      "critical": false
+    },
+    "right_joy_down": {
+      "action": "Look down (camera pan)",
+      "critical": false
+    }
+  },
+  "disputed": {
+    "right_stick": "One source (hollowknight.wiki) lists a right-stick click as the default 'Challenge' input on Xbox controller; another source (Destructoid) explicitly states the Challenge action is not available/bound by default on Xbox. Could not confirm which is correct, so left out of controls.",
+    "dpad_W": "Some sources state the D-pad works as an alternate movement input alongside the left stick by default, but none gave exact per-direction confirmation, so D-pad bindings were omitted rather than guessed.",
+    "dpad_E": "Same uncertainty as dpad_W regarding D-pad as alternate movement on Xbox controller."
+  },
+  "not_covered": []
+}
