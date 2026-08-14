@@ -1,0 +1,5028 @@
+{
+  "manifest": "2026-08-14",
+  "results": [
+    {
+      "family": "007-first-light-x360",
+      "game": "007 - First Light x360",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 56,
+          "answered": 56,
+          "inputs": 36,
+          "exact": 32
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "007-first-light-x360",
+      "game": "007 - First Light x360",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 56,
+          "answered": 56,
+          "inputs": 48,
+          "exact": 46
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "a-plague-tale-1-2",
+      "game": "A Plague Tale 1+2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 44,
+          "inputs": 26,
+          "exact": 23
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "a-plague-tale-1-2",
+      "game": "A Plague Tale 1+2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 44,
+          "inputs": 16,
+          "exact": 13
+        },
+        "rig": {
+          "total": 11,
+          "answered": 10,
+          "inputs": 8,
+          "exact": 8,
+          "abstained": 1
+        }
+      }
+    },
+    {
+      "family": "a-way-out",
+      "game": "A Way Out",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 30,
+          "exact": 27
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "a-way-out",
+      "game": "A Way Out",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 35,
+          "exact": 35
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "alan-wake-ii",
+      "game": "Alan Wake II",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 31,
+          "exact": 28
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "alan-wake-ii",
+      "game": "Alan Wake II",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 27,
+          "exact": 26
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "apex-legends",
+      "game": "Apex x360",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 34,
+          "answered": 34,
+          "inputs": 24,
+          "exact": 21
+        },
+        "rig": {
+          "total": 2,
+          "answered": 2,
+          "inputs": 2,
+          "exact": 2
+        }
+      }
+    },
+    {
+      "family": "apex-legends",
+      "game": "Apex x360",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 34,
+          "answered": 34,
+          "inputs": 19,
+          "exact": 17
+        },
+        "rig": {
+          "total": 2,
+          "answered": 2,
+          "inputs": 2,
+          "exact": 2
+        }
+      }
+    },
+    {
+      "family": "apex-legends",
+      "game": "Apex",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 39,
+          "inputs": 22,
+          "exact": 20
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "apex-legends",
+      "game": "Apex",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 37,
+          "inputs": 10,
+          "exact": 6,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "arc-raiders-x360",
+      "game": "ARC Raiders x360",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 34,
+          "exact": 31
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "arc-raiders-x360",
+      "game": "ARC Raiders x360",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 53,
+          "inputs": 34,
+          "exact": 28,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 13,
+          "answered": 12,
+          "inputs": 11,
+          "exact": 11,
+          "abstained": 1
+        }
+      }
+    },
+    {
+      "family": "assassins-creed",
+      "game": "Assassin's Creed IV - Black Flag Resynced",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 44,
+          "inputs": 28,
+          "exact": 25
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "assassins-creed",
+      "game": "Assassin's Creed IV - Black Flag Resynced",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 43,
+          "inputs": 17,
+          "exact": 13,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "assassins-creed",
+      "game": "Assassin's Creed Unity",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 31,
+          "exact": 29
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "assassins-creed",
+      "game": "Assassin's Creed Unity",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 20,
+          "exact": 15
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "avatar-frontiers-of-pandora",
+      "game": "Avatar - Frontiers of Pandora",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 22,
+          "exact": 19
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "avatar-frontiers-of-pandora",
+      "game": "Avatar - Frontiers of Pandora",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 40,
+          "exact": 39
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "baldurs-gate-3",
+      "game": "Baldurs Gate 3",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 68,
+          "answered": 68,
+          "inputs": 47,
+          "exact": 43
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "baldurs-gate-3",
+      "game": "Baldurs Gate 3",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 68,
+          "answered": 68,
+          "inputs": 63,
+          "exact": 63
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "batman-arkham-city",
+      "game": "Batman Arkham City",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 40,
+          "inputs": 21,
+          "exact": 19
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "batman-arkham-city",
+      "game": "Batman Arkham City",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 40,
+          "inputs": 18,
+          "exact": 15
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "battlebit-remastered-pc",
+      "game": "BattleBit Remastered PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 45,
+          "answered": 45,
+          "inputs": 30,
+          "exact": 27
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "battlebit-remastered-pc",
+      "game": "BattleBit Remastered PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 45,
+          "answered": 45,
+          "inputs": 20,
+          "exact": 17
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "battlefield",
+      "game": "Battlefield 2042 QMP4",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 53,
+          "answered": 53,
+          "inputs": 34,
+          "exact": 32
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "battlefield",
+      "game": "Battlefield 2042 QMP4",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 53,
+          "answered": 53,
+          "inputs": 41,
+          "exact": 38
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "battlefield",
+      "game": "Battlefield 6 x360",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 56,
+          "answered": 56,
+          "inputs": 37,
+          "exact": 35
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "battlefield",
+      "game": "Battlefield 6 x360",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 56,
+          "answered": 56,
+          "inputs": 48,
+          "exact": 46
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "battlefield",
+      "game": "Battlefield V PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 23,
+          "exact": 16
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 5
+        }
+      }
+    },
+    {
+      "family": "battlefield",
+      "game": "Battlefield V PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 15,
+          "exact": 9
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD BOCW x360 MP",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 24,
+          "answered": 24,
+          "inputs": 14,
+          "exact": 12
+        },
+        "rig": {
+          "total": 3,
+          "answered": 3,
+          "inputs": 2,
+          "exact": 2
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD BOCW x360 MP",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 24,
+          "answered": 24,
+          "inputs": 12,
+          "exact": 9
+        },
+        "rig": {
+          "total": 3,
+          "answered": 3,
+          "inputs": 3,
+          "exact": 3
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Black Ops 6 - MP/Zombies x360 (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 36,
+          "exact": 34
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Black Ops 6 - MP/Zombies x360 (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 43,
+          "exact": 42
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Black Ops 6 - Single Player x360 (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 36,
+          "exact": 34
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Black Ops 6 - Single Player x360 (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 43,
+          "exact": 42
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Black Ops 6 - TEST WZ 2.0 x360 (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 36,
+          "exact": 34
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Black Ops 6 - TEST WZ 2.0 x360 (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 44,
+          "exact": 42
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Black Ops 6 - WZ 2.0 x360 (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 36,
+          "exact": 34
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Black Ops 6 - WZ 2.0 x360 (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 44,
+          "exact": 43
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Modern Warfare II - WZ 2.0 x360 (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 53,
+          "answered": 53,
+          "inputs": 36,
+          "exact": 34
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Modern Warfare II - WZ 2.0 x360 (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 53,
+          "answered": 53,
+          "inputs": 41,
+          "exact": 38
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Modern Warfare II Story x360 (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 52,
+          "answered": 52,
+          "inputs": 35,
+          "exact": 33
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Modern Warfare II Story x360 (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 52,
+          "answered": 52,
+          "inputs": 36,
+          "exact": 33
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Modern Warfare III - WZ 2.0 x360 (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 37,
+          "exact": 35
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "call-of-duty",
+      "game": "CoD Modern Warfare III - WZ 2.0 x360 (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 43,
+          "exact": 42
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "chained-together",
+      "game": "Chained together",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 35,
+          "answered": 34,
+          "inputs": 25,
+          "exact": 24,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "chained-together",
+      "game": "Chained together",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 35,
+          "answered": 34,
+          "inputs": 27,
+          "exact": 27,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "construction-simulator",
+      "game": "Construction-Simulator",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 52,
+          "answered": 52,
+          "inputs": 29,
+          "exact": 28
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 8,
+          "exact": 8
+        }
+      }
+    },
+    {
+      "family": "construction-simulator",
+      "game": "Construction-Simulator",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 52,
+          "answered": 46,
+          "inputs": 24,
+          "exact": 21,
+          "abstained": 6
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "control",
+      "game": "Control",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 27,
+          "exact": 23
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "control",
+      "game": "Control",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 17,
+          "exact": 12
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 5
+        }
+      }
+    },
+    {
+      "family": "cooking-simulator",
+      "game": "Cooking Simulator",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 31,
+          "answered": 31,
+          "inputs": 25,
+          "exact": 22
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "cooking-simulator",
+      "game": "Cooking Simulator",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 31,
+          "answered": 31,
+          "inputs": 21,
+          "exact": 18
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "cyberpunk-2077",
+      "game": "Cyberpunk 2077 Controller",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 25,
+          "answered": 25,
+          "inputs": 16,
+          "exact": 13
+        },
+        "rig": {
+          "total": 2,
+          "answered": 2,
+          "inputs": 2,
+          "exact": 2
+        }
+      }
+    },
+    {
+      "family": "cyberpunk-2077",
+      "game": "Cyberpunk 2077 Controller",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 25,
+          "answered": 25,
+          "inputs": 12,
+          "exact": 10
+        },
+        "rig": {
+          "total": 2,
+          "answered": 2,
+          "inputs": 2,
+          "exact": 2
+        }
+      }
+    },
+    {
+      "family": "cyberpunk-2077",
+      "game": "Cyberpunk 2077 PC KO",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 39,
+          "inputs": 26,
+          "exact": 24
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "cyberpunk-2077",
+      "game": "Cyberpunk 2077 PC KO",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 38,
+          "inputs": 19,
+          "exact": 19,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "cyberpunk-2077",
+      "game": "Cyberpunk 2077 PC QMP4",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 53,
+          "answered": 53,
+          "inputs": 22,
+          "exact": 21
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "cyberpunk-2077",
+      "game": "Cyberpunk 2077 PC QMP4",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 53,
+          "answered": 46,
+          "inputs": 17,
+          "exact": 17,
+          "abstained": 7
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "dead-space",
+      "game": "Dead Space Rem PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 46,
+          "answered": 46,
+          "inputs": 30,
+          "exact": 30
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "dead-space",
+      "game": "Dead Space Rem PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 46,
+          "answered": 46,
+          "inputs": 25,
+          "exact": 24
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "dead-space",
+      "game": "Dead Space Rem x360 (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 56,
+          "answered": 55,
+          "inputs": 35,
+          "exact": 32,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "dead-space",
+      "game": "Dead Space Rem x360 (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 56,
+          "answered": 52,
+          "inputs": 36,
+          "exact": 32,
+          "abstained": 4
+        },
+        "rig": {
+          "total": 11,
+          "answered": 10,
+          "inputs": 9,
+          "exact": 9,
+          "abstained": 1
+        }
+      }
+    },
+    {
+      "family": "deep-rock",
+      "game": "Deep Rock Galactic: Survivor",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 33,
+          "answered": 33,
+          "inputs": 24,
+          "exact": 24
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "deep-rock",
+      "game": "Deep Rock Galactic: Survivor",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 33,
+          "answered": 33,
+          "inputs": 25,
+          "exact": 23
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "deep-rock",
+      "game": "DeepRock",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 30,
+          "exact": 27
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "deep-rock",
+      "game": "DeepRock",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 17,
+          "exact": 12
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "default-shooter",
+      "game": "Default Shooter Profile",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 34,
+          "answered": 34,
+          "inputs": 29,
+          "exact": 28
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "default-shooter",
+      "game": "Default Shooter Profile",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 34,
+          "answered": 34,
+          "inputs": 23,
+          "exact": 22
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "default-shooter",
+      "game": "Default Shooter x360",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 50,
+          "answered": 50,
+          "inputs": 33,
+          "exact": 29
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "default-shooter",
+      "game": "Default Shooter x360",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 50,
+          "answered": 50,
+          "inputs": 44,
+          "exact": 43
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "default-shooter",
+      "game": "Shooter default PS5",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 67,
+          "answered": 56,
+          "inputs": 40,
+          "exact": 38,
+          "abstained": 11
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "default-shooter",
+      "game": "Shooter default PS5",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 67,
+          "answered": 55,
+          "inputs": 44,
+          "exact": 43,
+          "abstained": 12
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "deliver-at-all-costs",
+      "game": "Deliver At All Costs",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 26,
+          "exact": 23
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "deliver-at-all-costs",
+      "game": "Deliver At All Costs",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 32,
+          "exact": 31
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "denshattack",
+      "game": "Denshattack",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 50,
+          "answered": 50,
+          "inputs": 30,
+          "exact": 26
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "denshattack",
+      "game": "Denshattack",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 50,
+          "answered": 50,
+          "inputs": 34,
+          "exact": 33
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Maus Bluetooth",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 68,
+          "answered": 68,
+          "inputs": 47,
+          "exact": 42
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Maus Bluetooth",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 68,
+          "answered": 68,
+          "inputs": 63,
+          "exact": 63
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Maus",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 68,
+          "answered": 68,
+          "inputs": 47,
+          "exact": 42
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Maus",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 68,
+          "answered": 68,
+          "inputs": 63,
+          "exact": 63
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Maus2 TV",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 68,
+          "answered": 68,
+          "inputs": 47,
+          "exact": 42
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Maus2 TV",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 68,
+          "answered": 68,
+          "inputs": 63,
+          "exact": 63
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Monitor Control - Samsung G8",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 59,
+          "answered": 59,
+          "inputs": 39,
+          "exact": 35
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Monitor Control - Samsung G8",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 59,
+          "answered": 59,
+          "inputs": 52,
+          "exact": 50
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "My Current Preferences",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {},
+        "rig": {
+          "total": 2,
+          "answered": 2,
+          "inputs": 2,
+          "exact": 1
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "My Current Preferences",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {},
+        "rig": {
+          "total": 2,
+          "answered": 2,
+          "inputs": 2,
+          "exact": 1
+        }
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Screen Saver",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 1,
+          "answered": 1
+        },
+        "rig": {}
+      }
+    },
+    {
+      "family": "desktop-mouse",
+      "game": "Screen Saver",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 1,
+          "answered": 1
+        },
+        "rig": {}
+      }
+    },
+    {
+      "family": "divinity-original-sin-ii",
+      "game": "Divinity Original Sin II",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 54,
+          "answered": 54,
+          "inputs": 32,
+          "exact": 28
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "divinity-original-sin-ii",
+      "game": "Divinity Original Sin II",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 54,
+          "answered": 54,
+          "inputs": 50,
+          "exact": 48
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "doom",
+      "game": "Doom",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 24,
+          "exact": 21
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "doom",
+      "game": "Doom",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 19,
+          "exact": 18
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "enshrouded",
+      "game": "Enshrouded",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 39,
+          "inputs": 25,
+          "exact": 23
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "enshrouded",
+      "game": "Enshrouded",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 39,
+          "inputs": 29,
+          "exact": 28
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "eurotruck-simulator-2",
+      "game": "Eurotruck Simulator 2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 75,
+          "answered": 71,
+          "inputs": 22,
+          "exact": 18,
+          "abstained": 4
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "eurotruck-simulator-2",
+      "game": "Eurotruck Simulator 2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 75,
+          "answered": 52,
+          "inputs": 21,
+          "exact": 19,
+          "abstained": 23
+        },
+        "rig": {
+          "total": 7,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 5,
+          "abstained": 1
+        }
+      }
+    },
+    {
+      "family": "far-cry",
+      "game": "Far Cry 3 PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 21,
+          "exact": 21
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "far-cry",
+      "game": "Far Cry 3 PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 14,
+          "exact": 11
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "far-cry",
+      "game": "Far Cry 4 PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 22,
+          "exact": 16
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "far-cry",
+      "game": "Far Cry 4 PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 35,
+          "inputs": 10,
+          "exact": 6,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "far-cry",
+      "game": "Far Cry 5 PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 43,
+          "answered": 41,
+          "inputs": 26,
+          "exact": 21,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "far-cry",
+      "game": "Far Cry 5 PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 43,
+          "answered": 41,
+          "inputs": 16,
+          "exact": 12,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "far-cry",
+      "game": "Far Cry 6 PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 38,
+          "inputs": 25,
+          "exact": 20,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 8,
+          "answered": 8,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "far-cry",
+      "game": "Far Cry 6 PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 38,
+          "inputs": 15,
+          "exact": 11,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 8,
+          "answered": 8,
+          "inputs": 7,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "farming-simulator-17",
+      "game": "Farming Simulator 17",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 51,
+          "answered": 51,
+          "inputs": 17,
+          "exact": 12
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 5
+        }
+      }
+    },
+    {
+      "family": "farming-simulator-17",
+      "game": "Farming Simulator 17",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 51,
+          "answered": 42,
+          "inputs": 11,
+          "exact": 6,
+          "abstained": 9
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 5
+        }
+      }
+    },
+    {
+      "family": "flight-simulator",
+      "game": "Copy of Flight Simulator 20",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 61,
+          "answered": 57,
+          "abstained": 4,
+          "inputs": 24,
+          "exact": 22
+        },
+        "rig": {
+          "total": 9,
+          "answered": 9,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "flight-simulator",
+      "game": "Copy of Flight Simulator 20",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 61,
+          "answered": 46,
+          "inputs": 17,
+          "exact": 16,
+          "abstained": 15
+        },
+        "rig": {
+          "total": 9,
+          "answered": 9,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "flight-simulator",
+      "game": "FSX/P3D",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 65,
+          "answered": 65,
+          "inputs": 19,
+          "exact": 15
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 5
+        }
+      }
+    },
+    {
+      "family": "flight-simulator",
+      "game": "FSX/P3D",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 65,
+          "answered": 52,
+          "inputs": 21,
+          "exact": 19,
+          "abstained": 13
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 5
+        }
+      }
+    },
+    {
+      "family": "flight-simulator",
+      "game": "Flight Simulator 20",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 61,
+          "answered": 57,
+          "abstained": 4,
+          "inputs": 24,
+          "exact": 22
+        },
+        "rig": {
+          "total": 9,
+          "answered": 9,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "flight-simulator",
+      "game": "Flight Simulator 20",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 61,
+          "answered": 46,
+          "inputs": 17,
+          "exact": 16,
+          "abstained": 15
+        },
+        "rig": {
+          "total": 9,
+          "answered": 9,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "flight-simulator",
+      "game": "Flight Simulator 24",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 75,
+          "answered": 71,
+          "abstained": 4,
+          "inputs": 25,
+          "exact": 21
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 8,
+          "exact": 8
+        }
+      }
+    },
+    {
+      "family": "flight-simulator",
+      "game": "Flight Simulator 24",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 75,
+          "answered": 58,
+          "inputs": 19,
+          "exact": 17,
+          "abstained": 17
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 8,
+          "exact": 8
+        }
+      }
+    },
+    {
+      "family": "fortnite",
+      "game": "Lego Fortnite",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 23,
+          "exact": 19
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "fortnite",
+      "game": "Lego Fortnite",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 40,
+          "exact": 39
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "forza-horizon-4",
+      "game": "Forza Horizon 4",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 12,
+          "exact": 11
+        },
+        "rig": {
+          "total": 2,
+          "answered": 2,
+          "inputs": 2,
+          "exact": 1
+        }
+      }
+    },
+    {
+      "family": "forza-horizon-4",
+      "game": "Forza Horizon 4",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 20,
+          "exact": 20
+        },
+        "rig": {
+          "total": 2,
+          "answered": 2,
+          "inputs": 2,
+          "exact": 2
+        }
+      }
+    },
+    {
+      "family": "gardians-of-the-galaxy-beta",
+      "game": "Gardians of the Galaxy BETA",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 23,
+          "exact": 21
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "gardians-of-the-galaxy-beta",
+      "game": "Gardians of the Galaxy BETA",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 16,
+          "exact": 11
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "ghost-recon-wildlands",
+      "game": "Ghost Recon Wildlands",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 57,
+          "answered": 57,
+          "inputs": 36,
+          "exact": 31
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "ghost-recon-wildlands",
+      "game": "Ghost Recon Wildlands",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 57,
+          "abstained": 9,
+          "answered": 48,
+          "inputs": 19,
+          "exact": 15
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "ghostrunner",
+      "game": "Ghostrunner",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 32,
+          "exact": 30
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "ghostrunner",
+      "game": "Ghostrunner",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 23,
+          "exact": 20
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "goat-simulator-3",
+      "game": "Goat Simulator 3",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 29,
+          "exact": 29
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "goat-simulator-3",
+      "game": "Goat Simulator 3",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 41,
+          "inputs": 24,
+          "exact": 23,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "gta",
+      "game": "GTA IV",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 62,
+          "answered": 61,
+          "inputs": 31,
+          "exact": 28,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "gta",
+      "game": "GTA IV",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 62,
+          "answered": 47,
+          "inputs": 18,
+          "exact": 17,
+          "abstained": 15
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "gta",
+      "game": "GTA V FiveM 2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 62,
+          "answered": 60,
+          "inputs": 25,
+          "exact": 21,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 8,
+          "exact": 8
+        }
+      }
+    },
+    {
+      "family": "gta",
+      "game": "GTA V FiveM 2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 62,
+          "answered": 48,
+          "inputs": 18,
+          "exact": 14,
+          "abstained": 14
+        },
+        "rig": {
+          "total": 11,
+          "answered": 10,
+          "inputs": 6,
+          "exact": 6,
+          "abstained": 1
+        }
+      }
+    },
+    {
+      "family": "gta",
+      "game": "GTA V Redone (FiveM optimized)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 58,
+          "answered": 57,
+          "inputs": 27,
+          "exact": 22,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "gta",
+      "game": "GTA V Redone (FiveM optimized)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 58,
+          "answered": 43,
+          "inputs": 14,
+          "exact": 12,
+          "abstained": 15
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "gta",
+      "game": "GTA V",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 61,
+          "answered": 60,
+          "inputs": 33,
+          "exact": 28,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "gta",
+      "game": "GTA V",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 61,
+          "answered": 46,
+          "inputs": 19,
+          "exact": 18,
+          "abstained": 15
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "halo-infinite-pc",
+      "game": "Halo Infinite PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 28,
+          "exact": 27
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "halo-infinite-pc",
+      "game": "Halo Infinite PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 19,
+          "exact": 16
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "helldivers-ii",
+      "game": "Helldivers II",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 46,
+          "answered": 46,
+          "inputs": 30,
+          "exact": 27
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "helldivers-ii",
+      "game": "Helldivers II",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 46,
+          "answered": 46,
+          "inputs": 21,
+          "exact": 18
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "high-on-life-pc",
+      "game": "High on Life PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 40,
+          "inputs": 32,
+          "exact": 30
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "high-on-life-pc",
+      "game": "High on Life PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 40,
+          "inputs": 18,
+          "exact": 13
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "hogwarts-legacy",
+      "game": "Hogwarts Legacy",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 46,
+          "answered": 46,
+          "inputs": 27,
+          "exact": 24
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "hogwarts-legacy",
+      "game": "Hogwarts Legacy",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 46,
+          "answered": 46,
+          "inputs": 18,
+          "exact": 16
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "horizon-zero-dawn",
+      "game": "Horizon Zero Dawn",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 35,
+          "answered": 35,
+          "inputs": 23,
+          "exact": 20
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "horizon-zero-dawn",
+      "game": "Horizon Zero Dawn",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 35,
+          "answered": 35,
+          "inputs": 16,
+          "exact": 13
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "hunt-showdown",
+      "game": "Hunt: Showdown",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 22,
+          "exact": 20
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "hunt-showdown",
+      "game": "Hunt: Showdown",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 19,
+          "exact": 18
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "hytale",
+      "game": "Hytale",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 26,
+          "exact": 24
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "hytale",
+      "game": "Hytale",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 27,
+          "exact": 24
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "indiana-jones-and-the-great-circle",
+      "game": "Indiana Jones and the Great Circle",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 58,
+          "answered": 57,
+          "inputs": 39,
+          "exact": 36,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "indiana-jones-and-the-great-circle",
+      "game": "Indiana Jones and the Great Circle",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 58,
+          "answered": 56,
+          "inputs": 35,
+          "exact": 32,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 12,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "it-takes-two",
+      "game": "It takes two",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 28,
+          "exact": 25
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "it-takes-two",
+      "game": "It takes two",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 37,
+          "inputs": 35,
+          "exact": 35,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "just-cause-2",
+      "game": "Just Cause 2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 27,
+          "exact": 25
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "just-cause-2",
+      "game": "Just Cause 2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 20,
+          "exact": 17
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "kingdom-come-deliverance-ii",
+      "game": "Kingdom Come Deliverance II",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 72,
+          "answered": 72,
+          "inputs": 45,
+          "exact": 43
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "kingdom-come-deliverance-ii",
+      "game": "Kingdom Come Deliverance II",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 72,
+          "answered": 62,
+          "inputs": 35,
+          "exact": 31,
+          "abstained": 10
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "lethal-company",
+      "game": "Lethal Company",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 27,
+          "exact": 26
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "lethal-company",
+      "game": "Lethal Company",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 19,
+          "exact": 16
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "max-payne-3",
+      "game": "Max Payne 3",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 28,
+          "exact": 26
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "max-payne-3",
+      "game": "Max Payne 3",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 41,
+          "inputs": 19,
+          "exact": 15,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "metal-gear-snake-eater",
+      "game": "Metal Gear Snake Eater",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 40,
+          "inputs": 30,
+          "exact": 25
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "metal-gear-snake-eater",
+      "game": "Metal Gear Snake Eater",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 40,
+          "inputs": 26,
+          "exact": 21
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "minecraft",
+      "game": "Minecraft",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 24,
+          "exact": 20
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "minecraft",
+      "game": "Minecraft",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 36,
+          "inputs": 15,
+          "exact": 12,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 12,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "need-for-speed-heat",
+      "game": "Need for Speed - Heat",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 31,
+          "exact": 26
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 8,
+          "exact": 8
+        }
+      }
+    },
+    {
+      "family": "need-for-speed-heat",
+      "game": "Need for Speed - Heat",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 30,
+          "exact": 27
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "path-of-exile-ii-x360",
+      "game": "Path of Exile II x360",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 46,
+          "answered": 46,
+          "inputs": 25,
+          "exact": 23
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "path-of-exile-ii-x360",
+      "game": "Path of Exile II x360",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 46,
+          "answered": 46,
+          "inputs": 26,
+          "exact": 23
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 8,
+          "exact": 8
+        }
+      }
+    },
+    {
+      "family": "payday-2",
+      "game": "Payday 2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 29,
+          "exact": 25
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "payday-2",
+      "game": "Payday 2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 23,
+          "exact": 19
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "payday-3",
+      "game": "Payday 3",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 28,
+          "exact": 23
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "payday-3",
+      "game": "Payday 3",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 21,
+          "exact": 17
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "planetside-2",
+      "game": "PlanetSide 2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 29,
+          "exact": 26
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "planetside-2",
+      "game": "PlanetSide 2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 37,
+          "inputs": 17,
+          "exact": 11,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 7,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "police-simulator-patrol-officers-pc",
+      "game": "Police Simulator: Patrol Officers PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 27,
+          "exact": 23
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "police-simulator-patrol-officers-pc",
+      "game": "Police Simulator: Patrol Officers PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 17,
+          "exact": 16
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "ps2-need-for-speed-carbon-qmp4",
+      "game": "PS2  Need for Speed Carbon (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 50,
+          "answered": 50,
+          "inputs": 28,
+          "exact": 25
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "ps2-need-for-speed-carbon-qmp4",
+      "game": "PS2  Need for Speed Carbon (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 50,
+          "answered": 50,
+          "inputs": 28,
+          "exact": 26
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "raft",
+      "game": "Raft",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 39,
+          "inputs": 26,
+          "exact": 23
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "raft",
+      "game": "Raft",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 38,
+          "inputs": 20,
+          "exact": 17,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 13,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "red-dead",
+      "game": "Red Dead Redemption II - RedM",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 21,
+          "exact": 18
+        },
+        "rig": {
+          "total": 9,
+          "answered": 9,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "red-dead",
+      "game": "Red Dead Redemption II - RedM",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 14,
+          "exact": 11
+        },
+        "rig": {
+          "total": 9,
+          "answered": 9,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "red-dead",
+      "game": "Red Dead Redemption II",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 40,
+          "inputs": 20,
+          "exact": 18
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "red-dead",
+      "game": "Red Dead Redemption II",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 40,
+          "answered": 40,
+          "inputs": 20,
+          "exact": 17
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "satisfactory",
+      "game": "Satisfactory",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 47,
+          "answered": 47,
+          "inputs": 20,
+          "exact": 17
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "satisfactory",
+      "game": "Satisfactory",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 47,
+          "answered": 45,
+          "inputs": 11,
+          "exact": 9,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 8,
+          "exact": 8
+        }
+      }
+    },
+    {
+      "family": "schedule-i",
+      "game": "Schedule I",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 27,
+          "exact": 24
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "schedule-i",
+      "game": "Schedule I",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 37,
+          "inputs": 24,
+          "exact": 22,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "sea-of-thieves",
+      "game": "Sea of Thieves",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 29,
+          "exact": 26
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "sea-of-thieves",
+      "game": "Sea of Thieves",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 17,
+          "exact": 15
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "shadow-warrior-3",
+      "game": "Shadow Warrior 3",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 30,
+          "answered": 30,
+          "inputs": 23,
+          "exact": 21
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 7,
+          "exact": 7
+        }
+      }
+    },
+    {
+      "family": "shadow-warrior-3",
+      "game": "Shadow Warrior 3",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 30,
+          "answered": 30,
+          "inputs": 19,
+          "exact": 16
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "shatterlinepc",
+      "game": "ShatterlinePC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 21,
+          "exact": 19
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "shatterlinepc",
+      "game": "ShatterlinePC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 32,
+          "answered": 32,
+          "inputs": 18,
+          "exact": 16
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "six-days-in-fallujah",
+      "game": "Six Days In Fallujah",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 39,
+          "inputs": 24,
+          "exact": 21
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "six-days-in-fallujah",
+      "game": "Six Days In Fallujah",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 39,
+          "answered": 39,
+          "inputs": 18,
+          "exact": 13
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "skate",
+      "game": "skate.",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 41,
+          "exact": 39
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "skate",
+      "game": "skate.",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 55,
+          "answered": 55,
+          "inputs": 45,
+          "exact": 43
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "sniper-elite",
+      "game": "Sniper Elite 3",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 35,
+          "inputs": 24,
+          "exact": 22,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "sniper-elite",
+      "game": "Sniper Elite 3",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 35,
+          "abstained": 1,
+          "inputs": 15,
+          "exact": 10
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 5
+        }
+      }
+    },
+    {
+      "family": "sniper-elite",
+      "game": "Sniper Elite 4",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 33,
+          "answered": 32,
+          "inputs": 23,
+          "exact": 18,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "sniper-elite",
+      "game": "Sniper Elite 4",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 33,
+          "answered": 32,
+          "abstained": 1,
+          "inputs": 20,
+          "exact": 12
+        },
+        "rig": {
+          "total": 6,
+          "answered": 6,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "sniper-elite",
+      "game": "Sniper Elite 5",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 26,
+          "exact": 23
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "sniper-elite",
+      "game": "Sniper Elite 5",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 16,
+          "exact": 11
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "sniper-ghost-warrior-2",
+      "game": "Sniper Ghost Warrior 2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 29,
+          "exact": 27
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "sniper-ghost-warrior-2",
+      "game": "Sniper Ghost Warrior 2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 19,
+          "exact": 15
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "spindle",
+      "game": "Spindle",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 34,
+          "answered": 34,
+          "inputs": 26,
+          "exact": 24
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "spindle",
+      "game": "Spindle",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 34,
+          "answered": 34,
+          "inputs": 18,
+          "exact": 17
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "split-fiction",
+      "game": "Split Fiction",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 28,
+          "exact": 25
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "split-fiction",
+      "game": "Split Fiction",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 35,
+          "exact": 35
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "splitgate-betatest-x360",
+      "game": "Splitgate (betatest) x360",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 24,
+          "answered": 24,
+          "inputs": 16,
+          "exact": 14
+        },
+        "rig": {
+          "total": 3,
+          "answered": 3,
+          "inputs": 2,
+          "exact": 2
+        }
+      }
+    },
+    {
+      "family": "splitgate-betatest-x360",
+      "game": "Splitgate (betatest) x360",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 24,
+          "answered": 24,
+          "inputs": 12,
+          "exact": 9
+        },
+        "rig": {
+          "total": 3,
+          "answered": 3,
+          "inputs": 3,
+          "exact": 3
+        }
+      }
+    },
+    {
+      "family": "star-wars-jedi-fallen-order-pc",
+      "game": "Star Wars - Jedi Fallen Order PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 35,
+          "exact": 31
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "star-wars-jedi-fallen-order-pc",
+      "game": "Star Wars - Jedi Fallen Order PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 23,
+          "exact": 17
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "starcitizen",
+      "game": "StarCitizen",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 44,
+          "inputs": 30,
+          "exact": 29
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "starcitizen",
+      "game": "StarCitizen",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 42,
+          "inputs": 26,
+          "exact": 21,
+          "abstained": 2
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "starfield",
+      "game": "Starfield",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 28,
+          "exact": 26
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "starfield",
+      "game": "Starfield",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 24,
+          "exact": 23
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "the-finals",
+      "game": "the Finals",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 28,
+          "exact": 26
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "the-finals",
+      "game": "the Finals",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 41,
+          "inputs": 22,
+          "exact": 19,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "the-last-of-us",
+      "game": "The Last of Us Part II",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 43,
+          "answered": 43,
+          "inputs": 19,
+          "exact": 16
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "the-last-of-us",
+      "game": "The Last of Us Part II",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 43,
+          "answered": 41,
+          "inputs": 13,
+          "abstained": 2,
+          "exact": 9
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "the-last-of-us",
+      "game": "The Last of Us",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 44,
+          "inputs": 24,
+          "exact": 18
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "the-last-of-us",
+      "game": "The Last of Us",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 43,
+          "inputs": 15,
+          "exact": 9,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 10,
+          "inputs": 8,
+          "exact": 8,
+          "abstained": 1
+        }
+      }
+    },
+    {
+      "family": "thehunter-cotw",
+      "game": "theHunter CotW",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 54,
+          "answered": 54,
+          "inputs": 28,
+          "exact": 23
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "thehunter-cotw",
+      "game": "theHunter CotW",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 54,
+          "answered": 46,
+          "inputs": 18,
+          "exact": 15,
+          "abstained": 8
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "tiny-tinas-wonderlands",
+      "game": "Tiny Tinas Wonderlands",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 44,
+          "inputs": 31,
+          "exact": 29
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "tiny-tinas-wonderlands",
+      "game": "Tiny Tinas Wonderlands",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 43,
+          "inputs": 28,
+          "exact": 26,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 14,
+          "exact": 14
+        }
+      }
+    },
+    {
+      "family": "titanfall-2",
+      "game": "Titanfall 2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 53,
+          "answered": 53,
+          "inputs": 39,
+          "exact": 36
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "titanfall-2",
+      "game": "Titanfall 2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 53,
+          "answered": 53,
+          "inputs": 41,
+          "exact": 38
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "tomb-raider",
+      "game": "Tomb Raider 1",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 29,
+          "exact": 25
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "tomb-raider",
+      "game": "Tomb Raider 1",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 17,
+          "exact": 12
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 6,
+          "exact": 5
+        }
+      }
+    },
+    {
+      "family": "tomb-raider",
+      "game": "Tomb Raider 2 - Rise of the Tomb Raider",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 28,
+          "exact": 24
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 6,
+          "exact": 6
+        }
+      }
+    },
+    {
+      "family": "tomb-raider",
+      "game": "Tomb Raider 2 - Rise of the Tomb Raider",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 36,
+          "answered": 36,
+          "inputs": 16,
+          "exact": 11
+        },
+        "rig": {
+          "total": 7,
+          "answered": 7,
+          "inputs": 6,
+          "exact": 5
+        }
+      }
+    },
+    {
+      "family": "tomb-raider",
+      "game": "Tomb Raider 3 - Shadow of the Tomb Raider",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 43,
+          "answered": 43,
+          "inputs": 24,
+          "exact": 21
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "tomb-raider",
+      "game": "Tomb Raider 3 - Shadow of the Tomb Raider",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 43,
+          "answered": 43,
+          "inputs": 15,
+          "exact": 13
+        },
+        "rig": {
+          "total": 11,
+          "answered": 10,
+          "inputs": 8,
+          "exact": 8,
+          "abstained": 1
+        }
+      }
+    },
+    {
+      "family": "tony-hawk",
+      "game": "Tony Hawk",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 27,
+          "exact": 26
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "tony-hawk",
+      "game": "Tony Hawk",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 40,
+          "inputs": 26,
+          "exact": 25,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "trepang-2",
+      "game": "Trepang 2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 28,
+          "exact": 26
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "trepang-2",
+      "game": "Trepang 2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 37,
+          "answered": 37,
+          "inputs": 20,
+          "exact": 19
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "tunic",
+      "game": "Tunic",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 4,
+          "exact": 3
+        },
+        "rig": {
+          "total": 3,
+          "answered": 3,
+          "inputs": 2,
+          "exact": 2
+        }
+      }
+    },
+    {
+      "family": "tunic",
+      "game": "Tunic",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 14,
+          "answered": 14,
+          "inputs": 2,
+          "exact": 1
+        },
+        "rig": {
+          "total": 3,
+          "answered": 3,
+          "inputs": 3,
+          "exact": 3
+        }
+      }
+    },
+    {
+      "family": "valheim",
+      "game": "Valheim",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 31,
+          "exact": 29
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "valheim",
+      "game": "Valheim",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 16,
+          "exact": 13
+        },
+        "rig": {
+          "total": 10,
+          "answered": 10,
+          "inputs": 8,
+          "exact": 8
+        }
+      }
+    },
+    {
+      "family": "warhammer-40k",
+      "game": "Warhammer 40k - Darktide",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 43,
+          "answered": 43,
+          "inputs": 24,
+          "exact": 22
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "warhammer-40k",
+      "game": "Warhammer 40k - Darktide",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 43,
+          "answered": 42,
+          "inputs": 25,
+          "exact": 20,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "warhammer-40k",
+      "game": "Warhammer 40k - Space Marine 2",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 22,
+          "exact": 19
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "warhammer-40k",
+      "game": "Warhammer 40k - Space Marine 2",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 38,
+          "answered": 38,
+          "inputs": 28,
+          "exact": 23
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "way-of-the-hunter",
+      "game": "Way of the Hunter",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 44,
+          "inputs": 23,
+          "exact": 21
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "way-of-the-hunter",
+      "game": "Way of the Hunter",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 44,
+          "answered": 44,
+          "inputs": 14,
+          "exact": 11
+        },
+        "rig": {
+          "total": 11,
+          "answered": 10,
+          "inputs": 8,
+          "exact": 8,
+          "abstained": 1
+        }
+      }
+    },
+    {
+      "family": "witcher-iii-pc",
+      "game": "Witcher III PC",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 42,
+          "inputs": 19,
+          "exact": 17
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 9,
+          "exact": 9
+        }
+      }
+    },
+    {
+      "family": "witcher-iii-pc",
+      "game": "Witcher III PC",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 42,
+          "answered": 41,
+          "inputs": 14,
+          "exact": 12,
+          "abstained": 1
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 9,
+          "exact": 8
+        }
+      }
+    },
+    {
+      "family": "world-of-tanks",
+      "game": "World of Tanks",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 28,
+          "exact": 23
+        },
+        "rig": {
+          "total": 11,
+          "answered": 11,
+          "inputs": 11,
+          "exact": 11
+        }
+      }
+    },
+    {
+      "family": "world-of-tanks",
+      "game": "World of Tanks",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 41,
+          "answered": 41,
+          "inputs": 18,
+          "exact": 14
+        },
+        "rig": {
+          "total": 11,
+          "answered": 10,
+          "inputs": 8,
+          "exact": 8,
+          "abstained": 1
+        }
+      }
+    },
+    {
+      "family": "xdefiant-x360-qmp4",
+      "game": "XDefiant x360 (QMP4)",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 54,
+          "answered": 54,
+          "inputs": 39,
+          "exact": 35
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 10,
+          "exact": 10
+        }
+      }
+    },
+    {
+      "family": "xdefiant-x360-qmp4",
+      "game": "XDefiant x360 (QMP4)",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 54,
+          "answered": 54,
+          "inputs": 40,
+          "exact": 36
+        },
+        "rig": {
+          "total": 12,
+          "answered": 12,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    },
+    {
+      "family": "zelda-breath-of-the-wild",
+      "game": "Zelda Breath of the Wild",
+      "baseline": "global",
+      "buckets": {
+        "gameplay": {
+          "total": 52,
+          "answered": 52,
+          "inputs": 31,
+          "exact": 28
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 13,
+          "exact": 13
+        }
+      }
+    },
+    {
+      "family": "zelda-breath-of-the-wild",
+      "game": "Zelda Breath of the Wild",
+      "baseline": "nearest",
+      "buckets": {
+        "gameplay": {
+          "total": 52,
+          "answered": 52,
+          "inputs": 31,
+          "exact": 29
+        },
+        "rig": {
+          "total": 13,
+          "answered": 13,
+          "inputs": 12,
+          "exact": 12
+        }
+      }
+    }
+  ]
+}

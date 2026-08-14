@@ -84,5 +84,19 @@ check "write moves no rows" "0" "$shift_at_write"
 $QSF validate tests/QuadStick.Format.Tests/corpus/device-style.csv >/dev/null
 check "a real profile validates clean" "0" "$?"
 
+# The firmware's keyword table still holds these names; only the validation
+# endpoint dropped them. Refusing one tells somebody to change a name their
+# device answers to. This author uses lip_soft 317 times.
+printf '[{"op":"set_binding","row":5,"output":"x","function":"normal","inputs":["lip_soft"]}]' > "$TMP/legacy.json"
+$QSF apply --template t.csv --ops "$TMP/legacy.json" --out "$TMP/legacy.csv" >/dev/null
+check "a legacy input the device knows is accepted" "0" "$?"
+
+# A settings row's column C is the value, not an input name.
+printf '[{"op":"set_binding","row":5,"output":"mouse_speed","function":"normal","inputs":["550"]}]' > "$TMP/pref.json"
+$QSF apply --template t.csv --ops "$TMP/pref.json" --out "$TMP/pref.csv" >/dev/null
+check "a preference value is not read as an input" "0" "$?"
+check "the value reaches the file" "550" "$(sed -n '5p' "$TMP/pref.csv" | cut -d, -f3)"
+
+
 [ "$fails" -eq 0 ] && echo "all qsf checks passed" || echo "$fails check(s) failed"
 exit "$fails"

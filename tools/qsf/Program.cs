@@ -56,8 +56,36 @@ int Usage()
 int Inspect(string[] paths)
 {
     if (paths.Length == 0) return Usage();
-    Emit(new { profiles = paths.Select(p => Describe(p, Open(File.ReadAllText(p), out int n), n)).ToArray() });
+    Emit(new
+    {
+        profiles = paths.Select(p =>
+        {
+            var text = ReadProfileText(p, out var skipped, out var limitation);
+            return Describe(p, Open(text, out int n), n, skipped, limitation);
+        }).ToArray(),
+    });
     return 0;
+}
+
+// A shared profile is usually a workbook, one tab per mode. Read it the way the
+// app's import does, and carry out what did NOT come across: a tab the device
+// skips is a mode its owner has probably already lost without being told.
+string ReadProfileText(string path, out object[] skipped, out string? limitation)
+{
+    var bytes = File.ReadAllBytes(path);
+    if (!Xlsx.LooksLikeXlsx(bytes))
+    {
+        skipped = Array.Empty<object>();
+        limitation = null;
+        return System.Text.Encoding.UTF8.GetString(bytes);
+    }
+    using var stream = new MemoryStream(bytes);
+    var import = Xlsx.Import(stream);
+    skipped = import.Skipped
+        .Select(t => (object)new { tab = t.Name, why = t.Kind.ToString(), rows = t.Rows.Count })
+        .ToArray();
+    limitation = import.Limitation;
+    return import.Csv;
 }
 
 // Every row number qsf reports or accepts is a line number in the file AS THE
@@ -74,12 +102,16 @@ ProfileFile Open(string csvText, out int rowsInserted)
     return pf;
 }
 
-object Describe(string path, ProfileFile pf, int rowsInserted)
+object Describe(string path, ProfileFile pf, int rowsInserted, object[] skipped, string? limitation)
 {
     var d = pf.Document;
     return new
     {
         path,
+        // Tabs the device would skip, and anything the workbook reader could
+        // not carry across. Empty is the normal case and says so out loud.
+        skippedTabs = skipped,
+        limitation,
         // Non-zero means the rows below moved to make the file readable by the
         // device, so these row numbers are not the disk file's line numbers.
         rowsInsertedForDevice = rowsInserted,
@@ -144,7 +176,7 @@ int Vocab_()
 int Validate(string[] paths)
 {
     if (paths.Length == 0) return Usage();
-    var pf = Open(File.ReadAllText(paths[0]), out int inserted);
+    var pf = Open(ReadProfileText(paths[0], out _, out _), out int inserted);
     int errors = pf.Issues.Count(i => i.Severity == Severity.Error);
     Emit(new
     {
@@ -174,7 +206,7 @@ int Apply(string[] a)
     if (opsPath is null || outPath is null || (from is null && template is null)) return Usage();
 
     var pf = from is not null
-        ? Open(File.ReadAllText(from), out _)
+        ? Open(ReadProfileText(from, out _, out _), out _)
         : Open(ProfileFile.NewFromTemplate(template!).ToCsvText(), out _);
 
     var json = opsPath == "-" ? Console.In.ReadToEnd() : File.ReadAllText(opsPath);
@@ -303,7 +335,11 @@ string? RejectBinding(ProfileFile pf, int row, string output, string function, s
     if (sheet.Type != SheetType.ProfileName)
         return $"row {row} is in a {sheet.Type} sheet, which holds settings rather than bindings";
 
-    if (!Vocab.IsKnownOutput(output) && !Vocab.PreferenceOverrides.Contains(output))
+    // Legacy names are in the firmware's own keyword table and missing only
+    // from the validation endpoint. The device answers to them, so refusing one
+    // would tell somebody to change a name their QuadStick already understands.
+    if (!Vocab.IsKnownOutput(output) && !Vocab.PreferenceOverrides.Contains(output)
+        && !Vocab.LegacyOutputs.Contains(output))
         return $"'{output}' is not an output the device knows (case sensitive). See qsf vocab.";
 
     var parts = function.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -314,9 +350,14 @@ string? RejectBinding(ProfileFile pf, int row, string output, string function, s
         return $"'{parts[0]}' takes at most {arity.Max} parameter(s), got {parts.Length - 1}";
 
     if (inputs.Length > MaxInputs) return $"a row holds at most {MaxInputs} inputs, got {inputs.Length}";
-    foreach (var input in inputs)
-        if (input != Vocab.NoneInput && !Vocab.Inputs.Contains(input))
-            return $"'{input}' is not an input the device knows (case sensitive). See qsf vocab.";
+    // A settings row's column C carries the value the preference is set to, not
+    // an input. "mouse_speed,normal,550" is a number, and reading it as an
+    // input name is how a real profile's tuning gets thrown away.
+    if (!Vocab.IsPreferenceOverride(output, function))
+        foreach (var input in inputs)
+            if (input != Vocab.NoneInput && !Vocab.Inputs.Contains(input)
+                && !Vocab.LegacyInputs.Contains(input))
+                return $"'{input}' is not an input the device knows (case sensitive). See qsf vocab.";
 
     if (action.Length == 0) return null;
     if (!ProfileFile.IsLegalActionName(action))
@@ -331,8 +372,8 @@ string? RejectBinding(ProfileFile pf, int row, string output, string function, s
 int Diff(string[] a)
 {
     if (a.Length < 2) return Usage();
-    var x = ProfileFile.Load(File.ReadAllText(a[0])).Grid;
-    var y = ProfileFile.Load(File.ReadAllText(a[1])).Grid;
+    var x = Open(ReadProfileText(a[0], out _, out _), out _).Grid;
+    var y = Open(ReadProfileText(a[1], out _, out _), out _).Grid;
     var changes = new List<object>();
     for (int r = 0; r < Math.Max(x.Count, y.Count); r++)
     {
