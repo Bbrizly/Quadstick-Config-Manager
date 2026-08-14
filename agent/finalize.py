@@ -96,6 +96,70 @@ def interview(report):
     return answers
 
 
+def apply_settled(profile, settled, out, log=print):
+    """Turn approved proposals into rows, or change nothing at all.
+
+    Two passes, because a row has to exist before it can be bound, so both run
+    on a copy: a refusal in the second pass would otherwise leave the empty rows
+    the first one made. The copy only becomes the profile once every binding has
+    been accepted AND the result validates, so a file that would load wrong on
+    the device never replaces one that loaded right.
+    """
+    work = out + ".building"
+    try:
+        rows_ops = [{"op": "add_row", "mode": 0, "why": f"a row for {p['output']}"} for p in settled]
+        made = qsf("apply", "--from", profile, "--ops", write_ops(rows_ops, "rows"),
+                   "--out", work, ok=(0, 1))
+        if made["rejected"]:
+            log(f"could not make the rows: {made['rejected'][:2]}")
+            return {"ok": False, "error": "the rows could not be made",
+                    "rejected": made["rejected"]}
+        rows = [a["detail"]["row"] for a in made["applied"] if a["op"] == "add_row"]
+
+        bind_ops = [{"op": "set_binding", "row": row, "output": p["output"],
+                     "function": p.get("function", "normal"), "inputs": p["inputs"],
+                     "why": f"[{p.get('confidence', 'inferred')}] {p['why']}",
+                     "note": f"{p.get('confidence', 'inferred')}: {p['why'][:180]}"}
+                    for row, p in zip(rows, settled)]
+        result = qsf("apply", "--from", work, "--ops", write_ops(bind_ops, "bind"),
+                     "--out", work, ok=(0, 1))
+
+        # `ok` is every op accepted and no errors in the result, and qsf writes
+        # nothing otherwise. Both halves matter: a refused binding and a result
+        # the device would read wrong are equally reasons to leave the profile
+        # exactly as it was.
+        if not result["ok"]:
+            log(f"nothing was written, and {out} is exactly as it was.")
+            for r in result["rejected"]:
+                log(f"   {r['reason']}\n     it wanted this because: {r['why'][:120]}")
+            for i in result["issues"]:
+                if i["severity"] == "Error":
+                    log(f"   {i['cell']}: {i['message'][:90]}")
+            return {"ok": False, "error": "the result was refused before it was written",
+                    "rejected": result["rejected"], "validation": result}
+        os.replace(work, out)
+    finally:
+        if os.path.exists(work):
+            os.remove(work)
+    return {"ok": True, "validation": result, "written": len(settled)}
+
+
+def report_open(unanswered, untouched=()):
+    """Say which controls are still unbound. Silence here is the bug this file
+    exists to avoid: an unanswered question is a control that does nothing."""
+    if unanswered:
+        print(f"\n{len(unanswered)} controls are still open, and were left alone:")
+        for q in unanswered:
+            print(f"   {q['output']}: {q['question']}")
+            for option in q.get("options") or []:
+                print(f"      - {option['label'] if isinstance(option, dict) else option}")
+    if untouched:
+        print(f"\n{len(untouched)} controls the agent never reached, so they are "
+              f"unbound and nothing was asked about them:")
+        for output in untouched:
+            print(f"   {output}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--profile", required=True, help="what predict.py wrote")
@@ -114,17 +178,32 @@ def main():
         answers.update(interview(report))
 
     settled = list(report["proposals"])
+    asked = {q["output"] for q in report["questions"]}
     # A question the person answered is theirs, and it outranks any proposal.
+    # Every field is taken exactly as given. An answer missing its function used
+    # to become `normal`, which is a device setting nobody typed, and an answer
+    # naming a control nobody asked about used to be written anyway.
     for output, choice in answers.items():
+        if output not in asked:
+            raise SystemExit(f"the answers name {output}, which the agent never asked "
+                             f"about. Nothing was written.")
+        if "function" not in choice or "inputs" not in choice:
+            raise SystemExit(f"the answer for {output} has no "
+                             f"{'function' if 'function' not in choice else 'inputs'}. "
+                             f"Nothing is guessed here, so nothing was written.")
         settled = [p for p in settled if p["output"] != output]
         settled.append({"output": output, "inputs": choice["inputs"],
-                        "function": choice.get("function", "normal"),
+                        "function": choice["function"],
                         "confidence": "chosen by the user",
                         "why": "they answered the question about this control"})
 
     unanswered = [q for q in report["questions"] if q["output"] not in answers]
     if not settled:
-        print("nothing to apply")
+        # "Nothing to apply" on its own read as a clean run. It is not one when
+        # the agent asked questions nobody answered: those controls are still
+        # unbound, and saying so is the whole job.
+        print(f"nothing to apply: the agent settled nothing on its own.")
+        report_open(unanswered, report.get("untouched") or [])
         return 0
 
     # Nothing is written until they say so. The list they approve is the list
@@ -141,51 +220,17 @@ def main():
             print("nothing written, the profile is exactly as it was")
             return 0
 
-    # Rows have to be made before they can be bound, which is two passes, which
-    # means a refusal in the second one would otherwise leave the empty rows the
-    # first one made. So both passes run on a copy, and the copy only becomes
-    # the profile once every binding has been accepted.
-    work = out + ".building"
-    try:
-        rows_ops = [{"op": "add_row", "mode": 0, "why": f"a row for {p['output']}"} for p in settled]
-        made = qsf("apply", "--from", args.profile, "--ops", write_ops(rows_ops, "rows"),
-                   "--out", work, ok=(0, 1))
-        if made["rejected"]:
-            print("could not make the rows:", made["rejected"][:2])
-            return 1
-        rows = [a["detail"]["row"] for a in made["applied"] if a["op"] == "add_row"]
+    done = apply_settled(args.profile, settled, out)
+    if not done["ok"]:
+        return 1
 
-        bind_ops = [{"op": "set_binding", "row": row, "output": p["output"],
-                     "function": p.get("function", "normal"), "inputs": p["inputs"],
-                     "why": f"[{p.get('confidence', 'inferred')}] {p['why']}",
-                     "note": f"{p.get('confidence', 'inferred')}: {p['why'][:180]}"}
-                    for row, p in zip(rows, settled)]
-        result = qsf("apply", "--from", work, "--ops", write_ops(bind_ops, "bind"),
-                     "--out", work, ok=(0, 1))
-
-        if result["rejected"]:
-            print(f"{len(result['rejected'])} of the agent's bindings were refused, "
-                  f"so the profile was left exactly as it was:")
-            for r in result["rejected"]:
-                print(f"   {r['reason']}\n     it wanted this because: {r['why'][:120]}")
-            return 1
-        os.replace(work, out)
-    finally:
-        if os.path.exists(work):
-            os.remove(work)
-
-    check = qsf("validate", out, ok=(0, 1))
+    check = done["validation"]
     print(f"{len(settled)} bindings applied to {out}")
     print(f"validation: {check['errors']} errors, {check['warnings']} warnings")
     for i in check["issues"][:5]:
         print(f"   {i['severity']}: {i['cell']} {i['message'][:90]}")
 
-    if unanswered:
-        print(f"\n{len(unanswered)} controls are still open, and were left alone:")
-        for q in unanswered:
-            print(f"   {q['output']}: {q['question']}")
-            for option in q["options"]:
-                print(f"      - {option['label'] if isinstance(option, dict) else option}")
+    report_open(unanswered, report.get("untouched") or [])
 
     if args.open:
         # The person's own app, on the file that was just built. Opening is as

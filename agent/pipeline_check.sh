@@ -87,5 +87,96 @@ check "choosing leave-unbound writes no row" \
 check "and it is reported as still open" "yes" \
   "$(grep -q 'still open' "$TMP/ask.log" && echo yes || echo no)"
 
+# --- the ways a wrong value used to reach the file ------------------------
+
+# Timings the person set are part of what they chose. Reading their history
+# with the parameters stripped off turned "tap 200" into "tap".
+python3 - <<'PY' > "$TMP/params.txt"
+import sys; sys.path.insert(0, "agent")
+import predict
+one = {"family": "f", "game": "g", "modes": [{"name": "m", "bindings": [
+    {"output": "kb_c", "function": "delay_on 500 16000",
+     "inputs": ["mp_left_sip"], "row": 4}]}]}
+print(predict.habits([one])["kb_c"][0]["function"])
+PY
+check "the timing they set survives being read back" "delay_on 500 16000" "$(cat "$TMP/params.txt")"
+
+# A dead even split is a question. It used to be settled by whichever profile
+# the corpus happened to list first.
+python3 - <<'PY' > "$TMP/tie.txt"
+import sys; sys.path.insert(0, "agent")
+import predict
+ranked = {"kb_c": [{"inputs": ["a"], "function": "normal", "seenIn": 1, "ofGames": 2, "share": 0.5,
+                    "evidence": "A"},
+                   {"inputs": ["b"], "function": "normal", "seenIn": 1, "ofGames": 2, "share": 0.5,
+                    "evidence": "B"}]}
+decided, asks = predict.predict(["kb_c"], ranked, 0.5)
+print(len(decided), len(asks))
+PY
+check "a 50/50 habit is asked about, not picked" "0 1" "$(cat "$TMP/tie.txt")"
+
+# A control the research would not commit to has to reach the person.
+python3 - <<'PY' > "$TMP/disputed.txt"
+import sys; sys.path.insert(0, "agent")
+import predict
+ranked = {"kb_c": [{"inputs": ["a"], "function": "normal", "seenIn": 9, "ofGames": 9,
+                    "share": 1.0, "evidence": "A"}]}
+decided, asks = predict.predict(["kb_c"], ranked, 0.5, disputed={"kb_c": ["aim", "brake"]})
+print(len(decided), len(asks))
+PY
+check "a disputed control is asked about even with a settled habit" "0 1" "$(cat "$TMP/disputed.txt")"
+
+# The agent may only answer the controls it was handed, once each, and never
+# with nothing to trigger them.
+python3 - <<'PY' > "$TMP/guard.txt"
+import sys; sys.path.insert(0, "agent")
+import qsagent
+ctx = qsagent.new_context({"habits": {}, "outputs": []}, ["kb_c"])
+def call(**args):
+    return qsagent.run_tool("propose_binding", {"function": "normal", "why": "w",
+                                                "confidence": "inferred", **args}, ctx)
+uninvited = call(output="left_trigger", inputs=["lip"])
+empty = call(output="kb_c", inputs=[])
+first = call(output="kb_c", inputs=["mp_left_sip"])
+again = call(output="kb_c", inputs=["lip"])
+early = qsagent.run_tool("finish", {"summary": "done"},
+                         qsagent.new_context({"habits": {}, "outputs": []}, ["kb_c", "kb_v"]))
+print("error" in uninvited, "error" in empty, "recorded" in first,
+      "error" in again, "error" in early, len(ctx["proposals"]))
+PY
+check "a control nobody asked about is refused, and so is finishing early" \
+  "True True True True True 1" "$(cat "$TMP/guard.txt")"
+
+# The device reads function parameters as whole numbers, so a generated row
+# that says "tap banana" would run as "tap 0" without saying so.
+cp "$TMP/p.csv" "$TMP/banana.csv"
+cat > "$TMP/banana.json" <<'EOF'
+{"game":"t","steps":1,"finished":true,"questions":[],"summary":"",
+ "proposals":[{"output":"kb_left_shift","inputs":["mp_triple_puff"],"function":"tap banana",
+               "confidence":"inferred","why":"a parameter the device cannot read"}]}
+EOF
+python3 agent/finalize.py --profile "$TMP/banana.csv" --decisions "$TMP/banana.json" >/dev/null 2>&1
+check "a parameter the device would read as something else is refused" "1" "$?"
+check "and that profile is byte for byte unchanged" "same" \
+  "$(cmp -s "$TMP/p.csv" "$TMP/banana.csv" && echo same || echo changed)"
+
+# An answer is taken exactly as given. A missing function used to become
+# "normal", which is a device setting nobody typed.
+cp "$TMP/p.csv" "$TMP/partial.csv"
+echo '{"kb_c": {"inputs": ["mp_left_sip"]}}' > "$TMP/partial-answers.json"
+python3 agent/finalize.py --profile "$TMP/partial.csv" --decisions "$TMP/ask.json" \
+  --answers "$TMP/partial-answers.json" >/dev/null 2>&1
+check "an answer with no function is refused, not filled in" "1" "$?"
+
+# Nothing the agent never reached may pass in silence.
+cat > "$TMP/left.json" <<'EOF'
+{"game":"t","steps":20,"finished":false,"summary":"","proposals":[],"questions":[],
+ "untouched":["kb_v","kb_space"]}
+EOF
+cp "$TMP/p.csv" "$TMP/left.csv"
+python3 agent/finalize.py --profile "$TMP/left.csv" --decisions "$TMP/left.json" > "$TMP/left.log" 2>&1
+check "controls the agent never reached are named, not passed over" "yes" \
+  "$(grep -q 'never reached' "$TMP/left.log" && echo yes || echo no)"
+
 [ "$fails" -eq 0 ] && echo "the whole pipeline holds" || echo "$fails check(s) failed"
 exit "$fails"

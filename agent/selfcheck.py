@@ -45,13 +45,13 @@ def use(name, **args):
     return {"content": [{"type": "tool_use", "id": f"t{name}", "name": name, "input": args}]}
 
 
-def fresh_ctx():
-    return {
+def fresh_ctx(unresolved=("kb_c",)):
+    plan = {
         "habits": {"kb_c": [{"inputs": ["mp_left_sip"], "function": "toggle", "seenIn": 40,
                              "ofGames": 95, "share": 0.42, "evidence": "Doom, mode 'Gameplay', row 31"}]},
         "outputs": ["kb_c", "kb_left_shift", "kb_left_control", "x", "circle"],
-        "proposals": [], "questions": [], "done": None,
     }
+    return qsagent.new_context(plan, unresolved)
 
 
 def run(call, ctx):
@@ -82,11 +82,44 @@ check("the budget is small enough to matter", True, qsagent.MAX_STEPS <= 25)
 # Asking is a real outcome, not a failure.
 ctx = fresh_ctx()
 run(scripted(
-    use("ask_user", output="kb_c", question="Crouch: hold or toggle?",
-        options=["toggle on mp_left_sip, as in Doom", "hold on mp_left_puff"]),
+    use("ask_user", output="kb_c", question="Crouch: hold or toggle?", options=[
+        {"inputs": ["mp_left_sip"], "function": "toggle", "label": "Left sip, toggle, as in Doom"},
+        {"inputs": ["mp_left_puff"], "function": "normal", "label": "Left puff, held"}]),
     use("finish", summary="one to ask"),
 ), ctx)
 check("a question is recorded, not a binding", (0, 1), (len(ctx["proposals"]), len(ctx["questions"])))
+
+# An option written as a sentence cannot be bound as written, so offering one
+# to a person would be offering a choice that does nothing when they pick it.
+ctx = fresh_ctx()
+run(scripted(
+    use("ask_user", output="kb_c", question="Crouch: hold or toggle?",
+        options=["toggle on mp_left_sip, as in Doom", "hold on mp_left_puff"]),
+    {"content": [{"type": "text", "text": "stopping"}]},
+), ctx)
+check("an option that cannot be bound is refused, not offered", 0, len(ctx["questions"]))
+
+# The controls it was handed are the job. Anything else is a change nobody
+# asked for, and it would reach the file exactly like a real one.
+ctx = fresh_ctx()
+run(scripted(
+    use("propose_binding", output="kb_left_control", inputs=["lip"], function="normal",
+        why="while I am here", confidence="inferred"),
+    {"content": [{"type": "text", "text": "stopping"}]},
+), ctx)
+check("a control nobody asked about is not recorded", 0, len(ctx["proposals"]))
+
+# Finishing with controls still untouched used to end the run reporting only
+# what it happened to record.
+ctx = fresh_ctx(unresolved=("kb_c", "kb_left_shift"))
+steps, finished, _ = run(scripted(
+    use("propose_binding", output="kb_c", inputs=["mp_left_sip"], function="toggle",
+        why="40 of 95 of his games, Doom row 31", confidence="evidenced"),
+    use("finish", summary="close enough"),
+    use("finish", summary="close enough"),
+), ctx)
+check("it cannot finish while a control is untouched", False, finished)
+check("and the one it never reached is named", ["kb_left_shift"], qsagent.brief(ctx)["untouched"])
 
 # Looking a token up beats inventing one.
 ctx = fresh_ctx()

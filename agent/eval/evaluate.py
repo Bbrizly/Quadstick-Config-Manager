@@ -29,18 +29,25 @@ def is_rig(output):
 
 
 def bindings_of(profile):
-    """One profile as {output token: (inputs tuple, function keyword)}.
+    """One profile as {output token: (inputs tuple, function keyword, whole function)}.
 
     First binding wins when a profile binds one output in several modes: the
     question asked is what this author reaches for, not every place he put it.
+
+    Both forms of the function are kept because they measure different things.
+    The keyword alone is what the registered numbers were scored on. The whole
+    string includes the timings he set, and `tap 200` and `tap 500` are not the
+    same binding to the person playing through them, so `with timings` is the
+    stricter and more honest column. Neither replaces the other here: the
+    registered one stays exactly as registered.
     """
     out = {}
     for mode in profile["modes"]:
         for b in mode["bindings"]:
             if not b["output"] or not b["inputs"]:
                 continue
-            out.setdefault(b["output"],
-                           (tuple(b["inputs"]), (b["function"] or "").split()[0] if b["function"] else ""))
+            whole = b["function"] or ""
+            out.setdefault(b["output"], (tuple(b["inputs"]), whole.split()[0] if whole else "", whole))
     return out
 
 
@@ -84,6 +91,8 @@ def score(reference, prediction):
             b["inputs"] += 1
             if guess[1] == truth[1]:
                 b["exact"] += 1
+                if guess[2] == truth[2]:
+                    b["withTimings"] += 1
     return buckets
 
 
@@ -129,7 +138,8 @@ def main():
     # Macro average by family, so one 550-binding profile cannot carry a number.
     print(f"leave-one-family-out over {len(families)} families, "
           f"{len({r['game'] for r in results})} profiles\n")
-    header = f"{'baseline':<10}{'gameplay exact':>16}{'gameplay inputs':>17}{'coverage':>10}{'rig exact':>11}"
+    header = (f"{'baseline':<10}{'gameplay exact':>16}{'with timings':>14}"
+              f"{'gameplay inputs':>17}{'coverage':>10}{'rig exact':>11}")
     print(header)
     print("-" * len(header))
     for name in ("global", "nearest"):
@@ -143,8 +153,12 @@ def main():
                 if fam:
                     vals.append(statistics.mean(fam))
             return statistics.mean(vals) if vals else 0.0
-        print(f"{name:<10}{macro('gameplay','exact'):>15.1%}{macro('gameplay','inputs'):>17.1%}"
+        print(f"{name:<10}{macro('gameplay','exact'):>15.1%}{macro('gameplay','withTimings'):>14.1%}"
+              f"{macro('gameplay','inputs'):>17.1%}"
               f"{macro('gameplay','answered'):>10.1%}{macro('rig','exact'):>11.1%}")
+    print("\n'gameplay exact' is the registered measure: same inputs, same function name.\n"
+          "'with timings' is the same rows scored with the function's parameters too,\n"
+          "so `tap 200` and `tap 500` count as different. It is the stricter number.")
 
     if args.family:
         print()

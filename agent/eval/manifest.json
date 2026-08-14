@@ -46,7 +46,8 @@
     "coverage": "share of the held-out profile's output tokens the system predicted anything at all for",
     "abstention": "share it declined to predict. Declining is not counted as a miss; it is counted here.",
     "headline": "macro-averaged top1_exact over gameplay bindings, averaged per family so a 550-binding profile cannot outweigh a 60-binding one",
-    "not_used": "raw cell equality against the held-out file, which these profiles' boilerplate would inflate"
+    "not_used": "raw cell equality against the held-out file, which these profiles' boilerplate would inflate",
+    "amended_2026-08-14": "A review found that dropping function parameters was not only a scoring choice, it was happening in the pipeline: a habit read out of the corpus as `delay_on 500 16000` was being written as `delay_on`, deleting a timing the author set. The pipeline now carries the whole function. Two consequences are reported rather than absorbed. First, a `with timings` column was ADDED: same rows, scored with parameters, global 53.2% and nearest 42.6%. It is the stricter and more meaningful number. Second, the registered `top1_exact` itself moved from 58.1% to 57.9%, because the global baseline now picks its most common answer over whole functions rather than keywords. The registered definition is unchanged and the 0.2 point drop is reported as a drop."
   },
 
   "baselines": {

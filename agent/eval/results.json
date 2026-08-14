@@ -9,14 +9,16 @@
         "gameplay": {
           "total": 56,
           "answered": 56,
-          "inputs": 36,
-          "exact": 32
+          "inputs": 35,
+          "exact": 31,
+          "withTimings": 28
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -29,13 +31,15 @@
           "total": 56,
           "answered": 56,
           "inputs": 48,
-          "exact": 46
+          "exact": 46,
+          "withTimings": 46
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -48,13 +52,15 @@
           "total": 44,
           "answered": 44,
           "inputs": 26,
-          "exact": 23
+          "exact": 24,
+          "withTimings": 23
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -67,13 +73,15 @@
           "total": 44,
           "answered": 44,
           "inputs": 16,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 10
         },
         "rig": {
           "total": 11,
           "answered": 10,
           "inputs": 8,
           "exact": 8,
+          "withTimings": 8,
           "abstained": 1
         }
       }
@@ -87,13 +95,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 30,
-          "exact": 27
+          "exact": 28,
+          "withTimings": 27
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -106,13 +116,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 35,
-          "exact": 35
+          "exact": 35,
+          "withTimings": 35
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -124,14 +136,16 @@
         "gameplay": {
           "total": 41,
           "answered": 41,
-          "inputs": 31,
-          "exact": 28
+          "inputs": 30,
+          "exact": 27,
+          "withTimings": 27
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -144,13 +158,15 @@
           "total": 41,
           "answered": 41,
           "inputs": 27,
-          "exact": 26
+          "exact": 26,
+          "withTimings": 14
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -162,14 +178,16 @@
         "gameplay": {
           "total": 34,
           "answered": 34,
-          "inputs": 24,
-          "exact": 21
+          "inputs": 23,
+          "exact": 20,
+          "withTimings": 14
         },
         "rig": {
           "total": 2,
           "answered": 2,
           "inputs": 2,
-          "exact": 2
+          "exact": 2,
+          "withTimings": 2
         }
       }
     },
@@ -182,13 +200,15 @@
           "total": 34,
           "answered": 34,
           "inputs": 19,
-          "exact": 17
+          "exact": 17,
+          "withTimings": 12
         },
         "rig": {
           "total": 2,
           "answered": 2,
           "inputs": 2,
-          "exact": 2
+          "exact": 2,
+          "withTimings": 2
         }
       }
     },
@@ -201,13 +221,15 @@
           "total": 39,
           "answered": 39,
           "inputs": 22,
-          "exact": 20
+          "exact": 21,
+          "withTimings": 15
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -221,13 +243,15 @@
           "answered": 37,
           "inputs": 10,
           "exact": 6,
+          "withTimings": 6,
           "abstained": 2
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -240,13 +264,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 34,
-          "exact": 31
+          "exact": 31,
+          "withTimings": 28
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -260,6 +286,7 @@
           "answered": 53,
           "inputs": 34,
           "exact": 28,
+          "withTimings": 27,
           "abstained": 2
         },
         "rig": {
@@ -267,6 +294,7 @@
           "answered": 12,
           "inputs": 11,
           "exact": 11,
+          "withTimings": 11,
           "abstained": 1
         }
       }
@@ -279,14 +307,16 @@
         "gameplay": {
           "total": 44,
           "answered": 44,
-          "inputs": 28,
-          "exact": 25
+          "inputs": 27,
+          "exact": 25,
+          "withTimings": 15
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -300,13 +330,15 @@
           "answered": 43,
           "inputs": 17,
           "exact": 13,
-          "abstained": 1
+          "abstained": 1,
+          "withTimings": 9
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -318,14 +350,16 @@
         "gameplay": {
           "total": 37,
           "answered": 37,
-          "inputs": 31,
-          "exact": 29
+          "inputs": 29,
+          "exact": 28,
+          "withTimings": 28
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -338,13 +372,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 20,
-          "exact": 15
+          "exact": 15,
+          "withTimings": 11
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -356,14 +392,16 @@
         "gameplay": {
           "total": 42,
           "answered": 42,
-          "inputs": 22,
-          "exact": 19
+          "inputs": 20,
+          "exact": 17,
+          "withTimings": 16
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -376,13 +414,15 @@
           "total": 42,
           "answered": 42,
           "inputs": 40,
-          "exact": 39
+          "exact": 39,
+          "withTimings": 39
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -394,14 +434,16 @@
         "gameplay": {
           "total": 68,
           "answered": 68,
-          "inputs": 47,
-          "exact": 43
+          "inputs": 48,
+          "exact": 43,
+          "withTimings": 39
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -414,13 +456,15 @@
           "total": 68,
           "answered": 68,
           "inputs": 63,
-          "exact": 63
+          "exact": 63,
+          "withTimings": 63
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -433,13 +477,15 @@
           "total": 40,
           "answered": 40,
           "inputs": 21,
-          "exact": 19
+          "exact": 18,
+          "withTimings": 18
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -452,13 +498,15 @@
           "total": 40,
           "answered": 40,
           "inputs": 18,
-          "exact": 15
+          "exact": 15,
+          "withTimings": 11
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -471,13 +519,15 @@
           "total": 45,
           "answered": 45,
           "inputs": 30,
-          "exact": 27
+          "exact": 27,
+          "withTimings": 26
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -490,13 +540,15 @@
           "total": 45,
           "answered": 45,
           "inputs": 20,
-          "exact": 17
+          "exact": 17,
+          "withTimings": 14
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -509,13 +561,15 @@
           "total": 53,
           "answered": 53,
           "inputs": 34,
-          "exact": 32
+          "exact": 31,
+          "withTimings": 28
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -528,13 +582,15 @@
           "total": 53,
           "answered": 53,
           "inputs": 41,
-          "exact": 38
+          "exact": 38,
+          "withTimings": 37
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -546,14 +602,16 @@
         "gameplay": {
           "total": 56,
           "answered": 56,
-          "inputs": 37,
-          "exact": 35
+          "inputs": 38,
+          "exact": 36,
+          "withTimings": 33
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -566,13 +624,15 @@
           "total": 56,
           "answered": 56,
           "inputs": 48,
-          "exact": 46
+          "exact": 46,
+          "withTimings": 46
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -585,13 +645,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 23,
-          "exact": 16
+          "exact": 15,
+          "withTimings": 7
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 5
+          "exact": 5,
+          "withTimings": 5
         }
       }
     },
@@ -604,13 +666,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 15,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 4
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 5
         }
       }
     },
@@ -623,13 +687,15 @@
           "total": 24,
           "answered": 24,
           "inputs": 14,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 10
         },
         "rig": {
           "total": 3,
           "answered": 3,
           "inputs": 2,
-          "exact": 2
+          "exact": 2,
+          "withTimings": 2
         }
       }
     },
@@ -642,13 +708,15 @@
           "total": 24,
           "answered": 24,
           "inputs": 12,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         },
         "rig": {
           "total": 3,
           "answered": 3,
           "inputs": 3,
-          "exact": 3
+          "exact": 3,
+          "withTimings": 3
         }
       }
     },
@@ -661,13 +729,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 36,
-          "exact": 34
+          "exact": 34,
+          "withTimings": 31
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -680,13 +750,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 43,
-          "exact": 42
+          "exact": 42,
+          "withTimings": 42
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -699,13 +771,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 36,
-          "exact": 34
+          "exact": 34,
+          "withTimings": 31
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -718,13 +792,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 43,
-          "exact": 42
+          "exact": 42,
+          "withTimings": 42
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -737,13 +813,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 36,
-          "exact": 34
+          "exact": 34,
+          "withTimings": 31
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -756,13 +834,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 44,
-          "exact": 42
+          "exact": 42,
+          "withTimings": 42
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -775,13 +855,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 36,
-          "exact": 34
+          "exact": 34,
+          "withTimings": 31
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -794,13 +876,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 44,
-          "exact": 43
+          "exact": 43,
+          "withTimings": 43
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -813,13 +897,15 @@
           "total": 53,
           "answered": 53,
           "inputs": 36,
-          "exact": 34
+          "exact": 33,
+          "withTimings": 30
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -832,13 +918,15 @@
           "total": 53,
           "answered": 53,
           "inputs": 41,
-          "exact": 38
+          "exact": 38,
+          "withTimings": 37
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -850,14 +938,16 @@
         "gameplay": {
           "total": 52,
           "answered": 52,
-          "inputs": 35,
-          "exact": 33
+          "inputs": 34,
+          "exact": 31,
+          "withTimings": 29
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -870,13 +960,15 @@
           "total": 52,
           "answered": 52,
           "inputs": 36,
-          "exact": 33
+          "exact": 33,
+          "withTimings": 32
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -889,13 +981,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 37,
-          "exact": 35
+          "exact": 34,
+          "withTimings": 31
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -908,13 +1002,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 43,
-          "exact": 42
+          "exact": 42,
+          "withTimings": 41
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -927,14 +1023,16 @@
           "total": 35,
           "answered": 34,
           "inputs": 25,
-          "exact": 24,
+          "exact": 25,
+          "withTimings": 25,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -948,13 +1046,15 @@
           "answered": 34,
           "inputs": 27,
           "exact": 27,
+          "withTimings": 27,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -966,14 +1066,16 @@
         "gameplay": {
           "total": 52,
           "answered": 52,
-          "inputs": 29,
-          "exact": 28
+          "inputs": 28,
+          "exact": 26,
+          "withTimings": 26
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 8,
-          "exact": 8
+          "exact": 8,
+          "withTimings": 8
         }
       }
     },
@@ -987,13 +1089,15 @@
           "answered": 46,
           "inputs": 24,
           "exact": 21,
+          "withTimings": 18,
           "abstained": 6
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -1006,13 +1110,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 27,
-          "exact": 23
+          "exact": 23,
+          "withTimings": 20
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -1025,13 +1131,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 17,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 7
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 5
+          "exact": 5,
+          "withTimings": 5
         }
       }
     },
@@ -1044,13 +1152,15 @@
           "total": 31,
           "answered": 31,
           "inputs": 25,
-          "exact": 22
+          "exact": 22,
+          "withTimings": 21
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -1063,13 +1173,15 @@
           "total": 31,
           "answered": 31,
           "inputs": 21,
-          "exact": 18
+          "exact": 18,
+          "withTimings": 16
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -1082,13 +1194,15 @@
           "total": 25,
           "answered": 25,
           "inputs": 16,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 12
         },
         "rig": {
           "total": 2,
           "answered": 2,
           "inputs": 2,
-          "exact": 2
+          "exact": 2,
+          "withTimings": 2
         }
       }
     },
@@ -1101,13 +1215,15 @@
           "total": 25,
           "answered": 25,
           "inputs": 12,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         },
         "rig": {
           "total": 2,
           "answered": 2,
           "inputs": 2,
-          "exact": 2
+          "exact": 2,
+          "withTimings": 2
         }
       }
     },
@@ -1120,13 +1236,15 @@
           "total": 39,
           "answered": 39,
           "inputs": 26,
-          "exact": 24
+          "exact": 25,
+          "withTimings": 18
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -1140,13 +1258,15 @@
           "answered": 38,
           "inputs": 19,
           "exact": 19,
+          "withTimings": 16,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1158,14 +1278,16 @@
         "gameplay": {
           "total": 53,
           "answered": 53,
-          "inputs": 22,
-          "exact": 21
+          "inputs": 21,
+          "exact": 21,
+          "withTimings": 16
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -1179,13 +1301,15 @@
           "answered": 46,
           "inputs": 17,
           "exact": 17,
+          "withTimings": 16,
           "abstained": 7
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1198,13 +1322,15 @@
           "total": 46,
           "answered": 46,
           "inputs": 30,
-          "exact": 30
+          "exact": 30,
+          "withTimings": 26
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1217,13 +1343,15 @@
           "total": 46,
           "answered": 46,
           "inputs": 25,
-          "exact": 24
+          "exact": 24,
+          "withTimings": 22
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1237,13 +1365,15 @@
           "answered": 55,
           "inputs": 35,
           "exact": 32,
+          "withTimings": 28,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1257,6 +1387,7 @@
           "answered": 52,
           "inputs": 36,
           "exact": 32,
+          "withTimings": 31,
           "abstained": 4
         },
         "rig": {
@@ -1264,6 +1395,7 @@
           "answered": 10,
           "inputs": 9,
           "exact": 9,
+          "withTimings": 9,
           "abstained": 1
         }
       }
@@ -1276,14 +1408,16 @@
         "gameplay": {
           "total": 33,
           "answered": 33,
-          "inputs": 24,
-          "exact": 24
+          "inputs": 23,
+          "exact": 23,
+          "withTimings": 23
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -1296,13 +1430,15 @@
           "total": 33,
           "answered": 33,
           "inputs": 25,
-          "exact": 23
+          "exact": 23,
+          "withTimings": 23
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -1315,13 +1451,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 30,
-          "exact": 27
+          "exact": 27,
+          "withTimings": 24
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1334,13 +1472,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 17,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 8
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -1353,13 +1493,15 @@
           "total": 34,
           "answered": 34,
           "inputs": 29,
-          "exact": 28
+          "exact": 28,
+          "withTimings": 21
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -1372,13 +1514,15 @@
           "total": 34,
           "answered": 34,
           "inputs": 23,
-          "exact": 22
+          "exact": 22,
+          "withTimings": 22
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -1390,14 +1534,16 @@
         "gameplay": {
           "total": 50,
           "answered": 50,
-          "inputs": 33,
-          "exact": 29
+          "inputs": 32,
+          "exact": 28,
+          "withTimings": 25
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -1410,13 +1556,15 @@
           "total": 50,
           "answered": 50,
           "inputs": 44,
-          "exact": 43
+          "exact": 43,
+          "withTimings": 43
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -1428,15 +1576,17 @@
         "gameplay": {
           "total": 67,
           "answered": 56,
-          "inputs": 40,
-          "exact": 38,
+          "inputs": 41,
+          "exact": 39,
+          "withTimings": 36,
           "abstained": 11
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1450,13 +1600,15 @@
           "answered": 55,
           "inputs": 44,
           "exact": 43,
+          "withTimings": 43,
           "abstained": 12
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -1468,14 +1620,16 @@
         "gameplay": {
           "total": 55,
           "answered": 55,
-          "inputs": 26,
-          "exact": 23
+          "inputs": 25,
+          "exact": 23,
+          "withTimings": 20
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1488,13 +1642,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 32,
-          "exact": 31
+          "exact": 31,
+          "withTimings": 31
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -1506,14 +1662,16 @@
         "gameplay": {
           "total": 50,
           "answered": 50,
-          "inputs": 30,
-          "exact": 26
+          "inputs": 29,
+          "exact": 26,
+          "withTimings": 23
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -1526,13 +1684,15 @@
           "total": 50,
           "answered": 50,
           "inputs": 34,
-          "exact": 33
+          "exact": 33,
+          "withTimings": 33
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -1545,13 +1705,15 @@
           "total": 68,
           "answered": 68,
           "inputs": 47,
-          "exact": 42
+          "exact": 42,
+          "withTimings": 36
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -1564,13 +1726,15 @@
           "total": 68,
           "answered": 68,
           "inputs": 63,
-          "exact": 63
+          "exact": 63,
+          "withTimings": 63
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -1583,13 +1747,15 @@
           "total": 68,
           "answered": 68,
           "inputs": 47,
-          "exact": 42
+          "exact": 42,
+          "withTimings": 36
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -1602,13 +1768,15 @@
           "total": 68,
           "answered": 68,
           "inputs": 63,
-          "exact": 63
+          "exact": 63,
+          "withTimings": 63
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -1621,13 +1789,15 @@
           "total": 68,
           "answered": 68,
           "inputs": 47,
-          "exact": 42
+          "exact": 42,
+          "withTimings": 36
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -1640,13 +1810,15 @@
           "total": 68,
           "answered": 68,
           "inputs": 63,
-          "exact": 63
+          "exact": 63,
+          "withTimings": 63
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -1659,13 +1831,15 @@
           "total": 59,
           "answered": 59,
           "inputs": 39,
-          "exact": 35
+          "exact": 35,
+          "withTimings": 29
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -1678,13 +1852,15 @@
           "total": 59,
           "answered": 59,
           "inputs": 52,
-          "exact": 50
+          "exact": 50,
+          "withTimings": 50
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -1698,7 +1874,8 @@
           "total": 2,
           "answered": 2,
           "inputs": 2,
-          "exact": 1
+          "exact": 1,
+          "withTimings": 1
         }
       }
     },
@@ -1712,7 +1889,8 @@
           "total": 2,
           "answered": 2,
           "inputs": 2,
-          "exact": 1
+          "exact": 1,
+          "withTimings": 1
         }
       }
     },
@@ -1749,13 +1927,15 @@
           "total": 54,
           "answered": 54,
           "inputs": 32,
-          "exact": 28
+          "exact": 28,
+          "withTimings": 24
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -1768,13 +1948,15 @@
           "total": 54,
           "answered": 54,
           "inputs": 50,
-          "exact": 48
+          "exact": 48,
+          "withTimings": 48
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -1786,14 +1968,16 @@
         "gameplay": {
           "total": 32,
           "answered": 32,
-          "inputs": 24,
-          "exact": 21
+          "inputs": 23,
+          "exact": 21,
+          "withTimings": 21
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1806,13 +1990,15 @@
           "total": 32,
           "answered": 32,
           "inputs": 19,
-          "exact": 18
+          "exact": 18,
+          "withTimings": 18
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -1825,13 +2011,15 @@
           "total": 39,
           "answered": 39,
           "inputs": 25,
-          "exact": 23
+          "exact": 24,
+          "withTimings": 23
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -1844,13 +2032,15 @@
           "total": 39,
           "answered": 39,
           "inputs": 29,
-          "exact": 28
+          "exact": 28,
+          "withTimings": 28
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -1864,13 +2054,15 @@
           "answered": 71,
           "inputs": 22,
           "exact": 18,
+          "withTimings": 12,
           "abstained": 4
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -1884,6 +2076,7 @@
           "answered": 52,
           "inputs": 21,
           "exact": 19,
+          "withTimings": 19,
           "abstained": 23
         },
         "rig": {
@@ -1891,6 +2084,7 @@
           "answered": 6,
           "inputs": 6,
           "exact": 5,
+          "withTimings": 5,
           "abstained": 1
         }
       }
@@ -1903,14 +2097,16 @@
         "gameplay": {
           "total": 42,
           "answered": 42,
-          "inputs": 21,
-          "exact": 21
+          "inputs": 22,
+          "exact": 20,
+          "withTimings": 16
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -1923,13 +2119,15 @@
           "total": 42,
           "answered": 42,
           "inputs": 14,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 8
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -1942,13 +2140,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 22,
-          "exact": 16
+          "exact": 16,
+          "withTimings": 12
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -1962,13 +2162,15 @@
           "answered": 35,
           "inputs": 10,
           "exact": 6,
+          "withTimings": 6,
           "abstained": 1
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -1982,13 +2184,15 @@
           "answered": 41,
           "inputs": 26,
           "exact": 21,
+          "withTimings": 15,
           "abstained": 2
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2002,13 +2206,15 @@
           "answered": 41,
           "inputs": 16,
           "exact": 12,
-          "abstained": 2
+          "abstained": 2,
+          "withTimings": 6
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2022,13 +2228,15 @@
           "answered": 38,
           "inputs": 25,
           "exact": 20,
+          "withTimings": 13,
           "abstained": 2
         },
         "rig": {
           "total": 8,
           "answered": 8,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -2042,13 +2250,15 @@
           "answered": 38,
           "inputs": 15,
           "exact": 11,
+          "withTimings": 4,
           "abstained": 2
         },
         "rig": {
           "total": 8,
           "answered": 8,
           "inputs": 7,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -2061,13 +2271,15 @@
           "total": 51,
           "answered": 51,
           "inputs": 17,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 5
+          "exact": 5,
+          "withTimings": 5
         }
       }
     },
@@ -2081,13 +2293,15 @@
           "answered": 42,
           "inputs": 11,
           "exact": 6,
+          "withTimings": 6,
           "abstained": 9
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 5
+          "exact": 5,
+          "withTimings": 5
         }
       }
     },
@@ -2101,13 +2315,15 @@
           "answered": 57,
           "abstained": 4,
           "inputs": 24,
-          "exact": 22
+          "exact": 22,
+          "withTimings": 16
         },
         "rig": {
           "total": 9,
           "answered": 9,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -2121,13 +2337,15 @@
           "answered": 46,
           "inputs": 17,
           "exact": 16,
+          "withTimings": 12,
           "abstained": 15
         },
         "rig": {
           "total": 9,
           "answered": 9,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -2140,13 +2358,15 @@
           "total": 65,
           "answered": 65,
           "inputs": 19,
-          "exact": 15
+          "exact": 15,
+          "withTimings": 15
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 5
+          "exact": 5,
+          "withTimings": 5
         }
       }
     },
@@ -2160,13 +2380,15 @@
           "answered": 52,
           "inputs": 21,
           "exact": 19,
+          "withTimings": 19,
           "abstained": 13
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 5
+          "exact": 5,
+          "withTimings": 5
         }
       }
     },
@@ -2180,13 +2402,15 @@
           "answered": 57,
           "abstained": 4,
           "inputs": 24,
-          "exact": 22
+          "exact": 22,
+          "withTimings": 16
         },
         "rig": {
           "total": 9,
           "answered": 9,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -2200,13 +2424,15 @@
           "answered": 46,
           "inputs": 17,
           "exact": 16,
+          "withTimings": 12,
           "abstained": 15
         },
         "rig": {
           "total": 9,
           "answered": 9,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -2220,13 +2446,15 @@
           "answered": 71,
           "abstained": 4,
           "inputs": 25,
-          "exact": 21
+          "exact": 21,
+          "withTimings": 14
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 8,
-          "exact": 8
+          "exact": 8,
+          "withTimings": 8
         }
       }
     },
@@ -2240,13 +2468,15 @@
           "answered": 58,
           "inputs": 19,
           "exact": 17,
+          "withTimings": 12,
           "abstained": 17
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 8,
-          "exact": 8
+          "exact": 8,
+          "withTimings": 8
         }
       }
     },
@@ -2258,14 +2488,16 @@
         "gameplay": {
           "total": 42,
           "answered": 42,
-          "inputs": 23,
-          "exact": 19
+          "inputs": 21,
+          "exact": 18,
+          "withTimings": 17
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2278,13 +2510,15 @@
           "total": 42,
           "answered": 42,
           "inputs": 40,
-          "exact": 39
+          "exact": 39,
+          "withTimings": 39
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2297,13 +2531,15 @@
           "total": 32,
           "answered": 32,
           "inputs": 12,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         },
         "rig": {
           "total": 2,
           "answered": 2,
           "inputs": 2,
-          "exact": 1
+          "exact": 1,
+          "withTimings": 1
         }
       }
     },
@@ -2316,13 +2552,15 @@
           "total": 32,
           "answered": 32,
           "inputs": 20,
-          "exact": 20
+          "exact": 20,
+          "withTimings": 20
         },
         "rig": {
           "total": 2,
           "answered": 2,
           "inputs": 2,
-          "exact": 2
+          "exact": 2,
+          "withTimings": 2
         }
       }
     },
@@ -2335,13 +2573,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 23,
-          "exact": 21
+          "exact": 21,
+          "withTimings": 20
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2354,13 +2594,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 16,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 8
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -2372,14 +2614,16 @@
         "gameplay": {
           "total": 57,
           "answered": 57,
-          "inputs": 36,
-          "exact": 31
+          "inputs": 35,
+          "exact": 30,
+          "withTimings": 23
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -2393,13 +2637,15 @@
           "abstained": 9,
           "answered": 48,
           "inputs": 19,
-          "exact": 15
+          "exact": 15,
+          "withTimings": 13
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -2412,13 +2658,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 32,
-          "exact": 30
+          "exact": 30,
+          "withTimings": 30
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2431,13 +2679,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 23,
-          "exact": 20
+          "exact": 20,
+          "withTimings": 20
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2449,14 +2699,16 @@
         "gameplay": {
           "total": 42,
           "answered": 42,
-          "inputs": 29,
-          "exact": 29
+          "inputs": 28,
+          "exact": 28,
+          "withTimings": 28
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -2470,13 +2722,15 @@
           "answered": 41,
           "inputs": 24,
           "exact": 23,
+          "withTimings": 18,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2490,13 +2744,15 @@
           "answered": 61,
           "inputs": 31,
           "exact": 28,
+          "withTimings": 20,
           "abstained": 1
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -2510,13 +2766,15 @@
           "answered": 47,
           "inputs": 18,
           "exact": 17,
+          "withTimings": 12,
           "abstained": 15
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -2530,13 +2788,15 @@
           "answered": 60,
           "inputs": 25,
           "exact": 21,
+          "withTimings": 14,
           "abstained": 2
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 8,
-          "exact": 8
+          "exact": 8,
+          "withTimings": 8
         }
       }
     },
@@ -2550,6 +2810,7 @@
           "answered": 48,
           "inputs": 18,
           "exact": 14,
+          "withTimings": 9,
           "abstained": 14
         },
         "rig": {
@@ -2557,6 +2818,7 @@
           "answered": 10,
           "inputs": 6,
           "exact": 6,
+          "withTimings": 6,
           "abstained": 1
         }
       }
@@ -2571,13 +2833,15 @@
           "answered": 57,
           "inputs": 27,
           "exact": 22,
+          "withTimings": 18,
           "abstained": 1
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2591,13 +2855,15 @@
           "answered": 43,
           "inputs": 14,
           "exact": 12,
+          "withTimings": 10,
           "abstained": 15
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2611,13 +2877,15 @@
           "answered": 60,
           "inputs": 33,
           "exact": 28,
+          "withTimings": 20,
           "abstained": 1
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -2631,13 +2899,15 @@
           "answered": 46,
           "inputs": 19,
           "exact": 18,
+          "withTimings": 13,
           "abstained": 15
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -2649,14 +2919,16 @@
         "gameplay": {
           "total": 41,
           "answered": 41,
-          "inputs": 28,
-          "exact": 27
+          "inputs": 27,
+          "exact": 25,
+          "withTimings": 25
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2669,13 +2941,15 @@
           "total": 41,
           "answered": 41,
           "inputs": 19,
-          "exact": 16
+          "exact": 16,
+          "withTimings": 13
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2688,13 +2962,15 @@
           "total": 46,
           "answered": 46,
           "inputs": 30,
-          "exact": 27
+          "exact": 26,
+          "withTimings": 24
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2707,13 +2983,15 @@
           "total": 46,
           "answered": 46,
           "inputs": 21,
-          "exact": 18
+          "exact": 18,
+          "withTimings": 13
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2726,13 +3004,15 @@
           "total": 40,
           "answered": 40,
           "inputs": 32,
-          "exact": 30
+          "exact": 31,
+          "withTimings": 31
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2745,13 +3025,15 @@
           "total": 40,
           "answered": 40,
           "inputs": 18,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 9
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -2764,13 +3046,15 @@
           "total": 46,
           "answered": 46,
           "inputs": 27,
-          "exact": 24
+          "exact": 24,
+          "withTimings": 24
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2783,13 +3067,15 @@
           "total": 46,
           "answered": 46,
           "inputs": 18,
-          "exact": 16
+          "exact": 16,
+          "withTimings": 15
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2802,13 +3088,15 @@
           "total": 35,
           "answered": 35,
           "inputs": 23,
-          "exact": 20
+          "exact": 21,
+          "withTimings": 20
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2821,13 +3109,15 @@
           "total": 35,
           "answered": 35,
           "inputs": 16,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 8
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2839,14 +3129,16 @@
         "gameplay": {
           "total": 32,
           "answered": 32,
-          "inputs": 22,
-          "exact": 20
+          "inputs": 21,
+          "exact": 20,
+          "withTimings": 19
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2859,13 +3151,15 @@
           "total": 32,
           "answered": 32,
           "inputs": 19,
-          "exact": 18
+          "exact": 18,
+          "withTimings": 16
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -2877,14 +3171,16 @@
         "gameplay": {
           "total": 38,
           "answered": 38,
-          "inputs": 26,
-          "exact": 24
+          "inputs": 25,
+          "exact": 22,
+          "withTimings": 21
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -2897,13 +3193,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 27,
-          "exact": 24
+          "exact": 24,
+          "withTimings": 18
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -2916,14 +3214,16 @@
           "total": 58,
           "answered": 57,
           "inputs": 39,
-          "exact": 36,
+          "exact": 37,
+          "withTimings": 34,
           "abstained": 1
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -2937,13 +3237,15 @@
           "answered": 56,
           "inputs": 35,
           "exact": 32,
+          "withTimings": 27,
           "abstained": 2
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 12,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -2956,13 +3258,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 28,
-          "exact": 25
+          "exact": 26,
+          "withTimings": 26
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -2976,13 +3280,15 @@
           "answered": 37,
           "inputs": 35,
           "exact": 35,
+          "withTimings": 35,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -2995,13 +3301,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 27,
-          "exact": 25
+          "exact": 25,
+          "withTimings": 25
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3014,13 +3322,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 20,
-          "exact": 17
+          "exact": 17,
+          "withTimings": 17
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3033,13 +3343,15 @@
           "total": 72,
           "answered": 72,
           "inputs": 45,
-          "exact": 43
+          "exact": 44,
+          "withTimings": 43
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -3053,13 +3365,15 @@
           "answered": 62,
           "inputs": 35,
           "exact": 31,
+          "withTimings": 29,
           "abstained": 10
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -3071,14 +3385,16 @@
         "gameplay": {
           "total": 38,
           "answered": 38,
-          "inputs": 27,
-          "exact": 26
+          "inputs": 26,
+          "exact": 26,
+          "withTimings": 26
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3091,13 +3407,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 19,
-          "exact": 16
+          "exact": 16,
+          "withTimings": 12
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -3110,13 +3428,15 @@
           "total": 42,
           "answered": 42,
           "inputs": 28,
-          "exact": 26
+          "exact": 26,
+          "withTimings": 26
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3130,13 +3450,15 @@
           "answered": 41,
           "inputs": 19,
           "exact": 15,
+          "withTimings": 12,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -3148,14 +3470,16 @@
         "gameplay": {
           "total": 40,
           "answered": 40,
-          "inputs": 30,
-          "exact": 25
+          "inputs": 29,
+          "exact": 25,
+          "withTimings": 24
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -3168,13 +3492,15 @@
           "total": 40,
           "answered": 40,
           "inputs": 26,
-          "exact": 21
+          "exact": 21,
+          "withTimings": 15
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -3187,13 +3513,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 24,
-          "exact": 20
+          "exact": 21,
+          "withTimings": 13
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -3207,13 +3535,15 @@
           "answered": 36,
           "inputs": 15,
           "exact": 12,
+          "withTimings": 9,
           "abstained": 2
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 12,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3225,14 +3555,16 @@
         "gameplay": {
           "total": 55,
           "answered": 55,
-          "inputs": 31,
-          "exact": 26
+          "inputs": 29,
+          "exact": 25,
+          "withTimings": 22
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 8,
-          "exact": 8
+          "exact": 8,
+          "withTimings": 8
         }
       }
     },
@@ -3245,13 +3577,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 30,
-          "exact": 27
+          "exact": 27,
+          "withTimings": 26
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -3263,14 +3597,16 @@
         "gameplay": {
           "total": 46,
           "answered": 46,
-          "inputs": 25,
-          "exact": 23
+          "inputs": 24,
+          "exact": 23,
+          "withTimings": 21
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -3283,13 +3619,15 @@
           "total": 46,
           "answered": 46,
           "inputs": 26,
-          "exact": 23
+          "exact": 23,
+          "withTimings": 22
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 8,
-          "exact": 8
+          "exact": 8,
+          "withTimings": 8
         }
       }
     },
@@ -3302,13 +3640,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 29,
-          "exact": 25
+          "exact": 25,
+          "withTimings": 22
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3321,13 +3661,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 23,
-          "exact": 19
+          "exact": 19,
+          "withTimings": 16
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3340,13 +3682,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 28,
-          "exact": 23
+          "exact": 23,
+          "withTimings": 20
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3359,13 +3703,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 21,
-          "exact": 17
+          "exact": 17,
+          "withTimings": 10
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3378,13 +3724,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 29,
-          "exact": 26
+          "exact": 26,
+          "withTimings": 22
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -3398,13 +3746,15 @@
           "answered": 37,
           "inputs": 17,
           "exact": 11,
+          "withTimings": 7,
           "abstained": 1
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 7,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -3416,14 +3766,16 @@
         "gameplay": {
           "total": 32,
           "answered": 32,
-          "inputs": 27,
-          "exact": 23
+          "inputs": 26,
+          "exact": 23,
+          "withTimings": 20
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -3436,13 +3788,15 @@
           "total": 32,
           "answered": 32,
           "inputs": 17,
-          "exact": 16
+          "exact": 16,
+          "withTimings": 5
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -3454,14 +3808,16 @@
         "gameplay": {
           "total": 50,
           "answered": 50,
-          "inputs": 28,
-          "exact": 25
+          "inputs": 27,
+          "exact": 24,
+          "withTimings": 22
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -3474,13 +3830,15 @@
           "total": 50,
           "answered": 50,
           "inputs": 28,
-          "exact": 26
+          "exact": 26,
+          "withTimings": 24
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -3492,14 +3850,16 @@
         "gameplay": {
           "total": 39,
           "answered": 39,
-          "inputs": 26,
-          "exact": 23
+          "inputs": 27,
+          "exact": 24,
+          "withTimings": 22
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -3513,13 +3873,15 @@
           "answered": 38,
           "inputs": 20,
           "exact": 17,
+          "withTimings": 14,
           "abstained": 1
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 13,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -3532,13 +3894,15 @@
           "total": 41,
           "answered": 41,
           "inputs": 21,
-          "exact": 18
+          "exact": 18,
+          "withTimings": 15
         },
         "rig": {
           "total": 9,
           "answered": 9,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -3551,13 +3915,15 @@
           "total": 41,
           "answered": 41,
           "inputs": 14,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 8
         },
         "rig": {
           "total": 9,
           "answered": 9,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -3570,13 +3936,15 @@
           "total": 40,
           "answered": 40,
           "inputs": 20,
-          "exact": 18
+          "exact": 18,
+          "withTimings": 16
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -3589,13 +3957,15 @@
           "total": 40,
           "answered": 40,
           "inputs": 20,
-          "exact": 17
+          "exact": 17,
+          "withTimings": 15
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -3608,13 +3978,15 @@
           "total": 47,
           "answered": 47,
           "inputs": 20,
-          "exact": 17
+          "exact": 17,
+          "withTimings": 17
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -3628,13 +4000,15 @@
           "answered": 45,
           "inputs": 11,
           "exact": 9,
+          "withTimings": 5,
           "abstained": 2
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 8,
-          "exact": 8
+          "exact": 8,
+          "withTimings": 8
         }
       }
     },
@@ -3646,14 +4020,16 @@
         "gameplay": {
           "total": 38,
           "answered": 38,
-          "inputs": 27,
-          "exact": 24
+          "inputs": 26,
+          "exact": 24,
+          "withTimings": 23
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -3667,13 +4043,15 @@
           "answered": 37,
           "inputs": 24,
           "exact": 22,
+          "withTimings": 17,
           "abstained": 1
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -3685,14 +4063,16 @@
         "gameplay": {
           "total": 38,
           "answered": 38,
-          "inputs": 29,
-          "exact": 26
+          "inputs": 28,
+          "exact": 25,
+          "withTimings": 18
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3705,13 +4085,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 17,
-          "exact": 15
+          "exact": 15,
+          "withTimings": 8
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3724,13 +4106,15 @@
           "total": 30,
           "answered": 30,
           "inputs": 23,
-          "exact": 21
+          "exact": 21,
+          "withTimings": 19
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 7,
-          "exact": 7
+          "exact": 7,
+          "withTimings": 7
         }
       }
     },
@@ -3743,13 +4127,15 @@
           "total": 30,
           "answered": 30,
           "inputs": 19,
-          "exact": 16
+          "exact": 16,
+          "withTimings": 15
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -3762,13 +4148,15 @@
           "total": 32,
           "answered": 32,
           "inputs": 21,
-          "exact": 19
+          "exact": 18,
+          "withTimings": 17
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -3781,13 +4169,15 @@
           "total": 32,
           "answered": 32,
           "inputs": 18,
-          "exact": 16
+          "exact": 16,
+          "withTimings": 14
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -3799,14 +4189,16 @@
         "gameplay": {
           "total": 39,
           "answered": 39,
-          "inputs": 24,
-          "exact": 21
+          "inputs": 23,
+          "exact": 20,
+          "withTimings": 20
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -3819,13 +4211,15 @@
           "total": 39,
           "answered": 39,
           "inputs": 18,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 9
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -3837,14 +4231,16 @@
         "gameplay": {
           "total": 55,
           "answered": 55,
-          "inputs": 41,
-          "exact": 39
+          "inputs": 42,
+          "exact": 40,
+          "withTimings": 37
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -3857,13 +4253,15 @@
           "total": 55,
           "answered": 55,
           "inputs": 45,
-          "exact": 43
+          "exact": 43,
+          "withTimings": 43
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -3877,13 +4275,15 @@
           "answered": 35,
           "inputs": 24,
           "exact": 22,
+          "withTimings": 17,
           "abstained": 1
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -3897,13 +4297,15 @@
           "answered": 35,
           "abstained": 1,
           "inputs": 15,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 7
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 5
+          "exact": 5,
+          "withTimings": 5
         }
       }
     },
@@ -3916,14 +4318,16 @@
           "total": 33,
           "answered": 32,
           "inputs": 23,
-          "exact": 18,
+          "exact": 19,
+          "withTimings": 16,
           "abstained": 1
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -3937,13 +4341,15 @@
           "answered": 32,
           "abstained": 1,
           "inputs": 20,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 9
         },
         "rig": {
           "total": 6,
           "answered": 6,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -3956,13 +4362,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 26,
-          "exact": 23
+          "exact": 24,
+          "withTimings": 21
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -3975,13 +4383,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 16,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -3994,13 +4404,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 29,
-          "exact": 27
+          "exact": 28,
+          "withTimings": 27
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4013,13 +4425,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 19,
-          "exact": 15
+          "exact": 15,
+          "withTimings": 11
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4032,13 +4446,15 @@
           "total": 34,
           "answered": 34,
           "inputs": 26,
-          "exact": 24
+          "exact": 25,
+          "withTimings": 24
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -4051,13 +4467,15 @@
           "total": 34,
           "answered": 34,
           "inputs": 18,
-          "exact": 17
+          "exact": 17,
+          "withTimings": 13
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -4070,13 +4488,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 28,
-          "exact": 25
+          "exact": 26,
+          "withTimings": 26
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4089,13 +4509,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 35,
-          "exact": 35
+          "exact": 35,
+          "withTimings": 35
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4107,14 +4529,16 @@
         "gameplay": {
           "total": 24,
           "answered": 24,
-          "inputs": 16,
-          "exact": 14
+          "inputs": 17,
+          "exact": 14,
+          "withTimings": 12
         },
         "rig": {
           "total": 3,
           "answered": 3,
           "inputs": 2,
-          "exact": 2
+          "exact": 2,
+          "withTimings": 2
         }
       }
     },
@@ -4127,13 +4551,15 @@
           "total": 24,
           "answered": 24,
           "inputs": 12,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         },
         "rig": {
           "total": 3,
           "answered": 3,
           "inputs": 3,
-          "exact": 3
+          "exact": 3,
+          "withTimings": 3
         }
       }
     },
@@ -4146,13 +4572,15 @@
           "total": 41,
           "answered": 41,
           "inputs": 35,
-          "exact": 31
+          "exact": 32,
+          "withTimings": 32
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4165,13 +4593,15 @@
           "total": 41,
           "answered": 41,
           "inputs": 23,
-          "exact": 17
+          "exact": 17,
+          "withTimings": 13
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -4184,13 +4614,15 @@
           "total": 44,
           "answered": 44,
           "inputs": 30,
-          "exact": 29
+          "exact": 28,
+          "withTimings": 28
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4204,13 +4636,15 @@
           "answered": 42,
           "inputs": 26,
           "exact": 21,
+          "withTimings": 13,
           "abstained": 2
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4222,14 +4656,16 @@
         "gameplay": {
           "total": 36,
           "answered": 36,
-          "inputs": 28,
-          "exact": 26
+          "inputs": 27,
+          "exact": 26,
+          "withTimings": 26
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4242,13 +4678,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 24,
-          "exact": 23
+          "exact": 23,
+          "withTimings": 22
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4260,14 +4698,16 @@
         "gameplay": {
           "total": 42,
           "answered": 42,
-          "inputs": 28,
-          "exact": 26
+          "inputs": 29,
+          "exact": 25,
+          "withTimings": 23
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4281,13 +4721,15 @@
           "answered": 41,
           "inputs": 22,
           "exact": 19,
+          "withTimings": 15,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4300,13 +4742,15 @@
           "total": 43,
           "answered": 43,
           "inputs": 19,
-          "exact": 16
+          "exact": 17,
+          "withTimings": 17
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4320,13 +4764,15 @@
           "answered": 41,
           "inputs": 13,
           "abstained": 2,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 6
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4339,13 +4785,15 @@
           "total": 44,
           "answered": 44,
           "inputs": 24,
-          "exact": 18
+          "exact": 19,
+          "withTimings": 19
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4359,6 +4807,7 @@
           "answered": 43,
           "inputs": 15,
           "exact": 9,
+          "withTimings": 5,
           "abstained": 1
         },
         "rig": {
@@ -4366,6 +4815,7 @@
           "answered": 10,
           "inputs": 8,
           "exact": 8,
+          "withTimings": 8,
           "abstained": 1
         }
       }
@@ -4379,13 +4829,15 @@
           "total": 54,
           "answered": 54,
           "inputs": 28,
-          "exact": 23
+          "exact": 23,
+          "withTimings": 20
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -4399,13 +4851,15 @@
           "answered": 46,
           "inputs": 18,
           "exact": 15,
+          "withTimings": 13,
           "abstained": 8
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -4417,14 +4871,16 @@
         "gameplay": {
           "total": 44,
           "answered": 44,
-          "inputs": 31,
-          "exact": 29
+          "inputs": 30,
+          "exact": 28,
+          "withTimings": 27
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -4438,13 +4894,15 @@
           "answered": 43,
           "inputs": 28,
           "exact": 26,
+          "withTimings": 16,
           "abstained": 1
         },
         "rig": {
           "total": 14,
           "answered": 14,
           "inputs": 14,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 14
         }
       }
     },
@@ -4456,14 +4914,16 @@
         "gameplay": {
           "total": 53,
           "answered": 53,
-          "inputs": 39,
-          "exact": 36
+          "inputs": 37,
+          "exact": 34,
+          "withTimings": 31
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4476,13 +4936,15 @@
           "total": 53,
           "answered": 53,
           "inputs": 41,
-          "exact": 38
+          "exact": 38,
+          "withTimings": 37
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -4494,14 +4956,16 @@
         "gameplay": {
           "total": 36,
           "answered": 36,
-          "inputs": 29,
-          "exact": 25
+          "inputs": 30,
+          "exact": 25,
+          "withTimings": 23
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -4514,13 +4978,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 17,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 8
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 6,
-          "exact": 5
+          "exact": 5,
+          "withTimings": 5
         }
       }
     },
@@ -4532,14 +4998,16 @@
         "gameplay": {
           "total": 36,
           "answered": 36,
-          "inputs": 28,
-          "exact": 24
+          "inputs": 29,
+          "exact": 24,
+          "withTimings": 23
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 6,
-          "exact": 6
+          "exact": 6,
+          "withTimings": 6
         }
       }
     },
@@ -4552,13 +5020,15 @@
           "total": 36,
           "answered": 36,
           "inputs": 16,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 7
         },
         "rig": {
           "total": 7,
           "answered": 7,
           "inputs": 6,
-          "exact": 5
+          "exact": 5,
+          "withTimings": 5
         }
       }
     },
@@ -4570,14 +5040,16 @@
         "gameplay": {
           "total": 43,
           "answered": 43,
-          "inputs": 24,
-          "exact": 21
+          "inputs": 25,
+          "exact": 21,
+          "withTimings": 21
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4590,13 +5062,15 @@
           "total": 43,
           "answered": 43,
           "inputs": 15,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 9
         },
         "rig": {
           "total": 11,
           "answered": 10,
           "inputs": 8,
           "exact": 8,
+          "withTimings": 8,
           "abstained": 1
         }
       }
@@ -4610,13 +5084,15 @@
           "total": 41,
           "answered": 41,
           "inputs": 27,
-          "exact": 26
+          "exact": 26,
+          "withTimings": 19
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -4630,13 +5106,15 @@
           "answered": 40,
           "inputs": 26,
           "exact": 25,
+          "withTimings": 22,
           "abstained": 1
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -4649,13 +5127,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 28,
-          "exact": 26
+          "exact": 27,
+          "withTimings": 26
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4668,13 +5148,15 @@
           "total": 37,
           "answered": 37,
           "inputs": 20,
-          "exact": 19
+          "exact": 19,
+          "withTimings": 13
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4686,14 +5168,16 @@
         "gameplay": {
           "total": 14,
           "answered": 14,
-          "inputs": 4,
-          "exact": 3
+          "inputs": 3,
+          "exact": 3,
+          "withTimings": 3
         },
         "rig": {
           "total": 3,
           "answered": 3,
           "inputs": 2,
-          "exact": 2
+          "exact": 2,
+          "withTimings": 2
         }
       }
     },
@@ -4706,13 +5190,15 @@
           "total": 14,
           "answered": 14,
           "inputs": 2,
-          "exact": 1
+          "exact": 1,
+          "withTimings": 1
         },
         "rig": {
           "total": 3,
           "answered": 3,
           "inputs": 3,
-          "exact": 3
+          "exact": 3,
+          "withTimings": 3
         }
       }
     },
@@ -4724,14 +5210,16 @@
         "gameplay": {
           "total": 42,
           "answered": 42,
-          "inputs": 31,
-          "exact": 29
+          "inputs": 32,
+          "exact": 30,
+          "withTimings": 25
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4744,13 +5232,15 @@
           "total": 42,
           "answered": 42,
           "inputs": 16,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 10
         },
         "rig": {
           "total": 10,
           "answered": 10,
           "inputs": 8,
-          "exact": 8
+          "exact": 8,
+          "withTimings": 8
         }
       }
     },
@@ -4762,14 +5252,16 @@
         "gameplay": {
           "total": 43,
           "answered": 43,
-          "inputs": 24,
-          "exact": 22
+          "inputs": 22,
+          "exact": 19,
+          "withTimings": 18
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4783,13 +5275,15 @@
           "answered": 42,
           "inputs": 25,
           "exact": 20,
+          "withTimings": 19,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4802,13 +5296,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 22,
-          "exact": 19
+          "exact": 20,
+          "withTimings": 20
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4821,13 +5317,15 @@
           "total": 38,
           "answered": 38,
           "inputs": 28,
-          "exact": 23
+          "exact": 23,
+          "withTimings": 23
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4840,13 +5338,15 @@
           "total": 44,
           "answered": 44,
           "inputs": 23,
-          "exact": 21
+          "exact": 21,
+          "withTimings": 21
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4859,13 +5359,15 @@
           "total": 44,
           "answered": 44,
           "inputs": 14,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 8
         },
         "rig": {
           "total": 11,
           "answered": 10,
           "inputs": 8,
           "exact": 8,
+          "withTimings": 8,
           "abstained": 1
         }
       }
@@ -4879,13 +5381,15 @@
           "total": 42,
           "answered": 42,
           "inputs": 19,
-          "exact": 17
+          "exact": 18,
+          "withTimings": 15
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 9,
-          "exact": 9
+          "exact": 9,
+          "withTimings": 9
         }
       }
     },
@@ -4899,13 +5403,15 @@
           "answered": 41,
           "inputs": 14,
           "exact": 12,
+          "withTimings": 7,
           "abstained": 1
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 9,
-          "exact": 8
+          "exact": 8,
+          "withTimings": 8
         }
       }
     },
@@ -4917,14 +5423,16 @@
         "gameplay": {
           "total": 41,
           "answered": 41,
-          "inputs": 28,
-          "exact": 23
+          "inputs": 27,
+          "exact": 22,
+          "withTimings": 21
         },
         "rig": {
           "total": 11,
           "answered": 11,
           "inputs": 11,
-          "exact": 11
+          "exact": 11,
+          "withTimings": 11
         }
       }
     },
@@ -4937,13 +5445,15 @@
           "total": 41,
           "answered": 41,
           "inputs": 18,
-          "exact": 14
+          "exact": 14,
+          "withTimings": 12
         },
         "rig": {
           "total": 11,
           "answered": 10,
           "inputs": 8,
           "exact": 8,
+          "withTimings": 8,
           "abstained": 1
         }
       }
@@ -4956,14 +5466,16 @@
         "gameplay": {
           "total": 54,
           "answered": 54,
-          "inputs": 39,
-          "exact": 35
+          "inputs": 37,
+          "exact": 34,
+          "withTimings": 32
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 10,
-          "exact": 10
+          "exact": 10,
+          "withTimings": 10
         }
       }
     },
@@ -4976,13 +5488,15 @@
           "total": 54,
           "answered": 54,
           "inputs": 40,
-          "exact": 36
+          "exact": 36,
+          "withTimings": 36
         },
         "rig": {
           "total": 12,
           "answered": 12,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     },
@@ -4995,13 +5509,15 @@
           "total": 52,
           "answered": 52,
           "inputs": 31,
-          "exact": 28
+          "exact": 27,
+          "withTimings": 25
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 13,
-          "exact": 13
+          "exact": 13,
+          "withTimings": 13
         }
       }
     },
@@ -5014,13 +5530,15 @@
           "total": 52,
           "answered": 52,
           "inputs": 31,
-          "exact": 29
+          "exact": 29,
+          "withTimings": 28
         },
         "rig": {
           "total": 13,
           "answered": 13,
           "inputs": 12,
-          "exact": 12
+          "exact": 12,
+          "withTimings": 12
         }
       }
     }

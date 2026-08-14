@@ -78,7 +78,16 @@ def call_model(system, messages, tools, max_tokens=1500):
     # what is doing the thinking.
     if os.path.exists(path) and MODE != "live":
         with open(path) as f:
-            return json.load(f), "cache"
+            recorded = json.load(f)
+        # A recording is a file on disk, so it can be truncated, hand edited or
+        # left over from an older shape. Reading one that is not a reply at all
+        # would crash the loop, or worse, look like a model that said nothing.
+        if not isinstance(recorded, dict) or not isinstance(recorded.get("content"), list):
+            raise SystemExit(
+                f"the recorded answer at {path} is not a model reply.\n"
+                f"Delete that file and run again, or run with QSF_MODEL_MODE=live "
+                f"to record it fresh.")
+        return recorded, "cache"
     if MODE == "replay":
         raise SystemExit(
             f"replay mode and nothing cached for this request ({key}).\n"
@@ -347,17 +356,33 @@ When each one has a proposal or a question, call finish."""
 REQUIRED = {t["name"]: t["input_schema"].get("required", []) for t in TOOLS}
 
 
+# The shapes the write path depends on. A model that sends a string where a
+# list belongs would otherwise be recorded as a proposal and then read one
+# character at a time, so `inputs: "mp_left_sip"` becomes eleven inputs.
+SHAPES = {"controls": list, "inputs": list, "output": str, "function": str,
+          "query": str, "why": str, "summary": str, "question": str, "options": list}
+
+
 def run_tool(name, args, ctx):
     """The tools are plain lookups over data the caller already has."""
+    if not isinstance(args, dict):
+        return {"error": f"{name} was called with {type(args).__name__}, not an object. "
+                         f"Call it again with a JSON object of arguments."}
     # A half-filled call is sent back to be redone rather than half-recorded. A
     # proposal missing its reason would otherwise reach the file with no reason.
     missing = [k for k in REQUIRED.get(name, []) if k not in args]
     if missing:
         return {"error": f"{name} needs {', '.join(missing)}, which you left out. "
                          f"Call it again with all of them."}
+    wrong = [f"{k} must be a {SHAPES[k].__name__}, not a {type(v).__name__}"
+             for k, v in args.items() if k in SHAPES and not isinstance(v, SHAPES[k])]
+    if wrong:
+        return {"error": f"{name}: {'; '.join(wrong)}. Call it again."}
     if name == "read_habits":
         out = {}
         for control in args["controls"][:12]:
+            if not isinstance(control, str):
+                return {"error": "read_habits takes a list of output names as strings."}
             ranked = ctx["habits"].get(control, [])
             out[control] = [{
                 "inputs": o["inputs"], "function": o["function"],
@@ -372,41 +397,132 @@ def run_tool(name, args, ctx):
         return {"matches": sorted(hits)[:25],
                 "note": "exact spelling and case, as the device reads it"}
     if name == "propose_binding":
+        if not all(isinstance(i, str) for i in args["inputs"]):
+            return {"error": "every input must be a device input name, as a string."}
+        # A binding with nothing to trigger it is a row the device reads and can
+        # never fire. If it should be left alone, leave it out of the report.
+        if not args["inputs"]:
+            return {"error": f"{args['output']} was proposed with no inputs, which "
+                             f"would write a control nothing can trigger. To leave it "
+                             f"alone, do not propose it at all."}
+        # The job is the controls handed over. A proposal for anything else is a
+        # change nobody asked for, and it would reach the file the same way a
+        # real one does.
+        if args["output"] not in ctx["unresolved"]:
+            return {"error": f"{args['output']} is not one of the controls you were "
+                             f"asked to settle, so it was not recorded. Only these are "
+                             f"open: {', '.join(sorted(ctx['unresolved']))[:400]}"}
+        if args["output"] in ctx["settled"]:
+            return {"error": f"{args['output']} already has an answer. Two answers for "
+                             f"one control would write two rows that fight each other."}
+        ctx["settled"].add(args["output"])
         ctx["proposals"].append(args)
         return {"recorded": args["output"]}
     if name == "ask_user":
+        # An option is only worth offering if it can be bound exactly as shown.
+        # One that cannot is dropped here, with the reason, rather than reaching
+        # a person as a choice that quietly does nothing when they pick it.
+        good, bad = [], []
+        for o in args["options"]:
+            if (isinstance(o, dict) and isinstance(o.get("inputs"), list)
+                    and all(isinstance(i, str) for i in o["inputs"])
+                    and isinstance(o.get("label"), str)):
+                good.append(o)
+            else:
+                bad.append(o)
+        args["options"] = good
+        if bad:
+            return {"error": f"{len(bad)} of those options could not be bound as written, "
+                             f"so they were dropped. Each option needs inputs (a list of "
+                             f"device input names), function, and label. Ask again with "
+                             f"options that carry real tokens."}
+        if args["output"] not in ctx["unresolved"]:
+            return {"error": f"{args['output']} is not one of the controls you were asked "
+                             f"to settle, so nothing was asked about it."}
+        if args["output"] in ctx["settled"]:
+            return {"error": f"{args['output']} already has an answer."}
+        ctx["settled"].add(args["output"])
         ctx["questions"].append(args)
         return {"asked": args["output"], "note": "the person will answer this before anything is written"}
     if name == "finish":
+        # Finishing with controls still untouched used to end the run reporting
+        # only what it happened to record, and the rest were never mentioned
+        # again. They are named back here so the run cannot end by forgetting.
+        left = sorted(ctx["unresolved"] - ctx["settled"])
+        if left:
+            return {"error": f"{len(left)} controls still have neither a proposal nor a "
+                             f"question: {', '.join(left)[:600]}. Settle or ask about "
+                             f"each one, then finish."}
         ctx["done"] = args["summary"]
         return {"ok": True}
     return {"error": f"no tool called {name}"}
 
 
-def agent_loop(task, ctx, verbose=True):
-    """Bounded. Every step is printed, because a loop nobody can see is a claim."""
+def new_context(plan, unresolved):
+    """Everything the tools read, plus the two sets that keep the agent honest:
+    which controls it was asked about, and which it has answered."""
+    return {"habits": plan["habits"], "outputs": plan["outputs"],
+            "unresolved": set(unresolved), "settled": set(),
+            "proposals": [], "questions": [], "done": None}
+
+
+def brief(ctx):
+    """What the run actually produced, including what it never touched."""
+    return {"proposals": ctx["proposals"], "questions": ctx["questions"],
+            "untouched": sorted(ctx["unresolved"] - ctx["settled"]),
+            "summary": ctx["done"]}
+
+
+def agent_loop(task, ctx, verbose=True, on_event=None,
+               system=None, tools=None, runner=None):
+    """Bounded. Every step is printed, because a loop nobody can see is a claim.
+
+    on_event gets the same steps as a structured record, which is how the app
+    shows each call as it happens instead of after the fact. system/tools/runner
+    are the seam the edit agent uses: same bounded loop, same cache, same write
+    refusals, a different set of things it may do.
+    """
+    say = on_event or (lambda *_, **__: None)
+    system = system or SYSTEM
+    tools = tools or TOOLS
+    runner = runner or run_tool
     messages = [{"role": "user", "content": task}]
     for step in range(1, MAX_STEPS + 1):
-        reply, origin = call_model(SYSTEM, messages, TOOLS)
-        blocks = reply.get("content", [])
+        say("thinking", step=step)
+        reply, origin = call_model(system, messages, tools)
+        content = reply.get("content", []) if isinstance(reply, dict) else []
+        # Only blocks that are objects are read. One that is not would crash the
+        # reader below on its way to being refused, which turns a bad answer into
+        # a dead run instead of a reported one.
+        blocks = [b for b in content if isinstance(b, dict)]
         messages.append({"role": "assistant", "content": blocks})
 
         said = "".join(b.get("text", "") for b in blocks if b.get("type") == "text").strip()
         if verbose and said:
             print(f"  [{step}] {said[:300]}", flush=True)
+        if said:
+            say("said", step=step, text=said[:600], origin=origin)
 
         calls = [b for b in blocks if b.get("type") == "tool_use"]
         if not calls:
             if verbose:
                 print(f"  [{step}] stopped without acting ({origin})")
+            say("stalled", step=step, text=said[:600] or "it answered with nothing to do")
             return step, False
 
         results = []
-        for call in calls:
-            result = run_tool(call["name"], call["input"], ctx)
+        for i, call in enumerate(calls):
+            # A block with no input at all is still a call it made, so it goes
+            # through run_tool and comes back as the same missing-argument
+            # error the model already knows how to fix.
+            given = call.get("input")
+            result = runner(call["name"], given, ctx)
             if verbose:
-                detail = call["input"].get("output") or call["input"].get("query") or ""
+                detail = (given.get("output") or given.get("query") or ""
+                          if isinstance(given, dict) else "")
                 print(f"  [{step}] {call['name']}({detail}) [{origin}]", flush=True)
+            say("tool", step=step, index=i, name=call["name"], input=given,
+                result=result, origin=origin)
             results.append({"type": "tool_result", "tool_use_id": call["id"],
                             "content": json.dumps(result)})
         messages.append({"role": "user", "content": results})
@@ -415,6 +531,8 @@ def agent_loop(task, ctx, verbose=True):
             if verbose:
                 print(f"  [{step}] finished: {ctx['done'][:200]}")
             return step, True
+    say("budget", step=MAX_STEPS,
+        text=f"it used all {MAX_STEPS} steps without finishing")
     return MAX_STEPS, False
 
 
@@ -431,8 +549,7 @@ def main():
         print("nothing left ambiguous; the deterministic pass settled everything")
         return 0
 
-    ctx = {"habits": plan["habits"], "outputs": plan["outputs"],
-           "proposals": [], "questions": [], "done": None}
+    ctx = new_context(plan, unresolved)
 
     meanings = plan.get("controlMeanings", {})
     task = (
@@ -447,12 +564,16 @@ def main():
     print(f"{len(unresolved)} controls the evidence did not settle. "
           f"Model: {MODEL} via {BACKEND}, mode: {MODE}")
     steps, finished = agent_loop(task, ctx)
+    result = brief(ctx)
     print(f"\n{steps} steps, {'finished' if finished else 'hit the step budget'}: "
-          f"{len(ctx['proposals'])} proposed, {len(ctx['questions'])} to ask")
+          f"{len(result['proposals'])} proposed, {len(result['questions'])} to ask")
+    # A control the agent never reached is not a control that is fine. It is
+    # named here and carried into the report so the write step can say so too.
+    if result["untouched"]:
+        print(f"{len(result['untouched'])} it never got to, and they are still unbound: "
+              f"{', '.join(result['untouched'])}")
 
-    report = {"game": plan["game"], "steps": steps, "finished": finished,
-              "proposals": ctx["proposals"], "questions": ctx["questions"],
-              "summary": ctx["done"]}
+    report = {"game": plan["game"], "steps": steps, "finished": finished, **result}
     if args.report:
         with open(args.report, "w") as f:
             json.dump(report, f, indent=2)

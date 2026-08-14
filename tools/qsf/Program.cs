@@ -294,21 +294,26 @@ int Apply(string[] a)
         }
     }
 
+    // Nothing is written unless the result is one the device would read. The
+    // old order wrote first and counted errors afterwards, so `qsf apply` could
+    // report ok:false, exit 1, and have already replaced --out with the file it
+    // was complaining about.
+    int errors = pf.Issues.Count(x => x.Severity == Severity.Error);
+    bool ok = rejected.Count == 0 && errors == 0;
+
     int shifted = 0;
-    if (rejected.Count == 0)
+    if (ok)
     {
         int before = pf.Grid.Count;
         pf.NormalizeForDeviceCsv();
         shifted = pf.Grid.Count - before;
         ProfileFile.WriteAtomic(outPath, pf.ToCsvText());
     }
-    int errors = pf.Issues.Count(x => x.Severity == Severity.Error);
-    bool ok = rejected.Count == 0 && errors == 0;
 
     Emit(new
     {
         ok,
-        wrote = rejected.Count == 0 ? outPath : null,
+        wrote = ok ? outPath : null,
         // Should be 0. Anything else means the write moved rows out from under
         // the row numbers reported above, and they need re-reading.
         rowsInsertedAtWrite = shifted,
@@ -352,6 +357,17 @@ string? RejectBinding(ProfileFile pf, int row, string output, string function, s
         return $"'{parts[0]}' is not a function the device knows. See qsf vocab.";
     if (parts.Length - 1 > arity.Max)
         return $"'{parts[0]}' takes at most {arity.Max} parameter(s), got {parts.Length - 1}";
+    // The device reads a parameter with atoi: whole and non-negative. "tap
+    // banana" becomes "tap 0" and "tap 1.5" becomes "tap 1", silently, so the
+    // row does something other than what it says. The validator only warns
+    // about that, because a person may have typed it and their value is theirs.
+    // Nothing generated has that excuse, so writing one is refused here.
+    foreach (var parameter in parts.Skip(1))
+        if (!long.TryParse(parameter, System.Globalization.NumberStyles.None,
+                           System.Globalization.CultureInfo.InvariantCulture, out _))
+            return $"'{parameter}' is not a whole number, and the device reads "
+                 + $"'{parts[0]}' parameters as whole numbers, so it would run as "
+                 + $"something other than what this says";
 
     if (inputs.Length > MaxInputs) return $"a row holds at most {MaxInputs} inputs, got {inputs.Length}";
     // A settings row's column C carries the value the preference is set to, not
