@@ -140,10 +140,13 @@ def main():
 
     # Rows have to be made before they can be filled, and only the row add_row
     # reports back is safe to write to, so this runs in two passes.
+    # Both passes run on a copy. A refusal in the second one would otherwise
+    # leave behind the empty rows the first one made.
+    work = args.out + ".building"
     ops = [{"op": "set_filename", "name": spec["csvFileName"], "why": "the name the device shows"}]
     ops += [{"op": "add_row", "mode": 0, "why": f"a row for {d['output']}"} for d in decided]
     result, _ = qsf("apply", "--template", spec["csvFileName"], "--ops", write_tmp(ops),
-                    "--out", args.out, ok=(0, 1))
+                    "--out", work, ok=(0, 1))
     if not result["ok"]:
         print("could not make the rows:", result["rejected"][:2])
         return 1
@@ -152,15 +155,18 @@ def main():
     ops = [{"op": "set_binding", "row": row, "output": d["output"],
             "function": d["function"], "inputs": d["inputs"],
             "why": f"{d['seenIn']} of {d['ofGames']} of his profiles bind {d['output']} this way "
-                   f"({d['share']:.0%}); nearest example {d['evidence']}"}
+                   f"({d['share']:.0%}); nearest example {d['evidence']}",
+            "note": f"from {d['evidence']} ({d['seenIn']}/{d['ofGames']} of his games)"}
            for row, d in zip(rows, decided)]
-    result, _ = qsf("apply", "--from", args.out, "--ops", write_tmp(ops), "--out", args.out, ok=(0, 1))
+    result, _ = qsf("apply", "--from", work, "--ops", write_tmp(ops), "--out", work, ok=(0, 1))
 
     if result["rejected"]:
         print(f"{len(result['rejected'])} bindings refused before they reached the file:")
         for r in result["rejected"][:5]:
             print("   ", r["reason"])
+        os.remove(work)
         return 1
+    os.replace(work, args.out)
 
     check, _ = qsf("validate", args.out, ok=(0, 1))
     print(f"wrote {args.out}: {check['errors']} errors, {check['warnings']} warnings")

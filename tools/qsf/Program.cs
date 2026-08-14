@@ -280,6 +280,10 @@ int Apply(string[] a)
                 pf.SetCell(row, 1, function);
                 for (int c = 0; c < MaxInputs; c++)
                     pf.SetCell(row, FirstInputCol + c, c < inputs.Length ? inputs[c] : "");
+                // Column K, past every column the device reads. A generated row
+                // that cannot say where it came from is a guess in a fact's
+                // clothes, and the person it is generated for cannot tell which.
+                if (op.ContainsKey("note")) pf.SetCell(row, ProfileFile.NoteColumn, Str(op, "note"));
                 Ok(new { cell = A1(row, 0) });
                 break;
             }
