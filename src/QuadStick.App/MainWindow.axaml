@@ -56,6 +56,13 @@
                   <TextBlock Text="Edit a profile CSV from anywhere" Classes="cardsub"/>
                 </StackPanel>
               </Button>
+              <Button x:Name="HomeAgentButton" Classes="card"
+                      AutomationProperties.Name="Name a game and have a profile built for it from the profiles you already have">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="Set up a game" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
+                  <TextBlock Text="Name any game, and build it from your own profiles" Classes="cardsub"/>
+                </StackPanel>
+              </Button>
               <Button x:Name="HomeCommunityButton" Classes="card"
                       AutomationProperties.Name="Browse the community list of shared game profiles and import one">
                 <StackPanel Spacing="6">
@@ -129,7 +136,7 @@
                       AutomationProperties.Name="Manage the profile files on your QuadStick: copy, delete, and see the file selection order"/>
             </StackPanel>
             <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
-                       Text="Plug in your QuadStick and its profiles will show up here. (In PS4 boot mode or controller emulation? The drive won't appear.)"/>
+                       Text="Plug in your QuadStick and its profiles will show up here. (On USB emulation mode 6, the drive won't appear.)"/>
             <StackPanel x:Name="DeviceCards" Spacing="6"/>
           </StackPanel>
 

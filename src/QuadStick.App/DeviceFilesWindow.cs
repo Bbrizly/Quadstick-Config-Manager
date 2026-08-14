@@ -315,7 +315,7 @@ public class DeviceFilesWindow : Window
         {
             _summary.Text = "No QuadStick drive is plugged in right now. "
                           + "A QuadStick drive is one with default.csv on it. "
-                          + "In PS4 boot mode or controller emulation the drive does not appear at all.";
+                          + "On USB emulation mode 6 the drive does not appear at all.";
             return;
         }
 

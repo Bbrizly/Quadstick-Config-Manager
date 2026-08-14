@@ -321,6 +321,11 @@ public partial class MainWindow : Window
         await new DrivePickerWindow(this, preCheck).ShowDialog(this);
     }
 
+    // Naming a game and having a profile built for it. Not modal: the agent can
+    // ask a question that takes real thought, and a window that pins the whole
+    // app while somebody decides what crouch should be is the wrong shape.
+    public void ShowAgent() => new AgentWindow(this).Show(this);
+
     // The community list is fetched from here and nowhere else. Startup and a
     // home refresh never touch it, so the app opens with no network at all.
     public async Task ShowCommunityProfilesAsync() =>
@@ -671,6 +676,7 @@ public partial class MainWindow : Window
         HomeNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
         HomeTemplateButton.Click += async (_, _) => await UseTemplateAsync();
         HomeOpenButton.Click += async (_, _) => await OpenAsync();
+        HomeAgentButton.Click += (_, _) => ShowAgent();
         HomeCommunityButton.Click += async (_, _) => await ShowCommunityProfilesAsync();
         HomeDeviceFilesButton.Click += async (_, _) => await ShowDeviceFilesAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
@@ -2901,10 +2907,21 @@ public partial class MainWindow : Window
 
     public void LoadProfile(ProfileFile file) => OpenInEditor(file, savePath: null, ProfileSource.File);
 
+    /// <summary>Open a profile from a path, in the editor, exactly as opening a
+    /// file does. The agent window hands its result back through here rather
+    /// than through anything of its own, so what it wrote is checked, validated
+    /// and installed by the same screens as any other profile.</summary>
+    public void OpenPath(string path) =>
+        OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path, ProfileSource.File);
+
+    /// <summary>The file the editor is on, or null on the home screen. The
+    /// agent asks so that "make sprint a hard puff" changes the profile in front
+    /// of them instead of building a new one.</summary>
+    public string? CurrentProfilePath => _savePath;
+
     // Opening a real path is what feeds the recents list, so a test needs the
     // path seam, not just LoadProfile's in-memory one.
-    public void OpenPathForPreview(string path) =>
-        OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path, ProfileSource.File);
+    public void OpenPathForPreview(string path) => OpenPath(path);
 
     public void ShowHomeForPreview() => ShowHome();
 
