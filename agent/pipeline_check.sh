@@ -178,5 +178,29 @@ python3 agent/finalize.py --profile "$TMP/left.csv" --decisions "$TMP/left.json"
 check "controls the agent never reached are named, not passed over" "yes" \
   "$(grep -q 'never reached' "$TMP/left.log" && echo yes || echo no)"
 
+# --- changing a profile that already exists -------------------------------
+
+# An edit touches the row it was asked about and carries the rest of that row
+# through exactly as they left it.
+python3 - <<'PY' > "$TMP/edit.txt"
+import sys; sys.path.insert(0, "agent")
+import run
+ctx = {"rows": [{"row": 7, "mode": "m", "output": "kb_left_shift",
+                 "function": "delay_on 500 16000", "inputs": ["mp_triple_puff"]}],
+       "changes": [], "questions": [], "settled": set(), "unresolved": set(),
+       "inputs": ["right_puff"], "outputs": ["kb_left_shift"], "done": None,
+       "required": {t["name"]: t["input_schema"].get("required", []) for t in run.EDIT_TOOLS}}
+missing = run.edit_tool("change_row", {"row": 99, "inputs": ["right_puff"], "why": "w"}, ctx)
+same = run.edit_tool("change_row", {"row": 7, "inputs": ["mp_triple_puff"], "why": "w"}, ctx)
+ok = run.edit_tool("change_row", {"row": 7, "inputs": ["right_puff"], "why": "harder puff"}, ctx)
+kept = ctx["changes"][0]
+nothing = run.edit_tool("finish", {"summary": "s"},
+                        {**ctx, "changes": [], "questions": []})
+print("error" in missing, "error" in same, "changed" in ok,
+      kept["function"], "|", kept["output"], "|", len(ctx["changes"]), "error" in nothing)
+PY
+check "an edit changes one row and leaves the rest of it alone" \
+  "True True True delay_on 500 16000 | kb_left_shift | 1 True" "$(cat "$TMP/edit.txt")"
+
 [ "$fails" -eq 0 ] && echo "the whole pipeline holds" || echo "$fails check(s) failed"
 exit "$fails"

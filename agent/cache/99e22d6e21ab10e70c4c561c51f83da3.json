@@ -1,0 +1,1 @@
+{"content": [{"type": "tool_use", "id": "fc12f3b6-7344-4d57-9511-565a477fbda4-0", "name": "read_profile", "input": {"match": "crouch"}}]}

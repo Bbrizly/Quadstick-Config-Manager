@@ -94,6 +94,22 @@ def describe(name, args, result):
                 args.get("question", ""), failed)
     if name == "finish":
         return ("Finished deciding", args.get("summary", ""), failed)
+    if name == "read_profile":
+        asked = args.get("match") or ""
+        shown = len((result or {}).get("rows") or [])
+        return (f"Read the profile for “{asked}”" if asked else "Read the whole profile",
+                f"{shown} of {(result or {}).get('of', 0)} rows", failed)
+    if name == "find_input":
+        found = (result or {}).get("matches") or []
+        return (f"Looked up the device's input for “{args.get('query', '')}”",
+                f"{len(found)} match{'' if len(found) == 1 else 'es'}: "
+                f"{', '.join(found[:5])}", failed)
+    if name == "change_row":
+        was = (result or {}).get("from", "")
+        return (f"Changed row {args.get('row', '')}",
+                f"{args.get('output', '')}, {args.get('function', '')}, "
+                f"{' + '.join(args.get('inputs') or [])}"
+                + (f"   was {was}" if was else ""), failed)
     return (name, "", failed)
 
 
@@ -218,6 +234,17 @@ EDIT_TOOLS = [
             "required": ["match"]},
     },
     {
+        # Outputs and inputs are two separate lists on the device. An edit is
+        # almost always about what triggers a row, so without this the only
+        # lookup available searches the wrong half and finds nothing.
+        "name": "find_input",
+        "description": ("Search the sips, puffs, lip and joystick positions the device "
+                        "knows. A soft input and a hard one are different names: "
+                        "right_puff is a hard puff, right_puff_soft is a light one."),
+        "input_schema": {"type": "object", "properties": {
+            "query": {"type": "string"}}, "required": ["query"]},
+    },
+    {
         "name": "change_row",
         "description": ("Change one row that already exists. Only the fields you give are "
                         "changed. Everything else on that row stays exactly as they left it."),
@@ -260,6 +287,11 @@ def edit_tool(name, args, ctx):
                 if not match or match in json.dumps(r).lower()]
         return {"rows": rows[:60], "of": len(ctx["rows"]),
                 "note": "row numbers here are the ones to change"}
+    if name == "find_input":
+        q = (args["query"] or "").lower().replace(" ", "_")
+        hits = [i for i in ctx["inputs"] if q in i.lower()]
+        return {"matches": sorted(hits)[:25],
+                "note": "exact spelling and case, as the device reads it"}
     if name == "change_row":
         row = args["row"]
         current = next((r for r in ctx["rows"] if r["row"] == row), None)
@@ -319,6 +351,7 @@ def edit(args):
     vocab = finalize.qsf("vocab")
     ctx = {"rows": rows, "changes": [], "questions": [], "settled": set(),
            "unresolved": set(), "done": None, "habits": {},
+           "inputs": sorted(set(vocab["inputs"]) | set(vocab["legacyInputs"])),
            "outputs": sorted(set(vocab["outputs"]["ps3"]) | set(vocab["outputs"]["xbox"])),
            "required": {t["name"]: t["input_schema"].get("required", []) for t in EDIT_TOOLS}}
     # ask_user checks membership of these two, and in an edit any row is fair
