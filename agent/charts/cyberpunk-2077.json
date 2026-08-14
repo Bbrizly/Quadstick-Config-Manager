@@ -1,0 +1,58 @@
+{
+  "game": "Cyberpunk 2077",
+  "family": "cyberpunk-2077",
+  "edition": "Phantom Liberty / 2.x",
+  "platform": "pc",
+  "layout": "default keyboard and mouse",
+  "source": {
+    "url": "https://game8.co/games/Cyberpunk-2077/archives/Controls",
+    "retrieved": "2026-08-14",
+    "method": "fetched and transcribed, not remembered",
+    "verified_by_hand": true
+  },
+  "confidence": "assumed-default",
+  "confidence_means": "This is the game's published default layout. It is NOT proof of what this particular player has set in their own game options, and the agent must treat it as a strong hint rather than a fact about them.",
+
+  "controls": {
+    "kb_w": {"action": "Move forward", "critical": true},
+    "kb_a": {"action": "Move left", "critical": true},
+    "kb_s": {"action": "Move backward", "critical": true},
+    "kb_d": {"action": "Move right", "critical": true},
+    "kb_left_shift": {"action": "Sprint", "behavior": "hold", "critical": true},
+    "kb_space": {"action": "Jump", "critical": true},
+    "kb_left_control": {"action": "Slide while sprinting; horn in a vehicle"},
+    "kb_f": {"action": "Interact, enter or exit a vehicle", "critical": true},
+    "kb_r": {"action": "Reload; parry in melee", "critical": true},
+    "kb_tab": {"action": "Scanner, held"},
+    "kb_caps_lock": {"action": "Scanner, toggled"},
+    "kb_i": {"action": "Journal"},
+    "kb_n": {"action": "Photo mode"},
+    "kb_t": {"action": "Phone"},
+    "kb_z": {"action": "Most recent message"},
+    "kb_v": {"action": "Call a vehicle"},
+    "kb_left_alt": {"action": "Draw or holster on a double tap, cycle weapons on a hold"},
+    "kb_escape": {"action": "Pause"},
+    "mouse_left_button": {"action": "Shoot, or a fast melee attack", "critical": true},
+    "mouse_right_button": {"action": "Aim, or block in melee", "critical": true},
+    "mouse_wheel_up": {"action": "Cycle quickhacks"},
+    "mouse_wheel_down": {"action": "Cycle quickhacks"}
+  },
+
+  "disputed": {
+    "kb_q": {
+      "candidates": ["Melee strike", "Quickhack menu"],
+      "why": "Two sources consulted on 2026-08-14 disagreed. Not resolved, so the agent must ask rather than pick.",
+      "sources": [
+        "https://game8.co/games/Cyberpunk-2077/archives/Controls",
+        "web search summary, 2026-08-14"
+      ]
+    },
+    "kb_c": {
+      "candidates": ["Crouch"],
+      "why": "Widely reported as crouch but absent from the control list actually fetched, so it is unconfirmed and treated as unknown.",
+      "sources": []
+    }
+  },
+
+  "not_covered": "Any control absent from both blocks above is unknown to this chart. Unknown is reported, never filled in."
+}

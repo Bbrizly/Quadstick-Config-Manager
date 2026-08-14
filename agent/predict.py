@@ -95,6 +95,22 @@ def predict(controls, ranked, ask_below):
     return decided, asks
 
 
+def load_chart(path):
+    """A chart says what a control does in this game, and says when it does not know.
+
+    Disputed entries are kept apart from settled ones on purpose. A control two
+    sources disagree about is a question for the person, not a coin toss.
+    """
+    if not path:
+        return {"meanings": {}, "disputed": {}}
+    chart = json.load(open(path))
+    return {
+        "meanings": {k: v["action"] for k, v in chart["controls"].items()},
+        "disputed": {k: v["candidates"] for k, v in chart.get("disputed", {}).items()},
+        "source": chart.get("source"),
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--controls", required=True,
@@ -105,6 +121,8 @@ def main():
                     help="hold a family out, so a prediction cannot read its own answer")
     ap.add_argument("--ask-below", type=float, default=0.5,
                     help="below this share of his games agreeing, ask instead of guess")
+    ap.add_argument("--chart", default=None,
+                    help="a sourced control chart for the target game")
     ap.add_argument("--trace", default=None)
     args = ap.parse_args()
 
@@ -148,10 +166,21 @@ def main():
     print(f"wrote {args.out}: {check['errors']} errors, {check['warnings']} warnings")
 
     if args.trace:
+        # The trace is also the agent's brief: what was settled and on what
+        # evidence, what was not, and what this game's controls actually do.
+        chart = load_chart(args.chart)
+        vocab, _ = qsf("vocab")
         with open(args.trace, "w") as f:
-            json.dump({"game": spec["game"], "heldOut": args.exclude_family,
-                       "decided": decided, "asks": asks,
-                       "applied": result["applied"], "validation": check}, f, indent=2)
+            json.dump({
+                "game": spec["game"], "csvFileName": spec["csvFileName"],
+                "heldOut": args.exclude_family, "profile": args.out,
+                "decided": decided, "asks": asks,
+                "habits": {a["output"]: ranked.get(a["output"], []) for a in asks},
+                "controlMeanings": chart["meanings"],
+                "disputed": chart["disputed"],
+                "outputs": sorted(set(vocab["outputs"]["ps3"]) | set(vocab["outputs"]["xbox"])),
+                "applied": result["applied"], "validation": check,
+            }, f, indent=2)
         print(f"evidence for every row written to {args.trace}")
     if asks:
         print(f"\n{len(asks)} it will not guess at:")
