@@ -69,7 +69,61 @@ def vocab(platform):
     return set(json.loads(out.stdout)["outputs"][platform])
 
 
-def research(game, platform, names, mode):
+def brief(content):
+    """One line for what a web call came back with, out of a page of text."""
+    if isinstance(content, list):
+        content = " ".join(b.get("text", "") for b in content if isinstance(b, dict))
+    text = " ".join(str(content or "").split())
+    links = text.count('"url":') or text.count("http")
+    if text.startswith("Web search results"):
+        return f"{links} results"
+    return f"{len(text):,} characters read" if len(text) > 400 else text[:160]
+
+
+def stream_cli(command, on_event):
+    """Run the CLI in streaming mode and report every step while it happens.
+
+    The web searches and page reads this makes are the most interesting thing
+    the whole run does, and the non-streaming form hid all of them behind one
+    long silence. A tool nobody can watch working is a tool nobody can check.
+    """
+    running = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               text=True, stdin=subprocess.DEVNULL, bufsize=1)
+    answer, failed = None, None
+    for line in running.stdout:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        kind = event.get("type")
+        if kind in ("assistant", "user"):
+            for block in (event.get("message") or {}).get("content") or []:
+                if not isinstance(block, dict):
+                    continue
+                if block.get("type") == "tool_use":
+                    on_event("tool", id=block.get("id"), name=block.get("name", ""),
+                             input=block.get("input"))
+                elif block.get("type") == "tool_result":
+                    on_event("tool_result", id=block.get("tool_use_id"),
+                             summary=brief(block.get("content")),
+                             failed=bool(block.get("is_error")))
+                elif block.get("type") == "text" and (block.get("text") or "").strip():
+                    on_event("said", text=block["text"].strip()[:400])
+        elif kind == "result":
+            answer = event.get("result")
+            if event.get("is_error"):
+                failed = str(answer)[:300]
+    running.wait()
+    if running.returncode != 0 or failed:
+        raise SystemExit(f"the research call failed: "
+                         f"{failed or (running.stderr.read() or '')[:300]}")
+    return answer or ""
+
+
+def research(game, platform, names, mode, on_event=lambda *a, **k: None):
     """One web-reading call, cached, so a rehearsed run needs no network."""
     # Buttons and keys only. The rig rows (mouse speed, deflection, mode
     # switching) are the player's own setup and are not a fact about the game.
@@ -101,20 +155,14 @@ def research(game, platform, names, mode):
     if mode == "replay":
         raise SystemExit(f"replay mode and no research recorded for {game} ({key}).")
 
-    done = subprocess.run([
-        CLAUDE_BIN, "-p", prompt, "--model", MODEL, "--output-format", "json",
+    text = stream_cli([
+        CLAUDE_BIN, "-p", prompt, "--model", MODEL,
+        "--output-format", "stream-json", "--verbose",
         "--system-prompt", SYSTEM,
         "--tools", TOOLS,
         "--disable-slash-commands", "--strict-mcp-config",
         "--mcp-config", '{"mcpServers":{}}', "--safe-mode", "--no-session-persistence",
-    ], capture_output=True, text=True, timeout=600, stdin=subprocess.DEVNULL)
-    if done.returncode != 0:
-        raise SystemExit(f"the research call failed: {(done.stderr or done.stdout)[:300]}")
-
-    try:
-        text = (json.loads(done.stdout).get("result") or "").strip()
-    except (json.JSONDecodeError, AttributeError):
-        raise SystemExit(f"the research call did not return JSON:\n{done.stdout[:400]}")
+    ], on_event).strip()
     if text.startswith("```"):
         text = text.split("```")[1].removeprefix("json").strip()
     try:
@@ -135,7 +183,8 @@ def slugify(game):
     return re.sub(r"[^a-z0-9]+", "-", game.lower()).strip("-")
 
 
-def build_chart(game, platform="xbox", out=None, mode="auto", log=print):
+def build_chart(game, platform="xbox", out=None, mode="auto", log=print,
+                on_event=lambda *a, **k: None):
     """Research one game and write its chart. Returns the chart and what it cost.
 
     Every count the caller needs is in the return value, because the app shows
@@ -145,7 +194,7 @@ def build_chart(game, platform="xbox", out=None, mode="auto", log=print):
     out = out or os.path.join(HERE, "charts", slug + ".json")
     names = vocab(platform)
 
-    found, origin = research(game, platform, names, mode)
+    found, origin = research(game, platform, names, mode, on_event)
 
     # Nothing the researcher says becomes a control until the device agrees the
     # name exists. This is the same rule qsf applies at the write end; applying

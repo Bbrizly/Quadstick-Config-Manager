@@ -176,5 +176,62 @@ check("a structured reply becomes a real tool call", ("tool_use", "finish"),
 check("an unparseable reply becomes text, not a binding", "text",
       qsagent.shape({"result": "I am not sure what to do"})["content"][0]["type"])
 
+
+# ---- what the run lets a person watch -------------------------------------
+#
+# The window can only show what the pipeline says out loud. Two things had to be
+# proved here rather than by eye: that a call is announced before it runs, and
+# that the web calls the researcher makes come out one at a time while they
+# happen. Both were wrong for real, and both looked fine from the outside: every
+# card appeared and finished in the same instant, and a run that spent two
+# minutes reading the web showed one motionless box the whole time.
+
+import research  # noqa: E402
+
+order = []
+qsagent.call_model = lambda *a, **k: ({"content": [
+    {"type": "tool_use", "id": "c1", "name": "read_habits",
+     "input": {"controls": ["kb_w"]}}]}, "scripted")
+
+
+def slow(name, args, ctx):
+    order.append("ran")
+    return {"habits": {}}
+
+
+watched = qsagent.new_context({"habits": {}, "outputs": {}}, ["kb_w"])
+qsagent.agent_loop("t", watched, verbose=False, runner=slow,
+                   on_event=lambda kind, **f: order.append(kind))
+check("a call is announced before it runs, not after",
+      ["thinking", "thought", "tool", "ran", "tool_result"], order[:5])
+
+heard = []
+lines = [
+    {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "id": "w1", "name": "WebSearch",
+         "input": {"query": "Celeste controls"}}]}},
+    {"type": "user", "message": {"content": [
+        {"type": "tool_result", "tool_use_id": "w1",
+         "content": "Web search results for query: x\nLinks: [{\"url\":\"a\"}]"}]}},
+    {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "id": "w2", "name": "WebFetch",
+         "input": {"url": "https://pcgamingwiki.com/wiki/Celeste"}}]}},
+    {"type": "result", "is_error": False, "result": '{"game": "Celeste"}'},
+]
+answer = research.stream_cli(
+    [sys.executable, "-c",
+     "import sys\nfor l in %r: sys.stdout.write(l + chr(10))" % [json.dumps(l) for l in lines]],
+    lambda kind, **f: heard.append((kind, f.get("name") or f.get("summary") or "")))
+check("every web call the researcher makes is reported as it happens",
+      [("tool", "WebSearch"), ("tool_result", "1 results"), ("tool", "WebFetch")], heard)
+check("and the chart it read out is what comes back", '{"game": "Celeste"}', answer)
+
+# A researcher that fails must say so, not hand back half a chart.
+try:
+    research.stream_cli([sys.executable, "-c", "import sys; sys.exit(3)"], lambda *a, **k: None)
+    check("a failed research call stops the run", "raised", "returned")
+except SystemExit as stopped:
+    check("a failed research call stops the run", True, "research call failed" in str(stopped))
+
 print("\nall agent checks passed" if not fails else f"\n{len(fails)} check(s) failed")
 sys.exit(len(fails))

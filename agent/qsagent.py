@@ -489,7 +489,9 @@ def agent_loop(task, ctx, verbose=True, on_event=None,
     messages = [{"role": "user", "content": task}]
     for step in range(1, MAX_STEPS + 1):
         say("thinking", step=step)
+        began = time.time()
         reply, origin = call_model(system, messages, tools)
+        say("thought", step=step, origin=origin, ms=int((time.time() - began) * 1000))
         content = reply.get("content", []) if isinstance(reply, dict) else []
         # Only blocks that are objects are read. One that is not would crash the
         # reader below on its way to being refused, which turns a bad answer into
@@ -516,13 +518,18 @@ def agent_loop(task, ctx, verbose=True, on_event=None,
             # through run_tool and comes back as the same missing-argument
             # error the model already knows how to fix.
             given = call.get("input")
+            # Announced before it runs, not after. Announcing a call once its
+            # answer was already in hand meant the card appeared and settled in
+            # the same instant, so the window never showed anything working.
+            say("tool", step=step, index=i, name=call["name"], input=given, origin=origin)
+            began = time.time()
             result = runner(call["name"], given, ctx)
             if verbose:
                 detail = (given.get("output") or given.get("query") or ""
                           if isinstance(given, dict) else "")
                 print(f"  [{step}] {call['name']}({detail}) [{origin}]", flush=True)
-            say("tool", step=step, index=i, name=call["name"], input=given,
-                result=result, origin=origin)
+            say("tool_result", step=step, index=i, name=call["name"], input=given,
+                result=result, origin=origin, ms=int((time.time() - began) * 1000))
             results.append({"type": "tool_result", "tool_use_id": call["id"],
                             "content": json.dumps(result)})
         messages.append({"role": "user", "content": results})
