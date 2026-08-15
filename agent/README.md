@@ -39,9 +39,15 @@ signed in. `ANTHROPIC_API_KEY` switches to the API if you want it.
    its evidence, ask, or finish. It cannot write a cell.
 4. **Ask the person.** Every option carries the device tokens it will be bound
    to, so what they pick is written exactly as it was shown.
-5. **Write, once they say so.** Every proposal becomes one `qsf` op carrying its
-   own reason, on a copy. If one op is refused, or the result would not validate,
+5. **Write, once they say so.** The whole profile is built on a copy first, so
+   starting a run writes nothing. Every proposal becomes one `qsf` op carrying
+   its own reason. If one op is refused, or the result would not validate,
    nothing is written and the profile is exactly as it was.
+6. **Open it, and install it if you want.** The result goes to the editor
+   through the same open path as any other file. When a QuadStick is plugged in
+   it also offers to install, which starts the app's own install: it rechecks
+   the file, asks which drive, and confirms before replacing anything. Nothing
+   here writes to a device on its own.
 
 ## The rules it is built to keep
 
