@@ -58,6 +58,13 @@ public class AgentWindow : Window
     readonly Button _toGuide;
     readonly Button _toSteps;
     AgentGuide? _guide;
+    // The game the device was drawn for, kept because the picture is redrawn
+    // from the approval list later and that list is about rows, not games.
+    string _game = "";
+    // Whether the list is up. The walkthrough ending means two different things
+    // either side of that: before it, the run is still working out what to ask;
+    // after it, they have already been asked and the list is what is waiting.
+    bool _deciding;
     // Anything that arrived while somebody was still being walked through their
     // own device. The run is blocked on stdin either way, so nothing is lost by
     // making it wait; interrupting the walkthrough would cost an answer given
@@ -380,6 +387,8 @@ public class AgentWindow : Window
         _switch.IsVisible = false;
         Look(guide: false);
         _written = null;
+        _deciding = false;
+        _game = "";
         _spoke = false;
         _running = true;
         _asked = _recorded = 0;
@@ -721,7 +730,7 @@ public class AgentWindow : Window
     /// makes the questions after it answerable.</summary>
     void Map(AgentEvent e)
     {
-        var rows = e.List("rows").Select(Placement).ToList();
+        _game = e.Str("game");
         _guide = GuideFor(e);
         _guide.Walked = Walked;
         _guideHost.Content = _guide;
@@ -733,10 +742,14 @@ public class AgentWindow : Window
         Say("");
     }
 
-    /// <summary>One map event as the guide it draws. Preview renders go through
-    /// this too, so what a screenshot shows is what a run shows.</summary>
-    internal static AgentGuide GuideFor(AgentEvent e) => new(
-        e.Str("game"),
+    /// <summary>One map or confirm event as the guide it draws. Preview renders
+    /// go through this too, so what a screenshot shows is what a run shows.
+    ///
+    /// A confirm carries the same three lists and no game name, which is why
+    /// the name can be handed in: the picture belongs to the run, not to the
+    /// one event it happens to be redrawn from.</summary>
+    internal static AgentGuide GuideFor(AgentEvent e, string? game = null) => new(
+        e.Str("game") is { Length: > 0 } named ? named : game ?? "",
         e.List("rows").Select(Placement).ToList(),
         // What is not being bound travels as rows too, so the reason each one
         // carries is on screen with it rather than as a count.
@@ -747,16 +760,17 @@ public class AgentWindow : Window
     /// now.</summary>
     void Walked()
     {
-        if (_held.Count == 0)
-        {
-            // This step can sit in a model call for minutes. The seconds count
-            // on the line below, and What it did has the call itself, so a wait
-            // this long is never a screen that just stopped.
-            _guide?.Waiting("Working out the next thing to ask you...",
-                            "What it is doing right now is under What it did.");
-            return;
-        }
-        Draw(_held.Dequeue());
+        if (_held.Count > 0) { Draw(_held.Dequeue()); return; }
+        // Once the list is up they have been asked everything, so the end of
+        // the picture is the way back to the thing that is waiting on them.
+        // Telling them it is working out the next question would be a screen
+        // waiting for something that already happened.
+        if (_deciding) { Look(guide: false); return; }
+        // This step can sit in a model call for minutes. The seconds count on
+        // the line below, and What it did has the call itself, so a wait this
+        // long is never a screen that just stopped.
+        _guide?.Waiting("Working out the next thing to ask you...",
+                        "What it is doing right now is under What it did.");
     }
 
     /// <summary>One row of a map or a confirm as something with a place on the
@@ -926,10 +940,20 @@ public class AgentWindow : Window
     void Confirm(AgentEvent e)
     {
         if (_guide is { Walking: true }) { _held.Enqueue(e); return; }
-        // The list to approve is a list, so it is read in the list. The device
-        // has already done its job by this point: they have seen where every one
-        // of these lands.
-        if (_guide is not null) Look(guide: false);
+        _deciding = true;
+        // The list to approve is a list, so it is read in the list. But the
+        // picture behind the other button is of the profile as it was worked
+        // out, before anybody answered a question or changed anything, so it is
+        // redrawn from the list being approved. A device drawn from a profile
+        // that is no longer the one being written is the app getting somebody's
+        // hardware wrong on the one screen that exists to show it right.
+        if (_guide is not null)
+        {
+            _guide = GuideFor(e, _game);
+            _guide.Walked = Walked;
+            _guideHost.Content = _guide;
+            Look(guide: false);
+        }
         var rows = e.List("rows");
         var open = e.List("open");
         var untouched = e.List("untouched");

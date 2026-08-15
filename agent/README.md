@@ -53,6 +53,12 @@ is still being shown their device waits for them; the run is blocked on the
 answer either way, and an answer given before the tour is an answer given
 without it.
 
+The picture is redrawn from the list being approved, so it is the profile that
+is about to be written and not the one the run started with. It was drawn before
+the interview, and every answer and every change after that moved it: a device
+drawn from a profile nobody is writing any more is this app getting somebody's
+hardware wrong on the one screen that exists to show it right.
+
 This is not decoration. A list of forty rows saying `kb_x, mp_left_puff_soft`
 is a correct answer nobody can check, and an approval over something unreadable
 is not an approval. The list is still there, one button away, and the approval

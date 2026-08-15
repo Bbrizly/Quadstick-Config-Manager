@@ -482,6 +482,38 @@ public sealed class AgentWindowTests
         Assert.Equal("""{"id":"c2","write":true,"skip":[]}""", run.Replies.Last());
     }
 
+    // The picture was drawn before anybody answered anything, so by the time
+    // the list is up it is a device that is not the one being written. Getting
+    // somebody's hardware wrong on the one screen that exists to show it right
+    // is the worst thing this window could do quietly.
+    [AvaloniaFact]
+    public void ThePictureIsRedrawnFromTheListBeingApproved()
+    {
+        var (_, window, run) = Open();
+        run.Say(Map);
+        // Two settled and one still to ask about, which is what the run knew
+        // before anybody answered anything.
+        Assert.Contains("2 controls worked out, 1 still needs you", Guide(window).Saying);
+        Press(window, "Skip");
+
+        run.Say(Choosy);
+        var guide = Guide(window);
+        // Redrawn from the list, so it says the game it was drawn for and the
+        // rows that are actually about to be written.
+        Assert.Contains("Celeste", guide.Saying);
+        Assert.Contains("3 controls worked out", guide.Saying);
+        Assert.DoesNotContain("still needs you", guide.Saying);
+
+        // And walking it now goes back to the list, because the list is the
+        // thing waiting on them. Saying it was working out the next question
+        // would be a screen waiting for something that already happened.
+        Press(window, "Your QuadStick");
+        Press(window, "Skip");
+        Assert.DoesNotContain("Working out the next thing", Words(window));
+        Press(window, "Write it");
+        Assert.Equal("""{"id":"c1","write":true,"skip":[]}""", Assert.Single(run.Replies));
+    }
+
     // A row they took off is not a row that was never there. An account that
     // leaves out what somebody declined is not an account of what they got.
     [AvaloniaFact]
