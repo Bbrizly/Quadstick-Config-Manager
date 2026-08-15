@@ -301,10 +301,9 @@ TOOLS = [
     {
         "name": "ask_user",
         "description": (
-            "Stop and ask. Correct whenever the evidence does not decide it. An "
-            "unasked question that turns into a wrong binding is worse than a "
-            "question: this is a control someone plays and works through with their "
-            "mouth. Offer their own past choices as the options. Every option is "
+            "Stop and ask. There are five of these for the whole profile, so spend "
+            "them where two options are genuinely different ways to play, not "
+            "wherever you are unsure. Offer their own past choices as the options. Every option is "
             "bound exactly as you write it, so it carries real device tokens, not a "
             "description of them, and the label is what gets read aloud to them."),
         "input_schema": {"type": "object", "properties": {
@@ -344,9 +343,12 @@ How to decide one:
 - A binding is `evidenced` when their own profiles show them doing this for this job.
   It is `inferred` when you are reasoning across games. Say which. Do not dress one up
   as the other.
-- If the evidence does not decide it, ASK. Asking is the right answer, not a failure.
-  You are not scored on how few questions you ask. A wrong binding costs them a
-  playthrough and a support call; a question costs them ten seconds.
+- DECIDE. You get 5 questions for the whole profile, and a control you ask about is
+  one they have to do themselves. Spend them on the ones where two options are
+  genuinely different ways to play, not on the ones where you are merely unsure.
+- Everything else gets a binding marked `inferred`, with the reason. They see every
+  row before anything is written and the app they are in is an editor, so a decision
+  they disagree with costs one edit. Thirty questions costs them the whole job.
 - Never invent a token. Look it up. The device matches names case sensitively and
   whole, so a near miss is silently dead rather than wrong.
 - Do not change something they did not ask you to change.
@@ -354,6 +356,10 @@ How to decide one:
 Read habits first, then settle or ask about every control you can in each reply.
 When each one has a proposal or a question, call finish."""
 
+
+# How many questions one profile is worth. Past this the agent decides and marks
+# it inferred, which they can change in one edit.
+ASK_BUDGET = 5
 
 REQUIRED = {t["name"]: t["input_schema"].get("required", []) for t in TOOLS}
 
@@ -443,6 +449,13 @@ def run_tool(name, args, ctx):
                              f"to settle, so nothing was asked about it."}
         if args["output"] in ctx["settled"]:
             return {"error": f"{args['output']} already has an answer."}
+        # The prompt asks for restraint and a run once asked thirty-five times
+        # anyway. A person handed thirty questions has been given the job back.
+        if len(ctx["questions"]) >= ASK_BUDGET:
+            return {"error": f"that is {ASK_BUDGET} questions, which is the whole budget "
+                             f"for this profile. Decide {args['output']} yourself with "
+                             f"propose_binding, mark it inferred, and say in `why` that "
+                             f"their profiles were split on it."}
         ctx["settled"].add(args["output"])
         ctx["questions"].append(args)
         return {"asked": args["output"], "note": "the person will answer this before anything is written"}
