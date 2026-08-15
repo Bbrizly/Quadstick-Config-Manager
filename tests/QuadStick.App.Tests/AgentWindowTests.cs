@@ -139,6 +139,22 @@ public sealed class AgentWindowTests
         Assert.Contains("8.4s", card.StateWord);
     }
 
+    // The step happening now is marked out from the ones that are done, so the
+    // eye lands on it. The word still carries the state; this is a second signal.
+    [AvaloniaFact]
+    public void TheStepHappeningNowIsMarkedOutFromTheFinishedOnes()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"tool","id":"t1","title":"Reading the control page","state":"running"}""");
+        var card = window.GetVisualDescendants().OfType<AgentWindow.ToolCard>().Single();
+        var working = card.BorderThickness;
+
+        run.Say("""{"event":"tool_done","id":"t1","state":"ok","summary":"done"}""");
+        Assert.NotEqual(working, card.BorderThickness);
+        // And the word says it too, for anyone who cannot see the edge at all.
+        Assert.Contains("done", card.StateWord);
+    }
+
     // Where each answer came from is on the card, in words. A run that finished
     // in a second because everything was already recorded looks exactly like a
     // run that made it up, and this is the only thing that tells them apart.

@@ -127,4 +127,6 @@ functions. That is reported as a drop rather than absorbed.
     python3 agent/eval/evaluate.py
 
 Every fix in here landed with a check that fails without it. `--replay` runs the
-whole thing from recorded answers in about a second, with no network at all.
+whole thing from recorded answers with no network at all, and replays the
+searches and page reads too, so the offline run shows the same work the live one
+did rather than a silent gap where the web was.

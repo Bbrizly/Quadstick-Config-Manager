@@ -837,6 +837,7 @@ public class AgentWindow : Window
         {
             if (!Running) return;
             Running = false;
+            Edge(false);
             _word = "✕ never finished";
             _state.Text = Label();
             Announce();
@@ -858,8 +859,10 @@ public class AgentWindow : Window
 
         internal ToolCard(AgentEvent e)
         {
-            Paint(this, "SurfaceSubtleBrush", "SurfaceBorderBrush");
-            BorderThickness = new Thickness(1);
+            // The step happening now is the one the eye should land on. This is
+            // a second signal only: the word beside it already says "working",
+            // so nothing here is carried by the colour on its own.
+            Edge(e.State == "running");
             CornerRadius = new CornerRadius(Size("TrackRadius"));
             Padding = new Thickness(14, 12);
 
@@ -906,9 +909,17 @@ public class AgentWindow : Window
             Announce();
         }
 
+        void Edge(bool working)
+        {
+            Paint(this, working ? "SurfaceBrush" : "SurfaceSubtleBrush",
+                  working ? "AccentBrush" : "SurfaceBorderBrush");
+            BorderThickness = new Thickness(working ? 2 : 1);
+        }
+
         internal void Settle(AgentEvent e)
         {
             Running = false;
+            Edge(false);
             _word = Word(e.State);
             // What the run reports it took beats what the window happened to
             // observe. The run is the thing that did the work.
