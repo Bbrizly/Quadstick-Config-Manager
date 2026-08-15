@@ -111,6 +111,42 @@ public sealed class AgentWindowTests
          "open":[{"output":"kb_c","question":"crouch?"}],"untouched":["kb_v"]}
         """.ReplaceLineEndings(" ");
 
+    // The real event stream, as agent/run.py emits it, drawn end to end. Every
+    // kind has to be recognised: an unknown one falls back to dumping its raw
+    // JSON on screen, which is the window admitting it does not understand its
+    // own agent.
+    [AvaloniaFact]
+    public void ARealTranscriptDrawsWithNoRawJsonLeftOnScreen()
+    {
+        var (_, window, run) = Open();
+        foreach (var line in new[]
+        {
+            """{"event":"run","mode":"live","model":"claude-sonnet-5","backend":"cli","says":"asks the model every time, nothing replayed"}""",
+            """{"event":"stage","key":"research","title":"How Celeste is controlled"}""",
+            """{"event":"tool","id":"chart","title":"Nobody has charted Celeste, so reading how it is controlled","subtitle":"searching the web","state":"running","detail":{"game":"Celeste"}}""",
+            """{"event":"tool","id":"w1","title":"Searching the web for \u201cCeleste default controls\u201d","subtitle":"reading what comes back","state":"running","origin":"live"}""",
+            """{"event":"tool_done","id":"w1","state":"ok","summary":"10 results","origin":"live"}""",
+            """{"event":"tool_done","id":"chart","state":"warn","ms":160000,"origin":"live","summary":"17 controls the device knows, 3 the sources disagree about, 0 dropped"}""",
+            """{"event":"stage","key":"history","title":"What his own profiles already answer"}""",
+            """{"event":"tool","id":"predict","title":"Matched this game against every profile he has built","state":"running"}""",
+            """{"event":"tool_done","id":"predict","state":"ok","ms":600,"origin":"local","summary":"37 of 67 answered from his own profiles"}""",
+            """{"event":"rows","title":"Settled from his own profiles","rows":[{"output":"kb_z","inputs":["mp_right_puff"],"function":"normal","why":"51 of 96 of his profiles do this"}]}""",
+            """{"event":"note","text":"I will settle the movement keys first."}""",
+            """{"event":"tool","id":"m1","title":"Working out the ones his profiles cannot settle","subtitle":"step 1","state":"running"}""",
+            """{"event":"tool_done","id":"m1","state":"ok","ms":23000,"origin":"live","summary":"decided what to do"}""",
+        })
+            run.Say(line);
+
+        var shown = Words(window);
+        Assert.DoesNotContain("\"event\"", shown);
+        Assert.DoesNotContain("could not be drawn", shown);
+        Assert.Contains("How Celeste is controlled".ToUpperInvariant(), shown);
+        Assert.Contains("Searching the web", shown);
+        Assert.Contains("160.0s", shown);
+        Assert.Contains("asked the model", shown);
+        Assert.Contains("on this machine, no model", shown);
+    }
+
     // A step that is still going counts its own seconds. Without this a model
     // call that takes three minutes is indistinguishable from a run that hung,
     // and the whole window looks like it is doing nothing.

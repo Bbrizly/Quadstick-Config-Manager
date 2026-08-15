@@ -12,7 +12,8 @@ somebody's hands.
 ## Run it
 
     agent/setup.sh "Hollow Knight Silksong"
-    agent/setup.sh "Elden Ring" --replay
+    agent/setup.sh "Elden Ring" --replay      # from the recording, no network
+    agent/setup.sh "Celeste" --live           # ask every time, reuse nothing
     agent/setup.sh --edit mine.csv "make sprint a hard puff"
 
 Or open QuadStick Config Manager and press **Set up a game**, the first card on
