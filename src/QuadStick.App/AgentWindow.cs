@@ -181,6 +181,7 @@ public class AgentWindow : Window
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         };
         AutomationProperties.SetLiveSetting(_status, AutomationLiveSetting.Polite);
+        _status.IsVisible = _status.Text!.Length > 0;
 
         _close = new Button { Content = "Close", MinWidth = 130, IsCancel = true };
         AutomationProperties.SetName(_close, "Close this window");
@@ -193,29 +194,56 @@ public class AgentWindow : Window
         // Stop sits with Close, not with Set it up. They are the two ways out
         // of this window, and keeping Stop up top cost a whole row of height
         // above the device for a button that is only ever pressed to leave.
-        var out_ = new StackPanel
+        // Ruled off, because the guide has its own row of buttons directly above
+        // it. Without the line, Skip and Close read as one bank of four and the
+        // way out of the window looks like a step of the walkthrough.
+        var out_ = new Border
         {
-            Orientation = Orientation.Horizontal, Spacing = 10,
-            HorizontalAlignment = HorizontalAlignment.Left,
-            Children = { _close, _stop },
+            BorderThickness = new Thickness(0, 1, 0, 0),
+            Padding = new Thickness(0, 12, 0, 0),
+            [!BorderBrushProperty] = new DynamicResourceExtension("SurfaceBorderBrush"),
+            Child = new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 10,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Children = { _close, _stop },
+            },
         };
 
         // Two ways to look at the same run: the device with what landed on it,
         // and every step it took to get there. Neither replaces the other. The
         // guide is what a person checks the profile with; the steps are what
         // they check the guide with.
+        // One track, two keys, like the view switch in the editor. Disabling the
+        // key you are on read as a dead grey button; the fill on the active one
+        // is what says which view this is, and the track is what says the two
+        // are the same choice.
         _guideHost = new ContentControl { IsVisible = false };
-        _toGuide = new Button { Content = "Your QuadStick", MinWidth = 150 };
+        _toGuide = new Button { Content = "Your QuadStick", MinWidth = 150, Padding = new Thickness(14, 0),
+            FontWeight = FontWeight.SemiBold, Classes = { "switchkey" } };
         AutomationProperties.SetName(_toGuide,
             "Show the profile drawn on your QuadStick, part by part");
         _toGuide.Click += (_, _) => Look(guide: true);
-        _toSteps = new Button { Content = "What it did", MinWidth = 130 };
+        _toSteps = new Button { Content = "What it did", MinWidth = 150, Padding = new Thickness(14, 0),
+            FontWeight = FontWeight.SemiBold, Classes = { "switchkey" } };
         AutomationProperties.SetName(_toSteps, "Show every step the agent took, in order");
         _toSteps.Click += (_, _) => Look(guide: false);
         _switch = new StackPanel
         {
-            Orientation = Orientation.Horizontal, Spacing = 8, IsVisible = false,
-            Children = { _toGuide, _toSteps },
+            Orientation = Orientation.Horizontal, IsVisible = false,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Children =
+            {
+                new Border
+                {
+                    Classes = { "switchtrack" },
+                    Child = new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal, Spacing = 2,
+                        Children = { _toGuide, _toSteps },
+                    },
+                },
+            },
         };
 
         var views = new Grid();
@@ -421,9 +449,13 @@ public class AgentWindow : Window
             : "The run finished without writing anything.");
     }
 
+    // An empty status takes its row with it. The row was costing height above
+    // the device to hold nothing, or to repeat what the guide's own heading
+    // already said.
     void Say(string message)
     {
         _status.Text = message;
+        _status.IsVisible = message.Length > 0;
     }
 
     // ---- turning events into cards ---------------------------------------
@@ -664,8 +696,8 @@ public class AgentWindow : Window
     {
         _guideHost.IsVisible = guide;
         _scroll.IsVisible = !guide;
-        _toGuide.IsEnabled = !guide;
-        _toSteps.IsEnabled = guide;
+        Pressed(_toGuide, guide);
+        Pressed(_toSteps, !guide);
         // The drawing of the device needs the room, and naming a game does
         // nothing while a run is being walked through. The first build kept the
         // whole setup row and left the QuadStick as a sixty pixel sliver under
@@ -673,6 +705,15 @@ public class AgentWindow : Window
         // model call has to be stoppable from wherever you are looking.
         _ask.IsVisible = _go.IsVisible = _replay.IsVisible = !guide;
         _setup.IsVisible = !guide;
+    }
+
+    /// <summary>Which key of the view switch is down. Pressed reads as a fill
+    /// and as the word "showing" to a screen reader, so it is never the colour
+    /// on its own.</summary>
+    static void Pressed(Button key, bool down)
+    {
+        key.Classes.Set("primary", down);
+        AutomationProperties.SetItemStatus(key, down ? "showing" : "");
     }
 
     /// <summary>The whole profile, drawn on the device, before a single
@@ -686,7 +727,10 @@ public class AgentWindow : Window
         _guideHost.Content = _guide;
         _switch.IsVisible = true;
         Look(guide: true);
-        Say($"{rows.Count} controls worked out. Step through them, then answer what is left.");
+        // The guide's own first step says the same three counts. Saying them
+        // again on the status line cost a row of the device's height to repeat
+        // the sentence directly above it.
+        Say("");
     }
 
     /// <summary>One map event as the guide it draws. Preview renders go through
@@ -705,7 +749,11 @@ public class AgentWindow : Window
     {
         if (_held.Count == 0)
         {
-            _guide?.Waiting("Working out the next thing to ask you...");
+            // This step can sit in a model call for minutes. The seconds count
+            // on the line below, and What it did has the call itself, so a wait
+            // this long is never a screen that just stopped.
+            _guide?.Waiting("Working out the next thing to ask you...",
+                            "What it is doing right now is under What it did.");
             return;
         }
         Draw(_held.Dequeue());

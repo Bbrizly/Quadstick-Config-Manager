@@ -649,9 +649,12 @@ public sealed class AgentWindowTests
         // different things, and neither is allowed to be a bare number.
         Press(window, "Next");
         Assert.Contains("Climb", guide.Saying);
-        Assert.Contains("Climb: hold it, or press once?", guide.Saying);
         Assert.Contains("1 left unbound on purpose:", guide.Saying);
         Assert.Contains("a keyboard key with no place on a controller profile", guide.Saying);
+        // Named, not asked twice. The whole question is put on its own screen a
+        // press later; printing all four of them here as well was a wall of
+        // text between somebody and the four buttons they came for.
+        Assert.DoesNotContain("Climb: hold it, or press once?", guide.Saying);
     }
 
     /// <summary>A map event with as many controls on one part as a real game
@@ -686,6 +689,73 @@ public sealed class AgentWindowTests
         Assert.True(bottom!.Value.Y <= guide.Bounds.Height + 1,
                     $"the device ends at {bottom.Value.Y} of {guide.Bounds.Height}");
         Assert.True(guide.Map.Bounds.Height > 0);
+    }
+
+    // The device is the thing this screen is for, so it gets more of the screen
+    // than the words do. It used to take sixty pixels under three paragraphs,
+    // which is a walkthrough of nothing.
+    /// <summary>One part carrying more words than fit: forty controls whose
+    /// names are as long as real games make them. Gathering them by trigger is
+    /// not enough on its own, because one gathered line of two thousand
+    /// characters wraps into a wall all by itself.</summary>
+    static string Wordy(int rows) => """{"event":"map","game":"Elden Ring","rows":["""
+        + string.Join(",", Enumerable.Range(0, rows).Select(n =>
+            $$"""
+            {"output":"kb_{{(char)('a' + n % 26)}}{{n}}",
+             "action":"Switch to the {{n}} weapon in the right hand and guard with it",
+             "inputs":["mp_left_puff"],"function":"normal","why":"the {{n}} reason"}
+            """.ReplaceLineEndings(" ")))
+        + """],"open":[],"left":[],"untouched":[]}""";
+
+    [AvaloniaFact]
+    public void TheDeviceIsTheBiggestThingOnTheScreen()
+    {
+        var (_, window, run) = Open();
+        run.Say(Wordy(40));
+        Press(window, "Next");
+        var guide = Guide(window);
+        var drawn = guide.GetVisualDescendants().OfType<Viewbox>().First();
+        var words = guide.GetVisualDescendants().OfType<ScrollViewer>().First();
+        Assert.True(drawn.Bounds.Height > words.Bounds.Height,
+                    $"the device got {drawn.Bounds.Height}, the words {words.Bounds.Height}");
+        Assert.True(drawn.Bounds.Height > guide.Bounds.Height / 3,
+                    $"the device got {drawn.Bounds.Height} of {guide.Bounds.Height}");
+    }
+
+    // Text run edge to edge is text nobody reads. Every word on this screen sits
+    // in one centred column, whatever the window is doing.
+    [AvaloniaFact]
+    public void TheWordsSitInAColumnRatherThanSpanningTheWindow()
+    {
+        var (_, window, run) = Open();
+        run.Say(Crowded(30));
+        Press(window, "Next");
+        var guide = Guide(window);
+        Assert.True(guide.Bounds.Width > 500, $"the guide was only {guide.Bounds.Width} wide");
+        foreach (var said in guide.GetVisualDescendants().OfType<TextBlock>()
+                                  .Where(t => (t.Text ?? "").Length > 40))
+            Assert.True(said.Bounds.Width <= 640,
+                        $"\"{said.Text}\" ran {said.Bounds.Width} wide");
+    }
+
+    // Thirty controls on one hole are one thing you do with your mouth and
+    // thirty outputs it sends. Drawing it as thirty rows, each with its own line
+    // of evidence under it, is what buried the device under grey text.
+    [AvaloniaFact]
+    public void ControlsFiredByTheSameThingAreOneLine()
+    {
+        var (_, window, run) = Open();
+        run.Say(Crowded(30));
+        Press(window, "Next");
+        var guide = Guide(window);
+        Assert.Contains("Do the 0 thing, Do the 1 thing, Do the 2 thing", guide.Saying);
+        // The evidence for each row is read aloud with it and is in full in the
+        // steps view and on the list being approved. On this screen it doubled
+        // the height of every part for a line nobody was reading.
+        Assert.DoesNotContain("of the published profiles do this", guide.Saying);
+        Assert.Contains("of the published profiles do this",
+                        AutomationProperties.GetName(guide.GetVisualDescendants()
+                            .OfType<TextBlock>().First(t => (t.Text ?? "").Contains("Do the 0 thing"))));
     }
 
     // Nothing on the walkthrough is a device token. A control the chart had no
@@ -771,7 +841,7 @@ public sealed class AgentWindowTests
         Assert.DoesNotContain("Sprint", guide.Saying);
         Assert.Empty(run.Replies);
 
-        Press(window, "Skip the walkthrough");
+        Press(window, "Skip");
         Assert.False(guide.Walking);
         Assert.Contains("Sprint: hold it, or press once to keep running?", guide.Saying);
     }
@@ -784,7 +854,7 @@ public sealed class AgentWindowTests
     {
         var (_, window, run) = Open();
         run.Say(Map);
-        Press(window, "Skip the walkthrough");
+        Press(window, "Skip");
         run.Say(Question);
         var guide = Guide(window);
 
@@ -807,7 +877,7 @@ public sealed class AgentWindowTests
     {
         var (_, window, run) = Open();
         run.Say(Map);
-        Press(window, "Skip the walkthrough");
+        Press(window, "Skip");
         run.Say(Question);
 
         Press(window, "Lip, press once");
@@ -826,7 +896,7 @@ public sealed class AgentWindowTests
     {
         var (_, window, run) = Open();
         run.Say(Map);
-        Press(window, "Skip the walkthrough");
+        Press(window, "Skip");
         run.Say(Question);
 
         Press(window, "Leave this one alone");
@@ -848,7 +918,7 @@ public sealed class AgentWindowTests
         Assert.DoesNotContain(window.GetVisualDescendants().OfType<Button>(),
                               b => Label(b).Contains("Write it"));
 
-        Press(window, "Skip the walkthrough");
+        Press(window, "Skip");
         Assert.Contains("Write 1 binding?", Words(window));
         Press(window, "Write it");
         Assert.Equal("""{"id":"c1","write":true}""", Assert.Single(run.Replies));

@@ -15,9 +15,16 @@ namespace QuadStick.App;
 // a person can disagree with. That is the whole point of this file: the
 // approval at the end is worth nothing if what came before it was unreadable.
 //
-// The device never moves and never scrolls away. Everything else is written
-// above it in a fixed band, because a walkthrough that pushes the thing being
-// walked through off the bottom of the screen is not a walkthrough.
+// The device is the biggest thing on the screen and never scrolls away. A
+// heading sits above it, what landed on this part sits under it, and the way
+// forward sits under that. One column, centred, capped at a line length
+// somebody can actually read.
+//
+// Every word here is rationed. The first cut of this put a paragraph of device
+// manual and a line of evidence under every row, which is how eleven joystick
+// bindings became a wall of grey text with the QuadStick squeezed underneath
+// it. The evidence is still in the steps view and in the list being approved,
+// which is where somebody checking the work goes.
 //
 // Nothing here decides anything. It draws what the run already sent and hands
 // answers straight back.
@@ -75,7 +82,7 @@ internal sealed class DeviceMap : Border
     internal DeviceMap(IReadOnlyList<Placed> rows)
     {
         CornerRadius = new CornerRadius(AgentWindow.Size("PanelRadius"));
-        Padding = new Thickness(16, 14);
+        Padding = new Thickness(20, 18);
         BorderThickness = new Thickness(1);
         AgentWindow.Paint(this, "SurfaceSubtleBrush", "SurfaceBorderBrush");
         HorizontalAlignment = HorizontalAlignment.Center;
@@ -313,15 +320,20 @@ internal sealed class DeviceMap : Border
 internal sealed class AgentGuide : Grid
 {
     readonly DeviceMap _map;
-    readonly StackPanel _above;
+    readonly StackPanel _head;
+    readonly StackPanel _body;
     readonly ScrollViewer _reading;
-    readonly StackPanel _below;
+    readonly Grid _foot;
     readonly List<Step> _steps = new();
     readonly IReadOnlyList<Placed> _open;
     readonly IReadOnlyList<Placed> _left;
     int _at = -1;
 
-    sealed record Step(string? Zone, string Heading, string Body, IReadOnlyList<Placed> Rows);
+    // A line long enough to read comfortably and no longer. Text run edge to
+    // edge across the window is the other half of why this was unreadable.
+    const double Column = 620;
+
+    sealed record Step(string? Zone, string Heading, string Under, IReadOnlyList<Placed> Rows);
 
     /// <summary>The walkthrough ran out. Whatever comes next, a question or the
     /// approval, happens now.</summary>
@@ -332,8 +344,9 @@ internal sealed class AgentGuide : Grid
     /// their own device is how you get an answer they did not think about.</summary>
     internal bool Walking => _at >= 0 && _at < _steps.Count;
 
-    /// <summary>Test seam: everything said above the device right now.</summary>
-    internal string Saying => string.Join("\n", Texts(_above));
+    /// <summary>Test seam: everything this step says in words right now.</summary>
+    internal string Saying =>
+        string.Join("\n", Texts(_head).Concat(Texts(_body)).Concat(Texts(_foot)));
 
     static IEnumerable<string> Texts(Panel panel) => panel.Children
         .SelectMany(child => child switch
@@ -361,74 +374,79 @@ internal sealed class AgentGuide : Grid
         _open = open;
         _left = left;
         var asking = open.Count;
-        _above = new StackPanel { Spacing = 6, VerticalAlignment = VerticalAlignment.Top };
-        _below = new StackPanel { Spacing = 8, Margin = new Thickness(0, 12, 0, 0) };
+        _head = new StackPanel
+        {
+            Spacing = 4, MaxWidth = Column,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
+        _body = new StackPanel
+        {
+            Spacing = 6, MaxWidth = Column,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
         _map = new DeviceMap(rows);
 
         var bound = rows.Count(r => !r.Asking);
-        var opening = $"{bound} control{(bound == 1 ? "" : "s")} worked out from the "
-                    + "profiles you have already built.";
-        if (asking > 0)
-            opening += $" {asking} still need{(asking == 1 ? "s" : "")} you.";
+        var counts = $"{bound} control{(bound == 1 ? "" : "s")} worked out";
+        if (asking > 0) counts += $", {asking} still need{(asking == 1 ? "s" : "")} you";
         if (left.Count > 0)
-            opening += $" {left.Count} {(left.Count == 1 ? "is" : "are")} left unbound on purpose.";
-        // Somebody may be meeting their own device here for the first time, so
-        // the first step names its parts before it counts anything on them.
-        _steps.Add(new Step(null, $"{game}, on your QuadStick", opening
-            + " Below is your device: three holes you sip or puff on, the lip switch under "
-            + "them, the side tube beside them, and the whole mouthpiece moving as a joystick. "
-            + "Each part shows how many controls landed on it.",
-            rows));
+            counts += $", {left.Count} {(left.Count == 1 ? "is" : "are")} left unbound on purpose";
+        // Three facts and a picture. The old opening spent four lines naming the
+        // parts of a QuadStick, which the drawing right underneath it labels.
+        _steps.Add(new Step(null, $"{game}, on your QuadStick", counts + ".", rows));
 
         foreach (var id in _map.Parts)
         {
             var zone = MainWindow.AllZones.First(z => z.Id == id);
             var here = rows.Where(r => r.Zone == id).ToList();
             if (here.Count == 0) continue;
-            _steps.Add(new Step(id, zone.Title, zone.Blurb, here));
+            // One sentence of what this part is, not the paragraph. The count is
+            // already on the part itself, and what landed there is right below.
+            _steps.Add(new Step(id, zone.Title, First(zone.Blurb), here));
         }
 
         _steps.Add(new Step(null,
-            asking > 0 ? $"{asking} thing{(asking == 1 ? "" : "s")} the evidence cannot settle"
+            asking > 0 ? $"{asking} thing{(asking == 1 ? "" : "s")} still need you"
                        : "That is the whole profile",
             asking > 0
-                ? "These are the ones your own profiles answer both ways, so they are yours "
-                + "to call. Each one shows where it would land on the device."
-                : "Nothing here needs you. Next is the list to approve, and nothing is "
-                + "written until you do.",
+                ? "Your own profiles answer these both ways, so they are yours to call."
+                : "Nothing here needs you. Nothing is written until you approve it.",
             Array.Empty<Placed>()));
 
-        // Three bands: the words on top, the device under them, the buttons at
-        // the bottom. The words take what they need and no more, and are capped
-        // short of half the height, so a part with twelve controls on it scrolls
-        // its own list instead of pushing the device off the bottom. The device
-        // is on screen at every step, which is the only reason any of this is
-        // worth drawing.
-        RowDefinitions = new RowDefinitions("Auto,*,Auto");
-        _reading = new ScrollViewer
-        {
-            Content = _above,
-            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            Margin = new Thickness(0, 0, 0, 12),
-        };
-        // The words never take more than a third of the height, and never so
-        // much that the device is squeezed below the size its part labels stop
-        // being readable at. They scroll; the device does not.
-        SizeChanged += (_, e) => _reading.MaxHeight =
-            Math.Max(96, Math.Min(e.NewSize.Height * 0.40, e.NewSize.Height - 300));
-        Add(_reading, 0);
-        // The figure shrinks to fit the room it is given rather than being cut
-        // off by it. Half a QuadStick is worse than a small one: somebody
-        // checking their own profile has to be able to see all of the device.
-        // Shrinking is better than clipping: on a short window the whole
-        // device is still there, smaller. What it must never do is lose a part
-        // off the edge, because somebody is checking their profile against it.
+        // Four bands: the heading, the device, what landed on it, the way
+        // forward. The device gets the star row, so it takes everything the
+        // other three do not, and it is the biggest thing on the screen at
+        // every step. That is the only reason any of this is worth drawing.
+        RowDefinitions = new RowDefinitions("Auto,*,Auto,Auto");
+        _head.Margin = new Thickness(0, 0, 0, 10);
+        Add(_head, 0);
+        // It scales to the room it is given rather than being cut off by it, up
+        // as well as down. Half a QuadStick is worse than a small one: somebody
+        // checking their own profile has to see all of the device.
         Add(new Viewbox
         {
-            Child = _map, Stretch = Stretch.Uniform,
-            StretchDirection = StretchDirection.DownOnly,
+            Child = _map, Stretch = Stretch.Uniform, MaxWidth = 620,
+            HorizontalAlignment = HorizontalAlignment.Center,
         }, 1);
-        Add(_below, 2);
+        _reading = new ScrollViewer
+        {
+            Content = _body,
+            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            Margin = new Thickness(0, 14, 0, 0),
+        };
+        // What landed on this part never takes more than about a third of the
+        // height. A part with twelve controls scrolls its own list instead of
+        // squeezing the device out of the window.
+        SizeChanged += (_, e) => _reading.MaxHeight =
+            Math.Max(120, Math.Min(e.NewSize.Height * 0.36, e.NewSize.Height - 280));
+        Add(_reading, 2);
+        _foot = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,Auto,*"),
+            Margin = new Thickness(0, 16, 0, 0),
+        };
+        Add(_foot, 3);
         Go(0);
     }
 
@@ -436,6 +454,15 @@ internal sealed class AgentGuide : Grid
     {
         Grid.SetRow(child, row);
         Children.Add(child);
+    }
+
+    /// <summary>The first sentence of a longer blurb. What a part is takes one
+    /// line here; the rest of it is the device manual, and the editor is where
+    /// that belongs.</summary>
+    static string First(string blurb)
+    {
+        var stop = blurb.IndexOf(". ", StringComparison.Ordinal);
+        return stop < 0 ? blurb : blurb[..(stop + 1)];
     }
 
     // ---- the walkthrough --------------------------------------------------
@@ -446,110 +473,154 @@ internal sealed class AgentGuide : Grid
         var now = _steps[_at];
         _map.Highlight(now.Zone);
 
-        _above.Children.Clear();
-        _above.Children.Add(Heading(now.Heading));
-        _above.Children.Add(Body(now.Body));
-        // Every control on this part, in the game's words, with what fires it
-        // and why it is there. This is the part somebody actually reads. The
-        // opening step has no part, so it stays a count rather than listing the
-        // whole profile before they have seen any of the device.
-        if (now.Zone is not null) _above.Children.Add(Bindings(now.Rows));
+        _head.Children.Clear();
+        _head.Children.Add(Heading(now.Heading));
+        _head.Children.Add(Under(now.Under));
+
+        _body.Children.Clear();
+        // Every control on this part, in the game's words, gathered by what
+        // fires it. The opening step has no part, so it stays a count rather
+        // than listing the whole profile before they have seen the device.
+        if (now.Zone is not null) _body.Children.Add(Bindings(now.Rows));
         // The last step is where what is NOT being bound gets said, by name and
         // with its reason. A control left on purpose and a control nobody got
-        // to are not the same thing, and neither of them is allowed to be a
-        // number somebody has to go looking behind.
+        // to are not the same thing, and neither is allowed to be a number
+        // somebody has to go looking behind.
         if (_at == _steps.Count - 1)
         {
-            foreach (var open in _open) _above.Children.Add(Aside(open.Name, open.Why));
+            if (_open.Count > 0)
+                _body.Children.Add(Body(string.Join(", ", _open.Select(o => o.Name)) + "."));
             if (_left.Count > 0)
             {
-                _above.Children.Add(Body($"{_left.Count} left unbound on purpose:"));
+                _body.Children.Add(Body($"{_left.Count} left unbound on purpose:"));
                 // Thirteen keyboard keys left alone for the same reason is one
                 // fact, not thirteen. Listing it thirteen times buried the four
                 // questions above it that actually wanted an answer.
                 foreach (var same in _left.GroupBy(l => l.Why))
-                    _above.Children.Add(Aside(string.Join(", ", same.Select(l => l.Name)), same.Key));
+                    _body.Children.Add(Aside(string.Join(", ", same.Select(l => l.Name)), same.Key));
             }
         }
-        _above.Children.Add(new TextBlock
-        {
-            Text = $"Step {_at + 1} of {_steps.Count}",
-            FontSize = AgentWindow.Size("SmallSize"), Classes = { "muted" },
-            Margin = new Thickness(0, 4, 0, 0),
-        });
         _reading.Offset = default;
 
-        _below.Children.Clear();
-        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
-        if (_at > 0) buttons.Children.Add(Button("Back", () => Go(_at - 1)));
         var last = _at == _steps.Count - 1;
-        buttons.Children.Add(Button(last ? "Continue" : "Next", () =>
-        {
-            if (last) { _at = _steps.Count; Walked?.Invoke(); }
-            else Go(_at + 1);
-        }, primary: true));
-        if (!last)
-            buttons.Children.Add(Button("Skip the walkthrough", () =>
+        Foot(
+            left: last ? null : Button("Skip", () =>
             {
                 _at = _steps.Count;
                 _map.Highlight(null);
                 Walked?.Invoke();
-            }, quiet: true));
-        _below.Children.Add(buttons);
+            }, quiet: true, tell: "Skip the walkthrough and go straight to the questions"),
+            middle: Dots(),
+            back: _at > 0 ? Button("Back", () => Go(_at - 1)) : null,
+            next: Button(last ? "Continue" : "Next", () =>
+            {
+                if (last) { _at = _steps.Count; Walked?.Invoke(); }
+                else Go(_at + 1);
+            }, primary: true));
     }
 
-    /// <summary>What landed on one part, gathered by the thing you do to fire
-    /// it. Six rows all reading "up" is one thing you do with your mouth and
-    /// six outputs it sends, and reading it as six separate bindings is how
-    /// twelve joystick rows became unreadable.</summary>
+    /// <summary>How far along, as one dot per step and as a sentence. The dots
+    /// are the glance; the sentence is what gets read aloud and what anyone who
+    /// cannot pick the filled dot out of the row still has.</summary>
+    Control Dots()
+    {
+        var row = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 6,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
+        for (int n = 0; n < _steps.Count; n++)
+        {
+            var here = n == _at;
+            // The step you are on is a bar, the rest are dots. Shape carries it,
+            // so the fill is the second signal and never the only one.
+            var dot = new Border
+            {
+                Width = here ? 20 : 7, Height = 7, CornerRadius = new CornerRadius(3.5),
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            dot[!BackgroundProperty] = new Avalonia.Markup.Xaml.MarkupExtensions
+                .DynamicResourceExtension(here ? "AccentBrush" : "SurfaceBorderBrush");
+            row.Children.Add(dot);
+        }
+        var said = new TextBlock
+        {
+            Text = $"Step {_at + 1} of {_steps.Count}",
+            FontSize = AgentWindow.Size("SmallSize"), Classes = { "muted" },
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
+        var stack = new StackPanel
+        {
+            Spacing = 6, HorizontalAlignment = HorizontalAlignment.Center,
+            Children = { row, said },
+        };
+        AutomationProperties.SetName(stack, $"Step {_at + 1} of {_steps.Count}");
+        return stack;
+    }
+
+    /// <summary>The bar under everything: the way out on the left, where you are
+    /// in the middle, the way on at the right. Same three places at every step,
+    /// so nothing under the hand moves between them.</summary>
+    void Foot(Control? left, Control? middle, Control? back, Control? next)
+    {
+        _foot.Children.Clear();
+        void Put(Control? child, int column, HorizontalAlignment where)
+        {
+            if (child is null) return;
+            child.HorizontalAlignment = where;
+            Grid.SetColumn(child, column);
+            _foot.Children.Add(child);
+        }
+        Put(left, 0, HorizontalAlignment.Left);
+        Put(middle, 1, HorizontalAlignment.Center);
+        var onward = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        if (back is not null) onward.Children.Add(back);
+        if (next is not null) onward.Children.Add(next);
+        Put(onward, 2, HorizontalAlignment.Right);
+    }
+
+    /// <summary>What landed on one part, one line per thing you do with your
+    /// mouth. Eleven joystick rows are four mouth movements and what each of
+    /// them sends, and drawing it as eleven rows with a line of evidence under
+    /// every one is how this became a wall of text.</summary>
     static Control Bindings(IReadOnlyList<Placed> rows)
     {
-        var grid = new Grid
-        {
-            ColumnDefinitions = new ColumnDefinitions("Auto,*"),
-            Margin = new Thickness(0, 8, 0, 0),
-        };
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
         var at = 0;
         foreach (var group in rows.GroupBy(r => r.Trigger))
         {
-            var first = true;
-            foreach (var row in group)
+            grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            var trigger = new TextBlock
             {
-                grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-                if (first)
-                {
-                    var trigger = new TextBlock
-                    {
-                        Text = group.Key, FontSize = AgentWindow.Size("BodySize"),
-                        FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
-                        MaxWidth = 190, Margin = new Thickness(0, 6, 16, 0),
-                    };
-                    Grid.SetRow(trigger, at);
-                    grid.Children.Add(trigger);
-                    first = false;
-                }
-                var said = new StackPanel { Spacing = 1, Margin = new Thickness(0, 6, 0, 0) };
-                said.Children.Add(new TextBlock
-                {
-                    Text = row.Behaviour.Length > 0 ? $"{row.Name} ({Lower(row.Behaviour)})" : row.Name,
-                    FontSize = AgentWindow.Size("BodySize"), TextWrapping = TextWrapping.Wrap,
-                });
-                var why = Short(row.Why);
-                if (why.Length > 0)
-                    said.Children.Add(new TextBlock
-                    {
-                        Text = why, FontSize = AgentWindow.Size("SmallSize"),
-                        Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
-                    });
-                AutomationProperties.SetName(said, $"{row.Name}, {group.Key}. {row.Behaviour} {row.Why}");
-                Grid.SetRow(said, at);
-                Grid.SetColumn(said, 1);
-                grid.Children.Add(said);
-                at++;
-            }
+                Text = group.Key, FontSize = AgentWindow.Size("BodySize"),
+                FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
+                MaxWidth = 170, Margin = new Thickness(0, 5, 16, 0),
+                TextAlignment = TextAlignment.Right,
+            };
+            Grid.SetRow(trigger, at);
+            grid.Children.Add(trigger);
+
+            var names = string.Join(", ", group.Select(Named));
+            var said = new TextBlock
+            {
+                Text = names, FontSize = AgentWindow.Size("BodySize"),
+                TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 0),
+            };
+            // The evidence for every row is read aloud with it, and is in full
+            // in the steps view and on the list being approved. On screen here
+            // it doubled the height of every part for a line nobody was reading.
+            AutomationProperties.SetName(said, $"{group.Key}: {names}. "
+                + string.Join(" ", group.Select(r => r.Why)));
+            Grid.SetRow(said, at);
+            Grid.SetColumn(said, 1);
+            grid.Children.Add(said);
+            at++;
         }
         return grid;
     }
+
+    static string Named(Placed row) =>
+        row.Behaviour.Length > 0 ? $"{row.Name} ({Lower(row.Behaviour)})" : row.Name;
 
     // ---- a question, asked over the same picture --------------------------
 
@@ -561,16 +632,15 @@ internal sealed class AgentGuide : Grid
                       Action<int> answer)
     {
         _map.Highlight(null);
-        _above.Children.Clear();
-        _above.Children.Add(Heading(question));
-        _above.Children.Add(new TextBlock
-        {
-            Text = about, FontSize = AgentWindow.Size("SmallSize"), Classes = { "muted" },
-            TextWrapping = TextWrapping.Wrap,
-        });
+        _head.Children.Clear();
+        _head.Children.Add(Heading(question));
+        _head.Children.Add(Under(about));
         _reading.Offset = default;
+        _foot.Children.Clear();
 
-        _below.Children.Clear();
+        _body.Children.Clear();
+        var choices = new StackPanel { Spacing = 8 };
+        _body.Children.Add(choices);
         var all = new List<Button>();
         for (int n = 0; n < options.Count; n++)
         {
@@ -606,7 +676,7 @@ internal sealed class AgentGuide : Grid
                 answer(choice);
             };
             all.Add(button);
-            _below.Children.Add(button);
+            choices.Children.Add(button);
         }
     }
 
@@ -615,23 +685,25 @@ internal sealed class AgentGuide : Grid
     internal void Chose(string what, Placed? landed)
     {
         _map.Highlight(landed is { Inputs.Count: > 0 } ? landed.Zone : null);
-        _below.Children.Clear();
-        _above.Children.Add(new TextBlock
+        _body.Children.Clear();
+        _body.Children.Add(new TextBlock
         {
             Text = $"You chose: {what}", FontSize = AgentWindow.Size("BodySize"),
             FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
-            Margin = new Thickness(0, 8, 0, 0),
+            TextAlignment = TextAlignment.Center,
         });
     }
 
     /// <summary>Nothing left to ask here. Says so rather than sitting on the
     /// last thing that happened, which reads as a run that stopped.</summary>
-    internal void Waiting(string text)
+    internal void Waiting(string text, string? under = null)
     {
         _map.Highlight(null);
-        _above.Children.Clear();
-        _above.Children.Add(Heading(text));
-        _below.Children.Clear();
+        _head.Children.Clear();
+        _head.Children.Add(Heading(text));
+        if (under is { Length: > 0 }) _head.Children.Add(Under(under));
+        _body.Children.Clear();
+        _foot.Children.Clear();
     }
 
     // ---- words ------------------------------------------------------------
@@ -662,19 +734,20 @@ internal sealed class AgentGuide : Grid
     static string Lower(string said) =>
         said.Length == 0 ? "" : char.ToLowerInvariant(said[0]) + said[1..].TrimEnd('.');
 
-    /// <summary>The evidence, down to the part that is about this profile. The
-    /// tail naming the exact file and row it was copied from is kept whole in
-    /// the step list and in the approval, which is where somebody checking the
-    /// work goes; here it pushed the device off the screen.</summary>
-    static string Short(string why) => why.Split(';')[0].Trim();
-
     static string Title(string zone) =>
         MainWindow.AllZones.FirstOrDefault(z => z.Id == zone)?.Title.ToLowerInvariant() ?? zone;
 
     static TextBlock Heading(string text) => new()
     {
         Text = text, FontSize = AgentWindow.Size("SectionSize"), FontWeight = FontWeight.Bold,
-        TextWrapping = TextWrapping.Wrap,
+        TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
+    };
+
+    /// <summary>The one line under the heading. One, not a paragraph.</summary>
+    static TextBlock Under(string text) => new()
+    {
+        Text = text, FontSize = AgentWindow.Size("BodySize"), Classes = { "muted" },
+        TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
     };
 
     static TextBlock Body(string text) => new()
@@ -685,7 +758,7 @@ internal sealed class AgentGuide : Grid
     /// <summary>A control that is not being bound: what it is, and why not.</summary>
     static Control Aside(string name, string why)
     {
-        var stack = new StackPanel { Spacing = 1, Margin = new Thickness(0, 8, 0, 0) };
+        var stack = new StackPanel { Spacing = 1, Margin = new Thickness(0, 6, 0, 0) };
         stack.Children.Add(new TextBlock
         {
             Text = name, FontSize = AgentWindow.Size("BodySize"), TextWrapping = TextWrapping.Wrap,
@@ -699,14 +772,17 @@ internal sealed class AgentGuide : Grid
         return stack;
     }
 
-    static Button Button(string text, Action clicked, bool primary = false, bool quiet = false)
+    static Button Button(string text, Action clicked, bool primary = false, bool quiet = false,
+                         string? tell = null)
     {
         var button = new Button
         {
-            Content = text, MinWidth = 120, MinHeight = AgentWindow.Size("ControlHeight"),
+            Content = text, MinWidth = quiet ? 88 : 120,
+            MinHeight = AgentWindow.Size("ControlHeight"),
         };
         if (primary) button.Classes.Add("primary");
         if (quiet) button.Classes.Add("quiet");
+        if (tell is not null) AutomationProperties.SetName(button, tell);
         button.Click += (_, _) => clicked();
         return button;
     }

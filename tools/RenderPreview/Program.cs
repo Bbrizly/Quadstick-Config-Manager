@@ -67,6 +67,9 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
     {
         CaptureRun($"{suffix}-1e-run-walk", new[] { mapEvent });
         CaptureRun($"{suffix}-1e2-run-crowded", new[] { mapEvent }, next: 1);
+        // The last step, where everything not being bound is said. It carries
+        // the most words of any step, so it is the one that has to be looked at.
+        CaptureRun($"{suffix}-1e3-run-last", new[] { mapEvent }, next: 9);
         CaptureRun($"{suffix}-1f-run-asking", new[] { mapEvent, Ask }, skipWalk: true);
         CaptureRun($"{suffix}-1g-run-confirm", new[] { mapEvent, Settled }, skipWalk: true);
     }
@@ -173,7 +176,7 @@ void CaptureRun(string name, IReadOnlyList<string> events, bool skipWalk = false
     foreach (var line in events)
     {
         run.Say(line.ReplaceLineEndings(" "));
-        if (skipWalk) { Click(win, "Skip the walkthrough"); skipWalk = false; }
+        if (skipWalk) { Click(win, "Skip"); skipWalk = false; }
     }
     for (int n = 0; n < next; n++) Click(win, "Next");
     win.UpdateLayout();
