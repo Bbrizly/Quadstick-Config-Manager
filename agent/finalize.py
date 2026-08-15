@@ -96,6 +96,23 @@ def interview(report):
     return answers
 
 
+def blank_rows(profile):
+    """Row number of every output that has a row but nothing bound to it yet.
+
+    Only the first mode, and only rows with no inputs. A row with an input in it
+    is a binding somebody has, and gets a new row rather than being written over.
+    """
+    read = qsf("inspect", profile)
+    spare = {}
+    for pf in read["profiles"]:
+        for mode in pf["modes"][:1]:
+            for b in mode["bindings"]:
+                if not b["inputs"] and b["output"] not in spare:
+                    spare[b["output"]] = b["row"]
+        break
+    return spare
+
+
 def apply_settled(profile, settled, out, log=print):
     """Turn approved proposals into rows, or change nothing at all.
 
@@ -106,20 +123,32 @@ def apply_settled(profile, settled, out, log=print):
     the device never replaces one that loaded right.
     """
     work = out + ".building"
+    spare = blank_rows(profile)
     try:
-        rows_ops = [{"op": "add_row", "mode": 0, "why": f"a row for {p['output']}"} for p in settled]
+        # A new profile arrives with a blank row per output already in it, so
+        # adding one for every proposal wrote a second dpad_N under the first and
+        # left the file twice the size with each output bound in two places. A
+        # row that already carries an input is somebody's, and is never reused.
+        # Claimed as they are handed out, so two proposals for one output do not
+        # both land on the same row and quietly become one binding.
+        taken = [spare.pop(p["output"], None) for p in settled]
+        rows_ops = [{"op": "add_row", "mode": 0, "why": f"a row for {p['output']}"}
+                    for p, row in zip(settled, taken) if row is None]
         made = qsf("apply", "--from", profile, "--ops", write_ops(rows_ops, "rows"),
                    "--out", work, ok=(0, 1))
         if made["rejected"]:
             log(f"could not make the rows: {made['rejected'][:2]}")
             return {"ok": False, "error": "the rows could not be made",
                     "rejected": made["rejected"]}
-        rows = [a["detail"]["row"] for a in made["applied"] if a["op"] == "add_row"]
+        fresh = iter(a["detail"]["row"] for a in made["applied"] if a["op"] == "add_row")
+        rows = [row if row is not None else next(fresh) for row in taken]
 
         bind_ops = [{"op": "set_binding", "row": row, "output": p["output"],
                      "function": p.get("function", "normal"), "inputs": p["inputs"],
                      "why": f"[{p.get('confidence', 'inferred')}] {p['why']}",
-                     "note": f"{p.get('confidence', 'inferred')}: {p['why'][:180]}"}
+                     # 180 characters of prose in a spreadsheet cell is a wall
+                     # nobody reads. Say where it came from, in a glance.
+                     "note": p["why"][:70]}
                     for row, p in zip(rows, settled)]
         result = qsf("apply", "--from", work, "--ops", write_ops(bind_ops, "bind"),
                      "--out", work, ok=(0, 1))
