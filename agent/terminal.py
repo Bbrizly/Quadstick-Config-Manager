@@ -45,13 +45,17 @@ def main():
             continue
         kind = e["event"]
 
-        if kind == "stage":
+        if kind == "run":
+            print(f"mode {e['mode']}: {e['says']} ({e['model']} via {e['backend']})")
+        elif kind == "stage":
             print(f"\n== {e['title']} ==")
         elif kind == "tool":
             print(f"  {e['title']}" + (f": {e['subtitle']}" if e.get("subtitle") else ""))
         elif kind == "tool_done":
             if e.get("summary"):
-                print(f"     {e['state']}: {e['summary']}")
+                took = f" in {e['ms'] / 1000:.1f}s" if e.get("ms") else ""
+                where = f" [{e['origin']}]" if e.get("origin") else ""
+                print(f"     {e['state']}{took}{where}: {e['summary']}")
         elif kind == "note":
             print(f"  {e['text']}")
         elif kind == "rows":

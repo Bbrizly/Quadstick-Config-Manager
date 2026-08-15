@@ -30,6 +30,7 @@ import argparse
 import json
 import os
 import sys
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -79,8 +80,56 @@ def words(value):
     return "" if value is None else str(value)
 
 
+def title_for(name, args):
+    """What a call is doing, from the call alone, before any answer exists.
+
+    Split out from the result so a card can be put up the moment the call is
+    made. Waiting for the answer to name the card is what made every step
+    appear and finish in the same instant.
+    """
+    args = args if isinstance(args, dict) else {}
+    name = str(name)
+    if name == "WebSearch":
+        return (f"Searching the web for “{args.get('query', '')}”", "reading what comes back")
+    if name == "WebFetch":
+        return (f"Reading {short_url(args.get('url', ''))}", "the actual control page")
+    if name == "read_habits":
+        controls = args.get("controls") or []
+        return (f"Reading his habit for {len(controls)} "
+                f"control{'' if len(controls) == 1 else 's'}",
+                ", ".join(str(c) for c in controls[:6]))
+    if name == "find_output":
+        return (f"Looking up the device's name for “{args.get('query', '')}”", "")
+    if name == "find_input":
+        return (f"Looking up the device's input for “{args.get('query', '')}”", "")
+    if name == "read_profile":
+        asked = args.get("match") or ""
+        return (f"Reading the profile for “{asked}”" if asked else "Reading the whole profile", "")
+    if name == "propose_binding":
+        return (f"Settling {args.get('output', '')}",
+                f"{words(args.get('inputs'))}, {args.get('function', '')}"
+                f"  [{args.get('confidence', 'inferred')}]")
+    if name == "ask_user":
+        return (f"Deciding to ask about {args.get('output', '')}", args.get("question", ""))
+    if name == "change_row":
+        return (f"Changing row {args.get('row', '')}",
+                f"{args.get('output', '')}, {args.get('function', '')}, "
+                f"{words(args.get('inputs'))}")
+    if name == "finish":
+        return ("Finishing", args.get("summary", ""))
+    return (name, "")
+
+
+def short_url(url):
+    """A page as somebody would say it, not as a query string."""
+    text = str(url or "")
+    for cut in ("https://", "http://", "www."):
+        text = text.removeprefix(cut)
+    return text[:70] + ("…" if len(text) > 70 else "")
+
+
 def describe(name, args, result):
-    """One tool call as a title, a subtitle and how it went.
+    """One finished tool call as a title, a subtitle and how it went.
 
     Everything here is defensive on purpose. This runs on what a model sent,
     and a card that cannot be built is a step the person never sees.
@@ -125,42 +174,89 @@ def describe(name, args, result):
     return (name, "", failed)
 
 
-def watcher():
-    """Turn agent_loop's steps into events, one card each."""
+def watcher(label="Working out what to do next", prefix="m", origin=None):
+    """Turn a loop's steps into events, one card each, as they happen.
+
+    Two cards per model turn, not one: the wait for the model is itself a step,
+    and it is the long one. Leaving it out meant the window sat blank for the
+    whole time anything was actually happening, then filled up at once, which
+    reads as a recording rather than as work.
+    """
     seen = [0]
+    open_ids = {}
+
+    def start(key, name, args, origin=None):
+        seen[0] += 1
+        ident = f"{prefix}{seen[0]}"
+        open_ids[key] = (ident, name, args)
+        title, subtitle = title_for(name, args)
+        emit("tool", id=ident, title=title, subtitle=subtitle, detail=args,
+             state="running", origin=origin)
+        return ident
 
     def on_event(kind, **fields):
-        if kind == "said" and fields.get("text"):
-            emit("note", text=fields["text"])
+        if kind == "thinking":
+            seen[0] += 1
+            open_ids["think"] = (f"{prefix}{seen[0]}", "think", None)
+            emit("tool", id=f"{prefix}{seen[0]}", title=label,
+                 subtitle=f"step {fields.get('step', '')}", state="running")
+        elif kind == "thought":
+            ident = (open_ids.pop("think", None) or (None,))[0]
+            if ident:
+                emit("tool_done", id=ident, state="ok",
+                     summary="decided what to do", ms=fields.get("ms"),
+                     origin=fields.get("origin"))
+        elif kind == "said" and fields.get("text"):
+            # The researcher's answer IS a JSON chart, and it arrives as the last
+            # thing it says. Printing it as a sentence put a wall of raw JSON in
+            # the middle of the transcript; the card under it already reports
+            # what the chart turned out to contain.
+            said = fields["text"].strip()
+            if not said.startswith(("{", "[", "```")):
+                emit("note", text=said)
         elif kind in ("stalled", "budget"):
             emit("note", text=fields.get("text", ""))
         elif kind == "tool":
-            seen[0] += 1
-            ident = f"m{seen[0]}"
-            title, subtitle, failed = describe(
-                fields.get("name", "a step"), fields.get("input"), fields.get("result"))
-            emit("tool", id=ident, title=title, subtitle=subtitle,
-                 detail=fields.get("input"), state="running",
-                 origin=fields.get("origin"))
+            key = fields.get("id") or (fields.get("step"), fields.get("index"))
+            start(key, fields.get("name", "a step"), fields.get("input"),
+                  fields.get("origin"))
+        elif kind == "tool_result":
+            key = fields.get("id") or (fields.get("step"), fields.get("index"))
+            ident, name, args = open_ids.pop(key, (None, None, None))
             result = fields.get("result")
+            if ident is None:
+                # A result for a call nobody announced is still a call it made,
+                # so it gets its own card rather than being dropped.
+                ident = start(key, fields.get("name", "a step"), fields.get("input"),
+                              fields.get("origin"))
+                open_ids.pop(key, None)
+                name, args = fields.get("name"), fields.get("input")
+            if result is None:
+                # The web tools stream a summary line, not a result object.
+                emit("tool_done", id=ident, state="failed" if fields.get("failed") else "ok",
+                     summary=fields.get("summary", ""), ms=fields.get("ms"),
+                     origin=fields.get("origin") or origin)
+                return
+            title, subtitle, failed = describe(name, args, result)
             emit("tool_done", id=ident, state="failed" if failed else "ok",
-                 summary=result.get("error", "") if failed and isinstance(result, dict) else subtitle,
-                 detail=result)
+                 summary=result.get("error", "") if failed and isinstance(result, dict)
+                         else subtitle,
+                 detail=result, ms=fields.get("ms"), origin="local")
     return on_event
 
 
 # ---- setting a game up from nothing ---------------------------------------
 
-def chart_for(game, replay):
+def chart_for(game, replay, live=False):
     """The game's controls, researched if nobody has charted it yet."""
     slug = research.slugify(game)
     path = os.path.join(CHARTS, slug + ".json")
-    if os.path.exists(path):
+    if os.path.exists(path) and not live:
         chart = json.load(open(path))
         emit("tool", id="chart", title=f"Read the control chart for {chart.get('game', game)}",
              subtitle=f"{len(chart.get('controls') or {})} controls, checked in already",
              state="running", detail={"path": path})
-        emit("tool_done", id="chart", state="ok",
+        emit("tool_done", id="chart", state="ok", origin="cache", ms=0,
              summary=f"{len(chart.get('controls') or {})} controls, "
                      f"{len(chart.get('disputed') or {})} the sources disagree about",
              detail={"source": chart.get("source"), "confidence": chart.get("confidence")})
@@ -169,13 +265,23 @@ def chart_for(game, replay):
     emit("tool", id="chart", title=f"Nobody has charted {game}, so reading how it is controlled",
          subtitle="searching the web and reading the control pages", state="running",
          detail={"game": game})
-    done = research.build_chart(game, out=path, mode="replay" if replay else "auto", log=lambda *_: None)
+    began = time.time()
+    done = research.build_chart(game, out=path,
+                                mode="replay" if replay else "live" if live else "auto",
+                                log=lambda *_: None,
+                                # Every search and every page it reads becomes its own
+                                # card while it happens. These are the only calls in the
+                                # whole run that touch the outside world, so they are
+                                # the ones a person most needs to see it make.
+                                on_event=watcher(prefix="w", origin="live"))
+    took = int((time.time() - began) * 1000)
     if not done["ok"]:
         emit("tool_done", id="chart", state="failed",
              summary="nothing came back that the device could use", detail=done.get("dropped"))
         raise Stopped(f"nothing usable was found about how {game} is controlled, "
                       f"so no profile was built.")
     emit("tool_done", id="chart", state="warn" if done["dropped"] else "ok",
+         ms=took, origin=done.get("origin"),
          summary=f"{done['kept']} controls the device knows, {done['disputed']} the sources "
                  f"disagree about, {len(done['dropped'])} dropped",
          detail={"source": done["source"], "dropped": done["dropped"],
@@ -192,21 +298,23 @@ def create(args, work):
     """
     game = args.game
     emit("stage", key="research", title=f"How {game} is controlled")
-    chart_path, chart = chart_for(game, args.replay)
+    chart_path, chart = chart_for(game, args.replay, args.live)
 
     emit("stage", key="history", title="What his own profiles already answer")
     emit("tool", id="predict", title="Matched this game against every profile he has built",
          subtitle="no model involved, evidence only", state="running",
          detail={"corpus": args.corpus, "heldOut": args.hold_out})
+    began = time.time()
     built = predict.build(work, corpus=args.corpus, chart=chart_path,
                           exclude_family=research.slugify(game) if args.hold_out else None,
                           log=lambda *_: None)
+    took = int((time.time() - began) * 1000)
     if not built["ok"]:
         emit("tool_done", id="predict", state="failed", summary=built["error"], detail=built)
         raise Stopped(built["error"])
     plan = built["plan"]
     check = built["validation"]
-    emit("tool_done", id="predict", state="ok",
+    emit("tool_done", id="predict", state="ok", ms=took, origin="local",
          summary=f"{len(plan['decided'])} of {len(built['spec']['controls'])} answered from "
                  f"his own profiles, {len(plan['asks'])} the evidence will not settle",
          # The whole apply record is thousands of lines and the same facts are
@@ -235,7 +343,8 @@ def create(args, work):
                         f"{meanings.get(a['output'], 'unknown, not in the sourced control list')}"
                         for a in plan["asks"])
             + "\n\nRead their habits, then settle each one or ask about it.")
-    qsagent.agent_loop(task, ctx, verbose=False, on_event=watcher())
+    qsagent.agent_loop(task, ctx, verbose=False,
+                       on_event=watcher("Working out the ones his profiles cannot settle"))
     return ctx, plan
 
 
@@ -387,7 +496,8 @@ def edit(args):
     task = (f"This is their profile. They asked for exactly this and nothing more:\n\n"
             f"  “{args.request}”\n\n"
             f"Read the profile, find the row or rows that means, and change only those.")
-    qsagent.agent_loop(task, ctx, verbose=False, on_event=watcher(),
+    qsagent.agent_loop(task, ctx, verbose=False,
+                       on_event=watcher("Working out which row they mean"),
                        system=EDIT_SYSTEM, tools=EDIT_TOOLS, runner=edit_tool)
     return ctx
 
@@ -516,11 +626,23 @@ def main():
     ap.add_argument("--hold-out", action="store_true",
                     help="hide this game's own profiles first, so the result can be checked")
     ap.add_argument("--replay", action="store_true", help="from the recording, no network")
+    ap.add_argument("--live", action="store_true",
+                    help="ask the model even where an answer is already recorded")
     args = ap.parse_args()
 
-    if args.replay:
-        os.environ["QSF_MODEL_MODE"] = "replay"
-        qsagent.MODE = "replay"
+    if args.replay and args.live:
+        emit("failed", message="give either --replay or --live, not both")
+        return 2
+    mode = "replay" if args.replay else "live" if args.live else "auto"
+    os.environ["QSF_MODEL_MODE"] = mode
+    qsagent.MODE = mode
+    # What a run is allowed to do is said before it does anything. A run that
+    # finished in a second because every answer was already on disk looks
+    # exactly like a run that made it all up, and only this line tells them apart.
+    emit("run", mode=mode, model=qsagent.MODEL, backend=qsagent.BACKEND,
+         says={"auto": "asks the model, but uses a recorded answer where one exists",
+               "live": "asks the model every time, nothing replayed",
+               "replay": "from the recording only, no network"}[mode])
     if not args.game and not (args.edit and args.request):
         emit("failed", message="give either --game, or --edit with --request")
         return 2
