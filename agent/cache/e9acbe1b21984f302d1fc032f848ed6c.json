@@ -1,0 +1,1 @@
+{"content": [{"type": "tool_use", "id": "512835cb-c7e4-4897-ab76-6907f9c5922d-0", "name": "read_habits", "input": {"controls": ["dpad_E", "dpad_N", "dpad_S", "start", "back"]}}]}

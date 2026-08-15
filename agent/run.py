@@ -358,13 +358,20 @@ def create(args, work):
     emit("stage", key="agent", title="What the evidence could not settle")
     ctx = qsagent.new_context(plan, [a["output"] for a in plan["asks"]])
     meanings = plan.get("controlMeanings", {})
-    task = (f"Game: {plan['game']}.\n\nThese {len(plan['asks'])} controls are unsettled. For "
-            f"each, what it does in this game, where that is known:\n"
-            + "\n".join(f"  {a['output']}: "
-                        f"{meanings.get(a['output'], 'unknown, not in the sourced control list')}"
-                        for a in plan["asks"])
-            + "\n\nRead their habits, then settle each one or ask about it.")
-    qsagent.agent_loop(task, ctx, verbose=False,
+    # Everything it would have fetched, handed over up front: what each control
+    # does in this game, and every way they have bound it before. Fetching these
+    # a control at a time was most of the run.
+    unsettled = {
+        a["output"]: {
+            "inThisGame": meanings.get(a["output"],
+                                       "unknown, not in the sourced control list"),
+            "theyHaveDone": qsagent.habits_for(plan["habits"], a["output"]),
+        } for a in plan["asks"]}
+    task = (f"Game: {plan['game']}.\n\nThese {len(plan['asks'])} controls are unsettled. "
+            f"For each: what it does in this game, and every way they have bound it "
+            f"before, ranked.\n\n" + json.dumps(unsettled, indent=1)
+            + "\n\nSettle or ask about all of them in this reply, then call finish.")
+    qsagent.agent_loop(task, ctx, verbose=False, tools=qsagent.SETUP_TOOLS,
                        on_event=watcher("Working out the ones his profiles cannot settle"))
     return ctx, plan
 

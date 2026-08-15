@@ -1,0 +1,385 @@
+[
+  {
+    "kind": "tool",
+    "id": "toolu_01T9Mfwg6Nkpnmr7JNyFMNSz",
+    "name": "WebSearch",
+    "input": {
+      "query": "Binding of Isaac Repentance default controls keyboard mouse xbox controller"
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01MW1qqHNyMwnGwrj2iVEWF7",
+    "name": "WebSearch",
+    "input": {
+      "query": "Binding of Isaac Rebirth default keybindings wiki controls page"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01T9Mfwg6Nkpnmr7JNyFMNSz",
+    "summary": "8 results",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01MW1qqHNyMwnGwrj2iVEWF7",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01Fbfd6DPifWfai5VcPJmZu5",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://thebindingofisaacrebirth.wiki/systems/controls/",
+      "prompt": "List every default control binding for keyboard, mouse, and Xbox controller, including movement, shooting, use item, use pill/card, drop trinket, place bomb, map, pause, menu navigation, etc. Give exact key/button names."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_013qDrhDGsSeRnCBzQUJAZdK",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://bindingofisaac.wiki.fextralife.com/Controls",
+      "prompt": "List every default control binding for keyboard, mouse, and Xbox controller, including movement, shooting, use item, use pill/card, drop trinket, place bomb, map, pause, menu navigation, etc. Give exact key/button names."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01Fbfd6DPifWfai5VcPJmZu5",
+    "summary": "1,014 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_013qDrhDGsSeRnCBzQUJAZdK",
+    "summary": "1,030 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01FYeXxVMJ7c2RZxmKhSjVLt",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://strategywiki.org/wiki/The_Binding_of_Isaac:_Repentance/Controls",
+      "prompt": "List every default control binding for keyboard, mouse, and Xbox/gamepad controller, including movement, shooting, use active item, use pocket item (pill/card/rune), drop trinket, place bomb, map, pause, menu navigation. Give exact key/button names as listed on the page."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01Mpc77boYFqiv9Xu19QEU3h",
+    "name": "WebSearch",
+    "input": {
+      "query": "\"Binding of Isaac\" controls \"place bomb\" keyboard \"E\" \"pocket item\" \"Q\" default"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01FYeXxVMJ7c2RZxmKhSjVLt",
+    "summary": "The server returned HTTP 403 Forbidden. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01Mpc77boYFqiv9Xu19QEU3h",
+    "summary": "9 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_0113TAMPPk3qLyAtQVd5SQXb",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://gamerant.com/binding-of-isaac-keyboard-controls-keybinds-guide/",
+      "prompt": "List every default control binding for keyboard and Xbox controller, including movement, shooting, use active item, use pocket item (pill/card/rune), drop trinket, place bomb, map, pause, menu navigation. Give exact key/button names as listed on the page, separately for keyboard and controller."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01DMjpch5gijP7LP26PcNF7E",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://defkey.com/binding-of-isaac-rebirth-shortcuts",
+      "prompt": "List every default control binding for keyboard and Xbox controller, including movement, shooting, use active item, use pocket item (pill/card/rune), drop trinket, place bomb, map, pause, menu navigation. Give exact key/button names as listed on the page, separately for keyboard and controller."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01DMjpch5gijP7LP26PcNF7E",
+    "summary": "The server returned HTTP 403 Forbidden. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_0113TAMPPk3qLyAtQVd5SQXb",
+    "summary": "910 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01CZQJJWFDW7oEU6cEC9yBzt",
+    "name": "WebSearch",
+    "input": {
+      "query": "Binding of Isaac Rebirth Xbox controller default \"right stick\" shoot \"left bumper\" bomb \"right trigger\""
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01CFQDYq8zAL5T7VrN1xVXEs",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://www.g2a.com/news/features/the-binding-of-isaac-rebirth-keyboard-or-controller-controls-guide/",
+      "prompt": "List every default control binding for keyboard and Xbox controller in Binding of Isaac Rebirth, including movement, shooting, use active item, use pocket item (pill/card/rune), drop trinket, place bomb, map, pause, menu navigation. Give exact key/button names as listed on the page, separately for keyboard and controller."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01CZQJJWFDW7oEU6cEC9yBzt",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01CFQDYq8zAL5T7VrN1xVXEs",
+    "summary": "timeout of 60000ms exceeded",
+    "failed": true
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_013dHXP1u15QRAmgnvxT3YWZ",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=336806525",
+      "prompt": "List every default control binding for Xbox controller in Binding of Isaac Rebirth: movement, shoot, use active item, use pill/card, drop trinket, place bomb, map, pause. Give exact button names (A, B, X, Y, LB, RB, LT, RT, Start, Back, Left Stick, Right Stick, D-pad)."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_011UN59Ko5zT17tpBK51gTZC",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=288824930",
+      "prompt": "List every default control binding for Xbox controller in Binding of Isaac: movement, shoot, use active item, use pill/card, drop trinket, place bomb, map, pause. Give exact button names (A, B, X, Y, LB, RB, LT, RT, Start, Back, Left Stick, Right Stick, D-pad)."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_013dHXP1u15QRAmgnvxT3YWZ",
+    "summary": "583 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_011UN59Ko5zT17tpBK51gTZC",
+    "summary": "704 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01KPVFd8VNDZbyBxH4LcVg5c",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://bindingofisaacrebirth.fandom.com/wiki/Options",
+      "prompt": "List every default control binding for Xbox controller and keyboard: movement, shoot, use active item, use pill/card, drop trinket, place bomb, map, pause. Give exact button/key names as listed."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01FARsT9xLCfsBpYW8yHEhTJ",
+    "name": "WebSearch",
+    "input": {
+      "query": "Isaac Repentance controller default \"LT\" \"RT\" \"LB\" \"RB\" bomb active item pocket item map button"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01KPVFd8VNDZbyBxH4LcVg5c",
+    "summary": "The server returned HTTP 402 Payment Required. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` fo",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01FARsT9xLCfsBpYW8yHEhTJ",
+    "summary": "9 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01FNsARKyY4rS9nkwsgNEH8x",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://bo3.gg/games/articles/the-binding-of-isaac-controls-guide",
+      "prompt": "List every default control binding for keyboard and Xbox controller in Binding of Isaac, including movement, shooting, use active item, use pocket item (pill/card/rune), drop trinket, place bomb, map, pause, menu navigation. Give exact key/button names as listed on the page, separately for keyboard and controller."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01Qt4EW2UiRAsMzHQZEFamjN",
+    "name": "WebSearch",
+    "input": {
+      "query": "Binding of Isaac controller default map button \"back\" OR \"select\" OR \"start\" toggle map controller"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01FNsARKyY4rS9nkwsgNEH8x",
+    "summary": "673 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01Qt4EW2UiRAsMzHQZEFamjN",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01RSaJg9fSuD3BXEMjHQuNM3",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://gist.github.com/travm/110fe97e766a4fe6fc0b7b9238325411",
+      "prompt": "What does this list show about Binding of Isaac Rebirth controller mapping order and default button assignments? List all actions and any associated default buttons if shown."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01WgwuCvxEYB1fP1d4uu2tuh",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://gamefaqs.gamespot.com/boards/777728-the-binding-of-isaac-rebirth/70639205",
+      "prompt": "What are the default controller controls for Binding of Isaac Rebirth mentioned in this discussion? List all button mappings."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01WgwuCvxEYB1fP1d4uu2tuh",
+    "summary": "The server returned HTTP 403 Forbidden. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01RSaJg9fSuD3BXEMjHQuNM3",
+    "summary": "777 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01Cydy8L1qXEbW7qxK8gRJHD",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://thebindingofisaacrebirth.wiki/systems/controls/",
+      "prompt": "Quote the full text content of this page verbatim, including all tables, headers, and lists, especially anything about Xbox controller button defaults for map, pause, accept, cancel, bomb, item, pill/card."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01VUjxTW2put5Bt5pWrgMACz",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://bindingofisaac.wiki.fextralife.com/Controls",
+      "prompt": "Quote the full text content of this page verbatim, including all tables, headers, and lists, especially anything about Xbox controller button defaults for map, pause, accept, cancel, bomb, item, pill/card, drop trinket."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01Cydy8L1qXEbW7qxK8gRJHD",
+    "summary": "841 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01VUjxTW2put5Bt5pWrgMACz",
+    "summary": "746 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_019MyuekHCfvS2pycsXVkgzz",
+    "name": "WebSearch",
+    "input": {
+      "query": "\"Binding of Isaac\" controller \"Back\" button map default OR \"View button\" map toggle Xbox one controller"
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_014CdH9mvkfUz7r1ZsiKuPKN",
+    "name": "WebSearch",
+    "input": {
+      "query": "Isaac Rebirth controller controls reddit \"map\" button default Xbox controller"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_019MyuekHCfvS2pycsXVkgzz",
+    "summary": "9 results",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_014CdH9mvkfUz7r1ZsiKuPKN",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01DFvGJWw4zjifP3at4emDEG",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://www.g2a.com/news/features/the-binding-of-isaac-rebirth-keyboard-or-controller-controls-guide/",
+      "prompt": "List every default control binding for keyboard and Xbox controller, separately. Include movement, shoot, use active item, use pill/card/rune, drop trinket, place bomb, map, pause, accept, cancel. Quote exact button names as written."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01URr5yeymWxc5KwyLPAuYhj",
+    "name": "WebSearch",
+    "input": {
+      "query": "\"Binding of Isaac\" \"RB\" \"active item\" controller default site:reddit.com"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01URr5yeymWxc5KwyLPAuYhj",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01DFvGJWw4zjifP3at4emDEG",
+    "summary": "timeout of 60000ms exceeded",
+    "failed": true
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01JYmaLZDRb88QUQH5rnMq3r",
+    "name": "WebSearch",
+    "input": {
+      "query": "\"Binding of Isaac\" controller \"select button\" OR \"back button\" opens map"
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_0145huKdB8vxKYesemahs4Hm",
+    "name": "WebSearch",
+    "input": {
+      "query": "isaac rebirth controller default controls list start pause back map accept cancel button"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01JYmaLZDRb88QUQH5rnMq3r",
+    "summary": "9 results",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_0145huKdB8vxKYesemahs4Hm",
+    "summary": "7 results",
+    "failed": false
+  },
+  {
+    "kind": "said",
+    "text": "```json\n{\"game\": \"The Binding of Isaac: Repentance / Rebirth\",\n  \"platform\": \"xbox\",\n  \"controls\": {\n    \"kb_w\": {\"action\": \"move up\", \"critical\": true},\n    \"kb_a\": {\"action\": \"move left\", \"critical\": true},\n    \"kb_s\": {\"action\": \"move down\", \"critical\": true},\n    \"kb_d\": {\"action\": \"move right\", \"critical\": true},\n    \"kb_up_arrow\": {\"action\": \"shoot tears up\", \"critical\": true},\n    \"kb_down_"
+  }
+]

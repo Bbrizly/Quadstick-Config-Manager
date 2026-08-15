@@ -1,0 +1,135 @@
+{
+  "game": "The Binding of Isaac: Repentance / Rebirth",
+  "family": "binding-of-isaac",
+  "platform": "xbox",
+  "source": {
+    "url": "https://gamerant.com/binding-of-isaac-keyboard-controls-keybinds-guide/",
+    "note": "Primary source for the full keyboard and Xbox bumper/trigger/stick layout, cross-checked against https://bindingofisaac.wiki.fextralife.com/Controls and search summaries citing the same LB/LT/RB/RT scheme. Could not find a page giving an authoritative, self-consistent listing of default Xbox face-button (A/B/X/Y) bindings \u2014 thebindingofisaacrebirth.wiki/systems/controls/ gave self-contradictory answers across two separate fetches of the same URL, so its face-button claims were excluded from controls and moved to disputed.",
+    "method": "read from the web by agent/research.py",
+    "verified_by_hand": false
+  },
+  "confidence": "researched, not checked by a person",
+  "controls": {
+    "kb_w": {
+      "action": "move up",
+      "critical": true
+    },
+    "kb_a": {
+      "action": "move left",
+      "critical": true
+    },
+    "kb_s": {
+      "action": "move down",
+      "critical": true
+    },
+    "kb_d": {
+      "action": "move right",
+      "critical": true
+    },
+    "kb_up_arrow": {
+      "action": "shoot tears up",
+      "critical": true
+    },
+    "kb_down_arrow": {
+      "action": "shoot tears down",
+      "critical": true
+    },
+    "kb_left_arrow": {
+      "action": "shoot tears left",
+      "critical": true
+    },
+    "kb_right_arrow": {
+      "action": "shoot tears right",
+      "critical": true
+    },
+    "kb_space": {
+      "action": "use active item",
+      "critical": true
+    },
+    "kb_q": {
+      "action": "use pocket item (pill/card/rune)",
+      "critical": true
+    },
+    "kb_e": {
+      "action": "place bomb",
+      "critical": true
+    },
+    "kb_left_control": {
+      "action": "hold to drop held pill, card, rune or trinket",
+      "critical": false
+    },
+    "kb_tab": {
+      "action": "toggle floor map overlay",
+      "critical": false
+    },
+    "kb_escape": {
+      "action": "pause / open menu",
+      "critical": false
+    },
+    "left_joy_up": {
+      "action": "move up",
+      "critical": true
+    },
+    "left_joy_down": {
+      "action": "move down",
+      "critical": true
+    },
+    "left_joy_left": {
+      "action": "move left",
+      "critical": true
+    },
+    "left_joy_right": {
+      "action": "move right",
+      "critical": true
+    },
+    "right_joy_up": {
+      "action": "shoot tears up",
+      "critical": true
+    },
+    "right_joy_down": {
+      "action": "shoot tears down",
+      "critical": true
+    },
+    "right_joy_left": {
+      "action": "shoot tears left",
+      "critical": true
+    },
+    "right_joy_right": {
+      "action": "shoot tears right",
+      "critical": true
+    },
+    "left_bumper": {
+      "action": "place bomb",
+      "critical": true
+    },
+    "left_trigger": {
+      "action": "use active item",
+      "critical": true
+    },
+    "right_bumper": {
+      "action": "use pocket item (pill/card/rune)",
+      "critical": true
+    },
+    "right_trigger": {
+      "action": "hold to drop held pill, card, rune or trinket",
+      "critical": false
+    },
+    "back": {
+      "action": "toggle floor map overlay",
+      "critical": false
+    },
+    "start": {
+      "action": "pause / open menu",
+      "critical": false
+    }
+  },
+  "disputed": {
+    "A": "One source (thebindingofisaacrebirth.wiki) claimed A=shoot on Xbox by default, but the same page contradicted itself elsewhere by saying shooting is done with the right stick and bumpers/triggers handle bombs/items; could not confirm any default face-button binding.",
+    "B": "Same page claimed B=use active item on Xbox, conflicting with its own and other sources' statement that LT is the active-item button by default; unverified.",
+    "X": "Claimed as 'drop card' on Xbox by the same inconsistent source; conflicts with RB/RT-based pocket-item scheme reported elsewhere.",
+    "Y": "Claimed as 'drop trinket' on Xbox by the same inconsistent source; conflicts with the right-trigger-hold drop scheme reported elsewhere.",
+    "kb_f": "Reported by some guides as a default 'toggle fullscreen' key, but this is an app/window setting rather than a gameplay control and wasn't confirmed on every source, so left out of the main list.",
+    "right_trigger": "Some summaries described RT as 'swap consumable/active item' rather than purely 'drop/hold to drop'; exact wording of the action differs between guides."
+  },
+  "not_covered": []
+}

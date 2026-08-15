@@ -353,13 +353,21 @@ How to decide one:
   whole, so a near miss is silently dead rather than wrong.
 - Do not change something they did not ask you to change.
 
-Read habits first, then settle or ask about every control you can in each reply.
-When each one has a proposal or a question, call finish."""
+Their habits for every control are already in front of you. There is nothing to
+fetch. Settle or ask about every control in ONE reply, then call finish in that
+same reply. Waiting a turn to do the next one costs them minutes of staring at a
+spinner for an answer you already have."""
 
 
 # How many questions one profile is worth. Past this the agent decides and marks
 # it inferred, which they can change in one edit.
 ASK_BUDGET = 5
+
+# Setting a game up hands the agent every habit it could have asked for and the
+# exact output token for every control, so read_habits and find_output are two
+# round trips to fetch what it already has. A round trip is a whole model call,
+# and eight of them was twelve minutes of somebody watching a spinner.
+SETUP_TOOLS = [t for t in TOOLS if t["name"] not in ("read_habits", "find_output")]
 
 REQUIRED = {t["name"]: t["input_schema"].get("required", []) for t in TOOLS}
 
@@ -391,13 +399,7 @@ def run_tool(name, args, ctx):
         for control in args["controls"][:12]:
             if not isinstance(control, str):
                 return {"error": "read_habits takes a list of output names as strings."}
-            ranked = ctx["habits"].get(control, [])
-            out[control] = [{
-                "inputs": o["inputs"], "function": o["function"],
-                "usedIn": f"{o['seenIn']} of {o['ofGames']} of their games "
-                          f"({o['share']:.0%})",
-                "example": o["evidence"],
-            } for o in ranked[:4]] or "they have never bound this control"
+            out[control] = habits_for(ctx["habits"], control)
         return out
     if name == "find_output":
         q = args["query"].lower().replace(" ", "_")
@@ -471,6 +473,21 @@ def run_tool(name, args, ctx):
         ctx["done"] = args["summary"]
         return {"ok": True}
     return {"error": f"no tool called {name}"}
+
+
+def habits_for(habits, control):
+    """Every way they have bound one control before, ranked, in plain words.
+
+    This used to be reachable only by asking for it, which cost a whole model
+    call to fetch something already on disk. It is the same answer either way,
+    so it is written once and both the tool and the opening brief use it.
+    """
+    ranked = habits.get(control, [])
+    return [{
+        "inputs": o["inputs"], "function": o["function"],
+        "usedIn": f"{o['seenIn']} of {o['ofGames']} of their games ({o['share']:.0%})",
+        "example": o["evidence"],
+    } for o in ranked[:4]] or "they have never bound this control"
 
 
 def new_context(plan, unresolved):

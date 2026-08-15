@@ -1,0 +1,1 @@
+{"content": [{"type": "text", "text": "**Searching for the actual token vocabulary \u2014 my `_soft` guesses are all dead:**\n\n{\"calls\": [{\"tool\": \"find_output\", \"input\": {\"query\": \"mp_right\"}}, {\"tool\": \"find_output\", \"input\": {\"query\": \"mp_left\"}}, {\"tool\": \"find_output\", \"input\": {\"query\": \"soft\"}}]}"}]}

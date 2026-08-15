@@ -1,0 +1,1 @@
+{"content": [{"type": "tool_use", "id": "47dc82e6-7cdc-445c-83c5-02b5a7fa415a-0", "name": "find_output", "input": {"query": "puff_soft"}}, {"type": "tool_use", "id": "47dc82e6-7cdc-445c-83c5-02b5a7fa415a-1", "name": "find_output", "input": {"query": "sip_soft"}}]}

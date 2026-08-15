@@ -1,0 +1,1 @@
+{"content": [{"type": "tool_use", "id": "ab9afde5-55b1-490a-a13a-3ddb264e0dae-0", "name": "read_habits", "input": {"controls": ["back", "quick_restart_controller", "kb_a", "kb_e", "kb_f", "kb_f1", "kb_h", "kb_left_control", "kb_q", "kb_s", "kb_w", "mouse_right_button"]}}]}

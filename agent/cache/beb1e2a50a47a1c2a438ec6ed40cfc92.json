@@ -1,0 +1,1 @@
+{"content": [{"type": "text", "text": "**Verifying two unusual tokens before committing (missing the `mp_` prefix seen elsewhere):**\n\n{\"calls\": [{\"tool\": \"find_output\", \"input\": {\"query\": \"right_puff_soft\"}}, {\"tool\": \"find_output\", \"input\": {\"query\": \"right_sip_soft\"}}]}"}]}

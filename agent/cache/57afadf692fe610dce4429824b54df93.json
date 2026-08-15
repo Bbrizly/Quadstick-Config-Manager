@@ -1,0 +1,1 @@
+{"content": [{"type": "tool_use", "id": "34723c88-86c6-47b0-a0bb-d62b4b17c867-0", "name": "find_output", "input": {}}, {"type": "tool_use", "id": "34723c88-86c6-47b0-a0bb-d62b4b17c867-1", "name": "find_output", "input": {}}]}

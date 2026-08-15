@@ -1,14 +1,6 @@
 {
   "game": "Celeste",
-  "family": "celeste",
   "platform": "xbox",
-  "source": {
-    "url": "https://raw.githubusercontent.com/EverestAPI/RainbowMod/master/RainbowMod/settings.celeste",
-    "note": "This is a real Celeste settings.celeste save-config file (the game's actual XML config format) containing default keyboard (Grab/Jump/Dash/Talk/Confirm/Cancel/Journal/QuickRestart) and controller (BtnGrab/BtnJump/BtnDash/BtnTalk) bindings, cross-checked against magicgameworld.com's 'Celeste Controls Guide: Default Binds' and multiple Steam Community discussion threads which independently reported the same C/X/Z keyboard scheme and A-Y jump / X-B dash / LT-RT-LB-RB grab controller scheme. PCGamingWiki, Neoseeker, Celeste Fandom wiki, and celeste.ink were all blocked (403/CAPTCHA) and could not be read directly.",
-    "method": "read from the web by agent/research.py",
-    "verified_by_hand": false
-  },
-  "confidence": "researched, not checked by a person",
   "controls": {
     "kb_left_arrow": {
       "action": "Move Madeline left / aim dash left",
@@ -136,5 +128,8 @@
     "quick_restart_controller": "Older guides say holding both shoulder buttons (LB+RB) plus Start triggers Quick Restart on controller, but patch notes indicate this hardcoded shortcut was later removed in favor of a rebindable 'Alt Quick Restart' which ships with NO default button assigned (BtnAltQuickRestart was empty in the actual settings file read). Could not confirm a current default controller quick-restart binding.",
     "kb_escape": "Not listed inside the <Pause/> tag of the actual settings.celeste config file (it was empty), suggesting Pause may be a hardcoded, non-remappable Escape key rather than a normal default binding \u2014 but every secondary source agrees Escape is used, so confidence is still fairly high."
   },
-  "not_covered": []
+  "source": {
+    "url": "https://raw.githubusercontent.com/EverestAPI/RainbowMod/master/RainbowMod/settings.celeste",
+    "note": "This is a real Celeste settings.celeste save-config file (the game's actual XML config format) containing default keyboard (Grab/Jump/Dash/Talk/Confirm/Cancel/Journal/QuickRestart) and controller (BtnGrab/BtnJump/BtnDash/BtnTalk) bindings, cross-checked against magicgameworld.com's 'Celeste Controls Guide: Default Binds' and multiple Steam Community discussion threads which independently reported the same C/X/Z keyboard scheme and A-Y jump / X-B dash / LT-RT-LB-RB grab controller scheme. PCGamingWiki, Neoseeker, Celeste Fandom wiki, and celeste.ink were all blocked (403/CAPTCHA) and could not be read directly."
+  }
 }

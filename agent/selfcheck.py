@@ -75,6 +75,32 @@ steps, finished, log = run(scripted(
     use("finish", summary="one control settled"),
 ), ctx)
 check("a deciding model finishes", (3, True), (steps, finished))
+
+# Setting a game up hands it the habits, so the only reason left to take a second
+# turn is to fetch something it already has. One reply, one step, one minute
+# instead of twelve: this is the check that a round trip has not crept back in.
+one_pass = fresh_ctx(unresolved=("kb_c", "kb_left_shift"))
+qsagent.call_model = scripted({"content": [
+    {"type": "tool_use", "id": "t1", "name": "propose_binding",
+     "input": {"output": "kb_c", "inputs": ["mp_left_sip"], "function": "toggle",
+               "why": "40 of 95 of his games, Doom row 31", "confidence": "evidenced"}},
+    {"type": "tool_use", "id": "t2", "name": "propose_binding",
+     "input": {"output": "kb_left_shift", "inputs": ["lip"], "function": "normal",
+               "why": "he sprints on the lip switch in 30 of 95", "confidence": "evidenced"}},
+    {"type": "tool_use", "id": "t3", "name": "finish", "input": {"summary": "both settled"}},
+]})
+with contextlib.redirect_stdout(io.StringIO()):
+    one_steps, one_done = qsagent.agent_loop("task", one_pass, tools=qsagent.SETUP_TOOLS)
+check("a whole profile is settled in one model call", (1, True), (one_steps, one_done))
+check("and both controls came out of it", 2, len(one_pass["proposals"]))
+check("nothing it already has is still fetchable",
+      [], [t["name"] for t in qsagent.SETUP_TOOLS
+           if t["name"] in ("read_habits", "find_output")])
+check("the habits it is handed say the same thing the tool did",
+      [{"inputs": ["mp_left_sip"], "function": "toggle",
+        "usedIn": "40 of 95 of their games (42%)",
+        "example": "Doom, mode 'Gameplay', row 31"}],
+      qsagent.habits_for(fresh_ctx()["habits"], "kb_c"))
 check("the proposal is recorded", 1, len(ctx["proposals"]))
 check("the reason survives", True, "Doom row 31" in ctx["proposals"][0]["why"])
 
