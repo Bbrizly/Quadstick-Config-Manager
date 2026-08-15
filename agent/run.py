@@ -322,6 +322,14 @@ def create(args, work):
     if not built["ok"]:
         emit("tool_done", id="predict", state="failed", summary=built["error"], detail=built)
         raise Stopped(built["error"])
+    # The template ships with "Left Joystick" in the mode name cell, which is the
+    # label for the joystick columns, not a name. Left alone, every profile this
+    # tool makes is called Left Joystick in the app and on the device.
+    finalize.qsf("apply", "--from", work, "--out", work,
+                 "--ops", finalize.write_ops(
+                     [{"op": "rename_mode", "mode": 0, "name": "Gameplay",
+                       "why": "the template's placeholder is a column label"}], "name"),
+                 ok=(0, 1))
     plan = built["plan"]
     check = built["validation"]
     emit("tool_done", id="predict", state="ok", ms=took, origin="local",
