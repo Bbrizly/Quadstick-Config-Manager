@@ -209,7 +209,10 @@ def build(out, corpus=CORPUS, controls=None, chart=None, exclude_family=None,
                 "function": d["function"], "inputs": d["inputs"],
                 "why": f"{d['seenIn']} of {d['ofGames']} of his profiles bind {d['output']} this way "
                        f"({d['share']:.0%}); nearest example {d['evidence']}",
-                "note": f"from {d['evidence']} ({d['seenIn']}/{d['ofGames']} of his games)"}
+                # Column K is a spreadsheet cell somebody reads at a glance. The
+                # mode and row it came from filled eighty characters and answered
+                # nothing; how many of their own profiles agree is the whole point.
+                "note": f"{d['seenIn']} of your {d['ofGames']} profiles do this"}
                for row, d in zip(rows, decided)]
         result, _ = qsf("apply", "--from", work, "--ops", write_tmp(ops), "--out", work, ok=(0, 1))
 
