@@ -289,7 +289,7 @@ import finalize  # noqa: E402
 bench = tempfile.mkdtemp()
 start = os.path.join(bench, "start.csv")
 shutil.copy(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tests/QuadStick.Format.Tests/corpus/default.csv"), start)
-spare = finalize.blank_rows(start)
+spare = finalize.open_rows(start)
 check("a blank row is found for an output the template already has", True, "dpad_N" in spare)
 
 made = os.path.join(bench, "made.csv")
@@ -311,6 +311,25 @@ check("the binding landed on the row that was already there",
 # is a wall, and the mode and row it came from answer nothing.
 notes = [row[10] for row in csv.reader(open(made)) if len(row) > 10 and row[10].strip()]
 check("a note fits in a cell", True, all(len(n) <= 70 for n in notes))
+
+# The template pre-binds left_joy_up and increment_mode. On a profile this run
+# just built, those stock rows are what the answers replace; an edit leaves them.
+kept = os.path.join(bench, "kept.csv")
+finalize.apply_settled(start, [{"output": "left_joy_up", "inputs": ["mp_left_sip"],
+                                "function": "normal", "why": "asked", "confidence": "chosen by them"}],
+                       kept, log=lambda *_: None)
+stock = [b for b in finalize.qsf("inspect", kept)["profiles"][0]["modes"][0]["bindings"]
+         if b["output"] == "left_joy_up"]
+check("an edit leaves a row somebody already bound", 2, len(stock))
+
+over = os.path.join(bench, "over.csv")
+finalize.apply_settled(start, [{"output": "left_joy_up", "inputs": ["mp_left_sip"],
+                                "function": "normal", "why": "asked", "confidence": "chosen by them"}],
+                       over, fresh=True, log=lambda *_: None)
+made_rows = [b for b in finalize.qsf("inspect", over)["profiles"][0]["modes"][0]["bindings"]
+             if b["output"] == "left_joy_up"]
+check("a profile this run built replaces its own stock row", 1, len(made_rows))
+check("and the answer is what is in it", ["mp_left_sip"], made_rows[0]["inputs"])
 shutil.rmtree(bench, ignore_errors=True)
 
 

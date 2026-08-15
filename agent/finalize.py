@@ -96,24 +96,27 @@ def interview(report):
     return answers
 
 
-def blank_rows(profile):
-    """Row number of every output that has a row but nothing bound to it yet.
+def open_rows(profile, fresh=False):
+    """Row number of every output in the first mode that a binding may land on.
 
-    Only the first mode, and only rows with no inputs. A row with an input in it
-    is a binding somebody has, and gets a new row rather than being written over.
+    A row with an input in it is somebody's binding, so editing an existing
+    profile only ever takes the empty ones. A profile this run built a minute ago
+    out of the template has nobody's work in it, and its stock rows
+    (left_joy_up=up, increment_mode=right_sip) are exactly the ones the answers
+    are meant to replace, so `fresh` takes those too.
     """
     read = qsf("inspect", profile)
     spare = {}
     for pf in read["profiles"]:
         for mode in pf["modes"][:1]:
             for b in mode["bindings"]:
-                if not b["inputs"] and b["output"] not in spare:
+                if (fresh or not b["inputs"]) and b["output"] not in spare:
                     spare[b["output"]] = b["row"]
         break
     return spare
 
 
-def apply_settled(profile, settled, out, log=print):
+def apply_settled(profile, settled, out, log=print, fresh=False):
     """Turn approved proposals into rows, or change nothing at all.
 
     Two passes, because a row has to exist before it can be bound, so both run
@@ -123,7 +126,7 @@ def apply_settled(profile, settled, out, log=print):
     the device never replaces one that loaded right.
     """
     work = out + ".building"
-    spare = blank_rows(profile)
+    spare = open_rows(profile, fresh)
     try:
         # A new profile arrives with a blank row per output already in it, so
         # adding one for every proposal wrote a second dpad_N under the first and

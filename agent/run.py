@@ -584,7 +584,8 @@ def approved(ident):
     return listen(ident).get("write") is True
 
 
-def confirm_and_write(profile, settled, open_questions, untouched, out=None, shown=None):
+def confirm_and_write(profile, settled, open_questions, untouched, out=None, shown=None,
+                      fresh=False):
     """Show the whole list, write it only if they say so.
 
     `shown` is what the person is approving, which for a new profile is every
@@ -599,7 +600,8 @@ def confirm_and_write(profile, settled, open_questions, untouched, out=None, sho
     if not approved("c1"):
         raise Stopped("nothing was written, and the profile is exactly as it was")
 
-    done = finalize.apply_settled(profile, settled, out, log=lambda text: emit("note", text=text))
+    done = finalize.apply_settled(profile, settled, out, fresh=fresh,
+                                  log=lambda text: emit("note", text=text))
     if not done["ok"]:
         emit("failed", message=f"{done['error']}, so nothing was written and the profile "
                                f"is exactly as it was", detail=done)
@@ -747,7 +749,7 @@ def main():
                                f"({d['share']:.0%}); nearest example {d['evidence']}"}
                        for d in plan["decided"]]
             confirm_and_write(work, settled, still_open, result["untouched"],
-                              out=args.out, shown=already + settled)
+                              out=args.out, shown=already + settled, fresh=True)
         finally:
             if os.path.exists(work):
                 os.remove(work)
