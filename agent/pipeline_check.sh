@@ -340,6 +340,38 @@ PY
 check "saying something shows the whole list again before anything is written" \
   "2 ['c1', 'c2'] [True, True] make the first one a hard puff | 2" "$(cat "$TMP/said.txt")"
 
+# Two front ends, one pipeline. Whatever the window can do to the list, the
+# terminal can do to the same list, or one of them is showing a run the other
+# one cannot.
+python3 - <<'PY' > "$TMP/term.txt"
+import contextlib, io, sys; sys.path.insert(0, "agent")
+import terminal
+card = {"id": "c1", "profile": "/tmp/g.csv", "canSay": True, "open": [], "untouched": [],
+        "rows": [{"output": "kb_a", "inputs": ["lip"], "function": "normal"},
+                 {"output": "kb_b", "inputs": ["right_puff"], "function": "toggle"},
+                 {"output": "kb_c", "inputs": ["mp_left_sip"], "function": "tap 200"}]}
+def answered(typed, **over):
+    sys.stdin = io.StringIO(typed)
+    with contextlib.redirect_stdout(io.StringIO()) as out:
+        said = terminal.decide({**card, **over})
+    return said, out.getvalue()
+took, _ = answered("1\n3\ny\n")
+back, _ = answered("2\n2\ny\n")
+# Every row off, so y is refused and asked again; putting one back writes that one.
+every, refused = answered("1\n2\n3\ny\n3\ny\n")
+spoke, _ = answered("s\nmake sprint a hard puff\n")
+quiet, _ = answered("")                          # a closed keyboard writes nothing
+plain, _ = answered("s\ns\nn\n", canSay=False)   # s is not on offer without it
+print(took, back, every["skip"] == [0, 1], "every row is taken off" in refused)
+print(spoke, quiet, plain)
+PY
+check "the terminal can take rows off the list too" \
+  "{'id': 'c1', 'write': True, 'skip': [0, 2]} {'id': 'c1', 'write': True, 'skip': []} True True" \
+  "$(sed -n 1p "$TMP/term.txt")"
+check "and can say something, and a closed keyboard writes nothing" \
+  "{'id': 'c1', 'say': 'make sprint a hard puff'} {'id': 'c1', 'write': False} {'id': 'c1', 'write': False}" \
+  "$(sed -n 2p "$TMP/term.txt")"
+
 # The rounds are bounded, and the last one says so rather than quietly ignoring
 # what they typed.
 cp "$TMP/p.csv" "$TMP/loop-work.csv"
