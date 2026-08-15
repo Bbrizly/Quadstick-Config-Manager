@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="QuadStick.App.Tests" />
+    <InternalsVisibleTo Include="RenderPreview" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.1.3" />

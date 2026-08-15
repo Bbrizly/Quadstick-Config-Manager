@@ -26,9 +26,18 @@ other.
 
 Before anybody is asked anything, the whole profile is drawn on a picture of
 the QuadStick and walked through one part at a time: the joystick, each
-mouthpiece hole, the combos, the side tube, the lip switch. Each part says what
-landed on it in the game's own words, so the left hole reads **Dash: soft
-puff**, not `kb_x, mp_left_puff_soft`.
+mouthpiece hole, the combos, the side tube, the lip switch. The picture is the
+device, not a list of it: three holes in a row with the lip switch under them
+and the side tube beside them, all inside the frame that is the joystick,
+because moving the whole mouthpiece is what the joystick is. Each part carries
+how many controls landed on it, and the part being walked through lights up.
+
+What landed there is written above the picture, in the game's own words and
+gathered by the thing you do to fire it, so a hole reads **soft puff: Dash**,
+not `kb_x, mp_left_puff_soft`. A control the chart had no word for is still
+said in English: `kb_escape` is "Escape key". The device is on screen at every
+step, whatever is being said above it, and shrinks rather than losing a part
+off the edge.
 
 The questions are then asked over the same picture. Reaching an option lights
 the part of the mouthpiece it would land on, by keyboard as well as by mouse,

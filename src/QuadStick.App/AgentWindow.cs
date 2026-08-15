@@ -42,6 +42,8 @@ public class AgentWindow : Window
     readonly StackPanel _stream;
     readonly ScrollViewer _scroll;
     readonly TextBlock _status;
+    readonly TextBlock _explain;
+    readonly StackPanel _setup;
     readonly CheckBox _replay;
     readonly Dictionary<string, ToolCard> _cards = new();
     readonly List<ToolCard> _timed = new();
@@ -98,8 +100,8 @@ public class AgentWindow : Window
         OpenWritten = path => _owner.OpenPath(path);
         InstallWritten = path => _ = _owner.OpenPathAndInstallAsync(path);
         Title = changing ? "Ask for a change" : "Set up a game";
-        Width = Math.Min(760 * owner.UiScale, 1100);
-        Height = Math.Min(700 * owner.UiScale, 900);
+        Width = Math.Min(820 * owner.UiScale, 1100);
+        Height = Math.Min(760 * owner.UiScale, 940);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
         var heading = new TextBlock
@@ -107,7 +109,7 @@ public class AgentWindow : Window
             Text = changing ? "Ask for a change" : "Set up a game",
             FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold,
         };
-        var explain = new TextBlock
+        _explain = new TextBlock
         {
             Text = changing
                 ? "Say what you want changed, in your own words. It finds the row you mean, "
@@ -184,10 +186,19 @@ public class AgentWindow : Window
         AutomationProperties.SetName(_close, "Close this window");
         _close.Click += (_, _) => Close();
 
-        var top = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
-        top.Children.Add(_go);
-        top.Children.Add(_stop);
-        top.Children.Add(_replay);
+        _setup = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
+        _setup.Children.Add(_go);
+        _setup.Children.Add(_replay);
+
+        // Stop sits with Close, not with Set it up. They are the two ways out
+        // of this window, and keeping Stop up top cost a whole row of height
+        // above the device for a button that is only ever pressed to leave.
+        var out_ = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 10,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Children = { _close, _stop },
+        };
 
         // Two ways to look at the same run: the device with what landed on it,
         // and every step it took to get there. Neither replaces the other. The
@@ -214,11 +225,11 @@ public class AgentWindow : Window
         var panel = new DockPanel { LastChildFill = true, Margin = new Thickness(24) };
         foreach (var (control, dock, margin) in new (Control, Dock, Thickness)[]
         {
-            (explain, Dock.Top, new Thickness(0, 0, 0, 12)),
+            (_explain, Dock.Top, new Thickness(0, 0, 0, 12)),
             (_ask, Dock.Top, new Thickness(0, 0, 0, 10)),
-            (top, Dock.Top, new Thickness(0, 0, 0, 14)),
+            (_setup, Dock.Top, new Thickness(0, 0, 0, 14)),
             (_switch, Dock.Top, new Thickness(0, 0, 0, 12)),
-            (_close, Dock.Bottom, new Thickness(0, 12, 0, 0)),
+            (out_, Dock.Bottom, new Thickness(0, 12, 0, 0)),
             (_status, Dock.Bottom, new Thickness(0, 12, 0, 0)),
         })
         {
@@ -226,7 +237,6 @@ public class AgentWindow : Window
             DockPanel.SetDock(control, dock);
             panel.Children.Add(control);
         }
-        _close.HorizontalAlignment = HorizontalAlignment.Left;
         panel.Children.Add(views);
 
         // One timer for the whole window, not one per card. A step that sits in
@@ -327,6 +337,11 @@ public class AgentWindow : Window
         // game. That is the whole of "talk to it once it is done": the same box,
         // pointed at what is now on disk.
         var target = _changing ? _owner.CurrentProfilePath : _written;
+
+        // What this window is for is worth a paragraph before the first run and
+        // nothing after it. Once something is on screen, that paragraph is
+        // taking room from the thing it was explaining.
+        _explain.IsVisible = false;
 
         _stream.Children.Clear();
         _cards.Clear();
@@ -651,6 +666,13 @@ public class AgentWindow : Window
         _scroll.IsVisible = !guide;
         _toGuide.IsEnabled = !guide;
         _toSteps.IsEnabled = guide;
+        // The drawing of the device needs the room, and naming a game does
+        // nothing while a run is being walked through. The first build kept the
+        // whole setup row and left the QuadStick as a sixty pixel sliver under
+        // it, which is no better than not drawing it. Stop stays: a run in a
+        // model call has to be stoppable from wherever you are looking.
+        _ask.IsVisible = _go.IsVisible = _replay.IsVisible = !guide;
+        _setup.IsVisible = !guide;
     }
 
     /// <summary>The whole profile, drawn on the device, before a single
@@ -659,16 +681,23 @@ public class AgentWindow : Window
     void Map(AgentEvent e)
     {
         var rows = e.List("rows").Select(Placement).ToList();
-        // What is not being bound travels as rows too, so the reason each one
-        // carries is on screen with it rather than as a count.
-        var open = e.List("open").Select(Placement).ToList();
-        var left = e.List("left").Select(Placement).ToList();
-        _guide = new AgentGuide(e.Str("game"), rows, open, left) { Walked = Walked };
+        _guide = GuideFor(e);
+        _guide.Walked = Walked;
         _guideHost.Content = _guide;
         _switch.IsVisible = true;
         Look(guide: true);
         Say($"{rows.Count} controls worked out. Step through them, then answer what is left.");
     }
+
+    /// <summary>One map event as the guide it draws. Preview renders go through
+    /// this too, so what a screenshot shows is what a run shows.</summary>
+    internal static AgentGuide GuideFor(AgentEvent e) => new(
+        e.Str("game"),
+        e.List("rows").Select(Placement).ToList(),
+        // What is not being bound travels as rows too, so the reason each one
+        // carries is on screen with it rather than as a count.
+        e.List("open").Select(Placement).ToList(),
+        e.List("left").Select(Placement).ToList());
 
     /// <summary>The walkthrough ran out, so whatever was waiting on it happens
     /// now.</summary>
@@ -729,7 +758,8 @@ public class AgentWindow : Window
         options.Add(new Placed(output, "Leave this one alone", Array.Empty<string>(), "", ""));
 
         Look(guide: true);
-        _guide!.Ask(e.Str("question"), $"{output}. Nothing is written either way until you approve it.",
+        _guide!.Ask(e.Str("question"),
+            $"{AgentGuide.Speak(output)}. Nothing is written either way until you approve it.",
                     options, choice =>
         {
             var picked = options[choice];

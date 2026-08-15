@@ -184,7 +184,7 @@ def build(out, corpus=CORPUS, controls=None, chart=None, exclude_family=None,
     loaded_chart = load_chart(chart)
     decided, asks = predict(spec["controls"], ranked, ask_below, loaded_chart["disputed"])
     log(f"{len(spec['controls'])} controls this game needs: "
-        f"{len(decided)} answered from his own profiles, {len(asks)} need him")
+        f"{len(decided)} answered from the published profiles, {len(asks)} need you")
 
     # Rows have to be made before they can be filled, and only the row add_row
     # reports back is safe to write to, so this runs in two passes.
@@ -226,7 +226,7 @@ def build(out, corpus=CORPUS, controls=None, chart=None, exclude_family=None,
 
         ops = [{"op": "set_binding", "row": row, "output": d["output"],
                 "function": d["function"], "inputs": d["inputs"],
-                "why": f"{d['seenIn']} of {d['ofGames']} of his profiles bind {d['output']} this way "
+                "why": f"{d['seenIn']} of {d['ofGames']} of the published profiles bind {d['output']} this way "
                        f"({d['share']:.0%}); nearest example {d['evidence']}",
                 # Column K is a spreadsheet cell somebody reads at a glance. The
                 # mode and row it came from filled eighty characters and answered

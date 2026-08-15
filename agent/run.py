@@ -98,7 +98,7 @@ def title_for(name, args):
         return (f"Reading {short_url(args.get('url', ''))}", "the actual control page")
     if name == "read_habits":
         controls = args.get("controls") or []
-        return (f"Reading his habit for {len(controls)} "
+        return (f"Reading the habit for {len(controls)} "
                 f"control{'' if len(controls) == 1 else 's'}",
                 ", ".join(str(c) for c in controls[:6]))
     if name == "find_output":
@@ -145,7 +145,7 @@ def describe(name, args, result):
     failed = "error" in result
     if name == "read_habits":
         controls = args.get("controls") or []
-        return (f"Read his habit for {len(controls)} control{'' if len(controls) == 1 else 's'}",
+        return (f"Read the habit for {len(controls)} control{'' if len(controls) == 1 else 's'}",
                 ", ".join(str(c) for c in controls[:6]), failed)
     if name == "find_output":
         found = result.get("matches") or []
@@ -320,10 +320,10 @@ def create(args, work):
              "are read first, from the game's own pages.")
     chart_path, chart = chart_for(game, args.replay, args.research)
 
-    emit("stage", key="history", title="What his own profiles already answer",
+    emit("stage", key="history", title="What the published profiles already answer",
          why="A control he has bound the same way across years of profiles is already "
              "answered. No model is asked, and neither are you.")
-    emit("tool", id="predict", title="Matched this game against every profile he has built",
+    emit("tool", id="predict", title="Matched this game against every published profile",
          subtitle="no model involved, evidence only", state="running",
          detail={"corpus": args.corpus, "heldOut": args.hold_out})
     began = time.time()
@@ -349,7 +349,7 @@ def create(args, work):
     check = built["validation"]
     emit("tool_done", id="predict", state="ok", ms=took, origin="local",
          summary=f"{len(plan['decided'])} of {len(built['spec']['controls'])} answered from "
-                 f"his own profiles, {len(plan['asks'])} the evidence will not settle",
+                 f"the published profiles, {len(plan['asks'])} the evidence will not settle",
          # The whole apply record is thousands of lines and the same facts are
          # already in the rows below, so what travels is what a person would
          # actually read: what the device thinks of the file so far.
@@ -361,19 +361,19 @@ def create(args, work):
     # shape of the job, and reading it off a wall of cards is not the same thing.
     emit("tally", of=len(built["spec"]["controls"]),
          answered=len(plan["decided"]), asking=len(plan["asks"]))
-    emit("rows", title="Settled from his own profiles", rows=[
+    emit("rows", title="Settled from the published profiles", rows=[
         {"output": d["output"], "inputs": d["inputs"], "function": d["function"],
          "confidence": "evidenced",
-         "why": f"{d['seenIn']} of {d['ofGames']} of his profiles do this "
+         "why": f"{d['seenIn']} of {d['ofGames']} of the published profiles do this "
                 f"({d['share']:.0%}); nearest example {d['evidence']}"}
         for d in plan["decided"]])
 
     if not plan["asks"]:
-        emit("note", text="his own profiles settled every control this game needs.")
+        emit("note", text="The published profiles settled every control this game needs.")
         return qsagent.new_context(plan, []), plan
 
     emit("stage", key="agent", title="What the evidence could not settle",
-         why="Only the controls his own profiles cannot answer go to the model. These "
+         why="Only the controls the published profiles cannot answer go to the model. These "
              "are the ones you may be asked about.")
     ctx = qsagent.new_context(plan, [a["output"] for a in plan["asks"]])
     meanings = plan.get("controlMeanings", {})
@@ -391,7 +391,7 @@ def create(args, work):
             f"before, ranked.\n\n" + json.dumps(unsettled, indent=1)
             + "\n\nSettle or ask about all of them in this reply, then call finish.")
     qsagent.agent_loop(task, ctx, verbose=False, tools=qsagent.SETUP_TOOLS,
-                       on_event=watcher("Working out the ones his profiles cannot settle"))
+                       on_event=watcher("Working out the ones the published profiles cannot settle"))
     return ctx, plan
 
 
@@ -807,7 +807,7 @@ def main():
             proposed = [p for p in result["proposals"] if p["output"] not in asked]
             already = [{"output": d["output"], "inputs": d["inputs"], "function": d["function"],
                         "confidence": "evidenced",
-                        "why": f"{d['seenIn']} of {d['ofGames']} of his profiles do this "
+                        "why": f"{d['seenIn']} of {d['ofGames']} of the published profiles do this "
                                f"({d['share']:.0%}); nearest example {d['evidence']}"}
                        for d in plan["decided"]]
             show_map(plan, already + proposed, result["questions"],

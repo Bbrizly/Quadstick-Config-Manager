@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -623,21 +624,24 @@ public sealed class AgentWindowTests
         Assert.Contains("1 still needs you", guide.Saying);
         Assert.Contains("1 is left unbound on purpose", guide.Saying);
 
-        // The game's own word is what the part says, not the device token.
-        Assert.Equal("Left mouthpiece hole: Dash", guide.Map.TextOf("mp_left"));
-        Assert.Equal("Right mouthpiece hole: Jump", guide.Map.TextOf("mp_right"));
+        // The game's own word is what the part says, not the device token, and
+        // it says how many landed there so the drawing can be read at a glance.
+        Assert.Equal("Left mouthpiece hole: 1 control, Dash", guide.Map.TextOf("mp_left"));
+        Assert.Equal("Right mouthpiece hole: 1 control, Jump", guide.Map.TextOf("mp_right"));
         // A part with nothing on it says so. That is where the next thing goes.
         Assert.Contains("nothing here", guide.Map.TextOf("mp_center"));
 
         // Step through it: the part being talked about is the part that is lit.
         Press(window, "Next");
         Assert.Contains("Left mouthpiece hole", guide.Saying);
-        Assert.Contains("Dash: soft puff", guide.Saying);
+        Assert.Contains("soft puff", guide.Saying);
+        Assert.Contains("Dash", guide.Saying);
         Assert.True(guide.Map.IsLit("mp_left"));
         Assert.False(guide.Map.IsLit("mp_right"));
 
         Press(window, "Next");
-        Assert.Contains("Jump: puff", guide.Saying);
+        Assert.Contains("puff", guide.Saying);
+        Assert.Contains("Jump", guide.Saying);
         Assert.True(guide.Map.IsLit("mp_right"));
 
         // The last step says what is NOT being bound, by name and with the
@@ -648,6 +652,108 @@ public sealed class AgentWindowTests
         Assert.Contains("Climb: hold it, or press once?", guide.Saying);
         Assert.Contains("1 left unbound on purpose:", guide.Saying);
         Assert.Contains("a keyboard key with no place on a controller profile", guide.Saying);
+    }
+
+    /// <summary>A map event with as many controls on one part as a real game
+    /// puts there. Elden Ring lands eleven on the joystick alone.</summary>
+    static string Crowded(int rows) => """{"event":"map","game":"Elden Ring","rows":["""
+        + string.Join(",", Enumerable.Range(0, rows).Select(n =>
+            $$"""
+            {"output":"kb_{{(char)('a' + n % 26)}}{{n}}","action":"Do the {{n}} thing",
+             "inputs":["mp_left_puff"],"function":"normal",
+             "why":"{{n}} of 46 of the published profiles do this (52%); nearest example Construction-Simulator, mode 'vehicle', row {{n}}"}
+            """.ReplaceLineEndings(" ")))
+        + """],"open":[],"left":[],"untouched":[]}""";
+
+    // The device is on screen at every step, whatever landed on the part being
+    // talked about. The first build docked the words above it with no ceiling,
+    // so a part with a dozen controls on it pushed the QuadStick off the bottom
+    // and the walkthrough walked through nothing.
+    [AvaloniaFact]
+    public void TheDeviceStaysOnScreenWhenAPartIsCrowded()
+    {
+        var (_, window, run) = Open();
+        run.Say(Crowded(30));
+        Press(window, "Next");                 // onto the left hole, all 30 of them
+        var guide = Guide(window);
+        Assert.Contains("Do the 0 thing", guide.Saying);
+
+        var reading = guide.GetVisualDescendants().OfType<ScrollViewer>().First();
+        Assert.True(reading.Bounds.Height <= guide.Bounds.Height / 2,
+                    $"the words took {reading.Bounds.Height} of {guide.Bounds.Height}");
+        var bottom = guide.Map.TranslatePoint(new Point(0, guide.Map.Bounds.Height), guide);
+        Assert.NotNull(bottom);
+        Assert.True(bottom!.Value.Y <= guide.Bounds.Height + 1,
+                    $"the device ends at {bottom.Value.Y} of {guide.Bounds.Height}");
+        Assert.True(guide.Map.Bounds.Height > 0);
+    }
+
+    // Nothing on the walkthrough is a device token. A control the chart had no
+    // word for is still said in English, because "kb_escape" on a picture of
+    // somebody's own mouthpiece tells them nothing they did not already know.
+    [AvaloniaFact]
+    public void AControlTheChartCouldNotNameIsStillSaidInEnglish()
+    {
+        var (_, window, run) = Open();
+        run.Say("""
+            {"event":"map","game":"Elden Ring",
+             "rows":[{"output":"kb_escape","action":"","inputs":["mp_left_puff_soft"],
+                      "function":"normal","why":"67 of 124 of the published profiles do this"}],
+             "open":[],"left":[{"output":"mouse_right_button","action":"","why":"no place on a controller profile"}],
+             "untouched":[]}
+            """.ReplaceLineEndings(" "));
+        var guide = Guide(window);
+        Press(window, "Next");
+        Assert.Contains("Escape key", guide.Saying);
+        Assert.DoesNotContain("kb_escape", guide.Saying);
+        Assert.Contains("Escape key", guide.Map.TextOf("mp_left"));
+
+        Press(window, "Next");
+        Assert.Contains("Right mouse button", guide.Saying);
+        Assert.DoesNotContain("mouse_right_button", guide.Saying);
+    }
+
+    // Twelve keyboard keys left alone for the same reason is one fact, not
+    // twelve. Saying it twelve times buried the questions above it that
+    // actually wanted an answer.
+    [AvaloniaFact]
+    public void ControlsLeftAloneForTheSameReasonAreSaidOnce()
+    {
+        var (_, window, run) = Open();
+        var left = string.Join(",", "abcdefghijkl".Select(c =>
+            $$"""{"output":"kb_{{c}}","action":"","why":"Keyboard key with no listed function."}"""));
+        run.Say($$"""
+            {"event":"map","game":"Elden Ring",
+             "rows":[{"output":"kb_c","action":"Jump","inputs":["mp_right_puff"],"function":"normal","why":"habit"}],
+             "open":[],"left":[{{left}}],"untouched":[]}
+            """.ReplaceLineEndings(" "));
+        var guide = Guide(window);
+        Press(window, "Next");
+        Press(window, "Next");
+
+        Assert.Contains("12 left unbound on purpose:", guide.Saying);
+        var said = guide.Saying.Split('\n')
+                        .Count(line => line.Contains("Keyboard key with no listed function."));
+        Assert.Equal(1, said);
+        // Said once, but every one of the twelve is still named.
+        Assert.Contains("A key, B key, C key", guide.Saying);
+        Assert.Contains("L key", guide.Saying);
+    }
+
+    // While the device is on screen the box for naming a game is not, because
+    // it does nothing during a run and the drawing needs the room. Stop stays:
+    // a run sitting in a model call has to be stoppable from either view.
+    [AvaloniaFact]
+    public void NamingAGameGetsOutOfTheWayOfTheDevice()
+    {
+        var (_, window, run) = Open();
+        run.Say(Map);
+        var box = window.GetVisualDescendants().OfType<TextBox>().First();
+        Assert.False(box.IsVisible);
+        Assert.True(Find(window, "Stop").IsVisible);
+
+        Press(window, "What it did");
+        Assert.True(box.IsVisible);
     }
 
     // A question that arrives while somebody is still being shown their own
