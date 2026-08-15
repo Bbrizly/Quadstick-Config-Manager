@@ -502,6 +502,7 @@ def agent_loop(task, ctx, verbose=True, on_event=None,
     tools = tools or TOOLS
     runner = runner or run_tool
     messages = [{"role": "user", "content": task}]
+    stalls = 0
     for step in range(1, MAX_STEPS + 1):
         say("thinking", step=step)
         began = time.time()
@@ -522,10 +523,24 @@ def agent_loop(task, ctx, verbose=True, on_event=None,
 
         calls = [b for b in blocks if b.get("type") == "tool_use"]
         if not calls:
+            # A run once ended here with thirty controls untouched because the
+            # model typed read_habits({...}) as prose instead of calling it. One
+            # answer with nothing in it is a slip worth naming; two in a row is a
+            # model that is not going to finish, and the caller reports what is
+            # missing rather than the run inventing the rest.
+            stalls += 1
             if verbose:
                 print(f"  [{step}] stopped without acting ({origin})")
-            say("stalled", step=step, text=said[:600] or "it answered with nothing to do")
-            return step, False
+            if stalls >= 2:
+                say("stalled", step=step, text=said[:600] or "it answered with nothing to do")
+                return step, False
+            say("nudged", step=step, text=said[:300])
+            messages.append({"role": "user", "content":
+                             "That reply called no tool. Writing a call out as text does "
+                             "nothing: the run only sees real tool calls. Make the calls "
+                             "you meant to make, then carry on until every control has a "
+                             "proposal or a question and you can call finish."})
+            continue
 
         results = []
         for i, call in enumerate(calls):

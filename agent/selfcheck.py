@@ -141,7 +141,8 @@ check("an unknown tool does not crash the loop", True, finished is False and ste
 
 ctx = fresh_ctx()
 steps, finished, _ = run(scripted({"content": []}), ctx)
-check("an empty reply ends the loop cleanly", (1, False), (steps, finished))
+check("an empty reply is told once and then ends the loop cleanly",
+      (2, False), (steps, finished))
 
 # A tool call missing an argument is sent back, not half-recorded. The CLI
 # backend cannot constrain each tool's arguments, so this is what stands in.
@@ -343,6 +344,38 @@ laid = [b["output"] for b in
         finalize.qsf("inspect", os.path.join(bench, "ev.csv"))["profiles"][0]["modes"][0]["bindings"]]
 twice = sorted({o for o in laid if laid.count(o) > 1})
 check("the evidence pass writes each output once", [], twice)
+
+# A run ended with thirty controls untouched because the model typed a tool call
+# out as text. One empty answer gets told; two in a row ends it.
+empty = {"content": [{"type": "text", "text": 'read_habits({"controls": ["kb_a"]})'}]}
+acted = {"content": [{"type": "tool_use", "id": "t", "name": "finish",
+                      "input": {"summary": "done"}}]}
+
+
+def turning(*replies):
+    queue = list(replies)
+    qsagent.call_model = lambda *a, **k: (queue.pop(0) if queue else acted, "test")
+
+
+def ending(ctx, name, args):
+    ctx["done"] = "done"
+    return {"ok": True}
+
+
+turning(empty, acted)
+seen = []
+step, ok = qsagent.agent_loop("go", ctx=fresh_ctx(), verbose=False,
+                              runner=lambda n, a, c: ending(c, n, a),
+                              on_event=lambda kind, **f: seen.append(kind))
+check("one empty answer is told to make the call, not given up on", True, "nudged" in seen)
+check("and the run carries on and finishes", True, ok)
+
+turning(empty, empty)
+seen2 = []
+qsagent.agent_loop("go", ctx=fresh_ctx(), verbose=False,
+                   runner=lambda n, a, c: ending(c, n, a),
+                   on_event=lambda kind, **f: seen2.append(kind))
+check("two in a row ends it", True, "stalled" in seen2)
 shutil.rmtree(bench, ignore_errors=True)
 
 
