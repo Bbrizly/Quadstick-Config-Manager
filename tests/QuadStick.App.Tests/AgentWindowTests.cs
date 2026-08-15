@@ -387,6 +387,20 @@ public sealed class AgentWindowTests
                      window.Arguments("sprint should be lighter", "/tmp/mine.csv", false, changing: true));
     }
 
+    // Stopping ends the run without throwing the transcript away, so what it
+    // did up to that point is still on screen to read.
+    [AvaloniaFact]
+    public void StoppingEndsTheRunAndKeepsWhatItSaid()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"tool","id":"t1","title":"Read how Elden Ring is controlled","state":"running"}""");
+        Press(window, "Stop");
+        Assert.True(run.Disposed);
+        Assert.Contains("Read how Elden Ring is controlled", Words(window));
+        // Stop is only offered while something is running.
+        Assert.False(Find(window, "Stop").IsEnabled);
+    }
+
     // Closing the window closes the agent's pipe, which stops it at its next
     // question rather than leaving it writing for nobody.
     [AvaloniaFact]

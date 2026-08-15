@@ -32,6 +32,7 @@ public class AgentWindow : Window
 
     readonly TextBox _ask;
     readonly Button _go;
+    readonly Button _stop;
     readonly Button _close;
     readonly StackPanel _stream;
     readonly ScrollViewer _scroll;
@@ -108,6 +109,18 @@ public class AgentWindow : Window
                                                   : "Start setting up the game you named");
         _go.Click += (_, _) => Begin();
 
+        // A run can sit in a model call for a while. Without this the only way
+        // out is closing the window, and somebody halfway through answering
+        // should not have to throw the whole transcript away to stop it.
+        _stop = new Button { Content = "Stop", MinWidth = 100, IsEnabled = false };
+        AutomationProperties.SetName(_stop, "Stop the run. Nothing that has not been written stays.");
+        _stop.Click += (_, _) =>
+        {
+            _stop.IsEnabled = false;
+            Say("Stopping...");
+            _bridge?.Dispose();
+        };
+
         _replay = new CheckBox { Content = "From the recording", IsChecked = false };
         AutomationProperties.SetName(_replay,
             "Run from the recorded answers instead of asking the model again. Needs no internet.");
@@ -138,6 +151,7 @@ public class AgentWindow : Window
 
         var top = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
         top.Children.Add(_go);
+        top.Children.Add(_stop);
         top.Children.Add(_replay);
 
         var panel = new DockPanel { LastChildFill = true, Margin = new Thickness(24) };
@@ -147,8 +161,8 @@ public class AgentWindow : Window
             (explain, Dock.Top, new Thickness(0, 0, 0, 12)),
             (_ask, Dock.Top, new Thickness(0, 0, 0, 10)),
             (top, Dock.Top, new Thickness(0, 0, 0, 14)),
-            (_status, Dock.Bottom, new Thickness(0, 12, 0, 0)),
             (_close, Dock.Bottom, new Thickness(0, 12, 0, 0)),
+            (_status, Dock.Bottom, new Thickness(0, 12, 0, 0)),
         })
         {
             control.Margin = margin;
@@ -248,6 +262,7 @@ public class AgentWindow : Window
         _spoke = false;
         _running = true;
         _go.IsEnabled = false;
+        _stop.IsEnabled = true;
         _ask.IsEnabled = false;
         Say(_changing ? $"Working out what \"{said}\" means..." : $"Setting up {said}...");
 
@@ -266,6 +281,7 @@ public class AgentWindow : Window
         {
             _running = false;
             _go.IsEnabled = true;
+            _stop.IsEnabled = false;
             _ask.IsEnabled = true;
             Say($"The agent could not be started: {ex.Message}");
         }
@@ -275,6 +291,7 @@ public class AgentWindow : Window
     {
         _running = false;
         _go.IsEnabled = true;
+        _stop.IsEnabled = false;
         _ask.IsEnabled = true;
         // A run that ends without having said why is the one thing this window
         // must never do quietly, so the exit code is turned into a sentence.
