@@ -330,6 +330,19 @@ made_rows = [b for b in finalize.qsf("inspect", over)["profiles"][0]["modes"][0]
              if b["output"] == "left_joy_up"]
 check("a profile this run built replaces its own stock row", 1, len(made_rows))
 check("and the answer is what is in it", ["mp_left_sip"], made_rows[0]["inputs"])
+
+# The evidence pass builds straight off the template and had the same bug.
+import predict  # noqa: E402
+
+built = predict.build(os.path.join(bench, "ev.csv"), corpus=predict.CORPUS,
+                      chart=os.path.join(os.path.dirname(os.path.dirname(
+                          os.path.abspath(__file__))), "agent/charts/elden-ring.json"),
+                      log=lambda *_: None)
+check("the evidence pass builds", True, built["ok"])
+laid = [b["output"] for b in
+        finalize.qsf("inspect", os.path.join(bench, "ev.csv"))["profiles"][0]["modes"][0]["bindings"]]
+twice = sorted({o for o in laid if laid.count(o) > 1})
+check("the evidence pass writes each output once", [], twice)
 shutil.rmtree(bench, ignore_errors=True)
 
 

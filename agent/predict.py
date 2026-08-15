@@ -195,15 +195,34 @@ def build(out, corpus=CORPUS, controls=None, chart=None, exclude_family=None,
     # eventually open, and it is not a profile.
     work = out + ".building"
     try:
-        ops = [{"op": "set_filename", "name": spec["csvFileName"], "why": "the name the device shows"}]
-        ops += [{"op": "add_row", "mode": 0, "why": f"a row for {d['output']}"} for d in decided]
-        result, _ = qsf("apply", "--template", spec["csvFileName"], "--ops", write_tmp(ops),
+        # The template already carries a row for left_joy_up, dpad_SW and the
+        # rest. Adding one per decision wrote the answer underneath the stock row
+        # and left the output bound in two places, which the device reads as two
+        # bindings. So: lay the file down first, then look at what is in it.
+        named = [{"op": "set_filename", "name": spec["csvFileName"],
+                  "why": "the name the device shows"}]
+        result, _ = qsf("apply", "--template", spec["csvFileName"], "--ops", write_tmp(named),
+                        "--out", work, ok=(0, 1))
+        if not result["ok"]:
+            log(f"could not start the profile: {result['rejected'][:2]}")
+            return {"ok": False, "error": "the profile could not be started",
+                    "rejected": result["rejected"], "spec": spec}
+        stock = {}
+        for mode in qsf("inspect", work)[0]["profiles"][0]["modes"][:1]:
+            for b in mode["bindings"]:
+                stock.setdefault(b["output"], b["row"])
+        taken = [stock.pop(d["output"], None) for d in decided]
+
+        ops = [{"op": "add_row", "mode": 0, "why": f"a row for {d['output']}"}
+               for d, row in zip(decided, taken) if row is None]
+        result, _ = qsf("apply", "--from", work, "--ops", write_tmp(ops),
                         "--out", work, ok=(0, 1))
         if not result["ok"]:
             log(f"could not make the rows: {result['rejected'][:2]}")
             return {"ok": False, "error": "the rows could not be made",
                     "rejected": result["rejected"], "spec": spec}
-        rows = [a["detail"]["row"] for a in result["applied"] if a["op"] == "add_row"]
+        fresh = iter(a["detail"]["row"] for a in result["applied"] if a["op"] == "add_row")
+        rows = [row if row is not None else next(fresh) for row in taken]
 
         ops = [{"op": "set_binding", "row": row, "output": d["output"],
                 "function": d["function"], "inputs": d["inputs"],
