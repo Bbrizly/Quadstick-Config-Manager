@@ -52,6 +52,12 @@ public class AgentWindow : Window
     /// The app opens it in the editor; a test just records the path.</summary>
     internal Action<string> OpenWritten { get; set; }
 
+    /// <summary>Test seam: opening it and going straight on to install it.</summary>
+    internal Action<string>? InstallWritten { get; set; }
+
+    /// <summary>Test seam: whether a QuadStick is plugged in.</summary>
+    internal Func<bool> DeviceConnected { get; set; } = MainWindow.DeviceIsConnected;
+
     /// <summary>Test seam: how the agent process gets started. Tests hand this
     /// a bridge over a scripted stream so no model and no network are involved.</summary>
     internal Func<IReadOnlyList<string>, IAgentRun>? StartWith { get; set; }
@@ -67,6 +73,7 @@ public class AgentWindow : Window
         _root = root ?? "";
         _changing = changing;
         OpenWritten = path => _owner.OpenPath(path);
+        InstallWritten = path => _ = _owner.OpenPathAndInstallAsync(path);
         Title = changing ? "Ask for a change" : "Set up a game";
         Width = Math.Min(760 * owner.UiScale, 1100);
         Height = Math.Min(700 * owner.UiScale, 900);
@@ -621,16 +628,27 @@ public class AgentWindow : Window
 
         if (count > 0)
         {
+            var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
             var open = new Button { Content = "Open it in the editor", Classes = { "primary" }, MinWidth = 180 };
             AutomationProperties.SetName(open,
                 "Open the profile that was just written in the editor, where you can check it and install it");
-            open.Click += (_, _) =>
+            open.Click += (_, _) => Hand(OpenWritten);
+            buttons.Children.Add(open);
+
+            // Only offered when there is something to install onto. This does
+            // not install anything by itself: it opens the profile and starts
+            // the app's own install, which checks the file, asks which drive,
+            // and asks again before replacing what is on the device.
+            if (InstallWritten is { } install && Connected())
             {
-                try { OpenWritten(_written!); Close(); }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-                { Say($"Could not open it: {ex.Message}"); }
-            };
-            panel.Children.Add(open);
+                var now = new Button { Content = "Install it to your QuadStick", MinWidth = 220 };
+                AutomationProperties.SetName(now,
+                    "Open this profile and start installing it onto the QuadStick that is plugged in. "
+                  + "It still asks you which drive and confirms before replacing anything.");
+                now.Click += (_, _) => Hand(install);
+                buttons.Children.Add(now);
+            }
+            panel.Children.Add(buttons);
         }
 
         Add(Panel(panel, "SurfaceBrush", accent: true));
@@ -639,6 +657,23 @@ public class AgentWindow : Window
     }
 
     static string Count(int n, string word) => $"{n} {word}{(n == 1 ? "" : "s")}";
+
+    /// <summary>Hand the written profile to the app, and stay open if that
+    /// fails so the reason is somewhere the person can read it.</summary>
+    void Hand(Action<string> next)
+    {
+        try { next(_written!); Close(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        { Say($"Could not open it: {ex.Message}"); }
+    }
+
+    bool Connected()
+    {
+        // Looking for a drive touches the filesystem, and a machine with a
+        // stalled mount should not take the window down with it.
+        try { return DeviceConnected(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return false; }
+    }
 
     void Failed(AgentEvent e)
     {

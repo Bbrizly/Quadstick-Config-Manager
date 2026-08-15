@@ -2915,6 +2915,22 @@ public partial class MainWindow : Window
     public void OpenPath(string path) =>
         OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path, ProfileSource.File);
 
+    /// <summary>Open what the agent wrote and go straight into installing it.
+    ///
+    /// Straight into the real install flow, not past it: it re-reads the file,
+    /// refuses to install one with errors, asks which drive, and asks again
+    /// before replacing the device's default profile. Skipping any of that to
+    /// save a click would be skipping it on a device somebody depends on.</summary>
+    public async Task OpenPathAndInstallAsync(string path)
+    {
+        OpenPath(path);
+        await RunInstallFlowAsync();
+    }
+
+    /// <summary>Whether a QuadStick is plugged in right now. The agent asks so
+    /// it only offers to install when there is something to install onto.</summary>
+    public static bool DeviceIsConnected() => Device.FindCandidates().Count > 0;
+
     /// <summary>The file the editor is on, or null on the home screen. The
     /// agent asks so that "make sprint a hard puff" changes the profile in front
     /// of them instead of building a new one.</summary>

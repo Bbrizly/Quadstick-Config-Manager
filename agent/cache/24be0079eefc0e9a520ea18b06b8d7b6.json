@@ -1,0 +1,1 @@
+{"content": [{"type": "tool_use", "id": "ca59ecab-5595-4b9d-b477-068be3f66919-0", "name": "read_habits", "input": {"controls": ["kb_j", "Y", "left_bumper", "start"]}}]}

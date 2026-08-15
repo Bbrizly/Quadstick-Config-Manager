@@ -326,6 +326,26 @@ public sealed class AgentWindowTests
         Assert.Equal("/tmp/elden-ring.csv", opened);
     }
 
+    // Installing is offered only when there is something to install onto, and
+    // it hands the file to the app's own install rather than doing its own.
+    [AvaloniaFact]
+    public void InstallingIsOfferedOnlyWhenAQuadStickIsPluggedIn()
+    {
+        var (_, window, run) = Open();
+        window.DeviceConnected = () => false;
+        run.Say("""{"event":"done","profile":"/tmp/x.csv","written":4,"errors":0,"warnings":0,"issues":[],"open":[],"untouched":[]}""");
+        Assert.DoesNotContain(window.GetVisualDescendants().OfType<Button>(),
+                              b => Label(b).Contains("Install it to your QuadStick"));
+
+        var (_, plugged, run2) = Open();
+        string? installed = null;
+        plugged.DeviceConnected = () => true;
+        plugged.InstallWritten = path => installed = path;
+        run2.Say("""{"event":"done","profile":"/tmp/x.csv","written":4,"errors":0,"warnings":0,"issues":[],"open":[],"untouched":[]}""");
+        Press(plugged, "Install it to your QuadStick");
+        Assert.Equal("/tmp/x.csv", installed);
+    }
+
     // A run that wrote nothing offers nothing to open, and says that plainly.
     [AvaloniaFact]
     public void ARunThatWroteNothingOffersNothingToOpen()
