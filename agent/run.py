@@ -25,9 +25,20 @@ The events are the whole protocol:
     failed     why it stopped
 
 Answers arrive as {"id": "q1", "choice": 0} or {"id": "q1", "choice": null} to
-leave a control alone, and {"id": "c1", "write": true} to approve the write.
-A closed pipe before the confirm means nothing was written, which is the same
-outcome as saying no.
+leave a control alone. The confirm takes three, because a list you can only
+accept whole or refuse whole is not something anybody can steer:
+
+    {"id": "c1", "write": true}                 write the list as it stands
+    {"id": "c1", "write": true, "skip": [3, 7]} write it without those rows
+    {"id": "c1", "say": "sprint should be a hard puff"}
+                                                change it, then show it again
+
+`skip` holds positions in the row list that confirm sent, not names, because
+one output can be on two rows and a name would be ambiguous exactly where it
+matters. `say` starts another round: the confirm that comes back is c2, then
+c3, and it carries `canSay` so the front end never offers a round the run will
+not take. A closed pipe before the confirm means nothing was written, which is
+the same outcome as saying no.
 """
 import argparse
 import json
@@ -397,6 +408,19 @@ def create(args, work):
 
 # ---- changing a profile that already exists -------------------------------
 
+# Outputs and inputs are two separate lists on the device. Anything changing a
+# row that already exists is almost always about what triggers it, so without
+# this the only lookup available searches the wrong half and finds nothing.
+FIND_INPUT = {
+    "name": "find_input",
+    "description": ("Search the sips, puffs, lip and joystick positions the device "
+                    "knows. A soft input and a hard one are different names: "
+                    "right_puff is a hard puff, right_puff_soft is a light one."),
+    "input_schema": {"type": "object", "properties": {
+        "query": {"type": "string"}}, "required": ["query"]},
+}
+
+
 EDIT_TOOLS = [
     qsagent.tool("find_output"),
     {
@@ -408,17 +432,7 @@ EDIT_TOOLS = [
                       "an output name, an input name, or part of one. Empty for all."}},
             "required": ["match"]},
     },
-    {
-        # Outputs and inputs are two separate lists on the device. An edit is
-        # almost always about what triggers a row, so without this the only
-        # lookup available searches the wrong half and finds nothing.
-        "name": "find_input",
-        "description": ("Search the sips, puffs, lip and joystick positions the device "
-                        "knows. A soft input and a hard one are different names: "
-                        "right_puff is a hard puff, right_puff_soft is a light one."),
-        "input_schema": {"type": "object", "properties": {
-            "query": {"type": "string"}}, "required": ["query"]},
-    },
+    FIND_INPUT,
     {
         "name": "change_row",
         "description": ("Change one row that already exists. Only the fields you give are "
@@ -641,31 +655,262 @@ def interview(questions):
     return answers
 
 
-def approved(ident):
+def approved(said):
     """Exactly the boolean true, and nothing that merely looks like it.
 
     "false" as a string, 1, and an empty object are all truthy in Python, and
     each of them would authorise a write nobody approved.
     """
-    return listen(ident).get("write") is True
+    return said.get("write") is True
+
+
+def spoken(said):
+    """What they typed about the list, or nothing. A blank line is not a
+    sentence, and treating one as a request would spend a model call on it."""
+    text = said.get("say")
+    return text.strip() if isinstance(text, str) else ""
+
+
+def taken_off(said, rows):
+    """The rows they unticked, as positions in the list they were shown.
+
+    Positions, not names: one output can sit on two rows, and a name would be
+    ambiguous in exactly the case where getting it wrong writes a binding they
+    took off the list.
+    """
+    asked = said.get("skip")
+    if not isinstance(asked, list):
+        return set()
+    return {n for n in asked if isinstance(n, int) and not isinstance(n, bool)
+            and 0 <= n < len(rows)}
+
+
+# How many times one run will go round on their say-so. Past this it is a
+# conversation about a file that still does not exist, and the change box over
+# a written profile is the better place for the next one.
+MAX_ROUNDS = 5
+
+def revise_tools():
+    """The setup tools, said again for a turn that is not setting anything up.
+
+    Three of them arrive describing a job where every control still needs an
+    answer, and left as they are they tell a model to account for rows nobody
+    asked it about. The schemas are the same; only what they are for changed.
+    """
+    said = {
+        "propose_binding": ("Replace one row on the list they are looking at. The reason "
+                            "is shown to them beside the row, so it says what their "
+                            "sentence asked for, not that you decided something."),
+        "leave_unbound": ("Take one row off the list, so nothing is written for that "
+                          "control and they are told it was left. Use this when what "
+                          "they said was to drop it, never to skip a row you find hard."),
+        "finish": ("Done. Call once, with a summary of what you changed and why, or of "
+                   "what you could not tell and so did not change."),
+    }
+    tools = [qsagent.tool("find_output"), FIND_INPUT, qsagent.tool("propose_binding"),
+             qsagent.tool("leave_unbound"), qsagent.tool("finish")]
+    return [{**t, "description": said.get(t["name"], t["description"])} for t in tools]
+
+
+REVISE_TOOLS = revise_tools()
+
+REVISE_SYSTEM = """They have just been shown a whole profile, and nothing has been \
+written yet. They said something about it. You change what that sentence asks for, and \
+nothing else.
+
+A QuadStick is a mouth-operated controller: sips, puffs, a lip sensor and a joystick, \
+used by people who cannot use their hands. This profile is how they will play, and for \
+some of them work and talk.
+
+The rules, in order:
+- Change only the rows their sentence is about. Every other row on that list is staying
+  exactly as it is, and re-proposing one you were not asked about is a change nobody
+  asked for.
+- propose_binding replaces a row on the list. leave_unbound takes one off it.
+- Never invent a token. Look it up. The device matches names whole and case sensitively,
+  so a near miss is silently dead rather than wrong.
+- If their sentence could mean two different rows, change nothing and say which two in
+  your summary. They see the whole list again either way, so saying you could not tell
+  costs them one sentence and a wrong guess costs them a session.
+- Do it in one reply, then call finish saying what you changed and why."""
+
+
+def revise_tool(name, args, ctx):
+    """The setup tools, over the list they were just shown.
+
+    finish is not the setup one. There every control had to end with an answer,
+    so finishing early was refused; here every row already has one, and a model
+    made to account for all of them would re-propose rows nobody asked about.
+    Finishing with nothing changed is a real answer and is reported as one.
+    """
+    # A tool it was not given is refused here rather than left to run_tool, which
+    # knows ask_user and would record a question nobody is ever going to be
+    # asked. A question that reaches no one is the quietest way to say nothing.
+    if name not in {t["name"] for t in REVISE_TOOLS}:
+        return {"error": f"{name} is not one of the tools for this. You have "
+                         f"{', '.join(t['name'] for t in REVISE_TOOLS)}. There is nobody "
+                         f"to ask at this point: they are looking at the list right now."}
+    if name == "find_input":
+        if not isinstance(args, dict) or not isinstance(args.get("query"), str):
+            return {"error": "find_input takes a query, as a string."}
+        wanted = args["query"].lower().replace(" ", "_")
+        return {"matches": sorted(i for i in ctx["inputs"] if wanted in i.lower())[:25],
+                "note": "exact spelling and case, as the device reads it"}
+    if name == "finish":
+        if not isinstance(args, dict) or not str(args.get("summary") or "").strip():
+            return {"error": "finish needs a summary: what you changed, or that you "
+                             "changed nothing and why."}
+        ctx["done"] = args["summary"]
+        return {"ok": True}
+    return qsagent.run_tool(name, args, ctx)
+
+
+def unbind(profile, outputs):
+    """Take rows back out of the working copy.
+
+    A row they decline is not just a row left off the list. The deterministic
+    pass has already written its answer into the copy, so dropping it from the
+    list alone would write the very thing they took off it.
+
+    Deleting a row renumbers everything under it, so these go in descending
+    order and the numbers read before the first delete stay true.
+    """
+    if not outputs:
+        return 0
+    read = finalize.qsf("inspect", profile)
+    rows = sorted((b["row"] for pf in read.get("profiles") or []
+                   for mode in pf.get("modes") or []
+                   for b in mode.get("bindings") or [] if b["output"] in outputs),
+                  reverse=True)
+    if not rows:
+        return 0
+    ops = finalize.write_ops([{"op": "delete_row", "row": row,
+                               "why": "they took this one off the list"} for row in rows],
+                             "decline")
+    done = finalize.qsf("apply", "--from", profile, "--ops", ops, "--out", profile, ok=(0, 1))
+    if not done["ok"]:
+        raise Stopped("a control you took off the list could not be removed from the "
+                      "profile, so nothing was written at all")
+    return len(rows)
+
+
+def reworker(plan, work):
+    """A turn over the list they were just shown, in their own words.
+
+    Bound to the plan and the working copy so the confirm loop can stay one
+    thing that shows a list and reads a reply, whichever run it belongs to.
+    """
+    def rework(said, shown, settled, left):
+        vocab = finalize.qsf("vocab")
+        ctx = {"habits": plan["habits"], "outputs": plan["outputs"],
+               "inputs": sorted(set(vocab["inputs"]) | set(vocab["legacyInputs"])),
+               # Every row on the list is fair game, and so is anything being
+               # left off it: "actually bind crouch after all" is a sentence.
+               "unresolved": ({r["output"] for r in shown}
+                              | {u["output"] for u in left}),
+               "settled": set(), "proposals": [], "questions": [], "unbound": [],
+               "done": None}
+        listed = "\n".join(
+            f"  {r['output']}  {r.get('action') or ''}"
+            f"  ->  {' + '.join(r['inputs'])}, {r.get('function') or 'normal'}"
+            for r in shown)
+        off = "\n".join(f"  {u['output']}  {u.get('action') or ''}  ->  nothing, on purpose"
+                        for u in left)
+        task = (f"Game: {plan['game']}. This is the profile they have just been shown. "
+                f"Nothing has been written.\n\n{listed}\n"
+                + (f"\nLeft off it:\n{off}\n" if off else "")
+                + f"\nThey said, about it:\n\n  “{said}”\n\n"
+                f"Change only what that asks for, then finish.")
+        qsagent.agent_loop(task, ctx, verbose=False, system=REVISE_SYSTEM,
+                           tools=REVISE_TOOLS, runner=revise_tool,
+                           on_event=watcher("Working out what they asked to change"))
+        changed = {p["output"]: p for p in ctx["proposals"]}
+        gone = {u["output"] for u in ctx["unbound"]}
+        if not changed and not gone:
+            emit("note", text=(ctx["done"] or "Nothing on the list changed.")
+                 + " Say it another way, or write it as it is and change it in the editor.")
+            return shown, settled, left
+
+        def redo(rows):
+            return [{**r, **changed[r["output"]], "confidence": "you asked for this"}
+                    if r["output"] in changed else r
+                    for r in rows if r["output"] not in gone]
+
+        was_shown = {r["output"] for r in shown}
+        added = with_words(plan, [{**p, "confidence": "you asked for this"}
+                                  for p in ctx["proposals"] if p["output"] not in was_shown])
+        # One entry per control, so a control left off twice is not listed twice
+        # and one that is being bound after all stops being listed as left.
+        off = {u["output"]: u for u in left if u["output"] not in changed}
+        off.update({u["output"]: u for u in ctx["unbound"]})
+        # A row taken off the list comes out of the working copy in the same
+        # breath, for the same reason a declined one does.
+        unbind(work, gone)
+        return redo(shown) + added, redo(settled) + added, list(off.values())
+    return rework
 
 
 def confirm_and_write(profile, settled, open_questions, untouched, out=None, shown=None,
-                      fresh=False, controls=None, left=()):
-    """Show the whole list, write it only if they say so.
+                      fresh=False, controls=None, left=(), rework=None):
+    """Show the whole list, take back what they decline, write what is left.
 
     `shown` is what the person is approving, which for a new profile is every
     row it will contain. `settled` is only the part still to be applied on top
     of what the deterministic pass already put in the working copy.
+
+    Three ways out, because yes-or-nothing over fifty rows is not something a
+    person can steer: write it, write it without the rows they unticked, or say
+    what is wrong in their own words and see the whole list again.
     """
     out = out or profile
-    emit("confirm", id="c1", profile=out,
-         rows=shown if shown is not None else settled,
-         open=[{"output": q["output"], "question": q["question"]} for q in open_questions],
-         left=[{"output": u["output"], "why": u["why"]} for u in left],
-         untouched=list(untouched))
-    if not approved("c1"):
-        raise Stopped("nothing was written, and the profile is exactly as it was")
+    shown = list(shown if shown is not None else settled)
+    settled, left = list(settled), list(left)
+    declined = []
+
+    for round_ in range(1, MAX_ROUNDS + 1):
+        # Whether another round is on offer travels with the list, so nothing
+        # can offer a change this run has already decided it will not make.
+        again = rework is not None and round_ < MAX_ROUNDS
+        emit("confirm", id=f"c{round_}", profile=out, rows=shown, canSay=again,
+             open=[{"output": q["output"], "question": q["question"]} for q in open_questions],
+             left=[{"output": u["output"], "why": u["why"]} for u in left],
+             untouched=list(untouched))
+        said = listen(f"c{round_}")
+
+        if spoken(said) and again:
+            emit("stage", key="rework", title=f"“{spoken(said)}”",
+                 why="Nothing has been written. This changes what is on the list, and then "
+                     "shows you the whole list again.")
+            shown, settled, left = rework(spoken(said), shown, settled, left)
+            continue
+        if spoken(said):
+            raise Stopped(f"“{spoken(said)}” was not applied: that is as many rounds of "
+                          f"changes as one run makes. Nothing was written, and the profile "
+                          f"is exactly as it was. Set it up again, or write it and ask for "
+                          f"the change from the editor.")
+        if not approved(said):
+            raise Stopped("nothing was written, and the profile is exactly as it was")
+
+        off = taken_off(said, shown)
+        declined = [shown[n] for n in sorted(off)]
+        if declined:
+            gone = {r["output"] for r in declined}
+            shown = [r for n, r in enumerate(shown) if n not in off]
+            settled = [r for r in settled if r["output"] not in gone]
+            # Off the list is not enough. The deterministic pass has already put
+            # its answer in the working copy, so a row they unticked has to come
+            # out of the file too or it is written anyway. By name here, not by
+            # position, because that is what the file is keyed on, and on this
+            # path one control is one row: the two passes that fill this list
+            # both refuse a second answer for a control that already has one.
+            unbind(profile, gone)
+            emit("note", text=f"{len(declined)} you took off the list, so "
+                              f"{'it is' if len(declined) == 1 else 'they are'} left "
+                              f"unbound: {', '.join(sorted(gone))}.")
+        if not shown:
+            raise Stopped("you took every row off the list, so nothing was written and the "
+                          "profile is exactly as it was")
+        break
 
     done = finalize.apply_settled(profile, settled, out, fresh=fresh, controls=controls,
                                   log=lambda text: emit("note", text=text))
@@ -676,16 +921,108 @@ def confirm_and_write(profile, settled, open_questions, untouched, out=None, sho
     check = done["validation"]
     # What they approved and what they are told was written have to be the same
     # number. `settled` is only the second pass; the file holds every row shown.
-    emit("done", profile=out,
-         written=len(shown) if shown is not None else done["written"],
+    emit("done", profile=out, written=len(shown),
          errors=check["errors"], warnings=check["warnings"],
          issues=[{"severity": i["severity"], "cell": i["cell"], "message": i["message"]}
                  for i in check["issues"][:12]],
          open=[{"output": q["output"], "question": q["question"]} for q in open_questions],
          left=[{"output": u["output"], "why": u["why"]} for u in left],
+         # A row they took off is not a row that was never there. It is named
+         # here for the same reason an unanswered question is.
+         declined=[{"output": r["output"], "action": r.get("action") or ""}
+                   for r in declined],
          named=done.get("named", 0),
          untouched=list(untouched))
     return True
+
+
+def edit_run(args, committed):
+    """Work out the change they asked for, show it, and write it if they say so.
+
+    The same three ways out as a new profile. Saying something here starts the
+    request again in their new words rather than reworking a list, because
+    nothing has been written and their own profile is still the thing being
+    changed, so a fresh sentence about it is the whole job again.
+    """
+    request = args.request
+    for round_ in range(1, MAX_ROUNDS + 1):
+        args.request = request
+        ctx = edit(args)
+        answers = interview(ctx["questions"])
+        # A question left unanswered takes its row back off the list. The
+        # model may have changed a row and then asked which row was meant;
+        # writing its first guess after they declined to confirm it is
+        # filling in an unanswered question.
+        for q in ctx["questions"]:
+            if q["output"] in answers:
+                continue
+            dropped = [c for c in ctx["changes"] if c["was"]["output"] == q["output"]]
+            if dropped:
+                ctx["changes"] = [c for c in ctx["changes"] if c not in dropped]
+                emit("note", text=f"{q['output']} was left alone, so the change to "
+                                  f"row {dropped[0]['row']} was dropped.")
+        # An answered question is a change too, and it outranks anything the
+        # model proposed for that row.
+        for output, choice in answers.items():
+            row = next((r["row"] for r in ctx["rows"] if r["output"] == output), None)
+            if row is None:
+                continue
+            ctx["changes"] = [c for c in ctx["changes"] if c["row"] != row] + [{
+                "row": row, "output": output, "inputs": choice["inputs"],
+                "function": choice["function"], "why": "they answered the question about this row",
+                "was": next(r for r in ctx["rows"] if r["row"] == row)}]
+        if not ctx["changes"]:
+            emit("done", profile=args.edit, written=0, errors=0, warnings=0,
+                 issues=[], open=[], untouched=[], declined=[])
+            emit("note", text="nothing was changed.")
+            return 0
+
+        again = round_ < MAX_ROUNDS
+        shown = [{"output": c["output"], "inputs": c["inputs"], "function": c["function"],
+                  "why": c["why"], "confidence": "asked for",
+                  "was": f"{c['was']['output']}, {c['was']['function']}, "
+                         f"{' + '.join(c['was']['inputs'])}", "row": c["row"]}
+                 for c in ctx["changes"]]
+        emit("confirm", id=f"c{round_}", profile=args.out, rows=shown, canSay=again,
+             open=[], untouched=[])
+        said = listen(f"c{round_}")
+
+        if spoken(said) and again:
+            request = spoken(said)
+            emit("note", text="Nothing has been written, so this starts again from your "
+                              "profile exactly as it is now.")
+            continue
+        if spoken(said):
+            raise Stopped(f"“{spoken(said)}” was not applied: that is as many rounds of "
+                          f"changes as one run makes. Nothing was written, and the profile "
+                          f"is exactly as it was.")
+        if not approved(said):
+            raise Stopped("nothing was written, and the profile is exactly as it was")
+
+        off = taken_off(said, shown)
+        if off:
+            # Positions in the list they were shown, and that list is built from
+            # ctx["changes"] in order, so the two line up row for row.
+            emit("note", text=f"{len(off)} you took off the list, and "
+                              f"{'that row is' if len(off) == 1 else 'those rows are'} "
+                              f"exactly as they were: "
+                              f"{', '.join(sorted(shown[n]['output'] for n in off))}.")
+            ctx["changes"] = [c for n, c in enumerate(ctx["changes"]) if n not in off]
+        if not ctx["changes"]:
+            raise Stopped("you took every change off the list, so nothing was written and "
+                          "the profile is exactly as it was")
+
+        done = apply_changes(args.edit, ctx["changes"], args.out, committed)
+        if not done["ok"]:
+            emit("failed", message="the change was refused, so the profile is exactly "
+                                   "as it was", detail=done)
+            return 1
+        emit("done", profile=args.out, written=len(ctx["changes"]),
+             errors=done["validation"]["errors"], warnings=done["validation"]["warnings"],
+             issues=[], open=[], untouched=[],
+             declined=[{"output": shown[n]["output"], "action": ""} for n in sorted(off)],
+             diff=done["diff"])
+        return 0
 
 
 def free_name(path):
@@ -745,52 +1082,7 @@ def main():
     try:
         if args.edit:
             args.out = args.out or args.edit
-            ctx = edit(args)
-            answers = interview(ctx["questions"])
-            # A question left unanswered takes its row back off the list. The
-            # model may have changed a row and then asked which row was meant;
-            # writing its first guess after they declined to confirm it is
-            # filling in an unanswered question.
-            for q in ctx["questions"]:
-                if q["output"] in answers:
-                    continue
-                dropped = [c for c in ctx["changes"] if c["was"]["output"] == q["output"]]
-                if dropped:
-                    ctx["changes"] = [c for c in ctx["changes"] if c not in dropped]
-                    emit("note", text=f"{q['output']} was left alone, so the change to "
-                                      f"row {dropped[0]['row']} was dropped.")
-            # An answered question is a change too, and it outranks anything the
-            # model proposed for that row.
-            for output, choice in answers.items():
-                row = next((r["row"] for r in ctx["rows"] if r["output"] == output), None)
-                if row is None:
-                    continue
-                ctx["changes"] = [c for c in ctx["changes"] if c["row"] != row] + [{
-                    "row": row, "output": output, "inputs": choice["inputs"],
-                    "function": choice["function"], "why": "they answered the question about this row",
-                    "was": next(r for r in ctx["rows"] if r["row"] == row)}]
-            if not ctx["changes"]:
-                emit("done", profile=args.edit, written=0, errors=0, warnings=0,
-                     issues=[], open=[], untouched=[])
-                emit("note", text="nothing was changed.")
-                return 0
-            emit("confirm", id="c1", profile=args.out, rows=[
-                {"output": c["output"], "inputs": c["inputs"], "function": c["function"],
-                 "why": c["why"], "confidence": "asked for",
-                 "was": f"{c['was']['output']}, {c['was']['function']}, "
-                        f"{' + '.join(c['was']['inputs'])}", "row": c["row"]}
-                for c in ctx["changes"]], open=[], untouched=[])
-            if not approved("c1"):
-                raise Stopped("nothing was written, and the profile is exactly as it was")
-            done = apply_changes(args.edit, ctx["changes"], args.out, committed)
-            if not done["ok"]:
-                emit("failed", message="the change was refused, so the profile is exactly "
-                                       "as it was", detail=done)
-                return 1
-            emit("done", profile=args.out, written=len(ctx["changes"]),
-                 errors=done["validation"]["errors"], warnings=done["validation"]["warnings"],
-                 issues=[], open=[], untouched=[], diff=done["diff"])
-            return 0
+            return edit_run(args, committed)
 
         args.out = args.out or free_name(os.path.join(
             os.path.expanduser("~/Documents"), research.slugify(args.game) + ".csv"))
@@ -822,7 +1114,8 @@ def main():
             confirm_and_write(work, settled, still_open, result["untouched"],
                               out=args.out, shown=with_words(plan, already + settled),
                               fresh=True, controls=plan.get("controls"),
-                              left=result.get("unbound", ()))
+                              left=result.get("unbound", ()),
+                              rework=reworker(plan, work))
         finally:
             if os.path.exists(work):
                 os.remove(work)

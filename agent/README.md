@@ -58,6 +58,26 @@ is a correct answer nobody can check, and an approval over something unreadable
 is not an approval. The list is still there, one button away, and the approval
 at the end is still over the list.
 
+## Saying no to part of it
+
+The list at the end is not take it or leave it. Every row has a tick, and a row
+you untick is not written: it comes off the list, out of the working copy, and
+into the finished report by name, because a row somebody declined is not a row
+that was never there. Ticks are positions in the list, never names, since one
+control can sit on two rows and a name would be ambiguous in exactly the case
+where getting it wrong writes a binding they took off.
+
+Under the list is a box. Say **make sprint a hard puff** and it works out which
+rows that means, changes those and nothing else, and shows you the whole list
+again. Five rounds, and the fifth says so rather than quietly ignoring what you
+typed. Nothing is written by any of this: the profile is a copy until the moment
+somebody presses Write it, and a run that ends here leaves nothing behind.
+
+That box is the same shape as the one over a finished profile, and on purpose.
+Yes-or-nothing over fifty rows is the pressure that gets a wrong binding
+approved: one row you disagree with used to cost you the entire run, and a
+binding this gets wrong is somebody's hands.
+
 ## Watching it work
 
 Every call is on screen before it runs, not after it finished. A step that is
@@ -102,10 +122,13 @@ signed in. `ANTHROPIC_API_KEY` switches to the API if you want it.
    single question. Every option then carries the device tokens it will be
    bound to and lights the part it would land on, so what they pick is written
    exactly as it was shown.
-5. **Write, once they say so.** The whole profile is built on a copy first, so
-   starting a run writes nothing. Every proposal becomes one `qsf` op carrying
-   its own reason. If one op is refused, or the result would not validate,
-   nothing is written and the profile is exactly as it was.
+5. **Argue with it, then write.** The whole list comes back with a tick beside
+   every row and a box to type in. Take the tick off anything you do not want,
+   or say what is wrong in your own words and the whole list comes back changed.
+   The profile is built on a copy the whole time, so starting a run writes
+   nothing and neither does going round again. Every proposal becomes one `qsf`
+   op carrying its own reason. If one op is refused, or the result would not
+   validate, nothing is written and the profile is exactly as it was.
 6. **Open it, and install it if you want.** The result goes to the editor
    through the same open path as any other file. When a QuadStick is plugged in
    it also offers to install, which starts the app's own install: it rechecks
@@ -136,7 +159,8 @@ over that list.
 control alone, and the confirm card lists what is staying unbound alongside what
 is being written. A control left alone on purpose carries the reason it was
 left, and is listed apart from the ones the agent never reached, because those
-are not the same thing to the person reading them.
+are not the same thing to the person reading them. A row they took the tick off
+is a third thing again, and it is named too.
 
 **A row says what it is in the game's words.** The chart already knows the game
 calls `kb_space` Jump, so Jump goes in column L beside the binding. The parser,

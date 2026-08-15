@@ -338,7 +338,164 @@ public sealed class AgentWindowTests
         Assert.Contains("kb_v", words);
 
         Press(window, "Write it");
-        Assert.Equal(new[] { """{"id":"c1","write":true}""" }, run.Replies);
+        Assert.Equal(new[] { """{"id":"c1","write":true,"skip":[]}""" }, run.Replies);
+    }
+
+    // Three rows, and a run that will take another round over them.
+    static readonly string Choosy = """
+        {"event":"confirm","id":"c1","profile":"/tmp/elden-ring.csv","canSay":true,
+         "rows":[{"output":"kb_left_shift","action":"Sprint","inputs":["mp_triple_puff"],
+                  "function":"delay_on","why":"41% of his profiles"},
+                 {"output":"kb_space","action":"Jump","inputs":["lip"],"function":"normal",
+                  "why":"every platformer he has"},
+                 {"output":"kb_c","action":"Crouch","inputs":["mp_left_sip"],"function":"toggle",
+                  "why":"a guess across games"}],
+         "open":[],"left":[],"untouched":[]}
+        """.ReplaceLineEndings(" ");
+
+    /// <summary>The tick beside each row. The replay checkbox at the top of the
+    /// window carries a string, so this is the ones carrying a binding.</summary>
+    static List<CheckBox> Ticks(Window window) =>
+        window.GetVisualDescendants().OfType<CheckBox>().Where(c => c.Content is Control).ToList();
+
+    // Matched whole. The box at the top of the window carries a watermark about
+    // hard puffs too once a profile has been written, and finding that one
+    // instead would be a test passing on the wrong control.
+    const string SayBox = "sprint should be a hard puff";
+
+    static TextBox Saying(Window window) =>
+        window.GetVisualDescendants().OfType<TextBox>().First(t => t.Watermark == SayBox);
+
+    // One row they disagree with used to cost them the whole run, which is the
+    // pressure that gets a wrong binding approved. A row they untick is sent as
+    // its position in the list they were shown.
+    [AvaloniaFact]
+    public void ARowTheyUntickIsTakenOffTheListTheyApprove()
+    {
+        var (_, window, run) = Open();
+        run.Say(Choosy);
+        Assert.Contains("Write these 3 bindings?", Words(window));
+
+        var ticks = Ticks(window);
+        Assert.Equal(3, ticks.Count);
+        Assert.All(ticks, t => Assert.True(t.IsChecked));
+        ticks[1].IsChecked = false;
+        Dispatcher.UIThread.RunJobs();
+        // The count follows the ticks, and it is a live region, so somebody
+        // listening hears the number change rather than finding out after.
+        Assert.Contains("Write 2 of 3 bindings?", Words(window));
+
+        Press(window, "Write it");
+        Assert.Equal("""{"id":"c1","write":true,"skip":[1]}""", Assert.Single(run.Replies));
+    }
+
+    [AvaloniaFact]
+    public void EveryTickReadsOutTheRowItIsAboutAndWhatItDoes()
+    {
+        var (_, window, run) = Open();
+        run.Say(Choosy);
+        var said = AutomationProperties.GetName(Ticks(window)[0]);
+        Assert.Contains("Sprint", said);
+        Assert.Contains("mp_triple_puff", said);
+        Assert.Contains("41% of his profiles", said);
+        Assert.Contains("Take the tick off", said);
+    }
+
+    // Nothing ticked is nothing to write, and the button says that rather than
+    // sitting there looking pressable.
+    [AvaloniaFact]
+    public void TakingEveryTickOffLeavesNothingToWrite()
+    {
+        var (_, window, run) = Open();
+        run.Say(Choosy);
+        foreach (var tick in Ticks(window)) tick.IsChecked = false;
+        Dispatcher.UIThread.RunJobs();
+        var write = Find(window, "Write it");
+        Assert.False(write.IsEnabled);
+        Assert.Contains("nothing to write", AutomationProperties.GetName(write),
+                        StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Write 0 of 3 bindings?", Words(window));
+    }
+
+    // The other half of the back and forth: say what is wrong in words and see
+    // the whole list again. Nothing is written by saying something.
+    [AvaloniaFact]
+    public void SayingWhatIsWrongGoesBackToTheRunAndWritesNothing()
+    {
+        var (_, window, run) = Open();
+        run.Say(Choosy);
+        Saying(window).Text = "  sprint should be a hard puff  ";
+        Dispatcher.UIThread.RunJobs();
+        Press(window, "Change it");
+        Assert.Equal("""{"id":"c1","say":"sprint should be a hard puff"}""",
+                     Assert.Single(run.Replies));
+        // Their own words stay in the transcript, so a list that changed can be
+        // checked against the sentence that changed it.
+        Assert.Contains("You said: sprint should be a hard puff", Words(window));
+    }
+
+    [AvaloniaFact]
+    public void AnEmptySentenceIsNotSentAnywhere()
+    {
+        var (_, window, run) = Open();
+        run.Say(Choosy);
+        Press(window, "Change it");
+        Assert.Empty(run.Replies);
+        Assert.Contains("Say what to change first", Words(window));
+        // Still pressable, because they have not decided anything yet.
+        Assert.True(Find(window, "Write it").IsEnabled);
+    }
+
+    // A run that will not take another round must not be offered one. A box
+    // that quietly does nothing is worse than no box.
+    [AvaloniaFact]
+    public void TheLastRoundOffersNoBoxToTypeIn()
+    {
+        var (_, window, run) = Open();
+        run.Say(Confirm);      // no canSay on it at all
+        Assert.DoesNotContain(window.GetVisualDescendants().OfType<Button>(),
+                              b => Label(b).Contains("Change it"));
+        Assert.DoesNotContain(window.GetVisualDescendants().OfType<TextBox>(),
+                              t => t.Watermark == SayBox);
+    }
+
+    // A second confirm is a second card. The first one stays on screen with its
+    // buttons dead, so what was agreed to and when is still readable.
+    [AvaloniaFact]
+    public void AnotherRoundIsAnotherCardAndTheFirstOneStopsTakingAnswers()
+    {
+        var (_, window, run) = Open();
+        run.Say(Choosy);
+        Press(window, "Change it");   // empty, so nothing is sent
+        Saying(window).Text = "make crouch a toggle";
+        Dispatcher.UIThread.RunJobs();
+        Press(window, "Change it");
+        run.Say(Choosy.Replace("\"c1\"", "\"c2\"").Replace("\"canSay\":true", "\"canSay\":false"));
+
+        var writes = window.GetVisualDescendants().OfType<Button>()
+                           .Where(b => Label(b).Contains("Write it")).ToList();
+        Assert.Equal(2, writes.Count);
+        Assert.False(writes[0].IsEnabled);
+        Assert.True(writes[1].IsEnabled);
+        writes[1].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("""{"id":"c2","write":true,"skip":[]}""", run.Replies.Last());
+    }
+
+    // A row they took off is not a row that was never there. An account that
+    // leaves out what somebody declined is not an account of what they got.
+    [AvaloniaFact]
+    public void WhatTheyDeclinedIsNamedOnTheFinishedCard()
+    {
+        var (_, window, run) = Open();
+        run.Say("""
+            {"event":"done","profile":"/tmp/elden-ring.csv","written":2,"errors":0,"warnings":0,
+             "issues":[],"open":[],"untouched":[],
+             "declined":[{"output":"kb_space","action":"Jump"}]}
+            """.ReplaceLineEndings(" "));
+        var words = Words(window);
+        Assert.Contains("1 you took off the list", words);
+        Assert.Contains("kb_space", words);
     }
 
     [AvaloniaFact]
@@ -921,7 +1078,7 @@ public sealed class AgentWindowTests
         Press(window, "Skip");
         Assert.Contains("Write 1 binding?", Words(window));
         Press(window, "Write it");
-        Assert.Equal("""{"id":"c1","write":true}""", Assert.Single(run.Replies));
+        Assert.Equal("""{"id":"c1","write":true,"skip":[]}""", Assert.Single(run.Replies));
     }
 
     // The three numbers the run is about, said once, as a bar and in words.

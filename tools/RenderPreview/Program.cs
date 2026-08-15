@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Styling;
@@ -36,11 +37,20 @@ const string Ask = """
      "options":[{"inputs":["up"],"function":"normal","label":"Tilt the mouthpiece forward"},
                 {"inputs":["mp_center_puff"],"function":"toggle","label":"Puff on the centre hole, press once"}]}
     """;
+// The list they decide over, with the two ways of declining on it: a tick per
+// row, and a box to say what is wrong in their own words.
 const string Settled = """
-    {"event":"confirm","id":"c1","profile":"/tmp/elden-ring.csv",
+    {"event":"confirm","id":"c1","profile":"/tmp/elden-ring.csv","canSay":true,
      "rows":[{"output":"left_joy_up","action":"Move character forward","inputs":["up"],
-              "function":"normal","why":"you answered the question about this control"}],
-     "open":[],"untouched":[]}
+              "function":"normal","why":"you answered the question about this control"},
+             {"output":"kb_left_shift","action":"Sprint","inputs":["mp_triple_puff"],
+              "function":"delay_on 500 16000","why":"24 of 46 of the published profiles do this (52%); nearest example Apex Legends, mode 'Gameplay', row 19"},
+             {"output":"kb_space","action":"Jump","inputs":["lip"],"function":"normal",
+              "why":"every platformer in the corpus does this"},
+             {"output":"kb_c","action":"Crouch","inputs":["mp_left_sip"],"function":"toggle",
+              "why":"a guess across games, not something his own profiles settle"}],
+     "open":[{"output":"kb_v","question":"Melee: hold it, or press once?"}],
+     "untouched":["kb_f"]}
     """;
 
 AppBuilder.Configure<App>()
@@ -72,6 +82,11 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
         CaptureRun($"{suffix}-1e3-run-last", new[] { mapEvent }, next: 9);
         CaptureRun($"{suffix}-1f-run-asking", new[] { mapEvent, Ask }, skipWalk: true);
         CaptureRun($"{suffix}-1g-run-confirm", new[] { mapEvent, Settled }, skipWalk: true);
+        // The same card with a row taken off it. A state nobody has looked at
+        // is a state nobody has checked, and this is the one where the count,
+        // the button and the list all have to agree.
+        CaptureRun($"{suffix}-1h-run-declined", new[] { mapEvent, Settled },
+                   skipWalk: true, untick: 2);
     }
 
     if (mapEvent is not null)
@@ -157,7 +172,8 @@ return;
 
 /// <summary>The agent window driven by a scripted run, the way a person sees
 /// it: type a game, press the button, watch the events land.</summary>
-void CaptureRun(string name, IReadOnlyList<string> events, bool skipWalk = false, int next = 0)
+void CaptureRun(string name, IReadOnlyList<string> events, bool skipWalk = false, int next = 0,
+                int untick = -1)
 {
     var owner = new MainWindow();
     owner.Show();
@@ -179,6 +195,23 @@ void CaptureRun(string name, IReadOnlyList<string> events, bool skipWalk = false
         if (skipWalk) { Click(win, "Skip"); skipWalk = false; }
     }
     for (int n = 0; n < next; n++) Click(win, "Next");
+    if (untick >= 0)
+    {
+        // The row ticks carry a binding; the replay checkbox up top carries a
+        // string, so this picks the ones on the list being approved.
+        var tick = win.GetVisualDescendants().OfType<CheckBox>()
+                      .Where(c => c.Content is Control).Skip(untick).FirstOrDefault();
+        if (tick is not null) tick.IsChecked = false;
+        Dispatcher.UIThread.RunJobs();
+    }
+    win.UpdateLayout();
+    // The window scrolls the transcript on a posted job, which in here runs
+    // before the new card has been laid out, so the shot is taken at a scroll
+    // position the app never actually sits at. Settled here instead.
+    foreach (var scroll in win.GetVisualDescendants().OfType<ScrollViewer>())
+        if (AutomationProperties.GetName(scroll) is "What the agent has done so far")
+            scroll.ScrollToEnd();
+    Dispatcher.UIThread.RunJobs();
     win.UpdateLayout();
     CaptureWindow(name, win, shown: true);
     owner.Close();

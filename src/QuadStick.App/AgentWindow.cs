@@ -916,6 +916,13 @@ public class AgentWindow : Window
         Send(id, choice);
     }
 
+    /// <summary>The list, and the three things a person can do to it: write it,
+    /// write it without the rows they took the tick off, or say what is wrong
+    /// and see the whole thing again.
+    ///
+    /// Yes-or-nothing over fifty rows is not a choice anybody can steer. One row
+    /// they disagree with used to cost them the whole run, which is exactly the
+    /// pressure that gets a wrong binding approved.</summary>
     void Confirm(AgentEvent e)
     {
         if (_guide is { Walking: true }) { _held.Enqueue(e); return; }
@@ -926,21 +933,56 @@ public class AgentWindow : Window
         var rows = e.List("rows");
         var open = e.List("open");
         var untouched = e.List("untouched");
+        // Whether another round is on offer is the run's to say. Offering one it
+        // will not take would be a box that quietly does nothing.
+        var canSay = e.Get("canSay")?.ValueKind == JsonValueKind.True;
 
         var panel = new StackPanel { Spacing = 8 };
+        var heading = new TextBlock
+        {
+            FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold,
+            TextWrapping = TextWrapping.Wrap,
+        };
+        AutomationProperties.SetLiveSetting(heading, AutomationLiveSetting.Polite);
+        panel.Children.Add(heading);
         panel.Children.Add(new TextBlock
         {
-            Text = rows.Count == 1 ? "Write 1 binding?" : $"Write these {rows.Count} bindings?",
-            FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
-        });
-        panel.Children.Add(new TextBlock
-        {
-            Text = $"Into {Path.GetFileName(e.Str("profile"))}. Nothing has been written yet.",
+            Text = $"Into {Path.GetFileName(e.Str("profile"))}. Nothing has been written yet. "
+                 + "Take the tick off anything you do not want.",
             FontSize = Size("BodySize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         });
 
+        var write = new Button { Content = "Write it", Classes = { "primary" }, MinWidth = 140 };
+        var cancel = new Button { Content = "Do not write anything", MinWidth = 180 };
+        AutomationProperties.SetName(cancel, "Write nothing and leave the profile exactly as it is");
+        // The count again, next to the buttons. On a fifty row card the heading
+        // is a long way up the transcript by the time somebody is deciding, and
+        // a number you have to scroll back to is a number nobody has.
+        var counted = new TextBlock
+        {
+            FontSize = Size("BodySize"), FontWeight = FontWeight.Bold,
+            TextWrapping = TextWrapping.Wrap, IsVisible = false,
+        };
+
+        var ticks = new List<CheckBox>();
         var list = new StackPanel { Spacing = 6 };
-        foreach (var row in rows) list.Children.Add(BindingLine(row));
+        foreach (var row in rows)
+        {
+            var line = BindingLine(row);
+            var tick = new CheckBox
+            {
+                IsChecked = true, Content = line, MinHeight = Size("ControlHeight"),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+            };
+            // The row's own sentence is what the tick is about, so that is what
+            // it says when it is read out, with what the tick itself means.
+            AutomationProperties.SetName(tick,
+                $"{AutomationProperties.GetName(line)} Ticked, so it gets written. "
+              + "Take the tick off to leave this control exactly as it is.");
+            tick.IsCheckedChanged += (_, _) => Recount();
+            ticks.Add(tick);
+            list.Children.Add(tick);
+        }
         panel.Children.Add(new ScrollViewer
         {
             MaxHeight = 260, Content = list,
@@ -962,25 +1004,104 @@ public class AgentWindow : Window
             });
         }
 
-        var write = new Button { Content = "Write it", Classes = { "primary" }, MinWidth = 140 };
-        AutomationProperties.SetName(write, $"Write these {rows.Count} bindings into the profile");
-        var cancel = new Button { Content = "Do not write anything", MinWidth = 180 };
-        AutomationProperties.SetName(cancel, "Write nothing and leave the profile exactly as it is");
-        var buttons = new StackPanel
+        TextBox? say = null;
+        Button? change = null;
+        if (canSay)
+        {
+            say = new TextBox
+            {
+                Watermark = "sprint should be a hard puff",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+            };
+            AutomationProperties.SetName(say,
+                "Say what is wrong with this list, in your own words. It works out what you "
+              + "mean and shows you the whole list again. Nothing is written either way.");
+            change = new Button { Content = "Change it", MinWidth = 140 };
+            AutomationProperties.SetName(change,
+                "Work out the change you typed, and show this list again");
+            panel.Children.Add(new TextBlock
+            {
+                Text = "Not right? Say what to change, in your own words, and see the whole "
+                     + "list again before anything is written.",
+                FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+            });
+            var row = new DockPanel { LastChildFill = true };
+            change.Margin = new Thickness(10, 0, 0, 0);
+            DockPanel.SetDock(change, Dock.Right);
+            row.Children.Add(change);
+            row.Children.Add(say);
+            panel.Children.Add(row);
+        }
+
+        panel.Children.Add(counted);
+        panel.Children.Add(new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 12,
             Children = { write, cancel },
-        };
-        panel.Children.Add(buttons);
+        });
+
+        void Recount()
+        {
+            var kept = ticks.Count(t => t.IsChecked == true);
+            heading.Text = kept == rows.Count
+                ? kept == 1 ? "Write 1 binding?" : $"Write these {kept} bindings?"
+                : $"Write {kept} of {rows.Count} bindings?";
+            counted.IsVisible = kept < rows.Count;
+            counted.Text = $"{kept} of {rows.Count} ticked. The other {rows.Count - kept} "
+                         + $"{(rows.Count - kept == 1 ? "stays" : "stay")} exactly as "
+                         + $"{(rows.Count - kept == 1 ? "it is" : "they are")}.";
+            write.IsEnabled = kept > 0;
+            AutomationProperties.SetName(write, kept > 0
+                ? $"Write {kept} binding{(kept == 1 ? "" : "s")} into the profile"
+                : "Nothing is ticked, so there is nothing to write");
+        }
+        Recount();
+
+        void Freeze()
+        {
+            write.IsEnabled = cancel.IsEnabled = false;
+            foreach (var tick in ticks) tick.IsEnabled = false;
+            if (say is not null) say.IsEnabled = false;
+            if (change is not null) change.IsEnabled = false;
+        }
 
         void Decide(bool yes)
         {
-            write.IsEnabled = cancel.IsEnabled = false;
+            // Positions, not names: one output can sit on two rows, and a name
+            // would be ambiguous in exactly the case where getting it wrong
+            // writes a binding they took off the list.
+            var skip = ticks.Select((tick, n) => (tick, n))
+                            .Where(x => x.tick.IsChecked != true).Select(x => x.n).ToArray();
+            Freeze();
             Say(yes ? "Writing..." : "Nothing was written.");
-            _bridge?.Reply(new { id = e.Id, write = yes });
+            if (yes && skip.Length > 0)
+                Note($"{skip.Length} taken off the list, so nothing is written for them.");
+            _bridge?.Reply(yes ? new { id = e.Id, write = true, skip }
+                               : (object)new { id = e.Id, write = false });
         }
+
+        void Tell()
+        {
+            var said = (say?.Text ?? "").Trim();
+            if (said.Length == 0)
+            {
+                Say("Say what to change first, then press Change it.");
+                say?.Focus();
+                return;
+            }
+            Freeze();
+            // The transcript keeps what they asked for in their own words, so a
+            // list that changed can be checked against the sentence that changed it.
+            Note($"You said: {said}");
+            Say("Working out what you asked for...");
+            _bridge?.Reply(new { id = e.Id, say = said });
+        }
+
         write.Click += (_, _) => Decide(true);
         cancel.Click += (_, _) => Decide(false);
+        if (change is not null) change.Click += (_, _) => Tell();
+        if (say is not null)
+            say.KeyDown += (_, k) => { if (k.Key == Key.Enter) { k.Handled = true; Tell(); } };
 
         Add(Panel(panel, "SurfaceBrush", accent: true));
         Dispatcher.UIThread.Post(() => write.Focus(), DispatcherPriority.Background);
@@ -1003,6 +1124,21 @@ public class AgentWindow : Window
                  + $"{Count(e.Num("warnings"), "warning")}.",
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         });
+        // A row they took off the list is not a row that was never there. It is
+        // named for the same reason an unanswered question is: an account that
+        // leaves out what somebody declined is not an account of what they got.
+        var declined = e.List("declined")
+            .Select(d => d.TryGetProperty("output", out var v) ? v.GetString() : null)
+            .Where(x => !string.IsNullOrEmpty(x)).ToList();
+        if (declined.Count > 0)
+            panel.Children.Add(new TextBlock
+            {
+                Text = $"{declined.Count} you took off the list, so "
+                     + $"{(declined.Count == 1 ? "it is" : "they are")} unbound: "
+                     + string.Join(", ", declined),
+                FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+            });
+
         foreach (var issue in e.List("issues").Take(6))
             panel.Children.Add(new TextBlock
             {
