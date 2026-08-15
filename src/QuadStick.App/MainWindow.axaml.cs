@@ -1810,9 +1810,12 @@ public partial class MainWindow : Window
         ModesChanged(idx, "Preferences sheet added.");
     }
 
-    sealed record Zone(string Id, string Title, string Display, string DefaultInput, string Blurb);
+    internal sealed record Zone(string Id, string Title, string Display, string DefaultInput, string Blurb);
 
-    static readonly Zone[] AllZones =
+    // Shared with the agent window, which draws the same device from the same
+    // list. Two tables of the parts of a QuadStick would drift, and the one that
+    // drifted would be teaching somebody their device wrong.
+    internal static readonly Zone[] AllZones =
     {
         new("joystick", "Joystick", "Joystick", "up",
             "Moving the whole mouthpiece with your mouth works like a joystick. Up, down, left, right, and the 8 compass directions can each press something."),

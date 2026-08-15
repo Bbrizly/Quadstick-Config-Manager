@@ -15,7 +15,10 @@ The events are the whole protocol:
     tool       something is happening now, with what it was given
     tool_done  how it ended: ok, warn or failed, and what it found
     note       a plain sentence
+    tally      how many controls the game has, how many are answered, how many are not
     rows       bindings settled so far, with the evidence for each
+    map        the whole profile before anyone is asked anything: every control,
+               the game's word for it, and what it is bound to
     question   the run stops here until a line comes back on stdin
     confirm    nothing is written until a line comes back saying so
     done       what was written, and what was deliberately left alone
@@ -312,10 +315,14 @@ def create(args, work):
     file, which is a write nobody approved.
     """
     game = args.game
-    emit("stage", key="research", title=f"How {game} is controlled")
+    emit("stage", key="research", title=f"How {game} is controlled",
+         why="A binding can only be right if the game's own controls are right, so those "
+             "are read first, from the game's own pages.")
     chart_path, chart = chart_for(game, args.replay, args.research)
 
-    emit("stage", key="history", title="What his own profiles already answer")
+    emit("stage", key="history", title="What his own profiles already answer",
+         why="A control he has bound the same way across years of profiles is already "
+             "answered. No model is asked, and neither are you.")
     emit("tool", id="predict", title="Matched this game against every profile he has built",
          subtitle="no model involved, evidence only", state="running",
          detail={"corpus": args.corpus, "heldOut": args.hold_out})
@@ -349,6 +356,11 @@ def create(args, work):
          detail={"errors": check["errors"], "warnings": check["warnings"],
                  "issues": [{"severity": i["severity"], "cell": i["cell"],
                              "message": i["message"]} for i in check["issues"][:8]]})
+    # The same three numbers the run is about, said once, in one place, before
+    # the list of rows. "138 controls, 34 answered, 6 that need you" is the whole
+    # shape of the job, and reading it off a wall of cards is not the same thing.
+    emit("tally", of=len(built["spec"]["controls"]),
+         answered=len(plan["decided"]), asking=len(plan["asks"]))
     emit("rows", title="Settled from his own profiles", rows=[
         {"output": d["output"], "inputs": d["inputs"], "function": d["function"],
          "confidence": "evidenced",
@@ -360,7 +372,9 @@ def create(args, work):
         emit("note", text="his own profiles settled every control this game needs.")
         return qsagent.new_context(plan, []), plan
 
-    emit("stage", key="agent", title="What the evidence could not settle")
+    emit("stage", key="agent", title="What the evidence could not settle",
+         why="Only the controls his own profiles cannot answer go to the model. These "
+             "are the ones you may be asked about.")
     ctx = qsagent.new_context(plan, [a["output"] for a in plan["asks"]])
     meanings = plan.get("controlMeanings", {})
     # Everything it would have fetched, handed over up front: what each control
@@ -567,6 +581,43 @@ def apply_changes(path, changes, out, committed=None):
 
 # ---- asking, approving, writing -------------------------------------------
 
+def word_for(plan, output):
+    """The game's own word for one control, trimmed the way column L trims it.
+
+    The guide and the file have to say the same thing. If the profile ends up
+    with "Move Madeline left" in column L, a walkthrough that calls it something
+    else is teaching them a name their own file does not use.
+    """
+    said = ((plan.get("controls") or {}).get(output) or {}).get("action", "")
+    return finalize.action_name(said) if said else ""
+
+
+def with_words(plan, rows):
+    """Every row carrying the game's word for it, and whether the game calls it
+    critical. Both come off the chart, so neither is the window's invention."""
+    controls = plan.get("controls") or {}
+    return [{**r, "action": word_for(plan, r["output"]),
+             "critical": bool((controls.get(r["output"]) or {}).get("critical"))}
+            for r in rows]
+
+
+def show_map(plan, rows, questions, unbound, untouched):
+    """The whole profile as a picture, before a single question is asked.
+
+    This is the event the window draws the device from: every control it worked
+    out, on the part of the device it lands on, in the game's words. It goes out
+    before the interview on purpose. Being asked "sprint: hold or toggle?" makes
+    a different kind of sense once you have already seen where everything else
+    on your mouthpiece went.
+    """
+    emit("map", game=plan["game"], rows=with_words(plan, rows),
+         open=[{"output": q["output"], "action": word_for(plan, q["output"]),
+                "question": q["question"]} for q in questions],
+         left=[{"output": u["output"], "action": word_for(plan, u["output"]),
+                "why": u["why"]} for u in unbound],
+         untouched=list(untouched))
+
+
 def interview(questions):
     """Each question, one at a time, and nothing filled in for a skipped one."""
     answers = {}
@@ -748,27 +799,30 @@ def main():
         try:
             ctx, plan = create(args, work)
             result = qsagent.brief(ctx)
-            answers = interview(result["questions"])
             asked = {q["output"] for q in result["questions"]}
             # A proposal for a control that was also asked about is dropped
             # unless they answered it. The agent cannot do both any more, but a
             # profile is not the place to rely on that: an unanswered question
             # must never come out of this as a written row.
-            settled = [p for p in result["proposals"]
-                       if p["output"] not in asked and p["output"] not in answers]
-            settled += [{"output": output, "inputs": choice["inputs"],
-                         "function": choice["function"], "confidence": "chosen by them",
-                         "why": "they answered the question about this control"}
-                        for output, choice in answers.items()]
-            still_open = [q for q in result["questions"] if q["output"] not in answers]
+            proposed = [p for p in result["proposals"] if p["output"] not in asked]
             already = [{"output": d["output"], "inputs": d["inputs"], "function": d["function"],
                         "confidence": "evidenced",
                         "why": f"{d['seenIn']} of {d['ofGames']} of his profiles do this "
                                f"({d['share']:.0%}); nearest example {d['evidence']}"}
                        for d in plan["decided"]]
+            show_map(plan, already + proposed, result["questions"],
+                     result.get("unbound", ()), result["untouched"])
+            answers = interview(result["questions"])
+            settled = proposed + [
+                {"output": output, "inputs": choice["inputs"],
+                 "function": choice["function"], "confidence": "chosen by them",
+                 "why": "they answered the question about this control"}
+                for output, choice in answers.items()]
+            still_open = [q for q in result["questions"] if q["output"] not in answers]
             confirm_and_write(work, settled, still_open, result["untouched"],
-                              out=args.out, shown=already + settled, fresh=True,
-                              controls=plan.get("controls"), left=result.get("unbound", ()))
+                              out=args.out, shown=with_words(plan, already + settled),
+                              fresh=True, controls=plan.get("controls"),
+                              left=result.get("unbound", ()))
         finally:
             if os.path.exists(work):
                 os.remove(work)

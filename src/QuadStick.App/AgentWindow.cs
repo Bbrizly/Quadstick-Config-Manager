@@ -15,13 +15,18 @@ namespace QuadStick.App;
 // control scheme this person already spent years learning, asks about whatever
 // their own profiles cannot settle, and writes nothing until they say so.
 //
-// Every step the agent takes is a card in this window, in the order it happened,
-// with what it was given and what came back. That is not decoration. A profile
-// arriving fully formed with no account of where each row came from is exactly
-// the thing a person cannot check, and this is a file they steer their computer
-// with. So the transcript IS the feature: the run explains itself as it goes,
-// and the approval at the end is over a list they have already watched being
-// built.
+// Two views of one run, and both of them matter.
+//
+// Every step the agent takes is a card here, in the order it happened, with
+// what it was given and what came back. A profile arriving fully formed with no
+// account of where each row came from is exactly the thing a person cannot
+// check, and this is a file they steer their computer with.
+//
+// But a correct account nobody can read is not an account. So before anybody is
+// asked anything, the same profile is drawn on their own device and walked
+// through part by part, in the game's own words, and the questions are asked
+// over that picture. The steps are still one button away, and the approval at
+// the end is still over the list.
 //
 // Nothing here writes a cell. The agent process does that, behind the same
 // refusals the terminal path uses, so there is one write path and not two.
@@ -43,6 +48,19 @@ public class AgentWindow : Window
     readonly DispatcherTimer _tick;
     DateTime _began;
     int _asked, _recorded;
+
+    // The guide: the profile drawn on the device, walked through before anyone
+    // is asked anything, and the questions asked over the same picture.
+    readonly ContentControl _guideHost;
+    readonly StackPanel _switch;
+    readonly Button _toGuide;
+    readonly Button _toSteps;
+    AgentGuide? _guide;
+    // Anything that arrived while somebody was still being walked through their
+    // own device. The run is blocked on stdin either way, so nothing is lost by
+    // making it wait; interrupting the walkthrough would cost an answer given
+    // without the context it was about to get.
+    readonly Queue<AgentEvent> _held = new();
 
     IAgentRun? _bridge;
     string? _written;
@@ -73,6 +91,7 @@ public class AgentWindow : Window
 
     internal AgentWindow(MainWindow owner, string? root, bool changing = false)
     {
+        Classes.Add("dialog");
         _owner = owner;
         _root = root ?? "";
         _changing = changing;
@@ -170,13 +189,35 @@ public class AgentWindow : Window
         top.Children.Add(_stop);
         top.Children.Add(_replay);
 
+        // Two ways to look at the same run: the device with what landed on it,
+        // and every step it took to get there. Neither replaces the other. The
+        // guide is what a person checks the profile with; the steps are what
+        // they check the guide with.
+        _guideHost = new ContentControl { IsVisible = false };
+        _toGuide = new Button { Content = "Your QuadStick", MinWidth = 150 };
+        AutomationProperties.SetName(_toGuide,
+            "Show the profile drawn on your QuadStick, part by part");
+        _toGuide.Click += (_, _) => Look(guide: true);
+        _toSteps = new Button { Content = "What it did", MinWidth = 130 };
+        AutomationProperties.SetName(_toSteps, "Show every step the agent took, in order");
+        _toSteps.Click += (_, _) => Look(guide: false);
+        _switch = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8, IsVisible = false,
+            Children = { _toGuide, _toSteps },
+        };
+
+        var views = new Grid();
+        views.Children.Add(_scroll);
+        views.Children.Add(_guideHost);
+
         var panel = new DockPanel { LastChildFill = true, Margin = new Thickness(24) };
         foreach (var (control, dock, margin) in new (Control, Dock, Thickness)[]
         {
-            (heading, Dock.Top, new Thickness(0, 0, 0, 8)),
             (explain, Dock.Top, new Thickness(0, 0, 0, 12)),
             (_ask, Dock.Top, new Thickness(0, 0, 0, 10)),
             (top, Dock.Top, new Thickness(0, 0, 0, 14)),
+            (_switch, Dock.Top, new Thickness(0, 0, 0, 12)),
             (_close, Dock.Bottom, new Thickness(0, 12, 0, 0)),
             (_status, Dock.Bottom, new Thickness(0, 12, 0, 0)),
         })
@@ -186,7 +227,7 @@ public class AgentWindow : Window
             panel.Children.Add(control);
         }
         _close.HorizontalAlignment = HorizontalAlignment.Left;
-        panel.Children.Add(_scroll);
+        panel.Children.Add(views);
 
         // One timer for the whole window, not one per card. A step that sits in
         // a model call for three minutes has to visibly still be working, or
@@ -282,9 +323,19 @@ public class AgentWindow : Window
             return;
         }
 
+        // A follow-up is a change to the profile this run just wrote, not a new
+        // game. That is the whole of "talk to it once it is done": the same box,
+        // pointed at what is now on disk.
+        var target = _changing ? _owner.CurrentProfilePath : _written;
+
         _stream.Children.Clear();
         _cards.Clear();
         _timed.Clear();
+        _held.Clear();
+        _guide = null;
+        _guideHost.Content = null;
+        _switch.IsVisible = false;
+        Look(guide: false);
         _written = null;
         _spoke = false;
         _running = true;
@@ -296,8 +347,8 @@ public class AgentWindow : Window
         _ask.IsEnabled = false;
         Say(_changing ? $"Working out what \"{said}\" means..." : $"Setting up {said}...");
 
-        var arguments = Arguments(said, _changing ? _owner.CurrentProfilePath : null,
-                                  _replay.IsChecked == true, _changing);
+        var arguments = Arguments(said, target, _replay.IsChecked == true,
+                                  _changing || target is not null);
         try
         {
             _bridge = StartWith is not null ? StartWith(arguments)
@@ -384,11 +435,13 @@ public class AgentWindow : Window
         switch (e.Kind)
         {
             case "run": Mode(e); break;
-            case "stage": Stage(e.Title); break;
+            case "stage": Stage(e); break;
             case "tool": Add(new ToolCard(e), e.Id); break;
             case "tool_done": Done(e); break;
             case "note": Note(e.Text); break;
+            case "tally": Tally(e); break;
             case "rows": Rows(e); break;
+            case "map": Map(e); break;
             case "question": Question(e); break;
             case "confirm": Confirm(e); break;
             // Both of these are the run accounting for itself, which is what
@@ -448,7 +501,7 @@ public class AgentWindow : Window
         else Add(new ToolCard(e));
     }
 
-    void Stage(string title)
+    void Stage(AgentEvent e)
     {
         var panel = new StackPanel { Spacing = 6, Margin = new Thickness(0, 12, 0, 2) };
         var rule = new Border { Height = 1 };
@@ -456,9 +509,69 @@ public class AgentWindow : Window
         panel.Children.Add(rule);
         panel.Children.Add(new TextBlock
         {
-            Text = title.ToUpperInvariant(), Classes = { "section" }, TextWrapping = TextWrapping.Wrap,
+            Text = e.Title.ToUpperInvariant(), Classes = { "section" }, TextWrapping = TextWrapping.Wrap,
         });
+        // Why this phase is happening at all. Watching a run without this is
+        // watching a machine work: everything is visible and none of it means
+        // anything, which is the complaint that put this line here.
+        if (e.Str("why") is { Length: > 0 } why)
+            panel.Children.Add(new TextBlock
+            {
+                Text = why, FontSize = Size("BodySize"), Classes = { "muted" },
+                TextWrapping = TextWrapping.Wrap,
+            });
         Add(panel);
+    }
+
+    /// <summary>The shape of the whole job as one bar: what his own profiles
+    /// answered, what still needs a person, and what the chart never covered.
+    ///
+    /// The same three numbers are in the cards below it. A number you have to
+    /// assemble by reading forty cards is a number nobody has.</summary>
+    void Tally(AgentEvent e)
+    {
+        int of = e.Num("of"), answered = e.Num("answered"), asking = e.Num("asking");
+        var rest = Math.Max(0, of - answered - asking);
+        var parts = new (int Count, string Word, string Brush)[]
+        {
+            (answered, "answered from his own profiles", "AccentBrush"),
+            (asking, "the evidence cannot settle", "SurfaceBorderBrush"),
+            (rest, "the chart does not cover", "SurfaceSubtleBrush"),
+        }.Where(p => p.Count > 0).ToArray();
+
+        var bar = new Grid { Height = 14 };
+        var legend = new StackPanel { Spacing = 2 };
+        for (int n = 0; n < parts.Length; n++)
+        {
+            bar.ColumnDefinitions.Add(new ColumnDefinition(parts[n].Count, GridUnitType.Star));
+            var block = new Border
+            {
+                CornerRadius = new CornerRadius(3), MinWidth = 6,
+                Margin = new Thickness(n == 0 ? 0 : 2, 0, 0, 0),
+                [!BackgroundProperty] = new DynamicResourceExtension(parts[n].Brush),
+            };
+            Grid.SetColumn(block, n);
+            bar.Children.Add(block);
+            // Every segment is named and counted in words underneath. The widths
+            // are the second signal, never the only one.
+            legend.Children.Add(new TextBlock
+            {
+                Text = $"{parts[n].Count}  {parts[n].Word}",
+                FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap,
+            });
+        }
+
+        var panel = new StackPanel { Spacing = 8 };
+        panel.Children.Add(new TextBlock
+        {
+            Text = $"{of} control{(of == 1 ? "" : "s")} this game uses",
+            FontSize = Size("BodySize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
+        });
+        panel.Children.Add(bar);
+        panel.Children.Add(legend);
+        AutomationProperties.SetName(panel, $"{of} controls this game uses. "
+            + string.Join(". ", parts.Select(p => $"{p.Count} {p.Word}")));
+        Add(Panel(panel, "SurfaceSubtleBrush"));
     }
 
     void Note(string text, bool muted = false)
@@ -499,11 +612,15 @@ public class AgentWindow : Window
         var function = Text("function");
         var why = Text("why");
         var was = Text("was");
+        // The game's own word for the row, when the chart had one. This is the
+        // same word that goes into column L, so the list and the file agree.
+        var action = Text("action");
+        var named = action.Length > 0 ? $"{action}   {output}" : output;
 
         var stack = new StackPanel { Spacing = 1 };
         stack.Children.Add(new TextBlock
         {
-            Text = $"{output}   {inputs}, {function}",
+            Text = $"{named}   {inputs}, {function}",
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         });
         if (was.Length > 0)
@@ -519,13 +636,119 @@ public class AgentWindow : Window
                 TextWrapping = TextWrapping.Wrap,
             });
         AutomationProperties.SetName(stack,
-            $"{output} bound to {inputs}, {function}. {(was.Length > 0 ? $"Was {was}. " : "")}{why}");
+            $"{named} bound to {inputs}, {function}. {(was.Length > 0 ? $"Was {was}. " : "")}{why}");
         return stack;
+    }
+
+    // ---- the device, and the walk through it ------------------------------
+
+    /// <summary>Which of the two views is on screen. The other one is still
+    /// there and still one button away, so nothing is ever hidden, only put
+    /// behind the thing a person is actually doing.</summary>
+    void Look(bool guide)
+    {
+        _guideHost.IsVisible = guide;
+        _scroll.IsVisible = !guide;
+        _toGuide.IsEnabled = !guide;
+        _toSteps.IsEnabled = guide;
+    }
+
+    /// <summary>The whole profile, drawn on the device, before a single
+    /// question. Walking somebody through their own mouthpiece first is what
+    /// makes the questions after it answerable.</summary>
+    void Map(AgentEvent e)
+    {
+        var rows = e.List("rows").Select(Placement).ToList();
+        // What is not being bound travels as rows too, so the reason each one
+        // carries is on screen with it rather than as a count.
+        var open = e.List("open").Select(Placement).ToList();
+        var left = e.List("left").Select(Placement).ToList();
+        _guide = new AgentGuide(e.Str("game"), rows, open, left) { Walked = Walked };
+        _guideHost.Content = _guide;
+        _switch.IsVisible = true;
+        Look(guide: true);
+        Say($"{rows.Count} controls worked out. Step through them, then answer what is left.");
+    }
+
+    /// <summary>The walkthrough ran out, so whatever was waiting on it happens
+    /// now.</summary>
+    void Walked()
+    {
+        if (_held.Count == 0)
+        {
+            _guide?.Waiting("Working out the next thing to ask you...");
+            return;
+        }
+        Draw(_held.Dequeue());
+    }
+
+    /// <summary>One row of a map or a confirm as something with a place on the
+    /// device.</summary>
+    static Placed Placement(JsonElement row)
+    {
+        string Text(string name) => row.TryGetProperty(name, out var v)
+            && v.ValueKind == JsonValueKind.String ? v.GetString() ?? "" : "";
+        var inputs = row.TryGetProperty("inputs", out var i) && i.ValueKind == JsonValueKind.Array
+            ? i.EnumerateArray().Select(x => x.GetString() ?? "").Where(x => x.Length > 0).ToList()
+            : new List<string>();
+        // A settled row carries why it was settled; one still open carries the
+        // question. Either way it is the sentence that goes under the name.
+        var why = Text("why") is { Length: > 0 } said ? said : Text("question");
+        return new Placed(Text("output"), Text("action"), inputs, Text("function"), why);
     }
 
     // ---- the two places a person decides something ------------------------
 
     void Question(AgentEvent e)
+    {
+        // Mid-walkthrough it waits its turn. The run is blocked on the answer
+        // either way, so nothing is lost by finishing the tour first.
+        if (_guide is { Walking: true }) { _held.Enqueue(e); return; }
+        if (_guide is not null) { AskOnDevice(e); return; }
+        AskInStream(e);
+    }
+
+    /// <summary>The question above the device, with each option lighting the
+    /// part of the mouthpiece it would land on as it is reached.</summary>
+    void AskOnDevice(AgentEvent e)
+    {
+        var output = e.Str("output");
+        var options = e.List("options").Select(o =>
+        {
+            var row = o;
+            string Text(string name) => row.TryGetProperty(name, out var v)
+                && v.ValueKind == JsonValueKind.String ? v.GetString() ?? "" : "";
+            var inputs = row.TryGetProperty("inputs", out var i) && i.ValueKind == JsonValueKind.Array
+                ? i.EnumerateArray().Select(x => x.GetString() ?? "").Where(x => x.Length > 0).ToList()
+                : new List<string>();
+            return new Placed(output, Text("label"), inputs, Text("function"), "");
+        }).ToList();
+        // The offer to leave it alone is an option like any other, and the last
+        // one, so it is never the thing a hurried hand lands on first.
+        var leaveAt = options.Count;
+        options.Add(new Placed(output, "Leave this one alone", Array.Empty<string>(), "", ""));
+
+        Look(guide: true);
+        _guide!.Ask(e.Str("question"), $"{output}. Nothing is written either way until you approve it.",
+                    options, choice =>
+        {
+            var picked = options[choice];
+            var what = choice == leaveAt ? "left alone"
+                : picked.Inputs.Count > 0 ? $"{picked.Trigger}, {picked.Function}"
+                : "left unbound";
+            _guide.Chose(what, picked);
+            // The transcript keeps the whole account, including the things that
+            // were decided somewhere else. A person checking later must not have
+            // to remember which view a decision was made in.
+            Note($"Asked about {output}: {e.Str("question")}  You chose: {what}.");
+            Send(e.Id, choice == leaveAt ? -1 : choice);
+        });
+    }
+
+    void Send(string id, int choice) =>
+        _bridge?.Reply(choice >= 0 ? new { id, choice } : new { id, choice = (int?)null });
+
+    void AskInStream(AgentEvent e)
     {
         var options = e.List("options");
         var panel = new StackPanel { Spacing = 8 };
@@ -612,11 +835,16 @@ public class AgentWindow : Window
         };
         AutomationProperties.SetLiveSetting(chosen, AutomationLiveSetting.Polite);
         panel.Children.Add(chosen);
-        _bridge?.Reply(choice >= 0 ? new { id, choice } : new { id, choice = (int?)null });
+        Send(id, choice);
     }
 
     void Confirm(AgentEvent e)
     {
+        if (_guide is { Walking: true }) { _held.Enqueue(e); return; }
+        // The list to approve is a list, so it is read in the list. The device
+        // has already done its job by this point: they have seen where every one
+        // of these lands.
+        if (_guide is not null) Look(guide: false);
         var rows = e.List("rows");
         var open = e.List("open");
         var untouched = e.List("untouched");
@@ -729,11 +957,26 @@ public class AgentWindow : Window
                 buttons.Children.Add(now);
             }
             panel.Children.Add(buttons);
+            // It does not end here. The box at the top now points at the file
+            // that was just written, so the next thing they say is a change to
+            // it rather than a whole new game.
+            panel.Children.Add(new TextBlock
+            {
+                Text = "Not quite right? Say what to change at the top, in your own words, "
+                     + "and it changes that row and nothing else.",
+                FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+            });
+            _ask.Text = "";
+            _ask.Watermark = "make sprint a hard puff instead";
+            AutomationProperties.SetName(_ask,
+                $"A change to {Path.GetFileName(_written)}, in your own words");
+            _go.Content = "Change it";
+            AutomationProperties.SetName(_go, "Work out what to change, and show you before it changes anything");
         }
 
         Add(Panel(panel, "SurfaceBrush", accent: true));
         Say(count == 0 ? "Nothing was changed."
-                       : $"Written to {_written}. Open it in the editor to check it and install it.");
+                       : $"Written to {_written}. Ask for a change above, or open it in the editor.");
     }
 
     static string Count(int n, string word) => $"{n} {word}{(n == 1 ? "" : "s")}";
@@ -807,7 +1050,7 @@ public class AgentWindow : Window
         border[!BorderBrushProperty] = new DynamicResourceExtension(edge);
     }
 
-    static double Size(string token) => (double)Application.Current!.FindResource(token)!;
+    internal static double Size(string token) => (double)Application.Current!.FindResource(token)!;
 
     /// <summary>One call the agent made, as a card: what it did, how it went,
     /// and, when opened, exactly what it was given and what came back.
@@ -820,6 +1063,7 @@ public class AgentWindow : Window
         readonly TextBlock _subtitle;
         readonly TextBlock _state;
         readonly Expander _detail;
+        readonly StackPanel _head;
 
         internal string StateWord => _state.Text ?? "";
 
@@ -891,21 +1135,24 @@ public class AgentWindow : Window
             head.Children.Add(_state);
             head.Children.Add(_title);
 
+            // The card is its own expander. A separate row saying "what it was
+            // given, and what came back" cost a line of height on every step of
+            // a forty step run to say something the arrow already says, so the
+            // card itself opens, and the raw call stays one click away for
+            // anyone who wants to check it.
+            _head = new StackPanel { Spacing = 2 };
+            _head.Children.Add(head);
+            if (e.Subtitle.Length > 0) _head.Children.Add(_subtitle);
             _detail = new Expander
             {
-                Header = "What it was given, and what came back",
+                Header = _head,
                 FontSize = Size("SmallSize"),
-                Margin = new Thickness(0, 6, 0, 0),
                 Content = Body(e),
             };
             AutomationProperties.SetName(_detail,
-                "Show exactly what this step was given and what it returned");
+                $"{e.Title}. Opens to show exactly what this step was given and what it returned");
 
-            var stack = new StackPanel { Spacing = 2 };
-            stack.Children.Add(head);
-            if (e.Subtitle.Length > 0) stack.Children.Add(_subtitle);
-            stack.Children.Add(_detail);
-            Child = stack;
+            Child = _detail;
             Announce();
         }
 
@@ -929,8 +1176,7 @@ public class AgentWindow : Window
             if (e.Str("summary") is { Length: > 0 } summary)
             {
                 _subtitle.Text = summary;
-                if (!((StackPanel)Child!).Children.Contains(_subtitle))
-                    ((StackPanel)Child!).Children.Insert(1, _subtitle);
+                if (!_head.Children.Contains(_subtitle)) _head.Children.Add(_subtitle);
             }
             _detail.Content = Body(e);
             Announce();

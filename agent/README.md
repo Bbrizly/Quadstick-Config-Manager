@@ -22,6 +22,26 @@ per line. The window draws those events as cards; the terminal prints them as
 lines. One pipeline, two front ends, so nothing can be true in one and not the
 other.
 
+## Seeing it on your own device
+
+Before anybody is asked anything, the whole profile is drawn on a picture of
+the QuadStick and walked through one part at a time: the joystick, each
+mouthpiece hole, the combos, the side tube, the lip switch. Each part says what
+landed on it in the game's own words, so the left hole reads **Dash: soft
+puff**, not `kb_x, mp_left_puff_soft`.
+
+The questions are then asked over the same picture. Reaching an option lights
+the part of the mouthpiece it would land on, by keyboard as well as by mouse,
+so tabbing the options walks the device. A question that arrives while somebody
+is still being shown their device waits for them; the run is blocked on the
+answer either way, and an answer given before the tour is an answer given
+without it.
+
+This is not decoration. A list of forty rows saying `kb_x, mp_left_puff_soft`
+is a correct answer nobody can check, and an approval over something unreadable
+is not an approval. The list is still there, one button away, and the approval
+at the end is still over the list.
+
 ## Watching it work
 
 Every call is on screen before it runs, not after it finished. A step that is
@@ -61,8 +81,11 @@ signed in. `ANTHROPIC_API_KEY` switches to the API if you want it.
    control should stay unbound and why, or finishes. It cannot write a cell.
    Fetching those facts a control at a time used to cost eight model calls and
    most of the run.
-4. **Ask the person.** Every option carries the device tokens it will be bound
-   to, so what they pick is written exactly as it was shown.
+4. **Show the whole thing on the device, then ask.** Everything worked out so
+   far is drawn on the QuadStick and walked through part by part before a
+   single question. Every option then carries the device tokens it will be
+   bound to and lights the part it would land on, so what they pick is written
+   exactly as it was shown.
 5. **Write, once they say so.** The whole profile is built on a copy first, so
    starting a run writes nothing. Every proposal becomes one `qsf` op carrying
    its own reason. If one op is refused, or the result would not validate,
@@ -82,7 +105,16 @@ made, and that was a real bug, found in review and fixed.
 
 **Never say nothing.** Controls the agent never reached are named. Names the
 research dropped are named. A refusal says which cell and why. A run that stops
-says so on screen rather than going quiet.
+says so on screen rather than going quiet. Every phase says why it is happening
+at all, and the three numbers the whole run is about (what the game uses, what
+his profiles answered, what needs a person) are said once, in one place, as a
+bar and in words.
+
+**An approval over something unreadable is not an approval.** This is why the
+profile is drawn on the device and walked through before anybody is asked
+anything, and why every row says what the game calls it. The rows and the
+evidence are still there, one button away, and the approval at the end is still
+over that list.
 
 **Nothing unanswered is filled in.** A question nobody answered leaves that
 control alone, and the confirm card lists what is staying unbound alongside what

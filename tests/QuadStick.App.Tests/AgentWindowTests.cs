@@ -586,4 +586,237 @@ public sealed class AgentWindowTests
         Assert.Contains("kb_space   lip, normal", words);
         Assert.Contains("73 of 120 of his profiles", words);
     }
+
+    // ---- the device, and the walk through it ------------------------------
+
+    // Celeste, two controls placed, one still to ask about, one deliberately
+    // left. The Left hole and the Right hole are the only parts with anything
+    // on them, so the walkthrough is: the whole thing, then those two, then
+    // what is left to ask.
+    static readonly string Map = """
+        {"event":"map","game":"Celeste",
+         "rows":[{"output":"kb_c","action":"Jump","inputs":["mp_right_puff"],"function":"normal",
+                  "why":"51 of 96 of his profiles do this"},
+                 {"output":"kb_x","action":"Dash","inputs":["mp_left_puff_soft"],"function":"toggle",
+                  "why":"he does this in every platformer"}],
+         "open":[{"output":"kb_left_shift","action":"Climb","question":"Climb: hold it, or press once?"}],
+         "left":[{"output":"kb_f1","action":"","why":"a keyboard key with no place on a controller profile"}],
+         "untouched":[]}
+        """.ReplaceLineEndings(" ");
+
+    static AgentGuide Guide(Window window) =>
+        window.GetVisualDescendants().OfType<AgentGuide>().Single();
+
+    // The profile drawn on the device, part by part, before anybody is asked
+    // anything. A list of rows saying kb_x, mp_left_puff_soft is a correct
+    // answer nobody can check; "Dash: soft puff" on a picture of the left hole
+    // is the same answer, and it is one a person can disagree with.
+    [AvaloniaFact]
+    public void TheProfileIsWalkedThroughOnTheDeviceBeforeAnythingIsAsked()
+    {
+        var (_, window, run) = Open();
+        run.Say(Map);
+
+        var guide = Guide(window);
+        Assert.Contains("Celeste, on your QuadStick", guide.Saying);
+        Assert.Contains("2 controls worked out", guide.Saying);
+        Assert.Contains("1 still needs you", guide.Saying);
+        Assert.Contains("1 is left unbound on purpose", guide.Saying);
+
+        // The game's own word is what the part says, not the device token.
+        Assert.Equal("Left mouthpiece hole: Dash", guide.Map.TextOf("mp_left"));
+        Assert.Equal("Right mouthpiece hole: Jump", guide.Map.TextOf("mp_right"));
+        // A part with nothing on it says so. That is where the next thing goes.
+        Assert.Contains("nothing here", guide.Map.TextOf("mp_center"));
+
+        // Step through it: the part being talked about is the part that is lit.
+        Press(window, "Next");
+        Assert.Contains("Left mouthpiece hole", guide.Saying);
+        Assert.Contains("Dash: soft puff", guide.Saying);
+        Assert.True(guide.Map.IsLit("mp_left"));
+        Assert.False(guide.Map.IsLit("mp_right"));
+
+        Press(window, "Next");
+        Assert.Contains("Jump: puff", guide.Saying);
+        Assert.True(guide.Map.IsLit("mp_right"));
+
+        // The last step says what is NOT being bound, by name and with the
+        // reason. A control left on purpose and a control nobody reached are
+        // different things, and neither is allowed to be a bare number.
+        Press(window, "Next");
+        Assert.Contains("Climb", guide.Saying);
+        Assert.Contains("Climb: hold it, or press once?", guide.Saying);
+        Assert.Contains("1 left unbound on purpose:", guide.Saying);
+        Assert.Contains("a keyboard key with no place on a controller profile", guide.Saying);
+    }
+
+    // A question that arrives while somebody is still being shown their own
+    // device waits for them. The run is blocked on the answer either way, and
+    // an answer given before the tour is an answer given without it.
+    [AvaloniaFact]
+    public void AQuestionThatArrivesMidWalkthroughWaitsForTheWalkthrough()
+    {
+        var (_, window, run) = Open();
+        run.Say(Map);
+        run.Say(Question);
+
+        var guide = Guide(window);
+        Assert.True(guide.Walking);
+        Assert.DoesNotContain("Sprint", guide.Saying);
+        Assert.Empty(run.Replies);
+
+        Press(window, "Skip the walkthrough");
+        Assert.False(guide.Walking);
+        Assert.Contains("Sprint: hold it, or press once to keep running?", guide.Saying);
+    }
+
+    // Each option lights the part of the mouthpiece it would land on, as it is
+    // reached. Reached by keyboard as well: tabbing the options walks the
+    // device, so the picture is not a mouse-only channel.
+    [AvaloniaFact]
+    public void EachOptionLightsThePartOfTheDeviceItWouldLandOn()
+    {
+        var (_, window, run) = Open();
+        run.Say(Map);
+        Press(window, "Skip the walkthrough");
+        run.Say(Question);
+        var guide = Guide(window);
+
+        // Triple puff is a combo, the lip switch is its own part.
+        Find(window, "Triple puff").Focus();
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(guide.Map.IsLit("combo"));
+
+        Find(window, "Lip, press once").Focus();
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(guide.Map.IsLit("lip"));
+        Assert.False(guide.Map.IsLit("combo"));
+    }
+
+    // The answer goes back as the option that was shown, and what was chosen
+    // stays on screen. Answering on the device must not be a second, looser
+    // path to the same write.
+    [AvaloniaFact]
+    public void AnAnswerOnTheDeviceGoesBackExactlyAsItWasShown()
+    {
+        var (_, window, run) = Open();
+        run.Say(Map);
+        Press(window, "Skip the walkthrough");
+        run.Say(Question);
+
+        Press(window, "Lip, press once");
+        Assert.Equal("""{"id":"q1","choice":1}""", Assert.Single(run.Replies));
+        Assert.Contains("You chose: lip, toggle", Guide(window).Saying);
+        // And the transcript keeps it, so checking later does not depend on
+        // remembering which view the decision was made in.
+        Press(window, "What it did");
+        Assert.Contains("You chose: lip, toggle", Words(window));
+    }
+
+    // Leaving one alone sends no choice at all. Nothing is filled in for a
+    // control somebody declined to decide.
+    [AvaloniaFact]
+    public void LeavingOneAloneOnTheDeviceSendsNoChoice()
+    {
+        var (_, window, run) = Open();
+        run.Say(Map);
+        Press(window, "Skip the walkthrough");
+        run.Say(Question);
+
+        Press(window, "Leave this one alone");
+        Assert.Equal("""{"id":"q1","choice":null}""", Assert.Single(run.Replies));
+    }
+
+    // The list to approve is read as a list, so the confirm sends the window
+    // back to the transcript rather than leaving it behind a picture.
+    [AvaloniaFact]
+    public void TheConfirmWaitsForTheWalkthroughAndThenShowsTheList()
+    {
+        var (_, window, run) = Open();
+        run.Say(Map);
+        run.Say(Confirm);
+        Assert.True(Guide(window).Walking);
+        Assert.Empty(run.Replies);
+        // Not drawn at all yet, so there is nothing to press by accident while
+        // somebody is still being shown what they would be approving.
+        Assert.DoesNotContain(window.GetVisualDescendants().OfType<Button>(),
+                              b => Label(b).Contains("Write it"));
+
+        Press(window, "Skip the walkthrough");
+        Assert.Contains("Write 1 binding?", Words(window));
+        Press(window, "Write it");
+        Assert.Equal("""{"id":"c1","write":true}""", Assert.Single(run.Replies));
+    }
+
+    // The three numbers the run is about, said once, as a bar and in words.
+    // Nothing here is carried by the widths alone.
+    [AvaloniaFact]
+    public void TheTallySaysEveryNumberInWordsAsWellAsWidths()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"tally","of":67,"answered":37,"asking":6}""");
+        var words = Words(window);
+        Assert.Contains("67 controls this game uses", words);
+        Assert.Contains("37  answered from his own profiles", words);
+        Assert.Contains("6  the evidence cannot settle", words);
+        Assert.Contains("24  the chart does not cover", words);
+    }
+
+    // A phase says why it is happening. Watching a run without this is watching
+    // a machine work: all of it visible, none of it meaning anything.
+    [AvaloniaFact]
+    public void EveryPhaseSaysWhyItIsHappening()
+    {
+        var (_, window, run) = Open();
+        run.Say("""
+            {"event":"stage","key":"history","title":"What his own profiles already answer",
+             "why":"A control he has bound the same way for years is already answered."}
+            """.ReplaceLineEndings(" "));
+        Assert.Contains("A control he has bound the same way for years is already answered.",
+                        Words(window));
+    }
+
+    // The run does not end at the write. The box at the top now points at the
+    // file that was just written, so the next thing said is a change to it.
+    [AvaloniaFact]
+    public void AFinishedRunPointsTheBoxAtWhatItWrote()
+    {
+        var (_, window, run) = Open();
+        run.Say("""
+            {"event":"done","profile":"/tmp/celeste.csv","written":12,"errors":0,"warnings":0,
+             "issues":[],"open":[],"untouched":[]}
+            """.ReplaceLineEndings(" "));
+        run.End(0);
+
+        Assert.Contains("Say what to change at the top", Words(window));
+        var next = window.Arguments("make dash a hard puff", "/tmp/celeste.csv", replay: false,
+                                    changing: true);
+        Assert.Equal(new[] { "--edit", "/tmp/celeste.csv", "--request", "make dash a hard puff", "--live" },
+                     next);
+
+        // And the button says what it now does, rather than still offering to
+        // set the game up again.
+        Type(window, "make dash a hard puff");
+        Press(window, "Change it");
+        Assert.True(Find(window, "Stop").IsEnabled);
+    }
+
+    // The raw call is one click away on the card itself. It used to cost every
+    // step a second row saying "what it was given, and what came back", which
+    // on a forty step run is a screenful of height spent on a label.
+    [AvaloniaFact]
+    public void TheCardItselfOpensToShowTheRawCall()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"tool","id":"t1","title":"Reading the control page","state":"running","detail":{"url":"x"}}""");
+        Assert.DoesNotContain("What it was given", Words(window));
+
+        var card = window.GetVisualDescendants().OfType<AgentWindow.ToolCard>().Single();
+        var expander = card.GetVisualDescendants().OfType<Expander>().Single();
+        Assert.False(expander.IsExpanded);
+        expander.IsExpanded = true;
+        Dispatcher.UIThread.RunJobs();
+        window.UpdateLayout();
+        Assert.Contains("\"url\"", Words(window));
+    }
 }
