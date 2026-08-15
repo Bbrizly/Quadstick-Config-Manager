@@ -331,6 +331,9 @@ def create(args, work):
                        "why": "the template's placeholder is a column label"}], "name"),
                  ok=(0, 1))
     plan = built["plan"]
+    # The chart's own word for each output, carried to the write so the rows can
+    # say "Jump" rather than "kb_space". Column L only, which the device ignores.
+    plan["controls"] = chart.get("controls") or {}
     check = built["validation"]
     emit("tool_done", id="predict", state="ok", ms=took, origin="local",
          summary=f"{len(plan['decided'])} of {len(built['spec']['controls'])} answered from "
@@ -585,7 +588,7 @@ def approved(ident):
 
 
 def confirm_and_write(profile, settled, open_questions, untouched, out=None, shown=None,
-                      fresh=False):
+                      fresh=False, controls=None):
     """Show the whole list, write it only if they say so.
 
     `shown` is what the person is approving, which for a new profile is every
@@ -600,7 +603,7 @@ def confirm_and_write(profile, settled, open_questions, untouched, out=None, sho
     if not approved("c1"):
         raise Stopped("nothing was written, and the profile is exactly as it was")
 
-    done = finalize.apply_settled(profile, settled, out, fresh=fresh,
+    done = finalize.apply_settled(profile, settled, out, fresh=fresh, controls=controls,
                                   log=lambda text: emit("note", text=text))
     if not done["ok"]:
         emit("failed", message=f"{done['error']}, so nothing was written and the profile "
@@ -749,7 +752,8 @@ def main():
                                f"({d['share']:.0%}); nearest example {d['evidence']}"}
                        for d in plan["decided"]]
             confirm_and_write(work, settled, still_open, result["untouched"],
-                              out=args.out, shown=already + settled, fresh=True)
+                              out=args.out, shown=already + settled, fresh=True,
+                              controls=plan.get("controls"))
         finally:
             if os.path.exists(work):
                 os.remove(work)

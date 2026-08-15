@@ -313,6 +313,42 @@ check("the binding landed on the row that was already there",
 notes = [row[10] for row in csv.reader(open(made)) if len(row) > 10 and row[10].strip()]
 check("a note fits in a cell", True, all(len(n) <= 70 for n in notes))
 
+# Column L: the game's own word for the row. The device never reads it, so it is
+# what the app shows on the zone and what the walkthrough says out loud.
+named = os.path.join(bench, "named.csv")
+chart_controls = {
+    "dpad_N": {"action": "Move forward / climb a ladder up"},
+    "dpad_S": {"action": "A name far too long to fit in the forty characters "
+                          "column L will take"},
+}
+done = finalize.apply_settled(start, [
+    {"output": "dpad_N", "inputs": ["mp_left_sip"], "function": "normal",
+     "why": "12 of your 40 profiles do this", "confidence": "evidenced"},
+    {"output": "dpad_S", "inputs": ["mp_left_puff"], "function": "normal",
+     "why": "9 of your 40 profiles do this", "confidence": "evidenced"},
+], named, controls=chart_controls, log=lambda *_: None)
+cells = {row[0]: row[11] for row in csv.reader(open(named))
+         if len(row) > 11 and row[11].strip()}
+check("the game's word for a row is written beside it", "Move forward", cells.get("dpad_N"))
+check("and it is only the part that fits", True,
+      all(len(n) <= 40 for n in cells.values()))
+check("and the run says how many it named", True, done["named"] >= 2)
+
+# A name is worth nothing to the device, so it must never be able to cost a
+# binding. Two controls the chart calls the same thing is the ordinary way that
+# happens, and the second one simply goes unnamed.
+same = os.path.join(bench, "same.csv")
+done = finalize.apply_settled(start, [
+    {"output": "dpad_N", "inputs": ["mp_left_sip"], "function": "normal",
+     "why": "12 of your 40 profiles do this", "confidence": "evidenced"},
+    {"output": "dpad_S", "inputs": ["mp_left_puff"], "function": "normal",
+     "why": "9 of your 40 profiles do this", "confidence": "evidenced"},
+], same, controls={"dpad_N": {"action": "Move"}, "dpad_S": {"action": "Move"}},
+    log=lambda *_: None)
+check("two controls the chart calls one thing still write", True, done["ok"])
+twice = [row[11] for row in csv.reader(open(same)) if len(row) > 11 and row[11].strip()]
+check("and only one of them takes the name", 1, twice.count("Move"))
+
 # The template pre-binds left_joy_up and increment_mode. On a profile this run
 # just built, those stock rows are what the answers replace; an edit leaves them.
 kept = os.path.join(bench, "kept.csv")

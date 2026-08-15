@@ -259,6 +259,23 @@ int Apply(string[] a)
                 Ok();
                 break;
 
+            // Column L: the profile's own word for a row, like Jump beside
+            // kb_space. The device never reads it, so it is refused on its own
+            // rather than with the binding, and a row nobody could name keeps
+            // the binding it already had.
+            case "set_action":
+            {
+                int row = Int(op, "row");
+                string name = Str(op, "name");
+                string token = pf.GetCell(row, 0).Trim();
+                if (token.Length == 0) { No($"row {row} has no output to name"); break; }
+                if (!pf.SetOutput(row, token, name))
+                    No($"'{name}' cannot name row {row}: 1 to {ProfileFile.MaxActionName} "
+                       + "characters, not an output name, and not already used here");
+                else Ok(new { cell = A1(row, ProfileFile.ActionColumn) });
+                break;
+            }
+
             case "set_cell":
                 pf.SetCell(Int(op, "row"), Int(op, "col"), Str(op, "value"));
                 Ok();

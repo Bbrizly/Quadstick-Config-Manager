@@ -116,7 +116,58 @@ def open_rows(profile, fresh=False):
     return spare
 
 
-def apply_settled(profile, settled, out, log=print, fresh=False):
+def action_name(said):
+    """The game's own word for a control, short enough to be a name.
+
+    A chart says "Move Madeline left / aim dash left". Column L holds 40
+    characters, so the name is the first thing it says, without the aside.
+    """
+    said = said.split(" / ")[0].split(" (")[0].strip().rstrip(",;.")
+    if len(said) <= 40:
+        return said
+    cut = said[:40].rsplit(" ", 1)[0]
+    return (cut or said[:40]).strip()
+
+
+def name_rows(profile, controls, log=print):
+    """Write the game's word for each row into column L, best effort.
+
+    The device never reads column L, so a name that will not go on is worth
+    nothing and worth risking nothing: this runs as its own pass, after the
+    bindings are already accepted. One refusal drops the whole pass, because
+    qsf writes nothing unless every op is taken, and the profile is then
+    exactly the bindings with their token names, which is what every profile
+    written before this existed looks like. Returns how many landed, because a
+    run that says it named things has to be able to prove it.
+    """
+    if not controls:
+        return 0
+    read = qsf("inspect", profile)
+    ops, seen = [], set()
+    for pf in read["profiles"]:
+        for mode in pf["modes"]:
+            for b in mode["bindings"]:
+                said = (controls.get(b["output"]) or {}).get("action", "")
+                name = action_name(said) if said else ""
+                # One name, one output, which qsf enforces anyway. Checking here
+                # too keeps a second row for the same output from spending a
+                # rejection on a name that was never going to be allowed.
+                if not name or name.lower() in seen:
+                    continue
+                seen.add(name.lower())
+                ops.append({"op": "set_action", "row": b["row"], "name": name,
+                            "why": f"the game calls {b['output']} \"{name}\""})
+    if not ops:
+        return 0
+    done = qsf("apply", "--from", profile, "--ops", write_ops(ops, "name"),
+               "--out", profile, ok=(0, 1))
+    if not done["ok"]:
+        log("the rows kept their token names, and the bindings are unchanged.")
+        return 0
+    return len(done["applied"])
+
+
+def apply_settled(profile, settled, out, log=print, fresh=False, controls=None):
     """Turn approved proposals into rows, or change nothing at all.
 
     Two passes, because a row has to exist before it can be bound, so both run
@@ -169,11 +220,12 @@ def apply_settled(profile, settled, out, log=print, fresh=False):
                     log(f"   {i['cell']}: {i['message'][:90]}")
             return {"ok": False, "error": "the result was refused before it was written",
                     "rejected": result["rejected"], "validation": result}
+        named = name_rows(work, controls, log)
         os.replace(work, out)
     finally:
         if os.path.exists(work):
             os.remove(work)
-    return {"ok": True, "validation": result, "written": len(settled)}
+    return {"ok": True, "validation": result, "written": len(settled), "named": named}
 
 
 def report_open(unanswered, untouched=()):
