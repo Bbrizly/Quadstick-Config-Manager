@@ -605,7 +605,10 @@ def confirm_and_write(profile, settled, open_questions, untouched, out=None, sho
                                f"is exactly as it was", detail=done)
         return False
     check = done["validation"]
-    emit("done", profile=out, written=done["written"],
+    # What they approved and what they are told was written have to be the same
+    # number. `settled` is only the second pass; the file holds every row shown.
+    emit("done", profile=out,
+         written=len(shown) if shown is not None else done["written"],
          errors=check["errors"], warnings=check["warnings"],
          issues=[{"severity": i["severity"], "cell": i["cell"], "message": i["message"]}
                  for i in check["issues"][:12]],
