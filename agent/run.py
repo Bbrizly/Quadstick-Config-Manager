@@ -251,7 +251,14 @@ def chart_for(game, replay, live=False):
     """The game's controls, researched if nobody has charted it yet."""
     slug = research.slugify(game)
     path = os.path.join(CHARTS, slug + ".json")
-    if os.path.exists(path) and not live:
+    # A live run writes the chart it researched, so the next run would read that
+    # file and skip the reading entirely. Replaying a game this tool researched
+    # therefore goes back through the researcher, which replays the same
+    # searches and page reads from the recording. The offline run is the one to
+    # fall back on when the room has no wifi, and it should show the same work.
+    if replay and research.recorded_for(game):
+        pass
+    elif os.path.exists(path) and not live:
         chart = json.load(open(path))
         emit("tool", id="chart", title=f"Read the control chart for {chart.get('game', game)}",
              subtitle=f"{len(chart.get('controls') or {})} controls, checked in already",

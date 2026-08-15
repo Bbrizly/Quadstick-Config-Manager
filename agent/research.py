@@ -90,6 +90,14 @@ def stream_cli(command, on_event):
     running = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                text=True, stdin=subprocess.DEVNULL, bufsize=1)
     answer, failed = None, None
+    # Kept so a replay can show the same searches and page reads a live run did.
+    # Without this the offline run, which is the one to fall back on when the
+    # room's wifi gives out, showed nothing of the only part that touches the web.
+    steps = []
+
+    def report(kind, **fields):
+        steps.append({"kind": kind, **fields})
+        on_event(kind, **fields)
     for line in running.stdout:
         line = line.strip()
         if not line:
@@ -104,14 +112,14 @@ def stream_cli(command, on_event):
                 if not isinstance(block, dict):
                     continue
                 if block.get("type") == "tool_use":
-                    on_event("tool", id=block.get("id"), name=block.get("name", ""),
-                             input=block.get("input"))
+                    report("tool", id=block.get("id"), name=block.get("name", ""),
+                           input=block.get("input"))
                 elif block.get("type") == "tool_result":
-                    on_event("tool_result", id=block.get("tool_use_id"),
-                             summary=brief(block.get("content")),
-                             failed=bool(block.get("is_error")))
+                    report("tool_result", id=block.get("tool_use_id"),
+                           summary=brief(block.get("content")),
+                           failed=bool(block.get("is_error")))
                 elif block.get("type") == "text" and (block.get("text") or "").strip():
-                    on_event("said", text=block["text"].strip()[:400])
+                    report("said", text=block["text"].strip()[:400])
         elif kind == "result":
             answer = event.get("result")
             if event.get("is_error"):
@@ -120,26 +128,13 @@ def stream_cli(command, on_event):
     if running.returncode != 0 or failed:
         raise SystemExit(f"the research call failed: "
                          f"{failed or (running.stderr.read() or '')[:300]}")
-    return answer or ""
+    return answer or "", steps
 
 
 def research(game, platform, names, mode, on_event=lambda *a, **k: None):
     """One web-reading call, cached, so a rehearsed run needs no network."""
-    # Buttons and keys only. The rig rows (mouse speed, deflection, mode
-    # switching) are the player's own setup and are not a fact about the game.
-    offer = sorted(n for n in names if not n.startswith(
-        ("mouse_", "deflection_", "joystick_", "bluetooth_", "digital_out",
-         "acceleration_", "increment_", "decrement_")))
-    words = {"xbox": "PC, keyboard and mouse, or Xbox controller",
-             "ps3": "PC or PlayStation controller"}[platform]
-    prompt = ASK.format(game=game, platform=platform, platform_words=words,
-                        tokens=", ".join(offer))
-    # Everything that could change the answer is in the key, not just the
-    # question: the instructions it was given and the tools it was allowed to
-    # use decide what an answer is worth, and replaying one recorded under
-    # different instructions would be a stale hit wearing a fresh answer's face.
-    key = hashlib.sha256(
-        json.dumps([MODEL, SYSTEM, TOOLS, prompt]).encode()).hexdigest()[:32]
+    prompt = asking(game, platform, names)
+    key = keyed(prompt)
     path = os.path.join(CACHE, "research-" + key + ".json")
 
     if os.path.exists(path) and mode != "live":
@@ -151,18 +146,21 @@ def research(game, platform, names, mode, on_event=lambda *a, **k: None):
         if not isinstance(recorded, dict):
             raise SystemExit(f"the recorded research at {path} is not a control chart. "
                              f"Delete it and run again.")
+        for step in replay_steps(key):
+            on_event(step.pop("kind"), **step)
         return recorded, "cache"
     if mode == "replay":
         raise SystemExit(f"replay mode and no research recorded for {game} ({key}).")
 
-    text = stream_cli([
+    text, steps = stream_cli([
         CLAUDE_BIN, "-p", prompt, "--model", MODEL,
         "--output-format", "stream-json", "--verbose",
         "--system-prompt", SYSTEM,
         "--tools", TOOLS,
         "--disable-slash-commands", "--strict-mcp-config",
         "--mcp-config", '{"mcpServers":{}}', "--safe-mode", "--no-session-persistence",
-    ], on_event).strip()
+    ], on_event)
+    text = text.strip()
     if text.startswith("```"):
         text = text.split("```")[1].removeprefix("json").strip()
     try:
@@ -175,7 +173,54 @@ def research(game, platform, names, mode, on_event=lambda *a, **k: None):
     os.makedirs(CACHE, exist_ok=True)
     with open(path, "w") as f:
         json.dump(found, f, indent=2)
+    # Beside the answer, not inside it: an older recording has no steps file and
+    # still replays, it just replays quietly.
+    with open(steps_path(key), "w") as f:
+        json.dump(steps, f, indent=2)
     return found, "live"
+
+
+def steps_path(key):
+    return os.path.join(CACHE, "research-" + key + "-steps.json")
+
+
+def replay_steps(key):
+    """What the researcher did last time, if it was recorded."""
+    path = steps_path(key)
+    if not os.path.exists(path):
+        return []
+    try:
+        steps = json.load(open(path))
+    except json.JSONDecodeError:
+        return []
+    return [s for s in steps if isinstance(s, dict) and "kind" in s]
+
+
+def asking(game, platform, names):
+    """The exact question the researcher is given."""
+    # Buttons and keys only. The rig rows (mouse speed, deflection, mode
+    # switching) are the player's own setup and are not a fact about the game.
+    offer = sorted(n for n in names if not n.startswith(
+        ("mouse_", "deflection_", "joystick_", "bluetooth_", "digital_out",
+         "acceleration_", "increment_", "decrement_")))
+    words = {"xbox": "PC, keyboard and mouse, or Xbox controller",
+             "ps3": "PC or PlayStation controller"}[platform]
+    return ASK.format(game=game, platform=platform, platform_words=words,
+                      tokens=", ".join(offer))
+
+
+def keyed(prompt):
+    """Everything that could change the answer is in the key, not just the
+    question: the instructions it was given and the tools it was allowed to use
+    decide what an answer is worth, and replaying one recorded under different
+    instructions would be a stale hit wearing a fresh answer's face."""
+    return hashlib.sha256(
+        json.dumps([MODEL, SYSTEM, TOOLS, prompt]).encode()).hexdigest()[:32]
+
+
+def recorded_for(game, platform="xbox"):
+    """Whether the searches and page reads for this game were recorded."""
+    return bool(replay_steps(keyed(asking(game, platform, vocab(platform)))))
 
 
 def slugify(game):

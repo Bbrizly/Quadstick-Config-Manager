@@ -218,13 +218,18 @@ lines = [
          "input": {"url": "https://pcgamingwiki.com/wiki/Celeste"}}]}},
     {"type": "result", "is_error": False, "result": '{"game": "Celeste"}'},
 ]
-answer = research.stream_cli(
+answer, recorded_steps = research.stream_cli(
     [sys.executable, "-c",
      "import sys\nfor l in %r: sys.stdout.write(l + chr(10))" % [json.dumps(l) for l in lines]],
     lambda kind, **f: heard.append((kind, f.get("name") or f.get("summary") or "")))
 check("every web call the researcher makes is reported as it happens",
       [("tool", "WebSearch"), ("tool_result", "1 results"), ("tool", "WebFetch")], heard)
 check("and the chart it read out is what comes back", '{"game": "Celeste"}', answer)
+# The offline run is the one to fall back on when the network is not there, so
+# it has to show the same searches rather than a silent gap where they were.
+check("what it did is kept, so a replay can show the same work",
+      [("tool", "WebSearch"), ("tool_result", None), ("tool", "WebFetch")],
+      [(s["kind"], s.get("name")) for s in recorded_steps])
 
 # A researcher that fails must say so, not hand back half a chart.
 try:
