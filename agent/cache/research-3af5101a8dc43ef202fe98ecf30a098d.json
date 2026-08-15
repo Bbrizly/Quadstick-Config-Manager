@@ -1,0 +1,43 @@
+{
+  "game": "Hades II",
+  "platform": "xbox",
+  "controls": {
+    "left_stick": {
+      "action": "Move Melino\u00eb",
+      "critical": true
+    },
+    "X": {
+      "action": "Attack (tap: fast combo strikes; hold: charged Omega Attack using Magick)",
+      "critical": true
+    },
+    "Y": {
+      "action": "Special (tap: weapon special; hold: charged Omega Special using Magick)",
+      "critical": true
+    },
+    "B": {
+      "action": "Cast (tap: throw Magic Circle to ensnare/damage enemies; hold: charged Omega Cast)",
+      "critical": true
+    },
+    "A": {
+      "action": "Dash (tap: short dodge-dash; hold: sprint at full speed)",
+      "critical": true
+    },
+    "right_bumper": {
+      "action": "Interact (talk to NPCs, pick up items, open doors/chests)",
+      "critical": true
+    },
+    "right_trigger": {
+      "action": "Call/Hex (use equipped Arcana-granted Hex ability)",
+      "critical": true
+    }
+  },
+  "disputed": {
+    "left_trigger": "Fextralife wiki lists this as 'Gift' (give keepsake/items to NPCs), but a Game8 guide instead lists Gift on right_trigger (which conflicts with Call/Hex also being on right_trigger), so the exact default button is unclear.",
+    "left_bumper": "Fextralife wiki lists this as 'Open Codex', but another Game8 guide lists left_bumper as 'Tab Left' (menu navigation) and 'Salute' with Codex/Inventory instead tied to D-pad directions, so the true default binding is unclear.",
+    "back": "Fextralife wiki lists this as 'Boon Info', but another Game8 guide instead maps Boon Info to D-pad Left, so which is the actual default is unclear."
+  },
+  "source": {
+    "url": "https://hades2.wiki.fextralife.com/Controls",
+    "note": "Primary source read directly for default PC keyboard/mouse and Xbox controller bindings; core combat bindings (movement, Attack/X, Special/Y, Cast/B, Dash/A, Interact/RB, Call-Hex/RT) were cross-checked and confirmed against https://www.shacknews.com/article/146103/hades-2-controls-pc-keybindings and https://game8.co/games/Hades-2/archives/453563, which agreed. Non-combat bindings (Gift, Codex, Boon Info) disagreed between sources and are listed under 'disputed' rather than guessed. Note: the device-name vocabulary provided has no entry for mouse buttons, so the keyboard+mouse scheme (which binds Attack/Cast to mouse buttons) could not be fully represented; the Xbox controller scheme was used instead since it maps completely onto named buttons."
+  }
+}

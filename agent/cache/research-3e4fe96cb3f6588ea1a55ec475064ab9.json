@@ -1,0 +1,80 @@
+{
+  "game": "Celeste",
+  "platform": "xbox",
+  "controls": {
+    "A": {
+      "action": "Jump",
+      "critical": true
+    },
+    "Y": {
+      "action": "Jump (alternate button)",
+      "critical": true
+    },
+    "X": {
+      "action": "Dash (and aim the dash with the stick/d-pad)",
+      "critical": true
+    },
+    "B": {
+      "action": "Dash (alternate button); also used to talk to NPCs",
+      "critical": true
+    },
+    "left_trigger": {
+      "action": "Grab / climb walls",
+      "critical": true
+    },
+    "right_trigger": {
+      "action": "Grab / climb walls",
+      "critical": true
+    },
+    "left_bumper": {
+      "action": "Grab / climb walls",
+      "critical": true
+    },
+    "right_bumper": {
+      "action": "Grab / climb walls",
+      "critical": true
+    },
+    "left_joy_up": {
+      "action": "Move Madeline up / aim dash",
+      "critical": true
+    },
+    "left_joy_down": {
+      "action": "Move Madeline down / aim dash",
+      "critical": true
+    },
+    "left_joy_left": {
+      "action": "Move Madeline left / aim dash",
+      "critical": true
+    },
+    "left_joy_right": {
+      "action": "Move Madeline right / aim dash",
+      "critical": true
+    },
+    "dpad_N": {
+      "action": "Move Madeline up / aim dash",
+      "critical": true
+    },
+    "dpad_S": {
+      "action": "Move Madeline down / aim dash",
+      "critical": true
+    },
+    "dpad_W": {
+      "action": "Move Madeline left / aim dash",
+      "critical": true
+    },
+    "dpad_E": {
+      "action": "Move Madeline right / aim dash",
+      "critical": true
+    }
+  },
+  "disputed": {
+    "start": "Likely bound to Pause by default (standard Xbox convention) but no source I could read explicitly confirmed the default controller Pause binding; only keyboard Escape was confirmed.",
+    "back": "Possibly used for Journal by default on controller, but no source explicitly stated this; keyboard default for Journal is Tab.",
+    "guide": "No source confirmed a default binding for Confirm/Cancel/Journal on the controller specifically (as opposed to reusing Jump/Dash buttons); sources only stated keyboard Confirm=C, Cancel=X and inferred but did not verify the controller equivalents (A/B or A/X).",
+    "left_trigger+right_trigger+start": "Pre-1.4 patch versions had a hardcoded Quick Restart shortcut of holding both bumpers/triggers plus Start on gamepad; this was removed in patch 1.4 in favor of a user-assignable Quick Restart bind with no default, so current default behavior for a dedicated Quick Restart button is unclear/unconfirmed."
+  },
+  "source": {
+    "url": "https://www.magicgameworld.com/celeste-controls-guide-default-binds/",
+    "note": "Primary readable source giving a full default keybind table for both keyboard and Xbox controller (Move/Aim=Left Stick+D-Pad, Jump=A/Y, Dash=X/B, Talk=B, Grab&Climb=LT/RT/LB/RB). Cross-checked against multiple independent Steam Community and search summaries (e.g. steamcommunity.com/app/504230 discussions) which stated the same Jump=A/Y, Dash=X/B, Grab=all four shoulder buttons mapping, and against keyboard defaults (Arrow Keys move, C=Jump/Confirm, X=Dash/Cancel, Z/V/LeftShift=Grab, Escape=Pause, Tab=Journal, R=Quick Restart) found via Steam Community and search results. Direct access to PCGamingWiki, Neoseeker, and the official celeste.ink wiki was blocked (403/Cloudflare) despite repeated attempts including a reader-proxy fallback, so those could not be used to independently verify the menu-navigation buttons (Pause/Confirm/Cancel/Journal) on controller, which are listed under 'disputed'."
+  }
+}

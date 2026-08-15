@@ -1,0 +1,414 @@
+[
+  {
+    "kind": "tool",
+    "id": "toolu_01DoAG5wSM7FkBvHK2jLreK1",
+    "name": "WebSearch",
+    "input": {
+      "query": "Celeste PC default controls keyboard Xbox controller wiki"
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01TWNajMNjomQVyXXdHVNZyd",
+    "name": "WebSearch",
+    "input": {
+      "query": "Celeste game default keybindings dash jump grab climb"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01DoAG5wSM7FkBvHK2jLreK1",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01TWNajMNjomQVyXXdHVNZyd",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_017L5LCwExBEcCs1W4LUDugG",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://www.magicgameworld.com/celeste-controls-guide-default-binds/",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, demo dash, crouch/duck, retry, quick restart, etc."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01Vc83C24w2r27zR5uUiAVrx",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://www.neoseeker.com/celeste/Celeste_Basic_Controls",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, crouch, retry, quick restart, etc."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_017L5LCwExBEcCs1W4LUDugG",
+    "summary": "The server returned HTTP 403 Forbidden. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01Vc83C24w2r27zR5uUiAVrx",
+    "summary": "The server returned HTTP 403 Forbidden. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_0157khYeECC9hHzmt3QpEVtK",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://www.pcgamingwiki.com/wiki/Celeste",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, crouch, retry, quick restart, etc."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_017nQsDDuDeoMKj1uVFkKo9b",
+    "name": "WebSearch",
+    "input": {
+      "query": "Celeste fandom wiki controls xbox controller keyboard default"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_0157khYeECC9hHzmt3QpEVtK",
+    "summary": "The server returned HTTP 403 Forbidden. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_017nQsDDuDeoMKj1uVFkKo9b",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_019aU4iH63TSyzpj6K2BYvWU",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=2956545379",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, crouch, retry, quick restart, etc."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01Nq8M95hRvRgGuRK92iCoZF",
+    "name": "WebSearch",
+    "input": {
+      "query": "\"Celeste\" settings menu \"Jump\" \"Dash\" \"Grab\" controller \"Left Bumper\" OR \"Right Bumper\" OR \"A Button\""
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_019aU4iH63TSyzpj6K2BYvWU",
+    "summary": "518 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01Nq8M95hRvRgGuRK92iCoZF",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01DubGhKL113d3JiYSZF4QvF",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://gameaccess.info/celeste-motor-accessibility-options/",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, crouch, retry, quick restart, demo dash, talk, etc. Include specifically which controller buttons (A, B, X, Y, LB, RB, LT, RT, D-pad, start, back) map to which actions by default."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01DubGhKL113d3JiYSZF4QvF",
+    "summary": "649 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01LXw2y1H2iNPsDsJsmYPJkn",
+    "name": "WebSearch",
+    "input": {
+      "query": "Celeste \"Quick Restart\" default key controller button"
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01PoquUFcoYCkCBMvLtJsMKm",
+    "name": "WebSearch",
+    "input": {
+      "query": "Celeste game manual controls \"Pause\" \"Confirm\" \"Cancel\" \"Journal\" \"Demo Dash\""
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01LXw2y1H2iNPsDsJsmYPJkn",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01PoquUFcoYCkCBMvLtJsMKm",
+    "summary": "9 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01PufVo7h9dmZth7XAig8BR6",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://celeste.ink/wiki/Tech",
+      "prompt": "List any information about default keyboard controls and default Xbox controller button mappings for Celeste - jump, dash, grab, move, pause, confirm, cancel, journal, demo dash, quick restart, crouch, talk."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_011VULXWe973wdWNowqgPoRF",
+    "name": "WebSearch",
+    "input": {
+      "query": "celeste.ink wiki controls default keybinds"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01PufVo7h9dmZth7XAig8BR6",
+    "summary": "The server returned HTTP 403 Forbidden. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_011VULXWe973wdWNowqgPoRF",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_013z8ZvHv5otCTeqrp713Hoa",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://web.archive.org/web/2024/https://www.pcgamingwiki.com/wiki/Celeste",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, crouch, retry, quick restart, etc. Include the full input table if present."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01CpB1XBjvNpXaiZzgCxUwok",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://www.magicgameworld.com/celeste-controls-guide-default-binds/",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, crouch, retry, quick restart, etc."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_013z8ZvHv5otCTeqrp713Hoa",
+    "summary": "Claude Code is unable to fetch from web.archive.org",
+    "failed": true
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01CpB1XBjvNpXaiZzgCxUwok",
+    "summary": "The server returned HTTP 403 Forbidden. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01Xv1qmxjyDtcSbzKCtFNyHT",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://r.jina.ai/https://www.pcgamingwiki.com/wiki/Celeste",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, crouch, retry, quick restart, etc. Include the full input table if present."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_015d1EJhwNkhgNwsCJnzJfDt",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://r.jina.ai/https://www.magicgameworld.com/celeste-controls-guide-default-binds/",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, crouch, retry, quick restart, etc."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01Xv1qmxjyDtcSbzKCtFNyHT",
+    "summary": "522 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_015d1EJhwNkhgNwsCJnzJfDt",
+    "summary": "671 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01CHtGVsWcwszh5JX8NKCVxP",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://r.jina.ai/https://www.neoseeker.com/celeste/Celeste_Basic_Controls",
+      "prompt": "List the exact default keyboard controls and default Xbox controller controls for Celeste, including all actions like move, jump, dash, grab/climb, pause, menu confirm/cancel, crouch, retry, quick restart, etc."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_011HoaGhLmUCXCMae7F1W6qg",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://r.jina.ai/https://www.pcgamingwiki.com/wiki/Celeste",
+      "prompt": "Find the Input section / controller table for Celeste showing default keyboard and gamepad button mappings for jump, dash, grab, move, pause, confirm, cancel."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_011HoaGhLmUCXCMae7F1W6qg",
+    "summary": "639 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01CHtGVsWcwszh5JX8NKCVxP",
+    "summary": "656 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01MjJrMj6RUBpPRht5kBwxry",
+    "name": "WebSearch",
+    "input": {
+      "query": "Celeste controller default binds \"Jump\" \"A\" \"Y\" \"Dash\" \"X\" \"B\" settings menu"
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01F3o2iQyaSpXohVwyepPfck",
+    "name": "WebSearch",
+    "input": {
+      "query": "Celeste 1.4 rebinding update default controller buttons jump dash grab pause talk"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01MjJrMj6RUBpPRht5kBwxry",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01F3o2iQyaSpXohVwyepPfck",
+    "summary": "8 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_017xHGNakQ2wGrdS1mxMNpTE",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://r.jina.ai/https://steamcommunity.com/app/504230/discussions/0/4410794772266481855/",
+      "prompt": "Extract the full list of default controls for Celeste on keyboard and Xbox/gamepad controller, including move, jump, dash, grab/climb, pause, confirm, cancel, journal, quick restart, crouch dash/demo dash, talk."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01JFTRFnUnQjMgaM8TGnKeLu",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://www.speedrun.com/celeste/guides/02hpu",
+      "prompt": "Extract details about Celeste 1.4 default control bindings, especially Crouch Dash/Demo Dash button, and how Jump, Dash, Grab are bound by default on keyboard and controller."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01JFTRFnUnQjMgaM8TGnKeLu",
+    "summary": "The server returned HTTP 403 Forbidden. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_017xHGNakQ2wGrdS1mxMNpTE",
+    "summary": "776 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01G4V1P9vwLJciSNjJ1LzaiZ",
+    "name": "WebSearch",
+    "input": {
+      "query": "Celeste controller \"Confirm\" \"Cancel\" \"Pause\" \"Journal\" default button A B Start"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01G4V1P9vwLJciSNjJ1LzaiZ",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01TpkkK36TgN7S5P4kYAd5df",
+    "name": "WebSearch",
+    "input": {
+      "query": "Celeste \"Input.cs\" default GamePad Buttons.A Buttons.Y Buttons.X Buttons.B github"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01TpkkK36TgN7S5P4kYAd5df",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01S5kzzoRCNwUzKVYqm9qx5W",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://github.com/NoelFB/Celeste/blob/master/Source/Input.cs",
+      "prompt": "Find the default control bindings defined in this file - specifically default keyboard keys and default gamepad buttons for Jump, Dash, Grab, Pause, Confirm, Cancel, Journal, QuickRestart, CrouchDash, Up, Down, Left, Right, MenuUp, MenuDown, MenuLeft, MenuRight. Quote the exact code that sets defaults."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01S5kzzoRCNwUzKVYqm9qx5W",
+    "summary": "The server returned HTTP 404 Not Found. The response body was not retrieved. If this URL requires authentication, use an authenticated tool (e.g. `gh` for GitHu",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_0193oYgS7toN5ssv8WdTyvQQ",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://github.com/NoelFB/Celeste",
+      "prompt": "List the file/folder structure, particularly look for Input.cs or Settings related files under Source folder"
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_013DhFSh8hkBAJuYmkVizCfQ",
+    "name": "WebSearch",
+    "input": {
+      "query": "NoelFB Celeste github Source Input.cs"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_0193oYgS7toN5ssv8WdTyvQQ",
+    "summary": "1,015 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_013DhFSh8hkBAJuYmkVizCfQ",
+    "summary": "10 results",
+    "failed": false
+  },
+  {
+    "kind": "said",
+    "text": "```json\n{\"game\": \"Celeste\",\n  \"platform\": \"xbox\",\n  \"controls\": {\n    \"A\": {\"action\": \"Jump\", \"critical\": true},\n    \"Y\": {\"action\": \"Jump (alternate button)\", \"critical\": true},\n    \"X\": {\"action\": \"Dash (and aim the dash with the stick/d-pad)\", \"critical\": true},\n    \"B\": {\"action\": \"Dash (alternate button); also used to talk to NPCs\", \"critical\": true},\n    \"left_trigger\": {\"action\": \"Grab / cl"
+  }
+]

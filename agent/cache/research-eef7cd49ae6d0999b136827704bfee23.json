@@ -1,0 +1,138 @@
+{
+  "game": "Hollow Knight",
+  "platform": "xbox",
+  "controls": {
+    "kb_left_arrow": {
+      "action": "Move left",
+      "critical": true
+    },
+    "kb_right_arrow": {
+      "action": "Move right",
+      "critical": true
+    },
+    "kb_up_arrow": {
+      "action": "Look/aim upward, climb ladders/vines upward",
+      "critical": false
+    },
+    "kb_down_arrow": {
+      "action": "Look/aim downward, crouch on ledges",
+      "critical": false
+    },
+    "kb_z": {
+      "action": "Jump",
+      "critical": true
+    },
+    "kb_x": {
+      "action": "Attack (nail strike)",
+      "critical": true
+    },
+    "kb_a": {
+      "action": "Cast Spell / hold to Focus (heal)",
+      "critical": true
+    },
+    "kb_d": {
+      "action": "Dream Nail (hold to strike Dream Nail or use Dreamgate)",
+      "critical": false
+    },
+    "kb_c": {
+      "action": "Dash",
+      "critical": true
+    },
+    "kb_s": {
+      "action": "Super Dash / Crystal Dash (once ability is acquired)",
+      "critical": false
+    },
+    "kb_i": {
+      "action": "Open Inventory (Charms/Journal)",
+      "critical": false
+    },
+    "kb_tab": {
+      "action": "Quick Map (view map without opening inventory)",
+      "critical": false
+    },
+    "kb_escape": {
+      "action": "Pause menu",
+      "critical": false
+    },
+    "A": {
+      "action": "Jump",
+      "critical": true
+    },
+    "X": {
+      "action": "Attack (nail strike)",
+      "critical": true
+    },
+    "B": {
+      "action": "Cast Spell / hold to Focus (heal)",
+      "critical": true
+    },
+    "Y": {
+      "action": "Dream Nail (hold to strike Dream Nail or use Dreamgate)",
+      "critical": false
+    },
+    "right_bumper": {
+      "action": "Quick Cast (instant spell cast)",
+      "critical": false
+    },
+    "right_trigger": {
+      "action": "Dash",
+      "critical": true
+    },
+    "left_trigger": {
+      "action": "Super Dash / Crystal Dash (once ability is acquired)",
+      "critical": false
+    },
+    "left_bumper": {
+      "action": "Quick Map (view map without opening inventory)",
+      "critical": false
+    },
+    "back": {
+      "action": "Open Inventory (Charms/Journal)",
+      "critical": false
+    },
+    "start": {
+      "action": "Pause menu",
+      "critical": false
+    },
+    "left_joy_left": {
+      "action": "Move left",
+      "critical": true
+    },
+    "left_joy_right": {
+      "action": "Move right",
+      "critical": true
+    },
+    "left_joy_up": {
+      "action": "Look/aim upward, climb ladders/vines upward",
+      "critical": false
+    },
+    "left_joy_down": {
+      "action": "Look/aim downward, crouch on ledges",
+      "critical": false
+    },
+    "dpad_W": {
+      "action": "Move left (alternate to stick)",
+      "critical": false
+    },
+    "dpad_E": {
+      "action": "Move right (alternate to stick)",
+      "critical": false
+    },
+    "dpad_N": {
+      "action": "Look/aim upward (alternate to stick)",
+      "critical": false
+    },
+    "dpad_S": {
+      "action": "Look/aim downward (alternate to stick)",
+      "critical": false
+    }
+  },
+  "disputed": {
+    "kb_f": "Quick Cast keyboard default is listed as 'F' by hollowknight.wiki (official-style wiki, first fetch) but as 'E' by hollowknight.wiki.fextralife.com/Controls. Both are reputable control-listing pages and disagree, so I did not assign either as authoritative for the keyboard Quick Cast key. The Xbox equivalent (right_bumper) was consistent across both sources.",
+    "kb_e": "See kb_f note \u2014 same Quick Cast keybind conflict (E vs F) between the two wiki sources checked."
+  },
+  "source": {
+    "url": "https://hollowknight.wiki/w/Controls_(Hollow_Knight)",
+    "note": "Primary source read directly; cross-checked against https://hollowknight.wiki.fextralife.com/Controls, which agreed on all bindings except the keyboard Quick Cast key (E vs F), noted in 'disputed'. Hollow Knight has no default mouse bindings \u2014 keyboard+mouse play uses only keyboard by default. The Fandom wiki page (hollowknight.fandom.com/wiki/Controls_(Hollow_Knight)) could not be fetched (HTTP 402)."
+  }
+}
