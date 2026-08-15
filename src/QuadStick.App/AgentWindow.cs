@@ -39,6 +39,10 @@ public class AgentWindow : Window
     readonly TextBlock _status;
     readonly CheckBox _replay;
     readonly Dictionary<string, ToolCard> _cards = new();
+    readonly List<ToolCard> _timed = new();
+    readonly DispatcherTimer _tick;
+    DateTime _began;
+    int _asked, _recorded;
 
     IAgentRun? _bridge;
     string? _written;
@@ -128,9 +132,14 @@ public class AgentWindow : Window
             _bridge?.Dispose();
         };
 
-        _replay = new CheckBox { Content = "From the recording", IsChecked = false };
+        // Either it asks, or it replays. There is no quiet third state that
+        // reuses an old answer without saying so: a run that reused one and
+        // finished in a second is exactly what makes people ask whether any of
+        // it happened, and the answer has to be on screen before it starts.
+        _replay = new CheckBox { Content = "From the recording, no internet", IsChecked = false };
         AutomationProperties.SetName(_replay,
-            "Run from the recorded answers instead of asking the model again. Needs no internet.");
+            "Run from recorded answers instead of asking the model. Needs no internet. "
+            + "Unticked, every step asks the model.");
 
         _stream = new StackPanel { Spacing = 10 };
         _scroll = new ScrollViewer
@@ -178,6 +187,12 @@ public class AgentWindow : Window
         }
         _close.HorizontalAlignment = HorizontalAlignment.Left;
         panel.Children.Add(_scroll);
+
+        // One timer for the whole window, not one per card. A step that sits in
+        // a model call for three minutes has to visibly still be working, or
+        // there is no way to tell it apart from a run that died.
+        _tick = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
+        _tick.Tick += (_, _) => TickNow();
 
         Content = MainWindow.ZoomWrap(panel, owner.UiScale);
         Opened += (_, _) => _ask.Focus();
@@ -227,7 +242,11 @@ public class AgentWindow : Window
         {
             list.Add("--game"); list.Add(words);
         }
-        if (replay) list.Add("--replay");
+        // --live, not the default, on purpose. The default reuses a recorded
+        // answer wherever one exists, which from in here is indistinguishable
+        // from the run having made it up. In the window it either asks or it
+        // replays, and it says which.
+        list.Add(replay ? "--replay" : "--live");
         return list;
     }
 
@@ -265,9 +284,13 @@ public class AgentWindow : Window
 
         _stream.Children.Clear();
         _cards.Clear();
+        _timed.Clear();
         _written = null;
         _spoke = false;
         _running = true;
+        _asked = _recorded = 0;
+        _began = DateTime.UtcNow;
+        _tick.Start();
         _go.IsEnabled = false;
         _stop.IsEnabled = true;
         _ask.IsEnabled = false;
@@ -294,9 +317,33 @@ public class AgentWindow : Window
         }
     }
 
+    /// <summary>Move every card that is still working on one second. Public to
+    /// the tests so the ticking can be driven without waiting on a real clock.</summary>
+    internal void TickNow()
+    {
+        var now = DateTime.UtcNow;
+        var working = false;
+        foreach (var card in _timed)
+        {
+            if (!card.Running) continue;
+            working = true;
+            card.Tick((now - card.Began).TotalSeconds);
+        }
+        // A step that is still going says so on the status line too, so the
+        // count of seconds is readable without hunting for the last card.
+        if (working && _running)
+            Say($"{TotalSeconds:0}s so far. {_asked} asked of the model, "
+                + $"{_recorded} replayed from the recording.");
+    }
+
+    double TotalSeconds => (DateTime.UtcNow - _began).TotalSeconds;
+
     void Finished(int code)
     {
         _running = false;
+        _tick.Stop();
+        // A card left mid-step when the run ended must stop claiming to work.
+        foreach (var card in _timed) card.Abandon();
         _go.IsEnabled = true;
         _stop.IsEnabled = false;
         _ask.IsEnabled = true;
@@ -336,6 +383,7 @@ public class AgentWindow : Window
     {
         switch (e.Kind)
         {
+            case "run": Mode(e); break;
             case "stage": Stage(e.Title); break;
             case "tool": Add(new ToolCard(e), e.Id); break;
             case "tool_done": Done(e); break;
@@ -354,14 +402,46 @@ public class AgentWindow : Window
         }
     }
 
+    /// <summary>What this run is allowed to do, said before it does anything.
+    /// A run everybody watched finish in a second needs to have said up front
+    /// whether it was thinking or reading a recording.</summary>
+    void Mode(AgentEvent e)
+    {
+        var mode = e.Str("mode");
+        var panel = new StackPanel { Spacing = 2 };
+        panel.Children.Add(new TextBlock
+        {
+            Text = mode switch
+            {
+                "live" => "Asking the model, every step, nothing replayed.",
+                "replay" => "Running from the recording. No model and no internet.",
+                _ => "Asking the model, and reusing a recorded answer where there is one.",
+            },
+            FontSize = Size("BodySize"), FontWeight = FontWeight.Bold,
+            TextWrapping = TextWrapping.Wrap,
+        });
+        panel.Children.Add(new TextBlock
+        {
+            Text = $"{e.Str("model")} through {e.Str("backend")}. Every step below says which "
+                 + "of the two it was.",
+            FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+        });
+        Add(Panel(panel, "SurfaceSubtleBrush"));
+    }
+
     void Add(Control card, string? id = null)
     {
         _stream.Children.Add(card);
+        if (card is ToolCard timed) _timed.Add(timed);
         if (id is { Length: > 0 } && card is ToolCard tool) _cards[id] = tool;
     }
 
     void Done(AgentEvent e)
     {
+        // Counted per step, from what the run said, so the tally on screen is
+        // the run's own account of itself and not the window's guess.
+        if (e.Str("origin") == "live") _asked++;
+        else if (e.Str("origin") == "cache") _recorded++;
         if (_cards.TryGetValue(e.Id, out var card)) card.Settle(e);
         // A result for a card nobody started is still something the agent said,
         // so it becomes its own card rather than being dropped.
@@ -743,6 +823,39 @@ public class AgentWindow : Window
 
         internal string StateWord => _state.Text ?? "";
 
+        /// <summary>Still working. A card counts its own seconds while this is
+        /// true, because a step that takes half a minute with nothing moving is
+        /// indistinguishable from a step that hung.</summary>
+        internal bool Running { get; private set; }
+
+        /// <summary>When this step started, so one timer can count for all of them.</summary>
+        internal DateTime Began { get; } = DateTime.UtcNow;
+
+        /// <summary>The run ended while this step was still going. It says that,
+        /// rather than being left spinning forever on a card nobody will settle.</summary>
+        internal void Abandon()
+        {
+            if (!Running) return;
+            Running = false;
+            _word = "✕ never finished";
+            _state.Text = Label();
+            Announce();
+        }
+
+        string _word = "";
+        string _source = "";
+        double _seconds;
+
+        /// <summary>How long this card has been working, in words. Driven from
+        /// one timer in the window rather than one per card, so a run with a
+        /// hundred steps still has exactly one thing ticking.</summary>
+        internal void Tick(double seconds)
+        {
+            if (!Running) return;
+            _seconds = seconds;
+            _state.Text = Label();
+        }
+
         internal ToolCard(AgentEvent e)
         {
             Paint(this, "SurfaceSubtleBrush", "SurfaceBorderBrush");
@@ -760,9 +873,12 @@ public class AgentWindow : Window
                 Text = e.Subtitle, FontSize = Size("SmallSize"), Classes = { "muted" },
                 TextWrapping = TextWrapping.Wrap,
             };
+            _word = Word(e.State);
+            Running = e.State == "running";
+            _source = Source(e.Str("origin"));
             _state = new TextBlock
             {
-                Text = Word(e.State), FontSize = Size("SmallSize"),
+                Text = Label(), FontSize = Size("SmallSize"),
                 VerticalAlignment = VerticalAlignment.Top,
             };
 
@@ -792,7 +908,13 @@ public class AgentWindow : Window
 
         internal void Settle(AgentEvent e)
         {
-            _state.Text = Word(e.State);
+            Running = false;
+            _word = Word(e.State);
+            // What the run reports it took beats what the window happened to
+            // observe. The run is the thing that did the work.
+            if (e.Get("ms") is { ValueKind: JsonValueKind.Number } ms) _seconds = ms.GetDouble() / 1000;
+            if (Source(e.Str("origin")) is { Length: > 0 } where) _source = where;
+            _state.Text = Label();
             if (e.Str("summary") is { Length: > 0 } summary)
             {
                 _subtitle.Text = summary;
@@ -816,6 +938,27 @@ public class AgentWindow : Window
             "failed" => "✕ refused",
             _ => state,
         };
+
+        /// <summary>Where this step's answer came from, said plainly.
+        ///
+        /// A run that finishes in a second because every answer was already on
+        /// disk looks exactly like a run that invented them. This is the line
+        /// that tells them apart, and it is on every card rather than in a
+        /// footnote, because it is the first thing anyone doubts.</summary>
+        internal static string Source(string origin) => origin switch
+        {
+            "live" => "asked the model",
+            "cache" => "from the recording",
+            "local" => "on this machine, no model",
+            _ => "",
+        };
+
+        string Label()
+        {
+            var took = _seconds > 0 ? $"  {_seconds:0.0}s" : "";
+            var where = _source.Length > 0 && !Running ? $"  ·  {_source}" : "";
+            return _word + took + where;
+        }
 
         static Control Body(AgentEvent e) => new ScrollViewer
         {

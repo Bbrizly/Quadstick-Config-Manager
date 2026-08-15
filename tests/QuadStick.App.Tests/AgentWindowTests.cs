@@ -111,6 +111,85 @@ public sealed class AgentWindowTests
          "open":[{"output":"kb_c","question":"crouch?"}],"untouched":["kb_v"]}
         """.ReplaceLineEndings(" ");
 
+    // A step that is still going counts its own seconds. Without this a model
+    // call that takes three minutes is indistinguishable from a run that hung,
+    // and the whole window looks like it is doing nothing.
+    [AvaloniaFact]
+    public void AStepThatIsStillWorkingCountsItsOwnSeconds()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"tool","id":"t1","title":"Working out what to do next","state":"running"}""");
+
+        var card = window.GetVisualDescendants().OfType<AgentWindow.ToolCard>().Single();
+        Assert.True(card.Running);
+        Assert.DoesNotContain("s", card.StateWord.Replace("working", ""));
+
+        card.Tick(4.2);
+        Assert.Contains("4.2s", card.StateWord);
+        card.Tick(11.9);
+        Assert.Contains("11.9s", card.StateWord);
+
+        // The run's own measure wins over whatever the window watched, because
+        // the run is the thing that did the work.
+        run.Say("""{"event":"tool_done","id":"t1","state":"ok","summary":"decided what to do","ms":8400}""");
+        Assert.False(card.Running);
+        Assert.Contains("8.4s", card.StateWord);
+        // And it stops moving once it is settled.
+        card.Tick(99);
+        Assert.Contains("8.4s", card.StateWord);
+    }
+
+    // Where each answer came from is on the card, in words. A run that finished
+    // in a second because everything was already recorded looks exactly like a
+    // run that made it up, and this is the only thing that tells them apart.
+    [AvaloniaFact]
+    public void EveryStepSaysWhetherItAskedTheModelOrReplayedOne()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"tool","id":"t1","title":"Working it out","state":"running"}""");
+        run.Say("""{"event":"tool_done","id":"t1","state":"ok","summary":"done","ms":2000,"origin":"live"}""");
+        run.Say("""{"event":"tool","id":"t2","title":"Working it out again","state":"running"}""");
+        run.Say("""{"event":"tool_done","id":"t2","state":"ok","summary":"done","ms":0,"origin":"cache"}""");
+
+        var cards = window.GetVisualDescendants().OfType<AgentWindow.ToolCard>().ToList();
+        Assert.Contains("asked the model", cards[0].StateWord);
+        Assert.Contains("from the recording", cards[1].StateWord);
+        // Read aloud, the source comes with it rather than being colour or position.
+        Assert.Contains("from the recording",
+                        AutomationProperties.GetName(cards[1]) ?? "");
+    }
+
+    // What a run is allowed to do is said before it does anything, not worked
+    // out afterwards from how fast it went.
+    [AvaloniaFact]
+    public void TheRunSaysUpFrontWhetherItIsAskingOrReplaying()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"run","mode":"replay","model":"claude-sonnet-5","backend":"cli","says":"from the recording only"}""");
+        Assert.Contains("Running from the recording", Words(window));
+        Assert.Contains("No model and no internet", Words(window));
+
+        var (_, second, live) = Open();
+        live.Say("""{"event":"run","mode":"live","model":"claude-sonnet-5","backend":"cli","says":"asks every time"}""");
+        Assert.Contains("nothing replayed", Words(second));
+    }
+
+    // A run that ends mid-step must not leave a card claiming to still be
+    // working. Something spinning forever is the window lying about the run.
+    [AvaloniaFact]
+    public void AStepLeftUnfinishedWhenTheRunEndsSaysSo()
+    {
+        var (_, window, run) = Open();
+        run.Say("""{"event":"tool","id":"t1","title":"Reading the control page","state":"running"}""");
+        var card = window.GetVisualDescendants().OfType<AgentWindow.ToolCard>().Single();
+        Assert.True(card.Running);
+
+        run.End(1);
+        window.UpdateLayout();
+        Assert.False(card.Running);
+        Assert.Contains("never finished", card.StateWord);
+    }
+
     // A tool call shows what it is doing while it runs, and what came back when
     // it is done. The word beside it changes; the card does not vanish.
     [AvaloniaFact]
@@ -365,15 +444,19 @@ public sealed class AgentWindowTests
         var main = new MainWindow();
         var window = new AgentWindow(main, root: "/nowhere");
 
-        Assert.Equal(new[] { "--game", "Hollow Knight Silksong" },
+        Assert.Equal(new[] { "--game", "Hollow Knight Silksong", "--live" },
                      window.Arguments("Hollow Knight Silksong", null, false));
         // No profile open, so even a verb builds a game rather than silently
         // editing something that is not there.
-        Assert.Equal(new[] { "--game", "make sprint a hard puff" },
+        Assert.Equal(new[] { "--game", "make sprint a hard puff", "--live" },
                      window.Arguments("make sprint a hard puff", null, false));
-        Assert.Equal(new[] { "--edit", "/tmp/mine.csv", "--request", "make sprint a hard puff" },
+        Assert.Equal(new[] { "--edit", "/tmp/mine.csv", "--request", "make sprint a hard puff",
+                             "--live" },
                      window.Arguments("make sprint a hard puff", "/tmp/mine.csv", false));
         Assert.Contains("--replay", window.Arguments("Elden Ring", null, true));
+        // Never both, and never neither. A run with no mode named is a run that
+        // quietly reuses a recording and looks like it thought about it.
+        Assert.DoesNotContain("--live", window.Arguments("Elden Ring", null, true));
     }
 
     // Asking for a change needs a file on disk to change. Saying so beats
@@ -403,7 +486,8 @@ public sealed class AgentWindowTests
     {
         var main = new MainWindow();
         var window = new AgentWindow(main, root: "/nowhere", changing: true);
-        Assert.Equal(new[] { "--edit", "/tmp/mine.csv", "--request", "sprint should be lighter" },
+        Assert.Equal(new[] { "--edit", "/tmp/mine.csv", "--request", "sprint should be lighter",
+                             "--live" },
                      window.Arguments("sprint should be lighter", "/tmp/mine.csv", false, changing: true));
     }
 
