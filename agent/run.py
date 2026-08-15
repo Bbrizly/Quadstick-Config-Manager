@@ -111,6 +111,8 @@ def title_for(name, args):
                 f"  [{args.get('confidence', 'inferred')}]")
     if name == "ask_user":
         return (f"Deciding to ask about {args.get('output', '')}", args.get("question", ""))
+    if name == "leave_unbound":
+        return (f"Leaving {args.get('output', '')} unbound", args.get("why", ""))
     if name == "change_row":
         return (f"Changing row {args.get('row', '')}",
                 f"{args.get('output', '')}, {args.get('function', '')}, "
@@ -154,6 +156,9 @@ def describe(name, args, result):
     if name == "ask_user":
         return (f"Will ask about {args.get('output', '')}",
                 args.get("question", ""), failed)
+    if name == "leave_unbound":
+        return (f"Left {args.get('output', '')} unbound",
+                args.get("why", ""), failed)
     if name == "finish":
         return ("Finished deciding", args.get("summary", ""), failed)
     if name == "read_profile":
@@ -379,7 +384,7 @@ def create(args, work):
 # ---- changing a profile that already exists -------------------------------
 
 EDIT_TOOLS = [
-    dict(qsagent.TOOLS[1]),                                # find_output, unchanged
+    qsagent.tool("find_output"),
     {
         "name": "read_profile",
         "description": ("The rows this profile already has, so a change lands on the "
@@ -410,8 +415,8 @@ EDIT_TOOLS = [
             "inputs": {"type": "array", "items": {"type": "string"}},
             "why": {"type": "string"}}, "required": ["row", "why"]},
     },
-    dict(qsagent.TOOLS[3]),                                # ask_user, unchanged
-    dict(qsagent.TOOLS[4]),                                # finish, unchanged
+    qsagent.tool("ask_user"),
+    qsagent.tool("finish"),
 ]
 
 EDIT_SYSTEM = """You change one QuadStick profile, exactly as far as you are asked to.
@@ -595,7 +600,7 @@ def approved(ident):
 
 
 def confirm_and_write(profile, settled, open_questions, untouched, out=None, shown=None,
-                      fresh=False, controls=None):
+                      fresh=False, controls=None, left=()):
     """Show the whole list, write it only if they say so.
 
     `shown` is what the person is approving, which for a new profile is every
@@ -606,6 +611,7 @@ def confirm_and_write(profile, settled, open_questions, untouched, out=None, sho
     emit("confirm", id="c1", profile=out,
          rows=shown if shown is not None else settled,
          open=[{"output": q["output"], "question": q["question"]} for q in open_questions],
+         left=[{"output": u["output"], "why": u["why"]} for u in left],
          untouched=list(untouched))
     if not approved("c1"):
         raise Stopped("nothing was written, and the profile is exactly as it was")
@@ -625,6 +631,8 @@ def confirm_and_write(profile, settled, open_questions, untouched, out=None, sho
          issues=[{"severity": i["severity"], "cell": i["cell"], "message": i["message"]}
                  for i in check["issues"][:12]],
          open=[{"output": q["output"], "question": q["question"]} for q in open_questions],
+         left=[{"output": u["output"], "why": u["why"]} for u in left],
+         named=done.get("named", 0),
          untouched=list(untouched))
     return True
 
@@ -760,7 +768,7 @@ def main():
                        for d in plan["decided"]]
             confirm_and_write(work, settled, still_open, result["untouched"],
                               out=args.out, shown=already + settled, fresh=True,
-                              controls=plan.get("controls"))
+                              controls=plan.get("controls"), left=result.get("unbound", ()))
         finally:
             if os.path.exists(work):
                 os.remove(work)

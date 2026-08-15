@@ -96,6 +96,35 @@ check("and both controls came out of it", 2, len(one_pass["proposals"]))
 check("nothing it already has is still fetchable",
       [], [t["name"] for t in qsagent.SETUP_TOOLS
            if t["name"] in ("read_habits", "find_output")])
+# A keyboard key on a controller profile is a control with no business being
+# bound. Without a way to say so, the model proposed it with no inputs, ate the
+# refusal, and spent a second two-minute call saying the same thing again.
+leave = fresh_ctx(unresolved=("kb_c", "kb_left_shift"))
+qsagent.call_model = scripted({"content": [
+    {"type": "tool_use", "id": "t1", "name": "propose_binding",
+     "input": {"output": "kb_c", "inputs": ["mp_left_sip"], "function": "toggle",
+               "why": "40 of 95 of his games, Doom row 31", "confidence": "evidenced"}},
+    {"type": "tool_use", "id": "t2", "name": "leave_unbound",
+     "input": {"output": "kb_left_shift", "why": "a keyboard key, and this is a "
+                                                 "controller profile"}},
+    {"type": "tool_use", "id": "t3", "name": "finish", "input": {"summary": "one left"}},
+]})
+with contextlib.redirect_stdout(io.StringIO()):
+    left_steps, left_done = qsagent.agent_loop("task", leave, tools=qsagent.SETUP_TOOLS)
+check("leaving one alone still finishes, in one call", (1, True), (left_steps, left_done))
+check("the one left alone is not a proposal", 1, len(leave["proposals"]))
+check("and it is reported with its reason",
+      ("kb_left_shift", True),
+      (qsagent.brief(leave)["unbound"][0]["output"],
+       "controller profile" in qsagent.brief(leave)["unbound"][0]["why"]))
+check("a control left alone is not counted as never reached",
+      [], qsagent.brief(leave)["untouched"])
+
+skipped = fresh_ctx(unresolved=("kb_c",))
+check("it cannot leave a control nobody asked it about",
+      True, "error" in qsagent.run_tool(
+          "leave_unbound", {"output": "kb_z", "why": "not mine"}, skipped))
+
 check("the habits it is handed say the same thing the tool did",
       [{"inputs": ["mp_left_sip"], "function": "toggle",
         "usedIn": "40 of 95 of their games (42%)",

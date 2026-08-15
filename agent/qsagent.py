@@ -321,8 +321,19 @@ TOOLS = [
             "required": ["output", "question", "options"]},
     },
     {
+        "name": "leave_unbound",
+        "description": (
+            "Say that a control should stay unbound, and why. Use this for a control "
+            "this profile has no business binding, like a keyboard key on a controller "
+            "profile. It is not a way to skip something hard: that is what a question "
+            "is for. Nothing is written for it, and they are told it was left."),
+        "input_schema": {"type": "object", "properties": {
+            "output": {"type": "string"},
+            "why": {"type": "string"}}, "required": ["output", "why"]},
+    },
+    {
         "name": "finish",
-        "description": "Done deciding. Call once, when every control has a proposal or a question.",
+        "description": "Done deciding. Call once, when every control has a proposal, a question or a reason to be left.",
         "input_schema": {"type": "object", "properties": {
             "summary": {"type": "string"}}, "required": ["summary"]},
     },
@@ -351,6 +362,9 @@ How to decide one:
   they disagree with costs one edit. Thirty questions costs them the whole job.
 - Never invent a token. Look it up. The device matches names case sensitively and
   whole, so a near miss is silently dead rather than wrong.
+- A control this profile has no business binding, like a keyboard key on a
+  controller profile, goes to leave_unbound with the reason. Do not propose a
+  binding with no inputs: that is a row the device reads and nothing can fire.
 - Do not change something they did not ask you to change.
 
 Their habits for every control are already in front of you. There is nothing to
@@ -362,6 +376,13 @@ spinner for an answer you already have."""
 # How many questions one profile is worth. Past this the agent decides and marks
 # it inferred, which they can change in one edit.
 ASK_BUDGET = 5
+
+
+def tool(name):
+    """One tool by name. The edit agent used to borrow these by index, so adding
+    one to the middle of the list quietly handed it the wrong tool."""
+    return dict(next(t for t in TOOLS if t["name"] == name))
+
 
 # Setting a game up hands the agent every habit it could have asked for and the
 # exact output token for every control, so read_habits and find_output are two
@@ -461,15 +482,23 @@ def run_tool(name, args, ctx):
         ctx["settled"].add(args["output"])
         ctx["questions"].append(args)
         return {"asked": args["output"], "note": "the person will answer this before anything is written"}
+    if name == "leave_unbound":
+        if args["output"] not in ctx["unresolved"]:
+            return {"error": f"{args['output']} is not one of the controls you were asked "
+                             f"about, so leaving it is not yours to decide."}
+        ctx["settled"].add(args["output"])
+        ctx["unbound"].append(args)
+        return {"left": args["output"],
+                "note": "nothing will be written for it, and they will be told it was left"}
     if name == "finish":
         # Finishing with controls still untouched used to end the run reporting
         # only what it happened to record, and the rest were never mentioned
         # again. They are named back here so the run cannot end by forgetting.
         left = sorted(ctx["unresolved"] - ctx["settled"])
         if left:
-            return {"error": f"{len(left)} controls still have neither a proposal nor a "
-                             f"question: {', '.join(left)[:600]}. Settle or ask about "
-                             f"each one, then finish."}
+            return {"error": f"{len(left)} controls still have neither a proposal, a "
+                             f"question nor a reason to be left: {', '.join(left)[:600]}. "
+                             f"Settle, ask about or leave each one, then finish."}
         ctx["done"] = args["summary"]
         return {"ok": True}
     return {"error": f"no tool called {name}"}
@@ -495,12 +524,18 @@ def new_context(plan, unresolved):
     which controls it was asked about, and which it has answered."""
     return {"habits": plan["habits"], "outputs": plan["outputs"],
             "unresolved": set(unresolved), "settled": set(),
-            "proposals": [], "questions": [], "done": None}
+            "proposals": [], "questions": [], "unbound": [], "done": None}
 
 
 def brief(ctx):
-    """What the run actually produced, including what it never touched."""
+    """What the run actually produced, including what it never touched.
+
+    `unbound` and `untouched` are both controls with no row, and they are kept
+    apart because they are not the same thing to the person reading them: one
+    was a decision with a reason, the other is the agent not getting there.
+    """
     return {"proposals": ctx["proposals"], "questions": ctx["questions"],
+            "unbound": ctx["unbound"],
             "untouched": sorted(ctx["unresolved"] - ctx["settled"]),
             "summary": ctx["done"]}
 
