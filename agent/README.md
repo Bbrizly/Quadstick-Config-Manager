@@ -55,9 +55,12 @@ signed in. `ANTHROPIC_API_KEY` switches to the API if you want it.
    this author's published profiles and, for each control the game needs, ranks
    what he actually does. No model is involved. A lopsided history is an answer;
    an even split is not, and becomes a question.
-3. **Settle the rest, or ask.** `qsagent.py` runs a bounded loop over the
-   leftovers. It may read habits, look up a real token, propose a binding with
-   its evidence, ask, or finish. It cannot write a cell.
+3. **Settle the rest, or ask.** `qsagent.py` gets one bounded turn over the
+   leftovers, holding every habit and every control meaning already, so there is
+   nothing for it to fetch. It proposes a binding with its evidence, asks, says a
+   control should stay unbound and why, or finishes. It cannot write a cell.
+   Fetching those facts a control at a time used to cost eight model calls and
+   most of the run.
 4. **Ask the person.** Every option carries the device tokens it will be bound
    to, so what they pick is written exactly as it was shown.
 5. **Write, once they say so.** The whole profile is built on a copy first, so
@@ -83,7 +86,15 @@ says so on screen rather than going quiet.
 
 **Nothing unanswered is filled in.** A question nobody answered leaves that
 control alone, and the confirm card lists what is staying unbound alongside what
-is being written.
+is being written. A control left alone on purpose carries the reason it was
+left, and is listed apart from the ones the agent never reached, because those
+are not the same thing to the person reading them.
+
+**A row says what it is in the game's words.** The chart already knows the game
+calls `kb_space` Jump, so Jump goes in column L beside the binding. The parser,
+the device and both official converters ignore that column, so it costs nothing
+and survives being shared. It is written in its own pass after the bindings are
+accepted: a name is worth nothing to the device and must never cost a binding.
 
 **The device is the oracle.** `qsf` refuses any token the firmware would not
 read, and any function parameter it would read as something other than what it
