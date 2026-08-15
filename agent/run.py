@@ -247,18 +247,21 @@ def watcher(label="Working out what to do next", prefix="m", origin=None):
 
 # ---- setting a game up from nothing ---------------------------------------
 
-def chart_for(game, replay, live=False):
+def chart_for(game, replay, again=False):
     """The game's controls, researched if nobody has charted it yet."""
     slug = research.slugify(game)
     path = os.path.join(CHARTS, slug + ".json")
-    # A live run writes the chart it researched, so the next run would read that
-    # file and skip the reading entirely. Replaying a game this tool researched
-    # therefore goes back through the researcher, which replays the same
-    # searches and page reads from the recording. The offline run is the one to
-    # fall back on when the room has no wifi, and it should show the same work.
+    # How a game is controlled is a fact about the game, not an answer about the
+    # person, so a chart that exists is reused even on a live run. Reading the
+    # same twenty pages every launch cost three and a half minutes and told
+    # nobody anything new. --research is there for when a game has patched.
+    #
+    # A replay of a game this tool researched goes back through the researcher
+    # instead of the file, so the offline run, the one for when the room has no
+    # wifi, still shows the searches and the page reads.
     if replay and research.recorded_for(game):
         pass
-    elif os.path.exists(path) and not live:
+    elif os.path.exists(path) and not again:
         chart = json.load(open(path))
         emit("tool", id="chart", title=f"Read the control chart for {chart.get('game', game)}",
              subtitle=f"{len(chart.get('controls') or {})} controls, checked in already",
@@ -274,7 +277,7 @@ def chart_for(game, replay, live=False):
          detail={"game": game})
     began = time.time()
     done = research.build_chart(game, out=path,
-                                mode="replay" if replay else "live" if live else "auto",
+                                mode="replay" if replay else "live",
                                 log=lambda *_: None,
                                 # Every search and every page it reads becomes its own
                                 # card while it happens. These are the only calls in the
@@ -305,7 +308,7 @@ def create(args, work):
     """
     game = args.game
     emit("stage", key="research", title=f"How {game} is controlled")
-    chart_path, chart = chart_for(game, args.replay, args.live)
+    chart_path, chart = chart_for(game, args.replay, args.research)
 
     emit("stage", key="history", title="What his own profiles already answer")
     emit("tool", id="predict", title="Matched this game against every profile he has built",
@@ -633,6 +636,8 @@ def main():
     ap.add_argument("--hold-out", action="store_true",
                     help="hide this game's own profiles first, so the result can be checked")
     ap.add_argument("--replay", action="store_true", help="from the recording, no network")
+    ap.add_argument("--research", action="store_true",
+                    help="read the web about the game again, even if it is charted")
     ap.add_argument("--live", action="store_true",
                     help="ask the model even where an answer is already recorded")
     args = ap.parse_args()
@@ -648,7 +653,7 @@ def main():
     # exactly like a run that made it all up, and only this line tells them apart.
     emit("run", mode=mode, model=qsagent.MODEL, backend=qsagent.BACKEND,
          says={"auto": "asks the model, but uses a recorded answer where one exists",
-               "live": "asks the model every time, nothing replayed",
+               "live": "asks the model for every binding. A game already charted is not read again",
                "replay": "from the recording only, no network"}[mode])
     if not args.game and not (args.edit and args.request):
         emit("failed", message="give either --game, or --edit with --request")

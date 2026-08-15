@@ -223,7 +223,10 @@ public sealed class AgentWindowTests
 
         var (_, second, live) = Open();
         live.Say("""{"event":"run","mode":"live","model":"claude-sonnet-5","backend":"cli","says":"asks every time"}""");
-        Assert.Contains("nothing replayed", Words(second));
+        // A live run still reuses a chart already on disk, so the line must not
+        // promise that nothing is reused.
+        Assert.Contains("Asking the model for every binding", Words(second));
+        Assert.Contains("not read again", Words(second));
     }
 
     // A run that ends mid-step must not leave a card claiming to still be

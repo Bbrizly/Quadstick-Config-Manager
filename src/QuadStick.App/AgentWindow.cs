@@ -413,7 +413,7 @@ public class AgentWindow : Window
         {
             Text = mode switch
             {
-                "live" => "Asking the model, every step, nothing replayed.",
+                "live" => "Asking the model for every binding. A game already charted is not read again.",
                 "replay" => "Running from the recording. No model and no internet.",
                 _ => "Asking the model, and reusing a recorded answer where there is one.",
             },

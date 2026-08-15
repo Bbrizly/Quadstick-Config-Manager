@@ -254,5 +254,24 @@ with contextlib.redirect_stdout(loud):
         pass
 check("a retry says so without writing into the event stream", "", loud.getvalue())
 
+# A charted game is not researched again. Reading the same pages every launch
+# cost three and a half minutes and changed no answer.
+import run as runner_mod  # noqa: E402
+
+runner_mod.research.build_chart = lambda *a, **k: (_ for _ in ()).throw(
+    AssertionError("a charted game went back to the web"))
+charted = os.path.join(runner_mod.CHARTS, "elden-ring.json")
+try:
+    _, chart = runner_mod.chart_for("Elden Ring", replay=False, again=False)
+    check("a charted game is not researched again", True, bool(chart.get("controls")))
+except AssertionError as went:
+    check("a charted game is not researched again", "reused the chart", str(went))
+try:
+    runner_mod.chart_for("Elden Ring", replay=False, again=True)
+    check("--research goes back to the web", "went", "used the chart")
+except AssertionError:
+    check("--research goes back to the web", True, True)
+
+
 print("\nall agent checks passed" if not fails else f"\n{len(fails)} check(s) failed")
 sys.exit(len(fails))
