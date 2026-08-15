@@ -125,7 +125,8 @@ def call_model(system, messages, tools, max_tokens=1500):
         except (urllib.error.URLError, TimeoutError) as e:
             last = str(e)
         wait = min(2 ** attempt + random.random(), 20)
-        print(f"    model call failed ({last}); retrying in {wait:.1f}s", flush=True)
+        print(f"    model call failed ({last}); retrying in {wait:.1f}s",
+              file=sys.stderr, flush=True)
         time.sleep(wait)
     raise SystemExit(f"the model did not answer after 5 tries. Last error: {last}")
 
@@ -216,7 +217,7 @@ def call_cli(system, messages, tools):
             # DEVNULL because the person's answers may be arriving on stdin;
             # the model must never eat a keystroke meant for them.
             done = subprocess.run(command, capture_output=True, text=True,
-                                  timeout=300, stdin=subprocess.DEVNULL)
+                                  timeout=900, stdin=subprocess.DEVNULL)
             if done.returncode == 0:
                 answer = json.loads(done.stdout)
                 if not answer.get("is_error"):
@@ -227,7 +228,8 @@ def call_cli(system, messages, tools):
         except (subprocess.TimeoutExpired, json.JSONDecodeError, ValueError) as e:
             last = str(e)[:200]
         wait = min(2 ** attempt + random.random(), 20)
-        print(f"    the CLI did not answer ({last}); retrying in {wait:.1f}s", flush=True)
+        print(f"    the CLI did not answer ({last}); retrying in {wait:.1f}s",
+              file=sys.stderr, flush=True)
         time.sleep(wait)
     raise SystemExit(
         f"`claude -p` did not answer after 4 tries. Last error: {last}\n"

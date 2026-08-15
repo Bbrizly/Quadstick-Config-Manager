@@ -24,6 +24,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "cache")
@@ -90,6 +91,7 @@ def stream_cli(command, on_event):
     running = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                text=True, stdin=subprocess.DEVNULL, bufsize=1)
     answer, failed = None, None
+    deadline = time.monotonic() + 900
     # Kept so a replay can show the same searches and page reads a live run did.
     # Without this the offline run, which is the one to fall back on when the
     # room's wifi gives out, showed nothing of the only part that touches the web.
@@ -99,6 +101,12 @@ def stream_cli(command, on_event):
         steps.append({"kind": kind, **fields})
         on_event(kind, **fields)
     for line in running.stdout:
+        # Reading a stream has no timeout of its own, so a researcher that stops
+        # answering would hang the whole run with nothing on screen to say why.
+        if time.monotonic() > deadline:
+            running.kill()
+            raise SystemExit("the research call ran for 15 minutes without finishing, "
+                             "so it was stopped and nothing was written.")
         line = line.strip()
         if not line:
             continue

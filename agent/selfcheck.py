@@ -238,5 +238,21 @@ try:
 except SystemExit as stopped:
     check("a failed research call stops the run", True, "research call failed" in str(stopped))
 
+
+# stdout is the event stream when this runs under the app. A retry notice
+# printed there is not news, it is a line the window has to treat as damage.
+import subprocess as _sub  # noqa: E402
+
+qsagent.subprocess.run = lambda *a, **k: type("R", (), {
+    "returncode": 1, "stdout": "", "stderr": "no"})
+qsagent.time.sleep = lambda *_: None
+loud = io.StringIO()
+with contextlib.redirect_stdout(loud):
+    try:
+        qsagent.call_cli("sys", [{"role": "user", "content": "t"}], qsagent.TOOLS)
+    except SystemExit:
+        pass
+check("a retry says so without writing into the event stream", "", loud.getvalue())
+
 print("\nall agent checks passed" if not fails else f"\n{len(fails)} check(s) failed")
 sys.exit(len(fails))
