@@ -15,10 +15,30 @@ somebody's hands.
     agent/setup.sh "Elden Ring" --replay
     agent/setup.sh --edit mine.csv "make sprint a hard puff"
 
-Or open QuadStick Config Manager and press **Set up a game** on the home screen.
-Both front ends run `agent/run.py`, which emits one JSON event per line. The
-window draws those events as cards; the terminal prints them as lines. One
-pipeline, two front ends, so nothing can be true in one and not the other.
+Or open QuadStick Config Manager and press **Set up a game**, the first card on
+the home screen. Both front ends run `agent/run.py`, which emits one JSON event
+per line. The window draws those events as cards; the terminal prints them as
+lines. One pipeline, two front ends, so nothing can be true in one and not the
+other.
+
+## Watching it work
+
+Every call is on screen before it runs, not after it finished. A step that is
+still going counts its own seconds, so a model call that takes three minutes is
+visibly working rather than indistinguishable from a run that hung. The web
+searches and page reads the research step makes each get their own card as they
+happen, including the pages that answered with a 403.
+
+Each finished step says how long it took and where its answer came from, in
+words: **asked the model**, **from the recording**, or **on this machine, no
+model**. A run that finished in a second because every answer was already
+recorded looks exactly like a run that invented them, and that line is the only
+thing that tells them apart. The window says which of the two it is before it
+starts, too.
+
+In the window it either asks or it replays, and there is no quiet third state
+that reuses an old answer without saying so. The terminal keeps `auto` for when
+you are iterating and do not want to pay for the same answer twice.
 
 No API key. The model is reached through the Claude Code CLI, which is already
 signed in. `ANTHROPIC_API_KEY` switches to the API if you want it.

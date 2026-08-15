@@ -10,134 +10,150 @@
   <Panel x:Name="ScaleContent">
 
     <!-- ============ HOME ============ -->
-    <DockPanel x:Name="HomeView" Margin="32,24">
-      <DockPanel DockPanel.Dock="Top">
-        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8"
-                    VerticalAlignment="Top">
-          <TextBlock Text="Appearance" VerticalAlignment="Center" Classes="secondary"/>
-          <ComboBox x:Name="AppearancePicker" MinWidth="130"
-                    AutomationProperties.Name="Appearance: choose System, Light, or Dark theme"/>
-          <Button x:Name="SettingsButton" Classes="icon" Content="⚙" FontSize="20"
-                  AutomationProperties.Name="Open Settings"/>
-        </StackPanel>
-        <StackPanel Spacing="4">
-          <TextBlock Text="Quadstick: Config Manager" FontSize="{DynamicResource TitleSize}" FontWeight="Bold"/>
-          <TextBlock Text="Edit and install game profiles for your QuadStick. Free, unofficial, works offline."
-                     FontSize="{DynamicResource SubheadSize}" Classes="secondary"/>
-          <TextBlock x:Name="HomeVersionText" FontSize="{DynamicResource SmallSize}" Classes="secondary"/>
-        </StackPanel>
-      </DockPanel>
-
-      <ScrollViewer Margin="0,24,0,0">
-        <StackPanel Spacing="28">
-
-          <StackPanel Spacing="12">
-            <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
-            <TextBlock Classes="section" Text="START"/>
-            <WrapPanel x:Name="StartCards">
-              <Button x:Name="HomeNewButton" Classes="card"
-                      AutomationProperties.Name="Create a new profile from the factory default template">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="New profile" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
-                  <TextBlock Text="Start from the factory default layout" Classes="cardsub"/>
-                </StackPanel>
-              </Button>
-              <Button x:Name="HomeTemplateButton" Classes="card"
-                      AutomationProperties.Name="Start a new profile from one of your saved templates">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="Use template" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
-                  <TextBlock Text="Start from a profile you saved as a template" Classes="cardsub"/>
-                </StackPanel>
-              </Button>
-              <Button x:Name="HomeOpenButton" Classes="card"
-                      AutomationProperties.Name="Open a profile CSV file from your computer">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="Open a file" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
-                  <TextBlock Text="Edit a profile CSV from anywhere" Classes="cardsub"/>
-                </StackPanel>
-              </Button>
-              <Button x:Name="HomeAgentButton" Classes="card"
-                      AutomationProperties.Name="Name a game and have a profile built for it from the profiles you already have">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="Set up a game" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
-                  <TextBlock Text="Name any game, and build it from your own profiles" Classes="cardsub"/>
-                </StackPanel>
-              </Button>
-              <Button x:Name="HomeCommunityButton" Classes="card"
-                      AutomationProperties.Name="Browse the community list of shared game profiles and import one">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="Community profiles" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
-                  <TextBlock Text="Search game profiles people have shared online" Classes="cardsub"/>
-                </StackPanel>
-              </Button>
-              <Button x:Name="HomeHelpButton" Classes="card"
-                      AutomationProperties.Name="Open the quick guide that explains profiles, outputs, functions, and inputs">
-                <StackPanel Spacing="6">
-                  <TextBlock Text="How it works" FontSize="{DynamicResource SectionSize}" FontWeight="Bold"/>
-                  <TextBlock Text="Profiles, sips, puffs, and installing, in plain words" Classes="cardsub"/>
-                </StackPanel>
-              </Button>
-            </WrapPanel>
-            <StackPanel Orientation="Horizontal" Spacing="10">
-              <TextBox x:Name="SheetsUrlBox" Width="520"
-                       Watermark="Paste a Google Sheets profile link to import"
-                       AutomationProperties.Name="Google Sheets profile link"/>
-              <Button x:Name="ImportButton" Content="Import from Sheets"
-                      AutomationProperties.Name="Import the profile from the pasted Google Sheets link"/>
+    <DockPanel x:Name="HomeView" Margin="28,22">
+      <Border DockPanel.Dock="Top" Padding="0,0,0,18"
+              BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,0,1">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="10"
+                      VerticalAlignment="Center">
+            <StackPanel Spacing="2" VerticalAlignment="Center" Margin="0,0,8,0">
+              <TextBlock Text="APPEARANCE" FontSize="{DynamicResource SmallSize}"
+                         LetterSpacing="1" Classes="secondary"/>
+              <ComboBox x:Name="AppearancePicker" MinWidth="130"
+                        AutomationProperties.Name="Appearance: choose System, Light, or Dark theme"/>
             </StackPanel>
-            <TextBlock x:Name="HomeStatusText" FontSize="{DynamicResource BodySize}" Classes="error"
-                       TextWrapping="Wrap" MaxWidth="700" IsVisible="False"
-                       AutomationProperties.LiveSetting="Assertive"/>
-            <StackPanel x:Name="RescuePanel" Orientation="Horizontal" Spacing="10" IsVisible="False">
-              <Button x:Name="RescueOpenButton" Content="Open recovered work" Classes="primary"
-                      AutomationProperties.Name="Open the profile that was recovered after the last crash or force quit"/>
-              <Button x:Name="RescueDismissButton" Content="Dismiss"
-                      AutomationProperties.Name="Discard the recovered work permanently"/>
+            <Button x:Name="SettingsButton" Classes="icon" Content="⚙" FontSize="20"
+                    AutomationProperties.Name="Open Settings"/>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="14">
+            <Border Width="56" Height="56" CornerRadius="12" ClipToBounds="True"
+                    BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1">
+              <Image Source="avares://QuadStickConfigManager/Assets/AppIcon.png"
+                     Stretch="UniformToFill"/>
+            </Border>
+            <StackPanel Spacing="1" VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="QCM" Classes="brandmark"/>
+                <Border Background="{DynamicResource AccentBrush}" CornerRadius="2"
+                        Width="7" Height="7" VerticalAlignment="Center"
+                        AutomationProperties.Name="Application ready"/>
+              </StackPanel>
+              <TextBlock Text="QuadStick Config Manager" FontSize="{DynamicResource SubheadSize}"
+                         FontWeight="SemiBold" Classes="secondary"/>
+              <TextBlock x:Name="HomeVersionText" FontSize="{DynamicResource SmallSize}" Classes="secondary"/>
             </StackPanel>
           </StackPanel>
+        </DockPanel>
+      </Border>
 
-          <StackPanel Spacing="12">
-            <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <TextBlock Classes="section" Text="YOUR PROFILES" VerticalAlignment="Center"/>
-              <!-- Content, colour, and action are set per state in RefreshDriveButton. -->
-              <Button x:Name="HomeDriveButton" IsVisible="False"
-                      FontSize="{DynamicResource SmallSize}"/>
-            </StackPanel>
-            <StackPanel x:Name="LibraryEmptyPanel" Spacing="10">
-              <TextBlock FontSize="{DynamicResource BodySize}" Classes="secondary"
-                         Text="Profiles you save will show up here."/>
-              <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button x:Name="LibraryEmptyNewButton" Content="New profile"
+      <ScrollViewer Margin="0,20,0,0">
+        <StackPanel Spacing="18" MaxWidth="1120" HorizontalAlignment="Stretch">
+
+          <Border Classes="homepanel">
+            <StackPanel Spacing="14">
+              <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Classes="section" Text="START A PROFILE" VerticalAlignment="Center"/>
+                <TextBlock Text="Build, open, or find a setup" Classes="secondary"
+                           VerticalAlignment="Center"/>
+              </StackPanel>
+              <WrapPanel x:Name="StartCards">
+                <Button x:Name="HomeAgentButton" Classes="homeaction"
+                        Content="Set up a game"
+                        AutomationProperties.Name="Name a game and have a profile built for it from the profiles you already have"/>
+                <Button x:Name="HomeNewButton" Classes="homeaction"
+                        Content="New profile"
                         AutomationProperties.Name="Create a new profile from the factory default template"/>
-                <Button x:Name="LibraryEmptyOpenButton" Content="Open a file"
+                <Button x:Name="HomeTemplateButton" Classes="homeaction"
+                        Content="Use template"
+                        AutomationProperties.Name="Start a new profile from one of your saved templates"/>
+                <Button x:Name="HomeOpenButton" Classes="homeaction"
+                        Content="Open a file"
                         AutomationProperties.Name="Open a profile CSV file from your computer"/>
-                <Button x:Name="LibraryEmptyImportButton" Content="Import from Sheets"
-                        AutomationProperties.Name="Import the profile from the pasted Google Sheets link"/>
+                <Button x:Name="HomeCommunityButton" Classes="homeaction"
+                        Content="Community profiles"
+                        AutomationProperties.Name="Browse the community list of shared game profiles and import one"/>
+                <Button x:Name="HomeHelpButton" Classes="homeaction"
+                        Content="How it works"
+                        AutomationProperties.Name="Open the quick guide that explains profiles, outputs, functions, and inputs"/>
+              </WrapPanel>
+              <TextBlock x:Name="HomeStatusText" FontSize="{DynamicResource BodySize}" Classes="error"
+                         TextWrapping="Wrap" MaxWidth="760" IsVisible="False"
+                         AutomationProperties.LiveSetting="Assertive"/>
+              <StackPanel x:Name="RescuePanel" Orientation="Horizontal" Spacing="10" IsVisible="False">
+                <Button x:Name="RescueOpenButton" Content="Open recovered work" Classes="primary"
+                        AutomationProperties.Name="Open the profile that was recovered after the last crash or force quit"/>
+                <Button x:Name="RescueDismissButton" Content="Dismiss"
+                        AutomationProperties.Name="Discard the recovered work permanently"/>
               </StackPanel>
             </StackPanel>
-            <WrapPanel x:Name="LibraryCards"/>
-          </StackPanel>
+          </Border>
+
+          <Border Classes="homepanel">
+            <StackPanel Spacing="12">
+              <DockPanel>
+                <Button x:Name="HomeDeviceFilesButton" DockPanel.Dock="Right" Content="Manage files"
+                        FontSize="{DynamicResource SmallSize}"
+                        AutomationProperties.Name="Manage the profile files on your QuadStick: copy, delete, and see the file selection order"/>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <Border Background="{DynamicResource AccentBrush}" CornerRadius="5" Width="10" Height="10"
+                          VerticalAlignment="Center" AutomationProperties.Name="QuadStick connection status"/>
+                  <TextBlock Classes="section" Text="ON YOUR QUADSTICK" VerticalAlignment="Center"/>
+                </StackPanel>
+              </DockPanel>
+              <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
+                         Text="Plug in your QuadStick to see its profiles. If the drive is hidden, turn off controller emulation and reconnect it."
+                         TextWrapping="Wrap"/>
+              <StackPanel x:Name="DeviceCards" Spacing="6"/>
+            </StackPanel>
+          </Border>
+
+          <Border Classes="homepanel">
+            <StackPanel Spacing="12">
+              <DockPanel>
+                <!-- Content, colour, and action are set per state in RefreshDriveButton. -->
+                <Button x:Name="HomeDriveButton" DockPanel.Dock="Right" IsVisible="False"
+                        FontSize="{DynamicResource SmallSize}"/>
+                <TextBlock Classes="section" Text="IMPORT FROM SHEETS"/>
+              </DockPanel>
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBox x:Name="SheetsUrlBox" Grid.Column="0"
+                         Watermark="Paste a Google Sheets profile link"
+                         AutomationProperties.Name="Google Sheets profile link"/>
+                <Button x:Name="ImportButton" Grid.Column="1" Margin="10,0,0,0"
+                        Content="Import" Classes="primary" MinWidth="130"
+                        AutomationProperties.Name="Import the profile from the pasted Google Sheets link"/>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <Border Classes="homepanel">
+            <StackPanel Spacing="12">
+              <TextBlock Classes="section" Text="YOUR PROFILES"/>
+              <StackPanel x:Name="LibraryEmptyPanel" Spacing="10">
+                <TextBlock FontSize="{DynamicResource BodySize}" Classes="secondary"
+                           Text="Profiles you save will show up here."/>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <Button x:Name="LibraryEmptyNewButton" Content="New profile"
+                          AutomationProperties.Name="Create a new profile from the factory default template"/>
+                  <Button x:Name="LibraryEmptyOpenButton" Content="Open a file"
+                          AutomationProperties.Name="Open a profile CSV file from your computer"/>
+                  <Button x:Name="LibraryEmptyImportButton" Content="Import from Sheets"
+                          AutomationProperties.Name="Import the profile from the pasted Google Sheets link"/>
+                </StackPanel>
+              </StackPanel>
+              <WrapPanel x:Name="LibraryCards"/>
+            </StackPanel>
+          </Border>
 
           <!-- Files opened from elsewhere on the computer. Hidden until there
                is one, so a first run stays as simple as it is today. -->
-          <StackPanel x:Name="RecentSection" Spacing="12" IsVisible="False">
-            <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
-            <TextBlock Classes="section" Text="OPENED FROM YOUR COMPUTER"/>
-            <WrapPanel x:Name="RecentCards"/>
-          </StackPanel>
-
-          <StackPanel Spacing="12">
-            <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}"/>
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <TextBlock Classes="section" Text="ON YOUR QUADSTICK" VerticalAlignment="Center"/>
-              <Button x:Name="HomeDeviceFilesButton" Content="Manage files"
-                      FontSize="{DynamicResource SmallSize}"
-                      AutomationProperties.Name="Manage the profile files on your QuadStick: copy, delete, and see the file selection order"/>
-            </StackPanel>
-            <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
-                       Text="Plug in your QuadStick and its profiles will show up here. (On USB emulation mode 6, the drive won't appear.)"/>
-            <StackPanel x:Name="DeviceCards" Spacing="6"/>
+          <StackPanel x:Name="RecentSection" IsVisible="False">
+            <Border Classes="homepanel">
+              <StackPanel Spacing="12">
+                <TextBlock Classes="section" Text="OPENED FROM YOUR COMPUTER"/>
+                <WrapPanel x:Name="RecentCards"/>
+              </StackPanel>
+            </Border>
           </StackPanel>
 
         </StackPanel>
