@@ -67,11 +67,32 @@ public class PreferenceUiTests
         var w = ShowPrefs("bluetooth_device_mode,none\n", out var file);
 
         var combo = Cell<ComboBox>(w, 4);
-        Assert.Equal("none", combo.SelectedItem);
+        Assert.Equal("none", combo.SelectedItem?.ToString());
 
-        combo.SelectedItem = "game_pad";
+        combo.SelectedIndex = 2; // none, keyboard, game_pad
         Dispatcher.UIThread.RunJobs();
         Assert.Equal("game_pad", file.GetCell(4, 1));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // People pick a console, not a number. The row shows the console name with
+    // the device's own number beside it, and what lands in the file is the
+    // number on its own: a label reaching the file would be read as 0.
+    [AvaloniaFact]
+    public void A_choice_setting_shows_plain_words_and_still_writes_the_number()
+    {
+        var w = ShowPrefs("enable_DS3_emulation,0\n", out var file);
+
+        var combo = Cell<ComboBox>(w, 4);
+        var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()).ToList();
+        Assert.Equal("QuadStick (PC and PS3) (0)", shown[0]);
+        Assert.Contains("Nintendo Switch Pro Controller", shown[5]);
+
+        combo.SelectedIndex = 5;
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("5", file.GetCell(4, 1));
 
         file.Dirty = false;
         w.Close();
@@ -350,6 +371,40 @@ public class PreferenceUiTests
         Assert.False(Has<NumericUpDown>(w, 4));
         Assert.False(Has<CheckBox>(w, 4));
         Assert.True(Has<AutoCompleteBox>(w, 4));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // A mode row's value goes through a bare atoi, so a dropdown of words must
+    // never appear on one: a click would write "keyboard" into a cell the
+    // device reads as 0. A dropdown of numbers is safe there, and picking the
+    // console for one mode is exactly what people asked to be able to do.
+    [AvaloniaFact]
+    public void A_numbered_choice_is_pickable_on_a_mode_row_and_a_worded_one_is_not()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\n" +
+            "enable_DS3_emulation,,0\n" +
+            "bluetooth_device_mode,,none\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        Assert.True(Has<ComboBox>(w, 4));           // numbers: safe
+        Assert.False(Has<ComboBox>(w, 5));          // words: stays raw
+        Assert.True(Has<AutoCompleteBox>(w, 5));
+
+        var combo = Cell<ComboBox>(w, 4);
+        combo.SelectedIndex = 5;
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("5", file.GetCell(4, 2));      // column C, the one the device reads
 
         file.Dirty = false;
         w.Close();

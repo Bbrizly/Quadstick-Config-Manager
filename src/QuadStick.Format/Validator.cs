@@ -37,6 +37,12 @@ public static class Validator
         var issues = new List<Issue>();
         ValidateFileName(doc, issues);
 
+        // default.csv is what the device falls back to and prefs.csv is its
+        // device-wide settings, so between them they decide what the QuadStick
+        // comes up as. A USB emulation mode without a drive is survivable in a
+        // game profile and is not in these two.
+        var decidesTheBootMode = doc.IsDefaultConfig || doc.IsDevicePreferences;
+
         int profileSheets = 0;
         foreach (var sheet in doc.Sheets)
         {
@@ -46,7 +52,7 @@ public static class Validator
             // it on its own rules rather than as bindings.
             if (sheet.Type == SheetType.Preferences)
             {
-                ValidatePreferencesSheet(sheet, issues);
+                ValidatePreferencesSheet(sheet, decidesTheBootMode, issues);
                 continue;
             }
             // Infrared sheets carry IR codes, not bindings; skip them so their
@@ -85,7 +91,7 @@ public static class Validator
             {
                 if (IsPreferenceOverride(b))
                 {
-                    ValidatePreferenceOverride(b, issues);
+                    ValidatePreferenceOverride(b, decidesTheBootMode, issues);
                     var v = b.InputCols.Count > 0 && b.InputCols[0] == 2 ? b.Inputs[0] : null;
                     if (v is not null && int.TryParse(v.Trim(), out var n))
                         modeNumbers[b.Output] = (n, b.Row);
@@ -115,7 +121,7 @@ public static class Validator
     static bool IsPreferenceOverride(Binding b) =>
         Vocab.IsPreferenceOverride(b.Output, b.Function);
 
-    static void ValidatePreferenceOverride(Binding b, List<Issue> issues)
+    static void ValidatePreferenceOverride(Binding b, bool decidesTheBootMode, List<Issue> issues)
     {
         // The firmware reads the VALUE from the third column (it skips the
         // function column). Files in the wild also carry the value in column
@@ -156,6 +162,7 @@ public static class Validator
                 ValidateAgainstCatalog(def, valueInC, $"C{b.Row}", rejected, issues);
             WarnIfTheDeviceIgnoresIt(b.Output, valueInC, $"C{b.Row}", issues);
             WarnIfTheFirmwaresDisagree(b.Output, valueInC, $"C{b.Row}", issues);
+            WarnIfItTakesTheDriveAway(b.Output, valueInC, $"C{b.Row}", decidesTheBootMode, issues);
             return;
         }
         if (b.Function.Length > 0)
@@ -175,7 +182,7 @@ public static class Validator
     // 2026-07-08). This is the opposite of a mode-sheet preference override,
     // where column B is skipped and the value lives in column C. Column C+ on a
     // Preferences sheet is the human Units/Description annotation, not data.
-    static void ValidatePreferencesSheet(ModeSheet sheet, List<Issue> issues)
+    static void ValidatePreferencesSheet(ModeSheet sheet, bool decidesTheBootMode, List<Issue> issues)
     {
         // Whole-number values seen on this sheet, so the pair-order checks
         // below can compare two rows. A repeated name keeps the last row, the
@@ -256,6 +263,7 @@ public static class Validator
             if (def is not null) ValidateAgainstCatalog(def, value, $"B{b.Row}", rejected, issues);
             WarnIfTheDeviceIgnoresIt(b.Output, value, $"B{b.Row}", issues);
             WarnIfTheFirmwaresDisagree(b.Output, value, $"B{b.Row}", issues);
+            WarnIfItTakesTheDriveAway(b.Output, value, $"B{b.Row}", decidesTheBootMode, issues);
         }
 
         ValidatePreferenceOrder(numbers, "B", issues);
@@ -298,9 +306,20 @@ public static class Validator
 
             case PreferenceEditor.Choice:
                 if (alreadyRejected || def.Options.Contains(value, StringComparer.Ordinal)) return;
-                issues.Add(new Issue(Severity.Error, cell,
-                    $"\"{value}\" is not one of the values \"{def.Name}\" accepts.",
-                    $"Use one of: {string.Join(", ", def.Options)}."));
+                // A closed set is a blocking case: the words come from the
+                // firmware's own keyword table and one outside it selects the
+                // wrong mode on the device instead of failing. An open set is
+                // not. USB emulation has gained values with almost every
+                // firmware, so a number this app has not heard of is more
+                // likely a QuadStick newer than this app than a mistake, and
+                // refusing to install it would be the app overruling the device.
+                issues.Add(def.FirmwareMayAddMore
+                    ? new Issue(Severity.Warning, cell,
+                        $"\"{value}\" is not a value this app knows for \"{def.Name}\". It is written to the file untouched, and a newer QuadStick may well read it.",
+                        $"The values it knows are: {string.Join(", ", def.Options)}.")
+                    : new Issue(Severity.Error, cell,
+                        $"\"{value}\" is not one of the values \"{def.Name}\" accepts.",
+                        $"Use one of: {string.Join(", ", def.Options)}."));
                 return;
 
             default: // Text: nothing is proven about its range, so nothing is claimed
@@ -492,6 +511,46 @@ public static class Validator
             $"\"{name}\" set to {n} means something different depending on the QuadStick's firmware: {what}. "
             + "The row is saved exactly as you wrote it.",
             "Check which firmware your QuadStick runs before relying on this row."));
+    }
+
+    // A computer can only reach the QuadStick's files while the USB emulation
+    // it is running declares a mass-storage interface, and four of the eight do
+    // not. Read off the configuration descriptors in firmware 2373: PS3_t (mode
+    // 0), X360CE_t (2), X360_t (3) and CM_t (4, which is what mode 4 answers
+    // with on a computer) each carry an MS_Interface; DS3_t (1), NS_t (5),
+    // Mode6_t (6) and PS4_t (7) carry none. Joystick.c:656 skips configuring
+    // the endpoints for 6 on top of that.
+    static readonly Dictionary<int, string> EmulationModesWithNoDrive = new()
+    {
+        [1] = "DualShock 3",
+        [5] = "Nintendo Switch Pro Controller",
+        [6] = "DualShock 4 with no USB drive",
+        [7] = "DualShock 4 wireless",
+    };
+
+    // Losing the drive is survivable in a game profile: the device boots back
+    // into default.csv and the files come back. In default.csv or prefs.csv it
+    // is not, because those are what it boots into, and the only way back is
+    // the physical force-erase. So the same value is an error in one file and a
+    // warning in the other, and HasErrors is what stops the install.
+    static void WarnIfItTakesTheDriveAway(
+        string name, string value, string cell, bool decidesTheBootMode, List<Issue> issues)
+    {
+        if (name != "enable_DS3_emulation") return;
+        if (!int.TryParse(value.Trim(), System.Globalization.NumberStyles.Integer,
+                          System.Globalization.CultureInfo.InvariantCulture, out var mode)) return;
+        if (!EmulationModesWithNoDrive.TryGetValue(mode, out var what)) return;
+
+        issues.Add(decidesTheBootMode
+            ? new Issue(Severity.Error, cell,
+                $"USB emulation mode {mode} ({what}) does not give a computer access to the QuadStick's drive, "
+                + "and this file is one the device boots with. Installing it would leave no way to edit any profile back, "
+                + "and recovery is a physical force-erase.",
+                "Use mode 0, 2, 3 or 4 here, and set the other mode in a game profile instead.")
+            : new Issue(Severity.Warning, cell,
+                $"USB emulation mode {mode} ({what}) does not give a computer access to the QuadStick's drive, "
+                + "so the files disappear from the computer while this profile is running.",
+                "Expected for this console. Switch the QuadStick back to another profile to edit its files again."));
     }
 
     // The device reads a value with atoi, which is 32 bits wide. long.TryParse

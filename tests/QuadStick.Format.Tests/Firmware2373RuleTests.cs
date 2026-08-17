@@ -99,6 +99,77 @@ public class Firmware2373RuleTests
         Assert.Contains("Nintendo", issue.Message);
     }
 
+    // A computer can only reach the QuadStick's files while the emulation it is
+    // running declares a mass-storage interface, and four of the eight do not:
+    // DS3_t (mode 1), NS_t (5), Mode6_t (6) and PS4_t (7) have no MS_Interface,
+    // while PS3_t (0), X360CE_t (2), X360_t (3) and CM_t (4 on a computer) do.
+    // Put one of the four in the file the device boots with and there is no way
+    // to edit it back: recovery is the physical force-erase.
+    [Theory]
+    [InlineData("1")]
+    [InlineData("5")]
+    [InlineData("6")]
+    [InlineData("7")]
+    public void An_emulation_with_no_drive_cannot_go_in_the_device_preferences(string mode)
+    {
+        var issues = Load($"Preferences\nprefs.csv\nName,Value\nenable_DS3_emulation,{mode}\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("access to the QuadStick's drive"));
+        Assert.Equal(Severity.Error, issue.Severity);
+        Assert.Contains("force-erase", issue.Message);
+    }
+
+    // default.csv is the other file the device comes up on, so the same rule.
+    [Fact]
+    public void An_emulation_with_no_drive_cannot_go_in_default_csv()
+    {
+        var issues = Load("Profile Name,,Solo\ndefault.csv\nOutputs,Function,usb\nenable_DS3_emulation,,6\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("access to the QuadStick's drive"));
+        Assert.Equal(Severity.Error, issue.Severity);
+        Assert.Equal("C4", issue.Cell);
+    }
+
+    // In a game profile it is survivable: the device boots back into
+    // default.csv and the files come back. Worth saying, not worth blocking,
+    // because playing on a Switch is exactly what mode 5 is for.
+    [Fact]
+    public void An_emulation_with_no_drive_is_only_a_warning_in_a_game_profile()
+    {
+        var issues = Load(Head + "enable_DS3_emulation,,5\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("access to the QuadStick's drive"));
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.DoesNotContain(issues, i => i.Severity == Severity.Error);
+    }
+
+    // The four that keep the drive say nothing at all, including 4, which
+    // answers a computer with CM_t and a PS4 with PS4_t.
+    [Theory]
+    [InlineData("0")]
+    [InlineData("2")]
+    [InlineData("3")]
+    [InlineData("4")]
+    public void An_emulation_that_keeps_the_drive_is_not_worth_a_word(string mode)
+    {
+        var issues = Load($"Preferences\nprefs.csv\nName,Value\nenable_DS3_emulation,{mode}\n");
+
+        Assert.DoesNotContain(issues, i => i.Message.Contains("access to the QuadStick's drive"));
+    }
+
+    // USB emulation has gained values with almost every firmware, so a number
+    // this app has never heard of is more likely a QuadStick newer than the app
+    // than a mistake. It is written out untouched and the install is not blocked.
+    [Fact]
+    public void An_emulation_value_the_app_does_not_know_still_installs()
+    {
+        var issues = Load("Preferences\nprefs.csv\nName,Value\nenable_DS3_emulation,8\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("not a value this app knows"));
+        Assert.Equal(Severity.Warning, issue.Severity);
+        Assert.DoesNotContain(issues, i => i.Severity == Severity.Error);
+    }
+
     // joystick_deflection_minimum 0 meant no dead zone on 1476
     // (DataFlow.c:978, a plain multiply). 2373 substitutes 129 raw counts
     // instead (DataFlow.c:997), so a stick set to move at the slightest touch

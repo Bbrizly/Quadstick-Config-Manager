@@ -244,16 +244,20 @@ public class PreferenceCatalogTests
 
     // Value 5 meant PC only, no joystick on firmware 1476 and means a Nintendo
     // Switch Pro Controller on 2373, so the same file behaves differently after
-    // an update. The description names every value and says that out loud. It
-    // stays text: a choice would raise an Error on any off list value and turn
-    // valid files red.
+    // an update. The description names every value and says that out loud.
+    //
+    // It used to stay text, because a choice raises an Error on any off list
+    // value and that would turn a valid file for a newer QuadStick red. It is a
+    // choice now, with firmwareMayAddMore carrying that concern instead: the
+    // eight known values get plain-language names, and a ninth is a warning.
+    // People asked for the mode by console name, not by number.
     [Fact]
     public void USB_emulation_mode_documents_every_value()
     {
         Assert.True(PreferenceCatalog.TryGet("enable_DS3_emulation", out var p));
-        Assert.Equal(PreferenceEditor.Text, p.Editor);
-        Assert.Empty(p.Options);
-        Assert.Null(p.Default);
+        Assert.Equal(PreferenceEditor.Choice, p.Editor);
+        Assert.Equal(new[] { "0", "1", "2", "3", "4", "5", "6", "7" }, p.Options);
+        Assert.True(p.FirmwareMayAddMore);
         foreach (var meaning in new[]
                  {
                      "QuadStick native", "DualShock 3", "x360ce", "Xbox 360",
@@ -262,6 +266,19 @@ public class PreferenceCatalogTests
             Assert.Contains(meaning, p.Description, StringComparison.Ordinal);
         Assert.Contains("1476", p.Description, StringComparison.Ordinal);
         Assert.NotEqual("", p.Risk);
+    }
+
+    // The console name is the thing somebody is choosing; the number is only
+    // how the device spells it. Every option carries one.
+    [Fact]
+    public void USB_emulation_mode_names_every_value_in_plain_words()
+    {
+        Assert.True(PreferenceCatalog.TryGet("enable_DS3_emulation", out var p));
+        Assert.Equal(p.Options.Count, p.OptionLabels.Count);
+        Assert.Equal("Nintendo Switch Pro Controller, no USB drive", p.LabelForOption("5"));
+        Assert.Equal("DualShock 4, for a PS4", p.LabelForOption("4"));
+        // A value the catalog has no word for reads back as itself.
+        Assert.Equal("8", p.LabelForOption("8"));
     }
 
     // No entry may still say a name is missing from the device's table when
@@ -277,8 +294,9 @@ public class PreferenceCatalogTests
         }
     }
 
+    // enable_DS3_emulation was on this list until its eight values got names.
+    // It is off it because the values are the firmware's own, not a guess.
     [Theory]
-    [InlineData("enable_DS3_emulation")]
     [InlineData("enable_usb_a_device")]
     [InlineData("debug")]
     public void Disputed_settings_stay_raw(string name)

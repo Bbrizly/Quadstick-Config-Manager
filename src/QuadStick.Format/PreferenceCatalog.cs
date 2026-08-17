@@ -30,7 +30,21 @@ public sealed record PreferenceDefinition(
     IReadOnlyList<string> Options,
     bool ModeOverride,
     string Risk,
-    string Source);
+    string Source,
+    IReadOnlyList<string> OptionLabels,
+    bool FirmwareMayAddMore)
+{
+    /// <summary>The plain-language name for one option, or the option itself
+    /// when the catalog has no better word for it. Only ever shown: the token
+    /// is what gets written to the file, letter for letter.</summary>
+    public string LabelForOption(string option)
+    {
+        for (int i = 0; i < Options.Count && i < OptionLabels.Count; i++)
+            if (string.Equals(Options[i], option, StringComparison.Ordinal))
+                return OptionLabels[i];
+        return option;
+    }
+}
 
 // Preference metadata from Data/preferences.json. Every claimed range,
 // default, option list or risk note carries a Source string tracing it to the
@@ -49,7 +63,8 @@ public static class PreferenceCatalog
     static readonly string[] KnownFields =
     {
         "name", "label", "category", "editor", "default", "minimum", "maximum",
-        "unit", "description", "options", "modeOverride", "risk", "source",
+        "unit", "description", "options", "optionLabels", "modeOverride", "risk", "source",
+        "firmwareMayAddMore",
     };
 
     static PreferenceCatalog()
@@ -200,7 +215,9 @@ public static class PreferenceCatalog
         var min = OptionalInt(e, "minimum", name);
         var max = OptionalInt(e, "maximum", name);
         var options = OptionalOptions(e, name);
+        var optionLabels = OptionalStrings(e, "optionLabels", name);
         var modeOverride = OptionalBool(e, "modeOverride", name);
+        var mayAddMore = OptionalBool(e, "firmwareMayAddMore", name);
 
         if (editor != PreferenceEditor.Integer && (min.HasValue || max.HasValue))
             throw new InvalidOperationException($"Preference '{name}' is not an integer, so it cannot carry bounds.");
@@ -211,6 +228,17 @@ public static class PreferenceCatalog
             throw new InvalidOperationException($"Preference '{name}' is not a choice, so it cannot carry options.");
         if (editor == PreferenceEditor.Choice && options.Count == 0)
             throw new InvalidOperationException($"Preference '{name}' is a choice with no options.");
+
+        // A label list that does not line up with the options would put the
+        // wrong plain-language name on a value, and the whole point of the
+        // labels is that somebody picks one without reading the number.
+        if (optionLabels.Count > 0 && optionLabels.Count != options.Count)
+            throw new InvalidOperationException(
+                $"Preference '{name}' has {optionLabels.Count} option labels for {options.Count} options.");
+
+        if (mayAddMore && editor != PreferenceEditor.Choice)
+            throw new InvalidOperationException(
+                $"Preference '{name}' is not a choice, so 'firmwareMayAddMore' means nothing on it.");
 
         switch (editor)
         {
@@ -230,7 +258,7 @@ public static class PreferenceCatalog
 
         return new PreferenceDefinition(
             name, label, category, editor, def, min, max, unit, description,
-            options, modeOverride, risk, source);
+            options, modeOverride, risk, source, optionLabels, mayAddMore);
     }
 
     static string Required(JsonElement e, string field, string? name = null)
@@ -283,24 +311,27 @@ public static class PreferenceCatalog
         };
     }
 
-    static IReadOnlyList<string> OptionalOptions(JsonElement e, string name)
-    {
-        if (!e.TryGetProperty("options", out var v)) return Array.Empty<string>();
-        if (v.ValueKind != JsonValueKind.Array)
-            throw new InvalidOperationException($"Preference '{name}' has an 'options' field that is not an array.");
+    static IReadOnlyList<string> OptionalOptions(JsonElement e, string name) =>
+        OptionalStrings(e, "options", name);
 
-        var options = new List<string>();
+    static IReadOnlyList<string> OptionalStrings(JsonElement e, string field, string name)
+    {
+        if (!e.TryGetProperty(field, out var v)) return Array.Empty<string>();
+        if (v.ValueKind != JsonValueKind.Array)
+            throw new InvalidOperationException($"Preference '{name}' has a '{field}' field that is not an array.");
+
+        var items = new List<string>();
         foreach (var item in v.EnumerateArray())
         {
             if (item.ValueKind != JsonValueKind.String)
-                throw new InvalidOperationException($"Preference '{name}' has a non-text option.");
+                throw new InvalidOperationException($"Preference '{name}' has a non-text entry in '{field}'.");
             var token = item.GetString() ?? "";
             if (token.Length == 0)
-                throw new InvalidOperationException($"Preference '{name}' has an empty option.");
-            if (options.Contains(token, StringComparer.Ordinal))
-                throw new InvalidOperationException($"Preference '{name}' repeats the option '{token}'.");
-            options.Add(token);
+                throw new InvalidOperationException($"Preference '{name}' has an empty entry in '{field}'.");
+            if (items.Contains(token, StringComparer.Ordinal))
+                throw new InvalidOperationException($"Preference '{name}' repeats '{token}' in '{field}'.");
+            items.Add(token);
         }
-        return options;
+        return items;
     }
 }

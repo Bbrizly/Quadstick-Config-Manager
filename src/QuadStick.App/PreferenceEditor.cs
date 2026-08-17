@@ -241,13 +241,16 @@ public partial class MainWindow
     // col matters for one reason: a mode row's value is read with a bare atoi
     // (Configuration.c:495), while a settings sheet's goes through a switch
     // that has keyword tables for the bluetooth settings (:598-621). So a
-    // dropdown of words belongs on a settings sheet and nowhere else. Offering
+    // dropdown of WORDS belongs on a settings sheet and nowhere else. Offering
     // one on a mode row would let a click write "keyboard" into a cell the
-    // device turns into 0.
+    // device turns into 0. A dropdown whose options are all plain numbers has
+    // no such problem: atoi reads back exactly what the click wrote, so the USB
+    // emulation mode can be picked by console name on a mode row too.
     static bool CanRepresent(PreferenceDefinition def, string value, int col) => def.Editor switch
     {
         PreferenceEditor.Toggle => value is "0" or "1",
-        PreferenceEditor.Choice => col == 1 && def.Options.Contains(value, StringComparer.Ordinal),
+        PreferenceEditor.Choice => def.Options.Contains(value, StringComparer.Ordinal)
+            && (col == 1 || def.Options.All(IsPlainInteger)),
         PreferenceEditor.Integer =>
             int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var n)
             // "007", "+8" and " 8 " all parse, but showing them in a spinner
@@ -256,6 +259,12 @@ public partial class MainWindow
             && n >= (def.Minimum ?? int.MinValue) && n <= (def.Maximum ?? int.MaxValue),
         _ => false,
     };
+
+    // Written the one way atoi reads it back, so a click cannot change the
+    // spelling of the value it wrote.
+    static bool IsPlainInteger(string token) =>
+        int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var n)
+        && n.ToString(CultureInfo.InvariantCulture) == token;
 
     // The value column. def is null here whenever the row has to stay raw.
     // col is where the value lives: B on a settings sheet, C on a mode row
@@ -302,20 +311,34 @@ public partial class MainWindow
 
     // A fixed set of device keywords. The list holds the exact tokens, so
     // picking one writes the token the firmware reads, letter for letter.
+    //
+    // Where the catalog has a plain-language name for a token, that is what the
+    // row shows. "Nintendo Switch Pro Controller" is the thing somebody is
+    // choosing; 5 is only how the device spells it. The token stays in the item
+    // and is what gets committed, so the label never reaches the file.
     Control ChoiceValueControl(int row, int col, PreferenceDefinition def, string value, string name)
     {
+        var items = def.Options.Select(o => new ChoiceOption(o, def.LabelForOption(o))).ToList();
         var combo = new ComboBox
         {
-            ItemsSource = def.Options.ToList(),
-            SelectedItem = value,
+            ItemsSource = items,
+            SelectedItem = items.FirstOrDefault(i => i.Token == value),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Center,
         };
         combo[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(FunctionTint + "Brush");
         AutomationProperties.SetName(combo, name);
         combo.SelectionChanged += (_, _) =>
-        { if (combo.SelectedItem is string token) CommitPreferenceValue(row, col, token); };
+        { if (combo.SelectedItem is ChoiceOption pick) CommitPreferenceValue(row, col, pick.Token); };
         return combo;
+    }
+
+    // ToString is what the ComboBox shows and what a screen reader reads, so
+    // the token is spelled out beside the words rather than hidden behind them:
+    // the number is what the file will hold and what QuadStick support asks for.
+    sealed record ChoiceOption(string Token, string Label)
+    {
+        public override string ToString() => Label == Token ? Token : $"{Label} ({Token})";
     }
 
     // A whole number. Bounds come from the official manager's own sliders, so

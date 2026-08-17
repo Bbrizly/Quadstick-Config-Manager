@@ -336,6 +336,7 @@
     "editor": "choice",
     "default": "1",
     "options": ["0", "1", "2"],
+    "optionLabels": ["Linear", "Mixed", "Parabolic"],
     "description": "0 is linear, 1 is mixed, 2 is parabolic.",
     "modeOverride": true,
     "source": "QMP-4 QuadStick.py choice_mouse_response ['Linear','Mixed','Parabolic'] saved as the chosen index; qsflash.py defaults '1'"
@@ -510,11 +511,15 @@
     "name": "enable_DS3_emulation",
     "label": "USB emulation mode",
     "category": "USB and compatibility",
-    "editor": "text",
-    "description": "Which USB device the QuadStick pretends to be. On firmware 2373: 0 QuadStick native, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 for a PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 with no USB drive, 7 straight DS4 wireless. Value 5 meant PC only, no joystick on firmware 1476, so a file carrying 5 behaves completely differently once the device is updated.",
+    "editor": "choice",
+    "default": "0",
+    "options": ["0", "1", "2", "3", "4", "5", "6", "7"],
+    "optionLabels": ["QuadStick (PC and PS3)", "DualShock 3, no USB drive", "x360ce, for a PC", "Xbox 360 controller", "DualShock 4, for a PS4", "Nintendo Switch Pro Controller, no USB drive", "DualShock 4, no USB drive", "DualShock 4 wireless, no USB drive"],
+    "firmwareMayAddMore": true,
+    "description": "Which USB device the QuadStick pretends to be. On firmware 2373: 0 QuadStick native, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 for a PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 with no USB drive, 7 straight DS4 wireless. Value 5 meant PC only, no joystick on firmware 1476, so a file carrying 5 behaves completely differently once the device is updated. Modes 1, 5, 6 and 7 do not offer a USB drive at all, so a computer cannot see the QuadStick's files while one of them is running.",
     "modeOverride": true,
     "risk": "The name says DS3, but the device reads it as a USB emulation mode with eight numbered values, not an on or off switch. What 5 means changed between firmware 1476 and 2373, and a number the running firmware does not know leaves the device on an emulation nobody asked for. QCM keeps whatever is typed and refuses nothing, because a value that is wrong for one firmware is right for another. Change it only on advice from QuadStick support.",
-    "source": "firmware 2373 preference_keywords.h maps it to USB_EMULATION_MODE; Descriptors.c:1292 switches on all eight values, DescriptorsDS4.c:803 and :807 tell 6 (no USB drive) from 7 (straight DS4 wireless), and Joystick.c and DataFlow.c switch on the same numbers. Firmware 1476 Descriptors.c:1523 had 5 as PC only, no joystick. Preferences.h:138 defaults to 0. QMP-4 QuadStick.py checkbox_ps4_boot_mode treats it as a checkbox."
+    "source": "firmware 2373 preference_keywords.h maps it to USB_EMULATION_MODE; Descriptors.c:1292 switches on all eight values, DescriptorsDS4.c:803 and :807 tell 6 (no USB drive) from 7 (straight DS4 wireless), and Joystick.c and DataFlow.c switch on the same numbers. Which modes carry a USB drive is read off the configuration descriptors: PS3_t (mode 0), X360CE_t (2), X360_t (3) and CM_t (4 on a computer) each declare an MS_Interface, while DS3_t (1), NS_t (5), Mode6_t (6) and PS4_t (7) do not. Firmware 1476 Descriptors.c:1523 had 5 as PC only, no joystick. Preferences.h:138 defaults to 0. QMP-4 QuadStick.py checkbox_ps4_boot_mode treats it as a checkbox."
   },
   {
     "name": "enable_usb_comm",
