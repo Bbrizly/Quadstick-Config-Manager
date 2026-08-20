@@ -112,12 +112,13 @@ public partial class MainWindow
         var host = new StackPanel { Margin = new Thickness(24), Spacing = 16, MinWidth = 420, MaxWidth = 480 };
         var dialog = new Window
         {
+            Classes = { "dialog" },
             Title = "Installing profile",
             SizeToContent = SizeToContent.WidthAndHeight,
             CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Content = ZoomWrap(host, _uiScale),
         };
+        dialog.Content = DialogShell(dialog, ZoomWrap(host, _uiScale));
         // No inline/frozen Background: the app-wide "Window" style in
         // App.axaml already binds Background to {DynamicResource
         // AppBackgroundBrush}, so this dialog follows theme changes for free.

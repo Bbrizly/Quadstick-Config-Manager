@@ -24,6 +24,7 @@ public class DrivePickerWindow : Window
 
     public DrivePickerWindow(MainWindow owner, bool preCheck)
     {
+        Classes.Add("dialog");
         _owner = owner;
         _preCheck = preCheck;
         Title = "Import from Google Drive";
@@ -86,7 +87,7 @@ public class DrivePickerWindow : Window
         panel.Children.Add(buttons);
         panel.Children.Add(scroll);
 
-        Content = MainWindow.ZoomWrap(panel, owner.UiScale);
+        Content = MainWindow.DialogShell(this, MainWindow.ZoomWrap(panel, owner.UiScale));
 
         // Focus a control so Esc works from the first press.
         Opened += (_, _) => cancel.Focus();

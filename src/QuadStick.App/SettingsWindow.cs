@@ -44,6 +44,7 @@ public class SettingsWindow : Window
 
     public SettingsWindow(MainWindow owner)
     {
+        Classes.Add("dialog");
         Title = "Settings";
         Width = Math.Min(640 * owner.UiScale, 1200);
         Height = Math.Min(640 * owner.UiScale, 900);
@@ -104,7 +105,13 @@ public class SettingsWindow : Window
 
         DockPanel.SetDock(header, Dock.Top);
         DockPanel.SetDock(divider, Dock.Top);
-        Content = new DockPanel { LastChildFill = true, Children = { header, divider, body } };
+        // The shared workflow frame owns the title and close action. Starting
+        // directly with the tabs avoids the old title → giant Close bar → tabs
+        // stack that made Settings look like a dialog nested inside a dialog.
+        Content = MainWindow.DialogShell(this, body);
+        // Give the dialog a real keyboard target on first paint. Without one,
+        // platform-level Escape events can remain on the owner window.
+        Opened += (_, _) => tabControl.Focus();
     }
 
     // A settings window closed with an interface-size preview still pending

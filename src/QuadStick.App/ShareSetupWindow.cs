@@ -33,6 +33,7 @@ public class ShareSetupWindow : Window
 
     public ShareSetupWindow(MainWindow owner, string finishLabel, bool needsSave)
     {
+        Classes.Add("dialog");
         _owner = owner;
         _needsSave = needsSave;
         _finishLabel = finishLabel;
@@ -44,12 +45,6 @@ public class ShareSetupWindow : Window
 
         int total = needsSave ? 3 : 2;
 
-        var heading = new TextBlock
-        {
-            Text = "Set up Google Sheets",
-            FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold,
-            Margin = new Thickness(0, 0, 0, 8),
-        };
         var explain = new TextBlock
         {
             Text = "Sharing a profile puts it in a Google Sheet on your own Google Drive, "
@@ -83,7 +78,6 @@ public class ShareSetupWindow : Window
         steps.Children.Add(finishStep.Panel);
 
         var panel = new StackPanel { Margin = new Thickness(24), Spacing = 0 };
-        panel.Children.Add(heading);
         panel.Children.Add(explain);
         panel.Children.Add(steps);
         panel.Children.Add(_status);
@@ -95,7 +89,7 @@ public class ShareSetupWindow : Window
             Children = { cancel },
         });
 
-        Content = MainWindow.ZoomWrap(panel, owner.UiScale);
+        Content = MainWindow.DialogShell(this, MainWindow.ZoomWrap(panel, owner.UiScale));
         // Before the window is up, not on Opened: the last step must never be
         // live for the frame between showing and the first refresh.
         Refresh();

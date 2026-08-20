@@ -41,6 +41,7 @@ public class ModesWindow : Window
 
     public ModesWindow(MainWindow owner)
     {
+        Classes.Add("dialog");
         _owner = owner;
         Title = "Modes";
         Width = Math.Min(620 * owner.UiScale, 1100);
@@ -94,7 +95,7 @@ public class ModesWindow : Window
             },
         };
 
-        Content = MainWindow.ZoomWrap(new DockPanel
+        Content = MainWindow.DialogShell(this, MainWindow.ZoomWrap(new DockPanel
         {
             Children =
             {
@@ -111,7 +112,7 @@ public class ModesWindow : Window
                 },
                 new ScrollViewer { Content = body },
             },
-        }, owner.UiScale);
+        }, owner.UiScale));
 
         Build();
     }

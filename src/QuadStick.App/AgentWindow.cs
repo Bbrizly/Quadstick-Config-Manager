@@ -280,7 +280,7 @@ public class AgentWindow : Window
         _tick = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
         _tick.Tick += (_, _) => TickNow();
 
-        Content = MainWindow.ZoomWrap(panel, owner.UiScale);
+        Content = MainWindow.DialogShell(this, MainWindow.ZoomWrap(panel, owner.UiScale));
         Opened += (_, _) => _ask.Focus();
         Empty();
     }

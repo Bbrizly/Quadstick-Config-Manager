@@ -54,6 +54,7 @@ public class CommunityProfilesWindow : Window
     /// and the HttpClient the import should use.</summary>
     internal CommunityProfilesWindow(MainWindow owner, CommunityCatalogClient catalog, HttpClient? importHttp = null)
     {
+        Classes.Add("dialog");
         _owner = owner;
         _catalog = catalog;
         _importHttp = importHttp;
@@ -63,11 +64,6 @@ public class CommunityProfilesWindow : Window
         Height = Math.Min(600 * owner.UiScale, 800);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-        var heading = new TextBlock
-        {
-            Text = "Community profiles",
-            FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold,
-        };
         var explain = new TextBlock
         {
             Text = "Game profiles other QuadStick players have shared as Google Sheets. "
@@ -153,20 +149,17 @@ public class CommunityProfilesWindow : Window
         };
 
         var panel = new DockPanel { LastChildFill = true, Margin = new Thickness(24) };
-        DockPanel.SetDock(heading, Dock.Top);
         DockPanel.SetDock(explain, Dock.Top);
         DockPanel.SetDock(_search, Dock.Top);
         DockPanel.SetDock(_summary, Dock.Top);
         DockPanel.SetDock(_count, Dock.Top);
         DockPanel.SetDock(_status, Dock.Bottom);
         DockPanel.SetDock(buttons, Dock.Bottom);
-        heading.Margin = new Thickness(0, 0, 0, 8);
         explain.Margin = new Thickness(0, 0, 0, 12);
         _search.Margin = new Thickness(0, 0, 0, 10);
         _summary.Margin = new Thickness(0, 0, 0, 4);
         _count.Margin = new Thickness(0, 0, 0, 10);
         _status.Margin = new Thickness(0, 12, 0, 0);
-        panel.Children.Add(heading);
         panel.Children.Add(explain);
         panel.Children.Add(_search);
         panel.Children.Add(_summary);
@@ -175,7 +168,7 @@ public class CommunityProfilesWindow : Window
         panel.Children.Add(buttons);
         panel.Children.Add(scroll);
 
-        Content = MainWindow.ZoomWrap(panel, owner.UiScale);
+        Content = MainWindow.DialogShell(this, MainWindow.ZoomWrap(panel, owner.UiScale));
 
         // Focus the search box so typing works from the first key press.
         Opened += (_, _) => _search.Focus();

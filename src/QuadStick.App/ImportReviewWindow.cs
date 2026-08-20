@@ -97,6 +97,7 @@ public class ImportReviewWindow : Window
         IReadOnlyList<SkippedTab> skipped, string? limitation = null,
         IReadOnlyList<TabRename>? renamed = null)
     {
+        Classes.Add("dialog");
         _owner = owner;
         _file = file;
         _source = source;
@@ -179,7 +180,7 @@ public class ImportReviewWindow : Window
         panel.Children.Add(buttons);
         panel.Children.Add(_scroll);
 
-        Content = MainWindow.ZoomWrap(panel, owner.UiScale);
+        Content = MainWindow.DialogShell(this, MainWindow.ZoomWrap(panel, owner.UiScale));
         Resize();
         Build();
         // Land on the first thing that needs a person, not on the way out.

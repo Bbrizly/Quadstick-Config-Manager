@@ -60,19 +60,18 @@ public class DeviceFilesWindow : Window
 
     public DeviceFilesWindow(MainWindow owner)
     {
+        Classes.Add("dialog");
         _owner = owner;
         OpenUri = uri => Launcher.LaunchUriAsync(uri); // this window's own launcher
         Confirm = ConfirmDialogAsync;
         Title = "Files on your QuadStick";
         Width = Math.Min(760 * owner.UiScale, 1100);
-        Height = Math.Min(640 * owner.UiScale, 820);
+        // The shared frame adds a persistent header. Preserve the previous
+        // result viewport so a normal three-file drive does not virtualize its
+        // last action row just below the fold.
+        Height = Math.Min(700 * owner.UiScale, 880);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-        var heading = new TextBlock
-        {
-            Text = "Files on your QuadStick",
-            FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold,
-        };
         var explain = new TextBlock
         {
             Text = "Everything here reads and writes files on the QuadStick's drive, nothing else. "
@@ -118,23 +117,20 @@ public class DeviceFilesWindow : Window
         };
 
         var panel = new DockPanel { LastChildFill = true, Margin = new Thickness(24) };
-        DockPanel.SetDock(heading, Dock.Top);
         DockPanel.SetDock(explain, Dock.Top);
         DockPanel.SetDock(_summary, Dock.Top);
         DockPanel.SetDock(_status, Dock.Bottom);
         DockPanel.SetDock(buttons, Dock.Bottom);
-        heading.Margin = new Thickness(0, 0, 0, 8);
         explain.Margin = new Thickness(0, 0, 0, 12);
         _summary.Margin = new Thickness(0, 0, 0, 10);
         _status.Margin = new Thickness(0, 12, 0, 0);
-        panel.Children.Add(heading);
         panel.Children.Add(explain);
         panel.Children.Add(_summary);
         panel.Children.Add(_status);
         panel.Children.Add(buttons);
         panel.Children.Add(scroll);
 
-        Content = MainWindow.ZoomWrap(panel, owner.UiScale);
+        Content = MainWindow.DialogShell(this, MainWindow.ZoomWrap(panel, owner.UiScale));
 
         Opened += (_, _) => close.Focus();
         Opened += (_, _) => _busy = LoadAsync();
@@ -733,22 +729,23 @@ public class DeviceFilesWindow : Window
         AutomationProperties.SetName(no, "Cancel, change nothing");
         var dialog = new Window
         {
+            Classes = { "dialog" },
             Title = title,
             SizeToContent = SizeToContent.WidthAndHeight,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Content = MainWindow.ZoomWrap(new StackPanel
-            {
-                Margin = new Thickness(24),
-                Spacing = 16,
-                MaxWidth = 520,
-                Children =
-                {
-                    new TextBlock { Text = title, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
-                    new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
-                    new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { yes, no } },
-                },
-            }, _owner.UiScale),
         };
+        dialog.Content = MainWindow.DialogShell(dialog, MainWindow.ZoomWrap(new StackPanel
+        {
+            Margin = new Thickness(24),
+            Spacing = 16,
+            MaxWidth = 520,
+            Children =
+            {
+                new TextBlock { Text = title, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { yes, no } },
+            },
+        }, _owner.UiScale));
         var result = false;
         yes.Click += (_, _) => { result = true; dialog.Close(); };
         no.Click += (_, _) => dialog.Close();
