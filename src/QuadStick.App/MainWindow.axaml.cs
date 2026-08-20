@@ -707,7 +707,6 @@ public partial class MainWindow : Window
         LibraryEmptyOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
         LibraryEmptyImportButton.Click += async (_, _) => await ImportAsync();
 
-        HomeButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
         Closing += async (_, e) =>
         {
             if (_file is not { Dirty: true } || _closeConfirmed) return;
@@ -827,7 +826,6 @@ public partial class MainWindow : Window
         AppearancePicker.SelectionChanged += (_, _) => ApplyTheme((string)AppearancePicker.SelectedItem!);
 
         SettingsButton.Click += (_, _) => new SettingsWindow(this).ShowDialog(this);
-        EditorSettingsButton.Click += (_, _) => new SettingsWindow(this).ShowDialog(this);
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
         // key. Ctrl-combos are safe to fire even while a field has focus
@@ -1512,7 +1510,8 @@ public partial class MainWindow : Window
         HomeView.IsVisible = false;
         EditorView.IsVisible = true;
         ShellHomeButton.Classes.Remove("active");
-        HomeButton.Focus();
+        SheetPicker.Focus(); // the name box would put a caret on the filename
+
     }
 
     // Switches between Device View and List View, keeping keyboard focus on

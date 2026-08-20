@@ -202,8 +202,6 @@
            a tidy line: this app is driven by mouth joysticks and switches, so
            icon-only toolbars and side-scrolling are both hostile. -->
       <WrapPanel DockPanel.Dock="Top" Classes="toolbar" Margin="0,0,0,4">
-        <Button x:Name="HomeButton" Content="← Home"
-                AutomationProperties.Name="Go back to the home screen"/>
         <TextBlock Text="Profile" VerticalAlignment="Center" Classes="secondary"/>
         <TextBox x:Name="FileNameBox" Width="230" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold"
                  VerticalAlignment="Center"
@@ -230,8 +228,6 @@
                 AutomationProperties.Name="Install this profile onto a connected QuadStick. Shortcut Control I"/>
         <Button x:Name="HelpButton" Content="Help"
                 AutomationProperties.Name="Open the quick guide. Shortcut Control H or F1"/>
-        <Button x:Name="EditorSettingsButton" Classes="icon" Content="⚙" FontSize="20"
-                AutomationProperties.Name="Open Settings"/>
       </WrapPanel>
 
       <ContentControl x:Name="StatusHost" DockPanel.Dock="Top" Margin="0,0,0,10"/>

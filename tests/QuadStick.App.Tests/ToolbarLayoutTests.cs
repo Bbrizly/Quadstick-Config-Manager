@@ -16,8 +16,8 @@ public class ToolbarLayoutTests
 {
     static readonly string[] EditorButtons =
     {
-        "HomeButton", "ShareButton", "SaveButton", "UndoButton", "SaveTemplateButton",
-        "InstallButton", "HelpButton", "EditorSettingsButton", "ModeHelpButton",
+        "ShareButton", "SaveButton", "UndoButton", "SaveTemplateButton",
+        "InstallButton", "HelpButton", "ModeHelpButton",
         "ModesButton", "DeviceViewButton", "RailViewButton",
         "ListViewButton", "AddRowButton", "UnusedButton",
     };
