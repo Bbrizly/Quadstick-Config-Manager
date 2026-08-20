@@ -90,8 +90,10 @@
       <Setter Property="FontSize" Value="11"/>
       <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
     </Style>
+    <!-- No MinHeight of its own: 48 is the click-target floor Style.cs sets
+         for mouth stick and head mouse users, and a shorter button here sits
+         centred in the bar with a dead strip above and below it. -->
     <Style Selector="Button.shellnav">
-      <Setter Property="MinHeight" Value="40"/>
       <Setter Property="Padding" Value="12,8"/>
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>

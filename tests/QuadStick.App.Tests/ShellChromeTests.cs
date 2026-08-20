@@ -115,4 +115,37 @@ public class ShellChromeTests
         file.Dirty = false; // else Close waits on the save dialog forever
         w.Close();
     }
+
+    // reported the top buttons "sometimes just don't work at all".
+    [AvaloniaFact]
+    public void EveryShellCommandIsBigEnoughToHit()
+    {
+        var w = Open();
+        LoadClean(w);
+        var floor = Style.Numbers["ControlHeight"];
+        foreach (var name in NavButtons)
+        {
+            var b = w.FindControl<Button>(name)!;
+            Assert.True(b.Bounds.Height >= floor,
+                $"{name} is {b.Bounds.Height:0} tall, under the {floor:0} click-target floor");
+        }
+        w.Close();
+    }
+
+    // inert: a near miss lands on the bar and nothing happens.
+    [AvaloniaFact]
+    public void NoDeadStripAboveOrBelowTheShellCommands()
+    {
+        var w = Open();
+        LoadClean(w);
+        var row = w.FindControl<ComboBox>("AppearancePicker")!.Bounds.Height;
+        foreach (var name in NavButtons)
+        {
+            var b = w.FindControl<Button>(name)!;
+            Assert.True(b.Bounds.Height >= row - 0.5,
+                $"{name} is {b.Bounds.Height:0} tall in a {row:0} row, leaving "
+              + $"{row - b.Bounds.Height:0}px of the bar unclickable");
+        }
+        w.Close();
+    }
 }
