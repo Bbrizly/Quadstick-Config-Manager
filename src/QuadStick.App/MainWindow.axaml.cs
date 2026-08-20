@@ -2212,6 +2212,10 @@ public partial class MainWindow : Window
         // sized to fit the panel whole, so nothing here scrolls. ----
         var diagram = new StackPanel { Spacing = 14, HorizontalAlignment = HorizontalAlignment.Center };
 
+        // A photo of the real device, so the parts below are read against the
+        // thing in front of them and not a drawing that flatters it.
+        diagram.Children.Add(DevicePhoto());
+
         var joystick = ZoneButton(AllZones[0], byZone, 220, minHeight: 120);
         joystick.HorizontalAlignment = HorizontalAlignment.Center;
         diagram.Children.Add(joystick);
@@ -2266,6 +2270,27 @@ public partial class MainWindow : Window
         foreach (var z in visible.Where(z => z.Id is "combo" or "jacks" or "other")) AddExtra(z);
         foreach (var z in visible.Where(z => z.Id is "unset")) AddExtra(z);
         if (extras.Children.Count > 0) DeviceCanvas.Children.Add(extras);
+    }
+
+    // Loaded once: BuildDeviceView runs on every edit and decoding the PNG
+    // each time showed up as a stutter on the mapping panel.
+    static Avalonia.Media.Imaging.Bitmap? _devicePhoto;
+
+    static Control DevicePhoto()
+    {
+        _devicePhoto ??= new Avalonia.Media.Imaging.Bitmap(Avalonia.Platform.AssetLoader.Open(
+            new Uri("avares://QuadStickConfigManager/Assets/QuadStick.png")));
+        var photo = new Image
+        {
+            Source = _devicePhoto,
+            Stretch = Stretch.Uniform,
+            MaxHeight = 170,
+            MaxWidth = 460,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            IsHitTestVisible = false, // the parts below are the controls, not the picture
+        };
+        AutomationProperties.SetName(photo, "Photo of a QuadStick");
+        return photo;
     }
 
     // Which parts the selected model physically has. Zones the model lacks
