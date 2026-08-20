@@ -2206,62 +2206,43 @@ public partial class MainWindow : Window
 
         var visible = VisibleZones(byZone).ToList();
 
-        // ---- Main diagram, stacked to mirror the real device top to bottom:
-        // the joystick on top, the round mouthpiece holes below it, then the
-        // side tube + lip switch. Full width, so each row's parts can be large;
-        // sized to fit the panel whole, so nothing here scrolls. ----
-        var diagram = new StackPanel { Spacing = 14, HorizontalAlignment = HorizontalAlignment.Center };
-
-        // A photo of the real device, so the parts below are read against the
-        // thing in front of them and not a drawing that flatters it.
-        diagram.Children.Add(DevicePhoto());
-
-        var joystick = ZoneButton(AllZones[0], byZone, 220, minHeight: 120);
-        joystick.HorizontalAlignment = HorizontalAlignment.Center;
-        diagram.Children.Add(joystick);
-
-        var rightCol = diagram; // rows are appended straight down the stack
-
-        // A WrapPanel so the round holes drop to a second row instead of
-        // clipping when the window is narrow; on a normal window they sit in a
-        // single row across the mouthpiece.
-        var holes = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center };
-        foreach (var z in visible.Where(z => z.Id.StartsWith("mp_")))
+        // ---- Main diagram: the photo of the device with each part pinned
+        // where it physically sits, so a part is found by looking at the thing
+        // in your mouth instead of matching a name to a box. ----
+        var stage = new Canvas { Width = StageW, Height = StageH };
+        var photo = new Image
         {
-            var hole = ZoneButton(z, byZone, 90, circle: true);
-            hole.Margin = new Avalonia.Thickness(4);
-            holes.Children.Add(hole);
-        }
-        if (holes.Children.Count > 0)
+            Source = DevicePhoto(), Width = PhotoW, Height = PhotoH,
+            Stretch = Stretch.Uniform,
+            IsHitTestVisible = false, // the labels are the controls, not the picture
+        };
+        Canvas.SetLeft(photo, PhotoX);
+        Canvas.SetTop(photo, PhotoY);
+        stage.Children.Add(photo);
+
+        foreach (var (id, lx, ly, px, py) in Hotspots)
         {
-            var mouthpieceBar = new Border
-            {
-                CornerRadius = new Avalonia.CornerRadius(22),
-                Padding = new Avalonia.Thickness(14, 12),
-                BorderThickness = new Avalonia.Thickness(1),
-                Child = new StackPanel
-                {
-                    Spacing = 8,
-                    Children =
-                    {
-                        new TextBlock { Text = "Mouthpiece", FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"),
-                                        HorizontalAlignment = HorizontalAlignment.Center },
-                        holes,
-                    },
-                },
-            };
-            BindBrush(mouthpieceBar, Border.BackgroundProperty, "SurfaceSubtle");
-            BindBrush(mouthpieceBar, Border.BorderBrushProperty, "SurfaceBorder");
-            rightCol.Children.Add(mouthpieceBar);
+            var z = visible.FirstOrDefault(v => v.Id == id);
+            if (z is null) continue;
+            // The leader line leaves the edge of the label facing the part.
+            double ax = lx + PillW / 2, ay = ly < py ? ly + PillH : ly;
+            foreach (var line in Leader(ax, ay, px, py)) stage.Children.Add(line);
+            stage.Children.Add(Marker(px, py));
+
+            var label = ZoneButton(z, byZone, PillW, minHeight: PillH, shortName: true);
+            label.Width = PillW;
+            Canvas.SetLeft(label, lx);
+            Canvas.SetTop(label, ly);
+            stage.Children.Add(label);
         }
-
-        var sideRow = new StackPanel
-        { Orientation = Orientation.Horizontal, Spacing = 12, HorizontalAlignment = HorizontalAlignment.Center };
-        foreach (var z in visible.Where(z => z.Id is "side" or "lip"))
-            sideRow.Children.Add(ZoneButton(z, byZone, 200, minHeight: 108));
-        if (sideRow.Children.Count > 0) rightCol.Children.Add(sideRow);
-
-        DeviceCanvas.Children.Add(diagram);
+        // Shrinks to fit a narrow panel instead of clipping a hotspot off the
+        // edge, and is never blown up past the photo's own size.
+        DeviceCanvas.Children.Add(new Viewbox
+        {
+            Child = stage, Stretch = Stretch.Uniform,
+            StretchDirection = StretchDirection.DownOnly,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        });
 
         // ---- Secondary parts along the bottom: hole combos, switch jacks, USB,
         // then unmapped rows last so "No input yet" lands at the bottom right. ----
@@ -2272,26 +2253,60 @@ public partial class MainWindow : Window
         if (extras.Children.Count > 0) DeviceCanvas.Children.Add(extras);
     }
 
+    // The photo and its labels are laid out at one fixed size and scaled as a
+    // whole, so a label can never drift off the part it names.
+    const double StageW = 600, StageH = 468;
+    const double PhotoX = 80, PhotoY = 84, PhotoW = 440, PhotoH = 293;
+    const double PillW = 116, PillH = 68;
+
+    // Each part: where its label sits, and the point on the photo it names.
+    // Labels sit in clear space above and below the device because six of them
+    // dropped straight onto the parts cover the parts and each other.
+    static readonly (string Id, double LabelX, double LabelY, double PointX, double PointY)[] Hotspots =
+    {
+        ("joystick", 150, 390, 238, 251),   // the gimbal the mouthpiece tilts on
+        ("mp_left", 38, 0, 225, 222),
+        ("mp_center", 174, 0, 281, 222),
+        ("mp_right", 310, 0, 337, 222),
+        ("side", 446, 0, 439, 209),
+        ("lip", 318, 390, 280, 285),
+    };
+
+    // Leader lines and markers are drawn twice: a thick line in the surface
+    // colour under a thin one in the text colour, so they stay visible over
+    // the black device and over the panel behind it, in either theme.
+    IEnumerable<Control> Leader(double x1, double y1, double x2, double y2)
+    {
+        foreach (var (thickness, brush) in new[] { (5.0, "Surface"), (2.0, "TextSecondary") })
+        {
+            var line = new Avalonia.Controls.Shapes.Line
+            {
+                StartPoint = new Point(x1, y1), EndPoint = new Point(x2, y2),
+                StrokeThickness = thickness, IsHitTestVisible = false,
+            };
+            BindBrush(line, Avalonia.Controls.Shapes.Shape.StrokeProperty, brush);
+            yield return line;
+        }
+    }
+
+    Control Marker(double x, double y)
+    {
+        var dot = new Avalonia.Controls.Shapes.Ellipse
+        { Width = 14, Height = 14, StrokeThickness = 3, IsHitTestVisible = false };
+        BindBrush(dot, Avalonia.Controls.Shapes.Shape.StrokeProperty, "TextSecondary");
+        BindBrush(dot, Avalonia.Controls.Shapes.Shape.FillProperty, "Surface");
+        Canvas.SetLeft(dot, x - 7);
+        Canvas.SetTop(dot, y - 7);
+        return dot;
+    }
+
     // Loaded once: BuildDeviceView runs on every edit and decoding the PNG
     // each time showed up as a stutter on the mapping panel.
     static Avalonia.Media.Imaging.Bitmap? _devicePhoto;
 
-    static Control DevicePhoto()
-    {
+    static Avalonia.Media.Imaging.Bitmap DevicePhoto() =>
         _devicePhoto ??= new Avalonia.Media.Imaging.Bitmap(Avalonia.Platform.AssetLoader.Open(
             new Uri("avares://QuadStickConfigManager/Assets/QuadStick.png")));
-        var photo = new Image
-        {
-            Source = _devicePhoto,
-            Stretch = Stretch.Uniform,
-            MaxHeight = 170,
-            MaxWidth = 460,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            IsHitTestVisible = false, // the parts below are the controls, not the picture
-        };
-        AutomationProperties.SetName(photo, "Photo of a QuadStick");
-        return photo;
-    }
 
     // Which parts the selected model physically has. Zones the model lacks
     // still show when a profile maps them, but marked, so a profile made for
@@ -2301,7 +2316,7 @@ public partial class MainWindow : Window
         || zoneId is not ("mp_left" or "mp_right" or "combo" or "side" or "lip" or "jacks");
 
     Control ZoneButton(Zone z, Dictionary<string, List<Binding>> byZone, double minWidth,
-                       double minHeight = 84, bool circle = false)
+                       double minHeight = 84, bool circle = false, bool shortName = false)
     {
         byZone.TryGetValue(z.Id, out var bindings);
         int count = bindings?.Count ?? 0;
@@ -2311,8 +2326,9 @@ public partial class MainWindow : Window
         var content = new StackPanel { Spacing = 3 };
         content.Children.Add(new TextBlock
         {
-            // Circular holes use the short name so the label fits inside the ring.
-            Text = circle ? z.Display : z.Title, FontWeight = FontWeight.Bold,
+            // Round holes and photo callouts use the short name: the full one
+            // wraps to three lines and pushes the mapping count out of the box.
+            Text = circle || shortName ? z.Display : z.Title, FontWeight = FontWeight.Bold,
             FontSize = Size(circle ? "SmallSize" : "BodySize"),
             TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
@@ -2335,7 +2351,7 @@ public partial class MainWindow : Window
         if (foreign)
             content.Children.Add(new TextBlock
             {
-                Text = circle ? "Not on model" : "Not on your model",
+                Text = circle || shortName ? "Not on model" : "Not on your model",
                 FontSize = Size("SmallSize"), Classes = { "muted" },
                 TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
