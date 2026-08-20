@@ -33,6 +33,7 @@ public static class Style
         ["CellRadius"]    = 5,
         ["TrackRadius"]   = 8,
         ["IconRadius"]    = 20,
+        ["PanelRadius"]   = 12,
 
         // Size. The floors above, plus the card the home screen is built from.
         ["ControlHeight"] = 48,
@@ -58,6 +59,10 @@ public static class Style
     // "" means whatever the operating system hands us, which is what the app
     // has always used. A name here restyles every word in the program.
     public const string FontFamily = "";
+    // The compact QCM mark uses a technical display face without forcing a
+    // monospace font on long instructions and form labels. Every platform has
+    // at least one of these; the last entry is Avalonia's portable fallback.
+    public const string BrandFontFamily = "Cascadia Mono, JetBrains Mono, Menlo, DejaVu Sans Mono, monospace";
 
     public static void RegisterInto(Application app)
     {
@@ -68,6 +73,7 @@ public static class Style
             if (key.EndsWith("Radius")) d[key + "Corner"] = new CornerRadius(value);
         d["AppFont"] = FontFamily.Length > 0
             ? new FontFamily(FontFamily) : Avalonia.Media.FontFamily.Default;
+        d["BrandFont"] = new FontFamily(BrandFontFamily);
         app.Resources.MergedDictionaries.Add(d);
     }
 
