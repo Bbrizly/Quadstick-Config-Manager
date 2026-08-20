@@ -2354,14 +2354,19 @@ public partial class MainWindow : Window
     }
 
     // The photo and its labels are laid out at one fixed size and scaled as a
-    // whole, so a label can never drift off the part it names.
+    // whole, so a label can never drift off the part it names. Every number
+    // below is measured off Assets/QuadStick.png at 1536x1024. Replacing that
+    // file means measuring them again; DeviceHotspotTests pins the size so a
+    // swap fails loudly instead of quietly pointing at the wrong hole.
     const double StageW = 600, StageH = 468;
     const double PhotoX = 80, PhotoY = 84, PhotoW = 440, PhotoH = 293;
     const double PillW = 116, PillH = 68;
 
     // The five mode lights across the top of the case, as fractions of the
-    // photo. Measured off the picture: the lit one in it is light 1.
-    const double LedX = 0.2654, LedGap = 0.1005, LedY = 0.158;
+    // photo. Measured off Assets/QuadStick.png: the domes' paired specular
+    // glints give the centre of each, and a line fitted through the five gives
+    // the spacing. None of them is lit in this photo; the app draws its own.
+    const double LedX = 0.2407, LedGap = 0.1000, LedY = 0.1729;
 
 
     // Each part: where its label sits, and the point on the photo it names.
@@ -2369,12 +2374,12 @@ public partial class MainWindow : Window
     // dropped straight onto the parts cover the parts and each other.
     static readonly (string Id, double LabelX, double LabelY, double PointX, double PointY)[] Hotspots =
     {
-        ("joystick", 150, 390, 238, 251),   // the gimbal the mouthpiece tilts on
-        ("mp_left", 38, 0, 225, 222),
-        ("mp_center", 174, 0, 281, 222),
-        ("mp_right", 310, 0, 337, 222),
-        ("side", 446, 0, 439, 209),
-        ("lip", 318, 390, 280, 285),
+        ("joystick", 150, 390, 217, 253),   // the left arch of the gimbal, clear of the lip disc
+        ("mp_left", 38, 0, 218, 224),
+        ("mp_center", 174, 0, 273, 224),
+        ("mp_right", 310, 0, 327, 224),
+        ("side", 446, 0, 407, 222),         // the bore of the side tube, not its body
+        ("lip", 318, 390, 269, 286),
     };
 
     // Leader lines and markers are drawn twice: a thick line in the surface

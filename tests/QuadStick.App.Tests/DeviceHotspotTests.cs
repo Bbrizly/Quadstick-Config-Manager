@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Avalonia;
 using Avalonia.Automation;
@@ -5,6 +6,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Headless.XUnit;
+using System.Buffers.Binary;
+using System.IO;
+using Avalonia.Platform;
 using Avalonia.VisualTree;
 using QuadStick.App;
 using QuadStick.Format;
@@ -96,6 +100,31 @@ public class DeviceHotspotTests
                 $"mode 2's light should sit right of mode 1's: {two[0]} vs {one[0]}");
         }
         finally { w.Close(); }
+    }
+
+    // Every hotspot and mode-light number in MainWindow is measured off this one
+    // photo. Dropping in a differently framed picture leaves the numbers
+    // pointing at the wrong holes, which is what happened when the first photo
+    // was replaced. Pin the size so the swap fails here instead of on screen.
+    [AvaloniaFact]
+    public void The_photo_is_the_one_the_hotspots_were_measured_on()
+    {
+        // Read the PNG header rather than decoding: the headless platform hands
+        // back a 1x1 stub bitmap, so PixelSize would prove nothing here.
+        using var stream = AssetLoader.Open(
+            new Uri("avares://QuadStickConfigManager/Assets/QuadStick.png"));
+        var head = new byte[24];
+        using (var all = new MemoryStream())
+        {
+            stream.CopyTo(all);
+            all.Position = 0;
+            Assert.Equal(24, all.Read(head, 0, 24));
+        }
+        int width = BinaryPrimitives.ReadInt32BigEndian(head.AsSpan(16, 4));
+        int height = BinaryPrimitives.ReadInt32BigEndian(head.AsSpan(20, 4));
+        Assert.True((width, height) == (1536, 1024),
+            $"Assets/QuadStick.png is {width}x{height}, not 1536x1024. If the photo "
+          + "changed, measure Hotspots and LedX/LedGap/LedY off the new one again.");
     }
 
     [AvaloniaFact]
