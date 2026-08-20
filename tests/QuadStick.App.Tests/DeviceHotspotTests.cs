@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using QuadStick.App;
@@ -47,6 +48,55 @@ public class DeviceHotspotTests
             .Select(b => (AutomationProperties.GetName(b) ?? "",
                           new Rect(Canvas.GetLeft(b), Canvas.GetTop(b), b.Bounds.Width, b.Bounds.Height)))
             .ToArray();
+
+    // The lit mode lights: the leader-line markers are ellipses too, but they
+    // are drawn with a stroke and these are not.
+    static double[] LitLights(MainWindow w) =>
+        Stage(w).Children.OfType<Ellipse>()
+            .Where(e => e.StrokeThickness == 0 && e.Opacity == 1)
+            .Select(Canvas.GetLeft)
+            .OrderBy(x => x)
+            .ToArray();
+
+    static string Caption(MainWindow w) =>
+        w.GetVisualDescendants().OfType<TextBlock>()
+            .Select(t => t.Text ?? "")
+            .First(t => t.StartsWith("Device shows") || t.StartsWith("Device has no"));
+
+    // Mode 1 lights the leftmost of the five; mode 2 the one to its right.
+    // Both patterns come from the firmware's own table, see ModeLightsTests.
+    [AvaloniaFact]
+    public void The_mode_lights_follow_the_mode()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.NewFromTemplate("mygame.csv");
+        int second = file.AddModeSheet("Driving");
+        file.Dirty = false; // else Close opens the save dialog and waits forever
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(true);
+        w.UpdateLayout();
+        try
+        {
+            var one = LitLights(w);
+            Assert.Single(one);
+            Assert.Equal("Device shows light 1 purple", Caption(w));
+
+            w.SelectSheetForPreview(second);
+            w.UpdateLayout();
+
+            var two = LitLights(w);
+            Assert.Single(two);
+            Assert.Equal("Device shows light 2 purple", Caption(w));
+            Assert.True(two[0] > one[0],
+                $"mode 2's light should sit right of mode 1's: {two[0]} vs {one[0]}");
+        }
+        finally { w.Close(); }
+    }
 
     [AvaloniaFact]
     public void Every_part_on_the_device_has_a_label_on_the_photo()

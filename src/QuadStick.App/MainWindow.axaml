@@ -306,6 +306,11 @@
                 <ContentControl x:Name="DeviceHeaderStatus" VerticalAlignment="Center"/>
                 <TextBlock x:Name="DeviceHeaderMode" Classes="secondary"
                            VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
+                <!-- What the device's own five lights show for this mode. The
+                     lights are drawn on the photo too; this is the same thing
+                     in words, for anyone the colours do not reach. -->
+                <TextBlock x:Name="DeviceHeaderLights" Classes="secondary"
+                           VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
                 <TextBlock Text="Your QuadStick" Classes="secondary" VerticalAlignment="Center"
                            FontSize="{DynamicResource SmallSize}"/>
                 <ComboBox x:Name="ModelPicker" MinWidth="180"

@@ -2143,6 +2143,10 @@ public partial class MainWindow : Window
                 connected ? "QuadStick connected" : "No QuadStick detected", plainDot: !connected);
             var modeName = CurrentSheet is { } cs ? (cs.ModeName.Length > 0 ? cs.ModeName : cs.Type.ToString()) : "";
             DeviceHeaderMode.Text = modeName.Length > 0 ? $"Mode: {modeName}" : "";
+            int modeNumber = CurrentModeNumber();
+            DeviceHeaderLights.Text = ModeLights.For(modeNumber) is { } lit
+                ? $"Device shows {ModeLights.Describe(lit)}"
+                : $"Device has no light pattern for mode {modeNumber}";
             BuildDeviceView(); BuildZoneDetail();
         }
         else RebuildRows();
@@ -2220,6 +2224,16 @@ public partial class MainWindow : Window
         Canvas.SetTop(photo, PhotoY);
         stage.Children.Add(photo);
 
+        // The device's own mode lights, lit the way the firmware lights them.
+        // The header says the same thing in words, because a colour on its own
+        // is not a cue every reader gets.
+        int mode = CurrentModeNumber();
+        var lights = ModeLights.For(mode);
+        for (int i = 0; lights is not null && i < lights.Length; i++)
+            if (lights[i] != ModeLight.Off)
+                foreach (var dot in Led(lights[i], PhotoX + (LedX + i * LedGap) * PhotoW, PhotoY + LedY * PhotoH))
+                    stage.Children.Add(dot);
+
         foreach (var (id, lx, ly, px, py) in Hotspots)
         {
             var z = visible.FirstOrDefault(v => v.Id == id);
@@ -2259,6 +2273,11 @@ public partial class MainWindow : Window
     const double PhotoX = 80, PhotoY = 84, PhotoW = 440, PhotoH = 293;
     const double PillW = 116, PillH = 68;
 
+    // The five mode lights across the top of the case, as fractions of the
+    // photo. Measured off the picture: the lit one in it is light 1.
+    const double LedX = 0.2654, LedGap = 0.1005, LedY = 0.158;
+
+
     // Each part: where its label sits, and the point on the photo it names.
     // Labels sit in clear space above and below the device because six of them
     // dropped straight onto the parts cover the parts and each other.
@@ -2289,6 +2308,29 @@ public partial class MainWindow : Window
         }
     }
 
+    // A lit LED: the lens colour with a wider, dimmer bloom around it, which is
+    // what a lit one looks like against the black case.
+    static IEnumerable<Control> Led(ModeLight light, double x, double y)
+    {
+        var colour = light switch
+        {
+            ModeLight.Purple => Color.FromRgb(0xC2, 0x5C, 0xFF),
+            ModeLight.Blue => Color.FromRgb(0x4C, 0x8D, 0xFF),
+            _ => Color.FromRgb(0xFF, 0x4D, 0x45),
+        };
+        foreach (var (size, opacity) in new[] { (26.0, 0.3), (13.0, 1.0) })
+        {
+            var dot = new Avalonia.Controls.Shapes.Ellipse
+            {
+                Width = size, Height = size, Fill = new SolidColorBrush(colour),
+                Opacity = opacity, IsHitTestVisible = false,
+            };
+            Canvas.SetLeft(dot, x - size / 2);
+            Canvas.SetTop(dot, y - size / 2);
+            yield return dot;
+        }
+    }
+
     Control Marker(double x, double y)
     {
         var dot = new Avalonia.Controls.Shapes.Ellipse
@@ -2307,6 +2349,13 @@ public partial class MainWindow : Window
     static Avalonia.Media.Imaging.Bitmap DevicePhoto() =>
         _devicePhoto ??= new Avalonia.Media.Imaging.Bitmap(Avalonia.Platform.AssetLoader.Open(
             new Uri("avares://QuadStickConfigManager/Assets/QuadStick.png")));
+
+    // The device numbers modes by counting Profile Name segments as it reads
+    // the file, so a mode's number is its position among those, not its row in
+    // the sheet picker (Preferences and Infrared take no number).
+    int CurrentModeNumber() =>
+        _file is null ? 0
+        : _file.Document.Sheets.Take(_sheetIndex + 1).Count(s => s.Type == SheetType.ProfileName);
 
     // Which parts the selected model physically has. Zones the model lacks
     // still show when a profile maps them, but marked, so a profile made for
