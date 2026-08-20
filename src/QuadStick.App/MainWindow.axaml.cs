@@ -1372,7 +1372,14 @@ public partial class MainWindow : Window
         dialog.Classes.Add("dialog");
         if (dialog.Content is Control content
             && !(content is Border border && border.Classes.Contains("dialogshell")))
+        {
+            // Let go of the old content before the frame adopts it. Handing a
+            // control to a new parent while the window still owns it throws,
+            // and every prompt in the app comes through here: with unsaved
+            // work open, Home and the rest died on this line and did nothing.
+            dialog.Content = null;
             dialog.Content = DialogShell(dialog, content);
+        }
         await dialog.ShowDialog(this);
     }
 
@@ -5552,10 +5559,9 @@ public partial class MainWindow : Window
             Title = "Quick guide",
             Width = Math.Min(720 * _uiScale, 1200), Height = Math.Min(680 * _uiScale, 900),
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Content = new ScrollViewer { Content = ZoomWrap(panel, _uiScale) },
         };
         win.Classes.Add("dialog");
-        win.Content = DialogShell(win, (Control)win.Content);
+        win.Content = DialogShell(win, new ScrollViewer { Content = ZoomWrap(panel, _uiScale) });
         win.Show(this);
     }
 

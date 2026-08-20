@@ -1,7 +1,11 @@
 using System.Linq;
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using QuadStick.App;
 using QuadStick.Format;
 using Xunit;
@@ -70,6 +74,19 @@ public class ShellChromeTests
             w.UpdateLayout();
             Assert.Equal(1, home.Classes.Count(c => c == "active"));
         }
+        w.Close();
+    }
+
+    // work open the top buttons did nothing at all.
+    [AvaloniaFact]
+    public void TheQuickGuideOpens()
+    {
+        var w = Open();
+        LoadClean(w);
+        w.FindControl<Button>("HelpButton")!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        Assert.Contains(w.OwnedWindows, o => o.Title == "Quick guide");
+        foreach (var o in w.OwnedWindows.ToList()) o.Close();
         w.Close();
     }
 }
