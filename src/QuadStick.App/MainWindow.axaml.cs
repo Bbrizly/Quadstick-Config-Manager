@@ -679,7 +679,7 @@ public partial class MainWindow : Window
 
         HomeNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
         HomeTemplateButton.Click += async (_, _) => await UseTemplateAsync();
-        HomeOpenButton.Click += async (_, _) => await OpenAsync();
+        HomeOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
         HomeAgentButton.Click += (_, _) => ShowAgent();
         AgentButton.Click += (_, _) => ShowAgent(changing: true);
         HomeCommunityButton.Click += async (_, _) => await ShowCommunityProfilesAsync();
@@ -694,13 +694,17 @@ public partial class MainWindow : Window
         ShellHomeButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
         ShellNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
         ShellOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
-        ShellDeviceButton.Click += async (_, _) => await ShowDeviceFilesAsync();
-        ShellCommunityButton.Click += async (_, _) => await ShowCommunityProfilesAsync();
+        // These two can open a profile over the one being edited, and the shell
+        // is the first place they were ever reachable from the editor.
+        ShellDeviceButton.Click += async (_, _)
+            => { if (await ConfirmLeaveAsync()) await ShowDeviceFilesAsync(); };
+        ShellCommunityButton.Click += async (_, _)
+            => { if (await ConfirmLeaveAsync()) await ShowCommunityProfilesAsync(); };
 
         // Empty-library state offers the same three actions as the Start
         // cards above, so an empty library is never a dead end.
         LibraryEmptyNewButton.Click += (_, _) => NewFromTemplate();
-        LibraryEmptyOpenButton.Click += async (_, _) => await OpenAsync();
+        LibraryEmptyOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
         LibraryEmptyImportButton.Click += async (_, _) => await ImportAsync();
 
         HomeButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };

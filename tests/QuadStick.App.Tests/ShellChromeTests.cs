@@ -89,4 +89,30 @@ public class ShellChromeTests
         foreach (var o in w.OwnedWindows.ToList()) o.Close();
         w.Close();
     }
+
+    // not ask first, so unsaved work went without a word.
+    [AvaloniaFact]
+    public void EveryShellCommandAsksBeforeLeavingUnsavedWork()
+    {
+        var w = Open();
+        var file = ProfileFile.NewFromTemplate("mygame.csv");
+        w.LoadProfile(file);
+        file.Dirty = true;
+        w.UpdateLayout();
+
+        foreach (var name in NavButtons)
+        {
+            w.FindControl<Button>(name)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Dispatcher.UIThread.RunJobs();
+            var opened = w.OwnedWindows.ToList();
+            Assert.True(opened.Count == 1 && opened[0].Title == "Save your changes?",
+                $"{name} left the editor without asking: opened "
+              + (opened.Count == 0 ? "nothing" : string.Join(", ", opened.Select(o => o.Title))));
+            foreach (var o in opened) o.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+
+        file.Dirty = false; // else Close waits on the save dialog forever
+        w.Close();
+    }
 }
