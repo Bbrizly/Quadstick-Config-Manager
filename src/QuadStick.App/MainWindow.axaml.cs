@@ -1328,7 +1328,21 @@ public partial class MainWindow : Window
         var windowTitle = string.IsNullOrWhiteSpace(window.Title) ? "window" : window.Title;
         AutomationProperties.SetName(close, $"Close {windowTitle.ToLowerInvariant()}");
         close.Click += (_, _) => window.Close();
-        window.Opened += (_, _) => close.Focus();
+
+        // Focus has to land inside the window or Escape never reaches it, but
+        // it must not land on the close button: every prompt then opened on
+        // the control that means cancel, so Enter on "Save your changes?"
+        // answered Cancel and the Home click that raised it did nothing.
+        window.Opened += (_, _) =>
+        {
+            var inside = content.GetSelfAndVisualDescendants().OfType<Control>()
+                .Where(c => c.Focusable && c.IsEffectivelyVisible && c.IsEnabled)
+                .ToList();
+            var first = inside.FirstOrDefault(c => c is TextBox)
+                     ?? inside.FirstOrDefault(c => c is Button { IsDefault: true })
+                     ?? inside.FirstOrDefault();
+            (first ?? close).Focus();
+        };
 
         var title = new TextBlock
         {
