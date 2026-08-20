@@ -19,20 +19,127 @@
       <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}"/>
       <Setter Property="FontFamily" Value="{DynamicResource AppFont}"/>
     </Style>
+    <Style Selector="Window.dialog">
+      <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}"/>
+    </Style>
+    <Style Selector="Border.dialogshell">
+      <Setter Property="Margin" Value="10"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+      <Setter Property="BorderThickness" Value="{DynamicResource HairlineThickness}"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource PanelRadiusCorner}"/>
+      <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
+    <Style Selector="Border.dialogheader">
+      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+      <Setter Property="BorderThickness" Value="0,0,0,1"/>
+      <Setter Property="Padding" Value="18,11"/>
+    </Style>
+    <Style Selector="TextBlock.dialogtitle">
+      <Setter Property="FontSize" Value="{DynamicResource SubheadSize}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.dialogclose">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="FontSize" Value="22"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    </Style>
+    <Style Selector="Window.dialog ListBox">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Window.dialog ListBoxItem">
+      <Setter Property="MinHeight" Value="48"/>
+      <Setter Property="Padding" Value="14,10"/>
+      <Setter Property="Margin" Value="0,0,0,6"/>
+    </Style>
+    <Style Selector="Window.dialog ListBoxItem /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource ControlRadiusCorner}"/>
+    </Style>
+    <Style Selector="Window.dialog ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <Style Selector="Window.dialog TabItem">
+      <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Padding" Value="16,11"/>
+    </Style>
 
-    <!-- Press feedback: every button-shaped control dips to 96% while held
-         and settles back, so a click reads as a physical press instead of a
-         cut. 0.96 is the floor; smaller looks like a stunt. -->
+    <!-- Persistent application frame: quieter and denser than the working
+         canvas, so it stays recognizable without competing with the task. -->
+    <Style Selector="Border.appchrome">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+      <Setter Property="BorderThickness" Value="0,0,0,1"/>
+      <Setter Property="Padding" Value="20,11"/>
+    </Style>
+    <Style Selector="TextBlock.shellbrand">
+      <Setter Property="FontFamily" Value="{DynamicResource BrandFont}"/>
+      <Setter Property="FontSize" Value="21"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="LetterSpacing" Value="1.5"/>
+    </Style>
+    <Style Selector="TextBlock.shellcaption">
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    </Style>
+    <Style Selector="Button.shellnav">
+      <Setter Property="MinHeight" Value="40"/>
+      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="FontSize" Value="{DynamicResource SmallSize}"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.shellnav PathIcon">
+      <Setter Property="Width" Value="17"/>
+      <Setter Property="Height" Value="17"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.shellnav TextBlock">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.shellnav:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.shellnav.active">
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.shellnav.active /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+    </Style>
+    <Style Selector="Button.shellutility">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="TextBlock.pagetitle">
+      <Setter Property="FontSize" Value="32"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="LetterSpacing" Value="-0.5"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+
+    <!-- Press feedback is immediate. A transition here used to attach an
+         animator and transform to every button in every window, making dense
+         editor screens feel as if clicks were arriving through syrup. The
+         compositor still handles this render transform without relayout, but
+         releasing the pointer now restores the control in the same frame. -->
     <Style Selector=":is(Button)">
       <Setter Property="RenderTransform" Value="scale(1)"/>
-      <Setter Property="Transitions">
-        <Transitions>
-          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.08"/>
-        </Transitions>
-      </Setter>
     </Style>
     <Style Selector=":is(Button):pressed">
-      <Setter Property="RenderTransform" Value="scale(0.96)"/>
+      <Setter Property="RenderTransform" Value="scale(0.985)"/>
     </Style>
     <!-- No brush transitions on hover. Cross-fading the background and the
          border meant that dragging the pointer across neighbouring controls
@@ -224,13 +331,55 @@
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
     </Style>
 
-    <!-- Engraved plate label: tracked-out caps read like a physical panel
-         legend. Text is written in caps at each call site (TextBlock has no
-         text-transform), paired with a hairline rule above it in the view. -->
+    <!-- Home is an instrument console: quiet plates establish sections, then
+         cyan is reserved for actions, focus and live state. The nested radius
+         is tighter than the outer panel so the hierarchy reads correctly. -->
+    <Style Selector="Border.homepanel">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+      <Setter Property="BorderThickness" Value="{DynamicResource HairlineThickness}"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource PanelRadiusCorner}"/>
+      <Setter Property="Padding" Value="24"/>
+    </Style>
+    <Style Selector="Button.homeaction">
+      <Setter Property="MinWidth" Value="154"/>
+      <Setter Property="MinHeight" Value="104"/>
+      <Setter Property="Margin" Value="0,0,10,10"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="Button.homeaction.featured">
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <Style Selector="Button.homeaction.featured /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <Style Selector="Button.homeaction PathIcon">
+      <Setter Property="Width" Value="36"/>
+      <Setter Property="Height" Value="36"/>
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+    </Style>
+    <Style Selector="Button.homeaction:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.brandmark">
+      <Setter Property="FontFamily" Value="{DynamicResource BrandFont}"/>
+      <Setter Property="FontSize" Value="34"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="LetterSpacing" Value="2"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
+
+    <!-- Section labels use sentence case and moderate weight. Heavy tracked
+         capitals made every panel shout at the same level as the page title. -->
     <Style Selector="TextBlock.section">
       <Setter Property="FontSize" Value="{DynamicResource SectionSize}"/>
-      <Setter Property="FontWeight" Value="Bold"/>
-      <Setter Property="LetterSpacing" Value="1.5"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="LetterSpacing" Value="0.1"/>
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="TextBlock.cardsub">

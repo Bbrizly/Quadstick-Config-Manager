@@ -648,7 +648,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         var v = typeof(MainWindow).Assembly.GetName().Version;
-        HomeVersionText.Text = $"v{v?.Major}.{v?.Minor}.{v?.Build} · MIT · not affiliated with QuadStick";
+        HomeVersionText.Text = $"v{v?.Major}.{v?.Minor}.{v?.Build} \u00b7 MIT \u00b7 not affiliated with QuadStick";
 
         if (_settings.RememberWindow)
         {
@@ -660,7 +660,11 @@ public partial class MainWindow : Window
             if (_settings.WinX is { } winX && _settings.WinY is { } winY)
                 Position = new PixelPoint((int)winX, (int)winY);
         }
-        RootPanel.PropertyChanged += (_, e) => { if (e.Property == Visual.BoundsProperty) UpdateScaleSize(); };
+        RootHost.PropertyChanged += (_, e) => { if (e.Property == Visual.BoundsProperty) UpdateScaleSize(); };
+        RootPanel.PropertyChanged += (_, e) =>
+        {
+            if (e.Property == Visual.BoundsProperty) UpdateShellDensity();
+        };
         // Sentence cards lay out one way with room and another without it, so
         // the panel has to say which it has. Only a crossing rebuilds, and a
         // rebuild cannot change this width, so this settles in one pass.
@@ -683,6 +687,15 @@ public partial class MainWindow : Window
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
         HomeDriveButton.Click += (_, _) => OnDriveButtonClick();
+
+        // Persistent shell commands mirror the page actions. Keeping these
+        // delegates here means the shell is navigation, not a second set of
+        // business logic that can drift from the accessible Home controls.
+        ShellHomeButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
+        ShellNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
+        ShellOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
+        ShellDeviceButton.Click += async (_, _) => await ShowDeviceFilesAsync();
+        ShellCommunityButton.Click += async (_, _) => await ShowCommunityProfilesAsync();
 
         // Empty-library state offers the same three actions as the Start
         // cards above, so an empty library is never a dead end.
@@ -995,7 +1008,7 @@ public partial class MainWindow : Window
         var said = false;
         yes.Click += (_, _) => { said = true; dialog.Close(); };
         no.Click += (_, _) => dialog.Close();
-        await dialog.ShowDialog(this);
+        await ShowDialogInShellAsync(dialog);
 
         ApplyTelemetryAnswer(said);
     }
@@ -1115,7 +1128,7 @@ public partial class MainWindow : Window
         send.Click += (_, _) => { choice = CrashChoice.Send; dialog.Close(); };
         later.Click += (_, _) => dialog.Close();
         never.Click += (_, _) => { choice = CrashChoice.Never; dialog.Close(); };
-        await dialog.ShowDialog(this);
+        await ShowDialogInShellAsync(dialog);
 
         switch (choice)
         {
@@ -1272,11 +1285,22 @@ public partial class MainWindow : Window
 
     void UpdateScaleSize()
     {
-        if (RootPanel.Bounds is { Width: > 0, Height: > 0 } b)
+        if (RootHost.Bounds is { Width: > 0, Height: > 0 } b)
         {
-            ScaleContent.Width = b.Width / _uiScale;
-            ScaleContent.Height = b.Height / _uiScale;
+            RootPanel.Width = b.Width / _uiScale;
+            RootPanel.Height = b.Height / _uiScale;
         }
+    }
+
+    void UpdateShellDensity()
+    {
+        var compact = RootPanel.Bounds.Width is > 0 and < 930;
+        ShellBrandCaption.IsVisible = !compact;
+        ShellHomeLabel.IsVisible = !compact;
+        ShellNewLabel.IsVisible = !compact;
+        ShellOpenLabel.IsVisible = !compact;
+        ShellDeviceLabel.IsVisible = !compact;
+        ShellCommunityLabel.IsVisible = !compact;
     }
 
     // ---- Settings window API: SettingsWindow.cs calls these so every
@@ -1291,6 +1315,66 @@ public partial class MainWindow : Window
     public static Control ZoomWrap(Control content, double scale) =>
         scale == 1.0 ? content
         : new LayoutTransformControl { LayoutTransform = new ScaleTransform(scale, scale), Child = content };
+
+    // Every secondary workflow gets the same branded page frame. Native chrome
+    // still provides reliable platform move/resize controls; this inner frame
+    // supplies the application identity and hierarchy that Fluent's generic
+    // blank window cannot.
+    public static Control DialogShell(Window window, Control content)
+    {
+        var close = new Button { Content = "×", Classes = { "icon", "dialogclose" } };
+        var windowTitle = string.IsNullOrWhiteSpace(window.Title) ? "window" : window.Title;
+        AutomationProperties.SetName(close, $"Close {windowTitle.ToLowerInvariant()}");
+        close.Click += (_, _) => window.Close();
+        window.Opened += (_, _) => close.Focus();
+
+        var title = new TextBlock
+        {
+            Text = windowTitle,
+            Classes = { "dialogtitle" },
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        var statusDot = new Border
+        { Width = 8, Height = 8, CornerRadius = new CornerRadius(2) };
+        BindBrush(statusDot, Border.BackgroundProperty, "Accent");
+        var header = new Border
+        {
+            Classes = { "dialogheader" },
+            Child = new DockPanel
+            {
+                Children =
+                {
+                    new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        Spacing = 10,
+                        Children =
+                        {
+                            statusDot,
+                            title,
+                        },
+                    },
+                    close,
+                },
+            },
+        };
+        DockPanel.SetDock(close, Dock.Right);
+        DockPanel.SetDock(header, Dock.Top);
+        return new Border
+        {
+            Classes = { "dialogshell" },
+            Child = new DockPanel { Children = { header, content } },
+        };
+    }
+
+    async Task ShowDialogInShellAsync(Window dialog)
+    {
+        dialog.Classes.Add("dialog");
+        if (dialog.Content is Control content
+            && !(content is Border border && border.Classes.Contains("dialogshell")))
+            dialog.Content = DialogShell(dialog, content);
+        await dialog.ShowDialog(this);
+    }
 
     // ---- Modes window API: ModesWindow.cs owns adding, renaming, reordering
     // and deleting modes, and edits the same open profile the editor shows. ----
@@ -1408,6 +1492,7 @@ public partial class MainWindow : Window
         EditorView.IsVisible = false;
         Title = "Quadstick: Config Manager (unofficial)"; // no profile is open on Home
         RefreshHomeCards();
+        ShellHomeButton.Classes.Add("active");
         HomeNewButton.Focus();
     }
 
@@ -1415,6 +1500,7 @@ public partial class MainWindow : Window
     {
         HomeView.IsVisible = false;
         EditorView.IsVisible = true;
+        ShellHomeButton.Classes.Remove("active");
         HomeButton.Focus();
     }
 
@@ -1787,7 +1873,7 @@ public partial class MainWindow : Window
         confirm.Click += (_, _) => Confirm();
         cancel.Click += (_, _) => dialog.Close();
         box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Confirm(); };
-        await dialog.ShowDialog(this);
+        await ShowDialogInShellAsync(dialog);
 
         if (!confirmed) return null;
         var name = (box.Text ?? "").Trim();
@@ -3397,7 +3483,7 @@ public partial class MainWindow : Window
         save.Click += (_, _) => Confirm();
         cancel.Click += (_, _) => dialog.Close();
         box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Confirm(); };
-        await dialog.ShowDialog(this);
+        await ShowDialogInShellAsync(dialog);
         if (!confirmed) return;
 
         var fileName = SafeTemplateName(box.Text ?? "");
@@ -3524,7 +3610,7 @@ public partial class MainWindow : Window
             Status($"Deleted template {name}.", StatusKind.Ready);
         };
 
-        await dialog.ShowDialog(this);
+        await ShowDialogInShellAsync(dialog);
         if (!confirmed || list.SelectedIndex < 0) return;
 
         var path = templatePaths[list.SelectedIndex];
@@ -3594,7 +3680,7 @@ public partial class MainWindow : Window
         save.Click += (_, _) => { choice = "save"; dialog.Close(); };
         dontSave.Click += (_, _) => { choice = "dontsave"; dialog.Close(); };
         cancel.Click += (_, _) => dialog.Close();
-        await dialog.ShowDialog(this);
+        await ShowDialogInShellAsync(dialog);
 
         switch (choice)
         {
@@ -5463,6 +5549,8 @@ public partial class MainWindow : Window
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Content = new ScrollViewer { Content = ZoomWrap(panel, _uiScale) },
         };
+        win.Classes.Add("dialog");
+        win.Content = DialogShell(win, (Control)win.Content);
         win.Show(this);
     }
 
@@ -5517,7 +5605,7 @@ public partial class MainWindow : Window
             },
         }, _uiScale);
         cancel.Click += (_, _) => dialog.Close();
-        await dialog.ShowDialog(this);
+        await ShowDialogInShellAsync(dialog);
         return picked;
     }
 
@@ -5546,7 +5634,7 @@ public partial class MainWindow : Window
         var result = false;
         yes.Click += (_, _) => { result = true; dialog.Close(); };
         no.Click += (_, _) => dialog.Close();
-        await dialog.ShowDialog(this);
+        await ShowDialogInShellAsync(dialog);
         return result;
     }
 }

@@ -34,6 +34,7 @@ public class GalleryWindow : Window
 
     public GalleryWindow()
     {
+        Classes.Add("dialog");
         Title = "Appearance gallery";
         Width = 1280;
         Height = 900;
@@ -316,6 +317,7 @@ public class GalleryWindow : Window
                 FontSize = Size(key),
             });
         stack.Children.Add(new TextBlock { Text = "section: A PLATE LEGEND", Classes = { "section" } });
+        stack.Children.Add(new TextBlock { Text = "brandmark: QCM", Classes = { "brandmark" } });
         foreach (var cls in new[] { "secondary", "muted", "success", "warn", "error", "cardsub" })
             stack.Children.Add(new TextBlock
             {
@@ -372,6 +374,8 @@ public class GalleryWindow : Window
                 Btn("x", "icon", "danger")),
             Spec("danger", "Delete a profile. Rare, deliberate, never what focus lands on first.",
                 Btn("Delete", "danger")),
+            Spec("homeaction", "A labeled launch command on the home console; clear without relying on an icon.",
+                Btn("Open a file", "homeaction")),
             Spec("disabled", "Nothing to undo yet. It stays on screen and says so, rather than vanishing.",
                 new Button { Content = "Undo", IsEnabled = false })));
 
@@ -458,6 +462,67 @@ public class GalleryWindow : Window
     Control SurfaceSpecimens()
     {
         var wrap = new WrapPanel();
+        var nav = new Button
+        {
+            Classes = { "shellnav", "active" },
+            Content = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Children =
+                {
+                    new PathIcon { Data = (Geometry)Application.Current!.FindResource("IconHome")! },
+                    new TextBlock { Text = "Home" },
+                },
+            },
+        };
+        wrap.Children.Add(new Border
+        {
+            Classes = { "appchrome" }, Width = 360, Margin = new Thickness(0, 0, 10, 10),
+            Child = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 10,
+                Children =
+                {
+                    new TextBlock { Text = "QCM", Classes = { "shellbrand" } },
+                    new TextBlock { Text = "Config Manager", Classes = { "shellcaption" } },
+                    nav,
+                    new Button { Content = "⚙", Classes = { "shellutility" } },
+                },
+            },
+        });
+        wrap.Children.Add(new TextBlock
+        {
+            Text = "Your profiles", Classes = { "pagetitle" }, Width = 260,
+            Margin = new Thickness(0, 0, 10, 10),
+        });
+        wrap.Children.Add(new Border
+        {
+            Classes = { "homepanel" }, Width = 220, Margin = new Thickness(0, 0, 10, 10),
+            Child = new TextBlock
+            {
+                Text = "homepanel\nA rounded console section that groups one home-screen job.",
+                TextWrapping = TextWrapping.Wrap,
+            },
+        });
+        wrap.Children.Add(new Border
+        {
+            Classes = { "dialog", "dialogshell" }, Width = 220, Margin = new Thickness(0, 0, 10, 10),
+            Child = new Border
+            {
+                Classes = { "dialogheader" },
+                Child = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Children =
+                    {
+                        new TextBlock { Text = "dialogshell", Classes = { "dialogtitle" } },
+                        new Button { Content = "×", Classes = { "dialogclose" } },
+                    },
+                },
+            },
+        });
+        wrap.Children.Add(Btn("New profile", "homeaction", "featured"));
         foreach (var key in Base.Keys)
         {
             var hex = Edited.TryGetValue(key, out var e) ? e : Base[key];
