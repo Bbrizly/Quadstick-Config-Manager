@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:app="clr-namespace:QuadStick.App"
         x:Class="QuadStick.App.MainWindow"
         Title="Quadstick: Config Manager (unofficial)"
         Icon="avares://QuadStickConfigManager/Assets/AppIcon.png"
@@ -82,7 +83,10 @@
                         AutomationProperties.Name="Start a new profile from one of your saved templates">
                   <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconTemplate}"/><TextBlock Text="Use template" HorizontalAlignment="Center"/></StackPanel>
                 </Button>
+                <!-- Off for this release. See AgentFeature: one switch, read here
+                     at parse time so the card is never in the layout at all. -->
                 <Button x:Name="HomeAgentButton" Classes="homeaction"
+                        IsVisible="{x:Static app:AgentFeature.Enabled}"
                         AutomationProperties.Name="Name a game and have a profile built for it from the profiles you already have">
                   <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconSparkles}"/><TextBlock Text="Set up a game" HorizontalAlignment="Center"/></StackPanel>
                 </Button>
@@ -211,7 +215,9 @@
                        FontSize="{DynamicResource SubheadSize}"/>
           </TextBox.InnerRightContent>
         </TextBox>
+        <!-- Off for this release. See AgentFeature. -->
         <Button x:Name="AgentButton" Classes="quiet" Content="Ask for a change"
+                IsVisible="{x:Static app:AgentFeature.Enabled}"
                 AutomationProperties.Name="Describe a change in plain words and have it made to this profile. Nothing is changed until you approve it."/>
         <Button x:Name="ShareButton" Classes="quiet" Content="Share"
                 AutomationProperties.Name="Share this profile as a Google Sheet"/>

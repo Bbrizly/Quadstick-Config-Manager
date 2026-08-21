@@ -344,6 +344,9 @@ public class ListViewTests
             "square,normal,left_puff\n");
         w.LoadProfile(file);
         w.SetDeviceViewForPreview(false);
+        // The editor toolbar settles a pass late, so the rows are still
+        // 54px low without this and every click lands one row down.
+        Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
         // n is the nth binding; the label on it is its sheet row, and three
@@ -399,6 +402,9 @@ public class ListViewTests
             "square,normal,left_puff\n");
         w.LoadProfile(file);
         w.SetDeviceViewForPreview(false);
+        // The editor toolbar settles a pass late, so the rows are still
+        // 54px low without this and every click lands one row down.
+        Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
         // n is the nth binding; the label on it is its sheet row, and three
@@ -465,6 +471,9 @@ public class ListViewTests
             "square,normal,left_puff\n");
         w.LoadProfile(file);
         w.SetDeviceViewForPreview(false);
+        // The editor toolbar settles a pass late, so the rows are still
+        // 54px low without this and every click lands one row down.
+        Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
         // n is the nth binding; the label on it is its sheet row, and three
@@ -510,6 +519,9 @@ public class ListViewTests
             "circle,normal,right_sip\n");
         w.LoadProfile(file);
         w.SetDeviceViewForPreview(false);
+        // The editor toolbar settles a pass late, so the rows are still
+        // 54px low without this and every click lands one row down.
+        Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
         // n is the nth binding; the label on it is its sheet row, and three
@@ -551,6 +563,9 @@ public class ListViewTests
             "square,normal,left_puff\n");
         w.LoadProfile(file);
         w.SetDeviceViewForPreview(false);
+        // The editor toolbar settles a pass late, so the rows are still
+        // 54px low without this and every click lands one row down.
+        Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
         // n is the nth binding; the label on it is its sheet row, and three

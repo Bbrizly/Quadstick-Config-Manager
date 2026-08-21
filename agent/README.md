@@ -1,5 +1,10 @@
 # Set up a game
 
+> **Off in the shipped app right now.** `AgentFeature.Enabled` is false, so
+> the two buttons below are hidden and the window cannot be opened. The code
+> is untouched and still tested. Do not delete any of it. Flip that one flag
+> to bring it back.
+
 Name any game. This reads how that game is controlled, translates it into the
 control scheme one person spent years building, asks about anything their own
 history cannot settle, and writes nothing until they say so.

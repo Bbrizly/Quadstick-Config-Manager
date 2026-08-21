@@ -1,3 +1,8 @@
+// DO NOT DELETE. The agent is switched off for this release, not
+// abandoned: AgentFeature.Enabled is false, so the two buttons that reach
+// it are hidden. This file still builds and its tests still run so the
+// switch can flip back. It is not dead code, do not tidy it away.
+
 using System.Diagnostics;
 using System.Text.Json;
 

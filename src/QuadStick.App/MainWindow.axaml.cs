@@ -324,7 +324,14 @@ public partial class MainWindow : Window
     // Naming a game and having a profile built for it. Not modal: the agent can
     // ask a question that takes real thought, and a window that pins the whole
     // app while somebody decides what crouch should be is the wrong shape.
-    public void ShowAgent(bool changing = false) => new AgentWindow(this, changing).Show(this);
+    //
+    // Off for this release. The guard is here as well as on the buttons so no
+    // other path can reach the window while AgentFeature.Enabled is false.
+    public void ShowAgent(bool changing = false)
+    {
+        if (!AgentFeature.Enabled) return;
+        new AgentWindow(this, changing).Show(this);
+    }
 
     // The community list is fetched from here and nowhere else. Startup and a
     // home refresh never touch it, so the app opens with no network at all.
