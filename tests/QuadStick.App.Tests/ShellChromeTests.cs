@@ -175,4 +175,33 @@ public class ShellChromeTests
         foreach (var o in w.OwnedWindows.ToList()) o.Close();
         w.Close();
     }
+
+    // A mouth stick or a switch can double-fire one press. Two prompts stacked
+    // on the same question is two things to answer and no way to tell them
+    // apart, so the second click has to find the first prompt already up.
+    [AvaloniaTheory]
+    [InlineData("ShellHomeButton")]
+    [InlineData("ShellNewButton")]
+    [InlineData("ShellDeviceButton")]
+    [InlineData("ShellCommunityButton")]
+    public void ADoublePressAsksToSaveOnlyOnce(string button)
+    {
+        var w = Open();
+        var file = ProfileFile.NewFromTemplate("mygame.csv");
+        w.LoadProfile(file);
+        file.Dirty = true;
+        w.UpdateLayout();
+
+        var b = w.FindControl<Button>(button)!;
+        b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal(1, w.OwnedWindows.Count(o => o.Title == "Save your changes?"));
+
+        foreach (var o in w.OwnedWindows.ToList()) o.Close();
+        Dispatcher.UIThread.RunJobs();
+        file.Dirty = false;
+        w.Close();
+    }
 }

@@ -3685,10 +3685,24 @@ public partial class MainWindow : Window
     // proceed. Save only earns that if SaveAsync actually reached disk; a
     // cancelled picker or a failed write must keep the user right where
     // they were, work intact.
+    bool _confirmingLeave;
+
     async Task<bool> ConfirmLeaveAsync()
     {
         if (_file is not { Dirty: true }) return true;
 
+        // A mouth stick or a switch can double-fire one press, and every shell
+        // button and the window close come through here. The prompt already up
+        // is the question being asked; a second press is not a second answer,
+        // so it waits rather than stacking another prompt over the first.
+        if (_confirmingLeave) return false;
+        _confirmingLeave = true;
+        try { return await AskToSaveAsync(); }
+        finally { _confirmingLeave = false; }
+    }
+
+    async Task<bool> AskToSaveAsync()
+    {
         var title = "Save your changes?";
         var message = "This profile has unsaved changes. Save them before leaving?";
         var save = new Button { Content = "Save", MinWidth = 140, IsDefault = true };
