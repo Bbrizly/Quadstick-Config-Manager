@@ -35,8 +35,18 @@ public static class SafeFileName
     // "NUL.csv" is not a file at all: the write succeeds, the readback comes
     // back empty, and the user is told verification failed rather than that
     // their profile cannot be called that.
+    //
+    // The device name is the segment before the FIRST dot, so "CON.old.csv" is
+    // the console too. GetFileNameWithoutExtension strips only the last
+    // extension, which read "CON.old" and let the name through.
     public static bool IsReservedOnWindows(string? fileName) =>
-        ReservedWindowsNames.Contains(Path.GetFileNameWithoutExtension(fileName ?? ""));
+        ReservedWindowsNames.Contains(FirstSegment(fileName ?? ""));
+
+    static string FirstSegment(string name)
+    {
+        var dot = name.IndexOf('.', StringComparison.Ordinal);
+        return dot < 0 ? name : name[..dot];
+    }
 
     public static string ForCsv(string? name)
     {
@@ -52,7 +62,13 @@ public static class SafeFileName
         var baseName = cleaned.TrimEnd('.', ' ');
         if (baseName.Length == 0) baseName = "Untitled";
 
-        if (ReservedWindowsNames.Contains(baseName)) baseName += "_file";
+        // The suffix goes on the first segment, or "CON.old" becomes
+        // "CON.old_file", which Windows still resolves to the console.
+        if (IsReservedOnWindows(baseName))
+        {
+            var dot = baseName.IndexOf('.', StringComparison.Ordinal);
+            baseName = dot < 0 ? baseName + "_file" : baseName[..dot] + "_file" + baseName[dot..];
+        }
 
         // The cap can cut after a dot or space, so trim again.
         if (baseName.Length > MaxBaseLength) baseName = baseName[..MaxBaseLength].TrimEnd('.', ' ');

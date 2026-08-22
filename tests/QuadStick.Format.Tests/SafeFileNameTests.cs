@@ -27,6 +27,30 @@ public class SafeFileNameTests
     public void Reserved_windows_names_get_suffixed(string input)
         => Assert.Equal(input + "_file.csv", SafeFileName.ForCsv(input));
 
+    // Windows resolves the device name at the segment before the FIRST dot, so
+    // "CON.old" is the console whatever follows it. The suffix has to land on
+    // that first segment, or the new name is still the device.
+    [Theory]
+    [InlineData("CON.old", "CON_file.old.csv")]
+    [InlineData("nul.backup", "nul_file.backup.csv")]
+    [InlineData("LPT1.v2", "LPT1_file.v2.csv")]
+    public void Reserved_names_are_caught_before_the_first_dot(string input, string expected)
+        => Assert.Equal(expected, SafeFileName.ForCsv(input));
+
+    [Theory]
+    [InlineData("CON.old.csv")]
+    [InlineData("nul.backup.csv")]
+    [InlineData("COM1.csv")]
+    public void A_reserved_name_is_reserved_however_many_dots_follow_it(string name)
+        => Assert.True(SafeFileName.IsReservedOnWindows(name));
+
+    [Theory]
+    [InlineData("console.csv")]
+    [InlineData("connie.old.csv")]
+    [InlineData("my.con.csv")]
+    public void A_name_that_merely_starts_like_a_device_is_not_reserved(string name)
+        => Assert.False(SafeFileName.IsReservedOnWindows(name));
+
     [Fact]
     public void Trailing_dots_and_spaces_are_trimmed()
         => Assert.Equal("name.csv", SafeFileName.ForCsv("name.. "));
