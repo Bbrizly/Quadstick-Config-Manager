@@ -90,6 +90,11 @@ public class CommunityProfilesWindow : Window
             Text = "",
             FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         };
+        // What the load actually found goes here, and the loading line above it
+        // is cleared on success, so without these the window went from
+        // "Loading the community list..." to silence.
+        AutomationProperties.SetLiveSetting(_summary, AutomationLiveSetting.Polite);
+        AutomationProperties.SetLiveSetting(_count, AutomationLiveSetting.Polite);
 
         // One list, so the keyboard reaches every result with the arrows
         // instead of hundreds of tab stops.
