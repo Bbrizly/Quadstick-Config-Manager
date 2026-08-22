@@ -90,7 +90,10 @@ public partial class MainWindow
              () => AppearancePicker),
             ("New profile",
              "Every profile starts from a template.",
-             () => { },
+             // The next step opens a profile and switches to the editor. Back
+             // from there re-ran this setup, and an empty one left the editor
+             // on screen with the spotlight on a Home button nobody could see.
+             () => ShowHome(),
              () => HomeNewButton),
             ("Your QuadStick",
              "This is your QuadStick. Each part is a control you can map.",
