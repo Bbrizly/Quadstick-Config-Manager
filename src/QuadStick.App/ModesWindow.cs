@@ -297,9 +297,20 @@ public class ModesWindow : Window
     void Rename(int sheetIndex, string text)
     {
         if (_rebuilding || _owner.OpenFile is null) return;
-        if (!_owner.OpenFile.RenameMode(sheetIndex, text)) return;
-        _owner.ModesChanged(sheetIndex, "Mode renamed.");
-        Build();
+        if (_owner.OpenFile.RenameMode(sheetIndex, text))
+        {
+            _owner.ModesChanged(sheetIndex, "Mode renamed.");
+            Build();
+            return;
+        }
+        // A blank name is refused, and the box was left showing the blank while
+        // the mode kept its old name underneath. Say so and put the name back,
+        // or a screen reader reads the mode as having no name at all.
+        if (text.Trim().Length == 0)
+        {
+            _owner.ModesChanged(sheetIndex, "A mode needs a name. The old one is still there.");
+            Build();
+        }
     }
 
     void Move(int sheetIndex, int delta)
