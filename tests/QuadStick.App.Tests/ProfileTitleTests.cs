@@ -94,7 +94,7 @@ public class ProfileTitleTests
             // late its name sorts, and prefs.csv is settings rather than a
             // profile so it is never in the count. The cards are laid out in
             // that order too: numbers that jump about read as a bug.
-            var headings = texts.Where(t => !t.Contains("mode sheet(s)")).ToList();
+            var headings = texts.Where(t => !t.Contains("mode sheet")).ToList();
             Assert.Equal(new[] { "1. default", "2. B21", "prefs" }, headings);
             w.Close();
         }

@@ -1731,7 +1731,7 @@ public partial class MainWindow : Window
             // had one more mode than the device would ever run.
             var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
             sub = TitleNote(doc, path)
-                + $"{modes.Count} mode sheet(s), {modes.Sum(s => s.Bindings.Count)} binding(s)";
+                + $"{Plural.Of(modes.Count, "mode sheet")}, {Plural.Of(modes.Sum(s => s.Bindings.Count), "binding")}";
         }
         catch { sub = "Could not read this file"; }
         _cardCache[path] = (stamp, sub);
@@ -2868,7 +2868,7 @@ public partial class MainWindow : Window
 
         var zoneTitle = new TextBlock
         {
-            Text = $"{zone.Title}  ·  {bindings?.Count ?? 0} mapping(s)",
+            Text = $"{zone.Title}  ·  {Plural.Of(bindings?.Count ?? 0, "mapping")}",
             FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
         };
         AutomationProperties.SetLiveSetting(zoneTitle, AutomationLiveSetting.Polite);
@@ -4805,7 +4805,7 @@ public partial class MainWindow : Window
         var warns = _file.Issues.Count - errors;
         Status(errors + warns == 0
                 ? "No problems. Ready to save or install."
-                : $"{errors} error(s), {warns} warning(s). Errors block installing.",
+                : $"{Plural.Of(errors, "error")}, {Plural.Of(warns, "warning")}. Errors block installing.",
             errors > 0 ? StatusKind.Error : warns > 0 ? StatusKind.Warning : StatusKind.Ready);
         UpdateProblemsToggle();
     }

@@ -276,7 +276,7 @@ public class DeviceFilesWindow : Window
             subtitle = doc.IsDevicePreferences
                 ? "the device's own settings file"
                 : MainWindow.TitleNote(doc, path)
-                    + $"{modes.Count} mode sheet(s), {modes.Sum(s => s.Bindings.Count)} binding(s)";
+                    + $"{Plural.Of(modes.Count, "mode sheet")}, {Plural.Of(modes.Sum(s => s.Bindings.Count), "binding")}";
             if (SheetsUrl.TryGetEditUrlFromHeader(doc.HeaderVersion, doc.HeaderSource, out var url))
                 sheetUrl = url;
         }
