@@ -228,7 +228,10 @@ public sealed class CommunityCatalogClient
 
         var name = Text(row, 0);
         var sheetId = Text(row, 1);
-        var csvName = Text(row, 2);
+        // Search and display text, never a path: the import goes by the sheet
+        // ID. Trim before the shape check, or one stray space drops the whole
+        // row, sheet link and all, and the count blames a missing sheet.
+        var csvName = Text(row, 2).Trim();
 
         if (string.IsNullOrWhiteSpace(name)) return null;
         if (!IsSheetId(sheetId)) return null;

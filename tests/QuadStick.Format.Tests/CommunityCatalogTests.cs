@@ -131,6 +131,20 @@ public sealed class CommunityCatalogTests : IDisposable
         Assert.DoesNotContain(result.Profiles, p => p.CsvName == "voices.vch");
     }
 
+    // The csv name is search and display text, never a path: the import goes by
+    // the sheet ID. A stray space around it is untidy, not dangerous, and two
+    // real published profiles were being dropped whole for one leading space.
+    [Fact]
+    public async Task Load_KeepsARowWhoseCsvNameHasStraySpace()
+    {
+        var body = $$"""[[["Monitor Control","{{IdA}}"," MonRem.csv"]]]""";
+
+        var result = await Client(Serving(body)).LoadAsync();
+
+        Assert.Equal(0, result.SkippedRows);
+        Assert.Equal("MonRem.csv", Assert.Single(result.Profiles).CsvName);
+    }
+
     [Fact]
     public async Task Load_SkipsBadRowsAndReportsTheCount()
     {
