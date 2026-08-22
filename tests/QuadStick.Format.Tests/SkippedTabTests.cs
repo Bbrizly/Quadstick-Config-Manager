@@ -44,6 +44,30 @@ public class SkippedTabTests
         Assert.Single(ProfileFile.Load(csv).Document.Sheets);
     }
 
+    // The same loss, one size down. A small mode (a menu, a voice layer) is two
+    // bindings, and three was the count that decided a tab was worth naming, so
+    // a two binding tab whose A1 was overwritten went the one way that is never
+    // allowed: dropped, and the review still said the sheet came in clean.
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void A_small_tab_of_bindings_is_named_too(int bindings)
+    {
+        string[][] rows =
+        [
+            ["Chat pasted over this cell", "", "Menu"],
+            .. ModeRows("Profile Name")[3..(3 + bindings)],
+        ];
+
+        using var wb = Workbook(("Left Analog", ModeRows("Profile Name")), ("Menu", rows));
+
+        Xlsx.ToCsv(wb, out var skipped);
+
+        var tab = Assert.Single(skipped);
+        Assert.Equal("Menu", tab.Name);
+        Assert.Equal(SkippedTabKind.UnreadableA1, tab.Kind);
+    }
+
     [Fact]
     public void A_workbook_where_every_tab_is_a_mode_reports_nothing()
     {

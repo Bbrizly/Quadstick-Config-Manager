@@ -401,11 +401,13 @@ public static partial class Xlsx
     }
 
     // Rows with a real function in column B are what a mode is made of, and a
-    // reference card or a scratch tab has none. Three is enough to tell them
-    // apart without naming every stray tab on every import, which would just
-    // teach people to ignore the message.
+    // reference card or a scratch tab has none. That is the whole test, so one
+    // is the count: a menu or a voice layer is two bindings, and asking for
+    // three dropped those tabs in silence while the review still called the
+    // import clean. A tab with no function in column B is still passed over
+    // without a word, which is what keeps the message worth reading.
     static bool LooksLikeBindings(List<string[]> grid) =>
-        grid.Count(r => r.Length > 1 && Vocab.FunctionArity.ContainsKey(r[1].Trim())) >= 3;
+        grid.Any(r => r.Length > 1 && Vocab.FunctionArity.ContainsKey(r[1].Trim()));
 
     // Every worksheet in tab order, hidden ones included: QMP exports by tab
     // name and A1, not by whether the tab is showing, and an import that
