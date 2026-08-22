@@ -96,7 +96,11 @@ public static class Settings
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(p)!);
-            File.WriteAllText(p, JsonSerializer.Serialize(s, SettingsJsonContext.Default.AppSettings));
+            // Temp then rename, the same way profiles are written. A crash
+            // partway through a plain write left a truncated settings.json,
+            // which Load reads as "no settings" and silently resets the theme,
+            // the interface size and both consent answers.
+            QuadStick.Format.ProfileFile.WriteAtomic(p, JsonSerializer.Serialize(s, SettingsJsonContext.Default.AppSettings));
             return true;
         }
         catch { return false; }
