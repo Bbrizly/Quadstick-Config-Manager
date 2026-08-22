@@ -257,6 +257,10 @@ public class SettingsWindow : Window
             IsVisible = false, VerticalAlignment = VerticalAlignment.Center,
             FontSize = Size("BodySize"), Classes = { "muted" },
         };
+        // The one control here with a time limit on it. Without this a screen
+        // reader user changes the size, moves on, and never hears that it is
+        // about to put itself back.
+        AutomationProperties.SetLiveSetting(countdown, AutomationLiveSetting.Assertive);
 
         bool suppress = false; // stops the programmatic revert re-triggering this
         int remaining = 0;
