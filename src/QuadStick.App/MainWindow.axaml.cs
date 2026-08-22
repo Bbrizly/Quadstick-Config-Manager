@@ -832,7 +832,14 @@ public partial class MainWindow : Window
         // which does not re-fire SelectionChanged, so this can't loop.
         AppearancePicker.SelectionChanged += (_, _) => ApplyTheme((string)AppearancePicker.SelectedItem!);
 
-        SettingsButton.Click += (_, _) => new SettingsWindow(this).ShowDialog(this);
+        // Settings can connect or disconnect Drive, and the Home button reads
+        // that state. Without the refresh it keeps the old label until the user
+        // navigates away from Home and back.
+        SettingsButton.Click += async (_, _) =>
+        {
+            await new SettingsWindow(this).ShowDialog(this);
+            if (HomeView.IsVisible) RefreshHomeCards();
+        };
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
         // key. Ctrl-combos are safe to fire even while a field has focus
