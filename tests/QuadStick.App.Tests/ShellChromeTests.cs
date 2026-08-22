@@ -176,6 +176,25 @@ public class ShellChromeTests
         w.Close();
     }
 
+    // "Deleted mygame." is true at the moment it is written and stale a minute
+    // later. Nothing cleared it, so coming back to Home read out an action that
+    // had not just happened.
+    [AvaloniaFact]
+    public void ComingBackToHomeDropsTheOldBanner()
+    {
+        var w = Open();
+        var banner = w.FindControl<TextBlock>("HomeStatusText")!;
+        banner.Text = "Deleted mygame.";
+        banner.IsVisible = true;
+
+        LoadClean(w);
+        w.ShowHomeForPreview();
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.False(banner.IsVisible);
+        w.Close();
+    }
+
     // A mouth stick or a switch can double-fire one press. Two prompts stacked
     // on the same question is two things to answer and no way to tell them
     // apart, so the second click has to find the first prompt already up.

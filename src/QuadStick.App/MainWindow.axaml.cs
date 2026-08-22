@@ -1534,6 +1534,10 @@ public partial class MainWindow : Window
     void ShowHome()
     {
         _file = null; // Home has no profile open; a leftover dirty file would re-prompt "leave?" on the next action
+        // The banner describes something that just happened. Arriving on Home
+        // again is not that moment, and a screen reader reads it out as if it
+        // were. The startup rescue offer is written after this runs.
+        HomeStatusText.IsVisible = false;
         HomeView.IsVisible = true;
         EditorView.IsVisible = false;
         Title = "Quadstick: Config Manager (unofficial)"; // no profile is open on Home
