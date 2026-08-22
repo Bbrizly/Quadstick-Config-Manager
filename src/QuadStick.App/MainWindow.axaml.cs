@@ -462,7 +462,16 @@ public partial class MainWindow : Window
         // A share now writes one tab per mode and colours the new ones, so it
         // is several requests, and the window looked idle for all of them.
         Status("Putting this profile in Google Sheets...", StatusKind.Info);
-        var result = await Backup()!.GetShareLinkAsync(path, csvText);
+        ShareLinkResult result;
+        try { result = await Backup()!.GetShareLinkAsync(path, csvText); }
+        catch (Exception ex)
+        {
+            // Google answering in a shape the client did not expect escaped to
+            // the crash guard, which swallows it. The status was left reading
+            // "Putting this profile in Google Sheets..." for good.
+            Status($"Could not share this profile: {ex.Message}", StatusKind.Error);
+            return;
+        }
 
         // The dirty push here can hit the conflict prompt. Keep online still
         // rescues and replaces the local file, share or no share.
