@@ -6,15 +6,20 @@ public static class Palette
     // Single source of truth. Keys match the DynamicResource names used in
     // App.axaml.cs (Theme.Build) and in styles.
     // "Instrument panel" palette: cool graphite surfaces + hairline borders,
-    // not the warm-cream/soft-shadow default. Blue stays the accent hue
-    // (existing users already read blue as "select/primary") but deepens to
-    // a less generic instrument blue.
+    // not the warm-cream/soft-shadow default. Blue is the accent hue in both
+    // themes (existing users already read blue as "select/primary").
+    // Dark used to be near-black with an electric cyan accent. The surfaces
+    // sat within 5% of the background, so hairlines carried the whole layout
+    // and every screen read as a wireframe, and the cyan was loud enough that
+    // five equal icons on Home all shouted at once. Surfaces now step up in
+    // real increments and the accent is an azure in the same hue family as
+    // the light navy, so the two themes read as one product.
     public static readonly IReadOnlyDictionary<string, string> Light = new Dictionary<string, string>
     {
-        ["AppBackground"] = "#E9EBED",
+        ["AppBackground"] = "#E6E9ED",
         ["Surface"]       = "#FFFFFF",
-        ["SurfaceSubtle"] = "#F2F3F5",
-        ["SurfaceBorder"] = "#C6CACF",
+        ["SurfaceSubtle"] = "#F1F3F7",
+        ["SurfaceBorder"] = "#CBD1D9",
         ["TextPrimary"]   = "#16191C",
         ["TextSecondary"] = "#4E545B",
         ["Accent"]        = "#0B4F8A",
@@ -41,15 +46,15 @@ public static class Palette
 
     public static readonly IReadOnlyDictionary<string, string> Dark = new Dictionary<string, string>
     {
-        ["AppBackground"] = "#0B0D0F",
-        ["Surface"]       = "#15181B",
-        ["SurfaceSubtle"] = "#1C2024",
-        ["SurfaceBorder"] = "#343B42",
+        ["AppBackground"] = "#0F1216",
+        ["Surface"]       = "#1F252C",
+        ["SurfaceSubtle"] = "#2A313A",
+        ["SurfaceBorder"] = "#3A434E",
         ["TextPrimary"]   = "#F0F4F6",
         ["TextSecondary"] = "#AAB4BC",
-        ["Accent"]        = "#35C6E8",
-        ["AccentText"]    = "#64D7F0",
-        ["OnAccent"]      = "#061417",
+        ["Accent"]        = "#6EA8FF",
+        ["AccentText"]    = "#8FBEFF",
+        ["OnAccent"]      = "#06121F",
         ["Error"]         = "#F2B4B0",
         ["Success"]       = "#7FDE9B",
         ["Warning"]       = "#E8C36A",
