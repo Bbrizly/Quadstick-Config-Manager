@@ -333,15 +333,15 @@
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
     </Style>
 
-    <!-- Home is an instrument console: quiet plates establish sections, then
-         cyan is reserved for actions, focus and live state. The nested radius
-         is tighter than the outer panel so the hierarchy reads correctly. -->
+    <!-- No plate of its own. Each Home section used to be a filled, bordered
+         panel holding filled, bordered cards, so every screen was a box inside
+         a box and one sentence about the device took a 160px-tall container.
+         Sections are a heading plus their content now; the cards are the only
+         thing drawing a surface, which is what makes them read as objects. -->
     <Style Selector="Border.homepanel">
-      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
-      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
-      <Setter Property="BorderThickness" Value="{DynamicResource HairlineThickness}"/>
-      <Setter Property="CornerRadius" Value="{DynamicResource PanelRadiusCorner}"/>
-      <Setter Property="Padding" Value="24"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="4,0"/>
     </Style>
     <Style Selector="Button.homeaction">
       <Setter Property="MinWidth" Value="154"/>

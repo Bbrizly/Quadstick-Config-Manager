@@ -61,7 +61,7 @@
     <!-- ============ HOME ============ -->
     <DockPanel x:Name="HomeView" Margin="28,22">
       <ScrollViewer>
-        <StackPanel Spacing="18" MaxWidth="1120" HorizontalAlignment="Stretch">
+        <StackPanel Spacing="30" MaxWidth="1120" HorizontalAlignment="Stretch">
 
           <Border Classes="homepanel">
             <StackPanel Spacing="14">
