@@ -241,21 +241,42 @@
         <Button x:Name="AgentButton" Classes="quiet" Content="Ask for a change"
                 IsVisible="{x:Static app:AgentFeature.Enabled}"
                 AutomationProperties.Name="Describe a change in plain words and have it made to this profile. Nothing is changed until you approve it."/>
-        <Button x:Name="ShareButton" Classes="quiet" Content="Share"
-                AutomationProperties.Name="Share this profile as a Google Sheet"/>
+        <!-- Save, Undo, Share and Help are the four everyone already knows by
+             shape. As words they were four equal-weight grey rectangles and the
+             one destination that matters, Install, had to shout over them.
+             AutomationProperties.Name still carries the full sentence, and each
+             one has a tooltip, so nothing is lost to a screen reader or to
+             somebody who does not recognise the glyph. -->
+        <Button x:Name="ShareButton" Classes="icon quiet" ToolTip.Tip="Share as a Google Sheet"
+                AutomationProperties.Name="Share this profile as a Google Sheet">
+          <PathIcon Data="{DynamicResource IconShare}"/>
+        </Button>
         <!-- Which profile | what to do with it. The gap used to do this job,
              before the actions stopped being pinned to the right edge. -->
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
-        <Button x:Name="SaveButton" Content="Save"
-                AutomationProperties.Name="Save this profile. Shortcut Control S"/>
-        <Button x:Name="UndoButton" Content="Undo"
-                AutomationProperties.Name="Undo the last change. Shortcut Control Z"/>
-        <Button x:Name="SaveTemplateButton" Content="Save as template"
-                AutomationProperties.Name="Save this profile as a reusable template you can start new profiles from"/>
-        <Button x:Name="InstallButton" Content="Install to QuadStick" Classes="primary"
-                AutomationProperties.Name="Install this profile onto a connected QuadStick. Shortcut Control I"/>
-        <Button x:Name="HelpButton" Content="Help"
-                AutomationProperties.Name="Open the quick guide. Shortcut Control H or F1"/>
+        <Button x:Name="SaveButton" Classes="icon" ToolTip.Tip="Save  (Ctrl+S)"
+                AutomationProperties.Name="Save this profile. Shortcut Control S">
+          <PathIcon Data="{DynamicResource IconSave}"/>
+        </Button>
+        <Button x:Name="UndoButton" Classes="icon" ToolTip.Tip="Undo  (Ctrl+Z)"
+                AutomationProperties.Name="Undo the last change. Shortcut Control Z">
+          <PathIcon Data="{DynamicResource IconUndo}"/>
+        </Button>
+        <Button x:Name="SaveTemplateButton" Classes="icon quiet" ToolTip.Tip="Save as a template"
+                AutomationProperties.Name="Save this profile as a reusable template you can start new profiles from">
+          <PathIcon Data="{DynamicResource IconTemplate}"/>
+        </Button>
+        <Button x:Name="InstallButton" Classes="primary"
+                AutomationProperties.Name="Install this profile onto a connected QuadStick. Shortcut Control I">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <PathIcon Width="18" Height="18" Data="{DynamicResource IconInstall}"/>
+            <TextBlock Text="Install to QuadStick"/>
+          </StackPanel>
+        </Button>
+        <Button x:Name="HelpButton" Classes="icon quiet" ToolTip.Tip="How it works  (F1)"
+                AutomationProperties.Name="Open the quick guide. Shortcut Control H or F1">
+          <PathIcon Data="{DynamicResource IconHelp}"/>
+        </Button>
       </WrapPanel>
 
       <ContentControl x:Name="StatusHost" Margin="0,0,0,4"/>
