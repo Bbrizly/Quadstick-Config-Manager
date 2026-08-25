@@ -70,10 +70,25 @@ final class AppModel {
         autosave()
     }
 
+    /// Any change to the list of modes, with the same mode still active after.
+    /// The firmware tells modes apart by position, so reordering renumbers
+    /// them. Following the slot instead of the mode swaps somebody's controls
+    /// without saying so, which is why every list edit goes through here.
+    func mutateModes(_ change: (inout [Mode]) -> Void) {
+        let activeID = mode.id
+        mutate { change(&$0.modes) }
+        modeIndex = indexOfMode(activeID) ?? min(modeIndex, max(0, profile.modes.count - 1))
+    }
+
+    func indexOfMode(_ id: Mode.ID) -> Int? {
+        profile.modes.firstIndex { $0.id == id }
+    }
+
     func undo() {
         guard let last = undoStack.popLast() else { return }
+        let activeID = mode.id
         profile = last
-        modeIndex = min(modeIndex, max(0, profile.modes.count - 1))
+        modeIndex = indexOfMode(activeID) ?? min(modeIndex, max(0, profile.modes.count - 1))
         autosave()
     }
 

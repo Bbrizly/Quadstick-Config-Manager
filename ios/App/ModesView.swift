@@ -5,6 +5,7 @@ struct ModesView: View {
     @Environment(AppModel.self) private var model
     @State private var renaming: Mode?
     @State private var draftName = ""
+    @State private var lastModeAlert = false
 
     var body: some View {
         List {
@@ -19,18 +20,20 @@ struct ModesView: View {
                     modeRow(index: index, mode: mode)
                 }
                 .onMove { from, to in
-                    model.mutate { $0.modes.move(fromOffsets: from, toOffset: to) }
+                    model.mutateModes { $0.move(fromOffsets: from, toOffset: to) }
                 }
                 .onDelete { offsets in
-                    guard model.profile.modes.count > offsets.count else { return }
-                    model.mutate { $0.modes.remove(atOffsets: offsets) }
-                    model.modeIndex = min(model.modeIndex, model.profile.modes.count - 1)
+                    guard model.profile.modes.count > offsets.count else {
+                        lastModeAlert = true
+                        return
+                    }
+                    model.mutateModes { $0.remove(atOffsets: offsets) }
                 }
             }
 
             Section {
                 Button("Add Mode", systemImage: "plus") {
-                    model.mutate { $0.modes.append(Mode(name: "Mode \($0.modes.count + 1)")) }
+                    model.mutateModes { $0.append(Mode(name: "Mode \($0.count + 1)")) }
                 }
             }
         }
@@ -39,12 +42,20 @@ struct ModesView: View {
         .alert("Rename Mode", isPresented: renamePresented) {
             TextField("Name", text: $draftName)
             Button("Save") {
-                if let mode = renaming, let i = model.profile.modes.firstIndex(where: { $0.id == mode.id }) {
-                    model.mutate { $0.modes[i].name = draftName }
+                // An empty name leaves the mode with nothing to call it in the
+                // picker or the file, so the old name stands.
+                let name = draftName.trimmingCharacters(in: .whitespaces)
+                if !name.isEmpty, let mode = renaming, let i = model.indexOfMode(mode.id) {
+                    model.mutateModes { $0[i].name = name }
                 }
                 renaming = nil
             }
             Button("Cancel", role: .cancel) { renaming = nil }
+        }
+        .alert("A profile needs at least one mode.", isPresented: $lastModeAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("The QuadStick has nothing to load without one. Add another mode first, then delete this one.")
         }
     }
 
