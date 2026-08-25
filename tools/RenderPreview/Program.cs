@@ -21,11 +21,48 @@ var corpus = args.Length > 1 ? args[1] : "tests/QuadStick.Format.Tests/corpus";
 var mapEvent = args.Length > 2 && File.Exists(args[2]) ? File.ReadAllText(args[2]) : null;
 Directory.CreateDirectory(outDir);
 
-// Fake a profile library so the home screen has cards to show.
+// Screenshots are the app as it ships, not as this machine has it. Reading the
+// real settings file put whatever model, theme and card style this developer
+// last chose into the docs: every device-view shot went out saying "Not on
+// model" because a Singleton was picked here months ago.
+var cfgDir = Directory.CreateTempSubdirectory("qscm-cfg-").FullName;
+Settings.PathOverride = Path.Combine(cfgDir, "settings.json");
+Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false });
+
+// A library that looks like somebody's. Real community workbooks, under the
+// names their games have, so every card carries real modes and real counts:
+// two files called "gta" and "rocket-league" is what a fixture looks like.
 var lib = Directory.CreateTempSubdirectory("qscm-lib-").FullName;
-File.Copy(Path.Combine(corpus, "gta-mode1.csv"), Path.Combine(lib, "gta.csv"));
-File.Copy(Path.Combine(corpus, "default.csv"), Path.Combine(lib, "rocket-league.csv"));
+var shelf = new (string Book, string Name, int DaysAgo)[]
+{
+    ("Forza-Horizon-4", "Forza Horizon 4", 1),
+    ("Apex", "Apex Legends", 3),
+    ("Starfield", "Starfield", 8),
+    ("Valheim", "Valheim", 14),
+    ("Sea-of-Thieves", "Sea of Thieves", 26),
+    ("Zelda-Breath-of-the-Wild", "Zelda Breath of the Wild", 40),
+};
+// Fixed, so two runs of this tool produce the same picture.
+var today = new DateTime(2026, 8, 25, 11, 0, 0, DateTimeKind.Local);
+var books = args.Length > 3 ? args[3] : "agent/corpus/silas";
+foreach (var (book, name, daysAgo) in shelf)
+{
+    var src = Path.Combine(books, book + ".xlsx");
+    if (!File.Exists(src)) continue;
+    var to = Path.Combine(lib, name + ".csv");
+    using (var stream = File.OpenRead(src)) File.WriteAllText(to, Xlsx.ToCsv(stream));
+    File.SetLastWriteTime(to, today.AddDays(-daysAgo));
+}
+// Nothing on the shelf means no workbooks on this machine. Still render, so a
+// checkout without the corpus can look at the chrome.
+if (Directory.GetFiles(lib, "*.csv").Length == 0)
+    File.Copy(Path.Combine(corpus, "gta-mode1.csv"), Path.Combine(lib, "GTA.csv"));
 MainWindow.LibraryDir = lib;
+// Six real modes and one honest warning, which is what a profile somebody
+// actually plays looks like. Nothing in the community corpus validates
+// perfectly clean, and a screenshot should not pretend otherwise.
+var hero = Directory.GetFiles(lib, "Forza Horizon 4.csv").FirstOrDefault()
+        ?? Directory.GetFiles(lib, "*.csv").First();
 
 Environment.SetEnvironmentVariable("QSCM_TELEMETRY", "0");   // screenshots never send
 
@@ -61,12 +98,15 @@ AppBuilder.Configure<App>()
 foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) })
 {
     Application.Current!.RequestedThemeVariant = variant;
+    // Fresh settings per theme: opening a profile below files it under recents,
+    // and the second pass would otherwise show a Home the first one did not.
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false });
 
     // The specimen sheet: what you compare against after a token changes.
     // Tall on purpose, or the render stops at the fold and hides the colours.
     CaptureWindow($"{suffix}-0-gallery", new GalleryWindow { Height = 2300 });
 
-    Capture($"{suffix}-1-home", _ => { });
+    Capture($"{suffix}-1-home", w => w.Height = 900);
 
     CaptureOwned($"{suffix}-1b-settings", owner => new SettingsWindow(owner));
     CaptureOwned($"{suffix}-1c-game-setup", owner => new AgentWindow(owner));
@@ -107,14 +147,34 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
             CaptureWindow($"{suffix}-1d-guide-{at:00}", win, shown: true);
         }
 
-    Capture($"{suffix}-2-gta-loaded", w =>
-        w.LoadProfile(ProfileFile.Load(File.ReadAllText(Path.Combine(corpus, "gta-mode1.csv")))));
+    // The shot the README leads with: a real profile, open on the picture of
+    // the hardware, with a part picked so the panel beside it is doing its job.
+    // "Nothing selected" was half the window on the old one.
+    Capture($"{suffix}-2-editor", w =>
+    {
+        w.OpenPathForPreview(hero);
+        w.SelectZoneForPreview("joystick");
+    });
+
+    // Rows: what the file really is, one line per mapping. A different profile
+    // from the hero on purpose, one whose first screen is bound rather than a
+    // column of "pick an input", since that is what the view is for.
+    Capture($"{suffix}-2b-rows", w =>
+    {
+        w.OpenPathForPreview(Path.Combine(lib, "Apex Legends.csv") is var dense
+            && File.Exists(dense) ? dense : hero);
+        w.SetDeviceViewForPreview(false);
+    });
 
     Capture($"{suffix}-3-errors", w =>
     {
-        var f = ProfileFile.Load(File.ReadAllText(Path.Combine(corpus, "gta-mode1.csv")));
-        f.SetCell(4, 1, "blink");        // unknown function
-        f.SetCell(5, 2, "left_sip");     // unknown input
+        var f = ProfileFile.Load(File.ReadAllText(hero));
+        // One of each, because the two are not treated the same: a word where
+        // a device setting's number goes is an error and blocks the install,
+        // an input name the device does not know is a warning and does not.
+        f.SetCell(4, 0, "mouse_speed");
+        f.SetCell(4, 2, "fast");
+        f.SetCell(5, 2, "left_sip");
         w.LoadProfile(f);
         w.SetDeviceViewForPreview(false); // list view shows the bad cells
         w.ShowProblemsForPreview();       // and the plain English fix
