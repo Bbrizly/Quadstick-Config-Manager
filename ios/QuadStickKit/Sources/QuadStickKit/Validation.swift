@@ -91,6 +91,16 @@ public enum ConfigValidator {
                 }
 
                 if let out = a.output {
+                    // Desktop rule (Validator.cs): a name the catalog has never
+                    // heard of is a Warning and never an Error. The file may
+                    // predate this app's word list, and the device is the judge.
+                    if Firmware.keyword(forOutput: out.id) == nil {
+                        issues.append(Issue(id: "unknown-out-\(mode.id)-\(actionID)", severity: .warning,
+                                            message: "\(out.name) is not a word this app recognises. It is left exactly as it is, and the QuadStick may still accept it.",
+                                            location: "\(loc), \(actionName)",
+                                            fix: "Check the spelling against your QuadStick's manual, or leave it if it already works."))
+                    }
+
                     if let other = outputsSeen[out.id] {
                         issues.append(Issue(id: "dup-out-\(mode.id)-\(actionID)", severity: .warning,
                                             message: "\(out.name) is assigned to both \(other) and \(actionName). Both will trigger it.",

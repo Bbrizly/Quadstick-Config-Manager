@@ -42,7 +42,7 @@ public enum DeviceFile {
                 for action in input.actions {
                     guard let assignment = mode.assignments[action.id],
                           let output = assignment.output,
-                          let outputWord = Firmware.outputKeyword[output.id],
+                          let outputWord = Firmware.keyword(forOutput: output.id),
                           let inputWord = Firmware.inputKeyword[action.id] else { continue }
                     var row = [outputWord, functionCell(assignment.function), inputWord]
                     if let label = assignment.label, !label.isEmpty {
@@ -156,7 +156,7 @@ public enum DeviceFile {
             return
         }
 
-        guard let outputID = Firmware.outputID[keyword],
+        guard let outputID = Firmware.outputID(forKeyword: keyword),
               let output = QuadStickCatalog.output(outputID) else {
             let inputsPresent = cells.dropFirst(2).prefix(8).contains { !$0.isEmpty }
             if inputsPresent {

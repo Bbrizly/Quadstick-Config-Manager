@@ -72,6 +72,8 @@ public enum OutputCategory: String, Codable, CaseIterable, Hashable, Sendable {
     case controller = "Controller"
     case keyboard = "Keyboard"
     case mouse = "Mouse"
+    case motion = "Motion & Touchpad"
+    case infrared = "TV & Infrared"
     case quadstick = "QuadStick"
     case modeControl = "Mode & Profile"
 }

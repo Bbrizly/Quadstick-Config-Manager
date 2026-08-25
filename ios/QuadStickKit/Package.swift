@@ -6,7 +6,7 @@ let package = Package(
     platforms: [.iOS(.v17), .macOS(.v14)],
     products: [.library(name: "QuadStickKit", targets: ["QuadStickKit"])],
     targets: [
-        .target(name: "QuadStickKit"),
+        .target(name: "QuadStickKit", resources: [.process("Resources")]),
         .testTarget(name: "QuadStickKitTests", dependencies: ["QuadStickKit"]),
     ]
 )

@@ -127,4 +127,17 @@ public enum Firmware {
         map["right_3"] = "controller-right-stick-click"
         return map
     }()
+
+    /// The word to write for a catalog output. Curated ids are translated;
+    /// every other id is already a firmware word, so it stands for itself.
+    public static func keyword(forOutput id: String) -> String? {
+        if let mapped = outputKeyword[id] { return mapped }
+        return Vocabulary.accepts(output: id) ? id : nil
+    }
+
+    /// The catalog id for a word read out of a file, mirroring the above.
+    public static func outputID(forKeyword keyword: String) -> String? {
+        if let mapped = outputID[keyword] { return mapped }
+        return Vocabulary.accepts(output: keyword) ? keyword : nil
+    }
 }
