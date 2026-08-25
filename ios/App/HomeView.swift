@@ -103,19 +103,31 @@ struct HomeView: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Profile: \(model.profile.name). Double tap to switch profiles.")
 
-            HStack(spacing: 16) {
-                Button("Previous mode", systemImage: "chevron.left") {
-                    model.modeIndex = (model.modeIndex - 1 + model.profile.modes.count) % model.profile.modes.count
-                }
-                .labelStyle(.iconOnly)
-                Text("\(model.mode.name) · Mode \(model.modeIndex + 1) of \(model.profile.modes.count)")
+            // The name goes on its own line so the arrows stay beside the
+            // short half. Together on one line they strand the arrows against
+            // three wrapped lines at accessibility text sizes.
+            VStack(spacing: 4) {
+                Text(model.mode.name)
                     .font(.headline)
-                    .accessibilityLabel("Current mode: \(model.mode.name), mode \(model.modeIndex + 1) of \(model.profile.modes.count)")
-                Button("Next mode", systemImage: "chevron.right") {
-                    model.modeIndex = (model.modeIndex + 1) % model.profile.modes.count
+                    .multilineTextAlignment(.center)
+                HStack(spacing: 16) {
+                    Button("Previous mode", systemImage: "chevron.left") {
+                        model.modeIndex = (model.modeIndex - 1 + model.profile.modes.count) % model.profile.modes.count
+                    }
+                    .labelStyle(.iconOnly)
+                    .frame(minWidth: 44, minHeight: 44)
+                    Text("Mode \(model.modeIndex + 1) of \(model.profile.modes.count)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Button("Next mode", systemImage: "chevron.right") {
+                        model.modeIndex = (model.modeIndex + 1) % model.profile.modes.count
+                    }
+                    .labelStyle(.iconOnly)
+                    .frame(minWidth: 44, minHeight: 44)
                 }
-                .labelStyle(.iconOnly)
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("Current mode: \(model.mode.name), mode \(model.modeIndex + 1) of \(model.profile.modes.count)")
         }
     }
 
