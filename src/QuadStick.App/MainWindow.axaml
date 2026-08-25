@@ -113,18 +113,17 @@
 
           <Border Classes="homepanel">
             <StackPanel Spacing="12">
-              <DockPanel>
-                <Button x:Name="HomeDeviceFilesButton" DockPanel.Dock="Right"
+              <!-- Heading, then the action for it, side by side. Pinned to the
+                   far right the button sat 700px from the words it belonged to
+                   and read as unrelated furniture. -->
+              <StackPanel Orientation="Horizontal" Spacing="14">
+                <TextBlock Classes="section" Text="On your QuadStick" VerticalAlignment="Center"/>
+                <Button x:Name="HomeDeviceFilesButton" VerticalAlignment="Center" Classes="quiet"
                         FontSize="{DynamicResource SmallSize}"
                         AutomationProperties.Name="Manage the profile files on your QuadStick: copy, delete, and see the file selection order">
                   <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconFiles}"/><TextBlock Text="Manage files"/></StackPanel>
                 </Button>
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                  <Border Background="{DynamicResource AccentBrush}" CornerRadius="5" Width="10" Height="10"
-                          VerticalAlignment="Center" AutomationProperties.Name="QuadStick connection status"/>
-                  <TextBlock Classes="section" Text="On your QuadStick" VerticalAlignment="Center"/>
-                </StackPanel>
-              </DockPanel>
+              </StackPanel>
               <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
                          Text="Plug in your QuadStick to see its profiles. If the drive is hidden, turn off controller emulation and reconnect it."
                          TextWrapping="Wrap"/>
