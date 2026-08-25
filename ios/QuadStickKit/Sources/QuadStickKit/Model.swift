@@ -202,14 +202,21 @@ public struct Profile: Identifiable, Codable, Hashable, Sendable {
     /// the desktop still points at its own sheet after a round trip here.
     /// Optional so profiles saved before this existed still decode.
     public var sheetID: String?
+    /// When the sheet was last seen to change, as Drive reports it. Kept so a
+    /// push can tell "nobody has touched it since I wrote it" from "somebody
+    /// edited it online", and never write over the second one without asking.
+    /// Sync bookkeeping, so it stays in the app's own store and never reaches
+    /// the device file.
+    public var sheetSyncedTime: String?
 
     public init(id: UUID = UUID(), name: String, controllerType: ControllerType = .standard,
-                modes: [Mode], sheetID: String? = nil) {
+                modes: [Mode], sheetID: String? = nil, sheetSyncedTime: String? = nil) {
         self.id = id
         self.name = name
         self.controllerType = controllerType
         self.modes = modes
         self.sheetID = sheetID
+        self.sheetSyncedTime = sheetSyncedTime
     }
 }
 
