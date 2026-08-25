@@ -309,6 +309,10 @@
              independent buttons. Each key shows what it will give you: the
              device, the parts of it, or the sheet the file actually is. The
              word stays under the picture, because a glyph alone is a guess. -->
+        <!-- Label and track wrap as one item. Left loose in the WrapPanel, a
+             narrow window broke the line between them and left the word "View"
+             sitting alone over nothing. -->
+        <StackPanel Orientation="Horizontal" Spacing="2">
         <TextBlock Text="View" VerticalAlignment="Center" Classes="secondary"
                    FontSize="{DynamicResource SmallSize}" Margin="0,0,2,0"/>
         <Border Classes="switchtrack">
@@ -339,6 +343,7 @@
             </Button>
           </StackPanel>
         </Border>
+        </StackPanel>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
         <Button x:Name="AddRowButton" Content="+ Add row"
                 AutomationProperties.Name="Add a new binding row to this mode"/>
@@ -429,7 +434,11 @@
             <!-- The device diagram owns the larger, left-hand share of the
                  editor so its parts sit at a comfortable size. The mappings
                  panel on the right stays readable through its minimum width. -->
-            <Grid ColumnDefinitions="1.2*,1*">
+            <!-- Even halves. At 1.2 to 1 the panel on the right was 460 wide at
+                 the default window size, which is under what a mapping sentence
+                 needs, so every long output name arrived as "Mouse right b...".
+                 The picture reads fine with the smaller half. -->
+            <Grid ColumnDefinitions="1*,1*">
               <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                 <StackPanel x:Name="DeviceCanvas" Margin="14"/>
               </ScrollViewer>
