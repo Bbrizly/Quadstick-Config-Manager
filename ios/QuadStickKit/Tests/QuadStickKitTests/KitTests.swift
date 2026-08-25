@@ -302,4 +302,56 @@ extension KitTests {
         XCTAssertEqual(centre.x - left.x, right.x - centre.x, accuracy: 0.01)
     }
 
+    // MARK: - Names the device can show
+
+    /// A name outside CP437 makes the QuadStick fall back to the mangled 8.3
+    /// name on its own screen, so the app has to say so before install.
+    func testProfileNameOutsideCP437IsFlaggedButNotBlocked() {
+        let profile = Profile(name: "Zelda \u{1F3AE}", controllerType: .standard,
+                              modes: [Mode(name: "Mode 1", assignments: [:])])
+        let issues = ConfigValidator.validate(profile, capabilities: QuadStickCatalog.capabilities)
+        let encoding = issues.filter { $0.id == "profile-name-encoding" }
+        XCTAssertEqual(encoding.count, 1, "an unshowable profile name must be reported")
+        XCTAssertEqual(encoding.first?.severity, .warning, "the device may still load it, so never an error")
+    }
+
+    /// CP437 carries the accented Latin letters, so flagging them would be a
+    /// false alarm telling people to rename a profile that was always fine.
+    func testAccentedNameIsNotFlaggedBecauseCP437HasIt() {
+        let profile = Profile(name: "Caf\u{00E9}", controllerType: .standard,
+                              modes: [Mode(name: "Movement", assignments: [:])])
+        let issues = ConfigValidator.validate(profile, capabilities: QuadStickCatalog.capabilities)
+        XCTAssertTrue(issues.allSatisfy { !$0.id.contains("encoding") })
+    }
+
+    func testPlainNameIsNotFlagged() {
+        let profile = Profile(name: "Fortnite", controllerType: .standard,
+                              modes: [Mode(name: "Movement", assignments: [:])])
+        let issues = ConfigValidator.validate(profile, capabilities: QuadStickCatalog.capabilities)
+        XCTAssertTrue(issues.allSatisfy { !$0.id.contains("encoding") })
+    }
+
+    func testModeNameOutsideCP437IsFlagged() {
+        let profile = Profile(name: "Game", controllerType: .standard,
+                              modes: [Mode(name: "\u{6B69}\u{304F}", assignments: [:])])
+        let issues = ConfigValidator.validate(profile, capabilities: QuadStickCatalog.capabilities)
+        XCTAssertTrue(issues.contains { $0.id.hasPrefix("mode-name-encoding") })
+    }
+
+    /// CP437 is a byte-per-character encoding, so a file off the device is not
+    /// always valid UTF-8. Decoding it as UTF-8 anyway silently replaces the
+    /// character and the import still calls itself clean.
+    func testCP437FileIsReadAsCP437AndSaysSo() {
+        // 0x82 is e-acute in CP437 and is not valid UTF-8 on its own.
+        let data = Data([0x43, 0x61, 0x66, 0x82])
+        let (text, note) = DeviceFile.decode(data)
+        XCTAssertEqual(text, "Caf\u{00E9}")
+        XCTAssertNotNil(note, "an encoding fallback must be reported, never silent")
+    }
+
+    func testUTF8FileIsReadAsUTF8WithNoNote() {
+        let (text, note) = DeviceFile.decode(Data("Caf\u{00E9}".utf8))
+        XCTAssertEqual(text, "Caf\u{00E9}")
+        XCTAssertNil(note)
+    }
 }

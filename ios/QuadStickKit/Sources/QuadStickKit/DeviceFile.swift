@@ -86,6 +86,35 @@ public enum DeviceFile {
         }.joined(separator: ",") + "\r\n"
     }
 
+    // MARK: - Text encoding
+
+    /// The device writes and reads its files as CP437, so a file that came off
+    /// a QuadStick is not always valid UTF-8. Decoding it as UTF-8 anyway turns
+    /// every accented character into U+FFFD and the import still calls itself
+    /// clean, which is the one thing an import here must never do.
+    public static let deviceEncoding = String.Encoding(
+        rawValue: CFStringConvertEncodingToNSStringEncoding(
+            CFStringEncoding(CFStringEncodings.dosLatinUS.rawValue)))
+
+    /// Text, plus a note when it did not arrive as UTF-8. The note is shown,
+    /// never swallowed.
+    public static func decode(_ data: Data) -> (text: String, note: String?) {
+        if let utf8 = String(data: data, encoding: .utf8) {
+            return (utf8, nil)
+        }
+        if let cp437 = String(data: data, encoding: deviceEncoding) {
+            return (cp437, "This file is not UTF-8 text, so it was read as CP437, the QuadStick's own encoding. Check any name with an accent in it.")
+        }
+        return (String(decoding: data, as: UTF8.self),
+                "Some characters in this file could not be read and were replaced. Check the names.")
+    }
+
+    /// Whether the device can show this name as written. Anything outside CP437
+    /// makes it fall back to the mangled 8.3 name on the device's own screen.
+    public static func isDeviceReadable(_ name: String) -> Bool {
+        name.data(using: deviceEncoding, allowLossyConversion: false) != nil
+    }
+
     // MARK: - Import
 
     /// Accepts a full device file or a single Google Sheets tab (one mode).

@@ -36,6 +36,13 @@ public enum ConfigValidator {
                                 fix: "Give the profile a name so you can tell it apart from others."))
         }
 
+        if !DeviceFile.isDeviceReadable(profile.name) {
+            issues.append(Issue(id: "profile-name-encoding", severity: .warning,
+                                message: "The profile name \"\(profile.name)\" has characters the QuadStick cannot show. The device will list it by its shortened file name instead.",
+                                location: "Profile settings",
+                                fix: "Use plain letters, numbers, spaces, dashes and underscores if you want to recognise it on the device."))
+        }
+
         var seenNames: [String: Int] = [:]
         for (index, mode) in profile.modes.enumerated() {
             let n = index + 1
@@ -48,6 +55,13 @@ public enum ConfigValidator {
                                     fix: "Rename one of them if the shared name is not intentional."))
             } else {
                 seenNames[mode.name] = n
+            }
+
+            if !DeviceFile.isDeviceReadable(mode.name) {
+                issues.append(Issue(id: "mode-name-encoding-\(mode.id)", severity: .warning,
+                                    message: "The mode name \"\(mode.name)\" has characters the QuadStick cannot show, so it will look wrong on the device.",
+                                    location: loc,
+                                    fix: "Use plain letters, numbers, spaces, dashes and underscores."))
             }
 
             if mode.assignments.values.allSatisfy({ $0.output == nil }) {
