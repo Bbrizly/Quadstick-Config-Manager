@@ -12,10 +12,14 @@ public static class Style
 {
     public static readonly IReadOnlyDictionary<string, double> Numbers = new Dictionary<string, double>
     {
-        // Type. The scale the whole app is written in.
-        ["TitleSize"]     = 28,
-        ["SectionSize"]   = 19,
-        ["SubheadSize"]   = 16,
+        // Type. The scale the whole app is written in. Every step is a real
+        // jump. The old scale ran 28/19/16/15/14, so a section heading was four
+        // pixels off body text and no screen had anything that led the eye.
+        // Nothing below body moves: 15 and 14 are the reading sizes, and this
+        // app is read by people who cannot lean in.
+        ["TitleSize"]     = 30,
+        ["SectionSize"]   = 22,
+        ["SubheadSize"]   = 17,
         ["BodySize"]      = 15,
         ["SmallSize"]     = 14,
 
@@ -27,11 +31,12 @@ public static class Style
         ["SpaceXl"]       = 24,
         ["Space2Xl"]      = 32,
 
-        // Shape. Four radii, each with a job: a control, a cell inside a row,
-        // a track that holds a bank of controls, and a round icon button.
-        ["ControlRadius"] = 6,
-        ["CellRadius"]    = 5,
-        ["TrackRadius"]   = 8,
+        // Shape. A control is 8, anything that holds controls is 12, a round
+        // icon button is 20. Cell and Track sit one step inside their parent so
+        // a nested corner never bulges past the one around it.
+        ["ControlRadius"] = 8,
+        ["CellRadius"]    = 6,
+        ["TrackRadius"]   = 10,
         ["IconRadius"]    = 20,
         ["PanelRadius"]   = 12,
 

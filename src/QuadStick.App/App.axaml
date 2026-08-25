@@ -319,7 +319,7 @@
       <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
       <Setter Property="BorderThickness" Value="{DynamicResource HairlineThickness}"/>
-      <Setter Property="CornerRadius" Value="{DynamicResource ControlRadiusCorner}"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource PanelRadiusCorner}"/>
       <Setter Property="Padding" Value="{DynamicResource CardPadding}"/>
       <Setter Property="MinWidth" Value="{DynamicResource CardWidth}"/>
       <Setter Property="MinHeight" Value="{DynamicResource CardHeight}"/>
@@ -347,6 +347,7 @@
       <Setter Property="MinWidth" Value="154"/>
       <Setter Property="MinHeight" Value="104"/>
       <Setter Property="Margin" Value="0,0,10,10"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource PanelRadiusCorner}"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
@@ -377,11 +378,13 @@
     </Style>
 
     <!-- Section labels use sentence case and moderate weight. Heavy tracked
-         capitals made every panel shout at the same level as the page title. -->
+         capitals made every panel shout at the same level as the page title.
+         Tracking goes slightly negative instead: at 22px, default spacing
+         reads loose and the heading stops holding together as one word. -->
     <Style Selector="TextBlock.section">
       <Setter Property="FontSize" Value="{DynamicResource SectionSize}"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
-      <Setter Property="LetterSpacing" Value="0.1"/>
+      <Setter Property="LetterSpacing" Value="-0.2"/>
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="TextBlock.cardsub">
