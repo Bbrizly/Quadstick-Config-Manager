@@ -9,7 +9,7 @@ struct ProfilesView: View {
 
     @State private var showSheetsImport = false
     @State private var showFileImporter = false
-    @State private var badFileAlert = false
+    @State private var badFileText: String?
     @State private var importNotes: [String]?
 
     var body: some View {
@@ -41,8 +41,10 @@ struct ProfilesView: View {
                       allowedContentTypes: [.commaSeparatedText, .plainText]) { result in
             handleFileImport(result)
         }
-        .alert("That file does not look like a QuadStick profile.", isPresented: $badFileAlert) {
+        .alert("Nothing was imported", isPresented: badFilePresented) {
             Button("OK", role: .cancel) {}
+        } message: {
+            Text(badFileText ?? "")
         }
         .alert("Imported with notes", isPresented: notesPresented) {
             Button("OK", role: .cancel) {}
@@ -53,6 +55,10 @@ struct ProfilesView: View {
 
     private var notesPresented: Binding<Bool> {
         Binding(get: { importNotes != nil }, set: { if !$0 { importNotes = nil } })
+    }
+
+    private var badFilePresented: Binding<Bool> {
+        Binding(get: { badFileText != nil }, set: { if !$0 { badFileText = nil } })
     }
 
     private func profileRow(index: Int, profile: Profile) -> some View {
@@ -81,9 +87,11 @@ struct ProfilesView: View {
         .accessibilityLabel("\(profile.name), \(profile.modes.count) modes, \(profile.controllerType.rawValue)\(selected ? ", selected" : "")")
     }
 
+    /// Highest index first: deleting low to high shifts every later index down
+    /// by one and takes the wrong profile with it.
     private func delete(at offsets: IndexSet) {
-        guard model.profiles.count > 1 else { return }
-        for index in offsets {
+        guard model.profiles.count > offsets.count else { return }
+        for index in offsets.sorted(by: >) {
             model.deleteProfile(at: index)
         }
     }
@@ -100,22 +108,26 @@ struct ProfilesView: View {
     }
 
     private func handleFileImport(_ result: Result<URL, Error>) {
-        guard case .success(let url) = result else { return }
-        let didAccess = url.startAccessingSecurityScopedResource()
-        defer { if didAccess { url.stopAccessingSecurityScopedResource() } }
-        guard let data = try? Data(contentsOf: url) else {
-            badFileAlert = true
+        switch result {
+        case .failure(let error):
+            badFileText = "That file could not be opened (\(error.localizedDescription))."
             return
-        }
-        let csv = String(decoding: data, as: UTF8.self)
-        let fallbackName = url.deletingPathExtension().lastPathComponent
-        guard let result = DeviceFile.importProfile(csv: csv, fallbackName: fallbackName) else {
-            badFileAlert = true
-            return
-        }
-        model.addProfile(result.profile)
-        if !result.notes.isEmpty {
-            importNotes = result.notes
+        case .success(let url):
+            let didAccess = url.startAccessingSecurityScopedResource()
+            defer { if didAccess { url.stopAccessingSecurityScopedResource() } }
+            guard let data = try? Data(contentsOf: url) else {
+                badFileText = "That file could not be read. It may have moved, or this app may not have permission to open it."
+                return
+            }
+            let (csv, encodingNote) = DeviceFile.decode(data)
+            let fallbackName = url.deletingPathExtension().lastPathComponent
+            guard let imported = DeviceFile.importProfile(csv: csv, fallbackName: fallbackName) else {
+                badFileText = "That file does not look like a QuadStick profile. A profile file starts with a QuadStick line and has at least one Profile Name section."
+                return
+            }
+            model.addProfile(imported.profile)
+            let notes = (encodingNote.map { [$0] } ?? []) + imported.notes
+            if !notes.isEmpty { importNotes = notes }
         }
     }
 }
@@ -197,14 +209,23 @@ private struct SheetsImportView: View {
         Task {
             defer { isLoading = false }
             do {
-                let (data, _) = try await URLSession.shared.data(from: url)
+                let (data, response) = try await URLSession.shared.data(from: url)
+                let code = (response as? HTTPURLResponse)?.statusCode ?? 200
                 let text = String(decoding: data, as: UTF8.self)
-                if text.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("<") {
+                // Google answers a sheet that is not shared with a sign-in page,
+                // sometimes as 200. Blaming the sheet's contents for either sends
+                // people off editing a file that was never the problem.
+                if code == 401 || code == 403 || code == 404
+                    || text.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("<") {
                     errorText = "Google did not let us read the sheet. In Google Sheets, use Share and set General access to Anyone with the link."
                     return
                 }
+                guard code == 200 else {
+                    errorText = "Google returned an error (\(code)). Try again in a moment."
+                    return
+                }
                 guard let result = DeviceFile.importProfile(csv: text, fallbackName: "Imported profile") else {
-                    errorText = "That sheet does not look like a QuadStick profile."
+                    errorText = "That sheet does not look like a QuadStick profile. The tab needs an Output or Function header row."
                     return
                 }
                 model.addProfile(result.profile)
