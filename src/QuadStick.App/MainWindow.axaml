@@ -13,15 +13,24 @@
        stay in the same place while the content below changes. -->
   <Border Grid.Row="0" Classes="appchrome">
     <Grid ColumnDefinitions="Auto,*,Auto">
-      <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="11" VerticalAlignment="Center">
-        <Border Width="38" Height="38" CornerRadius="9" ClipToBounds="True">
-          <Image Source="avares://QuadStickConfigManager/Assets/AppIcon.png" Stretch="UniformToFill"/>
-        </Border>
-        <StackPanel Spacing="0" VerticalAlignment="Center">
-          <TextBlock Text="QCM" Classes="shellbrand"/>
-          <TextBlock x:Name="ShellBrandCaption" Text="QuadStick Config Manager" Classes="shellcaption"/>
+      <!-- The mark is the way home. It is the biggest, most predictable target
+           in the window and it is in the corner every other app puts one, so
+           anyone aiming with a mouth stick or a head mouse can always get back
+           without hunting the nav row. -->
+      <Button x:Name="ShellBrandButton" Grid.Column="0" Classes="shellbrandbutton"
+              VerticalAlignment="Center"
+              AutomationProperties.Name="QuadStick Config Manager. Go to Home"
+              ToolTip.Tip="Go to Home">
+        <StackPanel Orientation="Horizontal" Spacing="11" VerticalAlignment="Center">
+          <Border Width="38" Height="38" CornerRadius="9" ClipToBounds="True">
+            <Image Source="avares://QuadStickConfigManager/Assets/AppIcon.png" Stretch="UniformToFill"/>
+          </Border>
+          <StackPanel Spacing="0" VerticalAlignment="Center">
+            <TextBlock Text="QCM" Classes="shellbrand"/>
+            <TextBlock x:Name="ShellBrandCaption" Text="QuadStick Config Manager" Classes="shellcaption"/>
+          </StackPanel>
         </StackPanel>
-      </StackPanel>
+      </Button>
 
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4"
                   HorizontalAlignment="Center" VerticalAlignment="Center">

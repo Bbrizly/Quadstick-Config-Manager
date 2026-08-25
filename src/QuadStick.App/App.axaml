@@ -349,6 +349,19 @@
       <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}"/>
     </Style>
 
+    <!-- The brand is a real button but must not look like one sitting in the
+         chrome: no plate until you point at it. -->
+    <Style Selector="Button.shellbrandbutton">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="6,4"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource PanelRadiusCorner}"/>
+    </Style>
+    <Style Selector="Button.shellbrandbutton:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+
     <Style Selector="Button.card">
       <Setter Property="Margin" Value="0,0,14,14"/>
       <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>

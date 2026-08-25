@@ -708,6 +708,8 @@ public partial class MainWindow : Window
         // delegates here means the shell is navigation, not a second set of
         // business logic that can drift from the accessible Home controls.
         ShellHomeButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
+        // The mark goes home too. Same guard, so unsaved work still asks first.
+        ShellBrandButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
         ShellNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
         ShellOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
         // These two can open a profile over the one being edited, and the shell

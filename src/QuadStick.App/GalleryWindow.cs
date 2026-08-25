@@ -412,6 +412,31 @@ public class GalleryWindow : Window
         stack.Children.Add(Spec("switchtrack + switchkey",
             "Which editor you are in. One key is always on, and the on one is the primary style.", track));
 
+        var brand = new Button { Classes = { "shellbrandbutton" } };
+        brand.Content = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 11,
+            Children =
+            {
+                new Border
+                {
+                    Width = 38, Height = 38, CornerRadius = new CornerRadius(9),
+                    Background = Avalonia.Media.Brushes.SlateGray,
+                },
+                new StackPanel
+                {
+                    Children =
+                    {
+                        new TextBlock { Text = "QCM", Classes = { "shellbrand" } },
+                        new TextBlock { Text = "QuadStick Config Manager", Classes = { "shellcaption" } },
+                    },
+                },
+            },
+        };
+        stack.Children.Add(Spec("shellbrandbutton",
+            "The mark in the corner is the way home. No plate until you point at it, so it stays chrome rather than reading as another button in the nav row.",
+            brand));
+
         // Selection is an outline and a wash, never a solid fill: a filled zone
         // reads as a button that is about to fire, and the device diagram has
         // to be readable at a glance without colour doing the work alone.
