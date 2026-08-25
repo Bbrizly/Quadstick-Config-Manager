@@ -20,7 +20,7 @@ struct HomeView: View {
                     .pickerStyle(.segmented)
 
                     if model.face == .front {
-                        DeviceFrontView()
+                        DevicePhotoView()
                     } else {
                         DeviceBackView()
                     }
@@ -28,6 +28,7 @@ struct HomeView: View {
                     Text("Tap a part of the QuadStick to see and change what it does.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
                     validationStatus
 
