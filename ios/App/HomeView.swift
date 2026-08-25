@@ -173,7 +173,7 @@ struct HomeView: View {
             }
             NavigationLink(value: Screen.deviceSettings) {
                 homeRow("QuadStick Settings", icon: "slider.horizontal.3",
-                        detail: "Sensitivity, sip and puff strength, connections")
+                        detail: "Settings that live on the device, not in this profile")
             }
             NavigationLink(value: Screen.review) {
                 homeRow("Review Controls", icon: "checklist",
