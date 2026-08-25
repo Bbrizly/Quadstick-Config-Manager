@@ -72,6 +72,24 @@
       <Setter Property="Padding" Value="16,11"/>
     </Style>
 
+    <!-- The editor's command band. Chrome and canvas were the same surface,
+         so a dozen commands read as loose furniture scattered above the work
+         instead of as one toolbar. Runs edge to edge under the nav bar. -->
+    <Style Selector="Border.editorchrome">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+      <Setter Property="BorderThickness" Value="0,0,0,1"/>
+      <Setter Property="Padding" Value="16,10,16,10"/>
+    </Style>
+
+    <!-- A plain command sits ON the band, so it cannot share the band's fill:
+         in dark both were Surface and every button vanished down to its own
+         hairline. The accented, quiet and rocker-switch buttons carry their own
+         treatment and are left alone. -->
+    <Style Selector="Border.editorchrome Button:not(.primary):not(.quiet):not(.switchkey):not(.icon)">
+      <Setter Property="Background" Value="{DynamicResource SurfaceSubtleBrush}"/>
+    </Style>
+
     <!-- Persistent application frame: quieter and denser than the working
          canvas, so it stays recognizable without competing with the task. -->
     <Style Selector="Border.appchrome">

@@ -491,6 +491,23 @@ public class GalleryWindow : Window
                 },
             },
         });
+        // The editor's command band, with the two kinds of button that sit on
+        // it: a plain command lifted off the fill, and the accented one.
+        wrap.Children.Add(new Border
+        {
+            Classes = { "editorchrome" }, Width = 360, Margin = new Thickness(0, 0, 10, 10),
+            Child = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 10,
+                Children =
+                {
+                    new Button { Content = "Save" },
+                    new Button { Content = "Install", Classes = { "primary" } },
+                    new Button { Content = "Share", Classes = { "quiet" } },
+                },
+            },
+        });
         wrap.Children.Add(new TextBlock
         {
             Text = "Your profiles", Classes = { "pagetitle" }, Width = 260,
