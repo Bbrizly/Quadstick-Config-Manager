@@ -76,13 +76,15 @@ struct ModesView: View {
                         .fill(active ? Color.green : Color(.systemGray4))
                         .frame(width: 12, height: 12)
                     Text("\(index + 1)").font(.caption2.bold())
-                        .foregroundStyle(active ? .green : .secondary)
+                        .foregroundStyle(active ? Color.green : Color(white: 0.65))
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(mode.name).font(.headline).foregroundStyle(.primary)
+                    // Concrete colours: the row Button tints its label, and the
+                    // hierarchical styles resolve against that tint, not the theme.
+                    Text(mode.name).font(.headline).foregroundStyle(.white)
                     Text("\(assigned) action\(assigned == 1 ? "" : "s") assigned")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color(white: 0.65))
                 }
                 Spacer()
                 if active {
