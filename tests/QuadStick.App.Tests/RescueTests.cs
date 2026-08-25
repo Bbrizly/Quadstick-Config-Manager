@@ -16,6 +16,14 @@ public class RescueTests
     [AvaloniaFact]
     public void Opening_recovered_work_clears_the_home_banner()
     {
+        // RescueDirOverride is a static seam and CrashReportTests moves it, so
+        // reading the real user rescue folder here made this race whichever
+        // class xUnit happened to run alongside it. Own directory, own state.
+        var prior = CrashGuard.RescueDirOverride;
+        var rescue = Path.Combine(Path.GetTempPath(), "qscm-rescue-" + Guid.NewGuid().ToString("N"));
+        CrashGuard.RescueDirOverride = rescue;
+        try
+        {
         var s = Settings.Load();
         s.TutorialSeen = true;
         Settings.Save(s);
@@ -38,5 +46,11 @@ public class RescueTests
         // Replace the dirty recovered file so Close cannot open the save dialog.
         w.LoadProfile(ProfileFile.NewFromTemplate("clean.csv"));
         w.Close();
+        }
+        finally
+        {
+            CrashGuard.RescueDirOverride = prior;
+            try { Directory.Delete(rescue, recursive: true); } catch { }
+        }
     }
 }
