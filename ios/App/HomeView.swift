@@ -67,6 +67,7 @@ struct HomeView: View {
                 case .review: ReviewView()
                 case .profiles: ProfilesView()
                 case .install: InstallView()
+                case .drive: DriveView()
                 }
             }
             .sheet(isPresented: $showIssues) { ValidationListView() }
@@ -186,10 +187,29 @@ struct HomeView: View {
                 homeRow("Review Controls", icon: "checklist",
                         detail: "Walk through every input, one at a time")
             }
-            NavigationLink(value: Screen.install) {
-                homeRow("Install to QuadStick", icon: "arrow.down.circle.fill",
-                        detail: "Put \(model.profile.name) on the device", iconColor: Theme.accent)
+            NavigationLink(value: Screen.drive) {
+                homeRow("Google Drive", icon: "arrow.triangle.2.circlepath",
+                        detail: driveDetail, iconColor: Theme.accent)
             }
+            NavigationLink(value: Screen.install) {
+                homeRow("Install to QuadStick", icon: "arrow.down.circle",
+                        detail: "Put \(model.profile.name) on the device with a USB-C cable")
+            }
+        }
+    }
+
+    // What Drive is doing for this profile, in the row itself, so nobody has
+    // to open the screen to find out whether it is backed up.
+    private var driveDetail: String {
+        switch model.drive.status {
+        case .notConfigured: return "Not set up in this build"
+        case .signedOut: return "Back up and share this profile with a link"
+        case .working(let message): return message
+        case .problem(let message): return message
+        case .signedIn:
+            return model.profile.sheetID == nil
+                ? "Not backed up yet"
+                : "Backed up. Tap to share or update it."
         }
     }
 
@@ -218,5 +238,5 @@ struct HomeView: View {
 }
 
 enum Screen: Hashable {
-    case modes, deviceSettings, profileSettings, review, profiles, install
+    case modes, deviceSettings, profileSettings, review, profiles, install, drive
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Filled from Google.xcconfig. Empty in a build with no Google client,
+	     which the app reads as "Drive is not set up" rather than failing at the
+	     first request. -->
+	<key>GIDClientID</key>
+	<string>$(GOOGLE_CLIENT_ID)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>google-oauth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>$(GOOGLE_CLIENT_ID_REVERSED)</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

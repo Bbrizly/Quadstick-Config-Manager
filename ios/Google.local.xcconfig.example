@@ -1,0 +1,9 @@
+// Copy to Google.local.xcconfig and paste your own iOS OAuth client id.
+// The reversed form is the same id with its parts swapped: it is the URL
+// scheme iOS uses to hand the sign-in callback back to the app.
+//
+// GOOGLE_CLIENT_ID = 000000000000-abcdefghijklmnop.apps.googleusercontent.com
+// GOOGLE_CLIENT_ID_REVERSED = com.googleusercontent.apps.000000000000-abcdefghijklmnop
+
+GOOGLE_CLIENT_ID =
+GOOGLE_CLIENT_ID_REVERSED =

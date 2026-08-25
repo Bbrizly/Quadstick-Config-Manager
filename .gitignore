@@ -35,3 +35,4 @@ CLAUDE.md
 # Swift package build output.
 ios/QuadStickKit/.build/
 ios/**/xcuserdata/
+ios/Google.local.xcconfig

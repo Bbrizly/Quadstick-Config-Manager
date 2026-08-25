@@ -1,0 +1,19 @@
+// Google OAuth client for SipStudio.
+//
+// An iOS OAuth client is public: there is no secret, and the client id is the
+// whole credential. It still stays out of the repo, the same way the desktop
+// app's does, so it is not handed to scrapers.
+//
+// To connect a build:
+//   1. Google Cloud console, the SAME project as the desktop app.
+//      Credentials, Create credentials, OAuth client ID, type iOS,
+//      bundle id ca.adptiv.SipStudio.
+//   2. Copy ios/Google.local.xcconfig.example to ios/Google.local.xcconfig
+//      and paste the id into it. That file is gitignored.
+//
+// Empty means Drive is switched off: the app says so on the Drive screen and
+// everything else works as before.
+GOOGLE_CLIENT_ID =
+GOOGLE_CLIENT_ID_REVERSED =
+
+#include? "Google.local.xcconfig"

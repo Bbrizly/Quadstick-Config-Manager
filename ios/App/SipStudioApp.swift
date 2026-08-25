@@ -18,6 +18,7 @@ struct SipStudioApp: App {
 /// One observable model for the whole app. Every mutation goes through
 /// mutate(), which snapshots for undo and autosaves.
 @Observable
+@MainActor
 final class AppModel {
     var profiles: [Profile] = []
     var profileIndex: Int = 0
@@ -26,6 +27,7 @@ final class AppModel {
     var face: DeviceFace = .front
 
     let capabilities = QuadStickCatalog.capabilities
+    let drive = DriveAccount()
     private let repo: ConfigurationRepository
     private var undoStack: [Profile] = []
 
@@ -137,6 +139,50 @@ final class AppModel {
 
     private func autosave() {
         try? repo.saveProfiles(profiles)
+    }
+
+    // MARK: - Google Drive
+
+    /// Record where a profile now lives on Drive. Bookkeeping, not an edit: it
+    /// never lands in undo, because undoing a backup is not a thing anybody
+    /// means to do.
+    func rememberSheet(_ id: String, syncedAt time: String?) {
+        guard profiles.indices.contains(profileIndex) else { return }
+        profiles[profileIndex].sheetID = id
+        profiles[profileIndex].sheetSyncedTime = time
+        autosave()
+    }
+
+    /// The sheet won. Take its contents into the open profile, keeping the
+    /// profile's own identity so it stays the same row in the list and stays
+    /// pointed at the same sheet.
+    ///
+    /// Undoable, because this one really does replace somebody's work, and the
+    /// notes are surfaced rather than swallowed: an import that drops a row has
+    /// to say so.
+    @discardableResult
+    func adoptOnlineVersion(_ csv: String, sheetID: String) -> [String] {
+        guard let imported = DeviceFile.importProfile(csv: csv, fallbackName: profile.name) else {
+            return ["The sheet did not contain a profile this app could read. Nothing was changed."]
+        }
+        mutate { p in
+            p.name = imported.profile.name
+            p.controllerType = imported.profile.controllerType
+            p.modes = imported.profile.modes
+        }
+        modeIndex = min(modeIndex, max(0, profile.modes.count - 1))
+        rememberSheet(sheetID, syncedAt: nil)
+        return imported.notes
+    }
+
+    func applyPush(_ result: PushResult) -> [String] {
+        switch result {
+        case let .pushed(sheetID, modifiedTime):
+            rememberSheet(sheetID, syncedAt: modifiedTime)
+            return []
+        case let .keptOnline(sheetID, csv):
+            return adoptOnlineVersion(csv, sheetID: sheetID)
+        }
     }
 
     /// Assignments on an input, in catalog order, for lists and VoiceOver.

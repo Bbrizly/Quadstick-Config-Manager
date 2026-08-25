@@ -12,6 +12,7 @@
 
 /* Begin PBXFileReference section */
 		AA0000000000000000000040 /* SipStudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SipStudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000090 /* Google.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Google.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -162,6 +163,7 @@
 		};
 		AA0000000000000000000072 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA0000000000000000000090 /* Google.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -169,6 +171,7 @@
 				DEVELOPMENT_TEAM = 69NPZWZB47;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = SipStudio;
@@ -189,6 +192,7 @@
 		};
 		AA0000000000000000000073 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AA0000000000000000000090 /* Google.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -196,6 +200,7 @@
 				DEVELOPMENT_TEAM = 69NPZWZB47;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = SipStudio;
