@@ -38,7 +38,7 @@ This is a plain editor that catches those mistakes before anything reaches the d
 - **Manage files on a mounted QuadStick.** See every profile on the device, grouped by drive, and copy one to your library, open its linked Sheet, or delete it. Delete backs the file up first. `default.csv` and `prefs.csv` are protected and can't be deleted from the app.
 - **Built for access.** Big buttons, keyboard shortcuts, and screen reader labels throughout. Light and dark themes, following your system or set by hand.
 
-![Spreadsheet view catching two bad cells, dark theme](docs/screenshot-errors-dark.png)
+![The list view with one error and two warnings, each written out in plain English, dark theme](docs/screenshot-errors-dark.png)
 
 ## Download
 
@@ -67,6 +67,8 @@ xattr -dr com.apple.quarantine "/Applications/Quadstick Config Manager.app"
 ## Using it
 
 The home screen lets you start a new profile, open a file, pick your library (`Documents/QuadStick Profiles`), or paste a Sheets link.
+
+![The home screen listing a profile library, each profile showing its modes and how many bindings it has](docs/screenshot-home.png)
 
 The editor has a device view (a picture of the stick) and a list view (rows and columns). Fix anything red in the Problems panel before you install. Click a problem to copy it for a bug report.
 
