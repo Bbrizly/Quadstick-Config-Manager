@@ -354,4 +354,23 @@ extension KitTests {
         XCTAssertEqual(text, "Caf\u{00E9}")
         XCTAssertNil(note)
     }
+
+    /// Every ring on the photo is labelled, and the labels are short enough not
+    /// to run into each other: the three tube rings sit 0.125 of the photo width
+    /// apart and the full part names are wider than that gap.
+    func testEveryHotspotHasAShortLabelAndTheyAreUnique() {
+        let names = DevicePhoto.hotspots.map(\.shortName)
+        XCTAssertEqual(names.count, DevicePhoto.hotspots.count)
+        XCTAssertTrue(names.allSatisfy { !$0.isEmpty && $0.count <= 8 },
+                      "a photo label longer than 8 characters collides with its neighbour")
+        XCTAssertEqual(Set(names).count, names.count, "two rings labelled the same is unreadable")
+    }
+
+    /// Every ring opens a real input; a label pointing at nothing is worse than
+    /// no label.
+    func testEveryHotspotNamesAnInputInTheCatalog() {
+        for spot in DevicePhoto.hotspots {
+            XCTAssertNotNil(QuadStickCatalog.capabilities.input(spot.inputID), spot.inputID)
+        }
+    }
 }

@@ -41,7 +41,8 @@ struct DevicePhotoView: View {
         // part's target never sits on top of another's. KitTests pins it.
         let ring = size.width * 0.09
         let tap = size.width * DevicePhoto.minimumSeparation
-        return RegionRing(assigned: assignedCount(input), total: input.actions.count, size: ring)
+        return RegionRing(assigned: assignedCount(input), total: input.actions.count,
+                          size: ring, name: spot.shortName)
             .frame(width: tap, height: tap)
             .contentShape(Circle())
             .position(x: spot.x * size.width, y: spot.y * size.height)
@@ -79,6 +80,7 @@ private struct RegionRing: View {
     let assigned: Int
     let total: Int
     let size: CGFloat
+    let name: String
 
     var body: some View {
         ZStack {
@@ -99,6 +101,20 @@ private struct RegionRing: View {
         // A white halo keeps the ring readable over both the black case and
         // the white mouthpiece.
         .shadow(color: .black.opacity(0.55), radius: 3)
+        // The number is a count, not a name. Without this the ring on the
+        // gimbal arch and the ring on the lip disc are two orange circles in
+        // the same corner of the photo and tapping one is a guess. The desktop
+        // runs a leader line out to a named pill; there is no room for that
+        // here, so the name sits under the ring.
+        .overlay(alignment: .top) {
+            Text(name)
+                .font(.system(size: max(8, size * 0.30), weight: .semibold))
+                .foregroundStyle(.white)
+                .shadow(color: .black, radius: 2)
+                .shadow(color: .black, radius: 3)
+                .fixedSize()
+                .offset(y: size * 0.62)
+        }
     }
 }
 
