@@ -1631,7 +1631,9 @@ public partial class MainWindow : Window
         // A recent that has since been moved into the library, deleted, or
         // saved to a temp folder the system wiped just drops off the list.
         RecentCards.Children.Clear();
-        var recents = _settings.Recents.Where(p => !InLibrary(p) && File.Exists(p)).ToList();
+        var recents = _settings.Recents
+            .Where(p => !InLibrary(p) && File.Exists(p) && !IsAgentScratchFile(p))
+            .ToList();
         RecentSection.IsVisible = recents.Count > 0;
         foreach (var path in recents)
             RecentCards.Children.Add(ProfileCard(path, onDevice: false,
@@ -1668,6 +1670,14 @@ public partial class MainWindow : Window
             DeviceCards.Children.Add(cards);
         }
     }
+
+    // The agent writes its working copies as qcm-agent-<guid>.csv in the temp
+    // folder. They are scratch, not something a person opened, and one turning
+    // up under "Opened from your computer" is noise at best and a dead link
+    // once the system clears temp. This hides the artefact; the agent code
+    // itself is untouched and still builds (see AgentFeature).
+    static bool IsAgentScratchFile(string path) =>
+        Path.GetFileName(path).StartsWith("qcm-agent-", StringComparison.OrdinalIgnoreCase);
 
     // A yanked USB stick between FindCandidates and GetFiles is routine for this
     // hardware; it must never crash the home screen. That drive drops off the
