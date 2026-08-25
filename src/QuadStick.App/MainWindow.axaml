@@ -284,25 +284,59 @@
       <!-- Row 2: which mode (with a plain-language explainer), how to view it,
            add a row, what is still free. Wraps, for the same reason as row 1. -->
       <WrapPanel Classes="toolbar" Margin="0,0,0,-6">
+        <!-- The question mark reads as part of the label it explains, so it
+             comes first. Sat after the dropdown it looked like a third control
+             in the row and people read it as "mode, something, ?". -->
+        <Button x:Name="ModeHelpButton" Classes="icon quiet" Content="?"
+                ToolTip.Tip="What is a mode?"
+                AutomationProperties.Name="What is a mode, and why is there only one?"/>
         <TextBlock Text="Mode" VerticalAlignment="Center" FontSize="{DynamicResource BodySize}"/>
         <ComboBox x:Name="SheetPicker" MinWidth="180"
                   AutomationProperties.Name="Select which mode to edit"/>
-        <Button x:Name="ModeHelpButton" Classes="icon" Content="?"
-                AutomationProperties.Name="What is a mode, and why is there only one?"/>
-        <Button x:Name="ModesButton" Classes="quiet" Content="Modes..."
-                AutomationProperties.Name="Add, rename, reorder and delete modes"/>
+        <!-- "Modes..." named a dialog, not a job. Everything people come here
+             to do (add, rename, reorder, delete) is editing the set of them. -->
+        <Button x:Name="ModesButton" Classes="quiet"
+                ToolTip.Tip="Add, rename, reorder and delete modes"
+                AutomationProperties.Name="Edit modes: add, rename, reorder and delete">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <PathIcon Width="18" Height="18" Data="{DynamicResource IconTemplate}"/>
+            <TextBlock Text="Edit modes"/>
+          </StackPanel>
+        </Button>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
         <!-- These three are one mutually-exclusive choice, so they sit in a
              shared track like a rocker switch bank rather than as loose,
-             independent buttons. -->
+             independent buttons. Each key shows what it will give you: the
+             device, the parts of it, or the sheet the file actually is. The
+             word stays under the picture, because a glyph alone is a guess. -->
+        <TextBlock Text="View" VerticalAlignment="Center" Classes="secondary"
+                   FontSize="{DynamicResource SmallSize}" Margin="0,0,2,0"/>
         <Border Classes="switchtrack">
           <StackPanel Orientation="Horizontal" Spacing="2">
-            <Button x:Name="DeviceViewButton" Classes="switchkey" Content="Device view"
-                    AutomationProperties.Name="Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this"/>
-            <Button x:Name="RailViewButton" Classes="switchkey" Content="Parts list"
-                    AutomationProperties.Name="Show the parts as a simple list you arrow through, with the same editor on the right"/>
-            <Button x:Name="ListViewButton" Classes="switchkey" Content="List view"
-                    AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this"/>
+            <Button x:Name="DeviceViewButton" Classes="switchkey viewkey"
+                    ToolTip.Tip="See the mappings on a picture of the QuadStick  (Ctrl+D)"
+                    AutomationProperties.Name="Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this">
+              <StackPanel Spacing="3" HorizontalAlignment="Center">
+                <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewDevice}"/>
+                <TextBlock Text="Device" HorizontalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="RailViewButton" Classes="switchkey viewkey"
+                    ToolTip.Tip="Step through the parts one at a time"
+                    AutomationProperties.Name="Show the parts as a simple list you arrow through, with the same editor on the right">
+              <StackPanel Spacing="3" HorizontalAlignment="Center">
+                <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewRail}"/>
+                <TextBlock Text="Parts" HorizontalAlignment="Center"/>
+              </StackPanel>
+            </Button>
+            <Button x:Name="ListViewButton" Classes="switchkey viewkey"
+                    ToolTip.Tip="See the rows the way the sheet stores them  (Ctrl+D)"
+                    AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this">
+              <StackPanel Spacing="3" HorizontalAlignment="Center">
+                <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewSheet}"/>
+                <TextBlock Text="Rows" HorizontalAlignment="Center"/>
+              </StackPanel>
+            </Button>
           </StackPanel>
         </Border>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>

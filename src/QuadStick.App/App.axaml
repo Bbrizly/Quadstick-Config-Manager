@@ -362,6 +362,17 @@
       <Setter Property="BorderBrush" Value="Transparent"/>
     </Style>
 
+    <!-- A view key carries a picture over its word, so it needs height and a
+         wide enough plate that the three read as one bank of switches. -->
+    <Style Selector="Button.viewkey">
+      <Setter Property="MinWidth" Value="74"/>
+      <Setter Property="MinHeight" Value="52"/>
+      <Setter Property="Padding" Value="8,5"/>
+      <Setter Property="FontSize" Value="{DynamicResource SmallSize}"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
     <Style Selector="Button.card">
       <Setter Property="Margin" Value="0,0,14,14"/>
       <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>

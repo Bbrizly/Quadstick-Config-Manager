@@ -412,6 +412,29 @@ public class GalleryWindow : Window
         stack.Children.Add(Spec("switchtrack + switchkey",
             "Which editor you are in. One key is always on, and the on one is the primary style.", track));
 
+        // The real view switcher: a picture of what each key gives you over the
+        // word for it. The glyph alone would be a guess, the word alone was
+        // three grey rectangles.
+        var viewTrack = new Border { Classes = { "switchtrack" } };
+        var viewKeys = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
+        foreach (var (word, icon, on) in new[]
+                 { ("Device", "IconViewDevice", true), ("Parts", "IconViewRail", false),
+                   ("Rows", "IconViewSheet", false) })
+        {
+            var b = new Button { Classes = { "switchkey", "viewkey" } };
+            if (on) b.Classes.Add("primary");
+            var col = new StackPanel { Spacing = 3, HorizontalAlignment = HorizontalAlignment.Center };
+            var glyph = new PathIcon { Width = 22, Height = 22, HorizontalAlignment = HorizontalAlignment.Center };
+            glyph.Bind(PathIcon.DataProperty, new DynamicResourceExtension(icon));
+            col.Children.Add(glyph);
+            col.Children.Add(new TextBlock { Text = word, HorizontalAlignment = HorizontalAlignment.Center });
+            b.Content = col;
+            viewKeys.Children.Add(b);
+        }
+        viewTrack.Child = viewKeys;
+        stack.Children.Add(Spec("viewkey",
+            "A view key carries its picture over its word, so the three read as one bank of switches.", viewTrack));
+
         var brand = new Button { Classes = { "shellbrandbutton" } };
         brand.Content = new StackPanel
         {
