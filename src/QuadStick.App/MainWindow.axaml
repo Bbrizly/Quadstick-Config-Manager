@@ -59,8 +59,14 @@
       <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
         <ComboBox x:Name="AppearancePicker" MinWidth="112"
                   AutomationProperties.Name="Appearance: choose System, Light, or Dark theme"/>
-        <Button x:Name="SettingsButton" Classes="icon shellutility" Content="⚙" FontSize="19"
+        <!-- Deliberately the largest control in the chrome. It was a 40px key
+             with a 19px glyph and it is the one thing people go looking for
+             when the interface itself is the problem (scale, theme, contrast). -->
+        <Button x:Name="SettingsButton" Classes="icon shellutility" Content="⚙"
+                Width="52" Height="52" MinWidth="52" MinHeight="52" FontSize="30"
+                ToolTip.Tip="Settings"
                 AutomationProperties.Name="Open Settings"/>
+
       </StackPanel>
     </Grid>
   </Border>
