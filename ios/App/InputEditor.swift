@@ -1,8 +1,10 @@
 import SwiftUI
 import QuadStickKit
 
-/// One physical input: each action row assigns straight from a categorized
-/// dropdown. The behavior editor is one tap deeper, only when needed.
+/// One physical input and the four things it can do. Tapping a row picks what
+/// that action does, which is the change people come here to make. Behaviour
+/// and naming sit behind their own labelled button, one tap further, so the
+/// common case stays two taps from the device picture.
 struct InputDetailView: View {
     @Environment(AppModel.self) private var model
     let input: DeviceInput
@@ -12,10 +14,14 @@ struct InputDetailView: View {
             if let detail = input.detail {
                 Section { EmptyView() } footer: { Text(detail) }
             }
-            Section("In \(model.mode.name) mode") {
+            Section {
                 ForEach(input.actions) { action in
                     ActionRow(action: action)
                 }
+            } header: {
+                Text("In \(model.mode.name) mode")
+            } footer: {
+                Text("Tap an action to choose what it does. Options sets how it behaves and what you call it.")
             }
         }
         .navigationTitle(input.name)
@@ -26,84 +32,49 @@ struct InputDetailView: View {
 private struct ActionRow: View {
     @Environment(AppModel.self) private var model
     let action: InputActionDef
+    @State private var showPicker = false
 
     var body: some View {
         let assignment = model.assignment(for: action.id)
         HStack(spacing: 12) {
-            NavigationLink(value: action.id) {
+            Button {
+                showPicker = true
+            } label: {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(action.name)
+                        .foregroundStyle(.primary)
+                    Text(assignment.display)
+                        .font(.subheadline)
+                        .foregroundStyle(assignment.output == nil ? .secondary : Theme.accent)
                     if let f = assignment.function {
                         Text(f.summary)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
             }
-            .buttonStyle(.borderless)
-            .accessibilityLabel("\(action.name)\(assignment.function.map { ", \($0.summary)" } ?? ""). Opens behavior and naming.")
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(action.name), \(assignment.display)")
+            .accessibilityHint("Choose what this does")
 
-            Spacer(minLength: 8)
-
-            OutputMenu(actionID: action.id) {
-                HStack(spacing: 4) {
-                    Text(assignment.display)
-                        .foregroundStyle(assignment.output == nil ? Color.secondary : Theme.accent)
-                        .lineLimit(1)
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
+            NavigationLink(value: action.id) {
+                Image(systemName: "slider.horizontal.3")
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
-            .accessibilityLabel("\(action.name) is \(assignment.display). Double tap to choose a different action.")
+            .buttonStyle(.plain)
+            .foregroundStyle(Theme.accent)
+            .labelsHidden()
+            .frame(width: 44)
+            .accessibilityLabel("Options for \(action.name)")
+            .accessibilityHint("Set how it behaves and what you call it")
         }
-    }
-}
-
-/// The categorized dropdown. One submenu per category, never one giant list.
-struct OutputMenu<Label: View>: View {
-    @Environment(AppModel.self) private var model
-    let actionID: String
-    @ViewBuilder let label: Label
-
-    private var selected: OutputAction? { model.assignment(for: actionID).output }
-
-    var body: some View {
-        Menu {
-            Button {
-                set(nil)
-            } label: {
-                if selected == nil {
-                    SwiftUI.Label("Unassigned", systemImage: "checkmark")
-                } else {
-                    Text("Unassigned")
-                }
-            }
-            ForEach(OutputCategory.allCases, id: \.self) { category in
-                Menu(category.rawValue) {
-                    ForEach(QuadStickCatalog.outputs.filter { $0.category == category }) { output in
-                        Button {
-                            set(output)
-                        } label: {
-                            if selected?.id == output.id {
-                                SwiftUI.Label(output.name, systemImage: "checkmark")
-                            } else {
-                                Text(output.name)
-                            }
-                        }
-                    }
-                }
-            }
-        } label: {
-            label
+        .sheet(isPresented: $showPicker) {
+            OutputPicker(actionID: action.id)
         }
-        .buttonStyle(.borderless)
-    }
-
-    private func set(_ output: OutputAction?) {
-        var a = model.assignment(for: actionID)
-        a.output = output
-        model.setAssignment(a, for: actionID)
     }
 }
 
@@ -111,26 +82,31 @@ struct OutputMenu<Label: View>: View {
 struct ActionEditorView: View {
     @Environment(AppModel.self) private var model
     let action: InputActionDef
+    @State private var showPicker = false
 
     private var assignment: Assignment { model.assignment(for: action.id) }
 
     var body: some View {
         List {
             Section {
-                HStack {
-                    Text("Action")
-                    Spacer()
-                    OutputMenu(actionID: action.id) {
-                        HStack(spacing: 4) {
-                            Text(assignment.output?.name ?? "Unassigned")
-                                .foregroundStyle(assignment.output == nil ? .secondary : Theme.accent)
-                            Image(systemName: "chevron.up.chevron.down")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
+                Button {
+                    showPicker = true
+                } label: {
+                    HStack {
+                        Text("Action").foregroundStyle(.primary)
+                        Spacer()
+                        Text(assignment.output?.name ?? "Not set")
+                            .foregroundStyle(assignment.output == nil ? .secondary : Theme.accent)
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
                     }
-                    .accessibilityLabel("Action: \(assignment.output?.name ?? "Unassigned"). Double tap to choose.")
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Action: \(assignment.output?.name ?? "Not set")")
+                .accessibilityHint("Choose what this does")
                 if assignment.output != nil {
                     TextField("What you call it (optional)", text: labelBinding)
                         .accessibilityLabel("Your name for this action, for example Jump")
@@ -157,6 +133,9 @@ struct ActionEditorView: View {
         }
         .navigationTitle(action.fullName)
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showPicker) {
+            OutputPicker(actionID: action.id)
+        }
     }
 
     private var labelBinding: Binding<String> {

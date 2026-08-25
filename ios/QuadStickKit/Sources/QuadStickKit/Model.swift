@@ -154,9 +154,9 @@ public struct Assignment: Codable, Hashable, Sendable {
         self.function = function
     }
 
-    /// "Jump (A)" if labeled, "A" if not, "Unassigned" if empty.
+    /// "Jump (A)" if labeled, "A" if not, "Not set" if empty.
     public var display: String {
-        guard let output else { return "Unassigned" }
+        guard let output else { return "Not set" }
         if let label, !label.isEmpty { return "\(label) (\(output.name))" }
         return output.name
     }
