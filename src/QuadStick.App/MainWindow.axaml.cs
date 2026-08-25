@@ -118,6 +118,29 @@ public partial class MainWindow : Window
         RunBackup(path, async b => (PushResult?)await b.PushAsync(path, text));
 
     // Fire-and-forget the retry when a linked profile opens.
+    // Cell C1 of the file is the sheet it is backed up to. Called before any
+    // write and when a profile opens, so the id travels with the file instead
+    // of only living in settings under a path that a rename invalidates.
+    //
+    // Recovery runs first: a profile that moved carries its id but has no
+    // settings entry, and TryRecoverLink decides whether that id is really
+    // this file's to claim.
+    void SyncSheetIdentity(string? path)
+    {
+        if (_file is null || path is null) return;
+        var backup = Backup();
+        if (backup is null) return;
+        if (SheetsUrl.TryGetEditUrlFromHeader(_file.Document.HeaderVersion, _file.Document.HeaderSource, out _)
+            && _file.Document.HeaderSource is { Length: > 0 } carried)
+            backup.TryRecoverLink(path, IdOnly(carried));
+        _file.HeaderSheetId = backup.LinkedSheetId(path);
+    }
+
+    // A 1.4 header carries a whole URL where 1.5 carries the bare id. Settings
+    // only ever hold the id.
+    static string IdOnly(string source) =>
+        SheetsUrl.TryGetId(source, out var id) ? id : source;
+
     void FireBackupRetry(string path, string text) =>
         RunBackup(path, b => b.RetryIfDirtyAsync(path, text));
 
@@ -2018,7 +2041,12 @@ public partial class MainWindow : Window
         ShowEditor();
         RefreshEditor(); // RefreshIssues inside sets the status line
         // A profile opened from a path retries its backup if it was left dirty.
-        if (savePath is not null) { RememberRecent(savePath); FireBackupRetry(savePath, file.ToCsvText()); }
+        if (savePath is not null)
+        {
+            SyncSheetIdentity(savePath); // a moved profile finds its sheet again on open
+            RememberRecent(savePath);
+            FireBackupRetry(savePath, file.ToCsvText());
+        }
     }
 
     void RepopulateSheetPicker(int select)
@@ -3457,6 +3485,7 @@ public partial class MainWindow : Window
         try
         {
             _file.NormalizeForDeviceCsv(); // saved files match installed files byte for byte
+            SyncSheetIdentity(_savePath);  // stamp C1 before the bytes are written
             text = _file.ToCsvText();
             await Task.Run(() => ProfileFile.WriteAtomic(_savePath, text));
         }
@@ -4960,9 +4989,14 @@ public partial class MainWindow : Window
 
         var errors = _file.Issues.Count(i => i.Severity == Severity.Error);
         var warns = _file.Issues.Count - errors;
+        // Only errors block install, so a file with none is not told about
+        // them. "0 errors, 2 warnings. Errors block installing." read as a
+        // refusal on a profile that installs fine.
         Status(errors + warns == 0
                 ? "No problems. Ready to save or install."
-                : $"{Plural.Of(errors, "error")}, {Plural.Of(warns, "warning")}. Errors block installing.",
+                : errors == 0
+                    ? $"{Plural.Of(warns, "warning")}. The device skips those rows, so this still installs."
+                    : $"{Plural.Of(errors, "error")}, {Plural.Of(warns, "warning")}. Errors block installing.",
             errors > 0 ? StatusKind.Error : warns > 0 ? StatusKind.Warning : StatusKind.Ready);
         UpdateProblemsToggle();
     }

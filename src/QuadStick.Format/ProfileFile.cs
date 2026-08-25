@@ -39,7 +39,34 @@ public sealed class ProfileFile
     ///    and if one of them is blank the binding loop treats it as the end of
     ///    the mode and drops every row below. One published community profile
     ///    loses thirty bindings to a paragraph break in a comment.</summary>
-    public string ToCsvText() => Csv.Write(Grid.Select(DeviceSafe));
+    public string ToCsvText() => Csv.Write(StampedGrid().Select(DeviceSafe));
+
+    /// <summary>The Google Sheet this profile is backed up to. Cell C1 of the
+    /// version header is the format's own slot for it ("QuadStick
+    /// Configuration,Version 1.5,&lt;sheet id&gt;,&lt;name&gt;") and the parser
+    /// already reads it back, but this app wrote that cell blank and kept the
+    /// link in settings, keyed by the file's path. Move or rename the file and
+    /// the link was gone, so the next save forked a second sheet.
+    ///
+    /// Applied on the way out only. It is bookkeeping, not an edit: it never
+    /// marks the file dirty, never lands in undo, and null leaves whatever is
+    /// already in the cell alone.</summary>
+    public string? HeaderSheetId { get; set; }
+
+    // Row 1 with the sheet id in C1. Only when there is a header row to put it
+    // in: a file without one is not given a header here, NormalizeForDeviceCsv
+    // owns that decision.
+    IEnumerable<string[]> StampedGrid()
+    {
+        if (HeaderSheetId is null || Grid.Count == 0 || !Document.HasVersionHeader) return Grid;
+        var header = Grid[0];
+        if (header.Length > 2 && header[2] == HeaderSheetId) return Grid;
+        var stamped = new string[Math.Max(header.Length, 4)];
+        header.CopyTo(stamped, 0);
+        for (int i = header.Length; i < stamped.Length; i++) stamped[i] = "";
+        stamped[2] = HeaderSheetId;
+        return Grid.Select((row, i) => i == 0 ? stamped : row);
+    }
 
     // The grid exactly as the user has it. The parser and the validator read
     // this, so they still see what ToCsvText straightens out and can say so.

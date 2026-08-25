@@ -672,4 +672,75 @@ public class DriveBackupTests
         }).ToArray();
         return TestWorkbook.Build(tabs);
     }
+
+    // ---- Recovering a link from the file's own C1 ----
+
+    // A profile that moved carries its sheet id in the file. The settings entry
+    // is under the old path, and the old file is gone, so this is a move and the
+    // link follows it.
+    [Fact]
+    public void RecoverLink_MovesTheEntry_WhenTheOldFileIsGone()
+    {
+        var (backup, settings, _) = Make(_ => Json("{}"));
+        var gone = Path.Combine(Path.GetTempPath(), "qsc-gone-" + Guid.NewGuid() + ".csv");
+        settings.DriveLinks[gone] = new DriveLink { SpreadsheetId = "sheet-1" };
+
+        Assert.True(backup.TryRecoverLink("/new/place.csv", "sheet-1"));
+        Assert.Equal("sheet-1", backup.LinkedSheetId("/new/place.csv"));
+        Assert.False(settings.DriveLinks.ContainsKey(gone));
+    }
+
+    // The original still exists, so this is a copy. A copy inheriting the link
+    // would start overwriting the original's sheet on its next save.
+    [Fact]
+    public void RecoverLink_Refuses_WhenTheLinkedFileStillExists()
+    {
+        var (backup, settings, _) = Make(_ => Json("{}"));
+        var original = Path.Combine(Path.GetTempPath(), "qsc-orig-" + Guid.NewGuid() + ".csv");
+        File.WriteAllText(original, "x");
+        try
+        {
+            settings.DriveLinks[original] = new DriveLink { SpreadsheetId = "sheet-1" };
+            Assert.False(backup.TryRecoverLink("/copy/place.csv", "sheet-1"));
+            Assert.Null(backup.LinkedSheetId("/copy/place.csv"));
+            Assert.Equal("sheet-1", backup.LinkedSheetId(original));
+        }
+        finally { File.Delete(original); }
+    }
+
+    // An id this app never recorded belongs to somebody else's sheet, most
+    // likely one that arrived with a shared profile. Adopting it would push
+    // this user's profile over a stranger's.
+    [Fact]
+    public void RecoverLink_Refuses_AnIdItNeverRecorded()
+    {
+        var (backup, _, _) = Make(_ => Json("{}"));
+        Assert.False(backup.TryRecoverLink("/new/place.csv", "someone-elses-sheet"));
+        Assert.Null(backup.LinkedSheetId("/new/place.csv"));
+    }
+
+    [Fact]
+    public void RecoverLink_LeavesAnExistingLinkAlone()
+    {
+        var (backup, settings, _) = Make(_ => Json("{}"));
+        settings.DriveLinks["/here.csv"] = new DriveLink { SpreadsheetId = "mine" };
+        Assert.False(backup.TryRecoverLink("/here.csv", "other"));
+        Assert.Equal("mine", backup.LinkedSheetId("/here.csv"));
+    }
+
+    [Fact]
+    public void RecoverLink_IgnoresABlankId()
+    {
+        var (backup, _, _) = Make(_ => Json("{}"));
+        Assert.False(backup.TryRecoverLink("/new/place.csv", "   "));
+    }
+
+    // The push path stamps what it recovered, so the bytes that reach the sheet
+    // and the bytes on disk both name the sheet they belong to.
+    [Fact]
+    public void LinkedSheetId_IsNullUntilThereIsALink()
+    {
+        var (backup, _, _) = Make(_ => Json("{}"));
+        Assert.Null(backup.LinkedSheetId("/never/seen.csv"));
+    }
 }

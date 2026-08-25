@@ -252,6 +252,48 @@ public sealed class DriveBackup
     /// instead of over the public web. A link the user copied one second ago is
     /// the commonest thing they paste into Import, and the anonymous export of
     /// a sheet is only readable once link sharing is on and has settled.</summary>
+    /// <summary>Re-link a profile that moved. The sheet id travels in cell C1 of
+    /// the file itself, so a profile that was renamed or moved to another folder
+    /// can say which sheet is its own, and this puts the settings entry back
+    /// under the new path instead of forking a second sheet on the next save.
+    ///
+    /// Three refusals, all of them about not touching a sheet that is not this
+    /// file's to touch:
+    ///   - the path already has a link, so there is nothing to recover;
+    ///   - no entry holds that id, so the sheet was not made by this app for
+    ///     this user, and adopting it would push a stranger's profile over it;
+    ///   - the file the id is already linked to still exists, so this is a copy
+    ///     of a profile rather than a move, and a copy must never inherit the
+    ///     original's backup and start overwriting it.
+    /// True when the link was moved across.</summary>
+    public bool TryRecoverLink(string profilePath, string spreadsheetId)
+    {
+        if (string.IsNullOrWhiteSpace(spreadsheetId)) return false;
+        var settings = _getSettings();
+        if (settings.DriveLinks.ContainsKey(profilePath)) return false;
+
+        string? oldPath = null;
+        foreach (var (path, link) in settings.DriveLinks)
+            if (string.Equals(link.SpreadsheetId, spreadsheetId, StringComparison.Ordinal))
+            {
+                if (File.Exists(path)) return false; // a copy, not a move
+                oldPath = path;
+            }
+        if (oldPath is null) return false;
+
+        settings.DriveLinks[profilePath] = settings.DriveLinks[oldPath];
+        settings.DriveLinks.Remove(oldPath);
+        SaveState();
+        _status("Reconnected this profile to its Google Sheet.", false);
+        return true;
+    }
+
+    /// <summary>The sheet a profile is linked to, for stamping into the file.
+    /// Null when there is no link, which leaves whatever is already in the
+    /// cell alone.</summary>
+    public string? LinkedSheetId(string profilePath) =>
+        _getSettings().DriveLinks.TryGetValue(profilePath, out var link) ? link.SpreadsheetId : null;
+
     public bool Knows(string spreadsheetId) =>
         _getSettings().DriveLinks.Values.Any(l =>
             string.Equals(l.SpreadsheetId, spreadsheetId, StringComparison.Ordinal));
