@@ -76,7 +76,13 @@
     <!-- ============ HOME ============ -->
     <DockPanel x:Name="HomeView" Margin="28,22">
       <ScrollViewer>
-        <StackPanel Spacing="30" MaxWidth="1120" HorizontalAlignment="Stretch">
+        <!-- Centred, not left-hugging. On a wide window the whole page used to
+             sit against the left edge with a third of the screen empty beside
+             it. The column keeps its measure; it is the column that centres,
+             not the text inside it, because centred body copy is harder to
+             read and harder to scan down. -->
+        <StackPanel Spacing="30" MaxWidth="1120" HorizontalAlignment="Center">
+
 
           <Border Classes="homepanel">
             <StackPanel Spacing="14">
@@ -176,8 +182,8 @@
                 <Button x:Name="HomeDriveButton" IsVisible="False" VerticalAlignment="Center"
                         FontSize="{DynamicResource SmallSize}"/>
               </StackPanel>
-              <Grid ColumnDefinitions="Auto,Auto" HorizontalAlignment="Left">
-                <TextBox x:Name="SheetsUrlBox" Grid.Column="0" Width="560"
+              <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
+                <TextBox x:Name="SheetsUrlBox" Grid.Column="0" MinWidth="420"
                          Watermark="Paste a Google Sheets profile link"
                          AutomationProperties.Name="Google Sheets profile link"/>
                 <Button x:Name="ImportButton" Grid.Column="1" Margin="10,0,0,0"
