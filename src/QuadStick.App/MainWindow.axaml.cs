@@ -1894,7 +1894,9 @@ public partial class MainWindow : Window
         if (!onDevice && _settings.DriveLinks.TryGetValue(path, out var driveLink))
             subtitle += driveLink.BackupDirty ? " · backup pending" : " · on Google Drive";
 
-        var card = new Button { Classes = { "card" } };
+        // Stretch, so cards in one row end level. A profile whose facts wrap to
+        // an extra line used to stand taller than the two beside it.
+        var card = new Button { Classes = { "card" }, VerticalAlignment = VerticalAlignment.Stretch };
         AutomationProperties.SetName(card,
             $"Open {bare}, {subtitle}{(onDevice ? ", stored on the QuadStick" : ", in your profile library")}"
             + (position > 0 ? $", number {position} in the profile switch order" : ""));
