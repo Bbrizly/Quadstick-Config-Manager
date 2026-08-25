@@ -360,9 +360,20 @@
       <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
     </Style>
+    <!-- Quiet by default. Five 36px accent icons in a row all shouted at the
+         same volume, so the card that matters had nothing to win with. Only
+         the featured one is blue; hovering lights the rest. -->
     <Style Selector="Button.homeaction PathIcon">
-      <Setter Property="Width" Value="36"/>
-      <Setter Property="Height" Value="36"/>
+      <Setter Property="Width" Value="28"/>
+      <Setter Property="Height" Value="28"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    </Style>
+    <Style Selector="Button.homeaction.featured PathIcon">
+      <Setter Property="Width" Value="32"/>
+      <Setter Property="Height" Value="32"/>
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+    </Style>
+    <Style Selector="Button.homeaction:pointerover PathIcon">
       <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
     </Style>
     <Style Selector="Button.homeaction:pointerover /template/ ContentPresenter">

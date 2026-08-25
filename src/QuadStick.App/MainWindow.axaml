@@ -133,27 +133,6 @@
 
           <Border Classes="homepanel">
             <StackPanel Spacing="12">
-              <DockPanel>
-                <!-- Content, colour, and action are set per state in RefreshDriveButton. -->
-                <Button x:Name="HomeDriveButton" DockPanel.Dock="Right" IsVisible="False"
-                        FontSize="{DynamicResource SmallSize}"/>
-                <TextBlock Classes="section" Text="Import from Sheets"/>
-              </DockPanel>
-              <Grid ColumnDefinitions="*,Auto">
-                <TextBox x:Name="SheetsUrlBox" Grid.Column="0"
-                         Watermark="Paste a Google Sheets profile link"
-                         AutomationProperties.Name="Google Sheets profile link"/>
-                <Button x:Name="ImportButton" Grid.Column="1" Margin="10,0,0,0"
-                        Classes="primary" MinWidth="130"
-                        AutomationProperties.Name="Import the profile from the pasted Google Sheets link">
-                  <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconLink}"/><TextBlock Text="Import"/></StackPanel>
-                </Button>
-              </Grid>
-            </StackPanel>
-          </Border>
-
-          <Border Classes="homepanel">
-            <StackPanel Spacing="12">
               <TextBlock Classes="section" Text="Your profiles"/>
               <StackPanel x:Name="LibraryEmptyPanel" Spacing="10">
                 <TextBlock FontSize="{DynamicResource BodySize}" Classes="secondary"
@@ -171,6 +150,27 @@
                 </StackPanel>
               </StackPanel>
               <WrapPanel x:Name="LibraryCards"/>
+            </StackPanel>
+          </Border>
+
+          <Border Classes="homepanel">
+            <StackPanel Spacing="12">
+              <StackPanel Orientation="Horizontal" Spacing="14">
+                <TextBlock Classes="section" Text="Import from Sheets" VerticalAlignment="Center"/>
+                <!-- Content, colour, and action are set per state in RefreshDriveButton. -->
+                <Button x:Name="HomeDriveButton" IsVisible="False" VerticalAlignment="Center"
+                        FontSize="{DynamicResource SmallSize}"/>
+              </StackPanel>
+              <Grid ColumnDefinitions="Auto,Auto" HorizontalAlignment="Left">
+                <TextBox x:Name="SheetsUrlBox" Grid.Column="0" Width="560"
+                         Watermark="Paste a Google Sheets profile link"
+                         AutomationProperties.Name="Google Sheets profile link"/>
+                <Button x:Name="ImportButton" Grid.Column="1" Margin="10,0,0,0"
+                        Classes="primary" MinWidth="130"
+                        AutomationProperties.Name="Import the profile from the pasted Google Sheets link">
+                  <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconLink}"/><TextBlock Text="Import"/></StackPanel>
+                </Button>
+              </Grid>
             </StackPanel>
           </Border>
 
