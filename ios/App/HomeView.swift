@@ -131,23 +131,30 @@ struct HomeView: View {
         }
     }
 
+    @ViewBuilder
     private var validationStatus: some View {
         let issues = model.issues
         let errors = issues.filter { $0.severity == .error }.count
         let warnings = issues.count - errors
-        return Button {
-            showIssues = true
-        } label: {
-            if issues.isEmpty {
-                Label("No problems found", systemImage: "checkmark.circle")
-            } else {
+        if issues.isEmpty {
+            // A clean profile is a statement, not an unavailable button. As a
+            // disabled Button it drew dimmed and read out as "dimmed", which is
+            // the opposite of what a passing check should say.
+            Label("No problems found", systemImage: "checkmark.circle")
+                .font(.subheadline)
+                .foregroundStyle(.green)
+                .accessibilityLabel("No problems found in this profile.")
+        } else {
+            Button {
+                showIssues = true
+            } label: {
                 Label(statusText(errors: errors, warnings: warnings),
                       systemImage: errors > 0 ? "exclamationmark.octagon" : "exclamationmark.triangle")
             }
+            .buttonStyle(.bordered)
+            .tint(errors > 0 ? .red : .orange)
+            .accessibilityHint("Opens the list of problems")
         }
-        .buttonStyle(.bordered)
-        .tint(issues.isEmpty ? .green : (errors > 0 ? .red : .orange))
-        .disabled(issues.isEmpty)
     }
 
     private func statusText(errors: Int, warnings: Int) -> String {
