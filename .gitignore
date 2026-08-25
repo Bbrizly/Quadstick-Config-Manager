@@ -31,3 +31,7 @@ src/QuadStick.App/TelemetryToken.Local.cs
 
 # My own working notes for the AI tools. Not documentation for anyone else.
 CLAUDE.md
+
+# Swift package build output.
+ios/QuadStickKit/.build/
+ios/**/xcuserdata/
