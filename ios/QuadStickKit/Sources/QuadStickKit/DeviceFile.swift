@@ -23,7 +23,7 @@ public enum DeviceFile {
                               capabilities: DeviceCapabilities = QuadStickCatalog.capabilities) -> String {
         let base = makeDefault ? "default" : sanitizedFileName(fileName ?? profile.name)
         var rows: [[String]] = []
-        rows.append(["QuadStick Configuration", "Version 1.5", "", profile.name])
+        rows.append(["QuadStick Configuration", "Version 1.5", profile.sheetID ?? "", profile.name])
 
         for (index, mode) in profile.modes.enumerated() {
             rows.append([])   // firmware needs a truly empty line before each segment
@@ -128,7 +128,17 @@ public enum DeviceFile {
         var notes: [String] = []
         var profileName: String?
         var controllerType = ControllerType.standard
+        var sheetID: String?
         var at = 0
+
+        // Header line, when there is one: "QuadStick Configuration,Version
+        // 1.5,<sheet id>,<name>". Dropping C1 would cut a desktop profile off
+        // from its own Google Sheet, so it is read here and written back out.
+        let head = parseLine(lines.first ?? "")
+        if (head.first ?? "").hasPrefix("QuadStick") {
+            let cell = head.count > 2 ? head[2].trimmingCharacters(in: .whitespaces) : ""
+            if !cell.isEmpty { sheetID = cell }
+        }
 
         while at < lines.count {
             let cells = parseLine(lines[at])
@@ -166,7 +176,7 @@ public enum DeviceFile {
             notes.append("The file has \(modes.count) modes. The QuadStick only loads the first 16.")
         }
         let profile = Profile(name: profileName ?? fallbackName,
-                              controllerType: controllerType, modes: modes)
+                              controllerType: controllerType, modes: modes, sheetID: sheetID)
         return ImportResult(profile: profile, notes: notes)
     }
 

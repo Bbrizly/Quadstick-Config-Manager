@@ -374,3 +374,42 @@ extension KitTests {
         }
     }
 }
+
+// MARK: - The Google Sheet a profile came from
+
+/// Cell C1 is the sheet id. The firmware compares only the first nine
+/// characters of that line, so carrying it costs the device nothing, and
+/// dropping it would cut a desktop profile off from its own backup sheet.
+final class SheetIdentityTests: XCTestCase {
+    private let id = "1AbCdEfGhIjKlMnOpQrStUvWxYz0123456789"
+
+    private func roundTrip(_ csv: String) -> Profile? {
+        DeviceFile.importProfile(csv: csv, fallbackName: "Fallback")?.profile
+    }
+
+    func testSheetIdSurvivesImportThenExport() throws {
+        let original = DeviceFile.export(Profile(name: "Rocket League",
+                                                 modes: [Mode(name: "Driving")],
+                                                 sheetID: id))
+        let reimported = try XCTUnwrap(roundTrip(original))
+        XCTAssertEqual(reimported.sheetID, id)
+        XCTAssertTrue(DeviceFile.export(reimported).contains(id))
+    }
+
+    func testHeaderWithNoSheetIdStaysEmpty() throws {
+        let profile = try XCTUnwrap(roundTrip(DeviceFile.export(
+            Profile(name: "Plain", modes: [Mode(name: "One")]))))
+        XCTAssertNil(profile.sheetID)
+        // An absent id writes a blank cell, not the string "nil".
+        XCTAssertTrue(DeviceFile.export(profile)
+            .hasPrefix("QuadStick Configuration,Version 1.5,,Plain"))
+    }
+
+    func testFileWithNoHeaderAtAllStillImports() throws {
+        let full = DeviceFile.export(Profile(name: "Head less", modes: [Mode(name: "One")]))
+        let headless = full.components(separatedBy: "\n").dropFirst().joined(separator: "\n")
+        let profile = try XCTUnwrap(roundTrip(headless))
+        XCTAssertNil(profile.sheetID)
+        XCTAssertFalse(profile.modes.isEmpty)
+    }
+}

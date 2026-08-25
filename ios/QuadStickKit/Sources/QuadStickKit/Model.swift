@@ -197,12 +197,19 @@ public struct Profile: Identifiable, Codable, Hashable, Sendable {
     public var name: String
     public var controllerType: ControllerType
     public var modes: [Mode]
+    /// Cell C1 of the device file: the Google Sheet this profile came from.
+    /// This app never sets it, it only carries it, so a profile that came off
+    /// the desktop still points at its own sheet after a round trip here.
+    /// Optional so profiles saved before this existed still decode.
+    public var sheetID: String?
 
-    public init(id: UUID = UUID(), name: String, controllerType: ControllerType = .standard, modes: [Mode]) {
+    public init(id: UUID = UUID(), name: String, controllerType: ControllerType = .standard,
+                modes: [Mode], sheetID: String? = nil) {
         self.id = id
         self.name = name
         self.controllerType = controllerType
         self.modes = modes
+        self.sheetID = sheetID
     }
 }
 
