@@ -1728,6 +1728,109 @@ public partial class MainWindow : Window
             : "";
     }
 
+    // What a profile card says about itself beyond its name. Everything here is
+    // read out of the file we already parsed: no lookup, no network, no guess.
+    internal readonly record struct CardFacts(string Meta, string Modes, string Edited);
+
+    static readonly Dictionary<string, (long Stamp, CardFacts Facts)> _factsCache = new(StringComparer.Ordinal);
+
+    static CardFacts FactsFor(string path)
+    {
+        long stamp;
+        try { stamp = File.GetLastWriteTimeUtc(path).Ticks; }
+        catch { stamp = 0; }
+        if (_factsCache.TryGetValue(path, out var hit) && hit.Stamp == stamp) return hit.Facts;
+
+        CardFacts facts;
+        try
+        {
+            var doc = Parser.Parse(File.ReadAllText(path)).Doc;
+            var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
+            var bindings = modes.Sum(s => s.Bindings.Count);
+            var title = doc.Title;
+            var meta = (title.Length > 0 && !title.Equals(Path.GetFileNameWithoutExtension(path),
+                            StringComparison.OrdinalIgnoreCase) ? $"{title} · " : "")
+                + $"{Plural.Of(modes.Count, "mode")} · {Plural.Of(bindings, "binding")}";
+
+            // The mode names are the one thing that says what a profile is for.
+            // "Movement, Building, Driving" tells you it is a game setup; the
+            // binding count never did. With a single mode its name is already
+            // the profile's title, and printing it twice is how the card looked
+            // padded rather than informative.
+            var names = modes.Select(m => m.ModeName.Trim())
+                             .Where(n => n.Length > 0)
+                             .ToList();
+            var shown = "";
+            if (names.Count > 1)
+            {
+                shown = string.Join(", ", names.Take(3));
+                if (names.Count > 3) shown += $" +{names.Count - 3} more";
+            }
+            facts = new CardFacts(meta, shown, EditedNote(path));
+        }
+        catch
+        {
+            facts = new CardFacts("Could not read this file", "", "");
+        }
+        _factsCache[path] = (stamp, facts);
+        return facts;
+    }
+
+    // Rough on purpose. An exact timestamp on a card is noise; "yesterday" is
+    // what people actually sort by in their head.
+    static string EditedNote(string path)
+    {
+        try
+        {
+            var age = DateTime.Now - File.GetLastWriteTime(path);
+            if (age < TimeSpan.FromMinutes(2)) return "just now";
+            if (age < TimeSpan.FromHours(1)) return $"{(int)age.TotalMinutes} min ago";
+            if (age < TimeSpan.FromHours(24)) return $"{(int)age.TotalHours}h ago";
+            if (age < TimeSpan.FromDays(2)) return "yesterday";
+            if (age < TimeSpan.FromDays(30)) return $"{(int)age.TotalDays} days ago";
+            return File.GetLastWriteTime(path).ToString("d MMM yyyy");
+        }
+        catch { return ""; }
+    }
+
+    // Twelve grounds dark enough to carry white text, so the initials always
+    // clear 4.5:1 whatever the profile is called. CardTileTests pins that.
+    // Eight collided too often to be worth having: "gta" and "rocket-league",
+    // the two profiles in the sample library, landed on the same red.
+    internal static readonly Color[] TileColors =
+    {
+        Color.FromRgb(0x1F, 0x4E, 0x79), Color.FromRgb(0x6B, 0x2D, 0x5C),
+        Color.FromRgb(0x1B, 0x5E, 0x4A), Color.FromRgb(0x8A, 0x3A, 0x1E),
+        Color.FromRgb(0x3B, 0x35, 0x77), Color.FromRgb(0x7A, 0x2E, 0x2E),
+        Color.FromRgb(0x24, 0x55, 0x63), Color.FromRgb(0x5A, 0x44, 0x14),
+        Color.FromRgb(0x4A, 0x2E, 0x6B), Color.FromRgb(0x0F, 0x51, 0x32),
+        Color.FromRgb(0x8A, 0x2B, 0x4A), Color.FromRgb(0x34, 0x49, 0x5E),
+    };
+
+    // Same name, same colour, on every machine and every run: a card people
+    // recognise by its shape has to keep that shape. String.GetHashCode is
+    // randomised per process, so this does its own.
+    internal static Color TileColorFor(string name)
+    {
+        uint h = 2166136261;
+        foreach (var c in name.ToLowerInvariant()) { h ^= c; h *= 16777619; }
+        return TileColors[h % (uint)TileColors.Length];
+    }
+
+    // "rocket-league" reads as RL, "gta" as GT. Two characters is what fits and
+    // what people actually recognise at card size.
+    internal static string InitialsFor(string name)
+    {
+        var words = name.Split(new[] { ' ', '-', '_', '.', '+' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Where(w => char.IsLetterOrDigit(w[0])).ToList();
+        if (words.Count == 0) return "?";
+        if (words.Count == 1)
+            return words[0].Length >= 2
+                ? words[0][..2].ToUpperInvariant()
+                : words[0][..1].ToUpperInvariant();
+        return $"{char.ToUpperInvariant(words[0][0])}{char.ToUpperInvariant(words[1][0])}";
+    }
+
     static string CardSubtitle(string path)
     {
         long stamp;
@@ -1772,15 +1875,57 @@ public partial class MainWindow : Window
         AutomationProperties.SetName(card,
             $"Open {bare}, {subtitle}{(onDevice ? ", stored on the QuadStick" : ", in your profile library")}"
             + (position > 0 ? $", number {position} in the profile switch order" : ""));
-        card.Content = new StackPanel
+        // A tile, then the name, then what the profile actually is. The tile is
+        // the recognition: same name always gets the same colour and initials,
+        // so "Rocket League" and "GTA" are told apart across the room without
+        // reading either of them. It is derived from the name, never fetched,
+        // so it works offline and can never label a profile with the wrong art.
+        var facts = FactsFor(path);
+        var tile = new Border
         {
-            Spacing = 6,
-            Children =
+            Width = 46, Height = 46,
+            CornerRadius = new Avalonia.CornerRadius(11),
+            Background = new SolidColorBrush(TileColorFor(bare)),
+            VerticalAlignment = VerticalAlignment.Top,
+            Child = new TextBlock
             {
-                new TextBlock { Text = heading, FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold },
-                new TextBlock { Text = subtitle, Classes = { "cardsub" } },
+                Text = InitialsFor(bare),
+                Foreground = Brushes.White,
+                FontWeight = FontWeight.Bold,
+                FontSize = Size("SubheadSize"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
             },
         };
+        AutomationProperties.SetAccessibilityView(tile, AccessibilityView.Raw);
+
+        var lines = new StackPanel { Spacing = 3 };
+        lines.Children.Add(new TextBlock
+        {
+            // Named so a test can ask for the card's name without sweeping up
+            // every other line on it.
+            Name = "CardHeading",
+            Text = heading, FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+        });
+        lines.Children.Add(new TextBlock { Text = facts.Meta + note, Classes = { "cardsub" } });
+        if (facts.Modes.Length > 0)
+            lines.Children.Add(new TextBlock
+            {
+                Text = facts.Modes, Classes = { "cardsub" },
+                TextTrimming = TextTrimming.CharacterEllipsis,
+            });
+        if (facts.Edited.Length > 0)
+            lines.Children.Add(new TextBlock
+            {
+                Text = "Edited " + facts.Edited, Classes = { "cardsub" },
+                FontSize = Size("SmallSize"), Opacity = 0.75,
+            });
+
+        var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 13 };
+        row.Children.Add(tile);
+        row.Children.Add(lines);
+        card.Content = row;
         card.Click += async (_, _) =>
         {
             if (onDevice && name.Equals("prefs.csv", StringComparison.OrdinalIgnoreCase)

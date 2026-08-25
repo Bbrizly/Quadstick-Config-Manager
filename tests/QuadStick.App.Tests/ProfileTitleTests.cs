@@ -89,7 +89,8 @@ public class ProfileTitleTests
             w.UpdateLayout();
 
             var texts = w.GetVisualDescendants().OfType<StackPanel>().First(p => p.Name == "DeviceCards")
-                .GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text ?? "").ToList();
+                .GetVisualDescendants().OfType<TextBlock>()
+                .Where(t => t.Name == "CardHeading").Select(t => t.Text ?? "").ToList();
             // default.csv is always the first file the switch reaches, however
             // late its name sorts, and prefs.csv is settings rather than a
             // profile so it is never in the count. The cards are laid out in

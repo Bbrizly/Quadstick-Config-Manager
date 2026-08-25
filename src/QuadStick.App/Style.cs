@@ -44,7 +44,7 @@ public static class Style
         ["ControlHeight"] = 48,
         ["IconButton"]    = 40,
         ["CardWidth"]     = 280,
-        ["CardHeight"]    = 96,
+        ["CardHeight"]    = 112,
 
         // Weight of a hairline: the row separators, panel edges and rules.
         ["HairlineWidth"] = 1,
