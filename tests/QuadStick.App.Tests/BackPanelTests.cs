@@ -1,5 +1,8 @@
+using System.Buffers.Binary;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using QuadStick.App;
@@ -115,6 +118,87 @@ public class BackPanelTests
         var pins = lines.IndexOf(SwitchJacks.UsbDataPort);
         Assert.True(top < bottom, "the top jack has to come before the bottom one");
         Assert.True(bottom < pins, "the USB-A data pins sort last: nothing plugs into them");
+        w.Close();
+    }
+
+    // The picture is the thing Drew asked for by name. Every socket on it has
+    // to carry its own label, or it is a photo with dots on it.
+    [AvaloniaFact]
+    public void The_photo_names_every_socket_on_it()
+    {
+        var w = OnZone("jacks", WithJack);
+        var spoken = w.GetVisualDescendants().OfType<Border>()
+            .Select(b => AutomationProperties.GetName(b) ?? "")
+            .ToList();
+        foreach (var expected in new[]
+                 {
+                     "Top jack. One switch: in 8",
+                     "Lip jack. One switch: in 5",
+                     "Bottom jack. One switch: in 1",
+                     "USB-B port. To the computer",
+                     "USB-A port. Joystick, or in 3-4",
+                 })
+            Assert.Contains(expected, spoken, StringComparer.Ordinal);
+        w.Close();
+    }
+
+    // The socket points are fractions of this exact photo. A different crop
+    // puts every marker somewhere the socket is not, and nothing else would
+    // notice.
+    [AvaloniaFact]
+    public void The_photo_is_the_one_the_sockets_were_measured_on()
+    {
+        using var stream = AssetLoader.Open(
+            new Uri("avares://QuadStickConfigManager/Assets/QuadStickBack.png"));
+        var head = new byte[24];
+        using var all = new MemoryStream();
+        stream.CopyTo(all);
+        all.Position = 0;
+        Assert.Equal(24, all.Read(head, 0, 24));
+        int width = BinaryPrimitives.ReadInt32BigEndian(head.AsSpan(16, 4));
+        int height = BinaryPrimitives.ReadInt32BigEndian(head.AsSpan(20, 4));
+        Assert.True((width, height) == (588, 319),
+            $"Assets/QuadStickBack.png is {width}x{height}, not 588x319. If the photo "
+          + "changed, measure the socket points in BackSockets off the new one again.");
+    }
+
+    // The rear USB-A port is a socket on the case, so its card is on the
+    // device view before anything maps to it. It used to appear only once a
+    // profile already used a usb_1_* name, which is the wrong way round: you
+    // click the card to find those names.
+    [AvaloniaFact]
+    public void The_usb_card_is_on_the_device_before_anything_maps_to_it()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.NewFromTemplate("mygame.csv");
+        file.Dirty = false;
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(true);
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        Assert.Contains("USB devices", AllText(w), StringComparison.Ordinal);
+        w.Close();
+    }
+
+    // Sixteen button numbers sort before "usb_1_up", so the four directions
+    // Drew asked for came last on a list of seventy-three.
+    [AvaloniaFact]
+    public void The_usb_screen_offers_the_joystick_directions_first()
+    {
+        var w = OnZone("other",
+            "Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n");
+        var offered = w.GetVisualDescendants().OfType<Button>()
+            .Select(b => AutomationProperties.GetName(b) ?? "")
+            .Where(n => n.StartsWith("Map ", StringComparison.Ordinal))
+            .ToList();
+        Assert.Equal(
+            SwitchJacks.RearJoystick.Select(t => $"Map {t} to a new mapping on the USB devices").ToArray(),
+            offered.Take(4).ToArray());
         w.Close();
     }
 

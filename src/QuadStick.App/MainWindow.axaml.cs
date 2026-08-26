@@ -2292,6 +2292,103 @@ public partial class MainWindow : Window
     // stay legible at every interface size, read aloud in order, and survive a
     // theme change. A picture of the panel would be nicer to look at and would
     // say none of this.
+    // The back panel photo and its labels are laid out at one fixed size and
+    // scaled as a whole, so a label can never drift off the socket it names.
+    // Every number below is measured off Assets/QuadStickBack.png at 588x319.
+    // BackPanelTests pins that size, so swapping the photo fails loudly.
+    const double BackStageW = 720, BackStageH = 285;
+    const double BackPhotoX = 150, BackPhotoY = 27, BackPhotoW = 420, BackPhotoH = 228;
+    const double BackPillW = 145, BackPillH = 54;
+
+    // Each socket: where its label sits, and the point on the photo it names.
+    // The points are fractions of the photo, taken off the centre of each
+    // socket's opening. The three jacks run down the left edge of the case and
+    // the two USB ports down the right, so the labels sit outside the photo on
+    // the side their socket is on.
+    static readonly (string Name, string Detail, bool Left, double LabelY, double PointX, double PointY)[] BackSockets =
+    {
+        (SwitchJacks.TopPort, "One switch: in 8", true, 60, 0.1114, 0.2963),
+        (SwitchJacks.LipPort, "One switch: in 5", true, 122, 0.1114, 0.5000),
+        (SwitchJacks.BottomPort, "One switch: in 1", true, 184, 0.1114, 0.7147),
+        ("USB-B port", "To the computer", false, 70, 0.9005, 0.3354),
+        ("USB-A port", "Joystick, or in 3-4", false, 150, 0.9107, 0.6254),
+    };
+
+    // Loaded once, the way the front photo is: this runs on every zone change.
+    static Avalonia.Media.Imaging.Bitmap? _backPhoto;
+
+    static Avalonia.Media.Imaging.Bitmap BackPhoto() =>
+        _backPhoto ??= new Avalonia.Media.Imaging.Bitmap(Avalonia.Platform.AssetLoader.Open(
+            new Uri("avares://QuadStickConfigManager/Assets/QuadStickBack.png")));
+
+    // The picture Drew asked for: the back of the case with each socket named
+    // and the number a plug lands on written beside it. The case's own green
+    // silkscreen says "In 7-8", which is the pair, never which of the two a
+    // single switch with no splitter actually gets.
+    Control BackPanelPicture()
+    {
+        var stage = new Canvas { Width = BackStageW, Height = BackStageH };
+        var photo = new Image
+        {
+            Source = BackPhoto(), Width = BackPhotoW, Height = BackPhotoH,
+            Stretch = Stretch.Uniform, IsHitTestVisible = false,
+        };
+        Canvas.SetLeft(photo, BackPhotoX);
+        Canvas.SetTop(photo, BackPhotoY);
+        stage.Children.Add(photo);
+
+        foreach (var (name, detail, left, labelY, fx, fy) in BackSockets)
+        {
+            double px = BackPhotoX + fx * BackPhotoW, py = BackPhotoY + fy * BackPhotoH;
+            double lx = left ? 0 : BackStageW - BackPillW;
+            double ax = left ? lx + BackPillW : lx;
+            foreach (var line in Leader(ax, labelY + BackPillH / 2, px, py)) stage.Children.Add(line);
+            stage.Children.Add(Marker(px, py));
+
+            var pill = new Border
+            {
+                Width = BackPillW, Height = BackPillH,
+                CornerRadius = new Avalonia.CornerRadius(5),
+                Padding = new Avalonia.Thickness(8, 5),
+                BorderThickness = new Avalonia.Thickness(1),
+                Child = new StackPanel
+                {
+                    Spacing = 1,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = name, FontSize = Size("SmallSize"),
+                            FontWeight = FontWeight.SemiBold,
+                        },
+                        new TextBlock
+                        {
+                            Text = detail, FontSize = Size("SmallSize"),
+                            Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+                        },
+                    },
+                },
+            };
+            BindBrush(pill, Border.BackgroundProperty, "Surface");
+            BindBrush(pill, Border.BorderBrushProperty, "Divider");
+            // The two lines are one fact, so a screen reader reads them as one
+            // sentence instead of announcing a fragment and then a number.
+            AutomationProperties.SetName(pill, $"{name}. {detail}");
+            Canvas.SetLeft(pill, lx);
+            Canvas.SetTop(pill, labelY);
+            stage.Children.Add(pill);
+        }
+        // Shrinks to fit a narrow panel rather than clipping a label off the
+        // edge, and is never blown up past the photo's own size.
+        return new Viewbox
+        {
+            Child = stage, Stretch = Stretch.Uniform,
+            StretchDirection = StretchDirection.DownOnly,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Margin = new Avalonia.Thickness(0, 2, 0, 4),
+        };
+    }
+
     Control BackPanelGuide()
     {
         var rows = new StackPanel { Spacing = 6 };
@@ -2317,7 +2414,7 @@ public partial class MainWindow : Window
             Padding = new Avalonia.Thickness(10, 8),
             Margin = new Avalonia.Thickness(0, 6, 0, 2),
             MaxWidth = 860,
-            Child = new StackPanel { Spacing = 6, Children = { title, rows } },
+            Child = new StackPanel { Spacing = 6, Children = { title, BackPanelPicture(), rows } },
         };
         BindBrush(box, Border.BackgroundProperty, "SurfaceSubtle");
         return box;
@@ -2379,7 +2476,7 @@ public partial class MainWindow : Window
         return map;
     }
 
-    IEnumerable<Zone> VisibleZones(Dictionary<string, List<Binding>> byZone) =>
+    IEnumerable<Zone> VisibleZones(Dictionary<string, List<Binding>> byZone, bool withUsbPort = false) =>
         AllZones.Where(z => z.Id switch
         {
             // The Singleton has one mouthpiece tube: no left/right holes,
@@ -2387,9 +2484,15 @@ public partial class MainWindow : Window
             // profile actually maps them, so nothing is ever hidden-but-live.
             "mp_left" or "mp_right" or "combo" or "side" =>
                 _model != QsModel.Singleton || byZone.ContainsKey(z.Id),
+            // The rear USB-A port is a real socket on the case, so the device
+            // view always offers its card: reaching a joystick plugged in there
+            // needs somewhere to click. The toolbar's unused list leaves it out
+            // until the profile uses one, because twenty usb_1_* names in front
+            // of the mouthpiece is not what that list is for.
+            "other" => withUsbPort || byZone.ContainsKey(z.Id),
             // Not parts of the QuadStick, so they appear only when the profile
             // actually has rows in them.
-            "other" or "unset" or "settings" => byZone.ContainsKey(z.Id),
+            "unset" or "settings" => byZone.ContainsKey(z.Id),
             _ => true,
         });
 
@@ -2406,7 +2509,10 @@ public partial class MainWindow : Window
     // Inputs this mode has nothing mapped to. A force_off row does not count as
     // using its input: it only turns off an output that toggle or delayed_latch
     // left on, so the input is still free for a real mapping.
-    IEnumerable<string> UnusedInputs()
+    /// <param name="alsoZone">One zone to answer for whatever the toolbar list
+    /// leaves out. Standing on a part is a narrower question than "what is free
+    /// anywhere", and the rear USB-A port had no answer to it at all.</param>
+    IEnumerable<string> UnusedInputs(string? alsoZone = null)
     {
         var used = (CurrentSheet?.Bindings ?? [])
             .Where(b => FunctionName(b.Function) != "force_off")
@@ -2415,6 +2521,7 @@ public partial class MainWindow : Window
         // Same zone filter as the device view, so a Singleton is not told its
         // missing holes are free and the usb_* tokens stay out unless used.
         var zones = VisibleZones(BindingsByZone()).Select(z => z.Id).ToHashSet(StringComparer.Ordinal);
+        if (alsoZone is not null) zones.Add(alsoZone);
         return Vocab.Inputs
             .Where(i => !used.Contains(i) && zones.Contains(ZoneOf(i)))
             .OrderBy(GroupRank).ThenBy(x => x, StringComparer.Ordinal);
@@ -2453,9 +2560,16 @@ public partial class MainWindow : Window
     // keeps the order it arrived in.
     static int JackRank(string token)
     {
-        if (SwitchJacks.For(token) is not { } jack) return 0;
-        int port = Array.FindIndex(SwitchJacks.Ports, p => p.Port == jack.Port);
-        return (port * 2) + (jack.Lone ? 0 : 1);
+        if (SwitchJacks.For(token) is { } jack)
+        {
+            int port = Array.FindIndex(SwitchJacks.Ports, p => p.Port == jack.Port);
+            return (port * 2) + (jack.Lone ? 0 : 1);
+        }
+        // On the USB card the four joystick directions lead. Alphabetical put
+        // them after sixteen button numbers, so the thing somebody plugging a
+        // joystick in is looking for was the last thing offered.
+        int dir = Array.IndexOf(SwitchJacks.RearJoystick, token);
+        return dir < 0 ? 0 : dir - SwitchJacks.RearJoystick.Length;
     }
 
     // Flyout list grouped by part. Does not take editor space.
@@ -2621,13 +2735,13 @@ public partial class MainWindow : Window
             var rail = new StackPanel { Spacing = 6 };
             rail.Children.Add(new TextBlock
             { Text = "Parts", FontSize = Size("SmallSize"), FontWeight = FontWeight.Bold, Classes = { "muted" }, Margin = new Avalonia.Thickness(2, 0, 0, 4) });
-            foreach (var z in VisibleZones(byZone))
+            foreach (var z in VisibleZones(byZone, withUsbPort: true))
                 rail.Children.Add(RailRow(z, byZone));
             DeviceCanvas.Children.Add(rail);
             return;
         }
 
-        var visible = VisibleZones(byZone).ToList();
+        var visible = VisibleZones(byZone, withUsbPort: true).ToList();
 
         // ---- Main diagram: the photo of the device with each part pinned
         // where it physically sits, so a part is found by looking at the thing
@@ -3359,7 +3473,7 @@ public partial class MainWindow : Window
             // Ordered by socket, top of the case down, so the first thing
             // offered on the jacks is the top jack rather than digital_in_1.
             // The USB-A data pins sort last: nothing plugs into them.
-            var freeHere = UnusedInputs().Where(i => ZoneOf(i) == zone.Id)
+            var freeHere = UnusedInputs(zone.Id).Where(i => ZoneOf(i) == zone.Id)
                 .OrderBy(JackRank).ToList();
             if (freeHere.Count > 0)
             {

@@ -26,6 +26,7 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets/AppIcon.png" />
     <AvaloniaResource Include="Assets/QuadStick.png" />
+    <AvaloniaResource Include="Assets/QuadStickBack.png" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="QuadStick.App.Tests" />
