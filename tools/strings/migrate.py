@@ -14,7 +14,9 @@ JOIN and blocks the run, because a translator has to be able to reorder the
 whole sentence. A verbatim string, a format specifier, or a hole holding its
 own string prints as SKIP and is left alone.
 """
-import re, sys, os, subprocess
+import re, sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import resx
 
 SINK_TAIL = re.compile(
     r'(?:\b(?:Text|Content|Title|Header|Watermark)\s*=\s*'
@@ -175,13 +177,16 @@ def run(mode, path, prefix):
     joined = [f'{line_of(src, s)}: {lit}' for s, e, lit in found
               if re.match(r'\s*(\+|\)|,)?\s*\+?\s*[$@]*"', src[e:e+40].lstrip()) and src[e:e+40].lstrip().startswith('+')
               or re.search(r'"\s*\+\s*$', src[max(0, s-40):s])]
-    taken, rows, skips = set(), [], []
+    taken, rows, skips, seen = set(), [], [], {}
     for start, end, lit in found:
         probe = lit[2:-1] if lit.startswith('$') else lit[1:-1]
-        key = key_for(prefix, probe, taken)
+        key = seen.get(lit) or key_for(prefix, probe, taken)
         text, expr = rewrite(lit, key)
         if text is None:
-            skips.append(f'{line_of(src, start)}: {lit}'); taken.discard(key); continue
+            skips.append(f'{line_of(src, start)}: {lit}')
+            if lit not in seen: taken.discard(key)
+            continue
+        seen[lit] = key
         rows.append((start, end, key, text, expr))
 
     for j in joined: print('JOIN', j)
@@ -194,14 +199,12 @@ def run(mode, path, prefix):
         src = src[:start] + expr + src[end:]
     # A const cannot hold a resource: its value is not known until the app
     # knows what language it is being read in.
-    src = re.sub(r'\bconst string (\w+ = (?:Strings\.|string\.Format\())', r'static readonly string \1', src)
+    src = re.sub(r'\bconst string (\w+\s*=\s*\n?\s*(?:Strings\.|string\.Format\())', r'static readonly string \1', src)
     if 'string.Format(' in src and 'using System.Globalization;' not in src:
         src = re.sub(r'^(using )', 'using System.Globalization;\n\\1', src, count=1, flags=re.M)
     open(path, 'w').write(src)
-    resx = os.path.join(os.path.dirname(path), 'Strings.resx')
-    tsv = ''.join(f'{k}\t{t}\n' for _, _, k, t, _ in rows)
-    subprocess.run(['python3', os.path.join(os.path.dirname(__file__), 'resx.py'), 'add', resx],
-                   input=tsv, text=True, check=True)
+    resx.add_pairs(os.path.join(os.path.dirname(path), 'Strings.resx'),
+                   [(k, t) for _, _, k, t, _ in rows])
     print(f'moved {len(rows)}, left {len(skips)}')
 
 if __name__ == '__main__':

@@ -21,12 +21,9 @@ public class LocalizationTests
         "AgentWindow.cs", "AgentGuide.cs", "AgentBridge.cs", "GalleryWindow.cs",
     };
 
-    // Waiting their turn. This list only ever shrinks: when it is empty, delete
-    // it and the branch that reads it.
-    static readonly string[] StillEnglish =
-    {
-        "MainWindow.axaml.cs",
-    };
+    // Nothing left waiting. Any new file is held to the rule from its first
+    // line, which is the point.
+    static readonly string[] StillEnglish = Array.Empty<string>();
 
     // Text that is right to leave in English, with the reason it is right.
     static readonly Dictionary<string, string[]> Keep = new()

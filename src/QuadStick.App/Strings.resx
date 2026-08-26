@@ -277,6 +277,36 @@
   <data name="Count_Mode_other" xml:space="preserve">
     <value>{0} modes</value>
   </data>
+  <data name="Count_RowDeleted_one" xml:space="preserve">
+    <value>{0} row deleted. Ctrl+Z brings it back.</value>
+  </data>
+  <data name="Count_RowDeleted_other" xml:space="preserve">
+    <value>{0} rows deleted. Ctrl+Z brings them back.</value>
+  </data>
+  <data name="Count_RowMovedBottom_one" xml:space="preserve">
+    <value>{0} row moved to the bottom. Ctrl+Z undoes it.</value>
+  </data>
+  <data name="Count_RowMovedBottom_other" xml:space="preserve">
+    <value>{0} rows moved to the bottom. Ctrl+Z undoes it.</value>
+  </data>
+  <data name="Count_RowMovedTop_one" xml:space="preserve">
+    <value>{0} row moved to the top. Ctrl+Z undoes it.</value>
+  </data>
+  <data name="Count_RowMovedTop_other" xml:space="preserve">
+    <value>{0} rows moved to the top. Ctrl+Z undoes it.</value>
+  </data>
+  <data name="Count_UnusedInputOpens_one" xml:space="preserve">
+    <value>{0} input not used yet. Opens the list.</value>
+  </data>
+  <data name="Count_UnusedInputOpens_other" xml:space="preserve">
+    <value>{0} inputs not used yet. Opens the list.</value>
+  </data>
+  <data name="Count_UnusedInput_one" xml:space="preserve">
+    <value>{0} input not used yet</value>
+  </data>
+  <data name="Count_UnusedInput_other" xml:space="preserve">
+    <value>{0} inputs not used yet</value>
+  </data>
   <data name="Count_Warning_one" xml:space="preserve">
     <value>{0} warning</value>
   </data>
@@ -585,6 +615,1144 @@
   </data>
   <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
     <value>That folder does not look like a QuadStick (no default.csv at its root).</value>
+  </data>
+  <data name="Main_AButton" xml:space="preserve">
+    <value>A button</value>
+  </data>
+  <data name="Main_AFunction" xml:space="preserve">
+    <value>a function</value>
+  </data>
+  <data name="Main_AJoystickOrControllerPlugged" xml:space="preserve">
+    <value>A joystick or controller plugged into the QuadStick's rear USB-A port.</value>
+  </data>
+  <data name="Main_AJoystickPluggedInHere" xml:space="preserve">
+    <value>A joystick plugged in here arrives as </value>
+  </data>
+  <data name="Main_AModeIsOneFull" xml:space="preserve">
+    <value>A mode is one full layout of your inputs. A profile can hold several and you switch between them while playing, for example a walking layout and a driving layout. To switch modes in the game, sip or puff the side tube, or map increment_mode / decrement_mode to an input.
+
+Most profiles have just one mode, so this list often shows a single entry. That is normal.</value>
+  </data>
+  <data name="Main_AProfileTabStartsWith" xml:space="preserve">
+    <value>A profile tab starts with "Profile Name", "Preferences" or "Infrared" in cell A1.</value>
+  </data>
+  <data name="Main_AQuickPressSendsOne" xml:space="preserve">
+    <value>A quick press sends one output; holding longer sends a different one.</value>
+  </data>
+  <data name="Main_AShortActivationTapsIt" xml:space="preserve">
+    <value>A short activation taps it; a long one latches it on.</value>
+  </data>
+  <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>A template named {0} already exists.</value>
+  </data>
+  <data name="Main_ATemplateNeedsAName" xml:space="preserve">
+    <value>A template needs a name.</value>
+  </data>
+  <data name="Main_AccessibleNameOpensASearchableList" xml:space="preserve">
+    <value>{0}. Opens a searchable list.</value>
+  </data>
+  <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
+    <value>Adaptive switches plugged into the 3.5 mm jacks on the back of the QuadStick.</value>
+  </data>
+  <data name="Main_AddANewBindingRow" xml:space="preserve">
+    <value>Add a new binding row to this mode</value>
+  </data>
+  <data name="Main_AddANewMappingFor" xml:space="preserve">
+    <value>Add a new mapping for the {0}</value>
+  </data>
+  <data name="Main_AddARowToThe" xml:space="preserve">
+    <value>Add a row to the custom output names table</value>
+  </data>
+  <data name="Main_AddAnotherInput" xml:space="preserve">
+    <value>Add another input</value>
+  </data>
+  <data name="Main_AddAnotherInputToMapping" xml:space="preserve">
+    <value>Add another input to mapping {0}; you do the inputs one after the other, left to right</value>
+  </data>
+  <data name="Main_AddAnotherInputToRow" xml:space="preserve">
+    <value>Add another input to row {0}</value>
+  </data>
+  <data name="Main_AddName" xml:space="preserve">
+    <value>+ Add name</value>
+  </data>
+  <data name="Main_AddRow" xml:space="preserve">
+    <value>+ Add row</value>
+  </data>
+  <data name="Main_AllThree" xml:space="preserve">
+    <value>All three</value>
+  </data>
+  <data name="Main_AnInput" xml:space="preserve">
+    <value>an input</value>
+  </data>
+  <data name="Main_AnOutput" xml:space="preserve">
+    <value>an output</value>
+  </data>
+  <data name="Main_AnyoneWithThisLinkCan" xml:space="preserve">
+    <value>Anyone with this link can view this sheet (read only). Turn on link sharing and copy?</value>
+  </data>
+  <data name="Main_AppearanceInterfaceSizeAndThe" xml:space="preserve">
+    <value>Appearance, interface size, and the rest go back to their defaults.</value>
+  </data>
+  <data name="Main_AsFunction" xml:space="preserve">
+    <value>, as {0}</value>
+  </data>
+  <data name="Main_BButton" xml:space="preserve">
+    <value>B button</value>
+  </data>
+  <data name="Main_Back" xml:space="preserve">
+    <value>‹ Back</value>
+  </data>
+  <data name="Main_BackOfTheQuadStick" xml:space="preserve">
+    <value>Back of the QuadStick</value>
+  </data>
+  <data name="Main_BackToAllCategories" xml:space="preserve">
+    <value>Back to all categories</value>
+  </data>
+  <data name="Main_BackToCat" xml:space="preserve">
+    <value>Back to {0}</value>
+  </data>
+  <data name="Main_BackedUpToGoogleDrive" xml:space="preserve">
+    <value>Backed up to Google Drive.</value>
+  </data>
+  <data name="Main_BackingUpToDrive" xml:space="preserve">
+    <value>Backing up to Drive</value>
+  </data>
+  <data name="Main_BackingUpToGoogleDrive" xml:space="preserve">
+    <value>Backing up to Google Drive. Click to import your other profiles.</value>
+  </data>
+  <data name="Main_BackupErrorExMessage" xml:space="preserve">
+    <value>Backup error: {0}</value>
+  </data>
+  <data name="Main_BackupOff" xml:space="preserve">
+    <value>Backup off</value>
+  </data>
+  <data name="Main_BackupPending" xml:space="preserve">
+    <value> · backup pending</value>
+  </data>
+  <data name="Main_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Main_CenterMouthpieceHole" xml:space="preserve">
+    <value>Center mouthpiece hole</value>
+  </data>
+  <data name="Main_ChangeUndone" xml:space="preserve">
+    <value>Change undone.</value>
+  </data>
+  <data name="Main_ChooseQuadStick" xml:space="preserve">
+    <value>Choose QuadStick</value>
+  </data>
+  <data name="Main_ChooseWhichDriveToInstall" xml:space="preserve">
+    <value>Choose which drive to install to:</value>
+  </data>
+  <data name="Main_ClickAnyPartOfThe" xml:space="preserve">
+    <value>Click any part of the QuadStick to see and change what it does in this mode. The number on each part is how many game buttons it presses. Parts your model does not have are dimmed.
+
+</value>
+  </data>
+  <data name="Main_ClickToHide" xml:space="preserve">
+    <value>  (click to hide)</value>
+  </data>
+  <data name="Main_ClickToSelectDragTo" xml:space="preserve">
+    <value>Click to select, drag to reorder</value>
+  </data>
+  <data name="Main_ClickToSignInAnd" xml:space="preserve">
+    <value>Click to sign in and back up your profiles to Google Drive.</value>
+  </data>
+  <data name="Main_ClickToView" xml:space="preserve">
+    <value>  (click to view)</value>
+  </data>
+  <data name="Main_CloseTheEditorForMapping" xml:space="preserve">
+    <value>Close the editor for mapping {0} and go back to its card</value>
+  </data>
+  <data name="Main_CloseWindowTitleToLowerInvariant" xml:space="preserve">
+    <value>Close {0}</value>
+  </data>
+  <data name="Main_CommunityProfiles" xml:space="preserve">
+    <value>Community profiles</value>
+  </data>
+  <data name="Main_ConnectionTimedOut" xml:space="preserve">
+    <value>the connection timed out after 15 seconds</value>
+  </data>
+  <data name="Main_CopyALinkToThis" xml:space="preserve">
+    <value>Copy a link to this profile's Google Sheet</value>
+  </data>
+  <data name="Main_CopyShareLink" xml:space="preserve">
+    <value>Copy share link</value>
+  </data>
+  <data name="Main_CopyYourBackedUpProfiles" xml:space="preserve">
+    <value>Copy your backed up profiles from Google Drive to this computer now?</value>
+  </data>
+  <data name="Main_CouldNotDeleteBareEx" xml:space="preserve">
+    <value>Could not delete {0}: {1}</value>
+  </data>
+  <data name="Main_CouldNotDeleteTheTemplate" xml:space="preserve">
+    <value>Could not delete the template: {0}</value>
+  </data>
+  <data name="Main_CouldNotDownloadTheSheet" xml:space="preserve">
+    <value>Could not download the sheet: {0}. Check your internet connection and the link.</value>
+  </data>
+  <data name="Main_CouldNotLoadTheOnline" xml:space="preserve">
+    <value>Could not load the online version: {0}</value>
+  </data>
+  <data name="Main_CouldNotOpenBareEx" xml:space="preserve">
+    <value>Could not open {0}: {1}</value>
+  </data>
+  <data name="Main_CouldNotOpenPicks0" xml:space="preserve">
+    <value>Could not open {0}: {1}</value>
+  </data>
+  <data name="Main_CouldNotOpenThatTemplate" xml:space="preserve">
+    <value>Could not open that template: {0}</value>
+  </data>
+  <data name="Main_CouldNotOpenTheRecovered" xml:space="preserve">
+    <value>Could not open the recovered file: {0}</value>
+  </data>
+  <data name="Main_CouldNotReadBareNamePath" xml:space="preserve">
+    <value>Could not read {0}: {1}</value>
+  </data>
+  <data name="Main_CouldNotReadPicks0" xml:space="preserve">
+    <value>Could not read {0}. It is not a readable spreadsheet.</value>
+  </data>
+  <data name="Main_CouldNotReadThatSpreadsheet" xml:space="preserve">
+    <value>Could not read that spreadsheet. Download it as .xlsx and open it with the Open button instead.</value>
+  </data>
+  <data name="Main_CouldNotReadThisFile" xml:space="preserve">
+    <value>Could not read this file</value>
+  </data>
+  <data name="Main_CouldNotRenameTheTemplate" xml:space="preserve">
+    <value>Could not rename the template: {0}</value>
+  </data>
+  <data name="Main_CouldNotSaveExMessage" xml:space="preserve">
+    <value>Could not save: {0}</value>
+  </data>
+  <data name="Main_CouldNotSaveThatPreference" xml:space="preserve">
+    <value>Could not save that preference. Nothing is sent now, but the change did not stick.</value>
+  </data>
+  <data name="Main_CouldNotSaveThatYou" xml:space="preserve">
+    <value>Could not save that. You may be asked again next time.</value>
+  </data>
+  <data name="Main_CouldNotSaveTheReset" xml:space="preserve">
+    <value>Could not save the reset. The old settings may come back next time.</value>
+  </data>
+  <data name="Main_CouldNotSaveTheTemplate" xml:space="preserve">
+    <value>Could not save the template: {0}</value>
+  </data>
+  <data name="Main_CouldNotSendTheCrash" xml:space="preserve">
+    <value>Could not send the crash report. It is still on your computer.</value>
+  </data>
+  <data name="Main_CouldNotShareThisProfile" xml:space="preserve">
+    <value>Could not share this profile: {0}</value>
+  </data>
+  <data name="Main_CrashDetailsUsedToBuild" xml:space="preserve">
+    <value>Crash details used to build the report</value>
+  </data>
+  <data name="Main_CrashReportSentThankYou" xml:space="preserve">
+    <value>Crash report sent. Thank you.</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>d MMM yyyy</value>
+  </data>
+  <data name="Main_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Main_DeleteBare" xml:space="preserve">
+    <value>Delete {0}?</value>
+  </data>
+  <data name="Main_DeleteBareFromYourProfile" xml:space="preserve">
+    <value>Delete {0} from your profile library</value>
+  </data>
+  <data name="Main_DeleteProfile" xml:space="preserve">
+    <value>Delete profile</value>
+  </data>
+  <data name="Main_DeleteRowBRow" xml:space="preserve">
+    <value>Delete row {0}</value>
+  </data>
+  <data name="Main_DeleteSelectedTemplate" xml:space="preserve">
+    <value>Delete selected template</value>
+  </data>
+  <data name="Main_DeleteTemplateName" xml:space="preserve">
+    <value>Delete template "{0}"?</value>
+  </data>
+  <data name="Main_DeleteThisWholeRow" xml:space="preserve">
+    <value>Delete this whole row</value>
+  </data>
+  <data name="Main_DeletedBare" xml:space="preserve">
+    <value>Deleted {0}.</value>
+  </data>
+  <data name="Main_DeletedTemplateName" xml:space="preserve">
+    <value>Deleted template {0}.</value>
+  </data>
+  <data name="Main_DetailedEditor" xml:space="preserve">
+    <value>Detailed editor</value>
+  </data>
+  <data name="Main_DeviceFilesWindowLabelForRootRoot" xml:space="preserve">
+    <value>{0}  ({1})</value>
+  </data>
+  <data name="Main_DeviceHasNoLightPattern" xml:space="preserve">
+    <value>Device has no light pattern for mode {0}</value>
+  </data>
+  <data name="Main_DeviceSettings" xml:space="preserve">
+    <value>Device settings</value>
+  </data>
+  <data name="Main_DeviceSettingsThisModeChanges" xml:space="preserve">
+    <value>Device settings this mode changes while it is running, like mouse speed or volume. They are not something you press, so they have no input: each one is a name and a value.</value>
+  </data>
+  <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
+    <value>Device shows {0}</value>
+  </data>
+  <data name="Main_DonTSave" xml:space="preserve">
+    <value>Don't save</value>
+  </data>
+  <data name="Main_Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Main_DownloadingTheSpreadsheet" xml:space="preserve">
+    <value>Downloading the spreadsheet...</value>
+  </data>
+  <data name="Main_EditDevicePreferences" xml:space="preserve">
+    <value>Edit device preferences?</value>
+  </data>
+  <data name="Main_Edited" xml:space="preserve">
+    <value>Edited </value>
+  </data>
+  <data name="Main_ErrorsBlockInstalling" xml:space="preserve">
+    <value>. Errors block installing.</value>
+  </data>
+  <data name="Main_EveryInputOnYourQuadStick" xml:space="preserve">
+    <value>Every input on your QuadStick is used in this mode.</value>
+  </data>
+  <data name="Main_ExtraInputForMappingN" xml:space="preserve">
+    <value>Extra input for mapping {0}</value>
+  </data>
+  <data name="Main_FPS3HoleMouthpieceSide" xml:space="preserve">
+    <value>FPS: 3-hole mouthpiece, side tube, lip sensor, rear jacks. More precise joystick than the Original.</value>
+  </data>
+  <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
+    <value>Fires once your input passes a set strength.</value>
+  </data>
+  <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
+    <value>Fires while your input stays under a set strength.</value>
+  </data>
+  <data name="Main_FoundAProblem" xml:space="preserve">
+    <value>Found a problem?</value>
+  </data>
+  <data name="Main_FunctionForRowBRow" xml:space="preserve">
+    <value>Function for row {0}. {1}</value>
+  </data>
+  <data name="Main_FunctionKeys" xml:space="preserve">
+    <value>Function keys</value>
+  </data>
+  <data name="Main_FunctionTakesNoNumbers" xml:space="preserve">
+    <value>{0} takes no numbers.</value>
+  </data>
+  <data name="Main_GameButtonPressedByShortInput" xml:space="preserve">
+    <value>Game button pressed by {0}</value>
+  </data>
+  <data name="Main_GoogleDriveBackupIsNot" xml:space="preserve">
+    <value>Google Drive backup is not available in this build.</value>
+  </data>
+  <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
+    <value>Google returned a web page instead of the profile. The sheet is probably not shared publicly (File &gt; Share &gt; Anyone with the link).</value>
+  </data>
+  <data name="Main_HeldDownForAsLong" xml:space="preserve">
+    <value>Held down for as long as your input is active.</value>
+  </data>
+  <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
+    <value>Help improve QuadStick Config Manager</value>
+  </data>
+  <data name="Main_HidesTheProblems" xml:space="preserve">
+    <value>{0}. Hides the list of problems.</value>
+  </data>
+  <data name="Main_HitsCount40MoreKeep" xml:space="preserve">
+    <value>{0} more. Keep typing to narrow it down.</value>
+  </data>
+  <data name="Main_HoleCombos" xml:space="preserve">
+    <value>Hole combos</value>
+  </data>
+  <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
+    <value>How {0} presses it. {1}</value>
+  </data>
+  <data name="Main_IfTheDeviceIsIn" xml:space="preserve">
+    <value>If the device is in PS4 boot mode, or virtual XBox / Dualshock controller emulation is enabled, the flash drive does not appear on the computer. Turn those off (in QMP or your prefs) and replug. On a Mac, the volume is named "QUAD STICK" in Finder.</value>
+  </data>
+  <data name="Main_ImportFromGoogleDrive" xml:space="preserve">
+    <value>Import from Google Drive</value>
+  </data>
+  <data name="Main_ImportedModesImportedFromPicks" xml:space="preserve">
+    <value>Imported {0} from {1}. Save to keep it as a profile.</value>
+  </data>
+  <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
+    <value>Imported {0} from the spreadsheet.</value>
+  </data>
+  <data name="Main_InputI1ForRow" xml:space="preserve">
+    <value>Input {0} for row {1}</value>
+  </data>
+  <data name="Main_InputI1ForThis" xml:space="preserve">
+    <value>Input {0} for this {1} mapping</value>
+  </data>
+  <data name="Main_InputNextCol1ForRow" xml:space="preserve">
+    <value>Input {0} for row {1}</value>
+  </data>
+  <data name="Main_InstallToTheQuadStickNamed" xml:space="preserve">
+    <value>Install to the QuadStick named {0}, at {1}</value>
+  </data>
+  <data name="Main_InstallingSafely" xml:space="preserve">
+    <value>Installing safely</value>
+  </data>
+  <data name="Main_IntAgeTotalDaysDaysAgo" xml:space="preserve">
+    <value>{0} days ago</value>
+  </data>
+  <data name="Main_IntAgeTotalHoursHAgo" xml:space="preserve">
+    <value>{0}h ago</value>
+  </data>
+  <data name="Main_IntAgeTotalMinutesMinAgo" xml:space="preserve">
+    <value>{0} min ago</value>
+  </data>
+  <data name="Main_ItsButtonsAreUsb1" xml:space="preserve">
+    <value>. Its buttons are usb_1_button_1 upwards.</value>
+  </data>
+  <data name="Main_JoystickOrIn34" xml:space="preserve">
+    <value>Joystick, or in 3-4</value>
+  </data>
+  <data name="Main_JustNow" xml:space="preserve">
+    <value>just now</value>
+  </data>
+  <data name="Main_KeepsACopyYouCan" xml:space="preserve">
+    <value>Keeps a copy you can start new profiles from any time, under Use template on the home screen. Editing or installing a profile never changes its template.</value>
+  </data>
+  <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
+    <value>Keeps pressing for a moment after you release.</value>
+  </data>
+  <data name="Main_LeftBumper" xml:space="preserve">
+    <value>Left bumper</value>
+  </data>
+  <data name="Main_LeftMouthpieceHole" xml:space="preserve">
+    <value>Left mouthpiece hole</value>
+  </data>
+  <data name="Main_LeftStickClick" xml:space="preserve">
+    <value>Left stick click</value>
+  </data>
+  <data name="Main_LeftTrigger" xml:space="preserve">
+    <value>Left trigger</value>
+  </data>
+  <data name="Main_LipSwitch" xml:space="preserve">
+    <value>Lip switch</value>
+  </data>
+  <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
+    <value>Loaded the online version of this profile. Your previous local copy is in the rescue folder.</value>
+  </data>
+  <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
+    <value>Managing files on your QuadStick</value>
+  </data>
+  <data name="Main_MapSomethingToThis" xml:space="preserve">
+    <value>+ Map something to this</value>
+  </data>
+  <data name="Main_MapTokenToANew" xml:space="preserve">
+    <value>Map {0} to a new mapping on the {1}</value>
+  </data>
+  <data name="Main_MappingRowSpoken" xml:space="preserve">
+    <value>Mapping {0}: press {1} when you {2}{3}. Press Enter to edit.</value>
+  </data>
+  <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
+    <value>Mapping {0}: press {1} when you {2}, one after the other{3}. Press Enter to edit.</value>
+  </data>
+  <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
+    <value>Mappings read as simple sentence cards. Switch to the detailed editor.</value>
+  </data>
+  <data name="Main_MappingsShowTheDetailedEditor" xml:space="preserve">
+    <value>Mappings show the detailed editor. Switch to simple sentence cards.</value>
+  </data>
+  <data name="Main_MenuButton" xml:space="preserve">
+    <value>Menu button</value>
+  </data>
+  <data name="Main_ModeNumberAndName" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Main_ModeSettings" xml:space="preserve">
+    <value>Mode settings</value>
+  </data>
+  <data name="Main_MoveRowBRowWord" xml:space="preserve">
+    <value>Move row {0} {1}</value>
+  </data>
+  <data name="Main_MoveTheTextInCell" xml:space="preserve">
+    <value>Move the text in cell {0} to the notes column</value>
+  </data>
+  <data name="Main_MoveToNotes" xml:space="preserve">
+    <value>Move to notes</value>
+  </data>
+  <data name="Main_MovedTheTextFromI" xml:space="preserve">
+    <value>Moved the text from {0} into the notes column.</value>
+  </data>
+  <data name="Main_MovingTheWholeMouthpieceWith" xml:space="preserve">
+    <value>Moving the whole mouthpiece with your mouth works like a joystick. Up, down, left, right, and the 8 compass directions can each press something.</value>
+  </data>
+  <data name="Main_MultipleQuadSticksFound" xml:space="preserve">
+    <value>Multiple QuadSticks found</value>
+  </data>
+  <data name="Main_MyTemplate" xml:space="preserve">
+    <value>my template</value>
+  </data>
+  <data name="Main_NameDetail" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Main_NameForThisTemplate" xml:space="preserve">
+    <value>Name for this template</value>
+  </data>
+  <data name="Main_NewNameForThisTemplate" xml:space="preserve">
+    <value>New name for this template</value>
+  </data>
+  <data name="Main_NewProfileGivesYouThe" xml:space="preserve">
+    <value>New profile gives you the factory default layout, the same one shipped on every QuadStick. The community also shares hundreds of game profiles as Google Sheets: paste any share link on the home screen to import it. Profiles that keep each mode on its own tab come in whole, every tab as a mode. Open also takes a downloaded .xlsx workbook. Then adjust, rename, save.</value>
+  </data>
+  <data name="Main_NoBindingsYetClickAdd" xml:space="preserve">
+    <value>No bindings yet. Click "Add row" to connect an input to an output.</value>
+  </data>
+  <data name="Main_NoCommandsOnThisSheet" xml:space="preserve">
+    <value>No commands on this sheet yet. Click "Add row" to add one.</value>
+  </data>
+  <data name="Main_NoErrorsToFix" xml:space="preserve">
+    <value>No errors to fix.</value>
+  </data>
+  <data name="Main_NoInput" xml:space="preserve">
+    <value>(no input)</value>
+  </data>
+  <data name="Main_NoInputYet" xml:space="preserve">
+    <value>No input yet</value>
+  </data>
+  <data name="Main_NoProblems" xml:space="preserve">
+    <value>No problems</value>
+  </data>
+  <data name="Main_NoProblemsClickToHide" xml:space="preserve">
+    <value>No problems (click to hide)</value>
+  </data>
+  <data name="Main_NoProblemsFound" xml:space="preserve">
+    <value>No problems found.</value>
+  </data>
+  <data name="Main_NoProblemsReadyToSave" xml:space="preserve">
+    <value>No problems. Ready to save or install.</value>
+  </data>
+  <data name="Main_NoQuadStickDetected" xml:space="preserve">
+    <value>No QuadStick detected</value>
+  </data>
+  <data name="Main_NoSettingsOnThisSheet" xml:space="preserve">
+    <value>No settings on this sheet yet. Click "Add row" to add one.</value>
+  </data>
+  <data name="Main_NoTabInThatSpreadsheet" xml:space="preserve">
+    <value>No tab in that spreadsheet is a profile. {0} {1}</value>
+  </data>
+  <data name="Main_NoThanks" xml:space="preserve">
+    <value>No thanks</value>
+  </data>
+  <data name="Main_NoThanksDoNotShare" xml:space="preserve">
+    <value>No thanks, do not share usage data</value>
+  </data>
+  <data name="Main_NoValue" xml:space="preserve">
+    <value>(no value)</value>
+  </data>
+  <data name="Main_NotAvailableOnYourModelNames" xml:space="preserve">
+    <value> Not available on your {0}.</value>
+  </data>
+  <data name="Main_NotMapped" xml:space="preserve">
+    <value>Not mapped</value>
+  </data>
+  <data name="Main_NotNow" xml:space="preserve">
+    <value>Not now</value>
+  </data>
+  <data name="Main_NotNowKeepTheReport" xml:space="preserve">
+    <value>Not now, keep the report and ask again later</value>
+  </data>
+  <data name="Main_NotOnModel" xml:space="preserve">
+    <value>Not on model</value>
+  </data>
+  <data name="Main_NotOnYourModel" xml:space="preserve">
+    <value>Not on your model</value>
+  </data>
+  <data name="Main_NotUsedYetOnThis" xml:space="preserve">
+    <value>Not used yet on this part ({0})</value>
+  </data>
+  <data name="Main_Note" xml:space="preserve">
+    <value>note</value>
+  </data>
+  <data name="Main_NoteForRowBRow" xml:space="preserve">
+    <value>Note for row {0}. Saved in the file, ignored by the QuadStick</value>
+  </data>
+  <data name="Main_NoteForThisMappingSaved" xml:space="preserve">
+    <value>Note for this mapping. Saved in the file, ignored by the QuadStick</value>
+  </data>
+  <data name="Main_NoteForThisRowSaved" xml:space="preserve">
+    <value>Note for this row. Saved in the file, ignored by the QuadStick</value>
+  </data>
+  <data name="Main_NothingMappedHereYet" xml:space="preserve">
+    <value>Nothing mapped here yet.</value>
+  </data>
+  <data name="Main_NothingMappedYet" xml:space="preserve">
+    <value>nothing mapped yet</value>
+  </data>
+  <data name="Main_NothingMatchesTryFewerLetters" xml:space="preserve">
+    <value>Nothing matches. Try fewer letters, or type your own below.</value>
+  </data>
+  <data name="Main_NothingPressesBOutputNow" xml:space="preserve">
+    <value>Nothing presses "{0}" now, so the QuadStick will not fire it.</value>
+  </data>
+  <data name="Main_NothingSelectedNNPickA" xml:space="preserve">
+    <value>Nothing selected.
+
+Pick a part of the QuadStick on the left to see what it does in this mode, change it, or map something new to it.</value>
+  </data>
+  <data name="Main_NothingToUndo" xml:space="preserve">
+    <value>Nothing to undo.</value>
+  </data>
+  <data name="Main_NothingYet" xml:space="preserve">
+    <value>nothing yet</value>
+  </data>
+  <data name="Main_NumberPositionInTheProfile" xml:space="preserve">
+    <value>, number {0} in the profile switch order</value>
+  </data>
+  <data name="Main_NumbersForFunctionOptionalWhole" xml:space="preserve">
+    <value>Numbers for {0}, optional, whole numbers separated by spaces. </value>
+  </data>
+  <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
+    <value>One activation latches it on, the next releases it.</value>
+  </data>
+  <data name="Main_OneCSVFileThatTells" xml:space="preserve">
+    <value>One CSV file that tells the QuadStick which sip, puff, lip press, or joystick move presses which game button. A profile has one or more mode sheets: full control layouts you switch between while playing (walking layout, driving layout, menus). Sip or puff the side tube, or bind increment_mode / decrement_mode, to switch modes in-game.</value>
+  </data>
+  <data name="Main_OneShortPressEachTime" xml:space="preserve">
+    <value>One short press each time you activate.</value>
+  </data>
+  <data name="Main_OneSwitchIn1" xml:space="preserve">
+    <value>One switch: in 1</value>
+  </data>
+  <data name="Main_OneSwitchIn5" xml:space="preserve">
+    <value>One switch: in 5</value>
+  </data>
+  <data name="Main_OneSwitchIn8" xml:space="preserve">
+    <value>One switch: in 8</value>
+  </data>
+  <data name="Main_OpenInGoogleSheets" xml:space="preserve">
+    <value>Open in Google Sheets</value>
+  </data>
+  <data name="Main_OpenInLibrary" xml:space="preserve">
+    <value>Open {0}, {1}, in your profile library</value>
+  </data>
+  <data name="Main_OpenOnDevice" xml:space="preserve">
+    <value>Open {0}, {1}, stored on the QuadStick</value>
+  </data>
+  <data name="Main_OpenOrCreateAProfile" xml:space="preserve">
+    <value>Open or create a profile first.</value>
+  </data>
+  <data name="Main_OpenQuadStickProfile" xml:space="preserve">
+    <value>Open QuadStick profile</value>
+  </data>
+  <data name="Main_OpenThisProfileSGoogle" xml:space="preserve">
+    <value>Open this profile's Google Sheet in your browser</value>
+  </data>
+  <data name="Main_OpenedFromYourQuadStickSave" xml:space="preserve">
+    <value>Opened from your QuadStick. Save keeps a copy in your library; use Install to put changes back on the device.</value>
+  </data>
+  <data name="Main_OpensAFreshCopyYou" xml:space="preserve">
+    <value>Opens a fresh copy you can edit and install. Your template stays as it is.</value>
+  </data>
+  <data name="Main_Original3HoleMouthpieceSide" xml:space="preserve">
+    <value>Original: 3-hole mouthpiece, side tube, lip switch, rear jacks. Same inputs as the FPS.</value>
+  </data>
+  <data name="Main_OutputForRowBRow" xml:space="preserve">
+    <value>Output for row {0}</value>
+  </data>
+  <data name="Main_OutputGameButton" xml:space="preserve">
+    <value>Output (game button)</value>
+  </data>
+  <data name="Main_Parts" xml:space="preserve">
+    <value>Parts</value>
+  </data>
+  <data name="Main_PathGetFileNamePathIsRemoved" xml:space="preserve">
+    <value>{0} is removed from this computer for good. A copy on your QuadStick or in Google Sheets is not touched.</value>
+  </data>
+  <data name="Main_Picks0NameNoProfileTabRead" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Main_PlugInTheQuadStickIt" xml:space="preserve">
+    <value>Plug in the QuadStick; it shows up like a USB drive. Install backs up the old file to QuadStickBackups, writes a temp copy, checks it, then swaps it in. Errors block install. Overwriting default.csv always asks first.</value>
+  </data>
+  <data name="Main_PortExplain" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Main_PreferencesSheetAdded" xml:space="preserve">
+    <value>Preferences sheet added.</value>
+  </data>
+  <data name="Main_PrefsCsvHoldsTheQuadStick" xml:space="preserve">
+    <value>prefs.csv holds the QuadStick's own settings, not a game profile. A wrong value here changes how the whole device behaves. Only continue if you know which setting you are changing.</value>
+  </data>
+  <data name="Main_PrefsCsvIsTheQuadStick" xml:space="preserve">
+    <value>prefs.csv is the QuadStick's own settings file, not a game profile: it changes how the whole device behaves, not just one game. A setting the app recognizes gets a real control, a number box, a checkbox, or a dropdown, so you cannot type a value the device would reject. A setting it does not recognize, or a value already in the file an exact control could not show without changing it, keeps a plain text box and is left exactly as it was. Installing prefs.csv back to the device always asks first, and backs up the file already there.</value>
+  </data>
+  <data name="Main_PressAgainToOpenGoogle" xml:space="preserve">
+    <value>Press again to open Google sign-in.</value>
+  </data>
+  <data name="Main_PressAgainToSignIn" xml:space="preserve">
+    <value>Press again to sign in</value>
+  </data>
+  <data name="Main_PressTheLipSwitchOr" xml:space="preserve">
+    <value>Press the lip switch or sensor with your lip. Often used for the fire button.</value>
+  </data>
+  <data name="Main_PressesInARepeatingOn" xml:space="preserve">
+    <value>Presses in a repeating on and off cycle.</value>
+  </data>
+  <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
+    <value>Problem copied to the clipboard.</value>
+  </data>
+  <data name="Main_ProfilesYouAlreadyMadeFrom" xml:space="preserve">
+    <value>Profiles you already made from this template are not affected. This cannot be undone.</value>
+  </data>
+  <data name="Main_PuttingThisProfileInGoogle" xml:space="preserve">
+    <value>Putting this profile in Google Sheets...</value>
+  </data>
+  <data name="Main_QuadStickConnected" xml:space="preserve">
+    <value>QuadStick connected</value>
+  </data>
+  <data name="Main_QuadStickNotShowingUp" xml:space="preserve">
+    <value>QuadStick not showing up?</value>
+  </data>
+  <data name="Main_QuadStickProfile" xml:space="preserve">
+    <value>QuadStick profile</value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficial" xml:space="preserve">
+    <value>Quadstick: Config Manager (unofficial)</value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficial2" xml:space="preserve">
+    <value>Quadstick: Config Manager (unofficial) - </value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficialV" xml:space="preserve">
+    <value>Quadstick: Config Manager (unofficial) - {0}</value>
+  </data>
+  <data name="Main_QuickGuide" xml:space="preserve">
+    <value>Quick guide</value>
+  </data>
+  <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
+    <value>Rapid-fire taps while your input is held.</value>
+  </data>
+  <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
+    <value>Read the privacy policy</value>
+  </data>
+  <data name="Main_ReadThePrivacyPolicyOpens" xml:space="preserve">
+    <value>Read the privacy policy, opens in your browser</value>
+  </data>
+  <data name="Main_RearJoystickDirection" xml:space="preserve">
+    <value>Rear joystick, {0}</value>
+  </data>
+  <data name="Main_RecoveredProfileOpenedSaveIt" xml:space="preserve">
+    <value>Recovered profile opened. Save it to keep it.</value>
+  </data>
+  <data name="Main_RemoveInputI1From" xml:space="preserve">
+    <value>Remove input {0} from row {1}</value>
+  </data>
+  <data name="Main_RemoveTheBOutputSetting" xml:space="preserve">
+    <value>Remove the {0} setting</value>
+  </data>
+  <data name="Main_RemoveTheShortInputZoneB" xml:space="preserve">
+    <value>Remove the {0} mapping</value>
+  </data>
+  <data name="Main_RemoveThisEmptyInputFrom" xml:space="preserve">
+    <value>Remove this empty input from mapping {0}</value>
+  </data>
+  <data name="Main_RemoveThisInputFromMapping" xml:space="preserve">
+    <value>Remove this input from mapping {0}</value>
+  </data>
+  <data name="Main_RemoveThisMapping" xml:space="preserve">
+    <value>Remove this mapping</value>
+  </data>
+  <data name="Main_Rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="Main_RenameSelectedTemplate" xml:space="preserve">
+    <value>Rename selected template</value>
+  </data>
+  <data name="Main_RenameTemplate" xml:space="preserve">
+    <value>Rename template</value>
+  </data>
+  <data name="Main_RenamedTemplateToPathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>Renamed template to {0}.</value>
+  </data>
+  <data name="Main_ResetAllSettings" xml:space="preserve">
+    <value>Reset all settings?</value>
+  </data>
+  <data name="Main_RestoreYourProfiles" xml:space="preserve">
+    <value>Restore your profiles?</value>
+  </data>
+  <data name="Main_RightBumper" xml:space="preserve">
+    <value>Right bumper</value>
+  </data>
+  <data name="Main_RightMouthpieceHole" xml:space="preserve">
+    <value>Right mouthpiece hole</value>
+  </data>
+  <data name="Main_RightSideTube" xml:space="preserve">
+    <value>Right + Side tube</value>
+  </data>
+  <data name="Main_RightStickClick" xml:space="preserve">
+    <value>Right stick click</value>
+  </data>
+  <data name="Main_RightTrigger" xml:space="preserve">
+    <value>Right trigger</value>
+  </data>
+  <data name="Main_RowBRowScopeModeScope" xml:space="preserve">
+    <value>Row {0} scope: {1}</value>
+  </data>
+  <data name="Main_RowNotSelected" xml:space="preserve">
+    <value>{0}. Space selects, drag reorders</value>
+  </data>
+  <data name="Main_RowSelected" xml:space="preserve">
+    <value>{0}, selected. Space selects, drag reorders</value>
+  </data>
+  <data name="Main_RowsThatPressAGame" xml:space="preserve">
+    <value>Rows that press a game button but have nothing triggering them yet. Give each one an input, or delete it.</value>
+  </data>
+  <data name="Main_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Main_SaveAsTemplate" xml:space="preserve">
+    <value>Save as template</value>
+  </data>
+  <data name="Main_SaveProfileCSV" xml:space="preserve">
+    <value>Save profile CSV</value>
+  </data>
+  <data name="Main_SaveTemplate" xml:space="preserve">
+    <value>Save template</value>
+  </data>
+  <data name="Main_SaveThisProfileFirstThen" xml:space="preserve">
+    <value>Save this profile first, then copy a share link to create its sheet.</value>
+  </data>
+  <data name="Main_SaveYourChanges" xml:space="preserve">
+    <value>Save your changes?</value>
+  </data>
+  <data name="Main_SavedTemplateFileNameFindIt" xml:space="preserve">
+    <value>Saved template {0}. Find it under Use template on the home screen.</value>
+  </data>
+  <data name="Main_SavedToSavePath" xml:space="preserve">
+    <value>Saved to {0}.</value>
+  </data>
+  <data name="Main_Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Main_SearchThisList" xml:space="preserve">
+    <value>Search this list</value>
+  </data>
+  <data name="Main_SelectAProblemInThe" xml:space="preserve">
+    <value>Select a problem in the list to copy it. File at github.com/Bbrizly/Quadstick-Config-Manager/issues. Say what you did and what went wrong.</value>
+  </data>
+  <data name="Main_SelectATemplateToDelete" xml:space="preserve">
+    <value>Select a template to delete first.</value>
+  </data>
+  <data name="Main_SelectATemplateToRename" xml:space="preserve">
+    <value>Select a template to rename first.</value>
+  </data>
+  <data name="Main_SelectedRowsCountSelected" xml:space="preserve">
+    <value>{0} selected</value>
+  </data>
+  <data name="Main_SendACrashReport" xml:space="preserve">
+    <value>Send a crash report?</value>
+  </data>
+  <data name="Main_SendReport" xml:space="preserve">
+    <value>Send report</value>
+  </data>
+  <data name="Main_SendThisCrashReport" xml:space="preserve">
+    <value>Send this crash report</value>
+  </data>
+  <data name="Main_SetItTo" xml:space="preserve">
+    <value>Set it to</value>
+  </data>
+  <data name="Main_SettingChangedByThisRow" xml:space="preserve">
+    <value>Setting changed by this row</value>
+  </data>
+  <data name="Main_SettingRowSpoken" xml:space="preserve">
+    <value>Setting {0}: while this mode runs, set {1} to {2}. Press Enter to edit.</value>
+  </data>
+  <data name="Main_SeverityLabelBaseName" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Main_ShareThisSheet" xml:space="preserve">
+    <value>Share this sheet?</value>
+  </data>
+  <data name="Main_ShowsTheProblems" xml:space="preserve">
+    <value>{0}. Shows the list of problems.</value>
+  </data>
+  <data name="Main_SideTube" xml:space="preserve">
+    <value>Side tube</value>
+  </data>
+  <data name="Main_SignInToBackUp" xml:space="preserve">
+    <value>Sign in to back up</value>
+  </data>
+  <data name="Main_SimpleCards" xml:space="preserve">
+    <value>Simple cards</value>
+  </data>
+  <data name="Main_SingletonASingleSipPuff" xml:space="preserve">
+    <value>Singleton: a single sip/puff tube on the joystick. Uses sip and puff patterns plus joystick movement.</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe" xml:space="preserve">
+    <value>Sip or puff on the left mouthpiece hole. A gentle sip or puff can do something different (the soft variants).</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe2" xml:space="preserve">
+    <value>Sip or puff on the center mouthpiece hole. A gentle sip or puff can do something different (the soft variants).</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe3" xml:space="preserve">
+    <value>Sip or puff on the right mouthpiece hole. A gentle sip or puff can do something different (the soft variants).</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
+    <value>Sip or puff on the side tube. A long hard sip here normally switches profiles, but you can map it too.</value>
+  </data>
+  <data name="Main_StartANewMappingOn" xml:space="preserve">
+    <value>Start a new mapping on {0}</value>
+  </data>
+  <data name="Main_StartFromATemplate" xml:space="preserve">
+    <value>Start from a template</value>
+  </data>
+  <data name="Main_StartFromAWorkingProfile" xml:space="preserve">
+    <value>Start from a working profile, not from scratch</value>
+  </data>
+  <data name="Main_StartedFromTemplatePathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>Started from template {0}. Save to keep this as its own profile.</value>
+  </data>
+  <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
+    <value>Steps an analog output down a notch and leaves it there, like a trigger or a stick axis.</value>
+  </data>
+  <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
+    <value>Steps an analog output up a notch and leaves it there, like a trigger or a stick axis.</value>
+  </data>
+  <data name="Main_StopAsking" xml:space="preserve">
+    <value>Stop asking</value>
+  </data>
+  <data name="Main_StopAskingAboutCrashReports" xml:space="preserve">
+    <value>Stop asking about crash reports</value>
+  </data>
+  <data name="Main_SwitchJacks" xml:space="preserve">
+    <value>Switch jacks</value>
+  </data>
+  <data name="Main_TabMovesBetweenFieldsArrows" xml:space="preserve">
+    <value>Tab moves between fields, arrows navigate suggestion lists, Enter confirms. Ctrl/Cmd+O open, S save, N new, Z undo, I install, D switch between Device view and List view, H this guide. F1 also opens this guide from anywhere. Selecting a problem, or the Fix first problem button, jumps focus straight to it. Every control announces itself to screen readers.</value>
+  </data>
+  <data name="Main_ThatDoesNotLookLike" xml:space="preserve">
+    <value>That does not look like a Google Sheets link. Paste the full link from your browser's address bar.</value>
+  </data>
+  <data name="Main_ThatFolderIsAQuadStick" xml:space="preserve">
+    <value>That folder is a QuadStick drive. Use Install to write to the device safely.</value>
+  </data>
+  <data name="Main_ThatSpreadsheetCameBackEmpty" xml:space="preserve">
+    <value>That spreadsheet came back empty. If you have just shared it, wait a moment and try again.</value>
+  </data>
+  <data name="Main_ThatSpreadsheetHasNoProfile" xml:space="preserve">
+    <value>That spreadsheet has no profile tab: cell A1 is empty. {0}</value>
+  </data>
+  <data name="Main_ThatSpreadsheetHasNoProfile2" xml:space="preserve">
+    <value>That spreadsheet has no profile tab: cell A1 says "{0}". {1}</value>
+  </data>
+  <data name="Main_TheAppCrashedLastTime" xml:space="preserve">
+    <value>The app crashed last time. These are the crash details it saved. There is no message text and no file paths in here, on purpose: only the type of error and the list of functions it happened in.
+
+Sending converts this into the crash reporter's own format. It also adds your anonymous install ID, the reporting library's version, your .NET and operating system versions, and whether your processor is Intel or ARM.</value>
+  </data>
+  <data name="Main_TheCommunityProfilesCardOn" xml:space="preserve">
+    <value>The Community profiles card on the home screen searches the shared list of game profiles. Opening that window, and pressing Refresh in it, downloads the list from quadstick.com. Nothing about you is sent, and the last list is kept on this computer so the window still opens with no internet. Import opens the profile in the editor, the same as pasting its link. It never writes to your QuadStick: that still takes the Install button, and errors still block it.</value>
+  </data>
+  <data name="Main_TheDeviceSFallbackFile" xml:space="preserve">
+    <value> · the device's fallback file</value>
+  </data>
+  <data name="Main_TheDeviceSkipsThoseRows" xml:space="preserve">
+    <value>. The device skips those rows, so this still installs.</value>
+  </data>
+  <data name="Main_TheManageFilesCardUnder" xml:space="preserve">
+    <value>The Manage files card, under On your QuadStick, works on a mounted QuadStick: its drive has to show up like a USB stick in Finder or File Explorer. From there you can copy a file to your library, open the Google Sheet it is linked to, or delete it; deleting backs it up to QuadStickBackups first. default.csv and prefs.csv are protected and cannot be deleted from this app. If the drive does not show up at all, this app has no other way to reach it; see QuadStick not showing up below.</value>
+  </data>
+  <data name="Main_TheNameBoxAtThe" xml:space="preserve">
+    <value>The name box at the top of the editor is the profile's on-device name. Use no spaces; the .csv file extension is added for you. The profile named default is special: it is the device's fallback file and should stay unchanged.</value>
+  </data>
+  <data name="Main_TheOnlineCopyOfThis" xml:space="preserve">
+    <value>The online copy of this profile is empty or unreadable, so your version on this computer was kept. Your next save replaces the sheet.</value>
+  </data>
+  <data name="Main_TheTabSkipped0Name" xml:space="preserve">
+    <value>The tab "{0}" was passed over.</value>
+  </data>
+  <data name="Main_TheThreeColumnsSameColors" xml:space="preserve">
+    <value>The three columns (same colors as the official spreadsheets)</value>
+  </data>
+  <data name="Main_ThenJoin" xml:space="preserve">
+    <value>, then </value>
+  </data>
+  <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
+    <value>These tabs were passed over: </value>
+  </data>
+  <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
+    <value>This app can send anonymous usage data: which screens get used, whether installing to a QuadStick worked, and nothing else. While it is on, those events are sent as they happen.
+
+Never sent, whatever you pick: your profiles, file names, file paths, your Google account, and your name or machine name. Nothing you type is sent either, apart from the feedback box in Settings, which only sends when you press Send on it.
+
+Crash reports are separate. If the app ever crashes, it saves a report on your computer and asks you the next time you open it. You see it before it goes anywhere.
+
+What is sent goes to PostHog, on servers in the United States.
+
+You can change this any time in Settings, under Advanced.</value>
+  </data>
+  <data name="Main_ThisLinkIsAPublished" xml:space="preserve">
+    <value>This link is a published one, and a published link only ever gives a single tab. Any other mode tabs in the spreadsheet were not sent to us at all, so we cannot say what is in them. To bring the whole profile in, share the sheet with "Anyone with the link" in Google Sheets and import it again.</value>
+  </data>
+  <data name="Main_ThisProfileHasNoGoogle" xml:space="preserve">
+    <value>This profile has no Google Sheet yet. Use Copy share link first, which creates it.</value>
+  </data>
+  <data name="Main_ThisProfileHasUnsavedChanges" xml:space="preserve">
+    <value>This profile has unsaved changes. Save them before leaving?</value>
+  </data>
+  <data name="Main_ThisProfileLivesOnThe" xml:space="preserve">
+    <value>This profile lives on the QuadStick. Use Install to write it back safely; Save As puts a copy in your library.</value>
+  </data>
+  <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
+    <value>This row sets a QuadStick setting instead of pressing a button. It applies while this mode is running.</value>
+  </data>
+  <data name="Main_ThisSpreadsheet" xml:space="preserve">
+    <value>This spreadsheet</value>
+  </data>
+  <data name="Main_TitleBodyPressEscapeTo" xml:space="preserve">
+    <value>{0}. {1}. Press Escape to close.</value>
+  </data>
+  <data name="Main_TitleCount" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Main_TitleCountOptionsOpensThis" xml:space="preserve">
+    <value>{0}, {1} options. Opens this category.</value>
+  </data>
+  <data name="Main_ToTheBottom" xml:space="preserve">
+    <value>To the bottom</value>
+  </data>
+  <data name="Main_ToTheComputer" xml:space="preserve">
+    <value>To the computer</value>
+  </data>
+  <data name="Main_ToTheTop" xml:space="preserve">
+    <value>To the top</value>
+  </data>
+  <data name="Main_TokenNotUsedInThis" xml:space="preserve">
+    <value>{0}, not used in this mode</value>
+  </data>
+  <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
+    <value>Turns off an output that toggle or delayed_latch left on.</value>
+  </data>
+  <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
+    <value>Two or more holes used at the same time, all three together, or the right hole with the side tube. Good for actions you never want to trigger by accident.</value>
+  </data>
+  <data name="Main_TypeACustomValue" xml:space="preserve">
+    <value>. Type a custom value.</value>
+  </data>
+  <data name="Main_TypeACustomValue2" xml:space="preserve">
+    <value>Type a custom value</value>
+  </data>
+  <data name="Main_TypeAValueOrLeave" xml:space="preserve">
+    <value>type a value, or leave blank to go back</value>
+  </data>
+  <data name="Main_TypeAValueOrLeave2" xml:space="preserve">
+    <value>type a value, or leave blank to cancel</value>
+  </data>
+  <data name="Main_TypeYourOwn" xml:space="preserve">
+    <value>＋ Type your own…</value>
+  </data>
+  <data name="Main_USBAPort" xml:space="preserve">
+    <value>USB-A port</value>
+  </data>
+  <data name="Main_USBBPort" xml:space="preserve">
+    <value>USB-B port</value>
+  </data>
+  <data name="Main_USBDevices" xml:space="preserve">
+    <value>USB devices</value>
+  </data>
+  <data name="Main_UnnamedMode" xml:space="preserve">
+    <value>(unnamed mode)</value>
+  </data>
+  <data name="Main_UnsavedWorkFromLastTime" xml:space="preserve">
+    <value>Unsaved work from last time was recovered ({0}). Open it from the button below, or dismiss to discard.</value>
+  </data>
+  <data name="Main_UnusedFree" xml:space="preserve">
+    <value>Unused ({0})</value>
+  </data>
+  <data name="Main_UseTemplate" xml:space="preserve">
+    <value>Use template</value>
+  </data>
+  <data name="Main_UsingDeviceView" xml:space="preserve">
+    <value>Using device view</value>
+  </data>
+  <data name="Main_VVMajorVMinor" xml:space="preserve">
+    <value>v{0}.{1}.{2} u00b7 MIT u00b7 not affiliated with QuadStick</value>
+  </data>
+  <data name="Main_ViewButton" xml:space="preserve">
+    <value>View button</value>
+  </data>
+  <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
+    <value>Waits a moment after you activate, then presses.</value>
+  </data>
+  <data name="Main_WhatIsAMode" xml:space="preserve">
+    <value>What is a mode?</value>
+  </data>
+  <data name="Main_WhatIsAProfile" xml:space="preserve">
+    <value>What is a profile?</value>
+  </data>
+  <data name="Main_WhenYou" xml:space="preserve">
+    <value>when you</value>
+  </data>
+  <data name="Main_WhenYou2" xml:space="preserve">
+    <value>When you</value>
+  </data>
+  <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
+    <value>Words are shown as raw list-view names. Switch to plain English.</value>
+  </data>
+  <data name="Main_WordsAreShownAsXbox" xml:space="preserve">
+    <value>Words are shown as Xbox style button names. Switch to the raw list-view names.</value>
+  </data>
+  <data name="Main_WordsAreShownInPlain" xml:space="preserve">
+    <value>Words are shown in plain English. Switch to Xbox style button names.</value>
+  </data>
+  <data name="Main_WordsListNames" xml:space="preserve">
+    <value>Words: List names</value>
+  </data>
+  <data name="Main_WordsXboxStyle" xml:space="preserve">
+    <value>Words: Xbox style</value>
+  </data>
+  <data name="Main_XButton" xml:space="preserve">
+    <value>X button</value>
+  </data>
+  <data name="Main_XboxButton" xml:space="preserve">
+    <value>Xbox button</value>
+  </data>
+  <data name="Main_YButton" xml:space="preserve">
+    <value>Y button</value>
+  </data>
+  <data name="Main_YellowOUTPUTTheGameButton" xml:space="preserve">
+    <value>Yellow, OUTPUT: the game button or action. PlayStation names (x, circle, left_1), Xbox names (A, B, left_trigger), mouse (mouse_up, mouse_left_button), keyboard (kb_space), and device setting names like mouse_speed. A setting name here sets that setting for the whole mode: the device ignores the function cell and reads the next cell as the value, not as an input.
+Pink, FUNCTION: how the press behaves.
+  normal: pressed while your input is active.
+  toggle: one activation latches it on, the next releases it. Great for aiming without holding a sip.
+  repeat [rate] [delay]: rapid-fire taps while held. "repeat 5 2000" holds 2 seconds, then taps 5x per second.
+  pulse [ms] [count]: one short press per activation. "pulse 50 2" double-taps.
+  delayed_latch [ms]: short activation = normal press, long activation = latch. Two behaviors from one input.
+  tap / delay_on: split one input into two outputs by press length.
+  force_off: releases another latched output. greater_than / less_than: threshold triggers. duty, increment_value, decrement_value: analog control.
+Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_sip). …_soft variants trigger on gentle pressure. right_sip / right_puff are the side tube. lip is the lip switch. left/right/up/down and N/NE/… are the joystick. Several inputs on one row are a sequence: you do them one after the other, left to right, and the last one fires the output.</value>
+  </data>
+  <data name="Main_YesContinue" xml:space="preserve">
+    <value>Yes, continue</value>
+  </data>
+  <data name="Main_YesShareAnonymousUsageData" xml:space="preserve">
+    <value>Yes, share anonymous usage data</value>
+  </data>
+  <data name="Main_YesShareUsageData" xml:space="preserve">
+    <value>Yes, share usage data</value>
+  </data>
+  <data name="Main_YouHaveNotSavedAny" xml:space="preserve">
+    <value>You have not saved any templates yet. Open a profile and use Save as template to make one.</value>
+  </data>
+  <data name="Main_YourSavedTemplates" xml:space="preserve">
+    <value>Your saved templates</value>
+  </data>
+  <data name="Main_Zone" xml:space="preserve">
+    <value>{0}. {1}. {2}.{3} Press Enter to edit.</value>
+  </data>
+  <data name="Main_ZoneSelected" xml:space="preserve">
+    <value>{0}. Selected. {1}. {2}.{3} Press Enter to edit.</value>
+  </data>
+  <data name="Main_ZoneTitleInZoneCountNot" xml:space="preserve">
+    <value>{0}, {1} not used. Opens this part in device view.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>A mode is a full layout of your inputs. Switch between them while playing with the side tube, or with increment_mode and decrement_mode.</value>

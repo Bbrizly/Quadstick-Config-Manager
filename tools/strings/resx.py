@@ -17,12 +17,13 @@ def load(path):
     return t, {d.get('name'): d for d in t.getroot().findall('data')}
 
 def add(path):
+    pairs = [l.rstrip('\n').split('\t', 1) for l in sys.stdin if l.strip()]
+    add_pairs(path, pairs)
+
+def add_pairs(path, pairs):
     tree, have = load(path)
     root = tree.getroot()
-    for line in sys.stdin:
-        if not line.strip():
-            continue
-        key, value = line.rstrip('\n').split('\t', 1)
+    for key, value in pairs:
         node = have.get(key)
         if node is None:
             node = ET.SubElement(root, 'data')
