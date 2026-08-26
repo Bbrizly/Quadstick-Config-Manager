@@ -276,9 +276,27 @@ public class PreferenceCatalogTests
         Assert.True(PreferenceCatalog.TryGet("enable_DS3_emulation", out var p));
         Assert.Equal(p.Options.Count, p.OptionLabels.Count);
         Assert.Equal("Nintendo Switch Pro Controller, no USB drive", p.LabelForOption("5"));
-        Assert.Equal("DualShock 4, for a PS4", p.LabelForOption("4"));
+        // Mode 4 also carries the name QMP puts on it, because that is the
+        // phrase somebody arrives with. Joystick.c:625 calls the same value
+        // "boot in PS4 mode" in the firmware's own comment.
+        Assert.Equal("DualShock 4, for a PS4 (QMP's Boot in PS4 Mode)", p.LabelForOption("4"));
         // A value the catalog has no word for reads back as itself.
         Assert.Equal("8", p.LabelForOption("8"));
+    }
+
+    // Drew's whole reason for asking was to stop opening QMP, so somebody
+    // arrives holding QMP's words for these settings. The catalog has to answer
+    // to those words, not only to the file's token.
+    [Theory]
+    [InlineData("sip_puff_threshold", "high threshold")]
+    [InlineData("sip_puff_delay_soft", "Low Threshold Delay")]
+    [InlineData("titan_two", "Titan 2 PS4 flag")]
+    [InlineData("enable_usb_a_host", "USB-A Host Mode")]
+    [InlineData("enable_DS3_emulation", "Boot in PS4 Mode")]
+    public void A_setting_answers_to_the_name_QMP_shows(string name, string qmpWords)
+    {
+        Assert.True(PreferenceCatalog.TryGet(name, out var p));
+        Assert.Contains(qmpWords, p.Description, StringComparison.Ordinal);
     }
 
     // No entry may still say a name is missing from the device's table when
