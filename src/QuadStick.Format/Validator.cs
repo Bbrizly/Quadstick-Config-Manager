@@ -779,11 +779,46 @@ public static class Validator
                 issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
                     $"\"{args[i]}\" is negative; the device does not handle negative parameters predictably.",
                     "Use a value of 0 or more."));
-            else if (i == 0 && n > 16383)
+            else if (i == 0 && n > FunctionParameters.Ceiling)
                 issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                    $"\"{args[i]}\" is larger than 16383, the device's limit for the first parameter; it overflows into the second parameter.",
-                    "Use a value up to 16383."));
+                    $"\"{args[i]}\" is larger than {FunctionParameters.Ceiling}, the device's limit for the first parameter; it overflows into the second parameter.",
+                    $"Use a value up to {FunctionParameters.Ceiling}."));
+            else
+                WarnIfOutOfRange(b, parts[0], args[i], i, n, issues);
         }
+    }
+
+    // Both numbers live in 14 bits, and a percent is scaled with
+    // `value * 1023 / 100`, so 100 is the top of the device's own scale. A
+    // number past either bound is read, just not as the number that was typed:
+    // a warning, never a rewrite. Nothing here fires for a function whose
+    // parameters this app cannot vouch for.
+    static void WarnIfOutOfRange(
+        Binding b, string function, string text, int index, long n, List<Issue> issues)
+    {
+        var spec = FunctionParameters.For(function);
+        if (index >= spec.Count) return;
+        var p = spec[index];
+        if (n >= p.Minimum && n <= p.Maximum) return;
+
+        // 0 is how a file says "leave this one out", and the device substitutes
+        // its own default for it. Saying that is worth more than calling it low.
+        if (n == 0)
+        {
+            issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+                $"\"{function}\" reads 0 for {p.Label.ToLowerInvariant()} as no value at all, so the device uses {p.Default}.",
+                $"Leave it out to mean the same thing, or set {p.Label.ToLowerInvariant()} between {p.Minimum} and {p.Maximum}."));
+            return;
+        }
+
+        issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+            n > p.Maximum
+                ? $"{p.Label} for \"{function}\" is {text}, past the device's limit of {p.Maximum}"
+                  + (p.Unit == "percent"
+                      ? ". A percent over 100 is a level no input reaches, so this row never fires."
+                      : $". The device stores it in 14 bits, so it arrives as {n % (FunctionParameters.Ceiling + 1)}.")
+                : $"{p.Label} for \"{function}\" is {text}, under the device's minimum of {p.Minimum}.",
+            $"Use {p.Minimum} to {p.Maximum}. {p.What}"));
     }
 
     static void ValidateInputs(Binding b, List<Issue> issues)

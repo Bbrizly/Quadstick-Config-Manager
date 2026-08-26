@@ -24,8 +24,8 @@ public static class Vocab
         KnownOutputsLoose = new HashSet<string>(known, StringComparer.OrdinalIgnoreCase);
 
         var fnNames = Set(root.GetProperty("functions"));
-        FunctionArity = FunctionParams.Where(kv => fnNames.Contains(kv.Key))
-            .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.Ordinal);
+        FunctionArity = FunctionParameters.All.Where(kv => fnNames.Contains(kv.Key))
+            .ToDictionary(kv => kv.Key, kv => (0, kv.Value.Length), StringComparer.Ordinal);
         FunctionsInFirmwareOrder = FirmwareFunctionOrder.Where(FunctionArity.ContainsKey).ToArray();
     }
 
@@ -57,25 +57,11 @@ public static class Vocab
     // reads its keywords case-sensitively, so KnownOutputs is the truth there.
     public static readonly IReadOnlySet<string> KnownOutputsLoose;
 
+    /// <summary>How many numbers each function takes. Counted off
+    /// <see cref="FunctionParameters"/> so the count and what the numbers mean
+    /// cannot drift apart. Every parameter is optional, so the minimum is 0.</summary>
     public static readonly IReadOnlyDictionary<string, (int Min, int Max)> FunctionArity;
 
-    static readonly Dictionary<string, (int Min, int Max)> FunctionParams = new(StringComparer.Ordinal)
-    {
-        ["normal"] = (0, 0),
-        ["toggle"] = (0, 0),
-        ["repeat"] = (0, 2),
-        ["pulse"] = (0, 2),
-        ["duty"] = (0, 1),
-        ["greater_than"] = (0, 2),
-        ["less_than"] = (0, 1),
-        ["force_off"] = (0, 1),
-        ["delayed_latch"] = (0, 1),
-        ["delay_off"] = (0, 1),
-        ["delay_on"] = (0, 2),
-        ["tap"] = (0, 2),
-        ["increment_value"] = (0, 2),
-        ["decrement_value"] = (0, 2),
-    };
 
     /// <summary>A1 must contain "Profile", or be Preferences / Infrared.</summary>
     public static bool IsSheetKeyword(string a1) =>

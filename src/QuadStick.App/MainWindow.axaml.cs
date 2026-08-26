@@ -4342,7 +4342,11 @@ public partial class MainWindow : Window
         var outputs = OutputsFor(CurrentSheet!);
         p.Children.Add(At(Mid(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, $"Output for row {b.Row}", OutputTint, outputs.Catalog, "an output",
             picked => CommitOutputFromList(b, outputs, picked))), 1));
-        p.Children.Add(At(Mid(ListPickerCell(b.Row, 1, b.Function, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint, null, "a function")), 2));
+        // List View is the raw grid, so the function's numbers explain
+        // themselves through the cell's name rather than a panel: same
+        // sentences Device View prints under its box.
+        p.Children.Add(At(Mid(ListPickerCell(b.Row, 1, b.Function, FunctionSuggestions,
+            $"Function for row {b.Row}. {ParameterAccessibleName(b.Function)}", FunctionTint, null, "a function")), 2));
 
         // A mode row whose output is a setting name is not a binding: the
         // device skips column B and reads column C as the setting's VALUE.
@@ -5117,16 +5121,29 @@ public partial class MainWindow : Window
         });
         AutomationProperties.SetName(combo, $"How {ShortInput(zone, b)} presses it. {FunctionExplain(current)}");
 
+        bool startHasParams = Vocab.FunctionArity.TryGetValue(firstToken, out var startArity) && startArity.Max > 0;
         var paramsBox = new TextBox
         {
             Text = currentParams,
-            Watermark = "optional values, e.g. 1000",
+            Watermark = ParameterWatermark(firstToken),
             FontSize = Size("SmallSize"),
             Margin = new Avalonia.Thickness(0, 4, 0, 0),
-            IsVisible = Vocab.FunctionArity.TryGetValue(firstToken, out var startArity) && startArity.Max > 0,
+            IsVisible = startHasParams,
         };
-        AutomationProperties.SetName(paramsBox,
-            $"Optional parameter values for {firstToken}. Whole numbers separated by spaces, for example 1000");
+        AutomationProperties.SetName(paramsBox, ParameterAccessibleName(firstToken));
+
+        // The ranges and defaults sit under the box, not in a tooltip: a
+        // tooltip is unreachable by keyboard and silent to a screen reader,
+        // and this is the guidance somebody needs before typing, not after.
+        var paramsHint = new TextBlock
+        {
+            Text = ParameterHint(firstToken),
+            FontSize = Size("SmallSize"),
+            Classes = { "muted" },
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Avalonia.Thickness(0, 2, 0, 0),
+            IsVisible = startHasParams,
+        };
 
         void Commit()
         {
@@ -5150,8 +5167,10 @@ public partial class MainWindow : Window
             {
                 bool hasParams = Vocab.FunctionArity.TryGetValue(name, out var ar) && ar.Max > 0;
                 paramsBox.IsVisible = hasParams;
-                AutomationProperties.SetName(paramsBox,
-                    $"Optional parameter values for {name}. Whole numbers separated by spaces, for example 1000");
+                paramsHint.IsVisible = hasParams;
+                paramsHint.Text = ParameterHint(name);
+                paramsBox.Watermark = ParameterWatermark(name);
+                AutomationProperties.SetName(paramsBox, ParameterAccessibleName(name));
                 if (!hasParams) paramsBox.Text = "";
             }
             Commit();
@@ -5164,7 +5183,7 @@ public partial class MainWindow : Window
         // too. Without the wrapper, B{row} lives nowhere in _cellBorders.
         // RefreshIssues mirrors the wrapper child's accessible name onto the
         // highlight; the panel needs the combo's name or an error reads as nothing.
-        var stack = new StackPanel { Children = { combo, paramsBox } };
+        var stack = new StackPanel { Children = { combo, paramsBox, paramsHint } };
         AutomationProperties.SetName(stack, AutomationProperties.GetName(combo));
         var wrapper = new Border
         {
@@ -5691,6 +5710,40 @@ public partial class MainWindow : Window
             $"{label}. {(_problemsExpanded ? "Hides" : "Shows")} the list of problems.");
         FixFirstButton.IsVisible = _problemsExpanded && errors > 0;
         ProblemsDock.IsVisible = _problemsExpanded || errors + warns > 0;
+    }
+
+    static string FunctionToken(string function) =>
+        (function ?? "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+
+    // The numbers beside a function are where people guess, and a guess here is
+    // silent: "greater_than 250" is a strength no input reaches, so the row
+    // simply never fires and nothing says why. Each line names one number, its
+    // unit, how far it goes, and what the device substitutes when it is left
+    // out. All of it read off firmware 2373, see FunctionParameters.
+    internal static string ParameterHint(string function)
+    {
+        var spec = FunctionParameters.For(FunctionToken(function));
+        return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Sentence));
+    }
+
+    // A screen reader gets the same sentences the sighted user reads under the
+    // box, because the ranges are the whole point of the field.
+    internal static string ParameterAccessibleName(string function)
+    {
+        var spec = FunctionParameters.For(FunctionToken(function));
+        return spec.Count == 0
+            ? $"{function} takes no numbers."
+            : $"Numbers for {function}, optional, whole numbers separated by spaces. "
+              + string.Join(" ", spec.Select(x => x.Sentence));
+    }
+
+    // What to put in an empty box: the parameter names in order, so the shape
+    // of "repeat 5 2000" is visible before anything is typed.
+    internal static string ParameterWatermark(string function)
+    {
+        var spec = FunctionParameters.For(FunctionToken(function));
+        return spec.Count == 0 ? ""
+            : "optional: " + string.Join("  ", spec.Select(x => x.Label.ToLowerInvariant()));
     }
 
     // Plain words for what a Function does, keyed on its first token so
