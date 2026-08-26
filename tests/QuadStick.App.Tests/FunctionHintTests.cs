@@ -48,8 +48,8 @@ public class FunctionHintTests
     {
         var w = Editor(Csv);
         var text = AllText(w);
-        Assert.Contains("1 to 100", text, StringComparison.Ordinal);
-        Assert.Contains("Left out: 100 percent", text, StringComparison.Ordinal);
+        Assert.Contains("Threshold: 1 to 100 percent", text, StringComparison.Ordinal);
+        Assert.Contains("Blank means 100 percent", text, StringComparison.Ordinal);
         w.Close();
     }
 
@@ -70,7 +70,7 @@ public class FunctionHintTests
         var hint = MainWindow.ParameterHint("repeat 5 2000");
         Assert.Contains("taps a second", hint, StringComparison.Ordinal);
         Assert.Contains("First hold", hint, StringComparison.Ordinal);
-        Assert.Contains("Left out: 10 a second", hint, StringComparison.Ordinal);
+        Assert.Contains("Blank means 10 a second", hint, StringComparison.Ordinal);
     }
 
     // Every function the dropdown offers has to answer for its numbers, or the

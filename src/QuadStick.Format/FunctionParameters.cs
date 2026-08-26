@@ -18,11 +18,12 @@ public sealed record FunctionParameter(
     string Default,
     string What)
 {
-    /// <summary>The whole thing as one sentence, for a hint line or a screen
-    /// reader: "Rate, taps per second, 1 to 1000. Left out: 10 a second."
-    /// </summary>
+    /// <summary>The whole thing as one line, for a hint under the box or a
+    /// screen reader: "Rate: 1 to 1000 taps a second. Blank means 10 a second.
+    /// How fast it taps while you hold the input."</summary>
     public string Sentence =>
-        $"{Label}{(Unit.Length > 0 ? ", " + Unit : "")}, {Minimum} to {Maximum}. Left out: {Default}. {What}";
+        $"{Label}: {Minimum} to {Maximum}{(Unit.Length > 0 ? " " + Unit : "")}. "
+        + $"Blank means {Default}. {What}";
 }
 
 /// <summary>
