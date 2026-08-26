@@ -1,0 +1,328 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Count_Binding_one" xml:space="preserve">
+    <value>{0} binding</value>
+  </data>
+  <data name="Count_Binding_other" xml:space="preserve">
+    <value>{0} bindings</value>
+  </data>
+  <data name="Count_Error_one" xml:space="preserve">
+    <value>{0} error</value>
+  </data>
+  <data name="Count_Error_other" xml:space="preserve">
+    <value>{0} errors</value>
+  </data>
+  <data name="Count_Mapping_one" xml:space="preserve">
+    <value>{0} mapping</value>
+  </data>
+  <data name="Count_Mapping_other" xml:space="preserve">
+    <value>{0} mappings</value>
+  </data>
+  <data name="Count_ModeSheet_one" xml:space="preserve">
+    <value>{0} mode sheet</value>
+  </data>
+  <data name="Count_ModeSheet_other" xml:space="preserve">
+    <value>{0} mode sheets</value>
+  </data>
+  <data name="Count_Mode_one" xml:space="preserve">
+    <value>{0} mode</value>
+  </data>
+  <data name="Count_Mode_other" xml:space="preserve">
+    <value>{0} modes</value>
+  </data>
+  <data name="Count_Warning_one" xml:space="preserve">
+    <value>{0} warning</value>
+  </data>
+  <data name="Count_Warning_other" xml:space="preserve">
+    <value>{0} warnings</value>
+  </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="Settings_AppearanceHelp" xml:space="preserve">
+    <value>Appearance: choose System, Light, or Dark theme</value>
+  </data>
+  <data name="Settings_AskCrashes" xml:space="preserve">
+    <value>Ask before sending a crash report</value>
+  </data>
+  <data name="Settings_Backup" xml:space="preserve">
+    <value>Google Drive backup</value>
+  </data>
+  <data name="Settings_BackupCaption" xml:space="preserve">
+    <value>Every time you save a profile, a copy goes to your own Google Drive. Import copies them back onto any computer.</value>
+  </data>
+  <data name="Settings_BackupToggle" xml:space="preserve">
+    <value>Back up my profiles to Google Drive</value>
+  </data>
+  <data name="Settings_BackupUnavailable" xml:space="preserve">
+    <value>This build is not connected to Google yet.</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Settings_CancelConnect" xml:space="preserve">
+    <value>Cancel connecting to Google</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>Checking...</value>
+  </data>
+  <data name="Settings_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Settings_CloseHelp" xml:space="preserve">
+    <value>Close settings</value>
+  </data>
+  <data name="Settings_Connected" xml:space="preserve">
+    <value>Connected to Google Drive</value>
+  </data>
+  <data name="Settings_ContactIntro" xml:space="preserve">
+    <value>Found a problem, or just want to say hello? Here is how to reach the person who made this.</value>
+  </data>
+  <data name="Settings_CopyInstallId" xml:space="preserve">
+    <value>Copy install ID</value>
+  </data>
+  <data name="Settings_CopyInstallIdHelp" xml:space="preserve">
+    <value>Copy the install ID to the clipboard</value>
+  </data>
+  <data name="Settings_CrashCaption" xml:space="preserve">
+    <value>A crash saves a report on your computer. Nothing is sent until you see it and press Send.</value>
+  </data>
+  <data name="Settings_EmailHelp" xml:space="preserve">
+    <value>Send an email, opens your mail app</value>
+  </data>
+  <data name="Settings_EmailLink" xml:space="preserve">
+    <value>Email: {0}</value>
+  </data>
+  <data name="Settings_FeedbackCaption" xml:space="preserve">
+    <value>Goes to the developer with your anonymous install ID and nothing else. Needs usage data turned on, under Advanced. The email link above always works.</value>
+  </data>
+  <data name="Settings_FeedbackFailed" xml:space="preserve">
+    <value>That could not be sent. The email link above always works.</value>
+  </data>
+  <data name="Settings_FeedbackLabel" xml:space="preserve">
+    <value>Your feedback</value>
+  </data>
+  <data name="Settings_FeedbackSent" xml:space="preserve">
+    <value>Thank you. That was sent.</value>
+  </data>
+  <data name="Settings_FeedbackWatermark" xml:space="preserve">
+    <value>What would make this app better?</value>
+  </data>
+  <data name="Settings_Grouping" xml:space="preserve">
+    <value>Picker grouping</value>
+  </data>
+  <data name="Settings_GroupingCaption" xml:space="preserve">
+    <value>Detailed files outputs under a category and then a group inside it. Wide shows every output in a category at once. Flat is one searchable list. Search works the same in all three.</value>
+  </data>
+  <data name="Settings_GroupingHelp" xml:space="preserve">
+    <value>Picker grouping: Detailed, Wide, or Flat lists in the output and input pickers</value>
+  </data>
+  <data name="Settings_ImportDrive" xml:space="preserve">
+    <value>Import from Google Drive</value>
+  </data>
+  <data name="Settings_ImportDriveHelp" xml:space="preserve">
+    <value>Import your profiles from Google Drive</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings_LanguageHelp" xml:space="preserve">
+    <value>Language: choose which language the app is written in</value>
+  </data>
+  <data name="Settings_LanguageRestart" xml:space="preserve">
+    <value>Close and reopen the app to see it in this language.</value>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>Same as my computer</value>
+  </data>
+  <data name="Settings_LinkedInHelp" xml:space="preserve">
+    <value>Open LinkedIn, opens in your browser</value>
+  </data>
+  <data name="Settings_Model" xml:space="preserve">
+    <value>Default QuadStick model</value>
+  </data>
+  <data name="Settings_NoInstallId" xml:space="preserve">
+    <value>No install ID yet. One is made the first time something is sent.</value>
+  </data>
+  <data name="Settings_OpenDownload" xml:space="preserve">
+    <value>Open the download page</value>
+  </data>
+  <data name="Settings_OpenDownloadHelp" xml:space="preserve">
+    <value>Open the download page in your browser</value>
+  </data>
+  <data name="Settings_OpenFolder" xml:space="preserve">
+    <value>Open settings folder</value>
+  </data>
+  <data name="Settings_OpenFolderHelp" xml:space="preserve">
+    <value>Open the settings folder</value>
+  </data>
+  <data name="Settings_Privacy" xml:space="preserve">
+    <value>Read the privacy policy</value>
+  </data>
+  <data name="Settings_PrivacyHelp" xml:space="preserve">
+    <value>Read the privacy policy, opens in your browser</value>
+  </data>
+  <data name="Settings_Privacy_Heading" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
+  <data name="Settings_QuickGuide" xml:space="preserve">
+    <value>Quick guide</value>
+  </data>
+  <data name="Settings_Reconnect" xml:space="preserve">
+    <value>Reconnect to Google</value>
+  </data>
+  <data name="Settings_ReconnectShort" xml:space="preserve">
+    <value>Reconnect</value>
+  </data>
+  <data name="Settings_ReduceMotion" xml:space="preserve">
+    <value>Reduce motion</value>
+  </data>
+  <data name="Settings_ReduceMotionCaption" xml:space="preserve">
+    <value>Turns off the tutorial fade animation.</value>
+  </data>
+  <data name="Settings_RememberWindow" xml:space="preserve">
+    <value>Remember window size and position</value>
+  </data>
+  <data name="Settings_ReplayTutorial" xml:space="preserve">
+    <value>Replay tutorial</value>
+  </data>
+  <data name="Settings_ReplayTutorialHelp" xml:space="preserve">
+    <value>Replay the tutorial</value>
+  </data>
+  <data name="Settings_ReportBug" xml:space="preserve">
+    <value>Report a bug on GitHub</value>
+  </data>
+  <data name="Settings_ReportBugHelp" xml:space="preserve">
+    <value>Report a bug on GitHub, opens in your browser</value>
+  </data>
+  <data name="Settings_Reset" xml:space="preserve">
+    <value>Reset all settings to defaults</value>
+  </data>
+  <data name="Settings_Reverting" xml:space="preserve">
+    <value>Reverting in {0}s</value>
+  </data>
+  <data name="Settings_SaveSize" xml:space="preserve">
+    <value>Save size</value>
+  </data>
+  <data name="Settings_SaveSizeHelp" xml:space="preserve">
+    <value>Keep this interface size</value>
+  </data>
+  <data name="Settings_Scale" xml:space="preserve">
+    <value>Interface size</value>
+  </data>
+  <data name="Settings_ScaleCaption" xml:space="preserve">
+    <value>Makes all text and controls larger or smaller.</value>
+  </data>
+  <data name="Settings_ScaleHelp" xml:space="preserve">
+    <value>Interface size, in percent</value>
+  </data>
+  <data name="Settings_SendFeedback" xml:space="preserve">
+    <value>Send feedback</value>
+  </data>
+  <data name="Settings_Sending" xml:space="preserve">
+    <value>Sending...</value>
+  </data>
+  <data name="Settings_ShowTutorial" xml:space="preserve">
+    <value>Show the tutorial next time I open the app</value>
+  </data>
+  <data name="Settings_TabAdvanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="Settings_TabContact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Settings_TabGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Settings_TabHelp" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_Updates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="Settings_UpdatesCaption" xml:space="preserve">
+    <value>This app does not update itself and never checks on its own.</value>
+  </data>
+  <data name="Settings_UsageCaption" xml:space="preserve">
+    <value>Which screens get used and whether installing worked. Never your profiles, file names, paths, anything you type, or your Google account.</value>
+  </data>
+  <data name="Settings_UsageData" xml:space="preserve">
+    <value>Share anonymous usage data</value>
+  </data>
+  <data name="Settings_WaitingBrowser" xml:space="preserve">
+    <value>Waiting for your browser...</value>
+  </data>
+  <data name="Settings_WebsiteHelp" xml:space="preserve">
+    <value>Open the website, opens in your browser</value>
+  </data>
+  <data name="Settings_WebsiteLink" xml:space="preserve">
+    <value>Website: {0}</value>
+  </data>
+  <data name="Settings_YouAreOn" xml:space="preserve">
+    <value>You are on {0}.</value>
+  </data>
+</root>

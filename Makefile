@@ -1,4 +1,4 @@
-# make test | run | gallery | build | package | release VERSION=x.y.z | clean
+# make test | run | gallery | build | package | pseudo | release VERSION=x.y.z | clean
 
 SLN := QuadStick.sln
 APP := src/QuadStick.App/QuadStick.App.csproj
@@ -6,7 +6,7 @@ DIST := dist
 # The Mac this is run on: builds the bundle you can actually launch to test.
 HOSTRID := osx-$(shell uname -m | sed 's/x86_64/x64/')
 
-.PHONY: all test run gallery build package release clean
+.PHONY: all test run gallery build package pseudo release clean
 
 all: test build
 
@@ -24,6 +24,12 @@ gallery:
 
 build:
 	dotnet build $(SLN) -c Release --nologo
+
+# Rebuild the pseudo language after adding or changing any UI text. Then run a
+# debug build, pick Pseudo under Settings > Language, and reopen: whatever is
+# still in plain English never made it into Strings.resx.
+pseudo:
+	python3 tools/strings/resx.py pseudo src/QuadStick.App/Strings.resx
 
 # Build the macOS .app locally to smoke-test the bundle before releasing.
 # CI (.github/workflows/build.yml) builds the full Windows/macOS/Linux matrix;

@@ -1486,6 +1486,15 @@ public partial class MainWindow : Window
         finally { _pickerSyncing = false; }
     }
 
+    // Saved, not applied. Every window builds its text once, while it is being
+    // built, so the language that is already on screen stays on screen until
+    // the app is started again. Settings says so next to the picker.
+    public void SetLanguage(string tag)
+    {
+        _settings.Language = tag;
+        Settings.Save(_settings);
+    }
+
     public void SetInterfaceScale(int pct)
     {
         _settings.InterfaceScalePercent = pct;
@@ -1773,7 +1782,7 @@ public partial class MainWindow : Window
             var title = doc.Title;
             var meta = (title.Length > 0 && !title.Equals(Path.GetFileNameWithoutExtension(path),
                             StringComparison.OrdinalIgnoreCase) ? $"{title} · " : "")
-                + $"{Plural.Of(modes.Count, "mode")} · {Plural.Of(bindings, "binding")}";
+                + $"{Plural.Of(modes.Count, "Count_Mode")} · {Plural.Of(bindings, "Count_Binding")}";
 
             // The mode names are the one thing that says what a profile is for.
             // "Movement, Building, Driving" tells you it is a game setup; the
@@ -1869,7 +1878,7 @@ public partial class MainWindow : Window
             // had one more mode than the device would ever run.
             var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
             sub = TitleNote(doc, path)
-                + $"{Plural.Of(modes.Count, "mode sheet")}, {Plural.Of(modes.Sum(s => s.Bindings.Count), "binding")}";
+                + $"{Plural.Of(modes.Count, "Count_ModeSheet")}, {Plural.Of(modes.Sum(s => s.Bindings.Count), "Count_Binding")}";
         }
         catch { sub = "Could not read this file"; }
         _cardCache[path] = (stamp, sub);
@@ -3264,7 +3273,7 @@ public partial class MainWindow : Window
 
         var zoneTitle = new TextBlock
         {
-            Text = $"{zone.Title}  ·  {Plural.Of(bindings?.Count ?? 0, "mapping")}",
+            Text = $"{zone.Title}  ·  {Plural.Of(bindings?.Count ?? 0, "Count_Mapping")}",
             FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
         };
         AutomationProperties.SetLiveSetting(zoneTitle, AutomationLiveSetting.Polite);
@@ -5219,8 +5228,8 @@ public partial class MainWindow : Window
         Status(errors + warns == 0
                 ? "No problems. Ready to save or install."
                 : errors == 0
-                    ? $"{Plural.Of(warns, "warning")}. The device skips those rows, so this still installs."
-                    : $"{Plural.Of(errors, "error")}, {Plural.Of(warns, "warning")}. Errors block installing.",
+                    ? $"{Plural.Of(warns, "Count_Warning")}. The device skips those rows, so this still installs."
+                    : $"{Plural.Of(errors, "Count_Error")}, {Plural.Of(warns, "Count_Warning")}. Errors block installing.",
             errors > 0 ? StatusKind.Error : warns > 0 ? StatusKind.Warning : StatusKind.Ready);
         UpdateProblemsToggle();
     }

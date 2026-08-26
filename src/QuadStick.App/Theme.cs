@@ -12,6 +12,10 @@ public sealed class AppSettings
 {
     public string Model = "FPS";
     public string Theme = "System";           // System | Light | Dark
+    // Which language the interface speaks. "System" follows the machine.
+    // Read once at startup: changing it asks for a restart, because the
+    // windows are built in code and never re-read their text.
+    public string Language = Localization.FollowSystem;
     public int InterfaceScalePercent = 100;    // 100 | 125 | 150 | 200
     public bool ReduceMotion = false;
     public bool RememberWindow = true;

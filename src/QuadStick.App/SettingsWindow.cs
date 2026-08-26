@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -45,7 +46,7 @@ public class SettingsWindow : Window
     public SettingsWindow(MainWindow owner)
     {
         Classes.Add("dialog");
-        Title = "Settings";
+        Title = Strings.Settings_Title;
         Width = Math.Min(640 * owner.UiScale, 1200);
         Height = Math.Min(640 * owner.UiScale, 900);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -54,10 +55,10 @@ public class SettingsWindow : Window
         {
             Items =
             {
-                new TabItem { Header = "General", Content = GeneralTab(owner) },
-                new TabItem { Header = "Advanced", Content = AdvancedTab(owner) },
-                new TabItem { Header = "Help", Content = HelpTab(owner) },
-                new TabItem { Header = "Contact", Content = ContactTab(owner) },
+                new TabItem { Header = Strings.Settings_TabGeneral, Content = GeneralTab(owner) },
+                new TabItem { Header = Strings.Settings_TabAdvanced, Content = AdvancedTab(owner) },
+                new TabItem { Header = Strings.Settings_TabHelp, Content = HelpTab(owner) },
+                new TabItem { Header = Strings.Settings_TabContact, Content = ContactTab(owner) },
             },
         };
 
@@ -66,11 +67,11 @@ public class SettingsWindow : Window
         // sizes. IsCancel wires Esc to it too, no focus needed.
         var close = new Button
         {
-            Content = "Close", Classes = { "primary" }, IsCancel = true,
+            Content = Strings.Settings_Close, Classes = { "primary" }, IsCancel = true,
             FontSize = Size("SubheadSize"), Padding = new Thickness(28, 12),
             MinWidth = 150, VerticalAlignment = VerticalAlignment.Center,
         };
-        AutomationProperties.SetName(close, "Close settings");
+        AutomationProperties.SetName(close, Strings.Settings_CloseHelp);
         close.Click += (_, _) => Close();
         // A dialog can open with keyboard focus still on the window behind
         // it, and then every key press (Escape included) bypasses this window
@@ -86,7 +87,7 @@ public class SettingsWindow : Window
             {
                 new TextBlock
                 {
-                    Text = "Settings", FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold,
+                    Text = Strings.Settings_Title, FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold,
                     VerticalAlignment = VerticalAlignment.Center,
                 },
                 close,
@@ -216,7 +217,31 @@ public class SettingsWindow : Window
     Control GeneralTab(MainWindow owner)
     {
         var panel = new StackPanel { Margin = new Thickness(24), Spacing = 16 };
-        panel.Children.Add(Heading("General"));
+        panel.Children.Add(Heading(Strings.Settings_TabGeneral));
+
+        var language = new ComboBox
+        {
+            ItemsSource = Localization.Choices(),
+            SelectedIndex = Localization.IndexOf(owner.CurrentSettings.Language),
+            MinWidth = 220,
+        };
+        AutomationProperties.SetName(language, Strings.Settings_LanguageHelp);
+        var languageNote = new TextBlock
+        {
+            Text = Strings.Settings_LanguageRestart, IsVisible = false, TextWrapping = TextWrapping.Wrap,
+            FontSize = Size("BodySize"), Classes = { "muted" },
+        };
+        // Nothing on screen changes when this is picked, so a sighted user sees
+        // the note appear and a screen reader user has to be told.
+        AutomationProperties.SetLiveSetting(languageNote, AutomationLiveSetting.Polite);
+        language.SelectionChanged += (_, _) =>
+        {
+            if (language.SelectedIndex < 0) return;
+            var tag = Localization.TagAt(language.SelectedIndex);
+            owner.SetLanguage(tag);
+            languageNote.IsVisible = true;
+        };
+        panel.Children.Add(Field(Strings.Settings_Language, null, language, languageNote));
 
         var appearance = new ComboBox
         {
@@ -224,12 +249,12 @@ public class SettingsWindow : Window
             SelectedIndex = owner.CurrentSettings.Theme switch { "Light" => 1, "Dark" => 2, _ => 0 },
             MinWidth = 220,
         };
-        AutomationProperties.SetName(appearance, "Appearance: choose System, Light, or Dark theme");
+        AutomationProperties.SetName(appearance, Strings.Settings_AppearanceHelp);
         appearance.SelectionChanged += (_, _) =>
         {
             if (appearance.SelectedItem is string choice) owner.ApplyTheme(choice);
         };
-        panel.Children.Add(Field("Appearance", null, appearance));
+        panel.Children.Add(Field(Strings.Settings_Appearance, null, appearance));
 
         var scalePercents = MainWindow.ValidScalePercents;
         int scaleIndex = Array.IndexOf(scalePercents, owner.CurrentSettings.InterfaceScalePercent);
@@ -240,7 +265,7 @@ public class SettingsWindow : Window
             MinWidth = 220,
             VerticalAlignment = VerticalAlignment.Center,
         };
-        AutomationProperties.SetName(scale, "Interface size, in percent");
+        AutomationProperties.SetName(scale, Strings.Settings_ScaleHelp);
 
         // A new size previews live but is not saved until the user confirms.
         // A countdown reverts to the last saved size otherwise, so a size that
@@ -248,10 +273,10 @@ public class SettingsWindow : Window
         // Windows puts on a display-resolution change.
         var saveSize = new Button
         {
-            Content = "Save size", Classes = { "primary" }, IsVisible = false,
+            Content = Strings.Settings_SaveSize, Classes = { "primary" }, IsVisible = false,
             VerticalAlignment = VerticalAlignment.Center,
         };
-        AutomationProperties.SetName(saveSize, "Keep this interface size");
+        AutomationProperties.SetName(saveSize, Strings.Settings_SaveSizeHelp);
         var countdown = new TextBlock
         {
             IsVisible = false, VerticalAlignment = VerticalAlignment.Center,
@@ -291,7 +316,7 @@ public class SettingsWindow : Window
         {
             remaining--;
             if (remaining <= 0) { Revert(); return; }
-            countdown.Text = $"Reverting in {remaining}s";
+            countdown.Text = string.Format(CultureInfo.CurrentCulture, Strings.Settings_Reverting, remaining);
         };
 
         scale.SelectionChanged += (_, _) =>
@@ -311,7 +336,7 @@ public class SettingsWindow : Window
             owner.ApplyInterfaceScale(pct); // preview only; SetInterfaceScale saves
             RescaleTo(owner);
             remaining = RevertSeconds;
-            countdown.Text = $"Reverting in {remaining}s";
+            countdown.Text = string.Format(CultureInfo.CurrentCulture, Strings.Settings_Reverting, remaining);
             saveSize.IsVisible = true;
             countdown.IsVisible = true;
             _revertSize = Revert;
@@ -331,7 +356,7 @@ public class SettingsWindow : Window
             Orientation = Orientation.Horizontal, Spacing = 10,
             Children = { scale, saveSize, countdown },
         };
-        panel.Children.Add(Field("Interface size", "Makes all text and controls larger or smaller.", scaleRow));
+        panel.Children.Add(Field(Strings.Settings_Scale, Strings.Settings_ScaleCaption, scaleRow));
 
         var model = new ComboBox
         {
@@ -339,12 +364,12 @@ public class SettingsWindow : Window
             SelectedIndex = ModelIndexOf(owner.CurrentSettings.Model),
             MinWidth = 220,
         };
-        AutomationProperties.SetName(model, "Default QuadStick model");
+        AutomationProperties.SetName(model, Strings.Settings_Model);
         model.SelectionChanged += (_, _) =>
         {
             if (model.SelectedIndex >= 0) owner.SetDefaultModel(model.SelectedIndex);
         };
-        panel.Children.Add(Field("Default QuadStick model", null, model));
+        panel.Children.Add(Field(Strings.Settings_Model, null, model));
 
         panel.Children.Add(BackupArea(owner));
         panel.Children.Add(UpdateArea(owner));
@@ -360,16 +385,16 @@ public class SettingsWindow : Window
         var version = UpdateCheck.CurrentVersion;
         var line = new TextBlock
         {
-            Text = $"You are on {version}.",
+            Text = string.Format(CultureInfo.CurrentCulture, Strings.Settings_YouAreOn, version),
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
         };
         AutomationProperties.SetLiveSetting(line, AutomationLiveSetting.Polite);
 
-        var check = new Button { Content = "Check for updates" };
-        AutomationProperties.SetName(check, "Check for updates");
+        var check = new Button { Content = Strings.Settings_CheckUpdates };
+        AutomationProperties.SetName(check, Strings.Settings_CheckUpdates);
 
-        var download = new Button { Content = "Open the download page", IsVisible = false };
-        AutomationProperties.SetName(download, "Open the download page in your browser");
+        var download = new Button { Content = Strings.Settings_OpenDownload, IsVisible = false };
+        AutomationProperties.SetName(download, Strings.Settings_OpenDownloadHelp);
         string? url = null;
         download.Click += async (_, _) =>
         {
@@ -380,7 +405,7 @@ public class SettingsWindow : Window
         check.Click += async (_, _) =>
         {
             check.IsEnabled = false;
-            line.Text = "Checking...";
+            line.Text = Strings.Settings_Checking;
             var result = await UpdateCheck.LatestAsync(owner.HttpClient, version);
             line.Text = result.Message;
             url = result.DownloadUrl;
@@ -390,7 +415,7 @@ public class SettingsWindow : Window
             check.IsEnabled = true;
         };
 
-        return Field("Updates", "This app does not update itself and never checks on its own.",
+        return Field(Strings.Settings_Updates, Strings.Settings_UpdatesCaption,
             new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 10,
@@ -404,18 +429,18 @@ public class SettingsWindow : Window
     Control BackupArea(MainWindow owner)
     {
         var section = new StackPanel { Spacing = 16 };
-        section.Children.Add(Heading("Google Drive backup"));
+        section.Children.Add(Heading(Strings.Settings_Backup));
 
         var configured = GoogleAuth.IsConfigured;
         var backupCheck = new CheckBox
         {
-            Content = "Back up my profiles to Google Drive",
+            Content = Strings.Settings_BackupToggle,
             // Ticked only when a token is stored, not from the default setting.
             IsChecked = owner.DriveConnected,
             IsEnabled = configured,
             FontSize = Size("BodySize"),
         };
-        AutomationProperties.SetName(backupCheck, "Back up my profiles to Google Drive");
+        AutomationProperties.SetName(backupCheck, Strings.Settings_BackupToggle);
         // Checkbox, Connected line, and caption are one field: pack tight so
         // status and explanation sit right under the checkbox.
         var group = new StackPanel { Spacing = 4 };
@@ -425,7 +450,7 @@ public class SettingsWindow : Window
         // stored). RefreshConnected keeps it in step.
         var connected = new TextBlock
         {
-            Text = "Connected to Google Drive",
+            Text = Strings.Settings_Connected,
             FontSize = Size("BodySize"),
             FontWeight = FontWeight.SemiBold,
             TextWrapping = TextWrapping.Wrap,
@@ -434,19 +459,19 @@ public class SettingsWindow : Window
         // Bind dynamically: the brush lives in a theme dictionary, and a plain
         // FindResource misses theme-scoped brushes (text stays invisible).
         connected[!TextBlock.ForegroundProperty] = new DynamicResourceExtension("SuccessBrush");
-        AutomationProperties.SetName(connected, "Connected to Google Drive");
+        AutomationProperties.SetName(connected, Strings.Settings_Connected);
         group.Children.Add(connected);
         void RefreshConnected() => connected.IsVisible = owner.DriveConnected;
 
         group.Children.Add(Caption(configured
-            ? "Every time you save a profile, a copy goes to your own Google Drive. Import copies them back onto any computer."
-            : "This build is not connected to Google yet."));
+            ? Strings.Settings_BackupCaption
+            : Strings.Settings_BackupUnavailable));
         section.Children.Add(group);
 
         var waitingText = new TextBlock
-        { Text = "Waiting for your browser...", FontSize = Size("BodySize"), Classes = { "muted" } };
-        var cancelConnect = new Button { Content = "Cancel" };
-        AutomationProperties.SetName(cancelConnect, "Cancel connecting to Google");
+        { Text = Strings.Settings_WaitingBrowser, FontSize = Size("BodySize"), Classes = { "muted" } };
+        var cancelConnect = new Button { Content = Strings.Settings_Cancel };
+        AutomationProperties.SetName(cancelConnect, Strings.Settings_CancelConnect);
         var waitingRow = new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 10, IsVisible = false,
@@ -455,15 +480,15 @@ public class SettingsWindow : Window
         section.Children.Add(waitingRow);
 
         // Shown whenever backup is on. Also used to switch Google accounts.
-        var reconnect = new Button { Content = "Reconnect", IsVisible = configured && owner.CurrentSettings.DriveBackup };
-        AutomationProperties.SetName(reconnect, "Reconnect to Google");
+        var reconnect = new Button { Content = Strings.Settings_ReconnectShort, IsVisible = configured && owner.CurrentSettings.DriveBackup };
+        AutomationProperties.SetName(reconnect, Strings.Settings_Reconnect);
         section.Children.Add(reconnect);
 
         // Bulk restore. On only while backup is on; closes this window and
         // opens the picker so restored profiles land in the home library.
         var importDrive = new Button
-        { Content = "Import from Google Drive", IsEnabled = owner.CurrentSettings.DriveBackup };
-        AutomationProperties.SetName(importDrive, "Import your profiles from Google Drive");
+        { Content = Strings.Settings_ImportDrive, IsEnabled = owner.CurrentSettings.DriveBackup };
+        AutomationProperties.SetName(importDrive, Strings.Settings_ImportDriveHelp);
         importDrive.Click += async (_, _) => { Close(); await owner.ShowDrivePickerAsync(preCheck: false); };
         section.Children.Add(importDrive);
 
@@ -522,16 +547,16 @@ public class SettingsWindow : Window
     Control AdvancedTab(MainWindow owner)
     {
         var panel = new StackPanel { Margin = new Thickness(24), Spacing = 16 };
-        panel.Children.Add(Heading("Advanced"));
+        panel.Children.Add(Heading(Strings.Settings_TabAdvanced));
 
         var reduceMotion = new CheckBox
-        { Content = "Reduce motion", IsChecked = owner.CurrentSettings.ReduceMotion, FontSize = Size("BodySize") };
-        AutomationProperties.SetName(reduceMotion, "Reduce motion");
+        { Content = Strings.Settings_ReduceMotion, IsChecked = owner.CurrentSettings.ReduceMotion, FontSize = Size("BodySize") };
+        AutomationProperties.SetName(reduceMotion, Strings.Settings_ReduceMotion);
         reduceMotion.IsCheckedChanged += (_, _) => owner.SetReduceMotion(reduceMotion.IsChecked == true);
         panel.Children.Add(new StackPanel
         {
             Spacing = 4,
-            Children = { reduceMotion, Caption("Turns off the tutorial fade animation.") },
+            Children = { reduceMotion, Caption(Strings.Settings_ReduceMotionCaption) },
         });
 
         var grouping = new ComboBox
@@ -542,26 +567,24 @@ public class SettingsWindow : Window
             MinWidth = 220,
         };
         AutomationProperties.SetName(grouping,
-            "Picker grouping: Detailed, Wide, or Flat lists in the output and input pickers");
+            Strings.Settings_GroupingHelp);
         grouping.SelectionChanged += (_, _) =>
         {
             if (grouping.SelectedItem is string choice) owner.SetPickerGrouping(choice);
         };
-        panel.Children.Add(Field("Picker grouping",
-            "Detailed files outputs under a category and then a group inside it. Wide shows every "
-            + "output in a category at once. Flat is one searchable list. Search works the same in "
-            + "all three.",
+        panel.Children.Add(Field(Strings.Settings_Grouping,
+            Strings.Settings_GroupingCaption,
             grouping));
 
         panel.Children.Add(PrivacyArea(owner));
 
         var rememberWindow = new CheckBox
         {
-            Content = "Remember window size and position",
+            Content = Strings.Settings_RememberWindow,
             IsChecked = owner.CurrentSettings.RememberWindow,
             FontSize = Size("BodySize"),
         };
-        AutomationProperties.SetName(rememberWindow, "Remember window size and position");
+        AutomationProperties.SetName(rememberWindow, Strings.Settings_RememberWindow);
         rememberWindow.IsCheckedChanged += (_, _) =>
         {
             owner.CurrentSettings.RememberWindow = rememberWindow.IsChecked == true;
@@ -571,11 +594,11 @@ public class SettingsWindow : Window
 
         var showTutorial = new CheckBox
         {
-            Content = "Show the tutorial next time I open the app",
+            Content = Strings.Settings_ShowTutorial,
             IsChecked = !owner.CurrentSettings.TutorialSeen,
             FontSize = Size("BodySize"),
         };
-        AutomationProperties.SetName(showTutorial, "Show the tutorial next time I open the app");
+        AutomationProperties.SetName(showTutorial, Strings.Settings_ShowTutorial);
         showTutorial.IsCheckedChanged += (_, _) =>
         {
             owner.CurrentSettings.TutorialSeen = showTutorial.IsChecked != true;
@@ -583,8 +606,8 @@ public class SettingsWindow : Window
         };
         panel.Children.Add(showTutorial);
 
-        var openFolder = new Button { Content = "Open settings folder" };
-        AutomationProperties.SetName(openFolder, "Open the settings folder");
+        var openFolder = new Button { Content = Strings.Settings_OpenFolder };
+        AutomationProperties.SetName(openFolder, Strings.Settings_OpenFolderHelp);
         openFolder.Click += async (_, _) =>
         {
             var dir = Path.GetDirectoryName(Settings.DefaultPath)!;
@@ -593,8 +616,8 @@ public class SettingsWindow : Window
         };
         panel.Children.Add(openFolder);
 
-        var reset = new Button { Content = "Reset all settings to defaults", Classes = { "danger" } };
-        AutomationProperties.SetName(reset, "Reset all settings to defaults");
+        var reset = new Button { Content = Strings.Settings_Reset, Classes = { "danger" } };
+        AutomationProperties.SetName(reset, Strings.Settings_Reset);
         reset.Click += async (_, _) =>
         {
             if (await owner.ConfirmResetAsync()) { owner.ResetSettings(); Close(); }
@@ -607,10 +630,10 @@ public class SettingsWindow : Window
     Control HelpTab(MainWindow owner)
     {
         var panel = new StackPanel { Margin = new Thickness(24), Spacing = 14 };
-        panel.Children.Add(Heading("Quick guide"));
+        panel.Children.Add(Heading(Strings.Settings_QuickGuide));
 
-        var replay = new Button { Content = "Replay tutorial", Classes = { "primary" } };
-        AutomationProperties.SetName(replay, "Replay the tutorial");
+        var replay = new Button { Content = Strings.Settings_ReplayTutorial, Classes = { "primary" } };
+        AutomationProperties.SetName(replay, Strings.Settings_ReplayTutorialHelp);
         replay.Click += (_, _) => { Close(); owner.StartTutorial(); };
         panel.Children.Add(replay);
 
@@ -633,22 +656,22 @@ public class SettingsWindow : Window
         var s = owner.CurrentSettings;
 
         var usage = new CheckBox
-        { Content = "Share anonymous usage data", IsChecked = s.UsageAnalytics, FontSize = Size("BodySize") };
-        AutomationProperties.SetName(usage, "Share anonymous usage data");
+        { Content = Strings.Settings_UsageData, IsChecked = s.UsageAnalytics, FontSize = Size("BodySize") };
+        AutomationProperties.SetName(usage, Strings.Settings_UsageData);
 
         var askCrashes = new CheckBox
-        { Content = "Ask before sending a crash report", IsChecked = s.AskAboutCrashes, FontSize = Size("BodySize") };
-        AutomationProperties.SetName(askCrashes, "Ask before sending a crash report");
+        { Content = Strings.Settings_AskCrashes, IsChecked = s.AskAboutCrashes, FontSize = Size("BodySize") };
+        AutomationProperties.SetName(askCrashes, Strings.Settings_AskCrashes);
 
         var idText = new TextBlock
         {
-            Text = s.InstallId.Length == 0 ? "No install ID yet. One is made the first time something is sent."
+            Text = s.InstallId.Length == 0 ? Strings.Settings_NoInstallId
                                            : $"Install ID: {s.InstallId}",
             FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
         };
 
-        var copyId = new Button { Content = "Copy install ID", IsEnabled = s.InstallId.Length > 0 };
-        AutomationProperties.SetName(copyId, "Copy the install ID to the clipboard");
+        var copyId = new Button { Content = Strings.Settings_CopyInstallId, IsEnabled = s.InstallId.Length > 0 };
+        AutomationProperties.SetName(copyId, Strings.Settings_CopyInstallIdHelp);
         copyId.Click += async (_, _) =>
         {
             try { if (Clipboard is { } c) await c.SetTextAsync(owner.CurrentSettings.InstallId); }
@@ -674,7 +697,7 @@ public class SettingsWindow : Window
             // nothing being sent even though the box shows the stored answer.
             var live = owner.CurrentSettings.UsageAnalytics;
             idText.Text = owner.CurrentSettings.InstallId.Length == 0
-                ? "No install ID yet. One is made the first time something is sent."
+                ? Strings.Settings_NoInstallId
                 : $"Install ID: {owner.CurrentSettings.InstallId}";
             copyId.IsEnabled = owner.CurrentSettings.InstallId.Length > 0;
             if (_feedbackSend is not null) _feedbackSend.IsEnabled = live;
@@ -714,21 +737,20 @@ public class SettingsWindow : Window
             {
                 new TextBlock
                 {
-                    Text = "Privacy", FontSize = Size("SubheadSize"),
+                    Text = Strings.Settings_Privacy_Heading, FontSize = Size("SubheadSize"),
                     FontWeight = FontWeight.Bold, Margin = new Thickness(0, 8, 0, 0),
                 },
                 usage,
-                Caption("Which screens get used and whether installing worked. Never your profiles, "
-                      + "file names, paths, anything you type, or your Google account."),
+                Caption(Strings.Settings_UsageCaption),
                 askCrashes,
-                Caption("A crash saves a report on your computer. Nothing is sent until you see it and press Send."),
+                Caption(Strings.Settings_CrashCaption),
                 idText,
                 copyId,
                 // Reachable from the toggles themselves, not just from the
                 // notice at first launch, which most people will never see again.
-                LinkButton("Read the privacy policy",
+                LinkButton(Strings.Settings_Privacy,
                            MainWindow.PrivacyPolicyUrl,
-                           "Read the privacy policy, opens in your browser"),
+                           Strings.Settings_PrivacyHelp),
             },
         };
     }
@@ -736,29 +758,29 @@ public class SettingsWindow : Window
     Control ContactTab(MainWindow owner)
     {
         var panel = new StackPanel { Margin = new Thickness(24), Spacing = 16 };
-        panel.Children.Add(Heading("Contact"));
+        panel.Children.Add(Heading(Strings.Settings_TabContact));
         panel.Children.Add(new TextBlock
         {
-            Text = "Found a problem, or just want to say hello? Here is how to reach the person who made this.",
+            Text = Strings.Settings_ContactIntro,
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         });
 
         panel.Children.Add(LinkButton(
-            "Report a bug on GitHub",
+            Strings.Settings_ReportBug,
             "https://github.com/Bbrizly/Quadstick-Config-Manager/issues",
-            "Report a bug on GitHub, opens in your browser"));
+            Strings.Settings_ReportBugHelp));
         panel.Children.Add(LinkButton(
-            "Website: bbrizly.github.io",
+            string.Format(CultureInfo.CurrentCulture, Strings.Settings_WebsiteLink, "bbrizly.github.io"),
             "https://bbrizly.github.io",
-            "Open the website, opens in your browser"));
+            Strings.Settings_WebsiteHelp));
         panel.Children.Add(LinkButton(
             "LinkedIn",
             "https://www.linkedin.com/in/bassam-k/",
-            "Open LinkedIn, opens in your browser"));
+            Strings.Settings_LinkedInHelp));
         panel.Children.Add(LinkButton(
-            "Email: bassamkamal.py@gmail.com",
+            string.Format(CultureInfo.CurrentCulture, Strings.Settings_EmailLink, "bassamkamal.py@gmail.com"),
             "mailto:bassamkamal.py@gmail.com",
-            "Send an email, opens your mail app"));
+            Strings.Settings_EmailHelp));
 
         panel.Children.Add(FeedbackArea(owner));
         return Tab(panel);
@@ -775,17 +797,17 @@ public class SettingsWindow : Window
             TextWrapping = TextWrapping.Wrap,
             Height = 90,
             MaxLength = Telemetry.MaxFeedbackChars,
-            Watermark = "What would make this app better?",
+            Watermark = Strings.Settings_FeedbackWatermark,
             FontSize = Size("BodySize"),
         };
-        AutomationProperties.SetName(box, "Your feedback");
+        AutomationProperties.SetName(box, Strings.Settings_FeedbackLabel);
 
         var status = new TextBlock
         { FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, IsVisible = false, Classes = { "muted" } };
         AutomationProperties.SetLiveSetting(status, AutomationLiveSetting.Polite);
 
-        var send = new Button { Content = "Send feedback", IsEnabled = owner.CurrentSettings.UsageAnalytics };
-        AutomationProperties.SetName(send, "Send feedback");
+        var send = new Button { Content = Strings.Settings_SendFeedback, IsEnabled = owner.CurrentSettings.UsageAnalytics };
+        AutomationProperties.SetName(send, Strings.Settings_SendFeedback);
         _feedbackSend = send;   // so the Advanced tab's toggle can follow it
 
         send.Click += async (_, _) =>
@@ -794,7 +816,7 @@ public class SettingsWindow : Window
             // without this the button stays live and a second press queues the
             // same feedback again.
             send.IsEnabled = false;
-            status.Text = "Sending...";
+            status.Text = Strings.Settings_Sending;
             status.IsVisible = true;
             try
             {
@@ -804,9 +826,9 @@ public class SettingsWindow : Window
                 if (await Telemetry.SendFeedbackAsync(box.Text ?? ""))
                 {
                     box.Text = "";
-                    status.Text = "Thank you. That was sent.";
+                    status.Text = Strings.Settings_FeedbackSent;
                 }
-                else status.Text = "That could not be sent. The email link above always works.";
+                else status.Text = Strings.Settings_FeedbackFailed;
             }
             finally { send.IsEnabled = owner.CurrentSettings.UsageAnalytics; }
         };
@@ -819,13 +841,12 @@ public class SettingsWindow : Window
             {
                 new TextBlock
                 {
-                    Text = "Send feedback", FontSize = Size("SubheadSize"),
+                    Text = Strings.Settings_SendFeedback, FontSize = Size("SubheadSize"),
                     FontWeight = FontWeight.Bold, Margin = new Thickness(0, 8, 0, 0),
                 },
                 // One sentence that is true whichever way the toggle sits, so
                 // there is no second piece of state to keep in step with it.
-                Caption("Goes to the developer with your anonymous install ID and nothing else. "
-                      + "Needs usage data turned on, under Advanced. The email link above always works."),
+                Caption(Strings.Settings_FeedbackCaption),
                 box,
                 send,
                 status,

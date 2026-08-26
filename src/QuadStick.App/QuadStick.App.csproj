@@ -23,6 +23,19 @@
     <DefineConstants>$(DefineConstants);TELEMETRY_TOKEN_LOCAL</DefineConstants>
   </PropertyGroup>
 
+  <!-- Every user-facing string. The generator writes a strongly typed
+       Strings class into obj/ at build time, so a renamed key is a compile
+       error, not a blank label at runtime. Translations are Strings.<lang>.resx
+       next to this one; MSBuild turns each into a satellite assembly. -->
+  <ItemGroup>
+    <!-- The pseudo language is a debugging aid, not something to ship. -->
+    <EmbeddedResource Remove="Strings.qps-ploc.resx" Condition="'$(Configuration)' == 'Release'" />
+    <EmbeddedResource Update="Strings.resx" Generator="MSBuild:Compile"
+                      StronglyTypedLanguage="CSharp" StronglyTypedNamespace="QuadStick.App"
+                      StronglyTypedClassName="Strings"
+                      StronglyTypedFileName="$(IntermediateOutputPath)Strings.Designer.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <AvaloniaResource Include="Assets/AppIcon.png" />
     <AvaloniaResource Include="Assets/QuadStick.png" />

@@ -1,0 +1,328 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Count_Binding_one" xml:space="preserve">
+    <value>[{0} bíñdíñg xxxx]</value>
+  </data>
+  <data name="Count_Binding_other" xml:space="preserve">
+    <value>[{0} bíñdíñgš xxxx]</value>
+  </data>
+  <data name="Count_Error_one" xml:space="preserve">
+    <value>[{0} érrór xxx]</value>
+  </data>
+  <data name="Count_Error_other" xml:space="preserve">
+    <value>[{0} érrórš xxxx]</value>
+  </data>
+  <data name="Count_Mapping_one" xml:space="preserve">
+    <value>[{0} máppíñg xxxx]</value>
+  </data>
+  <data name="Count_Mapping_other" xml:space="preserve">
+    <value>[{0} máppíñgš xxxx]</value>
+  </data>
+  <data name="Count_ModeSheet_one" xml:space="preserve">
+    <value>[{0} módé šhéét xxxxx]</value>
+  </data>
+  <data name="Count_ModeSheet_other" xml:space="preserve">
+    <value>[{0} módé šhéétš xxxxxx]</value>
+  </data>
+  <data name="Count_Mode_one" xml:space="preserve">
+    <value>[{0} módé xxx]</value>
+  </data>
+  <data name="Count_Mode_other" xml:space="preserve">
+    <value>[{0} módéš xxx]</value>
+  </data>
+  <data name="Count_Warning_one" xml:space="preserve">
+    <value>[{0} wárñíñg xxxx]</value>
+  </data>
+  <data name="Count_Warning_other" xml:space="preserve">
+    <value>[{0} wárñíñgš xxxx]</value>
+  </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>[Áppéáráñçé xxxx]</value>
+  </data>
+  <data name="Settings_AppearanceHelp" xml:space="preserve">
+    <value>[Áppéáráñçé: çhóóšé Šýštém, Líght, ór Dárk thémé xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_AskCrashes" xml:space="preserve">
+    <value>[Ášk béfóré šéñdíñg á çrášh répórt xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Backup" xml:space="preserve">
+    <value>[Góóglé Drívé báçkúp xxxxxxx]</value>
+  </data>
+  <data name="Settings_BackupCaption" xml:space="preserve">
+    <value>[Évérý tímé ýóú šávé á prófílé, á çópý góéš tó ýóúr ówñ Góóglé Drívé. Ímpórt çópíéš thém báçk óñtó áñý çómpútér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_BackupToggle" xml:space="preserve">
+    <value>[Báçk úp mý prófíléš tó Góóglé Drívé xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_BackupUnavailable" xml:space="preserve">
+    <value>[Thíš búíld íš ñót çóññéçtéd tó Góóglé ýét. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>[Çáñçél xx]</value>
+  </data>
+  <data name="Settings_CancelConnect" xml:space="preserve">
+    <value>[Çáñçél çóññéçtíñg tó Góóglé xxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>[Çhéçk fór úpdátéš xxxxxx]</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>[Çhéçkíñg... xxxx]</value>
+  </data>
+  <data name="Settings_Close" xml:space="preserve">
+    <value>[Çlóšé xx]</value>
+  </data>
+  <data name="Settings_CloseHelp" xml:space="preserve">
+    <value>[Çlóšé šéttíñgš xxxxx]</value>
+  </data>
+  <data name="Settings_Connected" xml:space="preserve">
+    <value>[Çóññéçtéd tó Góóglé Drívé xxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_ContactIntro" xml:space="preserve">
+    <value>[Fóúñd á próblém, ór júšt wáñt tó šáý hélló? Héré íš hów tó réáçh thé péršóñ whó mádé thíš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_CopyInstallId" xml:space="preserve">
+    <value>[Çópý íñštáll ÍD xxxxxx]</value>
+  </data>
+  <data name="Settings_CopyInstallIdHelp" xml:space="preserve">
+    <value>[Çópý thé íñštáll ÍD tó thé çlípbóárd xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_CrashCaption" xml:space="preserve">
+    <value>[Á çrášh šávéš á répórt óñ ýóúr çómpútér. Ñóthíñg íš šéñt úñtíl ýóú šéé ít áñd préšš Šéñd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_EmailHelp" xml:space="preserve">
+    <value>[Šéñd áñ émáíl, ópéñš ýóúr máíl ápp xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_EmailLink" xml:space="preserve">
+    <value>[Émáíl: {0} xxxx]</value>
+  </data>
+  <data name="Settings_FeedbackCaption" xml:space="preserve">
+    <value>[Góéš tó thé dévélópér wíth ýóúr áñóñýmóúš íñštáll ÍD áñd ñóthíñg élšé. Ñéédš úšágé dátá túrñéd óñ, úñdér Ádváñçéd. Thé émáíl líñk ábóvé álwáýš wórkš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_FeedbackFailed" xml:space="preserve">
+    <value>[Thát çóúld ñót bé šéñt. Thé émáíl líñk ábóvé álwáýš wórkš. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_FeedbackLabel" xml:space="preserve">
+    <value>[Ýóúr féédbáçk xxxxx]</value>
+  </data>
+  <data name="Settings_FeedbackSent" xml:space="preserve">
+    <value>[Tháñk ýóú. Thát wáš šéñt. xxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_FeedbackWatermark" xml:space="preserve">
+    <value>[Whát wóúld máké thíš ápp béttér? xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Grouping" xml:space="preserve">
+    <value>[Píçkér gróúpíñg xxxxxx]</value>
+  </data>
+  <data name="Settings_GroupingCaption" xml:space="preserve">
+    <value>[Détáíléd fíléš óútpútš úñdér á çátégórý áñd théñ á gróúp íñšídé ít. Wídé šhówš évérý óútpút íñ á çátégórý át óñçé. Flát íš óñé šéárçháblé líšt. Šéárçh wórkš thé šámé íñ áll thréé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_GroupingHelp" xml:space="preserve">
+    <value>[Píçkér gróúpíñg: Détáíléd, Wídé, ór Flát líštš íñ thé óútpút áñd íñpút píçkérš xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_ImportDrive" xml:space="preserve">
+    <value>[Ímpórt fróm Góóglé Drívé xxxxxxxxx]</value>
+  </data>
+  <data name="Settings_ImportDriveHelp" xml:space="preserve">
+    <value>[Ímpórt ýóúr prófíléš fróm Góóglé Drívé xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>[Láñgúágé xxx]</value>
+  </data>
+  <data name="Settings_LanguageHelp" xml:space="preserve">
+    <value>[Láñgúágé: çhóóšé whíçh láñgúágé thé ápp íš wríttéñ íñ xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_LanguageRestart" xml:space="preserve">
+    <value>[Çlóšé áñd réópéñ thé ápp tó šéé ít íñ thíš láñgúágé. xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>[Šámé áš mý çómpútér xxxxxxx]</value>
+  </data>
+  <data name="Settings_LinkedInHelp" xml:space="preserve">
+    <value>[Ópéñ LíñkédÍñ, ópéñš íñ ýóúr brówšér xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Model" xml:space="preserve">
+    <value>[Défáúlt QúádŠtíçk módél xxxxxxxxx]</value>
+  </data>
+  <data name="Settings_NoInstallId" xml:space="preserve">
+    <value>[Ñó íñštáll ÍD ýét. Óñé íš mádé thé fíršt tímé šóméthíñg íš šéñt. xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_OpenDownload" xml:space="preserve">
+    <value>[Ópéñ thé dówñlóád págé xxxxxxxx]</value>
+  </data>
+  <data name="Settings_OpenDownloadHelp" xml:space="preserve">
+    <value>[Ópéñ thé dówñlóád págé íñ ýóúr brówšér xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_OpenFolder" xml:space="preserve">
+    <value>[Ópéñ šéttíñgš fóldér xxxxxxxx]</value>
+  </data>
+  <data name="Settings_OpenFolderHelp" xml:space="preserve">
+    <value>[Ópéñ thé šéttíñgš fóldér xxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Privacy" xml:space="preserve">
+    <value>[Réád thé príváçý pólíçý xxxxxxxxx]</value>
+  </data>
+  <data name="Settings_PrivacyHelp" xml:space="preserve">
+    <value>[Réád thé príváçý pólíçý, ópéñš íñ ýóúr brówšér xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Privacy_Heading" xml:space="preserve">
+    <value>[Príváçý xx]</value>
+  </data>
+  <data name="Settings_QuickGuide" xml:space="preserve">
+    <value>[Qúíçk gúídé xxxx]</value>
+  </data>
+  <data name="Settings_Reconnect" xml:space="preserve">
+    <value>[Réçóññéçt tó Góóglé xxxxxxx]</value>
+  </data>
+  <data name="Settings_ReconnectShort" xml:space="preserve">
+    <value>[Réçóññéçt xxx]</value>
+  </data>
+  <data name="Settings_ReduceMotion" xml:space="preserve">
+    <value>[Rédúçé mótíóñ xxxxx]</value>
+  </data>
+  <data name="Settings_ReduceMotionCaption" xml:space="preserve">
+    <value>[Túrñš óff thé tútóríál fádé áñímátíóñ. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_RememberWindow" xml:space="preserve">
+    <value>[Rémémbér wíñdów šížé áñd póšítíóñ xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_ReplayTutorial" xml:space="preserve">
+    <value>[Répláý tútóríál xxxxxx]</value>
+  </data>
+  <data name="Settings_ReplayTutorialHelp" xml:space="preserve">
+    <value>[Répláý thé tútóríál xxxxxxx]</value>
+  </data>
+  <data name="Settings_ReportBug" xml:space="preserve">
+    <value>[Répórt á búg óñ GítHúb xxxxxxxx]</value>
+  </data>
+  <data name="Settings_ReportBugHelp" xml:space="preserve">
+    <value>[Répórt á búg óñ GítHúb, ópéñš íñ ýóúr brówšér xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Reset" xml:space="preserve">
+    <value>[Réšét áll šéttíñgš tó défáúltš xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Reverting" xml:space="preserve">
+    <value>[Révértíñg íñ {0}š xxxxxx]</value>
+  </data>
+  <data name="Settings_SaveSize" xml:space="preserve">
+    <value>[Šávé šížé xxx]</value>
+  </data>
+  <data name="Settings_SaveSizeHelp" xml:space="preserve">
+    <value>[Kéép thíš íñtérfáçé šížé xxxxxxxxx]</value>
+  </data>
+  <data name="Settings_Scale" xml:space="preserve">
+    <value>[Íñtérfáçé šížé xxxxx]</value>
+  </data>
+  <data name="Settings_ScaleCaption" xml:space="preserve">
+    <value>[Mákéš áll téxt áñd çóñtrólš lárgér ór šmállér. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_ScaleHelp" xml:space="preserve">
+    <value>[Íñtérfáçé šížé, íñ pérçéñt xxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_SendFeedback" xml:space="preserve">
+    <value>[Šéñd féédbáçk xxxxx]</value>
+  </data>
+  <data name="Settings_Sending" xml:space="preserve">
+    <value>[Šéñdíñg... xxxx]</value>
+  </data>
+  <data name="Settings_ShowTutorial" xml:space="preserve">
+    <value>[Šhów thé tútóríál ñéxt tímé Í ópéñ thé ápp xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_TabAdvanced" xml:space="preserve">
+    <value>[Ádváñçéd xxx]</value>
+  </data>
+  <data name="Settings_TabContact" xml:space="preserve">
+    <value>[Çóñtáçt xx]</value>
+  </data>
+  <data name="Settings_TabGeneral" xml:space="preserve">
+    <value>[Géñérál xx]</value>
+  </data>
+  <data name="Settings_TabHelp" xml:space="preserve">
+    <value>[Hélp x]</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>[Šéttíñgš xxx]</value>
+  </data>
+  <data name="Settings_Updates" xml:space="preserve">
+    <value>[Úpdátéš xx]</value>
+  </data>
+  <data name="Settings_UpdatesCaption" xml:space="preserve">
+    <value>[Thíš ápp dóéš ñót úpdáté ítšélf áñd ñévér çhéçkš óñ ítš ówñ. xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_UsageCaption" xml:space="preserve">
+    <value>[Whíçh šçrééñš gét úšéd áñd whéthér íñštállíñg wórkéd. Ñévér ýóúr prófíléš, fílé ñáméš, páthš, áñýthíñg ýóú týpé, ór ýóúr Góóglé áççóúñt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_UsageData" xml:space="preserve">
+    <value>[Šháré áñóñýmóúš úšágé dátá xxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_WaitingBrowser" xml:space="preserve">
+    <value>[Wáítíñg fór ýóúr brówšér... xxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_WebsiteHelp" xml:space="preserve">
+    <value>[Ópéñ thé wébšíté, ópéñš íñ ýóúr brówšér xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_WebsiteLink" xml:space="preserve">
+    <value>[Wébšíté: {0} xxxx]</value>
+  </data>
+  <data name="Settings_YouAreOn" xml:space="preserve">
+    <value>[Ýóú áré óñ {0}. xxxxxx]</value>
+  </data>
+</root>
