@@ -3,6 +3,7 @@
 
   resx.py add <file.resx> < key<TAB>value lines
   resx.py pseudo <file.resx>     writes Strings.qps-ploc.resx beside it
+  resx.py prefs-pseudo <preferences.json>  the same, for the preference catalog
 
 The pseudo language is English, accented and padded 40%. Run the app in it
 (Settings > Language > Pseudo) and anything still in plain English is a string
@@ -42,14 +43,34 @@ ACCENT = str.maketrans('aeiouAEIOUcnsyzCNSYZ', 'áéíóúÁÉÍÓÚçñšýžÇ
 def pseudo(path):
     tree, have = load(path)
     for key, node in have.items():
-        text = node.find('value').text or ''
-        # {0} and \n mean something to the code, so they survive untouched.
-        parts = re.split(r'(\{\d+[^}]*\}|\\n)', text)
-        body = ''.join(p if i % 2 else p.translate(ACCENT) for i, p in enumerate(parts))
-        pad = 'x' * max(1, int(len(text) * 0.4))
-        node.find('value').text = f'[{body} {pad}]'
+        # {0} means something to the code, so it survives untouched.
+        node.find('value').text = accent(node.find('value').text or '')
     ET.indent(tree, '  ')
     tree.write(path.replace('.resx', '.qps-ploc.resx'), encoding='utf-8', xml_declaration=True)
 
+# preferences.json carries its own prose. Same idea, different file: only the
+# words a person reads are copied out, so a translator never sees a number, a
+# default, or a firmware citation.
+SAID = ('label', 'unit', 'description', 'risk')
+
+def prefs_pseudo(path):
+    import json
+    out = []
+    for p in json.load(open(path)):
+        row = {'name': p['name']}
+        for f in SAID:
+            if p.get(f): row[f] = accent(p[f])
+        if p.get('optionLabels'): row['optionLabels'] = [accent(x) for x in p['optionLabels']]
+        out.append(row)
+    target = path.replace('.json', '.qps-ploc.json')
+    with open(target, 'w') as f:
+        json.dump(out, f, ensure_ascii=False, indent=1)
+        f.write('\n')
+
+def accent(text):
+    parts = re.split(r'(\{\d+[^}]*\})', text)
+    body = ''.join(p if i % 2 else p.translate(ACCENT) for i, p in enumerate(parts))
+    return f'[{body} {"x" * max(1, int(len(text) * 0.4))}]'
+
 if __name__ == '__main__':
-    {'add': add, 'pseudo': pseudo}[sys.argv[1]](sys.argv[2])
+    {'add': add, 'pseudo': pseudo, 'prefs-pseudo': prefs_pseudo}[sys.argv[1]](sys.argv[2])

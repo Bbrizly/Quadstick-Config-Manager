@@ -89,9 +89,74 @@ public static class PreferenceCatalog
     {
         using var s = typeof(PreferenceCatalog).Assembly.GetManifestResourceStream("PreferencesJson")
             ?? throw new InvalidOperationException("Embedded preferences.json missing.");
-        All = Parse(s);
+        All = Translate(Parse(s));
         ByName = All.ToDictionary(d => d.Name, StringComparer.Ordinal);
     }
+
+    /// <summary>Puts the words a person reads into their language, and leaves
+    /// everything else exactly as preferences.json has it.</summary>
+    /// <remarks>
+    /// A translation is Data/preferences.&lt;tag&gt;.json, embedded as
+    /// PreferencesJson.&lt;tag&gt;, holding a name and whichever of label,
+    /// unit, description, risk and optionLabels have been done. A field that
+    /// is missing, or a preference that is not in the file at all, keeps the
+    /// English. Nothing here can reach a device: name, category, editor,
+    /// default, minimum, maximum, options and source are never read from it.
+    ///
+    /// This runs once, when the catalog is first touched, so the language has
+    /// to be set before then. The app does that before its first window.
+    /// </remarks>
+    internal static IReadOnlyList<PreferenceDefinition> TranslateForTest(IReadOnlyList<PreferenceDefinition> english) =>
+        Translate(english);
+
+    static IReadOnlyList<PreferenceDefinition> Translate(IReadOnlyList<PreferenceDefinition> english)
+    {
+        using var stream = TranslationFor(CultureInfo.CurrentUICulture);
+        if (stream is null) return english;
+        using var doc = JsonDocument.Parse(stream);
+        var said = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
+        foreach (var e in doc.RootElement.EnumerateArray())
+            if (e.TryGetProperty("name", out var n) && n.GetString() is { } name) said[name] = e;
+
+        return english.Select(d => said.TryGetValue(d.Name, out var t) ? d with
+        {
+            Label = Word(t, "label", d.Label),
+            Unit = Word(t, "unit", d.Unit),
+            Description = Word(t, "description", d.Description),
+            Risk = Word(t, "risk", d.Risk),
+            OptionLabels = Words(t, "optionLabels", d.OptionLabels),
+        } : d).ToList();
+    }
+
+    static Stream? TranslationFor(CultureInfo c)
+    {
+        var asm = typeof(PreferenceCatalog).Assembly;
+        var have = asm.GetManifestResourceNames();
+        // "pt-BR" before "pt": a regional file wins over the plain language.
+        // Matched without case, because the runtime writes the region half in
+        // its own case ("qps-ploc" comes back as "qps-Ploc") and a file named
+        // for a language should not have to guess which.
+        foreach (var tag in new[] { c.Name, c.TwoLetterISOLanguageName })
+        {
+            if (tag.Length == 0) continue;
+            var want = "PreferencesJson." + tag;
+            var found = Array.Find(have, n => string.Equals(n, want, StringComparison.OrdinalIgnoreCase));
+            if (found is not null) return asm.GetManifestResourceStream(found);
+        }
+        return null;
+    }
+
+    static string Word(JsonElement t, string field, string english) =>
+        t.TryGetProperty(field, out var v) && v.ValueKind == JsonValueKind.String
+            && v.GetString() is { Length: > 0 } said ? said : english;
+
+    // A part-translated option list would put one language's word next to
+    // another's, so it is all of them or none.
+    static IReadOnlyList<string> Words(JsonElement t, string field, IReadOnlyList<string> english) =>
+        t.TryGetProperty(field, out var v) && v.ValueKind == JsonValueKind.Array
+            && v.GetArrayLength() == english.Count
+            ? v.EnumerateArray().Select(x => x.GetString() ?? "").ToList()
+            : english;
 
     /// <summary>Every preference, in the file's order, which groups them by
     /// <see cref="Categories"/>.</summary>
