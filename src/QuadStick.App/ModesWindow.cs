@@ -45,7 +45,10 @@ public class ModesWindow : Window
         Classes.Add("dialog");
         _owner = owner;
         Title = "Modes";
-        Width = Math.Min(620 * owner.UiScale, 1100);
+        // Wide enough for the whole row: the name box, the connection dropdown,
+        // and the four round buttons after them. At 620 the last two were off
+        // the edge with no scrollbar to reach them.
+        Width = Math.Min(740 * owner.UiScale, 1200);
         Height = Math.Min(520 * owner.UiScale, 900);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 

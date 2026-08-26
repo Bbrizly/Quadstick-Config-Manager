@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
@@ -83,6 +84,40 @@ public class ModeChannelTests
         // over a cable is the reason this control needs to say more than a
         // token, so the spoken name carries it.
         Assert.Contains("mouse or keyboard", AutomationProperties.GetName(combos[0]) ?? "", StringComparison.Ordinal);
+
+        modes.Close();
+        w.Close();
+    }
+
+    // The connection dropdown made the row wider than the window and pushed the
+    // copy and delete buttons off the right edge, with no scrollbar to reach
+    // them. A control you cannot see is a control you cannot use.
+    [AvaloniaFact]
+    public void Every_control_on_a_mode_row_is_inside_the_window()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        w.LoadProfile(Load());
+        w.UpdateLayout();
+
+        var modes = new ModesWindow(w);
+        modes.Show();
+        Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+        modes.UpdateLayout();
+
+        foreach (var control in modes.GetVisualDescendants().OfType<Control>()
+                     .Where(c => c is Button or ComboBox or TextBox)
+                     .Where(c => c.Bounds.Width > 0))
+        {
+            var right = control.TranslatePoint(new Point(control.Bounds.Width, 0), modes);
+            Assert.True(right is null || right.Value.X <= modes.Width,
+                $"{AutomationProperties.GetName(control) ?? control.GetType().Name} "
+                + $"reaches {right?.X} on a {modes.Width} wide window");
+        }
 
         modes.Close();
         w.Close();
