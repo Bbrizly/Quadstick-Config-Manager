@@ -65,7 +65,11 @@ public sealed class DriveLink
 
 public static class Settings
 {
-    public static string DefaultPath => Path.Combine(
+    /// <summary>Where settings live. Set to a temp file by the screenshot tool
+    /// and by tests, so neither reads or writes the real per-user file.</summary>
+    public static string? PathOverride { get; set; }
+
+    public static string DefaultPath => PathOverride ?? Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "QuadStickConfigManager", "settings.json");
 
