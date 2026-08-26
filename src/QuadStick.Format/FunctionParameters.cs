@@ -132,7 +132,7 @@ public static class FunctionParameters
         {
             new FunctionParameter("Wait", "milliseconds", 1, Ceiling, "1000 ms",
                 "Waits this long after you activate, then presses."),
-            new FunctionParameter("Then", "1 to latch, or milliseconds", 1, Ceiling, "holds while you hold",
+            new FunctionParameter("Then", "milliseconds", 1, Ceiling, "holds while you hold",
                 "1 latches the output on. Anything above 1 is how long the press lasts."),
         },
 
@@ -143,7 +143,7 @@ public static class FunctionParameters
         {
             new FunctionParameter("Counts as a tap", "milliseconds", 1, Ceiling, "500 ms",
                 "Let go inside this window and it counts as a tap. Hold longer and nothing fires."),
-            new FunctionParameter("Press", "1 to latch, or milliseconds", 1, Ceiling, "100 ms",
+            new FunctionParameter("Press", "milliseconds", 1, Ceiling, "100 ms",
                 "How long the tap presses for. 1 latches the output on instead."),
         },
 
