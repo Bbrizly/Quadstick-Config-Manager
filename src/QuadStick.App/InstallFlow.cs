@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -27,13 +28,13 @@ public partial class MainWindow
         if (_file is null)
         {
             Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.NoProfile);
-            Status("Open a profile first."); return;
+            Status(Strings.Install_OpenAProfileFirst); return;
         }
         _file.Reparse();
         if (_file.HasErrors)
         {
             Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.HasErrors);
-            Status("Fix the errors in the Problems list before installing.", StatusKind.Error); RefreshIssues(); return;
+            Status(Strings.Install_FixTheErrorsInThe, StatusKind.Error); RefreshIssues(); return;
         }
 
         var candidates = Device.FindCandidates();
@@ -46,7 +47,7 @@ public partial class MainWindow
             if (root is null)
             {
                 Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledDevice);
-                Status("Install cancelled."); return;
+                Status(Strings.Install_InstallCancelled); return;
             }
         }
         else if (candidates.Count == 1)
@@ -55,9 +56,9 @@ public partial class MainWindow
         }
         else
         {
-            Status("No QuadStick drive found (a drive with default.csv on it). Pick the drive or a folder manually.");
+            Status(Strings.Install_NoQuadStickDriveFoundA);
             var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-            { Title = "Choose the QuadStick drive" });
+            { Title = Strings.Install_ChooseTheQuadStickDrive });
             if (folders.Count == 0)
             {
                 Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledFolder);
@@ -69,7 +70,7 @@ public partial class MainWindow
         if (!Device.IsInstallTarget(root))
         {
             Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.NotAQuadstick);
-            Status("That folder does not look like a QuadStick (no default.csv at its root).", StatusKind.Error);
+            Status(Strings.Install_ThatFolderDoesNotLook, StatusKind.Error);
             return;
         }
 
@@ -77,12 +78,12 @@ public partial class MainWindow
         if (_file.Document.IsDefaultConfig)
         {
             confirmDefault = await ConfirmAsync(
-                "Overwrite default.csv?",
-                "A wrong default.csv can disable flash-drive access, and recovery needs a physical force-erase. A backup will be made first. Continue?");
+                Strings.Install_OverwriteDefaultCsv,
+                Strings.Install_AWrongDefaultCsvCan);
             if (!confirmDefault)
             {
                 Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledDefault);
-                Status("Install cancelled."); return;
+                Status(Strings.Install_InstallCancelled2); return;
             }
         }
 
@@ -93,13 +94,12 @@ public partial class MainWindow
         if (_file.Document.IsDevicePreferences)
         {
             confirmPrefs = await ConfirmAsync(
-                "Install prefs.csv to this QuadStick?",
-                $"prefs.csv holds the device's own settings, so this changes how the QuadStick behaves in every " +
-                $"profile on {root}, not just one game. The prefs.csv already on the drive is backed up first. Continue?");
+                Strings.Install_InstallPrefsCsvToThis,
+                string.Format(CultureInfo.CurrentCulture, Strings.Install_PrefsCsvHoldsTheDevice, root));
             if (!confirmPrefs)
             {
                 Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledPreferences);
-                Status("Install cancelled."); return;
+                Status(Strings.Install_InstallCancelled3); return;
             }
         }
 
@@ -113,7 +113,7 @@ public partial class MainWindow
         var dialog = new Window
         {
             Classes = { "dialog" },
-            Title = "Installing profile",
+            Title = Strings.Install_InstallingProfile,
             SizeToContent = SizeToContent.WidthAndHeight,
             CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -126,14 +126,14 @@ public partial class MainWindow
         void SetContent(Control content) { host.Children.Clear(); host.Children.Add(content); }
 
         var progressLine = new TextBlock
-        { Text = "Backing up and installing…", FontSize = 15, TextWrapping = TextWrapping.Wrap };
+        { Text = Strings.Install_BackingUpAndInstalling, FontSize = 15, TextWrapping = TextWrapping.Wrap };
         AutomationProperties.SetLiveSetting(progressLine, AutomationLiveSetting.Polite);
         SetContent(new StackPanel
         {
             Spacing = 12,
             Children =
             {
-                new TextBlock { Text = "Installing to", FontWeight = FontWeight.Bold, FontSize = 16 },
+                new TextBlock { Text = Strings.Install_InstallingTo, FontWeight = FontWeight.Bold, FontSize = 16 },
                 new TextBlock { Text = root, FontSize = 15, TextWrapping = TextWrapping.Wrap, Classes = { "muted" } },
                 progressLine,
             },
@@ -145,8 +145,8 @@ public partial class MainWindow
         var dialogTask = dialog.ShowDialog(this);
 
         // Same dismiss button for both outcomes; only one branch ever shows it.
-        var close = new Button { Content = "Close", MinWidth = 140, IsDefault = true, IsCancel = true };
-        AutomationProperties.SetName(close, "Close");
+        var close = new Button { Content = Strings.Install_Close, MinWidth = 140, IsDefault = true, IsCancel = true };
+        AutomationProperties.SetName(close, Strings.Install_Close2);
         close.Click += (_, _) => dialog.Close();
 
         try
@@ -164,8 +164,8 @@ public partial class MainWindow
                     StatusChip(StatusKind.Ready, "Installed"),
                     new TextBlock { Text = Path.GetFileName(result.InstalledPath), FontWeight = FontWeight.Bold,
                                      FontSize = 16, TextWrapping = TextWrapping.Wrap },
-                    new TextBlock { Text = $"Target drive: {root}", FontSize = 15, TextWrapping = TextWrapping.Wrap },
-                    new TextBlock { Text = $"Backup: {result.BackupPath ?? "no previous file to back up"}",
+                    new TextBlock { Text = string.Format(CultureInfo.CurrentCulture, Strings.Install_TargetDriveRoot, root), FontSize = 15, TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = string.Format(CultureInfo.CurrentCulture, Strings.Install_BackupPath, result.BackupPath ?? Strings.Install_NoPreviousFile),
                                      FontSize = 15, TextWrapping = TextWrapping.Wrap, Classes = { "muted" } },
                     close,
                 },
@@ -173,7 +173,7 @@ public partial class MainWindow
             close.Focus();
 
             Telemetry.Track(TelemetryEvent.InstallSucceeded);
-            Status($"Installed {Path.GetFileName(result.InstalledPath)} to {root}.", StatusKind.Ready);
+            Status(string.Format(CultureInfo.CurrentCulture, Strings.Install_InstalledPathGetFileNameResultInstalledPath, Path.GetFileName(result.InstalledPath), root), StatusKind.Ready);
         }
         // Anything at all, not a named few. The panel on screen while the
         // install runs holds no button: `close` is only put in the tree by the
@@ -194,7 +194,7 @@ public partial class MainWindow
                 Spacing = 12,
                 Children =
                 {
-                    StatusChip(StatusKind.Error, "Install failed"),
+                    StatusChip(StatusKind.Error, Strings.Install_InstallFailed),
                     new TextBlock { Text = ex.Message, FontSize = 15, TextWrapping = TextWrapping.Wrap },
                     close,
                 },

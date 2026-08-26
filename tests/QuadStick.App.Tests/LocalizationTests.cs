@@ -25,11 +25,7 @@ public class LocalizationTests
     // it and the branch that reads it.
     static readonly string[] StillEnglish =
     {
-        "CommunityCatalog.cs", "CommunityProfilesWindow.cs", "CustomNames.cs",
-        "DeviceFilesWindow.cs", "DriveBackup.cs", "DriveClient.cs", "DrivePickerWindow.cs",
-        "GoogleAuth.cs", "ImportReviewWindow.cs", "InstallFlow.cs", "MainWindow.axaml.cs",
-        "ModesWindow.cs", "OutputCatalog.cs", "PreferenceEditor.cs", "ShareSetupWindow.cs",
-        "Telemetry.cs", "TokenStore.cs", "TutorialTour.cs", "UpdateCheck.cs",
+        "MainWindow.axaml.cs",
     };
 
     // Text that is right to leave in English, with the reason it is right.
@@ -40,6 +36,14 @@ public class LocalizationTests
         ["Localization.cs"] = new[] { "\"English\"", "\"Pseudo (finds missed text)\"" },
         // A company's name, not a word.
         ["SettingsWindow.cs"] = new[] { "\"LinkedIn\"" },
+        // A Drive search query and an error for whoever is reading the log.
+        ["DriveClient.cs"] = new[]
+        {
+            "\"mimeType='application/vnd.google-apps.spreadsheet' and trashed=false\"",
+            "$\"Drive API returned {(int)status}: {body}\"",
+        },
+        // The page the browser lands on after signing in, around the message.
+        ["GoogleAuth.cs"] = new[] { "$\"<!doctype html><html><body><p>{message}</p></body></html>\"" },
     };
 
     const string Literal = @"\$?@?""(?:[^""\\\n]|\\.)*""";
@@ -100,7 +104,7 @@ public class LocalizationTests
     {
         var used = new HashSet<string>();
         foreach (var f in Directory.GetFiles(SrcDir(), "*.cs"))
-            foreach (Match m in Regex.Matches(File.ReadAllText(f), @"Plural\.Of\([^;]*?""([A-Za-z_]+)""\)"))
+            foreach (Match m in Regex.Matches(File.ReadAllText(f), @"Plural\.(?:Of|Wording)\([^;]*?""([A-Za-z_]+)""\)"))
                 used.Add(m.Groups[1].Value);
 
         Assert.NotEmpty(used);

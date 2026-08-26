@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -64,7 +65,7 @@ public class DeviceFilesWindow : Window
         _owner = owner;
         OpenUri = uri => Launcher.LaunchUriAsync(uri); // this window's own launcher
         Confirm = ConfirmDialogAsync;
-        Title = "Files on your QuadStick";
+        Title = Strings.Device_FilesOnYourQuadStick;
         Width = Math.Min(760 * owner.UiScale, 1100);
         // The shared frame adds a persistent header. Preserve the previous
         // result viewport so a normal three-file drive does not virtualize its
@@ -74,16 +75,13 @@ public class DeviceFilesWindow : Window
 
         var explain = new TextBlock
         {
-            Text = "Everything here reads and writes files on the QuadStick's drive, nothing else. "
-                 + "Files are grouped by the drive they are on, and every action names the drive it will touch. "
-                 + "Deleting keeps a copy in your backup folder first. "
-                 + "default.csv and prefs.csv cannot be deleted, because the device needs them.",
+            Text = Strings.Device_EverythingHereReadsAndWrites,
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         };
 
         _summary = new TextBlock
         {
-            Text = "Looking for your QuadStick...",
+            Text = Strings.Device_LookingForYourQuadStick,
             FontSize = Size("BodySize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         };
 
@@ -102,12 +100,12 @@ public class DeviceFilesWindow : Window
         };
         AutomationProperties.SetLiveSetting(_status, AutomationLiveSetting.Polite);
 
-        _refresh = new Button { Content = "Refresh", MinWidth = 130 };
-        AutomationProperties.SetName(_refresh, "Look for QuadStick drives again and reload the file list");
+        _refresh = new Button { Content = Strings.Device_Refresh, MinWidth = 130 };
+        AutomationProperties.SetName(_refresh, Strings.Device_LookForQuadStickDrivesAgain);
         _refresh.Click += (_, _) => _busy = LoadAsync(refresh: true);
 
-        var close = new Button { Content = "Close", MinWidth = 130, IsCancel = true };
-        AutomationProperties.SetName(close, "Close this window");
+        var close = new Button { Content = Strings.Device_Close, MinWidth = 130, IsCancel = true };
+        AutomationProperties.SetName(close, Strings.Device_CloseThisWindow);
         close.Click += (_, _) => Close();
 
         var buttons = new StackPanel
@@ -160,7 +158,7 @@ public class DeviceFilesWindow : Window
         // never drift apart.
         internal string Line => Colors.Count > 0
             ? $"{Number}. {FileName}: {string.Join(", ", Colors)}"
-            : $"{Number}. {FileName}: no light pattern is documented for this position";
+            : string.Format(CultureInfo.CurrentCulture, Strings.Device_NumberFileNameNoLightPattern, Number, FileName);
     }
 
     // The drive's own name where the system gives us one, so the user reads
@@ -198,7 +196,7 @@ public class DeviceFilesWindow : Window
             // An explicit Refresh must not wait out the detection cache: a
             // stick plugged in a second ago has to show up now.
             Device.InvalidateCandidateCache();
-            _status.Text = "Looking for QuadStick drives again...";
+            _status.Text = Strings.Device_LookingForQuadStickDrivesAgain;
         }
 
         List<DeviceGroup> found;
@@ -214,8 +212,8 @@ public class DeviceFilesWindow : Window
             // window alive and say so.
             _groups.Clear();
             _groupsPanel.Children.Clear();
-            _summary.Text = "Could not look at the drives on this computer.";
-            _status.Text = $"Could not list the drives: {ex.Message} Press Refresh to try again.";
+            _summary.Text = Strings.Device_CouldNotLookAtThe;
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_CouldNotListTheDrives, ex.Message);
             _refresh.IsEnabled = true;
             return;
         }
@@ -245,7 +243,7 @@ public class DeviceFilesWindow : Window
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
             {
                 groups.Add(new DeviceGroup(root, LabelFor(root), Array.Empty<DeviceFileInfo>(),
-                    $"Could not read this drive: {ex.Message}"));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Device_CouldNotReadThisDrive, ex.Message)));
                 continue;
             }
 
@@ -274,7 +272,7 @@ public class DeviceFilesWindow : Window
             // mode nor a set of bindings.
             var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
             subtitle = doc.IsDevicePreferences
-                ? "the device's own settings file"
+                ? Strings.Device_TheDeviceSOwnSettings
                 : MainWindow.TitleNote(doc, path)
                     + $"{Plural.Of(modes.Count, "Count_ModeSheet")}, {Plural.Of(modes.Sum(s => s.Bindings.Count), "Count_Binding")}";
             if (SheetsUrl.TryGetEditUrlFromHeader(doc.HeaderVersion, doc.HeaderSource, out var url))
@@ -282,7 +280,7 @@ public class DeviceFilesWindow : Window
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            subtitle = "could not be read just now";
+            subtitle = Strings.Device_CouldNotBeReadJust;
         }
         // Anything else is the parser itself failing on a file it should have
         // handled, which is a bug here and not a bad file on the stick. The
@@ -291,12 +289,12 @@ public class DeviceFilesWindow : Window
         // of the app quietly blaming a file the user can open and edit.
         catch (Exception ex)
         {
-            CrashGuard.Note(ex, $"reading {name} for the device file list");
-            subtitle = "could not be read as a profile";
+            CrashGuard.Note(ex, string.Format(CultureInfo.CurrentCulture, Strings.Device_ReadingNameForTheDevice, name));
+            subtitle = Strings.Device_CouldNotBeReadAs;
         }
 
         if (name.Equals("default.csv", StringComparison.OrdinalIgnoreCase))
-            subtitle += ", the device's fallback file";
+            subtitle += Strings.Device_TheDeviceSFallbackFile;
         if (isProtected) subtitle += ", protected";
         return new DeviceFileInfo(root, name, path, subtitle, sheetUrl, isProtected);
     }
@@ -309,16 +307,14 @@ public class DeviceFilesWindow : Window
 
         if (_groups.Count == 0)
         {
-            _summary.Text = "No QuadStick drive is plugged in right now. "
-                          + "A QuadStick drive is one with default.csv on it. "
-                          + "On USB emulation mode 6 the drive does not appear at all.";
+            _summary.Text = Strings.Device_NoQuadStickDriveIsPlugged;
             return;
         }
 
         var total = _groups.Sum(g => g.Files.Count);
         _summary.Text = _groups.Count == 1
             ? $"{Files(total)} on {Where(_groups[0])}."
-            : $"{Files(total)} across {_groups.Count} QuadStick drives. Each drive is listed on its own below.";
+            : string.Format(CultureInfo.CurrentCulture, Strings.Device_FilesTotalAcrossGroupsCount, Files(total), _groups.Count);
 
         foreach (var group in _groups)
             _groupsPanel.Children.Add(BuildGroup(group));
@@ -329,14 +325,14 @@ public class DeviceFilesWindow : Window
     Control BuildGroup(DeviceGroup group)
     {
         var stack = new StackPanel { Spacing = 10, Tag = group.Root };
-        AutomationProperties.SetName(stack, $"Files on the QuadStick at {group.Root}");
+        AutomationProperties.SetName(stack, string.Format(CultureInfo.CurrentCulture, Strings.Device_FilesOnTheQuadStickAt, group.Root));
 
         var title = new TextBlock
         {
             Text = Where(group),
             FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
         };
-        AutomationProperties.SetName(title, $"QuadStick drive {group.Label}, at {group.Root}");
+        AutomationProperties.SetName(title, string.Format(CultureInfo.CurrentCulture, Strings.Device_QuadStickDriveGroupLabelAt, group.Label, group.Root));
         stack.Children.Add(title);
 
         if (group.Error is not null)
@@ -353,7 +349,7 @@ public class DeviceFilesWindow : Window
         {
             stack.Children.Add(new TextBlock
             {
-                Text = "This drive has no .csv profiles on it.",
+                Text = Strings.Device_ThisDriveHasNoCsv,
                 FontSize = Size("BodySize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
             });
             return stack;
@@ -362,7 +358,7 @@ public class DeviceFilesWindow : Window
         // One list per drive, so the arrow keys walk that drive's files and an
         // action can never be aimed at the drive next to it.
         var list = new ListBox { SelectionMode = SelectionMode.Single, Tag = group.Root };
-        AutomationProperties.SetName(list, $"Profiles on {group.Label} at {group.Root}, use the arrow keys");
+        AutomationProperties.SetName(list, string.Format(CultureInfo.CurrentCulture, Strings.Device_ProfilesOnGroupLabelAt, group.Label, group.Root));
         list.ItemsSource = group.Files.Select(f => BuildRow(group, f)).ToList();
         stack.Children.Add(list);
 
@@ -381,23 +377,23 @@ public class DeviceFilesWindow : Window
         {
             Text = file.SheetUrl is null
                 ? file.Subtitle
-                : file.Subtitle + ", linked to a Google Sheet",
+                : file.Subtitle + Strings.Device_LinkedToAGoogleSheet,
             FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         };
 
         // Every action is a visible button on the row. Nothing here hides in a
         // right-click menu: a mouth stick cannot right-click.
-        var open = RowButton($"Open {file.Name} from {group.Root} in the editor", "Open");
+        var open = RowButton(string.Format(CultureInfo.CurrentCulture, Strings.Device_OpenFileNameFromGroup, file.Name, group.Root), "Open");
         open.Click += (_, _) => _busy = OpenAsync(group, file);
 
-        var copy = RowButton($"Copy {file.Name} from {group.Root} into your profile library", "Copy to library");
+        var copy = RowButton(string.Format(CultureInfo.CurrentCulture, Strings.Device_CopyFileNameFromGroup, file.Name, group.Root), Strings.Device_CopyToLibrary);
         copy.Click += (_, _) => _busy = CopyToLibraryAsync(group, file);
 
-        var sheet = RowButton($"Open the Google Sheet linked from {file.Name} on {group.Root}", "Open linked Sheet");
+        var sheet = RowButton(string.Format(CultureInfo.CurrentCulture, Strings.Device_OpenTheGoogleSheetLinked, file.Name, group.Root), Strings.Device_OpenLinkedSheet);
         sheet.IsEnabled = file.SheetUrl is not null;
         sheet.Click += (_, _) => _busy = OpenSheetAsync(group, file);
 
-        var delete = RowButton($"Delete {file.Name} from the QuadStick at {group.Root}", "Delete");
+        var delete = RowButton(string.Format(CultureInfo.CurrentCulture, Strings.Device_DeleteFileNameFromThe, file.Name, group.Root), "Delete");
         // The button is off for the two files the device cannot start without.
         // Device.DeleteProfile refuses them too; this only saves the user the
         // trip to a dialog that was always going to say no.
@@ -415,9 +411,9 @@ public class DeviceFilesWindow : Window
         var row = new ListBoxItem { Content = stack, Tag = file };
         // The row says the file, the drive, and why a button is off, so none of
         // that depends on seeing a greyed-out control.
-        var why = file.Protected ? ", protected, it cannot be deleted" : "";
-        if (file.SheetUrl is null) why += ", no linked Google Sheet in its header";
-        AutomationProperties.SetName(row, $"{file.Name} on {group.Label} at {group.Root}, {file.Subtitle}{why}");
+        var why = file.Protected ? Strings.Device_ProtectedItCannotBeDeleted : "";
+        if (file.SheetUrl is null) why += Strings.Device_NoLinkedGoogleSheetIn;
+        AutomationProperties.SetName(row, string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameOnGroupLabel, file.Name, group.Label, group.Root, file.Subtitle, why));
         return row;
     }
 
@@ -449,7 +445,7 @@ public class DeviceFilesWindow : Window
         var head = group is null ? root : Where(group);
         var lines = Guide(root).Select(e => e.Line);
         return string.Join(Environment.NewLine,
-            new[] { $"File selection order on {head}" }.Concat(lines));
+            new[] { string.Format(CultureInfo.CurrentCulture, Strings.Device_FileSelectionOrderOnHead, head) }.Concat(lines));
     }
 
     Control BuildGuide(DeviceGroup group)
@@ -457,14 +453,12 @@ public class DeviceFilesWindow : Window
         var stack = new StackPanel { Spacing = 8 };
         stack.Children.Add(new TextBlock
         {
-            Text = "File selection order and lights",
+            Text = Strings.Device_FileSelectionOrderAndLights,
             FontSize = Size("BodySize"), FontWeight = FontWeight.Bold,
         });
         stack.Children.Add(new TextBlock
         {
-            Text = "Pushing the profile switch steps through the files in this order, and the five lights "
-                 + "show which one is loaded. prefs.csv is settings, not a profile, so it is never in the list. "
-                 + "The colours are written out below as well as shown.",
+            Text = Strings.Device_PushingTheProfileSwitchSteps,
             FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         });
 
@@ -473,11 +467,11 @@ public class DeviceFilesWindow : Window
 
         var copy = new Button
         {
-            Content = "Copy this guide",
+            Content = Strings.Device_CopyThisGuide,
             MinWidth = 150, MinHeight = 34,
             HorizontalAlignment = HorizontalAlignment.Left,
         };
-        AutomationProperties.SetName(copy, $"Copy the file selection guide for {group.Label} at {group.Root} as text");
+        AutomationProperties.SetName(copy, string.Format(CultureInfo.CurrentCulture, Strings.Device_CopyTheFileSelectionGuide, group.Label, group.Root));
         copy.Click += (_, _) => _busy = CopyGuideAsync(group);
         stack.Children.Add(copy);
         return stack;
@@ -492,7 +486,7 @@ public class DeviceFilesWindow : Window
 
         row.Children.Add(new TextBlock
         {
-            Text = $"{entry.Number}. {entry.FileName}",
+            Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_EntryNumberEntryFileName, entry.Number, entry.FileName),
             FontSize = Size("SmallSize"), FontWeight = FontWeight.Bold,
             Margin = new Thickness(0, 0, 10, 4), VerticalAlignment = VerticalAlignment.Center,
         });
@@ -501,7 +495,7 @@ public class DeviceFilesWindow : Window
         {
             row.Children.Add(new TextBlock
             {
-                Text = "no light pattern is documented for this position",
+                Text = Strings.Device_NoLightPatternIsDocumented,
                 FontSize = Size("SmallSize"), Classes = { "muted" },
                 VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap,
             });
@@ -553,17 +547,17 @@ public class DeviceFilesWindow : Window
         var text = GuideText(group.Root);
         if (Clipboard is not { } clipboard)
         {
-            _status.Text = "This computer would not give the app its clipboard, so the guide was not copied.";
+            _status.Text = Strings.Device_ThisComputerWouldNotGive;
             return;
         }
         try
         {
             await clipboard.SetTextAsync(text);
-            _status.Text = $"Copied the file selection guide for {Where(group)} to the clipboard.";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_CopiedTheFileSelectionGuide, Where(group));
         }
         catch (Exception ex)
         {
-            _status.Text = $"Could not copy the guide: {ex.Message}";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_CouldNotCopyTheGuide, ex.Message);
         }
     }
 
@@ -572,12 +566,10 @@ public class DeviceFilesWindow : Window
     async Task OpenAsync(DeviceGroup group, DeviceFileInfo file)
     {
         if (file.Name.Equals("prefs.csv", StringComparison.OrdinalIgnoreCase)
-            && !await Confirm("Edit device preferences?",
-                $"prefs.csv on {Where(group)} holds the QuadStick's own settings, not a game profile. "
-                + "A wrong value here changes how the whole device behaves. "
-                + "Only continue if you know which setting you are changing."))
+            && !await Confirm(Strings.Device_EditDevicePreferences,
+                string.Format(CultureInfo.CurrentCulture, Strings.Device_PrefsCsvOnWhereGroup, Where(group))))
         {
-            _status.Text = $"{file.Name} on {Where(group)} was not opened.";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameOnWhereGroup, file.Name, Where(group));
             return;
         }
 
@@ -588,7 +580,7 @@ public class DeviceFilesWindow : Window
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
         {
-            await ReportGoneAsync($"Could not open {file.Name} from {Where(group)}: {ex.Message}");
+            await ReportGoneAsync(string.Format(CultureInfo.CurrentCulture, Strings.Device_CouldNotOpenFileName, file.Name, Where(group), ex.Message));
             return;
         }
 
@@ -598,7 +590,7 @@ public class DeviceFilesWindow : Window
         }
         catch (Exception ex)
         {
-            _status.Text = $"Could not open {file.Name} from {Where(group)}: {ex.Message}";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_CouldNotOpenFileName2, file.Name, Where(group), ex.Message);
             return;
         }
         // The profile is open in the editor behind this window, so get out of
@@ -611,11 +603,10 @@ public class DeviceFilesWindow : Window
         var dest = Path.Combine(MainWindow.LibraryDir, file.Name);
         var existed = File.Exists(dest);
         if (existed && !await Confirm(
-                $"Replace {file.Name} in your library?",
-                $"Your library already has {file.Name}. Copying {file.Name} from {Where(group)} "
-                + $"will overwrite {dest}. The copy on the QuadStick is not changed either way."))
+                string.Format(CultureInfo.CurrentCulture, Strings.Device_ReplaceFileNameInYour, file.Name),
+                string.Format(CultureInfo.CurrentCulture, Strings.Device_YourLibraryAlreadyHasFile, file.Name, file.Name, Where(group), dest)))
         {
-            _status.Text = $"{file.Name} was not copied. Your library file is unchanged.";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameWasNotCopied, file.Name);
             return;
         }
 
@@ -631,8 +622,7 @@ public class DeviceFilesWindow : Window
             // one, so stop instead of overwriting it in silence.
             if (!existed && File.Exists(dest))
             {
-                _status.Text = $"{file.Name} turned up in your library while the copy was running, "
-                             + $"so {dest} was left alone. Copy it again to replace it.";
+                _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameTurnedUpIn, file.Name, dest);
                 return;
             }
 
@@ -644,30 +634,29 @@ public class DeviceFilesWindow : Window
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
         {
-            await ReportGoneAsync($"Could not copy {file.Name} from {Where(group)}: {ex.Message}");
+            await ReportGoneAsync(string.Format(CultureInfo.CurrentCulture, Strings.Device_CouldNotCopyFileName, file.Name, Where(group), ex.Message));
             return;
         }
 
         _owner.RefreshHomeAfterRestore();
-        _status.Text = $"Copied {file.Name} from {Where(group)} to {dest}. The file on the QuadStick is unchanged.";
+        _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_CopiedFileNameFromWhere, file.Name, Where(group), dest);
     }
 
     async Task OpenSheetAsync(DeviceGroup group, DeviceFileInfo file)
     {
         if (file.SheetUrl is not { } url)
         {
-            _status.Text = $"{file.Name} on {Where(group)} does not name a Google Sheet in its header, "
-                         + "so there is nothing to open.";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameOnWhereGroup2, file.Name, Where(group));
             return;
         }
         try
         {
             await OpenUri(new Uri(url));
-            _status.Text = $"Opened the Google Sheet linked from {file.Name} on {Where(group)} in your browser.";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_OpenedTheGoogleSheetLinked, file.Name, Where(group));
         }
         catch (Exception ex)
         {
-            _status.Text = $"Could not open the sheet in your browser: {ex.Message}";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_CouldNotOpenTheSheet, ex.Message);
         }
     }
 
@@ -678,18 +667,15 @@ public class DeviceFilesWindow : Window
         // Device.DeleteProfile is the third and the real one.
         if (file.Protected)
         {
-            _status.Text = $"{file.Name} on {Where(group)} is protected and cannot be deleted. "
-                         + "Removing it can leave the device unusable.";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameOnWhereGroup3, file.Name, Where(group));
             return;
         }
 
         if (!await Confirm(
                 $"Delete {file.Name} from {group.Label}?",
-                $"{file.Name} will be deleted from the QuadStick at {group.Root}. "
-                + $"A copy is saved in {BackupDir} first, so you can put it back with Install. "
-                + "Nothing else on this or any other drive is touched."))
+                string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameWillBeDeleted, file.Name, group.Root, BackupDir)))
         {
-            _status.Text = $"{file.Name} on {Where(group)} was not deleted.";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameOnWhereGroup4, file.Name, Where(group));
             return;
         }
 
@@ -702,13 +688,13 @@ public class DeviceFilesWindow : Window
         }
         catch (Exception ex)
         {
-            await ReportGoneAsync($"Could not delete {file.Name} from {Where(group)}: {ex.Message}");
+            await ReportGoneAsync(string.Format(CultureInfo.CurrentCulture, Strings.Device_CouldNotDeleteFileName, file.Name, Where(group), ex.Message));
             return;
         }
 
         await LoadAsync();
         _owner.RefreshHomeAfterRestore();
-        _status.Text = $"Deleted {result.DeletedPath}. A copy is saved at {result.BackupPath}.";
+        _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_DeletedResultDeletedPathACopy, result.DeletedPath, result.BackupPath);
     }
 
     // A drive that vanished mid-action is normal for this hardware. Say what
@@ -723,10 +709,10 @@ public class DeviceFilesWindow : Window
 
     async Task<bool> ConfirmDialogAsync(string title, string message)
     {
-        var yes = new Button { Content = "Yes, continue", MinWidth = 140 };
+        var yes = new Button { Content = Strings.Device_YesContinue, MinWidth = 140 };
         AutomationProperties.SetName(yes, title + " Yes, continue.");
-        var no = new Button { Content = "Cancel", MinWidth = 140, IsDefault = true, IsCancel = true };
-        AutomationProperties.SetName(no, "Cancel, change nothing");
+        var no = new Button { Content = Strings.Device_Cancel, MinWidth = 140, IsDefault = true, IsCancel = true };
+        AutomationProperties.SetName(no, Strings.Device_CancelChangeNothing);
         var dialog = new Window
         {
             Classes = { "dialog" },

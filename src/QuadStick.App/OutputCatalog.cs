@@ -21,8 +21,8 @@ public static class OutputCatalog
     // their items flat.
     public static readonly string[] CategoryOrder =
     {
-        "Controller", "Keyboard", "Mouse", "TV remote",
-        "Xbox Adaptive Controller", "Mode switching", "Device settings",
+        "Controller", "Keyboard", "Mouse", Strings.Outputs_TVRemote,
+        "Xbox Adaptive Controller", Strings.Outputs_ModeSwitching, Strings.Outputs_DeviceSettings,
     };
 
     public static readonly IReadOnlyDictionary<string, string[]> SubOrder =
@@ -31,8 +31,8 @@ public static class OutputCatalog
             ["Controller"] = new[] { "Buttons", "D-pad", "Thumbsticks" },
             ["Keyboard"] = new[]
             {
-                "Letters", "Numbers", "Space, Enter, arrows", "Function keys",
-                "Modifier keys", "Number pad", "Other keys",
+                "Letters", "Numbers", "Space, Enter, arrows", Strings.Outputs_FunctionKeys,
+                Strings.Outputs_ModifierKeys, Strings.Outputs_NumberPad, Strings.Outputs_OtherKeys,
             },
         };
 
@@ -62,23 +62,23 @@ public static class OutputCatalog
 
     public static (string Category, string Sub) Classify(string t) => t switch
     {
-        _ when t.StartsWith("kb_keypad_", StringComparison.Ordinal) => ("Keyboard", "Number pad"),
-        _ when Regex.IsMatch(t, "^kb_f([1-9]|1[0-9]|2[0-4])$") => ("Keyboard", "Function keys"),
+        _ when t.StartsWith("kb_keypad_", StringComparison.Ordinal) => ("Keyboard", Strings.Outputs_NumberPad2),
+        _ when Regex.IsMatch(t, "^kb_f([1-9]|1[0-9]|2[0-4])$") => ("Keyboard", Strings.Outputs_FunctionKeys2),
         _ when Regex.IsMatch(t, "^kb_[a-z]$") => ("Keyboard", "Letters"),
         _ when Regex.IsMatch(t, "^kb_[0-9]$") => ("Keyboard", "Numbers"),
         _ when KbEveryday.Contains(t) => ("Keyboard", "Space, Enter, arrows"),
-        _ when KbModifiers.Contains(t) => ("Keyboard", "Modifier keys"),
-        _ when t.StartsWith("kb_", StringComparison.Ordinal) => ("Keyboard", "Other keys"),
+        _ when KbModifiers.Contains(t) => ("Keyboard", Strings.Outputs_ModifierKeys2),
+        _ when t.StartsWith("kb_", StringComparison.Ordinal) => ("Keyboard", Strings.Outputs_OtherKeys2),
         _ when t.StartsWith("mouse_", StringComparison.Ordinal) => ("Mouse", ""),
-        _ when t.StartsWith("ir_", StringComparison.Ordinal) => ("TV remote", ""),
+        _ when t.StartsWith("ir_", StringComparison.Ordinal) => (Strings.Outputs_TVRemote2, ""),
         _ when t.StartsWith("xac_", StringComparison.Ordinal) => ("Xbox Adaptive Controller", ""),
         _ when t.StartsWith("dpad_", StringComparison.Ordinal) => ("Controller", "D-pad"),
         _ when t.StartsWith("left_joy_", StringComparison.Ordinal)
             || t.StartsWith("right_joy_", StringComparison.Ordinal)
             || t is "left_stick" or "right_stick" => ("Controller", "Thumbsticks"),
         _ when ControllerButtons.Contains(t) => ("Controller", "Buttons"),
-        _ when t is "increment_mode" or "decrement_mode" or "load_file" => ("Mode switching", ""),
-        _ => ("Device settings", ""),
+        _ when t is "increment_mode" or "decrement_mode" or "load_file" => (Strings.Outputs_ModeSwitching2, ""),
+        _ => (Strings.Outputs_DeviceSettings2, ""),
     };
 
     public static readonly TokenCatalog Catalog = new(Classify, CategoryOrder, SubOrder);

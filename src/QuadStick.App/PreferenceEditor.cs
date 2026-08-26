@@ -49,10 +49,11 @@ public partial class MainWindow
     // The device reads the same setting names in three places and means
     // something different each time, so the editor has to say which one is on
     // screen. These three phrases are the whole contract; they are read out as
-    // text, never signalled by color alone.
-    internal const string DeviceWideScope = "Device-wide settings";
-    internal const string ProfileScope = "Active while this profile is loaded";
-    internal const string ModeScope = "Active only in this mode";
+    // text, never signalled by color alone. Not const: the words come from the
+    // language the app was started in.
+    internal static readonly string DeviceWideScope = Strings.Prefs_DeviceWideSettings;
+    internal static readonly string ProfileScope = Strings.Prefs_ActiveWhileThisProfileIs;
+    internal static readonly string ModeScope = Strings.Prefs_ActiveOnlyInThisMode;
 
     // A standalone prefs.csv is the device's own settings file, so its
     // Preferences sheet is device-wide. The same sheet inside a game profile
@@ -83,7 +84,7 @@ public partial class MainWindow
             Child = new StackPanel { Spacing = 2, Children = { title, body } },
         };
         BindBrush(box, Border.BackgroundProperty, "SurfaceSubtle");
-        AutomationProperties.SetName(box, $"{phrase}. {explain}");
+        AutomationProperties.SetName(box, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_PhraseExplain, phrase, explain));
         return box;
     }
 
@@ -112,7 +113,7 @@ public partial class MainWindow
     // app describing a sheet it had read perfectly well as something else.
     bool Infrared => CurrentSheet?.Type == SheetType.Infrared;
     string NameColumn => Infrared ? "Command" : "Setting";
-    string ValueColumn => Infrared ? "Hex code" : "Value";
+    string ValueColumn => Infrared ? Strings.Prefs_HexCode : "Value";
 
     // handle, name, value, units, description, delete.
     static string PrefsColumns =>
@@ -138,8 +139,8 @@ public partial class MainWindow
             Children =
             {
                 ScopeBanner(scope, scope == DeviceWideScope
-                    ? "This file is the QuadStick's own settings. Every change here applies to the whole device, in every profile."
-                    : "These settings apply while this profile is the one running, and go back to the device's own settings when another profile loads."),
+                    ? Strings.Prefs_ThisFileIsTheQuadStick
+                    : Strings.Prefs_TheseSettingsApplyWhileThis),
                 p,
             },
         };
@@ -168,13 +169,13 @@ public partial class MainWindow
         // and a Description (column D). The device ignores both, but hiding
         // them here hid the tester's own notes about what each setting does.
         p.Children.Add(At(Mid(SuggestBox(b.Row, 2, _file!.GetCell(b.Row, 2), NoSuggestions,
-            $"{(Infrared ? "Notes" : "Units")} for row {b.Row}", InputTint)), 3));
+            string.Format(CultureInfo.CurrentCulture, Infrared ? Strings.Prefs_NotesForRow : Strings.Prefs_UnitsForRow, b.Row), InputTint)), 3));
         var desc = NoteBox(b.Row, 3,
-            $"{(Infrared ? "Notes" : "Description")} for row {b.Row}. Saved in the file, ignored by the QuadStick");
+            string.Format(CultureInfo.CurrentCulture, Infrared ? Strings.Prefs_NotesForRowSaved : Strings.Prefs_DescriptionForRowSaved, b.Row));
         p.Children.Add(At(Mid(desc), 4));
         var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
-        ToolTip.SetTip(del, "Delete this whole row");
-        AutomationProperties.SetName(del, $"Delete row {b.Row}");
+        ToolTip.SetTip(del, Strings.Prefs_DeleteThisWholeRow);
+        AutomationProperties.SetName(del, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_DeleteRowBRow, b.Row));
         del.Click += (_, _) => DeleteListRow(b);
         p.Children.Add(At(Mid(del), 5));
 
@@ -211,7 +212,7 @@ public partial class MainWindow
             Text = def.Category, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"),
             Margin = new Avalonia.Thickness(RowNumberWidth + 4, 10, 0, 0),
         };
-        AutomationProperties.SetName(text, $"{def.Category} settings");
+        AutomationProperties.SetName(text, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_DefCategorySettings, def.Category));
         return text;
     }
 
@@ -220,7 +221,7 @@ public partial class MainWindow
     Control PrefsNameCell(Binding b, PreferenceDefinition? def)
     {
         var box = SuggestBox(b.Row, 0, b.Output, PreferenceNameSuggestions,
-            $"{NameColumn} name for row {b.Row}", OutputTint,
+            string.Format(CultureInfo.CurrentCulture, Strings.Prefs_NameColumnNameForRowB, NameColumn, b.Row), OutputTint,
             (before, after) => Definition(before) != Definition(after));
         if (def is null) return box;
 
@@ -231,7 +232,7 @@ public partial class MainWindow
             // column out from under its header.
             TextWrapping = TextWrapping.Wrap,
         };
-        AutomationProperties.SetName(label, $"{def.Label}, written as {def.Name}");
+        AutomationProperties.SetName(label, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_DefLabelWrittenAsDef, def.Label, def.Name));
         return new StackPanel { Spacing = 2, Children = { label, box } };
     }
 
@@ -272,7 +273,7 @@ public partial class MainWindow
     // column in each case, so the control has to be told which.
     Border PrefsValueCell(Binding b, PreferenceDefinition? def, int col)
     {
-        var name = $"{(Infrared ? "Hex code" : "Setting value")} for row {b.Row}";
+        var name = string.Format(CultureInfo.CurrentCulture, Infrared ? Strings.Prefs_HexCodeForRow : Strings.Prefs_SettingValueForRow, b.Row);
         var wrapper = new Border
         {
             // Match the thickness RefreshIssues sets on an errored cell, so
@@ -444,9 +445,9 @@ public partial class MainWindow
 
         var parts = new List<string>();
         if (def.Description.Length > 0) parts.Add(def.Description);
-        if (def.Unit.Length > 0) parts.Add($"Measured in {def.Unit}.");
+        if (def.Unit.Length > 0) parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Prefs_MeasuredInDefUnit, def.Unit));
         if (def.Default is { Length: > 0 } suggested)
-            parts.Add($"This is usually set to {suggested}. Your device may hold something else.");
+            parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Prefs_ThisIsUsuallySetTo, suggested));
         if (parts.Count > 0)
         {
             var about = string.Join(" ", parts);
@@ -455,7 +456,7 @@ public partial class MainWindow
                 Text = about, FontSize = Size("SmallSize"), Classes = { "secondary" },
                 TextWrapping = TextWrapping.Wrap, MaxWidth = 700,
             };
-            AutomationProperties.SetName(text, $"About {def.Label}: {about}");
+            AutomationProperties.SetName(text, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_AboutDefLabelAbout, def.Label, about));
             line.Children.Add(text);
         }
 
@@ -464,10 +465,10 @@ public partial class MainWindow
             // "Careful:" carries the warning in words; the color only repeats it.
             var risk = new TextBlock
             {
-                Text = $"Careful: {def.Risk}", FontSize = Size("SmallSize"), Classes = { "warn" },
+                Text = string.Format(CultureInfo.CurrentCulture, Strings.Prefs_CarefulDefRisk, def.Risk), FontSize = Size("SmallSize"), Classes = { "warn" },
                 TextWrapping = TextWrapping.Wrap, MaxWidth = 700,
             };
-            AutomationProperties.SetName(risk, $"Careful, {def.Label}: {def.Risk}");
+            AutomationProperties.SetName(risk, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_CarefulDefLabelDefRisk, def.Label, def.Risk));
             line.Children.Add(risk);
         }
 
@@ -482,14 +483,14 @@ public partial class MainWindow
     {
         var button = new Button
         {
-            Classes = { "quiet" }, Content = "Type an exact value",
+            Classes = { "quiet" }, Content = Strings.Prefs_TypeAnExactValue,
             FontSize = Size("SmallSize"), HorizontalAlignment = HorizontalAlignment.Left,
         };
-        AutomationProperties.SetName(button, $"Type an exact value for {def.Label}");
-        ToolTip.SetTip(button, "Swap the control for a plain box, for a value outside the tested range.");
+        AutomationProperties.SetName(button, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_TypeAnExactValueFor, def.Label));
+        ToolTip.SetTip(button, Strings.Prefs_SwapTheControlForA);
         button.Click += (_, _) =>
         {
-            var box = RawValueBox(row, col, $"Setting value for row {row}");
+            var box = RawValueBox(row, col, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_SettingValueForRowRow, row));
             cell.Child = box;
             button.IsVisible = false;
             Dispatcher.UIThread.Post(() => box.Focus(), DispatcherPriority.Loaded);

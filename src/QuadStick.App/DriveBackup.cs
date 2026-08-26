@@ -29,22 +29,17 @@ public sealed class DriveBackup
     // message, isWarning. Marshalled to the UI thread by the caller.
     readonly Action<string, bool> _status;
 
-    const string ConflictTitle = "Sheet edited online";
+    static readonly string ConflictTitle = Strings.Backup_SheetEditedOnline;
     // The buttons are fixed Yes/Cancel, so the mapping lives in the words.
-    const string ConflictBody =
-        "This profile's Google Sheet was edited online since your last backup. "
-        + "Choose Yes to replace it with your copy (the online edits stay in "
-        + "Drive revision history). Choose Cancel to keep the online version and "
-        + "load it into the editor instead.";
+    static readonly string ConflictBody =
+        Strings.Backup_ThisProfileSGoogleSheet;
 
-    const string RecreateTitle = "Backup sheet not found";
-    const string RecreateBody =
-        "The Google Sheet for this profile could not be found. It may have been "
-        + "deleted or moved to trash. Choose Yes to create a new sheet and back "
-        + "up to it. Choose Cancel to turn backup off for this profile.";
+    static readonly string RecreateTitle = Strings.Backup_BackupSheetNotFound;
+    static readonly string RecreateBody =
+        Strings.Backup_TheGoogleSheetForThis;
 
-    const string PendingMessage = "Backup pending";
-    const string PausedMessage = "Backup paused. Reconnect to Google in Settings.";
+    static readonly string PendingMessage = Strings.Backup_BackupPending;
+    static readonly string PausedMessage = Strings.Backup_BackupPausedReconnectToGoogle;
 
     // One Drive op at a time. A background push and a share-link copy can race
     // on the same unlinked profile and each create a sheet; the gate serializes
@@ -63,7 +58,7 @@ public sealed class DriveBackup
     // rule). Restore checks _trySave itself, since it must also undo the write.
     void SaveState()
     {
-        if (!_trySave()) _status("Could not save backup settings.", true);
+        if (!_trySave()) _status(Strings.Backup_CouldNotSaveBackupSettings, true);
     }
 
     public DriveBackup(
@@ -137,7 +132,7 @@ public sealed class DriveBackup
         {
             if (link != null) link.BackupDirty = true;
             SaveState();
-            _status("The Google Sheet could not be read as a profile, so nothing here was changed.", true);
+            _status(Strings.Backup_TheGoogleSheetCouldNot, true);
             return new PushResult(PushResultKind.Failed);
         }
         catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException)
@@ -284,7 +279,7 @@ public sealed class DriveBackup
         settings.DriveLinks[profilePath] = settings.DriveLinks[oldPath];
         settings.DriveLinks.Remove(oldPath);
         SaveState();
-        _status("Reconnected this profile to its Google Sheet.", false);
+        _status(Strings.Backup_ReconnectedThisProfileToIts, false);
         return true;
     }
 
@@ -336,7 +331,7 @@ public sealed class DriveBackup
             var first = await PushCoreAsync(profilePath, csvText, ct);
             if (first.Kind != PushResultKind.Pushed)
                 return new ShareLinkResult(ShareLinkKind.Failed, null,
-                    "Could not create the Google Sheet, so there is nothing to share yet.");
+                    Strings.Backup_CouldNotCreateTheGoogle);
             link = settings.DriveLinks[profilePath];
         }
         // Step 3: linked but the last backup did not land. Push. If it fails,
@@ -349,10 +344,10 @@ public sealed class DriveBackup
                 keptOnlineCsv = push.DownloadedCsv;
             else if (push.Kind == PushResultKind.RecreatedOff)
                 return new ShareLinkResult(ShareLinkKind.Failed, null,
-                    "Backup was turned off for this profile, so nothing was copied.");
+                    Strings.Backup_BackupWasTurnedOffFor);
             else if (push.Kind is PushResultKind.Failed or PushResultKind.Paused)
                 return new ShareLinkResult(ShareLinkKind.CopiedStale, Url(link.SpreadsheetId),
-                    "Link copied. Your latest changes are not uploaded yet (backup pending).");
+                    Strings.Backup_LinkCopiedYourLatestChanges);
 
             // Re-read link: a 404 push may have created a new sheet.
             link = settings.DriveLinks[profilePath];
@@ -377,12 +372,12 @@ public sealed class DriveBackup
             {
                 // An unshared link is useless, so copy nothing.
                 return new ShareLinkResult(ShareLinkKind.Failed, null,
-                    "Could not turn on link sharing, so nothing was copied.", keptOnlineCsv);
+                    Strings.Backup_CouldNotTurnOnLink, keptOnlineCsv);
             }
         }
 
         // Step 5: hand back the URL for the clipboard.
-        return new ShareLinkResult(ShareLinkKind.Copied, Url(link.SpreadsheetId), "Link copied.", keptOnlineCsv);
+        return new ShareLinkResult(ShareLinkKind.Copied, Url(link.SpreadsheetId), Strings.Backup_LinkCopied, keptOnlineCsv);
     }
 
     // ---- Restore (bulk import from Drive) ----
@@ -451,16 +446,16 @@ public sealed class DriveBackup
                 // not a written-then-broken profile.
                 ProfileFile parsed;
                 try { parsed = ProfileFile.Load(csv); }
-                catch { failed.Add((reportName, "could not read the sheet")); continue; }
+                catch { failed.Add((reportName, Strings.Backup_CouldNotReadTheSheet)); continue; }
                 if (parsed.Document.Sheets.Count == 0)
-                { failed.Add((reportName, "not a valid profile")); continue; }
+                { failed.Add((reportName, Strings.Backup_NotAValidProfile)); continue; }
 
                 var fileName = SafeFileName.ForCsv(pick.Name, batchNames);
                 batchNames.Add(fileName);
                 reportName = Path.GetFileNameWithoutExtension(fileName);
 
                 if (onDisk.Contains(fileName))
-                { skipped.Add((reportName, "already exists")); continue; }
+                { skipped.Add((reportName, Strings.Backup_AlreadyExists)); continue; }
 
                 // Read metadata BEFORE writing the file, so a network failure
                 // lands before the disk has anything to undo: a failed import
@@ -486,7 +481,7 @@ public sealed class DriveBackup
                 {
                     settings.DriveLinks.Remove(dest);
                     try { File.Delete(dest); } catch { /* the write may already be gone */ }
-                    failed.Add((reportName, "could not save the link"));
+                    failed.Add((reportName, Strings.Backup_CouldNotSaveTheLink));
                     continue;
                 }
 
@@ -495,17 +490,17 @@ public sealed class DriveBackup
             }
             catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException or GoogleAuthRevokedException)
             {
-                failed.Add((reportName, "download failed"));
+                failed.Add((reportName, Strings.Backup_DownloadFailed));
             }
             // The download arrived and is not a workbook this reader can open.
             catch (InvalidDataException)
             {
-                failed.Add((reportName, "could not read the sheet"));
+                failed.Add((reportName, Strings.Backup_CouldNotReadTheSheet2));
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
                 // A disk failure on one file must not abort the batch either.
-                failed.Add((reportName, "could not write the file"));
+                failed.Add((reportName, Strings.Backup_CouldNotWriteTheFile));
             }
         }
 

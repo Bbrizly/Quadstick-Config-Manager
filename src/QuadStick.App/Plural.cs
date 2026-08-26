@@ -12,9 +12,11 @@ namespace QuadStick.App;
 static class Plural
 {
     public static string Of(int n, string keyPrefix) =>
-        string.Format(CultureInfo.CurrentCulture, Form(n, keyPrefix), n);
+        string.Format(CultureInfo.CurrentCulture, Wording(n, keyPrefix), n);
 
-    static string Form(int n, string keyPrefix)
+    /// <summary>The wording a count of n takes, for a sentence that does not
+    /// print the number itself.</summary>
+    public static string Wording(int n, string keyPrefix)
     {
         var rm = Strings.ResourceManager;
         var c = CultureInfo.CurrentUICulture;

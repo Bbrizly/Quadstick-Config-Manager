@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -112,18 +113,18 @@ public class GoogleAuth
 
         void Respond(string message)
         {
-            var bytes = Encoding.UTF8.GetBytes($"<!doctype html><html><body><p>{message}</p></body></html>");
+            var bytes = Encoding.UTF8.GetBytes(string.Format(CultureInfo.CurrentCulture, Strings.Auth_DoctypeHtmlHtmlBodyP, message));
             ctx.Response.ContentType = "text/html";
             ctx.Response.ContentLength64 = bytes.Length;
             ctx.Response.OutputStream.Write(bytes, 0, bytes.Length);
             ctx.Response.Close();
         }
 
-        if (q.TryGetValue("error", out var err)) { Respond("Sign-in failed. You can close this tab."); throw new GoogleAuthException(err); }
-        if (!q.TryGetValue("state", out var s) || s != expectedState) { Respond("Sign-in failed. You can close this tab."); throw new GoogleAuthException("state mismatch on the loopback callback"); }
-        if (!q.TryGetValue("code", out var code)) { Respond("Sign-in failed. You can close this tab."); throw new GoogleAuthException("no authorization code on the callback"); }
+        if (q.TryGetValue("error", out var err)) { Respond(Strings.Auth_SignInFailedYouCan); throw new GoogleAuthException(err); }
+        if (!q.TryGetValue("state", out var s) || s != expectedState) { Respond(Strings.Auth_SignInFailedYouCan2); throw new GoogleAuthException("state mismatch on the loopback callback"); }
+        if (!q.TryGetValue("code", out var code)) { Respond(Strings.Auth_SignInFailedYouCan3); throw new GoogleAuthException("no authorization code on the callback"); }
 
-        Respond("You are signed in. You can close this tab.");
+        Respond(Strings.Auth_YouAreSignedInYou);
         return code;
     }
 
@@ -215,5 +216,5 @@ public class GoogleAuthException : Exception
 public class GoogleAuthRevokedException : GoogleAuthException
 {
     public GoogleAuthRevokedException()
-        : base("The Google connection was revoked or expired. Reconnect to keep backing up.") { }
+        : base(Strings.Auth_TheGoogleConnectionWasRevoked) { }
 }

@@ -58,6 +58,195 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Auth_DoctypeHtmlHtmlBodyP" xml:space="preserve">
+    <value>[&lt;!dóçtýpé html&gt;&lt;html&gt;&lt;bódý&gt;&lt;p&gt;{0}&lt;/p&gt;&lt;/bódý&gt;&lt;/html&gt; xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan" xml:space="preserve">
+    <value>[Šígñ-íñ fáíléd. Ýóú çáñ çlóšé thíš táb. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan2" xml:space="preserve">
+    <value>[Šígñ-íñ fáíléd. Ýóú çáñ çlóšé thíš táb. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan3" xml:space="preserve">
+    <value>[Šígñ-íñ fáíléd. Ýóú çáñ çlóšé thíš táb. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Auth_TheGoogleConnectionWasRevoked" xml:space="preserve">
+    <value>[Thé Góóglé çóññéçtíóñ wáš révókéd ór éxpíréd. Réçóññéçt tó kéép báçkíñg úp. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Auth_YouAreSignedInYou" xml:space="preserve">
+    <value>[Ýóú áré šígñéd íñ. Ýóú çáñ çlóšé thíš táb. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_AlreadyExists" xml:space="preserve">
+    <value>[álréádý éxíštš xxxxx]</value>
+  </data>
+  <data name="Backup_BackupPausedReconnectToGoogle" xml:space="preserve">
+    <value>[Báçkúp páúšéd. Réçóññéçt tó Góóglé íñ Šéttíñgš. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_BackupPending" xml:space="preserve">
+    <value>[Báçkúp péñdíñg xxxxx]</value>
+  </data>
+  <data name="Backup_BackupSheetNotFound" xml:space="preserve">
+    <value>[Báçkúp šhéét ñót fóúñd xxxxxxxx]</value>
+  </data>
+  <data name="Backup_BackupWasTurnedOffFor" xml:space="preserve">
+    <value>[Báçkúp wáš túrñéd óff fór thíš prófílé, šó ñóthíñg wáš çópíéd. xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_CouldNotCreateTheGoogle" xml:space="preserve">
+    <value>[Çóúld ñót çréáté thé Góóglé Šhéét, šó théré íš ñóthíñg tó šháré ýét. xxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_CouldNotReadTheSheet" xml:space="preserve">
+    <value>[çóúld ñót réád thé šhéét xxxxxxxxx]</value>
+  </data>
+  <data name="Backup_CouldNotReadTheSheet2" xml:space="preserve">
+    <value>[çóúld ñót réád thé šhéét xxxxxxxxx]</value>
+  </data>
+  <data name="Backup_CouldNotSaveBackupSettings" xml:space="preserve">
+    <value>[Çóúld ñót šávé báçkúp šéttíñgš. xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_CouldNotSaveTheLink" xml:space="preserve">
+    <value>[çóúld ñót šávé thé líñk xxxxxxxxx]</value>
+  </data>
+  <data name="Backup_CouldNotTurnOnLink" xml:space="preserve">
+    <value>[Çóúld ñót túrñ óñ líñk šháríñg, šó ñóthíñg wáš çópíéd. xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_CouldNotWriteTheFile" xml:space="preserve">
+    <value>[çóúld ñót wríté thé fílé xxxxxxxxx]</value>
+  </data>
+  <data name="Backup_DownloadFailed" xml:space="preserve">
+    <value>[dówñlóád fáíléd xxxxxx]</value>
+  </data>
+  <data name="Backup_LinkCopied" xml:space="preserve">
+    <value>[Líñk çópíéd. xxxx]</value>
+  </data>
+  <data name="Backup_LinkCopiedYourLatestChanges" xml:space="preserve">
+    <value>[Líñk çópíéd. Ýóúr látéšt çháñgéš áré ñót úplóádéd ýét (báçkúp péñdíñg). xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_NotAValidProfile" xml:space="preserve">
+    <value>[ñót á válíd prófílé xxxxxxx]</value>
+  </data>
+  <data name="Backup_ReconnectedThisProfileToIts" xml:space="preserve">
+    <value>[Réçóññéçtéd thíš prófílé tó ítš Góóglé Šhéét. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_SheetEditedOnline" xml:space="preserve">
+    <value>[Šhéét édítéd óñlíñé xxxxxxx]</value>
+  </data>
+  <data name="Backup_TheGoogleSheetCouldNot" xml:space="preserve">
+    <value>[Thé Góóglé Šhéét çóúld ñót bé réád áš á prófílé, šó ñóthíñg héré wáš çháñgéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_TheGoogleSheetForThis" xml:space="preserve">
+    <value>[Thé Góóglé Šhéét fór thíš prófílé çóúld ñót bé fóúñd. Ít máý hávé bééñ délétéd ór móvéd tó trášh. Çhóóšé Ýéš tó çréáté á ñéw šhéét áñd báçk úp tó ít. Çhóóšé Çáñçél tó túrñ báçkúp óff fór thíš prófílé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Backup_ThisProfileSGoogleSheet" xml:space="preserve">
+    <value>[Thíš prófílé'š Góóglé Šhéét wáš édítéd óñlíñé šíñçé ýóúr lášt báçkúp. Çhóóšé Ýéš tó répláçé ít wíth ýóúr çópý (thé óñlíñé édítš štáý íñ Drívé révíšíóñ híštórý). Çhóóšé Çáñçél tó kéép thé óñlíñé véršíóñ áñd lóád ít íñtó thé édítór íñštéád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_CheckYourInternetConnectionAnd" xml:space="preserve">
+    <value>[Çhéçk ýóúr íñtérñét çóññéçtíóñ áñd préšš Réfréšh. Évérýthíñg élšé íñ thé ápp wórkš wíthóút thíš líšt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_CheckingQuadstickComForNew" xml:space="preserve">
+    <value>[Çhéçkíñg qúádštíçk.çóm fór ñéw prófíléš... xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_Close" xml:space="preserve">
+    <value>[Çlóšé xx]</value>
+  </data>
+  <data name="Community_CloseThisWindow" xml:space="preserve">
+    <value>[Çlóšé thíš wíñdów xxxxxx]</value>
+  </data>
+  <data name="Community_CommunityProfiles" xml:space="preserve">
+    <value>[Çómmúñítý prófíléš xxxxxxx]</value>
+  </data>
+  <data name="Community_CommunityProfilesUseTheArrow" xml:space="preserve">
+    <value>[Çómmúñítý prófíléš, úšé thé árrów kéýš xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_CouldNotImportPickedName" xml:space="preserve">
+    <value>[Çóúld ñót ímpórt {0}: {1} xxxxxxxxxx]</value>
+  </data>
+  <data name="Community_CouldNotOpenTheSheet" xml:space="preserve">
+    <value>[Çóúld ñót ópéñ thé šhéét íñ ýóúr brówšér: {0} xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_CouldNotReachQuadstickCom" xml:space="preserve">
+    <value>[Çóúld ñót réáçh qúádštíçk.çóm, šó thíš íš štíll thé çópý šávéd óñ thíš çómpútér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_DownloadTheCommunityListAgain" xml:space="preserve">
+    <value>[Dówñlóád thé çómmúñítý líšt ágáíñ xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_GameProfilesOtherQuadStickPlayers" xml:space="preserve">
+    <value>[Gámé prófíléš óthér QúádŠtíçk pláýérš hávé šháréd áš Góóglé Šhéétš. Ópéñíñg thíš wíñdów dówñlóádš thé líšt fróm qúádštíçk.çóm, áñd Réfréšh dówñlóádš ít ágáíñ. Ímpórt ópéñš thé prófílé íñ thé édítór. Ñóthíñg héré wrítéš tó ýóúr QúádŠtíçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_Import" xml:space="preserve">
+    <value>[Ímpórt xx]</value>
+  </data>
+  <data name="Community_ImportTheSelectedProfileInto" xml:space="preserve">
+    <value>[Ímpórt thé šéléçtéd prófílé íñtó thé édítór xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_ImportingPickedName" xml:space="preserve">
+    <value>[Ímpórtíñg {0}... xxxxxx]</value>
+  </data>
+  <data name="Community_LoadingTheCommunityList" xml:space="preserve">
+    <value>[Lóádíñg thé çómmúñítý líšt... xxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_LoadingTheCommunityList2" xml:space="preserve">
+    <value>[Lóádíñg thé çómmúñítý líšt... xxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_NoProfilesMatchQuery" xml:space="preserve">
+    <value>[Ñó prófíléš mátçh "{0}". xxxxxxxxx]</value>
+  </data>
+  <data name="Community_NothingMatchesThatSearchClear" xml:space="preserve">
+    <value>[Ñóthíñg mátçhéš thát šéárçh. Çléár thé šéárçh bóx tó šéé thé whólé líšt. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_OpenInSheets" xml:space="preserve">
+    <value>[Ópéñ íñ Šhéétš xxxxx]</value>
+  </data>
+  <data name="Community_OpenTheSelectedProfileS" xml:space="preserve">
+    <value>[Ópéñ thé šéléçtéd prófílé'š Góóglé Šhéét íñ ýóúr brówšér xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_OpenedThePickedNameSheet" xml:space="preserve">
+    <value>[Ópéñéd thé {0} šhéét íñ ýóúr brówšér. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_PickAProfileFromThe" xml:space="preserve">
+    <value>[Píçk á prófílé fróm thé líšt fíršt. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_PickAProfileFromThe2" xml:space="preserve">
+    <value>[Píçk á prófílé fróm thé líšt fíršt. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_PickedNameIsSelected" xml:space="preserve">
+    <value>[{0} íš šéléçtéd. xxxxxx]</value>
+  </data>
+  <data name="Community_ProfilesCountDownloadedJustNow" xml:space="preserve">
+    <value>[{0}, dówñlóádéd júšt ñów. xxxxxxxxxx]</value>
+  </data>
+  <data name="Community_ProfilesCountFromTheCopy" xml:space="preserve">
+    <value>[{0} fróm thé çópý šávéd óñ thíš çómpútér. Préšš Réfréšh tó çhéçk fór ñéw óñéš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_Refresh" xml:space="preserve">
+    <value>[Réfréšh xx]</value>
+  </data>
+  <data name="Community_SearchByGameFileName" xml:space="preserve">
+    <value>[Šéárçh bý gámé, fílé ñámé, çóñšólé, ór póíñtér xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
+    <value>[Šéárçh thé çómmúñítý prófíléš xxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
+    <value>[Šhówíñg áll {0}. xxxxxx]</value>
+  </data>
+  <data name="Community_ShowingMatchesCountOfAll" xml:space="preserve">
+    <value>[Šhówíñg {0} óf {1} prófíléš mátçhíñg "{2}". xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_SkippedRow_one" xml:space="preserve">
+    <value>[{0} rów wáš škíppéd béçáúšé ít díd ñót ñámé á šháréd Góóglé Šhéét. xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_SkippedRow_other" xml:space="preserve">
+    <value>[{0} rówš wéré škíppéd béçáúšé théý díd ñót ñámé á šháréd Góóglé Šhéét. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_TheCommunityListCouldNot" xml:space="preserve">
+    <value>[Thé çómmúñítý líšt çóúld ñót bé dówñlóádéd, áñd théré íš ñó šávéd çópý óñ thíš çómpútér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_TheCommunityListHasNo" xml:space="preserve">
+    <value>[Thé çómmúñítý líšt háš ñó prófíléš íñ ít ríght ñów. xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Community_TheSavedCopyOfThe" xml:space="preserve">
+    <value>[Thé šávéd çópý óf thé çómmúñítý líšt háš ñó prófíléš íñ ít. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Count_Binding_one" xml:space="preserve">
     <value>[{0} bíñdíñg xxxx]</value>
   </data>
@@ -93,6 +282,915 @@
   </data>
   <data name="Count_Warning_other" xml:space="preserve">
     <value>[{0} wárñíñgš xxxx]</value>
+  </data>
+  <data name="Device_Cancel" xml:space="preserve">
+    <value>[Çáñçél xx]</value>
+  </data>
+  <data name="Device_CancelChangeNothing" xml:space="preserve">
+    <value>[Çáñçél, çháñgé ñóthíñg xxxxxxxx]</value>
+  </data>
+  <data name="Device_Close" xml:space="preserve">
+    <value>[Çlóšé xx]</value>
+  </data>
+  <data name="Device_CloseThisWindow" xml:space="preserve">
+    <value>[Çlóšé thíš wíñdów xxxxxx]</value>
+  </data>
+  <data name="Device_CopiedFileNameFromWhere" xml:space="preserve">
+    <value>[Çópíéd {0} fróm {1} tó {2}. Thé fílé óñ thé QúádŠtíçk íš úñçháñgéd. xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CopiedTheFileSelectionGuide" xml:space="preserve">
+    <value>[Çópíéd thé fílé šéléçtíóñ gúídé fór {0} tó thé çlípbóárd. xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CopyFileNameFromGroup" xml:space="preserve">
+    <value>[Çópý {0} fróm {1} íñtó ýóúr prófílé líbrárý xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CopyTheFileSelectionGuide" xml:space="preserve">
+    <value>[Çópý thé fílé šéléçtíóñ gúídé fór {0} át {1} áš téxt xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CopyThisGuide" xml:space="preserve">
+    <value>[Çópý thíš gúídé xxxxxx]</value>
+  </data>
+  <data name="Device_CopyToLibrary" xml:space="preserve">
+    <value>[Çópý tó líbrárý xxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotBeReadAs" xml:space="preserve">
+    <value>[çóúld ñót bé réád áš á prófílé xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotBeReadJust" xml:space="preserve">
+    <value>[çóúld ñót bé réád júšt ñów xxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotCopyFileName" xml:space="preserve">
+    <value>[Çóúld ñót çópý {0} fróm {1}: {2} xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotCopyTheGuide" xml:space="preserve">
+    <value>[Çóúld ñót çópý thé gúídé: {0} xxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotDeleteFileName" xml:space="preserve">
+    <value>[Çóúld ñót délété {0} fróm {1}: {2} xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotListTheDrives" xml:space="preserve">
+    <value>[Çóúld ñót líšt thé drívéš: {0} Préšš Réfréšh tó trý ágáíñ. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotLookAtThe" xml:space="preserve">
+    <value>[Çóúld ñót lóók át thé drívéš óñ thíš çómpútér. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotOpenFileName" xml:space="preserve">
+    <value>[Çóúld ñót ópéñ {0} fróm {1}: {2} xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotOpenFileName2" xml:space="preserve">
+    <value>[Çóúld ñót ópéñ {0} fróm {1}: {2} xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotOpenTheSheet" xml:space="preserve">
+    <value>[Çóúld ñót ópéñ thé šhéét íñ ýóúr brówšér: {0} xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_CouldNotReadThisDrive" xml:space="preserve">
+    <value>[Çóúld ñót réád thíš drívé: {0} xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
+    <value>[Délété {0} fróm thé QúádŠtíçk át {1} xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_DeletedResultDeletedPathACopy" xml:space="preserve">
+    <value>[Délétéd {0}. Á çópý íš šávéd át {1}. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_EditDevicePreferences" xml:space="preserve">
+    <value>[Édít dévíçé préféréñçéš? xxxxxxxxx]</value>
+  </data>
+  <data name="Device_EntryNumberEntryFileName" xml:space="preserve">
+    <value>[{0}. {1} xxx]</value>
+  </data>
+  <data name="Device_EverythingHereReadsAndWrites" xml:space="preserve">
+    <value>[Évérýthíñg héré réádš áñd wrítéš fíléš óñ thé QúádŠtíçk'š drívé, ñóthíñg élšé. Fíléš áré gróúpéd bý thé drívé théý áré óñ, áñd évérý áçtíóñ ñáméš thé drívé ít wíll tóúçh. Délétíñg kéépš á çópý íñ ýóúr báçkúp fóldér fíršt. défáúlt.çšv áñd préfš.çšv çáññót bé délétéd, béçáúšé thé dévíçé ñéédš thém. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileNameOnGroupLabel" xml:space="preserve">
+    <value>[{0} óñ {1} át {2}, {3}{4} xxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup" xml:space="preserve">
+    <value>[{0} óñ {1} wáš ñót ópéñéd. xxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup2" xml:space="preserve">
+    <value>[{0} óñ {1} dóéš ñót ñámé á Góóglé Šhéét íñ ítš héádér, šó théré íš ñóthíñg tó ópéñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup3" xml:space="preserve">
+    <value>[{0} óñ {1} íš prótéçtéd áñd çáññót bé délétéd. Rémóvíñg ít çáñ léávé thé dévíçé úñúšáblé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup4" xml:space="preserve">
+    <value>[{0} óñ {1} wáš ñót délétéd. xxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileNameTurnedUpIn" xml:space="preserve">
+    <value>[{0} túrñéd úp íñ ýóúr líbrárý whílé thé çópý wáš rúññíñg, šó {1} wáš léft álóñé. Çópý ít ágáíñ tó répláçé ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileNameWasNotCopied" xml:space="preserve">
+    <value>[{0} wáš ñót çópíéd. Ýóúr líbrárý fílé íš úñçháñgéd. xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileNameWillBeDeleted" xml:space="preserve">
+    <value>[{0} wíll bé délétéd fróm thé QúádŠtíçk át {1}. Á çópý íš šávéd íñ {2} fíršt, šó ýóú çáñ pút ít báçk wíth Íñštáll. Ñóthíñg élšé óñ thíš ór áñý óthér drívé íš tóúçhéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileSelectionOrderAndLights" xml:space="preserve">
+    <value>[Fílé šéléçtíóñ órdér áñd líghtš xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FileSelectionOrderOnHead" xml:space="preserve">
+    <value>[Fílé šéléçtíóñ órdér óñ {0} xxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FilesOnTheQuadStickAt" xml:space="preserve">
+    <value>[Fíléš óñ thé QúádŠtíçk át {0} xxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_FilesOnYourQuadStick" xml:space="preserve">
+    <value>[Fíléš óñ ýóúr QúádŠtíçk xxxxxxxxx]</value>
+  </data>
+  <data name="Device_FilesTotalAcrossGroupsCount" xml:space="preserve">
+    <value>[{0} áçróšš {1} QúádŠtíçk drívéš. Éáçh drívé íš líštéd óñ ítš ówñ bélów. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_LinkedToAGoogleSheet" xml:space="preserve">
+    <value>[, líñkéd tó á Góóglé Šhéét xxxxxxxxxx]</value>
+  </data>
+  <data name="Device_LookForQuadStickDrivesAgain" xml:space="preserve">
+    <value>[Lóók fór QúádŠtíçk drívéš ágáíñ áñd rélóád thé fílé líšt xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_LookingForQuadStickDrivesAgain" xml:space="preserve">
+    <value>[Lóókíñg fór QúádŠtíçk drívéš ágáíñ... xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_LookingForYourQuadStick" xml:space="preserve">
+    <value>[Lóókíñg fór ýóúr QúádŠtíçk... xxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
+    <value>[ñó líght páttérñ íš dóçúméñtéd fór thíš póšítíóñ xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_NoLinkedGoogleSheetIn" xml:space="preserve">
+    <value>[, ñó líñkéd Góóglé Šhéét íñ ítš héádér xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_NoQuadStickDriveIsPlugged" xml:space="preserve">
+    <value>[Ñó QúádŠtíçk drívé íš plúggéd íñ ríght ñów. Á QúádŠtíçk drívé íš óñé wíth défáúlt.çšv óñ ít. Óñ ÚŠB émúlátíóñ módé 6 thé drívé dóéš ñót áppéár át áll. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_NumberFileNameNoLightPattern" xml:space="preserve">
+    <value>[{0}. {1}: ñó líght páttérñ íš dóçúméñtéd fór thíš póšítíóñ xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_OpenFileNameFromGroup" xml:space="preserve">
+    <value>[Ópéñ {0} fróm {1} íñ thé édítór xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_OpenLinkedSheet" xml:space="preserve">
+    <value>[Ópéñ líñkéd Šhéét xxxxxx]</value>
+  </data>
+  <data name="Device_OpenTheGoogleSheetLinked" xml:space="preserve">
+    <value>[Ópéñ thé Góóglé Šhéét líñkéd fróm {0} óñ {1} xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_OpenedTheGoogleSheetLinked" xml:space="preserve">
+    <value>[Ópéñéd thé Góóglé Šhéét líñkéd fróm {0} óñ {1} íñ ýóúr brówšér. xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_PrefsCsvOnWhereGroup" xml:space="preserve">
+    <value>[préfš.çšv óñ {0} hóldš thé QúádŠtíçk'š ówñ šéttíñgš, ñót á gámé prófílé. Á wróñg válúé héré çháñgéš hów thé whólé dévíçé béhávéš. Óñlý çóñtíñúé íf ýóú kñów whíçh šéttíñg ýóú áré çháñgíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_ProfilesOnGroupLabelAt" xml:space="preserve">
+    <value>[Prófíléš óñ {0} át {1}, úšé thé árrów kéýš xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_ProtectedItCannotBeDeleted" xml:space="preserve">
+    <value>[, prótéçtéd, ít çáññót bé délétéd xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_PushingTheProfileSwitchSteps" xml:space="preserve">
+    <value>[Púšhíñg thé prófílé šwítçh štépš thróúgh thé fíléš íñ thíš órdér, áñd thé fívé líghtš šhów whíçh óñé íš lóádéd. préfš.çšv íš šéttíñgš, ñót á prófílé, šó ít íš ñévér íñ thé líšt. Thé çólóúrš áré wríttéñ óút bélów áš wéll áš šhówñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_QuadStickDriveGroupLabelAt" xml:space="preserve">
+    <value>[QúádŠtíçk drívé {0}, át {1} xxxxxxxxxx]</value>
+  </data>
+  <data name="Device_ReadingNameForTheDevice" xml:space="preserve">
+    <value>[réádíñg {0} fór thé dévíçé fílé líšt xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_Refresh" xml:space="preserve">
+    <value>[Réfréšh xx]</value>
+  </data>
+  <data name="Device_ReplaceFileNameInYour" xml:space="preserve">
+    <value>[Répláçé {0} íñ ýóúr líbrárý? xxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_TheDeviceSFallbackFile" xml:space="preserve">
+    <value>[, thé dévíçé'š fállbáçk fílé xxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_TheDeviceSOwnSettings" xml:space="preserve">
+    <value>[thé dévíçé'š ówñ šéttíñgš fílé xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_ThisComputerWouldNotGive" xml:space="preserve">
+    <value>[Thíš çómpútér wóúld ñót gívé thé ápp ítš çlípbóárd, šó thé gúídé wáš ñót çópíéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_ThisDriveHasNoCsv" xml:space="preserve">
+    <value>[Thíš drívé háš ñó .çšv prófíléš óñ ít. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_YesContinue" xml:space="preserve">
+    <value>[Ýéš, çóñtíñúé xxxxx]</value>
+  </data>
+  <data name="Device_YourLibraryAlreadyHasFile" xml:space="preserve">
+    <value>[Ýóúr líbrárý álréádý háš {0}. Çópýíñg {1} fróm {2} wíll óvérwríté {3}. Thé çópý óñ thé QúádŠtíçk íš ñót çháñgéd éíthér wáý. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DrivePick_AlreadyInYourProfiles" xml:space="preserve">
+    <value>[  (álréádý íñ ýóúr prófíléš) xxxxxxxxxxx]</value>
+  </data>
+  <data name="DrivePick_Close" xml:space="preserve">
+    <value>[Çlóšé xx]</value>
+  </data>
+  <data name="DrivePick_CloseThisWindow" xml:space="preserve">
+    <value>[Çlóšé thíš wíñdów xxxxxx]</value>
+  </data>
+  <data name="DrivePick_CouldNotLoadYourBackups" xml:space="preserve">
+    <value>[Çóúld ñót lóád ýóúr báçkúpš:  xxxxxxxxxxx]</value>
+  </data>
+  <data name="DrivePick_Import" xml:space="preserve">
+    <value>[Ímpórt xx]</value>
+  </data>
+  <data name="DrivePick_ImportFailed" xml:space="preserve">
+    <value>[Ímpórt fáíléd:  xxxxxx]</value>
+  </data>
+  <data name="DrivePick_ImportFromGoogleDrive" xml:space="preserve">
+    <value>[Ímpórt fróm Góóglé Drívé xxxxxxxxx]</value>
+  </data>
+  <data name="DrivePick_ImportTheSelectedProfiles" xml:space="preserve">
+    <value>[Ímpórt thé šéléçtéd prófíléš xxxxxxxxxxx]</value>
+  </data>
+  <data name="DrivePick_Importing" xml:space="preserve">
+    <value>[Ímpórtíñg... xxxx]</value>
+  </data>
+  <data name="DrivePick_LoadingYourBackups" xml:space="preserve">
+    <value>[Lóádíñg ýóúr báçkúpš... xxxxxxxxx]</value>
+  </data>
+  <data name="DrivePick_NoBackupsFoundInYour" xml:space="preserve">
+    <value>[Ñó báçkúpš fóúñd íñ ýóúr Góóglé Drívé ýét. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DrivePick_NothingSelectedToImport" xml:space="preserve">
+    <value>[Ñóthíñg šéléçtéd tó ímpórt. xxxxxxxxxx]</value>
+  </data>
+  <data name="DrivePick_PickTheProfilesToCopy" xml:space="preserve">
+    <value>[Píçk thé prófíléš tó çópý óñtó thíš çómpútér. Óñlý thé šhéétš thíš ápp báçkéd úp áré líštéd. Óñéš álréádý íñ ýóúr prófíléš áré gréýéd óút. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
+    <value>[Ýóúr Góóglé Drívé báçkúpš xxxxxxxxxx]</value>
+  </data>
+  <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
+    <value>[Á wróñg défáúlt.çšv çáñ díšáblé flášh-drívé áççéšš, áñd réçóvérý ñéédš á phýšíçál fórçé-érášé. Á báçkúp wíll bé mádé fíršt. Çóñtíñúé? xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Install_BackingUpAndInstalling" xml:space="preserve">
+    <value>[Báçkíñg úp áñd íñštállíñg… xxxxxxxxxx]</value>
+  </data>
+  <data name="Install_BackupPath" xml:space="preserve">
+    <value>[Báçkúp: {0} xxxx]</value>
+  </data>
+  <data name="Install_ChooseTheQuadStickDrive" xml:space="preserve">
+    <value>[Çhóóšé thé QúádŠtíçk drívé xxxxxxxxxx]</value>
+  </data>
+  <data name="Install_Close" xml:space="preserve">
+    <value>[Çlóšé xx]</value>
+  </data>
+  <data name="Install_Close2" xml:space="preserve">
+    <value>[Çlóšé xx]</value>
+  </data>
+  <data name="Install_FixTheErrorsInThe" xml:space="preserve">
+    <value>[Fíx thé érrórš íñ thé Próblémš líšt béfóré íñštállíñg. xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Install_InstallCancelled" xml:space="preserve">
+    <value>[Íñštáll çáñçélléd. xxxxxxx]</value>
+  </data>
+  <data name="Install_InstallCancelled2" xml:space="preserve">
+    <value>[Íñštáll çáñçélléd. xxxxxxx]</value>
+  </data>
+  <data name="Install_InstallCancelled3" xml:space="preserve">
+    <value>[Íñštáll çáñçélléd. xxxxxxx]</value>
+  </data>
+  <data name="Install_InstallFailed" xml:space="preserve">
+    <value>[Íñštáll fáíléd xxxxx]</value>
+  </data>
+  <data name="Install_InstallPrefsCsvToThis" xml:space="preserve">
+    <value>[Íñštáll préfš.çšv tó thíš QúádŠtíçk? xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Install_InstalledPathGetFileNameResultInstalledPath" xml:space="preserve">
+    <value>[Íñštálléd {0} tó {1}. xxxxxxxx]</value>
+  </data>
+  <data name="Install_InstallingProfile" xml:space="preserve">
+    <value>[Íñštállíñg prófílé xxxxxxx]</value>
+  </data>
+  <data name="Install_InstallingTo" xml:space="preserve">
+    <value>[Íñštállíñg tó xxxxx]</value>
+  </data>
+  <data name="Install_NoPreviousFile" xml:space="preserve">
+    <value>[ñó prévíóúš fílé tó báçk úp xxxxxxxxxx]</value>
+  </data>
+  <data name="Install_NoQuadStickDriveFoundA" xml:space="preserve">
+    <value>[Ñó QúádŠtíçk drívé fóúñd (á drívé wíth défáúlt.çšv óñ ít). Píçk thé drívé ór á fóldér máñúállý. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Install_OpenAProfileFirst" xml:space="preserve">
+    <value>[Ópéñ á prófílé fíršt. xxxxxxxx]</value>
+  </data>
+  <data name="Install_OverwriteDefaultCsv" xml:space="preserve">
+    <value>[Óvérwríté défáúlt.çšv? xxxxxxxx]</value>
+  </data>
+  <data name="Install_PrefsCsvHoldsTheDevice" xml:space="preserve">
+    <value>[préfš.çšv hóldš thé dévíçé'š ówñ šéttíñgš, šó thíš çháñgéš hów thé QúádŠtíçk béhávéš íñ évérý prófílé óñ {0}, ñót júšt óñé gámé. Thé préfš.çšv álréádý óñ thé drívé íš báçkéd úp fíršt. Çóñtíñúé? xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Install_TargetDriveRoot" xml:space="preserve">
+    <value>[Tárgét drívé: {0} xxxxxx]</value>
+  </data>
+  <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
+    <value>[Thát fóldér dóéš ñót lóók líké á QúádŠtíçk (ñó défáúlt.çšv át ítš róót). xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_AModeIsAFull" xml:space="preserve">
+    <value>[Á módé íš á fúll láýóút óf ýóúr íñpútš. Šwítçh bétwééñ thém whílé pláýíñg wíth thé šídé túbé, ór wíth íñçréméñt_módé áñd déçréméñt_módé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_AModeNeedsAName" xml:space="preserve">
+    <value>[Á módé ñéédš á ñámé. Thé óld óñé íš štíll théré. xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_AddAMode" xml:space="preserve">
+    <value>[Ádd á módé xxxx]</value>
+  </data>
+  <data name="Modes_AddAPreferencesSheet" xml:space="preserve">
+    <value>[+ Ádd á préféréñçéš šhéét xxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_AddAPreferencesSheetWhere" xml:space="preserve">
+    <value>[Ádd á préféréñçéš šhéét, whéré dévíçé šéttíñgš líké šíp áñd púff préššúré lívé xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_AddMode" xml:space="preserve">
+    <value>[+ Ádd módé xxxx]</value>
+  </data>
+  <data name="Modes_CloseModes" xml:space="preserve">
+    <value>[Çlóšé módéš xxxx]</value>
+  </data>
+  <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
+    <value>[Çóññéçtíóñ çléáréd. Thé dévíçé fállš báçk tó thé ÚŠB çáblé. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_ConnectionForModeOrdinalWhere" xml:space="preserve">
+    <value>[Çóññéçtíóñ fór módé {0}. Whéré thíš módé'š búttóñ préššéš gó. Á módé óñ Blúétóóth álóñé šéñdš ñó móúšé ór kéýbóárd óvér á çáblé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_ConnectionSetToPickedItem2" xml:space="preserve">
+    <value>[Çóññéçtíóñ šét tó {0}. xxxxxxxx]</value>
+  </data>
+  <data name="Modes_Done" xml:space="preserve">
+    <value>[Dóñé x]</value>
+  </data>
+  <data name="Modes_MakeACopyOfName" xml:space="preserve">
+    <value>[Máké á çópý óf {0} xxxxxxx]</value>
+  </data>
+  <data name="Modes_ModeAdded" xml:space="preserve">
+    <value>[Módé áddéd. xxxx]</value>
+  </data>
+  <data name="Modes_ModeCopied" xml:space="preserve">
+    <value>[Módé çópíéd. xxxx]</value>
+  </data>
+  <data name="Modes_ModeDeletedControlZUndoes" xml:space="preserve">
+    <value>[Módé délétéd. Çóñtról Ž úñdóéš ít. xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_ModeMoved" xml:space="preserve">
+    <value>[Módé móvéd. xxxx]</value>
+  </data>
+  <data name="Modes_ModeRenamed" xml:space="preserve">
+    <value>[Módé réñáméd. xxxxx]</value>
+  </data>
+  <data name="Modes_Modes" xml:space="preserve">
+    <value>[Módéš xx]</value>
+  </data>
+  <data name="Modes_NameOfModeOrdinal" xml:space="preserve">
+    <value>[Ñámé óf módé {0} xxxxxx]</value>
+  </data>
+  <data name="Modes_NeitherSendsNothing" xml:space="preserve">
+    <value>[Ñéíthér, šéñdš ñóthíñg xxxxxxxx]</value>
+  </data>
+  <data name="Modes_NotSetUSBCable" xml:space="preserve">
+    <value>[Ñót šét (ÚŠB çáblé) xxxxxxx]</value>
+  </data>
+  <data name="Modes_Position1" xml:space="preserve">
+    <value>[{0}. x]</value>
+  </data>
+  <data name="Modes_PreferencesDeviceSettings" xml:space="preserve">
+    <value>[Préféréñçéš (dévíçé šéttíñgš) xxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_PreferencesSheetRemovedControlZ" xml:space="preserve">
+    <value>[Préféréñçéš šhéét rémóvéd. Çóñtról Ž úñdóéš ít. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_ReallyDelete" xml:space="preserve">
+    <value>[Réállý délété? xxxxx]</value>
+  </data>
+  <data name="Modes_ReallyDeleteName" xml:space="preserve">
+    <value>[Réállý délété {0} xxxxxx]</value>
+  </data>
+  <data name="Modes_SheetChannelNotAWord" xml:space="preserve">
+    <value>[{0} (ñót á wórd thé dévíçé kñówš) xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Modes_ThePreferencesSheet" xml:space="preserve">
+    <value>[thé préféréñçéš šhéét xxxxxxxx]</value>
+  </data>
+  <data name="Modes_USBAndBluetooth" xml:space="preserve">
+    <value>[ÚŠB áñd Blúétóóth xxxxxx]</value>
+  </data>
+  <data name="Modes_USBCable" xml:space="preserve">
+    <value>[ÚŠB çáblé xxx]</value>
+  </data>
+  <data name="Names_ANameHasToBe" xml:space="preserve">
+    <value>[Á ñámé háš tó bé 1 tó {0} çháráçtérš. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Names_AnOutput" xml:space="preserve">
+    <value>[áñ óútpút xxx]</value>
+  </data>
+  <data name="Names_CustomOutputNames" xml:space="preserve">
+    <value>[Çúštóm óútpút ñáméš xxxxxxx]</value>
+  </data>
+  <data name="Names_MappingNowReal_one" xml:space="preserve">
+    <value>[{0} máppíñg ñów šhówš thé réál búttóñ. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Names_MappingNowReal_other" xml:space="preserve">
+    <value>[{0} máppíñgš ñów šhów thé réál búttóñ. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Names_NameIsAlreadyWhatThe" xml:space="preserve">
+    <value>["{0}" íš álréádý whát thé QúádŠtíçk çállš óñé óf ítš ówñ búttóñš. Píçk á dífféréñt wórd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Names_NameIsNowHumanizeToken" xml:space="preserve">
+    <value>[{0} íš ñów {1}. xxxxxx]</value>
+  </data>
+  <data name="Names_NewName" xml:space="preserve">
+    <value>[Ñéw ñámé xxx]</value>
+  </data>
+  <data name="Names_NewNameI" xml:space="preserve">
+    <value>[Ñéw ñámé {0} xxxx]</value>
+  </data>
+  <data name="Names_NoNamesYetClickAdd" xml:space="preserve">
+    <value>[Ñó ñáméš ýét. Çlíçk "Ádd rów", píçk áñ óútpút, áñd týpé ýóúr ówñ wórd fór ít. Thát wórd théñ šhówš úp át thé tóp óf évérý óútpút píçkér, úñdér Çúštóm. Thé fílé štíll hóldš thé réál búttóñ, šó thé QúádŠtíçk wórkš thé šámé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Names_NotUsedYet" xml:space="preserve">
+    <value>[ñót úšéd ýét xxxx]</value>
+  </data>
+  <data name="Names_OpenOrCreateAProfile" xml:space="preserve">
+    <value>[Ópéñ ór çréáté á prófílé fíršt. xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Names_OutputRealButton" xml:space="preserve">
+    <value>[Óútpút (réál búttóñ) xxxxxxxx]</value>
+  </data>
+  <data name="Names_OutputThatNameStandsFor" xml:space="preserve">
+    <value>[Óútpút thát {0} štáñdš fór xxxxxxxxxx]</value>
+  </data>
+  <data name="Names_PickTheOutputThenType" xml:space="preserve">
+    <value>[Píçk thé óútpút, théñ týpé ýóúr ówñ ñámé fór ít. xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Names_RemoveTheNameName" xml:space="preserve">
+    <value>[Rémóvé thé ñámé {0} xxxxxxx]</value>
+  </data>
+  <data name="Names_RemoveThisName" xml:space="preserve">
+    <value>[Rémóvé thíš ñámé xxxxxx]</value>
+  </data>
+  <data name="Names_Removed" xml:space="preserve">
+    <value>[Rémóvéd {0}. xxxx]</value>
+  </data>
+  <data name="Names_ThisProfileAlreadyHasA" xml:space="preserve">
+    <value>[Thíš prófílé álréádý háš á ñámé çálléd "{0}". xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Names_YourNameForHumanizeToken" xml:space="preserve">
+    <value>[Ýóúr ñámé fór {0} xxxxxx]</value>
+  </data>
+  <data name="Names_YourNameForIt" xml:space="preserve">
+    <value>[Ýóúr ñámé fór ít xxxxxx]</value>
+  </data>
+  <data name="Names_YourNameForThisOutput" xml:space="preserve">
+    <value>[Ýóúr ñámé fór thíš óútpút xxxxxxxxxx]</value>
+  </data>
+  <data name="Outputs_DeviceSettings" xml:space="preserve">
+    <value>[Dévíçé šéttíñgš xxxxxx]</value>
+  </data>
+  <data name="Outputs_DeviceSettings2" xml:space="preserve">
+    <value>[Dévíçé šéttíñgš xxxxxx]</value>
+  </data>
+  <data name="Outputs_FunctionKeys" xml:space="preserve">
+    <value>[Fúñçtíóñ kéýš xxxxx]</value>
+  </data>
+  <data name="Outputs_FunctionKeys2" xml:space="preserve">
+    <value>[Fúñçtíóñ kéýš xxxxx]</value>
+  </data>
+  <data name="Outputs_ModeSwitching" xml:space="preserve">
+    <value>[Módé šwítçhíñg xxxxx]</value>
+  </data>
+  <data name="Outputs_ModeSwitching2" xml:space="preserve">
+    <value>[Módé šwítçhíñg xxxxx]</value>
+  </data>
+  <data name="Outputs_ModifierKeys" xml:space="preserve">
+    <value>[Módífíér kéýš xxxxx]</value>
+  </data>
+  <data name="Outputs_ModifierKeys2" xml:space="preserve">
+    <value>[Módífíér kéýš xxxxx]</value>
+  </data>
+  <data name="Outputs_NumberPad" xml:space="preserve">
+    <value>[Ñúmbér pád xxxx]</value>
+  </data>
+  <data name="Outputs_NumberPad2" xml:space="preserve">
+    <value>[Ñúmbér pád xxxx]</value>
+  </data>
+  <data name="Outputs_OtherKeys" xml:space="preserve">
+    <value>[Óthér kéýš xxxx]</value>
+  </data>
+  <data name="Outputs_OtherKeys2" xml:space="preserve">
+    <value>[Óthér kéýš xxxx]</value>
+  </data>
+  <data name="Outputs_TVRemote" xml:space="preserve">
+    <value>[TV rémóté xxx]</value>
+  </data>
+  <data name="Outputs_TVRemote2" xml:space="preserve">
+    <value>[TV rémóté xxx]</value>
+  </data>
+  <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
+    <value>[Ábóút {0}: {1} xxxxx]</value>
+  </data>
+  <data name="Prefs_ActiveOnlyInThisMode" xml:space="preserve">
+    <value>[Áçtívé óñlý íñ thíš módé xxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_ActiveWhileThisProfileIs" xml:space="preserve">
+    <value>[Áçtívé whílé thíš prófílé íš lóádéd xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_CarefulDefLabelDefRisk" xml:space="preserve">
+    <value>[Çáréfúl, {0}: {1} xxxxxx]</value>
+  </data>
+  <data name="Prefs_CarefulDefRisk" xml:space="preserve">
+    <value>[Çáréfúl: {0} xxxx]</value>
+  </data>
+  <data name="Prefs_DefCategorySettings" xml:space="preserve">
+    <value>[{0} šéttíñgš xxxx]</value>
+  </data>
+  <data name="Prefs_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>[{0}, wríttéñ áš {1} xxxxxxx]</value>
+  </data>
+  <data name="Prefs_DeleteRowBRow" xml:space="preserve">
+    <value>[Délété rów {0} xxxxx]</value>
+  </data>
+  <data name="Prefs_DeleteThisWholeRow" xml:space="preserve">
+    <value>[Délété thíš whólé rów xxxxxxxx]</value>
+  </data>
+  <data name="Prefs_DescriptionForRowSaved" xml:space="preserve">
+    <value>[Déšçríptíóñ fór rów {0}. Šávéd íñ thé fílé, ígñóréd bý thé QúádŠtíçk xxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_DeviceWideSettings" xml:space="preserve">
+    <value>[Dévíçé-wídé šéttíñgš xxxxxxxx]</value>
+  </data>
+  <data name="Prefs_ForRowBRow" xml:space="preserve">
+    <value>[)} fór rów {b.Rów} xxxxxxx]</value>
+  </data>
+  <data name="Prefs_ForRowBRowSaved" xml:space="preserve">
+    <value>[)} fór rów {b.Rów}. Šávéd íñ thé fílé, ígñóréd bý thé QúádŠtíçk xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_HexCode" xml:space="preserve">
+    <value>[Héx çódé xxx]</value>
+  </data>
+  <data name="Prefs_HexCodeForRow" xml:space="preserve">
+    <value>[Héx çódé fór rów {0} xxxxxxxx]</value>
+  </data>
+  <data name="Prefs_MeasuredInDefUnit" xml:space="preserve">
+    <value>[Méášúréd íñ {0}. xxxxxx]</value>
+  </data>
+  <data name="Prefs_NameColumnNameForRowB" xml:space="preserve">
+    <value>[{0} ñámé fór rów {1} xxxxxxxx]</value>
+  </data>
+  <data name="Prefs_NotesForRow" xml:space="preserve">
+    <value>[Ñótéš fór rów {0} xxxxxx]</value>
+  </data>
+  <data name="Prefs_NotesForRowSaved" xml:space="preserve">
+    <value>[Ñótéš fór rów {0}. Šávéd íñ thé fílé, ígñóréd bý thé QúádŠtíçk xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_PhraseExplain" xml:space="preserve">
+    <value>[{0}. {1} xxx]</value>
+  </data>
+  <data name="Prefs_SettingValueForRow" xml:space="preserve">
+    <value>[Šéttíñg válúé fór rów {0} xxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_SettingValueForRowRow" xml:space="preserve">
+    <value>[Šéttíñg válúé fór rów {0} xxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_SwapTheControlForA" xml:space="preserve">
+    <value>[Šwáp thé çóñtról fór á pláíñ bóx, fór á válúé óútšídé thé téštéd ráñgé. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_TheseSettingsApplyWhileThis" xml:space="preserve">
+    <value>[Théšé šéttíñgš ápplý whílé thíš prófílé íš thé óñé rúññíñg, áñd gó báçk tó thé dévíçé'š ówñ šéttíñgš whéñ áñóthér prófílé lóádš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_ThisFileIsTheQuadStick" xml:space="preserve">
+    <value>[Thíš fílé íš thé QúádŠtíçk'š ówñ šéttíñgš. Évérý çháñgé héré ápplíéš tó thé whólé dévíçé, íñ évérý prófílé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_ThisIsUsuallySetTo" xml:space="preserve">
+    <value>[Thíš íš úšúállý šét tó {0}. Ýóúr dévíçé máý hóld šóméthíñg élšé. xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_TypeAnExactValue" xml:space="preserve">
+    <value>[Týpé áñ éxáçt válúé xxxxxxx]</value>
+  </data>
+  <data name="Prefs_TypeAnExactValueFor" xml:space="preserve">
+    <value>[Týpé áñ éxáçt válúé fór {0} xxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_UnitsForRow" xml:space="preserve">
+    <value>[Úñítš fór rów {0} xxxxxx]</value>
+  </data>
+  <data name="Review_ASettingSNameUsed" xml:space="preserve">
+    <value>[á šéttíñg'š ñámé, úšéd héré tó óvérrídé ít fór thíš módé xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_AddItAsAWorking" xml:space="preserve">
+    <value>[Ádd ít áš á wórkíñg módé xxxxxxxxx]</value>
+  </data>
+  <data name="Review_AddTheTabTabName" xml:space="preserve">
+    <value>[Ádd thé táb {0} tó thíš prófílé áš á wórkíñg módé, bý wrítíñg Prófílé Ñámé óvér ítš çéll Á1 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_AddedTheTabNameTab" xml:space="preserve">
+    <value>[Áddéd thé "{0}" táb áš á módé. xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_AddingItChangesCellA1" xml:space="preserve">
+    <value>[Áddíñg ít çháñgéš çéll Á1. Évérýthíñg élšé íñ thé táb çóméš íñ áš ýóú wróté ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_AndYourPreferences" xml:space="preserve">
+    <value>[, áñd ýóúr préféréñçéš xxxxxxxx]</value>
+  </data>
+  <data name="Review_CToJInputsIn" xml:space="preserve">
+    <value>[Ç tó J  íñpútš, íñ órdér xxxxxxxxx]</value>
+  </data>
+  <data name="Review_CToJIsRoom" xml:space="preserve">
+    <value>[Ç tó J íš róóm fór úp tó 8 íñpútš, ñót á réqúíréméñt. Móšt rówš úšé Ç óñ ítš ówñ, áñd thát íš á pláíñ tríggér. Whéñ á rów fíllš móré tháñ óñé, théý áré á šéqúéñçé: ýóú dó thém óñé áftér thé óthér, léft tó ríght, áñd thé lášt óñé fíréš thé óútpút. Bláñk çéllš íñ bétwééñ áré ígñóréd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_CellMeaningRowColIsBindingThe" xml:space="preserve">
+    <value>[{0}, thé QúádŠtíçk dóéš ñót kñów thíš wórd xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_CellTheQuadStickWillTreat" xml:space="preserve">
+    <value>[çéll thé QúádŠtíçk wíll tréát dífféréñtlý tháñ ít réádš xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_CellsTheQuadStickWillTreat" xml:space="preserve">
+    <value>[çéllš thé QúádŠtíçk wíll tréát dífféréñtlý tháñ théý réád xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_ClearIt" xml:space="preserve">
+    <value>[Çléár ít xxx]</value>
+  </data>
+  <data name="Review_CloseTheImportReviewEvery" xml:space="preserve">
+    <value>[Çlóšé thé ímpórt révíéw. Évérý áñšwér ýóú gávé háš álréádý bééñ ápplíéd tó thé prófílé béhíñd ít xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_ContentsOfCellWhereMeaning" xml:space="preserve">
+    <value>[Çóñtéñtš óf çéll {0}, {1} xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_Done" xml:space="preserve">
+    <value>[Dóñé x]</value>
+  </data>
+  <data name="Review_EmptyCellWhere" xml:space="preserve">
+    <value>[Émptý çéll {0} xxxxx]</value>
+  </data>
+  <data name="Review_GoBackToTheSimple" xml:space="preserve">
+    <value>[Gó báçk tó thé šímplé víéw xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_HelperTabs_one" xml:space="preserve">
+    <value>[{0}   thíš táb íš ñótéš, ñót bíñdíñgš. QMP áñd thé Šhéétš ádd-óñ wríté thíš táb fór ýóú tó réád, áñd ýóúr QúádŠtíçk ñévér lóádš ít. Ñóthíñg wáš lóšt bý léávíñg ít óút. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_HelperTabs_other" xml:space="preserve">
+    <value>[{0}   théšé tábš áré ñótéš, ñót bíñdíñgš. QMP áñd thé Šhéétš ádd-óñ wríté théšé tábš fór ýóú tó réád, áñd ýóúr QúádŠtíçk ñévér lóádš thém. Ñóthíñg wáš lóšt bý léávíñg thém óút. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_ImportReview" xml:space="preserve">
+    <value>[Ímpórt révíéw xxxxx]</value>
+  </data>
+  <data name="Review_InfraredCommands" xml:space="preserve">
+    <value>[Íñfráréd çómmáñdš xxxxxx]</value>
+  </data>
+  <data name="Review_IssueCellWordIsNow" xml:space="preserve">
+    <value>[{0}   "{1}" íš ñów thíš rów'š ówñ ñámé, íñ çólúmñ L. xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_IssueCellWordLeftAs" xml:space="preserve">
+    <value>[{0}   "{1}" léft áš ít íš. Thé QúádŠtíçk ígñóréš ít. xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_IssueCellWordMovedInto" xml:space="preserve">
+    <value>[{0}   "{1}" móvéd íñtó thé ñótéš çólúmñ. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_KNoteLYourName" xml:space="preserve">
+    <value>[K  ñóté   L  ýóúr ñámé fór thé rów   M óñ  ñévér réád xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_KeepValueAsThisRow" xml:space="preserve">
+    <value>[Kéép "{0}" áš thíš rów'š ówñ ñámé, íñ çólúmñ L, whéré thé QúádŠtíçk ñévér lóókš xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_KeepWordAsThisRow" xml:space="preserve">
+    <value>[Kéép "{0}" áš thíš rów'š ówñ ñámé, íñ çólúmñ L, whéré thé QúádŠtíçk ñévér lóókš xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_LeaveIt" xml:space="preserve">
+    <value>[Léávé ít xxx]</value>
+  </data>
+  <data name="Review_LeaveItOut" xml:space="preserve">
+    <value>[Léávé ít óút xxxx]</value>
+  </data>
+  <data name="Review_LeaveTheTabTabName" xml:space="preserve">
+    <value>[Léávé thé táb {0} óút óf thíš prófílé, áš thé QúádŠtíçk dóéš xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_LeaveWordWhereItIs" xml:space="preserve">
+    <value>[Léávé "{0}" whéré ít íš, áñd kéép ítš wárñíñg íñ thé édítór xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_LineTheQuadStickWouldNot" xml:space="preserve">
+    <value>[líñé thé QúádŠtíçk wóúld ñót réád xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_LinesTheQuadStickWouldNot" xml:space="preserve">
+    <value>[líñéš thé QúádŠtíçk wóúld ñót réád xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MakeThisTheRowS" xml:space="preserve">
+    <value>[Máké thíš thé rów'š ñámé xxxxxxxxx]</value>
+  </data>
+  <data name="Review_ModeIsNamedAfterIts" xml:space="preserve">
+    <value>[módé íš ñáméd áftér ítš šhéét táb xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_ModeRModeNumberIsCalled" xml:space="preserve">
+    <value>[Módé {0} íš çálléd "{1}", áftér ítš šhéét táb. Thát módé'š ñámé çéll wáš émptý. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_ModeRModeNumberIsCalled2" xml:space="preserve">
+    <value>[Módé {0} íš çálléd "{1}", áftér ítš šhéét táb. Ítš ñámé çéll šáíd "{2}", whíçh íš thé ñámé thé témpláté çóméš wíth ór á çópý óf áñóthér módé'š. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_ModesAreNamedAfterTheir" xml:space="preserve">
+    <value>[módéš áré ñáméd áftér théír šhéét tábš xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MoreThanOneModeEach" xml:space="preserve">
+    <value>[Móré tháñ óñé módé éáçh çárrý thé ñáméš xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MoreThanOneModeIs" xml:space="preserve">
+    <value>[Móré tháñ óñé módé íš ñáméd xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MoveItEarlier" xml:space="preserve">
+    <value>[Móvé ít éárlíér xxxxxx]</value>
+  </data>
+  <data name="Review_MoveItLater" xml:space="preserve">
+    <value>[Móvé ít látér xxxxx]</value>
+  </data>
+  <data name="Review_MoveThisToTheNote" xml:space="preserve">
+    <value>[Móvé thíš tó thé ñóté çólúmñ xxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MoveToNotes" xml:space="preserve">
+    <value>[Móvé tó ñótéš xxxxx]</value>
+  </data>
+  <data name="Review_MoveValueFromWhereInto" xml:space="preserve">
+    <value>[Móvé "{0}" fróm {1} íñtó thé ñóté çólúmñ, whéré thé QúádŠtíçk ñévér lóókš xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MoveValueToColumnLetterTarget" xml:space="preserve">
+    <value>[Móvé "{0}" tó {1}{2}, óñé štép {3} íñ thíš rów'š šéqúéñçé óf íñpútš xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MoveWordIntoTheNotes" xml:space="preserve">
+    <value>[Móvé "{0}" íñtó thé ñótéš çólúmñ, whéré thé QúádŠtíçk ñévér lóókš xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MovedValueFromWhereInto" xml:space="preserve">
+    <value>[Móvéd "{0}" fróm {1} íñtó thé ñóté çólúmñ. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MovedValueFromWhereInto2" xml:space="preserve">
+    <value>[Móvéd "{0}" fróm {1} íñtó thíš rów'š ñámé. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_MovedWordIntoTheNotes" xml:space="preserve">
+    <value>[Móvéd "{0}" íñtó thé ñótéš çólúmñ. xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_NeverReadByTheQuadStick" xml:space="preserve">
+    <value>[ñévér réád bý thé QúádŠtíçk xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_NoCellPicked" xml:space="preserve">
+    <value>[Ñó çéll píçkéd xxxxx]</value>
+  </data>
+  <data name="Review_NoCellPickedClickOne" xml:space="preserve">
+    <value>[Ñó çéll píçkéd. Çlíçk óñé, ór préšš Táb tó thé šhéét áñd úšé thé árrów kéýš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_NotABindingRowSo" xml:space="preserve">
+    <value>[ñót á bíñdíñg rów, šó thé QúádŠtíçk réádš ñóthíñg héré xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_NotReadOnASettings" xml:space="preserve">
+    <value>[ñót réád óñ á šéttíñgš šhéét xxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_NotReadOnASettings2" xml:space="preserve">
+    <value>[ñót réád óñ á šéttíñgš rów xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_NotReadThisTabWas" xml:space="preserve">
+    <value>[ñót réád, thíš táb wáš léft óút xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_NoteNeverReadByThe" xml:space="preserve">
+    <value>[ñóté, ñévér réád bý thé QúádŠtíçk xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_NothingPressesBOutputNow" xml:space="preserve">
+    <value>[ Ñóthíñg préššéš "{0}" ñów, šó thé QúádŠtíçk wíll ñót fíré ít. xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_OnlyPartOfTheSpreadsheet" xml:space="preserve">
+    <value>[Óñlý párt óf thé špréádšhéét çóúld bé réád xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_PartOfTheRowThat" xml:space="preserve">
+    <value>[párt óf thé rów thát ópéñš á módé xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_SaveCell" xml:space="preserve">
+    <value>[Šávé çéll xxx]</value>
+  </data>
+  <data name="Review_ShowTheSpreadsheetWithThe" xml:space="preserve">
+    <value>[Šhów thé špréádšhéét wíth thé ápp'š réádíñg márkéd óñ ít xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_ShowingTheFirstShownRows" xml:space="preserve">
+    <value>[Šhówíñg thé fíršt {0} rówš óf {1}. Thé réšt ímpórtéd thé šámé wáý. xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_SimpleView" xml:space="preserve">
+    <value>[Šímplé víéw xxxx]</value>
+  </data>
+  <data name="Review_SkippedByTheQuadStickOn" xml:space="preserve">
+    <value>[škíppéd bý thé QúádŠtíçk óñ á šéttíñgš rów xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_SubjectNamesThatIsAllowed" xml:space="preserve">
+    <value>[{0} {1}. Thát íš állówéd: ýóúr QúádŠtíçk téllš módéš ápárt bý théír órdér íñ thé fílé, ñót bý théír ñámé, šó théšé áré šépáráté módéš áñd áll óf thém çámé íñ. Réñámé thém íñ Módéš íf ýóú wáñt tó téll thém ápárt óñ šçrééñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_SummaryNoProfileDataWas" xml:space="preserve">
+    <value>[{0} Ñó prófílé dátá wáš škíppéd. xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_SwapValueWithNeighbourMoving" xml:space="preserve">
+    <value>[Šwáp "{0}" wíth "{1}", móvíñg ít óñé štép {2} íñ thíš rów'š šéqúéñçé óf íñpútš xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_SwappedValueAndNeighbourIn" xml:space="preserve">
+    <value>[Šwáppéd "{0}" áñd "{1}" íñ rów {2}. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_TabDidNotComeIn" xml:space="preserve">
+    <value>[táb díd ñót çómé íñ xxxxxxx]</value>
+  </data>
+  <data name="Review_TabIsNotProfileData" xml:space="preserve">
+    <value>[táb íš ñót prófílé dátá xxxxxxxxx]</value>
+  </data>
+  <data name="Review_TabNameCellA1Has" xml:space="preserve">
+    <value>["{0}"   çéll Á1 háš tó šáý "Prófílé Ñámé". Ýóúrš háš óthér téxt íñ ít, šó thíš táb íš ñót á módé tó thé ápp ór tó ýóúr QúádŠtíçk. Ñéíthér óñé íš rúññíñg ít tódáý. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_TabNameIsNowA" xml:space="preserve">
+    <value>["{0}" íš ñów á módé íñ thíš prófílé. Ítš çéll Á1 šáýš "Prófílé Ñámé" whéré ýóúr téxt wáš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_TabNameLeftOutBecause" xml:space="preserve">
+    <value>["{0}", léft óút béçáúšé çéll Á1 dóéš ñót ñámé á kíñd óf šhéét: xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_TabNameWasAddedAs" xml:space="preserve">
+    <value>["{0}" wáš áddéd áš á módé. xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_TabNameWasLeftOut" xml:space="preserve">
+    <value>["{0}" wáš léft óút, thé šámé áš ýóúr QúádŠtíçk dóéš tódáý. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_TabNameWasLeftOut2" xml:space="preserve">
+    <value>["{0}" wáš léft óút. xxxxxxx]</value>
+  </data>
+  <data name="Review_TabsAreNotProfileData" xml:space="preserve">
+    <value>[tábš áré ñót prófílé dátá xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_TabsDidNotComeIn" xml:space="preserve">
+    <value>[tábš díd ñót çómé íñ xxxxxxxx]</value>
+  </data>
+  <data name="Review_ThatChangeWasUndone" xml:space="preserve">
+    <value>[Thát çháñgé wáš úñdóñé. xxxxxxxxx]</value>
+  </data>
+  <data name="Review_TheQuadStickDoesNotKnow" xml:space="preserve">
+    <value>[thé QúádŠtíçk dóéš ñót kñów thíš wórd xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_TheSettingSName" xml:space="preserve">
+    <value>[thé šéttíñg'š ñámé xxxxxxx]</value>
+  </data>
+  <data name="Review_TheSettingSValue" xml:space="preserve">
+    <value>[thé šéttíñg'š válúé xxxxxxx]</value>
+  </data>
+  <data name="Review_TheSettingSValue2" xml:space="preserve">
+    <value>[thé šéttíñg'š válúé xxxxxxx]</value>
+  </data>
+  <data name="Review_TheWordThatMakesThis" xml:space="preserve">
+    <value>[thé wórd thát mákéš thíš thé šéttíñgš šhéét xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_TheWordThatMakesThis2" xml:space="preserve">
+    <value>[thé wórd thát mákéš thíš á módé. Çháñgé ít áñd thé módé léávéš thé prófílé xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_ThisModeSName" xml:space="preserve">
+    <value>[thíš módé'š ñámé xxxxxx]</value>
+  </data>
+  <data name="Review_UndidTheLastCellChange" xml:space="preserve">
+    <value>[Úñdíd thé lášt çéll çháñgé. xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_UndidTheLastImportChange" xml:space="preserve">
+    <value>[Úñdíd thé lášt ímpórt çháñgé. xxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_Undo" xml:space="preserve">
+    <value>[Úñdó x]</value>
+  </data>
+  <data name="Review_Undo2" xml:space="preserve">
+    <value>[Úñdó x]</value>
+  </data>
+  <data name="Review_UndoThisChangeAndAsk" xml:space="preserve">
+    <value>[Úñdó thíš çháñgé áñd ášk ágáíñ: {0} xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_UndoThisChangeLastGridEdit" xml:space="preserve">
+    <value>[Úñdó thíš çháñgé: {0} xxxxxxxx]</value>
+  </data>
+  <data name="Review_UnnamedMode" xml:space="preserve">
+    <value>[(úññáméd módé) xxxxx]</value>
+  </data>
+  <data name="Review_UseAsThisRowS" xml:space="preserve">
+    <value>[Úšé áš thíš rów'š ñámé xxxxxxxx]</value>
+  </data>
+  <data name="Review_WeReadYourSheet" xml:space="preserve">
+    <value>[Wé réád ýóúr šhéét. xxxxxxx]</value>
+  </data>
+  <data name="Review_WhatCameIn" xml:space="preserve">
+    <value>[Whát çámé íñ xxxx]</value>
+  </data>
+  <data name="Review_WordIsNowThisRow" xml:space="preserve">
+    <value>["{0}" íš ñów thíš rów'š ñámé. xxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_WordIsNowThisRow2" xml:space="preserve">
+    <value>["{0}" íš ñów thíš rów'š ówñ ñámé, íñ çólúmñ L. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_WordMovedIntoTheNotes" xml:space="preserve">
+    <value>["{0}" móvéd íñtó thé ñótéš çólúmñ. xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_WordWasLeftWhereIt" xml:space="preserve">
+    <value>["{0}" wáš léft whéré ít íš. xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_YourAnswersAreAlreadyPart" xml:space="preserve">
+    <value>[Ýóúr áñšwérš áré álréádý párt óf thé prófílé. Ñóthíñg íš šávéd tó díšk ýét, áñd Çóñtról Ž íñ thé édítór úñdóéš áñý óf ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_YourNameForTheRow" xml:space="preserve">
+    <value>[ýóúr ñámé fór thé rów, ñévér réád bý thé QúádŠtíçk xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_YourSheetCameInClean" xml:space="preserve">
+    <value>[Ýóúr šhéét çámé íñ çléáñ. xxxxxxxxxx]</value>
+  </data>
+  <data name="Review_YourSpreadsheetArrowKeysPick" xml:space="preserve">
+    <value>[Ýóúr špréádšhéét. Árrów kéýš píçk á çéll, Éñtér édítš ít, Délété émptíéš ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_YourSpreadsheetWithWhatWe" xml:space="preserve">
+    <value>[Ýóúr špréádšhéét, wíth whát wé réád márkéd óñ ít. Á tíñtéd çéll íš óñé thé QúádŠtíçk réádš. Á pláíñ çéll íš óñé ít ñévér lóókš át, šó ñótéš áñd ýóúr ówñ ñáméš fór rówš áré šáfé théré. Çlíçk áñý çéll tó çháñgé ít, ór drág ít tó áñóthér çólúmñ íñ thé šámé rów. Évérý çháñgé héré íš á çháñgé tó thé prófílé ópéñ béhíñd thíš wíñdów. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Settings_Appearance" xml:space="preserve">
     <value>[Áppéáráñçé xxxx]</value>
@@ -324,5 +1422,131 @@
   </data>
   <data name="Settings_YouAreOn" xml:space="preserve">
     <value>[Ýóú áré óñ {0}. xxxxxx]</value>
+  </data>
+  <data name="Share_Cancel" xml:space="preserve">
+    <value>[Çáñçél xx]</value>
+  </data>
+  <data name="Share_CloseWithoutSharing" xml:space="preserve">
+    <value>[Çlóšé wíthóút šháríñg xxxxxxxx]</value>
+  </data>
+  <data name="Share_CouldNotConnectToGoogle" xml:space="preserve">
+    <value>[Çóúld ñót çóññéçt tó Góóglé. Çhéçk ýóúr íñtérñét çóññéçtíóñ áñd trý ágáíñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Share_FinishLabelNotAvailableYetFinish" xml:space="preserve">
+    <value>[{0}. Ñót áváíláblé ýét: fíñíšh thé štépš ábóvé fíršt. xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Share_NotDoneYet" xml:space="preserve">
+    <value>[Ñót dóñé ýét xxxx]</value>
+  </data>
+  <data name="Share_NotDoneYet2" xml:space="preserve">
+    <value>[Ñót dóñé ýét xxxx]</value>
+  </data>
+  <data name="Share_SaveThisProfile" xml:space="preserve">
+    <value>[Šávé thíš prófílé xxxxxx]</value>
+  </data>
+  <data name="Share_SetUpGoogleSheets" xml:space="preserve">
+    <value>[Šét úp Góóglé Šhéétš xxxxxxxx]</value>
+  </data>
+  <data name="Share_SharingAProfilePutsIt" xml:space="preserve">
+    <value>[Šháríñg á prófílé pútš ít íñ á Góóglé Šhéét óñ ýóúr ówñ Góóglé Drívé, áñd gívéš ýóú á líñk tó thát šhéét. Ñóbódý çáñ šéé ít úñtíl ýóú šéñd thé líñk óñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Share_StepDone" xml:space="preserve">
+    <value>[Štép {0} óf {1}, {2}, dóñé xxxxxxxxxx]</value>
+  </data>
+  <data name="Share_StepNotDone" xml:space="preserve">
+    <value>[Štép {0} óf {1}, {2}, ñót dóñé ýét xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Share_StepNumberOfTotalTitle" xml:space="preserve">
+    <value>[Štép {0} óf {1}: {2} xxxxxxxx]</value>
+  </data>
+  <data name="Share_StepNumberOfTotalTitle2" xml:space="preserve">
+    <value>[Štép {0} óf {1}, {2}, ñót dóñé ýét xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Share_ThisProfileWasNotSaved" xml:space="preserve">
+    <value>[Thíš prófílé wáš ñót šávéd, šó théré íš ñóthíñg tó pút íñ á šhéét ýét. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Share_TitleAlreadyDone" xml:space="preserve">
+    <value>[{0}. Álréádý dóñé. xxxxxxx]</value>
+  </data>
+  <data name="Share_WaitingForGoogleInYour" xml:space="preserve">
+    <value>[Wáítíñg fór Góóglé íñ ýóúr brówšér... xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Tour_Back" xml:space="preserve">
+    <value>[Báçk x]</value>
+  </data>
+  <data name="Tour_BackToThePreviousStep" xml:space="preserve">
+    <value>[Báçk tó thé prévíóúš štép xxxxxxxxxx]</value>
+  </data>
+  <data name="Tour_EveryProfileStartsFromA" xml:space="preserve">
+    <value>[Évérý prófílé štártš fróm á témpláté. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Tour_NewProfile" xml:space="preserve">
+    <value>[Ñéw prófílé xxxx]</value>
+  </data>
+  <data name="Tour_Next" xml:space="preserve">
+    <value>[Ñéxt x]</value>
+  </data>
+  <data name="Tour_NextStep" xml:space="preserve">
+    <value>[Ñéxt štép xxx]</value>
+  </data>
+  <data name="Tour_PickAPart" xml:space="preserve">
+    <value>[Píçk á párt xxxx]</value>
+  </data>
+  <data name="Tour_PickAPartToSee" xml:space="preserve">
+    <value>[Píçk á párt tó šéé áñd çháñgé whát ít dóéš. xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Tour_SaveYourWorkToA" xml:space="preserve">
+    <value>[Šávé ýóúr wórk tó á fílé. xxxxxxxxxx]</value>
+  </data>
+  <data name="Tour_SetLightOrDarkTo" xml:space="preserve">
+    <value>[Šét líght ór dárk tó šúít ýóúr éýéš. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Tour_Skip" xml:space="preserve">
+    <value>[Škíp x]</value>
+  </data>
+  <data name="Tour_SkipTheTutorial" xml:space="preserve">
+    <value>[Škíp thé tútóríál xxxxxx]</value>
+  </data>
+  <data name="Tour_StepTitleStepBody" xml:space="preserve">
+    <value>[{0}. {1} xxx]</value>
+  </data>
+  <data name="Tour_StepTourIndex1OfTourSteps" xml:space="preserve">
+    <value>[Štép {0} óf {1} xxxxxx]</value>
+  </data>
+  <data name="Tour_ThisIsYourQuadStickEach" xml:space="preserve">
+    <value>[Thíš íš ýóúr QúádŠtíçk. Éáçh párt íš á çóñtról ýóú çáñ máp. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
+    <value>[Thíš šhówš ýóú hów tó máké áñd íñštáll á prófílé. Ýóú çáñ škíp áñýtímé. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Tour_WhenItSReadySend" xml:space="preserve">
+    <value>[Whéñ ít'š réádý, šéñd ít tó ýóúr QúádŠtíçk. xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Tour_YouCanReplayThisAnytime" xml:space="preserve">
+    <value>[Ýóú çáñ répláý thíš áñýtímé fróm Šéttíñgš ▸ Hélp. xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Update_CouldNotCheckForUpdates" xml:space="preserve">
+    <value>[Çóúld ñót çhéçk fór úpdátéš (GítHúb áñšwéréd {0}). Ýóú áré óñ {1}. xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Update_CouldNotReachGitHubTo" xml:space="preserve">
+    <value>[Çóúld ñót réáçh GítHúb tó çhéçk fór úpdátéš. Ýóú áré óñ {0}. xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Update_GitHubDidNotNameA" xml:space="preserve">
+    <value>[GítHúb díd ñót ñámé á réléášé. Ýóú áré óñ {0}. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Update_GitHubIsAskingUsTo" xml:space="preserve">
+    <value>[GítHúb íš áškíñg úš tó wáít béfóré çhéçkíñg ágáíñ. Trý ágáíñ íñ á féw míñútéš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Update_GitHubSentSomethingWeCould" xml:space="preserve">
+    <value>[GítHúb šéñt šóméthíñg wé çóúld ñót réád. Ýóú áré óñ {0}. xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Update_LatestAPreviewRelease" xml:space="preserve">
+    <value>[{0} (á prévíéw réléášé) xxxxxxxxx]</value>
+  </data>
+  <data name="Update_YouAreOnCurrentLabel" xml:space="preserve">
+    <value>[Ýóú áré óñ {0}. {1} íš óút. xxxxxxxxxx]</value>
+  </data>
+  <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
+    <value>[Ýóú áré óñ {0}, whíçh íš thé látéšt. xxxxxxxxxxxxxx]</value>
   </data>
 </root>

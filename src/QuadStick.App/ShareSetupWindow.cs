@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -38,7 +39,7 @@ public class ShareSetupWindow : Window
         _needsSave = needsSave;
         _finishLabel = finishLabel;
 
-        Title = "Set up Google Sheets";
+        Title = Strings.Share_SetUpGoogleSheets;
         Width = Math.Min(520 * owner.UiScale, 900);
         SizeToContent = SizeToContent.Height;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -47,22 +48,20 @@ public class ShareSetupWindow : Window
 
         var explain = new TextBlock
         {
-            Text = "Sharing a profile puts it in a Google Sheet on your own Google Drive, "
-                 + "and gives you a link to that sheet. Nobody can see it until you send "
-                 + "the link on.",
+            Text = Strings.Share_SharingAProfilePutsIt,
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
             Margin = new Thickness(0, 0, 0, 16),
         };
 
         _connect = new Step(1, total, "Connect Google Drive", "Connect", ConnectAsync);
-        _save = new Step(2, total, "Save this profile", "Save", SaveStepAsync);
+        _save = new Step(2, total, Strings.Share_SaveThisProfile, "Save", SaveStepAsync);
 
         _finish = new Button { Content = finishLabel, Classes = { "primary" }, MinWidth = 160 };
         _finish.Click += (_, _) => { Completed = true; Close(); };
         var finishStep = new Step(total, total, finishLabel, null, null, _finish);
 
-        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
-        AutomationProperties.SetName(cancel, "Close without sharing");
+        var cancel = new Button { Content = Strings.Share_Cancel, MinWidth = 140, IsCancel = true };
+        AutomationProperties.SetName(cancel, Strings.Share_CloseWithoutSharing);
         cancel.Click += (_, _) => Close();
 
         _status = new TextBlock
@@ -108,16 +107,16 @@ public class ShareSetupWindow : Window
 
     async Task ConnectAsync()
     {
-        _status.Text = "Waiting for Google in your browser...";
+        _status.Text = Strings.Share_WaitingForGoogleInYour;
         var ok = await _owner.ConnectGoogleAsync();
-        _status.Text = ok ? "" : "Could not connect to Google. Check your internet connection and try again.";
+        _status.Text = ok ? "" : Strings.Share_CouldNotConnectToGoogle;
         Refresh();
     }
 
     async Task SaveStepAsync()
     {
         if (!await _owner.SaveProfileAsync())
-            _status.Text = "This profile was not saved, so there is nothing to put in a sheet yet.";
+            _status.Text = Strings.Share_ThisProfileWasNotSaved;
         Refresh();
     }
 
@@ -135,7 +134,7 @@ public class ShareSetupWindow : Window
         // is not a state a sighted user can explain either.
         AutomationProperties.SetName(_finish, _finish.IsEnabled
             ? _finishLabel
-            : $"{_finishLabel}. Not available yet: finish the steps above first.");
+            : string.Format(CultureInfo.CurrentCulture, Strings.Share_FinishLabelNotAvailableYetFinish, _finishLabel));
     }
 
     static double Size(string tokenKey) => (double)Application.Current!.FindResource(tokenKey)!;
@@ -159,13 +158,13 @@ public class ShareSetupWindow : Window
 
             var label = new TextBlock
             {
-                Text = $"Step {number} of {total}: {title}",
+                Text = string.Format(CultureInfo.CurrentCulture, Strings.Share_StepNumberOfTotalTitle, number, total, title),
                 FontSize = Size("BodySize"), FontWeight = FontWeight.Bold,
                 TextWrapping = TextWrapping.Wrap,
             };
             _state = new TextBlock
             {
-                Text = "Not done yet", FontSize = Size("BodySize"), Classes = { "muted" },
+                Text = Strings.Share_NotDoneYet, FontSize = Size("BodySize"), Classes = { "muted" },
                 TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 6),
             };
 
@@ -178,20 +177,21 @@ public class ShareSetupWindow : Window
 
             Panel = new StackPanel { Spacing = 0, Children = { label, _state } };
             if (Action is not null) Panel.Children.Add(Action);
-            AutomationProperties.SetName(Panel, $"Step {number} of {total}, {title}, not done yet");
+            AutomationProperties.SetName(Panel, string.Format(CultureInfo.CurrentCulture, Strings.Share_StepNumberOfTotalTitle2, number, total, title));
         }
 
         public void SetDone(bool done)
         {
-            _state.Text = done ? "Done" : "Not done yet";
+            _state.Text = done ? "Done" : Strings.Share_NotDoneYet2;
             if (Action is not null)
             {
                 Action.IsEnabled = !done;
                 AutomationProperties.SetName(Action,
-                    done ? $"{_title}. Already done." : _title);
+                    done ? string.Format(CultureInfo.CurrentCulture, Strings.Share_TitleAlreadyDone, _title) : _title);
             }
             AutomationProperties.SetName(Panel,
-                $"Step {_number} of {_total}, {_title}, {(done ? "done" : "not done yet")}");
+                string.Format(CultureInfo.CurrentCulture,
+                    done ? Strings.Share_StepDone : Strings.Share_StepNotDone, _number, _total, _title));
         }
 
         static double Size(string tokenKey) => (double)Application.Current!.FindResource(tokenKey)!;

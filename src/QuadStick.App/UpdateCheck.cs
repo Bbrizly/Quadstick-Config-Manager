@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 
@@ -34,11 +35,10 @@ public static class UpdateCheck
             // that has nothing to do with the user and passes on its own.
             if ((int)resp.StatusCode == 403 || (int)resp.StatusCode == 429)
                 return new UpdateResult(
-                    "GitHub is asking us to wait before checking again. Try again in a few minutes.", null, false);
+                    Strings.Update_GitHubIsAskingUsTo, null, false);
             if (!resp.IsSuccessStatusCode)
                 return new UpdateResult(
-                    $"Could not check for updates (GitHub answered {(int)resp.StatusCode}). "
-                    + $"You are on {current}.", null, false);
+                    string.Format(CultureInfo.CurrentCulture, Strings.Update_CouldNotCheckForUpdates, (int)resp.StatusCode, current), null, false);
 
             using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync(ct));
             var root = doc.RootElement;
@@ -48,23 +48,23 @@ public static class UpdateCheck
             var latest = Normalize(tag);
 
             if (latest.Length == 0)
-                return new UpdateResult($"GitHub did not name a release. You are on {current}.", null, false);
+                return new UpdateResult(string.Format(CultureInfo.CurrentCulture, Strings.Update_GitHubDidNotNameA, current), null, false);
 
             int order = Compare(latest, current);
             if (order <= 0)
-                return new UpdateResult($"You are on {current}, which is the latest.", page, false);
+                return new UpdateResult(string.Format(CultureInfo.CurrentCulture, Strings.Update_YouAreOnCurrentWhich, current), page, false);
 
-            var label = prerelease ? $"{latest} (a preview release)" : latest;
-            return new UpdateResult($"You are on {current}. {label} is out.", page, true);
+            var label = prerelease ? string.Format(CultureInfo.CurrentCulture, Strings.Update_LatestAPreviewRelease, latest) : latest;
+            return new UpdateResult(string.Format(CultureInfo.CurrentCulture, Strings.Update_YouAreOnCurrentLabel, current, label), page, true);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             return new UpdateResult(
-                $"Could not reach GitHub to check for updates. You are on {current}.", null, false);
+                string.Format(CultureInfo.CurrentCulture, Strings.Update_CouldNotReachGitHubTo, current), null, false);
         }
         catch (JsonException)
         {
-            return new UpdateResult($"GitHub sent something we could not read. You are on {current}.", null, false);
+            return new UpdateResult(string.Format(CultureInfo.CurrentCulture, Strings.Update_GitHubSentSomethingWeCould, current), null, false);
         }
     }
 

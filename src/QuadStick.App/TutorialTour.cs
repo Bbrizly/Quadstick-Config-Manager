@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Automation;
@@ -81,38 +82,38 @@ public partial class MainWindow
         _tourSteps = new (string, string, Action, Func<Control?>)[]
         {
             ("Welcome",
-             "This shows you how to make and install a profile. You can skip anytime.",
+             Strings.Tour_ThisShowsYouHowTo,
              () => ShowHome(),
              () => null),
             ("Appearance",
-             "Set light or dark to suit your eyes.",
+             Strings.Tour_SetLightOrDarkTo,
              () => { },
              () => AppearancePicker),
-            ("New profile",
-             "Every profile starts from a template.",
+            (Strings.Tour_NewProfile,
+             Strings.Tour_EveryProfileStartsFromA,
              // The next step opens a profile and switches to the editor. Back
              // from there re-ran this setup, and an empty one left the editor
              // on screen with the spotlight on a Home button nobody could see.
              () => ShowHome(),
              () => HomeNewButton),
             ("Your QuadStick",
-             "This is your QuadStick. Each part is a control you can map.",
+             Strings.Tour_ThisIsYourQuadStickEach,
              () => { if (_file is null) NewFromTemplate(); SetDeviceView(true); },
              () => DeviceViewButton),
-            ("Pick a part",
-             "Pick a part to see and change what it does.",
+            (Strings.Tour_PickAPart,
+             Strings.Tour_PickAPartToSee,
              () => SelectZoneForPreview("joystick"),
              () => ZoneDetailPanel),
             ("Save",
-             "Save your work to a file.",
+             Strings.Tour_SaveYourWorkToA,
              () => { },
              () => SaveButton),
             ("Install",
-             "When it's ready, send it to your QuadStick.",
+             Strings.Tour_WhenItSReadySend,
              () => { },
              () => InstallButton),
             ("Done",
-             "You can replay this anytime from Settings ▸ Help.",
+             Strings.Tour_YouCanReplayThisAnytime,
              () => { },
              () => null),
         };
@@ -147,16 +148,16 @@ public partial class MainWindow
         _tourBody = new TextBlock { FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap, LineHeight = 22 };
         BindBrush(_tourBody, TextBlock.ForegroundProperty, "TextPrimary");
 
-        _tourBack = new Button { Content = "Back" };
-        AutomationProperties.SetName(_tourBack, "Back to the previous step");
+        _tourBack = new Button { Content = Strings.Tour_Back };
+        AutomationProperties.SetName(_tourBack, Strings.Tour_BackToThePreviousStep);
         _tourBack.Click += (_, _) => { if (_tourIndex > 0) { _tourIndex--; ShowTourStep(); } };
 
-        _tourSkip = new Button { Content = "Skip", IsCancel = true };
-        AutomationProperties.SetName(_tourSkip, "Skip the tutorial");
+        _tourSkip = new Button { Content = Strings.Tour_Skip, IsCancel = true };
+        AutomationProperties.SetName(_tourSkip, Strings.Tour_SkipTheTutorial);
         _tourSkip.Click += (_, _) => EndTutorial();
 
-        _tourNext = new Button { Content = "Next", Classes = { "primary" }, IsDefault = true };
-        AutomationProperties.SetName(_tourNext, "Next step");
+        _tourNext = new Button { Content = Strings.Tour_Next, Classes = { "primary" }, IsDefault = true };
+        AutomationProperties.SetName(_tourNext, Strings.Tour_NextStep);
         _tourNext.Click += (_, _) =>
         {
             if (_tourIndex >= _tourSteps.Length - 1) EndTutorial();
@@ -207,7 +208,7 @@ public partial class MainWindow
         var step = _tourSteps[_tourIndex];
         step.Setup();
 
-        _tourStep.Text = $"Step {_tourIndex + 1} of {_tourSteps.Length}";
+        _tourStep.Text = string.Format(CultureInfo.CurrentCulture, Strings.Tour_StepTourIndex1OfTourSteps, _tourIndex + 1, _tourSteps.Length);
         _tourTitle.Text = step.Title;
         _tourBody.Text = step.Body;
         _tourBack.IsEnabled = _tourIndex > 0;
@@ -215,7 +216,7 @@ public partial class MainWindow
         _tourNext.Content = last ? "Finish" : "Next";
 
         // The live region reads the whole step; keep its Name in sync.
-        AutomationProperties.SetName(_tourCallout, $"{step.Title}. {step.Body}");
+        AutomationProperties.SetName(_tourCallout, string.Format(CultureInfo.CurrentCulture, Strings.Tour_StepTitleStepBody, step.Title, step.Body));
 
         if (!_reduceMotion) _tourCallout.Opacity = 0;
 
