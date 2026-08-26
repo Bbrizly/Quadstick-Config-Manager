@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.LogicalTree;
@@ -234,7 +235,8 @@ public class ModesWindow : Window
                     FontSize = Size("BodySize"),
                     Classes = { "muted" },
                 },
-                label, up, down, copy, delete,
+                label, isPrefs ? new Panel { Width = ChannelBoxWidth } : ChannelBox(sheet, sheetIndex, ordinal),
+                up, down, copy, delete,
             },
         };
         // Alt with an arrow moves the row from anywhere on it, including the
@@ -246,6 +248,58 @@ public class ModesWindow : Window
             Move(sheetIndex, e.Key == Key.Up ? -1 : 1);
         };
         return row;
+    }
+
+    // Which connection a mode's outputs travel over, column C of its header
+    // row. It was readable, warned about and never settable: a profile could
+    // only get a Bluetooth mode by being imported from somebody who already had
+    // one. The preferences sheet has no channel, so its row holds a gap of the
+    // same width and the columns stay lined up.
+    const double ChannelBoxWidth = 210;
+
+    // Blank is a real value, not a missing one: Configuration.c:528 falls back
+    // to USB for a blank or unrecognised word. Anything already in the cell
+    // that is not one of these stays in the list exactly as typed, so opening
+    // this window can never quietly change somebody's file.
+    static readonly (string Token, string Label)[] ChannelChoices =
+    {
+        ("", "Not set (USB cable)"),
+        ("usb", "USB cable"),
+        ("bluetooth", "Bluetooth"),
+        ("both", "USB and Bluetooth"),
+        ("none", "Neither, sends nothing"),
+    };
+
+    Control ChannelBox(ModeSheet sheet, int sheetIndex, int ordinal)
+    {
+        var items = ChannelChoices.ToList();
+        if (!items.Any(c => c.Token == sheet.Channel))
+            items.Insert(0, (sheet.Channel, $"{sheet.Channel} (not a word the device knows)"));
+
+        var combo = new ComboBox
+        {
+            ItemsSource = items,
+            SelectedItem = items.First(c => c.Token == sheet.Channel),
+            Width = ChannelBoxWidth,
+            VerticalAlignment = VerticalAlignment.Center,
+            FontSize = Size("BodySize"),
+            ItemTemplate = new FuncDataTemplate<(string Token, string Label)>((c, _) =>
+                new TextBlock { Text = c.Label, FontSize = Size("BodySize") }, true),
+        };
+        AutomationProperties.SetName(combo,
+            $"Connection for mode {ordinal}. Where this mode's button presses go. "
+            + "A mode on Bluetooth alone sends no mouse or keyboard over a cable.");
+        combo.SelectionChanged += (_, _) =>
+        {
+            if (_rebuilding || _owner.OpenFile is null) return;
+            if (combo.SelectedItem is not ValueTuple<string, string> picked) return;
+            if (!_owner.OpenFile.SetModeChannel(sheetIndex, picked.Item1)) return;
+            _owner.ModesChanged(sheetIndex, picked.Item1.Length == 0
+                ? "Connection cleared. The device falls back to the USB cable."
+                : $"Connection set to {picked.Item2.ToLowerInvariant()}.");
+            Build();
+        };
+        return combo;
     }
 
     TextBox NameBox(ModeSheet sheet, int sheetIndex, int ordinal)
