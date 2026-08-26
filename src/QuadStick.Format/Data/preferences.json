@@ -7,7 +7,7 @@
     "default": "8",
     "minimum": 0,
     "maximum": 20,
-    "description": "Center dead zone for the analog stick, as a percent of full travel. Set it high enough to stop a wandering mouse or joystick. This is a separate thing from the D-Pad rings. On firmware 2373 a value of 0 no longer means no dead zone: the device substitutes 129 raw counts instead, and it redoes that on every scan, so it wins over the value worked out when the file was loaded.",
+    "description": "Center dead zone for the analog stick, as a percent of full travel. Set it high enough to stop a wandering mouse or joystick. Larger numbers make the stick less sensitive around the center. This is a separate thing from the D-Pad rings. On firmware 2373 a value of 0 no longer means no dead zone: the device substitutes 129 raw counts instead, and it redoes that on every scan, so it wins over the value worked out when the file was loaded.",
     "modeOverride": true,
     "source": "QMP-4 QuadStick.py slider_NEUTRAL (0..20) and its tooltip; qsflash.py defaults '8'. Firmware 2373 Preferences.h:97 also defaults to 8, and DataFlow.c:997 is where 0 becomes 129 raw counts, overriding Configuration.c:376."
   },
@@ -19,7 +19,7 @@
     "default": "25",
     "minimum": 10,
     "maximum": 50,
-    "description": "How far the stick has to move for a full signal. QMP takes the largest of its four direction sliders.",
+    "description": "How far the stick has to move for a full signal. QMP calls this the joystick's range of motion and it is the nearest thing the device has to a sensitivity control: larger numbers mean more travel for the same output, so the joystick feels less sensitive. QMP takes the largest of its four direction sliders.",
     "modeOverride": true,
     "source": "QMP-4 QuadStick.py slider_UP/DOWN/LEFT/RIGHT (10..50) and calculate_joystick_preferences; qsflash.py defaults '25'"
   },
@@ -30,7 +30,7 @@
     "editor": "integer",
     "default": "140",
     "unit": "percent",
-    "description": "Scales the up direction so it reaches a full signal at the same point as the other directions.",
+    "description": "Scales the up direction so it reaches a full signal at the same point as the other directions. QMP works it out as the largest direction slider over the up one, so a larger multiplier means up reaches a full signal on less travel and feels more sensitive.",
     "modeOverride": true,
     "source": "QMP-4 QuadStick.py calculate_joystick_preferences computes max*100/slider, so it has no fixed range; qsflash.py defaults '140'"
   },
@@ -41,7 +41,7 @@
     "editor": "integer",
     "default": "130",
     "unit": "percent",
-    "description": "Scales the down direction so it reaches a full signal at the same point as the other directions.",
+    "description": "Scales the down direction so it reaches a full signal at the same point as the other directions. QMP works it out as the largest direction slider over the down one, so a larger multiplier means down reaches a full signal on less travel and feels more sensitive.",
     "modeOverride": true,
     "source": "QMP-4 QuadStick.py calculate_joystick_preferences computes max*100/slider, so it has no fixed range; qsflash.py defaults '130'"
   },
@@ -52,7 +52,7 @@
     "editor": "integer",
     "default": "100",
     "unit": "percent",
-    "description": "Scales the left direction so it reaches a full signal at the same point as the other directions.",
+    "description": "Scales the left direction so it reaches a full signal at the same point as the other directions. QMP works it out as the largest direction slider over the left one, so a larger multiplier means left reaches a full signal on less travel and feels more sensitive.",
     "modeOverride": true,
     "source": "QMP-4 QuadStick.py calculate_joystick_preferences computes max*100/slider, so it has no fixed range; qsflash.py defaults '100'"
   },
@@ -63,7 +63,7 @@
     "editor": "integer",
     "default": "100",
     "unit": "percent",
-    "description": "Scales the right direction so it reaches a full signal at the same point as the other directions.",
+    "description": "Scales the right direction so it reaches a full signal at the same point as the other directions. QMP works it out as the largest direction slider over the right one, so a larger multiplier means right reaches a full signal on less travel and feels more sensitive.",
     "modeOverride": true,
     "source": "QMP-4 QuadStick.py calculate_joystick_preferences computes max*100/slider, so it has no fixed range; qsflash.py defaults '100'"
   },

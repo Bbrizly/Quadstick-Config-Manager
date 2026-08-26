@@ -299,6 +299,23 @@ public class PreferenceCatalogTests
         Assert.Contains(qmpWords, p.Description, StringComparison.Ordinal);
     }
 
+    // "Joystick sensitivity" is not a setting. QMP-4 spells it as four range
+    // sliders and a dead zone, and its own label says outright that larger
+    // numbers are less sensitive. Somebody arriving with that word has to land
+    // somewhere, so every control it collapses into carries it.
+    [Theory]
+    [InlineData("joystick_deflection_maximum")]
+    [InlineData("joystick_deflection_minimum")]
+    [InlineData("deflection_multiplier_up")]
+    [InlineData("deflection_multiplier_down")]
+    [InlineData("deflection_multiplier_left")]
+    [InlineData("deflection_multiplier_right")]
+    public void Every_joystick_range_control_says_which_way_is_less_sensitive(string name)
+    {
+        Assert.True(PreferenceCatalog.TryGet(name, out var p));
+        Assert.Contains("sensitive", p.Description, StringComparison.OrdinalIgnoreCase);
+    }
+
     // No entry may still say a name is missing from the device's table when
     // firmware 2373 has it. These sentences used to drive modeOverride.
     [Fact]
