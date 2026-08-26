@@ -32,7 +32,7 @@
     <EmbeddedResource Remove="Strings.qps-ploc.resx" Condition="'$(Configuration)' == 'Release'" />
     <EmbeddedResource Update="Strings.resx" Generator="MSBuild:Compile"
                       StronglyTypedLanguage="CSharp" StronglyTypedNamespace="QuadStick.App"
-                      StronglyTypedClassName="Strings"
+                      StronglyTypedClassName="Strings" PublicClass="true"
                       StronglyTypedFileName="$(IntermediateOutputPath)Strings.Designer.cs" />
   </ItemGroup>
 

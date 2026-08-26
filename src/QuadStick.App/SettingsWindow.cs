@@ -245,14 +245,14 @@ public class SettingsWindow : Window
 
         var appearance = new ComboBox
         {
-            ItemsSource = new[] { "System", "Light", "Dark" },
+            ItemsSource = QuadStick.App.Theme.Choices,
             SelectedIndex = owner.CurrentSettings.Theme switch { "Light" => 1, "Dark" => 2, _ => 0 },
             MinWidth = 220,
         };
         AutomationProperties.SetName(appearance, Strings.Settings_AppearanceHelp);
         appearance.SelectionChanged += (_, _) =>
         {
-            if (appearance.SelectedItem is string choice) owner.ApplyTheme(choice);
+            owner.ApplyTheme(QuadStick.App.Theme.ChoiceAt(appearance.SelectedIndex));
         };
         panel.Children.Add(Field(Strings.Settings_Appearance, null, appearance));
 

@@ -855,11 +855,13 @@ public partial class MainWindow : Window
         };
 
         var savedTheme = _settings.Theme;
-        AppearancePicker.ItemsSource = new[] { "System", "Light", "Dark" };
+        AppearancePicker.ItemsSource = QuadStick.App.Theme.Choices;
         AppearancePicker.SelectedIndex = savedTheme switch { "Light" => 1, "Dark" => 2, _ => 0 };
         // ApplyTheme sets SelectedIndex back to the same value on the way out,
         // which does not re-fire SelectionChanged, so this can't loop.
-        AppearancePicker.SelectionChanged += (_, _) => ApplyTheme((string)AppearancePicker.SelectedItem!);
+        // By position, not by the word on screen: the word is translated and
+        // the value saved to settings.json is not.
+        AppearancePicker.SelectionChanged += (_, _) => ApplyTheme(QuadStick.App.Theme.ChoiceAt(AppearancePicker.SelectedIndex));
 
         // Settings can connect or disconnect Drive, and the Home button reads
         // that state. Without the refresh it keeps the old label until the user
@@ -1608,7 +1610,7 @@ public partial class MainWindow : Window
         LabelStyleButton.Content = _labelStyle switch
         {
             0 => Strings.Main_WordsListNames,
-            1 => "Words: Plain English",
+            1 => Strings.Main_WordsPlainEnglish,
             _ => Strings.Main_WordsXboxStyle,
         };
         AutomationProperties.SetName(LabelStyleButton, _labelStyle switch
@@ -2129,15 +2131,15 @@ public partial class MainWindow : Window
     // drifted would be teaching somebody their device wrong.
     internal static readonly Zone[] AllZones =
     {
-        new("joystick", "Joystick", "Joystick", "up",
+        new("joystick", Strings.Main_Joystick, Strings.Main_Joystick, "up",
             Strings.Main_MovingTheWholeMouthpieceWith),
-        new("mp_left", Strings.Main_LeftMouthpieceHole, "Left", "mp_left_sip",
+        new("mp_left", Strings.Main_LeftMouthpieceHole, Strings.Main_Left, "mp_left_sip",
             Strings.Main_SipOrPuffOnThe),
-        new("mp_center", Strings.Main_CenterMouthpieceHole, "Center", "mp_center_sip",
+        new("mp_center", Strings.Main_CenterMouthpieceHole, Strings.Main_Center, "mp_center_sip",
             Strings.Main_SipOrPuffOnThe2),
-        new("mp_right", Strings.Main_RightMouthpieceHole, "Right", "mp_right_sip",
+        new("mp_right", Strings.Main_RightMouthpieceHole, Strings.Main_Right, "mp_right_sip",
             Strings.Main_SipOrPuffOnThe3),
-        new("combo", Strings.Main_HoleCombos, "Combos", "mp_left_center_sip",
+        new("combo", Strings.Main_HoleCombos, Strings.Main_Combos, "mp_left_center_sip",
             Strings.Main_TwoOrMoreHolesUsed),
         new("side", Strings.Main_SideTube, Strings.Main_SideTube, "right_sip",
             Strings.Main_SipOrPuffOnThe4),
@@ -2663,7 +2665,8 @@ public partial class MainWindow : Window
             DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
                 connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected, plainDot: !connected);
             var modeName = CurrentSheet is { } cs ? (cs.ModeName.Length > 0 ? cs.ModeName : cs.Type.ToString()) : "";
-            DeviceHeaderMode.Text = modeName.Length > 0 ? $"Mode: {modeName}" : "";
+            DeviceHeaderMode.Text = modeName.Length > 0
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeNamed, modeName) : "";
             int modeNumber = CurrentModeNumber();
             DeviceHeaderLights.Text = ModeLights.For(modeNumber) is { } lit
                 ? string.Format(CultureInfo.CurrentCulture, Strings.Main_DeviceShowsModeLightsDescribeLit, ModeLights.Describe(lit))
@@ -2913,7 +2916,7 @@ public partial class MainWindow : Window
         // The full, editable list lives in the detail panel, opened on select.
         var countLabel = new TextBlock
         {
-            Text = count == 0 ? Strings.Main_NotMapped : count == 1 ? "1 mapping" : $"{count} mappings",
+            Text = count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping"),
             FontSize = Size("SmallSize"), TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
         };
@@ -2971,7 +2974,7 @@ public partial class MainWindow : Window
 
         var cnt = new TextBlock
         {
-            Text = count == 0 ? Strings.Main_NotMapped : count == 1 ? "1 mapping" : $"{count} mappings",
+            Text = count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping"),
             FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center,
         };
         if (count == 0) cnt.Classes.Add("muted"); else BindBrush(cnt, TextBlock.ForegroundProperty, "AccentText");
@@ -3100,8 +3103,8 @@ public partial class MainWindow : Window
         // "set X to 50" and the visible one was left saying "Press mouse_speed
         // when you 50", so the card on screen and the card in a screen reader
         // disagreed about the same row. Same fix, other direction.
-        string verb = setting ? "Set" : "Press";
-        string joiner = setting ? "to" : Strings.Main_WhenYou;
+        string verb = setting ? Strings.Main_SetVerb : Strings.Main_PressVerb;
+        string joiner = setting ? Strings.Main_ToJoiner : Strings.Main_WhenYou;
         string func = _labelStyle == 0 ? b.Function : b.Function.Replace('_', ' ');
 
         // Every card uses the same column widths, so the outputs line up under
@@ -3149,7 +3152,7 @@ public partial class MainWindow : Window
             Cell(Word(verb), 0); Cell(Pill(output, OutputTint), 1);
             Cell(Word(joiner, left: true), 0, row: 1); Cell(inputPills, 1, row: 1);
             if (func.Length > 0)
-            { Cell(Word("as", left: true), 0, row: 2); Cell(Pill(func, FunctionTint), 1, row: 2); }
+            { Cell(Word(Strings.Main_AsJoiner, left: true), 0, row: 2); Cell(Pill(func, FunctionTint), 1, row: 2); }
         }
         else
         {
@@ -3166,7 +3169,7 @@ public partial class MainWindow : Window
                     ColumnDefinitions = new ColumnDefinitions("Auto,*"),
                     VerticalAlignment = VerticalAlignment.Center,
                 };
-                asFunc.Children.Add(Word("as"));
+                asFunc.Children.Add(Word(Strings.Main_AsJoiner));
                 var funcPill = Pill(func, FunctionTint);
                 funcPill.HorizontalAlignment = HorizontalAlignment.Left; // sits against "as", not adrift
                 Grid.SetColumn(funcPill, 1);
@@ -3338,13 +3341,13 @@ public partial class MainWindow : Window
                     var prefDef = Definition(b.Output);
                     var prefValue = _file!.GetCell(b.Row, 2);
                     bool prefTyped = prefDef is not null && CanRepresent(prefDef, prefValue, 2);
-                    body.Children.Add(Labeled("Setting", OutputPicker(b, OutputsFor(CurrentSheet!),
+                    body.Children.Add(Labeled(Strings.Main_SettingLabel, OutputPicker(b, OutputsFor(CurrentSheet!),
                         Strings.Main_SettingChangedByThisRow, OutputTint)));
                     body.Children.Add(Labeled(Strings.Main_SetItTo, PrefsValueCell(b, prefTyped ? prefDef : null, 2)));
                     if (prefDef is not null
                         && PreferenceInfoLine(b, prefDef, prefTyped ? _cellBorders.GetValueOrDefault($"C{b.Row}") : null, 2) is { } prefInfo)
                         body.Children.Add(prefInfo);
-                    body.Children.Add(Labeled("Note", NoteBox(b.Row, NoteColumn,
+                    body.Children.Add(Labeled(Strings.Main_NoteLabel, NoteBox(b.Row, NoteColumn,
                         Strings.Main_NoteForThisRowSaved)));
                     body.Children.Add(ScopeBanner(ModeScope,
                         Strings.Main_ThisRowSetsAQuadStick));
@@ -3442,10 +3445,10 @@ public partial class MainWindow : Window
                 body.Children.Add(Labeled(Strings.Main_WhenYou2, inputsBox));
 
                 // ---- "Press" (game button) and "As" (how it presses) ----
-                body.Children.Add(Labeled("Press", OutputPicker(b, OutputsFor(CurrentSheet!),
+                body.Children.Add(Labeled(Strings.Main_PressVerb, OutputPicker(b, OutputsFor(CurrentSheet!),
                     string.Format(CultureInfo.CurrentCulture, Strings.Main_GameButtonPressedByShortInput, ShortInput(zone, b)), OutputTint)));
-                body.Children.Add(Labeled("As", FunctionCombo(b, zone)));
-                body.Children.Add(Labeled("Note", NoteBox(b.Row, NoteColumn, Strings.Main_NoteForThisMappingSaved)));
+                body.Children.Add(Labeled(Strings.Main_AsLabel, FunctionCombo(b, zone)));
+                body.Children.Add(Labeled(Strings.Main_NoteLabel, NoteBox(b.Row, NoteColumn, Strings.Main_NoteForThisMappingSaved)));
 
                 ZoneDetailPanel.Children.Add(MappingCard(body));
             }

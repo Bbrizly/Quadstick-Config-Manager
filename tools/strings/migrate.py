@@ -2,6 +2,7 @@
 """Move one file's user-facing text into Strings.resx.
 
   migrate.py join <file.cs>               glue split sentences back into one
+  migrate.py xaml-plan|xaml-apply <f.axaml> <Prefix>   the same, for a window's XAML
   migrate.py plan <file.cs> <Prefix>      what it would do, as key<TAB>text
   migrate.py apply <file.cs> <Prefix>     do it, and add the keys to the resx
 
@@ -21,7 +22,7 @@ import resx
 SINK_TAIL = re.compile(
     r'(?:\b(?:Text|Content|Title|Header|Watermark)\s*=\s*'
     r'|(?:SetName|SetHelpText|SetTip)\([^,]*,\s*'
-    r'|\b(?:Field|Heading|Label|Caption|LinkButton|ShowHelp|ConfirmAsync|Status)\(\s*)$')
+    r'|\b(?:Field|Heading|Label|Labeled|Caption|LinkButton|ShowHelp|ConfirmAsync|Status)\(\s*)$')
 PROSE = re.compile(r'[a-zA-Z] [a-z]')
 
 # C# has five ways to write a string and they nest, so a regex cannot find
@@ -163,6 +164,7 @@ def top_level_comma(expr):
 # The body of a C# literal is not its text: \" is one character, and a resx
 # holds the character.
 def unescape(body):
+    body = re.sub(r'\\u([0-9a-fA-F]{4})', lambda m: chr(int(m.group(1), 16)), body)
     return re.sub(r'\\(.)', lambda m: {'n': '\n', 't': '\t', 'r': '\r'}.get(m.group(1), m.group(1)), body)
 
 def rewrite(lit, key):
@@ -213,8 +215,43 @@ def run(mode, path, prefix):
                    [(k, t) for _, _, k, t, _ in rows])
     print(f'moved {len(rows)}, left {len(skips)}')
 
+# The window's own XAML holds text too, and none of the reading above sees it.
+# An attribute value that is already a binding or a markup extension is left
+# alone; everything else with a letter in it becomes {x:Static app:Strings.Key}.
+XAML_SINK = re.compile(
+    r'\b(Text|Content|Header|Watermark|Title|ToolTip\.Tip'
+    r'|AutomationProperties\.Name|AutomationProperties\.HelpText)="([^"{][^"]*)"')
+
+def xaml(mode, path, prefix, keep):
+    src = open(path).read()
+    taken, rows, seen = set(), [], {}
+    for m in XAML_SINK.finditer(src):
+        text = m.group(2)
+        if not re.search(r'[A-Za-z]', text) or text in keep: continue
+        key = seen.get(text) or key_for(prefix, text, taken)
+        seen[text] = key
+        rows.append((m.start(2), m.end(2), key, text))
+
+    for _, _, key, text in rows: print(f'{key}\t{text}')
+    if mode != 'apply': return
+    for start, end, key, _ in sorted(rows, reverse=True):
+        src = src[:start] + '{x:Static app:Strings.%s}' % key + src[end:]
+    open(path, 'w').write(src)
+    resx.add_pairs(os.path.join(os.path.dirname(path), 'Strings.resx'),
+                   [(k, xml_text(t)) for _, _, k, t in rows])
+    print(f'moved {len(rows)}')
+
+# XAML escapes its own characters; the resx holds the character.
+def xml_text(t):
+    return re.sub(r'&#(\d+);', lambda m: chr(int(m.group(1))), t) \
+        .replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>').replace('&quot;', '"')
+
 if __name__ == '__main__':
-    if sys.argv[1] == 'join':
+    if sys.argv[1].startswith('xaml-'):
+        # Keep: the product's own name, in the words it is written everywhere.
+        xaml(sys.argv[1][5:], sys.argv[2], sys.argv[3],
+             {'QCM', 'QuadStick Config Manager', 'Quadstick: Config Manager (unofficial)'})
+    elif sys.argv[1] == 'join':
         path = sys.argv[2]
         joined = join_split_strings(open(path).read())
         open(path, 'w').write(joined)

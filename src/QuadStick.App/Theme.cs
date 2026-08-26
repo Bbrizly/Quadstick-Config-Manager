@@ -126,6 +126,14 @@ internal partial class SettingsJsonContext : JsonSerializerContext { }
 
 public static class Theme
 {
+    /// <summary>The three appearances, in the words the app is being read in.
+    /// What gets saved is the position, never the word: settings.json holds
+    /// "System", "Light" or "Dark" whatever language wrote it.</summary>
+    public static string[] Choices =>
+        new[] { Strings.Theme_System, Strings.Theme_Light, Strings.Theme_Dark };
+
+    public static string ChoiceAt(int index) => index switch { 1 => "Light", 2 => "Dark", _ => "System" };
+
     public static void RegisterInto(Application app)
     {
         var rd = new ResourceDictionary();

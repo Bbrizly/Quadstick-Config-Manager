@@ -696,6 +696,12 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_AsFunction" xml:space="preserve">
     <value>, as {0}</value>
   </data>
+  <data name="Main_AsJoiner" xml:space="preserve">
+    <value>as</value>
+  </data>
+  <data name="Main_AsLabel" xml:space="preserve">
+    <value>As</value>
+  </data>
   <data name="Main_BButton" xml:space="preserve">
     <value>B button</value>
   </data>
@@ -732,6 +738,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="Main_Center" xml:space="preserve">
+    <value>Center</value>
+  </data>
   <data name="Main_CenterMouthpieceHole" xml:space="preserve">
     <value>Center mouthpiece hole</value>
   </data>
@@ -766,6 +775,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_CloseWindowTitleToLowerInvariant" xml:space="preserve">
     <value>Close {0}</value>
+  </data>
+  <data name="Main_Combos" xml:space="preserve">
+    <value>Combos</value>
   </data>
   <data name="Main_CommunityProfiles" xml:space="preserve">
     <value>Community profiles</value>
@@ -1010,6 +1022,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_ItsButtonsAreUsb1" xml:space="preserve">
     <value>. Its buttons are usb_1_button_1 upwards.</value>
   </data>
+  <data name="Main_Joystick" xml:space="preserve">
+    <value>Joystick</value>
+  </data>
   <data name="Main_JoystickOrIn34" xml:space="preserve">
     <value>Joystick, or in 3-4</value>
   </data>
@@ -1021,6 +1036,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
     <value>Keeps pressing for a moment after you release.</value>
+  </data>
+  <data name="Main_Left" xml:space="preserve">
+    <value>Left</value>
   </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>Left bumper</value>
@@ -1063,6 +1081,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
     <value>Menu button</value>
+  </data>
+  <data name="Main_ModeNamed" xml:space="preserve">
+    <value>Mode: {0}</value>
   </data>
   <data name="Main_ModeNumberAndName" xml:space="preserve">
     <value>{0}: {1}</value>
@@ -1181,6 +1202,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_NoteForThisRowSaved" xml:space="preserve">
     <value>Note for this row. Saved in the file, ignored by the QuadStick</value>
   </data>
+  <data name="Main_NoteLabel" xml:space="preserve">
+    <value>Note</value>
+  </data>
   <data name="Main_NothingMappedHereYet" xml:space="preserve">
     <value>Nothing mapped here yet.</value>
   </data>
@@ -1294,6 +1318,9 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   <data name="Main_PressTheLipSwitchOr" xml:space="preserve">
     <value>Press the lip switch or sensor with your lip. Often used for the fire button.</value>
   </data>
+  <data name="Main_PressVerb" xml:space="preserve">
+    <value>Press</value>
+  </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
     <value>Presses in a repeating on and off cycle.</value>
   </data>
@@ -1378,6 +1405,9 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   <data name="Main_RestoreYourProfiles" xml:space="preserve">
     <value>Restore your profiles?</value>
   </data>
+  <data name="Main_Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
   <data name="Main_RightBumper" xml:space="preserve">
     <value>Right bumper</value>
   </data>
@@ -1459,8 +1489,14 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   <data name="Main_SetItTo" xml:space="preserve">
     <value>Set it to</value>
   </data>
+  <data name="Main_SetVerb" xml:space="preserve">
+    <value>Set</value>
+  </data>
   <data name="Main_SettingChangedByThisRow" xml:space="preserve">
     <value>Setting changed by this row</value>
+  </data>
+  <data name="Main_SettingLabel" xml:space="preserve">
+    <value>Setting</value>
   </data>
   <data name="Main_SettingRowSpoken" xml:space="preserve">
     <value>Setting {0}: while this mode runs, set {1} to {2}. Press Enter to edit.</value>
@@ -1616,6 +1652,9 @@ You can change this any time in Settings, under Advanced.</value>
   <data name="Main_TitleCountOptionsOpensThis" xml:space="preserve">
     <value>{0}, {1} options. Opens this category.</value>
   </data>
+  <data name="Main_ToJoiner" xml:space="preserve">
+    <value>to</value>
+  </data>
   <data name="Main_ToTheBottom" xml:space="preserve">
     <value>To the bottom</value>
   </data>
@@ -1674,7 +1713,7 @@ You can change this any time in Settings, under Advanced.</value>
     <value>Using device view</value>
   </data>
   <data name="Main_VVMajorVMinor" xml:space="preserve">
-    <value>v{0}.{1}.{2} u00b7 MIT u00b7 not affiliated with QuadStick</value>
+    <value>v{0}.{1}.{2} · MIT · not affiliated with QuadStick</value>
   </data>
   <data name="Main_ViewButton" xml:space="preserve">
     <value>View button</value>
@@ -1705,6 +1744,9 @@ You can change this any time in Settings, under Advanced.</value>
   </data>
   <data name="Main_WordsListNames" xml:space="preserve">
     <value>Words: List names</value>
+  </data>
+  <data name="Main_WordsPlainEnglish" xml:space="preserve">
+    <value>Words: Plain English</value>
   </data>
   <data name="Main_WordsXboxStyle" xml:space="preserve">
     <value>Words: Xbox style</value>
@@ -2632,6 +2674,300 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Share_WaitingForGoogleInYour" xml:space="preserve">
     <value>Waiting for Google in your browser...</value>
+  </data>
+  <data name="Shell_AddANewBindingRow" xml:space="preserve">
+    <value>Add a new binding row to this mode</value>
+  </data>
+  <data name="Shell_AddRenameReorderAndDelete" xml:space="preserve">
+    <value>Add, rename, reorder and delete modes</value>
+  </data>
+  <data name="Shell_AddRow" xml:space="preserve">
+    <value>+ Add row</value>
+  </data>
+  <data name="Shell_AppearanceChooseSystemLightOr" xml:space="preserve">
+    <value>Appearance: choose System, Light, or Dark theme</value>
+  </data>
+  <data name="Shell_AskForAChange" xml:space="preserve">
+    <value>Ask for a change</value>
+  </data>
+  <data name="Shell_BrowseCommunityProfiles" xml:space="preserve">
+    <value>Browse community profiles</value>
+  </data>
+  <data name="Shell_BrowseTheCommunityListOf" xml:space="preserve">
+    <value>Browse the community list of shared game profiles and import one</value>
+  </data>
+  <data name="Shell_BuildOpenOrFindA" xml:space="preserve">
+    <value>Build, open, or find a setup</value>
+  </data>
+  <data name="Shell_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Shell_ClearTheSelection" xml:space="preserve">
+    <value>Clear the selection</value>
+  </data>
+  <data name="Shell_Community" xml:space="preserve">
+    <value>Community</value>
+  </data>
+  <data name="Shell_CommunityProfiles" xml:space="preserve">
+    <value>Community profiles</value>
+  </data>
+  <data name="Shell_CreateANewProfile" xml:space="preserve">
+    <value>Create a new profile</value>
+  </data>
+  <data name="Shell_CreateANewProfileFrom" xml:space="preserve">
+    <value>Create a new profile from the factory default template</value>
+  </data>
+  <data name="Shell_Csv" xml:space="preserve">
+    <value>.csv</value>
+  </data>
+  <data name="Shell_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedMappings" xml:space="preserve">
+    <value>Delete the selected mappings</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedRows" xml:space="preserve">
+    <value>Delete the selected rows</value>
+  </data>
+  <data name="Shell_DescribeAChangeInPlain" xml:space="preserve">
+    <value>Describe a change in plain words and have it made to this profile. Nothing is changed until you approve it.</value>
+  </data>
+  <data name="Shell_Device" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="Shell_DiscardTheRecoveredWorkPermanently" xml:space="preserve">
+    <value>Discard the recovered work permanently</value>
+  </data>
+  <data name="Shell_Dismiss" xml:space="preserve">
+    <value>Dismiss</value>
+  </data>
+  <data name="Shell_EditModes" xml:space="preserve">
+    <value>Edit modes</value>
+  </data>
+  <data name="Shell_EditModesAddRenameReorder" xml:space="preserve">
+    <value>Edit modes: add, rename, reorder and delete</value>
+  </data>
+  <data name="Shell_FixFirstProblem" xml:space="preserve">
+    <value>Fix first problem</value>
+  </data>
+  <data name="Shell_GoToHome" xml:space="preserve">
+    <value>Go to Home</value>
+  </data>
+  <data name="Shell_GoogleSheetsProfileLink" xml:space="preserve">
+    <value>Google Sheets profile link</value>
+  </data>
+  <data name="Shell_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Shell_HowDeviceViewWorksAnd" xml:space="preserve">
+    <value>How device view works, and which parts your model has</value>
+  </data>
+  <data name="Shell_HowItWorks" xml:space="preserve">
+    <value>How it works</value>
+  </data>
+  <data name="Shell_HowItWorksF1" xml:space="preserve">
+    <value>How it works  (F1)</value>
+  </data>
+  <data name="Shell_Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Shell_ImportFromSheets" xml:space="preserve">
+    <value>Import from Sheets</value>
+  </data>
+  <data name="Shell_ImportTheProfileFromThe" xml:space="preserve">
+    <value>Import the profile from the pasted Google Sheets link</value>
+  </data>
+  <data name="Shell_InstallThisProfileOntoA" xml:space="preserve">
+    <value>Install this profile onto a connected QuadStick. Shortcut Control I</value>
+  </data>
+  <data name="Shell_InstallToQuadStick" xml:space="preserve">
+    <value>Install to QuadStick</value>
+  </data>
+  <data name="Shell_JumpToAndFocusThe" xml:space="preserve">
+    <value>Jump to and focus the first error in the Problems list</value>
+  </data>
+  <data name="Shell_ListOfValidationProblemsSelect" xml:space="preserve">
+    <value>List of validation problems. Select one to copy it.</value>
+  </data>
+  <data name="Shell_ListTheInputsThisMode" xml:space="preserve">
+    <value>List the inputs this mode has not used yet</value>
+  </data>
+  <data name="Shell_ManageFiles" xml:space="preserve">
+    <value>Manage files</value>
+  </data>
+  <data name="Shell_ManageFilesOnYourQuadStick" xml:space="preserve">
+    <value>Manage files on your QuadStick</value>
+  </data>
+  <data name="Shell_ManageTheProfileFilesOn" xml:space="preserve">
+    <value>Manage the profile files on your QuadStick: copy, delete, and see the file selection order</value>
+  </data>
+  <data name="Shell_Mode" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="Shell_Move" xml:space="preserve">
+    <value>Move</value>
+  </data>
+  <data name="Shell_MoveTheSelectedMappingsTo" xml:space="preserve">
+    <value>Move the selected mappings to the top or bottom</value>
+  </data>
+  <data name="Shell_MoveTheSelectedRowsTo" xml:space="preserve">
+    <value>Move the selected rows to the top or bottom</value>
+  </data>
+  <data name="Shell_NameAGameAndHave" xml:space="preserve">
+    <value>Name a game and have a profile built for it from the profiles you already have</value>
+  </data>
+  <data name="Shell_New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="Shell_NewProfile" xml:space="preserve">
+    <value>New profile</value>
+  </data>
+  <data name="Shell_OnYourQuadStick" xml:space="preserve">
+    <value>On your QuadStick</value>
+  </data>
+  <data name="Shell_Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Shell_OpenAFile" xml:space="preserve">
+    <value>Open a file</value>
+  </data>
+  <data name="Shell_OpenAProfileCSVFile" xml:space="preserve">
+    <value>Open a profile CSV file from your computer</value>
+  </data>
+  <data name="Shell_OpenAProfileFile" xml:space="preserve">
+    <value>Open a profile file</value>
+  </data>
+  <data name="Shell_OpenRecoveredWork" xml:space="preserve">
+    <value>Open recovered work</value>
+  </data>
+  <data name="Shell_OpenSettings" xml:space="preserve">
+    <value>Open Settings</value>
+  </data>
+  <data name="Shell_OpenTheProfileThatWas" xml:space="preserve">
+    <value>Open the profile that was recovered after the last crash or force quit</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideShortcut" xml:space="preserve">
+    <value>Open the quick guide. Shortcut Control H or F1</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideThat" xml:space="preserve">
+    <value>Open the quick guide that explains profiles, outputs, functions, and inputs</value>
+  </data>
+  <data name="Shell_OpenedFromYourComputer" xml:space="preserve">
+    <value>Opened from your computer</value>
+  </data>
+  <data name="Shell_Parts" xml:space="preserve">
+    <value>Parts</value>
+  </data>
+  <data name="Shell_PasteAGoogleSheetsProfile" xml:space="preserve">
+    <value>Paste a Google Sheets profile link</value>
+  </data>
+  <data name="Shell_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>Plug in your QuadStick to see its profiles. If the drive is hidden, turn off controller emulation and reconnect it.</value>
+  </data>
+  <data name="Shell_Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Shell_ProfileNameEditToRename" xml:space="preserve">
+    <value>Profile name. Edit to rename; .csv is added for you</value>
+  </data>
+  <data name="Shell_ProfilesYouSaveWillShow" xml:space="preserve">
+    <value>Profiles you save will show up here.</value>
+  </data>
+  <data name="Shell_QuadStickConfigManagerGoTo" xml:space="preserve">
+    <value>QuadStick Config Manager. Go to Home</value>
+  </data>
+  <data name="Shell_Rows" xml:space="preserve">
+    <value>Rows</value>
+  </data>
+  <data name="Shell_SaveAsATemplate" xml:space="preserve">
+    <value>Save as a template</value>
+  </data>
+  <data name="Shell_SaveCtrlS" xml:space="preserve">
+    <value>Save  (Ctrl+S)</value>
+  </data>
+  <data name="Shell_SaveThisProfileAsA" xml:space="preserve">
+    <value>Save this profile as a reusable template you can start new profiles from</value>
+  </data>
+  <data name="Shell_SaveThisProfileShortcutControl" xml:space="preserve">
+    <value>Save this profile. Shortcut Control S</value>
+  </data>
+  <data name="Shell_SeeTheMappingsOnA" xml:space="preserve">
+    <value>See the mappings on a picture of the QuadStick  (Ctrl+D)</value>
+  </data>
+  <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
+    <value>See the rows the way the sheet stores them  (Ctrl+D)</value>
+  </data>
+  <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
+    <value>Select which mode to edit</value>
+  </data>
+  <data name="Shell_SetUpAGame" xml:space="preserve">
+    <value>Set up a game</value>
+  </data>
+  <data name="Shell_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Shell_ShareAsAGoogleSheet" xml:space="preserve">
+    <value>Share as a Google Sheet</value>
+  </data>
+  <data name="Shell_ShareThisProfileAsA" xml:space="preserve">
+    <value>Share this profile as a Google Sheet</value>
+  </data>
+  <data name="Shell_ShowOrHideTheList" xml:space="preserve">
+    <value>Show or hide the list of problems</value>
+  </data>
+  <data name="Shell_ShowTheMappingsAsA" xml:space="preserve">
+    <value>Show the mappings as a list of rows. Shortcut Control D toggles this</value>
+  </data>
+  <data name="Shell_ShowTheMappingsOnA" xml:space="preserve">
+    <value>Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this</value>
+  </data>
+  <data name="Shell_ShowThePartsAsA" xml:space="preserve">
+    <value>Show the parts as a simple list you arrow through, with the same editor on the right</value>
+  </data>
+  <data name="Shell_StartANewProfileFrom" xml:space="preserve">
+    <value>Start a new profile from one of your saved templates</value>
+  </data>
+  <data name="Shell_StartAProfile" xml:space="preserve">
+    <value>Start a profile</value>
+  </data>
+  <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
+    <value>Step through the parts one at a time</value>
+  </data>
+  <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
+    <value>Switch the words used in device view between plain English and the raw list-view names</value>
+  </data>
+  <data name="Shell_UndoCtrlZ" xml:space="preserve">
+    <value>Undo  (Ctrl+Z)</value>
+  </data>
+  <data name="Shell_UndoTheLastChangeShortcut" xml:space="preserve">
+    <value>Undo the last change. Shortcut Control Z</value>
+  </data>
+  <data name="Shell_UseTemplate" xml:space="preserve">
+    <value>Use template</value>
+  </data>
+  <data name="Shell_View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="Shell_WhatIsAMode" xml:space="preserve">
+    <value>What is a mode?</value>
+  </data>
+  <data name="Shell_WhatIsAModeAnd" xml:space="preserve">
+    <value>What is a mode, and why is there only one?</value>
+  </data>
+  <data name="Shell_WhichQuadStickModelYouHave" xml:space="preserve">
+    <value>Which QuadStick model you have</value>
+  </data>
+  <data name="Shell_YourProfiles" xml:space="preserve">
+    <value>Your profiles</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>System</value>
   </data>
   <data name="Tour_Back" xml:space="preserve">
     <value>Back</value>

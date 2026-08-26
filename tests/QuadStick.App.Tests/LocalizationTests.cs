@@ -67,7 +67,7 @@ public class LocalizationTests
     static readonly Regex Sink = new(
         @"(?:\b(?:Text|Content|Title|Header|Watermark)\s*=\s*"
         + @"|(?:SetName|SetHelpText|SetTip)\([^,]+,\s*"
-        + @"|\b(?:Field|Heading|Label|Caption|LinkButton|ShowHelp|ConfirmAsync|Status)\(\s*)"
+        + @"|\b(?:Field|Heading|Label|Labeled|Caption|LinkButton|ShowHelp|ConfirmAsync|Status)\(\s*)"
         + "(" + Literal + ")");
 
     // Anything that reads like a sentence, wherever it sits. This is what
@@ -118,6 +118,40 @@ public class LocalizationTests
         Assert.True(found.Count == 0,
             "Move this text into Strings.resx, or say why it stays English in LocalizationTests.Keep:\n"
             + string.Join("\n", found.Distinct()));
+    }
+
+    // A window's own XAML holds text too, and none of the reading above sees
+    // it: the first pseudo run found the whole Home screen still in English.
+    static readonly Regex XamlText = new(
+        "\\b(?:Text|Content|Header|Watermark|Title|ToolTip\\.Tip"
+        + "|AutomationProperties\\.Name|AutomationProperties\\.HelpText)=\"([^\"{][^\"]*)\"");
+
+    // The product's own name, written the same way everywhere it appears.
+    static readonly string[] TheProductsName =
+    {
+        "QCM", "QuadStick Config Manager", "Quadstick: Config Manager (unofficial)",
+    };
+
+    public static TheoryData<string> Windows()
+    {
+        var data = new TheoryData<string>();
+        foreach (var f in Directory.GetFiles(SrcDir(), "*.axaml")) data.Add(Path.GetFileName(f));
+        return data;
+    }
+
+    [Theory]
+    [MemberData(nameof(Windows))]
+    public void A_window_takes_its_words_from_Strings_too(string name)
+    {
+        var found = XamlText.Matches(File.ReadAllText(Path.Combine(SrcDir(), name)))
+            .Select(m => m.Groups[1].Value)
+            .Where(t => Regex.IsMatch(t, "[A-Za-z]") && !TheProductsName.Contains(t))
+            .Distinct()
+            .ToList();
+
+        Assert.True(found.Count == 0,
+            $"{name} writes text a person reads. Use {{x:Static app:Strings.Key}}:\n"
+            + string.Join("\n", found));
     }
 
     [Fact]

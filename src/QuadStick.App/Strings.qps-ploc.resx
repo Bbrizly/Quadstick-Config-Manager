@@ -696,6 +696,12 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_AsFunction" xml:space="preserve">
     <value>[, áš {0} xxx]</value>
   </data>
+  <data name="Main_AsJoiner" xml:space="preserve">
+    <value>[áš x]</value>
+  </data>
+  <data name="Main_AsLabel" xml:space="preserve">
+    <value>[Áš x]</value>
+  </data>
   <data name="Main_BButton" xml:space="preserve">
     <value>[B búttóñ xxx]</value>
   </data>
@@ -732,6 +738,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_Cancel" xml:space="preserve">
     <value>[Çáñçél xx]</value>
   </data>
+  <data name="Main_Center" xml:space="preserve">
+    <value>[Çéñtér xx]</value>
+  </data>
   <data name="Main_CenterMouthpieceHole" xml:space="preserve">
     <value>[Çéñtér móúthpíéçé hólé xxxxxxxx]</value>
   </data>
@@ -766,6 +775,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   </data>
   <data name="Main_CloseWindowTitleToLowerInvariant" xml:space="preserve">
     <value>[Çlóšé {0} xxx]</value>
+  </data>
+  <data name="Main_Combos" xml:space="preserve">
+    <value>[Çómbóš xx]</value>
   </data>
   <data name="Main_CommunityProfiles" xml:space="preserve">
     <value>[Çómmúñítý prófíléš xxxxxxx]</value>
@@ -1010,6 +1022,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_ItsButtonsAreUsb1" xml:space="preserve">
     <value>[. Ítš búttóñš áré úšb_1_búttóñ_1 úpwárdš. xxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_Joystick" xml:space="preserve">
+    <value>[Jóýštíçk xxx]</value>
+  </data>
   <data name="Main_JoystickOrIn34" xml:space="preserve">
     <value>[Jóýštíçk, ór íñ 3-4 xxxxxxx]</value>
   </data>
@@ -1021,6 +1036,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
     <value>[Kéépš préššíñg fór á móméñt áftér ýóú réléášé. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_Left" xml:space="preserve">
+    <value>[Léft x]</value>
   </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>[Léft búmpér xxxx]</value>
@@ -1063,6 +1081,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
     <value>[Méñú búttóñ xxxx]</value>
+  </data>
+  <data name="Main_ModeNamed" xml:space="preserve">
+    <value>[Módé: {0} xxx]</value>
   </data>
   <data name="Main_ModeNumberAndName" xml:space="preserve">
     <value>[{0}: {1} xxx]</value>
@@ -1181,6 +1202,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_NoteForThisRowSaved" xml:space="preserve">
     <value>[Ñóté fór thíš rów. Šávéd íñ thé fílé, ígñóréd bý thé QúádŠtíçk xxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_NoteLabel" xml:space="preserve">
+    <value>[Ñóté x]</value>
+  </data>
   <data name="Main_NothingMappedHereYet" xml:space="preserve">
     <value>[Ñóthíñg máppéd héré ýét. xxxxxxxxx]</value>
   </data>
@@ -1294,6 +1318,9 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
   <data name="Main_PressTheLipSwitchOr" xml:space="preserve">
     <value>[Préšš thé líp šwítçh ór šéñšór wíth ýóúr líp. Óftéñ úšéd fór thé fíré búttóñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_PressVerb" xml:space="preserve">
+    <value>[Préšš xx]</value>
+  </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
     <value>[Préššéš íñ á répéátíñg óñ áñd óff çýçlé. xxxxxxxxxxxxxxxx]</value>
   </data>
@@ -1378,6 +1405,9 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
   <data name="Main_RestoreYourProfiles" xml:space="preserve">
     <value>[Réštóré ýóúr prófíléš? xxxxxxxx]</value>
   </data>
+  <data name="Main_Right" xml:space="preserve">
+    <value>[Ríght xx]</value>
+  </data>
   <data name="Main_RightBumper" xml:space="preserve">
     <value>[Ríght búmpér xxxx]</value>
   </data>
@@ -1459,8 +1489,14 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
   <data name="Main_SetItTo" xml:space="preserve">
     <value>[Šét ít tó xxx]</value>
   </data>
+  <data name="Main_SetVerb" xml:space="preserve">
+    <value>[Šét x]</value>
+  </data>
   <data name="Main_SettingChangedByThisRow" xml:space="preserve">
     <value>[Šéttíñg çháñgéd bý thíš rów xxxxxxxxxx]</value>
+  </data>
+  <data name="Main_SettingLabel" xml:space="preserve">
+    <value>[Šéttíñg xx]</value>
   </data>
   <data name="Main_SettingRowSpoken" xml:space="preserve">
     <value>[Šéttíñg {0}: whílé thíš módé rúñš, šét {1} tó {2}. Préšš Éñtér tó édít. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -1616,6 +1652,9 @@ Whát íš šéñt góéš tó PóštHóg, óñ šérvérš íñ thé Úñítéd
   <data name="Main_TitleCountOptionsOpensThis" xml:space="preserve">
     <value>[{0}, {1} óptíóñš. Ópéñš thíš çátégórý. xxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_ToJoiner" xml:space="preserve">
+    <value>[tó x]</value>
+  </data>
   <data name="Main_ToTheBottom" xml:space="preserve">
     <value>[Tó thé bóttóm xxxxx]</value>
   </data>
@@ -1674,7 +1713,7 @@ Whát íš šéñt góéš tó PóštHóg, óñ šérvérš íñ thé Úñítéd
     <value>[Úšíñg dévíçé víéw xxxxxx]</value>
   </data>
   <data name="Main_VVMajorVMinor" xml:space="preserve">
-    <value>[v{0}.{1}.{2} ú00b7 MÍT ú00b7 ñót áffílíátéd wíth QúádŠtíçk xxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[v{0}.{1}.{2} · MÍT · ñót áffílíátéd wíth QúádŠtíçk xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_ViewButton" xml:space="preserve">
     <value>[Víéw búttóñ xxxx]</value>
@@ -1705,6 +1744,9 @@ Whát íš šéñt góéš tó PóštHóg, óñ šérvérš íñ thé Úñítéd
   </data>
   <data name="Main_WordsListNames" xml:space="preserve">
     <value>[Wórdš: Líšt ñáméš xxxxxx]</value>
+  </data>
+  <data name="Main_WordsPlainEnglish" xml:space="preserve">
+    <value>[Wórdš: Pláíñ Éñglíšh xxxxxxxx]</value>
   </data>
   <data name="Main_WordsXboxStyle" xml:space="preserve">
     <value>[Wórdš: Xbóx štýlé xxxxxx]</value>
@@ -2632,6 +2674,300 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   </data>
   <data name="Share_WaitingForGoogleInYour" xml:space="preserve">
     <value>[Wáítíñg fór Góóglé íñ ýóúr brówšér... xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_AddANewBindingRow" xml:space="preserve">
+    <value>[Ádd á ñéw bíñdíñg rów tó thíš módé xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_AddRenameReorderAndDelete" xml:space="preserve">
+    <value>[Ádd, réñámé, réórdér áñd délété módéš xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_AddRow" xml:space="preserve">
+    <value>[+ Ádd rów xxx]</value>
+  </data>
+  <data name="Shell_AppearanceChooseSystemLightOr" xml:space="preserve">
+    <value>[Áppéáráñçé: çhóóšé Šýštém, Líght, ór Dárk thémé xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_AskForAChange" xml:space="preserve">
+    <value>[Ášk fór á çháñgé xxxxxx]</value>
+  </data>
+  <data name="Shell_BrowseCommunityProfiles" xml:space="preserve">
+    <value>[Brówšé çómmúñítý prófíléš xxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_BrowseTheCommunityListOf" xml:space="preserve">
+    <value>[Brówšé thé çómmúñítý líšt óf šháréd gámé prófíléš áñd ímpórt óñé xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_BuildOpenOrFindA" xml:space="preserve">
+    <value>[Búíld, ópéñ, ór fíñd á šétúp xxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_Clear" xml:space="preserve">
+    <value>[Çléár xx]</value>
+  </data>
+  <data name="Shell_ClearTheSelection" xml:space="preserve">
+    <value>[Çléár thé šéléçtíóñ xxxxxxx]</value>
+  </data>
+  <data name="Shell_Community" xml:space="preserve">
+    <value>[Çómmúñítý xxx]</value>
+  </data>
+  <data name="Shell_CommunityProfiles" xml:space="preserve">
+    <value>[Çómmúñítý prófíléš xxxxxxx]</value>
+  </data>
+  <data name="Shell_CreateANewProfile" xml:space="preserve">
+    <value>[Çréáté á ñéw prófílé xxxxxxxx]</value>
+  </data>
+  <data name="Shell_CreateANewProfileFrom" xml:space="preserve">
+    <value>[Çréáté á ñéw prófílé fróm thé fáçtórý défáúlt témpláté xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_Csv" xml:space="preserve">
+    <value>[.çšv x]</value>
+  </data>
+  <data name="Shell_Delete" xml:space="preserve">
+    <value>[Délété xx]</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedMappings" xml:space="preserve">
+    <value>[Délété thé šéléçtéd máppíñgš xxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedRows" xml:space="preserve">
+    <value>[Délété thé šéléçtéd rówš xxxxxxxxx]</value>
+  </data>
+  <data name="Shell_DescribeAChangeInPlain" xml:space="preserve">
+    <value>[Déšçríbé á çháñgé íñ pláíñ wórdš áñd hávé ít mádé tó thíš prófílé. Ñóthíñg íš çháñgéd úñtíl ýóú áppróvé ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_Device" xml:space="preserve">
+    <value>[Dévíçé xx]</value>
+  </data>
+  <data name="Shell_DiscardTheRecoveredWorkPermanently" xml:space="preserve">
+    <value>[Díšçárd thé réçóvéréd wórk pérmáñéñtlý xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_Dismiss" xml:space="preserve">
+    <value>[Díšmíšš xx]</value>
+  </data>
+  <data name="Shell_EditModes" xml:space="preserve">
+    <value>[Édít módéš xxxx]</value>
+  </data>
+  <data name="Shell_EditModesAddRenameReorder" xml:space="preserve">
+    <value>[Édít módéš: ádd, réñámé, réórdér áñd délété xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_FixFirstProblem" xml:space="preserve">
+    <value>[Fíx fíršt próblém xxxxxx]</value>
+  </data>
+  <data name="Shell_GoToHome" xml:space="preserve">
+    <value>[Gó tó Hómé xxxx]</value>
+  </data>
+  <data name="Shell_GoogleSheetsProfileLink" xml:space="preserve">
+    <value>[Góóglé Šhéétš prófílé líñk xxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_Home" xml:space="preserve">
+    <value>[Hómé x]</value>
+  </data>
+  <data name="Shell_HowDeviceViewWorksAnd" xml:space="preserve">
+    <value>[Hów dévíçé víéw wórkš, áñd whíçh pártš ýóúr módél háš xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_HowItWorks" xml:space="preserve">
+    <value>[Hów ít wórkš xxxx]</value>
+  </data>
+  <data name="Shell_HowItWorksF1" xml:space="preserve">
+    <value>[Hów ít wórkš  (F1) xxxxxxx]</value>
+  </data>
+  <data name="Shell_Import" xml:space="preserve">
+    <value>[Ímpórt xx]</value>
+  </data>
+  <data name="Shell_ImportFromSheets" xml:space="preserve">
+    <value>[Ímpórt fróm Šhéétš xxxxxxx]</value>
+  </data>
+  <data name="Shell_ImportTheProfileFromThe" xml:space="preserve">
+    <value>[Ímpórt thé prófílé fróm thé páštéd Góóglé Šhéétš líñk xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_InstallThisProfileOntoA" xml:space="preserve">
+    <value>[Íñštáll thíš prófílé óñtó á çóññéçtéd QúádŠtíçk. Šhórtçút Çóñtról Í xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_InstallToQuadStick" xml:space="preserve">
+    <value>[Íñštáll tó QúádŠtíçk xxxxxxxx]</value>
+  </data>
+  <data name="Shell_JumpToAndFocusThe" xml:space="preserve">
+    <value>[Júmp tó áñd fóçúš thé fíršt érrór íñ thé Próblémš líšt xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ListOfValidationProblemsSelect" xml:space="preserve">
+    <value>[Líšt óf válídátíóñ próblémš. Šéléçt óñé tó çópý ít. xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ListTheInputsThisMode" xml:space="preserve">
+    <value>[Líšt thé íñpútš thíš módé háš ñót úšéd ýét xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ManageFiles" xml:space="preserve">
+    <value>[Máñágé fíléš xxxx]</value>
+  </data>
+  <data name="Shell_ManageFilesOnYourQuadStick" xml:space="preserve">
+    <value>[Máñágé fíléš óñ ýóúr QúádŠtíçk xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ManageTheProfileFilesOn" xml:space="preserve">
+    <value>[Máñágé thé prófílé fíléš óñ ýóúr QúádŠtíçk: çópý, délété, áñd šéé thé fílé šéléçtíóñ órdér xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_Mode" xml:space="preserve">
+    <value>[Módé x]</value>
+  </data>
+  <data name="Shell_Move" xml:space="preserve">
+    <value>[Móvé x]</value>
+  </data>
+  <data name="Shell_MoveTheSelectedMappingsTo" xml:space="preserve">
+    <value>[Móvé thé šéléçtéd máppíñgš tó thé tóp ór bóttóm xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_MoveTheSelectedRowsTo" xml:space="preserve">
+    <value>[Móvé thé šéléçtéd rówš tó thé tóp ór bóttóm xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_NameAGameAndHave" xml:space="preserve">
+    <value>[Ñámé á gámé áñd hávé á prófílé búílt fór ít fróm thé prófíléš ýóú álréádý hávé xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_New" xml:space="preserve">
+    <value>[Ñéw x]</value>
+  </data>
+  <data name="Shell_NewProfile" xml:space="preserve">
+    <value>[Ñéw prófílé xxxx]</value>
+  </data>
+  <data name="Shell_OnYourQuadStick" xml:space="preserve">
+    <value>[Óñ ýóúr QúádŠtíçk xxxxxx]</value>
+  </data>
+  <data name="Shell_Open" xml:space="preserve">
+    <value>[Ópéñ x]</value>
+  </data>
+  <data name="Shell_OpenAFile" xml:space="preserve">
+    <value>[Ópéñ á fílé xxxx]</value>
+  </data>
+  <data name="Shell_OpenAProfileCSVFile" xml:space="preserve">
+    <value>[Ópéñ á prófílé ÇŠV fílé fróm ýóúr çómpútér xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_OpenAProfileFile" xml:space="preserve">
+    <value>[Ópéñ á prófílé fílé xxxxxxx]</value>
+  </data>
+  <data name="Shell_OpenRecoveredWork" xml:space="preserve">
+    <value>[Ópéñ réçóvéréd wórk xxxxxxx]</value>
+  </data>
+  <data name="Shell_OpenSettings" xml:space="preserve">
+    <value>[Ópéñ Šéttíñgš xxxxx]</value>
+  </data>
+  <data name="Shell_OpenTheProfileThatWas" xml:space="preserve">
+    <value>[Ópéñ thé prófílé thát wáš réçóvéréd áftér thé lášt çrášh ór fórçé qúít xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideShortcut" xml:space="preserve">
+    <value>[Ópéñ thé qúíçk gúídé. Šhórtçút Çóñtról H ór F1 xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideThat" xml:space="preserve">
+    <value>[Ópéñ thé qúíçk gúídé thát éxpláíñš prófíléš, óútpútš, fúñçtíóñš, áñd íñpútš xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_OpenedFromYourComputer" xml:space="preserve">
+    <value>[Ópéñéd fróm ýóúr çómpútér xxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_Parts" xml:space="preserve">
+    <value>[Pártš xx]</value>
+  </data>
+  <data name="Shell_PasteAGoogleSheetsProfile" xml:space="preserve">
+    <value>[Pášté á Góóglé Šhéétš prófílé líñk xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>[Plúg íñ ýóúr QúádŠtíçk tó šéé ítš prófíléš. Íf thé drívé íš híddéñ, túrñ óff çóñtróllér émúlátíóñ áñd réçóññéçt ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_Profile" xml:space="preserve">
+    <value>[Prófílé xx]</value>
+  </data>
+  <data name="Shell_ProfileNameEditToRename" xml:space="preserve">
+    <value>[Prófílé ñámé. Édít tó réñámé; .çšv íš áddéd fór ýóú xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ProfilesYouSaveWillShow" xml:space="preserve">
+    <value>[Prófíléš ýóú šávé wíll šhów úp héré. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_QuadStickConfigManagerGoTo" xml:space="preserve">
+    <value>[QúádŠtíçk Çóñfíg Máñágér. Gó tó Hómé xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_Rows" xml:space="preserve">
+    <value>[Rówš x]</value>
+  </data>
+  <data name="Shell_SaveAsATemplate" xml:space="preserve">
+    <value>[Šávé áš á témpláté xxxxxxx]</value>
+  </data>
+  <data name="Shell_SaveCtrlS" xml:space="preserve">
+    <value>[Šávé  (Çtrl+Š) xxxxx]</value>
+  </data>
+  <data name="Shell_SaveThisProfileAsA" xml:space="preserve">
+    <value>[Šávé thíš prófílé áš á réúšáblé témpláté ýóú çáñ štárt ñéw prófíléš fróm xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_SaveThisProfileShortcutControl" xml:space="preserve">
+    <value>[Šávé thíš prófílé. Šhórtçút Çóñtról Š xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_SeeTheMappingsOnA" xml:space="preserve">
+    <value>[Šéé thé máppíñgš óñ á píçtúré óf thé QúádŠtíçk  (Çtrl+D) xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
+    <value>[Šéé thé rówš thé wáý thé šhéét štóréš thém  (Çtrl+D) xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
+    <value>[Šéléçt whíçh módé tó édít xxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_SetUpAGame" xml:space="preserve">
+    <value>[Šét úp á gámé xxxxx]</value>
+  </data>
+  <data name="Shell_Settings" xml:space="preserve">
+    <value>[Šéttíñgš xxx]</value>
+  </data>
+  <data name="Shell_ShareAsAGoogleSheet" xml:space="preserve">
+    <value>[Šháré áš á Góóglé Šhéét xxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ShareThisProfileAsA" xml:space="preserve">
+    <value>[Šháré thíš prófílé áš á Góóglé Šhéét xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ShowOrHideTheList" xml:space="preserve">
+    <value>[Šhów ór hídé thé líšt óf próblémš xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ShowTheMappingsAsA" xml:space="preserve">
+    <value>[Šhów thé máppíñgš áš á líšt óf rówš. Šhórtçút Çóñtról D tóggléš thíš xxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ShowTheMappingsOnA" xml:space="preserve">
+    <value>[Šhów thé máppíñgš óñ á píçtúré óf thé QúádŠtíçk. Šhórtçút Çóñtról D tóggléš thíš xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_ShowThePartsAsA" xml:space="preserve">
+    <value>[Šhów thé pártš áš á šímplé líšt ýóú árrów thróúgh, wíth thé šámé édítór óñ thé ríght xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_StartANewProfileFrom" xml:space="preserve">
+    <value>[Štárt á ñéw prófílé fróm óñé óf ýóúr šávéd témplátéš xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_StartAProfile" xml:space="preserve">
+    <value>[Štárt á prófílé xxxxxx]</value>
+  </data>
+  <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
+    <value>[Štép thróúgh thé pártš óñé át á tímé xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
+    <value>[Šwítçh thé wórdš úšéd íñ dévíçé víéw bétwééñ pláíñ Éñglíšh áñd thé ráw líšt-víéw ñáméš xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_UndoCtrlZ" xml:space="preserve">
+    <value>[Úñdó  (Çtrl+Ž) xxxxx]</value>
+  </data>
+  <data name="Shell_UndoTheLastChangeShortcut" xml:space="preserve">
+    <value>[Úñdó thé lášt çháñgé. Šhórtçút Çóñtról Ž xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_UseTemplate" xml:space="preserve">
+    <value>[Úšé témpláté xxxx]</value>
+  </data>
+  <data name="Shell_View" xml:space="preserve">
+    <value>[Víéw x]</value>
+  </data>
+  <data name="Shell_WhatIsAMode" xml:space="preserve">
+    <value>[Whát íš á módé? xxxxxx]</value>
+  </data>
+  <data name="Shell_WhatIsAModeAnd" xml:space="preserve">
+    <value>[Whát íš á módé, áñd whý íš théré óñlý óñé? xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_WhichQuadStickModelYouHave" xml:space="preserve">
+    <value>[Whíçh QúádŠtíçk módél ýóú hávé xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_YourProfiles" xml:space="preserve">
+    <value>[Ýóúr prófíléš xxxxx]</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>[Dárk x]</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>[Líght xx]</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>[Šýštém xx]</value>
   </data>
   <data name="Tour_Back" xml:space="preserve">
     <value>[Báçk x]</value>

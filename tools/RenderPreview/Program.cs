@@ -29,6 +29,11 @@ var cfgDir = Directory.CreateTempSubdirectory("qscm-cfg-").FullName;
 Settings.PathOverride = Path.Combine(cfgDir, "settings.json");
 Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false });
 
+// --pseudo draws the whole app in the pseudo language: every label that is
+// still plain English is one the move to Strings.resx missed, and every label
+// that runs out of its control is a layout that assumed English.
+if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
+
 // A library that looks like somebody's. Real community workbooks, under the
 // names their games have, so every card carries real modes and real counts:
 // two files called "gta" and "rocket-league" is what a fixture looks like.
@@ -231,6 +236,11 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
     // Fresh settings per theme: opening a profile below files it under recents,
     // and the second pass would otherwise show a Home the first one did not.
     Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false });
+
+// --pseudo draws the whole app in the pseudo language: every label that is
+// still plain English is one the move to Strings.resx missed, and every label
+// that runs out of its control is a layout that assumed English.
+if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
 
     // The specimen sheet: what you compare against after a token changes.
     // Tall on purpose, or the render stops at the fold and hides the colours.
