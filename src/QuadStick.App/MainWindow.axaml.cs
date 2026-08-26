@@ -2155,10 +2155,13 @@ public partial class MainWindow : Window
             "Sip or puff on the side tube. A long hard sip here normally switches profiles, but you can map it too."),
         new("lip", "Lip switch", "Lip switch", "lip",
             "Press the lip switch or sensor with your lip. Often used for the fire button."),
-        new("jacks", "Switch jacks", "Switch jacks", "digital_in_1",
-            "External adaptive switches plugged into the 3.5 mm jacks on the back of the QuadStick (up to 4)."),
+        // Default input is digital_in_8: a switch plugged into the top jack
+        // with no splitter lands there, so it is the first thing a new mapping
+        // on this zone should be.
+        new("jacks", "Switch jacks", "Switch jacks", "digital_in_8",
+            "Adaptive switches plugged into the 3.5 mm jacks on the back of the QuadStick."),
         new("other", "USB devices", "USB devices", "usb_1_button_1",
-            "Extra USB joysticks or controllers plugged into the QuadStick's USB-A port."),
+            "A joystick or controller plugged into the QuadStick's rear USB-A port."),
         new("settings", "Mode settings", "Settings", "",
             "Device settings this mode changes while it is running, like mouse speed or volume. They are not something you press, so they have no input: each one is a name and a value."),
         new("unset", "No input yet", "No input yet", "",
@@ -2264,6 +2267,11 @@ public partial class MainWindow : Window
     {
         // Avalonia templates a null item during measure before any value binds.
         if (string.IsNullOrEmpty(token) || !_friendlyLabels) return token ?? "";
+        // "Digital in 8" is the token with the underscores taken out; it says
+        // nothing about where to plug the switch. The socket does.
+        if (SwitchJacks.For(token) is { } jack) return jack.Label;
+        if (SwitchJacks.RearJoystick.Contains(token, StringComparer.Ordinal))
+            return $"Rear joystick, {token["usb_1_".Length..]}";
         var tz = ZoneOf(token);
         var bare = Humanize(StripInput(token, tz));
         if (bare.Length == 0) return bare;
@@ -2274,6 +2282,76 @@ public partial class MainWindow : Window
         if (tz == cardZone || tz is "other" or "unset") return bare;
         var disp = AllZones.FirstOrDefault(z => z.Id == tz)?.Display ?? tz;
         return $"{disp} · {low}";
+    }
+
+    // The back of the QuadStick, written out. Three switch jacks in the order
+    // they sit on the case, then the USB-A port, each row saying what a plug in
+    // it actually arrives as.
+    //
+    // Drawn as text and one glyph per port rather than as vector art: it has to
+    // stay legible at every interface size, read aloud in order, and survive a
+    // theme change. A picture of the panel would be nicer to look at and would
+    // say none of this.
+    Control BackPanelGuide()
+    {
+        var rows = new StackPanel { Spacing = 6 };
+        foreach (var (port, channels) in SwitchJacks.Ports)
+        {
+            // The USB-A data pins are not a socket anybody plugs a switch into.
+            // They are listed for completeness at the end, not as a port.
+            if (port == SwitchJacks.UsbDataPort) continue;
+            rows.Children.Add(PortRow("◎", port, SwitchJacks.Explain(port)));
+        }
+        rows.Children.Add(PortRow("▭", "USB-A port",
+            "A joystick plugged in here arrives as " + string.Join(", ", SwitchJacks.RearJoystick)
+            + ". Its buttons are usb_1_button_1 upwards."));
+
+        var title = new TextBlock
+        {
+            Text = "Back of the QuadStick",
+            FontSize = Size("SmallSize"), FontWeight = FontWeight.Bold,
+        };
+        var box = new Border
+        {
+            CornerRadius = new Avalonia.CornerRadius(5),
+            Padding = new Avalonia.Thickness(10, 8),
+            Margin = new Avalonia.Thickness(0, 6, 0, 2),
+            MaxWidth = 860,
+            Child = new StackPanel { Spacing = 6, Children = { title, rows } },
+        };
+        BindBrush(box, Border.BackgroundProperty, "SurfaceSubtle");
+        return box;
+    }
+
+    Control PortRow(string glyph, string port, string explain)
+    {
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*") };
+        var mark = new TextBlock
+        {
+            Text = glyph, FontSize = Size("BodySize"),
+            Margin = new Avalonia.Thickness(0, 0, 8, 0),
+            VerticalAlignment = VerticalAlignment.Top,
+        };
+        var name = new TextBlock
+        {
+            Text = port, FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold,
+            Width = 96, VerticalAlignment = VerticalAlignment.Top,
+        };
+        var body = new TextBlock
+        {
+            Text = explain, FontSize = Size("SmallSize"),
+            Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+        };
+        Grid.SetColumn(name, 1);
+        Grid.SetColumn(body, 2);
+        grid.Children.Add(mark);
+        grid.Children.Add(name);
+        grid.Children.Add(body);
+        // The glyph is decoration; a screen reader reads the port and its
+        // sentence as one line instead of announcing a shape.
+        AutomationProperties.SetName(grid, $"{port}. {explain}");
+        AutomationProperties.SetName(mark, "");
+        return grid;
     }
 
     Dictionary<string, List<Binding>> BindingsByZone()
@@ -2355,13 +2433,30 @@ public partial class MainWindow : Window
     // Chip text: the short form, since the zone heading above it already says
     // which part it is on. Combos are the exception. Every pairing strips to
     // the same word, so a combo chip has to name its pairing.
-    internal static string ChipLabel(string token, string zoneId) => zoneId != "combo"
+    // A chip on a card and a line in the unused list read the same way as the
+    // picker: "digital in 1" is the token with its underscores taken out and
+    // tells nobody which hole to plug into.
+    internal static string ChipLabel(string token, string zoneId) =>
+        SwitchJacks.For(token) is { } jack ? jack.Label
+        : SwitchJacks.RearJoystick.Contains(token, StringComparer.Ordinal)
+            ? $"Rear joystick, {token["usb_1_".Length..]}"
+        : zoneId != "combo"
         ? StripInput(token, zoneId)
         : (token.StartsWith("mp_triple_", StringComparison.Ordinal) ? "all 3 "
             : token.StartsWith("mp_left_center_", StringComparison.Ordinal) ? "L+C "
             : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "R+C "
             : token.StartsWith("mp_right_mode_", StringComparison.Ordinal) ? "R+S " : "L+R ")
           + StripInput(token, zoneId);
+
+    // Where a jack sorts: its socket's place on the case, then the lone
+    // channel before the splitter's second one. Anything that is not a jack
+    // keeps the order it arrived in.
+    static int JackRank(string token)
+    {
+        if (SwitchJacks.For(token) is not { } jack) return 0;
+        int port = Array.FindIndex(SwitchJacks.Ports, p => p.Port == jack.Port);
+        return (port * 2) + (jack.Lone ? 0 : 1);
+    }
 
     // Flyout list grouped by part. Does not take editor space.
     void ShowUnusedInputs()
@@ -3063,6 +3158,11 @@ public partial class MainWindow : Window
         ZoneDetailPanel.Children.Add(new TextBlock
         { Text = zone.Blurb, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
 
+        // The two zones that live on the back of the case get the panel drawn
+        // out, because the numbering is the whole problem: nothing on the
+        // hardware says which jack is digital_in_8.
+        if (zone.Id is "jacks" or "other") ZoneDetailPanel.Children.Add(BackPanelGuide());
+
         if (bindings is { Count: > 0 })
         {
             var zoneInputs = Vocab.Inputs.Where(i => ZoneOf(i) == zone.Id).OrderBy(GroupRank).ThenBy(x => x).ToList();
@@ -3256,7 +3356,11 @@ public partial class MainWindow : Window
         // and this app gets aimed at with a mouth stick.
         if (zone.Id != "unset")
         {
-            var freeHere = UnusedInputs().Where(i => ZoneOf(i) == zone.Id).ToList();
+            // Ordered by socket, top of the case down, so the first thing
+            // offered on the jacks is the top jack rather than digital_in_1.
+            // The USB-A data pins sort last: nothing plugs into them.
+            var freeHere = UnusedInputs().Where(i => ZoneOf(i) == zone.Id)
+                .OrderBy(JackRank).ToList();
             if (freeHere.Count > 0)
             {
                 ZoneDetailPanel.Children.Add(new TextBlock
@@ -5324,11 +5428,23 @@ public partial class MainWindow : Window
     }
 
     // Inputs group by the part of the device they live on, in AllZones order.
+    // Switch jacks then split again by the socket on the back, so picking one
+    // is "top jack, one switch" rather than knowing that means digital_in_8.
+    //
+    // Only Switch jacks gets a second level. ZoneOf sends everything it does
+    // not recognise to "other", typos included, and a category with a SubOrder
+    // shows nothing but its listed sockets: a token with no sub would be
+    // unreachable in the Detailed picker. Every digital_in has one, so this
+    // category is safe and USB devices is not. InputPickerGroupingTests holds
+    // that line.
     static TokenCatalog? _inputCatalog;
     static TokenCatalog InputCatalog => _inputCatalog ??= new(
-        t => (AllZones.First(z => z.Id == ZoneOf(t)).Title, ""),
+        t => (AllZones.First(z => z.Id == ZoneOf(t)).Title, SwitchJacks.For(t)?.Port ?? ""),
         AllZones.Select(z => z.Title).ToArray(),
-        new Dictionary<string, string[]>());
+        new Dictionary<string, string[]>
+        {
+            ["Switch jacks"] = SwitchJacks.Ports.Select(p => p.Port).ToArray(),
+        });
 
     // A List View cell backed by the drill-down picker. Commits like
     // SuggestBox did: set the cell, refresh issues, and rebuild the rows
