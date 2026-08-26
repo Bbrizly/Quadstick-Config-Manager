@@ -95,6 +95,136 @@ AppBuilder.Configure<App>()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
     .SetupWithoutStarting();
 
+// The set for Drew: one shot per thing he asked for, named after his own
+// numbering, so a reply to his email can point at a picture instead of
+// describing a screen. Light theme only, since these go in an email.
+if (args.Contains("--drew"))
+{
+    Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, DeviceCards = false });
+
+    // The six settings Drew named, in one Preferences sheet, so the shot shows
+    // the controls rather than an empty tab.
+    string Prefs(string file, int emulation) => string.Join("\n", new[]
+    {
+        "Profile Name,,Gameplay", file, "Outputs,Function,usb",
+        "kb_space,normal,lip", "", "Preferences", "",
+        "Preference,Value,Units,Description",
+        $"enable_DS3_emulation,{emulation}",
+        "sip_puff_threshold,60",
+        "sip_puff_delay_soft,1300",
+        "titan_two,1",
+        "enable_usb_a_host,1",
+        "joystick_deflection_maximum,40",
+    });
+
+    int PrefSheetOf(ProfileFile f) =>
+        f.Document.Sheets.ToList().FindIndex(x => x.Type == SheetType.Preferences);
+
+    // 1. Device settings, in plain words and with the names QMP uses for them,
+    // so somebody who knows QMP finds a setting by the words they already have.
+    Capture("1-device-settings", w =>
+    {
+        var f = ProfileFile.Load(Prefs("mygame.csv", 4));
+        w.Height = 1500;   // the explanations are long; a 768 window shows two
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(false);
+        w.SelectSheetForPreview(PrefSheetOf(f));
+    });
+
+    // 2. Emulation mode in default.csv, the file the device boots into, set to
+    // one of the four that take the drive away. Refused, not warned about.
+    Capture("2-emulation-blocked", w =>
+    {
+        var f = ProfileFile.Load(Prefs("default.csv", 5));
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(false);
+        w.SelectSheetForPreview(PrefSheetOf(f));
+        w.ShowProblemsForPreview();
+    });
+
+    // 3. The back panel: the photo with each socket named and the number a
+    // single switch lands on written next to it.
+    Capture("3-back-panel", w =>
+    {
+        w.Height = 1250;   // tall enough for the eight sockets under the picture
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SelectZoneForPreview("jacks");
+    });
+
+    // 3b. A joystick in the rear USB-A port, with its four directions, which
+    // had no way into the picker before.
+    Capture("3b-rear-joystick", w =>
+    {
+        w.Height = 1100;
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SelectZoneForPreview("other");
+    });
+
+    // Three rows whose functions take numbers, so the hint under the box has
+    // something to explain. Real functions, real shapes: a tap window, a delay
+    // that latches, and a threshold in percent.
+    string Funcs(string first) => string.Join("\n", new[]
+    {
+        "Profile Name,,Gameplay", "mygame.csv", "Outputs,Function,usb",
+        $"kb_space,{first},lip",
+        "kb_left_shift,delay_on 500 1,mp_triple_puff",
+        "mouse_left_button,greater_than 60,mp_left_sip",
+    });
+
+    // 4. What a function's numbers mean: the range, the unit, and what the
+    // device does when the cell leaves the number out.
+    Capture("4-function-numbers", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Funcs("tap 500 100")));
+        w.SelectZoneForPreview("lip");
+    });
+
+    // 4b. A number past what the device can hold, said out loud rather than
+    // quietly corrected. 150 percent is a level no input reaches, so the row
+    // never fires; QCM says so and still saves what was typed.
+    Capture("4b-out-of-range", w =>
+    {
+        w.LoadProfile(ProfileFile.Load(Funcs("greater_than 150")));
+        w.SetDeviceViewForPreview(false);
+        w.ShowProblemsForPreview();
+    });
+
+    // 5. USB or Bluetooth, per mode, in the file itself. Three modes with
+    // three different answers, since one mode with one dropdown does not show
+    // that the setting is per mode.
+    const string ThreeModes = """
+        Profile Name,,Gameplay,,,,,,,,Comments
+        mygame.csv
+        Outputs,Function,usb
+        kb_space,normal,lip
+
+        Profile Name,,Couch
+        mygame.csv
+        Outputs,Function,bluetooth
+        kb_space,normal,lip
+
+        Profile Name,,Desk and phone
+        mygame.csv
+        Outputs,Function,both
+        kb_space,normal,lip
+
+        Preferences
+
+        Preference,Value,Units,Description
+        sip_puff_threshold,60
+        """;
+    CaptureOwned("5-bluetooth-per-mode", owner =>
+    {
+        owner.LoadProfile(ProfileFile.Load(ThreeModes));
+        return new ModesWindow(owner);
+    });
+
+    Console.WriteLine($"Drew's set written to {outDir}");
+    return;
+}
+
 foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) })
 {
     Application.Current!.RequestedThemeVariant = variant;
