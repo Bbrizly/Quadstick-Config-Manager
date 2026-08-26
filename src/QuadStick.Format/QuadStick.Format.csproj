@@ -17,12 +17,17 @@
     <EmbeddedResource Include="Templates/default-template.csv" LogicalName="DefaultTemplate" />
     <EmbeddedResource Include="Data/validation.json" LogicalName="ValidationJson" />
     <EmbeddedResource Include="Data/preferences.json" LogicalName="PreferencesJson" />
-    <!-- One line per language. The words a person reads, and nothing else:
-         PreferenceCatalog.Translate never takes a number or a name from these. -->
+    <!-- Dropping preferences.<lang>.json in Data is enough: the glob picks it
+         up and the name after "preferences." is the tag the loader asks for.
+         The words a person reads, and nothing else: PreferenceCatalog.Translate
+         never takes a number or a name from these. -->
     <!-- WithCulture=false: the build reads ".qps-ploc." in a file name as a
          culture and files it into a satellite assembly, where this loader
          cannot see it. It is a plain resource that happens to be named after
          a language. -->
+    <EmbeddedResource Include="Data/preferences.*.json" WithCulture="false"
+                      LogicalName="PreferencesJson.$([System.String]::Copy('%(Filename)').Substring(12))"
+                      Exclude="Data/preferences.qps-ploc.json" />
     <EmbeddedResource Include="Data/preferences.qps-ploc.json" LogicalName="PreferencesJson.qps-ploc"
                       WithCulture="false" Condition="'$(Configuration)' != 'Release'" />
   </ItemGroup>
