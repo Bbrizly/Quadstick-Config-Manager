@@ -33,6 +33,23 @@ public class LocalizationTests
         ["Localization.cs"] = new[] { "\"English\"", "\"Pseudo (finds missed text)\"" },
         // A company's name, not a word.
         ["SettingsWindow.cs"] = new[] { "\"LinkedIn\"" },
+        // A category is named the same way in preferences.json and here, and
+        // the two are compared letter for letter. PreferenceCatalog.CategoryLabel
+        // is the half a person reads.
+        ["PreferenceCatalog.cs"] = new[]
+        {
+            "\"Sip and puff\"", "\"Lip sensor\"", "\"Sound and lights\"",
+            "\"Inputs and outputs\"", "\"USB and compatibility\"",
+            "\"CA1720:Identifier contains type name\"",
+            "\"The editor kinds are fixed by the preferences.json data contract.\"",
+            // Half of an exception message. A preferences.json this build
+            // cannot read is a failing test, read by whoever is fixing the
+            // data file, never by somebody using the app.
+            "\"A preference\"",
+        },
+        // A socket's identity, in a switch and in a test's InlineData.
+        // SwitchJacks.PortLabel is the half a person reads.
+        ["SwitchJacks.cs"] = new[] { "\"Top jack\"", "\"Bottom jack\"", "\"Lip jack\"", "\"USB-A data pins\"" },
         // A Drive search query and an error for whoever is reading the log.
         ["DriveClient.cs"] = new[]
         {
@@ -61,28 +78,35 @@ public class LocalizationTests
     public static TheoryData<string> AppSources()
     {
         var data = new TheoryData<string>();
-        foreach (var f in Directory.GetFiles(SrcDir(), "*.cs"))
-        {
-            var name = Path.GetFileName(f);
-            if (!NotShipped.Contains(name) && !StillEnglish.Contains(name)) data.Add(name);
-        }
+        foreach (var dir in new[] { SrcDir(), FormatDir() })
+            foreach (var f in Directory.GetFiles(dir, "*.cs"))
+            {
+                var name = Path.GetFileName(f);
+                if (!NotShipped.Contains(name) && !StillEnglish.Contains(name))
+                    data.Add(Path.Combine(Path.GetFileName(dir), name));
+            }
         return data;
     }
 
     [Theory]
     [MemberData(nameof(AppSources))]
-    public void A_translated_file_has_no_English_left_in_it(string name)
+    public void A_translated_file_has_no_English_left_in_it(string path)
     {
+        var name = Path.GetFileName(path);
         var keep = Keep.TryGetValue(name, out var k) ? k : Array.Empty<string>();
         var found = new List<string>();
         var lineNo = 0;
-        foreach (var raw in File.ReadAllLines(Path.Combine(SrcDir(), name)))
+        var recent = new Queue<string>();
+        foreach (var raw in File.ReadAllLines(Path.Combine(SrcDir(), "..", path)))
         {
             lineNo++;
             var line = CodeOnly(raw);
+            recent.Enqueue(line);
+            if (recent.Count > 3) recent.Dequeue();
             // An exception message is read by whoever is debugging, not by the
-            // person using the app.
-            if (line.Contains("throw ", StringComparison.Ordinal)) continue;
+            // person using the app. A long one sits a line or two below its
+            // throw, so look back rather than only at this line.
+            if (recent.Any(l => l.Contains("throw ", StringComparison.Ordinal))) continue;
 
             foreach (var lit in Sink.Matches(line).Select(m => m.Groups[1].Value)
                          .Concat(AnyLiteral.Matches(line).Select(m => m.Value).Where(v => Prose.IsMatch(v)))
@@ -193,4 +217,6 @@ public class LocalizationTests
 
     static string SrcDir([CallerFilePath] string here = "") =>
         Path.GetFullPath(Path.Combine(Path.GetDirectoryName(here)!, "..", "..", "src", "QuadStick.App"));
+
+    static string FormatDir() => Path.GetFullPath(Path.Combine(SrcDir(), "..", "QuadStick.Format"));
 }

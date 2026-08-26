@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace QuadStick.Format;
 
 /// <summary>Which physical socket on the back of the QuadStick a
@@ -14,9 +16,9 @@ public sealed record SwitchJack(string Channel, string Port, string Position, bo
     /// <summary>The whole thing in one phrase, for a list entry or a label.
     /// "Top jack, one switch" or "Top jack, splitter, second switch".</summary>
     public string Label =>
-        Position.Length == 0 ? Port
-        : Lone ? $"{Port}, one switch"
-        : $"{Port}, splitter, {Position}";
+        Position.Length == 0 ? SwitchJacks.PortLabel(Port)
+        : Lone ? string.Format(CultureInfo.CurrentCulture, Strings.Jack_PortOneSwitch, SwitchJacks.PortLabel(Port))
+        : string.Format(CultureInfo.CurrentCulture, Strings.Jack_PortSplitterPosition, SwitchJacks.PortLabel(Port), Position);
 }
 
 /// <summary>
@@ -40,20 +42,33 @@ public sealed record SwitchJack(string Channel, string Port, string Position, bo
 /// </remarks>
 public static class SwitchJacks
 {
+    // English, and staying English: this is how a socket is identified, in a
+    // switch, in a test's InlineData and in the app's hotspot table. PortLabel
+    // is what a person reads.
     public const string TopPort = "Top jack";
     public const string BottomPort = "Bottom jack";
     public const string LipPort = "Lip jack";
     public const string UsbDataPort = "USB-A data pins";
 
+    /// <summary>The socket's name in the language the app is being read in.</summary>
+    public static string PortLabel(string port) => port switch
+    {
+        TopPort => Strings.Jack_TopJack,
+        BottomPort => Strings.Jack_BottomJack,
+        LipPort => Strings.Jack_LipJack,
+        UsbDataPort => Strings.Jack_USBADataPins,
+        _ => port,
+    };
+
     static readonly Dictionary<string, SwitchJack> ByChannel = new(StringComparer.Ordinal)
     {
         // A single plug lands here, so it is the first thing to offer.
-        ["digital_in_8"] = new("digital_in_8", TopPort, "first switch", Lone: true),
-        ["digital_in_7"] = new("digital_in_7", TopPort, "second switch", Lone: false),
-        ["digital_in_1"] = new("digital_in_1", BottomPort, "first switch", Lone: true),
-        ["digital_in_2"] = new("digital_in_2", BottomPort, "second switch", Lone: false),
-        ["digital_in_5"] = new("digital_in_5", LipPort, "first switch", Lone: true),
-        ["digital_in_6"] = new("digital_in_6", LipPort, "second switch", Lone: false),
+        ["digital_in_8"] = new("digital_in_8", TopPort, Strings.Jack_FirstSwitch, Lone: true),
+        ["digital_in_7"] = new("digital_in_7", TopPort, Strings.Jack_SecondSwitch, Lone: false),
+        ["digital_in_1"] = new("digital_in_1", BottomPort, Strings.Jack_FirstSwitch, Lone: true),
+        ["digital_in_2"] = new("digital_in_2", BottomPort, Strings.Jack_SecondSwitch, Lone: false),
+        ["digital_in_5"] = new("digital_in_5", LipPort, Strings.Jack_FirstSwitch, Lone: true),
+        ["digital_in_6"] = new("digital_in_6", LipPort, Strings.Jack_SecondSwitch, Lone: false),
         // p0.29 and p0.30 are the USB-A data lines read as plain inputs. No
         // socket of their own, and no claim invented for them.
         ["digital_in_3"] = new("digital_in_3", UsbDataPort, "", Lone: false),
@@ -81,13 +96,10 @@ public static class SwitchJacks
     /// switch that does nothing and no way to tell why.</summary>
     public static string Explain(string port) => port switch
     {
-        TopPort => "Plug one switch into the top jack and it arrives as digital_in_8. "
-                 + "Only a splitter uses digital_in_7 as well.",
-        BottomPort => "Plug one switch into the bottom jack and it arrives as digital_in_1. "
-                    + "Only a splitter uses digital_in_2 as well.",
-        LipPort => "The middle jack is the lip switch. A splitter there gives digital_in_5 and digital_in_6.",
-        UsbDataPort => "The USB-A port's own data pins, read as plain switches. "
-                     + "Nothing plugs into these on the outside of the case.",
+        TopPort => Strings.Jack_PlugOneSwitchIntoThe,
+        BottomPort => Strings.Jack_PlugOneSwitchIntoThe2,
+        LipPort => Strings.Jack_TheMiddleJackIsThe,
+        UsbDataPort => Strings.Jack_TheUSBAPortS,
         _ => "",
     };
 

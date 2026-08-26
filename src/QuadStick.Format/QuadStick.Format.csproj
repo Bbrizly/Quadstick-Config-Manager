@@ -7,10 +7,28 @@
     <Version>1.0.0</Version>
     <!-- The safety-critical layer gets the strictest analyzer set. -->
     <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <!-- CA1863 wants a cached CompositeFormat per format string. These are
+         problem messages, built once each time a profile is read, and there
+         are hundreds of them: a static field apiece would be more code than
+         the messages. -->
+    <NoWarn>$(NoWarn);CA1863</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Templates/default-template.csv" LogicalName="DefaultTemplate" />
     <EmbeddedResource Include="Data/validation.json" LogicalName="ValidationJson" />
     <EmbeddedResource Include="Data/preferences.json" LogicalName="PreferencesJson" />
+  </ItemGroup>
+  <!-- The wording of every problem the reader reports. Same arrangement as the
+       app's: the generator writes a strongly typed Strings class into obj/, and
+       a translation is Strings.<lang>.resx beside this one. Input, output and
+       function names are not in here. They are file bytes the device compares,
+       so they read the same in every language. -->
+  <ItemGroup>
+    <!-- The pseudo language is a debugging aid, not something to ship. -->
+    <EmbeddedResource Remove="Strings.qps-ploc.resx" Condition="'$(Configuration)' == 'Release'" />
+    <EmbeddedResource Update="Strings.resx" Generator="MSBuild:Compile"
+                      StronglyTypedLanguage="CSharp" StronglyTypedNamespace="QuadStick.Format"
+                      StronglyTypedClassName="Strings"
+                      StronglyTypedFileName="$(IntermediateOutputPath)Strings.Designer.cs" />
   </ItemGroup>
 </Project>

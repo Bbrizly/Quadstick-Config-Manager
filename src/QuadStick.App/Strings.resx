@@ -1985,12 +1985,6 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Prefs_DeviceWideSettings" xml:space="preserve">
     <value>Device-wide settings</value>
   </data>
-  <data name="Prefs_ForRowBRow" xml:space="preserve">
-    <value>)} for row {b.Row}</value>
-  </data>
-  <data name="Prefs_ForRowBRowSaved" xml:space="preserve">
-    <value>)} for row {b.Row}. Saved in the file, ignored by the QuadStick</value>
-  </data>
   <data name="Prefs_HexCode" xml:space="preserve">
     <value>Hex code</value>
   </data>

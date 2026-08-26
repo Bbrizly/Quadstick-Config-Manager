@@ -53,11 +53,29 @@ public sealed record PreferenceDefinition(
 // rather than reaching a device.
 public static class PreferenceCatalog
 {
-    // The order the editor shows these headings in.
+    // The order the editor shows these headings in. English, and staying
+    // English: preferences.json names a category on every entry and the two
+    // are compared letter for letter. CategoryLabel is what a person reads.
     static readonly string[] CategoryOrder =
     {
         "Joystick", "Sip and puff", "Lip sensor", "Mouse", "Sound and lights",
         "Bluetooth", "Inputs and outputs", "USB and compatibility", "Advanced",
+    };
+
+    /// <summary>A category heading in the language the app is being read in.
+    /// A category this build has never heard of is shown as it arrived.</summary>
+    public static string CategoryLabel(string category) => category switch
+    {
+        "Joystick" => Strings.Pref_Joystick,
+        "Sip and puff" => Strings.Pref_SipAndPuff,
+        "Lip sensor" => Strings.Pref_LipSensor,
+        "Mouse" => Strings.Pref_Mouse,
+        "Sound and lights" => Strings.Pref_SoundAndLights,
+        "Bluetooth" => Strings.Pref_Bluetooth,
+        "Inputs and outputs" => Strings.Pref_InputsAndOutputs,
+        "USB and compatibility" => Strings.Pref_UsbAndCompatibility,
+        "Advanced" => Strings.Pref_Advanced,
+        _ => category,
     };
 
     static readonly string[] KnownFields =

@@ -30,6 +30,7 @@ build:
 # still in plain English never made it into Strings.resx.
 pseudo:
 	python3 tools/strings/resx.py pseudo src/QuadStick.App/Strings.resx
+	python3 tools/strings/resx.py pseudo src/QuadStick.Format/Strings.resx
 
 # Build the macOS .app locally to smoke-test the bundle before releasing.
 # CI (.github/workflows/build.yml) builds the full Windows/macOS/Linux matrix;

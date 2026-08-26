@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace QuadStick.Format;
 
 /// <summary>One number a function takes, in the words a person editing it
@@ -22,8 +24,9 @@ public sealed record FunctionParameter(
     /// screen reader: "Rate: 1 to 1000 taps a second. Blank means 10 a second.
     /// How fast it taps while you hold the input."</summary>
     public string Sentence =>
-        $"{Label}: {Minimum} to {Maximum}{(Unit.Length > 0 ? " " + Unit : "")}. "
-        + $"Blank means {Default}. {What}";
+        string.Format(CultureInfo.CurrentCulture,
+            Unit.Length > 0 ? Strings.Fn_SentenceWithUnit : Strings.Fn_Sentence,
+            Label, Minimum, Maximum, Default, What, Unit);
 }
 
 /// <summary>
@@ -61,10 +64,10 @@ public static class FunctionParameters
         // in hertz. Past 1000 that integer division is 0 and the taps stop.
         ["repeat"] = new[]
         {
-            new FunctionParameter("Rate", "taps a second", 1, 1000, "10 a second",
-                "How fast it taps while you hold the input."),
-            new FunctionParameter("First hold", "milliseconds", 0, Ceiling, "no extra hold",
-                "Holds the first tap this long before the rapid-fire starts."),
+            new FunctionParameter("Rate", Strings.Fn_TapsASecond, 1, 1000, Strings.Fn_10ASecond,
+                Strings.Fn_HowFastItTapsWhile),
+            new FunctionParameter(Strings.Fn_FirstHold, "milliseconds", 0, Ceiling, Strings.Fn_NoExtraHold,
+                Strings.Fn_HoldsTheFirstTapThis),
         },
 
         // DataFlow.c:1689 defaults the length to 100 ms; :1694 makes a missing
@@ -72,9 +75,9 @@ public static class FunctionParameters
         ["pulse"] = new[]
         {
             new FunctionParameter("Length", "milliseconds", 1, Ceiling, "100 ms",
-                "How long each press lasts."),
-            new FunctionParameter("Presses", "count", 1, Ceiling, "one press",
-                "How many presses one activation sends."),
+                Strings.Fn_HowLongEachPressLasts),
+            new FunctionParameter("Presses", "count", 1, Ceiling, Strings.Fn_OnePress,
+                Strings.Fn_HowManyPressesOneActivation),
         },
 
         // DataFlow.c:1624 defaults to 100 ms. The cycle stretches with how hard
@@ -82,7 +85,7 @@ public static class FunctionParameters
         ["duty"] = new[]
         {
             new FunctionParameter("Cycle", "milliseconds", 1, Ceiling, "100 ms",
-                "The on-and-off cycle length at full strength. Softer input stretches it."),
+                Strings.Fn_TheOnAndOffCycle),
         },
 
         // DataFlow.c:1846 `if (!function_parameter) function_parameter = 100;`
@@ -91,38 +94,38 @@ public static class FunctionParameters
         ["greater_than"] = new[]
         {
             new FunctionParameter("Threshold", "percent", 1, Percent, "100 percent",
-                "Fires once your input is at least this strong."),
-            new FunctionParameter("Upper limit", "percent", 1, Percent, "no upper limit",
-                "Stops firing again once your input goes past this, so the two numbers make a band."),
+                Strings.Fn_FiresOnceYourInputIs),
+            new FunctionParameter(Strings.Fn_UpperLimit, "percent", 1, Percent, Strings.Fn_NoUpperLimit,
+                Strings.Fn_StopsFiringAgainOnceYour),
         },
 
         // DataFlow.c:1874 defaults to 50 percent.
         ["less_than"] = new[]
         {
             new FunctionParameter("Threshold", "percent", 1, Percent, "50 percent",
-                "Fires while your input stays under this strength."),
+                Strings.Fn_FiresWhileYourInputStays),
         },
 
         // DataFlow.c:1902 `pOutputStatus->timer = function_parameter ?
         // calibrated_time(...) : 1`, so no number means it releases at once.
         ["force_off"] = new[]
         {
-            new FunctionParameter("Delay", "milliseconds", 1, Ceiling, "released at once",
-                "Waits this long before releasing the other row's latched output."),
+            new FunctionParameter("Delay", "milliseconds", 1, Ceiling, Strings.Fn_ReleasedAtOnce,
+                Strings.Fn_WaitsThisLongBeforeReleasing),
         },
 
         // DataFlow.c:1934 defaults to 1000 ms.
         ["delayed_latch"] = new[]
         {
-            new FunctionParameter("Hold to latch", "milliseconds", 1, Ceiling, "1000 ms",
-                "Hold the input longer than this and the output latches on instead of tapping."),
+            new FunctionParameter(Strings.Fn_HoldToLatch, "milliseconds", 1, Ceiling, "1000 ms",
+                Strings.Fn_HoldTheInputLongerThan),
         },
 
         // DataFlow.c:1723 defaults to 100 ms.
         ["delay_off"] = new[]
         {
-            new FunctionParameter("Hold on", "milliseconds", 1, Ceiling, "100 ms",
-                "Keeps the output pressed this long after you let go."),
+            new FunctionParameter(Strings.Fn_HoldOn, "milliseconds", 1, Ceiling, "100 ms",
+                Strings.Fn_KeepsTheOutputPressedThis),
         },
 
         // DataFlow.c:1739 defaults the wait to 1000 ms. The second number is
@@ -131,9 +134,9 @@ public static class FunctionParameters
         ["delay_on"] = new[]
         {
             new FunctionParameter("Wait", "milliseconds", 1, Ceiling, "1000 ms",
-                "Waits this long after you activate, then presses."),
-            new FunctionParameter("Then", "milliseconds", 1, Ceiling, "holds while you hold",
-                "1 latches the output on. Anything above 1 is how long the press lasts."),
+                Strings.Fn_WaitsThisLongAfterYou),
+            new FunctionParameter("Then", "milliseconds", 1, Ceiling, Strings.Fn_HoldsWhileYouHold,
+                Strings.Fn_1LatchesTheOutputOn),
         },
 
         // DataFlow.c:1960 defaults the tap window to 500 ms; :1976 defaults the
@@ -141,10 +144,10 @@ public static class FunctionParameters
         // "latch instead of tapping".
         ["tap"] = new[]
         {
-            new FunctionParameter("Counts as a tap", "milliseconds", 1, Ceiling, "500 ms",
-                "Let go inside this window and it counts as a tap. Hold longer and nothing fires."),
+            new FunctionParameter(Strings.Fn_CountsAsATap, "milliseconds", 1, Ceiling, "500 ms",
+                Strings.Fn_LetGoInsideThisWindow),
             new FunctionParameter("Press", "milliseconds", 1, Ceiling, "100 ms",
-                "How long the tap presses for. 1 latches the output on instead."),
+                Strings.Fn_HowLongTheTapPresses),
         },
 
         // DataFlow.c:1797 and :1821 both step by `(param ? param : 10) * 1023 /
@@ -153,16 +156,16 @@ public static class FunctionParameters
         ["increment_value"] = new[]
         {
             new FunctionParameter("Step", "percent", 1, Percent, "10 percent",
-                "How far up the analog output moves each time."),
-            new FunctionParameter("Repeat every", "milliseconds", 1, Ceiling, "one step per activation",
-                "Keeps stepping this often while you hold the input."),
+                Strings.Fn_HowFarUpTheAnalog),
+            new FunctionParameter(Strings.Fn_RepeatEvery, "milliseconds", 1, Ceiling, Strings.Fn_OneStepPerActivation,
+                Strings.Fn_KeepsSteppingThisOftenWhile),
         },
         ["decrement_value"] = new[]
         {
             new FunctionParameter("Step", "percent", 1, Percent, "10 percent",
-                "How far down the analog output moves each time."),
-            new FunctionParameter("Repeat every", "milliseconds", 1, Ceiling, "one step per activation",
-                "Keeps stepping this often while you hold the input."),
+                Strings.Fn_HowFarDownTheAnalog),
+            new FunctionParameter(Strings.Fn_RepeatEvery, "milliseconds", 1, Ceiling, Strings.Fn_OneStepPerActivation,
+                Strings.Fn_KeepsSteppingThisOftenWhile),
         },
     };
 

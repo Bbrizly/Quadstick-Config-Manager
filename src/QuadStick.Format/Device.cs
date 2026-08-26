@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace QuadStick.Format;
 
 // Find a mounted QuadStick (root has default.csv) and install profiles.
@@ -74,13 +76,11 @@ public static class Device
         var declared = file.Document.CsvFileName;
         if (declared is not null && SafeFileName.IsTooLongForDevice(declared))
             throw new InvalidOperationException(
-                $"\"{declared}\" is too long for the QuadStick to load, so nothing was written. " +
-                $"A profile name can be {SafeFileName.MaxDeviceFileNameLength} characters at most, counting \".csv\", " +
-                $"and this one is {declared.Length}. Shorten the name in cell A2 and install again.");
+                string.Format(CultureInfo.CurrentCulture, Strings.Device_DeclaredIsTooLongFor, declared, SafeFileName.MaxDeviceFileNameLength, declared.Length));
 
         if (file.HasErrors)
             throw new InvalidOperationException(
-                "This profile has validation errors and cannot be installed:\n" +
+                Strings.Device_ThisProfileHasValidationErrors +
                 string.Join("\n", file.Issues.Where(i => i.Severity == Severity.Error)));
 
         var name = file.Document.CsvFileName
@@ -88,8 +88,7 @@ public static class Device
 
         if (file.Document.IsDefaultConfig && !confirmDefaultCsv)
             throw new InvalidOperationException(
-                "Refusing to overwrite default.csv without explicit confirmation. " +
-                "A wrong default.csv can disable flash-drive access.");
+                Strings.Device_RefusingToOverwriteDefaultCsv);
 
         // prefs.csv is the device's own settings file, so it changes every
         // profile at once. The gate lives here and not in the window that calls
@@ -97,13 +96,11 @@ public static class Device
         // a normal game CSV is not this file and stays on the normal path.
         if (file.Document.IsDevicePreferences && !confirmPreferencesCsv)
             throw new InvalidOperationException(
-                "Refusing to overwrite prefs.csv without explicit confirmation. " +
-                "prefs.csv holds device-wide settings, and a wrong one can leave the QuadStick unusable.");
+                Strings.Device_RefusingToOverwritePrefsCsv);
 
         if (!IsInstallTarget(deviceRoot))
             throw new InvalidOperationException(
-                "That folder does not look like a QuadStick drive (no default.csv at its root). " +
-                "Pick the USB volume that appears when the device is plugged in.");
+                Strings.Device_ThatFolderDoesNotLook);
 
         // The name comes out of cell A2 of a file that may have arrived from
         // anywhere: a download, a shared workbook, a community profile.
@@ -120,8 +117,7 @@ public static class Device
         // and the user is told verification failed.
         if (name != Path.GetFileName(name) || name.Any(char.IsControl) || SafeFileName.IsReservedOnWindows(name))
             throw new InvalidOperationException(
-                $"\"{name}\" is not a plain file name the QuadStick can hold, so nothing was written. " +
-                "Change cell A2 to a simple name like \"mygame.csv\".");
+                string.Format(CultureInfo.CurrentCulture, Strings.Device_NameIsNotAPlain, name));
 
         var target = Path.Combine(deviceRoot, name);
 
@@ -164,9 +160,7 @@ public static class Device
                 // it says what is certainly true, keeps the backup, and asks the
                 // user to look rather than promising them nothing happened.
                 throw new InvalidOperationException(
-                    $"The QuadStick was disconnected while {name} was being written. " +
-                    $"Your previous version is safe at {backup}. Plug the device back in, check whether "
-                    + $"{name} is still on it, and install again.", swap);
+                    string.Format(CultureInfo.CurrentCulture, Strings.Device_TheQuadStickWasDisconnectedWhile, name, backup, name), swap);
             }
             catch (Exception swap) when (backup != null && !File.Exists(target))
             {
@@ -193,14 +187,13 @@ public static class Device
                     // never ran, and it is never a partial write.
                     try { if (File.Exists(back)) File.Delete(back); } catch { /* leave the stray copy */ }
                     throw new InvalidOperationException(
-                        $"Writing failed mid-swap and {name} could not be put back on the QuadStick. " +
-                        $"Your previous version is safe at {backup}. Copy it onto the device by hand.", restore);
+                        string.Format(CultureInfo.CurrentCulture, Strings.Device_WritingFailedMidSwapAnd, name, backup), restore);
                 }
                 // The cause travels with it. Now that any exception can land
                 // here, dropping it would leave a crash report with nothing in
                 // it about what actually broke.
                 throw new InvalidOperationException(
-                    $"Writing failed mid-swap; the previous version of {name} was restored from backup. The device is unchanged.", swap);
+                    string.Format(CultureInfo.CurrentCulture, Strings.Device_WritingFailedMidSwapThe, name), swap);
             }
         }
         finally
@@ -240,7 +233,7 @@ public static class Device
     {
         if (string.IsNullOrWhiteSpace(fileName) || fileName != Path.GetFileName(fileName))
             throw new InvalidOperationException(
-                "Only a plain file name on the device root can be deleted, not a path.");
+                Strings.Device_OnlyAPlainFileName);
 
         if (!fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Only .csv profiles can be deleted.");
@@ -248,13 +241,11 @@ public static class Device
         if (string.Equals(fileName, "default.csv", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(fileName, "prefs.csv", StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException(
-                $"{fileName} is protected and cannot be deleted. " +
-                "Removing it can leave the device unusable.");
+                string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameIsProtectedAndCannot, fileName));
 
         if (!IsInstallTarget(deviceRoot))
             throw new InvalidOperationException(
-                "That folder does not look like a QuadStick drive (no default.csv at its root). " +
-                "Pick the USB volume that appears when the device is plugged in.");
+                Strings.Device_ThatFolderDoesNotLook);
 
         // Belt and braces after the file-name check: resolve both paths and
         // prove the target still sits directly in the device root.
@@ -266,11 +257,11 @@ public static class Device
             : StringComparison.Ordinal;
         if (!string.Equals(targetDir, root, compare))
             throw new InvalidOperationException(
-                "That file is not directly on the device root, so it was not deleted.");
+                Strings.Device_ThatFileIsNotDirectly);
 
         if (!File.Exists(target))
             throw new InvalidOperationException(
-                $"{fileName} is no longer on the device. Refresh the list and try again.");
+                string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameIsNoLongerOn, fileName));
 
         // Backup first. If the copy throws, the source is still there and we
         // have deleted nothing.

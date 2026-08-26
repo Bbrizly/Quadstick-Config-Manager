@@ -2295,9 +2295,9 @@ public partial class MainWindow : Window
     // the side their socket is on.
     static readonly (string Name, string Detail, bool Left, double LabelY, double PointX, double PointY)[] BackSockets =
     {
-        (SwitchJacks.TopPort, Strings.Main_OneSwitchIn8, true, 60, 0.1114, 0.2963),
-        (SwitchJacks.LipPort, Strings.Main_OneSwitchIn5, true, 122, 0.1114, 0.5000),
-        (SwitchJacks.BottomPort, Strings.Main_OneSwitchIn1, true, 184, 0.1114, 0.7147),
+        (SwitchJacks.PortLabel(SwitchJacks.TopPort), Strings.Main_OneSwitchIn8, true, 60, 0.1114, 0.2963),
+        (SwitchJacks.PortLabel(SwitchJacks.LipPort), Strings.Main_OneSwitchIn5, true, 122, 0.1114, 0.5000),
+        (SwitchJacks.PortLabel(SwitchJacks.BottomPort), Strings.Main_OneSwitchIn1, true, 184, 0.1114, 0.7147),
         (Strings.Main_USBBPort, Strings.Main_ToTheComputer, false, 70, 0.9005, 0.3354),
         (Strings.Main_USBAPort, Strings.Main_JoystickOrIn34, false, 150, 0.9107, 0.6254),
     };
@@ -5543,11 +5543,11 @@ public partial class MainWindow : Window
     // that line.
     static TokenCatalog? _inputCatalog;
     static TokenCatalog InputCatalog => _inputCatalog ??= new(
-        t => (AllZones.First(z => z.Id == ZoneOf(t)).Title, SwitchJacks.For(t)?.Port ?? ""),
+        t => (AllZones.First(z => z.Id == ZoneOf(t)).Title, SwitchJacks.PortLabel(SwitchJacks.For(t)?.Port ?? "")),
         AllZones.Select(z => z.Title).ToArray(),
         new Dictionary<string, string[]>
         {
-            [Strings.Main_SwitchJacks] = SwitchJacks.Ports.Select(p => p.Port).ToArray(),
+            [Strings.Main_SwitchJacks] = SwitchJacks.Ports.Select(p => SwitchJacks.PortLabel(p.Port)).ToArray(),
         });
 
     // A List View cell backed by the drill-down picker. Commits like

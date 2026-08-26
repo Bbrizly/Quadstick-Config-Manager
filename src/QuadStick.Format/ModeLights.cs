@@ -63,7 +63,7 @@ public static class ModeLights
                          + Series(g.Select(x => x.Number.ToString(System.Globalization.CultureInfo.InvariantCulture)).ToList())
                          + " " + g.Key.ToString().ToLowerInvariant())
             .ToList();
-        return groups.Count == 0 ? "no lights" : string.Join(", ", groups);
+        return groups.Count == 0 ? Strings.Lights_NoLights : string.Join(", ", groups);
     }
 
     static string Series(List<string> parts) =>

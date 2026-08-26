@@ -1985,12 +1985,6 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Prefs_DeviceWideSettings" xml:space="preserve">
     <value>[Dévíçé-wídé šéttíñgš xxxxxxxx]</value>
   </data>
-  <data name="Prefs_ForRowBRow" xml:space="preserve">
-    <value>[)} fór rów {b.Rów} xxxxxxx]</value>
-  </data>
-  <data name="Prefs_ForRowBRowSaved" xml:space="preserve">
-    <value>[)} fór rów {b.Rów}. Šávéd íñ thé fílé, ígñóréd bý thé QúádŠtíçk xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
-  </data>
   <data name="Prefs_HexCode" xml:space="preserve">
     <value>[Héx çódé xxx]</value>
   </data>

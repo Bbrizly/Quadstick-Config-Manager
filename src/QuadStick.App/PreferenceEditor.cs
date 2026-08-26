@@ -209,10 +209,10 @@ public partial class MainWindow
         }
         var text = new TextBlock
         {
-            Text = def.Category, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"),
+            Text = PreferenceCatalog.CategoryLabel(def.Category), FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"),
             Margin = new Avalonia.Thickness(RowNumberWidth + 4, 10, 0, 0),
         };
-        AutomationProperties.SetName(text, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_DefCategorySettings, def.Category));
+        AutomationProperties.SetName(text, string.Format(CultureInfo.CurrentCulture, Strings.Prefs_DefCategorySettings, PreferenceCatalog.CategoryLabel(def.Category)));
         return text;
     }
 

@@ -141,7 +141,10 @@ def split_interpolation(body):
         j = read_hole(body, i + 1)
         if j is None: return None
         expr = body[i+1:j-1]
-        if ':' in expr or '"' in expr or top_level_comma(expr): return None  # a format spec, or an alignment
+        # A quote inside the hole is some call's own argument and travels with
+        # the expression. A colon is a format specifier or a ternary, and an
+        # outer comma is C#'s alignment syntax; neither survives {0}.
+        if ':' in expr or top_level_comma(expr): return None
         out += '{%d}' % len(args)
         args.append(expr)
         i = j
@@ -201,7 +204,10 @@ def run(mode, path, prefix):
     # knows what language it is being read in.
     src = re.sub(r'\bconst string (\w+\s*=\s*\n?\s*(?:Strings\.|string\.Format\())', r'static readonly string \1', src)
     if 'string.Format(' in src and 'using System.Globalization;' not in src:
-        src = re.sub(r'^(using )', 'using System.Globalization;\n\\1', src, count=1, flags=re.M)
+        # Some files open with a comment and go straight to the namespace.
+        anchor = r'^(using )' if re.search(r'^using ', src, re.M) else r'^(namespace )'
+        src = re.sub(anchor, 'using System.Globalization;\n\n\\1' if 'namespace' in anchor
+                     else 'using System.Globalization;\n\\1', src, count=1, flags=re.M)
     open(path, 'w').write(src)
     resx.add_pairs(os.path.join(os.path.dirname(path), 'Strings.resx'),
                    [(k, t) for _, _, k, t, _ in rows])
