@@ -36,3 +36,13 @@ CLAUDE.md
 ios/QuadStickKit/.build/
 ios/**/xcuserdata/
 ios/Google.local.xcconfig
+
+# The translator file resx.py writes; regenerate it, do not commit it.
+tools/strings/to-translate.txt
+
+# Pitch and revamp drafts I keep beside the site but do not publish. docs/ is
+# served as the public site, so anything here goes live the moment it is added.
+docs/UI-UX-REVAMP-BRIEF.md
+docs/hackathon-pitch.html
+docs/present.sh
+docs/research/

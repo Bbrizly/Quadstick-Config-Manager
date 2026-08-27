@@ -1,0 +1,79 @@
+[
+  {
+    "kind": "tool",
+    "id": "toolu_019f8uMqcFTjTCndyjquWFdf",
+    "name": "WebSearch",
+    "input": {
+      "query": "Minecraft Bedrock Xbox controller default controls official"
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_017k4EScwEANAEMmmchBZ3vG",
+    "name": "WebSearch",
+    "input": {
+      "query": "Minecraft Java Edition controls wiki.gg default keybindings"
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_019f8uMqcFTjTCndyjquWFdf",
+    "summary": "9 results",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_017k4EScwEANAEMmmchBZ3vG",
+    "summary": "8 results",
+    "failed": false
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01VH7VJiZe9e2vrArH4WGpSG",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://minecraft.wiki/w/Tutorial:Playing_with_a_controller",
+      "prompt": "List the default Xbox controller button mappings for Minecraft (Bedrock Edition), including movement, look, jump, sneak, sprint, attack/destroy, use/place, inventory, hotbar switching, drop item, chat, pause menu, and any other actions. Give exact button names (A, B, X, Y, LB, RB, LT, RT, left stick, right stick, D-pad directions, Start/Menu, Back/View)."
+    }
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_01QqUTYVifehtu5NnmCg99oh",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://www.minecraft.net/en-us/article/minecraft-controls",
+      "prompt": "List the default Xbox controller button mappings for Minecraft, including movement, look, jump, sneak, sprint, attack/destroy, use/place, inventory, hotbar switching, drop item, chat, pause menu, and any other actions. Give exact button names."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01VH7VJiZe9e2vrArH4WGpSG",
+    "summary": "1,040 characters read",
+    "failed": false
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_01QqUTYVifehtu5NnmCg99oh",
+    "summary": "timeout of 60000ms exceeded",
+    "failed": true
+  },
+  {
+    "kind": "tool",
+    "id": "toolu_013p59XeAoLw26snzfcjeSEw",
+    "name": "WebFetch",
+    "input": {
+      "url": "https://minecraft.wiki/w/Controls",
+      "prompt": "Find the section for gamepad/controller controls (Bedrock Edition, Xbox controller). List every button and its action: A, B, X, Y, LB, RB, LT, RT, left stick click, right stick click, D-pad up/down/left/right, Start/Menu button, Back/View button, left stick movement, right stick look."
+    }
+  },
+  {
+    "kind": "tool_result",
+    "id": "toolu_013p59XeAoLw26snzfcjeSEw",
+    "summary": "858 characters read",
+    "failed": false
+  },
+  {
+    "kind": "said",
+    "text": "```json\n{\"game\": \"Minecraft (Bedrock Edition)\",\n  \"platform\": \"xbox\",\n  \"controls\": {\n    \"left_joy_up\": {\"action\": \"Move forward\", \"critical\": true},\n    \"left_joy_down\": {\"action\": \"Move backward\", \"critical\": true},\n    \"left_joy_left\": {\"action\": \"Strafe left\", \"critical\": true},\n    \"left_joy_right\": {\"action\": \"Strafe right\", \"critical\": true},\n    \"right_joy_up\": {\"action\": \"Look up\", \"crit"
+  }
+]
