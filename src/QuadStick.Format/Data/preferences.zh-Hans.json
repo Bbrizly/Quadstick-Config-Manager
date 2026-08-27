@@ -1,0 +1,330 @@
+[
+ {
+  "name": "joystick_deflection_minimum",
+  "label": "摇杆中心死区",
+  "description": "模拟摇杆的中心死区，以满行程的百分比表示。把它设得足够高，可以防止鼠标或摇杆漂移。数值越大，摇杆在中心附近就越不灵敏。这与 D-Pad 环是两回事。在 2373 固件上，0 不再表示没有死区：设备会改用 129 个原始计数值，并且每次扫描都会重新执行这一替换，因此它会覆盖文件加载时算出的值。"
+ },
+ {
+  "name": "joystick_deflection_maximum",
+  "label": "摇杆满行程偏转",
+  "description": "摇杆需要移动多远才能产生满信号。QMP 把这个称为摇杆的运动范围，它是设备上最接近灵敏度控制的设置：数值越大，达到同样输出所需的行程就越长，摇杆手感就越不灵敏。QMP 取其四个方向滑块中的最大值。"
+ },
+ {
+  "name": "deflection_multiplier_up",
+  "label": "向上偏转倍率",
+  "unit": "百分比",
+  "description": "缩放向上方向，使其在与其他方向相同的位置达到满信号。QMP 用最大方向滑块除以向上方向的滑块来算出这个值，因此倍率越大，向上方向达到满信号所需的行程就越短，手感也就越灵敏。"
+ },
+ {
+  "name": "deflection_multiplier_down",
+  "label": "向下偏转倍率",
+  "unit": "百分比",
+  "description": "缩放向下方向，使其在与其他方向相同的位置达到满信号。QMP 用最大方向滑块除以向下方向的滑块来算出这个值，因此倍率越大，向下方向达到满信号所需的行程就越短，手感也就越灵敏。"
+ },
+ {
+  "name": "deflection_multiplier_left",
+  "label": "向左偏转倍率",
+  "unit": "百分比",
+  "description": "缩放向左方向，使其在与其他方向相同的位置达到满信号。QMP 用最大方向滑块除以向左方向的滑块来算出这个值，因此倍率越大，向左方向达到满信号所需的行程就越短，手感也就越灵敏。"
+ },
+ {
+  "name": "deflection_multiplier_right",
+  "label": "向右偏转倍率",
+  "unit": "百分比",
+  "description": "缩放向右方向，使其在与其他方向相同的位置达到满信号。QMP 用最大方向滑块除以向右方向的滑块来算出这个值，因此倍率越大，向右方向达到满信号所需的行程就越短，手感也就越灵敏。"
+ },
+ {
+  "name": "joystick_D_Pad_inner",
+  "label": "内侧 D-Pad 环",
+  "unit": "百分比",
+  "description": "内侧 D-Pad 环起点占满偏转的百分比，从中心开始测量。它只有在短暂延迟之后才会触发，因此摇杆经过它向外移动时不会误触。该值的一半是方向停止保持的位置。"
+ },
+ {
+  "name": "joystick_D_Pad_outer",
+  "label": "外侧 D-Pad 环",
+  "unit": "百分比",
+  "description": "外侧 D-Pad 环起点占满偏转的百分比，从中心开始测量。超过这条线，方向会立即触发。"
+ },
+ {
+  "name": "joystick_dead_zone_shape",
+  "label": "圆形死区",
+  "description": "使用圆形的中心死区而不是方形的。"
+ },
+ {
+  "name": "anti_dead_zone",
+  "label": "反死区"
+ },
+ {
+  "name": "joystick_warning",
+  "label": "摇杆警告偏转",
+  "description": "超过此偏转值时，1476 固件会警告用户摇杆移动过远。2373 固件仍然接受这个名称，但会忽略它：相应的检查已被注释掉。"
+ },
+ {
+  "name": "joystick_alarm",
+  "label": "摇杆警报偏转",
+  "description": "超过此偏转值时，1476 固件会发出警报音。2373 固件仍然接受这个名称，但会忽略它：相应的检查已被注释掉。"
+ },
+ {
+  "name": "enable_auto_zero",
+  "label": "传感器自动归零",
+  "description": "2373 固件会忽略此项。它在每次加载配置后都会把该设置强制重置为 0，而原本会读取它的两处代码也都已被注释掉，因此无论在模式行中还是在设备上，打开它都不会改变任何东西。"
+ },
+ {
+  "name": "sip_puff_threshold_soft",
+  "label": "轻度 sip/puff 阈值",
+  "unit": "百分比",
+  "description": "开始识别轻度 sip 或 puff 的压力或真空水平。"
+ },
+ {
+  "name": "sip_puff_threshold",
+  "label": "重度 sip/puff 阈值",
+  "unit": "百分比",
+  "description": "触发输出的压力值。QMP 把它显示为 sip and puff high threshold（高阈值）；sip_puff_threshold_soft 是低阈值。"
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "Sip/puff 最大压力",
+  "unit": "百分比",
+  "description": "缩放为满信号所对应的最大压力。"
+ },
+ {
+  "name": "sip_puff_delay_soft",
+  "label": "轻度 sip/puff 延迟",
+  "unit": "毫秒",
+  "description": "轻度 sip 和 puff 信号会在这个短暂延迟之后被识别。QMP 把它显示为 Low Threshold Delay。"
+ },
+ {
+  "name": "sip_puff_delay_hard",
+  "label": "重度 sip/puff 延迟",
+  "unit": "毫秒",
+  "description": "重度 sip 或 puff 需要保持多久才会被算作长信号。计时从超过重度阈值那一刻开始，而不是压力刚开始变化时。0 并不表示未设置，而是表示长信号会立即触发。"
+ },
+ {
+  "name": "sip_threshold_soft",
+  "label": "轻度 sip 阈值",
+  "unit": "百分比",
+  "description": "自 2373 固件起，开始识别轻度 sip 的真空水平。为 0 时，轻度 sip/puff 阈值仍适用于 sip；设为其他值则只针对 sip 替换该阈值。"
+ },
+ {
+  "name": "sip_threshold",
+  "label": "重度 sip 阈值",
+  "unit": "百分比",
+  "description": "自 2373 固件起，触发重度 sip 的真空水平。为 0 时，重度 sip/puff 阈值仍适用于 sip；设为其他值则只针对 sip 替换该阈值。"
+ },
+ {
+  "name": "sip_maximum",
+  "label": "Sip 最大真空",
+  "unit": "百分比",
+  "description": "自 2373 固件起，sip 缩放为满信号所对应的真空值。为 0 时，sip/puff 最大值仍适用于 sip；设为其他值则只针对 sip 替换该值。"
+ },
+ {
+  "name": "puff_threshold_soft",
+  "label": "轻度 puff 阈值",
+  "unit": "百分比",
+  "description": "自 2373 固件起，开始识别轻度 puff 的压力值。为 0 时，轻度 sip/puff 阈值仍适用于 puff；设为其他值则只针对 puff 替换该阈值。"
+ },
+ {
+  "name": "puff_threshold",
+  "label": "重度 puff 阈值",
+  "unit": "百分比",
+  "description": "自 2373 固件起，触发重度 puff 的压力值。为 0 时，重度 sip/puff 阈值仍适用于 puff；设为其他值则只针对 puff 替换该阈值。"
+ },
+ {
+  "name": "puff_maximum",
+  "label": "Puff 最大压力",
+  "unit": "百分比",
+  "description": "自 2373 固件起，puff 缩放为满信号所对应的压力值。为 0 时，sip/puff 最大值仍适用于 puff；设为其他值则只针对 puff 替换该值。"
+ },
+ {
+  "name": "enable_left_side_tube",
+  "label": "使用左侧吸管",
+  "description": "通过与右侧吸管互换，改用左侧吸管进行模式控制。"
+ },
+ {
+  "name": "lip_position_minimum",
+  "label": "Lip 传感器最小值",
+  "unit": "百分比",
+  "description": "激活信号所需的 Lip 传感器位置百分比。"
+ },
+ {
+  "name": "lip_position_maximum",
+  "label": "Lip 传感器最大值",
+  "unit": "百分比",
+  "description": "达到满信号所需的 Lip 传感器移动百分比。"
+ },
+ {
+  "name": "mouse_speed",
+  "label": "鼠标速度",
+  "description": "相对于摇杆移动的鼠标速度。"
+ },
+ {
+  "name": "mouse_response_curve",
+  "label": "鼠标响应曲线",
+  "description": "0 为线性，1 为混合，2 为抛物线。",
+  "optionLabels": [
+   "线性",
+   "混合",
+   "抛物线"
+  ]
+ },
+ {
+  "name": "volume",
+  "label": "扬声器音量",
+  "description": "扬声器音量。"
+ },
+ {
+  "name": "brightness",
+  "label": "LED 亮度",
+  "description": "LED 亮度。"
+ },
+ {
+  "name": "enable_rumble",
+  "label": "震动"
+ },
+ {
+  "name": "bluetooth_device_mode",
+  "label": "Bluetooth 设备模式",
+  "description": "QuadStick 在 Bluetooth 上伪装成的设备类型。"
+ },
+ {
+  "name": "bluetooth_authentication_mode",
+  "label": "Bluetooth 身份验证模式"
+ },
+ {
+  "name": "bluetooth_connection_mode",
+  "label": "Bluetooth 连接模式"
+ },
+ {
+  "name": "bluetooth_remote_address",
+  "label": "Bluetooth 远程地址"
+ },
+ {
+  "name": "bluetooth_remote_adapter",
+  "label": "Bluetooth 远程适配器"
+ },
+ {
+  "name": "bluetooth_throttle",
+  "label": "Bluetooth 节流",
+  "description": "如果距离上一次发送的时间不够长，设备会跳过这次 Bluetooth 传输。"
+ },
+ {
+  "name": "digital_out_1",
+  "label": "数字输出 1",
+  "description": "设备在到达偏好设置表之前就会把这个名称匹配为一个输出，因此它只是一项设备设置，永远不会作为模式覆盖使用。"
+ },
+ {
+  "name": "digital_out_2",
+  "label": "数字输出 2",
+  "description": "设备在到达偏好设置表之前就会把这个名称匹配为一个输出，因此它只是一项设备设置，永远不会作为模式覆盖使用。"
+ },
+ {
+  "name": "digital_out_3",
+  "label": "数字输出 3",
+  "description": "设备在到达偏好设置表之前就会把这个名称匹配为一个输出，因此它只是一项设备设置，永远不会作为模式覆盖使用。"
+ },
+ {
+  "name": "digital_out_4",
+  "label": "数字输出 4",
+  "description": "设备在到达偏好设置表之前就会把这个名称匹配为一个输出，因此它只是一项设备设置，永远不会作为模式覆盖使用。"
+ },
+ {
+  "name": "enable_swap_inputs",
+  "label": "用侧管交换输入",
+  "description": "使用侧管来交换输入。"
+ },
+ {
+  "name": "enable_select_files",
+  "label": "用侧管选择文件",
+  "description": "使用侧管来选择文件。"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "USB-A 设备模式",
+  "risk": "这决定了 QuadStick 在哪个 USB 端口上呈现自己。该设置改变时，设备会断开 USB 并重新连接，因此错误的值会让主机或电脑无法识别它。它的优先级也高于 enable_usb_a_host：只要此项开启，无论主机设置写的是什么，USB-A 主机功能都会被关闭。仅在 QuadStick 支持人员的建议下更改此项。"
+ },
+ {
+  "name": "enable_usb_a_host",
+  "label": "USB-A 主机模式",
+  "description": "自 2373 固件起可用。开启此项且 USB-A 设备模式关闭时，设备会在 USB-A 端口上运行一个 USB 主机，因此插在那里的控制器会把信号送入 usb_1 输入通道。关闭此项，或者开启 USB-A 设备模式，主机功能就会被关闭。USB-A 设备模式优先级更高。QMP 把它显示为 USB-A Host Mode。"
+ },
+ {
+  "name": "enable_DS3_emulation",
+  "label": "USB 仿真模式",
+  "description": "QuadStick 伪装成哪种 USB 设备。在 2373 固件上：0 为 QuadStick 原生，1 为 DualShock 3，2 为 x360ce，3 为 Xbox 360，4 为供 PS4 使用的 DualShock 4，5 为 Nintendo Switch Pro Controller，6 为不带 USB 驱动器的 DualShock 4，7 为纯粹的 DS4 无线模式。在 1476 固件上，值 5 表示仅限 PC、没有摇杆功能，因此设备更新后，携带值 5 的文件行为会完全不同。模式 1、5、6 和 7 完全不提供 USB 驱动器，因此运行其中任何一个时，电脑都看不到 QuadStick 的文件。QMP 的 Boot in PS4 Mode 对应值 4：2373 固件的 Joystick.c 第 625 行在自己的注释中把这个值称为 \"boot in PS4 mode\"。",
+  "risk": "名称虽然写着 DS3，但设备把它读作一个有八个编号值的 USB 仿真模式，而不是一个开关。5 这个值在 1476 和 2373 固件之间含义发生了变化，运行中的固件如果不认识某个数字，就会让设备停留在一个谁都没有要求过的仿真状态上。QCM 会保留你输入的任何值，不做任何拒绝，因为对一个固件来说错误的值，对另一个固件可能是正确的。仅在 QuadStick 支持人员的建议下更改此项。",
+  "optionLabels": [
+   "QuadStick（PC 和 PS3）",
+   "DualShock 3，无 USB 驱动器",
+   "x360ce，用于 PC",
+   "Xbox 360 控制器",
+   "DualShock 4，用于 PS4（QMP 的 Boot in PS4 Mode）",
+   "Nintendo Switch Pro Controller，无 USB 驱动器",
+   "DualShock 4，无 USB 驱动器",
+   "DualShock 4 无线模式，无 USB 驱动器"
+  ]
+ },
+ {
+  "name": "enable_usb_comm",
+  "label": "通过 USB 的语音命令",
+  "description": "启用通过 USB 的语音命令。"
+ },
+ {
+  "name": "usb_1_multiplier_up",
+  "label": "USB 1 向上倍率"
+ },
+ {
+  "name": "usb_1_multiplier_down",
+  "label": "USB 1 向下倍率"
+ },
+ {
+  "name": "usb_1_multiplier_left",
+  "label": "USB 1 向左倍率"
+ },
+ {
+  "name": "usb_1_multiplier_right",
+  "label": "USB 1 向右倍率"
+ },
+ {
+  "name": "usb_2_multiplier_up",
+  "label": "USB 2 向上倍率"
+ },
+ {
+  "name": "usb_2_multiplier_down",
+  "label": "USB 2 向下倍率"
+ },
+ {
+  "name": "usb_2_multiplier_left",
+  "label": "USB 2 向左倍率"
+ },
+ {
+  "name": "usb_2_multiplier_right",
+  "label": "USB 2 向右倍率"
+ },
+ {
+  "name": "usb_1_dead_zone",
+  "label": "USB 1 死区",
+  "unit": "原始轴计数",
+  "description": "自 2373 固件起可用。插在 USB-A 主机端口上的控制器的中心死区，以该控制器居中轴字节的原始步进计数，而不是百分比来表示。低于该值时，轴读数为 0；高于该值时，会减去该值，使行程从零开始，结果被限制在正负 100 之间。为 0 时，轴数据会原样通过。居中的轴字节无论哪个方向都只能到大约 127，因此 128 或更大的值会让该轴失效。"
+ },
+ {
+  "name": "usb_2_dead_zone",
+  "label": "USB 2 死区",
+  "unit": "原始轴计数",
+  "description": "自 2373 固件起该名称合法，文件中也带有它，但设备会忽略此项。固件中没有任何代码读取这个值：所有 USB 主机轴都使用 USB 1 死区。在模式行中设置它同样不起任何作用。"
+ },
+ {
+  "name": "titan_two",
+  "label": "Titan Two 适配器",
+  "description": "自 2373 固件起可用。告诉设备它是通过 Titan Two 连接到 PS4，而不是直接插入主机。这样设备会跳过 DS4 身份验证握手，并停止周期性的强制 USB 重新连接。QMP 把它显示为 Titan 2 PS4 flag。"
+ },
+ {
+  "name": "watchdog_disable",
+  "label": "禁用看门狗",
+  "risk": "设备运行着一个两分钟的硬件看门狗，如果它停止响应就会重启设备。1476 和 2373 固件中都没有代码读取此设置，因此在这两个版本上它都不起任何作用，未来的固件会如何处理它则未知。"
+ },
+ {
+  "name": "debug",
+  "label": "调试输出级别",
+  "description": "当此值大于零时，设备会开启其控制台。"
+ }
+]

@@ -1,0 +1,686 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Device_DeclaredIsTooLongFor" xml:space="preserve">
+    <value>“{0}”太长，QuadStick 无法加载，因此未写入任何内容。配置文件名（含“.csv”）最多可以有 {1} 个字符，而这个名称有 {2} 个字符。请缩短单元格 A2 中的名称后重新安装。</value>
+  </data>
+  <data name="Device_FileNameIsNoLongerOn" xml:space="preserve">
+    <value>{0} 已不在设备上。请刷新列表后重试。</value>
+  </data>
+  <data name="Device_FileNameIsProtectedAndCannot" xml:space="preserve">
+    <value>{0} 受保护，无法删除。删除它可能导致设备无法使用。</value>
+  </data>
+  <data name="Device_NameIsNotAPlain" xml:space="preserve">
+    <value>“{0}”不是 QuadStick 可以接受的简单文件名，因此未写入任何内容。请将单元格 A2 改为类似“mygame.csv”的简单名称。</value>
+  </data>
+  <data name="Device_OnlyAPlainFileName" xml:space="preserve">
+    <value>只能删除设备根目录下的简单文件名，不能删除路径。</value>
+  </data>
+  <data name="Device_RefusingToOverwriteDefaultCsv" xml:space="preserve">
+    <value>未经明确确认，拒绝覆盖 default.csv。错误的 default.csv 可能导致无法访问闪存驱动器。</value>
+  </data>
+  <data name="Device_RefusingToOverwritePrefsCsv" xml:space="preserve">
+    <value>未经明确确认，拒绝覆盖 prefs.csv。prefs.csv 保存设备的全局设置，错误的 prefs.csv 可能导致 QuadStick 无法使用。</value>
+  </data>
+  <data name="Device_ThatFileIsNotDirectly" xml:space="preserve">
+    <value>该文件不在设备根目录下，因此未被删除。</value>
+  </data>
+  <data name="Device_ThatFolderDoesNotLook" xml:space="preserve">
+    <value>该文件夹看起来不是 QuadStick 驱动器（其根目录下没有 default.csv）。请选择设备插入后出现的 USB 卷。</value>
+  </data>
+  <data name="Device_TheQuadStickWasDisconnectedWhile" xml:space="preserve">
+    <value>在写入 {0} 期间，QuadStick 断开了连接。您之前的版本已安全保存在 {1}。请重新插入设备，检查 {2} 是否仍在设备上，然后重新安装。</value>
+  </data>
+  <data name="Device_ThisProfileHasValidationErrors" xml:space="preserve">
+    <value>此配置文件存在验证错误，无法安装：
+</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapAnd" xml:space="preserve">
+    <value>写入在交换过程中失败，{0} 无法放回 QuadStick。您之前的版本已安全保存在 {1}。请手动将其复制到设备上。</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapThe" xml:space="preserve">
+    <value>写入在交换过程中失败；{0} 的之前版本已从备份中恢复。设备未发生变化。</value>
+  </data>
+  <data name="Fn_10ASecond" xml:space="preserve">
+    <value>每秒 10 次</value>
+  </data>
+  <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
+    <value>1 会将输出锁定为开启。大于 1 的值表示按压持续的时长。</value>
+  </data>
+  <data name="Fn_CountsAsATap" xml:space="preserve">
+    <value>算作一次轻点</value>
+  </data>
+  <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
+    <value>一旦您的输入达到此强度即触发。</value>
+  </data>
+  <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
+    <value>只要您的输入强度低于此值就会触发。</value>
+  </data>
+  <data name="Fn_FirstHold" xml:space="preserve">
+    <value>首次按住</value>
+  </data>
+  <data name="Fn_HoldOn" xml:space="preserve">
+    <value>按住</value>
+  </data>
+  <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
+    <value>按住输入超过此时长，输出会锁定为开启，而不是轻点。</value>
+  </data>
+  <data name="Fn_HoldToLatch" xml:space="preserve">
+    <value>按住以锁定</value>
+  </data>
+  <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
+    <value>在连发开始前，第一次轻点会保持这么长时间。</value>
+  </data>
+  <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
+    <value>按住时保持</value>
+  </data>
+  <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
+    <value>每次模拟输出向下移动的幅度。</value>
+  </data>
+  <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
+    <value>每次模拟输出向上移动的幅度。</value>
+  </data>
+  <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
+    <value>您按住输入时的轻点速度。</value>
+  </data>
+  <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
+    <value>每次按压持续的时长。</value>
+  </data>
+  <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
+    <value>轻点按压持续的时长。1 则会将输出锁定为开启。</value>
+  </data>
+  <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
+    <value>一次激活发送多少次按压。</value>
+  </data>
+  <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
+    <value>您按住输入时，会按此频率持续步进。</value>
+  </data>
+  <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
+    <value>松开后，输出会保持按下这么长时间。</value>
+  </data>
+  <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
+    <value>在此时间窗口内松开算作一次轻点。按住更久则不会触发任何操作。</value>
+  </data>
+  <data name="Fn_NoExtraHold" xml:space="preserve">
+    <value>无额外按住时间</value>
+  </data>
+  <data name="Fn_NoUpperLimit" xml:space="preserve">
+    <value>无上限</value>
+  </data>
+  <data name="Fn_OnePress" xml:space="preserve">
+    <value>一次按压</value>
+  </data>
+  <data name="Fn_OneStepPerActivation" xml:space="preserve">
+    <value>每次激活一步</value>
+  </data>
+  <data name="Fn_ReleasedAtOnce" xml:space="preserve">
+    <value>立即释放</value>
+  </data>
+  <data name="Fn_RepeatEvery" xml:space="preserve">
+    <value>每隔</value>
+  </data>
+  <data name="Fn_Sentence" xml:space="preserve">
+    <value>{0}：{1} 到 {2}。留空表示 {3}。{4}</value>
+  </data>
+  <data name="Fn_SentenceWithUnit" xml:space="preserve">
+    <value>{0}：{1} 到 {2} {5}。留空表示 {3}。{4}</value>
+  </data>
+  <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
+    <value>一旦您的输入超过此值，就会停止再次触发，因此这两个数字构成一个区间。</value>
+  </data>
+  <data name="Fn_TapsASecond" xml:space="preserve">
+    <value>每秒轻点次数</value>
+  </data>
+  <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
+    <value>满强度时的开关循环时长。较弱的输入会延长它。</value>
+  </data>
+  <data name="Fn_UpperLimit" xml:space="preserve">
+    <value>上限</value>
+  </data>
+  <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
+    <value>激活后等待这么长时间，然后按压。</value>
+  </data>
+  <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
+    <value>等待这么长时间后，才释放另一行锁定的输出。</value>
+  </data>
+  <data name="Issue_0UsedToMeanNo" xml:space="preserve">
+    <value>0 以前表示完全没有死区，而 2025 年的固件会改用 129 个原始计数代替，因此摇杆会出现一个此文件从未要求的小死区</value>
+  </data>
+  <data name="Issue_5WasPCOnlyNo" xml:space="preserve">
+    <value>5 在 2025 年之前表示“仅限 PC，无摇杆”，现在则表示 Nintendo Switch Pro Controller，因此更新后的 QuadStick 在主机或 PC 上会完全显示为另一种控制器</value>
+  </data>
+  <data name="Issue_ADirectionSettingLeftAt" xml:space="preserve">
+    <value> （{0} 设置若保留为 0，则会改用共享的 sip_puff_ 值。）</value>
+  </data>
+  <data name="Issue_APercentOver100Is" xml:space="preserve">
+    <value>。超过 100% 的数值是任何输入都无法达到的水平，因此这一行永远不会触发。</value>
+  </data>
+  <data name="Issue_ArgsIHasADecimal" xml:space="preserve">
+    <value>“{0}”带有小数部分。设备只读取整数，因此会将其当作“{1}”处理。</value>
+  </data>
+  <data name="Issue_ArgsIIsLargerThan" xml:space="preserve">
+    <value>“{0}”大于 {1}，即设备对第一个参数的限制；它会溢出到第二个参数中。</value>
+  </data>
+  <data name="Issue_ArgsIIsNegativeThe" xml:space="preserve">
+    <value>“{0}”是负数；设备对负数参数的处理结果不可预测。</value>
+  </data>
+  <data name="Issue_ArgsIIsNotA" xml:space="preserve">
+    <value>“{0}”不是数字。“{1}”的参数必须是整数，设备会将此值读作 0。</value>
+  </data>
+  <data name="Issue_BActionNameHasNoButton" xml:space="preserve">
+    <value>“{0}”尚未关联任何按钮，因此这一行在 QuadStick 上不会产生任何作用。</value>
+  </data>
+  <data name="Issue_BOutputHasNoValue" xml:space="preserve">
+    <value>“{0}”在列 B 中没有值，因此设备会将其读作 0。</value>
+  </data>
+  <data name="Issue_BOutputIsADevice" xml:space="preserve">
+    <value>“{0}”是一项设备设置，设备会从列 C 读取其值，但此处列 C 为空。列 B 会被忽略，因此这一行可能会将该值设为 0。</value>
+  </data>
+  <data name="Issue_BOutputIsADevice2" xml:space="preserve">
+    <value>“{0}”是一项设备设置，但后面没有跟随任何值，因此设备会将其设为 0。</value>
+  </data>
+  <data name="Issue_BOutputIsALegacy" xml:space="preserve">
+    <value>“{0}”是一个旧版输出名称：固件能识别它，但当前官方列表中已不包含它。</value>
+  </data>
+  <data name="Issue_BOutputIsNotA" xml:space="preserve">
+    <value>“{0}”不是有文档记录的输出名称（PlayStation 或 XBox 命名规范）。</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRow" xml:space="preserve">
+    <value>此模式使用“{0}”通道，其中有 {1} 个鼠标或键盘行，位于第 {2} 行。2025 年及更新的固件只有在通道包含 USB 时才会通过 USB 发送鼠标和键盘操作，因此通过数据线连接时，这一行不会产生任何作用，而该模式中手柄部分仍会正常工作。较旧的固件无论如何都会发送它们。</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRows" xml:space="preserve">
+    <value>此模式使用“{0}”通道，其中有 {1} 个鼠标或键盘行，第一个位于第 {2} 行。2025 年及更新的固件只有在通道包含 USB 时才会通过 USB 发送鼠标和键盘操作，因此通过数据线连接时，这些行不会产生任何作用，而该模式中手柄部分仍会正常工作。较旧的固件无论如何都会发送它们。</value>
+  </data>
+  <data name="Issue_BothNeedsFirmwareFrom2025" xml:space="preserve">
+    <value>“both”需要 2025 年或更新的固件。使用较旧固件的 QuadStick 无法识别这个词，只会通过 USB 运行此模式，且不会提示 Bluetooth 部分的情况。</value>
+  </data>
+  <data name="Issue_CheckTheSpellingAgainstThe" xml:space="preserve">
+    <value>请对照您设备已有的偏好设置检查拼写。（比此应用更新的固件可能会包含此应用从未见过的名称。）</value>
+  </data>
+  <data name="Issue_CheckWhichFirmwareYourQuadStick" xml:space="preserve">
+    <value>在依赖此行之前，请先确认您的 QuadStick 运行的是哪个固件版本。</value>
+  </data>
+  <data name="Issue_DidYouMeanNearIf" xml:space="preserve">
+    <value>您是不是想输入“{0}”？（如果您 QuadStick 的固件比此应用更新，它可能识别“{1}”，此警告可以放心忽略。）</value>
+  </data>
+  <data name="Issue_DualShock4WithNoUSB" xml:space="preserve">
+    <value>不带 USB 驱动器的 DualShock 4</value>
+  </data>
+  <data name="Issue_ExpectedForThisConsoleSwitch" xml:space="preserve">
+    <value>对于此主机，这是预期行为。请将 QuadStick 切换回另一个配置文件，才能再次编辑其文件。</value>
+  </data>
+  <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
+    <value>请使用 push 以外的方式触发，或使用一种 push 本身无法单独保持的组合。</value>
+  </data>
+  <data name="Issue_FunctionReads0ForP" xml:space="preserve">
+    <value>“{0}”将 {1} 的 0 值当作完全没有值处理，因此设备会使用 {2}。</value>
+  </data>
+  <data name="Issue_InputIsALegacyInput" xml:space="preserve">
+    <value>“{0}”是一个旧版输入名称：固件能识别它，但当前官方列表中已不包含它。</value>
+  </data>
+  <data name="Issue_InputIsNotADocumented" xml:space="preserve">
+    <value>“{0}”不是有文档记录的输入名称，因此设备会忽略它。</value>
+  </data>
+  <data name="Issue_ItReachesTheKeywordTable" xml:space="preserve">
+    <value>它只会到达关键字表和设置数组，不会有其他影响，因此两分钟看门狗无论如何都会运行</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer" xml:space="preserve">
+    <value>它应该仍然可以工作；如果存在当前名称，建议优先使用，例如“gyroscope_z_cw”。</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer2" xml:space="preserve">
+    <value>它应该仍然可以工作；如果存在当前名称，建议优先使用。</value>
+  </data>
+  <data name="Issue_KeepItIfThatIs" xml:space="preserve">
+    <value>如果这正是您想要的，可以保留它，并建议选择一个不容易被意外触发的输入。</value>
+  </data>
+  <data name="Issue_KeepItIfYourQuadStick" xml:space="preserve">
+    <value>如果您的 QuadStick 是最新版本，可以保留它。如果不是，请使用“usb”或“bluetooth”并选择其中一个。</value>
+  </data>
+  <data name="Issue_LeaveItOutToMean" xml:space="preserve">
+    <value>留空表示相同的含义，或将 {0} 设置在 {1} 到 {2} 之间。</value>
+  </data>
+  <data name="Issue_MostPreferencesTakeAWhole" xml:space="preserve">
+    <value>大多数偏好设置需要一个整数，例如“50”。</value>
+  </data>
+  <data name="Issue_MoveTheValueIntoColumn" xml:space="preserve">
+    <value>将该值移到列 B 中：“{0},{1}”。</value>
+  </data>
+  <data name="Issue_NameDoesNothingOnCurrent" xml:space="preserve">
+    <value>“{0}”在当前固件上不会产生任何作用：{1}。此行会按您所写的内容原样保存。</value>
+  </data>
+  <data name="Issue_NameIsANameWindows" xml:space="preserve">
+    <value>“{0}”是 Windows 为硬件保留的名称，因此不能作为该系统中的文件名。</value>
+  </data>
+  <data name="Issue_NameIsNotAValid" xml:space="preserve">
+    <value>“{0}”不是有效的配置文件名。</value>
+  </data>
+  <data name="Issue_NameIsTooLongSo" xml:space="preserve">
+    <value>"{0}" 太长，QuadStick 将无法加载它。配置名称最多可以有 {1} 个字符（包含 ".csv"），而这个是 {2} 个。</value>
+  </data>
+  <data name="Issue_NameSetToNMeans" xml:space="preserve">
+    <value>"{0}" 设为 {1} 时，含义会因 QuadStick 固件版本而不同：{2}。该行会按你输入的原样保存。</value>
+  </data>
+  <data name="Issue_NoOutputFunctionTheDevice" xml:space="preserve">
+    <value>没有输出功能；设备会把空白当作 "normal" 处理。</value>
+  </data>
+  <data name="Issue_NothingInTheFirmwareEver" xml:space="preserve">
+    <value>固件中从来没有代码读取它</value>
+  </data>
+  <data name="Issue_OnAPreferencesSheetThe" xml:space="preserve">
+    <value>在 Preferences 表中，设备从 B 列读取 "{0}" 的值，但 B 列是空的，值却在 C 列。（模式表使用 C 列；Preferences 表使用 B 列。）</value>
+  </data>
+  <data name="Issue_OpenCustomOutputNamesAnd" xml:space="preserve">
+    <value>打开自定义输出名称，选择 "{0}" 所代表的按钮。</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs" xml:space="preserve">
+    <value>"{1}" 的 {0} 是 {2}，超过了设备的上限 {3}</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs2" xml:space="preserve">
+    <value>"{1}" 的 {0} 是 {2}，低于设备的下限 {3}。</value>
+  </data>
+  <data name="Issue_Parts0IsNotA" xml:space="preserve">
+    <value>"{0}" 不是有文档记录的输出功能，因此设备对该行会使用 "normal" 作为回退。</value>
+  </data>
+  <data name="Issue_Parts0IsNotA2" xml:space="preserve">
+    <value>"{0}" 不是有文档记录的输出功能。它以 "{1}" 开头，设备在此处就停止匹配，因此该行会当作 "{2}" 处理。</value>
+  </data>
+  <data name="Issue_Parts0TakesAtMost" xml:space="preserve">
+    <value>"{0}" 最多接受 {1} 个参数，但发现了 {2} 个。设备只读取它认得的部分，其余会被丢弃。</value>
+  </data>
+  <data name="Issue_PickAnInputFromThe" xml:space="preserve">
+    <value>从 Inputs 下拉列表中选择一个输入，例如 "mp_left_sip" 或 "lip"，或者把文字移到备注列。</value>
+  </data>
+  <data name="Issue_PickAnOutputFromThe" xml:space="preserve">
+    <value>从编辑器的列表中选择一个输出，例如 "x"、"left_trigger" 或 "mouse_up"。</value>
+  </data>
+  <data name="Issue_PickAnotherNameForExample" xml:space="preserve">
+    <value>换一个名称，例如 "game.csv"。</value>
+  </data>
+  <data name="Issue_PickTheGameButtonOr" xml:space="preserve">
+    <value>选择该行控制的游戏按钮或动作，例如 "x" 或 "left_trigger"。</value>
+  </data>
+  <data name="Issue_PreferANewFilenameThe" xml:space="preserve">
+    <value>建议使用新文件名。安装程序在写入 default.csv 之前会要求明确确认。</value>
+  </data>
+  <data name="Issue_PrefsCsvIsTheDevice" xml:space="preserve">
+    <value>prefs.csv 是设备的偏好设置文件，不是游戏配置文件。</value>
+  </data>
+  <data name="Issue_PutThePreferenceSValue" xml:space="preserve">
+    <value>把该偏好设置的值放在 B 列。</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn" xml:space="preserve">
+    <value>把值放在 C 列："{0},,{1}"。</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn2" xml:space="preserve">
+    <value>把值放在 C 列。</value>
+  </data>
+  <data name="Issue_RaiseHiNameToLong" xml:space="preserve">
+    <value>把 "{0}" 提高到 {1} 或更高，或者调低 "{2}"。</value>
+  </data>
+  <data name="Issue_RaiseUpperToLongLo" xml:space="preserve">
+    <value>把 "{0}" 提高到 {1} 或更高，或者调低 "{2}"。</value>
+  </data>
+  <data name="Issue_RemoveModesUntilThereAre" xml:space="preserve">
+    <value>删除一些模式，直到最多只剩 16 个。</value>
+  </data>
+  <data name="Issue_RemoveTheExtraValues" xml:space="preserve">
+    <value>删除多余的值。</value>
+  </data>
+  <data name="Issue_RemoveTheRowOrLeave" xml:space="preserve">
+    <value>删除该行，或者保留它以供仍然响应该设置的旧款 QuadStick 使用。</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole" xml:space="preserve">
+    <value>把它换成一个整数，例如 "50"。</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole2" xml:space="preserve">
+    <value>把它换成一个整数，例如 "repeat 4"。</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick" xml:space="preserve">
+    <value>"reset_quadstick" 会重启 QuadStick，而该行是由咬嘴的 push 开关触发的。如果重启发生时 push 仍被按住，设备会进入固件加载程序，并在拔出再插回之前无法作为控制器工作。</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick2" xml:space="preserve">
+    <value>"reset_quadstick" 会重启 QuadStick。你正在玩的游戏会有几秒钟失去控制器。</value>
+  </data>
+  <data name="Issue_SetItToAName" xml:space="preserve">
+    <value>把它设为一个名称，例如 "mygame.csv"。</value>
+  </data>
+  <data name="Issue_SetItToNormalTo" xml:space="preserve">
+    <value>把它设为 "normal" 以明确表示这一点。</value>
+  </data>
+  <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
+    <value>把它缩短到 {0} 个字符以内，例如 "game.csv"。</value>
+  </data>
+  <data name="Issue_TheCellUnderTheFirst" xml:space="preserve">
+    <value>第一个表关键字下方的单元格必须包含 CSV 文件名。</value>
+  </data>
+  <data name="Issue_TheDeviceDoesNotMatch" xml:space="preserve">
+    <value>设备无法将 "{0}" 匹配为一个连接通道，因此该模式会改为通过 USB 连接。</value>
+  </data>
+  <data name="Issue_TheDeviceReadsAValue" xml:space="preserve">
+    <value>设备使用 32 位 atoi 读取数值，因此任何超出 -2147483648 到 2147483647 范围的值都会变成另一个数字。</value>
+  </data>
+  <data name="Issue_TheDeviceStoresItIn" xml:space="preserve">
+    <value>。设备用 14 位存储它，因此实际会变成 {0}。</value>
+  </data>
+  <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
+    <value>设备最多支持 16 个模式；它会忽略这个模式以及之后的所有模式。</value>
+  </data>
+  <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
+    <value>{0} 的阈值相互冲突："{1}" 是 {2}，"{3}" 是 {4}。</value>
+  </data>
+  <data name="Issue_TheFirmwareSetsItBack" xml:space="preserve">
+    <value>固件在每次加载后都会把它重置为 0，而使用它的代码已经被注释掉</value>
+  </data>
+  <data name="Issue_TheQuadStickHasNoPreference" xml:space="preserve">
+    <value>QuadStick 没有名为 "{0}" 的偏好设置，因此它会跳过该行，此设置不起任何作用。它会按你输入的原样保存。</value>
+  </data>
+  <data name="Issue_TheToneItUsedTo" xml:space="preserve">
+    <value>它原本用来触发的提示音代码已被注释掉</value>
+  </data>
+  <data name="Issue_TheTwoNeedAtLeast" xml:space="preserve">
+    <value>这两者之间至少需要相差 2。</value>
+  </data>
+  <data name="Issue_TheValuesItKnowsAre" xml:space="preserve">
+    <value>它认得的值有：{0}。</value>
+  </data>
+  <data name="Issue_ThisEditsDefaultCsvThe" xml:space="preserve">
+    <value>这是在编辑 default.csv，也就是设备设计上应保持不变的后备文件。其中错误的 USB 仿真值会导致闪存盘访问失效，恢复需要进行物理强制擦除。</value>
+  </data>
+  <data name="Issue_ThisModeHasCountedCount" xml:space="preserve">
+    <value>该模式有 {0} 行带有输出名称；设备只读取前 128 行，其余会被忽略。</value>
+  </data>
+  <data name="Issue_ThisRowHasNoOutput" xml:space="preserve">
+    <value>该行没有输出名称。设备会跳过它，两个官方转换工具也都会删除它，因此该行不起任何作用。</value>
+  </data>
+  <data name="Issue_TrimTheModeTo128" xml:space="preserve">
+    <value>把该模式精简到 128 行以内。</value>
+  </data>
+  <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
+    <value>两个相等的阈值会导致设备每次读取吸管时都发生除以零的错误。</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
+    <value>USB 仿真模式 {0}（{1}）不会让计算机访问 QuadStick 的驱动器，而这个文件是设备启动时使用的文件。安装它之后将无法再回头编辑任何配置，恢复需要进行物理强制擦除。</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat2" xml:space="preserve">
+    <value>USB 仿真模式 {0}（{1}）不会让计算机访问 QuadStick 的驱动器，因此在该配置运行期间，文件会从计算机上消失。</value>
+  </data>
+  <data name="Issue_UpperIsHiValueAnd" xml:space="preserve">
+    <value>"{0}" 是 {1}，"{2}" 是 {3}。这两者之间至少需要相差 {4}，否则设置会相互冲突。</value>
+  </data>
+  <data name="Issue_Use1ForOnOr" xml:space="preserve">
+    <value>用 1 表示开，用 0 表示关。</value>
+  </data>
+  <data name="Issue_UseADifferentNameUnless" xml:space="preserve">
+    <value>换一个名称，除非你确实想更改偏好设置。</value>
+  </data>
+  <data name="Issue_UseAValueInsideThat" xml:space="preserve">
+    <value>使用该范围内的值。</value>
+  </data>
+  <data name="Issue_UseAValueOf0" xml:space="preserve">
+    <value>使用 0 或更大的值。</value>
+  </data>
+  <data name="Issue_UseAValueUpTo" xml:space="preserve">
+    <value>使用不超过 {0} 的值。</value>
+  </data>
+  <data name="Issue_UseAWholeNumber" xml:space="preserve">
+    <value>使用一个整数。</value>
+  </data>
+  <data name="Issue_UseBothSoTheMode" xml:space="preserve">
+    <value>使用 "both"，让该模式在任一连接方式下都能工作；如果只会用有线连接，则使用 "usb"。</value>
+  </data>
+  <data name="Issue_UseMaxOrLess" xml:space="preserve">
+    <value>使用 {0} 或更小的值。</value>
+  </data>
+  <data name="Issue_UseMinOrMore" xml:space="preserve">
+    <value>使用 {0} 或更大的值。</value>
+  </data>
+  <data name="Issue_UseMode023" xml:space="preserve">
+    <value>这里使用模式 0、2、3 或 4，另一个模式改到游戏配置中设置。</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin" xml:space="preserve">
+    <value>使用以下之一：{0}。</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin2" xml:space="preserve">
+    <value>使用以下之一：{0}。</value>
+  </data>
+  <data name="Issue_UseTheFormSomethingCsv" xml:space="preserve">
+    <value>使用 "something.csv" 这样的格式，不含空格或特殊字符。</value>
+  </data>
+  <data name="Issue_UseUsbBluetoothBothOr" xml:space="preserve">
+    <value>使用小写的 "usb"、"bluetooth"、"both" 或 "none"。</value>
+  </data>
+  <data name="Issue_ValueInCIsAWordB" xml:space="preserve">
+    <value>"{0}" 是一个单词。"{1}" 在设置表中接受单词，但模式行中的值会被当作数字读取，因此设备在这里会把它设为 0。</value>
+  </data>
+  <data name="Issue_ValueInCIsNotAWhole" xml:space="preserve">
+    <value>"{0}" 不是整数。"{1}" 是一项设备设置；该单元格是它的值。</value>
+  </data>
+  <data name="Issue_ValueInCIsTooBigFor" xml:space="preserve">
+    <value>"{0}" 太大，设备无法读取。{1}</value>
+  </data>
+  <data name="Issue_ValueInColumnBIs" xml:space="preserve">
+    <value>B 列中的 "{0}" 是 "{1}" 的值，但它不是整数。</value>
+  </data>
+  <data name="Issue_ValueIsAboveMaxThe" xml:space="preserve">
+    <value>"{0}" 超过了 {1}，即官方管理软件为 "{2}" 提供的最大值。设备仍会接受它，但已超出经过测试的范围。</value>
+  </data>
+  <data name="Issue_ValueIsBelowMinThe" xml:space="preserve">
+    <value>"{0}" 低于 {1}，即官方管理软件为 "{2}" 提供的最小值。设备仍会接受它，但已超出经过测试的范围。</value>
+  </data>
+  <data name="Issue_ValueIsNotAValue" xml:space="preserve">
+    <value>"{0}" 不是本应用为 "{1}" 认得的值。它会原样写入文件，较新的 QuadStick 很可能能读取它。</value>
+  </data>
+  <data name="Issue_ValueIsNotAnOn" xml:space="preserve">
+    <value>"{0}" 不是 "{1}" 的开关值。设备会把它当作数字读取，因此除 0 以外的任何值都算作开。</value>
+  </data>
+  <data name="Issue_ValueIsNotOneOf" xml:space="preserve">
+    <value>"{0}" 不是 "{1}" 所接受的值之一。</value>
+  </data>
+  <data name="Issue_ValueIsTooBigFor" xml:space="preserve">
+    <value>"{0}" 太大，设备无法读取。{1}</value>
+  </data>
+  <data name="Jack_BottomJack" xml:space="preserve">
+    <value>下方插孔</value>
+  </data>
+  <data name="Jack_FirstSwitch" xml:space="preserve">
+    <value>第一个开关</value>
+  </data>
+  <data name="Jack_LipJack" xml:space="preserve">
+    <value>Lip 插孔</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe" xml:space="preserve">
+    <value>把一个开关插入上方插孔，它会作为 digital_in_8 输入。只有使用分线器时才会同时用到 digital_in_7。</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe2" xml:space="preserve">
+    <value>把一个开关插入下方插孔，它会作为 digital_in_1 输入。只有使用分线器时才会同时用到 digital_in_2。</value>
+  </data>
+  <data name="Jack_PortOneSwitch" xml:space="preserve">
+    <value>{0}，一个开关</value>
+  </data>
+  <data name="Jack_PortSplitterPosition" xml:space="preserve">
+    <value>{0}，分线器，{1}</value>
+  </data>
+  <data name="Jack_SecondSwitch" xml:space="preserve">
+    <value>第二个开关</value>
+  </data>
+  <data name="Jack_TheMiddleJackIsThe" xml:space="preserve">
+    <value>中间的插孔是 lip 开关。在这里使用分线器会得到 digital_in_5 和 digital_in_6。</value>
+  </data>
+  <data name="Jack_TheUSBAPortS" xml:space="preserve">
+    <value>USB-A 端口自身的数据针脚，被当作普通开关读取。外壳外部没有任何东西可以插入这些针脚。</value>
+  </data>
+  <data name="Jack_TopJack" xml:space="preserve">
+    <value>上方插孔</value>
+  </data>
+  <data name="Jack_USBADataPins" xml:space="preserve">
+    <value>USB-A 数据针脚</value>
+  </data>
+  <data name="Lights_NoLights" xml:space="preserve">
+    <value>无灯光</value>
+  </data>
+  <data name="Parse_BeginTheCellWithThe" xml:space="preserve">
+    <value>让单元格以表关键字开头，例如 "Profile Name"。</value>
+  </data>
+  <data name="Parse_DeleteRowsAboveTheFirst" xml:space="preserve">
+    <value>删除第一个表标题上方的所有行。</value>
+  </data>
+  <data name="Parse_FirstCellMustContainProfile" xml:space="preserve">
+    <value>第一个单元格必须包含 "Profile"，或者是 "Preferences" 或 "Infrared"。实际发现的是 "{0}"。</value>
+  </data>
+  <data name="Parse_KeepANoteOnA" xml:space="preserve">
+    <value>把备注保持在单独一行。</value>
+  </data>
+  <data name="Parse_KeepLettersNumbersSpacesAnd" xml:space="preserve">
+    <value>只保留字母、数字、空格和 "_ . -"，或者把文字移到备注列。</value>
+  </data>
+  <data name="Parse_MoveItAboveTheFirst" xml:space="preserve">
+    <value>把它移到第一个空行上方，或者删除它。</value>
+  </data>
+  <data name="Parse_RawA1DoesNotSTARTWith" xml:space="preserve">
+    <value>"{0}" 不是以 "Profile"、"Preferences" 或 "Infrared"（大小写须完全一致）开头的，因此设备会跳过整张表。</value>
+  </data>
+  <data name="Parse_RowR1AppearsAfter" xml:space="preserve">
+    <value>第 {0} 行出现在一个空行之后，设备在那里就已停止读取该模式，因此该行不起任何作用。</value>
+  </data>
+  <data name="Parse_RowR1HasA" xml:space="preserve">
+    <value>第 {0} 行有一个单元格包含多行内容。设备会把每一行都当作单独的一行来读取，其中若有空行，就会让它停止读取该模式后面的内容，因此保存时会把它们合并为一行。</value>
+  </data>
+  <data name="Parse_RowR1IsLonger" xml:space="preserve">
+    <value>第 {0} 行（包含注释）超过了 {1} 个字符。设备会把一行读入一个 1024 字节的缓冲区，超出的部分会被当作下一行处理。根据断行发生的位置，这可能会提前结束该模式，并丢弃其下方的所有行。</value>
+  </data>
+  <data name="Parse_SectionStarts0ScanFromRowS" xml:space="preserve">
+    <value>第一个表关键字之前的 {0} 行不属于任何表。</value>
+  </data>
+  <data name="Parse_SetCellA1ToThe" xml:space="preserve">
+    <value>把单元格 A1 设为表类型关键字，例如 "Profile Name"。</value>
+  </data>
+  <data name="Parse_ShortenItTo63Characters" xml:space="preserve">
+    <value>把它缩短到 63 个字符以内。</value>
+  </data>
+  <data name="Parse_ShortenTheRowSComments" xml:space="preserve">
+    <value>缩短该行的注释。</value>
+  </data>
+  <data name="Parse_ThisCellIsValueLength" xml:space="preserve">
+    <value>该单元格有 {0} 个字符。设备在 64 个字符之后就不再寻找单元格结尾，因此它会把该单元格以及该行之后的所有内容都读作空。</value>
+  </data>
+  <data name="Parse_ValueContainsValueAtThe" xml:space="preserve">
+    <value>"{0}" 中包含 "{1}"。设备会在那个字符处结束该单元格，因此会把它读作两个单元格（"{2}" 和 "{3}"），该行后面的内容都会顺移一列。</value>
+  </data>
+  <data name="Pref_Advanced" xml:space="preserve">
+    <value>高级</value>
+  </data>
+  <data name="Pref_Bluetooth" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="Pref_InputsAndOutputs" xml:space="preserve">
+    <value>输入和输出</value>
+  </data>
+  <data name="Pref_Joystick" xml:space="preserve">
+    <value>摇杆</value>
+  </data>
+  <data name="Pref_LipSensor" xml:space="preserve">
+    <value>Lip 传感器</value>
+  </data>
+  <data name="Pref_Mouse" xml:space="preserve">
+    <value>鼠标</value>
+  </data>
+  <data name="Pref_SipAndPuff" xml:space="preserve">
+    <value>Sip 和 Puff</value>
+  </data>
+  <data name="Pref_SoundAndLights" xml:space="preserve">
+    <value>声音和灯光</value>
+  </data>
+  <data name="Pref_UsbAndCompatibility" xml:space="preserve">
+    <value>USB 和兼容性</value>
+  </data>
+  <data name="Sheet_CauseMissedNotReadAt" xml:space="preserve">
+    <value>{0} {1} 完全没有被读取，因此我们无法说明其中的内容。请把所需的模式拆分到更小的电子表格中，一次导入一个。</value>
+  </data>
+  <data name="Sheet_EveryTabFromThereOn" xml:space="preserve">
+    <value>从那之后的每个标签页都</value>
+  </data>
+  <data name="Sheet_EveryTabPastThatWas" xml:space="preserve">
+    <value>在那之后的每个标签页都</value>
+  </data>
+  <data name="Sheet_LeftJoy" xml:space="preserve">
+    <value>左摇杆</value>
+  </data>
+  <data name="Sheet_LeftMoreTabsWere" xml:space="preserve">
+    <value>还有 {0} 个标签页</value>
+  </data>
+  <data name="Sheet_OneMoreTabWas" xml:space="preserve">
+    <value>还有一个标签页</value>
+  </data>
+  <data name="Sheet_RightJoy" xml:space="preserve">
+    <value>右摇杆</value>
+  </data>
+  <data name="Sheet_TabPastTheRowCap" xml:space="preserve">
+    <value>标签页 "{0}" 在第 {1} 行之后仍有单元格，远远超出了任何配置文件应有的结尾，因此我们在那里就停止了读取，无法说明下方还有什么内容。如果这是粘贴操作遗留下来的杂散单元格，删除标签页底部的空行后重新导入即可清除此提示。</value>
+  </data>
+  <data name="Sheet_ThatSpreadsheetHoldsAPart" xml:space="preserve">
+    <value>该电子表格中有一部分大小为 {0} MB，远大于任何配置文件，因此未被读取。</value>
+  </data>
+  <data name="Sheet_ThisSpreadsheetHasMoreThan" xml:space="preserve">
+    <value>该电子表格的标签页超过 {0} 个，我们只读取了前 {1} 个。</value>
+  </data>
+  <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
+    <value>该电子表格超过了 {0} 行，远大于任何配置文件，因此我们在读到一半时就停止了。</value>
+  </data>
+</root>

@@ -1,0 +1,3050 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Auth_DoctypeHtmlHtmlBodyP" xml:space="preserve">
+    <value>&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;{0}&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan" xml:space="preserve">
+    <value>Error al iniciar sesión. Puede cerrar esta pestaña.</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan2" xml:space="preserve">
+    <value>Error al iniciar sesión. Puede cerrar esta pestaña.</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan3" xml:space="preserve">
+    <value>Error al iniciar sesión. Puede cerrar esta pestaña.</value>
+  </data>
+  <data name="Auth_TheGoogleConnectionWasRevoked" xml:space="preserve">
+    <value>La conexión con Google se revocó o caducó. Reconéctese para seguir haciendo copias de seguridad.</value>
+  </data>
+  <data name="Auth_YouAreSignedInYou" xml:space="preserve">
+    <value>Ha iniciado sesión. Puede cerrar esta pestaña.</value>
+  </data>
+  <data name="Backup_AlreadyExists" xml:space="preserve">
+    <value>ya existe</value>
+  </data>
+  <data name="Backup_BackupPausedReconnectToGoogle" xml:space="preserve">
+    <value>Copia de seguridad en pausa. Vuelva a conectar Google en Ajustes.</value>
+  </data>
+  <data name="Backup_BackupPending" xml:space="preserve">
+    <value>Copia de seguridad pendiente</value>
+  </data>
+  <data name="Backup_BackupSheetNotFound" xml:space="preserve">
+    <value>No se encontró la hoja de copia de seguridad</value>
+  </data>
+  <data name="Backup_BackupWasTurnedOffFor" xml:space="preserve">
+    <value>La copia de seguridad estaba desactivada para este perfil, así que no se copió nada.</value>
+  </data>
+  <data name="Backup_CouldNotCreateTheGoogle" xml:space="preserve">
+    <value>No se pudo crear la hoja de cálculo de Google, así que todavía no hay nada que compartir.</value>
+  </data>
+  <data name="Backup_CouldNotReadTheSheet" xml:space="preserve">
+    <value>no se pudo leer la hoja</value>
+  </data>
+  <data name="Backup_CouldNotReadTheSheet2" xml:space="preserve">
+    <value>no se pudo leer la hoja</value>
+  </data>
+  <data name="Backup_CouldNotSaveBackupSettings" xml:space="preserve">
+    <value>No se pudieron guardar los ajustes de copia de seguridad.</value>
+  </data>
+  <data name="Backup_CouldNotSaveTheLink" xml:space="preserve">
+    <value>no se pudo guardar el enlace</value>
+  </data>
+  <data name="Backup_CouldNotTurnOnLink" xml:space="preserve">
+    <value>No se pudo activar el uso compartido por enlace, así que no se copió nada.</value>
+  </data>
+  <data name="Backup_CouldNotWriteTheFile" xml:space="preserve">
+    <value>no se pudo escribir el archivo</value>
+  </data>
+  <data name="Backup_DownloadFailed" xml:space="preserve">
+    <value>falló la descarga</value>
+  </data>
+  <data name="Backup_LinkCopied" xml:space="preserve">
+    <value>Enlace copiado.</value>
+  </data>
+  <data name="Backup_LinkCopiedYourLatestChanges" xml:space="preserve">
+    <value>Enlace copiado. Sus últimos cambios aún no están subidos (copia de seguridad pendiente).</value>
+  </data>
+  <data name="Backup_NotAValidProfile" xml:space="preserve">
+    <value>no es un perfil válido</value>
+  </data>
+  <data name="Backup_ReconnectedThisProfileToIts" xml:space="preserve">
+    <value>Se volvió a conectar este perfil a su hoja de cálculo de Google.</value>
+  </data>
+  <data name="Backup_SheetEditedOnline" xml:space="preserve">
+    <value>Hoja editada en línea</value>
+  </data>
+  <data name="Backup_TheGoogleSheetCouldNot" xml:space="preserve">
+    <value>La hoja de cálculo de Google no se pudo leer como perfil, así que aquí no se cambió nada.</value>
+  </data>
+  <data name="Backup_TheGoogleSheetForThis" xml:space="preserve">
+    <value>No se encontró la hoja de cálculo de Google de este perfil. Puede que se haya eliminado o movido a la papelera. Elija Sí para crear una hoja nueva y hacer la copia de seguridad en ella. Elija Cancelar para desactivar la copia de seguridad de este perfil.</value>
+  </data>
+  <data name="Backup_ThisProfileSGoogleSheet" xml:space="preserve">
+    <value>La hoja de cálculo de Google de este perfil se editó en línea después de su última copia de seguridad. Elija Sí para reemplazarla con su copia (las ediciones en línea quedan en el historial de revisiones de Drive). Elija Cancelar para conservar la versión en línea y cargarla en el editor.</value>
+  </data>
+  <data name="Community_CheckYourInternetConnectionAnd" xml:space="preserve">
+    <value>Compruebe su conexión a internet y pulse Actualizar. Todo lo demás en la app funciona sin esta lista.</value>
+  </data>
+  <data name="Community_CheckingQuadstickComForNew" xml:space="preserve">
+    <value>Buscando perfiles nuevos en quadstick.com...</value>
+  </data>
+  <data name="Community_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Community_CloseThisWindow" xml:space="preserve">
+    <value>Cerrar esta ventana</value>
+  </data>
+  <data name="Community_CommunityProfiles" xml:space="preserve">
+    <value>Perfiles de la comunidad</value>
+  </data>
+  <data name="Community_CommunityProfilesUseTheArrow" xml:space="preserve">
+    <value>Perfiles de la comunidad, use las teclas de flecha</value>
+  </data>
+  <data name="Community_CouldNotImportPickedName" xml:space="preserve">
+    <value>No se pudo importar {0}: {1}</value>
+  </data>
+  <data name="Community_CouldNotOpenTheSheet" xml:space="preserve">
+    <value>No se pudo abrir la hoja en su navegador: {0}</value>
+  </data>
+  <data name="Community_CouldNotReachQuadstickCom" xml:space="preserve">
+    <value>No se pudo conectar con quadstick.com, así que esta sigue siendo la copia guardada en este equipo.</value>
+  </data>
+  <data name="Community_DownloadTheCommunityListAgain" xml:space="preserve">
+    <value>Volver a descargar la lista de la comunidad</value>
+  </data>
+  <data name="Community_GameProfilesOtherQuadStickPlayers" xml:space="preserve">
+    <value>Perfiles de juego que otros jugadores de QuadStick han compartido como hojas de cálculo de Google. Al abrir esta ventana se descarga la lista de quadstick.com, y Actualizar la descarga otra vez. Importar abre el perfil en el editor. Nada de aquí escribe en su QuadStick.</value>
+  </data>
+  <data name="Community_Import" xml:space="preserve">
+    <value>Importar</value>
+  </data>
+  <data name="Community_ImportTheSelectedProfileInto" xml:space="preserve">
+    <value>Importar el perfil seleccionado en el editor</value>
+  </data>
+  <data name="Community_ImportingPickedName" xml:space="preserve">
+    <value>Importando {0}...</value>
+  </data>
+  <data name="Community_LoadingTheCommunityList" xml:space="preserve">
+    <value>Cargando la lista de la comunidad...</value>
+  </data>
+  <data name="Community_LoadingTheCommunityList2" xml:space="preserve">
+    <value>Cargando la lista de la comunidad...</value>
+  </data>
+  <data name="Community_NoProfilesMatchQuery" xml:space="preserve">
+    <value>Ningún perfil coincide con "{0}".</value>
+  </data>
+  <data name="Community_NothingMatchesThatSearchClear" xml:space="preserve">
+    <value>Nada coincide con esa búsqueda. Borre el cuadro de búsqueda para ver la lista completa.</value>
+  </data>
+  <data name="Community_OpenInSheets" xml:space="preserve">
+    <value>Abrir en Sheets</value>
+  </data>
+  <data name="Community_OpenTheSelectedProfileS" xml:space="preserve">
+    <value>Abrir en su navegador la hoja de cálculo de Google del perfil seleccionado</value>
+  </data>
+  <data name="Community_OpenedThePickedNameSheet" xml:space="preserve">
+    <value>Se abrió la hoja de {0} en su navegador.</value>
+  </data>
+  <data name="Community_PickAProfileFromThe" xml:space="preserve">
+    <value>Primero elija un perfil de la lista.</value>
+  </data>
+  <data name="Community_PickAProfileFromThe2" xml:space="preserve">
+    <value>Primero elija un perfil de la lista.</value>
+  </data>
+  <data name="Community_PickedNameIsSelected" xml:space="preserve">
+    <value>{0} está seleccionado.</value>
+  </data>
+  <data name="Community_ProfilesCountDownloadedJustNow" xml:space="preserve">
+    <value>{0}, descargados ahora mismo.</value>
+  </data>
+  <data name="Community_ProfilesCountFromTheCopy" xml:space="preserve">
+    <value>{0} de la copia guardada en este equipo. Pulse Actualizar para buscar nuevos.</value>
+  </data>
+  <data name="Community_Refresh" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="Community_SearchByGameFileName" xml:space="preserve">
+    <value>Buscar por juego, nombre de archivo, consola o puntero</value>
+  </data>
+  <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
+    <value>Buscar en los perfiles de la comunidad</value>
+  </data>
+  <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
+    <value>Se muestran los {0}.</value>
+  </data>
+  <data name="Community_ShowingMatchesCountOfAll" xml:space="preserve">
+    <value>Mostrando {0} de {1} perfiles que coinciden con "{2}".</value>
+  </data>
+  <data name="Community_SkippedRow_one" xml:space="preserve">
+    <value>Se omitió {0} fila porque no indicaba una hoja de cálculo de Google compartida.</value>
+  </data>
+  <data name="Community_SkippedRow_other" xml:space="preserve">
+    <value>Se omitieron {0} filas porque no indicaban una hoja de cálculo de Google compartida.</value>
+  </data>
+  <data name="Community_TheCommunityListCouldNot" xml:space="preserve">
+    <value>No se pudo descargar la lista de la comunidad y no hay ninguna copia guardada en este equipo.</value>
+  </data>
+  <data name="Community_TheCommunityListHasNo" xml:space="preserve">
+    <value>La lista de la comunidad no tiene perfiles ahora mismo.</value>
+  </data>
+  <data name="Community_TheSavedCopyOfThe" xml:space="preserve">
+    <value>La copia guardada de la lista de la comunidad no tiene perfiles.</value>
+  </data>
+  <data name="Count_Binding_one" xml:space="preserve">
+    <value>{0} vinculación</value>
+  </data>
+  <data name="Count_Binding_other" xml:space="preserve">
+    <value>{0} vinculaciones</value>
+  </data>
+  <data name="Count_Error_one" xml:space="preserve">
+    <value>{0} error</value>
+  </data>
+  <data name="Count_Error_other" xml:space="preserve">
+    <value>{0} errores</value>
+  </data>
+  <data name="Count_Mapping_one" xml:space="preserve">
+    <value>{0} asignación</value>
+  </data>
+  <data name="Count_Mapping_other" xml:space="preserve">
+    <value>{0} asignaciones</value>
+  </data>
+  <data name="Count_ModeSheet_one" xml:space="preserve">
+    <value>{0} hoja de modo</value>
+  </data>
+  <data name="Count_ModeSheet_other" xml:space="preserve">
+    <value>{0} hojas de modo</value>
+  </data>
+  <data name="Count_Mode_one" xml:space="preserve">
+    <value>{0} modo</value>
+  </data>
+  <data name="Count_Mode_other" xml:space="preserve">
+    <value>{0} modos</value>
+  </data>
+  <data name="Count_RowDeleted_one" xml:space="preserve">
+    <value>{0} fila eliminada. Ctrl+Z la recupera.</value>
+  </data>
+  <data name="Count_RowDeleted_other" xml:space="preserve">
+    <value>{0} filas eliminadas. Ctrl+Z las recupera.</value>
+  </data>
+  <data name="Count_RowMovedBottom_one" xml:space="preserve">
+    <value>{0} fila movida al final. Ctrl+Z lo deshace.</value>
+  </data>
+  <data name="Count_RowMovedBottom_other" xml:space="preserve">
+    <value>{0} filas movidas al final. Ctrl+Z lo deshace.</value>
+  </data>
+  <data name="Count_RowMovedTop_one" xml:space="preserve">
+    <value>{0} fila movida al principio. Ctrl+Z lo deshace.</value>
+  </data>
+  <data name="Count_RowMovedTop_other" xml:space="preserve">
+    <value>{0} filas movidas al principio. Ctrl+Z lo deshace.</value>
+  </data>
+  <data name="Count_UnusedInputOpens_one" xml:space="preserve">
+    <value>{0} entrada sin usar todavía. Abre la lista.</value>
+  </data>
+  <data name="Count_UnusedInputOpens_other" xml:space="preserve">
+    <value>{0} entradas sin usar todavía. Abre la lista.</value>
+  </data>
+  <data name="Count_UnusedInput_one" xml:space="preserve">
+    <value>{0} entrada sin usar todavía</value>
+  </data>
+  <data name="Count_UnusedInput_other" xml:space="preserve">
+    <value>{0} entradas sin usar todavía</value>
+  </data>
+  <data name="Count_Warning_one" xml:space="preserve">
+    <value>{0} advertencia</value>
+  </data>
+  <data name="Count_Warning_other" xml:space="preserve">
+    <value>{0} advertencias</value>
+  </data>
+  <data name="Device_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Device_CancelChangeNothing" xml:space="preserve">
+    <value>Cancelar, no cambiar nada</value>
+  </data>
+  <data name="Device_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Device_CloseThisWindow" xml:space="preserve">
+    <value>Cerrar esta ventana</value>
+  </data>
+  <data name="Device_CopiedFileNameFromWhere" xml:space="preserve">
+    <value>Se copió {0} de {1} a {2}. El archivo en el QuadStick no cambió.</value>
+  </data>
+  <data name="Device_CopiedTheFileSelectionGuide" xml:space="preserve">
+    <value>Se copió al portapapeles la guía de selección de archivos de {0}.</value>
+  </data>
+  <data name="Device_CopyFileNameFromGroup" xml:space="preserve">
+    <value>Copiar {0} de {1} a su biblioteca de perfiles</value>
+  </data>
+  <data name="Device_CopyTheFileSelectionGuide" xml:space="preserve">
+    <value>Copiar como texto la guía de selección de archivos de {0} en {1}</value>
+  </data>
+  <data name="Device_CopyThisGuide" xml:space="preserve">
+    <value>Copiar esta guía</value>
+  </data>
+  <data name="Device_CopyToLibrary" xml:space="preserve">
+    <value>Copiar a la biblioteca</value>
+  </data>
+  <data name="Device_CouldNotBeReadAs" xml:space="preserve">
+    <value>no se pudo leer como perfil</value>
+  </data>
+  <data name="Device_CouldNotBeReadJust" xml:space="preserve">
+    <value>no se pudo leer en este momento</value>
+  </data>
+  <data name="Device_CouldNotCopyFileName" xml:space="preserve">
+    <value>No se pudo copiar {0} de {1}: {2}</value>
+  </data>
+  <data name="Device_CouldNotCopyTheGuide" xml:space="preserve">
+    <value>No se pudo copiar la guía: {0}</value>
+  </data>
+  <data name="Device_CouldNotDeleteFileName" xml:space="preserve">
+    <value>No se pudo eliminar {0} de {1}: {2}</value>
+  </data>
+  <data name="Device_CouldNotListTheDrives" xml:space="preserve">
+    <value>No se pudieron listar las unidades: {0} Pulse Actualizar para reintentar.</value>
+  </data>
+  <data name="Device_CouldNotLookAtThe" xml:space="preserve">
+    <value>No se pudieron examinar las unidades de este equipo.</value>
+  </data>
+  <data name="Device_CouldNotOpenFileName" xml:space="preserve">
+    <value>No se pudo abrir {0} de {1}: {2}</value>
+  </data>
+  <data name="Device_CouldNotOpenFileName2" xml:space="preserve">
+    <value>No se pudo abrir {0} de {1}: {2}</value>
+  </data>
+  <data name="Device_CouldNotOpenTheSheet" xml:space="preserve">
+    <value>No se pudo abrir la hoja en su navegador: {0}</value>
+  </data>
+  <data name="Device_CouldNotReadThisDrive" xml:space="preserve">
+    <value>No se pudo leer esta unidad: {0}</value>
+  </data>
+  <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
+    <value>Eliminar {0} del QuadStick en {1}</value>
+  </data>
+  <data name="Device_DeletedResultDeletedPathACopy" xml:space="preserve">
+    <value>Se eliminó {0}. Hay una copia guardada en {1}.</value>
+  </data>
+  <data name="Device_EditDevicePreferences" xml:space="preserve">
+    <value>¿Editar las preferencias del dispositivo?</value>
+  </data>
+  <data name="Device_EntryNumberEntryFileName" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Device_EverythingHereReadsAndWrites" xml:space="preserve">
+    <value>Todo lo de aquí lee y escribe archivos en la unidad del QuadStick, nada más. Los archivos se agrupan por la unidad en la que están, y cada acción indica la unidad que va a tocar. Antes de eliminar se guarda una copia en su carpeta de copias de seguridad. default.csv y prefs.csv no se pueden eliminar porque el dispositivo los necesita.</value>
+  </data>
+  <data name="Device_FileNameOnGroupLabel" xml:space="preserve">
+    <value>{0} en {1}, en {2}, {3}{4}</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup" xml:space="preserve">
+    <value>{0} en {1} no se abrió.</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup2" xml:space="preserve">
+    <value>{0} en {1} no indica una hoja de cálculo de Google en su encabezado, así que no hay nada que abrir.</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup3" xml:space="preserve">
+    <value>{0} en {1} está protegido y no se puede eliminar. Quitarlo puede dejar el dispositivo inutilizable.</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup4" xml:space="preserve">
+    <value>{0} en {1} no se eliminó.</value>
+  </data>
+  <data name="Device_FileNameTurnedUpIn" xml:space="preserve">
+    <value>{0} apareció en su biblioteca mientras se hacía la copia, así que {1} se dejó tal cual. Cópielo de nuevo para reemplazarlo.</value>
+  </data>
+  <data name="Device_FileNameWasNotCopied" xml:space="preserve">
+    <value>{0} no se copió. El archivo de su biblioteca no cambió.</value>
+  </data>
+  <data name="Device_FileNameWillBeDeleted" xml:space="preserve">
+    <value>{0} se eliminará del QuadStick en {1}. Antes se guarda una copia en {2}, así que puede reponerlo con Instalar. No se toca nada más en esta ni en ninguna otra unidad.</value>
+  </data>
+  <data name="Device_FileSelectionOrderAndLights" xml:space="preserve">
+    <value>Orden de selección de archivos y luces</value>
+  </data>
+  <data name="Device_FileSelectionOrderOnHead" xml:space="preserve">
+    <value>Orden de selección de archivos en {0}</value>
+  </data>
+  <data name="Device_FilesOnTheQuadStickAt" xml:space="preserve">
+    <value>Archivos en el QuadStick en {0}</value>
+  </data>
+  <data name="Device_FilesOnYourQuadStick" xml:space="preserve">
+    <value>Archivos en su QuadStick</value>
+  </data>
+  <data name="Device_FilesTotalAcrossGroupsCount" xml:space="preserve">
+    <value>{0} repartidos en {1} unidades QuadStick. Cada unidad aparece por separado abajo.</value>
+  </data>
+  <data name="Device_LinkedToAGoogleSheet" xml:space="preserve">
+    <value>, vinculado a una hoja de cálculo de Google</value>
+  </data>
+  <data name="Device_LookForQuadStickDrivesAgain" xml:space="preserve">
+    <value>Volver a buscar unidades QuadStick y recargar la lista de archivos</value>
+  </data>
+  <data name="Device_LookingForQuadStickDrivesAgain" xml:space="preserve">
+    <value>Buscando unidades QuadStick otra vez...</value>
+  </data>
+  <data name="Device_LookingForYourQuadStick" xml:space="preserve">
+    <value>Buscando su QuadStick...</value>
+  </data>
+  <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
+    <value>no hay un patrón de luces documentado para esta posición</value>
+  </data>
+  <data name="Device_NoLinkedGoogleSheetIn" xml:space="preserve">
+    <value>, sin hoja de cálculo de Google vinculada en su encabezado</value>
+  </data>
+  <data name="Device_NoQuadStickDriveIsPlugged" xml:space="preserve">
+    <value>No hay ninguna unidad QuadStick conectada ahora mismo. Una unidad QuadStick es una que tiene default.csv. En el modo de emulación USB 6 la unidad no aparece.</value>
+  </data>
+  <data name="Device_NumberFileNameNoLightPattern" xml:space="preserve">
+    <value>{0}. {1}: no hay un patrón de luces documentado para esta posición</value>
+  </data>
+  <data name="Device_OpenFileNameFromGroup" xml:space="preserve">
+    <value>Abrir {0} de {1} en el editor</value>
+  </data>
+  <data name="Device_OpenLinkedSheet" xml:space="preserve">
+    <value>Abrir la hoja vinculada</value>
+  </data>
+  <data name="Device_OpenTheGoogleSheetLinked" xml:space="preserve">
+    <value>Abrir la hoja de cálculo de Google vinculada desde {0} en {1}</value>
+  </data>
+  <data name="Device_OpenedTheGoogleSheetLinked" xml:space="preserve">
+    <value>Se abrió en su navegador la hoja de cálculo de Google vinculada desde {0} en {1}.</value>
+  </data>
+  <data name="Device_PrefsCsvOnWhereGroup" xml:space="preserve">
+    <value>prefs.csv en {0} contiene los ajustes propios del QuadStick, no un perfil de juego. Un valor equivocado aquí cambia el comportamiento de todo el dispositivo. Continúe solo si sabe qué ajuste está cambiando.</value>
+  </data>
+  <data name="Device_ProfilesOnGroupLabelAt" xml:space="preserve">
+    <value>Perfiles en {0}, en {1}, use las teclas de flecha</value>
+  </data>
+  <data name="Device_ProtectedItCannotBeDeleted" xml:space="preserve">
+    <value>, protegido, no se puede eliminar</value>
+  </data>
+  <data name="Device_PushingTheProfileSwitchSteps" xml:space="preserve">
+    <value>Pulsar el interruptor de perfil avanza por los archivos en este orden, y las cinco luces muestran cuál está cargado. prefs.csv es ajustes, no un perfil, así que nunca está en la lista. Los colores están escritos abajo además de mostrarse.</value>
+  </data>
+  <data name="Device_QuadStickDriveGroupLabelAt" xml:space="preserve">
+    <value>Unidad QuadStick {0}, en {1}</value>
+  </data>
+  <data name="Device_ReadingNameForTheDevice" xml:space="preserve">
+    <value>leyendo {0} para la lista de archivos del dispositivo</value>
+  </data>
+  <data name="Device_Refresh" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="Device_ReplaceFileNameInYour" xml:space="preserve">
+    <value>¿Reemplazar {0} en su biblioteca?</value>
+  </data>
+  <data name="Device_TheDeviceSFallbackFile" xml:space="preserve">
+    <value>, el archivo de reserva del dispositivo</value>
+  </data>
+  <data name="Device_TheDeviceSOwnSettings" xml:space="preserve">
+    <value>el archivo de ajustes propio del dispositivo</value>
+  </data>
+  <data name="Device_ThisComputerWouldNotGive" xml:space="preserve">
+    <value>Este equipo no dejó a la app usar el portapapeles, así que la guía no se copió.</value>
+  </data>
+  <data name="Device_ThisDriveHasNoCsv" xml:space="preserve">
+    <value>Esta unidad no tiene perfiles .csv.</value>
+  </data>
+  <data name="Device_YesContinue" xml:space="preserve">
+    <value>Sí, continuar</value>
+  </data>
+  <data name="Device_YourLibraryAlreadyHasFile" xml:space="preserve">
+    <value>Su biblioteca ya tiene {0}. Copiar {1} desde {2} sobrescribirá {3}. La copia en el QuadStick no cambia en ningún caso.</value>
+  </data>
+  <data name="DrivePick_AlreadyInYourProfiles" xml:space="preserve">
+    <value>  (ya está en sus perfiles)</value>
+  </data>
+  <data name="DrivePick_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="DrivePick_CloseThisWindow" xml:space="preserve">
+    <value>Cerrar esta ventana</value>
+  </data>
+  <data name="DrivePick_CouldNotLoadYourBackups" xml:space="preserve">
+    <value>No se pudieron cargar sus copias de seguridad: </value>
+  </data>
+  <data name="DrivePick_Import" xml:space="preserve">
+    <value>Importar</value>
+  </data>
+  <data name="DrivePick_ImportFailed" xml:space="preserve">
+    <value>La importación falló: </value>
+  </data>
+  <data name="DrivePick_ImportFromGoogleDrive" xml:space="preserve">
+    <value>Importar desde Google Drive</value>
+  </data>
+  <data name="DrivePick_ImportTheSelectedProfiles" xml:space="preserve">
+    <value>Importar los perfiles seleccionados</value>
+  </data>
+  <data name="DrivePick_Importing" xml:space="preserve">
+    <value>Importando...</value>
+  </data>
+  <data name="DrivePick_LoadingYourBackups" xml:space="preserve">
+    <value>Cargando sus copias de seguridad...</value>
+  </data>
+  <data name="DrivePick_NoBackupsFoundInYour" xml:space="preserve">
+    <value>Todavía no hay copias de seguridad en su Google Drive.</value>
+  </data>
+  <data name="DrivePick_NothingSelectedToImport" xml:space="preserve">
+    <value>No hay nada seleccionado para importar.</value>
+  </data>
+  <data name="DrivePick_PickTheProfilesToCopy" xml:space="preserve">
+    <value>Elija los perfiles que copiar a este equipo. Solo se listan las hojas de las que esta app hizo copia de seguridad. Los que ya están en sus perfiles aparecen atenuados.</value>
+  </data>
+  <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
+    <value>Sus copias de seguridad de Google Drive</value>
+  </data>
+  <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
+    <value>Un default.csv equivocado puede desactivar el acceso como unidad flash, y la recuperación exige un borrado forzado físico. Primero se hará una copia de seguridad. ¿Continuar?</value>
+  </data>
+  <data name="Install_BackingUpAndInstalling" xml:space="preserve">
+    <value>Haciendo copia de seguridad e instalando…</value>
+  </data>
+  <data name="Install_BackupPath" xml:space="preserve">
+    <value>Copia de seguridad: {0}</value>
+  </data>
+  <data name="Install_ChooseTheQuadStickDrive" xml:space="preserve">
+    <value>Elija la unidad QuadStick</value>
+  </data>
+  <data name="Install_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Install_Close2" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Install_FixTheErrorsInThe" xml:space="preserve">
+    <value>Corrija los errores de la lista de Problemas antes de instalar.</value>
+  </data>
+  <data name="Install_InstallCancelled" xml:space="preserve">
+    <value>Instalación cancelada.</value>
+  </data>
+  <data name="Install_InstallCancelled2" xml:space="preserve">
+    <value>Instalación cancelada.</value>
+  </data>
+  <data name="Install_InstallCancelled3" xml:space="preserve">
+    <value>Instalación cancelada.</value>
+  </data>
+  <data name="Install_InstallFailed" xml:space="preserve">
+    <value>La instalación falló</value>
+  </data>
+  <data name="Install_InstallPrefsCsvToThis" xml:space="preserve">
+    <value>¿Instalar prefs.csv en este QuadStick?</value>
+  </data>
+  <data name="Install_InstalledPathGetFileNameResultInstalledPath" xml:space="preserve">
+    <value>Se instaló {0} en {1}.</value>
+  </data>
+  <data name="Install_InstallingProfile" xml:space="preserve">
+    <value>Instalando el perfil</value>
+  </data>
+  <data name="Install_InstallingTo" xml:space="preserve">
+    <value>Instalando en</value>
+  </data>
+  <data name="Install_NoPreviousFile" xml:space="preserve">
+    <value>no hay archivo anterior que copiar</value>
+  </data>
+  <data name="Install_NoQuadStickDriveFoundA" xml:space="preserve">
+    <value>No se encontró ninguna unidad QuadStick (una unidad con default.csv). Elija la unidad o una carpeta manualmente.</value>
+  </data>
+  <data name="Install_OpenAProfileFirst" xml:space="preserve">
+    <value>Abra primero un perfil.</value>
+  </data>
+  <data name="Install_OverwriteDefaultCsv" xml:space="preserve">
+    <value>¿Sobrescribir default.csv?</value>
+  </data>
+  <data name="Install_PrefsCsvHoldsTheDevice" xml:space="preserve">
+    <value>prefs.csv contiene los ajustes propios del dispositivo, así que esto cambia cómo se comporta el QuadStick en todos los perfiles de {0}, no solo en un juego. Primero se hace una copia de seguridad del prefs.csv que ya está en la unidad. ¿Continuar?</value>
+  </data>
+  <data name="Install_TargetDriveRoot" xml:space="preserve">
+    <value>Unidad de destino: {0}</value>
+  </data>
+  <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
+    <value>Esa carpeta no parece un QuadStick (no hay default.csv en su raíz).</value>
+  </data>
+  <data name="Main_AButton" xml:space="preserve">
+    <value>Botón A</value>
+  </data>
+  <data name="Main_AFunction" xml:space="preserve">
+    <value>una función</value>
+  </data>
+  <data name="Main_AJoystickOrControllerPlugged" xml:space="preserve">
+    <value>Un joystick o mando conectado al puerto USB-A trasero del QuadStick.</value>
+  </data>
+  <data name="Main_AJoystickPluggedInHere" xml:space="preserve">
+    <value>Un joystick conectado aquí llega como </value>
+  </data>
+  <data name="Main_AModeIsOneFull" xml:space="preserve">
+    <value>Un modo es una distribución completa de sus entradas. Un perfil puede tener varios y usted cambia entre ellos mientras juega, por ejemplo una distribución para caminar y otra para conducir. Para cambiar de modo dentro del juego, haga Sip o Puff en el tubo lateral, o asigne increment_mode / decrement_mode a una entrada.
+
+La mayoría de los perfiles tienen un solo modo, así que esta lista suele mostrar un solo elemento. Eso es normal.</value>
+  </data>
+  <data name="Main_AProfileTabStartsWith" xml:space="preserve">
+    <value>Una pestaña de perfil empieza con "Profile Name", "Preferences" o "Infrared" en la celda A1.</value>
+  </data>
+  <data name="Main_AQuickPressSendsOne" xml:space="preserve">
+    <value>Una pulsación rápida envía una salida; mantenerla más tiempo envía otra distinta.</value>
+  </data>
+  <data name="Main_AShortActivationTapsIt" xml:space="preserve">
+    <value>Una activación corta lo pulsa un momento; una larga lo deja fijado.</value>
+  </data>
+  <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>Ya existe una plantilla llamada {0}.</value>
+  </data>
+  <data name="Main_ATemplateNeedsAName" xml:space="preserve">
+    <value>Una plantilla necesita un nombre.</value>
+  </data>
+  <data name="Main_AccessibleNameOpensASearchableList" xml:space="preserve">
+    <value>{0}. Abre una lista con búsqueda.</value>
+  </data>
+  <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
+    <value>Interruptores adaptados conectados a los conectores de 3,5 mm de la parte trasera del QuadStick.</value>
+  </data>
+  <data name="Main_AddANewBindingRow" xml:space="preserve">
+    <value>Añadir una fila de vinculación nueva a este modo</value>
+  </data>
+  <data name="Main_AddANewMappingFor" xml:space="preserve">
+    <value>Añadir una asignación nueva para {0}</value>
+  </data>
+  <data name="Main_AddARowToThe" xml:space="preserve">
+    <value>Añadir una fila a la tabla de nombres de salida personalizados</value>
+  </data>
+  <data name="Main_AddAnotherInput" xml:space="preserve">
+    <value>Añadir otra entrada</value>
+  </data>
+  <data name="Main_AddAnotherInputToMapping" xml:space="preserve">
+    <value>Añadir otra entrada a la asignación {0}; las entradas se hacen una tras otra, de izquierda a derecha</value>
+  </data>
+  <data name="Main_AddAnotherInputToRow" xml:space="preserve">
+    <value>Añadir otra entrada a la fila {0}</value>
+  </data>
+  <data name="Main_AddName" xml:space="preserve">
+    <value>+ Añadir nombre</value>
+  </data>
+  <data name="Main_AddRow" xml:space="preserve">
+    <value>+ Añadir fila</value>
+  </data>
+  <data name="Main_AllThree" xml:space="preserve">
+    <value>Los tres</value>
+  </data>
+  <data name="Main_AnInput" xml:space="preserve">
+    <value>una entrada</value>
+  </data>
+  <data name="Main_AnOutput" xml:space="preserve">
+    <value>una salida</value>
+  </data>
+  <data name="Main_AnyoneWithThisLinkCan" xml:space="preserve">
+    <value>Cualquiera con este enlace puede ver esta hoja (solo lectura). ¿Activar el uso compartido por enlace y copiar?</value>
+  </data>
+  <data name="Main_AppearanceInterfaceSizeAndThe" xml:space="preserve">
+    <value>La apariencia, el tamaño de la interfaz y lo demás vuelven a sus valores predeterminados.</value>
+  </data>
+  <data name="Main_AsFunction" xml:space="preserve">
+    <value>, como {0}</value>
+  </data>
+  <data name="Main_AsJoiner" xml:space="preserve">
+    <value>como</value>
+  </data>
+  <data name="Main_AsLabel" xml:space="preserve">
+    <value>Como</value>
+  </data>
+  <data name="Main_BButton" xml:space="preserve">
+    <value>Botón B</value>
+  </data>
+  <data name="Main_Back" xml:space="preserve">
+    <value>‹ Atrás</value>
+  </data>
+  <data name="Main_BackOfTheQuadStick" xml:space="preserve">
+    <value>Parte trasera del QuadStick</value>
+  </data>
+  <data name="Main_BackToAllCategories" xml:space="preserve">
+    <value>Volver a todas las categorías</value>
+  </data>
+  <data name="Main_BackToCat" xml:space="preserve">
+    <value>Volver a {0}</value>
+  </data>
+  <data name="Main_BackedUpToGoogleDrive" xml:space="preserve">
+    <value>Copia de seguridad hecha en Google Drive.</value>
+  </data>
+  <data name="Main_BackingUpToDrive" xml:space="preserve">
+    <value>Haciendo copia de seguridad en Drive</value>
+  </data>
+  <data name="Main_BackingUpToGoogleDrive" xml:space="preserve">
+    <value>Haciendo copia de seguridad en Google Drive. Haga clic para importar sus otros perfiles.</value>
+  </data>
+  <data name="Main_BackupErrorExMessage" xml:space="preserve">
+    <value>Error de copia de seguridad: {0}</value>
+  </data>
+  <data name="Main_BackupOff" xml:space="preserve">
+    <value>Copia de seguridad desactivada</value>
+  </data>
+  <data name="Main_BackupPending" xml:space="preserve">
+    <value> · copia de seguridad pendiente</value>
+  </data>
+  <data name="Main_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Main_Center" xml:space="preserve">
+    <value>Centro</value>
+  </data>
+  <data name="Main_CenterMouthpieceHole" xml:space="preserve">
+    <value>Orificio central de la boquilla</value>
+  </data>
+  <data name="Main_ChangeUndone" xml:space="preserve">
+    <value>Cambio deshecho.</value>
+  </data>
+  <data name="Main_ChooseQuadStick" xml:space="preserve">
+    <value>Elegir QuadStick</value>
+  </data>
+  <data name="Main_ChooseWhichDriveToInstall" xml:space="preserve">
+    <value>Elija en qué unidad instalar:</value>
+  </data>
+  <data name="Main_ClickAnyPartOfThe" xml:space="preserve">
+    <value>Haga clic en cualquier parte del QuadStick para ver y cambiar lo que hace en este modo. El número en cada parte es cuántos botones del juego pulsa. Las partes que su modelo no tiene aparecen atenuadas.
+
+</value>
+  </data>
+  <data name="Main_ClickToHide" xml:space="preserve">
+    <value>  (clic para ocultar)</value>
+  </data>
+  <data name="Main_ClickToSelectDragTo" xml:space="preserve">
+    <value>Clic para seleccionar, arrastre para reordenar</value>
+  </data>
+  <data name="Main_ClickToSignInAnd" xml:space="preserve">
+    <value>Haga clic para iniciar sesión y hacer copia de seguridad de sus perfiles en Google Drive.</value>
+  </data>
+  <data name="Main_ClickToView" xml:space="preserve">
+    <value>  (clic para ver)</value>
+  </data>
+  <data name="Main_CloseTheEditorForMapping" xml:space="preserve">
+    <value>Cerrar el editor de la asignación {0} y volver a su tarjeta</value>
+  </data>
+  <data name="Main_CloseWindowTitleToLowerInvariant" xml:space="preserve">
+    <value>Cerrar {0}</value>
+  </data>
+  <data name="Main_Combos" xml:space="preserve">
+    <value>Combos</value>
+  </data>
+  <data name="Main_CommunityProfiles" xml:space="preserve">
+    <value>Perfiles de la comunidad</value>
+  </data>
+  <data name="Main_ConnectionTimedOut" xml:space="preserve">
+    <value>la conexión expiró tras 15 segundos</value>
+  </data>
+  <data name="Main_CopyALinkToThis" xml:space="preserve">
+    <value>Copiar un enlace a la hoja de cálculo de Google de este perfil</value>
+  </data>
+  <data name="Main_CopyShareLink" xml:space="preserve">
+    <value>Copiar enlace para compartir</value>
+  </data>
+  <data name="Main_CopyYourBackedUpProfiles" xml:space="preserve">
+    <value>¿Copiar ahora a este equipo sus perfiles guardados en Google Drive?</value>
+  </data>
+  <data name="Main_CouldNotDeleteBareEx" xml:space="preserve">
+    <value>No se pudo eliminar {0}: {1}</value>
+  </data>
+  <data name="Main_CouldNotDeleteTheTemplate" xml:space="preserve">
+    <value>No se pudo eliminar la plantilla: {0}</value>
+  </data>
+  <data name="Main_CouldNotDownloadTheSheet" xml:space="preserve">
+    <value>No se pudo descargar la hoja: {0}. Compruebe su conexión a internet y el enlace.</value>
+  </data>
+  <data name="Main_CouldNotLoadTheOnline" xml:space="preserve">
+    <value>No se pudo cargar la versión en línea: {0}</value>
+  </data>
+  <data name="Main_CouldNotOpenBareEx" xml:space="preserve">
+    <value>No se pudo abrir {0}: {1}</value>
+  </data>
+  <data name="Main_CouldNotOpenPicks0" xml:space="preserve">
+    <value>No se pudo abrir {0}: {1}</value>
+  </data>
+  <data name="Main_CouldNotOpenThatTemplate" xml:space="preserve">
+    <value>No se pudo abrir esa plantilla: {0}</value>
+  </data>
+  <data name="Main_CouldNotOpenTheRecovered" xml:space="preserve">
+    <value>No se pudo abrir el archivo recuperado: {0}</value>
+  </data>
+  <data name="Main_CouldNotReadBareNamePath" xml:space="preserve">
+    <value>No se pudo leer {0}: {1}</value>
+  </data>
+  <data name="Main_CouldNotReadPicks0" xml:space="preserve">
+    <value>No se pudo leer {0}. No es una hoja de cálculo legible.</value>
+  </data>
+  <data name="Main_CouldNotReadThatSpreadsheet" xml:space="preserve">
+    <value>No se pudo leer esa hoja de cálculo. Descárguela como .xlsx y ábrala con el botón Abrir.</value>
+  </data>
+  <data name="Main_CouldNotReadThisFile" xml:space="preserve">
+    <value>No se pudo leer este archivo</value>
+  </data>
+  <data name="Main_CouldNotRenameTheTemplate" xml:space="preserve">
+    <value>No se pudo renombrar la plantilla: {0}</value>
+  </data>
+  <data name="Main_CouldNotSaveExMessage" xml:space="preserve">
+    <value>No se pudo guardar: {0}</value>
+  </data>
+  <data name="Main_CouldNotSaveThatPreference" xml:space="preserve">
+    <value>No se pudo guardar esa preferencia. Ahora no se envía nada, pero el cambio no quedó guardado.</value>
+  </data>
+  <data name="Main_CouldNotSaveThatYou" xml:space="preserve">
+    <value>No se pudo guardar eso. Puede que se le pregunte otra vez la próxima vez.</value>
+  </data>
+  <data name="Main_CouldNotSaveTheReset" xml:space="preserve">
+    <value>No se pudo guardar el restablecimiento. Los ajustes antiguos pueden volver la próxima vez.</value>
+  </data>
+  <data name="Main_CouldNotSaveTheTemplate" xml:space="preserve">
+    <value>No se pudo guardar la plantilla: {0}</value>
+  </data>
+  <data name="Main_CouldNotSendTheCrash" xml:space="preserve">
+    <value>No se pudo enviar el informe del fallo. Sigue en su equipo.</value>
+  </data>
+  <data name="Main_CouldNotShareThisProfile" xml:space="preserve">
+    <value>No se pudo compartir este perfil: {0}</value>
+  </data>
+  <data name="Main_CrashDetailsUsedToBuild" xml:space="preserve">
+    <value>Detalles del fallo usados para crear el informe</value>
+  </data>
+  <data name="Main_CrashReportSentThankYou" xml:space="preserve">
+    <value>Informe de fallo enviado. Gracias.</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>d MMM yyyy</value>
+  </data>
+  <data name="Main_Delete" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="Main_DeleteBare" xml:space="preserve">
+    <value>¿Eliminar {0}?</value>
+  </data>
+  <data name="Main_DeleteBareFromYourProfile" xml:space="preserve">
+    <value>Eliminar {0} de su biblioteca de perfiles</value>
+  </data>
+  <data name="Main_DeleteProfile" xml:space="preserve">
+    <value>Eliminar perfil</value>
+  </data>
+  <data name="Main_DeleteRowBRow" xml:space="preserve">
+    <value>Eliminar fila {0}</value>
+  </data>
+  <data name="Main_DeleteSelectedTemplate" xml:space="preserve">
+    <value>Eliminar plantilla seleccionada</value>
+  </data>
+  <data name="Main_DeleteTemplateName" xml:space="preserve">
+    <value>¿Eliminar la plantilla "{0}"?</value>
+  </data>
+  <data name="Main_DeleteThisWholeRow" xml:space="preserve">
+    <value>Eliminar toda esta fila</value>
+  </data>
+  <data name="Main_DeletedBare" xml:space="preserve">
+    <value>Se eliminó {0}.</value>
+  </data>
+  <data name="Main_DeletedTemplateName" xml:space="preserve">
+    <value>Se eliminó la plantilla {0}.</value>
+  </data>
+  <data name="Main_DetailedEditor" xml:space="preserve">
+    <value>Editor detallado</value>
+  </data>
+  <data name="Main_DeviceFilesWindowLabelForRootRoot" xml:space="preserve">
+    <value>{0}  ({1})</value>
+  </data>
+  <data name="Main_DeviceHasNoLightPattern" xml:space="preserve">
+    <value>El dispositivo no tiene patrón de luces para el modo {0}</value>
+  </data>
+  <data name="Main_DeviceSettings" xml:space="preserve">
+    <value>Ajustes del dispositivo</value>
+  </data>
+  <data name="Main_DeviceSettingsThisModeChanges" xml:space="preserve">
+    <value>Ajustes del dispositivo que este modo cambia mientras está activo, como la velocidad del ratón o el volumen. No son algo que se pulsa, así que no tienen entrada: cada uno es un nombre y un valor.</value>
+  </data>
+  <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
+    <value>El dispositivo muestra {0}</value>
+  </data>
+  <data name="Main_DonTSave" xml:space="preserve">
+    <value>No guardar</value>
+  </data>
+  <data name="Main_Done" xml:space="preserve">
+    <value>Listo</value>
+  </data>
+  <data name="Main_DownloadingTheSpreadsheet" xml:space="preserve">
+    <value>Descargando la hoja de cálculo...</value>
+  </data>
+  <data name="Main_EditDevicePreferences" xml:space="preserve">
+    <value>¿Editar las preferencias del dispositivo?</value>
+  </data>
+  <data name="Main_Edited" xml:space="preserve">
+    <value>Editado </value>
+  </data>
+  <data name="Main_ErrorsBlockInstalling" xml:space="preserve">
+    <value>. Los errores bloquean la instalación.</value>
+  </data>
+  <data name="Main_EveryInputOnYourQuadStick" xml:space="preserve">
+    <value>Todas las entradas de su QuadStick están en uso en este modo.</value>
+  </data>
+  <data name="Main_ExtraInputForMappingN" xml:space="preserve">
+    <value>Entrada adicional para la asignación {0}</value>
+  </data>
+  <data name="Main_FPS3HoleMouthpieceSide" xml:space="preserve">
+    <value>FPS: boquilla de 3 orificios, tubo lateral, sensor de labio, conectores traseros. Joystick más preciso que el Original.</value>
+  </data>
+  <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
+    <value>Se activa cuando su entrada supera una fuerza establecida.</value>
+  </data>
+  <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
+    <value>Se activa mientras su entrada se mantiene por debajo de una fuerza establecida.</value>
+  </data>
+  <data name="Main_FoundAProblem" xml:space="preserve">
+    <value>¿Encontró un problema?</value>
+  </data>
+  <data name="Main_FunctionForRowBRow" xml:space="preserve">
+    <value>Función para la fila {0}. {1}</value>
+  </data>
+  <data name="Main_FunctionKeys" xml:space="preserve">
+    <value>Teclas de función</value>
+  </data>
+  <data name="Main_FunctionTakesNoNumbers" xml:space="preserve">
+    <value>{0} no acepta números.</value>
+  </data>
+  <data name="Main_GameButtonPressedByShortInput" xml:space="preserve">
+    <value>Botón de juego pulsado por {0}</value>
+  </data>
+  <data name="Main_GoogleDriveBackupIsNot" xml:space="preserve">
+    <value>La copia de seguridad en Google Drive no está disponible en esta versión.</value>
+  </data>
+  <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
+    <value>Google devolvió una página web en lugar del perfil. Probablemente la hoja no está compartida públicamente (Archivo &gt; Compartir &gt; Cualquier persona con el enlace).</value>
+  </data>
+  <data name="Main_HeldDownForAsLong" xml:space="preserve">
+    <value>Se mantiene pulsado mientras su entrada esté activa.</value>
+  </data>
+  <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
+    <value>Ayude a mejorar QuadStick Config Manager</value>
+  </data>
+  <data name="Main_HidesTheProblems" xml:space="preserve">
+    <value>{0}. Oculta la lista de problemas.</value>
+  </data>
+  <data name="Main_HitsCount40MoreKeep" xml:space="preserve">
+    <value>{0} más. Siga escribiendo para acotar la búsqueda.</value>
+  </data>
+  <data name="Main_HoleCombos" xml:space="preserve">
+    <value>Combinaciones de orificios</value>
+  </data>
+  <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
+    <value>Cómo {0} lo pulsa. {1}</value>
+  </data>
+  <data name="Main_IfTheDeviceIsIn" xml:space="preserve">
+    <value>Si el dispositivo está en modo de arranque PS4, o la emulación de mando virtual XBox / Dualshock está activada, la unidad flash no aparece en el equipo. Desactívelas (en QMP o en sus preferencias) y vuelva a conectarlo. En un Mac, el volumen se llama "QUAD STICK" en el Finder.</value>
+  </data>
+  <data name="Main_ImportFromGoogleDrive" xml:space="preserve">
+    <value>Importar desde Google Drive</value>
+  </data>
+  <data name="Main_ImportedModesImportedFromPicks" xml:space="preserve">
+    <value>Se importó {0} de {1}. Guarde para conservarlo como perfil.</value>
+  </data>
+  <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
+    <value>Se importó {0} de la hoja de cálculo.</value>
+  </data>
+  <data name="Main_InputI1ForRow" xml:space="preserve">
+    <value>Entrada {0} para la fila {1}</value>
+  </data>
+  <data name="Main_InputI1ForThis" xml:space="preserve">
+    <value>Entrada {0} para esta asignación de {1}</value>
+  </data>
+  <data name="Main_InputNextCol1ForRow" xml:space="preserve">
+    <value>Entrada {0} para la fila {1}</value>
+  </data>
+  <data name="Main_InstallToTheQuadStickNamed" xml:space="preserve">
+    <value>Instalar en el QuadStick llamado {0}, en {1}</value>
+  </data>
+  <data name="Main_InstallingSafely" xml:space="preserve">
+    <value>Instalar con seguridad</value>
+  </data>
+  <data name="Main_IntAgeTotalDaysDaysAgo" xml:space="preserve">
+    <value>hace {0} días</value>
+  </data>
+  <data name="Main_IntAgeTotalHoursHAgo" xml:space="preserve">
+    <value>hace {0} h</value>
+  </data>
+  <data name="Main_IntAgeTotalMinutesMinAgo" xml:space="preserve">
+    <value>hace {0} min</value>
+  </data>
+  <data name="Main_ItsButtonsAreUsb1" xml:space="preserve">
+    <value>. Sus botones son usb_1_button_1 en adelante.</value>
+  </data>
+  <data name="Main_Joystick" xml:space="preserve">
+    <value>Joystick</value>
+  </data>
+  <data name="Main_JoystickOrIn34" xml:space="preserve">
+    <value>Joystick, o en 3-4</value>
+  </data>
+  <data name="Main_JustNow" xml:space="preserve">
+    <value>ahora mismo</value>
+  </data>
+  <data name="Main_KeepsACopyYouCan" xml:space="preserve">
+    <value>Guarda una copia desde la que puede crear perfiles nuevos en cualquier momento, en Usar plantilla en la pantalla de inicio. Editar o instalar un perfil nunca cambia su plantilla.</value>
+  </data>
+  <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
+    <value>Sigue pulsando un momento después de soltar.</value>
+  </data>
+  <data name="Main_Left" xml:space="preserve">
+    <value>Izquierda</value>
+  </data>
+  <data name="Main_LeftBumper" xml:space="preserve">
+    <value>Bumper izquierdo</value>
+  </data>
+  <data name="Main_LeftMouthpieceHole" xml:space="preserve">
+    <value>Orificio izquierdo de la boquilla</value>
+  </data>
+  <data name="Main_LeftStickClick" xml:space="preserve">
+    <value>Clic del stick izquierdo</value>
+  </data>
+  <data name="Main_LeftTrigger" xml:space="preserve">
+    <value>Gatillo izquierdo</value>
+  </data>
+  <data name="Main_LipSwitch" xml:space="preserve">
+    <value>Interruptor de labio</value>
+  </data>
+  <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
+    <value>Se cargó la versión en línea de este perfil. Su copia local anterior está en la carpeta de rescate.</value>
+  </data>
+  <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
+    <value>Gestión de archivos en su QuadStick</value>
+  </data>
+  <data name="Main_MapSomethingToThis" xml:space="preserve">
+    <value>+ Asignar algo aquí</value>
+  </data>
+  <data name="Main_MapTokenToANew" xml:space="preserve">
+    <value>Asignar {0} a una nueva asignación en {1}</value>
+  </data>
+  <data name="Main_MappingRowSpoken" xml:space="preserve">
+    <value>Asignación {0}: se pulsa {1} cuando usted {2}{3}. Pulse Intro para editar.</value>
+  </data>
+  <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
+    <value>Asignación {0}: se pulsa {1} cuando usted {2}, uno tras otro{3}. Pulse Intro para editar.</value>
+  </data>
+  <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
+    <value>Las asignaciones se leen como tarjetas de frases simples. Cambiar al editor detallado.</value>
+  </data>
+  <data name="Main_MappingsShowTheDetailedEditor" xml:space="preserve">
+    <value>Las asignaciones muestran el editor detallado. Cambiar a tarjetas de frases simples.</value>
+  </data>
+  <data name="Main_MenuButton" xml:space="preserve">
+    <value>Botón de menú</value>
+  </data>
+  <data name="Main_ModeNamed" xml:space="preserve">
+    <value>Modo: {0}</value>
+  </data>
+  <data name="Main_ModeNumberAndName" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Main_ModeSettings" xml:space="preserve">
+    <value>Ajustes del modo</value>
+  </data>
+  <data name="Main_MoveRowBRowWord" xml:space="preserve">
+    <value>Mover la fila {0} {1}</value>
+  </data>
+  <data name="Main_MoveTheTextInCell" xml:space="preserve">
+    <value>Mover el texto de la celda {0} a la columna de notas</value>
+  </data>
+  <data name="Main_MoveToNotes" xml:space="preserve">
+    <value>Mover a notas</value>
+  </data>
+  <data name="Main_MovedTheTextFromI" xml:space="preserve">
+    <value>Se movió el texto de {0} a la columna de notas.</value>
+  </data>
+  <data name="Main_MovingTheWholeMouthpieceWith" xml:space="preserve">
+    <value>Mover toda la boquilla con la boca funciona como un joystick. Arriba, abajo, izquierda, derecha y las 8 direcciones de la brújula pueden pulsar algo cada una.</value>
+  </data>
+  <data name="Main_MultipleQuadSticksFound" xml:space="preserve">
+    <value>Se encontraron varios QuadStick</value>
+  </data>
+  <data name="Main_MyTemplate" xml:space="preserve">
+    <value>mi plantilla</value>
+  </data>
+  <data name="Main_NameDetail" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Main_NameForThisTemplate" xml:space="preserve">
+    <value>Nombre para esta plantilla</value>
+  </data>
+  <data name="Main_NewNameForThisTemplate" xml:space="preserve">
+    <value>Nuevo nombre para esta plantilla</value>
+  </data>
+  <data name="Main_NewProfileGivesYouThe" xml:space="preserve">
+    <value>Perfil nuevo le da la disposición de fábrica, la misma que trae cada QuadStick. La comunidad también comparte cientos de perfiles de juegos como hojas de Google Sheets: pegue cualquier enlace de compartir en la pantalla de inicio para importarlo. Los perfiles que mantienen cada modo en su propia pestaña entran completos, cada pestaña como un modo. Abrir también acepta un libro .xlsx descargado. Después ajuste, renombre y guarde.</value>
+  </data>
+  <data name="Main_NoBindingsYetClickAdd" xml:space="preserve">
+    <value>Aún no hay asignaciones. Haga clic en "Añadir fila" para conectar una entrada con una salida.</value>
+  </data>
+  <data name="Main_NoCommandsOnThisSheet" xml:space="preserve">
+    <value>Aún no hay comandos en esta hoja. Haga clic en "Añadir fila" para añadir uno.</value>
+  </data>
+  <data name="Main_NoErrorsToFix" xml:space="preserve">
+    <value>No hay errores que corregir.</value>
+  </data>
+  <data name="Main_NoInput" xml:space="preserve">
+    <value>(sin entrada)</value>
+  </data>
+  <data name="Main_NoInputYet" xml:space="preserve">
+    <value>Aún sin entrada</value>
+  </data>
+  <data name="Main_NoProblems" xml:space="preserve">
+    <value>Sin problemas</value>
+  </data>
+  <data name="Main_NoProblemsClickToHide" xml:space="preserve">
+    <value>Sin problemas (clic para ocultar)</value>
+  </data>
+  <data name="Main_NoProblemsFound" xml:space="preserve">
+    <value>No se encontraron problemas.</value>
+  </data>
+  <data name="Main_NoProblemsReadyToSave" xml:space="preserve">
+    <value>Sin problemas. Listo para guardar o instalar.</value>
+  </data>
+  <data name="Main_NoQuadStickDetected" xml:space="preserve">
+    <value>No se detectó ningún QuadStick</value>
+  </data>
+  <data name="Main_NoSettingsOnThisSheet" xml:space="preserve">
+    <value>Aún no hay ajustes en esta hoja. Haga clic en "Añadir fila" para añadir uno.</value>
+  </data>
+  <data name="Main_NoTabInThatSpreadsheet" xml:space="preserve">
+    <value>Ninguna pestaña de esa hoja de cálculo es un perfil. {0} {1}</value>
+  </data>
+  <data name="Main_NoThanks" xml:space="preserve">
+    <value>No, gracias</value>
+  </data>
+  <data name="Main_NoThanksDoNotShare" xml:space="preserve">
+    <value>No, gracias, no compartir datos de uso</value>
+  </data>
+  <data name="Main_NoValue" xml:space="preserve">
+    <value>(sin valor)</value>
+  </data>
+  <data name="Main_NotAvailableOnYourModelNames" xml:space="preserve">
+    <value> No disponible en su {0}.</value>
+  </data>
+  <data name="Main_NotMapped" xml:space="preserve">
+    <value>Sin asignar</value>
+  </data>
+  <data name="Main_NotNow" xml:space="preserve">
+    <value>Ahora no</value>
+  </data>
+  <data name="Main_NotNowKeepTheReport" xml:space="preserve">
+    <value>Ahora no, conservar el informe y preguntar más tarde</value>
+  </data>
+  <data name="Main_NotOnModel" xml:space="preserve">
+    <value>No en este modelo</value>
+  </data>
+  <data name="Main_NotOnYourModel" xml:space="preserve">
+    <value>No en su modelo</value>
+  </data>
+  <data name="Main_NotUsedYetOnThis" xml:space="preserve">
+    <value>Aún sin usar en esta parte ({0})</value>
+  </data>
+  <data name="Main_Note" xml:space="preserve">
+    <value>nota</value>
+  </data>
+  <data name="Main_NoteForRowBRow" xml:space="preserve">
+    <value>Nota para la fila {0}. Se guarda en el archivo, el QuadStick la ignora</value>
+  </data>
+  <data name="Main_NoteForThisMappingSaved" xml:space="preserve">
+    <value>Nota para esta asignación. Se guarda en el archivo, el QuadStick la ignora</value>
+  </data>
+  <data name="Main_NoteForThisRowSaved" xml:space="preserve">
+    <value>Nota para esta fila. Se guarda en el archivo, el QuadStick la ignora</value>
+  </data>
+  <data name="Main_NoteLabel" xml:space="preserve">
+    <value>Nota</value>
+  </data>
+  <data name="Main_NothingMappedHereYet" xml:space="preserve">
+    <value>Aún no hay nada asignado aquí.</value>
+  </data>
+  <data name="Main_NothingMappedYet" xml:space="preserve">
+    <value>aún nada asignado</value>
+  </data>
+  <data name="Main_NothingMatchesTryFewerLetters" xml:space="preserve">
+    <value>Nada coincide. Pruebe con menos letras o escriba el suyo abajo.</value>
+  </data>
+  <data name="Main_NothingPressesBOutputNow" xml:space="preserve">
+    <value>Nada pulsa "{0}" ahora, así que el QuadStick no lo activará.</value>
+  </data>
+  <data name="Main_NothingSelectedNNPickA" xml:space="preserve">
+    <value>Nada seleccionado.
+
+Elija una parte del QuadStick a la izquierda para ver qué hace en este modo, cambiarla o asignarle algo nuevo.</value>
+  </data>
+  <data name="Main_NothingToUndo" xml:space="preserve">
+    <value>Nada que deshacer.</value>
+  </data>
+  <data name="Main_NothingYet" xml:space="preserve">
+    <value>aún nada</value>
+  </data>
+  <data name="Main_NumberPositionInTheProfile" xml:space="preserve">
+    <value>, número {0} en el orden de cambio de perfiles</value>
+  </data>
+  <data name="Main_NumbersForFunctionOptionalWhole" xml:space="preserve">
+    <value>Números para {0}, opcionales, números enteros separados por espacios. </value>
+  </data>
+  <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
+    <value>Una activación lo deja fijado, la siguiente lo suelta.</value>
+  </data>
+  <data name="Main_OneCSVFileThatTells" xml:space="preserve">
+    <value>Un archivo CSV que le dice al QuadStick qué sorbo, soplo, presión de labio o movimiento del joystick pulsa qué botón del juego. Un perfil tiene una o más hojas de modo: disposiciones de control completas entre las que cambia mientras juega (disposición para caminar, para conducir, para menús). Sorba o sople en el tubo lateral, o asigne increment_mode / decrement_mode, para cambiar de modo dentro del juego.</value>
+  </data>
+  <data name="Main_OneShortPressEachTime" xml:space="preserve">
+    <value>Una pulsación corta cada vez que activa.</value>
+  </data>
+  <data name="Main_OneSwitchIn1" xml:space="preserve">
+    <value>Un interruptor: en 1</value>
+  </data>
+  <data name="Main_OneSwitchIn5" xml:space="preserve">
+    <value>Un interruptor: en 5</value>
+  </data>
+  <data name="Main_OneSwitchIn8" xml:space="preserve">
+    <value>Un interruptor: en 8</value>
+  </data>
+  <data name="Main_OpenInGoogleSheets" xml:space="preserve">
+    <value>Abrir en Google Sheets</value>
+  </data>
+  <data name="Main_OpenInLibrary" xml:space="preserve">
+    <value>Abrir {0}, {1}, en su biblioteca de perfiles</value>
+  </data>
+  <data name="Main_OpenOnDevice" xml:space="preserve">
+    <value>Abrir {0}, {1}, guardado en el QuadStick</value>
+  </data>
+  <data name="Main_OpenOrCreateAProfile" xml:space="preserve">
+    <value>Primero abra o cree un perfil.</value>
+  </data>
+  <data name="Main_OpenQuadStickProfile" xml:space="preserve">
+    <value>Abrir perfil de QuadStick</value>
+  </data>
+  <data name="Main_OpenThisProfileSGoogle" xml:space="preserve">
+    <value>Abrir la hoja de Google de este perfil en su navegador</value>
+  </data>
+  <data name="Main_OpenedFromYourQuadStickSave" xml:space="preserve">
+    <value>Abierto desde su QuadStick. Guardar conserva una copia en su biblioteca; use Instalar para devolver los cambios al dispositivo.</value>
+  </data>
+  <data name="Main_OpensAFreshCopyYou" xml:space="preserve">
+    <value>Abre una copia nueva que puede editar e instalar. Su plantilla queda como está.</value>
+  </data>
+  <data name="Main_Original3HoleMouthpieceSide" xml:space="preserve">
+    <value>Original: boquilla de 3 orificios, tubo lateral, interruptor de labio, conectores traseros. Las mismas entradas que el FPS.</value>
+  </data>
+  <data name="Main_OutputForRowBRow" xml:space="preserve">
+    <value>Salida para la fila {0}</value>
+  </data>
+  <data name="Main_OutputGameButton" xml:space="preserve">
+    <value>Salida (botón del juego)</value>
+  </data>
+  <data name="Main_Parts" xml:space="preserve">
+    <value>Partes</value>
+  </data>
+  <data name="Main_PathGetFileNamePathIsRemoved" xml:space="preserve">
+    <value>{0} se elimina de este equipo definitivamente. Una copia en su QuadStick o en Google Sheets no se toca.</value>
+  </data>
+  <data name="Main_Picks0NameNoProfileTabRead" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Main_PlugInTheQuadStickIt" xml:space="preserve">
+    <value>Conecte el QuadStick; aparece como una unidad USB. Instalar respalda el archivo antiguo en QuadStickBackups, escribe una copia temporal, la comprueba y luego la intercambia. Los errores bloquean la instalación. Sobrescribir default.csv siempre pregunta primero.</value>
+  </data>
+  <data name="Main_PortExplain" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Main_PreferencesSheetAdded" xml:space="preserve">
+    <value>Hoja de preferencias añadida.</value>
+  </data>
+  <data name="Main_PrefsCsvHoldsTheQuadStick" xml:space="preserve">
+    <value>prefs.csv contiene los ajustes propios del QuadStick, no un perfil de juego. Un valor incorrecto aquí cambia el comportamiento de todo el dispositivo. Continúe solo si sabe qué ajuste está cambiando.</value>
+  </data>
+  <data name="Main_PrefsCsvIsTheQuadStick" xml:space="preserve">
+    <value>prefs.csv es el archivo de ajustes propio del QuadStick, no un perfil de juego: cambia cómo se comporta todo el dispositivo, no solo un juego. Un ajuste que la aplicación reconoce recibe un control real, una casilla numérica, una casilla de verificación o un desplegable, para que no pueda escribir un valor que el dispositivo rechazaría. Un ajuste que no reconoce, o un valor ya presente en el archivo que un control exacto no podría mostrar sin cambiarlo, conserva un cuadro de texto simple y se deja exactamente como estaba. Instalar prefs.csv de vuelta en el dispositivo siempre pregunta primero, y respalda el archivo que ya está allí.</value>
+  </data>
+  <data name="Main_PressAgainToOpenGoogle" xml:space="preserve">
+    <value>Pulse otra vez para abrir el inicio de sesión de Google.</value>
+  </data>
+  <data name="Main_PressAgainToSignIn" xml:space="preserve">
+    <value>Pulse otra vez para iniciar sesión</value>
+  </data>
+  <data name="Main_PressTheLipSwitchOr" xml:space="preserve">
+    <value>Pulse el interruptor o sensor de labio con el labio. Se usa a menudo para el botón de disparo.</value>
+  </data>
+  <data name="Main_PressVerb" xml:space="preserve">
+    <value>Pulsar</value>
+  </data>
+  <data name="Main_PressesInARepeatingOn" xml:space="preserve">
+    <value>Pulsa en un ciclo repetido de encendido y apagado.</value>
+  </data>
+  <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
+    <value>Problema copiado al portapapeles.</value>
+  </data>
+  <data name="Main_ProfilesYouAlreadyMadeFrom" xml:space="preserve">
+    <value>Los perfiles que ya creó a partir de esta plantilla no se ven afectados. Esto no se puede deshacer.</value>
+  </data>
+  <data name="Main_PuttingThisProfileInGoogle" xml:space="preserve">
+    <value>Subiendo este perfil a Google Sheets...</value>
+  </data>
+  <data name="Main_QuadStickConnected" xml:space="preserve">
+    <value>QuadStick conectado</value>
+  </data>
+  <data name="Main_QuadStickNotShowingUp" xml:space="preserve">
+    <value>¿El QuadStick no aparece?</value>
+  </data>
+  <data name="Main_QuadStickProfile" xml:space="preserve">
+    <value>Perfil de QuadStick</value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficial" xml:space="preserve">
+    <value>Quadstick: Config Manager (no oficial)</value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficial2" xml:space="preserve">
+    <value>Quadstick: Config Manager (no oficial) - </value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficialV" xml:space="preserve">
+    <value>Quadstick: Config Manager (no oficial) - {0}</value>
+  </data>
+  <data name="Main_QuickGuide" xml:space="preserve">
+    <value>Guía rápida</value>
+  </data>
+  <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
+    <value>Pulsaciones rápidas repetidas mientras su entrada se mantiene.</value>
+  </data>
+  <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
+    <value>Leer la política de privacidad</value>
+  </data>
+  <data name="Main_ReadThePrivacyPolicyOpens" xml:space="preserve">
+    <value>Leer la política de privacidad, se abre en su navegador</value>
+  </data>
+  <data name="Main_RearJoystickDirection" xml:space="preserve">
+    <value>Joystick trasero, {0}</value>
+  </data>
+  <data name="Main_RecoveredProfileOpenedSaveIt" xml:space="preserve">
+    <value>Perfil recuperado abierto. Guárdelo para conservarlo.</value>
+  </data>
+  <data name="Main_RemoveInputI1From" xml:space="preserve">
+    <value>Quitar la entrada {0} de la fila {1}</value>
+  </data>
+  <data name="Main_RemoveTheBOutputSetting" xml:space="preserve">
+    <value>Quitar el ajuste {0}</value>
+  </data>
+  <data name="Main_RemoveTheShortInputZoneB" xml:space="preserve">
+    <value>Quitar la asignación de {0}</value>
+  </data>
+  <data name="Main_RemoveThisEmptyInputFrom" xml:space="preserve">
+    <value>Quitar esta entrada vacía de la asignación {0}</value>
+  </data>
+  <data name="Main_RemoveThisInputFromMapping" xml:space="preserve">
+    <value>Quitar esta entrada de la asignación {0}</value>
+  </data>
+  <data name="Main_RemoveThisMapping" xml:space="preserve">
+    <value>Quitar esta asignación</value>
+  </data>
+  <data name="Main_Rename" xml:space="preserve">
+    <value>Renombrar</value>
+  </data>
+  <data name="Main_RenameSelectedTemplate" xml:space="preserve">
+    <value>Renombrar plantilla seleccionada</value>
+  </data>
+  <data name="Main_RenameTemplate" xml:space="preserve">
+    <value>Renombrar plantilla</value>
+  </data>
+  <data name="Main_RenamedTemplateToPathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>Plantilla renombrada a {0}.</value>
+  </data>
+  <data name="Main_ResetAllSettings" xml:space="preserve">
+    <value>¿Restablecer todos los ajustes?</value>
+  </data>
+  <data name="Main_RestoreYourProfiles" xml:space="preserve">
+    <value>¿Restaurar sus perfiles?</value>
+  </data>
+  <data name="Main_Right" xml:space="preserve">
+    <value>Derecha</value>
+  </data>
+  <data name="Main_RightBumper" xml:space="preserve">
+    <value>Bumper derecho</value>
+  </data>
+  <data name="Main_RightMouthpieceHole" xml:space="preserve">
+    <value>Orificio derecho de la boquilla</value>
+  </data>
+  <data name="Main_RightSideTube" xml:space="preserve">
+    <value>Derecho + Tubo lateral</value>
+  </data>
+  <data name="Main_RightStickClick" xml:space="preserve">
+    <value>Clic del stick derecho</value>
+  </data>
+  <data name="Main_RightTrigger" xml:space="preserve">
+    <value>Gatillo derecho</value>
+  </data>
+  <data name="Main_RowBRowScopeModeScope" xml:space="preserve">
+    <value>Alcance de la fila {0}: {1}</value>
+  </data>
+  <data name="Main_RowNotSelected" xml:space="preserve">
+    <value>{0}. Espacio selecciona, arrastrar reordena</value>
+  </data>
+  <data name="Main_RowSelected" xml:space="preserve">
+    <value>{0}, seleccionada. Espacio selecciona, arrastrar reordena</value>
+  </data>
+  <data name="Main_RowsThatPressAGame" xml:space="preserve">
+    <value>Filas que pulsan un botón del juego pero que aún no tienen nada que las active. Dé a cada una una entrada, o elimínela.</value>
+  </data>
+  <data name="Main_Save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="Main_SaveAsTemplate" xml:space="preserve">
+    <value>Guardar como plantilla</value>
+  </data>
+  <data name="Main_SaveProfileCSV" xml:space="preserve">
+    <value>Guardar CSV del perfil</value>
+  </data>
+  <data name="Main_SaveTemplate" xml:space="preserve">
+    <value>Guardar plantilla</value>
+  </data>
+  <data name="Main_SaveThisProfileFirstThen" xml:space="preserve">
+    <value>Guarde este perfil primero, luego copie un enlace de compartir para crear su hoja.</value>
+  </data>
+  <data name="Main_SaveYourChanges" xml:space="preserve">
+    <value>¿Guardar sus cambios?</value>
+  </data>
+  <data name="Main_SavedTemplateFileNameFindIt" xml:space="preserve">
+    <value>Plantilla {0} guardada. Encuéntrela en Usar plantilla en la pantalla de inicio.</value>
+  </data>
+  <data name="Main_SavedToSavePath" xml:space="preserve">
+    <value>Guardado en {0}.</value>
+  </data>
+  <data name="Main_Search" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
+  <data name="Main_SearchThisList" xml:space="preserve">
+    <value>Buscar en esta lista</value>
+  </data>
+  <data name="Main_SelectAProblemInThe" xml:space="preserve">
+    <value>Seleccione un problema de la lista para copiarlo. Repórtelo en github.com/Bbrizly/Quadstick-Config-Manager/issues. Diga qué hizo y qué salió mal.</value>
+  </data>
+  <data name="Main_SelectATemplateToDelete" xml:space="preserve">
+    <value>Seleccione primero una plantilla para eliminar.</value>
+  </data>
+  <data name="Main_SelectATemplateToRename" xml:space="preserve">
+    <value>Seleccione primero una plantilla para renombrar.</value>
+  </data>
+  <data name="Main_SelectedRowsCountSelected" xml:space="preserve">
+    <value>{0} seleccionadas</value>
+  </data>
+  <data name="Main_SendACrashReport" xml:space="preserve">
+    <value>¿Enviar un informe de fallo?</value>
+  </data>
+  <data name="Main_SendReport" xml:space="preserve">
+    <value>Enviar informe</value>
+  </data>
+  <data name="Main_SendThisCrashReport" xml:space="preserve">
+    <value>Enviar este informe de fallo</value>
+  </data>
+  <data name="Main_SetItTo" xml:space="preserve">
+    <value>Ponerlo en</value>
+  </data>
+  <data name="Main_SetVerb" xml:space="preserve">
+    <value>Establecer</value>
+  </data>
+  <data name="Main_SettingChangedByThisRow" xml:space="preserve">
+    <value>Ajuste cambiado por esta fila</value>
+  </data>
+  <data name="Main_SettingLabel" xml:space="preserve">
+    <value>Ajuste</value>
+  </data>
+  <data name="Main_SettingRowSpoken" xml:space="preserve">
+    <value>Ajuste {0}: mientras este modo está activo, poner {1} en {2}. Pulse Intro para editar.</value>
+  </data>
+  <data name="Main_SeverityLabelBaseName" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Main_ShareThisSheet" xml:space="preserve">
+    <value>¿Compartir esta hoja?</value>
+  </data>
+  <data name="Main_ShowsTheProblems" xml:space="preserve">
+    <value>{0}. Muestra la lista de problemas.</value>
+  </data>
+  <data name="Main_SideTube" xml:space="preserve">
+    <value>Tubo lateral</value>
+  </data>
+  <data name="Main_SignInToBackUp" xml:space="preserve">
+    <value>Iniciar sesión para respaldar</value>
+  </data>
+  <data name="Main_SimpleCards" xml:space="preserve">
+    <value>Tarjetas simples</value>
+  </data>
+  <data name="Main_SingletonASingleSipPuff" xml:space="preserve">
+    <value>Singleton: un solo tubo de sorbo/soplo en el joystick. Usa patrones de sorbo y soplo más el movimiento del joystick.</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe" xml:space="preserve">
+    <value>Sorba o sople en el orificio izquierdo de la boquilla. Un sorbo o soplo suave puede hacer algo distinto (las variantes soft).</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe2" xml:space="preserve">
+    <value>Sorba o sople en el orificio central de la boquilla. Un sorbo o soplo suave puede hacer algo distinto (las variantes soft).</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe3" xml:space="preserve">
+    <value>Sorba o sople en el orificio derecho de la boquilla. Un sorbo o soplo suave puede hacer algo distinto (las variantes soft).</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
+    <value>Sorba o sople en el tubo lateral. Un sorbo largo y fuerte aquí normalmente cambia de perfil, pero también puede asignarlo.</value>
+  </data>
+  <data name="Main_StartANewMappingOn" xml:space="preserve">
+    <value>Iniciar una nueva asignación en {0}</value>
+  </data>
+  <data name="Main_StartFromATemplate" xml:space="preserve">
+    <value>Empezar desde una plantilla</value>
+  </data>
+  <data name="Main_StartFromAWorkingProfile" xml:space="preserve">
+    <value>Empiece desde un perfil que funciona, no desde cero</value>
+  </data>
+  <data name="Main_StartedFromTemplatePathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>Iniciado desde la plantilla {0}. Guarde para conservarlo como perfil propio.</value>
+  </data>
+  <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
+    <value>Baja una salida analógica un paso y la deja ahí, como un gatillo o un eje del stick.</value>
+  </data>
+  <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
+    <value>Sube una salida analógica un paso y la deja ahí, como un gatillo o un eje del stick.</value>
+  </data>
+  <data name="Main_StopAsking" xml:space="preserve">
+    <value>Dejar de preguntar</value>
+  </data>
+  <data name="Main_StopAskingAboutCrashReports" xml:space="preserve">
+    <value>Dejar de preguntar sobre informes de fallo</value>
+  </data>
+  <data name="Main_SwitchJacks" xml:space="preserve">
+    <value>Conectores de interruptores</value>
+  </data>
+  <data name="Main_TabMovesBetweenFieldsArrows" xml:space="preserve">
+    <value>Tab se mueve entre campos, las flechas navegan por las listas de sugerencias, Intro confirma. Ctrl/Cmd+O abrir, S guardar, N nuevo, Z deshacer, I instalar, D cambia entre la vista Dispositivo y la vista Lista, H esta guía. F1 también abre esta guía desde cualquier lugar. Seleccionar un problema, o el botón Corregir primer problema, lleva el foco directamente a él. Cada control se anuncia a los lectores de pantalla.</value>
+  </data>
+  <data name="Main_ThatDoesNotLookLike" xml:space="preserve">
+    <value>Eso no parece un enlace de Google Sheets. Pegue el enlace completo desde la barra de direcciones de su navegador.</value>
+  </data>
+  <data name="Main_ThatFolderIsAQuadStick" xml:space="preserve">
+    <value>Esa carpeta es una unidad QuadStick. Use Instalar para escribir en el dispositivo con seguridad.</value>
+  </data>
+  <data name="Main_ThatSpreadsheetCameBackEmpty" xml:space="preserve">
+    <value>Esa hoja de cálculo llegó vacía. Si la acaba de compartir, espere un momento y vuelva a intentarlo.</value>
+  </data>
+  <data name="Main_ThatSpreadsheetHasNoProfile" xml:space="preserve">
+    <value>Esa hoja de cálculo no tiene pestaña de perfil: la celda A1 está vacía. {0}</value>
+  </data>
+  <data name="Main_ThatSpreadsheetHasNoProfile2" xml:space="preserve">
+    <value>Esa hoja de cálculo no tiene pestaña de perfil: la celda A1 dice "{0}". {1}</value>
+  </data>
+  <data name="Main_TheAppCrashedLastTime" xml:space="preserve">
+    <value>La aplicación falló la última vez. Estos son los detalles del fallo que guardó. Aquí no hay texto de mensajes ni rutas de archivos, a propósito: solo el tipo de error y la lista de funciones en las que ocurrió.
+
+Enviar lo convierte al formato propio del sistema de informes de fallos. También añade su ID de instalación anónimo, la versión de la biblioteca de informes, sus versiones de .NET y del sistema operativo, y si su procesador es Intel o ARM.</value>
+  </data>
+  <data name="Main_TheCommunityProfilesCardOn" xml:space="preserve">
+    <value>La tarjeta Perfiles de la comunidad de la pantalla de inicio busca en la lista compartida de perfiles de juegos. Abrir esa ventana, y pulsar Actualizar en ella, descarga la lista de quadstick.com. No se envía nada sobre usted, y la última lista se guarda en este equipo, así que la ventana se abre igualmente sin internet. Importar abre el perfil en el editor, igual que pegar su enlace. Nunca escribe en su QuadStick: eso sigue requiriendo el botón Instalar, y los errores siguen bloqueándolo.</value>
+  </data>
+  <data name="Main_TheDeviceSFallbackFile" xml:space="preserve">
+    <value> · el archivo de reserva del dispositivo</value>
+  </data>
+  <data name="Main_TheDeviceSkipsThoseRows" xml:space="preserve">
+    <value>. El dispositivo omite esas filas, así que esto se instala igualmente.</value>
+  </data>
+  <data name="Main_TheManageFilesCardUnder" xml:space="preserve">
+    <value>La tarjeta Gestionar archivos, bajo En su QuadStick, funciona con un QuadStick montado: su unidad tiene que aparecer como una memoria USB en el Finder o el Explorador de archivos. Desde ahí puede copiar un archivo a su biblioteca, abrir la hoja de Google a la que está vinculado, o eliminarlo; al eliminar se respalda primero en QuadStickBackups. default.csv y prefs.csv están protegidos y no se pueden eliminar desde esta aplicación. Si la unidad no aparece en absoluto, esta aplicación no tiene otra forma de llegar a ella; vea El QuadStick no aparece más abajo.</value>
+  </data>
+  <data name="Main_TheNameBoxAtThe" xml:space="preserve">
+    <value>El cuadro de nombre en la parte superior del editor es el nombre del perfil en el dispositivo. No use espacios; la extensión .csv se añade automáticamente. El perfil llamado default es especial: es el archivo de reserva del dispositivo y debería quedarse sin cambios.</value>
+  </data>
+  <data name="Main_TheOnlineCopyOfThis" xml:space="preserve">
+    <value>La copia en línea de este perfil está vacía o es ilegible, así que se conservó su versión en este equipo. Su próximo guardado reemplaza la hoja.</value>
+  </data>
+  <data name="Main_TheTabSkipped0Name" xml:space="preserve">
+    <value>La pestaña "{0}" se pasó por alto.</value>
+  </data>
+  <data name="Main_TheThreeColumnsSameColors" xml:space="preserve">
+    <value>Las tres columnas (los mismos colores que las hojas de cálculo oficiales)</value>
+  </data>
+  <data name="Main_ThenJoin" xml:space="preserve">
+    <value>, luego </value>
+  </data>
+  <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
+    <value>Estas pestañas se pasaron por alto: </value>
+  </data>
+  <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
+    <value>Esta aplicación puede enviar datos de uso anónimos: qué pantallas se usan, si instalar en un QuadStick funcionó, y nada más. Mientras está activado, esos eventos se envían según ocurren.
+
+Nunca se envía, elija lo que elija: sus perfiles, nombres de archivos, rutas de archivos, su cuenta de Google, ni su nombre o el nombre de su equipo. Nada de lo que escribe se envía tampoco, salvo el cuadro de comentarios de Ajustes, que solo envía cuando pulsa Enviar en él.
+
+Los informes de fallo son aparte. Si la aplicación falla alguna vez, guarda un informe en su equipo y le pregunta la próxima vez que la abre. Usted lo ve antes de que vaya a ninguna parte.
+
+Lo que se envía va a PostHog, en servidores de Estados Unidos.
+
+Puede cambiar esto en cualquier momento en Ajustes, en Avanzado.</value>
+  </data>
+  <data name="Main_ThisLinkIsAPublished" xml:space="preserve">
+    <value>Este enlace es de tipo publicado, y un enlace publicado solo entrega una única pestaña. Las demás pestañas de modo de la hoja de cálculo no nos llegaron en absoluto, así que no podemos decir qué contienen. Para traer el perfil completo, comparta la hoja con "Cualquier persona con el enlace" en Google Sheets e impórtela de nuevo.</value>
+  </data>
+  <data name="Main_ThisProfileHasNoGoogle" xml:space="preserve">
+    <value>Este perfil aún no tiene hoja de Google. Use primero Copiar enlace de compartir, que la crea.</value>
+  </data>
+  <data name="Main_ThisProfileHasUnsavedChanges" xml:space="preserve">
+    <value>Este perfil tiene cambios sin guardar. ¿Guardarlos antes de salir?</value>
+  </data>
+  <data name="Main_ThisProfileLivesOnThe" xml:space="preserve">
+    <value>Este perfil vive en el QuadStick. Use Instalar para escribirlo de vuelta con seguridad; Guardar como pone una copia en su biblioteca.</value>
+  </data>
+  <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
+    <value>Esta fila establece un ajuste del QuadStick en lugar de pulsar un botón. Se aplica mientras este modo está activo.</value>
+  </data>
+  <data name="Main_ThisSpreadsheet" xml:space="preserve">
+    <value>Esta hoja de cálculo</value>
+  </data>
+  <data name="Main_TitleBodyPressEscapeTo" xml:space="preserve">
+    <value>{0}. {1}. Pulse Escape para cerrar.</value>
+  </data>
+  <data name="Main_TitleCount" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Main_TitleCountOptionsOpensThis" xml:space="preserve">
+    <value>{0}, {1} opciones. Abre esta categoría.</value>
+  </data>
+  <data name="Main_ToJoiner" xml:space="preserve">
+    <value>a</value>
+  </data>
+  <data name="Main_ToTheBottom" xml:space="preserve">
+    <value>Al final</value>
+  </data>
+  <data name="Main_ToTheComputer" xml:space="preserve">
+    <value>Al equipo</value>
+  </data>
+  <data name="Main_ToTheTop" xml:space="preserve">
+    <value>Al principio</value>
+  </data>
+  <data name="Main_TokenNotUsedInThis" xml:space="preserve">
+    <value>{0}, sin usar en este modo</value>
+  </data>
+  <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
+    <value>Apaga una salida que toggle o delayed_latch dejó encendida.</value>
+  </data>
+  <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
+    <value>Dos o más orificios usados a la vez, los tres juntos, o el orificio derecho con el tubo lateral. Bueno para acciones que nunca quiere activar por accidente.</value>
+  </data>
+  <data name="Main_TypeACustomValue" xml:space="preserve">
+    <value>. Escriba un valor personalizado.</value>
+  </data>
+  <data name="Main_TypeACustomValue2" xml:space="preserve">
+    <value>Escriba un valor personalizado</value>
+  </data>
+  <data name="Main_TypeAValueOrLeave" xml:space="preserve">
+    <value>escriba un valor, o deje en blanco para volver</value>
+  </data>
+  <data name="Main_TypeAValueOrLeave2" xml:space="preserve">
+    <value>escriba un valor, o deje en blanco para cancelar</value>
+  </data>
+  <data name="Main_TypeYourOwn" xml:space="preserve">
+    <value>＋ Escriba el suyo…</value>
+  </data>
+  <data name="Main_USBAPort" xml:space="preserve">
+    <value>Puerto USB-A</value>
+  </data>
+  <data name="Main_USBBPort" xml:space="preserve">
+    <value>Puerto USB-B</value>
+  </data>
+  <data name="Main_USBDevices" xml:space="preserve">
+    <value>Dispositivos USB</value>
+  </data>
+  <data name="Main_UnnamedMode" xml:space="preserve">
+    <value>(modo sin nombre)</value>
+  </data>
+  <data name="Main_UnsavedWorkFromLastTime" xml:space="preserve">
+    <value>Se recuperó trabajo sin guardar de la última vez ({0}). Ábralo con el botón de abajo, o descártelo para eliminarlo.</value>
+  </data>
+  <data name="Main_UnusedFree" xml:space="preserve">
+    <value>Sin usar ({0})</value>
+  </data>
+  <data name="Main_UseTemplate" xml:space="preserve">
+    <value>Usar plantilla</value>
+  </data>
+  <data name="Main_UsingDeviceView" xml:space="preserve">
+    <value>Usando la vista de dispositivo</value>
+  </data>
+  <data name="Main_VVMajorVMinor" xml:space="preserve">
+    <value>v{0}.{1}.{2} · MIT · sin afiliación con QuadStick</value>
+  </data>
+  <data name="Main_ViewButton" xml:space="preserve">
+    <value>Botón View</value>
+  </data>
+  <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
+    <value>Espera un momento después de que usted activa, y luego presiona.</value>
+  </data>
+  <data name="Main_WhatIsAMode" xml:space="preserve">
+    <value>¿Qué es un modo?</value>
+  </data>
+  <data name="Main_WhatIsAProfile" xml:space="preserve">
+    <value>¿Qué es un perfil?</value>
+  </data>
+  <data name="Main_WhenYou" xml:space="preserve">
+    <value>cuando usted</value>
+  </data>
+  <data name="Main_WhenYou2" xml:space="preserve">
+    <value>Cuando usted</value>
+  </data>
+  <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
+    <value>Las palabras se muestran como nombres crudos de la vista de lista. Cambiar a lenguaje sencillo.</value>
+  </data>
+  <data name="Main_WordsAreShownAsXbox" xml:space="preserve">
+    <value>Las palabras se muestran como nombres de botones al estilo Xbox. Cambiar a los nombres crudos de la vista de lista.</value>
+  </data>
+  <data name="Main_WordsAreShownInPlain" xml:space="preserve">
+    <value>Las palabras se muestran en lenguaje sencillo. Cambiar a nombres de botones al estilo Xbox.</value>
+  </data>
+  <data name="Main_WordsListNames" xml:space="preserve">
+    <value>Palabras: nombres de lista</value>
+  </data>
+  <data name="Main_WordsPlainEnglish" xml:space="preserve">
+    <value>Palabras: lenguaje sencillo</value>
+  </data>
+  <data name="Main_WordsXboxStyle" xml:space="preserve">
+    <value>Palabras: estilo Xbox</value>
+  </data>
+  <data name="Main_XButton" xml:space="preserve">
+    <value>Botón X</value>
+  </data>
+  <data name="Main_XboxButton" xml:space="preserve">
+    <value>Botón Xbox</value>
+  </data>
+  <data name="Main_YButton" xml:space="preserve">
+    <value>Botón Y</value>
+  </data>
+  <data name="Main_YellowOUTPUTTheGameButton" xml:space="preserve">
+    <value>Amarillo, OUTPUT: el botón o la acción del juego. Nombres de PlayStation (x, circle, left_1), nombres de Xbox (A, B, left_trigger), ratón (mouse_up, mouse_left_button), teclado (kb_space), y nombres de ajustes del dispositivo como mouse_speed. Un nombre de ajuste aquí fija ese ajuste para todo el modo: el dispositivo ignora la celda de función y lee la celda siguiente como el valor, no como una entrada.
+Rosa, FUNCTION: cómo se comporta la pulsación.
+  normal: presionado mientras su entrada está activa.
+  toggle: una activación lo deja fijado, la siguiente lo suelta. Útil para apuntar sin mantener un sip.
+  repeat [rate] [delay]: toques rápidos mientras se mantiene. "repeat 5 2000" mantiene 2 segundos y luego toca 5 veces por segundo.
+  pulse [ms] [count]: una pulsación corta por activación. "pulse 50 2" hace un toque doble.
+  delayed_latch [ms]: activación corta = pulsación normal, activación larga = fijado. Dos comportamientos con una entrada.
+  tap / delay_on: divide una entrada en dos salidas según la duración de la pulsación.
+  force_off: suelta otra salida fijada. greater_than / less_than: disparadores por umbral. duty, increment_value, decrement_value: control analógico.
+Azul, INPUTS: lo que hace su boca. Los nombres mp_… son orificios de la boquilla (mp_left_sip). Las variantes …_soft se activan con presión suave. right_sip / right_puff son el tubo lateral. lip es el interruptor de labio. left/right/up/down y N/NE/… son el joystick. Varias entradas en una fila son una secuencia: usted las hace una tras otra, de izquierda a derecha, y la última dispara la salida.</value>
+  </data>
+  <data name="Main_YesContinue" xml:space="preserve">
+    <value>Sí, continuar</value>
+  </data>
+  <data name="Main_YesShareAnonymousUsageData" xml:space="preserve">
+    <value>Sí, compartir datos de uso anónimos</value>
+  </data>
+  <data name="Main_YesShareUsageData" xml:space="preserve">
+    <value>Sí, compartir datos de uso</value>
+  </data>
+  <data name="Main_YouHaveNotSavedAny" xml:space="preserve">
+    <value>Todavía no ha guardado ninguna plantilla. Abra un perfil y use Guardar como plantilla para crear una.</value>
+  </data>
+  <data name="Main_YourSavedTemplates" xml:space="preserve">
+    <value>Sus plantillas guardadas</value>
+  </data>
+  <data name="Main_Zone" xml:space="preserve">
+    <value>{0}. {1}. {2}.{3} Pulse Enter para editar.</value>
+  </data>
+  <data name="Main_ZoneSelected" xml:space="preserve">
+    <value>{0}. Seleccionado. {1}. {2}.{3} Pulse Enter para editar.</value>
+  </data>
+  <data name="Main_ZoneTitleInZoneCountNot" xml:space="preserve">
+    <value>{0}, {1} sin usar. Abre esta parte en la vista de dispositivo.</value>
+  </data>
+  <data name="Modes_AModeIsAFull" xml:space="preserve">
+    <value>Un modo es una disposición completa de sus entradas. Cambie entre ellos mientras juega con el tubo lateral, o con increment_mode y decrement_mode.</value>
+  </data>
+  <data name="Modes_AModeNeedsAName" xml:space="preserve">
+    <value>Un modo necesita un nombre. El anterior sigue ahí.</value>
+  </data>
+  <data name="Modes_AddAMode" xml:space="preserve">
+    <value>Añadir un modo</value>
+  </data>
+  <data name="Modes_AddAPreferencesSheet" xml:space="preserve">
+    <value>+ Añadir una hoja de preferencias</value>
+  </data>
+  <data name="Modes_AddAPreferencesSheetWhere" xml:space="preserve">
+    <value>Añadir una hoja de preferencias, donde están los ajustes del dispositivo como la presión de sip y puff</value>
+  </data>
+  <data name="Modes_AddMode" xml:space="preserve">
+    <value>+ Añadir modo</value>
+  </data>
+  <data name="Modes_CloseModes" xml:space="preserve">
+    <value>Cerrar modos</value>
+  </data>
+  <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
+    <value>Conexión borrada. El dispositivo vuelve al cable USB.</value>
+  </data>
+  <data name="Modes_ConnectionForModeOrdinalWhere" xml:space="preserve">
+    <value>Conexión del modo {0}. Adónde van las pulsaciones de botón de este modo. Un modo solo en Bluetooth no envía ratón ni teclado por cable.</value>
+  </data>
+  <data name="Modes_ConnectionSetToPickedItem2" xml:space="preserve">
+    <value>Conexión fijada en {0}.</value>
+  </data>
+  <data name="Modes_Done" xml:space="preserve">
+    <value>Listo</value>
+  </data>
+  <data name="Modes_MakeACopyOfName" xml:space="preserve">
+    <value>Hacer una copia de {0}</value>
+  </data>
+  <data name="Modes_ModeAdded" xml:space="preserve">
+    <value>Modo añadido.</value>
+  </data>
+  <data name="Modes_ModeCopied" xml:space="preserve">
+    <value>Modo copiado.</value>
+  </data>
+  <data name="Modes_ModeDeletedControlZUndoes" xml:space="preserve">
+    <value>Modo eliminado. Control Z lo deshace.</value>
+  </data>
+  <data name="Modes_ModeMoved" xml:space="preserve">
+    <value>Modo movido.</value>
+  </data>
+  <data name="Modes_ModeRenamed" xml:space="preserve">
+    <value>Modo renombrado.</value>
+  </data>
+  <data name="Modes_Modes" xml:space="preserve">
+    <value>Modos</value>
+  </data>
+  <data name="Modes_NameOfModeOrdinal" xml:space="preserve">
+    <value>Nombre del modo {0}</value>
+  </data>
+  <data name="Modes_NeitherSendsNothing" xml:space="preserve">
+    <value>Ninguno, no envía nada</value>
+  </data>
+  <data name="Modes_NotSetUSBCable" xml:space="preserve">
+    <value>Sin definir (cable USB)</value>
+  </data>
+  <data name="Modes_Position1" xml:space="preserve">
+    <value>{0}.</value>
+  </data>
+  <data name="Modes_PreferencesDeviceSettings" xml:space="preserve">
+    <value>Preferencias (ajustes del dispositivo)</value>
+  </data>
+  <data name="Modes_PreferencesSheetRemovedControlZ" xml:space="preserve">
+    <value>Hoja de preferencias eliminada. Control Z lo deshace.</value>
+  </data>
+  <data name="Modes_ReallyDelete" xml:space="preserve">
+    <value>¿Eliminar de verdad?</value>
+  </data>
+  <data name="Modes_ReallyDeleteName" xml:space="preserve">
+    <value>Eliminar de verdad {0}</value>
+  </data>
+  <data name="Modes_SheetChannelNotAWord" xml:space="preserve">
+    <value>{0} (no es una palabra que el dispositivo conozca)</value>
+  </data>
+  <data name="Modes_ThePreferencesSheet" xml:space="preserve">
+    <value>la hoja de preferencias</value>
+  </data>
+  <data name="Modes_USBAndBluetooth" xml:space="preserve">
+    <value>USB y Bluetooth</value>
+  </data>
+  <data name="Modes_USBCable" xml:space="preserve">
+    <value>Cable USB</value>
+  </data>
+  <data name="Names_ANameHasToBe" xml:space="preserve">
+    <value>Un nombre debe tener de 1 a {0} caracteres.</value>
+  </data>
+  <data name="Names_AnOutput" xml:space="preserve">
+    <value>una salida</value>
+  </data>
+  <data name="Names_CustomOutputNames" xml:space="preserve">
+    <value>Nombres de salida personalizados</value>
+  </data>
+  <data name="Names_MappingNowReal_one" xml:space="preserve">
+    <value>{0} asignación muestra ahora el botón real.</value>
+  </data>
+  <data name="Names_MappingNowReal_other" xml:space="preserve">
+    <value>{0} asignaciones muestran ahora el botón real.</value>
+  </data>
+  <data name="Names_NameIsAlreadyWhatThe" xml:space="preserve">
+    <value>"{0}" ya es como el QuadStick llama a uno de sus propios botones. Elija otra palabra.</value>
+  </data>
+  <data name="Names_NameIsNowHumanizeToken" xml:space="preserve">
+    <value>{0} ahora es {1}.</value>
+  </data>
+  <data name="Names_NewName" xml:space="preserve">
+    <value>Nombre nuevo</value>
+  </data>
+  <data name="Names_NewNameI" xml:space="preserve">
+    <value>Nombre nuevo {0}</value>
+  </data>
+  <data name="Names_NoNamesYetClickAdd" xml:space="preserve">
+    <value>Todavía no hay nombres. Haga clic en "Añadir fila", elija una salida y escriba su propia palabra para ella. Esa palabra aparece entonces al principio de cada selector de salidas, bajo Personalizados. El archivo sigue guardando el botón real, así que el QuadStick funciona igual.</value>
+  </data>
+  <data name="Names_NotUsedYet" xml:space="preserve">
+    <value>sin usar todavía</value>
+  </data>
+  <data name="Names_OpenOrCreateAProfile" xml:space="preserve">
+    <value>Abra o cree un perfil primero.</value>
+  </data>
+  <data name="Names_OutputRealButton" xml:space="preserve">
+    <value>Salida (botón real)</value>
+  </data>
+  <data name="Names_OutputThatNameStandsFor" xml:space="preserve">
+    <value>Salida a la que corresponde {0}</value>
+  </data>
+  <data name="Names_PickTheOutputThenType" xml:space="preserve">
+    <value>Elija la salida y luego escriba su propio nombre para ella.</value>
+  </data>
+  <data name="Names_RemoveTheNameName" xml:space="preserve">
+    <value>Quitar el nombre {0}</value>
+  </data>
+  <data name="Names_RemoveThisName" xml:space="preserve">
+    <value>Quitar este nombre</value>
+  </data>
+  <data name="Names_Removed" xml:space="preserve">
+    <value>Se quitó {0}.</value>
+  </data>
+  <data name="Names_ThisProfileAlreadyHasA" xml:space="preserve">
+    <value>Este perfil ya tiene un nombre llamado "{0}".</value>
+  </data>
+  <data name="Names_YourNameForHumanizeToken" xml:space="preserve">
+    <value>Su nombre para {0}</value>
+  </data>
+  <data name="Names_YourNameForIt" xml:space="preserve">
+    <value>Su nombre para ella</value>
+  </data>
+  <data name="Names_YourNameForThisOutput" xml:space="preserve">
+    <value>Su nombre para esta salida</value>
+  </data>
+  <data name="Outputs_DeviceSettings" xml:space="preserve">
+    <value>Ajustes del dispositivo</value>
+  </data>
+  <data name="Outputs_DeviceSettings2" xml:space="preserve">
+    <value>Ajustes del dispositivo</value>
+  </data>
+  <data name="Outputs_FunctionKeys" xml:space="preserve">
+    <value>Teclas de función</value>
+  </data>
+  <data name="Outputs_FunctionKeys2" xml:space="preserve">
+    <value>Teclas de función</value>
+  </data>
+  <data name="Outputs_ModeSwitching" xml:space="preserve">
+    <value>Cambio de modo</value>
+  </data>
+  <data name="Outputs_ModeSwitching2" xml:space="preserve">
+    <value>Cambio de modo</value>
+  </data>
+  <data name="Outputs_ModifierKeys" xml:space="preserve">
+    <value>Teclas modificadoras</value>
+  </data>
+  <data name="Outputs_ModifierKeys2" xml:space="preserve">
+    <value>Teclas modificadoras</value>
+  </data>
+  <data name="Outputs_NumberPad" xml:space="preserve">
+    <value>Teclado numérico</value>
+  </data>
+  <data name="Outputs_NumberPad2" xml:space="preserve">
+    <value>Teclado numérico</value>
+  </data>
+  <data name="Outputs_OtherKeys" xml:space="preserve">
+    <value>Otras teclas</value>
+  </data>
+  <data name="Outputs_OtherKeys2" xml:space="preserve">
+    <value>Otras teclas</value>
+  </data>
+  <data name="Outputs_TVRemote" xml:space="preserve">
+    <value>Mando de TV</value>
+  </data>
+  <data name="Outputs_TVRemote2" xml:space="preserve">
+    <value>Mando de TV</value>
+  </data>
+  <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
+    <value>Acerca de {0}: {1}</value>
+  </data>
+  <data name="Prefs_ActiveOnlyInThisMode" xml:space="preserve">
+    <value>Activo solo en este modo</value>
+  </data>
+  <data name="Prefs_ActiveWhileThisProfileIs" xml:space="preserve">
+    <value>Activo mientras este perfil está cargado</value>
+  </data>
+  <data name="Prefs_CarefulDefLabelDefRisk" xml:space="preserve">
+    <value>Cuidado, {0}: {1}</value>
+  </data>
+  <data name="Prefs_CarefulDefRisk" xml:space="preserve">
+    <value>Cuidado: {0}</value>
+  </data>
+  <data name="Prefs_DefCategorySettings" xml:space="preserve">
+    <value>Ajustes de {0}</value>
+  </data>
+  <data name="Prefs_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}, escrito como {1}</value>
+  </data>
+  <data name="Prefs_DeleteRowBRow" xml:space="preserve">
+    <value>Eliminar la fila {0}</value>
+  </data>
+  <data name="Prefs_DeleteThisWholeRow" xml:space="preserve">
+    <value>Eliminar esta fila entera</value>
+  </data>
+  <data name="Prefs_DescriptionForRowSaved" xml:space="preserve">
+    <value>Descripción de la fila {0}. Se guarda en el archivo, el QuadStick la ignora</value>
+  </data>
+  <data name="Prefs_DeviceWideSettings" xml:space="preserve">
+    <value>Ajustes de todo el dispositivo</value>
+  </data>
+  <data name="Prefs_HexCode" xml:space="preserve">
+    <value>Código hex</value>
+  </data>
+  <data name="Prefs_HexCodeForRow" xml:space="preserve">
+    <value>Código hex de la fila {0}</value>
+  </data>
+  <data name="Prefs_MeasuredInDefUnit" xml:space="preserve">
+    <value>Se mide en {0}.</value>
+  </data>
+  <data name="Prefs_NameColumnNameForRowB" xml:space="preserve">
+    <value>Nombre de {0} para la fila {1}</value>
+  </data>
+  <data name="Prefs_NotesForRow" xml:space="preserve">
+    <value>Notas de la fila {0}</value>
+  </data>
+  <data name="Prefs_NotesForRowSaved" xml:space="preserve">
+    <value>Notas de la fila {0}. Se guardan en el archivo, el QuadStick las ignora</value>
+  </data>
+  <data name="Prefs_PhraseExplain" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Prefs_SettingValueForRow" xml:space="preserve">
+    <value>Valor del ajuste de la fila {0}</value>
+  </data>
+  <data name="Prefs_SettingValueForRowRow" xml:space="preserve">
+    <value>Valor del ajuste de la fila {0}</value>
+  </data>
+  <data name="Prefs_SwapTheControlForA" xml:space="preserve">
+    <value>Cambiar el control por una casilla simple, para un valor fuera del rango probado.</value>
+  </data>
+  <data name="Prefs_TheseSettingsApplyWhileThis" xml:space="preserve">
+    <value>Estos ajustes se aplican mientras este perfil es el que está en marcha, y vuelven a los ajustes propios del dispositivo cuando se carga otro perfil.</value>
+  </data>
+  <data name="Prefs_ThisFileIsTheQuadStick" xml:space="preserve">
+    <value>Este archivo son los ajustes propios del QuadStick. Cada cambio aquí se aplica a todo el dispositivo, en todos los perfiles.</value>
+  </data>
+  <data name="Prefs_ThisIsUsuallySetTo" xml:space="preserve">
+    <value>Esto suele estar en {0}. Su dispositivo puede tener otro valor.</value>
+  </data>
+  <data name="Prefs_TypeAnExactValue" xml:space="preserve">
+    <value>Escribir un valor exacto</value>
+  </data>
+  <data name="Prefs_TypeAnExactValueFor" xml:space="preserve">
+    <value>Escribir un valor exacto para {0}</value>
+  </data>
+  <data name="Prefs_UnitsForRow" xml:space="preserve">
+    <value>Unidades de la fila {0}</value>
+  </data>
+  <data name="Review_ASettingSNameUsed" xml:space="preserve">
+    <value>el nombre de un ajuste, usado aquí para sobrescribirlo en este modo</value>
+  </data>
+  <data name="Review_AddItAsAWorking" xml:space="preserve">
+    <value>Añadirla como un modo que funciona</value>
+  </data>
+  <data name="Review_AddTheTabTabName" xml:space="preserve">
+    <value>Añadir la pestaña {0} a este perfil como un modo que funciona, escribiendo Profile Name sobre su celda A1</value>
+  </data>
+  <data name="Review_AddedTheTabNameTab" xml:space="preserve">
+    <value>Se añadió la pestaña "{0}" como modo.</value>
+  </data>
+  <data name="Review_AddingItChangesCellA1" xml:space="preserve">
+    <value>Añadirla cambia la celda A1. Todo lo demás en la pestaña entra tal como usted lo escribió.</value>
+  </data>
+  <data name="Review_AndYourPreferences" xml:space="preserve">
+    <value>, y sus preferencias</value>
+  </data>
+  <data name="Review_CToJInputsIn" xml:space="preserve">
+    <value>C a J  entradas, en orden</value>
+  </data>
+  <data name="Review_CToJIsRoom" xml:space="preserve">
+    <value>C a J es espacio para hasta 8 entradas, no un requisito. La mayoría de las filas usan C sola, y eso es un disparador simple. Cuando una fila llena más de una, son una secuencia: usted las hace una tras otra, de izquierda a derecha, y la última dispara la salida. Las celdas vacías intermedias se ignoran.</value>
+  </data>
+  <data name="Review_CellMeaningRowColIsBindingThe" xml:space="preserve">
+    <value>{0}, el QuadStick no conoce esta palabra</value>
+  </data>
+  <data name="Review_CellTheQuadStickWillTreat" xml:space="preserve">
+    <value>celda que el QuadStick tratará de forma distinta a como se lee</value>
+  </data>
+  <data name="Review_CellsTheQuadStickWillTreat" xml:space="preserve">
+    <value>celdas que el QuadStick tratará de forma distinta a como se leen</value>
+  </data>
+  <data name="Review_ClearIt" xml:space="preserve">
+    <value>Vaciarla</value>
+  </data>
+  <data name="Review_CloseTheImportReviewEvery" xml:space="preserve">
+    <value>Cerrar la revisión de importación. Cada respuesta que dio ya se aplicó al perfil que está detrás</value>
+  </data>
+  <data name="Review_ContentsOfCellWhereMeaning" xml:space="preserve">
+    <value>Contenido de la celda {0}, {1}</value>
+  </data>
+  <data name="Review_Done" xml:space="preserve">
+    <value>Listo</value>
+  </data>
+  <data name="Review_EmptyCellWhere" xml:space="preserve">
+    <value>Celda vacía {0}</value>
+  </data>
+  <data name="Review_GoBackToTheSimple" xml:space="preserve">
+    <value>Volver a la vista simple</value>
+  </data>
+  <data name="Review_HelperTabs_one" xml:space="preserve">
+    <value>{0}   esta pestaña es notas, no asignaciones. QMP y el complemento de Sheets escriben esta pestaña para que usted la lea, y su QuadStick nunca la carga. No se perdió nada al dejarla fuera.</value>
+  </data>
+  <data name="Review_HelperTabs_other" xml:space="preserve">
+    <value>{0}   estas pestañas son notas, no asignaciones. QMP y el complemento de Sheets escriben estas pestañas para que usted las lea, y su QuadStick nunca las carga. No se perdió nada al dejarlas fuera.</value>
+  </data>
+  <data name="Review_ImportReview" xml:space="preserve">
+    <value>Revisión de importación</value>
+  </data>
+  <data name="Review_InfraredCommands" xml:space="preserve">
+    <value>Comandos de infrarrojos</value>
+  </data>
+  <data name="Review_IssueCellWordIsNow" xml:space="preserve">
+    <value>{0}   "{1}" es ahora el nombre propio de esta fila, en la columna L.</value>
+  </data>
+  <data name="Review_IssueCellWordLeftAs" xml:space="preserve">
+    <value>{0}   "{1}" se dejó como está. El QuadStick lo ignora.</value>
+  </data>
+  <data name="Review_IssueCellWordMovedInto" xml:space="preserve">
+    <value>{0}   "{1}" se movió a la columna de notas.</value>
+  </data>
+  <data name="Review_KNoteLYourName" xml:space="preserve">
+    <value>K  nota   L  su nombre para la fila   M en adelante  nunca se lee</value>
+  </data>
+  <data name="Review_KeepValueAsThisRow" xml:space="preserve">
+    <value>Mantener "{0}" como nombre propio de esta fila, en la columna L, donde el QuadStick nunca mira</value>
+  </data>
+  <data name="Review_KeepWordAsThisRow" xml:space="preserve">
+    <value>Mantener "{0}" como nombre propio de esta fila, en la columna L, donde el QuadStick nunca mira</value>
+  </data>
+  <data name="Review_LeaveIt" xml:space="preserve">
+    <value>Dejarlo</value>
+  </data>
+  <data name="Review_LeaveItOut" xml:space="preserve">
+    <value>Dejarla fuera</value>
+  </data>
+  <data name="Review_LeaveTheTabTabName" xml:space="preserve">
+    <value>Dejar la pestaña {0} fuera de este perfil, como hace el QuadStick</value>
+  </data>
+  <data name="Review_LeaveWordWhereItIs" xml:space="preserve">
+    <value>Dejar "{0}" donde está, y mantener su aviso en el editor</value>
+  </data>
+  <data name="Review_LineTheQuadStickWouldNot" xml:space="preserve">
+    <value>línea que el QuadStick no leería</value>
+  </data>
+  <data name="Review_LinesTheQuadStickWouldNot" xml:space="preserve">
+    <value>líneas que el QuadStick no leería</value>
+  </data>
+  <data name="Review_MakeThisTheRowS" xml:space="preserve">
+    <value>Convertir esto en el nombre de la fila</value>
+  </data>
+  <data name="Review_ModeIsNamedAfterIts" xml:space="preserve">
+    <value>modo lleva el nombre de su pestaña de hoja</value>
+  </data>
+  <data name="Review_ModeRModeNumberIsCalled" xml:space="preserve">
+    <value>El modo {0} se llama "{1}", por su pestaña de hoja. La celda de nombre de ese modo estaba vacía.</value>
+  </data>
+  <data name="Review_ModeRModeNumberIsCalled2" xml:space="preserve">
+    <value>El modo {0} se llama "{1}", por su pestaña de hoja. Su celda de nombre decía "{2}", que es el nombre con el que viene la plantilla o una copia del de otro modo.</value>
+  </data>
+  <data name="Review_ModesAreNamedAfterTheir" xml:space="preserve">
+    <value>modos llevan el nombre de sus pestañas de hoja</value>
+  </data>
+  <data name="Review_MoreThanOneModeEach" xml:space="preserve">
+    <value>Más de un modo lleva cada uno de los nombres</value>
+  </data>
+  <data name="Review_MoreThanOneModeIs" xml:space="preserve">
+    <value>Más de un modo se llama</value>
+  </data>
+  <data name="Review_MoveItEarlier" xml:space="preserve">
+    <value>Moverlo antes</value>
+  </data>
+  <data name="Review_MoveItLater" xml:space="preserve">
+    <value>Moverlo después</value>
+  </data>
+  <data name="Review_MoveThisToTheNote" xml:space="preserve">
+    <value>Mover esto a la columna de notas</value>
+  </data>
+  <data name="Review_MoveToNotes" xml:space="preserve">
+    <value>Mover a notas</value>
+  </data>
+  <data name="Review_MoveValueFromWhereInto" xml:space="preserve">
+    <value>Mover "{0}" de {1} a la columna de notas, donde el QuadStick nunca mira</value>
+  </data>
+  <data name="Review_MoveValueToColumnLetterTarget" xml:space="preserve">
+    <value>Mover "{0}" a {1}{2}, un paso {3} en la secuencia de entradas de esta fila</value>
+  </data>
+  <data name="Review_MoveWordIntoTheNotes" xml:space="preserve">
+    <value>Mover "{0}" a la columna de notas, donde el QuadStick nunca mira</value>
+  </data>
+  <data name="Review_MovedValueFromWhereInto" xml:space="preserve">
+    <value>Se movió "{0}" de {1} a la columna de notas.</value>
+  </data>
+  <data name="Review_MovedValueFromWhereInto2" xml:space="preserve">
+    <value>Se movió "{0}" de {1} al nombre de esta fila.</value>
+  </data>
+  <data name="Review_MovedWordIntoTheNotes" xml:space="preserve">
+    <value>Se movió "{0}" a la columna de notas.</value>
+  </data>
+  <data name="Review_NeverReadByTheQuadStick" xml:space="preserve">
+    <value>nunca leído por el QuadStick</value>
+  </data>
+  <data name="Review_NoCellPicked" xml:space="preserve">
+    <value>Ninguna celda elegida</value>
+  </data>
+  <data name="Review_NoCellPickedClickOne" xml:space="preserve">
+    <value>Ninguna celda elegida. Haga clic en una, o pase con Tab a la hoja y use las flechas.</value>
+  </data>
+  <data name="Review_NotABindingRowSo" xml:space="preserve">
+    <value>no es una fila de asignación, así que el QuadStick no lee nada aquí</value>
+  </data>
+  <data name="Review_NotReadOnASettings" xml:space="preserve">
+    <value>no se lee en una hoja de ajustes</value>
+  </data>
+  <data name="Review_NotReadOnASettings2" xml:space="preserve">
+    <value>no se lee en una fila de ajustes</value>
+  </data>
+  <data name="Review_NotReadThisTabWas" xml:space="preserve">
+    <value>no se lee, esta pestaña quedó fuera</value>
+  </data>
+  <data name="Review_NoteNeverReadByThe" xml:space="preserve">
+    <value>nota, nunca leída por el QuadStick</value>
+  </data>
+  <data name="Review_NothingPressesBOutputNow" xml:space="preserve">
+    <value> Ahora nada presiona "{0}", así que el QuadStick no lo disparará.</value>
+  </data>
+  <data name="Review_OnlyPartOfTheSpreadsheet" xml:space="preserve">
+    <value>Solo se pudo leer parte de la hoja de cálculo</value>
+  </data>
+  <data name="Review_PartOfTheRowThat" xml:space="preserve">
+    <value>parte de la fila que abre un modo</value>
+  </data>
+  <data name="Review_SaveCell" xml:space="preserve">
+    <value>Guardar celda</value>
+  </data>
+  <data name="Review_ShowTheSpreadsheetWithThe" xml:space="preserve">
+    <value>Mostrar la hoja de cálculo con la lectura de la app marcada encima</value>
+  </data>
+  <data name="Review_ShowingTheFirstShownRows" xml:space="preserve">
+    <value>Se muestran las primeras {0} filas de {1}. El resto se importó de la misma forma.</value>
+  </data>
+  <data name="Review_SimpleView" xml:space="preserve">
+    <value>Vista simple</value>
+  </data>
+  <data name="Review_SkippedByTheQuadStickOn" xml:space="preserve">
+    <value>omitido por el QuadStick en una fila de ajustes</value>
+  </data>
+  <data name="Review_SubjectNamesThatIsAllowed" xml:space="preserve">
+    <value>{0} {1}. Eso está permitido: su QuadStick distingue los modos por su orden en el archivo, no por su nombre, así que son modos separados y todos entraron. Renómbrelos en Modos si quiere distinguirlos en pantalla.</value>
+  </data>
+  <data name="Review_SummaryNoProfileDataWas" xml:space="preserve">
+    <value>{0} No se omitió ningún dato del perfil.</value>
+  </data>
+  <data name="Review_SwapValueWithNeighbourMoving" xml:space="preserve">
+    <value>Intercambiar "{0}" con "{1}", moviéndolo un paso {2} en la secuencia de entradas de esta fila</value>
+  </data>
+  <data name="Review_SwappedValueAndNeighbourIn" xml:space="preserve">
+    <value>Se intercambiaron "{0}" y "{1}" en la fila {2}.</value>
+  </data>
+  <data name="Review_TabDidNotComeIn" xml:space="preserve">
+    <value>pestaña no entró</value>
+  </data>
+  <data name="Review_TabIsNotProfileData" xml:space="preserve">
+    <value>pestaña no es datos de perfil</value>
+  </data>
+  <data name="Review_TabNameCellA1Has" xml:space="preserve">
+    <value>"{0}"   la celda A1 tiene que decir "Profile Name". La suya tiene otro texto, así que esta pestaña no es un modo ni para la app ni para su QuadStick. Ninguno de los dos la está usando hoy.</value>
+  </data>
+  <data name="Review_TabNameIsNowA" xml:space="preserve">
+    <value>"{0}" es ahora un modo de este perfil. Su celda A1 dice "Profile Name" donde estaba su texto.</value>
+  </data>
+  <data name="Review_TabNameLeftOutBecause" xml:space="preserve">
+    <value>"{0}", quedó fuera porque la celda A1 no nombra un tipo de hoja:</value>
+  </data>
+  <data name="Review_TabNameWasAddedAs" xml:space="preserve">
+    <value>"{0}" se añadió como modo.</value>
+  </data>
+  <data name="Review_TabNameWasLeftOut" xml:space="preserve">
+    <value>"{0}" quedó fuera, igual que hace su QuadStick hoy.</value>
+  </data>
+  <data name="Review_TabNameWasLeftOut2" xml:space="preserve">
+    <value>"{0}" quedó fuera.</value>
+  </data>
+  <data name="Review_TabsAreNotProfileData" xml:space="preserve">
+    <value>pestañas no son datos de perfil</value>
+  </data>
+  <data name="Review_TabsDidNotComeIn" xml:space="preserve">
+    <value>pestañas no entraron</value>
+  </data>
+  <data name="Review_ThatChangeWasUndone" xml:space="preserve">
+    <value>Ese cambio se deshizo.</value>
+  </data>
+  <data name="Review_TheQuadStickDoesNotKnow" xml:space="preserve">
+    <value>el QuadStick no conoce esta palabra</value>
+  </data>
+  <data name="Review_TheSettingSName" xml:space="preserve">
+    <value>el nombre del ajuste</value>
+  </data>
+  <data name="Review_TheSettingSValue" xml:space="preserve">
+    <value>el valor del ajuste</value>
+  </data>
+  <data name="Review_TheSettingSValue2" xml:space="preserve">
+    <value>el valor del ajuste</value>
+  </data>
+  <data name="Review_TheWordThatMakesThis" xml:space="preserve">
+    <value>la palabra que hace de esta la hoja de ajustes</value>
+  </data>
+  <data name="Review_TheWordThatMakesThis2" xml:space="preserve">
+    <value>la palabra que hace de esto un modo. Cámbiela y el modo sale del perfil</value>
+  </data>
+  <data name="Review_ThisModeSName" xml:space="preserve">
+    <value>el nombre de este modo</value>
+  </data>
+  <data name="Review_UndidTheLastCellChange" xml:space="preserve">
+    <value>Se deshizo el último cambio de celda.</value>
+  </data>
+  <data name="Review_UndidTheLastImportChange" xml:space="preserve">
+    <value>Se deshizo el último cambio de importación.</value>
+  </data>
+  <data name="Review_Undo" xml:space="preserve">
+    <value>Deshacer</value>
+  </data>
+  <data name="Review_Undo2" xml:space="preserve">
+    <value>Deshacer</value>
+  </data>
+  <data name="Review_UndoThisChangeAndAsk" xml:space="preserve">
+    <value>Deshacer este cambio y preguntar de nuevo: {0}</value>
+  </data>
+  <data name="Review_UndoThisChangeLastGridEdit" xml:space="preserve">
+    <value>Deshacer este cambio: {0}</value>
+  </data>
+  <data name="Review_UnnamedMode" xml:space="preserve">
+    <value>(modo sin nombre)</value>
+  </data>
+  <data name="Review_UseAsThisRowS" xml:space="preserve">
+    <value>Usar como nombre de esta fila</value>
+  </data>
+  <data name="Review_WeReadYourSheet" xml:space="preserve">
+    <value>Leímos su hoja.</value>
+  </data>
+  <data name="Review_WhatCameIn" xml:space="preserve">
+    <value>Lo que entró</value>
+  </data>
+  <data name="Review_WordIsNowThisRow" xml:space="preserve">
+    <value>"{0}" es ahora el nombre de esta fila.</value>
+  </data>
+  <data name="Review_WordIsNowThisRow2" xml:space="preserve">
+    <value>"{0}" es ahora el nombre propio de esta fila, en la columna L.</value>
+  </data>
+  <data name="Review_WordMovedIntoTheNotes" xml:space="preserve">
+    <value>"{0}" se movió a la columna de notas.</value>
+  </data>
+  <data name="Review_WordWasLeftWhereIt" xml:space="preserve">
+    <value>"{0}" se dejó donde está.</value>
+  </data>
+  <data name="Review_YourAnswersAreAlreadyPart" xml:space="preserve">
+    <value>Sus respuestas ya forman parte del perfil. Todavía no hay nada guardado en disco, y Control Z en el editor deshace cualquiera de ellas.</value>
+  </data>
+  <data name="Review_YourNameForTheRow" xml:space="preserve">
+    <value>su nombre para la fila, nunca leído por el QuadStick</value>
+  </data>
+  <data name="Review_YourSheetCameInClean" xml:space="preserve">
+    <value>Su hoja entró limpia.</value>
+  </data>
+  <data name="Review_YourSpreadsheetArrowKeysPick" xml:space="preserve">
+    <value>Su hoja de cálculo. Las flechas eligen una celda, Enter la edita, Delete la vacía.</value>
+  </data>
+  <data name="Review_YourSpreadsheetWithWhatWe" xml:space="preserve">
+    <value>Su hoja de cálculo, con lo que leímos marcado encima. Una celda coloreada es una que el QuadStick lee. Una celda sin color es una que nunca mira, así que las notas y sus propios nombres para las filas están seguros ahí. Haga clic en cualquier celda para cambiarla, o arrástrela a otra columna de la misma fila. Cada cambio aquí es un cambio en el perfil abierto detrás de esta ventana.</value>
+  </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>Apariencia</value>
+  </data>
+  <data name="Settings_AppearanceHelp" xml:space="preserve">
+    <value>Apariencia: elija el tema Sistema, Claro u Oscuro</value>
+  </data>
+  <data name="Settings_AskCrashes" xml:space="preserve">
+    <value>Preguntar antes de enviar un informe de fallo</value>
+  </data>
+  <data name="Settings_Backup" xml:space="preserve">
+    <value>Copia de seguridad en Google Drive</value>
+  </data>
+  <data name="Settings_BackupCaption" xml:space="preserve">
+    <value>Cada vez que guarda un perfil, una copia va a su propio Google Drive. Importar las trae de vuelta a cualquier equipo.</value>
+  </data>
+  <data name="Settings_BackupToggle" xml:space="preserve">
+    <value>Hacer copia de seguridad de mis perfiles en Google Drive</value>
+  </data>
+  <data name="Settings_BackupUnavailable" xml:space="preserve">
+    <value>Esta versión todavía no está conectada a Google.</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Settings_CancelConnect" xml:space="preserve">
+    <value>Cancelar la conexión con Google</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>Buscar actualizaciones</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>Comprobando...</value>
+  </data>
+  <data name="Settings_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Settings_CloseHelp" xml:space="preserve">
+    <value>Cerrar ajustes</value>
+  </data>
+  <data name="Settings_Connected" xml:space="preserve">
+    <value>Conectado a Google Drive</value>
+  </data>
+  <data name="Settings_ContactIntro" xml:space="preserve">
+    <value>¿Encontró un problema, o solo quiere saludar? Así puede contactar a la persona que hizo esto.</value>
+  </data>
+  <data name="Settings_CopyInstallId" xml:space="preserve">
+    <value>Copiar ID de instalación</value>
+  </data>
+  <data name="Settings_CopyInstallIdHelp" xml:space="preserve">
+    <value>Copiar el ID de instalación al portapapeles</value>
+  </data>
+  <data name="Settings_CrashCaption" xml:space="preserve">
+    <value>Un fallo guarda un informe en su equipo. No se envía nada hasta que usted lo ve y pulsa Enviar.</value>
+  </data>
+  <data name="Settings_EmailHelp" xml:space="preserve">
+    <value>Enviar un correo, abre su app de correo</value>
+  </data>
+  <data name="Settings_EmailLink" xml:space="preserve">
+    <value>Correo: {0}</value>
+  </data>
+  <data name="Settings_FeedbackCaption" xml:space="preserve">
+    <value>Va al desarrollador con su ID de instalación anónimo y nada más. Necesita los datos de uso activados, en Avanzado. El enlace de correo de arriba siempre funciona.</value>
+  </data>
+  <data name="Settings_FeedbackFailed" xml:space="preserve">
+    <value>Eso no se pudo enviar. El enlace de correo de arriba siempre funciona.</value>
+  </data>
+  <data name="Settings_FeedbackLabel" xml:space="preserve">
+    <value>Sus comentarios</value>
+  </data>
+  <data name="Settings_FeedbackSent" xml:space="preserve">
+    <value>Gracias. Se envió.</value>
+  </data>
+  <data name="Settings_FeedbackWatermark" xml:space="preserve">
+    <value>¿Qué haría mejor esta app?</value>
+  </data>
+  <data name="Settings_Grouping" xml:space="preserve">
+    <value>Agrupación del selector</value>
+  </data>
+  <data name="Settings_GroupingCaption" xml:space="preserve">
+    <value>Detallado ordena las salidas bajo una categoría y luego un grupo dentro de ella. Ancho muestra todas las salidas de una categoría a la vez. Plano es una sola lista con búsqueda. La búsqueda funciona igual en las tres.</value>
+  </data>
+  <data name="Settings_GroupingHelp" xml:space="preserve">
+    <value>Agrupación del selector: listas Detallado, Ancho o Plano en los selectores de salida y entrada</value>
+  </data>
+  <data name="Settings_ImportDrive" xml:space="preserve">
+    <value>Importar desde Google Drive</value>
+  </data>
+  <data name="Settings_ImportDriveHelp" xml:space="preserve">
+    <value>Importar sus perfiles desde Google Drive</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="Settings_LanguageHelp" xml:space="preserve">
+    <value>Idioma: elija en qué idioma está escrita la app</value>
+  </data>
+  <data name="Settings_LanguageRestart" xml:space="preserve">
+    <value>Cierre y vuelva a abrir la app para verla en este idioma.</value>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>Igual que mi equipo</value>
+  </data>
+  <data name="Settings_LinkedInHelp" xml:space="preserve">
+    <value>Abrir LinkedIn, se abre en su navegador</value>
+  </data>
+  <data name="Settings_Model" xml:space="preserve">
+    <value>Modelo de QuadStick predeterminado</value>
+  </data>
+  <data name="Settings_NoInstallId" xml:space="preserve">
+    <value>Aún no hay ID de instalación. Se crea la primera vez que se envía algo.</value>
+  </data>
+  <data name="Settings_OpenDownload" xml:space="preserve">
+    <value>Abrir la página de descargas</value>
+  </data>
+  <data name="Settings_OpenDownloadHelp" xml:space="preserve">
+    <value>Abrir la página de descargas en su navegador</value>
+  </data>
+  <data name="Settings_OpenFolder" xml:space="preserve">
+    <value>Abrir carpeta de ajustes</value>
+  </data>
+  <data name="Settings_OpenFolderHelp" xml:space="preserve">
+    <value>Abrir la carpeta de ajustes</value>
+  </data>
+  <data name="Settings_Privacy" xml:space="preserve">
+    <value>Leer la política de privacidad</value>
+  </data>
+  <data name="Settings_PrivacyHelp" xml:space="preserve">
+    <value>Leer la política de privacidad, se abre en su navegador</value>
+  </data>
+  <data name="Settings_Privacy_Heading" xml:space="preserve">
+    <value>Privacidad</value>
+  </data>
+  <data name="Settings_QuickGuide" xml:space="preserve">
+    <value>Guía rápida</value>
+  </data>
+  <data name="Settings_Reconnect" xml:space="preserve">
+    <value>Volver a conectar con Google</value>
+  </data>
+  <data name="Settings_ReconnectShort" xml:space="preserve">
+    <value>Reconectar</value>
+  </data>
+  <data name="Settings_ReduceMotion" xml:space="preserve">
+    <value>Reducir el movimiento</value>
+  </data>
+  <data name="Settings_ReduceMotionCaption" xml:space="preserve">
+    <value>Desactiva la animación de fundido del tutorial.</value>
+  </data>
+  <data name="Settings_RememberWindow" xml:space="preserve">
+    <value>Recordar tamaño y posición de la ventana</value>
+  </data>
+  <data name="Settings_ReplayTutorial" xml:space="preserve">
+    <value>Repetir el tutorial</value>
+  </data>
+  <data name="Settings_ReplayTutorialHelp" xml:space="preserve">
+    <value>Repetir el tutorial</value>
+  </data>
+  <data name="Settings_ReportBug" xml:space="preserve">
+    <value>Informar de un error en GitHub</value>
+  </data>
+  <data name="Settings_ReportBugHelp" xml:space="preserve">
+    <value>Informar de un error en GitHub, se abre en su navegador</value>
+  </data>
+  <data name="Settings_Reset" xml:space="preserve">
+    <value>Restablecer todos los ajustes a los valores predeterminados</value>
+  </data>
+  <data name="Settings_Reverting" xml:space="preserve">
+    <value>Revirtiendo en {0}s</value>
+  </data>
+  <data name="Settings_SaveSize" xml:space="preserve">
+    <value>Guardar tamaño</value>
+  </data>
+  <data name="Settings_SaveSizeHelp" xml:space="preserve">
+    <value>Mantener este tamaño de interfaz</value>
+  </data>
+  <data name="Settings_Scale" xml:space="preserve">
+    <value>Tamaño de la interfaz</value>
+  </data>
+  <data name="Settings_ScaleCaption" xml:space="preserve">
+    <value>Hace todo el texto y los controles más grandes o más pequeños.</value>
+  </data>
+  <data name="Settings_ScaleHelp" xml:space="preserve">
+    <value>Tamaño de la interfaz, en porcentaje</value>
+  </data>
+  <data name="Settings_SendFeedback" xml:space="preserve">
+    <value>Enviar comentarios</value>
+  </data>
+  <data name="Settings_Sending" xml:space="preserve">
+    <value>Enviando...</value>
+  </data>
+  <data name="Settings_ShowTutorial" xml:space="preserve">
+    <value>Mostrar el tutorial la próxima vez que abra la aplicación</value>
+  </data>
+  <data name="Settings_TabAdvanced" xml:space="preserve">
+    <value>Avanzado</value>
+  </data>
+  <data name="Settings_TabContact" xml:space="preserve">
+    <value>Contacto</value>
+  </data>
+  <data name="Settings_TabGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Settings_TabHelp" xml:space="preserve">
+    <value>Ayuda</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Ajustes</value>
+  </data>
+  <data name="Settings_Updates" xml:space="preserve">
+    <value>Actualizaciones</value>
+  </data>
+  <data name="Settings_UpdatesCaption" xml:space="preserve">
+    <value>Esta aplicación no se actualiza sola y nunca comprueba por su cuenta.</value>
+  </data>
+  <data name="Settings_UsageCaption" xml:space="preserve">
+    <value>Qué pantallas se usan y si la instalación funcionó. Nunca sus perfiles, nombres de archivo, rutas, nada de lo que escriba, ni su cuenta de Google.</value>
+  </data>
+  <data name="Settings_UsageData" xml:space="preserve">
+    <value>Compartir datos de uso anónimos</value>
+  </data>
+  <data name="Settings_WaitingBrowser" xml:space="preserve">
+    <value>Esperando su navegador...</value>
+  </data>
+  <data name="Settings_WebsiteHelp" xml:space="preserve">
+    <value>Abrir el sitio web, se abre en su navegador</value>
+  </data>
+  <data name="Settings_WebsiteLink" xml:space="preserve">
+    <value>Sitio web: {0}</value>
+  </data>
+  <data name="Settings_YouAreOn" xml:space="preserve">
+    <value>Está en la versión {0}.</value>
+  </data>
+  <data name="Share_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Share_CloseWithoutSharing" xml:space="preserve">
+    <value>Cerrar sin compartir</value>
+  </data>
+  <data name="Share_CouldNotConnectToGoogle" xml:space="preserve">
+    <value>No se pudo conectar con Google. Compruebe su conexión a internet e inténtelo de nuevo.</value>
+  </data>
+  <data name="Share_FinishLabelNotAvailableYetFinish" xml:space="preserve">
+    <value>{0}. Aún no disponible: termine primero los pasos de arriba.</value>
+  </data>
+  <data name="Share_NotDoneYet" xml:space="preserve">
+    <value>Aún no hecho</value>
+  </data>
+  <data name="Share_NotDoneYet2" xml:space="preserve">
+    <value>Aún no hecho</value>
+  </data>
+  <data name="Share_SaveThisProfile" xml:space="preserve">
+    <value>Guardar este perfil</value>
+  </data>
+  <data name="Share_SetUpGoogleSheets" xml:space="preserve">
+    <value>Configurar Google Sheets</value>
+  </data>
+  <data name="Share_SharingAProfilePutsIt" xml:space="preserve">
+    <value>Compartir un perfil lo pone en una hoja de Google Sheets en su propio Google Drive y le da un enlace a esa hoja. Nadie puede verlo hasta que usted envíe el enlace.</value>
+  </data>
+  <data name="Share_StepDone" xml:space="preserve">
+    <value>Paso {0} de {1}, {2}, hecho</value>
+  </data>
+  <data name="Share_StepNotDone" xml:space="preserve">
+    <value>Paso {0} de {1}, {2}, aún no hecho</value>
+  </data>
+  <data name="Share_StepNumberOfTotalTitle" xml:space="preserve">
+    <value>Paso {0} de {1}: {2}</value>
+  </data>
+  <data name="Share_StepNumberOfTotalTitle2" xml:space="preserve">
+    <value>Paso {0} de {1}, {2}, aún no hecho</value>
+  </data>
+  <data name="Share_ThisProfileWasNotSaved" xml:space="preserve">
+    <value>Este perfil no se ha guardado, así que todavía no hay nada que poner en una hoja.</value>
+  </data>
+  <data name="Share_TitleAlreadyDone" xml:space="preserve">
+    <value>{0}. Ya hecho.</value>
+  </data>
+  <data name="Share_WaitingForGoogleInYour" xml:space="preserve">
+    <value>Esperando a Google en su navegador...</value>
+  </data>
+  <data name="Shell_AddANewBindingRow" xml:space="preserve">
+    <value>Añadir una fila de asignación nueva a este modo</value>
+  </data>
+  <data name="Shell_AddRenameReorderAndDelete" xml:space="preserve">
+    <value>Añadir, renombrar, reordenar y eliminar modos</value>
+  </data>
+  <data name="Shell_AddRow" xml:space="preserve">
+    <value>+ Añadir fila</value>
+  </data>
+  <data name="Shell_AppearanceChooseSystemLightOr" xml:space="preserve">
+    <value>Apariencia: elija tema Sistema, Claro u Oscuro</value>
+  </data>
+  <data name="Shell_AskForAChange" xml:space="preserve">
+    <value>Pedir un cambio</value>
+  </data>
+  <data name="Shell_BrowseCommunityProfiles" xml:space="preserve">
+    <value>Explorar perfiles de la comunidad</value>
+  </data>
+  <data name="Shell_BrowseTheCommunityListOf" xml:space="preserve">
+    <value>Explorar la lista comunitaria de perfiles de juego compartidos e importar uno</value>
+  </data>
+  <data name="Shell_BuildOpenOrFindA" xml:space="preserve">
+    <value>Crear, abrir o buscar una configuración</value>
+  </data>
+  <data name="Shell_Clear" xml:space="preserve">
+    <value>Limpiar</value>
+  </data>
+  <data name="Shell_ClearTheSelection" xml:space="preserve">
+    <value>Limpiar la selección</value>
+  </data>
+  <data name="Shell_Community" xml:space="preserve">
+    <value>Comunidad</value>
+  </data>
+  <data name="Shell_CommunityProfiles" xml:space="preserve">
+    <value>Perfiles de la comunidad</value>
+  </data>
+  <data name="Shell_CreateANewProfile" xml:space="preserve">
+    <value>Crear un perfil nuevo</value>
+  </data>
+  <data name="Shell_CreateANewProfileFrom" xml:space="preserve">
+    <value>Crear un perfil nuevo desde la plantilla de fábrica</value>
+  </data>
+  <data name="Shell_Csv" xml:space="preserve">
+    <value>.csv</value>
+  </data>
+  <data name="Shell_Delete" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedMappings" xml:space="preserve">
+    <value>Eliminar las asignaciones seleccionadas</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedRows" xml:space="preserve">
+    <value>Eliminar las filas seleccionadas</value>
+  </data>
+  <data name="Shell_DescribeAChangeInPlain" xml:space="preserve">
+    <value>Describa un cambio con palabras sencillas y se aplicará a este perfil. Nada cambia hasta que usted lo apruebe.</value>
+  </data>
+  <data name="Shell_Device" xml:space="preserve">
+    <value>Dispositivo</value>
+  </data>
+  <data name="Shell_DiscardTheRecoveredWorkPermanently" xml:space="preserve">
+    <value>Descartar el trabajo recuperado de forma permanente</value>
+  </data>
+  <data name="Shell_Dismiss" xml:space="preserve">
+    <value>Descartar</value>
+  </data>
+  <data name="Shell_EditModes" xml:space="preserve">
+    <value>Editar modos</value>
+  </data>
+  <data name="Shell_EditModesAddRenameReorder" xml:space="preserve">
+    <value>Editar modos: añadir, renombrar, reordenar y eliminar</value>
+  </data>
+  <data name="Shell_FixFirstProblem" xml:space="preserve">
+    <value>Corregir el primer problema</value>
+  </data>
+  <data name="Shell_GoToHome" xml:space="preserve">
+    <value>Ir a Inicio</value>
+  </data>
+  <data name="Shell_GoogleSheetsProfileLink" xml:space="preserve">
+    <value>Enlace de perfil de Google Sheets</value>
+  </data>
+  <data name="Shell_Home" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+  <data name="Shell_HowDeviceViewWorksAnd" xml:space="preserve">
+    <value>Cómo funciona la vista de dispositivo y qué partes tiene su modelo</value>
+  </data>
+  <data name="Shell_HowItWorks" xml:space="preserve">
+    <value>Cómo funciona</value>
+  </data>
+  <data name="Shell_HowItWorksF1" xml:space="preserve">
+    <value>Cómo funciona  (F1)</value>
+  </data>
+  <data name="Shell_Import" xml:space="preserve">
+    <value>Importar</value>
+  </data>
+  <data name="Shell_ImportFromSheets" xml:space="preserve">
+    <value>Importar desde Sheets</value>
+  </data>
+  <data name="Shell_ImportTheProfileFromThe" xml:space="preserve">
+    <value>Importar el perfil desde el enlace de Google Sheets pegado</value>
+  </data>
+  <data name="Shell_InstallThisProfileOntoA" xml:space="preserve">
+    <value>Instalar este perfil en un QuadStick conectado. Atajo Control I</value>
+  </data>
+  <data name="Shell_InstallToQuadStick" xml:space="preserve">
+    <value>Instalar en el QuadStick</value>
+  </data>
+  <data name="Shell_JumpToAndFocusThe" xml:space="preserve">
+    <value>Ir al primer error de la lista de problemas y enfocarlo</value>
+  </data>
+  <data name="Shell_ListOfValidationProblemsSelect" xml:space="preserve">
+    <value>Lista de problemas de validación. Seleccione uno para copiarlo.</value>
+  </data>
+  <data name="Shell_ListTheInputsThisMode" xml:space="preserve">
+    <value>Listar las entradas que este modo aún no ha usado</value>
+  </data>
+  <data name="Shell_ManageFiles" xml:space="preserve">
+    <value>Gestionar archivos</value>
+  </data>
+  <data name="Shell_ManageFilesOnYourQuadStick" xml:space="preserve">
+    <value>Gestionar los archivos de su QuadStick</value>
+  </data>
+  <data name="Shell_ManageTheProfileFilesOn" xml:space="preserve">
+    <value>Gestionar los archivos de perfil de su QuadStick: copiar, eliminar y ver el orden de selección de archivos</value>
+  </data>
+  <data name="Shell_Mode" xml:space="preserve">
+    <value>Modo</value>
+  </data>
+  <data name="Shell_Move" xml:space="preserve">
+    <value>Mover</value>
+  </data>
+  <data name="Shell_MoveTheSelectedMappingsTo" xml:space="preserve">
+    <value>Mover las asignaciones seleccionadas al principio o al final</value>
+  </data>
+  <data name="Shell_MoveTheSelectedRowsTo" xml:space="preserve">
+    <value>Mover las filas seleccionadas al principio o al final</value>
+  </data>
+  <data name="Shell_NameAGameAndHave" xml:space="preserve">
+    <value>Nombre un juego y se creará un perfil para él a partir de los perfiles que ya tiene</value>
+  </data>
+  <data name="Shell_New" xml:space="preserve">
+    <value>Nuevo</value>
+  </data>
+  <data name="Shell_NewProfile" xml:space="preserve">
+    <value>Perfil nuevo</value>
+  </data>
+  <data name="Shell_OnYourQuadStick" xml:space="preserve">
+    <value>En su QuadStick</value>
+  </data>
+  <data name="Shell_Open" xml:space="preserve">
+    <value>Abrir</value>
+  </data>
+  <data name="Shell_OpenAFile" xml:space="preserve">
+    <value>Abrir un archivo</value>
+  </data>
+  <data name="Shell_OpenAProfileCSVFile" xml:space="preserve">
+    <value>Abrir un archivo CSV de perfil desde su equipo</value>
+  </data>
+  <data name="Shell_OpenAProfileFile" xml:space="preserve">
+    <value>Abrir un archivo de perfil</value>
+  </data>
+  <data name="Shell_OpenRecoveredWork" xml:space="preserve">
+    <value>Abrir trabajo recuperado</value>
+  </data>
+  <data name="Shell_OpenSettings" xml:space="preserve">
+    <value>Abrir Ajustes</value>
+  </data>
+  <data name="Shell_OpenTheProfileThatWas" xml:space="preserve">
+    <value>Abrir el perfil que se recuperó tras el último bloqueo o cierre forzado</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideShortcut" xml:space="preserve">
+    <value>Abrir la guía rápida. Atajo Control H o F1</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideThat" xml:space="preserve">
+    <value>Abrir la guía rápida que explica perfiles, salidas, funciones y entradas</value>
+  </data>
+  <data name="Shell_OpenedFromYourComputer" xml:space="preserve">
+    <value>Abierto desde su equipo</value>
+  </data>
+  <data name="Shell_Parts" xml:space="preserve">
+    <value>Partes</value>
+  </data>
+  <data name="Shell_PasteAGoogleSheetsProfile" xml:space="preserve">
+    <value>Pegue un enlace de perfil de Google Sheets</value>
+  </data>
+  <data name="Shell_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>Conecte su QuadStick para ver sus perfiles. Si la unidad está oculta, desactive la emulación de mando y vuelva a conectarlo.</value>
+  </data>
+  <data name="Shell_Profile" xml:space="preserve">
+    <value>Perfil</value>
+  </data>
+  <data name="Shell_ProfileNameEditToRename" xml:space="preserve">
+    <value>Nombre del perfil. Edítelo para renombrarlo; .csv se añade solo</value>
+  </data>
+  <data name="Shell_ProfilesYouSaveWillShow" xml:space="preserve">
+    <value>Los perfiles que guarde aparecerán aquí.</value>
+  </data>
+  <data name="Shell_QuadStickConfigManagerGoTo" xml:space="preserve">
+    <value>QuadStick Config Manager. Ir a Inicio</value>
+  </data>
+  <data name="Shell_Rows" xml:space="preserve">
+    <value>Filas</value>
+  </data>
+  <data name="Shell_SaveAsATemplate" xml:space="preserve">
+    <value>Guardar como plantilla</value>
+  </data>
+  <data name="Shell_SaveCtrlS" xml:space="preserve">
+    <value>Guardar  (Ctrl+S)</value>
+  </data>
+  <data name="Shell_SaveThisProfileAsA" xml:space="preserve">
+    <value>Guardar este perfil como una plantilla reutilizable desde la que empezar perfiles nuevos</value>
+  </data>
+  <data name="Shell_SaveThisProfileShortcutControl" xml:space="preserve">
+    <value>Guardar este perfil. Atajo Control S</value>
+  </data>
+  <data name="Shell_SeeTheMappingsOnA" xml:space="preserve">
+    <value>Ver las asignaciones sobre una imagen del QuadStick  (Ctrl+D)</value>
+  </data>
+  <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
+    <value>Ver las filas tal como las guarda la hoja  (Ctrl+D)</value>
+  </data>
+  <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
+    <value>Seleccionar qué modo editar</value>
+  </data>
+  <data name="Shell_SetUpAGame" xml:space="preserve">
+    <value>Configurar un juego</value>
+  </data>
+  <data name="Shell_Settings" xml:space="preserve">
+    <value>Ajustes</value>
+  </data>
+  <data name="Shell_ShareAsAGoogleSheet" xml:space="preserve">
+    <value>Compartir como hoja de Google</value>
+  </data>
+  <data name="Shell_ShareThisProfileAsA" xml:space="preserve">
+    <value>Compartir este perfil como una hoja de Google</value>
+  </data>
+  <data name="Shell_ShowOrHideTheList" xml:space="preserve">
+    <value>Mostrar u ocultar la lista de problemas</value>
+  </data>
+  <data name="Shell_ShowTheMappingsAsA" xml:space="preserve">
+    <value>Mostrar las asignaciones como una lista de filas. El atajo Control D alterna esto</value>
+  </data>
+  <data name="Shell_ShowTheMappingsOnA" xml:space="preserve">
+    <value>Mostrar las asignaciones sobre una imagen del QuadStick. El atajo Control D alterna esto</value>
+  </data>
+  <data name="Shell_ShowThePartsAsA" xml:space="preserve">
+    <value>Mostrar las partes como una lista sencilla que se recorre con las flechas, con el mismo editor a la derecha</value>
+  </data>
+  <data name="Shell_StartANewProfileFrom" xml:space="preserve">
+    <value>Empezar un perfil nuevo desde una de sus plantillas guardadas</value>
+  </data>
+  <data name="Shell_StartAProfile" xml:space="preserve">
+    <value>Empezar un perfil</value>
+  </data>
+  <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
+    <value>Recorrer las partes una por una</value>
+  </data>
+  <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
+    <value>Cambiar las palabras de la vista de dispositivo entre palabras sencillas y los nombres en bruto de la vista de lista</value>
+  </data>
+  <data name="Shell_UndoCtrlZ" xml:space="preserve">
+    <value>Deshacer  (Ctrl+Z)</value>
+  </data>
+  <data name="Shell_UndoTheLastChangeShortcut" xml:space="preserve">
+    <value>Deshacer el último cambio. Atajo Control Z</value>
+  </data>
+  <data name="Shell_UseTemplate" xml:space="preserve">
+    <value>Usar plantilla</value>
+  </data>
+  <data name="Shell_View" xml:space="preserve">
+    <value>Vista</value>
+  </data>
+  <data name="Shell_WhatIsAMode" xml:space="preserve">
+    <value>¿Qué es un modo?</value>
+  </data>
+  <data name="Shell_WhatIsAModeAnd" xml:space="preserve">
+    <value>¿Qué es un modo y por qué solo hay uno?</value>
+  </data>
+  <data name="Shell_WhichQuadStickModelYouHave" xml:space="preserve">
+    <value>Qué modelo de QuadStick tiene</value>
+  </data>
+  <data name="Shell_YourProfiles" xml:space="preserve">
+    <value>Sus perfiles</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Oscuro</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Claro</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>Sistema</value>
+  </data>
+  <data name="Tour_Back" xml:space="preserve">
+    <value>Atrás</value>
+  </data>
+  <data name="Tour_BackToThePreviousStep" xml:space="preserve">
+    <value>Volver al paso anterior</value>
+  </data>
+  <data name="Tour_EveryProfileStartsFromA" xml:space="preserve">
+    <value>Todo perfil empieza desde una plantilla.</value>
+  </data>
+  <data name="Tour_NewProfile" xml:space="preserve">
+    <value>Perfil nuevo</value>
+  </data>
+  <data name="Tour_Next" xml:space="preserve">
+    <value>Siguiente</value>
+  </data>
+  <data name="Tour_NextStep" xml:space="preserve">
+    <value>Paso siguiente</value>
+  </data>
+  <data name="Tour_PickAPart" xml:space="preserve">
+    <value>Elija una parte</value>
+  </data>
+  <data name="Tour_PickAPartToSee" xml:space="preserve">
+    <value>Elija una parte para ver y cambiar lo que hace.</value>
+  </data>
+  <data name="Tour_SaveYourWorkToA" xml:space="preserve">
+    <value>Guarde su trabajo en un archivo.</value>
+  </data>
+  <data name="Tour_SetLightOrDarkTo" xml:space="preserve">
+    <value>Elija claro u oscuro según le convenga a la vista.</value>
+  </data>
+  <data name="Tour_Skip" xml:space="preserve">
+    <value>Omitir</value>
+  </data>
+  <data name="Tour_SkipTheTutorial" xml:space="preserve">
+    <value>Omitir el tutorial</value>
+  </data>
+  <data name="Tour_StepTitleStepBody" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Tour_StepTourIndex1OfTourSteps" xml:space="preserve">
+    <value>Paso {0} de {1}</value>
+  </data>
+  <data name="Tour_ThisIsYourQuadStickEach" xml:space="preserve">
+    <value>Este es su QuadStick. Cada parte es un control que puede asignar.</value>
+  </data>
+  <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
+    <value>Esto le muestra cómo crear e instalar un perfil. Puede omitirlo en cualquier momento.</value>
+  </data>
+  <data name="Tour_WhenItSReadySend" xml:space="preserve">
+    <value>Cuando esté listo, envíelo a su QuadStick.</value>
+  </data>
+  <data name="Tour_YouCanReplayThisAnytime" xml:space="preserve">
+    <value>Puede repetirlo en cualquier momento desde Ajustes ▸ Ayuda.</value>
+  </data>
+  <data name="Update_CouldNotCheckForUpdates" xml:space="preserve">
+    <value>No se pudo comprobar si hay actualizaciones (GitHub respondió {0}). Está en la versión {1}.</value>
+  </data>
+  <data name="Update_CouldNotReachGitHubTo" xml:space="preserve">
+    <value>No se pudo contactar con GitHub para comprobar actualizaciones. Está en la versión {0}.</value>
+  </data>
+  <data name="Update_GitHubDidNotNameA" xml:space="preserve">
+    <value>GitHub no indicó ninguna versión publicada. Está en la versión {0}.</value>
+  </data>
+  <data name="Update_GitHubIsAskingUsTo" xml:space="preserve">
+    <value>GitHub nos pide esperar antes de comprobar otra vez. Inténtelo de nuevo en unos minutos.</value>
+  </data>
+  <data name="Update_GitHubSentSomethingWeCould" xml:space="preserve">
+    <value>GitHub envió algo que no pudimos leer. Está en la versión {0}.</value>
+  </data>
+  <data name="Update_LatestAPreviewRelease" xml:space="preserve">
+    <value>{0} (una versión preliminar)</value>
+  </data>
+  <data name="Update_YouAreOnCurrentLabel" xml:space="preserve">
+    <value>Está en la versión {0}. Ha salido {1}.</value>
+  </data>
+  <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
+    <value>Está en la versión {0}, que es la más reciente.</value>
+  </data>
+</root>

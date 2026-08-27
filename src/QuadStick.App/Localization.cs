@@ -26,6 +26,18 @@ public static class Localization
     public static readonly (string Tag, string Name)[] Languages =
     {
         ("en", "English"),
+        ("ar", "العربية"),
+        ("de", "Deutsch"),
+        ("es", "Español"),
+        ("fr", "Français"),
+        ("hi", "हिन्दी"),
+        ("it", "Italiano"),
+        ("ja", "日本語"),
+        ("ko", "한국어"),
+        ("nl", "Nederlands"),
+        ("pl", "Polski"),
+        ("pt", "Português"),
+        ("zh-Hans", "简体中文"),
 #if DEBUG
         // Not a language. English, accented and padded out, built by
         // `make pseudo`. Run the app in it and anything still in plain English

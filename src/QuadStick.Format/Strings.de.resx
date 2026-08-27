@@ -1,0 +1,686 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Device_DeclaredIsTooLongFor" xml:space="preserve">
+    <value>"{0}" ist zu lang, um vom QuadStick geladen zu werden, daher wurde nichts geschrieben. Ein Profilname darf höchstens {1} Zeichen haben, ".csv" mitgezählt, und dieser hat {2}. Kürzen Sie den Namen in Zelle A2 und installieren Sie erneut.</value>
+  </data>
+  <data name="Device_FileNameIsNoLongerOn" xml:space="preserve">
+    <value>{0} ist nicht mehr auf dem Gerät. Aktualisieren Sie die Liste und versuchen Sie es erneut.</value>
+  </data>
+  <data name="Device_FileNameIsProtectedAndCannot" xml:space="preserve">
+    <value>{0} ist geschützt und kann nicht gelöscht werden. Das Entfernen kann das Gerät unbenutzbar machen.</value>
+  </data>
+  <data name="Device_NameIsNotAPlain" xml:space="preserve">
+    <value>"{0}" ist kein einfacher Dateiname, den der QuadStick speichern kann, daher wurde nichts geschrieben. Ändern Sie Zelle A2 zu einem einfachen Namen wie "mygame.csv".</value>
+  </data>
+  <data name="Device_OnlyAPlainFileName" xml:space="preserve">
+    <value>Nur ein einfacher Dateiname im Stammverzeichnis des Geräts kann gelöscht werden, kein Pfad.</value>
+  </data>
+  <data name="Device_RefusingToOverwriteDefaultCsv" xml:space="preserve">
+    <value>default.csv wird ohne ausdrückliche Bestätigung nicht überschrieben. Eine falsche default.csv kann den Zugriff auf das Flash-Laufwerk deaktivieren.</value>
+  </data>
+  <data name="Device_RefusingToOverwritePrefsCsv" xml:space="preserve">
+    <value>prefs.csv wird ohne ausdrückliche Bestätigung nicht überschrieben. prefs.csv enthält geräteweite Einstellungen, und eine falsche kann den QuadStick unbenutzbar machen.</value>
+  </data>
+  <data name="Device_ThatFileIsNotDirectly" xml:space="preserve">
+    <value>Diese Datei befindet sich nicht direkt im Stammverzeichnis des Geräts, daher wurde sie nicht gelöscht.</value>
+  </data>
+  <data name="Device_ThatFolderDoesNotLook" xml:space="preserve">
+    <value>Dieser Ordner sieht nicht wie ein QuadStick-Laufwerk aus (keine default.csv im Stammverzeichnis). Wählen Sie das USB-Volume, das erscheint, wenn das Gerät angeschlossen wird.</value>
+  </data>
+  <data name="Device_TheQuadStickWasDisconnectedWhile" xml:space="preserve">
+    <value>Der QuadStick wurde getrennt, während {0} geschrieben wurde. Ihre vorherige Version ist sicher unter {1}. Schließen Sie das Gerät wieder an, prüfen Sie, ob {2} noch darauf vorhanden ist, und installieren Sie erneut.</value>
+  </data>
+  <data name="Device_ThisProfileHasValidationErrors" xml:space="preserve">
+    <value>Dieses Profil hat Validierungsfehler und kann nicht installiert werden:
+</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapAnd" xml:space="preserve">
+    <value>Das Schreiben ist mitten im Austausch fehlgeschlagen, und {0} konnte nicht wieder auf den QuadStick zurückgespielt werden. Ihre vorherige Version ist sicher unter {1}. Kopieren Sie sie von Hand auf das Gerät.</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapThe" xml:space="preserve">
+    <value>Das Schreiben ist mitten im Austausch fehlgeschlagen; die vorherige Version von {0} wurde aus der Sicherung wiederhergestellt. Das Gerät ist unverändert.</value>
+  </data>
+  <data name="Fn_10ASecond" xml:space="preserve">
+    <value>10 pro Sekunde</value>
+  </data>
+  <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
+    <value>1 rastet den Ausgang ein. Alles über 1 gibt an, wie lange der Druck dauert.</value>
+  </data>
+  <data name="Fn_CountsAsATap" xml:space="preserve">
+    <value>Zählt als Tippen</value>
+  </data>
+  <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
+    <value>Löst aus, sobald Ihre Eingabe mindestens so stark ist.</value>
+  </data>
+  <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
+    <value>Löst aus, solange Ihre Eingabe unter dieser Stärke bleibt.</value>
+  </data>
+  <data name="Fn_FirstHold" xml:space="preserve">
+    <value>Erstes Halten</value>
+  </data>
+  <data name="Fn_HoldOn" xml:space="preserve">
+    <value>Halten aktiv</value>
+  </data>
+  <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
+    <value>Wenn Sie die Eingabe länger als dies halten, rastet der Ausgang ein, statt zu tippen.</value>
+  </data>
+  <data name="Fn_HoldToLatch" xml:space="preserve">
+    <value>Halten zum Einrasten</value>
+  </data>
+  <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
+    <value>Hält den ersten Tipp so lange, bevor das Dauerfeuer beginnt.</value>
+  </data>
+  <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
+    <value>hält, solange Sie halten</value>
+  </data>
+  <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
+    <value>Wie weit sich der analoge Ausgang jedes Mal nach unten bewegt.</value>
+  </data>
+  <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
+    <value>Wie weit sich der analoge Ausgang jedes Mal nach oben bewegt.</value>
+  </data>
+  <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
+    <value>Wie schnell es tippt, solange Sie die Eingabe halten.</value>
+  </data>
+  <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
+    <value>Wie lange jeder Druck dauert.</value>
+  </data>
+  <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
+    <value>Wie lange der Tipp drückt. 1 rastet den Ausgang stattdessen ein.</value>
+  </data>
+  <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
+    <value>Wie viele Drücke eine Aktivierung sendet.</value>
+  </data>
+  <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
+    <value>Schreitet so oft weiter, solange Sie die Eingabe halten.</value>
+  </data>
+  <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
+    <value>Hält den Ausgang so lange gedrückt, nachdem Sie loslassen.</value>
+  </data>
+  <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
+    <value>Wenn Sie innerhalb dieses Fensters loslassen, zählt es als Tippen. Halten Sie länger, löst nichts aus.</value>
+  </data>
+  <data name="Fn_NoExtraHold" xml:space="preserve">
+    <value>kein zusätzliches Halten</value>
+  </data>
+  <data name="Fn_NoUpperLimit" xml:space="preserve">
+    <value>keine Obergrenze</value>
+  </data>
+  <data name="Fn_OnePress" xml:space="preserve">
+    <value>ein Druck</value>
+  </data>
+  <data name="Fn_OneStepPerActivation" xml:space="preserve">
+    <value>ein Schritt pro Aktivierung</value>
+  </data>
+  <data name="Fn_ReleasedAtOnce" xml:space="preserve">
+    <value>sofort losgelassen</value>
+  </data>
+  <data name="Fn_RepeatEvery" xml:space="preserve">
+    <value>Wiederholen alle</value>
+  </data>
+  <data name="Fn_Sentence" xml:space="preserve">
+    <value>{0}: {1} bis {2}. Leer bedeutet {3}. {4}</value>
+  </data>
+  <data name="Fn_SentenceWithUnit" xml:space="preserve">
+    <value>{0}: {1} bis {2} {5}. Leer bedeutet {3}. {4}</value>
+  </data>
+  <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
+    <value>Löst nicht mehr aus, sobald Ihre Eingabe darüber hinausgeht, sodass die beiden Zahlen einen Bereich bilden.</value>
+  </data>
+  <data name="Fn_TapsASecond" xml:space="preserve">
+    <value>Tipps pro Sekunde</value>
+  </data>
+  <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
+    <value>Die Länge des Ein-und-Aus-Zyklus bei voller Stärke. Schwächere Eingabe verlängert ihn.</value>
+  </data>
+  <data name="Fn_UpperLimit" xml:space="preserve">
+    <value>Obergrenze</value>
+  </data>
+  <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
+    <value>Wartet so lange, nachdem Sie aktivieren, und drückt dann.</value>
+  </data>
+  <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
+    <value>Wartet so lange, bevor der eingerastete Ausgang der anderen Zeile losgelassen wird.</value>
+  </data>
+  <data name="Issue_0UsedToMeanNo" xml:space="preserve">
+    <value>0 bedeutete früher überhaupt keine Totzone, und Firmware ab 2025 setzt stattdessen 129 Rohwerte ein, sodass der Stick eine kleine Totzone erhält, um die diese Datei nie gebeten hat</value>
+  </data>
+  <data name="Issue_5WasPCOnlyNo" xml:space="preserve">
+    <value>5 bedeutete bis 2025 "PC only, no joystick" und ist jetzt der Nintendo Switch Pro Controller, sodass ein aktualisierter QuadStick der Konsole oder dem PC gegenüber als ein völlig anderer Controller erscheint</value>
+  </data>
+  <data name="Issue_ADirectionSettingLeftAt" xml:space="preserve">
+    <value> (Eine {0}-Einstellung, die bei 0 belassen wird, verwendet stattdessen den gemeinsamen Wert sip_puff_.)</value>
+  </data>
+  <data name="Issue_APercentOver100Is" xml:space="preserve">
+    <value>. Ein Prozentsatz über 100 ist ein Wert, den keine Eingabe erreicht, daher löst diese Zeile nie aus.</value>
+  </data>
+  <data name="Issue_ArgsIHasADecimal" xml:space="preserve">
+    <value>"{0}" hat einen Dezimalteil. Das Gerät liest nur ganze Zahlen, daher verhält es sich wie "{1}".</value>
+  </data>
+  <data name="Issue_ArgsIIsLargerThan" xml:space="preserve">
+    <value>"{0}" ist größer als {1}, das Limit des Geräts für den ersten Parameter; es läuft in den zweiten Parameter über.</value>
+  </data>
+  <data name="Issue_ArgsIIsNegativeThe" xml:space="preserve">
+    <value>"{0}" ist negativ; das Gerät behandelt negative Parameter nicht vorhersehbar.</value>
+  </data>
+  <data name="Issue_ArgsIIsNotA" xml:space="preserve">
+    <value>"{0}" ist keine Zahl. Parameter für "{1}" müssen ganze Zahlen sein, und das Gerät liest diesen als 0.</value>
+  </data>
+  <data name="Issue_BActionNameHasNoButton" xml:space="preserve">
+    <value>"{0}" hat noch keine Taste dahinter, daher bewirkt diese Zeile nichts auf dem QuadStick.</value>
+  </data>
+  <data name="Issue_BOutputHasNoValue" xml:space="preserve">
+    <value>"{0}" hat keinen Wert in Spalte B, daher liest das Gerät ihn als 0.</value>
+  </data>
+  <data name="Issue_BOutputIsADevice" xml:space="preserve">
+    <value>"{0}" ist eine Geräteeinstellung, und das Gerät liest ihren Wert aus Spalte C, die hier leer ist. Spalte B wird übersprungen, sodass diese Zeile den Wert möglicherweise auf 0 setzt.</value>
+  </data>
+  <data name="Issue_BOutputIsADevice2" xml:space="preserve">
+    <value>"{0}" ist eine Geräteeinstellung, aber es folgt kein Wert darauf, daher setzt das Gerät sie auf 0.</value>
+  </data>
+  <data name="Issue_BOutputIsALegacy" xml:space="preserve">
+    <value>"{0}" ist ein veralteter Ausgangsname: Die Firmware kennt ihn, aber die aktuelle offizielle Liste enthält ihn nicht.</value>
+  </data>
+  <data name="Issue_BOutputIsNotA" xml:space="preserve">
+    <value>"{0}" ist kein dokumentierter Ausgangsname (PlayStation- oder XBox-Konvention).</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRow" xml:space="preserve">
+    <value>Dieser Modus steht auf "{0}" und hat {1} Maus- oder Tastaturzeile, auf Zeile {2}. Firmware ab 2025 sendet Maus und Tastatur über USB nur, wenn der Kanal USB einschließt, daher bewirkt diese Zeile über ein Kabel nichts, während die Gamepad-Hälfte des Modus weiter funktioniert. Ältere Firmware sendete sie trotzdem.</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRows" xml:space="preserve">
+    <value>Dieser Modus steht auf "{0}" und hat {1} Maus- oder Tastaturzeilen, die erste auf Zeile {2}. Firmware ab 2025 sendet Maus und Tastatur über USB nur, wenn der Kanal USB einschließt, daher bewirken diese Zeilen über ein Kabel nichts, während die Gamepad-Hälfte des Modus weiter funktioniert. Ältere Firmware sendete sie trotzdem.</value>
+  </data>
+  <data name="Issue_BothNeedsFirmwareFrom2025" xml:space="preserve">
+    <value>"both" benötigt Firmware ab 2025. Ein QuadStick mit älterer Firmware kennt das Wort nicht, führt diesen Modus nur über USB aus und sagt nichts über die Bluetooth-Hälfte.</value>
+  </data>
+  <data name="Issue_CheckTheSpellingAgainstThe" xml:space="preserve">
+    <value>Vergleichen Sie die Schreibweise mit den Einstellungen, die Ihr Gerät bereits hat. (Firmware, die neuer ist als diese App, hat Namen, die sie noch nie gehört hat.)</value>
+  </data>
+  <data name="Issue_CheckWhichFirmwareYourQuadStick" xml:space="preserve">
+    <value>Prüfen Sie, welche Firmware Ihr QuadStick nutzt, bevor Sie sich auf diese Zeile verlassen.</value>
+  </data>
+  <data name="Issue_DidYouMeanNearIf" xml:space="preserve">
+    <value>Meinten Sie "{0}"? (Wenn die Firmware Ihres QuadStick neuer ist als diese App, kennt sie möglicherweise "{1}", und diese Warnung kann gefahrlos ignoriert werden.)</value>
+  </data>
+  <data name="Issue_DualShock4WithNoUSB" xml:space="preserve">
+    <value>DualShock 4 ohne USB-Laufwerk</value>
+  </data>
+  <data name="Issue_ExpectedForThisConsoleSwitch" xml:space="preserve">
+    <value>Für diese Konsole erwartet. Schalten Sie den QuadStick zurück auf ein anderes Profil, um seine Dateien wieder zu bearbeiten.</value>
+  </data>
+  <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
+    <value>Lösen Sie es von etwas anderem als push aus, oder von einer Kombination, die push nicht allein halten kann.</value>
+  </data>
+  <data name="Issue_FunctionReads0ForP" xml:space="preserve">
+    <value>"{0}" liest 0 für {1} als überhaupt keinen Wert, daher verwendet das Gerät {2}.</value>
+  </data>
+  <data name="Issue_InputIsALegacyInput" xml:space="preserve">
+    <value>"{0}" ist ein veralteter Eingangsname: Die Firmware kennt ihn, aber die aktuelle offizielle Liste enthält ihn nicht.</value>
+  </data>
+  <data name="Issue_InputIsNotADocumented" xml:space="preserve">
+    <value>"{0}" ist kein dokumentierter Eingangsname, daher ignoriert das Gerät ihn.</value>
+  </data>
+  <data name="Issue_ItReachesTheKeywordTable" xml:space="preserve">
+    <value>es erreicht die Schlüsselworttabelle und das Einstellungs-Array und sonst nichts, daher läuft der Zwei-Minuten-Watchdog in jedem Fall</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer" xml:space="preserve">
+    <value>Es sollte trotzdem funktionieren; bevorzugen Sie einen aktuellen Namen, falls einer existiert, z. B. "gyroscope_z_cw".</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer2" xml:space="preserve">
+    <value>Es sollte trotzdem funktionieren; bevorzugen Sie einen aktuellen Namen, falls einer existiert.</value>
+  </data>
+  <data name="Issue_KeepItIfThatIs" xml:space="preserve">
+    <value>Behalten Sie es, wenn das gewollt ist, und bevorzugen Sie eine Eingabe, die schwer versehentlich auszulösen ist.</value>
+  </data>
+  <data name="Issue_KeepItIfYourQuadStick" xml:space="preserve">
+    <value>Behalten Sie es, wenn Ihr QuadStick auf dem neuesten Stand ist. Wenn nicht, verwenden Sie "usb" oder "bluetooth" und wählen Sie eines aus.</value>
+  </data>
+  <data name="Issue_LeaveItOutToMean" xml:space="preserve">
+    <value>Lassen Sie es weg, um dasselbe zu bedeuten, oder setzen Sie {0} zwischen {1} und {2}.</value>
+  </data>
+  <data name="Issue_MostPreferencesTakeAWhole" xml:space="preserve">
+    <value>Die meisten Einstellungen erwarten eine ganze Zahl, z. B. "50".</value>
+  </data>
+  <data name="Issue_MoveTheValueIntoColumn" xml:space="preserve">
+    <value>Verschieben Sie den Wert in Spalte B: "{0},{1}".</value>
+  </data>
+  <data name="Issue_NameDoesNothingOnCurrent" xml:space="preserve">
+    <value>"{0}" bewirkt nichts auf der aktuellen Firmware: {1}. Die Zeile wird genau so gespeichert, wie Sie sie geschrieben haben.</value>
+  </data>
+  <data name="Issue_NameIsANameWindows" xml:space="preserve">
+    <value>"{0}" ist ein Name, den Windows für Hardware reserviert, daher kann es dort keine Datei sein.</value>
+  </data>
+  <data name="Issue_NameIsNotAValid" xml:space="preserve">
+    <value>"{0}" ist kein gültiger Konfigurationsdateiname.</value>
+  </data>
+  <data name="Issue_NameIsTooLongSo" xml:space="preserve">
+    <value>"{0}" ist zu lang, sodass der QuadStick sie nicht laden kann. Ein Profilname darf höchstens {1} Zeichen haben, ".csv" mitgezählt, und dieser hat {2}.</value>
+  </data>
+  <data name="Issue_NameSetToNMeans" xml:space="preserve">
+    <value>"{0}" mit dem Wert {1} bedeutet je nach Firmware des QuadStick etwas anderes: {2}. Die Zeile wird genau so gespeichert, wie Sie sie geschrieben haben.</value>
+  </data>
+  <data name="Issue_NoOutputFunctionTheDevice" xml:space="preserve">
+    <value>Keine Ausgabefunktion; das Gerät behandelt ein leeres Feld als "normal".</value>
+  </data>
+  <data name="Issue_NothingInTheFirmwareEver" xml:space="preserve">
+    <value>nichts in der Firmware liest diesen Wert jemals</value>
+  </data>
+  <data name="Issue_OnAPreferencesSheetThe" xml:space="preserve">
+    <value>Auf einem Preferences-Blatt liest das Gerät den Wert von "{0}" aus Spalte B, aber B ist leer und der Wert steht in Spalte C. (Ein Mode-Blatt verwendet Spalte C; ein Preferences-Blatt verwendet Spalte B.)</value>
+  </data>
+  <data name="Issue_OpenCustomOutputNamesAnd" xml:space="preserve">
+    <value>Öffnen Sie "Benutzerdefinierte Ausgabenamen" und wählen Sie die Taste, für die "{0}" steht.</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs" xml:space="preserve">
+    <value>{0} für "{1}" beträgt {2}, über der Gerätegrenze von {3}</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs2" xml:space="preserve">
+    <value>{0} für "{1}" beträgt {2}, unter dem Mindestwert des Geräts von {3}.</value>
+  </data>
+  <data name="Issue_Parts0IsNotA" xml:space="preserve">
+    <value>"{0}" ist keine dokumentierte Ausgabefunktion, daher verwendet das Gerät für diese Zeile "normal".</value>
+  </data>
+  <data name="Issue_Parts0IsNotA2" xml:space="preserve">
+    <value>"{0}" ist keine dokumentierte Ausgabefunktion. Sie beginnt mit "{1}", und das Gerät bricht den Abgleich dort ab, sodass diese Zeile als "{2}" wirkt.</value>
+  </data>
+  <data name="Issue_Parts0TakesAtMost" xml:space="preserve">
+    <value>"{0}" nimmt höchstens {1} Parameter, gefunden wurden {2}. Das Gerät liest die ihm bekannten und verwirft den Rest.</value>
+  </data>
+  <data name="Issue_PickAnInputFromThe" xml:space="preserve">
+    <value>Wählen Sie eine Eingabe aus der Dropdownliste "Eingaben", z. B. "mp_left_sip" oder "lip", oder verschieben Sie den Text in die Notizspalte.</value>
+  </data>
+  <data name="Issue_PickAnOutputFromThe" xml:space="preserve">
+    <value>Wählen Sie eine Ausgabe aus der Liste des Editors, z. B. "x", "left_trigger" oder "mouse_up".</value>
+  </data>
+  <data name="Issue_PickAnotherNameForExample" xml:space="preserve">
+    <value>Wählen Sie einen anderen Namen, zum Beispiel "game.csv".</value>
+  </data>
+  <data name="Issue_PickTheGameButtonOr" xml:space="preserve">
+    <value>Wählen Sie die Spieltaste oder Aktion, die diese Zeile steuert, z. B. "x" oder "left_trigger".</value>
+  </data>
+  <data name="Issue_PreferANewFilenameThe" xml:space="preserve">
+    <value>Bevorzugen Sie einen neuen Dateinamen. Der Installer fragt vor dem Schreiben von default.csv ausdrücklich um Bestätigung.</value>
+  </data>
+  <data name="Issue_PrefsCsvIsTheDevice" xml:space="preserve">
+    <value>prefs.csv ist die Geräte-Einstellungsdatei, keine Spielkonfiguration.</value>
+  </data>
+  <data name="Issue_PutThePreferenceSValue" xml:space="preserve">
+    <value>Setzen Sie den Wert der Einstellung in Spalte B.</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn" xml:space="preserve">
+    <value>Setzen Sie den Wert in Spalte C: "{0},,{1}".</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn2" xml:space="preserve">
+    <value>Setzen Sie den Wert in Spalte C.</value>
+  </data>
+  <data name="Issue_RaiseHiNameToLong" xml:space="preserve">
+    <value>Erhöhen Sie "{0}" auf {1} oder mehr, oder verringern Sie "{2}".</value>
+  </data>
+  <data name="Issue_RaiseUpperToLongLo" xml:space="preserve">
+    <value>Erhöhen Sie "{0}" auf {1} oder mehr, oder verringern Sie "{2}".</value>
+  </data>
+  <data name="Issue_RemoveModesUntilThereAre" xml:space="preserve">
+    <value>Entfernen Sie Modi, bis höchstens 16 übrig sind.</value>
+  </data>
+  <data name="Issue_RemoveTheExtraValues" xml:space="preserve">
+    <value>Entfernen Sie die überzähligen Werte.</value>
+  </data>
+  <data name="Issue_RemoveTheRowOrLeave" xml:space="preserve">
+    <value>Entfernen Sie die Zeile, oder lassen Sie sie für einen älteren QuadStick stehen, der noch darauf reagiert.</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole" xml:space="preserve">
+    <value>Ersetzen Sie sie durch eine ganze Zahl, z. B. "50".</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole2" xml:space="preserve">
+    <value>Ersetzen Sie sie durch eine ganze Zahl, z. B. "repeat 4".</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick" xml:space="preserve">
+    <value>"reset_quadstick" startet den QuadStick neu, und diese Zeile löst das über den push-Schalter des Mundstücks aus. Wenn push beim Neustart noch gedrückt gehalten wird, wechselt das Gerät in seinen Firmware-Loader und funktioniert nicht mehr als Controller, bis es aus- und wieder eingesteckt wird.</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick2" xml:space="preserve">
+    <value>"reset_quadstick" startet den QuadStick neu. Das Spiel, das Sie gerade spielen, verliert den Controller für ein paar Sekunden.</value>
+  </data>
+  <data name="Issue_SetItToAName" xml:space="preserve">
+    <value>Setzen Sie sie auf einen Namen wie "mygame.csv".</value>
+  </data>
+  <data name="Issue_SetItToNormalTo" xml:space="preserve">
+    <value>Setzen Sie sie auf "normal", um das ausdrücklich zu machen.</value>
+  </data>
+  <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
+    <value>Kürzen Sie ihn auf {0} Zeichen oder weniger, zum Beispiel "game.csv".</value>
+  </data>
+  <data name="Issue_TheCellUnderTheFirst" xml:space="preserve">
+    <value>Die Zelle unter dem Schlüsselwort des ersten Blatts muss den CSV-Dateinamen enthalten.</value>
+  </data>
+  <data name="Issue_TheDeviceDoesNotMatch" xml:space="preserve">
+    <value>Das Gerät erkennt "{0}" nicht als Kanal, daher verbindet sich dieser Modus stattdessen über USB.</value>
+  </data>
+  <data name="Issue_TheDeviceReadsAValue" xml:space="preserve">
+    <value>Das Gerät liest einen Wert mit einem 32-Bit-atoi, daher kommt alles außerhalb von -2147483648 bis 2147483647 als eine andere Zahl an.</value>
+  </data>
+  <data name="Issue_TheDeviceStoresItIn" xml:space="preserve">
+    <value>. Das Gerät speichert ihn in 14 Bit, daher kommt er als {0} an.</value>
+  </data>
+  <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
+    <value>Das Gerät unterstützt 16 Modi; es ignoriert diesen Modus und alle danach.</value>
+  </data>
+  <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
+    <value>Die {0}-Schwellenwerte überschneiden sich: "{1}" ist {2} und "{3}" ist {4}.</value>
+  </data>
+  <data name="Issue_TheFirmwareSetsItBack" xml:space="preserve">
+    <value>die Firmware setzt ihn nach jedem Laden auf 0 zurück, und der Code, der ihn verwendet hat, ist auskommentiert</value>
+  </data>
+  <data name="Issue_TheQuadStickHasNoPreference" xml:space="preserve">
+    <value>Der QuadStick hat keine Einstellung namens "{0}", daher überspringt er diese Zeile und die Einstellung bewirkt nichts. Sie wird genau so gespeichert, wie Sie sie geschrieben haben.</value>
+  </data>
+  <data name="Issue_TheToneItUsedTo" xml:space="preserve">
+    <value>der Ton, den er früher auslöste, ist auskommentiert</value>
+  </data>
+  <data name="Issue_TheTwoNeedAtLeast" xml:space="preserve">
+    <value>Zwischen den beiden müssen mindestens 2 liegen.</value>
+  </data>
+  <data name="Issue_TheValuesItKnowsAre" xml:space="preserve">
+    <value>Die bekannten Werte sind: {0}.</value>
+  </data>
+  <data name="Issue_ThisEditsDefaultCsvThe" xml:space="preserve">
+    <value>Dies bearbeitet default.csv, die Ausweichdatei des Geräts, die unverändert bleiben soll. Ein falscher USB-Emulationswert darin kann den Zugriff auf das Flash-Laufwerk deaktivieren, und die Wiederherstellung erfordert ein physisches Force-Erase.</value>
+  </data>
+  <data name="Issue_ThisModeHasCountedCount" xml:space="preserve">
+    <value>Dieser Modus hat {0} Zeilen mit einem Ausgabenamen; das Gerät liest die ersten 128 und ignoriert den Rest.</value>
+  </data>
+  <data name="Issue_ThisRowHasNoOutput" xml:space="preserve">
+    <value>Diese Zeile hat keinen Ausgabenamen. Das Gerät überspringt sie, und beide offiziellen Konverter löschen sie, sodass die Zeile nichts bewirkt.</value>
+  </data>
+  <data name="Issue_TrimTheModeTo128" xml:space="preserve">
+    <value>Kürzen Sie den Modus auf 128 Zeilen.</value>
+  </data>
+  <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
+    <value>Zwei gleiche Schwellenwerte lassen das Gerät bei jedem Lesen des Schlauchs durch null teilen.</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
+    <value>USB-Emulationsmodus {0} ({1}) gibt einem Computer keinen Zugriff auf das Laufwerk des QuadStick, und diese Datei ist eine, mit der das Gerät startet. Wird sie installiert, gibt es keine Möglichkeit mehr, ein Profil zurückzubearbeiten, und die Wiederherstellung erfordert ein physisches Force-Erase.</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat2" xml:space="preserve">
+    <value>USB-Emulationsmodus {0} ({1}) gibt einem Computer keinen Zugriff auf das Laufwerk des QuadStick, daher verschwinden die Dateien vom Computer, solange dieses Profil läuft.</value>
+  </data>
+  <data name="Issue_UpperIsHiValueAnd" xml:space="preserve">
+    <value>"{0}" ist {1} und "{2}" ist {3}. Zwischen den beiden müssen mindestens {4} liegen, sonst überschneiden sich die Einstellungen.</value>
+  </data>
+  <data name="Issue_Use1ForOnOr" xml:space="preserve">
+    <value>Verwenden Sie 1 für ein oder 0 für aus.</value>
+  </data>
+  <data name="Issue_UseADifferentNameUnless" xml:space="preserve">
+    <value>Verwenden Sie einen anderen Namen, außer Sie wollen die Einstellungen ändern.</value>
+  </data>
+  <data name="Issue_UseAValueInsideThat" xml:space="preserve">
+    <value>Verwenden Sie einen Wert innerhalb dieses Bereichs.</value>
+  </data>
+  <data name="Issue_UseAValueOf0" xml:space="preserve">
+    <value>Verwenden Sie einen Wert von 0 oder mehr.</value>
+  </data>
+  <data name="Issue_UseAValueUpTo" xml:space="preserve">
+    <value>Verwenden Sie einen Wert bis {0}.</value>
+  </data>
+  <data name="Issue_UseAWholeNumber" xml:space="preserve">
+    <value>Verwenden Sie eine ganze Zahl.</value>
+  </data>
+  <data name="Issue_UseBothSoTheMode" xml:space="preserve">
+    <value>Verwenden Sie "both", damit der Modus auf beiden Verbindungen funktioniert, oder "usb", wenn er nur eingesteckt betrieben wird.</value>
+  </data>
+  <data name="Issue_UseMaxOrLess" xml:space="preserve">
+    <value>Verwenden Sie {0} oder weniger.</value>
+  </data>
+  <data name="Issue_UseMinOrMore" xml:space="preserve">
+    <value>Verwenden Sie {0} oder mehr.</value>
+  </data>
+  <data name="Issue_UseMode023" xml:space="preserve">
+    <value>Verwenden Sie hier Modus 0, 2, 3 oder 4, und setzen Sie den anderen Modus stattdessen in einem Spielprofil.</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin" xml:space="preserve">
+    <value>Verwenden Sie einen der folgenden Werte: {0}.</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin2" xml:space="preserve">
+    <value>Verwenden Sie einen der folgenden Werte: {0}.</value>
+  </data>
+  <data name="Issue_UseTheFormSomethingCsv" xml:space="preserve">
+    <value>Verwenden Sie die Form "something.csv" ohne Leerzeichen oder Sonderzeichen.</value>
+  </data>
+  <data name="Issue_UseUsbBluetoothBothOr" xml:space="preserve">
+    <value>Verwenden Sie "usb", "bluetooth", "both" oder "none", in Kleinbuchstaben.</value>
+  </data>
+  <data name="Issue_ValueInCIsAWordB" xml:space="preserve">
+    <value>"{0}" ist ein Wort. "{1}" nimmt auf dem Einstellungsblatt ein Wort entgegen, aber der Wert einer Mode-Zeile wird als Zahl gelesen, daher setzt das Gerät ihn hier auf 0.</value>
+  </data>
+  <data name="Issue_ValueInCIsNotAWhole" xml:space="preserve">
+    <value>"{0}" ist keine ganze Zahl. "{1}" ist eine Geräteeinstellung; diese Zelle enthält ihren Wert.</value>
+  </data>
+  <data name="Issue_ValueInCIsTooBigFor" xml:space="preserve">
+    <value>"{0}" ist zu groß, als dass das Gerät sie lesen könnte. {1}</value>
+  </data>
+  <data name="Issue_ValueInColumnBIs" xml:space="preserve">
+    <value>"{0}" in Spalte B ist der Wert von "{1}", ist aber keine ganze Zahl.</value>
+  </data>
+  <data name="Issue_ValueIsAboveMaxThe" xml:space="preserve">
+    <value>"{0}" liegt über {1}, dem höchsten Wert, den der offizielle Manager für "{2}" anbietet. Das Gerät akzeptiert ihn trotzdem, aber er liegt außerhalb des getesteten Bereichs.</value>
+  </data>
+  <data name="Issue_ValueIsBelowMinThe" xml:space="preserve">
+    <value>"{0}" liegt unter {1}, dem niedrigsten Wert, den der offizielle Manager für "{2}" anbietet. Das Gerät akzeptiert ihn trotzdem, aber er liegt außerhalb des getesteten Bereichs.</value>
+  </data>
+  <data name="Issue_ValueIsNotAValue" xml:space="preserve">
+    <value>"{0}" ist kein Wert, den diese App für "{1}" kennt. Er wird unverändert in die Datei geschrieben, und ein neuerer QuadStick liest ihn möglicherweise durchaus.</value>
+  </data>
+  <data name="Issue_ValueIsNotAnOn" xml:space="preserve">
+    <value>"{0}" ist kein Ein/Aus-Wert für "{1}". Das Gerät liest ihn als Zahl, daher zählt alles außer 0 als ein.</value>
+  </data>
+  <data name="Issue_ValueIsNotOneOf" xml:space="preserve">
+    <value>"{0}" ist keiner der Werte, die "{1}" akzeptiert.</value>
+  </data>
+  <data name="Issue_ValueIsTooBigFor" xml:space="preserve">
+    <value>"{0}" ist zu groß, als dass das Gerät sie lesen könnte. {1}</value>
+  </data>
+  <data name="Jack_BottomJack" xml:space="preserve">
+    <value>Unterer Anschluss</value>
+  </data>
+  <data name="Jack_FirstSwitch" xml:space="preserve">
+    <value>erster Schalter</value>
+  </data>
+  <data name="Jack_LipJack" xml:space="preserve">
+    <value>Lip-Anschluss</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe" xml:space="preserve">
+    <value>Stecken Sie einen Schalter in den oberen Anschluss, und er kommt als digital_in_8 an. Nur ein Splitter nutzt zusätzlich digital_in_7.</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe2" xml:space="preserve">
+    <value>Stecken Sie einen Schalter in den unteren Anschluss, und er kommt als digital_in_1 an. Nur ein Splitter nutzt zusätzlich digital_in_2.</value>
+  </data>
+  <data name="Jack_PortOneSwitch" xml:space="preserve">
+    <value>{0}, ein Schalter</value>
+  </data>
+  <data name="Jack_PortSplitterPosition" xml:space="preserve">
+    <value>{0}, Splitter, {1}</value>
+  </data>
+  <data name="Jack_SecondSwitch" xml:space="preserve">
+    <value>zweiter Schalter</value>
+  </data>
+  <data name="Jack_TheMiddleJackIsThe" xml:space="preserve">
+    <value>Der mittlere Anschluss ist der Lip-Schalter. Ein Splitter dort ergibt digital_in_5 und digital_in_6.</value>
+  </data>
+  <data name="Jack_TheUSBAPortS" xml:space="preserve">
+    <value>Die eigenen Datenpins des USB-A-Ports, gelesen als einfache Schalter. Außen am Gehäuse wird hier nichts eingesteckt.</value>
+  </data>
+  <data name="Jack_TopJack" xml:space="preserve">
+    <value>Oberer Anschluss</value>
+  </data>
+  <data name="Jack_USBADataPins" xml:space="preserve">
+    <value>USB-A-Datenpins</value>
+  </data>
+  <data name="Lights_NoLights" xml:space="preserve">
+    <value>keine Leuchten</value>
+  </data>
+  <data name="Parse_BeginTheCellWithThe" xml:space="preserve">
+    <value>Beginnen Sie die Zelle mit dem Blatt-Schlüsselwort, z. B. "Profile Name".</value>
+  </data>
+  <data name="Parse_DeleteRowsAboveTheFirst" xml:space="preserve">
+    <value>Löschen Sie die Zeilen oberhalb der ersten Blattüberschrift.</value>
+  </data>
+  <data name="Parse_FirstCellMustContainProfile" xml:space="preserve">
+    <value>Die erste Zelle muss "Profile" enthalten oder "Preferences" oder "Infrared" sein. Gefunden: "{0}".</value>
+  </data>
+  <data name="Parse_KeepANoteOnA" xml:space="preserve">
+    <value>Halten Sie eine Notiz auf einer einzigen Zeile.</value>
+  </data>
+  <data name="Parse_KeepLettersNumbersSpacesAnd" xml:space="preserve">
+    <value>Verwenden Sie nur Buchstaben, Zahlen, Leerzeichen und "_ . -", oder verschieben Sie den Text in die Notizspalte.</value>
+  </data>
+  <data name="Parse_MoveItAboveTheFirst" xml:space="preserve">
+    <value>Verschieben Sie sie über die erste leere Zeile, oder löschen Sie sie.</value>
+  </data>
+  <data name="Parse_RawA1DoesNotSTARTWith" xml:space="preserve">
+    <value>"{0}" BEGINNT nicht mit "Profile", "Preferences" oder "Infrared" (exakt so groß-/kleingeschrieben), daher überspringt das Gerät dieses gesamte Blatt.</value>
+  </data>
+  <data name="Parse_RowR1AppearsAfter" xml:space="preserve">
+    <value>Zeile {0} steht nach einer leeren Zeile, an der das Gerät das Lesen dieses Modus beendet, daher bewirkt diese Zeile nichts.</value>
+  </data>
+  <data name="Parse_RowR1HasA" xml:space="preserve">
+    <value>Zeile {0} hat eine Zelle mit mehr als einer Zeile Inhalt. Das Gerät liest jede Zeile als eigene Zeile, und eine leere Zeile darunter beendet das Lesen des restlichen Modus, daher werden sie beim Speichern zu einer Zeile zusammengeführt.</value>
+  </data>
+  <data name="Parse_RowR1IsLonger" xml:space="preserve">
+    <value>Zeile {0} ist länger als {1} Zeichen einschließlich Kommentare. Das Gerät liest eine Zeile in einen 1024-Byte-Puffer und gibt den Überlauf so zurück, als wäre er die nächste Zeile. Je nachdem, wo die Zeile dabei umbricht, kann das den Modus vorzeitig beenden und jede Zeile darunter verwerfen.</value>
+  </data>
+  <data name="Parse_SectionStarts0ScanFromRowS" xml:space="preserve">
+    <value>{0} Zeile(n) vor dem ersten Blatt-Schlüsselwort gehören zu keinem Blatt.</value>
+  </data>
+  <data name="Parse_SetCellA1ToThe" xml:space="preserve">
+    <value>Setzen Sie Zelle A1 auf das Blatttyp-Schlüsselwort, z. B. "Profile Name".</value>
+  </data>
+  <data name="Parse_ShortenItTo63Characters" xml:space="preserve">
+    <value>Kürzen Sie ihn auf 63 Zeichen oder weniger.</value>
+  </data>
+  <data name="Parse_ShortenTheRowSComments" xml:space="preserve">
+    <value>Kürzen Sie die Kommentare der Zeile.</value>
+  </data>
+  <data name="Parse_ThisCellIsValueLength" xml:space="preserve">
+    <value>Diese Zelle hat {0} Zeichen. Das Gerät sucht nur bis 64 nach dem Zellenende, daher liest es diese Zelle und alles danach in dieser Zeile als leer.</value>
+  </data>
+  <data name="Parse_ValueContainsValueAtThe" xml:space="preserve">
+    <value>"{0}" enthält "{1}". Das Gerät beendet eine Zelle an diesem Zeichen, daher liest es sie als zwei Zellen ("{2}" und "{3}"), und alles danach in dieser Zeile rückt eine Spalte weiter.</value>
+  </data>
+  <data name="Pref_Advanced" xml:space="preserve">
+    <value>Erweitert</value>
+  </data>
+  <data name="Pref_Bluetooth" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="Pref_InputsAndOutputs" xml:space="preserve">
+    <value>Eingänge und Ausgänge</value>
+  </data>
+  <data name="Pref_Joystick" xml:space="preserve">
+    <value>Joystick</value>
+  </data>
+  <data name="Pref_LipSensor" xml:space="preserve">
+    <value>Lip-Sensor</value>
+  </data>
+  <data name="Pref_Mouse" xml:space="preserve">
+    <value>Maus</value>
+  </data>
+  <data name="Pref_SipAndPuff" xml:space="preserve">
+    <value>Sip und Puff</value>
+  </data>
+  <data name="Pref_SoundAndLights" xml:space="preserve">
+    <value>Ton und Leuchten</value>
+  </data>
+  <data name="Pref_UsbAndCompatibility" xml:space="preserve">
+    <value>USB und Kompatibilität</value>
+  </data>
+  <data name="Sheet_CauseMissedNotReadAt" xml:space="preserve">
+    <value>{0} {1} wurde(n) gar nicht gelesen, daher können wir nicht sagen, was darin steht. Teilen Sie die benötigten Modi auf kleinere Tabellen auf und importieren Sie sie einzeln.</value>
+  </data>
+  <data name="Sheet_EveryTabFromThereOn" xml:space="preserve">
+    <value>Jeder Tab ab da war</value>
+  </data>
+  <data name="Sheet_EveryTabPastThatWas" xml:space="preserve">
+    <value>Jeder Tab danach war</value>
+  </data>
+  <data name="Sheet_LeftJoy" xml:space="preserve">
+    <value>Left joy</value>
+  </data>
+  <data name="Sheet_LeftMoreTabsWere" xml:space="preserve">
+    <value>{0} weitere Tabs waren</value>
+  </data>
+  <data name="Sheet_OneMoreTabWas" xml:space="preserve">
+    <value>Ein weiterer Tab war</value>
+  </data>
+  <data name="Sheet_RightJoy" xml:space="preserve">
+    <value>Right joy</value>
+  </data>
+  <data name="Sheet_TabPastTheRowCap" xml:space="preserve">
+    <value>Der Tab "{0}" hat Zellen unterhalb von Zeile {1}, weit über das Ende jedes Profils hinaus, daher haben wir das Lesen dieses Tabs dort gestoppt und können nicht sagen, was darunter steht. Wenn das eine versprengte Zelle von einem Einfügevorgang ist, behebt das Löschen der leeren Zeilen am Ende des Tabs und ein erneuter Import dies.</value>
+  </data>
+  <data name="Sheet_ThatSpreadsheetHoldsAPart" xml:space="preserve">
+    <value>Diese Tabelle enthält einen Teil von {0} MB, weit größer als jedes Profil, daher wurde sie nicht gelesen.</value>
+  </data>
+  <data name="Sheet_ThisSpreadsheetHasMoreThan" xml:space="preserve">
+    <value>Diese Tabelle hat mehr als {0} Tabs, wir haben die ersten {1} gelesen.</value>
+  </data>
+  <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
+    <value>Diese Tabelle ist größer als {0} Zeilen, weit größer als jedes Profil, daher haben wir das Lesen auf halbem Weg gestoppt.</value>
+  </data>
+</root>

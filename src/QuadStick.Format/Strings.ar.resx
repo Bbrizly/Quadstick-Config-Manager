@@ -1,0 +1,686 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Device_DeclaredIsTooLongFor" xml:space="preserve">
+    <value>"{0}" طويل جدًا على أن يحمّله QuadStick، لذا لم يُكتب شيء. يمكن أن يبلغ اسم الملف الشخصي {1} حرفًا كحد أقصى، بما فيها ".csv"، وهذا الاسم طوله {2} حرفًا. قصّر الاسم في الخلية A2 وثبّت مرة أخرى.</value>
+  </data>
+  <data name="Device_FileNameIsNoLongerOn" xml:space="preserve">
+    <value>{0} لم يعد موجودًا على الجهاز. حدّث القائمة وحاول مرة أخرى.</value>
+  </data>
+  <data name="Device_FileNameIsProtectedAndCannot" xml:space="preserve">
+    <value>{0} محمي ولا يمكن حذفه. إزالته قد تجعل الجهاز غير قابل للاستخدام.</value>
+  </data>
+  <data name="Device_NameIsNotAPlain" xml:space="preserve">
+    <value>"{0}" ليس اسم ملف بسيطًا يستطيع QuadStick الاحتفاظ به، لذا لم يُكتب شيء. غيّر الخلية A2 إلى اسم بسيط مثل "mygame.csv".</value>
+  </data>
+  <data name="Device_OnlyAPlainFileName" xml:space="preserve">
+    <value>لا يمكن حذف إلا اسم ملف بسيط في جذر الجهاز، وليس مسارًا.</value>
+  </data>
+  <data name="Device_RefusingToOverwriteDefaultCsv" xml:space="preserve">
+    <value>رفض الكتابة فوق default.csv دون تأكيد صريح. قد يؤدي default.csv خاطئ إلى تعطيل الوصول إلى محرك الفلاش.</value>
+  </data>
+  <data name="Device_RefusingToOverwritePrefsCsv" xml:space="preserve">
+    <value>رفض الكتابة فوق prefs.csv دون تأكيد صريح. يحتوي prefs.csv على إعدادات الجهاز بأكمله، وملف خاطئ قد يجعل QuadStick غير قابل للاستخدام.</value>
+  </data>
+  <data name="Device_ThatFileIsNotDirectly" xml:space="preserve">
+    <value>هذا الملف ليس في جذر الجهاز مباشرة، لذا لم يُحذف.</value>
+  </data>
+  <data name="Device_ThatFolderDoesNotLook" xml:space="preserve">
+    <value>هذا المجلد لا يبدو محرك QuadStick (لا يوجد default.csv في جذره). اختر وحدة تخزين USB التي تظهر عند توصيل الجهاز.</value>
+  </data>
+  <data name="Device_TheQuadStickWasDisconnectedWhile" xml:space="preserve">
+    <value>انقطع اتصال QuadStick أثناء كتابة {0}. نسختك السابقة محفوظة في {1}. أعد توصيل الجهاز، تحقق مما إذا كان {2} لا يزال عليه، وثبّت مرة أخرى.</value>
+  </data>
+  <data name="Device_ThisProfileHasValidationErrors" xml:space="preserve">
+    <value>يحتوي هذا الملف الشخصي على أخطاء تحقق ولا يمكن تثبيته:
+</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapAnd" xml:space="preserve">
+    <value>فشلت الكتابة في منتصف الاستبدال ولم يتمكن {0} من العودة إلى QuadStick. نسختك السابقة محفوظة في {1}. انسخها إلى الجهاز يدويًا.</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapThe" xml:space="preserve">
+    <value>فشلت الكتابة في منتصف الاستبدال؛ استُعيدت النسخة السابقة من {0} من النسخة الاحتياطية. الجهاز لم يتغير.</value>
+  </data>
+  <data name="Fn_10ASecond" xml:space="preserve">
+    <value>10 في الثانية</value>
+  </data>
+  <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
+    <value>1 يُبقي المخرج مفعّلاً. أي رقم أكبر من 1 هو مدة استمرار الضغطة.</value>
+  </data>
+  <data name="Fn_CountsAsATap" xml:space="preserve">
+    <value>يُحتسب كنقرة</value>
+  </data>
+  <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
+    <value>يُفعَّل بمجرد أن يبلغ مدخلك هذه القوة على الأقل.</value>
+  </data>
+  <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
+    <value>يُفعَّل ما دام مدخلك أقل من هذه القوة.</value>
+  </data>
+  <data name="Fn_FirstHold" xml:space="preserve">
+    <value>الاستمرار الأول</value>
+  </data>
+  <data name="Fn_HoldOn" xml:space="preserve">
+    <value>استمرار</value>
+  </data>
+  <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
+    <value>استمر بالمدخل أطول من هذا وسيُبقي المخرج مفعّلاً بدلاً من النقر.</value>
+  </data>
+  <data name="Fn_HoldToLatch" xml:space="preserve">
+    <value>استمرار للتثبيت</value>
+  </data>
+  <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
+    <value>يُبقي النقرة الأولى لهذه المدة قبل أن يبدأ الإطلاق السريع.</value>
+  </data>
+  <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
+    <value>يستمر ما دمت تضغط</value>
+  </data>
+  <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
+    <value>إلى أي مدى ينخفض المخرج التناظري في كل مرة.</value>
+  </data>
+  <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
+    <value>إلى أي مدى يرتفع المخرج التناظري في كل مرة.</value>
+  </data>
+  <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
+    <value>بأي سرعة ينقر أثناء استمرارك بالضغط على المدخل.</value>
+  </data>
+  <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
+    <value>مدة استمرار كل ضغطة.</value>
+  </data>
+  <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
+    <value>مدة ضغط النقرة. 1 يُبقي المخرج مفعّلاً بدلاً من ذلك.</value>
+  </data>
+  <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
+    <value>كم ضغطة يرسلها التفعيل الواحد.</value>
+  </data>
+  <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
+    <value>يستمر في التدرج بهذا المعدل أثناء استمرارك بالضغط على المدخل.</value>
+  </data>
+  <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
+    <value>يُبقي المخرج مضغوطًا لهذه المدة بعد أن تُفلت.</value>
+  </data>
+  <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
+    <value>أفلت خلال هذه النافذة الزمنية وستُحتسب نقرة. استمر لفترة أطول ولن يُفعَّل شيء.</value>
+  </data>
+  <data name="Fn_NoExtraHold" xml:space="preserve">
+    <value>بلا استمرار إضافي</value>
+  </data>
+  <data name="Fn_NoUpperLimit" xml:space="preserve">
+    <value>بلا حد أعلى</value>
+  </data>
+  <data name="Fn_OnePress" xml:space="preserve">
+    <value>ضغطة واحدة</value>
+  </data>
+  <data name="Fn_OneStepPerActivation" xml:space="preserve">
+    <value>خطوة واحدة لكل تفعيل</value>
+  </data>
+  <data name="Fn_ReleasedAtOnce" xml:space="preserve">
+    <value>يُطلق دفعة واحدة</value>
+  </data>
+  <data name="Fn_RepeatEvery" xml:space="preserve">
+    <value>التكرار كل</value>
+  </data>
+  <data name="Fn_Sentence" xml:space="preserve">
+    <value>{0}: من {1} إلى {2}. الفراغ يعني {3}. {4}</value>
+  </data>
+  <data name="Fn_SentenceWithUnit" xml:space="preserve">
+    <value>{0}: من {1} إلى {2} {5}. الفراغ يعني {3}. {4}</value>
+  </data>
+  <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
+    <value>يتوقف عن الإطلاق مرة أخرى بمجرد أن يتجاوز مدخلك هذا الحد، فيشكل الرقمان نطاقًا.</value>
+  </data>
+  <data name="Fn_TapsASecond" xml:space="preserve">
+    <value>نقرة في الثانية</value>
+  </data>
+  <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
+    <value>مدة دورة التشغيل والإيقاف عند القوة الكاملة. المدخل الأضعف يطيلها.</value>
+  </data>
+  <data name="Fn_UpperLimit" xml:space="preserve">
+    <value>الحد الأعلى</value>
+  </data>
+  <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
+    <value>ينتظر هذه المدة بعد التفعيل، ثم يضغط.</value>
+  </data>
+  <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
+    <value>ينتظر هذه المدة قبل إطلاق المخرج المثبت للصف الآخر.</value>
+  </data>
+  <data name="Issue_0UsedToMeanNo" xml:space="preserve">
+    <value>كان 0 يعني عدم وجود منطقة ميتة على الإطلاق، والبرنامج الثابت من عام 2025 يستبدله بـ 129 وحدة خام بدلاً من ذلك، فتكتسب العصا منطقة ميتة صغيرة لم يطلبها هذا الملف قط</value>
+  </data>
+  <data name="Issue_5WasPCOnlyNo" xml:space="preserve">
+    <value>كان 5 يعني "للكمبيوتر فقط، بلا عصا تحكم" حتى عام 2025 وأصبح الآن Nintendo Switch Pro Controller، لذا يظهر QuadStick المحدَّث لجهاز التحكم أو الكمبيوتر كوحدة تحكم مختلفة تمامًا</value>
+  </data>
+  <data name="Issue_ADirectionSettingLeftAt" xml:space="preserve">
+    <value> (إعداد {0} المتروك عند 0 يستخدم قيمة sip_puff_ المشتركة بدلاً من ذلك.)</value>
+  </data>
+  <data name="Issue_APercentOver100Is" xml:space="preserve">
+    <value>. النسبة المئوية التي تتجاوز 100 هي مستوى لا يصل إليه أي مدخل، لذا لا يُفعَّل هذا الصف أبدًا.</value>
+  </data>
+  <data name="Issue_ArgsIHasADecimal" xml:space="preserve">
+    <value>"{0}" يحتوي على جزء عشري. يقرأ الجهاز أعدادًا صحيحة فقط، لذا يتصرف كأنه "{1}".</value>
+  </data>
+  <data name="Issue_ArgsIIsLargerThan" xml:space="preserve">
+    <value>"{0}" أكبر من {1}، وهو حد الجهاز للمعامل الأول؛ فيفيض إلى المعامل الثاني.</value>
+  </data>
+  <data name="Issue_ArgsIIsNegativeThe" xml:space="preserve">
+    <value>"{0}" سالب؛ لا يتعامل الجهاز مع المعاملات السالبة بشكل يمكن التنبؤ به.</value>
+  </data>
+  <data name="Issue_ArgsIIsNotA" xml:space="preserve">
+    <value>"{0}" ليس رقمًا. يجب أن تكون معاملات "{1}" أعدادًا صحيحة، ويقرأ الجهاز هذا كـ 0.</value>
+  </data>
+  <data name="Issue_BActionNameHasNoButton" xml:space="preserve">
+    <value>"{0}" ليس له زر خلفه بعد، لذا لا يفعل هذا الصف شيئًا على QuadStick.</value>
+  </data>
+  <data name="Issue_BOutputHasNoValue" xml:space="preserve">
+    <value>"{0}" ليس له قيمة في العمود B، لذا يقرأه الجهاز كـ 0.</value>
+  </data>
+  <data name="Issue_BOutputIsADevice" xml:space="preserve">
+    <value>"{0}" إعداد جهاز، ويقرأ الجهاز قيمته من العمود C، وهو فارغ هنا. يُتجاهل العمود B، لذا قد يضبط هذا الصف القيمة على 0.</value>
+  </data>
+  <data name="Issue_BOutputIsADevice2" xml:space="preserve">
+    <value>"{0}" إعداد جهاز لكن لا تتبعه قيمة، لذا يضبطه الجهاز على 0.</value>
+  </data>
+  <data name="Issue_BOutputIsALegacy" xml:space="preserve">
+    <value>"{0}" اسم مخرج قديم: يعرفه البرنامج الثابت لكن القائمة الرسمية الحالية لا تتضمنه.</value>
+  </data>
+  <data name="Issue_BOutputIsNotA" xml:space="preserve">
+    <value>"{0}" ليس اسم مخرج موثقًا (بمصطلحات PlayStation أو XBox).</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRow" xml:space="preserve">
+    <value>هذا الوضع على "{0}"، وله {1} صف فأرة أو لوحة مفاتيح، في الصف {2}. البرنامج الثابت من عام 2025 أو أحدث يرسل الفأرة ولوحة المفاتيح عبر USB فقط عندما تتضمن القناة USB، لذا عبر الكابل لا يفعل ذلك الصف شيئًا بينما يستمر نصف الوضع الخاص بوحدة التحكم في العمل. البرنامج الثابت الأقدم كان يرسلها على أي حال.</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRows" xml:space="preserve">
+    <value>هذا الوضع على "{0}"، وله {1} صفوف فأرة أو لوحة مفاتيح، أولها في الصف {2}. البرنامج الثابت من عام 2025 أو أحدث يرسل الفأرة ولوحة المفاتيح عبر USB فقط عندما تتضمن القناة USB، لذا عبر الكابل لا تفعل تلك الصفوف شيئًا بينما يستمر نصف الوضع الخاص بوحدة التحكم في العمل. البرنامج الثابت الأقدم كان يرسلها على أي حال.</value>
+  </data>
+  <data name="Issue_BothNeedsFirmwareFrom2025" xml:space="preserve">
+    <value>"both" يحتاج إلى برنامج ثابت من عام 2025 أو أحدث. لا يعرف QuadStick ذو البرنامج الثابت الأقدم هذه الكلمة، فيشغّل هذا الوضع عبر USB فقط، ولا يقول شيئًا عن نصف Bluetooth.</value>
+  </data>
+  <data name="Issue_CheckTheSpellingAgainstThe" xml:space="preserve">
+    <value>تحقق من الإملاء مقابل التفضيلات الموجودة بالفعل على جهازك. (البرنامج الثابت الأحدث من هذا التطبيق سيكون له أسماء لم يسمع بها هذا التطبيق من قبل.)</value>
+  </data>
+  <data name="Issue_CheckWhichFirmwareYourQuadStick" xml:space="preserve">
+    <value>تحقق من البرنامج الثابت الذي يعمل عليه QuadStick الخاص بك قبل الاعتماد على هذا الصف.</value>
+  </data>
+  <data name="Issue_DidYouMeanNearIf" xml:space="preserve">
+    <value>هل تقصد "{0}"؟ (إذا كان البرنامج الثابت لـ QuadStick أحدث من هذا التطبيق، فقد يعرف "{1}" ويمكن تجاهل هذا التحذير بأمان.)</value>
+  </data>
+  <data name="Issue_DualShock4WithNoUSB" xml:space="preserve">
+    <value>DualShock 4 بلا محرك USB</value>
+  </data>
+  <data name="Issue_ExpectedForThisConsoleSwitch" xml:space="preserve">
+    <value>متوقع لهذه المنصة. بدّل QuadStick إلى ملف شخصي آخر لتحرير ملفاته مرة أخرى.</value>
+  </data>
+  <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
+    <value>فعّله من شيء غير push، أو من مجموعة لا يستطيع push الاحتفاظ بها بمفرده.</value>
+  </data>
+  <data name="Issue_FunctionReads0ForP" xml:space="preserve">
+    <value>"{0}" يقرأ 0 لـ {1} كأنه لا قيمة على الإطلاق، لذا يستخدم الجهاز {2}.</value>
+  </data>
+  <data name="Issue_InputIsALegacyInput" xml:space="preserve">
+    <value>"{0}" اسم مدخل قديم: يعرفه البرنامج الثابت لكن القائمة الرسمية الحالية لا تتضمنه.</value>
+  </data>
+  <data name="Issue_InputIsNotADocumented" xml:space="preserve">
+    <value>"{0}" ليس اسم مدخل موثقًا، لذا يتجاهله الجهاز.</value>
+  </data>
+  <data name="Issue_ItReachesTheKeywordTable" xml:space="preserve">
+    <value>يصل إلى جدول الكلمات المفتاحية ومصفوفة الإعدادات وحسب، لذا يعمل المراقب ذو الدقيقتين في كل الأحوال</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer" xml:space="preserve">
+    <value>ينبغي أن يعمل رغم ذلك؛ يُفضَّل استخدام اسم حالي إن وُجد، مثل "gyroscope_z_cw".</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer2" xml:space="preserve">
+    <value>ينبغي أن يعمل رغم ذلك؛ يُفضَّل استخدام اسم حالي إن وُجد.</value>
+  </data>
+  <data name="Issue_KeepItIfThatIs" xml:space="preserve">
+    <value>أبقِ عليه إن كان هذا ما تريده، وفضّل مدخلاً يصعب تفعيله عرضيًا.</value>
+  </data>
+  <data name="Issue_KeepItIfYourQuadStick" xml:space="preserve">
+    <value>أبقِ عليه إذا كان QuadStick محدَّثًا. إذا لم يكن كذلك، استخدم "usb" أو "bluetooth" واختر واحدًا.</value>
+  </data>
+  <data name="Issue_LeaveItOutToMean" xml:space="preserve">
+    <value>اتركه فارغًا ليعني الشيء نفسه، أو اضبط {0} بين {1} و{2}.</value>
+  </data>
+  <data name="Issue_MostPreferencesTakeAWhole" xml:space="preserve">
+    <value>تأخذ معظم التفضيلات عددًا صحيحًا، مثل "50".</value>
+  </data>
+  <data name="Issue_MoveTheValueIntoColumn" xml:space="preserve">
+    <value>انقل القيمة إلى العمود B: "{0},{1}".</value>
+  </data>
+  <data name="Issue_NameDoesNothingOnCurrent" xml:space="preserve">
+    <value>"{0}" لا يفعل شيئًا على البرنامج الثابت الحالي: {1}. يُحفظ الصف تمامًا كما كتبته.</value>
+  </data>
+  <data name="Issue_NameIsANameWindows" xml:space="preserve">
+    <value>"{0}" اسم يحجزه Windows للأجهزة، لذا لا يمكن أن يكون اسم ملف هناك.</value>
+  </data>
+  <data name="Issue_NameIsNotAValid" xml:space="preserve">
+    <value>"{0}" ليس اسم ملف إعدادات صالحًا.</value>
+  </data>
+  <data name="Issue_NameIsTooLongSo" xml:space="preserve">
+    <value>"{0}" طويل جدًا، لذا لن يتمكن QuadStick من تحميله. يمكن أن يكون اسم الملف الشخصي {1} حرفًا كحد أقصى، بما في ذلك ".csv"، وهذا الاسم يحتوي على {2}.</value>
+  </data>
+  <data name="Issue_NameSetToNMeans" xml:space="preserve">
+    <value>تعيين "{0}" إلى {1} يعني شيئًا مختلفًا حسب البرنامج الثابت الخاص بـ QuadStick: {2}. يُحفظ الصف تمامًا كما كتبته.</value>
+  </data>
+  <data name="Issue_NoOutputFunctionTheDevice" xml:space="preserve">
+    <value>لا توجد وظيفة إخراج؛ يتعامل الجهاز مع الخانة الفارغة على أنها "normal".</value>
+  </data>
+  <data name="Issue_NothingInTheFirmwareEver" xml:space="preserve">
+    <value>لا شيء في البرنامج الثابت يقرأه إطلاقًا</value>
+  </data>
+  <data name="Issue_OnAPreferencesSheetThe" xml:space="preserve">
+    <value>في ورقة Preferences يقرأ الجهاز قيمة "{0}" من العمود B، لكن B فارغ والقيمة موجودة في العمود C. (ورقة النمط تستخدم العمود C؛ وورقة Preferences تستخدم العمود B.)</value>
+  </data>
+  <data name="Issue_OpenCustomOutputNamesAnd" xml:space="preserve">
+    <value>افتح "Custom output names" واختر الزر الذي يمثله "{0}".</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs" xml:space="preserve">
+    <value>{0} لـ "{1}" هو {2}، وهذا يتجاوز حد الجهاز البالغ {3}</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs2" xml:space="preserve">
+    <value>{0} لـ "{1}" هو {2}، وهذا أقل من الحد الأدنى للجهاز البالغ {3}.</value>
+  </data>
+  <data name="Issue_Parts0IsNotA" xml:space="preserve">
+    <value>"{0}" ليست وظيفة إخراج موثّقة، لذا يرجع الجهاز إلى "normal" لهذا الصف.</value>
+  </data>
+  <data name="Issue_Parts0IsNotA2" xml:space="preserve">
+    <value>"{0}" ليست وظيفة إخراج موثّقة. تبدأ بـ "{1}"، ويتوقف الجهاز عن المطابقة عند هذا الحد، لذا يتصرف هذا الصف وكأنه "{2}".</value>
+  </data>
+  <data name="Issue_Parts0TakesAtMost" xml:space="preserve">
+    <value>"{0}" تقبل {1} معاملًا كحد أقصى، ووُجد {2}. يقرأ الجهاز ما يعرفه منها ويتجاهل الباقي.</value>
+  </data>
+  <data name="Issue_PickAnInputFromThe" xml:space="preserve">
+    <value>اختر إدخالًا من القائمة المنسدلة Inputs، مثل "mp_left_sip" أو "lip"، أو انقل النص إلى عمود الملاحظات.</value>
+  </data>
+  <data name="Issue_PickAnOutputFromThe" xml:space="preserve">
+    <value>اختر إخراجًا من قائمة المحرر، مثل "x" أو "left_trigger" أو "mouse_up".</value>
+  </data>
+  <data name="Issue_PickAnotherNameForExample" xml:space="preserve">
+    <value>اختر اسمًا آخر، مثل "game.csv".</value>
+  </data>
+  <data name="Issue_PickTheGameButtonOr" xml:space="preserve">
+    <value>اختر زر اللعبة أو الإجراء الذي يتحكم فيه هذا الصف، مثل "x" أو "left_trigger".</value>
+  </data>
+  <data name="Issue_PreferANewFilenameThe" xml:space="preserve">
+    <value>يُفضَّل اختيار اسم ملف جديد. سيطلب المثبّت تأكيدًا صريحًا قبل الكتابة فوق default.csv.</value>
+  </data>
+  <data name="Issue_PrefsCsvIsTheDevice" xml:space="preserve">
+    <value>prefs.csv هو ملف تفضيلات الجهاز، وليس إعدادات لعبة.</value>
+  </data>
+  <data name="Issue_PutThePreferenceSValue" xml:space="preserve">
+    <value>ضع قيمة التفضيل في العمود B.</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn" xml:space="preserve">
+    <value>ضع القيمة في العمود C: "{0},,{1}".</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn2" xml:space="preserve">
+    <value>ضع القيمة في العمود C.</value>
+  </data>
+  <data name="Issue_RaiseHiNameToLong" xml:space="preserve">
+    <value>ارفع "{0}" إلى {1} أو أكثر، أو اخفض "{2}".</value>
+  </data>
+  <data name="Issue_RaiseUpperToLongLo" xml:space="preserve">
+    <value>ارفع "{0}" إلى {1} أو أكثر، أو اخفض "{2}".</value>
+  </data>
+  <data name="Issue_RemoveModesUntilThereAre" xml:space="preserve">
+    <value>احذف الأنماط حتى يتبقى 16 نمطًا كحد أقصى.</value>
+  </data>
+  <data name="Issue_RemoveTheExtraValues" xml:space="preserve">
+    <value>احذف القيم الزائدة.</value>
+  </data>
+  <data name="Issue_RemoveTheRowOrLeave" xml:space="preserve">
+    <value>احذف الصف، أو اتركه من أجل جهاز QuadStick أقدم لا يزال يستجيب له.</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole" xml:space="preserve">
+    <value>استبدله برقم صحيح، مثل "50".</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole2" xml:space="preserve">
+    <value>استبدله برقم صحيح، مثل "repeat 4".</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick" xml:space="preserve">
+    <value>"reset_quadstick" يعيد تشغيل QuadStick، وهذا الصف يُطلقه من مفتاح الدفع في قطعة الفم. إذا ظل "push" مضغوطًا عند حدوث إعادة التشغيل، يدخل الجهاز إلى محمّل برنامجه الثابت ويتوقف عن العمل كوحدة تحكم حتى يُفصل ثم يُعاد توصيله.</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick2" xml:space="preserve">
+    <value>"reset_quadstick" يعيد تشغيل QuadStick. ستفقد أي لعبة تلعبها الاتصال بوحدة التحكم لبضع ثوانٍ.</value>
+  </data>
+  <data name="Issue_SetItToAName" xml:space="preserve">
+    <value>اجعله اسمًا مثل "mygame.csv".</value>
+  </data>
+  <data name="Issue_SetItToNormalTo" xml:space="preserve">
+    <value>اجعله "normal" لتوضيح ذلك صراحةً.</value>
+  </data>
+  <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
+    <value>قصّره إلى {0} حرفًا أو أقل، مثل "game.csv".</value>
+  </data>
+  <data name="Issue_TheCellUnderTheFirst" xml:space="preserve">
+    <value>يجب أن تحتوي الخانة الواقعة تحت الكلمة المفتاحية للورقة الأولى على اسم ملف CSV.</value>
+  </data>
+  <data name="Issue_TheDeviceDoesNotMatch" xml:space="preserve">
+    <value>لا يتعرّف الجهاز على "{0}" كقناة اتصال، لذا يتصل هذا النمط عبر USB بدلًا من ذلك.</value>
+  </data>
+  <data name="Issue_TheDeviceReadsAValue" xml:space="preserve">
+    <value>يقرأ الجهاز القيمة باستخدام دالة atoi بحجم 32 بت، لذا أي قيمة خارج النطاق من -2147483648 إلى 2147483647 تصل كرقم مختلف.</value>
+  </data>
+  <data name="Issue_TheDeviceStoresItIn" xml:space="preserve">
+    <value>. يخزّنها الجهاز في 14 بت، لذا تصل كـ {0}.</value>
+  </data>
+  <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
+    <value>يدعم الجهاز 16 نمطًا؛ ويتجاهل هذا النمط وأي نمط بعده.</value>
+  </data>
+  <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
+    <value>تتداخل حدود {0} مع بعضها البعض: "{1}" هي {2} و"{3}" هي {4}.</value>
+  </data>
+  <data name="Issue_TheFirmwareSetsItBack" xml:space="preserve">
+    <value>يعيد البرنامج الثابت ضبطها إلى 0 بعد كل عملية تحميل، والكود الذي كان يستخدمها معطّل بالتعليق</value>
+  </data>
+  <data name="Issue_TheQuadStickHasNoPreference" xml:space="preserve">
+    <value>لا يملك QuadStick تفضيلًا باسم "{0}"، لذا يتجاوز هذا الصف ولا يُحدث الإعداد أي تأثير. يُحفظ تمامًا كما كتبته.</value>
+  </data>
+  <data name="Issue_TheToneItUsedTo" xml:space="preserve">
+    <value>النغمة التي كانت تُطلقها معطّلة بالتعليق</value>
+  </data>
+  <data name="Issue_TheTwoNeedAtLeast" xml:space="preserve">
+    <value>يجب أن يفصل بينهما 2 على الأقل.</value>
+  </data>
+  <data name="Issue_TheValuesItKnowsAre" xml:space="preserve">
+    <value>القيم التي يعرفها هي: {0}.</value>
+  </data>
+  <data name="Issue_ThisEditsDefaultCsvThe" xml:space="preserve">
+    <value>هذا يعدّل default.csv، وهو ملف الجهاز الاحتياطي المصمم للبقاء دون تغيير. قيمة محاكاة USB خاطئة فيه يمكن أن تعطّل الوصول إلى محرك الأقراص، وتتطلب الاستعادة مسحًا إجباريًا ماديًا.</value>
+  </data>
+  <data name="Issue_ThisModeHasCountedCount" xml:space="preserve">
+    <value>يحتوي هذا النمط على {0} صفًا يتضمن اسم إخراج؛ يقرأ الجهاز أول 128 صفًا ويتجاهل الباقي.</value>
+  </data>
+  <data name="Issue_ThisRowHasNoOutput" xml:space="preserve">
+    <value>لا يحتوي هذا الصف على اسم إخراج. يتجاوزه الجهاز، ويحذفه كلا المحوّلين الرسميين، لذا لا يُحدث هذا الصف أي تأثير.</value>
+  </data>
+  <data name="Issue_TrimTheModeTo128" xml:space="preserve">
+    <value>قلّص النمط إلى 128 صفًا.</value>
+  </data>
+  <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
+    <value>يؤدي تساوي الحدين إلى قسمة الجهاز على صفر في كل مرة يقرأ فيها الأنبوب.</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
+    <value>وضع محاكاة USB {0} ({1}) لا يتيح للكمبيوتر الوصول إلى محرك أقراص QuadStick، وهذا الملف من الملفات التي يُقلع بها الجهاز. تثبيته لن يترك أي طريقة لتعديل أي ملف شخصي لاحقًا، والاستعادة تتطلب مسحًا إجباريًا ماديًا.</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat2" xml:space="preserve">
+    <value>وضع محاكاة USB {0} ({1}) لا يتيح للكمبيوتر الوصول إلى محرك أقراص QuadStick، لذا تختفي الملفات من الكمبيوتر أثناء تشغيل هذا الملف الشخصي.</value>
+  </data>
+  <data name="Issue_UpperIsHiValueAnd" xml:space="preserve">
+    <value>"{0}" هي {1} و"{2}" هي {3}. يجب أن يفصل بينهما {4} على الأقل، وإلا تداخل الإعدادان.</value>
+  </data>
+  <data name="Issue_Use1ForOnOr" xml:space="preserve">
+    <value>استخدم 1 للتشغيل أو 0 للإيقاف.</value>
+  </data>
+  <data name="Issue_UseADifferentNameUnless" xml:space="preserve">
+    <value>استخدم اسمًا مختلفًا إلا إذا كنت تنوي تغيير التفضيلات.</value>
+  </data>
+  <data name="Issue_UseAValueInsideThat" xml:space="preserve">
+    <value>استخدم قيمة ضمن هذا النطاق.</value>
+  </data>
+  <data name="Issue_UseAValueOf0" xml:space="preserve">
+    <value>استخدم قيمة 0 أو أكثر.</value>
+  </data>
+  <data name="Issue_UseAValueUpTo" xml:space="preserve">
+    <value>استخدم قيمة حتى {0}.</value>
+  </data>
+  <data name="Issue_UseAWholeNumber" xml:space="preserve">
+    <value>استخدم رقمًا صحيحًا.</value>
+  </data>
+  <data name="Issue_UseBothSoTheMode" xml:space="preserve">
+    <value>استخدم "both" حتى يعمل النمط عبر أي من الاتصالين، أو "usb" إذا كان سيُستخدم موصولًا دائمًا فقط.</value>
+  </data>
+  <data name="Issue_UseMaxOrLess" xml:space="preserve">
+    <value>استخدم {0} أو أقل.</value>
+  </data>
+  <data name="Issue_UseMinOrMore" xml:space="preserve">
+    <value>استخدم {0} أو أكثر.</value>
+  </data>
+  <data name="Issue_UseMode023" xml:space="preserve">
+    <value>استخدم النمط 0 أو 2 أو 3 أو 4 هنا، واضبط النمط الآخر في ملف شخصي للعبة بدلًا من ذلك.</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin" xml:space="preserve">
+    <value>استخدم إحدى القيم التالية: {0}.</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin2" xml:space="preserve">
+    <value>استخدم إحدى القيم التالية: {0}.</value>
+  </data>
+  <data name="Issue_UseTheFormSomethingCsv" xml:space="preserve">
+    <value>استخدم الصيغة "something.csv" دون مسافات أو رموز خاصة.</value>
+  </data>
+  <data name="Issue_UseUsbBluetoothBothOr" xml:space="preserve">
+    <value>استخدم "usb" أو "bluetooth" أو "both" أو "none"، بأحرف صغيرة.</value>
+  </data>
+  <data name="Issue_ValueInCIsAWordB" xml:space="preserve">
+    <value>"{0}" هي كلمة. تقبل "{1}" كلمة في ورقة الإعدادات، لكن قيمة صف النمط تُقرأ كرقم، لذا يضبطها الجهاز هنا على 0.</value>
+  </data>
+  <data name="Issue_ValueInCIsNotAWhole" xml:space="preserve">
+    <value>"{0}" ليست رقمًا صحيحًا. "{1}" هو إعداد جهاز؛ وهذه الخانة هي قيمته.</value>
+  </data>
+  <data name="Issue_ValueInCIsTooBigFor" xml:space="preserve">
+    <value>"{0}" أكبر من أن يقرأه الجهاز. {1}</value>
+  </data>
+  <data name="Issue_ValueInColumnBIs" xml:space="preserve">
+    <value>"{0}" في العمود B هي قيمة "{1}" لكنها ليست رقمًا صحيحًا.</value>
+  </data>
+  <data name="Issue_ValueIsAboveMaxThe" xml:space="preserve">
+    <value>"{0}" أعلى من {1}، وهي أعلى قيمة يتيحها المدير الرسمي لـ "{2}". لا يزال الجهاز يقبلها، لكنها خارج النطاق الذي جرى اختباره.</value>
+  </data>
+  <data name="Issue_ValueIsBelowMinThe" xml:space="preserve">
+    <value>"{0}" أقل من {1}، وهي أدنى قيمة يتيحها المدير الرسمي لـ "{2}". لا يزال الجهاز يقبلها، لكنها خارج النطاق الذي جرى اختباره.</value>
+  </data>
+  <data name="Issue_ValueIsNotAValue" xml:space="preserve">
+    <value>"{0}" ليست قيمة يعرفها هذا التطبيق لـ "{1}". تُكتب في الملف دون تغيير، وقد يقرأها جهاز QuadStick أحدث دون مشكلة.</value>
+  </data>
+  <data name="Issue_ValueIsNotAnOn" xml:space="preserve">
+    <value>"{0}" ليست قيمة تشغيل/إيقاف لـ "{1}". يقرأها الجهاز كرقم، لذا أي قيمة غير 0 تُعد تشغيلًا.</value>
+  </data>
+  <data name="Issue_ValueIsNotOneOf" xml:space="preserve">
+    <value>"{0}" ليست إحدى القيم التي تقبلها "{1}".</value>
+  </data>
+  <data name="Issue_ValueIsTooBigFor" xml:space="preserve">
+    <value>"{0}" أكبر من أن يقرأه الجهاز. {1}</value>
+  </data>
+  <data name="Jack_BottomJack" xml:space="preserve">
+    <value>المقبس السفلي</value>
+  </data>
+  <data name="Jack_FirstSwitch" xml:space="preserve">
+    <value>المفتاح الأول</value>
+  </data>
+  <data name="Jack_LipJack" xml:space="preserve">
+    <value>مقبس الشفة</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe" xml:space="preserve">
+    <value>وصّل مفتاحًا واحدًا بالمقبس العلوي ليصل كـ digital_in_8. المقسّم فقط هو من يستخدم digital_in_7 أيضًا.</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe2" xml:space="preserve">
+    <value>وصّل مفتاحًا واحدًا بالمقبس السفلي ليصل كـ digital_in_1. المقسّم فقط هو من يستخدم digital_in_2 أيضًا.</value>
+  </data>
+  <data name="Jack_PortOneSwitch" xml:space="preserve">
+    <value>{0}، مفتاح واحد</value>
+  </data>
+  <data name="Jack_PortSplitterPosition" xml:space="preserve">
+    <value>{0}، مقسّم، {1}</value>
+  </data>
+  <data name="Jack_SecondSwitch" xml:space="preserve">
+    <value>المفتاح الثاني</value>
+  </data>
+  <data name="Jack_TheMiddleJackIsThe" xml:space="preserve">
+    <value>المقبس الأوسط هو مفتاح الشفة. المقسّم هناك يعطي digital_in_5 و digital_in_6.</value>
+  </data>
+  <data name="Jack_TheUSBAPortS" xml:space="preserve">
+    <value>سنّات بيانات منفذ USB-A نفسه، تُقرأ كمفاتيح عادية. لا يتصل بها شيء من خارج الهيكل.</value>
+  </data>
+  <data name="Jack_TopJack" xml:space="preserve">
+    <value>المقبس العلوي</value>
+  </data>
+  <data name="Jack_USBADataPins" xml:space="preserve">
+    <value>سنّات بيانات USB-A</value>
+  </data>
+  <data name="Lights_NoLights" xml:space="preserve">
+    <value>لا توجد أضواء</value>
+  </data>
+  <data name="Parse_BeginTheCellWithThe" xml:space="preserve">
+    <value>ابدأ الخانة بالكلمة المفتاحية للورقة، مثل "Profile Name".</value>
+  </data>
+  <data name="Parse_DeleteRowsAboveTheFirst" xml:space="preserve">
+    <value>احذف الصفوف الواقعة فوق ترويسة الورقة الأولى.</value>
+  </data>
+  <data name="Parse_FirstCellMustContainProfile" xml:space="preserve">
+    <value>يجب أن تحتوي الخانة الأولى على "Profile" أو أن تكون "Preferences" أو "Infrared". وُجد "{0}".</value>
+  </data>
+  <data name="Parse_KeepANoteOnA" xml:space="preserve">
+    <value>اجعل الملاحظة في سطر واحد.</value>
+  </data>
+  <data name="Parse_KeepLettersNumbersSpacesAnd" xml:space="preserve">
+    <value>استخدم فقط الأحرف والأرقام والمسافات و"_ . -"، أو انقل النص إلى عمود الملاحظات.</value>
+  </data>
+  <data name="Parse_MoveItAboveTheFirst" xml:space="preserve">
+    <value>انقله إلى ما قبل أول صف فارغ أو احذفه.</value>
+  </data>
+  <data name="Parse_RawA1DoesNotSTARTWith" xml:space="preserve">
+    <value>"{0}" لا يبدأ بـ "Profile" أو "Preferences" أو "Infrared" (بنفس حالة الأحرف تمامًا)، لذا يتجاوز الجهاز هذه الورقة بأكملها.</value>
+  </data>
+  <data name="Parse_RowR1AppearsAfter" xml:space="preserve">
+    <value>يظهر الصف {0} بعد صف فارغ، حيث يتوقف الجهاز عن قراءة هذا النمط، لذا لا يُحدث هذا الصف أي تأثير.</value>
+  </data>
+  <data name="Parse_RowR1HasA" xml:space="preserve">
+    <value>يحتوي الصف {0} على خانة بها أكثر من سطر واحد. يقرأ الجهاز كل سطر كصف منفصل، وأي سطر فارغ بينها يوقف قراءة بقية هذا النمط، لذا يدمجها الحفظ في سطر واحد.</value>
+  </data>
+  <data name="Parse_RowR1IsLonger" xml:space="preserve">
+    <value>الصف {0} أطول من {1} حرفًا بما في ذلك التعليقات. يقرأ الجهاز الصف في ذاكرة مؤقتة سعتها 1024 بايت، ويعيد ما زاد وكأنه الصف التالي. وحسب موضع الانقطاع، قد يُنهي ذلك النمط مبكرًا ويُسقط كل صف بعده.</value>
+  </data>
+  <data name="Parse_SectionStarts0ScanFromRowS" xml:space="preserve">
+    <value>{0} من الصفوف قبل الكلمة المفتاحية للورقة الأولى ليست جزءًا من أي ورقة.</value>
+  </data>
+  <data name="Parse_SetCellA1ToThe" xml:space="preserve">
+    <value>اجعل الخانة A1 تحتوي على الكلمة المفتاحية لنوع الورقة، مثل "Profile Name".</value>
+  </data>
+  <data name="Parse_ShortenItTo63Characters" xml:space="preserve">
+    <value>قصّره إلى 63 حرفًا أو أقل.</value>
+  </data>
+  <data name="Parse_ShortenTheRowSComments" xml:space="preserve">
+    <value>قصّر تعليقات الصف.</value>
+  </data>
+  <data name="Parse_ThisCellIsValueLength" xml:space="preserve">
+    <value>هذه الخانة طولها {0} حرفًا. يتوقف الجهاز عن البحث عن نهاية الخانة بعد 64 حرفًا، لذا يقرأ هذه الخانة وكل ما بعدها في هذا الصف على أنها فارغة.</value>
+  </data>
+  <data name="Parse_ValueContainsValueAtThe" xml:space="preserve">
+    <value>"{0}" يحتوي على "{1}". ينهي الجهاز الخانة عند ذلك الحرف، لذا يقرأها كخانتين ("{2}" و"{3}")، وينتقل كل ما بعدها في هذا الصف عمودًا واحدًا.</value>
+  </data>
+  <data name="Pref_Advanced" xml:space="preserve">
+    <value>متقدم</value>
+  </data>
+  <data name="Pref_Bluetooth" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="Pref_InputsAndOutputs" xml:space="preserve">
+    <value>المدخلات والمخرجات</value>
+  </data>
+  <data name="Pref_Joystick" xml:space="preserve">
+    <value>عصا التحكم</value>
+  </data>
+  <data name="Pref_LipSensor" xml:space="preserve">
+    <value>مستشعر الشفة</value>
+  </data>
+  <data name="Pref_Mouse" xml:space="preserve">
+    <value>الماوس</value>
+  </data>
+  <data name="Pref_SipAndPuff" xml:space="preserve">
+    <value>Sip وPuff</value>
+  </data>
+  <data name="Pref_SoundAndLights" xml:space="preserve">
+    <value>الصوت والإضاءة</value>
+  </data>
+  <data name="Pref_UsbAndCompatibility" xml:space="preserve">
+    <value>USB والتوافق</value>
+  </data>
+  <data name="Sheet_CauseMissedNotReadAt" xml:space="preserve">
+    <value>لم تتم قراءة {0} {1} إطلاقًا، لذا لا يمكننا معرفة ما بداخلها. قسّم الأنماط التي تحتاجها على جداول بيانات أصغر واستوردها واحدًا تلو الآخر.</value>
+  </data>
+  <data name="Sheet_EveryTabFromThereOn" xml:space="preserve">
+    <value>كل علامة تبويب بعد ذلك كانت</value>
+  </data>
+  <data name="Sheet_EveryTabPastThatWas" xml:space="preserve">
+    <value>كل علامة تبويب بعد تلك كانت</value>
+  </data>
+  <data name="Sheet_LeftJoy" xml:space="preserve">
+    <value>Left joy</value>
+  </data>
+  <data name="Sheet_LeftMoreTabsWere" xml:space="preserve">
+    <value>كانت هناك {0} علامة تبويب أخرى</value>
+  </data>
+  <data name="Sheet_OneMoreTabWas" xml:space="preserve">
+    <value>كانت هناك علامة تبويب أخرى واحدة</value>
+  </data>
+  <data name="Sheet_RightJoy" xml:space="preserve">
+    <value>Right joy</value>
+  </data>
+  <data name="Sheet_TabPastTheRowCap" xml:space="preserve">
+    <value>تحتوي علامة التبويب "{0}" على خانات أسفل الصف {1}، وهو موضع أبعد بكثير من نهاية أي ملف شخصي، لذا توقفنا عن قراءة تلك العلامة عند هذا الحد ولا يمكننا معرفة ما تحته. إذا كانت هذه خانة عالقة من عملية لصق، فإن حذف الصفوف الفارغة أسفل علامة التبويب وإعادة الاستيراد سيزيل هذه المشكلة.</value>
+  </data>
+  <data name="Sheet_ThatSpreadsheetHoldsAPart" xml:space="preserve">
+    <value>يحتوي جدول البيانات ذاك على جزء بحجم {0} ميغابايت، وهو أكبر بكثير من أي ملف شخصي، لذا لم تتم قراءته.</value>
+  </data>
+  <data name="Sheet_ThisSpreadsheetHasMoreThan" xml:space="preserve">
+    <value>يحتوي جدول البيانات هذا على أكثر من {0} علامة تبويب، وقرأنا أول {1} منها.</value>
+  </data>
+  <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
+    <value>يحتوي جدول البيانات هذا على أكثر من {0} صف، وهو أكبر بكثير من أي ملف شخصي، لذا توقفنا عن القراءة في منتصف الطريق.</value>
+  </data>
+</root>

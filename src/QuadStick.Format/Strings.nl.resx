@@ -1,0 +1,686 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Device_DeclaredIsTooLongFor" xml:space="preserve">
+    <value>"{0}" is te lang om door de QuadStick te worden geladen, dus er is niets geschreven. Een profielnaam mag maximaal {1} tekens lang zijn, ".csv" meegerekend, en deze is {2}. Verkort de naam in cel A2 en installeer opnieuw.</value>
+  </data>
+  <data name="Device_FileNameIsNoLongerOn" xml:space="preserve">
+    <value>{0} staat niet meer op het apparaat. Vernieuw de lijst en probeer het opnieuw.</value>
+  </data>
+  <data name="Device_FileNameIsProtectedAndCannot" xml:space="preserve">
+    <value>{0} is beveiligd en kan niet worden verwijderd. Verwijderen kan het apparaat onbruikbaar maken.</value>
+  </data>
+  <data name="Device_NameIsNotAPlain" xml:space="preserve">
+    <value>"{0}" is geen eenvoudige bestandsnaam die de QuadStick kan bevatten, dus er is niets geschreven. Wijzig cel A2 naar een eenvoudige naam zoals "mygame.csv".</value>
+  </data>
+  <data name="Device_OnlyAPlainFileName" xml:space="preserve">
+    <value>Alleen een eenvoudige bestandsnaam op de hoofdmap van het apparaat kan worden verwijderd, geen pad.</value>
+  </data>
+  <data name="Device_RefusingToOverwriteDefaultCsv" xml:space="preserve">
+    <value>Weigert default.csv te overschrijven zonder uitdrukkelijke bevestiging. Een verkeerd default.csv kan de toegang tot de flashdrive uitschakelen.</value>
+  </data>
+  <data name="Device_RefusingToOverwritePrefsCsv" xml:space="preserve">
+    <value>Weigert prefs.csv te overschrijven zonder uitdrukkelijke bevestiging. prefs.csv bevat apparaatbrede instellingen, en een verkeerde kan de QuadStick onbruikbaar maken.</value>
+  </data>
+  <data name="Device_ThatFileIsNotDirectly" xml:space="preserve">
+    <value>Dat bestand staat niet direct in de hoofdmap van het apparaat, dus het is niet verwijderd.</value>
+  </data>
+  <data name="Device_ThatFolderDoesNotLook" xml:space="preserve">
+    <value>Die map lijkt niet op een QuadStick-schijf (geen default.csv in de hoofdmap). Kies het USB-volume dat verschijnt wanneer het apparaat is aangesloten.</value>
+  </data>
+  <data name="Device_TheQuadStickWasDisconnectedWhile" xml:space="preserve">
+    <value>De QuadStick werd losgekoppeld terwijl {0} werd geschreven. Uw vorige versie is veilig opgeslagen op {1}. Sluit het apparaat opnieuw aan, controleer of {2} er nog op staat, en installeer opnieuw.</value>
+  </data>
+  <data name="Device_ThisProfileHasValidationErrors" xml:space="preserve">
+    <value>Dit profiel heeft validatiefouten en kan niet worden geïnstalleerd:
+</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapAnd" xml:space="preserve">
+    <value>Schrijven mislukte halverwege de wissel en {0} kon niet worden teruggezet op de QuadStick. Uw vorige versie is veilig opgeslagen op {1}. Kopieer deze handmatig naar het apparaat.</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapThe" xml:space="preserve">
+    <value>Schrijven mislukte halverwege de wissel; de vorige versie van {0} is hersteld vanuit de back-up. Het apparaat is ongewijzigd.</value>
+  </data>
+  <data name="Fn_10ASecond" xml:space="preserve">
+    <value>10 per seconde</value>
+  </data>
+  <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
+    <value>1 zet de output aan en houdt hem vast. Alles boven 1 bepaalt hoe lang de druk duurt.</value>
+  </data>
+  <data name="Fn_CountsAsATap" xml:space="preserve">
+    <value>Telt als een tik</value>
+  </data>
+  <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
+    <value>Wordt geactiveerd zodra uw input minstens zo sterk is.</value>
+  </data>
+  <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
+    <value>Wordt geactiveerd zolang uw input onder deze sterkte blijft.</value>
+  </data>
+  <data name="Fn_FirstHold" xml:space="preserve">
+    <value>Eerste keer vasthouden</value>
+  </data>
+  <data name="Fn_HoldOn" xml:space="preserve">
+    <value>Vasthouden</value>
+  </data>
+  <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
+    <value>Houd de input langer dan dit vast en de output blijft aan staan in plaats van te tikken.</value>
+  </data>
+  <data name="Fn_HoldToLatch" xml:space="preserve">
+    <value>Vasthouden om te vergrendelen</value>
+  </data>
+  <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
+    <value>Houdt de eerste tik zo lang vast voordat het snelvuur begint.</value>
+  </data>
+  <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
+    <value>blijft vast zolang u vasthoudt</value>
+  </data>
+  <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
+    <value>Hoe ver de analoge output elke keer omlaag beweegt.</value>
+  </data>
+  <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
+    <value>Hoe ver de analoge output elke keer omhoog beweegt.</value>
+  </data>
+  <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
+    <value>Hoe snel het tikt terwijl u de input vasthoudt.</value>
+  </data>
+  <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
+    <value>Hoe lang elke druk duurt.</value>
+  </data>
+  <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
+    <value>Hoe lang de tik drukt. 1 zet de output in plaats daarvan aan en houdt hem vast.</value>
+  </data>
+  <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
+    <value>Hoeveel drukken één activering verstuurt.</value>
+  </data>
+  <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
+    <value>Blijft zo vaak stappen zolang u de input vasthoudt.</value>
+  </data>
+  <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
+    <value>Houdt de output zo lang ingedrukt nadat u loslaat.</value>
+  </data>
+  <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
+    <value>Laat los binnen dit venster en het telt als een tik. Houd langer vast en er gebeurt niets.</value>
+  </data>
+  <data name="Fn_NoExtraHold" xml:space="preserve">
+    <value>geen extra vasthouden</value>
+  </data>
+  <data name="Fn_NoUpperLimit" xml:space="preserve">
+    <value>geen bovengrens</value>
+  </data>
+  <data name="Fn_OnePress" xml:space="preserve">
+    <value>één druk</value>
+  </data>
+  <data name="Fn_OneStepPerActivation" xml:space="preserve">
+    <value>één stap per activering</value>
+  </data>
+  <data name="Fn_ReleasedAtOnce" xml:space="preserve">
+    <value>allemaal tegelijk losgelaten</value>
+  </data>
+  <data name="Fn_RepeatEvery" xml:space="preserve">
+    <value>Herhaal elke</value>
+  </data>
+  <data name="Fn_Sentence" xml:space="preserve">
+    <value>{0}: {1} tot {2}. Leeg betekent {3}. {4}</value>
+  </data>
+  <data name="Fn_SentenceWithUnit" xml:space="preserve">
+    <value>{0}: {1} tot {2} {5}. Leeg betekent {3}. {4}</value>
+  </data>
+  <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
+    <value>Stopt weer met activeren zodra uw input hierboven komt, zodat de twee getallen een band vormen.</value>
+  </data>
+  <data name="Fn_TapsASecond" xml:space="preserve">
+    <value>tikken per seconde</value>
+  </data>
+  <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
+    <value>De lengte van de aan-uitcyclus bij volle sterkte. Een zachtere input rekt deze op.</value>
+  </data>
+  <data name="Fn_UpperLimit" xml:space="preserve">
+    <value>Bovengrens</value>
+  </data>
+  <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
+    <value>Wacht zo lang nadat u activeert, en drukt dan.</value>
+  </data>
+  <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
+    <value>Wacht zo lang voordat de vergrendelde output van de andere rij wordt losgelaten.</value>
+  </data>
+  <data name="Issue_0UsedToMeanNo" xml:space="preserve">
+    <value>0 betekende vroeger helemaal geen dode zone, en firmware uit 2025 vervangt dit door 129 ruwe counts, waardoor de stick een kleine dode zone krijgt die dit bestand nooit heeft gevraagd</value>
+  </data>
+  <data name="Issue_5WasPCOnlyNo" xml:space="preserve">
+    <value>5 was tot 2025 "alleen pc, geen joystick" en is nu de Nintendo Switch Pro Controller, dus een bijgewerkte QuadStick meldt zich bij de console of pc als een volledig andere controller</value>
+  </data>
+  <data name="Issue_ADirectionSettingLeftAt" xml:space="preserve">
+    <value> (Een {0}-instelling die op 0 blijft staan, gebruikt in plaats daarvan de gedeelde sip_puff_ waarde.)</value>
+  </data>
+  <data name="Issue_APercentOver100Is" xml:space="preserve">
+    <value>. Een percentage boven 100 is een niveau dat geen enkele input bereikt, dus deze rij wordt nooit geactiveerd.</value>
+  </data>
+  <data name="Issue_ArgsIHasADecimal" xml:space="preserve">
+    <value>"{0}" heeft een decimaal deel. Het apparaat leest alleen hele getallen, dus het gedraagt zich als "{1}".</value>
+  </data>
+  <data name="Issue_ArgsIIsLargerThan" xml:space="preserve">
+    <value>"{0}" is groter dan {1}, de limiet van het apparaat voor de eerste parameter; het loopt over in de tweede parameter.</value>
+  </data>
+  <data name="Issue_ArgsIIsNegativeThe" xml:space="preserve">
+    <value>"{0}" is negatief; het apparaat verwerkt negatieve parameters niet voorspelbaar.</value>
+  </data>
+  <data name="Issue_ArgsIIsNotA" xml:space="preserve">
+    <value>"{0}" is geen getal. Parameters voor "{1}" moeten hele getallen zijn, en het apparaat leest deze als 0.</value>
+  </data>
+  <data name="Issue_BActionNameHasNoButton" xml:space="preserve">
+    <value>"{0}" heeft nog geen knop erachter, dus deze rij doet niets op de QuadStick.</value>
+  </data>
+  <data name="Issue_BOutputHasNoValue" xml:space="preserve">
+    <value>"{0}" heeft geen waarde in kolom B, dus het apparaat leest dit als 0.</value>
+  </data>
+  <data name="Issue_BOutputIsADevice" xml:space="preserve">
+    <value>"{0}" is een apparaatinstelling en het apparaat leest de waarde uit kolom C, die hier leeg is. Kolom B wordt overgeslagen, dus deze rij kan de waarde op 0 zetten.</value>
+  </data>
+  <data name="Issue_BOutputIsADevice2" xml:space="preserve">
+    <value>"{0}" is een apparaatinstelling maar er volgt geen waarde, dus het apparaat zet deze op 0.</value>
+  </data>
+  <data name="Issue_BOutputIsALegacy" xml:space="preserve">
+    <value>"{0}" is een verouderde outputnaam: de firmware kent deze, maar de huidige officiële lijst bevat hem niet.</value>
+  </data>
+  <data name="Issue_BOutputIsNotA" xml:space="preserve">
+    <value>"{0}" is geen gedocumenteerde outputnaam (PlayStation- of XBox-conventie).</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRow" xml:space="preserve">
+    <value>Deze modus staat op "{0}" en heeft {1} muis- of toetsenbordrij, op rij {2}. Firmware uit 2025 of nieuwer stuurt muis en toetsenbord alleen via USB wanneer het kanaal USB omvat, dus via een kabel doet die rij niets terwijl de gamepadhelft van de modus blijft werken. Oudere firmware stuurde ze sowieso.</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRows" xml:space="preserve">
+    <value>Deze modus staat op "{0}" en heeft {1} muis- of toetsenbordrijen, de eerste op rij {2}. Firmware uit 2025 of nieuwer stuurt muis en toetsenbord alleen via USB wanneer het kanaal USB omvat, dus via een kabel doen die rijen niets terwijl de gamepadhelft van de modus blijft werken. Oudere firmware stuurde ze sowieso.</value>
+  </data>
+  <data name="Issue_BothNeedsFirmwareFrom2025" xml:space="preserve">
+    <value>"both" vereist firmware uit 2025 of nieuwer. Een QuadStick met oudere firmware kent dit woord niet, voert deze modus alleen via USB uit, en zegt niets over de Bluetooth-helft.</value>
+  </data>
+  <data name="Issue_CheckTheSpellingAgainstThe" xml:space="preserve">
+    <value>Controleer de spelling aan de hand van de voorkeuren die uw apparaat al heeft. (Firmware nieuwer dan deze app heeft namen die deze nog nooit heeft gezien.)</value>
+  </data>
+  <data name="Issue_CheckWhichFirmwareYourQuadStick" xml:space="preserve">
+    <value>Controleer welke firmware uw QuadStick gebruikt voordat u op deze rij vertrouwt.</value>
+  </data>
+  <data name="Issue_DidYouMeanNearIf" xml:space="preserve">
+    <value>Bedoelde u "{0}"? (Als de firmware van uw QuadStick nieuwer is dan deze app, kent deze mogelijk "{1}" en kunt u deze waarschuwing negeren.)</value>
+  </data>
+  <data name="Issue_DualShock4WithNoUSB" xml:space="preserve">
+    <value>DualShock 4 zonder USB-schijf</value>
+  </data>
+  <data name="Issue_ExpectedForThisConsoleSwitch" xml:space="preserve">
+    <value>Verwacht voor deze console. Zet de QuadStick terug naar een ander profiel om de bestanden opnieuw te kunnen bewerken.</value>
+  </data>
+  <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
+    <value>Activeer dit vanuit iets anders dan push, of vanuit een combinatie die push niet alleen kan vasthouden.</value>
+  </data>
+  <data name="Issue_FunctionReads0ForP" xml:space="preserve">
+    <value>"{0}" leest 0 voor {1} als helemaal geen waarde, dus het apparaat gebruikt {2}.</value>
+  </data>
+  <data name="Issue_InputIsALegacyInput" xml:space="preserve">
+    <value>"{0}" is een verouderde inputnaam: de firmware kent deze, maar de huidige officiële lijst bevat hem niet.</value>
+  </data>
+  <data name="Issue_InputIsNotADocumented" xml:space="preserve">
+    <value>"{0}" is geen gedocumenteerde inputnaam, dus het apparaat negeert deze.</value>
+  </data>
+  <data name="Issue_ItReachesTheKeywordTable" xml:space="preserve">
+    <value>het bereikt de keyword-tabel en de settings-array en verder niets, dus de tweeminuten-watchdog loopt sowieso door</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer" xml:space="preserve">
+    <value>Het zou nog steeds moeten werken; geef de voorkeur aan een huidige naam als die bestaat, bijvoorbeeld "gyroscope_z_cw".</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer2" xml:space="preserve">
+    <value>Het zou nog steeds moeten werken; geef de voorkeur aan een huidige naam als die bestaat.</value>
+  </data>
+  <data name="Issue_KeepItIfThatIs" xml:space="preserve">
+    <value>Houd dit zo als dat is wat u wilt, en geef de voorkeur aan een input die moeilijk per ongeluk te activeren is.</value>
+  </data>
+  <data name="Issue_KeepItIfYourQuadStick" xml:space="preserve">
+    <value>Houd dit zo als uw QuadStick up-to-date is. Zo niet, gebruik "usb" of "bluetooth" en kies er een.</value>
+  </data>
+  <data name="Issue_LeaveItOutToMean" xml:space="preserve">
+    <value>Laat het weg om hetzelfde te betekenen, of stel {0} in tussen {1} en {2}.</value>
+  </data>
+  <data name="Issue_MostPreferencesTakeAWhole" xml:space="preserve">
+    <value>De meeste voorkeuren vereisen een heel getal, bijvoorbeeld "50".</value>
+  </data>
+  <data name="Issue_MoveTheValueIntoColumn" xml:space="preserve">
+    <value>Verplaats de waarde naar kolom B: "{0},{1}".</value>
+  </data>
+  <data name="Issue_NameDoesNothingOnCurrent" xml:space="preserve">
+    <value>"{0}" doet niets op de huidige firmware: {1}. De rij wordt opgeslagen precies zoals u deze heeft geschreven.</value>
+  </data>
+  <data name="Issue_NameIsANameWindows" xml:space="preserve">
+    <value>"{0}" is een naam die Windows reserveert voor hardware, dus het kan daar geen bestand zijn.</value>
+  </data>
+  <data name="Issue_NameIsNotAValid" xml:space="preserve">
+    <value>"{0}" is geen geldige configuratiebestandsnaam.</value>
+  </data>
+  <data name="Issue_NameIsTooLongSo" xml:space="preserve">
+    <value>"{0}" is te lang, dus de QuadStick kan het niet laden. Een profielnaam mag maximaal {1} tekens bevatten, inclusief ".csv", en deze telt er {2}.</value>
+  </data>
+  <data name="Issue_NameSetToNMeans" xml:space="preserve">
+    <value>"{0}" ingesteld op {1} betekent iets anders, afhankelijk van de firmware van de QuadStick: {2}. De rij wordt precies zo opgeslagen als u hem hebt geschreven.</value>
+  </data>
+  <data name="Issue_NoOutputFunctionTheDevice" xml:space="preserve">
+    <value>Geen uitvoerfunctie; het apparaat behandelt een lege waarde als "normal".</value>
+  </data>
+  <data name="Issue_NothingInTheFirmwareEver" xml:space="preserve">
+    <value>niets in de firmware leest dit ooit</value>
+  </data>
+  <data name="Issue_OnAPreferencesSheetThe" xml:space="preserve">
+    <value>Op een Preferences-blad leest het apparaat de waarde van "{0}" uit kolom B, maar B is leeg en de waarde staat in kolom C. (Een modusblad gebruikt kolom C; een Preferences-blad gebruikt kolom B.)</value>
+  </data>
+  <data name="Issue_OpenCustomOutputNamesAnd" xml:space="preserve">
+    <value>Open Custom output names en kies de knop waarvoor "{0}" staat.</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs" xml:space="preserve">
+    <value>{0} voor "{1}" is {2}, voorbij de limiet van het apparaat van {3}</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs2" xml:space="preserve">
+    <value>{0} voor "{1}" is {2}, onder het minimum van het apparaat van {3}.</value>
+  </data>
+  <data name="Issue_Parts0IsNotA" xml:space="preserve">
+    <value>"{0}" is geen gedocumenteerde uitvoerfunctie, dus het apparaat valt voor deze rij terug op "normal".</value>
+  </data>
+  <data name="Issue_Parts0IsNotA2" xml:space="preserve">
+    <value>"{0}" is geen gedocumenteerde uitvoerfunctie. Het begint met "{1}", en daar stopt het apparaat met matchen, dus deze rij werkt als "{2}".</value>
+  </data>
+  <data name="Issue_Parts0TakesAtMost" xml:space="preserve">
+    <value>"{0}" accepteert maximaal {1} parameter(s), er zijn er {2} gevonden. Het apparaat leest de parameters die het kent en laat de rest vallen.</value>
+  </data>
+  <data name="Issue_PickAnInputFromThe" xml:space="preserve">
+    <value>Kies een invoer uit de vervolgkeuzelijst Inputs, bijvoorbeeld "mp_left_sip" of "lip", of verplaats de tekst naar de kolom met notities.</value>
+  </data>
+  <data name="Issue_PickAnOutputFromThe" xml:space="preserve">
+    <value>Kies een uitvoer uit de lijst van de editor, bijvoorbeeld "x", "left_trigger" of "mouse_up".</value>
+  </data>
+  <data name="Issue_PickAnotherNameForExample" xml:space="preserve">
+    <value>Kies een andere naam, bijvoorbeeld "game.csv".</value>
+  </data>
+  <data name="Issue_PickTheGameButtonOr" xml:space="preserve">
+    <value>Kies de gameknop of actie die deze rij aanstuurt, bijvoorbeeld "x" of "left_trigger".</value>
+  </data>
+  <data name="Issue_PreferANewFilenameThe" xml:space="preserve">
+    <value>Kies bij voorkeur een nieuwe bestandsnaam. Het installatieprogramma vraagt om uitdrukkelijke bevestiging voordat het default.csv overschrijft.</value>
+  </data>
+  <data name="Issue_PrefsCsvIsTheDevice" xml:space="preserve">
+    <value>prefs.csv is het voorkeurenbestand van het apparaat, geen gameconfiguratie.</value>
+  </data>
+  <data name="Issue_PutThePreferenceSValue" xml:space="preserve">
+    <value>Zet de waarde van de voorkeur in kolom B.</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn" xml:space="preserve">
+    <value>Zet de waarde in kolom C: "{0},,{1}".</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn2" xml:space="preserve">
+    <value>Zet de waarde in kolom C.</value>
+  </data>
+  <data name="Issue_RaiseHiNameToLong" xml:space="preserve">
+    <value>Verhoog "{0}" naar {1} of meer, of verlaag "{2}".</value>
+  </data>
+  <data name="Issue_RaiseUpperToLongLo" xml:space="preserve">
+    <value>Verhoog "{0}" naar {1} of meer, of verlaag "{2}".</value>
+  </data>
+  <data name="Issue_RemoveModesUntilThereAre" xml:space="preserve">
+    <value>Verwijder modi tot er maximaal 16 over zijn.</value>
+  </data>
+  <data name="Issue_RemoveTheExtraValues" xml:space="preserve">
+    <value>Verwijder de extra waarden.</value>
+  </data>
+  <data name="Issue_RemoveTheRowOrLeave" xml:space="preserve">
+    <value>Verwijder de rij, of laat hem staan voor een oudere QuadStick die er nog op reageert.</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole" xml:space="preserve">
+    <value>Vervang het door een geheel getal, bijvoorbeeld "50".</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole2" xml:space="preserve">
+    <value>Vervang het door een geheel getal, bijvoorbeeld "repeat 4".</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick" xml:space="preserve">
+    <value>"reset_quadstick" herstart de QuadStick, en deze rij activeert dat vanaf de push-schakelaar van het mondstuk. Als push nog ingedrukt is wanneer de herstart plaatsvindt, gaat het apparaat naar zijn firmware loader en werkt het niet meer als controller totdat het losgekoppeld en weer aangesloten wordt.</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick2" xml:space="preserve">
+    <value>"reset_quadstick" herstart de QuadStick. Wat u ook speelt, verliest de controller voor een paar seconden.</value>
+  </data>
+  <data name="Issue_SetItToAName" xml:space="preserve">
+    <value>Stel het in op een naam zoals "mygame.csv".</value>
+  </data>
+  <data name="Issue_SetItToNormalTo" xml:space="preserve">
+    <value>Stel het in op "normal" om dat expliciet te maken.</value>
+  </data>
+  <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
+    <value>Verkort het tot {0} tekens of minder, bijvoorbeeld "game.csv".</value>
+  </data>
+  <data name="Issue_TheCellUnderTheFirst" xml:space="preserve">
+    <value>De cel onder het trefwoord van het eerste blad moet de CSV-bestandsnaam bevatten.</value>
+  </data>
+  <data name="Issue_TheDeviceDoesNotMatch" xml:space="preserve">
+    <value>Het apparaat herkent "{0}" niet als kanaal, dus deze modus maakt in plaats daarvan verbinding via USB.</value>
+  </data>
+  <data name="Issue_TheDeviceReadsAValue" xml:space="preserve">
+    <value>Het apparaat leest een waarde met een 32-bits atoi, dus alles buiten -2147483648 tot 2147483647 komt aan als een ander getal.</value>
+  </data>
+  <data name="Issue_TheDeviceStoresItIn" xml:space="preserve">
+    <value>. Het apparaat slaat het op in 14 bits, dus het komt aan als {0}.</value>
+  </data>
+  <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
+    <value>Het apparaat ondersteunt 16 modi; het negeert deze modus en alle modi erna.</value>
+  </data>
+  <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
+    <value>De {0}-drempels lopen in elkaar over: "{1}" is {2} en "{3}" is {4}.</value>
+  </data>
+  <data name="Issue_TheFirmwareSetsItBack" xml:space="preserve">
+    <value>de firmware zet dit na elke keer laden terug op 0, en de code die het gebruikte, is uitgecommentarieerd</value>
+  </data>
+  <data name="Issue_TheQuadStickHasNoPreference" xml:space="preserve">
+    <value>De QuadStick heeft geen voorkeur genaamd "{0}", dus slaat hij deze rij over en doet de instelling niets. Hij wordt precies zo opgeslagen als u hem hebt geschreven.</value>
+  </data>
+  <data name="Issue_TheToneItUsedTo" xml:space="preserve">
+    <value>de toon die het vroeger liet klinken, is uitgecommentarieerd</value>
+  </data>
+  <data name="Issue_TheTwoNeedAtLeast" xml:space="preserve">
+    <value>Tussen de twee moet minstens 2 verschil zitten.</value>
+  </data>
+  <data name="Issue_TheValuesItKnowsAre" xml:space="preserve">
+    <value>De waarden die het kent zijn: {0}.</value>
+  </data>
+  <data name="Issue_ThisEditsDefaultCsvThe" xml:space="preserve">
+    <value>Dit bewerkt default.csv, het reservebestand van het apparaat dat bedoeld is om ongewijzigd te blijven. Een verkeerde USB-emulatiewaarde hierin kan de toegang tot het flashstation uitschakelen, en herstel vereist een fysieke force-erase.</value>
+  </data>
+  <data name="Issue_ThisModeHasCountedCount" xml:space="preserve">
+    <value>Deze modus heeft {0} rijen met een uitvoernaam; het apparaat leest de eerste 128 en negeert de rest.</value>
+  </data>
+  <data name="Issue_ThisRowHasNoOutput" xml:space="preserve">
+    <value>Deze rij heeft geen uitvoernaam. Het apparaat slaat hem over en beide officiële converters verwijderen hem, dus de rij doet niets.</value>
+  </data>
+  <data name="Issue_TrimTheModeTo128" xml:space="preserve">
+    <value>Beperk de modus tot 128 rijen.</value>
+  </data>
+  <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
+    <value>Twee gelijke drempels laten het apparaat delen door nul, telkens wanneer het de buis uitleest.</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
+    <value>USB-emulatiemodus {0} ({1}) geeft een computer geen toegang tot het station van de QuadStick, en dit bestand is er een waarmee het apparaat opstart. Het installeren ervan laat geen manier meer over om een profiel terug te bewerken, en herstel is een fysieke force-erase.</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat2" xml:space="preserve">
+    <value>USB-emulatiemodus {0} ({1}) geeft een computer geen toegang tot het station van de QuadStick, dus de bestanden verdwijnen van de computer zolang dit profiel actief is.</value>
+  </data>
+  <data name="Issue_UpperIsHiValueAnd" xml:space="preserve">
+    <value>"{0}" is {1} en "{2}" is {3}. Tussen de twee moet minstens {4} verschil zitten, anders lopen de instellingen in elkaar over.</value>
+  </data>
+  <data name="Issue_Use1ForOnOr" xml:space="preserve">
+    <value>Gebruik 1 voor aan of 0 voor uit.</value>
+  </data>
+  <data name="Issue_UseADifferentNameUnless" xml:space="preserve">
+    <value>Gebruik een andere naam, tenzij u van plan bent voorkeuren te wijzigen.</value>
+  </data>
+  <data name="Issue_UseAValueInsideThat" xml:space="preserve">
+    <value>Gebruik een waarde binnen dat bereik.</value>
+  </data>
+  <data name="Issue_UseAValueOf0" xml:space="preserve">
+    <value>Gebruik een waarde van 0 of hoger.</value>
+  </data>
+  <data name="Issue_UseAValueUpTo" xml:space="preserve">
+    <value>Gebruik een waarde tot maximaal {0}.</value>
+  </data>
+  <data name="Issue_UseAWholeNumber" xml:space="preserve">
+    <value>Gebruik een geheel getal.</value>
+  </data>
+  <data name="Issue_UseBothSoTheMode" xml:space="preserve">
+    <value>Gebruik "both" zodat de modus op beide verbindingen werkt, of "usb" als het apparaat alleen ooit aangesloten wordt.</value>
+  </data>
+  <data name="Issue_UseMaxOrLess" xml:space="preserve">
+    <value>Gebruik {0} of minder.</value>
+  </data>
+  <data name="Issue_UseMinOrMore" xml:space="preserve">
+    <value>Gebruik {0} of meer.</value>
+  </data>
+  <data name="Issue_UseMode023" xml:space="preserve">
+    <value>Gebruik hier modus 0, 2, 3 of 4, en stel de andere modus in plaats daarvan in een gameprofiel in.</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin" xml:space="preserve">
+    <value>Gebruik een van de volgende: {0}.</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin2" xml:space="preserve">
+    <value>Gebruik een van de volgende: {0}.</value>
+  </data>
+  <data name="Issue_UseTheFormSomethingCsv" xml:space="preserve">
+    <value>Gebruik de vorm "something.csv" zonder spaties of speciale tekens.</value>
+  </data>
+  <data name="Issue_UseUsbBluetoothBothOr" xml:space="preserve">
+    <value>Gebruik "usb", "bluetooth", "both" of "none", in kleine letters.</value>
+  </data>
+  <data name="Issue_ValueInCIsAWordB" xml:space="preserve">
+    <value>"{0}" is een woord. "{1}" neemt een woord op het instellingenblad, maar de waarde van een modusrij wordt als getal gelezen, dus het apparaat zet dit hier op 0.</value>
+  </data>
+  <data name="Issue_ValueInCIsNotAWhole" xml:space="preserve">
+    <value>"{0}" is geen geheel getal. "{1}" is een apparaatinstelling; deze cel is de waarde ervan.</value>
+  </data>
+  <data name="Issue_ValueInCIsTooBigFor" xml:space="preserve">
+    <value>"{0}" is te groot voor het apparaat om te lezen. {1}</value>
+  </data>
+  <data name="Issue_ValueInColumnBIs" xml:space="preserve">
+    <value>"{0}" in kolom B is de waarde van "{1}", maar is geen geheel getal.</value>
+  </data>
+  <data name="Issue_ValueIsAboveMaxThe" xml:space="preserve">
+    <value>"{0}" ligt boven {1}, de hoogste waarde die de officiële manager biedt voor "{2}". Het apparaat accepteert de waarde nog steeds, maar ze valt buiten het geteste bereik.</value>
+  </data>
+  <data name="Issue_ValueIsBelowMinThe" xml:space="preserve">
+    <value>"{0}" ligt onder {1}, de laagste waarde die de officiële manager biedt voor "{2}". Het apparaat accepteert de waarde nog steeds, maar ze valt buiten het geteste bereik.</value>
+  </data>
+  <data name="Issue_ValueIsNotAValue" xml:space="preserve">
+    <value>"{0}" is geen waarde die deze app kent voor "{1}". Ze wordt ongewijzigd naar het bestand geschreven, en een nieuwere QuadStick leest haar mogelijk wel.</value>
+  </data>
+  <data name="Issue_ValueIsNotAnOn" xml:space="preserve">
+    <value>"{0}" is geen aan/uit-waarde voor "{1}". Het apparaat leest het als getal, dus alles behalve 0 telt als aan.</value>
+  </data>
+  <data name="Issue_ValueIsNotOneOf" xml:space="preserve">
+    <value>"{0}" is niet een van de waarden die "{1}" accepteert.</value>
+  </data>
+  <data name="Issue_ValueIsTooBigFor" xml:space="preserve">
+    <value>"{0}" is te groot voor het apparaat om te lezen. {1}</value>
+  </data>
+  <data name="Jack_BottomJack" xml:space="preserve">
+    <value>Onderste aansluiting</value>
+  </data>
+  <data name="Jack_FirstSwitch" xml:space="preserve">
+    <value>eerste schakelaar</value>
+  </data>
+  <data name="Jack_LipJack" xml:space="preserve">
+    <value>Lip-aansluiting</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe" xml:space="preserve">
+    <value>Sluit één schakelaar aan op de bovenste aansluiting en die komt binnen als digital_in_8. Alleen een splitter gebruikt ook digital_in_7.</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe2" xml:space="preserve">
+    <value>Sluit één schakelaar aan op de onderste aansluiting en die komt binnen als digital_in_1. Alleen een splitter gebruikt ook digital_in_2.</value>
+  </data>
+  <data name="Jack_PortOneSwitch" xml:space="preserve">
+    <value>{0}, één schakelaar</value>
+  </data>
+  <data name="Jack_PortSplitterPosition" xml:space="preserve">
+    <value>{0}, splitter, {1}</value>
+  </data>
+  <data name="Jack_SecondSwitch" xml:space="preserve">
+    <value>tweede schakelaar</value>
+  </data>
+  <data name="Jack_TheMiddleJackIsThe" xml:space="preserve">
+    <value>De middelste aansluiting is de lipschakelaar. Een splitter daar levert digital_in_5 en digital_in_6.</value>
+  </data>
+  <data name="Jack_TheUSBAPortS" xml:space="preserve">
+    <value>De eigen datapinnen van de USB-A-poort, gelezen als gewone schakelaars. Hier wordt aan de buitenkant van de behuizing niets op aangesloten.</value>
+  </data>
+  <data name="Jack_TopJack" xml:space="preserve">
+    <value>Bovenste aansluiting</value>
+  </data>
+  <data name="Jack_USBADataPins" xml:space="preserve">
+    <value>USB-A datapinnen</value>
+  </data>
+  <data name="Lights_NoLights" xml:space="preserve">
+    <value>geen lampjes</value>
+  </data>
+  <data name="Parse_BeginTheCellWithThe" xml:space="preserve">
+    <value>Begin de cel met het bladtrefwoord, bijvoorbeeld "Profile Name".</value>
+  </data>
+  <data name="Parse_DeleteRowsAboveTheFirst" xml:space="preserve">
+    <value>Verwijder de rijen boven de eerste bladkop.</value>
+  </data>
+  <data name="Parse_FirstCellMustContainProfile" xml:space="preserve">
+    <value>De eerste cel moet "Profile" bevatten of "Preferences" of "Infrared" zijn. Gevonden: "{0}".</value>
+  </data>
+  <data name="Parse_KeepANoteOnA" xml:space="preserve">
+    <value>Houd een notitie op één regel.</value>
+  </data>
+  <data name="Parse_KeepLettersNumbersSpacesAnd" xml:space="preserve">
+    <value>Gebruik alleen letters, cijfers, spaties en "_ . -", of verplaats de tekst naar de kolom met notities.</value>
+  </data>
+  <data name="Parse_MoveItAboveTheFirst" xml:space="preserve">
+    <value>Verplaats het naar boven de eerste lege rij of verwijder het.</value>
+  </data>
+  <data name="Parse_RawA1DoesNotSTARTWith" xml:space="preserve">
+    <value>"{0}" BEGINT niet met "Profile", "Preferences" of "Infrared" (met exact dat hoofdlettergebruik), dus het apparaat slaat dit hele blad over.</value>
+  </data>
+  <data name="Parse_RowR1AppearsAfter" xml:space="preserve">
+    <value>Rij {0} staat na een lege rij, waar het apparaat stopt met het lezen van deze modus, dus deze rij doet niets.</value>
+  </data>
+  <data name="Parse_RowR1HasA" xml:space="preserve">
+    <value>Rij {0} heeft een cel met meer dan één regel. Het apparaat leest elke regel als een aparte rij, en een lege regel ertussen laat het stoppen met het lezen van de rest van deze modus, dus bij het opslaan worden ze samengevoegd tot één regel.</value>
+  </data>
+  <data name="Parse_RowR1IsLonger" xml:space="preserve">
+    <value>Rij {0} is langer dan {1} tekens, inclusief opmerkingen. Het apparaat leest een rij in een buffer van 1024 bytes en geeft de overloop terug alsof het de volgende rij is. Afhankelijk van waar de rij toevallig afbreekt, kan dat de modus vroegtijdig beëindigen en elke rij eronder laten vervallen.</value>
+  </data>
+  <data name="Parse_SectionStarts0ScanFromRowS" xml:space="preserve">
+    <value>{0} rij(en) vóór het eerste bladtrefwoord maken geen deel uit van enig blad.</value>
+  </data>
+  <data name="Parse_SetCellA1ToThe" xml:space="preserve">
+    <value>Stel cel A1 in op het bladtypetrefwoord, bijvoorbeeld "Profile Name".</value>
+  </data>
+  <data name="Parse_ShortenItTo63Characters" xml:space="preserve">
+    <value>Verkort het tot 63 tekens of minder.</value>
+  </data>
+  <data name="Parse_ShortenTheRowSComments" xml:space="preserve">
+    <value>Verkort de opmerkingen van de rij.</value>
+  </data>
+  <data name="Parse_ThisCellIsValueLength" xml:space="preserve">
+    <value>Deze cel is {0} tekens lang. Het apparaat stopt na 64 tekens met zoeken naar het einde van een cel, dus het leest deze cel en alles erna op deze rij als leeg.</value>
+  </data>
+  <data name="Parse_ValueContainsValueAtThe" xml:space="preserve">
+    <value>"{0}" bevat "{1}". Het apparaat beëindigt een cel bij dat teken, dus het leest dit als twee cellen ("{2}" en "{3}") en alles erna op deze rij schuift één kolom op.</value>
+  </data>
+  <data name="Pref_Advanced" xml:space="preserve">
+    <value>Geavanceerd</value>
+  </data>
+  <data name="Pref_Bluetooth" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="Pref_InputsAndOutputs" xml:space="preserve">
+    <value>Invoer en uitvoer</value>
+  </data>
+  <data name="Pref_Joystick" xml:space="preserve">
+    <value>Joystick</value>
+  </data>
+  <data name="Pref_LipSensor" xml:space="preserve">
+    <value>Lipsensor</value>
+  </data>
+  <data name="Pref_Mouse" xml:space="preserve">
+    <value>Muis</value>
+  </data>
+  <data name="Pref_SipAndPuff" xml:space="preserve">
+    <value>Sip and puff</value>
+  </data>
+  <data name="Pref_SoundAndLights" xml:space="preserve">
+    <value>Geluid en lampjes</value>
+  </data>
+  <data name="Pref_UsbAndCompatibility" xml:space="preserve">
+    <value>USB en compatibiliteit</value>
+  </data>
+  <data name="Sheet_CauseMissedNotReadAt" xml:space="preserve">
+    <value>{0} {1} helemaal niet gelezen, dus we kunnen niet zeggen wat erin staat. Verdeel de modi die u nodig hebt over kleinere spreadsheets en importeer ze één voor één.</value>
+  </data>
+  <data name="Sheet_EveryTabFromThereOn" xml:space="preserve">
+    <value>Elk tabblad daarna was</value>
+  </data>
+  <data name="Sheet_EveryTabPastThatWas" xml:space="preserve">
+    <value>Elk tabblad daarna was</value>
+  </data>
+  <data name="Sheet_LeftJoy" xml:space="preserve">
+    <value>Left joy</value>
+  </data>
+  <data name="Sheet_LeftMoreTabsWere" xml:space="preserve">
+    <value>nog {0} tabbladen waren</value>
+  </data>
+  <data name="Sheet_OneMoreTabWas" xml:space="preserve">
+    <value>Nog één tabblad was</value>
+  </data>
+  <data name="Sheet_RightJoy" xml:space="preserve">
+    <value>Right joy</value>
+  </data>
+  <data name="Sheet_TabPastTheRowCap" xml:space="preserve">
+    <value>Het tabblad "{0}" heeft cellen onder rij {1}, ver voorbij waar enig profiel eindigt, dus we zijn daar gestopt met het lezen van dat tabblad en kunnen niet zeggen wat eronder staat. Als dit een verdwaalde cel is die is achtergebleven na een plakactie, dan verhelpt het verwijderen van de lege rijen onderaan het tabblad en opnieuw importeren dit.</value>
+  </data>
+  <data name="Sheet_ThatSpreadsheetHoldsAPart" xml:space="preserve">
+    <value>Die spreadsheet bevat een onderdeel van {0} MB, veel groter dan enig profiel, dus het is niet gelezen.</value>
+  </data>
+  <data name="Sheet_ThisSpreadsheetHasMoreThan" xml:space="preserve">
+    <value>Deze spreadsheet heeft meer dan {0} tabbladen, en we hebben de eerste {1} gelezen.</value>
+  </data>
+  <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
+    <value>Deze spreadsheet is groter dan {0} rijen, veel groter dan enig profiel, dus we zijn halverwege gestopt met lezen.</value>
+  </data>
+</root>
