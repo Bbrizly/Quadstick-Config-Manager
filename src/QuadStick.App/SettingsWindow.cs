@@ -222,7 +222,7 @@ public class SettingsWindow : Window
         // One language is not a choice. A release build has only English, so
         // the row would be a dropdown that cannot change anything; it appears
         // the moment a translation ships.
-        if (true)
+        if (Localization.Languages.Length > 1)
         {
             var language = new ComboBox
             {

@@ -66,6 +66,29 @@ public class SettingsWindowTests
         w.Close();
     }
 
+    // A picker with one entry is a control that fakes a choice. A release
+    // build ships English alone, so the Language row must not be drawn until a
+    // translation is actually there to pick.
+    [AvaloniaFact]
+    public void Language_row_appears_only_when_there_is_more_than_one_language()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+
+        var settings = new SettingsWindow(w);
+        _ = settings.ShowDialog(w);
+
+        var rows = settings.GetVisualDescendants().OfType<ComboBox>()
+            .Count(c => AutomationProperties.GetName(c) == "Language: choose which language the app is written in");
+        Assert.Equal(Localization.Languages.Length > 1 ? 1 : 0, rows);
+
+        settings.Close();
+        w.Close();
+    }
+
     // The backup checkbox must track GoogleAuth.IsConfigured: disabled on a
     // placeholder build so the user can't start an OAuth flow that can't
     // work, enabled on a build with a real client (GoogleClient.Local.cs).
