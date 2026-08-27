@@ -124,7 +124,8 @@ def export(lang):
 # ran out of room for, is ignored. A short answer imports what it got and the
 # rest stays English rather than the whole run failing.
 def read_answer(path, cat):
-    holes = lambda s: sorted(re.findall(r'\{\d[^}]*\}', s))
+    # A set, not a list: saying {1} twice is legal and Japanese does it.
+    holes = lambda s: sorted(set(re.findall(r'\{\d[^}]*\}', s)))
     said = {}
     for line in open(path):
         key, tab, value = line.rstrip('\n').partition('\t')
