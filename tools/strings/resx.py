@@ -4,8 +4,8 @@
   resx.py add <file.resx> < key<TAB>value lines
   resx.py pseudo <file.resx>     writes Strings.qps-ploc.resx beside it
   resx.py prefs-pseudo <preferences.json>  the same, for the preference catalog
-  resx.py export <outdir>        every string a translator sees, in chunks
-  resx.py import <tag> <file...> translated chunks back into Strings.<tag>.resx
+  resx.py export fr             writes tools/strings/to-translate.txt to paste
+  resx.py import fr             reads tools/strings/fr.txt back into the app
 
 The pseudo language is English, accented and padded 40%. Run the app in it
 (Settings > Language > Pseudo) and anything still in plain English is a string
@@ -77,9 +77,11 @@ def accent(text):
 APP = 'src/QuadStick.App/Strings.resx'
 FMT = 'src/QuadStick.Format/Strings.resx'
 PREFS = 'src/QuadStick.Format/Data/preferences.json'
+OUT = 'tools/strings/to-translate.txt'
 
-# One flat key space so a translator's file is one JSON object and the import
-# knows where each line goes: app/<key>, fmt/<key>, pref/<name>/<field>.
+# One flat key space so the whole interface is one file: app/<key> is a string
+# in the app, fmt/<key> one in the reader, pref/<name>/<field> a word from the
+# preference catalog. The import reads the key to know where the line goes.
 def catalog():
     import json
     out = {}
@@ -94,99 +96,111 @@ def catalog():
             out[f"pref/{p['name']}/option/{i}"] = o
     return out
 
-CHUNK = 8000  # characters, so one chunk is one answer a chat model can finish
+# What to call the language in the prompt, and what it calls itself in the
+# picker. A tag that is not here still works: it goes in as written.
+NAMES = {
+    'fr': ('French', 'Fran\u00e7ais'), 'de': ('German', 'Deutsch'),
+    'es': ('Spanish', 'Espa\u00f1ol'), 'it': ('Italian', 'Italiano'),
+    'pt': ('Portuguese', 'Portugu\u00eas'), 'nl': ('Dutch', 'Nederlands'),
+    'pl': ('Polish', 'Polski'), 'sv': ('Swedish', 'Svenska'),
+    'ru': ('Russian', '\u0420\u0443\u0441\u0441\u043a\u0438\u0439'),
+    'ja': ('Japanese', '\u65e5\u672c\u8a9e'), 'ko': ('Korean', '\ud55c\uad6d\uc5b4'),
+    'zh-Hans': ('Simplified Chinese', '\u7b80\u4f53\u4e2d\u6587'),
+}
 
-def export(outdir):
-    import json, os, textwrap
-    os.makedirs(outdir, exist_ok=True)
-    for f in os.listdir(outdir):
-        if f.startswith('part-'): os.remove(os.path.join(outdir, f))
-    part, size, parts = {}, 0, []
-    for key, value in catalog().items():
-        if size and size + len(value) > CHUNK:
-            parts.append(part); part, size = {}, 0
-        part[key] = value; size += len(value)
-    if part: parts.append(part)
-    for i, part in enumerate(parts, 1):
-        with open(f'{outdir}/part-{i:02d}.json', 'w') as f:
-            json.dump(part, f, ensure_ascii=False, indent=1)
-            f.write('\n')
-    open(f'{outdir}/PROMPT.md', 'w').write(PROMPT.format(n=len(parts)))
-    print(f'{len(parts)} parts in {outdir}. Read {outdir}/PROMPT.md.')
+def export(lang):
+    with open(OUT, 'w') as f:
+        f.write(PROMPT.format(lang=NAMES.get(lang, (lang, lang))[0]))
+        for key, value in catalog().items():
+            f.write(key + '\t' + value.replace('\n', '\\n') + '\n')
+    print(f'{OUT} is ready. Paste the whole file into ChatGPT.\n'
+          f'Save its answer as tools/strings/{lang}.txt, then:\n'
+          f'    python3 tools/strings/resx.py import {lang}')
 
-def import_(tag, paths):
+# Deliberately forgiving. Any line with a tab and a key we know is a
+# translation; everything else, chat prose, a code fence, half a file the model
+# ran out of room for, is ignored. A short answer imports what it got and the
+# rest stays English rather than the whole run failing.
+def read_answer(path, keys):
+    said = {}
+    for line in open(path):
+        key, tab, value = line.rstrip('\n').partition('\t')
+        if tab and key.strip() in keys and value.strip():
+            said[key.strip()] = value.replace('\\n', '\n')
+    return said
+
+def import_(lang):
     import json
-    words = {}
-    for p in paths: words.update(json.load(open(p)))
-    for prefix, path in (('app/', APP), ('fmt/', FMT)):
-        tree, have = load(path)
+    path = f'tools/strings/{lang}.txt'
+    said = read_answer(path, set(catalog()))
+    for prefix, source in (('app/', APP), ('fmt/', FMT)):
+        tree, have = load(source)
         root = tree.getroot()
         kept = 0
         for key, node in have.items():
-            said = words.get(prefix + key)
-            if said is None: root.remove(node)  # falls back to English at runtime
-            else: node.find('value').text = said; kept += 1
+            # A key with no translation is left out, so it falls back to
+            # English at runtime instead of shipping as a blank label.
+            if prefix + key in said:
+                node.find('value').text = said[prefix + key]
+                kept += 1
+            else:
+                root.remove(node)
         ET.indent(tree, '  ')
-        target = path.replace('.resx', f'.{tag}.resx')
+        target = source.replace('.resx', f'.{lang}.resx')
         tree.write(target, encoding='utf-8', xml_declaration=True)
         print(f'{target}: {kept} of {len(have)}')
     out, n = [], 0
     for p in json.load(open(PREFS)):
         row = {'name': p['name']}
         for f in SAID:
-            said = words.get(f"pref/{p['name']}/{f}")
-            if said: row[f] = said; n += 1
-        if p.get('optionLabels'):
-            labels = [words.get(f"pref/{p['name']}/option/{i}") for i in range(len(p['optionLabels']))]
-            if all(labels): row['optionLabels'] = labels; n += len(labels)
+            if said.get(f"pref/{p['name']}/{f}"):
+                row[f] = said[f"pref/{p['name']}/{f}"]; n += 1
+        labels = [said.get(f"pref/{p['name']}/option/{i}") for i in range(len(p.get('optionLabels') or []))]
+        if labels and all(labels):
+            row['optionLabels'] = labels; n += len(labels)
         out.append(row)
-    target = PREFS.replace('.json', f'.{tag}.json')
+    target = PREFS.replace('.json', f'.{lang}.json')
     with open(target, 'w') as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
         f.write('\n')
     print(f'{target}: {n} strings')
-    print(f'\nLast step, by hand: add ("{tag}", "<language in its own words>") to '
-          'Languages in src/QuadStick.App/Localization.cs, then `make test`.')
+    print(f'\nOne line by hand: add ("{lang}", "{NAMES.get(lang, (lang, lang))[1]}") to '
+          'Languages in src/QuadStick.App/Localization.cs. Then `make test`.')
 
-PROMPT = """Paste this to the chat model, then feed it part-01.json ... part-{n:02d}.json
-one at a time. Save each answer as <part>.<lang>.json in this folder, then:
+PROMPT = """Translate the lines below into {lang}.
 
-    python3 tools/strings/resx.py import fr tools/strings/export/*.fr.json
+Every line is a key, then a tab, then English. Give me back every line, same
+key, same tab, the English replaced by {lang}. Nothing else: no numbering, no
+commentary, no code fence. If it is long, keep going until the last line.
 
----
-
-You are translating the interface of a desktop app into <LANGUAGE>. The app
-edits configuration files for a QuadStick, a sip-and-puff game controller used
-by people with quadriplegia. Getting a setting wrong can leave someone with
-hardware that no longer answers them, so accuracy beats elegance everywhere.
-
-I will send JSON objects of key -> English text. Reply with the same object,
-same keys, same order, values translated. Nothing else: no prose, no code
-fence commentary, no keys added or dropped.
+What this is: the interface of a desktop app that edits configuration files for
+a QuadStick, a sip-and-puff game controller used by people with quadriplegia. A
+setting described wrongly can leave someone with hardware that no longer answers
+them, so be accurate before you are elegant.
 
 Rules:
 
 - {{0}}, {{1}}, {{0:P0}} and the like are values the app fills in. Copy them
   exactly and put them where the sentence needs them.
-- \\n is a line break. Keep it.
-- Keep names of device parts, inputs, outputs and functions in English. The
-  device compares those bytes literally: "Sip", "Puff", "Lip Left", "Button 1",
-  "Left joy up", "SHIFT_1", "Profile Name". If English appears inside a
-  sentence as a quoted thing on screen, leave it quoted in English.
-- Keep product and file names: QuadStick, USB, Bluetooth, PS4, Xbox, HID,
+- \\n inside a line is a line break. Keep it as the two characters \\n.
+- Names of device parts, inputs, outputs and functions stay in English. The
+  device compares those bytes literally: Sip, Puff, Lip Left, Button 1,
+  Left joy up, SHIFT_1, Profile Name. If one appears quoted inside a sentence,
+  leave it quoted in English.
+- Product and file names stay: QuadStick, USB, Bluetooth, PS4, Xbox, HID,
   .csv, .qsf.
 - Plain words a person actually says. Short sentences. No marketing tone.
-- Labels are short because they sit in narrow columns. Keep them short.
-- Error text tells the user what happened and what to do. Say the same thing,
-  do not soften it.
-- A key ending in /risk warns about damage. Keep the warning as strong.
-- Use the formal address if your language has one (vous, Sie).
-- If a string is a single ambiguous word, translate the sense the key suggests
-  (app/ImportButton is a button, not a noun in a sentence).
+- Labels sit in narrow columns. Keep them short.
+- Error text says what happened and what to do. Say the same thing, do not
+  soften it. A key ending in /risk warns about damage: keep it as strong.
+- Use the formal address if the language has one (vous, Sie).
+- A single ambiguous word: translate the sense the key suggests. app/...Button
+  is a button, not a noun in a sentence.
+
 """
 
 if __name__ == '__main__':
     cmd = sys.argv[1]
     if cmd == 'export': export(sys.argv[2])
-    elif cmd == 'import': import_(sys.argv[2], sys.argv[3:])
+    elif cmd == 'import': import_(sys.argv[2])
     else: {'add': add, 'pseudo': pseudo, 'prefs-pseudo': prefs_pseudo}[cmd](sys.argv[2])
