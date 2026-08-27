@@ -106,6 +106,8 @@ NAMES = {
     'ru': ('Russian', '\u0420\u0443\u0441\u0441\u043a\u0438\u0439'),
     'ja': ('Japanese', '\u65e5\u672c\u8a9e'), 'ko': ('Korean', '\ud55c\uad6d\uc5b4'),
     'zh-Hans': ('Simplified Chinese', '\u7b80\u4f53\u4e2d\u6587'),
+    'ar': ('Arabic', '\u0627\u0644\u0639\u0631\u0628\u064a\u0629'),
+    'hi': ('Hindi', '\u0939\u093f\u0928\u094d\u0926\u0940'),
 }
 
 def export(lang):
@@ -121,18 +123,26 @@ def export(lang):
 # translation; everything else, chat prose, a code fence, half a file the model
 # ran out of room for, is ignored. A short answer imports what it got and the
 # rest stays English rather than the whole run failing.
-def read_answer(path, keys):
+def read_answer(path, cat):
+    holes = lambda s: sorted(re.findall(r'\{\d[^}]*\}', s))
     said = {}
     for line in open(path):
         key, tab, value = line.rstrip('\n').partition('\t')
-        if tab and key.strip() in keys and value.strip():
-            said[key.strip()] = value.replace('\\n', '\n')
+        key = key.strip()
+        if not (tab and key in cat and value.strip()):
+            continue
+        # A translation that lost or invented a {0} would crash the format
+        # call at runtime. English is better than a crash.
+        if holes(value) != holes(cat[key]):
+            print(f'dropped {key}: placeholders differ')
+            continue
+        said[key] = value.replace('\\n', '\n')
     return said
 
 def import_(lang):
     import json
     path = f'tools/strings/{lang}.txt'
-    said = read_answer(path, set(catalog()))
+    said = read_answer(path, catalog())
     for prefix, source in (('app/', APP), ('fmt/', FMT)):
         tree, have = load(source)
         root = tree.getroot()
