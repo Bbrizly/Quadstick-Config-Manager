@@ -219,29 +219,35 @@ public class SettingsWindow : Window
         var panel = new StackPanel { Margin = new Thickness(24), Spacing = 16 };
         panel.Children.Add(Heading(Strings.Settings_TabGeneral));
 
-        var language = new ComboBox
+        // One language is not a choice. A release build has only English, so
+        // the row would be a dropdown that cannot change anything; it appears
+        // the moment a translation ships.
+        if (true)
         {
-            ItemsSource = Localization.Choices(),
-            SelectedIndex = Localization.IndexOf(owner.CurrentSettings.Language),
-            MinWidth = 220,
-        };
-        AutomationProperties.SetName(language, Strings.Settings_LanguageHelp);
-        var languageNote = new TextBlock
-        {
-            Text = Strings.Settings_LanguageRestart, IsVisible = false, TextWrapping = TextWrapping.Wrap,
-            FontSize = Size("BodySize"), Classes = { "muted" },
-        };
-        // Nothing on screen changes when this is picked, so a sighted user sees
-        // the note appear and a screen reader user has to be told.
-        AutomationProperties.SetLiveSetting(languageNote, AutomationLiveSetting.Polite);
-        language.SelectionChanged += (_, _) =>
-        {
-            if (language.SelectedIndex < 0) return;
-            var tag = Localization.TagAt(language.SelectedIndex);
-            owner.SetLanguage(tag);
-            languageNote.IsVisible = true;
-        };
-        panel.Children.Add(Field(Strings.Settings_Language, null, language, languageNote));
+            var language = new ComboBox
+            {
+                ItemsSource = Localization.Choices(),
+                SelectedIndex = Localization.IndexOf(owner.CurrentSettings.Language),
+                MinWidth = 220,
+            };
+            AutomationProperties.SetName(language, Strings.Settings_LanguageHelp);
+            var languageNote = new TextBlock
+            {
+                Text = Strings.Settings_LanguageRestart, IsVisible = false, TextWrapping = TextWrapping.Wrap,
+                FontSize = Size("BodySize"), Classes = { "muted" },
+            };
+            // Nothing on screen changes when this is picked, so a sighted user sees
+            // the note appear and a screen reader user has to be told.
+            AutomationProperties.SetLiveSetting(languageNote, AutomationLiveSetting.Polite);
+            language.SelectionChanged += (_, _) =>
+            {
+                if (language.SelectedIndex < 0) return;
+                var tag = Localization.TagAt(language.SelectedIndex);
+                owner.SetLanguage(tag);
+                languageNote.IsVisible = true;
+            };
+            panel.Children.Add(Field(Strings.Settings_Language, null, language, languageNote));
+        }
 
         var appearance = new ComboBox
         {
