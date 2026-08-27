@@ -58,7 +58,9 @@ public class PreferenceTranslationTests
     [Fact]
     public void A_language_with_no_file_reads_as_English()
     {
-        Assert.Equal(In("en").Select(d => d.Label), In("de").Select(d => d.Label));
+        // Faroese, chosen because no translation of this app will ever be
+        // named "fo" by accident. German used to sit here, until German shipped.
+        Assert.Equal(In("en").Select(d => d.Label), In("fo").Select(d => d.Label));
     }
 
     [Fact]
