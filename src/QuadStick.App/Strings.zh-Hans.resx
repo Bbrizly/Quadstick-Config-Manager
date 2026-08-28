@@ -1041,7 +1041,7 @@
     <value>左肩键</value>
   </data>
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
-    <value>左吸吹嘴孔</value>
+    <value>左吸嘴孔</value>
   </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
     <value>左摇杆按键</value>
@@ -1409,7 +1409,7 @@
     <value>右肩键</value>
   </data>
   <data name="Main_RightMouthpieceHole" xml:space="preserve">
-    <value>右吸吹嘴孔</value>
+    <value>右吸嘴孔</value>
   </data>
   <data name="Main_RightSideTube" xml:space="preserve">
     <value>右 + 侧管</value>

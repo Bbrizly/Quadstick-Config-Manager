@@ -1041,7 +1041,7 @@ Die meisten Profile haben nur einen Modus, daher zeigt diese Liste oft einen ein
     <value>Linker Bumper</value>
   </data>
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
-    <value>Linke Mundstücköffnung</value>
+    <value>Linkes Mundstückloch</value>
   </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
     <value>Linker Stick-Klick</value>
@@ -1409,7 +1409,7 @@ Wählen Sie links einen Teil des QuadStick aus, um zu sehen, was er in diesem Mo
     <value>Rechter Bumper</value>
   </data>
   <data name="Main_RightMouthpieceHole" xml:space="preserve">
-    <value>Rechte Mundstücköffnung</value>
+    <value>Rechtes Mundstückloch</value>
   </data>
   <data name="Main_RightSideTube" xml:space="preserve">
     <value>Rechts + Seitenröhrchen</value>
