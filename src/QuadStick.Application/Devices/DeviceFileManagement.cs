@@ -1,55 +1,17 @@
 using QuadStick.Format;
 
-namespace QuadStick.App;
-
-public sealed record DeviceFileSource(
-    string Root,
-    string Label,
-    string Name,
-    string Path,
-    string? Text,
-    string? ReadError);
-
-public sealed record DeviceFileSourceGroup(
-    string Root,
-    string Label,
-    IReadOnlyList<DeviceFileSource> Files,
-    string? Error);
-
-public interface IDeviceFileSource
-{
-    void InvalidateDiscovery();
-    string DefaultBackupDirectory { get; }
-    Task<IReadOnlyList<DeviceFileSourceGroup>> ListAsync(CancellationToken cancellationToken = default);
-    Task<string> ReadAsync(string root, string fileName, CancellationToken cancellationToken = default);
-    Task<DeviceDeleteReceipt> DeleteAsync(
-        string root,
-        string fileName,
-        string backupDirectory,
-        CancellationToken cancellationToken = default);
-}
-
-public sealed record DeviceDeleteReceipt(string DeletedPath, string BackupPath);
-
-public interface IProfileSheetLinkResolver
-{
-    string? Resolve(ProfileFile profile);
-}
+namespace QuadStick.Application.Devices;
 
 public sealed record ManagedDeviceFile(
-    string Root,
-    string Label,
+    DeviceProfileId Id,
     string Name,
-    string Path,
     ProfileFile? Profile,
-    string? SheetUrl,
     string? ReadError,
     Exception? ParseFailure,
     bool Protected);
 
 public sealed record ManagedDeviceGroup(
-    string Root,
-    string Label,
+    DeviceDescriptor Device,
     IReadOnlyList<ManagedDeviceFile> Files,
     string? Error);
 
@@ -57,28 +19,25 @@ public enum LibraryCopyKind { NeedsReplaceConfirmation, RaceDetected, Copied }
 
 public sealed record LibraryCopyResult(LibraryCopyKind Kind, string Destination);
 
-/// <summary>Application workflow for mounted-device profile files. Presentation
-/// decides how to ask confirmations; filesystem and mounted-volume mechanics
-/// are behind ports.</summary>
+/// <summary>Application workflow for profiles stored on a QuadStick. Device
+/// identities are opaque; filesystem roots never cross this layer.</summary>
 public sealed class DeviceFileManagementUseCase
 {
-    readonly IDeviceFileSource _devices;
+    readonly IDeviceProfileStore _devices;
+    readonly IDeviceDiscovery _discovery;
     readonly IProfileLibraryStore _library;
-    readonly IProfileSheetLinkResolver _links;
 
     public DeviceFileManagementUseCase(
-        IDeviceFileSource devices,
-        IProfileLibraryStore library,
-        IProfileSheetLinkResolver links)
+        IDeviceProfileStore devices,
+        IDeviceDiscovery discovery,
+        IProfileLibraryStore library)
     {
         _devices = devices;
+        _discovery = discovery;
         _library = library;
-        _links = links;
     }
 
-    public string DefaultBackupDirectory => _devices.DefaultBackupDirectory;
-
-    public void InvalidateDiscovery() => _devices.InvalidateDiscovery();
+    public void InvalidateDiscovery() => _discovery.InvalidateCache();
 
     public async Task<IReadOnlyList<ManagedDeviceGroup>> ListAsync(CancellationToken cancellationToken = default)
     {
@@ -86,61 +45,58 @@ public sealed class DeviceFileManagementUseCase
         var groups = new List<ManagedDeviceGroup>(source.Count);
         foreach (var group in source)
         {
-            var files = new List<ManagedDeviceFile>(group.Files.Count);
-            foreach (var file in group.Files)
+            var files = new List<ManagedDeviceFile>(group.Profiles.Count);
+            foreach (var entry in group.Profiles)
             {
                 ProfileFile? profile = null;
                 Exception? parseFailure = null;
-                string? sheetUrl = null;
-                if (file.Text is not null)
+                string? readError = null;
+                try
                 {
-                    try
-                    {
-                        profile = ProfileFile.Load(file.Text);
-                        sheetUrl = _links.Resolve(profile);
-                    }
-                    catch (Exception ex)
-                    {
-                        parseFailure = ex;
-                    }
+                    var text = await _devices.ReadAsync(entry.Id, cancellationToken).ConfigureAwait(false);
+                    profile = ProfileFile.Load(text);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException
+                                               or DirectoryNotFoundException or InvalidDataException
+                                               or InvalidOperationException)
+                {
+                    readError = ex.Message;
+                }
+                catch (Exception ex)
+                {
+                    parseFailure = ex;
                 }
 
                 var protectedFile =
-                    file.Name.Equals("default.csv", StringComparison.OrdinalIgnoreCase) ||
-                    file.Name.Equals("prefs.csv", StringComparison.OrdinalIgnoreCase);
+                    entry.FileName.Equals("default.csv", StringComparison.OrdinalIgnoreCase) ||
+                    entry.FileName.Equals("prefs.csv", StringComparison.OrdinalIgnoreCase);
                 files.Add(new ManagedDeviceFile(
-                    file.Root, file.Label, file.Name, file.Path,
-                    profile, sheetUrl, file.ReadError, parseFailure, protectedFile));
+                    entry.Id, entry.FileName, profile, readError, parseFailure, protectedFile));
             }
-            groups.Add(new ManagedDeviceGroup(group.Root, group.Label, files, group.Error));
+            groups.Add(new ManagedDeviceGroup(group.Device, files, group.Error));
         }
         return groups;
     }
 
     public async Task<ProfileFile> ReadProfileAsync(
-        string root,
-        string fileName,
+        DeviceProfileId profile,
         CancellationToken cancellationToken = default) =>
-        ProfileFile.Load(await _devices.ReadAsync(root, fileName, cancellationToken).ConfigureAwait(false));
+        ProfileFile.Load(await _devices.ReadAsync(profile, cancellationToken).ConfigureAwait(false));
 
     public async Task<LibraryCopyResult> CopyToLibraryAsync(
-        string root,
-        string fileName,
+        DeviceProfileId profile,
         string libraryDirectory,
         bool replaceExisting,
         CancellationToken cancellationToken = default)
     {
-        var destination = Path.Combine(libraryDirectory, fileName);
+        var destination = Path.Combine(libraryDirectory, profile.FileName);
         var existed = _library.Exists(destination);
         if (existed && !replaceExisting)
             return new LibraryCopyResult(LibraryCopyKind.NeedsReplaceConfirmation, destination);
 
-        var text = await _devices.ReadAsync(root, fileName, cancellationToken).ConfigureAwait(false);
+        var text = await _devices.ReadAsync(profile, cancellationToken).ConfigureAwait(false);
         _library.EnsureDirectory(libraryDirectory);
 
-        // Existence checks are advisory only. The create-only publication is
-        // the actual no-overwrite guarantee, so a file appearing between the
-        // device read and the final rename can never be replaced accidentally.
         if (!existed && !replaceExisting)
         {
             if (!_library.TryCreate(destination, text))
@@ -155,9 +111,8 @@ public sealed class DeviceFileManagementUseCase
     }
 
     public Task<DeviceDeleteReceipt> DeleteAsync(
-        string root,
-        string fileName,
-        string backupDirectory,
+        DeviceProfileId profile,
+        string recoveryDirectory,
         CancellationToken cancellationToken = default) =>
-        _devices.DeleteAsync(root, fileName, backupDirectory, cancellationToken);
+        _devices.DeleteAsync(profile, recoveryDirectory, cancellationToken);
 }
