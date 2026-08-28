@@ -71,7 +71,8 @@ public interface IManualDeviceResolver
 }
 
 /// <summary>Profile-storage capability shared by mounted-volume and future
-/// transports. Filesystem roots and absolute paths are adapter-private.</summary>
+/// transports. Filesystem roots, absolute paths and local recovery directories
+/// are adapter-private implementation details.</summary>
 public interface IDeviceProfileStore
 {
     Task<IReadOnlyList<DeviceProfileGroup>> ListAsync(CancellationToken cancellationToken = default);
@@ -87,6 +88,5 @@ public interface IDeviceProfileStore
 
     Task<DeviceDeleteReceipt> DeleteAsync(
         DeviceProfileId profile,
-        string recoveryDirectory,
         CancellationToken cancellationToken = default);
 }
