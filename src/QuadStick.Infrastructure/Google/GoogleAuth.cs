@@ -3,8 +3,9 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using QuadStick.Infrastructure.Security;
 
-namespace QuadStick.App;
+namespace QuadStick.Infrastructure.Google;
 
 // OAuth 2.0 installed-app flow with PKCE. Scope: drive.file only.
 public class GoogleAuth : IDisposable
@@ -42,8 +43,6 @@ public class GoogleAuth : IDisposable
     static string Base64Url(byte[] bytes) =>
         Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
-    // Interactive sign-in. Browser launch is external; cancellation remains
-    // cancellation rather than being converted to an auth/network failure.
     public async Task SignInAsync(Func<Uri, Task> launcher, CancellationToken ct = default)
     {
         ThrowIfDisposed();
@@ -80,8 +79,6 @@ public class GoogleAuth : IDisposable
         }
     }
 
-    // Bind a random loopback port. The OAuth state protects the callback; the
-    // cryptographic port choice simply avoids predictable retry patterns too.
     public static (HttpListener listener, int port) StartLoopback()
     {
         for (int attempt = 0; attempt < 10; attempt++)
@@ -128,9 +125,21 @@ public class GoogleAuth : IDisposable
             ctx.Response.Close();
         }
 
-        if (q.TryGetValue("error", out var err)) { Respond("Sign-in failed. You can close this tab."); throw new GoogleAuthException(err); }
-        if (!q.TryGetValue("state", out var s) || s != expectedState) { Respond("Sign-in failed. You can close this tab."); throw new GoogleAuthException("state mismatch on the loopback callback"); }
-        if (!q.TryGetValue("code", out var code)) { Respond("Sign-in failed. You can close this tab."); throw new GoogleAuthException("no authorization code on the callback"); }
+        if (q.TryGetValue("error", out var err))
+        {
+            Respond("Sign-in failed. You can close this tab.");
+            throw new GoogleAuthException(err);
+        }
+        if (!q.TryGetValue("state", out var s) || s != expectedState)
+        {
+            Respond("Sign-in failed. You can close this tab.");
+            throw new GoogleAuthException("state mismatch on the loopback callback");
+        }
+        if (!q.TryGetValue("code", out var code))
+        {
+            Respond("Sign-in failed. You can close this tab.");
+            throw new GoogleAuthException("no authorization code on the callback");
+        }
 
         Respond("You are signed in. You can close this tab.");
         return code;
@@ -177,8 +186,6 @@ public class GoogleAuth : IDisposable
         await _refreshGate.WaitAsync(ct);
         try
         {
-            // Several Drive requests can arrive together when the cached token
-            // expires. Only the first refreshes; everyone else reuses its result.
             if (FreshAccessToken() is string refreshed) return refreshed;
 
             var refresh = _store.Load() ?? throw new GoogleAuthException("Not connected to Google.");
