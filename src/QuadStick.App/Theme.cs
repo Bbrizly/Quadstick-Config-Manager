@@ -9,7 +9,7 @@ namespace QuadStick.App;
 // in Application/Infrastructure respectively; this file now knows only Avalonia.
 public static class Theme
 {
-    public static void RegisterInto(Application app)
+    public static void RegisterInto(Avalonia.Application app)
     {
         var rd = new ResourceDictionary();
         rd.ThemeDictionaries[ThemeVariant.Light] = BuildVariant(Palette.Light);
@@ -26,7 +26,7 @@ public static class Theme
     }
 
     public static void Apply(string choice) =>
-        Application.Current!.RequestedThemeVariant = choice switch
+        Avalonia.Application.Current!.RequestedThemeVariant = choice switch
         {
             "Light" => ThemeVariant.Light,
             "Dark"  => ThemeVariant.Dark,
