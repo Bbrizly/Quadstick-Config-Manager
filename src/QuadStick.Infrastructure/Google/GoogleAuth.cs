@@ -230,10 +230,7 @@ public class GoogleAuth : IDisposable
         _accessExpiry = DateTimeOffset.UtcNow.AddSeconds(seconds);
     }
 
-    void ThrowIfDisposed()
-    {
-        if (_disposed) throw new ObjectDisposedException(nameof(GoogleAuth));
-    }
+    void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);
 
     public void Dispose()
     {
@@ -241,6 +238,7 @@ public class GoogleAuth : IDisposable
         _disposed = true;
         _http.Dispose();
         _refreshGate.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
 
