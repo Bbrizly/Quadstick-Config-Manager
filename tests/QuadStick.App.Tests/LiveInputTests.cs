@@ -143,4 +143,29 @@ public class LiveInputTests
         Assert.True(System.Math.Abs(live.Y) < 0.01, $"Y was {live.Y}");
         Assert.Empty(live.Buttons);
     }
+
+    // Which USB identity to look for is the emulation mode's answer, and the
+    // app cannot ask the device what mode it is in, so it looks for all of
+    // them. This is CALLBACK_USB_GetDescriptor in Joystick/Descriptors.c and
+    // CALLBACK_USB_GetDescriptor_DS4 in Joystick/DescriptorsDS4.c, mode by
+    // mode. Mode 3, Xbox 360 native, is not here on purpose: that mode
+    // publishes interface class 0xFF, which is XInput and not HID at all.
+    [Fact]
+    public void EveryModeTheFirmwareCanEnumerateAsIsLookedFor()
+    {
+        Assert.Equal(new[]
+        {
+            (0x16D0, 0x092B), // mode 0, QuadStick
+            (0x054C, 0x0268), // mode 1, Dual Shock 3
+            (0x16D0, 0x092C), // mode 2, X360CE
+            (0x16D0, 0x092D), // modes 4 and 7 on a PC
+            (0x054C, 0x05C5), // mode 4 with a PS4 answering
+            (0x0F0D, 0x0066), // mode 4 before the console answers
+            (0x057E, 0x2009), // mode 5, Nintendo Switch Pro Controller
+            (0x16D0, 0x092E), // mode 6, PS4 without the flash drive
+            (0x054C, 0x05C4), // mode 7, wireless DualShock 4 V1
+        }, LiveInput.Known);
+
+        Assert.DoesNotContain((0x045E, 0x028E), LiveInput.Known);
+    }
 }

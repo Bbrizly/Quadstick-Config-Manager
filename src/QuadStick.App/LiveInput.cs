@@ -33,14 +33,24 @@ public sealed class LiveInput : IDisposable
 {
     // Every USB identity the QuadStick answers to. The emulation mode setting
     // picks between them, so the one to look for is not knowable in advance.
-    static readonly (int Vendor, int Product)[] Known =
+    // Each line is a case of CALLBACK_USB_GetDescriptor in
+    // Joystick/Descriptors.c, plus CALLBACK_USB_GetDescriptor_DS4 in
+    // Joystick/DescriptorsDS4.c, on firmware 2373.
+    //
+    // Emulation mode 3, Xbox 360 native, is deliberately absent. That mode
+    // publishes interface class 0xFF, which is XInput and not HID, so nothing
+    // here could open it however it were listed.
+    internal static readonly (int Vendor, int Product)[] Known =
     {
-        (0x16D0, 0x092B), // QuadStick native, and PS3
-        (0x16D0, 0x092C), // DualShock 3
-        (0x045E, 0x028E), // Xbox 360 and x360ce
-        (0x054C, 0x05C5), // DualShock 4, wired
-        (0x054C, 0x05C4), // DualShock 4, wireless
-        (0x057E, 0x2009), // Nintendo Switch Pro Controller
+        (0x16D0, 0x092B), // mode 0, QuadStick: the Afterglow PS3 descriptor
+        (0x054C, 0x0268), // mode 1, Dual Shock 3
+        (0x16D0, 0x092C), // mode 2, X360CE
+        (0x16D0, 0x092D), // modes 4 and 7 once the device has decided it is on a PC
+        (0x054C, 0x05C5), // mode 4 with a PS4 answering: wired DualShock 4
+        (0x0F0D, 0x0066), // mode 4 before the console answers: the HORI pad
+        (0x057E, 0x2009), // mode 5, Nintendo Switch Pro Controller
+        (0x16D0, 0x092E), // mode 6, PS4 without the flash drive
+        (0x054C, 0x05C4), // mode 7, wireless DualShock 4 V1
     };
 
     readonly Action<LiveState?> _report;
