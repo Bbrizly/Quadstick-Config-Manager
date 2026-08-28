@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using QuadStick.Format;
+using QuadStick.Infrastructure.Files;
 
 namespace QuadStick.App;
 
@@ -178,7 +179,7 @@ public sealed class CommunityCatalogClient
         {
             var dir = Path.GetDirectoryName(_cachePath);
             if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-            ProfileFile.WriteAtomic(_cachePath, body);
+            AtomicFileWriter.Write(_cachePath, body);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
     }
