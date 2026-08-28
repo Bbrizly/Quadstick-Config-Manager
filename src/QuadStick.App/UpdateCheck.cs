@@ -10,7 +10,9 @@ public static class UpdateCheck
         Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
 
     public static Task<UpdateResult> LatestAsync(HttpClient http, string current, CancellationToken ct = default) =>
-        new CheckForUpdatesUseCase(new GitHubReleaseSource(http)).ExecuteAsync(current, ct);
+        new CheckForUpdatesUseCase(
+            new QuadStick.Infrastructure.Updates.GitHubReleaseSource(http))
+            .ExecuteAsync(current, ct);
 
     public static int Compare(string a, string b) => UpdateVersion.Compare(a, b);
 }
