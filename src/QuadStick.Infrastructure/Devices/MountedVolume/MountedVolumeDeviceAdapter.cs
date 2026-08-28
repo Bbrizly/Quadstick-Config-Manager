@@ -6,20 +6,26 @@ using QuadStick.Format;
 
 namespace QuadStick.Infrastructure.Devices.MountedVolume;
 
-/// <summary>Mounted-filesystem implementation of QuadStick discovery/profile
-/// install. Mount paths never escape as device identity: this adapter owns the
-/// opaque DeviceId-to-root mapping for its lifetime.</summary>
+/// <summary>Mounted-filesystem implementation of the profile-storage capability.
+/// Mount paths never escape as device identity: this adapter owns the opaque
+/// DeviceId-to-root mapping for its lifetime.</summary>
 public sealed class MountedVolumeDeviceAdapter :
     IDeviceDiscovery,
     IManualDeviceResolver,
     IDeviceProfileStore
 {
+    public const long MaxProfileBytes = 4L * 1024 * 1024;
+
     readonly ConcurrentDictionary<string, string> _roots = new(StringComparer.Ordinal);
+    readonly Func<IReadOnlyList<string>> _findRoots;
+
+    public MountedVolumeDeviceAdapter(Func<IReadOnlyList<string>>? findRoots = null) =>
+        _findRoots = findRoots ?? (() => Device.FindCandidates());
 
     public async Task<IReadOnlyList<DeviceDescriptor>> DiscoverAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var roots = await Task.Run(() => Device.FindCandidates(), cancellationToken).ConfigureAwait(false);
+        var roots = await Task.Run(_findRoots, cancellationToken).ConfigureAwait(false);
         return roots.Select(Describe).ToList();
     }
 
@@ -34,6 +40,53 @@ public sealed class MountedVolumeDeviceAdapter :
         return isTarget ? Describe(folder) : null;
     }
 
+    public async Task<IReadOnlyList<DeviceProfileGroup>> ListAsync(CancellationToken cancellationToken = default)
+    {
+        var descriptors = await DiscoverAsync(cancellationToken).ConfigureAwait(false);
+        var groups = new List<DeviceProfileGroup>(descriptors.Count);
+        foreach (var descriptor in descriptors)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!_roots.TryGetValue(descriptor.Id.Value, out var root))
+            {
+                groups.Add(new DeviceProfileGroup(descriptor, Array.Empty<DeviceProfileEntry>(),
+                    "Could not resolve this QuadStick drive."));
+                continue;
+            }
+
+            try
+            {
+                var profiles = await Task.Run(() => Directory.GetFiles(root, "*.csv")
+                    .Select(Path.GetFileName)
+                    .Where(name => name is not null && DeviceProfileRules.IsProfileFileName(name))
+                    .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
+                    .Select(name => new DeviceProfileEntry(
+                        new DeviceProfileId(descriptor.Id, name!), name!))
+                    .ToList(), cancellationToken).ConfigureAwait(false);
+                groups.Add(new DeviceProfileGroup(descriptor, profiles));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
+            {
+                groups.Add(new DeviceProfileGroup(descriptor, Array.Empty<DeviceProfileEntry>(),
+                    $"Could not read this drive: {ex.Message}"));
+            }
+        }
+        return groups;
+    }
+
+    public Task<string> ReadAsync(
+        DeviceProfileId profile,
+        CancellationToken cancellationToken = default) =>
+        Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var path = ResolveProfilePath(profile, requireInstallTarget: true);
+            var length = new FileInfo(path).Length;
+            if (length > MaxProfileBytes)
+                throw new InvalidDataException($"{profile.FileName} is larger than the {MaxProfileBytes / (1024 * 1024)} MB profile safety limit.");
+            return File.ReadAllText(path);
+        }, cancellationToken);
+
     public async Task<DeviceInstallReceipt> InstallAsync(
         DeviceId device,
         DeviceInstallRequest request,
@@ -43,14 +96,15 @@ public sealed class MountedVolumeDeviceAdapter :
         if (!_roots.TryGetValue(device.Value, out var root))
             throw new InvalidOperationException("That QuadStick is no longer available. Refresh the device list and try again.");
 
-        // Cancellation is honored before the destructive operation begins. Once
-        // Device.Install starts it must finish verification/restore without an
-        // injected cancellation halfway through the filesystem swap.
+        // Revalidate while cancellation still applies. Once the legacy install
+        // primitive begins its backup/temp/readback/swap sequence, allow it to
+        // run to a known safe state without injected cancellation.
+        var isTarget = await Task.Run(() => Device.IsInstallTarget(root), cancellationToken).ConfigureAwait(false);
+        if (!isTarget)
+            throw new InvalidOperationException("That folder no longer looks like a QuadStick (no default.csv at its root).");
+
         var result = await Task.Run(() =>
         {
-            if (!Device.IsInstallTarget(root))
-                throw new InvalidOperationException("That folder no longer looks like a QuadStick (no default.csv at its root).");
-
             var profile = ProfileFile.Load(request.Payload.CsvText);
             var csvFileName = profile.Document.CsvFileName ?? "";
             if (!string.Equals(csvFileName, request.Payload.FileName, StringComparison.OrdinalIgnoreCase))
@@ -69,6 +123,37 @@ public sealed class MountedVolumeDeviceAdapter :
             result.BackupPath is { Length: > 0 }
                 ? new DeviceRecoveryReference(result.BackupPath)
                 : null);
+    }
+
+    public Task<DeviceDeleteReceipt> DeleteAsync(
+        DeviceProfileId profile,
+        string recoveryDirectory,
+        CancellationToken cancellationToken = default) =>
+        Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!_roots.TryGetValue(profile.Device.Value, out var root) || !Device.IsInstallTarget(root))
+                throw new InvalidOperationException("That QuadStick is no longer available. Refresh the device list and try again.");
+
+            // Device.DeleteProfile repeats protected-name/path checks and makes
+            // the recovery copy before removing the profile.
+            var result = Device.DeleteProfile(root, profile.FileName, recoveryDirectory);
+            return new DeviceDeleteReceipt(
+                profile.FileName,
+                new DeviceRecoveryReference(result.BackupPath));
+        }, cancellationToken);
+
+    string ResolveProfilePath(DeviceProfileId profile, bool requireInstallTarget)
+    {
+        if (!_roots.TryGetValue(profile.Device.Value, out var root))
+            throw new InvalidOperationException("That QuadStick is no longer available. Refresh the device list and try again.");
+        if (requireInstallTarget && !Device.IsInstallTarget(root))
+            throw new InvalidOperationException("That QuadStick is no longer available. Refresh the device list and try again.");
+        if (string.IsNullOrWhiteSpace(profile.FileName)
+            || profile.FileName != Path.GetFileName(profile.FileName)
+            || !DeviceProfileRules.IsProfileFileName(profile.FileName))
+            throw new InvalidOperationException("Only a plain profile file name on the QuadStick can be accessed.");
+        return Path.Combine(root, profile.FileName);
     }
 
     DeviceDescriptor Describe(string root)
@@ -92,6 +177,16 @@ public sealed class MountedVolumeDeviceAdapter :
 
     static string DisplayName(string root)
     {
+        try
+        {
+            var match = DriveInfo.GetDrives().FirstOrDefault(d => string.Equals(
+                Path.TrimEndingDirectorySeparator(d.RootDirectory.FullName),
+                Path.TrimEndingDirectorySeparator(root), StringComparison.Ordinal));
+            if (match is not null && !string.IsNullOrWhiteSpace(match.VolumeLabel))
+                return match.VolumeLabel;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+
         var trimmed = root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         var name = Path.GetFileName(trimmed);
         return string.IsNullOrWhiteSpace(name) ? trimmed : name;
