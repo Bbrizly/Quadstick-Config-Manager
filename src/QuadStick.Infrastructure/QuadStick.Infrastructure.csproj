@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>QuadStick.Infrastructure</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../QuadStick.Core/QuadStick.Core.csproj" />
+    <ProjectReference Include="../QuadStick.Application/QuadStick.Application.csproj" />
+  </ItemGroup>
+</Project>
