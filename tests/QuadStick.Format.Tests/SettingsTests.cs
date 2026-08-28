@@ -72,6 +72,7 @@ public class SettingsTests
         Assert.Null(settings.WinH);
         Assert.Null(settings.WinX);
         Assert.Null(settings.WinY);
+        Assert.Null(Settings.LastLoadWarning);
     }
 
     [Fact]
@@ -98,7 +99,7 @@ public class SettingsTests
     }
 
     [Fact]
-    public void Load_CorruptFile_ReturnsDefaults()
+    public void Load_CorruptFile_QuarantinesItAndReturnsDefaults()
     {
         var dir = Directory.CreateTempSubdirectory().FullName;
         var path = Path.Combine(dir, "settings.json");
@@ -108,13 +109,43 @@ public class SettingsTests
 
         Assert.Equal("FPS", settings.Model);
         Assert.Equal("System", settings.Theme);
-        Assert.Equal(100, settings.InterfaceScalePercent);
-        Assert.False(settings.ReduceMotion);
-        Assert.True(settings.RememberWindow);
-        Assert.False(settings.TutorialSeen);
-        Assert.Null(settings.WinW);
-        Assert.Null(settings.WinH);
-        Assert.Null(settings.WinX);
-        Assert.Null(settings.WinY);
+        Assert.NotNull(Settings.LastLoadWarning);
+        Assert.False(File.Exists(path));
+        Assert.Single(Directory.GetFiles(dir, "settings.json.corrupt-*"));
+    }
+
+    [Fact]
+    public void Load_CorruptPrimary_RecoversPreviousGoodBackup()
+    {
+        var dir = Directory.CreateTempSubdirectory().FullName;
+        var path = Path.Combine(dir, "settings.json");
+
+        Assert.True(Settings.TrySave(new AppSettings { Theme = "Dark" }, path));
+        Assert.True(Settings.TrySave(new AppSettings { Theme = "Light" }, path));
+        Assert.True(File.Exists(path + ".bak"));
+
+        File.WriteAllText(path, "{ broken");
+        var recovered = Settings.Load(path);
+
+        Assert.Equal("Dark", recovered.Theme); // previous known-good save
+        Assert.Contains("recovered", Settings.LastLoadWarning!, StringComparison.OrdinalIgnoreCase);
+        Assert.Single(Directory.GetFiles(dir, "settings.json.corrupt-*"));
+    }
+
+    [Fact]
+    public void Save_DoesNotReplaceGoodBackupWithMalformedPrimary()
+    {
+        var dir = Directory.CreateTempSubdirectory().FullName;
+        var path = Path.Combine(dir, "settings.json");
+
+        Assert.True(Settings.TrySave(new AppSettings { Theme = "Dark" }, path));
+        Assert.True(Settings.TrySave(new AppSettings { Theme = "Light" }, path));
+        var goodBackup = File.ReadAllText(path + ".bak");
+
+        File.WriteAllText(path, "not json");
+        Assert.True(Settings.TrySave(new AppSettings { Theme = "System" }, path));
+
+        Assert.Equal(goodBackup, File.ReadAllText(path + ".bak"));
+        Assert.Equal("System", Settings.Load(path).Theme);
     }
 }
