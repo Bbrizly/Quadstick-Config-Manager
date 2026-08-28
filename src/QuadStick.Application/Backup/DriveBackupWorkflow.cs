@@ -207,6 +207,18 @@ public sealed class DriveBackupWorkflow
         CancellationToken cancellationToken)
     {
         var link = _links.Get(profilePath);
+
+        // A missing-remote decision resumes the exact 404 state that produced
+        // the prompt. Do not probe the old id again: the provider can return a
+        // different answer on the second request (restore from trash, eventual
+        // consistency, test transport, etc.), which used to let a confirmed
+        // "recreate" accidentally write back into the old sheet. The explicit
+        // decision is the continuation token for that state.
+        if (link is not null && recreateMissing is not null)
+            return await ResolveMissingRemoteCoreAsync(
+                profilePath, csvText, recreateMissing.Value, link, context, cancellationToken)
+                .ConfigureAwait(false);
+
         try
         {
             if (link is null)
@@ -247,33 +259,8 @@ public sealed class DriveBackupWorkflow
         }
         catch (RemoteStorageException ex) when (ex.Kind == RemoteStorageFailureKind.NotFound)
         {
-            if (recreateMissing is null)
-                return new BackupPushOutcome(BackupPushState.RequiresMissingRemoteDecision,
-                    SettingsSaveFailed: context.SettingsSaveFailed);
-
-            if (!recreateMissing.Value)
-            {
-                if (!RemoveLink(profilePath, context))
-                    return new BackupPushOutcome(
-                        BackupPushState.Failed,
-                        Notice: "Backup could not be turned off because its local state could not be saved.",
-                        SettingsSaveFailed: true);
-                return new BackupPushOutcome(BackupPushState.RecreatedOff,
-                    SettingsSaveFailed: context.SettingsSaveFailed);
-            }
-
-            try
-            {
-                return await CreateAndRecordAsync(profilePath, csvText, context, cancellationToken).ConfigureAwait(false);
-            }
-            catch (RemoteStorageException create) when (create.Kind == RemoteStorageFailureKind.AuthRevoked)
-            {
-                return Paused(profilePath, link, context);
-            }
-            catch (RemoteStorageException)
-            {
-                return FailPending(profilePath, link, context);
-            }
+            return new BackupPushOutcome(BackupPushState.RequiresMissingRemoteDecision,
+                SettingsSaveFailed: context.SettingsSaveFailed);
         }
         catch (RemoteStorageException ex) when (ex.Kind == RemoteStorageFailureKind.AuthRevoked)
         {
@@ -292,6 +279,44 @@ public sealed class DriveBackupWorkflow
         catch (RemoteStorageException)
         {
             return FailPending(profilePath, link, context);
+        }
+    }
+
+    async Task<BackupPushOutcome> ResolveMissingRemoteCoreAsync(
+        string profilePath,
+        string csvText,
+        bool recreate,
+        DriveLink missingLink,
+        OperationContext context,
+        CancellationToken cancellationToken)
+    {
+        if (!recreate)
+        {
+            if (!RemoveLink(profilePath, context))
+                return new BackupPushOutcome(
+                    BackupPushState.Failed,
+                    Notice: "Backup could not be turned off because its local state could not be saved.",
+                    SettingsSaveFailed: true);
+            return new BackupPushOutcome(BackupPushState.RecreatedOff,
+                SettingsSaveFailed: context.SettingsSaveFailed);
+        }
+
+        try
+        {
+            return await CreateAndRecordAsync(profilePath, csvText, context, cancellationToken).ConfigureAwait(false);
+        }
+        catch (RemoteStorageException ex) when (ex.Kind == RemoteStorageFailureKind.AuthRevoked)
+        {
+            return Paused(profilePath, missingLink, context);
+        }
+        catch (InvalidDataException)
+        {
+            return new BackupPushOutcome(BackupPushState.Failed, Notice: InvalidProfileMessage,
+                SettingsSaveFailed: context.SettingsSaveFailed);
+        }
+        catch (RemoteStorageException)
+        {
+            return FailPending(profilePath, missingLink, context);
         }
     }
 
