@@ -96,9 +96,6 @@ public sealed class MountedVolumeDeviceAdapter :
         if (!_roots.TryGetValue(device.Value, out var root))
             throw new InvalidOperationException("That QuadStick is no longer available. Refresh the device list and try again.");
 
-        // Revalidate while cancellation still applies. Once the legacy install
-        // primitive begins its backup/temp/readback/swap sequence, allow it to
-        // run to a known safe state without injected cancellation.
         var isTarget = await Task.Run(() => Device.IsInstallTarget(root), cancellationToken).ConfigureAwait(false);
         if (!isTarget)
             throw new InvalidOperationException("That folder no longer looks like a QuadStick (no default.csv at its root).");
@@ -135,8 +132,6 @@ public sealed class MountedVolumeDeviceAdapter :
             if (!_roots.TryGetValue(profile.Device.Value, out var root) || !Device.IsInstallTarget(root))
                 throw new InvalidOperationException("That QuadStick is no longer available. Refresh the device list and try again.");
 
-            // Device.DeleteProfile repeats protected-name/path checks and makes
-            // the recovery copy before removing the profile.
             var result = Device.DeleteProfile(root, profile.FileName, recoveryDirectory);
             return new DeviceDeleteReceipt(
                 profile.FileName,
@@ -163,7 +158,7 @@ public sealed class MountedVolumeDeviceAdapter :
         _roots[id.Value] = normalized;
         return new DeviceDescriptor(
             id,
-            DisplayName(normalized),
+            LabelFor(normalized),
             DeviceTransportKind.MountedVolume,
             DeviceCapabilities.ProfileStorage,
             normalized);
@@ -175,7 +170,7 @@ public sealed class MountedVolumeDeviceAdapter :
         return "mounted-volume:" + Convert.ToHexString(bytes).ToLowerInvariant();
     }
 
-    static string DisplayName(string root)
+    public static string LabelFor(string root)
     {
         try
         {
