@@ -2492,9 +2492,6 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>Language: choose which language the app is written in</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>Close and reopen the app to see it in this language.</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>Same as my computer</value>
   </data>

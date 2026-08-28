@@ -2492,9 +2492,6 @@ Azul, INPUTS: lo que hace su boca. Los nombres mp_… son orificios de la boquil
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>Idioma: elija en qué idioma está escrita la app</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>Cierre y vuelva a abrir la app para verla en este idioma.</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>Igual que mi equipo</value>
   </data>

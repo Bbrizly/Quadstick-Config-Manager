@@ -2492,9 +2492,6 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>Sprache: wählen Sie, in welcher Sprache die App geschrieben ist</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>Schließen Sie die App und öffnen Sie sie erneut, um sie in dieser Sprache zu sehen.</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>Wie auf meinem Computer</value>
   </data>

@@ -2492,9 +2492,6 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>Lingua: scelga in quale lingua è scritta l'app</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>Chiuda e riapra l'app per vederla in questa lingua.</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>Come il mio computer</value>
   </data>

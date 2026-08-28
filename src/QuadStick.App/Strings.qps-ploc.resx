@@ -2492,9 +2492,6 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>[Láñgúágé: çhóóšé whíçh láñgúágé thé ápp íš wríttéñ íñ xxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>[Çlóšé áñd réópéñ thé ápp tó šéé ít íñ thíš láñgúágé. xxxxxxxxxxxxxxxxxxxx]</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>[Šámé áš mý çómpútér xxxxxxx]</value>
   </data>

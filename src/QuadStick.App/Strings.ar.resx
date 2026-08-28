@@ -2492,9 +2492,6 @@
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>اللغة: اختر اللغة التي يُكتب بها التطبيق</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>أغلق التطبيق وأعد فتحه لرؤيته بهذه اللغة.</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>مثل حاسوبي</value>
   </data>

@@ -554,8 +554,7 @@ public static class Validator
     // passed validation and then arrived on the device as a different number.
     static bool TooBigForDevice(long value) => value is < int.MinValue or > int.MaxValue;
 
-    static readonly string DeviceIntegerRange =
-        Strings.Issue_TheDeviceReadsAValue;
+    static string DeviceIntegerRange => Strings.Issue_TheDeviceReadsAValue;
 
     static void ValidateFileName(ProfileDocument doc, List<Issue> issues)
     {

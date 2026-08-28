@@ -2492,9 +2492,6 @@
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>भाषा: चुनें कि ऐप किस भाषा में लिखा गया है</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>इस भाषा में देखने के लिए ऐप को बंद करके फिर से खोलें।</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>मेरे कंप्यूटर जैसा ही</value>
   </data>

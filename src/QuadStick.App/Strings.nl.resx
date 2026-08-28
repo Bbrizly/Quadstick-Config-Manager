@@ -2492,9 +2492,6 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>Taal: kies in welke taal de app wordt weergegeven</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>Sluit de app en open deze opnieuw om ze in deze taal te zien.</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>Hetzelfde als mijn computer</value>
   </data>

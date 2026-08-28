@@ -2492,9 +2492,6 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>Idioma: escolha em qual idioma o aplicativo é exibido</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>Feche e reabra o aplicativo para vê-lo neste idioma.</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>Igual ao meu computador</value>
   </data>

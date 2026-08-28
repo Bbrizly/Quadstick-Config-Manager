@@ -2492,9 +2492,6 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>Język: wybierz, w jakim języku wyświetlana jest aplikacja</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>Zamknij i ponownie otwórz aplikację, aby zobaczyć ją w tym języku.</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>Tak samo jak mój komputer</value>
   </data>

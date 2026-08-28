@@ -2492,9 +2492,6 @@
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>语言：选择应用的显示语言</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>关闭并重新打开应用，即可看到该语言的界面。</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>与我的电脑相同</value>
   </data>

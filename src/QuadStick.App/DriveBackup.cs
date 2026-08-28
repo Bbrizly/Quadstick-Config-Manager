@@ -29,17 +29,15 @@ public sealed class DriveBackup
     // message, isWarning. Marshalled to the UI thread by the caller.
     readonly Action<string, bool> _status;
 
-    static readonly string ConflictTitle = Strings.Backup_SheetEditedOnline;
+    static string ConflictTitle => Strings.Backup_SheetEditedOnline;
     // The buttons are fixed Yes/Cancel, so the mapping lives in the words.
-    static readonly string ConflictBody =
-        Strings.Backup_ThisProfileSGoogleSheet;
+    static string ConflictBody => Strings.Backup_ThisProfileSGoogleSheet;
 
-    static readonly string RecreateTitle = Strings.Backup_BackupSheetNotFound;
-    static readonly string RecreateBody =
-        Strings.Backup_TheGoogleSheetForThis;
+    static string RecreateTitle => Strings.Backup_BackupSheetNotFound;
+    static string RecreateBody => Strings.Backup_TheGoogleSheetForThis;
 
-    static readonly string PendingMessage = Strings.Backup_BackupPending;
-    static readonly string PausedMessage = Strings.Backup_BackupPausedReconnectToGoogle;
+    static string PendingMessage => Strings.Backup_BackupPending;
+    static string PausedMessage => Strings.Backup_BackupPausedReconnectToGoogle;
 
     // One Drive op at a time. A background push and a share-link copy can race
     // on the same unlinked profile and each create a sheet; the gate serializes

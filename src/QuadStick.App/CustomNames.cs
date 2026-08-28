@@ -19,7 +19,7 @@ namespace QuadStick.App;
 // under the profile's path (AppSettings.CustomNames).
 public partial class MainWindow
 {
-    static readonly string CustomNamesLabel = Strings.Names_CustomOutputNames;
+    static string CustomNamesLabel => Strings.Names_CustomOutputNames;
 
     // "Shoot" and "shoot" are one name to whoever reads them, so the table
     // matches names the way ProfileFile does, ignoring case.

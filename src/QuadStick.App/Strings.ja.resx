@@ -2490,9 +2490,6 @@
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>言語：アプリの表示言語を選択</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>この言語で表示するには、アプリを閉じて再度開いてください。</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>自分のコンピューターと同じ</value>
   </data>

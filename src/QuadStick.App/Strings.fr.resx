@@ -2492,9 +2492,6 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
   <data name="Settings_LanguageHelp" xml:space="preserve">
     <value>Langue : choisissez la langue dans laquelle l'app est écrite</value>
   </data>
-  <data name="Settings_LanguageRestart" xml:space="preserve">
-    <value>Fermez et rouvrez l'app pour la voir dans cette langue.</value>
-  </data>
   <data name="Settings_LanguageSystem" xml:space="preserve">
     <value>Comme mon ordinateur</value>
   </data>

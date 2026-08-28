@@ -48,7 +48,9 @@ public static class Localization
 #endif
     };
 
-    /// <summary>Point resource lookups at a language. Call before any window exists.</summary>
+    /// <summary>Point resource lookups at a language. Runs before the first
+    /// window, and again, followed by <see cref="Relocalize"/>, when the
+    /// language is changed from Settings while the app is up.</summary>
     public static void Apply(string tag)
     {
         var c = Resolve(tag);
@@ -66,6 +68,17 @@ public static class Localization
     // to validate would not catch this.
     static CultureInfo Resolve(string tag) =>
         Array.Exists(Languages, l => l.Tag == tag) ? CultureInfo.GetCultureInfo(tag) : CultureInfo.InstalledUICulture;
+
+    /// <summary>Rebuild everything that baked text in the old language: the
+    /// preference catalog, the output picker's group names, and the window
+    /// statics. Windows already on screen keep their words; the caller builds
+    /// a new window after this and retires the old one.</summary>
+    public static void Relocalize()
+    {
+        QuadStick.Format.PreferenceCatalog.Relocalize();
+        OutputCatalog.Relocalize();
+        MainWindow.RelocalizeStatics();
+    }
 
     /// <summary>What the language picker lists. Row 0 follows the machine.</summary>
     public static string[] Choices()

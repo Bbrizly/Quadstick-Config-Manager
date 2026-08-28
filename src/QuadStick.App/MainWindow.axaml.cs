@@ -2,6 +2,7 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
@@ -1466,13 +1467,34 @@ public partial class MainWindow : Window
         finally { _pickerSyncing = false; }
     }
 
-    // Saved, not applied. Every window builds its text once, while it is being
-    // built, so the language that is already on screen stays on screen until
-    // the app is started again. Settings says so next to the picker.
-    public void SetLanguage(string tag)
+    // Applied by rebuilding: a window bakes its text while it is being built,
+    // so the honest way to change its language is to build it again. The open
+    // profile is handed to the new window as the same object, edits and dirty
+    // flag intact; nothing is saved, discarded or asked about on the way.
+    public MainWindow SetLanguage(string tag)
     {
+        if (_settings.Language == tag) return this;
         _settings.Language = tag;
         Settings.Save(_settings);
+        Localization.Apply(tag);
+        Localization.Relocalize();
+        var next = new MainWindow
+        {
+            Position = Position,
+            Width = Width,
+            Height = Height,
+        };
+        if (_file is not null)
+        {
+            next.OpenInEditor(_file, _savePath, ProfileSource.File, track: false);
+            next.RepopulateSheetPicker(_sheetIndex); // same mode open as before
+        }
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            desktop.MainWindow = next;
+        next.Show();
+        _closeConfirmed = true; // the profile moved, it was not discarded
+        Close();
+        return next;
     }
 
     public void SetInterfaceScale(int pct)
@@ -1723,6 +1745,16 @@ public partial class MainWindow : Window
     // just to show "N sheets, M bindings". Cache it by path + last-write time so
     // an unchanged file is parsed once, not on every navigation back to Home.
     // A slow USB still costs one read the first time it's seen; that's inherent.
+    /// <summary>Rebuild or empty every static that baked text in the old
+    /// language, so the next window built reads entirely in the new one.</summary>
+    internal static void RelocalizeStatics()
+    {
+        AllZones = BuildZones();
+        _inputCatalog = null; // lazy; next read rebuilds with the new zone titles
+        _cardCache.Clear();
+        _factsCache.Clear();
+    }
+
     static readonly Dictionary<string, (long Stamp, string Sub)> _cardCache = new();
 
     // File names on the QuadStick decide the order the profile switch steps
@@ -2013,9 +2045,11 @@ public partial class MainWindow : Window
     // No default on source. It used to be File, which silently mislabelled the
     // Sheets import for anyone who forgot to pass one, and a wrong source is
     // worse than no source: it reads as a real measurement.
-    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source)
+    // track is false only when a profile moves between windows it is already
+    // open in (the language rebuild): the person did not open anything.
+    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source, bool track = true)
     {
-        Telemetry.Track(TelemetryEvent.ProfileOpened, source);
+        if (track) Telemetry.Track(TelemetryEvent.ProfileOpened, source);
         _file = file;
         _savePath = savePath;
         LoadDrafts(savePath);
@@ -2129,7 +2163,9 @@ public partial class MainWindow : Window
     // Shared with the agent window, which draws the same device from the same
     // list. Two tables of the parts of a QuadStick would drift, and the one that
     // drifted would be teaching somebody their device wrong.
-    internal static readonly Zone[] AllZones =
+    internal static Zone[] AllZones { get; private set; } = BuildZones();
+
+    static Zone[] BuildZones() => new Zone[]
     {
         new("joystick", Strings.Main_Joystick, Strings.Main_Joystick, "up",
             Strings.Main_MovingTheWholeMouthpieceWith),
@@ -5410,7 +5446,7 @@ public partial class MainWindow : Window
     // The item that reveals a free-text box at the very bottom of a Device View
     // dropdown, so an exotic value is still reachable without making typing the
     // default. Reference-compared, never shown as a real token.
-    static readonly string TypeYourOwn = Strings.Main_TypeYourOwn;
+    static string TypeYourOwn => Strings.Main_TypeYourOwn;
 
     // A pick-don't-type field for Device View: a dropdown of known tokens shown
     // in the current label style, committing the raw token to the cell. The

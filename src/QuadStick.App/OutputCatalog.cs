@@ -18,14 +18,19 @@ public sealed record TokenCatalog(
 public static class OutputCatalog
 {
     // Display order for the picker. Categories missing a SubOrder entry list
-    // their items flat.
-    public static readonly string[] CategoryOrder =
+    // their items flat. Not readonly: the group names above the tokens are in
+    // the app's language, so Relocalize rebuilds all three when it changes.
+    public static string[] CategoryOrder { get; private set; } = BuildCategoryOrder();
+
+    static string[] BuildCategoryOrder() => new[]
     {
         "Controller", "Keyboard", "Mouse", Strings.Outputs_TVRemote,
         "Xbox Adaptive Controller", Strings.Outputs_ModeSwitching, Strings.Outputs_DeviceSettings,
     };
 
-    public static readonly IReadOnlyDictionary<string, string[]> SubOrder =
+    public static IReadOnlyDictionary<string, string[]> SubOrder { get; private set; } = BuildSubOrder();
+
+    static IReadOnlyDictionary<string, string[]> BuildSubOrder() =>
         new Dictionary<string, string[]>
         {
             ["Controller"] = new[] { "Buttons", "D-pad", "Thumbsticks" },
@@ -35,6 +40,16 @@ public static class OutputCatalog
                 Strings.Outputs_ModifierKeys, Strings.Outputs_NumberPad, Strings.Outputs_OtherKeys,
             },
         };
+
+    /// <summary>Rebuild the category and group names in the current language.
+    /// Classify already answers in the current language on every call; these
+    /// three were built once, and have to agree with it.</summary>
+    public static void Relocalize()
+    {
+        CategoryOrder = BuildCategoryOrder();
+        SubOrder = BuildSubOrder();
+        Catalog = new(Classify, CategoryOrder, SubOrder);
+    }
 
     // Every controller button that is not a dpad_/joy_/stick token: the
     // PlayStation set and the Xbox set share this one list.
@@ -81,7 +96,7 @@ public static class OutputCatalog
         _ => (Strings.Outputs_DeviceSettings2, ""),
     };
 
-    public static readonly TokenCatalog Catalog = new(Classify, CategoryOrder, SubOrder);
+    public static TokenCatalog Catalog { get; private set; } = new(Classify, CategoryOrder, SubOrder);
 
     // The output picker for one open profile: the names that profile gives its
     // own outputs, listed first under "Custom", then the real tokens. Names are

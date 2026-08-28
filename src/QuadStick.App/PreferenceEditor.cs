@@ -51,9 +51,9 @@ public partial class MainWindow
     // screen. These three phrases are the whole contract; they are read out as
     // text, never signalled by color alone. Not const: the words come from the
     // language the app was started in.
-    internal static readonly string DeviceWideScope = Strings.Prefs_DeviceWideSettings;
-    internal static readonly string ProfileScope = Strings.Prefs_ActiveWhileThisProfileIs;
-    internal static readonly string ModeScope = Strings.Prefs_ActiveOnlyInThisMode;
+    internal static string DeviceWideScope => Strings.Prefs_DeviceWideSettings;
+    internal static string ProfileScope => Strings.Prefs_ActiveWhileThisProfileIs;
+    internal static string ModeScope => Strings.Prefs_ActiveOnlyInThisMode;
 
     // A standalone prefs.csv is the device's own settings file, so its
     // Preferences sheet is device-wide. The same sheet inside a game profile

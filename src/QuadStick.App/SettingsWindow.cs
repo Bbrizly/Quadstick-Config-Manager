@@ -231,22 +231,16 @@ public class SettingsWindow : Window
                 MinWidth = 220,
             };
             AutomationProperties.SetName(language, Strings.Settings_LanguageHelp);
-            var languageNote = new TextBlock
-            {
-                Text = Strings.Settings_LanguageRestart, IsVisible = false, TextWrapping = TextWrapping.Wrap,
-                FontSize = Size("BodySize"), Classes = { "muted" },
-            };
-            // Nothing on screen changes when this is picked, so a sighted user sees
-            // the note appear and a screen reader user has to be told.
-            AutomationProperties.SetLiveSetting(languageNote, AutomationLiveSetting.Polite);
             language.SelectionChanged += (_, _) =>
             {
                 if (language.SelectedIndex < 0) return;
-                var tag = Localization.TagAt(language.SelectedIndex);
-                owner.SetLanguage(tag);
-                languageNote.IsVisible = true;
+                var next = owner.SetLanguage(Localization.TagAt(language.SelectedIndex));
+                // The whole interface was rebuilt in the picked language and
+                // this window closed with its old owner, so put Settings back
+                // on screen, already speaking it, right where the person was.
+                if (!ReferenceEquals(next, owner)) _ = new SettingsWindow(next).ShowDialog(next);
             };
-            panel.Children.Add(Field(Strings.Settings_Language, null, language, languageNote));
+            panel.Children.Add(Field(Strings.Settings_Language, null, language));
         }
 
         var appearance = new ComboBox

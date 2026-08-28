@@ -89,7 +89,19 @@ public static class PreferenceCatalog
     {
         using var s = typeof(PreferenceCatalog).Assembly.GetManifestResourceStream("PreferencesJson")
             ?? throw new InvalidOperationException("Embedded preferences.json missing.");
-        All = Translate(Parse(s));
+        English = Parse(s);
+        All = Translate(English);
+        ByName = All.ToDictionary(d => d.Name, StringComparer.Ordinal);
+    }
+
+    static readonly IReadOnlyList<PreferenceDefinition> English;
+
+    /// <summary>Re-reads the translation for the current language. The words
+    /// change; the names, bounds and defaults are the same objects' worth of
+    /// data either way. Called when the language changes while the app runs.</summary>
+    public static void Relocalize()
+    {
+        All = Translate(English);
         ByName = All.ToDictionary(d => d.Name, StringComparer.Ordinal);
     }
 
@@ -103,8 +115,8 @@ public static class PreferenceCatalog
     /// English. Nothing here can reach a device: name, category, editor,
     /// default, minimum, maximum, options and source are never read from it.
     ///
-    /// This runs once, when the catalog is first touched, so the language has
-    /// to be set before then. The app does that before its first window.
+    /// This runs when the catalog is first touched and again from
+    /// <see cref="Relocalize"/> when the language changes while the app runs.
     /// </remarks>
     internal static IReadOnlyList<PreferenceDefinition> TranslateForTest(IReadOnlyList<PreferenceDefinition> english) =>
         Translate(english);
@@ -160,12 +172,12 @@ public static class PreferenceCatalog
 
     /// <summary>Every preference, in the file's order, which groups them by
     /// <see cref="Categories"/>.</summary>
-    public static IReadOnlyList<PreferenceDefinition> All { get; }
+    public static IReadOnlyList<PreferenceDefinition> All { get; private set; }
 
     /// <summary>Category headings in display order.</summary>
     public static IReadOnlyList<string> Categories => CategoryOrder;
 
-    static readonly Dictionary<string, PreferenceDefinition> ByName;
+    static Dictionary<string, PreferenceDefinition> ByName;
 
     /// <summary>Looks a name up the way the device does, case sensitively. An
     /// unknown name is normal: firmware newer than this catalog will have
