@@ -28,6 +28,15 @@ public sealed record DeviceDescriptor(
     DeviceCapabilities Capabilities,
     string? Detail = null);
 
+public sealed record DeviceProfileId(DeviceId Device, string FileName);
+
+public sealed record DeviceProfileEntry(DeviceProfileId Id, string FileName);
+
+public sealed record DeviceProfileGroup(
+    DeviceDescriptor Device,
+    IReadOnlyList<DeviceProfileEntry> Profiles,
+    string? Error = null);
+
 public sealed record DeviceProfilePayload(string FileName, string CsvText);
 
 public sealed record DeviceInstallRequest(
@@ -40,6 +49,10 @@ public sealed record DeviceRecoveryReference(string DisplayLocation);
 public sealed record DeviceInstallReceipt(
     string FileName,
     DeviceRecoveryReference? Recovery = null);
+
+public sealed record DeviceDeleteReceipt(
+    string FileName,
+    DeviceRecoveryReference Recovery);
 
 public interface IDeviceDiscovery
 {
@@ -57,10 +70,23 @@ public interface IManualDeviceResolver
         CancellationToken cancellationToken = default);
 }
 
+/// <summary>Profile-storage capability shared by mounted-volume and future
+/// transports. Filesystem roots and absolute paths are adapter-private.</summary>
 public interface IDeviceProfileStore
 {
+    Task<IReadOnlyList<DeviceProfileGroup>> ListAsync(CancellationToken cancellationToken = default);
+
+    Task<string> ReadAsync(
+        DeviceProfileId profile,
+        CancellationToken cancellationToken = default);
+
     Task<DeviceInstallReceipt> InstallAsync(
         DeviceId device,
         DeviceInstallRequest request,
+        CancellationToken cancellationToken = default);
+
+    Task<DeviceDeleteReceipt> DeleteAsync(
+        DeviceProfileId profile,
+        string recoveryDirectory,
         CancellationToken cancellationToken = default);
 }
