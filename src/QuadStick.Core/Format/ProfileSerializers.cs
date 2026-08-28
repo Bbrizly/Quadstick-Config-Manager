@@ -1,11 +1,10 @@
 namespace QuadStick.Format;
 
-/// <summary>Optional metadata applied while serializing a profile. The source
-/// identifier is format metadata; provider APIs remain outside Core.</summary>
+/// <summary>Optional neutral format metadata applied while serializing a
+/// profile. Core knows only that the header can carry a source sheet id; it does
+/// not know which provider supplied it.</summary>
 public sealed record ProfileSerializationContext(string? SourceSheetId = null);
 
-/// <summary>Serializes a snapshot using the same compatibility rules QCM has
-/// historically used for files it writes.</summary>
 public static class ProfileCsvSerializer
 {
     public static string Serialize(
@@ -14,13 +13,20 @@ public static class ProfileCsvSerializer
     {
         ArgumentNullException.ThrowIfNull(snapshot);
         var working = ProfileFile.Load(snapshot.RawCsvText);
-        working.HeaderSheetId = context?.SourceSheetId;
+        StampSourceSheetId(working, context?.SourceSheetId);
         return working.ToCsvText();
+    }
+
+    internal static void StampSourceSheetId(ProfileFile working, string? sourceSheetId)
+    {
+        if (sourceSheetId is null || !working.Document.HasVersionHeader) return;
+        // This is an isolated serialization copy. Using the workspace's normal
+        // mutation path avoids a second hidden grid-stamping mechanism; its
+        // dirty/undo bookkeeping is irrelevant because this copy is discarded.
+        working.SetCell(1, 2, sourceSheetId);
     }
 }
 
-/// <summary>Produces the exact firmware-safe CSV used for installation. Device
-/// normalization happens on an isolated working copy, never the live editor.</summary>
 public static class DeviceProfileSerializer
 {
     public static string Serialize(
@@ -29,7 +35,7 @@ public static class DeviceProfileSerializer
     {
         ArgumentNullException.ThrowIfNull(snapshot);
         var working = ProfileFile.Load(snapshot.RawCsvText);
-        working.HeaderSheetId = context?.SourceSheetId;
+        ProfileCsvSerializer.StampSourceSheetId(working, context?.SourceSheetId);
         working.NormalizeForDeviceCsv();
         return working.ToCsvText();
     }
