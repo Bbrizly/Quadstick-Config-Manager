@@ -5,14 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>QuadStick.Format</RootNamespace>
     <Version>1.0.0</Version>
-    <!-- Temporary compatibility shell while filesystem/device/provider concerns are extracted. -->
+    <!-- Temporary compatibility shell while device/provider concerns are extracted. -->
     <AnalysisLevel>latest-recommended</AnalysisLevel>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../QuadStick.Core/QuadStick.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- ProfileFile still owns template construction during the incremental migration. -->
-    <EmbeddedResource Include="Templates/default-template.csv" LogicalName="DefaultTemplate" />
   </ItemGroup>
 </Project>

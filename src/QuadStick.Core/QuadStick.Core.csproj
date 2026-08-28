@@ -9,8 +9,8 @@
     <AnalysisLevel>latest-recommended</AnalysisLevel>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Keep the historical logical names while code is moved unchanged. -->
     <EmbeddedResource Include="Validation/Resources/validation.json" LogicalName="ValidationJson" />
     <EmbeddedResource Include="Preferences/Resources/preferences.json" LogicalName="PreferencesJson" />
+    <EmbeddedResource Include="Templates/Resources/default-template.csv" LogicalName="DefaultTemplate" />
   </ItemGroup>
 </Project>
