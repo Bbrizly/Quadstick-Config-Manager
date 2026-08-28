@@ -687,6 +687,7 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
+        FlowDirection = Localization.Direction;
         InitializeComponent();
         var v = typeof(MainWindow).Assembly.GetName().Version;
         HomeVersionText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_VVMajorVMinor, v?.Major, v?.Minor, v?.Build);
@@ -1353,6 +1354,7 @@ public partial class MainWindow : Window
     // blank window cannot.
     public static Control DialogShell(Window window, Control content)
     {
+        window.FlowDirection = Localization.Direction;
         var close = new Button { Content = "×", Classes = { "icon", "dialogclose" } };
         var windowTitle = string.IsNullOrWhiteSpace(window.Title) ? "window" : window.Title;
         AutomationProperties.SetName(close, string.Format(CultureInfo.CurrentCulture, Strings.Main_CloseWindowTitleToLowerInvariant, windowTitle.ToLowerInvariant()));
@@ -2353,7 +2355,7 @@ public partial class MainWindow : Window
     // single switch with no splitter actually gets.
     Control BackPanelPicture()
     {
-        var stage = new Canvas { Width = BackStageW, Height = BackStageH };
+        var stage = new Canvas { Width = BackStageW, Height = BackStageH, FlowDirection = Avalonia.Media.FlowDirection.LeftToRight };
         var photo = new Image
         {
             Source = BackPhoto(), Width = BackPhotoW, Height = BackPhotoH,
@@ -2773,7 +2775,7 @@ public partial class MainWindow : Window
         // ---- Main diagram: the photo of the device with each part pinned
         // where it physically sits, so a part is found by looking at the thing
         // in your mouth instead of matching a name to a box. ----
-        var stage = new Canvas { Width = StageW, Height = StageH };
+        var stage = new Canvas { Width = StageW, Height = StageH, FlowDirection = Avalonia.Media.FlowDirection.LeftToRight };
         var photo = new Image
         {
             Source = DevicePhoto(), Width = PhotoW, Height = PhotoH,

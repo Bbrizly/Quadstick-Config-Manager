@@ -124,7 +124,9 @@ public partial class MainWindow
 
         // 2) Dim + ring canvas. Four dim strips frame the target and leave it
         // bright; the accent ring outlines the target itself.
-        _tourCanvas = new Canvas();
+        // The dim strips and the ring are placed over measured screen
+        // coordinates, so this overlay stays left to right even in Arabic.
+        _tourCanvas = new Canvas { FlowDirection = Avalonia.Media.FlowDirection.LeftToRight };
         _tourDim = new Border[4];
         for (int i = 0; i < 4; i++)
         {

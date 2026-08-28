@@ -48,6 +48,15 @@ public static class Localization
 #endif
     };
 
+    /// <summary>Which way the interface runs. Arabic is the one shipped
+    /// language that reads right to left; every window takes this, and the two
+    /// device photos and the tour overlay pin themselves back because their
+    /// parts are placed at measured pixels that must not mirror.</summary>
+    public static Avalonia.Media.FlowDirection Direction =>
+        CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft
+            ? Avalonia.Media.FlowDirection.RightToLeft
+            : Avalonia.Media.FlowDirection.LeftToRight;
+
     /// <summary>Point resource lookups at a language. Runs before the first
     /// window, and again, followed by <see cref="Relocalize"/>, when the
     /// language is changed from Settings while the app is up.</summary>
