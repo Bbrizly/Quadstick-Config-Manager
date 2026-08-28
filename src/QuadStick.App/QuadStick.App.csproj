@@ -12,13 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Release workflows still generate provider credentials beside the app project;
-         Infrastructure links them in so those secrets never become presentation code. -->
-    <Compile Remove="GoogleClient.Local.cs" Condition="Exists('GoogleClient.Local.cs')" />
-    <Compile Remove="TelemetryToken.Local.cs" Condition="Exists('TelemetryToken.Local.cs')" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AvaloniaResource Include="Assets/AppIcon.png" />
     <AvaloniaResource Include="Assets/QuadStick.png" />
   </ItemGroup>
