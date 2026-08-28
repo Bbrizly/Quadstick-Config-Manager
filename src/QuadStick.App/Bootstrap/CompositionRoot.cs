@@ -1,4 +1,6 @@
+using QuadStick.Application.Community;
 using QuadStick.Application.Devices;
+using QuadStick.Infrastructure.Community;
 using QuadStick.Infrastructure.Devices.MountedVolume;
 using QuadStick.Infrastructure.Files;
 using QuadStick.Format;
@@ -9,16 +11,24 @@ namespace QuadStick.App;
 internal sealed class CompositionRoot
 {
     readonly MountedVolumeDeviceAdapter _mountedDevice;
+    readonly HttpClient _communityHttp;
 
     public DiscoverDevicesUseCase DiscoverDevices { get; }
     public InstallProfileUseCase InstallProfile { get; }
     public IManualDeviceResolver ManualDevices => _mountedDevice;
+    public CommunityCatalogUseCase CommunityCatalog { get; }
 
     public CompositionRoot()
     {
         _mountedDevice = new MountedVolumeDeviceAdapter();
         DiscoverDevices = new DiscoverDevicesUseCase(_mountedDevice);
         InstallProfile = new InstallProfileUseCase(_mountedDevice);
+
+        // One production client for the app lifetime. The catalog source owns
+        // request policy/cache semantics; presentation receives only the use case.
+        _communityHttp = HttpCommunityCatalogSource.CreateProductionClient();
+        CommunityCatalog = new CommunityCatalogUseCase(
+            new HttpCommunityCatalogSource(_communityHttp));
     }
 
     internal static IReadOnlyList<string> FindDeviceRoots() => Device.FindCandidatesCached();
@@ -45,4 +55,5 @@ internal sealed class CompositionRoot
 public partial class MainWindow
 {
     readonly CompositionRoot _architectureServices = new();
+    internal CommunityCatalogUseCase CommunityCatalog => _architectureServices.CommunityCatalog;
 }
