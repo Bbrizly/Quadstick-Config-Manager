@@ -6,22 +6,17 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using QuadStick.Application.Devices;
 using QuadStick.Format;
 
 namespace QuadStick.App;
 
-// Confirm -> progress -> receipt: a single modal Window whose content panel
-// is swapped in place as the install advances, rather than a multi-step
-// stepper control. Device pick and the default.csv confirmation reuse the
-// existing PickDeviceRootAsync/ConfirmAsync dialogs; only the write itself
-// (Device.Install) gets its own progress/receipt window, because that's the
-// step with no other feedback otherwise.
+// Confirm -> progress -> receipt: presentation owns the dialogs while discovery,
+// install policy and device I/O go through Application/Infrastructure.
 public partial class MainWindow
 {
     async Task RunInstallFlowAsync()
     {
-        // Every exit below is one reason, so the funnel says where installs
-        // actually die rather than only that they did.
         Telemetry.Track(TelemetryEvent.InstallAttempted);
 
         if (_file is null)
@@ -36,13 +31,16 @@ public partial class MainWindow
             Status("Fix the errors in the Problems list before installing.", StatusKind.Error); RefreshIssues(); return;
         }
 
-        var candidates = Device.FindCandidates();
+        var devices = await _architectureServices.DiscoverDevices.ExecuteAsync();
+        var candidates = devices
+            .Select(d => d.Location ?? d.Id.Value)
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToList();
+
         string? root;
         if (candidates.Count > 1)
         {
             root = await PickDeviceRootAsync(candidates);
-            // Cancelling the drive choice cancels the install; it must not
-            // fall through to a folder picker the user did not ask for.
             if (root is null)
             {
                 Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledDevice);
@@ -66,7 +64,8 @@ public partial class MainWindow
             root = folders[0].Path.LocalPath;
         }
 
-        if (!Device.IsInstallTarget(root))
+        var deviceId = new DeviceId(root);
+        if (!_architectureServices.InstallProfile.IsInstallTarget(deviceId))
         {
             Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.NotAQuadstick);
             Status("That folder does not look like a QuadStick (no default.csv at its root).", StatusKind.Error);
@@ -86,9 +85,6 @@ public partial class MainWindow
             }
         }
 
-        // prefs.csv is the device's settings file, not one game's profile, so it
-        // gets its own confirmation naming the file, the drive, and the reach of
-        // the change. Nothing is written until this comes back true.
         bool confirmPrefs = false;
         if (_file.Document.IsDevicePreferences)
         {
@@ -103,11 +99,10 @@ public partial class MainWindow
             }
         }
 
-        await RunInstallDialogAsync(_file, root, confirmDefault, confirmPrefs);
+        await RunInstallDialogAsync(_file, deviceId, root, confirmDefault, confirmPrefs);
     }
 
-    // Drives the modal itself: target drive -> progress -> receipt/failure.
-    async Task RunInstallDialogAsync(ProfileFile file, string root, bool confirmDefault, bool confirmPrefs)
+    async Task RunInstallDialogAsync(ProfileFile file, DeviceId deviceId, string root, bool confirmDefault, bool confirmPrefs)
     {
         var host = new StackPanel { Margin = new Thickness(24), Spacing = 16, MinWidth = 420, MaxWidth = 480 };
         var dialog = new Window
@@ -119,9 +114,6 @@ public partial class MainWindow
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
         };
         dialog.Content = DialogShell(dialog, ZoomWrap(host, _uiScale));
-        // No inline/frozen Background: the app-wide "Window" style in
-        // App.axaml already binds Background to {DynamicResource
-        // AppBackgroundBrush}, so this dialog follows theme changes for free.
 
         void SetContent(Control content) { host.Children.Clear(); host.Children.Add(content); }
 
@@ -139,23 +131,31 @@ public partial class MainWindow
             },
         });
 
-        // Kick the modal off but don't await it yet: it only completes when
-        // the user closes it, and we need the window on screen *while* the
-        // background install runs so the progress line is actually seen.
         var dialogTask = dialog.ShowDialog(this);
 
-        // Same dismiss button for both outcomes; only one branch ever shows it.
         var close = new Button { Content = "Close", MinWidth = 140, IsDefault = true, IsCancel = true };
         AutomationProperties.SetName(close, "Close");
         close.Click += (_, _) => dialog.Close();
 
         try
         {
-            // Device.Install does synchronous file I/O; keep it off the UI
-            // thread. Avalonia's SynchronizationContext resumes the
-            // continuation on the UI thread, so the content swap below is safe.
-            var result = await Task.Run(() => Device.Install(file, root, Device.DefaultBackupDir(), confirmDefault, confirmPrefs));
+            var operation = await _architectureServices.InstallProfile.ExecuteAsync(
+                file, deviceId, confirmDefault, confirmPrefs);
 
+            if (operation.Status != InstallProfileStatus.Installed || operation.Receipt is null)
+            {
+                var message = operation.Status switch
+                {
+                    InstallProfileStatus.HasErrors => "Fix the errors in the Problems list before installing.",
+                    InstallProfileStatus.InvalidTarget => "That folder does not look like a QuadStick (no default.csv at its root).",
+                    InstallProfileStatus.ConfirmationRequiredDefault => "Overwriting default.csv requires explicit confirmation.",
+                    InstallProfileStatus.ConfirmationRequiredPreferences => "Installing prefs.csv requires explicit confirmation.",
+                    _ => "The profile was not installed.",
+                };
+                throw new InvalidOperationException(message);
+            }
+
+            var result = operation.Receipt;
             SetContent(new StackPanel
             {
                 Spacing = 12,
@@ -175,19 +175,8 @@ public partial class MainWindow
             Telemetry.Track(TelemetryEvent.InstallSucceeded);
             Status($"Installed {Path.GetFileName(result.InstalledPath)} to {root}.", StatusKind.Ready);
         }
-        // Anything at all, not a named few. The panel on screen while the
-        // install runs holds no button: `close` is only put in the tree by the
-        // two branches here. So an exception this filter did not name escaped
-        // an async void click handler, CrashGuard swallowed it to keep the app
-        // alive, and the user was left looking at "Backing up and installing..."
-        // for ever with no way out but the title bar, and the reason for it only
-        // in a crash log. Whatever went wrong, saying so beats hanging.
         catch (Exception ex)
         {
-            // Show the exception message verbatim: Device.Install already
-            // distinguishes "the device was not modified" (readback failure)
-            // from "restored from backup" (mid-swap failure), and inventing a
-            // blanket "unchanged" here would misstate the mid-swap case.
             Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.IoError);
             SetContent(new StackPanel
             {
@@ -200,11 +189,10 @@ public partial class MainWindow
                 },
             });
             close.Focus();
-
             Status(ex.Message, StatusKind.Error);
         }
 
         await dialogTask;
-        InstallButton.Focus(); // both outcomes return focus to Install once the modal is gone
+        InstallButton.Focus();
     }
 }
