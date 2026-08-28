@@ -43,7 +43,7 @@ public class DeviceFilesWindow : Window
     {
         Classes.Add("dialog");
         _owner = owner;
-        _files = CompositionRoot.CreateDeviceFileManagement(() => FindRoots());
+        _files = CompositionRoot.CreateDeviceFileManagement(() => FindRoots(), () => BackupDir);
         OpenUri = uri => Launcher.LaunchUriAsync(uri);
         Confirm = ConfirmDialogAsync;
         Title = "Files on your QuadStick";
@@ -561,7 +561,7 @@ public class DeviceFilesWindow : Window
         DeviceDeleteReceipt result;
         try
         {
-            result = await _files.DeleteAsync(file.Id, BackupDir);
+            result = await _files.DeleteAsync(file.Id);
         }
         catch (Exception ex)
         {
