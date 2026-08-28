@@ -154,6 +154,7 @@ public sealed class DriveBackupWorkflow
     const string PendingMessage = "Backup pending";
     const string PausedMessage = "Backup paused. Reconnect to Google in Settings.";
     const string InvalidProfileMessage = "The profile data could not be read safely, so neither copy was changed.";
+    const string StateSaveMessage = "Backup settings could not be saved, so the remote copy was not changed.";
 
     sealed class OperationContext { public bool SettingsSaveFailed; }
 
@@ -211,8 +212,16 @@ public sealed class DriveBackupWorkflow
             if (link is null)
                 return await CreateAndRecordAsync(profilePath, csvText, context, cancellationToken).ConfigureAwait(false);
 
+            // Persist the retry marker before any operation that can change the
+            // remote sheet. If this write fails, stopping here preserves the
+            // previous remote revision and prevents disk from falsely saying
+            // the backup is clean after an unrecorded remote write.
             link.BackupDirty = true;
-            SaveLink(profilePath, link, context);
+            if (!SaveLink(profilePath, link, context))
+                return new BackupPushOutcome(
+                    BackupPushState.Failed,
+                    Notice: StateSaveMessage,
+                    SettingsSaveFailed: true);
 
             if (link.RevisionState == RemoteRevisionState.UnknownAfterWrite)
                 return await PushAndRecordAsync(profilePath, link, csvText, context, cancellationToken).ConfigureAwait(false);
@@ -244,7 +253,11 @@ public sealed class DriveBackupWorkflow
 
             if (!recreateMissing.Value)
             {
-                RemoveLink(profilePath, context);
+                if (!RemoveLink(profilePath, context))
+                    return new BackupPushOutcome(
+                        BackupPushState.Failed,
+                        Notice: "Backup could not be turned off because its local state could not be saved.",
+                        SettingsSaveFailed: true);
                 return new BackupPushOutcome(BackupPushState.RecreatedOff,
                     SettingsSaveFailed: context.SettingsSaveFailed);
             }
