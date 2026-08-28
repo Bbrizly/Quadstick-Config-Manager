@@ -15,8 +15,6 @@ public sealed class CommunityCatalogClient
     public const int MaxRows = HttpCommunityCatalogSource.MaxRows;
     public const int MaxFieldChars = HttpCommunityCatalogSource.MaxFieldChars;
 
-    public CommunityCatalogClient() : this(CompositionRoot.CommunityCatalog) { }
-
     public CommunityCatalogClient(HttpMessageHandler handler, string cachePath)
         : this(new CommunityCatalogUseCase(new HttpCommunityCatalogSource(handler, cachePath))) { }
 
