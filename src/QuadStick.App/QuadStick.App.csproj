@@ -38,7 +38,5 @@
     <ProjectReference Include="../QuadStick.Core/QuadStick.Core.csproj" />
     <ProjectReference Include="../QuadStick.Application/QuadStick.Application.csproj" />
     <ProjectReference Include="../QuadStick.Infrastructure/QuadStick.Infrastructure.csproj" />
-    <!-- Temporary compatibility shell; removed when ProfileFile/Device/SheetsUrl finish moving. -->
-    <ProjectReference Include="../QuadStick.Format/QuadStick.Format.csproj" />
   </ItemGroup>
 </Project>

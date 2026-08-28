@@ -9,6 +9,6 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/QuadStick.Format/QuadStick.Format.csproj" />
+    <ProjectReference Include="../../src/QuadStick.Core/QuadStick.Core.csproj" />
   </ItemGroup>
 </Project>

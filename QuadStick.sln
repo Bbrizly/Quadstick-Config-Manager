@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{88E39C4D-EA27-4EDA-A15D-12114A8C4BD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuadStick.Format", "src\QuadStick.Format\QuadStick.Format.csproj", "{0EC4D8BA-6667-4BB0-A027-E681406025C3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuadStick.Core", "src\QuadStick.Core\QuadStick.Core.csproj", "{0F8256C9-0B22-4C67-A988-44D433B29243}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuadStick.Application", "src\QuadStick.Application\QuadStick.Application.csproj", "{313053E2-A856-4D93-A932-0B1DA067B461}"
@@ -36,10 +34,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0EC4D8BA-6667-4BB0-A027-E681406025C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EC4D8BA-6667-4BB0-A027-E681406025C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0EC4D8BA-6667-4BB0-A027-E681406025C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0EC4D8BA-6667-4BB0-A027-E681406025C3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F8256C9-0B22-4C67-A988-44D433B29243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0F8256C9-0B22-4C67-A988-44D433B29243}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F8256C9-0B22-4C67-A988-44D433B29243}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -74,7 +68,6 @@ Global
 		{6350A6F2-5287-41E9-BE7A-DA3FE8A08A9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{0EC4D8BA-6667-4BB0-A027-E681406025C3} = {88E39C4D-EA27-4EDA-A15D-12114A8C4BD0}
 		{0F8256C9-0B22-4C67-A988-44D433B29243} = {88E39C4D-EA27-4EDA-A15D-12114A8C4BD0}
 		{313053E2-A856-4D93-A932-0B1DA067B461} = {88E39C4D-EA27-4EDA-A15D-12114A8C4BD0}
 		{8D41EE3C-C264-4DC8-8C2C-E6BB503E1672} = {88E39C4D-EA27-4EDA-A15D-12114A8C4BD0}
