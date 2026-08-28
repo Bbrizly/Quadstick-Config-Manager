@@ -1,9 +1,9 @@
 #if !TELEMETRY_TOKEN_LOCAL
-namespace QuadStick.App;
+namespace QuadStick.Infrastructure.Telemetry;
 
 // Placeholder PostHog project token. The real one lives in the gitignored
-// TelemetryToken.Local.cs, and CI writes that file from a repo secret, the
-// same arrangement GoogleClient.cs uses.
+// TelemetryToken.Local.cs in this Infrastructure folder, and CI writes that
+// file from a repo secret for official release builds.
 //
 // An empty token is not a broken build, it is a silent one: Telemetry.Start
 // refuses to construct a client without one, so a source build, a fork, and a
