@@ -6,7 +6,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace QuadStick.App;
+namespace QuadStick.Infrastructure.Agent;
 
 /// <summary>One event from the agent. Everything the window draws comes from
 /// these and nothing else, so what the run says and what the window shows
