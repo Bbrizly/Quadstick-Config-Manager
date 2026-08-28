@@ -24,25 +24,39 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
 
     public AppSettingsLoadResult Load()
     {
-        using var processLock = AcquireLock();
-        var backup = BackupPath(_path);
+        try
+        {
+            using var processLock = AcquireLock();
+            var backup = BackupPath(_path);
 
-        if (TryRead(_path, out var current, out var primaryInvalid))
-            return new AppSettingsLoadResult(current!);
+            if (TryRead(_path, out var current, out var primaryInvalid))
+                return new AppSettingsLoadResult(current!);
 
-        if (primaryInvalid) Quarantine(_path);
+            if (primaryInvalid) Quarantine(_path);
 
-        if (TryRead(backup, out var recovered, out _))
-            return new AppSettingsLoadResult(
-                recovered!,
-                "Settings were recovered from the previous good copy.");
+            if (TryRead(backup, out var recovered, out _))
+                return new AppSettingsLoadResult(
+                    recovered!,
+                    "Settings were recovered from the previous good copy.");
 
-        if (primaryInvalid || File.Exists(_path) || File.Exists(backup))
+            if (primaryInvalid || File.Exists(_path) || File.Exists(backup))
+                return new AppSettingsLoadResult(
+                    new AppSettings(),
+                    "Settings could not be read; defaults are in use.");
+
+            return new AppSettingsLoadResult(new AppSettings());
+        }
+        catch (Exception ex) when (IsPersistenceFailure(ex))
+        {
+            // Loading settings is never allowed to prevent the application from
+            // starting. Invalid paths are mostly a test/injected-store concern,
+            // but permissions, lock failures and damaged platform paths are
+            // real operational failures too. Fall back explicitly rather than
+            // leaking an exception from the persistence adapter.
             return new AppSettingsLoadResult(
                 new AppSettings(),
                 "Settings could not be read; defaults are in use.");
-
-        return new AppSettingsLoadResult(new AppSettings());
+        }
     }
 
     public bool TrySave(AppSettings settings)
@@ -67,12 +81,19 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
             AtomicFileWriter.Write(_path, json);
             return true;
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException
-                                       or TimeoutException or JsonException or NotSupportedException)
+        catch (Exception ex) when (IsPersistenceFailure(ex))
         {
             return false;
         }
     }
+
+    static bool IsPersistenceFailure(Exception ex) =>
+        ex is IOException
+            or UnauthorizedAccessException
+            or TimeoutException
+            or JsonException
+            or NotSupportedException
+            or ArgumentException;
 
     FileStream AcquireLock()
     {
@@ -123,7 +144,7 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
             invalid = true;
             return false;
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
             return false;
         }
@@ -140,7 +161,7 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
                 $"{name}.corrupt-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}");
             File.Move(path, quarantine, overwrite: false);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
             // Best effort. TrySave never promotes malformed primary data to .bak.
         }
