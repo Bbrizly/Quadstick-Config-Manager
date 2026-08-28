@@ -60,7 +60,7 @@ public sealed class CheckForUpdatesUseCase
             case UpdateSourceStatus.Success:
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(release.Status));
+                throw new InvalidOperationException($"Unknown update source status: {release.Status}.");
         }
 
         var latest = UpdateVersion.Normalize(release.Tag);
