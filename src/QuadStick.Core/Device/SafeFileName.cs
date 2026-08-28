@@ -1,7 +1,7 @@
 namespace QuadStick.Format;
 
 // Turn an arbitrary Google Sheets name into a CSV file name that is safe
-// on both macOS and Windows.
+// on every desktop platform QCM supports and on the QuadStick itself.
 public static class SafeFileName
 {
     static readonly HashSet<string> ReservedWindowsNames = new(StringComparer.OrdinalIgnoreCase)
@@ -26,10 +26,16 @@ public static class SafeFileName
     public static bool IsTooLongForDevice(string? fileName) =>
         (fileName ?? "").Length > MaxDeviceFileNameLength;
 
-    // Chars this platform rejects, plus / \ : which are legal on macOS but
-    // break a synced file on Windows. Must be safe on both.
-    static readonly HashSet<char> InvalidChars = Path.GetInvalidFileNameChars()
-        .Concat(new[] { '/', '\\', ':' }).ToHashSet();
+    // Do not use Path.GetInvalidFileNameChars here. That API describes the host
+    // OS, so the same Core input produced a Windows-safe name on Windows but
+    // could keep *, ?, <, >, | or quotes on macOS/Linux. The profile library is
+    // portable and synced, therefore this policy must be deterministic.
+    static readonly HashSet<char> InvalidChars = new(new[]
+    {
+        '<', '>', ':', '"', '/', '\\', '|', '?', '*',
+    });
+
+    static bool IsInvalid(char c) => char.IsControl(c) || InvalidChars.Contains(c);
 
     // Windows resolves these to devices whatever extension follows them, so
     // "NUL.csv" is not a file at all: the write succeeds, the readback comes
@@ -56,7 +62,7 @@ public static class SafeFileName
         if (trimmed.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
             trimmed = trimmed[..^4];
 
-        var cleaned = string.Concat(trimmed.Select(c => InvalidChars.Contains(c) ? '_' : c));
+        var cleaned = string.Concat(trimmed.Select(c => IsInvalid(c) ? '_' : c));
 
         // Windows rejects a trailing dot or space.
         var baseName = cleaned.TrimEnd('.', ' ');
