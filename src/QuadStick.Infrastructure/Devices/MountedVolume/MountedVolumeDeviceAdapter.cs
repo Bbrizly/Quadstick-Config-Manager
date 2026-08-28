@@ -22,7 +22,7 @@ public sealed class MountedVolumeDeviceAdapter : IDeviceDiscovery, IDeviceProfil
             root)).ToList();
     }
 
-    public void InvalidateCache() => Device.InvalidateCache();
+    public void InvalidateCache() => Device.InvalidateCandidateCache();
 
     public bool IsInstallTarget(DeviceId device) => Device.IsInstallTarget(device.Value);
 
