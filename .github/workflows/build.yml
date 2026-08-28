@@ -1,8 +1,8 @@
 name: CI
 
 # Tests run on every push and PR. Pushing a version tag (vX.Y.Z) additionally
-# builds a download for each platform and publishes a GitHub Release. The tag
-# is the only thing you create; everything below is automatic.
+# builds a download for each platform and publishes a GitHub Release. The tag is
+# the only thing you create; everything below is automatic.
 on:
   push:
     branches: [main]
@@ -11,8 +11,8 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# No job in this workflow may report. Releases are built here, and a
-# build machine's launches and crashes are not a user's.
+# No job in this workflow may report. Releases are built here, and a build
+# machine's launches and crashes are not a user's.
 env:
   QSCM_TELEMETRY: "0"
 
@@ -26,8 +26,12 @@ permissions:
 
 jobs:
   test:
-    name: Test
-    runs-on: ubuntu-latest
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
@@ -37,9 +41,6 @@ jobs:
       - run: dotnet test QuadStick.sln --nologo
 
   # One self-contained download per platform, built only for v* tags.
-  # Windows/Linux ship one compressed single-file binary; macOS ships a proper
-  # .app bundle via scripts/make-macos-app.sh (the same script `make package`
-  # uses, so local and release builds are identical).
   package:
     name: Package ${{ matrix.label }}
     needs: test
@@ -62,12 +63,10 @@ jobs:
 
       - name: Version from tag
         shell: bash
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"   # v1.2.3 -> 1.2.3
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
 
-      # The real Google OAuth client is gitignored (GoogleClient.Local.cs),
-      # so CI recreates it from repo secrets. Failing here is deliberate: a
-      # release built without it would ship with Google backup silently
-      # disabled. Forks without the feature can delete this step.
+      # Real provider credentials are generated inside Infrastructure, the
+      # assembly that owns Google auth. No source file is borrowed from App.
       - name: Google client from secrets
         shell: bash
         env:
@@ -79,15 +78,11 @@ jobs:
             echo "Add them in Settings > Secrets and variables > Actions, or remove this step to release without Google backup." >&2
             exit 1
           fi
-          # The values become C# string literals; only allow characters
-          # Google actually uses so a stray quote or newline cannot break
-          # or leak. A case glob checks every character, unlike grep,
-          # which works line by line and would let a newline through.
           case "$GID$GSECRET" in (*[!A-Za-z0-9._-]*)
             echo "A Google client secret value has unexpected characters; refusing to write source." >&2
             exit 1
           esac
-          cat > src/QuadStick.App/GoogleClient.Local.cs <<EOF
+          cat > src/QuadStick.Infrastructure/Google/GoogleClient.Local.cs <<EOF
           namespace QuadStick.App;
 
           static class GoogleClient
@@ -97,10 +92,6 @@ jobs:
           }
           EOF
 
-      # Same arrangement as the Google client above. Without this file the
-      # placeholder's empty token compiles in and the release is silent, so a
-      # missing secret is a warning here rather than a failure: a build with no
-      # analytics is fine, a build that leaks is not.
       - name: PostHog token from secrets
         shell: bash
         env:
@@ -110,14 +101,11 @@ jobs:
             echo "POSTHOG_PROJECT_TOKEN is not set; building with analytics disabled." >&2
             exit 0
           fi
-          # The value becomes a C# string literal. A case glob checks every
-          # character, unlike grep, which works line by line and would let a
-          # newline through.
           case "$PHTOKEN" in (*[!A-Za-z0-9_-]*)
             echo "POSTHOG_PROJECT_TOKEN has unexpected characters; refusing to write source." >&2
             exit 1
           esac
-          cat > src/QuadStick.App/TelemetryToken.Local.cs <<EOF
+          cat > src/QuadStick.Infrastructure/Telemetry/TelemetryToken.Local.cs <<EOF
           namespace QuadStick.App;
 
           static class TelemetryToken
@@ -129,8 +117,6 @@ jobs:
       - name: Publish
         shell: bash
         run: |
-          # macOS puts the plain self-contained folder inside the .app; the
-          # other platforms collapse to one compressed single file.
           EXTRA=""
           [ "${{ matrix.kind }}" = "macos" ] || \
             EXTRA="-p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true"
@@ -152,8 +138,6 @@ jobs:
         run: |
           mkdir -p dist
           scripts/make-macos-app.sh publish "$VERSION" "QuadStick Config Manager.app"
-          # ditto is the Mac-correct zip: keeps the bundle bit, symlinks and the
-          # executable permission a plain `zip` would flatten.
           ditto -c -k --keepParent "QuadStick Config Manager.app" \
             "dist/QuadStickConfigManager-${{ matrix.label }}.zip"
 
@@ -178,7 +162,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      contents: write   # create the release and upload the downloads
+      contents: write
     steps:
       - uses: actions/download-artifact@v7
         with:
