@@ -25,14 +25,22 @@ Directory.CreateDirectory(outDir);
 // real settings file put whatever model, theme and card style this developer
 // last chose into the docs: every device-view shot went out saying "Not on
 // model" because a Singleton was picked here months ago.
+var langAt = Array.IndexOf(args, "--lang");
+var lang = langAt >= 0 && langAt + 1 < args.Length ? args[langAt + 1] : Localization.FollowSystem;
+
 var cfgDir = Directory.CreateTempSubdirectory("qscm-cfg-").FullName;
 Settings.PathOverride = Path.Combine(cfgDir, "settings.json");
-Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false });
+Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Language = lang });
 
 // --pseudo draws the whole app in the pseudo language: every label that is
 // still plain English is one the move to Strings.resx missed, and every label
 // that runs out of its control is a layout that assumed English.
 if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
+
+// --lang <tag> draws it in a shipped language. The store shots need one set
+// per language, and Arabic is the one that has to be looked at rather than
+// asserted: the window mirrors and the device photo must not follow it.
+Localization.Apply(lang);
 
 // A library that looks like somebody's. Real community workbooks, under the
 // names their games have, so every card carries real modes and real counts:
@@ -106,7 +114,7 @@ AppBuilder.Configure<App>()
 if (args.Contains("--drew"))
 {
     Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
-    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, DeviceCards = false });
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, DeviceCards = false, Language = lang });
 
     // The six settings Drew named, in one Preferences sheet, so the shot shows
     // the controls rather than an empty tab.
@@ -235,7 +243,7 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
     Application.Current!.RequestedThemeVariant = variant;
     // Fresh settings per theme: opening a profile below files it under recents,
     // and the second pass would otherwise show a Home the first one did not.
-    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false });
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Language = lang });
 
 // --pseudo draws the whole app in the pseudo language: every label that is
 // still plain English is one the move to Strings.resx missed, and every label
