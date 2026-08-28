@@ -1,25 +1,17 @@
 using System.Text.RegularExpressions;
 
-namespace QuadStick.Format;
+namespace QuadStick.Infrastructure.Google;
 
-// Google Sheets share/edit links → export URL.
+/// <summary>Pure parsing of Google Sheets provider URL shapes. Deterministic is
+/// not the same as domain-generic: this belongs beside the Google adapter.</summary>
 public static partial class SheetsUrl
 {
-    /// <summary>The whole workbook, every tab. Import wants this one: profiles
-    /// are usually one mode per tab. The gid in the pasted link is dropped,
-    /// since it names a single tab.</summary>
     public static bool TryGetXlsxExportUrl(string pasted, out string exportUrl) =>
         TryGetExportUrl(pasted, "xlsx", wholeWorkbook: true, out exportUrl);
 
-    /// <summary>One tab as CSV: the linked one, or the first. The fallback for
-    /// published links, where the workbook export is not available.</summary>
     public static bool TryGetCsvExportUrl(string pasted, out string exportUrl) =>
         TryGetExportUrl(pasted, "csv", wholeWorkbook: false, out exportUrl);
 
-    /// <summary>The Sheet a device-written header points at, as a canonical edit
-    /// link. Version 1.4 headers carry the full URL (the add-on's format);
-    /// Version 1.5 headers carry the bare id (QMP's format). Never throws:
-    /// a missing or malformed version/source just fails the parse.</summary>
     public static bool TryGetEditUrlFromHeader(string version, string source, out string url)
     {
         url = "";
@@ -37,9 +29,6 @@ public static partial class SheetsUrl
         return true;
     }
 
-    // Version 1.4: the source is a pasted Sheets URL. Reuse IdPattern to pull
-    // the id out of it, same as the export-url path, but also require the
-    // Google host so a lookalike link on another domain is rejected.
     static string? IdFromUrl(string source)
     {
         if (!Uri.TryCreate(source, UriKind.Absolute, out var uri)) return null;
@@ -47,19 +36,12 @@ public static partial class SheetsUrl
         return IdPattern().Match(source) is { Success: true } m ? m.Groups[1].Value : null;
     }
 
-    // Version 1.5: the source IS the id, nothing to extract it from. Reuse the
-    // same id character class by matching it in the shape IdPattern expects,
-    // then require the match to consume the whole string so trailing garbage
-    // after a valid-looking prefix is rejected rather than silently dropped.
     static string? IdFromBareId(string source)
     {
         var m = IdPattern().Match("/spreadsheets/d/" + source);
         return m.Success && m.Groups[1].Value.Length == source.Length ? m.Groups[1].Value : null;
     }
 
-    /// <summary>The spreadsheet id in a pasted link, so a caller can ask
-    /// whether it already knows that sheet. A published link carries a
-    /// different kind of id and is not one.</summary>
     public static bool TryGetId(string pasted, out string id)
     {
         id = "";
