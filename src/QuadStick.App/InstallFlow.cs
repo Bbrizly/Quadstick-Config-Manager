@@ -32,24 +32,25 @@ public partial class MainWindow
         }
 
         var devices = await _architectureServices.DiscoverDevices.ExecuteAsync();
-        var candidates = devices
-            .Select(d => d.Location ?? d.Id.Value)
-            .Where(x => !string.IsNullOrWhiteSpace(x))
-            .ToList();
+        DeviceDescriptor? selected = null;
 
-        string? root;
-        if (candidates.Count > 1)
+        if (devices.Count > 1)
         {
-            root = await PickDeviceRootAsync(candidates);
-            if (root is null)
+            // The existing picker presents mounted locations. Selection is
+            // mapped back to the descriptor that owns the opaque DeviceId;
+            // presentation never reconstructs identity from that path.
+            var choices = devices.Select(DeviceLocation).ToList();
+            var chosen = await PickDeviceRootAsync(choices);
+            if (chosen is null)
             {
                 Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledDevice);
                 Status("Install cancelled."); return;
             }
+            selected = devices.FirstOrDefault(d => string.Equals(DeviceLocation(d), chosen, StringComparison.Ordinal));
         }
-        else if (candidates.Count == 1)
+        else if (devices.Count == 1)
         {
-            root = candidates[0];
+            selected = devices[0];
         }
         else
         {
@@ -61,16 +62,24 @@ public partial class MainWindow
                 Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledFolder);
                 return;
             }
-            root = folders[0].Path.LocalPath;
+
+            selected = await _architectureServices.ManualDevices.ResolveMountedFolderAsync(folders[0].Path.LocalPath);
+            if (selected is null)
+            {
+                Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.NotAQuadstick);
+                Status("That folder does not look like a QuadStick (no default.csv at its root).", StatusKind.Error);
+                return;
+            }
         }
 
-        var deviceId = new DeviceId(root);
-        if (!_architectureServices.InstallProfile.IsInstallTarget(deviceId))
+        if (selected is null)
         {
             Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.NotAQuadstick);
-            Status("That folder does not look like a QuadStick (no default.csv at its root).", StatusKind.Error);
+            Status("That QuadStick is no longer available. Refresh and try again.", StatusKind.Error);
             return;
         }
+
+        var location = DeviceLocation(selected);
 
         bool confirmDefault = false;
         if (_file.Document.IsDefaultConfig)
@@ -91,7 +100,7 @@ public partial class MainWindow
             confirmPrefs = await ConfirmAsync(
                 "Install prefs.csv to this QuadStick?",
                 $"prefs.csv holds the device's own settings, so this changes how the QuadStick behaves in every " +
-                $"profile on {root}, not just one game. The prefs.csv already on the drive is backed up first. Continue?");
+                $"profile on {location}, not just one game. The prefs.csv already on the drive is backed up first. Continue?");
             if (!confirmPrefs)
             {
                 Telemetry.Track(TelemetryEvent.InstallFailed, InstallFailure.CancelledPreferences);
@@ -99,10 +108,21 @@ public partial class MainWindow
             }
         }
 
-        await RunInstallDialogAsync(_file, deviceId, root, confirmDefault, confirmPrefs);
+        // Snapshot on the presentation thread before asynchronous work begins.
+        // The device workflow never receives the live mutable editor object.
+        var snapshot = ProfileSnapshot.From(_file);
+        await RunInstallDialogAsync(snapshot, selected.Id, location, confirmDefault, confirmPrefs);
     }
 
-    async Task RunInstallDialogAsync(ProfileFile file, DeviceId deviceId, string root, bool confirmDefault, bool confirmPrefs)
+    static string DeviceLocation(DeviceDescriptor device) =>
+        string.IsNullOrWhiteSpace(device.Detail) ? device.DisplayName : device.Detail!;
+
+    async Task RunInstallDialogAsync(
+        ProfileSnapshot profile,
+        DeviceId deviceId,
+        string location,
+        bool confirmDefault,
+        bool confirmPrefs)
     {
         var host = new StackPanel { Margin = new Thickness(24), Spacing = 16, MinWidth = 420, MaxWidth = 480 };
         var dialog = new Window
@@ -126,7 +146,7 @@ public partial class MainWindow
             Children =
             {
                 new TextBlock { Text = "Installing to", FontWeight = FontWeight.Bold, FontSize = 16 },
-                new TextBlock { Text = root, FontSize = 15, TextWrapping = TextWrapping.Wrap, Classes = { "muted" } },
+                new TextBlock { Text = location, FontSize = 15, TextWrapping = TextWrapping.Wrap, Classes = { "muted" } },
                 progressLine,
             },
         });
@@ -140,14 +160,13 @@ public partial class MainWindow
         try
         {
             var operation = await _architectureServices.InstallProfile.ExecuteAsync(
-                file, deviceId, confirmDefault, confirmPrefs);
+                profile, deviceId, confirmDefault, confirmPrefs);
 
             if (operation.Status != InstallProfileStatus.Installed || operation.Receipt is null)
             {
                 var message = operation.Status switch
                 {
                     InstallProfileStatus.HasErrors => "Fix the errors in the Problems list before installing.",
-                    InstallProfileStatus.InvalidTarget => "That folder does not look like a QuadStick (no default.csv at its root).",
                     InstallProfileStatus.ConfirmationRequiredDefault => "Overwriting default.csv requires explicit confirmation.",
                     InstallProfileStatus.ConfirmationRequiredPreferences => "Installing prefs.csv requires explicit confirmation.",
                     _ => "The profile was not installed.",
@@ -156,16 +175,17 @@ public partial class MainWindow
             }
 
             var result = operation.Receipt;
+            var backup = result.Recovery?.DisplayLocation ?? "no previous file to back up";
             SetContent(new StackPanel
             {
                 Spacing = 12,
                 Children =
                 {
                     StatusChip(StatusKind.Ready, "Installed"),
-                    new TextBlock { Text = Path.GetFileName(result.InstalledPath), FontWeight = FontWeight.Bold,
+                    new TextBlock { Text = result.FileName, FontWeight = FontWeight.Bold,
                                      FontSize = 16, TextWrapping = TextWrapping.Wrap },
-                    new TextBlock { Text = $"Target drive: {root}", FontSize = 15, TextWrapping = TextWrapping.Wrap },
-                    new TextBlock { Text = $"Backup: {result.BackupPath ?? "no previous file to back up"}",
+                    new TextBlock { Text = $"Target drive: {location}", FontSize = 15, TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = $"Backup: {backup}",
                                      FontSize = 15, TextWrapping = TextWrapping.Wrap, Classes = { "muted" } },
                     close,
                 },
@@ -173,7 +193,7 @@ public partial class MainWindow
             close.Focus();
 
             Telemetry.Track(TelemetryEvent.InstallSucceeded);
-            Status($"Installed {Path.GetFileName(result.InstalledPath)} to {root}.", StatusKind.Ready);
+            Status($"Installed {result.FileName} to {location}.", StatusKind.Ready);
         }
         catch (Exception ex)
         {
