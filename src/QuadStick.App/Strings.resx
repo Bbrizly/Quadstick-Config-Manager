@@ -2528,6 +2528,9 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>Ask before sending a crash report</value>
   </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>Go back from Settings</value>
+  </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Google Drive backup</value>
   </data>

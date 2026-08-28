@@ -32,7 +32,7 @@ public class LocalizationTests
         // app in a language they cannot read can still find their own.
         ["Localization.cs"] = new[] { "\"English\"", "\"Pseudo (finds missed text)\"" },
         // A company's name, not a word.
-        ["SettingsWindow.cs"] = new[] { "\"LinkedIn\"" },
+        ["SettingsView.cs"] = new[] { "\"LinkedIn\"" },
         // A category is named the same way in preferences.json and here, and
         // the two are compared letter for letter. PreferenceCatalog.CategoryLabel
         // is the half a person reads.

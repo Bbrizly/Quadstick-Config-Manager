@@ -887,11 +887,7 @@ public partial class MainWindow : Window
         // Settings can connect or disconnect Drive, and the Home button reads
         // that state. Without the refresh it keeps the old label until the user
         // navigates away from Home and back.
-        SettingsButton.Click += async (_, _) =>
-        {
-            await new SettingsWindow(this).ShowDialog(this);
-            if (HomeView.IsVisible) RefreshHomeCards();
-        };
+        SettingsButton.Click += (_, _) => ShowSettingsPage();
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
         // key. Ctrl-combos are safe to fire even while a field has focus
@@ -913,6 +909,8 @@ public partial class MainWindow : Window
                 { ShowHelp(); e.Handled = true; }
                 else if (e.Key == Key.Escape && _selectedRows.Count > 0)
                 { ClearSelection(); e.Handled = true; }
+                else if (e.Key == Key.Escape && SettingsPage.IsVisible)
+                { LeaveSettingsPage(); e.Handled = true; }
                 else if (e.Key == Key.Escape && _expandedMapping >= 0 && DeviceContainer.IsVisible)
                 { _expandedMapping = -1; BuildZoneDetail(); e.Handled = true; }
                 else if (e.Key == Key.Delete && _selectedRows.Count > 0
@@ -1352,7 +1350,7 @@ public partial class MainWindow : Window
         ShellCommunityLabel.IsVisible = !compact;
     }
 
-    // ---- Settings window API: SettingsWindow.cs calls these so every
+    // ---- Settings page API: SettingsView.cs calls these so every
     // setting applies live and persists through the same single source of
     // truth (_settings) the rest of the window already uses. ----
     public AppSettings CurrentSettings => _settings;
@@ -1492,6 +1490,7 @@ public partial class MainWindow : Window
     // flag intact; nothing is saved, discarded or asked about on the way.
     public MainWindow SetLanguage(string tag)
     {
+        bool onSettings = SettingsPage.IsVisible;
         if (_settings.Language == tag) return this;
         _settings.Language = tag;
         Settings.Save(_settings);
@@ -1511,6 +1510,7 @@ public partial class MainWindow : Window
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             desktop.MainWindow = next;
         next.Show();
+        if (onSettings) next.ShowSettingsPage();
         _closeConfirmed = true; // the profile moved, it was not discarded
         Close();
         return next;
@@ -1591,10 +1591,54 @@ public partial class MainWindow : Window
     // underline, so the current page is readable without seeing hue.
     void ShowPage(Control page, Button? tab)
     {
-        foreach (var p in new Control[] { HomeView, EditorView, DevicePage, CommunityPage })
+        if (SettingsPage.IsVisible && !ReferenceEquals(page, SettingsPage))
+            SettingsView.OnLeaving();
+        foreach (var p in new Control[] { HomeView, EditorView, DevicePage, CommunityPage, SettingsPage })
             p.IsVisible = ReferenceEquals(p, page);
         foreach (var t in new[] { ShellHomeButton, ShellDeviceButton, ShellCommunityButton })
             if (ReferenceEquals(t, tab)) t.Classes.Add("active"); else t.Classes.Remove("active");
+    }
+
+    SettingsView? _settingsView;
+    Control? _settingsReturnPage;
+
+    internal SettingsView SettingsView =>
+        _settingsView ??= new SettingsView(this);
+
+    /// <summary>Test seam: show the settings page inside the shell.</summary>
+    internal void ShowSettingsPageForPreview() => ShowSettingsPage();
+
+    public void ShowSettingsPage()
+    {
+        _settingsReturnPage = CurrentVisiblePage();
+        if (SettingsPageBody.Children.Count == 0)
+            SettingsPageBody.Children.Add(SettingsView);
+        ShowPage(SettingsPage, null);
+        SettingsView.FocusBack();
+        UpdateLayout();
+    }
+
+    public void LeaveSettingsPage() => ReturnFromSettingsPage();
+
+    void ReturnFromSettingsPage()
+    {
+        var page = _settingsReturnPage ?? HomeView;
+        _settingsReturnPage = null;
+        if (ReferenceEquals(page, HomeView)) ShowHome();
+        else if (ReferenceEquals(page, EditorView)) ShowPage(EditorView, null);
+        else if (ReferenceEquals(page, DevicePage)) ShowPage(DevicePage, ShellDeviceButton);
+        else if (ReferenceEquals(page, CommunityPage)) ShowCommunityPage();
+        else ShowHome();
+        if (HomeView.IsVisible) RefreshHomeCards();
+    }
+
+    Control CurrentVisiblePage()
+    {
+        if (HomeView.IsVisible) return HomeView;
+        if (EditorView.IsVisible) return EditorView;
+        if (DevicePage.IsVisible) return DevicePage;
+        if (CommunityPage.IsVisible) return CommunityPage;
+        return HomeView;
     }
 
     void ShowHome()

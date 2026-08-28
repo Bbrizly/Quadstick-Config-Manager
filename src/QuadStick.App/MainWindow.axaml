@@ -491,6 +491,14 @@
       <Panel x:Name="CommunityPageBody"/>
     </DockPanel>
 
+    <!-- ============ SETTINGS ============ -->
+    <!-- App settings (language, backup, privacy). A page in the shell, not a
+         second window: one place to go back from, no nested close buttons, and
+         the same keyboard path as Home and Community. -->
+    <DockPanel x:Name="SettingsPage" IsVisible="False" Margin="28,22">
+      <Panel x:Name="SettingsPageBody" MaxWidth="1120" HorizontalAlignment="Center"/>
+    </DockPanel>
+
   </Panel>
   </Grid>
   </LayoutTransformControl>

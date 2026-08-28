@@ -2525,6 +2525,9 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>[Ášk béfóré šéñdíñg á çrášh répórt xxxxxxxxxxxxx]</value>
   </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>[Gó báçk fróm Šéttíñgš xxxxxxxx]</value>
+  </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>[Góóglé Drívé báçkúp xxxxxxx]</value>
   </data>

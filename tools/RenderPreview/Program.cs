@@ -279,7 +279,7 @@ if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
 
     Capture($"{suffix}-1-home", w => w.Height = 900);
 
-    CaptureOwned($"{suffix}-1b-settings", owner => new SettingsWindow(owner));
+    Capture($"{suffix}-1b-settings", w => w.ShowSettingsPage());
     CaptureOwned($"{suffix}-1c-game-setup", owner => new AgentWindow(owner));
 
     // The whole window as somebody meets it: the walkthrough, then a question

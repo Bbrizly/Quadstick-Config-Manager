@@ -9,7 +9,7 @@ using Avalonia.Media;
 namespace QuadStick.App;
 
 // Drive restore picker. One dialog for bulk restore and cherry-pick, from
-// home, settings, and onboarding. Same idiom as SettingsWindow.
+// home, settings, and onboarding. Same idiom as other workflow windows.
 //
 // Sheets load after the window opens, not in the ctor, so home stays local
 // and a Drive failure shows in the status line instead of crashing.
