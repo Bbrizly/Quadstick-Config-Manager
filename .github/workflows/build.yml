@@ -83,7 +83,7 @@ jobs:
             exit 1
           esac
           cat > src/QuadStick.Infrastructure/Google/GoogleClient.Local.cs <<EOF
-          namespace QuadStick.App;
+          namespace QuadStick.Infrastructure.Google;
 
           static class GoogleClient
           {
@@ -106,7 +106,7 @@ jobs:
             exit 1
           esac
           cat > src/QuadStick.Infrastructure/Telemetry/TelemetryToken.Local.cs <<EOF
-          namespace QuadStick.App;
+          namespace QuadStick.Infrastructure.Telemetry;
 
           static class TelemetryToken
           {
