@@ -1,7 +1,9 @@
+using QuadStick.Application.Profiles;
+
 namespace QuadStick.Infrastructure.Files;
 
 /// <summary>Physical filesystem implementation of the local profile-library port.</summary>
-public sealed class PhysicalProfileLibraryStore : QuadStick.App.IProfileLibraryStore
+public sealed class PhysicalProfileLibraryStore : IProfileLibraryStore
 {
     public bool Exists(string path) => File.Exists(path);
 
