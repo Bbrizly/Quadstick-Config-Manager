@@ -16,5 +16,7 @@ public sealed class PhysicalProfileLibraryStore : QuadStick.App.IProfileLibraryS
 
     public void WriteAtomic(string path, string text) => AtomicFileWriter.Write(path, text);
 
+    public bool TryCreate(string path, string text) => AtomicFileWriter.TryCreate(path, text);
+
     public void Delete(string path) => File.Delete(path);
 }
