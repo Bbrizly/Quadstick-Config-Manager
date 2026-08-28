@@ -34,24 +34,29 @@ public sealed class GoogleDriveBackupProvider : IDriveBackupProvider
     static async Task Translate(Func<Task> operation)
     {
         try { await operation().ConfigureAwait(false); }
-        catch (Exception ex) { throw Map(ex); }
+        catch (OperationCanceledException) { throw; }
+        catch (GoogleAuthRevokedException ex) { throw MapRevoked(ex); }
+        catch (DriveApiException ex) { throw MapDrive(ex); }
+        catch (HttpRequestException ex) { throw MapTransient(ex); }
     }
 
     static async Task<T> Translate<T>(Func<Task<T>> operation)
     {
         try { return await operation().ConfigureAwait(false); }
-        catch (Exception ex) { throw Map(ex); }
+        catch (OperationCanceledException) { throw; }
+        catch (GoogleAuthRevokedException ex) { throw MapRevoked(ex); }
+        catch (DriveApiException ex) { throw MapDrive(ex); }
+        catch (HttpRequestException ex) { throw MapTransient(ex); }
     }
 
-    static RemoteStorageException Map(Exception ex) => ex switch
-    {
-        RemoteStorageException existing => existing,
-        GoogleAuthRevokedException => new RemoteStorageException(
-            RemoteStorageFailureKind.AuthRevoked, ex.Message, ex),
-        DriveApiException drive when drive.StatusCode == HttpStatusCode.NotFound => new RemoteStorageException(
-            RemoteStorageFailureKind.NotFound, drive.Message, drive),
-        DriveApiException or HttpRequestException or TaskCanceledException => new RemoteStorageException(
-            RemoteStorageFailureKind.Transient, ex.Message, ex),
-        _ => new RemoteStorageException(RemoteStorageFailureKind.Transient, ex.Message, ex),
-    };
+    static RemoteStorageException MapRevoked(GoogleAuthRevokedException ex) =>
+        new(RemoteStorageFailureKind.AuthRevoked, ex.Message, ex);
+
+    static RemoteStorageException MapDrive(DriveApiException ex) =>
+        ex.StatusCode == HttpStatusCode.NotFound
+            ? new RemoteStorageException(RemoteStorageFailureKind.NotFound, ex.Message, ex)
+            : new RemoteStorageException(RemoteStorageFailureKind.Transient, ex.Message, ex);
+
+    static RemoteStorageException MapTransient(HttpRequestException ex) =>
+        new(RemoteStorageFailureKind.Transient, ex.Message, ex);
 }
