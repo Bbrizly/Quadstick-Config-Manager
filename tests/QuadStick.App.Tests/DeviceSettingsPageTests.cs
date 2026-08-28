@@ -16,6 +16,10 @@ namespace QuadStick.App.Tests;
 // the two rules it has to keep are the two the official manager breaks: a value
 // nobody touched is never rewritten, and nothing reaches the device until it is
 // asked for.
+//
+// The third rule is this page's own. Sixty one settings in one scrolling column
+// is not a screen anybody can use, so one group is on screen at a time and the
+// picture of the device stays put above it.
 public class DeviceSettingsPageTests
 {
     const string Header = "Preferences\nprefs.csv\nPreference,Value,Units,Description\n";
@@ -28,7 +32,7 @@ public class DeviceSettingsPageTests
         + "joystick_deflection_maximum,25,,\n"
         + "deflection_multiplier_up,140,,\n";
 
-    static MainWindow Open(string prefs = Prefs)
+    static MainWindow Open(string prefs = Prefs, string category = "Sound and lights")
     {
         var s = Settings.Load();
         s.TutorialSeen = true;
@@ -36,18 +40,35 @@ public class DeviceSettingsPageTests
         Settings.Save(s);
         var w = new MainWindow();
         w.Show();
-        w.ShowDeviceSettingsForPreview(prefs);
+        w.ShowDeviceSettingsForPreview(prefs, category: category);
         w.UpdateLayout();
         return w;
     }
 
+    static MainWindow Detached(string category = "Sound and lights")
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        w.ShowDeviceSettingsForPreview(root: null, category: category);
+        w.UpdateLayout();
+        return w;
+    }
+
+    static IEnumerable<Control> Body(MainWindow w) =>
+        w.FindControl<Panel>("DevicePageBody")!.GetVisualDescendants().OfType<Control>();
+
     static T Named<T>(MainWindow w, string name) where T : Control =>
-        w.FindControl<StackPanel>("DevicePageBody")!.GetVisualDescendants().OfType<T>()
-            .First(c => AutomationProperties.GetName(c) == name);
+        Body(w).OfType<T>().First(c => AutomationProperties.GetName(c) == name);
 
     static bool Has<T>(MainWindow w, string name) where T : Control =>
-        w.FindControl<StackPanel>("DevicePageBody")!.GetVisualDescendants().OfType<T>()
-            .Any(c => AutomationProperties.GetName(c) == name);
+        Body(w).OfType<T>().Any(c => AutomationProperties.GetName(c) == name);
+
+    static string[] Said(MainWindow w) =>
+        Body(w).OfType<TextBlock>().Select(t => t.Text ?? "").ToArray();
 
     static string Cell(MainWindow w, string setting)
     {
@@ -118,6 +139,22 @@ public class DeviceSettingsPageTests
         w.Close();
     }
 
+    // Walking every group has to be free of edits too, or a person browsing the
+    // page has changed their own device by reading it.
+    [AvaloniaFact]
+    public void OpeningEveryGroupRewritesNothing()
+    {
+        var w = Open();
+        foreach (var category in PreferenceCatalog.Categories)
+        {
+            w.ShowDeviceCategoryForPreview(category);
+            w.UpdateLayout();
+        }
+        Assert.Equal(ProfileFile.Load(Prefs).ToCsvText(), w.DevicePrefsForPreview!.ToCsvText());
+        Assert.Empty(w.ChangedDeviceSettings);
+        w.Close();
+    }
+
     // A value no slider could show without changing its spelling keeps a plain
     // box, so an out-of-range setting survives being looked at.
     [AvaloniaFact]
@@ -137,9 +174,7 @@ public class DeviceSettingsPageTests
     public void ASettingMissingFromTheFileIsShownAndOnlyWrittenWhenChanged()
     {
         var w = Open();
-        var body = w.FindControl<StackPanel>("DevicePageBody")!;
-        Assert.Contains(body.GetVisualDescendants().OfType<TextBlock>(),
-            t => (t.Text ?? "").Contains("The device uses 75 until you change it"));
+        Assert.Contains(Said(w), t => t.Contains("The device uses 75 until you change it"));
 
         Named<NumericUpDown>(w, "LED brightness").Value = 30;
         Dispatcher.UIThread.RunJobs();
@@ -175,6 +210,24 @@ public class DeviceSettingsPageTests
         w.Close();
     }
 
+    // An edit in one group is still an edit after moving to another and back.
+    [AvaloniaFact]
+    public void AChangeSurvivesMovingBetweenGroups()
+    {
+        var w = Open();
+        Named<NumericUpDown>(w, "Speaker volume").Value = 60;
+        Dispatcher.UIThread.RunJobs();
+
+        w.ShowDeviceCategoryForPreview("Joystick");
+        w.UpdateLayout();
+        w.ShowDeviceCategoryForPreview("Sound and lights");
+        w.UpdateLayout();
+
+        Assert.Equal(new[] { "volume" }, w.ChangedDeviceSettings.ToArray());
+        Assert.Equal(60m, Named<NumericUpDown>(w, "Speaker volume").Value);
+        w.Close();
+    }
+
     // Undo puts every setting back to the bytes that were read off the device.
     [AvaloniaFact]
     public void UndoPutsTheFileBackToWhatTheDeviceHas()
@@ -199,19 +252,117 @@ public class DeviceSettingsPageTests
     public void EverySettingControlSaysWhatItIs()
     {
         var w = Open();
-        var body = w.FindControl<StackPanel>("DevicePageBody")!;
-        // The page's own controls, not the boxes a NumericUpDown builds inside
-        // its own template: those are named by the control that owns them.
-        var controls = body.GetVisualDescendants()
-            .OfType<Control>()
-            .Where(c => c is Slider or NumericUpDown or CheckBox or ComboBox or TextBox)
-            .Where(c => c.TemplatedParent is null)
-            .ToList();
+        foreach (var category in PreferenceCatalog.Categories)
+        {
+            w.ShowDeviceCategoryForPreview(category);
+            w.UpdateLayout();
+            // The page's own controls, not the boxes a NumericUpDown builds
+            // inside its own template: those are named by the control that
+            // owns them, and not the group list, which names itself.
+            var controls = Body(w)
+                .Where(c => c is Slider or NumericUpDown or CheckBox or ComboBox or TextBox)
+                .Where(c => c.TemplatedParent is null)
+                .ToList();
 
-        Assert.NotEmpty(controls);
-        foreach (var c in controls)
-            Assert.False(string.IsNullOrWhiteSpace(AutomationProperties.GetName(c)),
-                $"{c.GetType().Name} on the device page has no name");
+            Assert.NotEmpty(controls);
+            foreach (var c in controls)
+                Assert.False(string.IsNullOrWhiteSpace(AutomationProperties.GetName(c)),
+                    $"{c.GetType().Name} in {category} has no name");
+        }
+        w.Close();
+    }
+
+    // ---- one group at a time ----
+
+    // Every group the catalog has is reachable, in the catalog's own order.
+    [AvaloniaFact]
+    public void EveryGroupOfSettingsIsListed()
+    {
+        var w = Open();
+        var rail = Body(w).OfType<ListBox>().First();
+        var listed = rail.ItemsSource!.Cast<object>().Select(o => o.ToString()).ToArray();
+        Assert.Equal(
+            PreferenceCatalog.Categories.Select(PreferenceCatalog.CategoryLabel).ToArray(),
+            listed);
+        w.Close();
+    }
+
+    // The reason this page is not a scroll: the settings for the other eight
+    // groups are not built at all, so the open group is the whole screen.
+    [AvaloniaFact]
+    public void OnlyTheOpenGroupIsOnScreen()
+    {
+        var w = Open(Prefs, "Sound and lights");
+        Assert.True(Has<Slider>(w, "Speaker volume, 0 to 100"));
+        Assert.False(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
+
+        w.ShowDeviceCategoryForPreview("Sip and puff");
+        w.UpdateLayout();
+        Assert.True(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
+        Assert.False(Has<Slider>(w, "Speaker volume, 0 to 100"));
+        w.Close();
+    }
+
+    // Sip and puff is one group, so the thresholds somebody tunes while sipping
+    // are all on the screen together, not spread over two tabs as in QMP.
+    [AvaloniaFact]
+    public void TheSipAndPuffThresholdsAreInOneGroup()
+    {
+        var w = Open(Prefs, "Sip and puff");
+        Assert.True(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
+        Assert.True(Has<Slider>(w, "Soft sip/puff threshold, 5 to 100"));
+        Assert.True(Has<Slider>(w, "Sip/puff maximum pressure, 10 to 100"));
+        w.Close();
+    }
+
+    // ---- the picture ----
+
+    // The group says which part of the device it changes, in words, because a
+    // ring drawn on a photo is a cue somebody has to be able to see.
+    [AvaloniaFact]
+    public void ThePictureNamesThePartTheGroupChanges()
+    {
+        var w = Open(Prefs, "Sip and puff");
+        Assert.Contains(Said(w), t => t.StartsWith("This group changes:", StringComparison.Ordinal)
+            && t.Contains("mouthpiece"));
+
+        w.ShowDeviceCategoryForPreview("Bluetooth");
+        w.UpdateLayout();
+        Assert.Contains(Said(w), t => t.Contains("nothing you can point at"));
+        w.Close();
+    }
+
+    // The two joystick settings are a percent of travel each, which is why they
+    // are drawn as circles. The circles have to follow the sliders.
+    [AvaloniaFact]
+    public void TheJoystickPadFollowsTheJoystickSettings()
+    {
+        var w = Open(Prefs, "Joystick");
+        // 8 is the catalog default for the dead zone; 25 is in the file above.
+        Assert.Contains(Said(w), t => t.Contains("dead zone ends at 8%") && t.Contains("full signal at 25%"));
+
+        Named<NumericUpDown>(w, "Joystick center dead zone").Value = 15;
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        Assert.Contains(Said(w), t => t.Contains("dead zone ends at 15%"));
+        w.Close();
+    }
+
+    // With a QuadStick reporting, the pad says where the stick is. Without one
+    // it says that, rather than showing a centred stick that is not there.
+    [AvaloniaFact]
+    public void ThePadSaysWhereTheStickIsOrThatNothingIsReadingIt()
+    {
+        var w = Open(Prefs, "Joystick");
+        Assert.Contains(Said(w), t => t.StartsWith("The stick is not being read", StringComparison.Ordinal));
+
+        w.ShowLiveInputForPreview(new LiveState(0.5, -0.5, Array.Empty<int>(), "QuadStick"));
+        w.UpdateLayout();
+        Assert.Contains(Said(w), t => t == "The stick is at 50% across and 50% up.");
+
+        w.ShowLiveInputForPreview(null);
+        w.UpdateLayout();
+        Assert.Contains(Said(w), t => t.StartsWith("The stick is not being read", StringComparison.Ordinal));
         w.Close();
     }
 
@@ -225,7 +376,13 @@ public class DeviceSettingsPageTests
     {
         var w = Detached();
         Assert.True(Has<Slider>(w, "Speaker volume, 0 to 100"));
+
+        w.ShowDeviceCategoryForPreview("Sip and puff");
+        w.UpdateLayout();
         Assert.True(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
+
+        w.ShowDeviceCategoryForPreview("Joystick");
+        w.UpdateLayout();
         Assert.True(Has<NumericUpDown>(w, "Up deflection multiplier"));
         w.Close();
     }
@@ -235,10 +392,7 @@ public class DeviceSettingsPageTests
     public void WithNoQuadStickThePageSaysSoAtTheTop()
     {
         var w = Detached();
-        var said = w.FindControl<StackPanel>("DevicePageBody")!
-            .GetVisualDescendants().OfType<TextBlock>()
-            .Select(t => t.Text ?? "").ToArray();
-        Assert.Contains(said, t => t.StartsWith("No QuadStick is plugged in", StringComparison.Ordinal));
+        Assert.Contains(Said(w), t => t.StartsWith("No QuadStick is plugged in", StringComparison.Ordinal));
         w.Close();
     }
 
@@ -260,32 +414,6 @@ public class DeviceSettingsPageTests
             b => AutomationProperties.GetName(b) == "Write the changed settings to prefs.csv on your QuadStick");
         Assert.Contains(bar.GetVisualDescendants().OfType<TextBlock>(),
             t => (t.Text ?? "").Contains("Plug in your QuadStick to save"));
-        w.Close();
-    }
-
-    static MainWindow Detached()
-    {
-        var s = Settings.Load();
-        s.TutorialSeen = true;
-        s.RememberWindow = false;
-        Settings.Save(s);
-        var w = new MainWindow();
-        w.Show();
-        w.ShowDeviceSettingsForPreview(root: null);
-        w.UpdateLayout();
-        return w;
-    }
-
-    // Sip and puff thresholds are the settings somebody tunes while sipping, so
-    // they are on the page with their sliders, not two tabs away as in QMP.
-    [AvaloniaFact]
-    public void TheSipAndPuffThresholdsAreOnTheSamePage()
-    {
-        var w = Open();
-        Assert.True(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
-        Assert.True(Has<Slider>(w, "Soft sip/puff threshold, 5 to 100"));
-        Assert.True(Has<Slider>(w, "Sip/puff maximum pressure, 10 to 100"));
-        Assert.True(Has<Slider>(w, "Joystick center dead zone, 0 to 20"));
         w.Close();
     }
 }

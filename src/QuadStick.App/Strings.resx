@@ -313,6 +313,9 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} warnings</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>Anything from {0} to {1}.</value>
+  </data>
   <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
     <value>{0} setting changed</value>
   </data>
@@ -321,6 +324,9 @@
   </data>
   <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
     <value>Could not read the settings on your QuadStick: {0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>Dashed ring: dead zone ends at {0}% of travel. Solid ring: full signal at {1}%.</value>
   </data>
   <data name="DevicePage_DefLabel" xml:space="preserve">
     <value>{0}</value>
@@ -331,8 +337,17 @@
   <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
     <value>Found your QuadStick at {0}.</value>
   </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>Groups of settings</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>How far the stick has to move. The dashed circle is the dead zone, the solid circle is where the signal is full, and the dot is where the stick is now.</value>
+  </data>
   <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
     <value>It has no settings file yet, so these are the values it falls back to. Saving writes one.</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>Joystick travel</value>
   </data>
   <data name="DevicePage_LoToHi" xml:space="preserve">
     <value>{0} to {1}</value>
@@ -349,6 +364,9 @@
   <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
     <value>Not in your settings file. The device uses {0} until you change it.</value>
   </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>The stick is not being read. Plug the QuadStick in over USB and its position shows here.</value>
+  </data>
   <data name="DevicePage_Off0" xml:space="preserve">
     <value>Off (0)</value>
   </data>
@@ -364,20 +382,44 @@
   <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
     <value>Read the settings from your QuadStick again</value>
   </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>Reading a {0}. Nothing is pressed.</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>Reading a {0}. Pressed now: {1}.</value>
+  </data>
   <data name="DevicePage_Reload" xml:space="preserve">
     <value>Reload</value>
   </data>
   <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
     <value>Save to your QuadStick</value>
   </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>{0} setting</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>{0} settings</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>The mode lights on the case</value>
+  </data>
   <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
     <value>The settings you changed here have not been written to the QuadStick. Reading it again loses them.</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>The stick is at {0}% across and {1}% up.</value>
   </data>
   <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
     <value>These settings have a problem, so nothing was written: </value>
   </data>
   <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
     <value>These settings live in prefs.csv on the QuadStick itself, so they apply to every profile on it, not just to one game.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>This group changes nothing you can point at on the device.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>This group changes: {0}.</value>
   </data>
   <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
     <value>Throw away your changes?</value>

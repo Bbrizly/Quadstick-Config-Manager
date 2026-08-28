@@ -47,6 +47,13 @@ public class LocalizationTests
             // data file, never by somebody using the app.
             "\"A preference\"",
         },
+        // The same category keys again, this time deciding which part of the
+        // photo a group of settings points at. Never drawn: the words beside
+        // the picture come from PreferenceCatalog.CategoryLabel and PartName.
+        ["DeviceBand.cs"] = new[]
+        {
+            "\"Sip and puff\"", "\"Lip sensor\"", "\"Sound and lights\"",
+        },
         // A socket's identity, in a switch and in a test's InlineData.
         // SwitchJacks.PortLabel is the half a person reads.
         ["SwitchJacks.cs"] = new[] { "\"Top jack\"", "\"Bottom jack\"", "\"Lip jack\"", "\"USB-A data pins\"" },

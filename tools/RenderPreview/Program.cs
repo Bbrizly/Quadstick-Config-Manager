@@ -39,6 +39,10 @@ if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
 
 // A prefs.csv shaped like the one a QuadStick ships with: a handful of the
 // settings written down, the rest left to the device's own defaults.
+// One button held, so the shot shows the line that answers "did my sip
+// register?" rather than the resting one.
+int[] PressedForShot() => new[] { 2 };
+
 const string SamplePrefs =
     "Preferences\nprefs.csv\nPreference,Value,Units,Description\n"
     + "joystick_deflection_minimum,8,,\n"
@@ -318,14 +322,22 @@ if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
     // the hardware, with a part picked so the panel beside it is doing its job.
     // "Nothing selected" was half the window on the old one.
     // Tuning the device itself. No machine running this has a QuadStick on it,
-    // so the page is drawn from a prefs.csv held in memory: the point of the
-    // shot is the sliders, the headings and how far the page runs, and a real
-    // stick would show exactly the same rows.
+    // so the page is drawn from a prefs.csv held in memory and a made-up stick
+    // reading: the point of the shot is the picture, the group list and how
+    // little of the page is text.
     Capture($"{suffix}-1i-device", w =>
     {
-        w.Height = 1400;
-        w.ShowDeviceSettingsForPreview(SamplePrefs);
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Joystick");
+        w.ShowLiveInputForPreview(new LiveState(0.42, -0.30, PressedForShot(), "QuadStick"));
     });
+
+    // The group somebody opens to tune a mouthpiece, and the same page with
+    // nothing plugged in, which is how it looks on most machines.
+    Capture($"{suffix}-1i2-device-sip", w =>
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff"));
+
+    Capture($"{suffix}-1i3-device-unplugged", w =>
+        w.ShowDeviceSettingsForPreview(root: null, category: "Sound and lights"));
 
     Capture($"{suffix}-1j-community", w => w.ShowCommunityPage());
 

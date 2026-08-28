@@ -480,10 +480,10 @@
               Classes="editorchrome" Margin="0,14,0,0" Padding="14,10">
         <WrapPanel x:Name="DeviceSaveBarRow" Classes="toolbar" HorizontalAlignment="Center"/>
       </Border>
-      <ScrollViewer>
-        <StackPanel x:Name="DevicePageBody" Spacing="22" MaxWidth="1120"
-                    HorizontalAlignment="Center"/>
-      </ScrollViewer>
+      <!-- No ScrollViewer here on purpose. The picture of the device and the
+           list of groups stay put; only the open group's settings scroll, so
+           the part being tuned never leaves the screen. -->
+      <Panel x:Name="DevicePageBody"/>
     </DockPanel>
 
     <!-- ============ COMMUNITY ============ -->

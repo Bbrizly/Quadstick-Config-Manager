@@ -3,8 +3,10 @@ using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using QuadStick.Format;
@@ -15,12 +17,20 @@ namespace QuadStick.App;
 // device, which is the device's own settings and applies to every profile on
 // it, so nothing here is a profile edit and nothing here goes through Install.
 //
-// The QuadStick Manager Program does this over two tabs (Joystick and Misc)
-// with the controls identified only by position and tooltip. This is one page,
-// grouped by what the setting does, with the explanation in text a screen
-// reader can read.
+// Sixty one settings. The first version of this page put all of them in one
+// column and asked people to scroll, which is the worst shape it could have
+// had: somebody tuning a sip threshold cannot hold a scroll position and a
+// mouthpiece at the same time. So the settings are in groups down the left,
+// one group is on screen at a time, and the group is short enough to read
+// without moving anything.
 //
-// Two things QMP does that this deliberately does not:
+// Above the settings, and not scrolling with them, is a picture of the device
+// with the parts the open group is about ringed on it, and a pad showing where
+// the stick is. See DeviceBand.cs.
+//
+// The QuadStick Manager Program does this over seven notebook tabs with the
+// controls identified only by position and by tooltip. Two things it does that
+// this deliberately does not:
 //
 // It turns four direction sliders into six stored keys on every save, and the
 // arithmetic is lossy in both directions: load the shipped defaults, touch
@@ -42,28 +52,50 @@ public partial class MainWindow
     readonly HashSet<string> _deviceChanged = new(StringComparer.Ordinal);
     TextBlock? _deviceStatus;
 
+    string _deviceCategory = PreferenceCatalog.Categories[0];
+    ListBox? _deviceRail;
+    StackPanel? _deviceList;
+
+    LiveInput? _liveInput;
+    LiveState? _live;
+
     public async Task ShowDevicePageAsync()
     {
         _file = null; // no profile is open on a page; a stale dirty file re-asks "leave?" on the next action
         ShowPage(DevicePage, ShellDeviceButton);
+        WatchDevicePage();
+        StartLiveInput();
         await LoadDeviceSettingsAsync();
     }
 
     /// <summary>Test and screenshot seam: draw the page for a prefs.csv held in
     /// memory. No machine running the tests has a QuadStick plugged in, and the
-    /// page is worth looking at with real settings on it.</summary>
+    /// page is worth looking at with real settings on it. Nothing here opens a
+    /// USB device: the live reading is only started by the real navigation.</summary>
     /// <param name="root">Where the device is mounted, or null for the page as
     /// it looks with nothing plugged in.</param>
-    internal void ShowDeviceSettingsForPreview(string? prefsCsv = null, string? root = "/Volumes/QUADSTICK")
+    internal void ShowDeviceSettingsForPreview(string? prefsCsv = null, string? root = "/Volumes/QUADSTICK",
+                                               string? category = null)
     {
         _file = null;
         ShowPage(DevicePage, ShellDeviceButton);
         _deviceRoot = root;
         _deviceChanged.Clear();
+        _deviceCategory = category ?? PreferenceCatalog.Categories[0];
         ShowPrefs(prefsCsv ?? EmptyPrefs, root is null
             ? Strings.DevicePage_NoQuadStickIsPluggedIn
             : string.Format(CultureInfo.CurrentCulture,
                 Strings.DevicePage_FoundYourQuadStickAtRoot, root));
+    }
+
+    /// <summary>Test seam: open one group of settings, the way clicking its row
+    /// in the list on the left does.</summary>
+    internal void ShowDeviceCategoryForPreview(string category)
+    {
+        _deviceCategory = category;
+        if (_deviceRail is not null) _deviceRail.SelectedItem =
+            _deviceRail.Items.OfType<DeviceGroupRow>().FirstOrDefault(r => r.Category == category);
+        FillDeviceList();
     }
 
     /// <summary>Test seam: which settings this page counts as changed.</summary>
@@ -71,6 +103,14 @@ public partial class MainWindow
 
     /// <summary>Test seam: the prefs.csv this page is editing.</summary>
     internal ProfileFile? DevicePrefsForPreview => _devicePrefs;
+
+    /// <summary>Test and screenshot seam: draw the page as it looks with a
+    /// stick being used, without a stick.</summary>
+    internal void ShowLiveInputForPreview(LiveState? state)
+    {
+        _live = state;
+        UpdateDeviceBand();
+    }
 
     /// <summary>Test seam: Undo without the confirmation dialog, which a
     /// headless run has nobody to answer.</summary>
@@ -85,6 +125,38 @@ public partial class MainWindow
     // then shows as one the file does not carry, which is exactly true of a
     // QuadStick that is not here to be read.
     const string EmptyPrefs = "Preferences\nprefs.csv\nPreference,Value,Units,Description\n";
+
+    // ---- live reading ----
+
+    bool _deviceWatched;
+
+    // Reading the stick costs a thread parked on a USB read, so it runs while
+    // this page is the page and stops the moment it is not.
+    void WatchDevicePage()
+    {
+        if (_deviceWatched) return;
+        _deviceWatched = true;
+        DevicePage.PropertyChanged += (_, e) =>
+        {
+            if (e.Property == Visual.IsVisibleProperty && !DevicePage.IsVisible) StopLiveInput();
+        };
+    }
+
+    void StartLiveInput()
+    {
+        _liveInput ??= new LiveInput(state =>
+        {
+            _live = state;
+            UpdateDeviceBand();
+        });
+    }
+
+    void StopLiveInput()
+    {
+        _liveInput?.Dispose();
+        _liveInput = null;
+        _live = null;
+    }
 
     // Find the drive, read prefs.csv off it, and draw the page. Every failure
     // gets its own sentence: "nothing plugged in", "plugged in but no settings
@@ -166,40 +238,65 @@ public partial class MainWindow
     ModeSheet? DevicePrefsSheet =>
         _devicePrefs?.Document.Sheets.FirstOrDefault(s => s.Type == SheetType.Preferences);
 
+    // ---- the frame ----
+
     void BuildDevicePage(string status, ProfileFile? prefs)
     {
         DevicePageBody.Children.Clear();
-        DevicePageBody.Children.Add(DevicePageHeader(status));
+        _deviceRail = null;
+        _deviceList = null;
 
-        var sheet = prefs is null ? null : DevicePrefsSheet;
-        if (sheet is not null)
-            foreach (var card in DeviceSettingCards(sheet))
-                DevicePageBody.Children.Add(card);
+        var frame = new Grid
+        {
+            RowDefinitions = new RowDefinitions("Auto,*"),
+            MaxWidth = 1180, HorizontalAlignment = HorizontalAlignment.Stretch,
+        };
 
+        var header = DevicePageHeader(status);
+        Grid.SetRow(header, 0);
+        frame.Children.Add(header);
+
+        if (prefs is not null && DevicePrefsSheet is not null)
+        {
+            var split = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("Auto,*"),
+                Margin = new Thickness(0, 14, 0, 0),
+            };
+
+            var rail = DeviceGroupRail();
+            Grid.SetColumn(rail, 0);
+            split.Children.Add(rail);
+
+            _deviceList = new StackPanel { Spacing = 16 };
+            var right = new DockPanel { Margin = new Thickness(18, 0, 0, 0) };
+            var band = BuildDeviceBand();
+            DockPanel.SetDock(band, Dock.Top);
+            right.Children.Add(band);
+            right.Children.Add(new ScrollViewer
+            {
+                Content = _deviceList,
+                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            });
+            Grid.SetColumn(right, 1);
+            split.Children.Add(right);
+
+            Grid.SetRow(split, 1);
+            frame.Children.Add(split);
+            FillDeviceList();
+        }
+
+        DevicePageBody.Children.Add(frame);
         RefreshDeviceSaveBar();
     }
 
     Control DevicePageHeader(string status)
     {
-        var heading = new TextBlock { Text = Strings.DevicePage_YourQuadStickSSettings, Classes = { "section" } };
-
-        var explain = new TextBlock
+        var heading = new TextBlock
         {
-            Text = Strings.DevicePage_TheseSettingsLiveInPrefs,
-            FontSize = Size("BodySize"), Classes = { "secondary" }, TextWrapping = TextWrapping.Wrap,
+            Text = Strings.DevicePage_YourQuadStickSSettings, Classes = { "section" },
+            VerticalAlignment = VerticalAlignment.Center,
         };
-
-        // No stick attached is a state, not an error, but it is the first thing
-        // to know on this page: everything below it is what a QuadStick can be
-        // set to rather than what yours is set to. The words carry that, and
-        // the warn styling only repeats what they already say.
-        _deviceStatus = new TextBlock
-        {
-            Text = status, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
-            FontWeight = _deviceRoot is null ? FontWeight.Bold : FontWeight.Normal,
-        };
-        if (_deviceRoot is null) _deviceStatus.Classes.Add("warn");
-        AutomationProperties.SetLiveSetting(_deviceStatus, AutomationLiveSetting.Polite);
 
         var reload = new Button();
         reload.Content = Strings.DevicePage_Reload;
@@ -220,47 +317,109 @@ public partial class MainWindow
         AutomationProperties.SetName(files, Strings.Shell_ManageTheProfileFilesOn);
         files.Click += async (_, _) => await ShowDeviceFilesAsync();
 
+        var top = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        top.Children.Add(heading);
         var buttons = new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 10,
             Children = { reload, files },
         };
+        Grid.SetColumn(buttons, 1);
+        top.Children.Add(buttons);
 
-        return new Border
+        // No stick attached is a state, not an error, but it is the first thing
+        // to know on this page: everything below it is what a QuadStick can be
+        // set to rather than what yours is set to. The words carry that, and
+        // the warn styling only repeats what they already say.
+        _deviceStatus = new TextBlock
         {
-            Classes = { "homepanel" },
-            Child = new StackPanel
-            {
-                Spacing = 10,
-                Children = { heading, explain, _deviceStatus, buttons },
-            },
+            Text = status, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+            FontWeight = _deviceRoot is null ? FontWeight.Bold : FontWeight.Normal,
+            Margin = new Thickness(0, 6, 0, 0),
         };
+        if (_deviceRoot is null) _deviceStatus.Classes.Add("warn");
+        AutomationProperties.SetLiveSetting(_deviceStatus, AutomationLiveSetting.Polite);
+
+        // One line, and it earns it: it is the difference between a setting
+        // that changes one game and a setting that changes every game.
+        var scope = new TextBlock
+        {
+            Text = Strings.DevicePage_TheseSettingsLiveInPrefs,
+            FontSize = Size("SmallSize"), Classes = { "secondary" },
+            TextWrapping = TextWrapping.Wrap, MaxWidth = 720,
+            HorizontalAlignment = HorizontalAlignment.Left,
+        };
+
+        return new StackPanel { Children = { top, scope, _deviceStatus } };
     }
 
-    // One card per category, in the catalog's own order, holding every setting
-    // the catalog knows about in that category. Settings the file does not
-    // carry are shown too: the device is using a value for them either way, and
-    // hiding them is how QMP ends up with four keys nobody can see.
-    IEnumerable<Control> DeviceSettingCards(ModeSheet sheet)
+    // One row per group, in the catalog's own order. A list and not a row of
+    // tabs: nine tabs across the top of a 1024 wide window either shrink to
+    // initials or wrap, and a list is one arrow key per group either way.
+    sealed record DeviceGroupRow(string Category, string Label, int Count)
     {
-        foreach (var group in PreferenceCatalog.All
-            .GroupBy(d => d.Category)
-            .OrderBy(g => PreferenceCatalog.CategoryRank(g.Key)))
-        {
-            var rows = new StackPanel { Spacing = 18 };
-            foreach (var def in group)
-                rows.Children.Add(DeviceSettingRow(sheet, def));
+        public override string ToString() => Label;
+    }
 
-            var heading = new TextBlock
+    Control DeviceGroupRail()
+    {
+        var rows = PreferenceCatalog.All
+            .GroupBy(d => d.Category)
+            .OrderBy(g => PreferenceCatalog.CategoryRank(g.Key))
+            .Select(g => new DeviceGroupRow(g.Key, PreferenceCatalog.CategoryLabel(g.Key), g.Count()))
+            .ToList();
+
+        _deviceRail = new ListBox
+        {
+            ItemsSource = rows,
+            SelectedItem = rows.FirstOrDefault(r => r.Category == _deviceCategory) ?? rows[0],
+            Width = 208,
+            ItemTemplate = new FuncDataTemplate<DeviceGroupRow>((row, _) => new StackPanel
             {
-                Text = PreferenceCatalog.CategoryLabel(group.Key), Classes = { "section" },
-            };
-            yield return new Border
-            {
-                Classes = { "homepanel" },
-                Child = new StackPanel { Spacing = 14, Children = { heading, rows } },
-            };
-        }
+                Spacing = 1,
+                Margin = new Thickness(2, 4),
+                Children =
+                {
+                    new TextBlock { Text = row.Label, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap },
+                    new TextBlock
+                    {
+                        Text = Plural.Of(row.Count, "DevicePage_Setting"),
+                        FontSize = Size("SmallSize"), Classes = { "secondary" },
+                    },
+                },
+            }),
+        };
+        AutomationProperties.SetName(_deviceRail, Strings.DevicePage_GroupsOfSettings);
+        // The open group is bold as well as filled. A selected row that is only
+        // a different shade of the background is a colour-only cue.
+        // Avalonia.Styling.Style spelled out: this app has a Style class of
+        // its own, and the using above is here for the selector helpers.
+        _deviceRail.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<ListBoxItem>().Class(":selected"))
+        {
+            Setters = { new Avalonia.Styling.Setter(ListBoxItem.FontWeightProperty, FontWeight.Bold) },
+        });
+        _deviceRail.SelectionChanged += (_, _) =>
+        {
+            if (_deviceRail.SelectedItem is not DeviceGroupRow pick) return;
+            _deviceCategory = pick.Category;
+            FillDeviceList();
+        };
+        return _deviceRail;
+    }
+
+    // Only the open group is built. Nine groups of controls all alive at once
+    // is what made the first version of this page a mile of scroll.
+    void FillDeviceList()
+    {
+        if (_deviceList is null) return;
+        var sheet = DevicePrefsSheet;
+        _deviceList.Children.Clear();
+        if (sheet is null) return;
+
+        foreach (var def in PreferenceCatalog.All.Where(d => d.Category == _deviceCategory))
+            _deviceList.Children.Add(DeviceSettingRow(sheet, def));
+
+        UpdateDeviceBand();
     }
 
     // Which grid row holds this setting, or -1 when the file does not carry it.
@@ -271,6 +430,10 @@ public partial class MainWindow
         return -1;
     }
 
+    // Label and control on one line, and under them at most two short lines:
+    // what the setting does, and the facts about its value. QMP puts all of
+    // this in tooltips, which a keyboard or screen reader user never sees, and
+    // the first version of this page put it in paragraphs, which nobody read.
     Control DeviceSettingRow(ModeSheet sheet, PreferenceDefinition def)
     {
         int row = DeviceRowFor(sheet, def.Name);
@@ -281,57 +444,65 @@ public partial class MainWindow
         {
             Text = def.Label, FontWeight = FontWeight.Bold, FontSize = Size("BodySize"),
             TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(0, 0, 14, 0),
         };
         AutomationProperties.SetName(label, string.Format(CultureInfo.CurrentCulture,
             Strings.DevicePage_DefLabelWrittenAsDef, def.Label, def.Name));
 
-        var stack = new StackPanel { Spacing = 5 };
-        stack.Children.Add(label);
-        stack.Children.Add(DeviceValueControl(sheet, def, row, value));
+        var line = new Grid { ColumnDefinitions = new ColumnDefinitions("240,*") };
+        line.Children.Add(label);
+        var control = DeviceValueControl(sheet, def, row, value);
+        Grid.SetColumn(control, 1);
+        line.Children.Add(control);
 
-        // What it is measured in and what it does, in text. QMP puts all of
-        // this in tooltips, which a keyboard or screen reader user never sees.
-        var about = new List<string>();
-        if (def.Description.Length > 0) about.Add(def.Description);
+        var stack = new StackPanel { Spacing = 3, Children = { line } };
+
+        if (def.Description.Length > 0)
+            stack.Children.Add(Caption(def.Description, "secondary"));
+
+        // Range, unit, and what the device falls back to, in one line. These
+        // are facts about the number rather than help, so they read smaller
+        // and they are never a paragraph.
+        var facts = new List<string>();
+        // Whole sentences, because they are joined end to end: "10 to 50
+        // Measured in percent." reads as one broken line.
+        if (def.Minimum is { } lo && def.Maximum is { } hi)
+            facts.Add(string.Format(CultureInfo.CurrentCulture,
+                Strings.DevicePage_AnythingFromLoToHi, lo, hi));
         if (def.Unit.Length > 0)
-            about.Add(string.Format(CultureInfo.CurrentCulture, Strings.Prefs_MeasuredInDefUnit, def.Unit));
-        if (about.Count > 0)
-            stack.Children.Add(new TextBlock
-            {
-                Text = string.Join(" ", about), FontSize = Size("SmallSize"),
-                Classes = { "secondary" }, TextWrapping = TextWrapping.Wrap, MaxWidth = 760,
-                // A MaxWidth without this centres the text in whatever room is
-                // left, so the words drifted away from the control they explain.
-                HorizontalAlignment = HorizontalAlignment.Left,
-            });
+            facts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Prefs_MeasuredInDefUnit, def.Unit));
+        if (!present && def.Default is { Length: > 0 } fallback)
+            facts.Add(string.Format(CultureInfo.CurrentCulture,
+                Strings.DevicePage_NotInYourSettingsFile, fallback));
+        // Somebody who has been using QMP, or reading a forum post written by
+        // somebody who has, arrives holding QMP's name for this control.
+        if (def.AlsoCalled.Length > 0)
+            facts.Add(string.Format(CultureInfo.CurrentCulture,
+                Strings.Prefs_QMPCallsItDefAlsoCalled, def.AlsoCalled));
+        if (facts.Count > 0)
+            stack.Children.Add(Caption(string.Join(" ", facts), "muted"));
 
         if (def.Risk.Length > 0)
         {
             // "Careful:" carries the warning in words; the colour only repeats it.
-            var risk = new TextBlock
-            {
-                Text = string.Format(CultureInfo.CurrentCulture, Strings.Prefs_CarefulDefRisk, def.Risk),
-                FontSize = Size("SmallSize"), Classes = { "warn" },
-                TextWrapping = TextWrapping.Wrap, MaxWidth = 760,
-                HorizontalAlignment = HorizontalAlignment.Left,
-            };
+            var risk = Caption(string.Format(CultureInfo.CurrentCulture,
+                Strings.Prefs_CarefulDefRisk, def.Risk), "warn");
             AutomationProperties.SetName(risk, string.Format(CultureInfo.CurrentCulture,
                 Strings.Prefs_CarefulDefLabelDefRisk, def.Label, def.Risk));
             stack.Children.Add(risk);
         }
 
-        if (!present && def.Default is { Length: > 0 } fallback)
-            stack.Children.Add(new TextBlock
-            {
-                Text = string.Format(CultureInfo.CurrentCulture,
-                    Strings.DevicePage_NotInYourSettingsFile, fallback),
-                FontSize = Size("SmallSize"), Classes = { "secondary" },
-                TextWrapping = TextWrapping.Wrap, MaxWidth = 760,
-                HorizontalAlignment = HorizontalAlignment.Left,
-            });
-
         return stack;
     }
+
+    // A MaxWidth on its own centres the words in whatever room is left, so the
+    // caption drifts away from the control it explains.
+    TextBlock Caption(string text, string style) => new()
+    {
+        Text = text, FontSize = Size("SmallSize"), Classes = { style },
+        TextWrapping = TextWrapping.Wrap, MaxWidth = 700,
+        HorizontalAlignment = HorizontalAlignment.Left,
+    };
 
     // The control for one setting. A value the control could not show without
     // changing its spelling keeps a plain text box, exactly as the List View
@@ -365,7 +536,7 @@ public partial class MainWindow
             Minimum = lo, Maximum = hi, Value = start,
             SmallChange = 1, LargeChange = Math.Max(1, (hi - lo) / 10),
             TickFrequency = 1, IsSnapToTickEnabled = true,
-            MinWidth = 220, VerticalAlignment = VerticalAlignment.Center,
+            MinWidth = 200, VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(slider, string.Format(CultureInfo.CurrentCulture,
             Strings.DevicePage_NameLoToHi, name, lo, hi));
@@ -375,7 +546,7 @@ public partial class MainWindow
             Value = start, Increment = 1, FormatString = "0",
             ParsingNumberStyle = NumberStyles.Integer, // "3.5" is refused, never rounded
             NumberFormat = CultureInfo.InvariantCulture.NumberFormat,
-            Minimum = lo, Maximum = hi, Width = 132,
+            Minimum = lo, Maximum = hi, Width = 124,
             VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(box, name);
@@ -398,19 +569,14 @@ public partial class MainWindow
             CommitDeviceValue(sheet, def, ref row, ((int)d).ToString(CultureInfo.InvariantCulture));
         };
 
-        var range = new TextBlock
-        {
-            Text = string.Format(CultureInfo.CurrentCulture, Strings.DevicePage_LoToHi, lo, hi),
-            FontSize = Size("SmallSize"), Classes = { "secondary" },
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-
-        var line = new StackPanel
-        {
-            Orientation = Orientation.Horizontal, Spacing = 12,
-            Children = { slider, box, range },
-        };
-        return line;
+        var pair = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        pair.Children.Add(slider);
+        Grid.SetColumn(box, 1);
+        box.Margin = new Thickness(12, 0, 0, 0);
+        pair.Children.Add(box);
+        pair.MaxWidth = 400;
+        pair.HorizontalAlignment = HorizontalAlignment.Left;
+        return pair;
     }
 
     Control DeviceSpinner(ModeSheet sheet, PreferenceDefinition def, int row, string value, string name)
@@ -422,7 +588,7 @@ public partial class MainWindow
             ParsingNumberStyle = NumberStyles.Integer,
             NumberFormat = CultureInfo.InvariantCulture.NumberFormat,
             Minimum = def.Minimum ?? int.MinValue, Maximum = def.Maximum ?? int.MaxValue,
-            Width = 180, HorizontalAlignment = HorizontalAlignment.Left,
+            Width = 160, HorizontalAlignment = HorizontalAlignment.Left,
         };
         AutomationProperties.SetName(box, name);
         box.ValueChanged += (_, e) =>
@@ -462,7 +628,7 @@ public partial class MainWindow
         {
             ItemsSource = items,
             SelectedItem = items.FirstOrDefault(i => i.Token == value),
-            MinWidth = 300, HorizontalAlignment = HorizontalAlignment.Left,
+            MinWidth = 300, MaxWidth = 400, HorizontalAlignment = HorizontalAlignment.Left,
         };
         AutomationProperties.SetName(combo, name);
         combo.SelectionChanged += (_, _) =>
@@ -485,7 +651,7 @@ public partial class MainWindow
     {
         var box = new TextBox
         {
-            Text = value, MinWidth = 300, HorizontalAlignment = HorizontalAlignment.Left,
+            Text = value, MinWidth = 260, MaxWidth = 400, HorizontalAlignment = HorizontalAlignment.Left,
         };
         AutomationProperties.SetName(box, name);
         int here = row;
@@ -506,6 +672,7 @@ public partial class MainWindow
             if (exact == _devicePrefs.GetCell(row, 1)) return;
             _devicePrefs.SetCell(row, 1, exact);
             MarkDeviceChanged(def.Name, exact);
+            UpdateDeviceBand();
             return;
         }
 

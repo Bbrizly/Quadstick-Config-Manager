@@ -30,10 +30,7 @@
   <ItemGroup>
     <!-- The pseudo language is a debugging aid, not something to ship. -->
     <EmbeddedResource Remove="Strings.qps-ploc.resx" Condition="'$(Configuration)' == 'Release'" />
-    <EmbeddedResource Update="Strings.resx" Generator="MSBuild:Compile"
-                      StronglyTypedLanguage="CSharp" StronglyTypedNamespace="QuadStick.App"
-                      StronglyTypedClassName="Strings" PublicClass="true"
-                      StronglyTypedFileName="$(IntermediateOutputPath)Strings.Designer.cs" />
+    <EmbeddedResource Update="Strings.resx" Generator="MSBuild:Compile" StronglyTypedLanguage="CSharp" StronglyTypedNamespace="QuadStick.App" StronglyTypedClassName="Strings" PublicClass="true" StronglyTypedFileName="$(IntermediateOutputPath)Strings.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +47,7 @@
     <PackageReference Include="Avalonia.Desktop" Version="11.1.3" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.3" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.3" />
+    <PackageReference Include="HidSharp" Version="2.6.4" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
     <PackageReference Include="PostHog" Version="2.12.0" />
   </ItemGroup>
