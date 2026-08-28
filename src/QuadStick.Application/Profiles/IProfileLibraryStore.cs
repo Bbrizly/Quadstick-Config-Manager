@@ -1,7 +1,8 @@
-namespace QuadStick.App;
+namespace QuadStick.Application.Profiles;
 
 /// <summary>Filesystem port used by application workflows that manage the local
-/// profile library. Paths are opaque to the implementation's callers.</summary>
+/// profile library. Paths identify files in the user's local library, never a
+/// device transport.</summary>
 public interface IProfileLibraryStore
 {
     bool Exists(string path);
