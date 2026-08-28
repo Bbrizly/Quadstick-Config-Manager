@@ -1,6 +1,7 @@
 using System.Text.Json;
+using QuadStick.Application.Updates;
 
-namespace QuadStick.App;
+namespace QuadStick.Infrastructure.Updates;
 
 /// <summary>GitHub Releases implementation of the update provider port.</summary>
 public sealed class GitHubReleaseSource : IUpdateReleaseSource
@@ -24,7 +25,8 @@ public sealed class GitHubReleaseSource : IUpdateReleaseSource
             if (!resp.IsSuccessStatusCode)
                 return new UpdateRelease(UpdateSourceStatus.HttpFailure, HttpStatus: (int)resp.StatusCode);
 
-            using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+            using var doc = JsonDocument.Parse(
+                await resp.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
             var root = doc.RootElement;
             return new UpdateRelease(
                 UpdateSourceStatus.Success,
@@ -32,7 +34,11 @@ public sealed class GitHubReleaseSource : IUpdateReleaseSource
                 root.TryGetProperty("html_url", out var page) ? page.GetString() : null,
                 root.TryGetProperty("prerelease", out var preview) && preview.GetBoolean());
         }
-        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException)
         {
             return new UpdateRelease(UpdateSourceStatus.NetworkFailure);
         }
