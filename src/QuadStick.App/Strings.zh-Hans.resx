@@ -1274,7 +1274,7 @@
     <value>打开一份全新副本，您可以编辑并安装。您的模板保持不变。</value>
   </data>
   <data name="Main_Original3HoleMouthpieceSide" xml:space="preserve">
-    <value>Original：三孔口控杆、侧管、lip switch、后置插孔。输入与 FPS 相同。</value>
+    <value>Original：三孔口控杆、侧管、唇动开关、后置插孔。输入与 FPS 相同。</value>
   </data>
   <data name="Main_OutputForRowBRow" xml:space="preserve">
     <value>第 {0} 行的输出</value>
@@ -1313,7 +1313,7 @@
     <value>再次按下以登录</value>
   </data>
   <data name="Main_PressTheLipSwitchOr" xml:space="preserve">
-    <value>用嘴唇按压 lip switch 或传感器。常用于开火按钮。</value>
+    <value>用嘴唇按压唇动开关或传感器。常用于开火按钮。</value>
   </data>
   <data name="Main_PressVerb" xml:space="preserve">
     <value>按下</value>
@@ -1520,16 +1520,16 @@
     <value>Singleton：摇杆上的单个 sip/puff 管。使用 sip 和 puff 模式加上摇杆动作。</value>
   </data>
   <data name="Main_SipOrPuffOnThe" xml:space="preserve">
-    <value>在 left mouthpiece hole 上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
+    <value>在左吸嘴孔上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
   </data>
   <data name="Main_SipOrPuffOnThe2" xml:space="preserve">
-    <value>在 center mouthpiece hole 上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
+    <value>在中央吸嘴孔上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
   </data>
   <data name="Main_SipOrPuffOnThe3" xml:space="preserve">
-    <value>在 right mouthpiece hole 上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
+    <value>在右吸嘴孔上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
   </data>
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
-    <value>在 side tube 上进行 sip 或 puff。这里长而用力的 sip 通常用于切换配置文件，但您也可以映射它。</value>
+    <value>在侧管上进行 sip 或 puff。这里长而用力的 sip 通常用于切换配置文件，但您也可以映射它。</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>在 {0} 上开始一个新映射</value>

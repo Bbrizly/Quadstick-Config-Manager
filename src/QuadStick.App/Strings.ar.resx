@@ -1520,16 +1520,16 @@
     <value>Singleton: أنبوب sip/puff واحد على عصا التحكم. يستخدم أنماط sip وpuff بالإضافة إلى حركة عصا التحكم.</value>
   </data>
   <data name="Main_SipOrPuffOnThe" xml:space="preserve">
-    <value>Sip أو puff على Left mouthpiece hole. يمكن أن يُحدث sip أو puff لطيف شيئًا مختلفًا (الأنواع الخفيفة).</value>
+    <value>Sip أو puff على فتحة الفم اليسرى. يمكن أن يُحدث sip أو puff لطيف شيئًا مختلفًا (الأنواع الخفيفة).</value>
   </data>
   <data name="Main_SipOrPuffOnThe2" xml:space="preserve">
-    <value>Sip أو puff على Center mouthpiece hole. يمكن أن يُحدث sip أو puff لطيف شيئًا مختلفًا (الأنواع الخفيفة).</value>
+    <value>Sip أو puff على فتحة الفم الوسطى. يمكن أن يُحدث sip أو puff لطيف شيئًا مختلفًا (الأنواع الخفيفة).</value>
   </data>
   <data name="Main_SipOrPuffOnThe3" xml:space="preserve">
-    <value>Sip أو puff على Right mouthpiece hole. يمكن أن يُحدث sip أو puff لطيف شيئًا مختلفًا (الأنواع الخفيفة).</value>
+    <value>Sip أو puff على فتحة الفم اليمنى. يمكن أن يُحدث sip أو puff لطيف شيئًا مختلفًا (الأنواع الخفيفة).</value>
   </data>
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
-    <value>Sip أو puff على Side tube. عادةً ما يؤدي sip طويل وقوي هنا إلى تبديل الملفات الشخصية، لكن يمكنك ربطه أيضًا.</value>
+    <value>Sip أو puff على الأنبوب الجانبي. عادةً ما يؤدي sip طويل وقوي هنا إلى تبديل الملفات الشخصية، لكن يمكنك ربطه أيضًا.</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>بدء ربط جديد على {0}</value>
@@ -1668,7 +1668,7 @@
     <value>يوقف إخراجًا تركه toggle أو delayed_latch مُشغّلًا.</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
-    <value>استخدام فتحتين أو أكثر في الوقت نفسه، أو الفتحات الثلاث معًا، أو الفتحة اليمنى مع Side tube. مناسب للإجراءات التي لا تريد تفعيلها عن طريق الخطأ أبدًا.</value>
+    <value>استخدام فتحتين أو أكثر في الوقت نفسه، أو الفتحات الثلاث معًا، أو الفتحة اليمنى مع الأنبوب الجانبي. مناسب للإجراءات التي لا تريد تفعيلها عن طريق الخطأ أبدًا.</value>
   </data>
   <data name="Main_TypeACustomValue" xml:space="preserve">
     <value>. اكتب قيمة مخصصة.</value>

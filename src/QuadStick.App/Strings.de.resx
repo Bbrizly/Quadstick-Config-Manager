@@ -933,7 +933,7 @@ Die meisten Profile haben nur einen Modus, daher zeigt diese Liste oft einen ein
     <value>Zusätzliche Eingabe für Zuordnung {0}</value>
   </data>
   <data name="Main_FPS3HoleMouthpieceSide" xml:space="preserve">
-    <value>FPS: Mundstück mit 3 Löchern, Side tube, Lippensensor, Buchsen hinten. Präziserer Joystick als das Original.</value>
+    <value>FPS: Mundstück mit 3 Löchern, Seitenröhrchen, Lippensensor, Buchsen hinten. Präziserer Joystick als das Original.</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
     <value>Feuert, sobald Ihre Eingabe eine festgelegte Stärke überschreitet.</value>
@@ -1235,7 +1235,7 @@ Wählen Sie links einen Teil des QuadStick aus, um zu sehen, was er in diesem Mo
     <value>Eine Aktivierung rastet es ein, die nächste löst es.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>Eine CSV-Datei, die dem QuadStick sagt, welches sip, puff, welcher Lippendruck oder welche Joystick-Bewegung welche Spieltaste drückt. Ein Profil hat ein oder mehrere Modus-Blätter: vollständige Steuerungslayouts, zwischen denen Sie beim Spielen wechseln (Lauf-Layout, Fahr-Layout, Menüs). Sip oder Puff am side tube, oder increment_mode / decrement_mode binden, um Modi im Spiel zu wechseln.</value>
+    <value>Eine CSV-Datei, die dem QuadStick sagt, welches sip, puff, welcher Lippendruck oder welche Joystick-Bewegung welche Spieltaste drückt. Ein Profil hat ein oder mehrere Modus-Blätter: vollständige Steuerungslayouts, zwischen denen Sie beim Spielen wechseln (Lauf-Layout, Fahr-Layout, Menüs). Sip oder Puff am Seitenröhrchen, oder increment_mode / decrement_mode binden, um Modi im Spiel zu wechseln.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>Ein kurzer Druck bei jeder Aktivierung.</value>
@@ -1274,7 +1274,7 @@ Wählen Sie links einen Teil des QuadStick aus, um zu sehen, was er in diesem Mo
     <value>Öffnet eine neue Kopie, die Sie bearbeiten und installieren können. Ihre Vorlage bleibt unverändert.</value>
   </data>
   <data name="Main_Original3HoleMouthpieceSide" xml:space="preserve">
-    <value>Original: Mundstück mit 3 Löchern, Side tube, Lip switch, Buchsen hinten. Gleiche Eingaben wie beim FPS.</value>
+    <value>Original: Mundstück mit 3 Löchern, Seitenröhrchen, Lippenschalter, Buchsen hinten. Gleiche Eingaben wie beim FPS.</value>
   </data>
   <data name="Main_OutputForRowBRow" xml:space="preserve">
     <value>Ausgabe für Zeile {0}</value>
@@ -1313,7 +1313,7 @@ Wählen Sie links einen Teil des QuadStick aus, um zu sehen, was er in diesem Mo
     <value>Erneut drücken, um sich anzumelden</value>
   </data>
   <data name="Main_PressTheLipSwitchOr" xml:space="preserve">
-    <value>Drücken Sie den Lip switch oder Sensor mit Ihrer Lippe. Wird oft für die Feuertaste verwendet.</value>
+    <value>Drücken Sie den Lippenschalter oder Sensor mit Ihrer Lippe. Wird oft für die Feuertaste verwendet.</value>
   </data>
   <data name="Main_PressVerb" xml:space="preserve">
     <value>Drücken</value>
@@ -1520,16 +1520,16 @@ Wählen Sie links einen Teil des QuadStick aus, um zu sehen, was er in diesem Mo
     <value>Singleton: ein einzelner Sip/Puff-Schlauch am Joystick. Nutzt Sip- und Puff-Muster sowie Joystick-Bewegung.</value>
   </data>
   <data name="Main_SipOrPuffOnThe" xml:space="preserve">
-    <value>Sip oder Puff am Left mouthpiece hole. Ein sanftes Sip oder Puff kann etwas anderes bewirken (die sanften Varianten).</value>
+    <value>Sip oder Puff am linken Mundstückloch. Ein sanftes Sip oder Puff kann etwas anderes bewirken (die sanften Varianten).</value>
   </data>
   <data name="Main_SipOrPuffOnThe2" xml:space="preserve">
-    <value>Sip oder Puff am Center mouthpiece hole. Ein sanftes Sip oder Puff kann etwas anderes bewirken (die sanften Varianten).</value>
+    <value>Sip oder Puff am mittleren Mundstückloch. Ein sanftes Sip oder Puff kann etwas anderes bewirken (die sanften Varianten).</value>
   </data>
   <data name="Main_SipOrPuffOnThe3" xml:space="preserve">
-    <value>Sip oder Puff am Right mouthpiece hole. Ein sanftes Sip oder Puff kann etwas anderes bewirken (die sanften Varianten).</value>
+    <value>Sip oder Puff am rechten Mundstückloch. Ein sanftes Sip oder Puff kann etwas anderes bewirken (die sanften Varianten).</value>
   </data>
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
-    <value>Sip oder Puff am Side tube. Ein langes, kräftiges Sip hier wechselt normalerweise das Profil, aber Sie können es auch zuordnen.</value>
+    <value>Sip oder Puff am Seitenröhrchen. Ein langes, kräftiges Sip hier wechselt normalerweise das Profil, aber Sie können es auch zuordnen.</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>Eine neue Zuordnung auf {0} starten</value>
@@ -1668,7 +1668,7 @@ Sie können dies jederzeit in den Einstellungen unter Erweitert ändern.</value>
     <value>Schaltet eine Ausgabe aus, die toggle oder delayed_latch eingeschaltet gelassen hat.</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
-    <value>Zwei oder mehr Löcher gleichzeitig verwendet, alle drei zusammen, oder das rechte Loch mit dem Side tube. Gut für Aktionen, die nie versehentlich ausgelöst werden sollen.</value>
+    <value>Zwei oder mehr Löcher gleichzeitig verwendet, alle drei zusammen, oder das rechte Loch mit dem Seitenröhrchen. Gut für Aktionen, die nie versehentlich ausgelöst werden sollen.</value>
   </data>
   <data name="Main_TypeACustomValue" xml:space="preserve">
     <value>. Einen eigenen Wert eingeben.</value>
