@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace QuadStick.App;
 
-public class App : Application
+public class App : Avalonia.Application
 {
     public override void Initialize()
     {
