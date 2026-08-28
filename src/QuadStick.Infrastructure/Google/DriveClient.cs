@@ -14,12 +14,13 @@ public class DriveClient
     const string SheetsBase = "https://sheets.googleapis.com/v4/spreadsheets";
     const string DriveBase = "https://www.googleapis.com/drive/v3/files";
 
-    // Last cell of the wide range the leftover clears sweep. No sheet prefix,
-    // so it covers any profile grid on the first sheet.
-    // ponytail: a profile past 10000 rows keeps its stale tail; nothing near
-    // that exists, and the data written is still correct.
+    // Last cell of the wide range the leftover clears sweep.
     const int LastColumn = 702; // ZZ
     const int LastRow = 10000;
+
+    // Real QCM workbooks are tiny. Bound the transport before ZipArchive/XML
+    // ever sees it so a remote response cannot be buffered without limit.
+    public const int MaxWorkbookBytes = 16 * 1024 * 1024;
 
     readonly HttpClient _http;
     readonly Func<CancellationToken, Task<string>> _accessToken;
@@ -40,18 +41,15 @@ public class DriveClient
         return doc.RootElement.GetProperty("spreadsheetId").GetString()!;
     }
 
-    /// <summary>Write the profile as one worksheet tab per mode: the shape the
-    /// community writes its sheets in, and the only shape this app's own
-    /// importer reads back. Tabs are reused in place, so a tab keeps its
-    /// formatting from push to push.
-    ///
-    /// Write first, clear stale cells second. Never leave the sheet blank
-    /// mid-push.</summary>
+    /// <summary>Write the profile as one worksheet tab per mode. Writes are
+    /// idempotent: if a later request fails the Application layer keeps the link
+    /// dirty and replaying this method reconstructs the workbook.</summary>
     public async Task PushTabsAsync(string id, IReadOnlyList<ProfileTab> tabs, CancellationToken ct = default)
     {
-        // A blank grid writes nothing, so the clear below would sweep the whole
-        // sheet. An empty or truncated local file must never empty the backup.
-        if (!tabs.Any(t => t.Rows.Any(r => r.Any(c => !string.IsNullOrWhiteSpace(c))))) return;
+        // Returning success here used to let Application mark a backup clean
+        // even though Google was untouched.
+        if (!tabs.Any(t => t.Rows.Any(r => r.Any(c => !string.IsNullOrWhiteSpace(c)))))
+            throw new InvalidDataException("Refusing to replace a backup with an empty profile.");
 
         bool reshaped = await ShapeTabsAsync(id, tabs.Select(t => t.Title).ToList(), ct);
 
@@ -61,16 +59,13 @@ public class DriveClient
         foreach (var tab in tabs)
         {
             // Every row padded to one width, so a binding that lost an input
-            // has that cell blanked by the write instead of keeping its old
-            // value.
+            // has that cell blanked by the write instead of keeping its old value.
             int width = Math.Max(1, tab.Rows.Count == 0 ? 1 : tab.Rows.Max(r => r.Length));
             var grid = tab.Rows
                 .Select(r => r.Length == width ? r : r.Concat(Enumerable.Repeat("", width - r.Length)).ToArray())
                 .ToList();
             data.Add(new { range = $"{Quoted(tab.Title)}!A1", values = grid });
 
-            // Whatever a bigger earlier profile left outside the block just
-            // written: the rows under it and the columns right of it.
             if (grid.Count < LastRow) ranges.Add($"{Quoted(tab.Title)}!A{grid.Count + 1}:ZZ{LastRow}");
             if (width < LastColumn) ranges.Add($"{Quoted(tab.Title)}!{ColumnName(width + 1)}1:ZZ{LastRow}");
         }
@@ -88,16 +83,11 @@ public class DriveClient
             (await SendAsync(clear, ct)).Dispose();
         }
 
-        // Only when a tab was made or renamed. A save is a push, and paying two
-        // more requests on every save to set colours that are already there
-        // would make the backup slower for nothing.
         if (reshaped) await FormatTabsAsync(id, tabs, ct);
     }
 
-    // Frozen headings and the app's own column colours, so the sheet reads like
-    // the editor and like the community workbooks people already share. Best
-    // effort: the values are already written, and a profile that is in the
-    // sheet but grey is not a failure worth failing the backup over.
+    // Frozen headings and the app's own column colours. Best effort: values are
+    // already written, and formatting failure must not turn a good backup bad.
     async Task FormatTabsAsync(string id, IReadOnlyList<ProfileTab> tabs, CancellationToken ct)
     {
         var byTitle = (await ListTabsAsync(id, ct))
@@ -116,9 +106,6 @@ public class DriveClient
                     fields = "gridProperties.frozenRowCount",
                 },
             });
-            // A tab with no column-naming row has nothing to colour: its one
-            // heading is the keyword, and tinting that as an output column
-            // would say something untrue about it.
             if (tab.HeaderRow == 0) continue;
             requests.Add(Tint(sheetId, tab.HeaderRow, 0, 1, "OutputTint"));
             requests.Add(Tint(sheetId, tab.HeaderRow, 1, 2, "FunctionTint"));
@@ -130,14 +117,11 @@ public class DriveClient
         using var req = new HttpRequestMessage(HttpMethod.Post, $"{SheetsBase}/{id}:batchUpdate")
         { Content = new StringContent(body, Encoding.UTF8, "application/json") };
         try { (await SendAsync(req, ct)).Dispose(); }
-        catch (DriveApiException) { /* the profile is up; colours are not worth a failed backup */ }
+        catch (DriveApiException) { /* cosmetic only */ }
     }
 
     static object Tint(int sheetId, int row, int firstColumn, int lastColumn, string paletteKey)
     {
-        // Spreadsheet formatting is provider output, not an Avalonia concern.
-        // Keep the exact existing light-theme tints here so moving Drive code
-        // cannot silently couple Infrastructure back to the UI assembly.
         var (r, g, b) = Rgb(GoogleSheetPalette.Light[paletteKey]);
         return new
         {
@@ -164,34 +148,32 @@ public class DriveClient
         };
     }
 
-    // "#F3E2AE" as the 0..1 channels Sheets wants. The light palette either
-    // way: a spreadsheet is white paper, whatever theme the app is in.
     static (double R, double G, double B) Rgb(string hex)
     {
         var v = Convert.ToInt32(hex.TrimStart('#'), 16);
         return (((v >> 16) & 0xFF) / 255.0, ((v >> 8) & 0xFF) / 255.0, (v & 0xFF) / 255.0);
     }
 
-    // Make the spreadsheet's tabs match these titles, in this order: rename what
-    // is there, add what is missing, delete what a shorter profile left behind.
-    //
-    // Every existing tab is renamed out of the way first, in the same batch. A
-    // spreadsheet refuses two tabs with one title, and pushing a profile whose
-    // modes were reordered or renamed would otherwise collide with its own old
-    // names. One batchUpdate applies whole or not at all, so a failure cannot
-    // leave the placeholder names behind.
-    // True when it changed anything, so the caller knows whether the formatting
-    // pass has any work to do.
+    // Make the spreadsheet's tabs match these titles, in this order.
     async Task<bool> ShapeTabsAsync(string id, List<string> titles, CancellationToken ct)
     {
         var existing = await ListTabsAsync(id, ct);
-        // Already the right tabs, in the right order.
         if (existing.Select(e => e.Title).SequenceEqual(titles, StringComparer.Ordinal)) return false;
 
-        var requests = new List<object>();
+        // Never use a predictable placeholder such as _qsc_0: that is a legal
+        // user mode title. A per-operation prefix is chosen so no existing or
+        // desired title can collide with the temporary namespace.
+        var occupied = existing.Select(e => e.Title).Concat(titles).ToList();
+        string temporaryPrefix;
+        do
+        {
+            temporaryPrefix = $"_qsc_tmp_{Guid.NewGuid():N}_";
+        }
+        while (occupied.Any(t => t.StartsWith(temporaryPrefix, StringComparison.Ordinal)));
 
+        var requests = new List<object>();
         for (int i = 0; i < existing.Count; i++)
-            requests.Add(Rename(existing[i].SheetId, $"_qsc_{i}"));
+            requests.Add(Rename(existing[i].SheetId, temporaryPrefix + i));
         for (int i = 0; i < titles.Count; i++)
         {
             if (i < existing.Count) requests.Add(Rename(existing[i].SheetId, titles[i]));
@@ -228,10 +210,8 @@ public class DriveClient
         return tabs;
     }
 
-    // A1 notation quotes a tab name, and an apostrophe in the name is doubled.
     static string Quoted(string title) => "'" + title.Replace("'", "''") + "'";
 
-    // A1 column name: 1 -> A, 27 -> AA.
     static string ColumnName(int index)
     {
         var name = "";
@@ -252,20 +232,29 @@ public class DriveClient
         return doc.RootElement.GetProperty("modifiedTime").GetString()!;
     }
 
-    // Export via the Drive API export endpoint, not docs.google.com. The web
-    // endpoint returns 200 with an HTML sign-in page on a bad token; this returns
-    // a real 401/403. Works under drive.file for sheets this app created.
-    //
-    // The workbook, not CSV: a CSV export is the FIRST TAB and nothing else.
-    // Now that a push writes one tab per mode, downloading CSV would hand back
-    // a profile short every mode but the first, and the two callers write what
-    // they download over the user's local file.
+    // Export the whole workbook through Drive and enforce a transport-level cap
+    // before buffering it. CSV export would contain only the first tab.
     public async Task<byte[]> DownloadWorkbookAsync(string id, CancellationToken ct = default)
     {
         using var req = new HttpRequestMessage(HttpMethod.Get,
             $"{DriveBase}/{id}/export?mimeType={Uri.EscapeDataString(XlsxMimeType)}");
-        using var resp = await SendAsync(req, ct);
-        return await resp.Content.ReadAsByteArrayAsync(ct);
+        using var resp = await SendAsync(req, ct, HttpCompletionOption.ResponseHeadersRead);
+
+        if (resp.Content.Headers.ContentLength is long declared && declared > MaxWorkbookBytes)
+            throw new InvalidDataException($"Drive workbook is larger than {MaxWorkbookBytes / (1024 * 1024)} MB.");
+
+        await using var input = await resp.Content.ReadAsStreamAsync(ct);
+        using var output = new MemoryStream();
+        var buffer = new byte[64 * 1024];
+        while (true)
+        {
+            var read = await input.ReadAsync(buffer.AsMemory(0, buffer.Length), ct);
+            if (read == 0) break;
+            if (output.Length + read > MaxWorkbookBytes)
+                throw new InvalidDataException($"Drive workbook is larger than {MaxWorkbookBytes / (1024 * 1024)} MB.");
+            output.Write(buffer, 0, read);
+        }
+        return output.ToArray();
     }
 
     const string XlsxMimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -304,15 +293,17 @@ public class DriveClient
         return results;
     }
 
-    async Task<HttpResponseMessage> SendAsync(HttpRequestMessage req, CancellationToken ct)
+    async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage req,
+        CancellationToken ct,
+        HttpCompletionOption completion = HttpCompletionOption.ResponseContentRead)
     {
         req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _accessToken(ct));
-        var resp = await _http.SendAsync(req, ct);
+        var resp = await _http.SendAsync(req, completion, ct);
         if (resp.IsSuccessStatusCode) return resp;
         var status = resp.StatusCode;
         var body = await resp.Content.ReadAsStringAsync(ct);
         resp.Dispose();
-        // Carry the status so callers can branch on 404 vs everything else.
         throw new DriveApiException(status, body);
     }
 }
