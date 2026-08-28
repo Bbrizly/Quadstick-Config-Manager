@@ -360,8 +360,30 @@ public partial class MainWindow : Window
 
     // The community list is fetched from here and nowhere else. Startup and a
     // home refresh never touch it, so the app opens with no network at all.
-    public async Task ShowCommunityProfilesAsync() =>
-        await new CommunityProfilesWindow(this).ShowDialog(this);
+    // Built once and kept. The catalog it downloaded is the reason: coming back
+    // to the page should not be another wait on quadstick.com.
+    CommunityProfilesView? _community;
+
+    internal CommunityProfilesView CommunityView =>
+        _community ??= new CommunityProfilesView(this);
+
+    /// <summary>Test seam: host a view built with fake HTTP handlers on the
+    /// Community page and show it, so a test drives the page the shell shows
+    /// rather than a control floating outside the window.</summary>
+    internal void HostCommunityViewForPreview(CommunityProfilesView view)
+    {
+        _community = view;
+        CommunityPageBody.Children.Clear();
+        ShowCommunityPage();
+    }
+
+    public void ShowCommunityPage()
+    {
+        _file = null; // no profile is open on a page; a stale dirty file re-asks "leave?" on the next action
+        if (CommunityPageBody.Children.Count == 0) CommunityPageBody.Children.Add(CommunityView);
+        ShowPage(CommunityPage, ShellCommunityButton);
+        CommunityView.Start();
+    }
 
     // Managing what is already on the QuadStick. Everything it does is file
     // work on a mounted drive; nothing here talks to the device any other way.
@@ -724,7 +746,7 @@ public partial class MainWindow : Window
         HomeOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
         HomeAgentButton.Click += (_, _) => ShowAgent();
         AgentButton.Click += (_, _) => ShowAgent(changing: true);
-        HomeCommunityButton.Click += async (_, _) => await ShowCommunityProfilesAsync();
+        HomeCommunityButton.Click += (_, _) => ShowCommunityPage();
         HomeDeviceFilesButton.Click += async (_, _) => await ShowDeviceFilesAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
@@ -736,14 +758,11 @@ public partial class MainWindow : Window
         ShellHomeButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
         // The mark goes home too. Same guard, so unsaved work still asks first.
         ShellBrandButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
-        ShellNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
-        ShellOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
-        // These two can open a profile over the one being edited, and the shell
-        // is the first place they were ever reachable from the editor.
+        // Both leave the editor, so both ask about unsaved work first.
         ShellDeviceButton.Click += async (_, _)
-            => { if (await ConfirmLeaveAsync()) await ShowDeviceFilesAsync(); };
+            => { if (await ConfirmLeaveAsync()) await ShowDevicePageAsync(); };
         ShellCommunityButton.Click += async (_, _)
-            => { if (await ConfirmLeaveAsync()) await ShowCommunityProfilesAsync(); };
+            => { if (await ConfirmLeaveAsync()) ShowCommunityPage(); };
 
         // Empty-library state offers the same three actions as the Start
         // cards above, so an empty library is never a dead end.
@@ -1329,8 +1348,6 @@ public partial class MainWindow : Window
         var compact = RootPanel.Bounds.Width is > 0 and < 930;
         ShellBrandCaption.IsVisible = !compact;
         ShellHomeLabel.IsVisible = !compact;
-        ShellNewLabel.IsVisible = !compact;
-        ShellOpenLabel.IsVisible = !compact;
         ShellDeviceLabel.IsVisible = !compact;
         ShellCommunityLabel.IsVisible = !compact;
     }
@@ -1569,6 +1586,17 @@ public partial class MainWindow : Window
     public Task<bool> ConfirmResetAsync() => ConfirmAsync(Strings.Main_ResetAllSettings,
         Strings.Main_AppearanceInterfaceSizeAndThe);
 
+    // One page at a time, and the tab that named it is the one marked. Marking
+    // is a class and not a colour: "active" also changes the weight and the
+    // underline, so the current page is readable without seeing hue.
+    void ShowPage(Control page, Button? tab)
+    {
+        foreach (var p in new Control[] { HomeView, EditorView, DevicePage, CommunityPage })
+            p.IsVisible = ReferenceEquals(p, page);
+        foreach (var t in new[] { ShellHomeButton, ShellDeviceButton, ShellCommunityButton })
+            if (ReferenceEquals(t, tab)) t.Classes.Add("active"); else t.Classes.Remove("active");
+    }
+
     void ShowHome()
     {
         _file = null; // Home has no profile open; a leftover dirty file would re-prompt "leave?" on the next action
@@ -1576,19 +1604,15 @@ public partial class MainWindow : Window
         // again is not that moment, and a screen reader reads it out as if it
         // were. The startup rescue offer is written after this runs.
         HomeStatusText.IsVisible = false;
-        HomeView.IsVisible = true;
-        EditorView.IsVisible = false;
+        ShowPage(HomeView, ShellHomeButton);
         Title = Strings.Main_QuadstickConfigManagerUnofficial; // no profile is open on Home
         RefreshHomeCards();
-        ShellHomeButton.Classes.Add("active");
         HomeNewButton.Focus();
     }
 
     void ShowEditor()
     {
-        HomeView.IsVisible = false;
-        EditorView.IsVisible = true;
-        ShellHomeButton.Classes.Remove("active");
+        ShowPage(EditorView, null);
         SheetPicker.Focus(); // the name box would put a caret on the filename
 
     }

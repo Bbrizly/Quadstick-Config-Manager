@@ -62,6 +62,15 @@ public static class PreferenceCatalog
         "Bluetooth", "Inputs and outputs", "USB and compatibility", "Advanced",
     };
 
+    /// <summary>Where a category sits on a settings screen. A category this
+    /// build has never heard of sorts after the ones it knows, in the order the
+    /// data file gave them, rather than jumping to the top.</summary>
+    public static int CategoryRank(string category)
+    {
+        int i = Array.IndexOf(CategoryOrder, category);
+        return i < 0 ? CategoryOrder.Length : i;
+    }
+
     /// <summary>A category heading in the language the app is being read in.
     /// A category this build has never heard of is shown as it arrived.</summary>
     public static string CategoryLabel(string category) => category switch

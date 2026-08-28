@@ -170,7 +170,7 @@
     <value>Download the community list again</value>
   </data>
   <data name="Community_GameProfilesOtherQuadStickPlayers" xml:space="preserve">
-    <value>Game profiles other QuadStick players have shared as Google Sheets. Opening this window downloads the list from quadstick.com, and Refresh downloads it again. Import opens the profile in the editor. Nothing here writes to your QuadStick.</value>
+    <value>Game profiles other QuadStick players have shared as Google Sheets. Opening this page downloads the list from quadstick.com, and Refresh downloads it again. Import opens the profile in the editor. Nothing here writes to your QuadStick.</value>
   </data>
   <data name="Community_Import" xml:space="preserve">
     <value>Import</value>
@@ -312,6 +312,81 @@
   </data>
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} warnings</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} setting changed</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} settings changed</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>Could not read the settings on your QuadStick: {0}</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}, written as {1}</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>Found your QuadStick at {0}.</value>
+  </data>
+  <data name="DevicePage_ItHasNoPrefsCsvSo" xml:space="preserve">
+    <value>It has no prefs.csv, so there are no settings on it to change yet.</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0} to {1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>Looking for your QuadStick...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}, {1} to {2}</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>Not in your settings file. The device uses {0} until you change it.</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>Off (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>On (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickAnd" xml:space="preserve">
+    <value>Plug in your QuadStick and press Reload to change its settings.</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>Put every setting back to the value that is on the QuadStick</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>Read the settings from your QuadStick again</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>Save to your QuadStick</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>The settings you changed here have not been written to the QuadStick. Reading it again loses them.</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>These settings have a problem, so nothing was written: </value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>These settings live in prefs.csv on the QuadStick itself, so they apply to every profile on it, not just to one game.</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>Throw away your changes?</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>Undo changes</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>Write the changed settings to prefs.csv on your QuadStick</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>Your QuadStick's settings</value>
   </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>Cancel</value>

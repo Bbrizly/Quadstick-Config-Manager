@@ -37,6 +37,25 @@ Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Lan
 // that runs out of its control is a layout that assumed English.
 if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
 
+// A prefs.csv shaped like the one a QuadStick ships with: a handful of the
+// settings written down, the rest left to the device's own defaults.
+const string SamplePrefs =
+    "Preferences\nprefs.csv\nPreference,Value,Units,Description\n"
+    + "joystick_deflection_minimum,8,,\n"
+    + "joystick_deflection_maximum,25,,\n"
+    + "joystick_D_Pad_inner,25,,\n"
+    + "joystick_D_Pad_outer,80,,\n"
+    + "sip_puff_threshold_soft,8,,\n"
+    + "sip_puff_threshold,40,,\n"
+    + "sip_puff_maximum,70,,\n"
+    + "sip_puff_delay_soft,1300,,\n"
+    + "lip_position_minimum,8,,\n"
+    + "lip_position_maximum,35,,\n"
+    + "mouse_speed,100,,\n"
+    + "volume,40,,\n"
+    + "brightness,75,,\n";
+
+
 // --lang <tag> draws it in a shipped language. The store shots need one set
 // per language, and Arabic is the one that has to be looked at rather than
 // asserted: the window mirrors and the device photo must not follow it.
@@ -298,6 +317,18 @@ if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
     // The shot the README leads with: a real profile, open on the picture of
     // the hardware, with a part picked so the panel beside it is doing its job.
     // "Nothing selected" was half the window on the old one.
+    // Tuning the device itself. No machine running this has a QuadStick on it,
+    // so the page is drawn from a prefs.csv held in memory: the point of the
+    // shot is the sliders, the headings and how far the page runs, and a real
+    // stick would show exactly the same rows.
+    Capture($"{suffix}-1i-device", w =>
+    {
+        w.Height = 1400;
+        w.ShowDeviceSettingsForPreview(SamplePrefs);
+    });
+
+    Capture($"{suffix}-1j-community", w => w.ShowCommunityPage());
+
     Capture($"{suffix}-2-editor", w =>
     {
         w.OpenPathForPreview(hero);

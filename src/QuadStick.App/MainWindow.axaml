@@ -38,14 +38,9 @@
                 AutomationProperties.Name="{x:Static app:Strings.Shell_Home}">
           <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconHome}"/><TextBlock x:Name="ShellHomeLabel" Text="{x:Static app:Strings.Shell_Home}"/></StackPanel>
         </Button>
-        <Button x:Name="ShellNewButton" Classes="shellnav"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_CreateANewProfile}">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconAdd}"/><TextBlock x:Name="ShellNewLabel" Text="{x:Static app:Strings.Shell_New}"/></StackPanel>
-        </Button>
-        <Button x:Name="ShellOpenButton" Classes="shellnav"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_OpenAProfileFile}">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconFolder}"/><TextBlock x:Name="ShellOpenLabel" Text="{x:Static app:Strings.Shell_Open}"/></StackPanel>
-        </Button>
+        <!-- Three destinations, no commands. New and Open were commands sitting
+             in a row of places, and both already live on Home where a profile
+             gets started. -->
         <Button x:Name="ShellDeviceButton" Classes="shellnav"
                 AutomationProperties.Name="{x:Static app:Strings.Shell_ManageFilesOnYourQuadStick}">
           <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconDevice}"/><TextBlock x:Name="ShellDeviceLabel" Text="{x:Static app:Strings.Shell_Device}"/></StackPanel>
@@ -473,6 +468,29 @@
       </Panel>
 
     </DockPanel>
+
+    <!-- ============ DEVICE ============ -->
+    <!-- Tuning the QuadStick itself, not the profiles on it. A page and not a
+         dialog because it is one of the three places the app goes, and because
+         a settings screen you tune while sipping needs the whole window. The
+         body is built in code: the rows come from the preference catalog, so
+         the layout follows the file that is actually on the device. -->
+    <DockPanel x:Name="DevicePage" IsVisible="False" Margin="28,22">
+      <Border x:Name="DeviceSaveBar" DockPanel.Dock="Bottom" IsVisible="False"
+              Classes="editorchrome" Margin="0,14,0,0" Padding="14,10">
+        <WrapPanel x:Name="DeviceSaveBarRow" Classes="toolbar" HorizontalAlignment="Center"/>
+      </Border>
+      <ScrollViewer>
+        <StackPanel x:Name="DevicePageBody" Spacing="22" MaxWidth="1120"
+                    HorizontalAlignment="Center"/>
+      </ScrollViewer>
+    </DockPanel>
+
+    <!-- ============ COMMUNITY ============ -->
+    <DockPanel x:Name="CommunityPage" IsVisible="False" Margin="28,22">
+      <Panel x:Name="CommunityPageBody"/>
+    </DockPanel>
+
   </Panel>
   </Grid>
   </LayoutTransformControl>

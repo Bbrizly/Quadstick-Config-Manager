@@ -170,7 +170,7 @@
     <value>[Dówñlóád thé çómmúñítý líšt ágáíñ xxxxxxxxxxxxx]</value>
   </data>
   <data name="Community_GameProfilesOtherQuadStickPlayers" xml:space="preserve">
-    <value>[Gámé prófíléš óthér QúádŠtíçk pláýérš hávé šháréd áš Góóglé Šhéétš. Ópéñíñg thíš wíñdów dówñlóádš thé líšt fróm qúádštíçk.çóm, áñd Réfréšh dówñlóádš ít ágáíñ. Ímpórt ópéñš thé prófílé íñ thé édítór. Ñóthíñg héré wrítéš tó ýóúr QúádŠtíçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Gámé prófíléš óthér QúádŠtíçk pláýérš hávé šháréd áš Góóglé Šhéétš. Ópéñíñg thíš págé dówñlóádš thé líšt fróm qúádštíçk.çóm, áñd Réfréšh dówñlóádš ít ágáíñ. Ímpórt ópéñš thé prófílé íñ thé édítór. Ñóthíñg héré wrítéš tó ýóúr QúádŠtíçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Community_Import" xml:space="preserve">
     <value>[Ímpórt xx]</value>
@@ -312,6 +312,81 @@
   </data>
   <data name="Count_Warning_other" xml:space="preserve">
     <value>[{0} wárñíñgš xxxx]</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>[{0} šéttíñg çháñgéd xxxxxxx]</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>[{0} šéttíñgš çháñgéd xxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>[Çóúld ñót réád thé šéttíñgš óñ ýóúr QúádŠtíçk: {0} xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>[{0} x]</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>[{0}, wríttéñ áš {1} xxxxxxx]</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>[Fóúñd ýóúr QúádŠtíçk át {0}. xxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_ItHasNoPrefsCsvSo" xml:space="preserve">
+    <value>[Ít háš ñó préfš.çšv, šó théré áré ñó šéttíñgš óñ ít tó çháñgé ýét. xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>[{0} tó {1} xxxx]</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>[Lóókíñg fór ýóúr QúádŠtíçk... xxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>[{0}, {1} tó {2} xxxxxx]</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>[Ñót íñ ýóúr šéttíñgš fílé. Thé dévíçé úšéš {0} úñtíl ýóú çháñgé ít. xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>[Óff (0) xx]</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>[Óñ (1) xx]</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickAnd" xml:space="preserve">
+    <value>[Plúg íñ ýóúr QúádŠtíçk áñd préšš Rélóád tó çháñgé ítš šéttíñgš. xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>[Pút évérý šéttíñg báçk tó thé válúé thát íš óñ thé QúádŠtíçk xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>[Réád thé šéttíñgš fróm ýóúr QúádŠtíçk ágáíñ xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>[Rélóád xx]</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>[Šávé tó ýóúr QúádŠtíçk xxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>[Thé šéttíñgš ýóú çháñgéd héré hávé ñót bééñ wríttéñ tó thé QúádŠtíçk. Réádíñg ít ágáíñ lóšéš thém. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>[Théšé šéttíñgš hávé á próblém, šó ñóthíñg wáš wríttéñ:  xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>[Théšé šéttíñgš lívé íñ préfš.çšv óñ thé QúádŠtíçk ítšélf, šó théý ápplý tó évérý prófílé óñ ít, ñót júšt tó óñé gámé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>[Thrów áwáý ýóúr çháñgéš? xxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>[Úñdó çháñgéš xxxx]</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>[Wríté thé çháñgéd šéttíñgš tó préfš.çšv óñ ýóúr QúádŠtíçk xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>[Ýóúr QúádŠtíçk'š šéttíñgš xxxxxxxxxx]</value>
   </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>[Çáñçél xx]</value>

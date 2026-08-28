@@ -18,8 +18,7 @@ public class ShellChromeTests
 {
     static readonly string[] NavButtons =
     {
-        "ShellHomeButton", "ShellNewButton", "ShellOpenButton",
-        "ShellDeviceButton", "ShellCommunityButton",
+        "ShellHomeButton", "ShellDeviceButton", "ShellCommunityButton",
     };
 
     static MainWindow Open()
@@ -200,7 +199,6 @@ public class ShellChromeTests
     // apart, so the second click has to find the first prompt already up.
     [AvaloniaTheory]
     [InlineData("ShellHomeButton")]
-    [InlineData("ShellNewButton")]
     [InlineData("ShellDeviceButton")]
     [InlineData("ShellCommunityButton")]
     public void ADoublePressAsksToSaveOnlyOnce(string button)
