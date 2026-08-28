@@ -5,11 +5,27 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>QuadStick.Infrastructure</RootNamespace>
   </PropertyGroup>
+
+  <PropertyGroup Condition="Exists('../QuadStick.App/TelemetryToken.Local.cs')">
+    <DefineConstants>$(DefineConstants);TELEMETRY_TOKEN_LOCAL</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="Exists('../QuadStick.App/GoogleClient.Local.cs')">
+    <DefineConstants>$(DefineConstants);GOOGLE_CLIENT_LOCAL</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="../QuadStick.Core/QuadStick.Core.csproj" />
     <ProjectReference Include="../QuadStick.Application/QuadStick.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <PackageReference Include="PostHog" Version="2.12.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../QuadStick.App/TelemetryToken.Local.cs" Link="Telemetry/TelemetryToken.Local.cs" Condition="Exists('../QuadStick.App/TelemetryToken.Local.cs')" />
+    <Compile Include="../QuadStick.App/GoogleClient.Local.cs" Link="Google/GoogleClient.Local.cs" Condition="Exists('../QuadStick.App/GoogleClient.Local.cs')" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="QuadStick.App.Tests" />
   </ItemGroup>
 </Project>

@@ -11,12 +11,12 @@
     <ApplicationIcon>Assets/AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="Exists('GoogleClient.Local.cs')">
-    <DefineConstants>$(DefineConstants);GOOGLE_CLIENT_LOCAL</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="Exists('TelemetryToken.Local.cs')">
-    <DefineConstants>$(DefineConstants);TELEMETRY_TOKEN_LOCAL</DefineConstants>
-  </PropertyGroup>
+  <ItemGroup>
+    <!-- Release workflows still generate provider credentials beside the app project;
+         Infrastructure links them in so those secrets never become presentation code. -->
+    <Compile Remove="GoogleClient.Local.cs" Condition="Exists('GoogleClient.Local.cs')" />
+    <Compile Remove="TelemetryToken.Local.cs" Condition="Exists('TelemetryToken.Local.cs')" />
+  </ItemGroup>
 
   <ItemGroup>
     <AvaloniaResource Include="Assets/AppIcon.png" />
@@ -31,8 +31,6 @@
     <PackageReference Include="Avalonia.Desktop" Version="11.1.3" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.3" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.3" />
-    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
-    <PackageReference Include="PostHog" Version="2.12.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../QuadStick.Core/QuadStick.Core.csproj" />
