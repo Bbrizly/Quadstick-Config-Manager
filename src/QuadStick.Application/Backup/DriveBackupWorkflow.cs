@@ -128,7 +128,7 @@ public sealed record BackupShareOutcome(
 
 public sealed record LinkRecoveryOutcome(bool Recovered, bool SettingsSaveFailed);
 
-/// <summary>Provider-neutral Google/remote backup application workflow. It owns
+/// <summary>Provider-neutral remote backup application workflow. It owns
 /// conflict/link/restore policy but never prompts a human and never touches a
 /// physical filesystem or provider API directly.</summary>
 public sealed class DriveBackupWorkflow
@@ -288,8 +288,8 @@ public sealed class DriveBackupWorkflow
             SettingsSaveFailed: context.SettingsSaveFailed);
     }
 
-    static IReadOnlyList<ProfileTab> Tabs(string csvText) =>
-        SheetTabs.Split(ProfileFile.Load(csvText));
+    static List<ProfileTab> Tabs(string csvText) =>
+        SheetTabs.Split(ProfileFile.Load(csvText)).ToList();
 
     async Task<string> DownloadProfileAsync(string id, CancellationToken cancellationToken)
     {
@@ -491,7 +491,7 @@ public sealed class DriveBackupWorkflow
 
         _library.EnsureDirectory(libraryDirectory);
         var onDisk = new HashSet<string>(
-            _library.ListCsvFiles(libraryDirectory).Select(Path.GetFileName),
+            _library.ListCsvFiles(libraryDirectory).Select(path => Path.GetFileName(path)!),
             StringComparer.OrdinalIgnoreCase);
         var batchNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
