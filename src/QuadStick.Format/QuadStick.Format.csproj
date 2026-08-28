@@ -5,12 +5,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>QuadStick.Format</RootNamespace>
     <Version>1.0.0</Version>
-    <!-- The safety-critical layer gets the strictest analyzer set. -->
+    <!-- Temporary compatibility shell while filesystem/device/provider concerns are extracted. -->
     <AnalysisLevel>latest-recommended</AnalysisLevel>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../QuadStick.Core/QuadStick.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- ProfileFile still owns template construction during the incremental migration. -->
     <EmbeddedResource Include="Templates/default-template.csv" LogicalName="DefaultTemplate" />
-    <EmbeddedResource Include="Data/validation.json" LogicalName="ValidationJson" />
-    <EmbeddedResource Include="Data/preferences.json" LogicalName="PreferencesJson" />
   </ItemGroup>
 </Project>
