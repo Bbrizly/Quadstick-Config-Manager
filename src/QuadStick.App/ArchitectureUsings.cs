@@ -5,6 +5,7 @@ global using QuadStick.Application.Profiles;
 global using QuadStick.Application.Settings;
 global using QuadStick.Application.Telemetry;
 global using QuadStick.Application.Updates;
+global using QuadStick.Infrastructure.Agent;
 global using QuadStick.Infrastructure.Google;
 global using QuadStick.Infrastructure.Security;
 global using QuadStick.Infrastructure.Settings;
