@@ -136,14 +136,21 @@ public sealed class DeviceFileManagementUseCase
             return new LibraryCopyResult(LibraryCopyKind.NeedsReplaceConfirmation, destination);
 
         var text = await _devices.ReadAsync(root, fileName, cancellationToken).ConfigureAwait(false);
-
-        // If nobody approved an overwrite, a file appearing during the device
-        // read is a race, not permission to replace it.
-        if (!existed && _library.Exists(destination))
-            return new LibraryCopyResult(LibraryCopyKind.RaceDetected, destination);
-
         _library.EnsureDirectory(libraryDirectory);
-        _library.WriteAtomic(destination, text);
+
+        // Existence checks are advisory only. The create-only publication is
+        // the actual no-overwrite guarantee, so a file appearing between the
+        // device read and the final rename can never be replaced accidentally.
+        if (!existed && !replaceExisting)
+        {
+            if (!_library.TryCreate(destination, text))
+                return new LibraryCopyResult(LibraryCopyKind.RaceDetected, destination);
+        }
+        else
+        {
+            _library.WriteAtomic(destination, text);
+        }
+
         return new LibraryCopyResult(LibraryCopyKind.Copied, destination);
     }
 
