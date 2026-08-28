@@ -4,14 +4,15 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using QuadStick.Application.Telemetry;
 
-namespace QuadStick.App;
+namespace QuadStick.Infrastructure.Telemetry;
 
 // Turns an exception into something safe to send. Pure and SDK-free on
 // purpose: this is the privacy-critical half of telemetry, and it must be
 // reviewable and testable without a network stack anywhere near it. The neutral
 // payload DTOs live in Application so the telemetry provider can consume them
-// without depending on this Avalonia assembly.
+// without depending on the Avalonia assembly.
 public static partial class CrashReport
 {
     public const int SchemaVersion = 1;
@@ -28,7 +29,7 @@ public static partial class CrashReport
     public static CrashPayload Build(string where, Exception? ex) => new(
         Schema: SchemaVersion,
         Where: where,
-        App: Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0",
+        App: Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3) ?? "0.0.0",
         Os: OperatingSystem.IsWindows() ? "windows"
           : OperatingSystem.IsMacOS() ? "macos"
           : OperatingSystem.IsLinux() ? "linux" : "other",
