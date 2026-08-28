@@ -115,7 +115,7 @@ public static class OutputCatalog
         var options = tokenFor.Keys.Concat(tokens).ToList();
         var catalog = new TokenCatalog(
             t => tokenFor.ContainsKey(t) ? ("Custom", "") : Classify(t),
-            new[] { "Custom" }.Concat(CategoryOrder).ToArray(),
+            CategoryOrder.Prepend("Custom").ToArray(),
             SubOrder);
         return new ProfileOutputs(catalog, options, tokenFor);
     }
