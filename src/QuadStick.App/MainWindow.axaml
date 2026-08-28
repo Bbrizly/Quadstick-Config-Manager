@@ -91,7 +91,7 @@
                 <TextBlock Text="{x:Static app:Strings.Shell_BuildOpenOrFindA}" Classes="secondary"
                            VerticalAlignment="Center"/>
               </StackPanel>
-              <WrapPanel x:Name="StartCards">
+              <WrapPanel x:Name="StartCards" HorizontalAlignment="Center">
                 <Button x:Name="HomeNewButton" Classes="homeaction featured"
                         AutomationProperties.Name="{x:Static app:Strings.Shell_CreateANewProfileFrom}">
                   <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconAdd}"/><TextBlock Text="{x:Static app:Strings.Shell_NewProfile}" HorizontalAlignment="Center"/></StackPanel>
