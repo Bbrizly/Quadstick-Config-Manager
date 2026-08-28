@@ -1,5 +1,6 @@
 using Avalonia.Threading;
 using QuadStick.Format;
+using QuadStick.Infrastructure.Files;
 
 namespace QuadStick.App;
 
@@ -62,7 +63,7 @@ public static class CrashGuard
                 var name = Sanitize(raw);
                 var path = Path.Combine(RescueDir,
                     $"{name}-rescued-{DateTime.Now:yyyyMMdd-HHmmss}-{DateTime.Now.Ticks % 10000}.csv");
-                ProfileFile.WriteAtomic(path, file.ToCsvText());
+                AtomicFileWriter.Write(path, file.ToCsvText());
             }
         }
         catch { /* rescue is best effort; fall through to the log */ }
