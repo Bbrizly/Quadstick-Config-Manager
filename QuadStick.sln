@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuadStick.App", "src\QuadSt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{30488879-B395-4FBB-90EE-F66ADC62E2A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuadStick.Format.Tests", "tests\QuadStick.Format.Tests\QuadStick.Format.Tests.csproj", "{A6C4D511-2280-4916-9E6F-1D8940561B3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuadStick.Integration.Tests", "tests\QuadStick.Format.Tests\QuadStick.Format.Tests.csproj", "{A6C4D511-2280-4916-9E6F-1D8940561B3F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{B6A6E4D9-1EF6-414E-81FC-3D73C7EED259}"
 EndProject
