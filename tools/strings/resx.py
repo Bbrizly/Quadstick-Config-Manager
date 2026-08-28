@@ -82,12 +82,16 @@ OUT = 'tools/strings/to-translate.txt'
 # One flat key space so the whole interface is one file: app/<key> is a string
 # in the app, fmt/<key> one in the reader, pref/<name>/<field> a word from the
 # preference catalog. The import reads the key to know where the line goes.
+# Not words at all: a .NET format pattern a translation would break.
+NOT_WORDS = {'app/Main_DMMMYyyy'}
+
 def catalog():
     import json
     out = {}
     for tag, path in (('app', APP), ('fmt', FMT)):
         _, have = load(path)
         for key, node in have.items():
+            if f'{tag}/{key}' in NOT_WORDS: continue
             out[f'{tag}/{key}'] = node.find('value').text or ''
     for p in json.load(open(PREFS)):
         for f in SAID:

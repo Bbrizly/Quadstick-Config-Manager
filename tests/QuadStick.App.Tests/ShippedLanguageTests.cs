@@ -41,6 +41,21 @@ public class ShippedLanguageTests
         }
     }
 
+    // The label class that slipped through the first translation pass: device
+    // part names on the diagram, which is the screen the app is for. This one
+    // is a long, plain phrase no language borrows, so equal-to-English here
+    // means untranslated, not loanword.
+    [Theory]
+    [MemberData(nameof(Shipped))]
+    public void A_listed_language_names_the_device_parts_in_its_own_words(string tag)
+    {
+        var said = Strings.ResourceManager.GetString(
+            "Main_LeftMouthpieceHole", CultureInfo.GetCultureInfo(tag));
+        Assert.NotNull(said);
+        Assert.NotEqual(Strings.ResourceManager.GetString(
+            "Main_LeftMouthpieceHole", CultureInfo.InvariantCulture), said);
+    }
+
     [Theory]
     [MemberData(nameof(Shipped))]
     public void A_listed_language_translates_the_preference_catalog(string tag)

@@ -860,9 +860,6 @@ La plupart des profils n'ont qu'un seul mode, donc cette liste montre souvent un
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>Rapport de plantage envoyé. Merci.</value>
   </data>
-  <data name="Main_DMMMYyyy" xml:space="preserve">
-    <value>d MMM yyyy</value>
-  </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>Supprimer</value>
   </data>

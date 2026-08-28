@@ -860,9 +860,6 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>Raport awarii wysłany. Dziękujemy.</value>
   </data>
-  <data name="Main_DMMMYyyy" xml:space="preserve">
-    <value>d MMM yyyy</value>
-  </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>Usuń</value>
   </data>

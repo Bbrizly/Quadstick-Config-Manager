@@ -860,9 +860,6 @@
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>クラッシュレポートを送信しました。ありがとうございます。</value>
   </data>
-  <data name="Main_DMMMYyyy" xml:space="preserve">
-    <value>d MMM yyyy</value>
-  </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>削除</value>
   </data>

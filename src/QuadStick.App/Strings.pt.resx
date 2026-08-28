@@ -860,9 +860,6 @@ A maioria dos perfis tem apenas um modo, então esta lista costuma mostrar um ú
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>Relatório de falha enviado. Obrigado.</value>
   </data>
-  <data name="Main_DMMMYyyy" xml:space="preserve">
-    <value>d MMM yyyy</value>
-  </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>Excluir</value>
   </data>

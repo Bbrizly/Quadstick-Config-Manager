@@ -860,9 +860,6 @@ Die meisten Profile haben nur einen Modus, daher zeigt diese Liste oft einen ein
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>Absturzbericht gesendet. Danke.</value>
   </data>
-  <data name="Main_DMMMYyyy" xml:space="preserve">
-    <value>d. MMM yyyy</value>
-  </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>Löschen</value>
   </data>
@@ -1041,19 +1038,19 @@ Die meisten Profile haben nur einen Modus, daher zeigt diese Liste oft einen ein
     <value>Links</value>
   </data>
   <data name="Main_LeftBumper" xml:space="preserve">
-    <value>Left bumper</value>
+    <value>Linker Bumper</value>
   </data>
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
-    <value>Left mouthpiece hole</value>
+    <value>Linke Mundstücköffnung</value>
   </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
-    <value>Left stick click</value>
+    <value>Linker Stick-Klick</value>
   </data>
   <data name="Main_LeftTrigger" xml:space="preserve">
-    <value>Left trigger</value>
+    <value>Linker Trigger</value>
   </data>
   <data name="Main_LipSwitch" xml:space="preserve">
-    <value>Lip switch</value>
+    <value>Lippenschalter</value>
   </data>
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>Die Online-Version dieses Profils wurde geladen. Ihre vorherige lokale Kopie befindet sich im Rettungsordner.</value>
@@ -1080,7 +1077,7 @@ Die meisten Profile haben nur einen Modus, daher zeigt diese Liste oft einen ein
     <value>Zuordnungen zeigen den detaillierten Editor. Zu einfachen Satzkarten wechseln.</value>
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
-    <value>Menu button</value>
+    <value>Menütaste</value>
   </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>Modus: {0}</value>
@@ -1409,19 +1406,19 @@ Wählen Sie links einen Teil des QuadStick aus, um zu sehen, was er in diesem Mo
     <value>Rechts</value>
   </data>
   <data name="Main_RightBumper" xml:space="preserve">
-    <value>Right bumper</value>
+    <value>Rechter Bumper</value>
   </data>
   <data name="Main_RightMouthpieceHole" xml:space="preserve">
-    <value>Right mouthpiece hole</value>
+    <value>Rechte Mundstücköffnung</value>
   </data>
   <data name="Main_RightSideTube" xml:space="preserve">
-    <value>Right + Side tube</value>
+    <value>Rechts + Seitenröhrchen</value>
   </data>
   <data name="Main_RightStickClick" xml:space="preserve">
-    <value>Right stick click</value>
+    <value>Rechter Stick-Klick</value>
   </data>
   <data name="Main_RightTrigger" xml:space="preserve">
-    <value>Right trigger</value>
+    <value>Rechter Trigger</value>
   </data>
   <data name="Main_RowBRowScopeModeScope" xml:space="preserve">
     <value>Zeile {0} Geltungsbereich: {1}</value>
@@ -1511,7 +1508,7 @@ Wählen Sie links einen Teil des QuadStick aus, um zu sehen, was er in diesem Mo
     <value>{0}. Zeigt die Liste der Probleme an.</value>
   </data>
   <data name="Main_SideTube" xml:space="preserve">
-    <value>Side tube</value>
+    <value>Seitenröhrchen</value>
   </data>
   <data name="Main_SignInToBackUp" xml:space="preserve">
     <value>Anmelden, um zu sichern</value>

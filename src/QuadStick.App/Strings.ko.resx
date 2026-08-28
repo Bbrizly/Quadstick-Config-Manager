@@ -860,9 +860,6 @@
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>충돌 보고서를 보냈습니다. 감사합니다.</value>
   </data>
-  <data name="Main_DMMMYyyy" xml:space="preserve">
-    <value>yyyy년 M월 d일</value>
-  </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>삭제</value>
   </data>

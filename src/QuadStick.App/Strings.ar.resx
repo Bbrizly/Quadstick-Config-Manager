@@ -860,9 +860,6 @@
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>تم إرسال تقرير العطل. شكرًا لك.</value>
   </data>
-  <data name="Main_DMMMYyyy" xml:space="preserve">
-    <value>d MMM yyyy</value>
-  </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>حذف</value>
   </data>
@@ -1023,7 +1020,7 @@
     <value>. أزرارها هي usb_1_button_1 وما فوق.</value>
   </data>
   <data name="Main_Joystick" xml:space="preserve">
-    <value>Joystick</value>
+    <value>عصا التحكم</value>
   </data>
   <data name="Main_JoystickOrIn34" xml:space="preserve">
     <value>Joystick، أو في 3-4</value>
@@ -1038,22 +1035,22 @@
     <value>يستمر بالضغط للحظة بعد أن تُفلت.</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
-    <value>Left</value>
+    <value>يسار</value>
   </data>
   <data name="Main_LeftBumper" xml:space="preserve">
-    <value>Left bumper</value>
+    <value>المصد الأيسر</value>
   </data>
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
-    <value>Left mouthpiece hole</value>
+    <value>فتحة الفم اليسرى</value>
   </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
-    <value>Left stick click</value>
+    <value>ضغطة العصا اليسرى</value>
   </data>
   <data name="Main_LeftTrigger" xml:space="preserve">
-    <value>Left trigger</value>
+    <value>الزناد الأيسر</value>
   </data>
   <data name="Main_LipSwitch" xml:space="preserve">
-    <value>Lip switch</value>
+    <value>مفتاح الشفة</value>
   </data>
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>تم تحميل النسخة الإلكترونية من هذا الملف الشخصي. نسختك المحلية السابقة موجودة في مجلد الإنقاذ.</value>
@@ -1080,7 +1077,7 @@
     <value>تعرض الروابط المحرر التفصيلي. التبديل إلى بطاقات الجمل البسيطة.</value>
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
-    <value>Menu button</value>
+    <value>زر القائمة</value>
   </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>الوضع: {0}</value>
@@ -1406,22 +1403,22 @@
     <value>استعادة ملفاتك الشخصية؟</value>
   </data>
   <data name="Main_Right" xml:space="preserve">
-    <value>Right</value>
+    <value>يمين</value>
   </data>
   <data name="Main_RightBumper" xml:space="preserve">
-    <value>Right bumper</value>
+    <value>المصد الأيمن</value>
   </data>
   <data name="Main_RightMouthpieceHole" xml:space="preserve">
-    <value>Right mouthpiece hole</value>
+    <value>فتحة الفم اليمنى</value>
   </data>
   <data name="Main_RightSideTube" xml:space="preserve">
-    <value>Right + Side tube</value>
+    <value>يمين + الأنبوب الجانبي</value>
   </data>
   <data name="Main_RightStickClick" xml:space="preserve">
-    <value>Right stick click</value>
+    <value>ضغطة العصا اليمنى</value>
   </data>
   <data name="Main_RightTrigger" xml:space="preserve">
-    <value>Right trigger</value>
+    <value>الزناد الأيمن</value>
   </data>
   <data name="Main_RowBRowScopeModeScope" xml:space="preserve">
     <value>نطاق الصف {0}: {1}</value>
@@ -1511,7 +1508,7 @@
     <value>{0}. يعرض قائمة المشاكل.</value>
   </data>
   <data name="Main_SideTube" xml:space="preserve">
-    <value>Side tube</value>
+    <value>الأنبوب الجانبي</value>
   </data>
   <data name="Main_SignInToBackUp" xml:space="preserve">
     <value>سجّل الدخول للنسخ الاحتياطي</value>

@@ -543,7 +543,7 @@
     <value>पहला स्विच</value>
   </data>
   <data name="Jack_LipJack" xml:space="preserve">
-    <value>Lip jack</value>
+    <value>होंठ जैक</value>
   </data>
   <data name="Jack_PlugOneSwitchIntoThe" xml:space="preserve">
     <value>ऊपरी jack में एक स्विच प्लग करें और यह digital_in_8 के रूप में पहुंचता है। केवल स्प्लिटर digital_in_7 का भी उपयोग करता है।</value>

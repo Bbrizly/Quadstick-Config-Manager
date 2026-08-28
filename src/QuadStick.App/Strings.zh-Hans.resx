@@ -860,9 +860,6 @@
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>崩溃报告已发送。谢谢。</value>
   </data>
-  <data name="Main_DMMMYyyy" xml:space="preserve">
-    <value>yyyy年M月d日</value>
-  </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>删除</value>
   </data>
@@ -978,7 +975,7 @@
     <value>还有 {0} 个。继续输入以缩小范围。</value>
   </data>
   <data name="Main_HoleCombos" xml:space="preserve">
-    <value>Hole combos</value>
+    <value>孔位组合</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>{0} 如何按下它。{1}</value>
@@ -1023,7 +1020,7 @@
     <value>。它的按钮从 usb_1_button_1 起编号。</value>
   </data>
   <data name="Main_Joystick" xml:space="preserve">
-    <value>Joystick</value>
+    <value>摇杆</value>
   </data>
   <data name="Main_JoystickOrIn34" xml:space="preserve">
     <value>Joystick，或在 3-4 中</value>
@@ -1038,22 +1035,22 @@
     <value>释放后仍会继续按住片刻。</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
-    <value>Left</value>
+    <value>左</value>
   </data>
   <data name="Main_LeftBumper" xml:space="preserve">
-    <value>Left bumper</value>
+    <value>左肩键</value>
   </data>
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
-    <value>Left mouthpiece hole</value>
+    <value>左吸吹嘴孔</value>
   </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
-    <value>Left stick click</value>
+    <value>左摇杆按键</value>
   </data>
   <data name="Main_LeftTrigger" xml:space="preserve">
-    <value>Left trigger</value>
+    <value>左扳机键</value>
   </data>
   <data name="Main_LipSwitch" xml:space="preserve">
-    <value>Lip switch</value>
+    <value>唇动开关</value>
   </data>
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>已加载此配置文件的在线版本。您之前的本地副本保存在救援文件夹中。</value>
@@ -1080,7 +1077,7 @@
     <value>映射以详细编辑器的形式呈现。切换到简单语句卡片。</value>
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
-    <value>Menu button</value>
+    <value>菜单按钮</value>
   </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>模式：{0}</value>
@@ -1406,22 +1403,22 @@
     <value>恢复您的配置文件？</value>
   </data>
   <data name="Main_Right" xml:space="preserve">
-    <value>Right</value>
+    <value>右</value>
   </data>
   <data name="Main_RightBumper" xml:space="preserve">
-    <value>Right bumper</value>
+    <value>右肩键</value>
   </data>
   <data name="Main_RightMouthpieceHole" xml:space="preserve">
-    <value>Right mouthpiece hole</value>
+    <value>右吸吹嘴孔</value>
   </data>
   <data name="Main_RightSideTube" xml:space="preserve">
-    <value>Right + Side tube</value>
+    <value>右 + 侧管</value>
   </data>
   <data name="Main_RightStickClick" xml:space="preserve">
-    <value>Right stick click</value>
+    <value>右摇杆按键</value>
   </data>
   <data name="Main_RightTrigger" xml:space="preserve">
-    <value>Right trigger</value>
+    <value>右扳机键</value>
   </data>
   <data name="Main_RowBRowScopeModeScope" xml:space="preserve">
     <value>第 {0} 行范围：{1}</value>
@@ -1511,7 +1508,7 @@
     <value>{0}。显示问题列表。</value>
   </data>
   <data name="Main_SideTube" xml:space="preserve">
-    <value>Side tube</value>
+    <value>侧管</value>
   </data>
   <data name="Main_SignInToBackUp" xml:space="preserve">
     <value>登录以进行备份</value>
@@ -1559,7 +1556,7 @@
     <value>不再询问崩溃报告</value>
   </data>
   <data name="Main_SwitchJacks" xml:space="preserve">
-    <value>Switch jacks</value>
+    <value>开关插孔</value>
   </data>
   <data name="Main_TabMovesBetweenFieldsArrows" xml:space="preserve">
     <value>Tab 键在字段间移动，方向键在建议列表中导航，Enter 键确认。Ctrl/Cmd+O 打开，S 保存，N 新建，Z 撤销，I 安装，D 在设备视图和列表视图之间切换，H 打开本指南。F1 也可在任何位置打开本指南。选择一个问题，或点击“修复第一个问题”按钮，会将焦点直接跳转到它。每个控件都会向屏幕阅读器播报自身。</value>

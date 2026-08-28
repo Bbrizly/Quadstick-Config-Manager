@@ -860,9 +860,6 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>Segnalazione di arresto anomalo inviata. Grazie.</value>
   </data>
-  <data name="Main_DMMMYyyy" xml:space="preserve">
-    <value>d MMM yyyy</value>
-  </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>Elimina</value>
   </data>
@@ -2703,7 +2700,7 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
     <value>Cancella la selezione</value>
   </data>
   <data name="Shell_Community" xml:space="preserve">
-    <value>Community</value>
+    <value>Comunità</value>
   </data>
   <data name="Shell_CommunityProfiles" xml:space="preserve">
     <value>Profili della community</value>
