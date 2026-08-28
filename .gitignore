@@ -37,8 +37,11 @@ ios/QuadStickKit/.build/
 ios/**/xcuserdata/
 ios/Google.local.xcconfig
 
-# The translator file resx.py writes; regenerate it, do not commit it.
+# The translator file resx.py writes, and the answers pasted back. The .resx
+# files hold every line that survived the import, and the drift check proves
+# none were dropped, so these add nothing the repo does not already have.
 tools/strings/to-translate.txt
+tools/strings/*.txt
 
 # Pitch and revamp drafts I keep beside the site but do not publish. docs/ is
 # served as the public site, so anything here goes live the moment it is added.
