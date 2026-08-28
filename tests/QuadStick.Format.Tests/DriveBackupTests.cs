@@ -53,7 +53,10 @@ public class DriveBackupTests
         return (backup, settings, statuses);
     }
 
-    const string Grid = "x,circle\r\ny,cross\r\n";
+    // Drive workflow tests need a genuinely readable QuadStick profile. Parser
+    // validity is not what these tests are exercising, and accepting arbitrary
+    // two-row grids would weaken the production backup safety contract.
+    static string Grid => ProfileFile.NewFromTemplate("grid.csv").ToCsvText();
 
     [Fact]
     public async Task FirstPush_Creates_RecordsIdAndTime()
@@ -263,15 +266,16 @@ public class DriveBackupTests
         Assert.False(settings.DriveLinks.ContainsKey("/p.csv"));
     }
 
-    // Linked but dirty and the push fails: still copy the last good link, just
-    // flag it stale.
+    // A dirty push may return a stale URL only when that exact sheet is already
+    // known to be link-readable. Otherwise the workflow must still run the
+    // sharing permission/confirmation flow before returning anything useful.
     [Fact]
     public async Task Share_DirtyPushFails_ReturnsStale_WithUrl()
     {
         var (backup, settings, _) = Make(r =>
             IsModified(r) ? Json("{}", HttpStatusCode.InternalServerError) : Json("{}"));
         settings.DriveLinks["/p.csv"] = new DriveLink
-        { SpreadsheetId = "s", LastSeenModifiedTime = "t0", BackupDirty = true };
+        { SpreadsheetId = "s", LastSeenModifiedTime = "t0", BackupDirty = true, LinkShared = true };
 
         var result = await backup.GetShareLinkAsync("/p.csv", Grid);
 
@@ -476,10 +480,11 @@ public class DriveBackupTests
         finally { Directory.Delete(lib, recursive: true); }
     }
 
-    // Imported must mean linked: when the link state cannot be persisted, the
-    // just-written CSV is deleted and the file is reported as failed.
+    // A successful local recovery remains on disk even when only the Drive-link
+    // metadata cannot be persisted. Deleting it would risk destroying data that
+    // another process changed after publication.
     [Fact]
-    public async Task Restore_TrySaveFalse_DeletesCsv_ReportsFailed()
+    public async Task Restore_TrySaveFalse_KeepsCsv_ReportsFailedLink()
     {
         var lib = TempLib();
         try
@@ -495,7 +500,8 @@ public class DriveBackupTests
 
             Assert.Empty(summary.Imported);
             Assert.Single(summary.Failed);
-            Assert.False(File.Exists(Path.Combine(lib, "mygame.csv")));
+            Assert.True(File.Exists(Path.Combine(lib, "mygame.csv")));
+            Assert.Contains("profile saved", summary.Failed[0].Reason, StringComparison.OrdinalIgnoreCase);
             Assert.Empty(settings.DriveLinks);
         }
         finally { Directory.Delete(lib, recursive: true); }
