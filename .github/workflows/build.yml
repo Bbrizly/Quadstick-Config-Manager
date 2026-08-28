@@ -40,6 +40,41 @@ jobs:
           dotnet-version: "8.0.x"
       - run: dotnet test QuadStick.sln --nologo
 
+  # PR/test builds normally compile the safe placeholder credentials. Exercise
+  # the generated-source path too so a namespace/path regression cannot wait
+  # until a real version tag to break the release build.
+  release-source-smoke:
+    name: Release source smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+      - name: Generate harmless provider sources
+        shell: bash
+        run: |
+          cat > src/QuadStick.Infrastructure/Google/GoogleClient.Local.cs <<'EOF'
+          namespace QuadStick.Infrastructure.Google;
+
+          static class GoogleClient
+          {
+              public const string Id = "ci-smoke.apps.googleusercontent.com";
+              public const string Secret = "ci-smoke";
+          }
+          EOF
+          cat > src/QuadStick.Infrastructure/Telemetry/TelemetryToken.Local.cs <<'EOF'
+          namespace QuadStick.Infrastructure.Telemetry;
+
+          static class TelemetryToken
+          {
+              public const string Value = "ci-smoke";
+          }
+          EOF
+      - name: Compile release source path
+        run: dotnet build src/QuadStick.App/QuadStick.App.csproj -c Release --nologo
+
   # One self-contained download per platform, built only for v* tags.
   package:
     name: Package ${{ matrix.label }}
