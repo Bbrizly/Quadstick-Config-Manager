@@ -8,14 +8,17 @@ namespace QuadStick.App;
 /// <summary>Manual composition root. Concrete adapters are constructed here and nowhere in Application.</summary>
 internal sealed class CompositionRoot
 {
+    readonly MountedVolumeDeviceAdapter _mountedDevice;
+
     public DiscoverDevicesUseCase DiscoverDevices { get; }
     public InstallProfileUseCase InstallProfile { get; }
+    public IManualDeviceResolver ManualDevices => _mountedDevice;
 
     public CompositionRoot()
     {
-        var mountedDevice = new MountedVolumeDeviceAdapter();
-        DiscoverDevices = new DiscoverDevicesUseCase(mountedDevice);
-        InstallProfile = new InstallProfileUseCase(mountedDevice);
+        _mountedDevice = new MountedVolumeDeviceAdapter();
+        DiscoverDevices = new DiscoverDevicesUseCase(_mountedDevice);
+        InstallProfile = new InstallProfileUseCase(_mountedDevice);
     }
 
     internal static IReadOnlyList<string> FindDeviceRoots() => Device.FindCandidatesCached();
