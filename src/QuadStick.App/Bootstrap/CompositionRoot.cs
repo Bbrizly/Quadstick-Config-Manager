@@ -36,9 +36,10 @@ internal sealed class CompositionRoot
     internal static string DeviceLabelFor(string root) => MountedVolumeDeviceAdapter.LabelFor(root);
 
     internal static DeviceFileManagementUseCase CreateDeviceFileManagement(
-        Func<IReadOnlyList<string>> findRoots)
+        Func<IReadOnlyList<string>> findRoots,
+        Func<string> recoveryDirectory)
     {
-        var mounted = new MountedVolumeDeviceAdapter(findRoots);
+        var mounted = new MountedVolumeDeviceAdapter(findRoots, recoveryDirectory);
         return new DeviceFileManagementUseCase(
             mounted,
             mounted,
