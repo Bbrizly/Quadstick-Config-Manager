@@ -43,7 +43,7 @@ public sealed class ArchitectureBoundaryTests
     public void Infrastructure_CannotMasqueradeAsAppNamespace()
     {
         var offenders = Infrastructure.GetTypes()
-            .Where(type => type.Namespace?.StartsWith("QuadStick.App", StringComparison.Ordinal) == true)
+            .Where(type => IsInNamespace(type.Namespace, "QuadStick.App"))
             .Select(type => type.FullName)
             .OrderBy(name => name, StringComparer.Ordinal)
             .ToArray();
@@ -55,15 +55,19 @@ public sealed class ArchitectureBoundaryTests
     public void Application_CannotMasqueradeAsOuterLayers()
     {
         var offenders = Application.GetTypes()
-            .Where(type => type.Namespace is { } ns
-                && (ns.StartsWith("QuadStick.App", StringComparison.Ordinal)
-                    || ns.StartsWith("QuadStick.Infrastructure", StringComparison.Ordinal)))
+            .Where(type => IsInNamespace(type.Namespace, "QuadStick.App")
+                        || IsInNamespace(type.Namespace, "QuadStick.Infrastructure"))
             .Select(type => type.FullName)
             .OrderBy(name => name, StringComparer.Ordinal)
             .ToArray();
 
         Assert.Empty(offenders);
     }
+
+    static bool IsInNamespace(string? candidate, string root) =>
+        candidate is not null
+        && (string.Equals(candidate, root, StringComparison.Ordinal)
+            || candidate.StartsWith(root + ".", StringComparison.Ordinal));
 
     static string[] ReferenceNames(Assembly assembly) =>
         assembly.GetReferencedAssemblies()
