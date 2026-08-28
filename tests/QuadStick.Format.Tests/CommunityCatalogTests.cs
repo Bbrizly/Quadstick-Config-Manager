@@ -1,5 +1,4 @@
 using System.Net;
-using System.Reflection;
 using System.Text;
 using QuadStick.App;
 using Xunit;
@@ -385,19 +384,19 @@ public sealed class CommunityCatalogTests : IDisposable
         Assert.Equal(2, result.Profiles.Count);
     }
 
-    // The community window builds a catalog client every time it opens, so a
-    // private HttpClient each time would leave one behind for the collector on
-    // every open. The test seam still gets its own.
+    // Injected handlers are private to the injected source. This proves the
+    // test seam does not accidentally route traffic through some process-global
+    // client while leaving production lifetime ownership to composition.
     [Fact]
-    public void Clients_ShareOneHttpClientButTheTestSeamDoesNot()
+    public async Task InjectedHandlers_AreIndependent()
     {
-        var http = typeof(CommunityCatalogClient)
-            .GetField("_http", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var first = Serving(GoodBody);
+        var second = Serving(GoodBody);
 
-        Assert.Same(http.GetValue(new CommunityCatalogClient()),
-                    http.GetValue(new CommunityCatalogClient()));
-        Assert.NotSame(http.GetValue(new CommunityCatalogClient()),
-                       http.GetValue(Client(Serving(GoodBody))));
+        await Client(first).LoadAsync(refresh: true);
+
+        Assert.Single(first.Requests);
+        Assert.Empty(second.Requests);
     }
 
     [Fact]
