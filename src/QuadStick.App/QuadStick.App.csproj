@@ -11,14 +11,9 @@
     <ApplicationIcon>Assets/AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <!-- When the gitignored local client file exists, compile out the
-       committed placeholder in GoogleClient.cs. -->
   <PropertyGroup Condition="Exists('GoogleClient.Local.cs')">
     <DefineConstants>$(DefineConstants);GOOGLE_CLIENT_LOCAL</DefineConstants>
   </PropertyGroup>
-
-  <!-- Same arrangement for the PostHog project token. Without the local file
-       the placeholder's empty token compiles in and telemetry stays off. -->
   <PropertyGroup Condition="Exists('TelemetryToken.Local.cs')">
     <DefineConstants>$(DefineConstants);TELEMETRY_TOKEN_LOCAL</DefineConstants>
   </PropertyGroup>
@@ -40,6 +35,10 @@
     <PackageReference Include="PostHog" Version="2.12.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../QuadStick.Core/QuadStick.Core.csproj" />
+    <ProjectReference Include="../QuadStick.Application/QuadStick.Application.csproj" />
+    <ProjectReference Include="../QuadStick.Infrastructure/QuadStick.Infrastructure.csproj" />
+    <!-- Temporary compatibility shell; removed when ProfileFile/Device/SheetsUrl finish moving. -->
     <ProjectReference Include="../QuadStick.Format/QuadStick.Format.csproj" />
   </ItemGroup>
 </Project>
