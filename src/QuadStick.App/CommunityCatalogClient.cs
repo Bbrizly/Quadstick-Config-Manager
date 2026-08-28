@@ -1,8 +1,10 @@
+using QuadStick.Application.Community;
+using QuadStick.Infrastructure.Community;
+
 namespace QuadStick.App;
 
-/// <summary>Presentation compatibility facade. The window/tests keep the old
-/// entry point while Application owns the operation and Infrastructure owns
-/// HTTP/cache behavior.</summary>
+/// <summary>Presentation compatibility facade while the window migrates to a
+/// directly injected CommunityCatalogUseCase. It contains no HTTP/cache policy.</summary>
 public sealed class CommunityCatalogClient
 {
     readonly CommunityCatalogUseCase _useCase;
@@ -13,13 +15,15 @@ public sealed class CommunityCatalogClient
     public const int MaxRows = HttpCommunityCatalogSource.MaxRows;
     public const int MaxFieldChars = HttpCommunityCatalogSource.MaxFieldChars;
 
-    public CommunityCatalogClient() : this(new HttpCommunityCatalogSource()) { }
+    public CommunityCatalogClient() : this(CompositionRoot.CommunityCatalog) { }
 
     public CommunityCatalogClient(HttpMessageHandler handler, string cachePath)
-        : this(new HttpCommunityCatalogSource(handler, cachePath)) { }
+        : this(new CommunityCatalogUseCase(new HttpCommunityCatalogSource(handler, cachePath))) { }
 
-    internal CommunityCatalogClient(ICommunityCatalogSource source) =>
-        _useCase = new CommunityCatalogUseCase(source);
+    internal CommunityCatalogClient(ICommunityCatalogSource source)
+        : this(new CommunityCatalogUseCase(source)) { }
+
+    internal CommunityCatalogClient(CommunityCatalogUseCase useCase) => _useCase = useCase;
 
     public Task<CommunityCatalogResult> LoadAsync(bool refresh = false, CancellationToken ct = default) =>
         _useCase.LoadAsync(refresh, ct);
