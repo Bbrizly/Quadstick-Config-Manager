@@ -1,11 +1,15 @@
 using System.Text;
 using System.Text.Json;
+using QuadStick.Application.Community;
 using QuadStick.Format;
 using QuadStick.Infrastructure.Files;
+using QuadStick.Infrastructure.Google;
 
-namespace QuadStick.App;
+namespace QuadStick.Infrastructure.Community;
 
-// HTTP/cache implementation of the official shared-profile catalog provider.
+/// <summary>HTTP/cache implementation of the official shared-profile catalog.
+/// The HttpClient lifetime belongs to composition; external response/cache size
+/// is enforced before an unbounded string allocation.</summary>
 public sealed class HttpCommunityCatalogSource : ICommunityCatalogSource
 {
     public const string CatalogUrl = "https://bvhbml89uymwxubx.quadstick.com";
@@ -18,79 +22,122 @@ public sealed class HttpCommunityCatalogSource : ICommunityCatalogSource
     public const int MaxRows = 5_000;
     public const int MaxFieldChars = 2_000;
 
-    static readonly HttpClient Shared = NewHttpClient(new SocketsHttpHandler
-    {
-        MaxAutomaticRedirections = 5,
-        PooledConnectionLifetime = TimeSpan.FromMinutes(15),
-    });
-
     readonly HttpClient _http;
     readonly string _cachePath;
 
-    public HttpCommunityCatalogSource() : this(Shared, DefaultCachePath) { }
-
-    public HttpCommunityCatalogSource(HttpMessageHandler handler, string cachePath)
-        : this(NewHttpClient(handler), cachePath) { }
-
-    HttpCommunityCatalogSource(HttpClient http, string cachePath)
+    public HttpCommunityCatalogSource(HttpClient http, string? cachePath = null)
     {
         _http = http;
-        _cachePath = cachePath;
+        _cachePath = cachePath ?? DefaultCachePath;
     }
 
-    static HttpClient NewHttpClient(HttpMessageHandler handler) => new(handler)
-    {
-        Timeout = TimeSpan.FromSeconds(15),
-        MaxResponseContentBufferSize = MaxReplyBytes,
-        DefaultRequestHeaders = { { "User-Agent", "QuadStickConfigManager" } },
-    };
+    // Test seam. Production composition uses the HttpClient constructor.
+    public HttpCommunityCatalogSource(HttpMessageHandler handler, string cachePath)
+        : this(CreateClient(handler), cachePath) { }
 
-    public async Task<CommunityCatalogResult> LoadAsync(bool refresh = false, CancellationToken cancellationToken = default)
+    public static HttpClient CreateProductionClient()
     {
-        if (!refresh && await TryReadCacheAsync().ConfigureAwait(false) is { } cached)
+        var handler = new SocketsHttpHandler
+        {
+            MaxAutomaticRedirections = 5,
+            PooledConnectionLifetime = TimeSpan.FromMinutes(15),
+        };
+        return CreateClient(handler);
+    }
+
+    static HttpClient CreateClient(HttpMessageHandler handler)
+    {
+        var client = new HttpClient(handler)
+        {
+            Timeout = TimeSpan.FromSeconds(15),
+        };
+        client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "QuadStickConfigManager");
+        return client;
+    }
+
+    public async Task<CommunityCatalogResult> LoadAsync(
+        bool refresh = false,
+        CancellationToken cancellationToken = default)
+    {
+        if (!refresh && await TryReadCacheAsync(cancellationToken).ConfigureAwait(false) is { } cached)
             return new CommunityCatalogResult(cached.Profiles, true, cached.Skipped);
 
         string body;
         try
         {
             using var req = new HttpRequestMessage(HttpMethod.Get, CatalogUrl);
-            using var resp = await _http.SendAsync(req, cancellationToken).ConfigureAwait(false);
+            using var resp = await _http.SendAsync(
+                req,
+                HttpCompletionOption.ResponseHeadersRead,
+                cancellationToken).ConfigureAwait(false);
             resp.EnsureSuccessStatusCode();
-            var bytes = await resp.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
-            body = Encoding.UTF8.GetString(bytes).TrimStart('﻿');
+            body = await ReadBoundedUtf8Async(resp.Content, cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
         catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException
-                                         or IOException or InvalidOperationException)
+                                         or IOException or InvalidOperationException or InvalidDataException)
         {
-            return await CacheOrThrowAsync(ex).ConfigureAwait(false);
+            return await CacheOrThrowAsync(ex, cancellationToken).ConfigureAwait(false);
         }
 
         List<CommunityProfile> profiles;
         int skipped;
         try { (profiles, skipped) = Parse(body); }
-        catch (CommunityCatalogException ex) { return await CacheOrThrowAsync(ex).ConfigureAwait(false); }
+        catch (CommunityCatalogException ex)
+        {
+            return await CacheOrThrowAsync(ex, cancellationToken).ConfigureAwait(false);
+        }
 
         SaveCache(body);
         return new CommunityCatalogResult(profiles, false, skipped);
     }
 
-    async Task<CommunityCatalogResult> CacheOrThrowAsync(Exception cause) =>
-        await TryReadCacheAsync().ConfigureAwait(false) is { } cached
+    async Task<CommunityCatalogResult> CacheOrThrowAsync(
+        Exception cause,
+        CancellationToken cancellationToken) =>
+        await TryReadCacheAsync(cancellationToken).ConfigureAwait(false) is { } cached
             ? new CommunityCatalogResult(cached.Profiles, true, cached.Skipped)
             : throw new CommunityCatalogException("Could not read the community catalog.", cause);
 
-    async Task<(List<CommunityProfile> Profiles, int Skipped)?> TryReadCacheAsync()
+    async Task<(List<CommunityProfile> Profiles, int Skipped)?> TryReadCacheAsync(
+        CancellationToken cancellationToken)
     {
         try
         {
             if (!File.Exists(_cachePath)) return null;
-            return Parse(await File.ReadAllTextAsync(_cachePath).ConfigureAwait(false));
+            var info = new FileInfo(_cachePath);
+            if (info.Length > MaxReplyBytes) return null;
+            var bytes = await File.ReadAllBytesAsync(_cachePath, cancellationToken).ConfigureAwait(false);
+            if (bytes.Length > MaxReplyBytes) return null;
+            return Parse(Encoding.UTF8.GetString(bytes).TrimStart('\uFEFF'));
         }
-        catch (Exception ex) when (ex is CommunityCatalogException or IOException or UnauthorizedAccessException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+        catch (Exception ex) when (ex is CommunityCatalogException or IOException
+                                         or UnauthorizedAccessException or InvalidDataException)
         {
             return null;
         }
+    }
+
+    static async Task<string> ReadBoundedUtf8Async(
+        HttpContent content,
+        CancellationToken cancellationToken)
+    {
+        if (content.Headers.ContentLength is long declared && declared > MaxReplyBytes)
+            throw new InvalidDataException("The community catalog response is too large.");
+
+        await using var input = await content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        using var output = new MemoryStream();
+        var buffer = new byte[64 * 1024];
+        while (true)
+        {
+            var read = await input.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false);
+            if (read == 0) break;
+            if (output.Length + read > MaxReplyBytes)
+                throw new InvalidDataException("The community catalog response is too large.");
+            output.Write(buffer, 0, read);
+        }
+        return Encoding.UTF8.GetString(output.ToArray()).TrimStart('\uFEFF');
     }
 
     void SaveCache(string body)
@@ -108,7 +155,10 @@ public sealed class HttpCommunityCatalogSource : ICommunityCatalogSource
     {
         JsonDocument doc;
         try { doc = JsonDocument.Parse(json); }
-        catch (JsonException ex) { throw new CommunityCatalogException("The community catalog was not valid JSON.", ex); }
+        catch (JsonException ex)
+        {
+            throw new CommunityCatalogException("The community catalog was not valid JSON.", ex);
+        }
 
         using (doc)
         {
@@ -163,7 +213,8 @@ public sealed class HttpCommunityCatalogSource : ICommunityCatalogSource
     static bool IsSheetId(string id)
     {
         if (string.IsNullOrEmpty(id)) return false;
-        return SheetsUrl.TryGetXlsxExportUrl($"https://docs.google.com/spreadsheets/d/{id}/edit", out var export)
+        return SheetsUrl.TryGetXlsxExportUrl(
+                   $"https://docs.google.com/spreadsheets/d/{id}/edit", out var export)
                && export == $"https://docs.google.com/spreadsheets/d/{id}/export?format=xlsx";
     }
 }
