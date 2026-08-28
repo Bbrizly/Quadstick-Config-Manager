@@ -18,9 +18,15 @@ public sealed class MountedVolumeDeviceAdapter :
 
     readonly ConcurrentDictionary<string, string> _roots = new(StringComparer.Ordinal);
     readonly Func<IReadOnlyList<string>> _findRoots;
+    readonly Func<string> _recoveryDirectory;
 
-    public MountedVolumeDeviceAdapter(Func<IReadOnlyList<string>>? findRoots = null) =>
+    public MountedVolumeDeviceAdapter(
+        Func<IReadOnlyList<string>>? findRoots = null,
+        Func<string>? recoveryDirectory = null)
+    {
         _findRoots = findRoots ?? (() => Device.FindCandidates());
+        _recoveryDirectory = recoveryDirectory ?? Device.DefaultBackupDir;
+    }
 
     public async Task<IReadOnlyList<DeviceDescriptor>> DiscoverAsync(CancellationToken cancellationToken = default)
     {
@@ -100,6 +106,7 @@ public sealed class MountedVolumeDeviceAdapter :
         if (!isTarget)
             throw new InvalidOperationException("That folder no longer looks like a QuadStick (no default.csv at its root).");
 
+        var recoveryDirectory = _recoveryDirectory();
         var result = await Task.Run(() =>
         {
             var profile = ProfileFile.Load(request.Payload.CsvText);
@@ -110,7 +117,7 @@ public sealed class MountedVolumeDeviceAdapter :
             return Device.Install(
                 profile,
                 root,
-                Device.DefaultBackupDir(),
+                recoveryDirectory,
                 request.AllowDefaultCsv,
                 request.AllowPreferencesCsv);
         }, CancellationToken.None).ConfigureAwait(false);
@@ -124,7 +131,6 @@ public sealed class MountedVolumeDeviceAdapter :
 
     public Task<DeviceDeleteReceipt> DeleteAsync(
         DeviceProfileId profile,
-        string recoveryDirectory,
         CancellationToken cancellationToken = default) =>
         Task.Run(() =>
         {
@@ -132,7 +138,7 @@ public sealed class MountedVolumeDeviceAdapter :
             if (!_roots.TryGetValue(profile.Device.Value, out var root) || !Device.IsInstallTarget(root))
                 throw new InvalidOperationException("That QuadStick is no longer available. Refresh the device list and try again.");
 
-            var result = Device.DeleteProfile(root, profile.FileName, recoveryDirectory);
+            var result = Device.DeleteProfile(root, profile.FileName, _recoveryDirectory());
             return new DeviceDeleteReceipt(
                 profile.FileName,
                 new DeviceRecoveryReference(result.BackupPath));
