@@ -240,7 +240,7 @@ public class PreferenceUiTests
         // is 25. The line carries the number without claiming it was read off
         // the hardware, because for other settings the catalog follows the
         // device instead and one sentence cannot name both sources.
-        Assert.Contains(texts, t => t.Contains("Speaker volume.", StringComparison.Ordinal)
+        Assert.Contains(texts, t => t.Contains("How loud the QuadStick's own beeps are.", StringComparison.Ordinal)
                                     && t.Contains("usually set to 40", StringComparison.Ordinal));
         Assert.DoesNotContain(texts, t => t.Contains("device ships with", StringComparison.Ordinal));
         Assert.Equal("volume", w.GetVisualDescendants().OfType<AutoCompleteBox>()

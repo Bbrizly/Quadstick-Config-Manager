@@ -2126,6 +2126,9 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}. {1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>QMP calls it: {0}.</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>Setting value for row {0}</value>
   </data>

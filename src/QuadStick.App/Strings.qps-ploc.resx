@@ -2123,6 +2123,9 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>[{0}. {1} xxx]</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>[QMP çállš ít: {0}. xxxxxxx]</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>[Šéttíñg válúé fór rów {0} xxxxxxxxxx]</value>
   </data>

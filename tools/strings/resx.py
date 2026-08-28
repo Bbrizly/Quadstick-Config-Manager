@@ -53,7 +53,7 @@ def pseudo(path):
 # preferences.json carries its own prose. Same idea, different file: only the
 # words a person reads are copied out, so a translator never sees a number, a
 # default, or a firmware citation.
-SAID = ('label', 'unit', 'description', 'risk')
+SAID = ('label', 'unit', 'description', 'risk', 'alsoCalled')
 
 def prefs_pseudo(path):
     import json

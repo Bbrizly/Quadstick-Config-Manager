@@ -32,7 +32,8 @@ public sealed record PreferenceDefinition(
     string Risk,
     string Source,
     IReadOnlyList<string> OptionLabels,
-    bool FirmwareMayAddMore)
+    bool FirmwareMayAddMore,
+    string AlsoCalled)
 {
     /// <summary>The plain-language name for one option, or the option itself
     /// when the catalog has no better word for it. Only ever shown: the token
@@ -91,7 +92,7 @@ public static class PreferenceCatalog
     {
         "name", "label", "category", "editor", "default", "minimum", "maximum",
         "unit", "description", "options", "optionLabels", "modeOverride", "risk", "source",
-        "firmwareMayAddMore",
+        "firmwareMayAddMore", "alsoCalled",
     };
 
     static PreferenceCatalog()
@@ -145,6 +146,7 @@ public static class PreferenceCatalog
             Unit = Word(t, "unit", d.Unit),
             Description = Word(t, "description", d.Description),
             Risk = Word(t, "risk", d.Risk),
+            AlsoCalled = Word(t, "alsoCalled", d.AlsoCalled),
             OptionLabels = Words(t, "optionLabels", d.OptionLabels),
         } : d).ToList();
     }
@@ -322,6 +324,11 @@ public static class PreferenceCatalog
         var optionLabels = OptionalStrings(e, "optionLabels", name);
         var modeOverride = OptionalBool(e, "modeOverride", name);
         var mayAddMore = OptionalBool(e, "firmwareMayAddMore", name);
+        // What the QuadStick Manager Program puts on the same control. Somebody
+        // following a forum post or a QMP tutorial arrives holding that phrase,
+        // and it belongs beside the setting rather than inside the sentence
+        // saying what the setting does.
+        var alsoCalled = OptionalText(e, "alsoCalled", name);
 
         if (editor != PreferenceEditor.Integer && (min.HasValue || max.HasValue))
             throw new InvalidOperationException($"Preference '{name}' is not an integer, so it cannot carry bounds.");
@@ -362,7 +369,7 @@ public static class PreferenceCatalog
 
         return new PreferenceDefinition(
             name, label, category, editor, def, min, max, unit, description,
-            options, modeOverride, risk, source, optionLabels, mayAddMore);
+            options, modeOverride, risk, source, optionLabels, mayAddMore, alsoCalled);
     }
 
     static string Required(JsonElement e, string field, string? name = null)

@@ -184,8 +184,10 @@ public class PreferenceCatalogTests
         Assert.Equal(unit, p.Unit);
         Assert.True(p.ModeOverride, $"{name} is in the 2373 preference table, so a mode row reaches it.");
         Assert.Contains("2373", p.Source, StringComparison.Ordinal);
-        // Someone on older firmware needs to know the name is new.
-        Assert.Contains("firmware 2373", p.Description, StringComparison.Ordinal);
+        // Someone on an older QuadStick needs to know the name is new. The
+        // firmware number is evidence for whoever maintains the catalog and
+        // lives in Source; the person reading the app is told in their words.
+        Assert.Contains("Newer QuadSticks", p.Description, StringComparison.Ordinal);
     }
 
     // The USB dead zone counts raw steps of a host controller's axis byte, not
@@ -258,14 +260,19 @@ public class PreferenceCatalogTests
         Assert.Equal(PreferenceEditor.Choice, p.Editor);
         Assert.Equal(new[] { "0", "1", "2", "3", "4", "5", "6", "7" }, p.Options);
         Assert.True(p.FirmwareMayAddMore);
+        // The meanings are on the options themselves, which is where somebody
+        // picking one reads them. Listing all eight again in the description
+        // was the same text twice, once in a place nobody could act on.
+        var listed = string.Join(" | ", p.OptionLabels);
         foreach (var meaning in new[]
                  {
-                     "QuadStick native", "DualShock 3", "x360ce", "Xbox 360",
-                     "Nintendo Switch Pro Controller", "no USB drive", "DS4 wireless",
+                     "QuadStick", "DualShock 3", "x360ce", "Xbox 360",
+                     "Nintendo Switch Pro Controller", "no USB drive", "wireless",
                  })
-            Assert.Contains(meaning, p.Description, StringComparison.Ordinal);
-        Assert.Contains("1476", p.Description, StringComparison.Ordinal);
-        Assert.NotEqual("", p.Risk);
+            Assert.Contains(meaning, listed, StringComparison.Ordinal);
+        // A number means something else on an older QuadStick, and that is a
+        // warning, so it is in the risk note where a warning belongs.
+        Assert.Contains("older QuadSticks", p.Risk, StringComparison.Ordinal);
     }
 
     // The console name is the thing somebody is choosing; the number is only
@@ -287,6 +294,11 @@ public class PreferenceCatalogTests
     // Drew's whole reason for asking was to stop opening QMP, so somebody
     // arrives holding QMP's words for these settings. The catalog has to answer
     // to those words, not only to the file's token.
+    //
+    // They live in their own field rather than inside the description. "QMP
+    // calls this the joystick's range of motion" was half of a sentence that
+    // was supposed to say what the setting does, on a screen that already had
+    // too many words on it.
     [Theory]
     [InlineData("sip_puff_threshold", "high threshold")]
     [InlineData("sip_puff_delay_soft", "Low Threshold Delay")]
@@ -296,7 +308,7 @@ public class PreferenceCatalogTests
     public void A_setting_answers_to_the_name_QMP_shows(string name, string qmpWords)
     {
         Assert.True(PreferenceCatalog.TryGet(name, out var p));
-        Assert.Contains(qmpWords, p.Description, StringComparison.Ordinal);
+        Assert.Contains(qmpWords, p.AlsoCalled, StringComparison.Ordinal);
     }
 
     // "Joystick sensitivity" is not a setting. QMP-4 spells it as four range
