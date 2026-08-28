@@ -5,6 +5,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using QuadStick.Application.Devices;
 using QuadStick.Format;
 
 namespace QuadStick.App;
@@ -28,9 +29,8 @@ public class DeviceFilesWindow : Window
 
     internal Task Busy => _busy;
 
-    // Test seam preserved: the adapter captures this property through a lambda,
-    // so replacing it after construction still changes the roots used by the
-    // next load without putting filesystem code back in presentation.
+    // Test seam: roots are supplied only to the mounted-volume adapter inside
+    // composition. Application receives opaque device ids, not these paths.
     internal Func<IReadOnlyList<string>> FindRoots { get; set; } = CompositionRoot.FindDeviceRoots;
 
     internal string BackupDir { get; set; } = CompositionRoot.DefaultDeviceBackupDirectory;
@@ -121,10 +121,11 @@ public class DeviceFilesWindow : Window
     }
 
     sealed record DeviceFileInfo(
-        string Root, string Name, string Path, string Subtitle, string? SheetUrl, bool Protected);
+        DeviceProfileId Id, string Root, string Name, string Path,
+        string Subtitle, string? SheetUrl, bool Protected);
 
     sealed record DeviceGroup(
-        string Root, string Label, IReadOnlyList<DeviceFileInfo> Files, string? Error);
+        DeviceId Id, string Root, string Label, IReadOnlyList<DeviceFileInfo> Files, string? Error);
 
     internal sealed record GuideEntry(int Number, string FileName, IReadOnlyList<string> Colors)
     {
@@ -168,15 +169,24 @@ public class DeviceFilesWindow : Window
         if (refresh) _status.Text = "";
     }
 
-    static DeviceGroup ToViewGroup(ManagedDeviceGroup group) => new(
-        group.Root,
-        group.Label,
-        group.Files.Select(Describe).ToList(),
-        group.Error);
-
-    static DeviceFileInfo Describe(ManagedDeviceFile file)
+    static DeviceGroup ToViewGroup(ManagedDeviceGroup group)
     {
+        var root = string.IsNullOrWhiteSpace(group.Device.Detail)
+            ? group.Device.DisplayName
+            : group.Device.Detail!;
+        return new DeviceGroup(
+            group.Device.Id,
+            root,
+            group.Device.DisplayName,
+            group.Files.Select(file => Describe(root, file)).ToList(),
+            group.Error);
+    }
+
+    static DeviceFileInfo Describe(string root, ManagedDeviceFile file)
+    {
+        var displayPath = Path.Combine(root, file.Name);
         string subtitle;
+        string? sheetUrl = null;
         if (file.ReadError is not null)
         {
             subtitle = "could not be read just now";
@@ -192,8 +202,9 @@ public class DeviceFilesWindow : Window
             var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
             subtitle = doc.IsDevicePreferences
                 ? "the device's own settings file"
-                : MainWindow.TitleNote(doc, file.Path)
+                : MainWindow.TitleNote(doc, displayPath)
                     + $"{Plural.Of(modes.Count, "mode sheet")}, {Plural.Of(modes.Sum(s => s.Bindings.Count), "binding")}";
+            sheetUrl = CompositionRoot.LinkedGoogleSheetUrl(profile);
         }
         else
         {
@@ -203,7 +214,7 @@ public class DeviceFilesWindow : Window
         if (file.Name.Equals("default.csv", StringComparison.OrdinalIgnoreCase))
             subtitle += ", the device's fallback file";
         if (file.Protected) subtitle += ", protected";
-        return new DeviceFileInfo(file.Root, file.Name, file.Path, subtitle, file.SheetUrl, file.Protected);
+        return new DeviceFileInfo(file.Id, root, file.Name, displayPath, subtitle, sheetUrl, file.Protected);
     }
 
     void Rebuild()
@@ -452,9 +463,10 @@ public class DeviceFilesWindow : Window
         ProfileFile profile;
         try
         {
-            profile = await _files.ReadProfileAsync(file.Root, file.Name);
+            profile = await _files.ReadProfileAsync(file.Id);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException
+                                       or InvalidDataException or InvalidOperationException)
         {
             await ReportGoneAsync($"Could not open {file.Name} from {Where(group)}: {ex.Message}");
             return;
@@ -474,7 +486,7 @@ public class DeviceFilesWindow : Window
         try
         {
             var result = await _files.CopyToLibraryAsync(
-                file.Root, file.Name, MainWindow.LibraryDir, replaceExisting: false);
+                file.Id, MainWindow.LibraryDir, replaceExisting: false);
 
             if (result.Kind == LibraryCopyKind.NeedsReplaceConfirmation)
             {
@@ -487,7 +499,7 @@ public class DeviceFilesWindow : Window
                     return;
                 }
                 result = await _files.CopyToLibraryAsync(
-                    file.Root, file.Name, MainWindow.LibraryDir, replaceExisting: true);
+                    file.Id, MainWindow.LibraryDir, replaceExisting: true);
             }
 
             if (result.Kind == LibraryCopyKind.RaceDetected)
@@ -501,7 +513,8 @@ public class DeviceFilesWindow : Window
             _status.Text = $"Copied {file.Name} from {Where(group)} to {result.Destination}. "
                          + "The file on the QuadStick is unchanged.";
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException
+                                       or InvalidDataException or InvalidOperationException)
         {
             await ReportGoneAsync($"Could not copy {file.Name} from {Where(group)}: {ex.Message}");
         }
@@ -548,7 +561,7 @@ public class DeviceFilesWindow : Window
         DeviceDeleteReceipt result;
         try
         {
-            result = await _files.DeleteAsync(file.Root, file.Name, BackupDir);
+            result = await _files.DeleteAsync(file.Id, BackupDir);
         }
         catch (Exception ex)
         {
@@ -558,7 +571,7 @@ public class DeviceFilesWindow : Window
 
         await LoadAsync();
         _owner.RefreshHomeAfterRestore();
-        _status.Text = $"Deleted {result.DeletedPath}. A copy is saved at {result.BackupPath}.";
+        _status.Text = $"Deleted {file.Path}. A copy is saved at {result.Recovery.DisplayLocation}.";
     }
 
     async Task ReportGoneAsync(string message)
