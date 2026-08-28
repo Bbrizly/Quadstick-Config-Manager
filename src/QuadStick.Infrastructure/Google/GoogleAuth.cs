@@ -7,15 +7,11 @@ using System.Text.Json;
 namespace QuadStick.App;
 
 // OAuth 2.0 installed-app flow with PKCE. Scope: drive.file only.
-public class GoogleAuth
+public class GoogleAuth : IDisposable
 {
-    // From GoogleClient (local file if present, else placeholder).
-    // Google needs the secret for Desktop clients even with PKCE. Not confidential for installed apps.
     public const string ClientId = GoogleClient.Id;
     public const string ClientSecret = GoogleClient.Secret;
 
-    // False on the placeholder and on Linux (no persistent store: it would
-    // drop the refresh token every restart). Callers show "not set up yet".
     public static bool IsConfigured =>
         !ClientId.StartsWith("REPLACE-ME")
         && (OperatingSystem.IsMacOS() || OperatingSystem.IsWindows());
@@ -26,9 +22,11 @@ public class GoogleAuth
 
     readonly HttpClient _http;
     readonly ITokenStore _store;
+    readonly SemaphoreSlim _refreshGate = new(1, 1);
 
     string? _accessToken;
     DateTimeOffset _accessExpiry;
+    bool _disposed;
 
     public GoogleAuth(ITokenStore store, HttpMessageHandler? handler = null)
     {
@@ -36,20 +34,19 @@ public class GoogleAuth
         _http = new HttpClient(handler ?? new HttpClientHandler());
     }
 
-    // PKCE verifier: 32 random bytes, base64url (43 chars).
     public static string CreateVerifier() => Base64Url(RandomNumberGenerator.GetBytes(32));
 
-    // S256 challenge: base64url(SHA256(ASCII(verifier))).
     public static string Challenge(string verifier) =>
         Base64Url(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)));
 
     static string Base64Url(byte[] bytes) =>
         Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
-    // Interactive sign-in. Launcher opens the system browser (Google blocks
-    // embedded webviews). ct cancels; 2-minute cap backs it up.
+    // Interactive sign-in. Browser launch is external; cancellation remains
+    // cancellation rather than being converted to an auth/network failure.
     public async Task SignInAsync(Func<Uri, Task> launcher, CancellationToken ct = default)
     {
+        ThrowIfDisposed();
         var verifier = CreateVerifier();
         var challenge = Challenge(verifier);
         var state = CreateVerifier();
@@ -60,7 +57,21 @@ public class GoogleAuth
             await launcher(new Uri(BuildAuthUrl(challenge, state, redirect)));
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeout.CancelAfter(TimeSpan.FromMinutes(2));
-            var code = await AwaitCodeAsync(listener, state, timeout.Token);
+
+            string code;
+            try
+            {
+                code = await AwaitCodeAsync(listener, state, timeout.Token);
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (OperationCanceledException)
+            {
+                throw new GoogleAuthException("Sign-in timed out.");
+            }
+
             await ExchangeCodeAsync(code, verifier, redirect, ct);
         }
         finally
@@ -69,13 +80,13 @@ public class GoogleAuth
         }
     }
 
-    // Bind a random loopback port. Retry on bind failure.
+    // Bind a random loopback port. The OAuth state protects the callback; the
+    // cryptographic port choice simply avoids predictable retry patterns too.
     public static (HttpListener listener, int port) StartLoopback()
     {
-        var rand = new Random();
         for (int attempt = 0; attempt < 10; attempt++)
         {
-            int port = rand.Next(1024, 65500);
+            int port = RandomNumberGenerator.GetInt32(1024, 65500);
             var listener = new HttpListener();
             listener.Prefixes.Add($"http://127.0.0.1:{port}/");
             try { listener.Start(); return (listener, port); }
@@ -99,14 +110,12 @@ public class GoogleAuth
             "prompt=consent",
         });
 
-    // Wait for the redirect, check state, return the code.
-    // Bad or missing state is rejected. ct stops the listener.
     public static async Task<string> AwaitCodeAsync(HttpListener listener, string expectedState, CancellationToken ct)
     {
         using var reg = ct.Register(() => { try { listener.Stop(); } catch { } });
         HttpListenerContext ctx;
         try { ctx = await listener.GetContextAsync(); }
-        catch when (ct.IsCancellationRequested) { throw new GoogleAuthException("Sign-in timed out or was cancelled."); }
+        catch when (ct.IsCancellationRequested) { throw new OperationCanceledException(ct); }
 
         var q = ParseQuery(ctx.Request.Url!.Query);
 
@@ -140,9 +149,9 @@ public class GoogleAuth
         return dict;
     }
 
-    // Trade the authorization code for tokens and store the refresh token.
     public async Task ExchangeCodeAsync(string code, string verifier, string redirectUri, CancellationToken ct)
     {
+        ThrowIfDisposed();
         var form = new Dictionary<string, string>
         {
             ["client_id"] = ClientId,
@@ -156,26 +165,43 @@ public class GoogleAuth
         CacheAccess(doc.RootElement);
         if (doc.RootElement.TryGetProperty("refresh_token", out var rt) && rt.GetString() is string token)
             _store.Save(token);
+        else if (_store.Load() is null)
+            throw new GoogleAuthException("Google did not return a refresh token.");
     }
 
-    // Cached access token, refreshed with the stored refresh token when stale.
     public async Task<string> GetAccessTokenAsync(CancellationToken ct = default)
     {
-        if (_accessToken != null && DateTimeOffset.UtcNow < _accessExpiry - TimeSpan.FromSeconds(60))
-            return _accessToken;
+        ThrowIfDisposed();
+        if (FreshAccessToken() is string cached) return cached;
 
-        var refresh = _store.Load() ?? throw new GoogleAuthException("Not connected to Google.");
-        var form = new Dictionary<string, string>
+        await _refreshGate.WaitAsync(ct);
+        try
         {
-            ["client_id"] = ClientId,
-            ["refresh_token"] = refresh,
-            ["grant_type"] = "refresh_token",
-        };
-        using var resp = await PostTokenAsync(form, ct);
-        using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync(ct));
-        CacheAccess(doc.RootElement);
-        return _accessToken!;
+            // Several Drive requests can arrive together when the cached token
+            // expires. Only the first refreshes; everyone else reuses its result.
+            if (FreshAccessToken() is string refreshed) return refreshed;
+
+            var refresh = _store.Load() ?? throw new GoogleAuthException("Not connected to Google.");
+            var form = new Dictionary<string, string>
+            {
+                ["client_id"] = ClientId,
+                ["refresh_token"] = refresh,
+                ["grant_type"] = "refresh_token",
+            };
+            using var resp = await PostTokenAsync(form, ct);
+            using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync(ct));
+            CacheAccess(doc.RootElement);
+            return _accessToken!;
+        }
+        finally
+        {
+            _refreshGate.Release();
+        }
     }
+
+    string? FreshAccessToken() =>
+        _accessToken != null && DateTimeOffset.UtcNow < _accessExpiry - TimeSpan.FromSeconds(60)
+            ? _accessToken : null;
 
     async Task<HttpResponseMessage> PostTokenAsync(Dictionary<string, string> form, CancellationToken ct)
     {
@@ -193,7 +219,6 @@ public class GoogleAuth
         }
         catch { }
         resp.Dispose();
-        // Revoked or expired refresh token. Caller pauses backup and shows Reconnect.
         if (error == "invalid_grant") throw new GoogleAuthRevokedException();
         throw new GoogleAuthException($"Token endpoint returned {status}: {error ?? body}");
     }
@@ -204,6 +229,19 @@ public class GoogleAuth
         var seconds = root.TryGetProperty("expires_in", out var e) ? e.GetInt32() : 3600;
         _accessExpiry = DateTimeOffset.UtcNow.AddSeconds(seconds);
     }
+
+    void ThrowIfDisposed()
+    {
+        if (_disposed) throw new ObjectDisposedException(nameof(GoogleAuth));
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _http.Dispose();
+        _refreshGate.Dispose();
+    }
 }
 
 public class GoogleAuthException : Exception
@@ -211,7 +249,6 @@ public class GoogleAuthException : Exception
     public GoogleAuthException(string message) : base(message) { }
 }
 
-// Distinct so the caller can pause backup and show Reconnect.
 public class GoogleAuthRevokedException : GoogleAuthException
 {
     public GoogleAuthRevokedException()
