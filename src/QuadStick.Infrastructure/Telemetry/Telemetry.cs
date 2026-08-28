@@ -314,7 +314,7 @@ public static partial class Telemetry
     // rather than trusted, including the pre-serialized JSON string someone
     // might reasonably think works. A string here would reach PostHog as a
     // quoted string and never be parsed anyway.
-    static object CleanExceptionList(object value)
+    static List<Dictionary<string, object>> CleanExceptionList(object value)
     {
         if (value is not List<Dictionary<string, object>> list)
             return new List<Dictionary<string, object>>();
