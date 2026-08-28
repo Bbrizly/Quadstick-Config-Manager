@@ -1,3 +1,4 @@
+using QuadStick.Application.Profiles;
 using QuadStick.Format;
 
 namespace QuadStick.Application.Devices;
