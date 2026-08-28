@@ -1,9 +1,19 @@
 using System.Text;
+using QuadStick.Application.Profiles;
+using QuadStick.Application.Settings;
 using QuadStick.Format;
 
-namespace QuadStick.App;
+namespace QuadStick.Application.Backup;
 
-public enum RemoteStorageFailureKind { NotFound, AuthRevoked, Transient }
+public enum RemoteStorageFailureKind
+{
+    NotFound,
+    AuthRevoked,
+    PermissionDenied,
+    InvalidRequest,
+    RateLimited,
+    Transient,
+}
 
 public sealed class RemoteStorageException : Exception
 {
@@ -14,20 +24,23 @@ public sealed class RemoteStorageException : Exception
 
 public sealed record RemoteDriveSheet(string Id, string Name, string ModifiedTime);
 
+/// <summary>Result of an idempotent remote content write. ContentWritten=true
+/// with no RevisionToken means Google accepted the content but revision metadata
+/// could not be read; Application must replay local truth before conflict checks.</summary>
+public sealed record RemoteWriteReceipt(bool ContentWritten, string? RevisionToken);
+
 public interface IDriveBackupProvider
 {
     Task<string> CreateSpreadsheetAsync(string title, CancellationToken cancellationToken = default);
-    Task PushTabsAsync(string id, IReadOnlyList<ProfileTab> tabs, CancellationToken cancellationToken = default);
+    Task DeleteSpreadsheetAsync(string id, CancellationToken cancellationToken = default);
+    Task<RemoteWriteReceipt> PushProfileAsync(
+        string id,
+        IReadOnlyList<ProfileTab> tabs,
+        CancellationToken cancellationToken = default);
     Task<string> GetModifiedTimeAsync(string id, CancellationToken cancellationToken = default);
     Task<byte[]> DownloadWorkbookAsync(string id, CancellationToken cancellationToken = default);
     Task ShareAnyoneReaderAsync(string id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<RemoteDriveSheet>> ListSpreadsheetsAsync(CancellationToken cancellationToken = default);
-}
-
-public interface IBackupSettingsContext
-{
-    AppSettings Current { get; }
-    bool TrySave();
 }
 
 public enum ConflictChoice { KeepOnline, ReplaceWithMine }
@@ -128,13 +141,13 @@ public sealed record BackupShareOutcome(
 
 public sealed record LinkRecoveryOutcome(bool Recovered, bool SettingsSaveFailed);
 
-/// <summary>Provider-neutral remote backup application workflow. It owns
-/// conflict/link/restore policy but never prompts a human and never touches a
-/// physical filesystem or provider API directly.</summary>
+/// <summary>Provider-neutral remote backup workflow. Human decisions arrive as
+/// explicit arguments/results; filesystem, Google APIs and global mutable
+/// settings remain behind ports.</summary>
 public sealed class DriveBackupWorkflow
 {
     readonly IDriveBackupProvider _provider;
-    readonly IBackupSettingsContext _settings;
+    readonly IDriveLinkStore _links;
     readonly IProfileLibraryStore _library;
     readonly SemaphoreSlim _gate = new(1, 1);
 
@@ -146,11 +159,11 @@ public sealed class DriveBackupWorkflow
 
     public DriveBackupWorkflow(
         IDriveBackupProvider provider,
-        IBackupSettingsContext settings,
+        IDriveLinkStore links,
         IProfileLibraryStore library)
     {
         _provider = provider;
-        _settings = settings;
+        _links = links;
         _library = library;
     }
 
@@ -161,9 +174,18 @@ public sealed class DriveBackupWorkflow
         finally { _gate.Release(); }
     }
 
-    void SaveState(OperationContext context)
+    bool SaveLink(string path, DriveLink link, OperationContext context)
     {
-        if (!_settings.TrySave()) context.SettingsSaveFailed = true;
+        if (_links.TrySet(path, link)) return true;
+        context.SettingsSaveFailed = true;
+        return false;
+    }
+
+    bool RemoveLink(string path, OperationContext context)
+    {
+        if (_links.TryRemove(path)) return true;
+        context.SettingsSaveFailed = true;
+        return false;
     }
 
     public Task<BackupPushOutcome> PushAsync(
@@ -183,38 +205,34 @@ public sealed class DriveBackupWorkflow
         OperationContext context,
         CancellationToken cancellationToken)
     {
-        var settings = _settings.Current;
-        settings.DriveLinks.TryGetValue(profilePath, out var link);
+        var link = _links.Get(profilePath);
         try
         {
             if (link is null)
                 return await CreateAndRecordAsync(profilePath, csvText, context, cancellationToken).ConfigureAwait(false);
 
             link.BackupDirty = true;
-            SaveState(context);
+            SaveLink(profilePath, link, context);
 
-            // Empty means the previous upload reached Google but fetching its
-            // revision token did not. Comparing that upload against an older
-            // token would manufacture a conflict with our own write. Replay the
-            // local source of truth and establish a fresh token instead.
-            if (string.IsNullOrEmpty(link.LastSeenModifiedTime))
-                return await PushAndRecordAsync(link, csvText, context, cancellationToken).ConfigureAwait(false);
+            if (link.RevisionState == RemoteRevisionState.UnknownAfterWrite)
+                return await PushAndRecordAsync(profilePath, link, csvText, context, cancellationToken).ConfigureAwait(false);
 
             var current = await _provider.GetModifiedTimeAsync(link.SpreadsheetId, cancellationToken).ConfigureAwait(false);
             if (current == link.LastSeenModifiedTime)
-                return await PushAndRecordAsync(link, csvText, context, cancellationToken).ConfigureAwait(false);
+                return await PushAndRecordAsync(profilePath, link, csvText, context, cancellationToken).ConfigureAwait(false);
 
             if (conflictDecision is null)
                 return new BackupPushOutcome(BackupPushState.RequiresConflictDecision,
                     SettingsSaveFailed: context.SettingsSaveFailed);
 
             if (conflictDecision == ConflictChoice.ReplaceWithMine)
-                return await PushAndRecordAsync(link, csvText, context, cancellationToken).ConfigureAwait(false);
+                return await PushAndRecordAsync(profilePath, link, csvText, context, cancellationToken).ConfigureAwait(false);
 
             var online = await DownloadProfileAsync(link.SpreadsheetId, cancellationToken).ConfigureAwait(false);
             link.LastSeenModifiedTime = current;
+            link.RevisionState = RemoteRevisionState.Known;
             link.BackupDirty = false;
-            SaveState(context);
+            SaveLink(profilePath, link, context);
             return new BackupPushOutcome(BackupPushState.KeptOnline, online,
                 SettingsSaveFailed: context.SettingsSaveFailed);
         }
@@ -226,8 +244,7 @@ public sealed class DriveBackupWorkflow
 
             if (!recreateMissing.Value)
             {
-                _settings.Current.DriveLinks.Remove(profilePath);
-                SaveState(context);
+                RemoveLink(profilePath, context);
                 return new BackupPushOutcome(BackupPushState.RecreatedOff,
                     SettingsSaveFailed: context.SettingsSaveFailed);
             }
@@ -238,27 +255,30 @@ public sealed class DriveBackupWorkflow
             }
             catch (RemoteStorageException create) when (create.Kind == RemoteStorageFailureKind.AuthRevoked)
             {
-                return Paused(link, context);
+                return Paused(profilePath, link, context);
             }
             catch (RemoteStorageException)
             {
-                return FailPending(link, context);
+                return FailPending(profilePath, link, context);
             }
         }
         catch (RemoteStorageException ex) when (ex.Kind == RemoteStorageFailureKind.AuthRevoked)
         {
-            return Paused(link, context);
+            return Paused(profilePath, link, context);
         }
         catch (InvalidDataException)
         {
-            if (link is not null) link.BackupDirty = true;
-            SaveState(context);
+            if (link is not null)
+            {
+                link.BackupDirty = true;
+                SaveLink(profilePath, link, context);
+            }
             return new BackupPushOutcome(BackupPushState.Failed, Notice: InvalidProfileMessage,
                 SettingsSaveFailed: context.SettingsSaveFailed);
         }
         catch (RemoteStorageException)
         {
-            return FailPending(link, context);
+            return FailPending(profilePath, link, context);
         }
     }
 
@@ -268,48 +288,69 @@ public sealed class DriveBackupWorkflow
         OperationContext context,
         CancellationToken cancellationToken)
     {
-        // Parse before creating a remote sheet. An invalid/empty local profile
-        // must not leave an orphaned blank spreadsheet behind.
         var tabs = Tabs(csvText);
         var title = Path.GetFileNameWithoutExtension(profilePath);
         var id = await _provider.CreateSpreadsheetAsync(title, cancellationToken).ConfigureAwait(false);
-        var link = new DriveLink { SpreadsheetId = id, BackupDirty = true };
-        _settings.Current.DriveLinks[profilePath] = link;
-        SaveState(context);
+        var link = new DriveLink
+        {
+            SpreadsheetId = id,
+            BackupDirty = true,
+            RevisionState = RemoteRevisionState.Known,
+        };
 
-        await _provider.PushTabsAsync(id, tabs, cancellationToken).ConfigureAwait(false);
-        MarkRevisionUnknown(link, context);
-        link.LastSeenModifiedTime = await _provider.GetModifiedTimeAsync(id, cancellationToken).ConfigureAwait(false);
-        link.BackupDirty = false;
-        SaveState(context);
+        if (!SaveLink(profilePath, link, context))
+        {
+            try { await _provider.DeleteSpreadsheetAsync(id, cancellationToken).ConfigureAwait(false); }
+            catch (RemoteStorageException) { }
+            return new BackupPushOutcome(
+                BackupPushState.Failed,
+                Notice: "Backup could not be recorded locally, so the new remote sheet was not used.",
+                SettingsSaveFailed: true);
+        }
+
+        var write = await _provider.PushProfileAsync(id, tabs, cancellationToken).ConfigureAwait(false);
+        RecordWrite(profilePath, link, write, context);
         return new BackupPushOutcome(BackupPushState.Pushed,
+            Notice: write.RevisionToken is null ? PendingMessage : null,
             SettingsSaveFailed: context.SettingsSaveFailed);
     }
 
     async Task<BackupPushOutcome> PushAndRecordAsync(
+        string profilePath,
         DriveLink link,
         string csvText,
         OperationContext context,
         CancellationToken cancellationToken)
     {
-        await _provider.PushTabsAsync(link.SpreadsheetId, Tabs(csvText), cancellationToken).ConfigureAwait(false);
-        MarkRevisionUnknown(link, context);
-        link.LastSeenModifiedTime = await _provider.GetModifiedTimeAsync(link.SpreadsheetId, cancellationToken).ConfigureAwait(false);
-        link.BackupDirty = false;
-        SaveState(context);
+        var write = await _provider.PushProfileAsync(
+            link.SpreadsheetId, Tabs(csvText), cancellationToken).ConfigureAwait(false);
+        RecordWrite(profilePath, link, write, context);
         return new BackupPushOutcome(BackupPushState.Pushed,
+            Notice: write.RevisionToken is null ? PendingMessage : null,
             SettingsSaveFailed: context.SettingsSaveFailed);
     }
 
-    void MarkRevisionUnknown(DriveLink link, OperationContext context)
+    void RecordWrite(
+        string profilePath,
+        DriveLink link,
+        RemoteWriteReceipt write,
+        OperationContext context)
     {
-        // Persist this *after* the value write and before asking Google for its
-        // revision. If the metadata read fails, the next retry knows that the
-        // apparent remote change may be our own successful write and replays
-        // local state instead of showing a false conflict.
-        link.LastSeenModifiedTime = "";
-        link.BackupDirty = true;
-        SaveState(context);
+        if (!write.ContentWritten)
+            throw new InvalidDataException("The remote provider did not confirm a profile write.");
+
+        if (write.RevisionToken is { Length: > 0 } revision)
+        {
+            link.LastSeenModifiedTime = revision;
+            link.RevisionState = RemoteRevisionState.Known;
+            link.BackupDirty = false;
+        }
+        else
+        {
+            link.RevisionState = RemoteRevisionState.UnknownAfterWrite;
+            link.BackupDirty = true;
+        }
+        SaveLink(profilePath, link, context);
     }
 
     static List<ProfileTab> Tabs(string csvText)
@@ -333,18 +374,24 @@ public sealed class DriveBackupWorkflow
         return Xlsx.ToCsv(stream);
     }
 
-    BackupPushOutcome FailPending(DriveLink? link, OperationContext context)
+    BackupPushOutcome FailPending(string profilePath, DriveLink? link, OperationContext context)
     {
-        if (link is not null) link.BackupDirty = true;
-        SaveState(context);
+        if (link is not null)
+        {
+            link.BackupDirty = true;
+            SaveLink(profilePath, link, context);
+        }
         return new BackupPushOutcome(BackupPushState.Failed, Notice: PendingMessage,
             SettingsSaveFailed: context.SettingsSaveFailed);
     }
 
-    BackupPushOutcome Paused(DriveLink? link, OperationContext context)
+    BackupPushOutcome Paused(string profilePath, DriveLink? link, OperationContext context)
     {
-        if (link is not null) link.BackupDirty = true;
-        SaveState(context);
+        if (link is not null)
+        {
+            link.BackupDirty = true;
+            SaveLink(profilePath, link, context);
+        }
         return new BackupPushOutcome(BackupPushState.Paused, Notice: PausedMessage,
             SettingsSaveFailed: context.SettingsSaveFailed);
     }
@@ -356,9 +403,8 @@ public sealed class DriveBackupWorkflow
         bool? recreateMissing = null) =>
         Locked<BackupPushOutcome?>(async () =>
         {
-            var settings = _settings.Current;
-            if (!settings.DriveLinks.TryGetValue(profilePath, out var link) || !link.BackupDirty)
-                return null;
+            var link = _links.Get(profilePath);
+            if (link is null || !link.BackupDirty) return null;
             return await PushCoreAsync(profilePath, csvText, conflictDecision, recreateMissing,
                 new OperationContext(), CancellationToken.None).ConfigureAwait(false);
         }, CancellationToken.None);
@@ -366,37 +412,33 @@ public sealed class DriveBackupWorkflow
     public LinkRecoveryOutcome TryRecoverLink(string profilePath, string spreadsheetId)
     {
         if (string.IsNullOrWhiteSpace(spreadsheetId)) return new LinkRecoveryOutcome(false, false);
-        var settings = _settings.Current;
-        if (settings.DriveLinks.ContainsKey(profilePath)) return new LinkRecoveryOutcome(false, false);
+        if (_links.Get(profilePath) is not null) return new LinkRecoveryOutcome(false, false);
 
         string? oldPath = null;
-        foreach (var (path, link) in settings.DriveLinks)
-            if (string.Equals(link.SpreadsheetId, spreadsheetId, StringComparison.Ordinal))
-            {
-                if (_library.Exists(path)) return new LinkRecoveryOutcome(false, false);
-                oldPath = path;
-            }
+        foreach (var (path, link) in _links.Snapshot())
+        {
+            if (!string.Equals(link.SpreadsheetId, spreadsheetId, StringComparison.Ordinal)) continue;
+            if (_library.Exists(path)) return new LinkRecoveryOutcome(false, false);
+            oldPath = path;
+            break;
+        }
         if (oldPath is null) return new LinkRecoveryOutcome(false, false);
 
-        settings.DriveLinks[profilePath] = settings.DriveLinks[oldPath];
-        settings.DriveLinks.Remove(oldPath);
-        var context = new OperationContext();
-        SaveState(context);
-        return new LinkRecoveryOutcome(true, context.SettingsSaveFailed);
+        var moved = _links.TryMove(oldPath, profilePath);
+        return new LinkRecoveryOutcome(moved, !moved);
     }
 
-    public string? LinkedSheetId(string profilePath) =>
-        _settings.Current.DriveLinks.TryGetValue(profilePath, out var link) ? link.SpreadsheetId : null;
+    public string? LinkedSheetId(string profilePath) => _links.Get(profilePath)?.SpreadsheetId;
 
     public bool Knows(string spreadsheetId) =>
-        _settings.Current.DriveLinks.Values.Any(l =>
-            string.Equals(l.SpreadsheetId, spreadsheetId, StringComparison.Ordinal));
+        _links.Snapshot().Values.Any(link =>
+            string.Equals(link.SpreadsheetId, spreadsheetId, StringComparison.Ordinal));
 
     public Task<string> ReadProfileAsync(string spreadsheetId, CancellationToken cancellationToken = default) =>
         Locked(() => DownloadProfileAsync(spreadsheetId, cancellationToken), cancellationToken);
 
     public string? LinkedSheetUrl(string profilePath) =>
-        _settings.Current.DriveLinks.TryGetValue(profilePath, out var link) ? Url(link.SpreadsheetId) : null;
+        _links.Get(profilePath) is { } link ? Url(link.SpreadsheetId) : null;
 
     static string Url(string spreadsheetId) =>
         $"https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit?usp=sharing";
@@ -420,10 +462,9 @@ public sealed class DriveBackupWorkflow
         OperationContext context,
         CancellationToken cancellationToken)
     {
-        var settings = _settings.Current;
-        settings.DriveLinks.TryGetValue(profilePath, out var link);
+        var link = _links.Get(profilePath);
         string? keptOnlineCsv = null;
-        bool stale = false;
+        var stale = false;
         string? staleNotice = null;
 
         if (link is null)
@@ -438,7 +479,11 @@ public sealed class DriveBackupWorkflow
                 return new BackupShareOutcome(BackupShareState.Failed, Message:
                     "Could not create the Google Sheet, so there is nothing to share yet.",
                     Notice: first.Notice, SettingsSaveFailed: context.SettingsSaveFailed);
-            link = settings.DriveLinks[profilePath];
+            link = _links.Get(profilePath);
+            if (link is null)
+                return new BackupShareOutcome(BackupShareState.Failed, Message:
+                    "The Google Sheet was created but its local link could not be recorded.",
+                    SettingsSaveFailed: true);
         }
         else if (link.BackupDirty)
         {
@@ -457,15 +502,12 @@ public sealed class DriveBackupWorkflow
             {
                 stale = true;
                 staleNotice = push.Notice;
-                // A stale URL is useful only when this exact sheet was already
-                // shared. Otherwise returning it before the permission flow
-                // hands the user a private link that looks successfully shared.
                 if (link.LinkShared)
                     return new BackupShareOutcome(BackupShareState.CopiedStale, Url(link.SpreadsheetId),
                         "Link copied. Your latest changes are not uploaded yet (backup pending).",
                         Notice: push.Notice, SettingsSaveFailed: context.SettingsSaveFailed);
             }
-            link = settings.DriveLinks[profilePath];
+            link = _links.Get(profilePath) ?? link;
         }
 
         if (!link.LinkShared)
@@ -482,22 +524,21 @@ public sealed class DriveBackupWorkflow
             {
                 await _provider.ShareAnyoneReaderAsync(link.SpreadsheetId, cancellationToken).ConfigureAwait(false);
                 link.LinkShared = true;
-                SaveState(context); // permission succeeded; persist that fact immediately
+                SaveLink(profilePath, link, context);
 
                 try
                 {
                     link.LastSeenModifiedTime = await _provider.GetModifiedTimeAsync(
                         link.SpreadsheetId, cancellationToken).ConfigureAwait(false);
-                    SaveState(context);
+                    link.RevisionState = RemoteRevisionState.Known;
+                    SaveLink(profilePath, link, context);
                 }
-                catch (RemoteStorageException)
+                catch (RemoteStorageException ex) when (ex.Kind is RemoteStorageFailureKind.Transient
+                                                             or RemoteStorageFailureKind.RateLimited)
                 {
-                    // Permission is live even if its revision token could not be
-                    // refreshed. Force the next backup to replay local truth
-                    // rather than manufacturing a conflict with this metadata change.
-                    link.LastSeenModifiedTime = "";
+                    link.RevisionState = RemoteRevisionState.UnknownAfterWrite;
                     link.BackupDirty = true;
-                    SaveState(context);
+                    SaveLink(profilePath, link, context);
                 }
             }
             catch (RemoteStorageException)
@@ -528,7 +569,7 @@ public sealed class DriveBackupWorkflow
     {
         var sheets = await _provider.ListSpreadsheetsAsync(cancellationToken).ConfigureAwait(false);
         var linkedIds = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var (path, link) in _settings.Current.DriveLinks)
+        foreach (var (path, link) in _links.Snapshot())
             if (_library.Exists(path)) linkedIds.Add(link.SpreadsheetId);
 
         return sheets.Select(s => new DriveSheetInfo(
@@ -546,7 +587,6 @@ public sealed class DriveBackupWorkflow
         string libraryDirectory,
         CancellationToken cancellationToken)
     {
-        var settings = _settings.Current;
         var imported = new List<string>();
         var skipped = new List<(string Name, string Reason)>();
         var failed = new List<(string Name, string Reason)>();
@@ -562,9 +602,9 @@ public sealed class DriveBackupWorkflow
             var reportName = Path.GetFileNameWithoutExtension(SafeFileName.ForCsv(pick.Name));
             try
             {
-                var csv = await DownloadProfileAsync(pick.Id, cancellationToken).ConfigureAwait(false);
+                var downloaded = await DownloadProfileAsync(pick.Id, cancellationToken).ConfigureAwait(false);
                 ProfileFile parsed;
-                try { parsed = ProfileFile.Load(csv); }
+                try { parsed = ProfileFile.Load(downloaded); }
                 catch { failed.Add((reportName, "could not read the sheet")); continue; }
                 if (parsed.Document.Sheets.Count == 0)
                 { failed.Add((reportName, "not a valid profile")); continue; }
@@ -578,9 +618,15 @@ public sealed class DriveBackupWorkflow
                 var modifiedTime = await _provider.GetModifiedTimeAsync(pick.Id, cancellationToken).ConfigureAwait(false);
                 var destination = Path.Combine(libraryDirectory, fileName);
 
-                // The snapshot above is only for fast/user-friendly reporting.
-                // This create-only publication is the actual no-overwrite rule:
-                // a file appearing during the download is never replaced.
+                // Stamp provider-neutral source metadata into the recovered
+                // profile before publication. If settings persistence fails,
+                // opening the file later can recover its known remote link.
+                parsed.SetCell(parsed.Document.FileNameCellRow, 0, fileName);
+                var snapshot = ProfileSnapshot.From(parsed);
+                var csv = ProfileCsvSerializer.Serialize(
+                    snapshot,
+                    new ProfileSerializationContext(pick.Id));
+
                 if (!_library.TryCreate(destination, csv))
                 {
                     skipped.Add((reportName, "already exists"));
@@ -588,22 +634,17 @@ public sealed class DriveBackupWorkflow
                     continue;
                 }
 
-                settings.DriveLinks[destination] = new DriveLink
+                var link = new DriveLink
                 {
                     SpreadsheetId = pick.Id,
                     LastSeenModifiedTime = modifiedTime,
+                    RevisionState = RemoteRevisionState.Known,
                     BackupDirty = false,
                     LinkShared = false,
                 };
 
-                if (!_settings.TrySave())
+                if (!_links.TrySet(destination, link))
                 {
-                    // Never roll back by deleting the destination: another
-                    // process can legitimately replace it after TryCreate, and
-                    // deleting then would destroy data we did not write. The
-                    // imported profile is still safe on disk; only its Drive
-                    // association failed to persist.
-                    settings.DriveLinks.Remove(destination);
                     onDisk.Add(fileName);
                     failed.Add((reportName, "profile saved, but could not save its Drive link"));
                     continue;
