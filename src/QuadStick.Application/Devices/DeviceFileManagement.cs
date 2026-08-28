@@ -113,7 +113,6 @@ public sealed class DeviceFileManagementUseCase
 
     public Task<DeviceDeleteReceipt> DeleteAsync(
         DeviceProfileId profile,
-        string recoveryDirectory,
         CancellationToken cancellationToken = default) =>
-        _devices.DeleteAsync(profile, recoveryDirectory, cancellationToken);
+        _devices.DeleteAsync(profile, cancellationToken);
 }
