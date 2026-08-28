@@ -1,11 +1,13 @@
 using System.Runtime.ExceptionServices;
+using QuadStick.Application.Backup;
+using QuadStick.Application.Settings;
 using QuadStick.Infrastructure.Files;
+using QuadStick.Infrastructure.Google;
 
 namespace QuadStick.App;
 
-/// <summary>Presentation compatibility facade for the remote-backup workflow.
-/// It owns human prompts/status rendering; Application owns backup policy and
-/// Infrastructure owns Google/filesystem mechanics.</summary>
+/// <summary>Presentation facade for remote-backup decisions and status. It never
+/// owns Drive state policy or provider mechanics.</summary>
 public sealed class DriveBackup
 {
     readonly DriveBackupWorkflow _workflow;
@@ -27,14 +29,59 @@ public sealed class DriveBackup
         + "deleted or moved to trash. Choose Yes to create a new sheet and back "
         + "up to it. Choose Cancel to turn backup off for this profile.";
 
-    sealed class DelegateSettingsContext : IBackupSettingsContext
+    // Compatibility store for existing tests/callers that still supply the
+    // historical settings delegates. Mutations are rolled back in memory when
+    // persistence fails, matching AppSettingsSession transaction semantics.
+    sealed class DelegateDriveLinkStore : IDriveLinkStore
     {
         readonly Func<AppSettings> _get;
         readonly Func<bool> _save;
-        public DelegateSettingsContext(Func<AppSettings> get, Func<bool> save)
+
+        public DelegateDriveLinkStore(Func<AppSettings> get, Func<bool> save)
         { _get = get; _save = save; }
-        public AppSettings Current => _get();
-        public bool TrySave() => _save();
+
+        public DriveLink? Get(string profilePath) =>
+            _get().DriveLinks.TryGetValue(profilePath, out var link) ? link.DeepClone() : null;
+
+        public IReadOnlyDictionary<string, DriveLink> Snapshot() =>
+            _get().DriveLinks.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value.DeepClone(),
+                StringComparer.Ordinal);
+
+        public bool TrySet(string profilePath, DriveLink link)
+        {
+            var settings = _get();
+            var hadOld = settings.DriveLinks.TryGetValue(profilePath, out var old);
+            settings.DriveLinks[profilePath] = link.DeepClone();
+            if (_save()) return true;
+            if (hadOld) settings.DriveLinks[profilePath] = old!.DeepClone();
+            else settings.DriveLinks.Remove(profilePath);
+            return false;
+        }
+
+        public bool TryRemove(string profilePath)
+        {
+            var settings = _get();
+            if (!settings.DriveLinks.TryGetValue(profilePath, out var old)) return true;
+            settings.DriveLinks.Remove(profilePath);
+            if (_save()) return true;
+            settings.DriveLinks[profilePath] = old.DeepClone();
+            return false;
+        }
+
+        public bool TryMove(string oldPath, string newPath)
+        {
+            var settings = _get();
+            if (!settings.DriveLinks.TryGetValue(oldPath, out var link)
+                || settings.DriveLinks.ContainsKey(newPath)) return false;
+            settings.DriveLinks[newPath] = link.DeepClone();
+            settings.DriveLinks.Remove(oldPath);
+            if (_save()) return true;
+            settings.DriveLinks[oldPath] = link.DeepClone();
+            settings.DriveLinks.Remove(newPath);
+            return false;
+        }
     }
 
     public DriveBackup(
@@ -45,11 +92,25 @@ public sealed class DriveBackup
         Func<string, string, Task<bool>> recreatePrompt,
         Action<string, bool> status,
         Func<Task<bool>> shareConfirm)
+        : this(
+            new DriveBackupWorkflow(
+                new GoogleDriveBackupProvider(client),
+                new DelegateDriveLinkStore(getSettings, trySave),
+                new PhysicalProfileLibraryStore()),
+            conflictPrompt,
+            recreatePrompt,
+            status,
+            shareConfirm)
+    { }
+
+    internal DriveBackup(
+        DriveBackupWorkflow workflow,
+        Func<string, string, Task<ConflictChoice>> conflictPrompt,
+        Func<string, string, Task<bool>> recreatePrompt,
+        Action<string, bool> status,
+        Func<Task<bool>> shareConfirm)
     {
-        _workflow = new DriveBackupWorkflow(
-            new GoogleDriveBackupProvider(client),
-            new DelegateSettingsContext(getSettings, trySave),
-            new PhysicalProfileLibraryStore());
+        _workflow = workflow;
         _conflictPrompt = conflictPrompt;
         _recreatePrompt = recreatePrompt;
         _status = status;
