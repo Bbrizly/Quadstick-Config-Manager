@@ -52,16 +52,18 @@ public partial class MainWindow
     /// <summary>Test and screenshot seam: draw the page for a prefs.csv held in
     /// memory. No machine running the tests has a QuadStick plugged in, and the
     /// page is worth looking at with real settings on it.</summary>
-    internal void ShowDeviceSettingsForPreview(string prefsCsv, string root = "/Volumes/QUADSTICK")
+    /// <param name="root">Where the device is mounted, or null for the page as
+    /// it looks with nothing plugged in.</param>
+    internal void ShowDeviceSettingsForPreview(string? prefsCsv = null, string? root = "/Volumes/QUADSTICK")
     {
         _file = null;
         ShowPage(DevicePage, ShellDeviceButton);
         _deviceRoot = root;
-        _devicePrefs = ProfileFile.Load(prefsCsv);
-        _devicePrefsAsRead = prefsCsv;
         _deviceChanged.Clear();
-        BuildDevicePage(string.Format(CultureInfo.CurrentCulture,
-            Strings.DevicePage_FoundYourQuadStickAtRoot, root), _devicePrefs);
+        ShowPrefs(prefsCsv ?? EmptyPrefs, root is null
+            ? Strings.DevicePage_NoQuadStickIsPluggedIn
+            : string.Format(CultureInfo.CurrentCulture,
+                Strings.DevicePage_FoundYourQuadStickAtRoot, root));
     }
 
     /// <summary>Test seam: which settings this page counts as changed.</summary>
@@ -79,13 +81,26 @@ public partial class MainWindow
         BuildDevicePage(_deviceStatus?.Text ?? "", _devicePrefs);
     }
 
+    // An empty settings file: the sheet and its header, no rows. Every setting
+    // then shows as one the file does not carry, which is exactly true of a
+    // QuadStick that is not here to be read.
+    const string EmptyPrefs = "Preferences\nprefs.csv\nPreference,Value,Units,Description\n";
+
     // Find the drive, read prefs.csv off it, and draw the page. Every failure
     // gets its own sentence: "nothing plugged in", "plugged in but no settings
     // file" and "the file would not parse" need different answers from the user.
+    //
+    // Only the last of those hides the settings. With no device, or with a
+    // device that has no settings file yet, the rows are still drawn from the
+    // catalog: what a QuadStick can be set to is worth reading before buying
+    // one, and it is the only way to look at this screen on a machine that has
+    // no stick attached. The line at the top says which case you are in, and
+    // the save bar does not offer a write there is nowhere to send.
     async Task LoadDeviceSettingsAsync()
     {
         _devicePrefs = null;
         _devicePrefsAsRead = "";
+        _deviceRoot = null;
         _deviceChanged.Clear();
         BuildDevicePage(Strings.DevicePage_LookingForYourQuadStick, null);
 
@@ -99,7 +114,7 @@ public partial class MainWindow
         _deviceRoot = root;
         if (root is null)
         {
-            BuildDevicePage(Strings.DevicePage_PlugInYourQuadStickAnd, null);
+            ShowPrefs(EmptyPrefs, Strings.DevicePage_NoQuadStickIsPluggedIn);
             return;
         }
 
@@ -118,9 +133,9 @@ public partial class MainWindow
 
         if (text is null)
         {
-            BuildDevicePage(string.Format(CultureInfo.CurrentCulture,
+            ShowPrefs(EmptyPrefs, string.Format(CultureInfo.CurrentCulture,
                 Strings.DevicePage_FoundYourQuadStickAtRoot, root)
-                + " " + Strings.DevicePage_ItHasNoPrefsCsvSo, null);
+                + " " + Strings.DevicePage_ItHasNoSettingsFileYet);
             return;
         }
 
@@ -138,6 +153,13 @@ public partial class MainWindow
         _devicePrefsAsRead = text;
         BuildDevicePage(string.Format(CultureInfo.CurrentCulture,
             Strings.DevicePage_FoundYourQuadStickAtRoot, root), _devicePrefs);
+    }
+
+    void ShowPrefs(string csv, string status)
+    {
+        _devicePrefs = ProfileFile.Load(csv);
+        _devicePrefsAsRead = csv;
+        BuildDevicePage(status, _devicePrefs);
     }
 
     // The Preferences sheet inside prefs.csv, or null when the file has none.
@@ -167,10 +189,16 @@ public partial class MainWindow
             FontSize = Size("BodySize"), Classes = { "secondary" }, TextWrapping = TextWrapping.Wrap,
         };
 
+        // No stick attached is a state, not an error, but it is the first thing
+        // to know on this page: everything below it is what a QuadStick can be
+        // set to rather than what yours is set to. The words carry that, and
+        // the warn styling only repeats what they already say.
         _deviceStatus = new TextBlock
         {
             Text = status, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+            FontWeight = _deviceRoot is null ? FontWeight.Bold : FontWeight.Normal,
         };
+        if (_deviceRoot is null) _deviceStatus.Classes.Add("warn");
         AutomationProperties.SetLiveSetting(_deviceStatus, AutomationLiveSetting.Polite);
 
         var reload = new Button();
@@ -545,13 +573,28 @@ public partial class MainWindow
             BuildDevicePage(_deviceStatus?.Text ?? "", _devicePrefs);
         };
 
+        DeviceSaveBarRow.Children.Add(count);
+        DeviceSaveBarRow.Children.Add(undo);
+
+        // A Save button with no device to save to is a button that lies. The
+        // edits are kept, so plugging the stick in and pressing Reload is not
+        // the way to lose them; the sentence says what to do instead.
+        if (_deviceRoot is null)
+        {
+            DeviceSaveBarRow.Children.Add(new TextBlock
+            {
+                Text = Strings.DevicePage_PlugInYourQuadStickTo,
+                FontSize = Size("BodySize"), Classes = { "warn" },
+                TextWrapping = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+            return;
+        }
+
         var save = new Button { Classes = { "primary" } };
         save.Content = Strings.DevicePage_SaveToYourQuadStick;
         AutomationProperties.SetName(save, Strings.DevicePage_WriteTheChangedSettingsTo);
         save.Click += async (_, _) => await SaveDeviceSettingsAsync();
-
-        DeviceSaveBarRow.Children.Add(count);
-        DeviceSaveBarRow.Children.Add(undo);
         DeviceSaveBarRow.Children.Add(save);
     }
 

@@ -215,6 +215,67 @@ public class DeviceSettingsPageTests
         w.Close();
     }
 
+    // ---- nothing plugged in ----
+
+    // The page used to be one sentence telling you to go and find a cable.
+    // Every setting is worth reading before you own a stick, and it is the only
+    // way to look at this screen on a machine with nothing attached.
+    [AvaloniaFact]
+    public void WithNoQuadStickThePageStillShowsEverySetting()
+    {
+        var w = Detached();
+        Assert.True(Has<Slider>(w, "Speaker volume, 0 to 100"));
+        Assert.True(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
+        Assert.True(Has<NumericUpDown>(w, "Up deflection multiplier"));
+        w.Close();
+    }
+
+    // And it says so first, in words, at the top.
+    [AvaloniaFact]
+    public void WithNoQuadStickThePageSaysSoAtTheTop()
+    {
+        var w = Detached();
+        var said = w.FindControl<StackPanel>("DevicePageBody")!
+            .GetVisualDescendants().OfType<TextBlock>()
+            .Select(t => t.Text ?? "").ToArray();
+        Assert.Contains(said, t => t.StartsWith("No QuadStick is plugged in", StringComparison.Ordinal));
+        w.Close();
+    }
+
+    // A Save button with nowhere to send the file is a button that lies. The
+    // edits are still kept, so plugging in and reloading is not the way to lose
+    // them, and the bar says what to do instead.
+    [AvaloniaFact]
+    public void WithNoQuadStickNothingOffersToSave()
+    {
+        var w = Detached();
+        Named<NumericUpDown>(w, "Speaker volume").Value = 60;
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        var bar = w.FindControl<Border>("DeviceSaveBar")!;
+        Assert.True(bar.IsVisible);
+        Assert.Equal("60", Cell(w, "volume"));
+        Assert.DoesNotContain(bar.GetVisualDescendants().OfType<Button>(),
+            b => AutomationProperties.GetName(b) == "Write the changed settings to prefs.csv on your QuadStick");
+        Assert.Contains(bar.GetVisualDescendants().OfType<TextBlock>(),
+            t => (t.Text ?? "").Contains("Plug in your QuadStick to save"));
+        w.Close();
+    }
+
+    static MainWindow Detached()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        w.ShowDeviceSettingsForPreview(root: null);
+        w.UpdateLayout();
+        return w;
+    }
+
     // Sip and puff thresholds are the settings somebody tunes while sipping, so
     // they are on the page with their sliders, not two tabs away as in QMP.
     [AvaloniaFact]

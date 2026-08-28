@@ -331,8 +331,8 @@
   <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
     <value>Found your QuadStick at {0}.</value>
   </data>
-  <data name="DevicePage_ItHasNoPrefsCsvSo" xml:space="preserve">
-    <value>It has no prefs.csv, so there are no settings on it to change yet.</value>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>It has no settings file yet, so these are the values it falls back to. Saving writes one.</value>
   </data>
   <data name="DevicePage_LoToHi" xml:space="preserve">
     <value>{0} to {1}</value>
@@ -343,6 +343,9 @@
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}, {1} to {2}</value>
   </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>No QuadStick is plugged in, so these are the settings a QuadStick has, not the ones yours is on. Plug one in and press Reload to see and change its own.</value>
+  </data>
   <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
     <value>Not in your settings file. The device uses {0} until you change it.</value>
   </data>
@@ -352,8 +355,8 @@
   <data name="DevicePage_On1" xml:space="preserve">
     <value>On (1)</value>
   </data>
-  <data name="DevicePage_PlugInYourQuadStickAnd" xml:space="preserve">
-    <value>Plug in your QuadStick and press Reload to change its settings.</value>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>Plug in your QuadStick to save these.</value>
   </data>
   <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
     <value>Put every setting back to the value that is on the QuadStick</value>
