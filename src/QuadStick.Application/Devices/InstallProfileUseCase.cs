@@ -6,7 +6,6 @@ public enum InstallProfileStatus
 {
     Installed,
     HasErrors,
-    InvalidTarget,
     ConfirmationRequiredDefault,
     ConfirmationRequiredPreferences,
 }
@@ -15,41 +14,44 @@ public sealed record InstallProfileResult(
     InstallProfileStatus Status,
     DeviceInstallReceipt? Receipt = null);
 
-/// <summary>
-/// Application-level install policy. The mounted-volume adapter repeats its own
-/// destructive-boundary checks; this layer makes safety independent of the UI.
-/// </summary>
+/// <summary>Application-level install policy. The UI-owned editor is snapped
+/// before this use case is invoked; only immutable data crosses the async
+/// boundary. Infrastructure revalidates the actual device immediately before
+/// any destructive mounted-volume work.</summary>
 public sealed class InstallProfileUseCase
 {
     readonly IDeviceProfileStore _store;
 
     public InstallProfileUseCase(IDeviceProfileStore store) => _store = store;
 
-    public bool IsInstallTarget(DeviceId device) => _store.IsInstallTarget(device);
-
     public async Task<InstallProfileResult> ExecuteAsync(
-        ProfileFile profile,
+        ProfileSnapshot profile,
         DeviceId device,
         bool confirmDefaultCsv,
         bool confirmPreferencesCsv,
+        string? sourceSheetId = null,
         CancellationToken cancellationToken = default)
     {
-        profile.Reparse();
+        ArgumentNullException.ThrowIfNull(profile);
         if (profile.HasErrors)
             return new InstallProfileResult(InstallProfileStatus.HasErrors);
 
-        if (!_store.IsInstallTarget(device))
-            return new InstallProfileResult(InstallProfileStatus.InvalidTarget);
-
-        if (profile.Document.IsDefaultConfig && !confirmDefaultCsv)
+        var fileName = profile.CsvFileName ?? "config.csv";
+        if (string.Equals(fileName, "default.csv", StringComparison.OrdinalIgnoreCase) && !confirmDefaultCsv)
             return new InstallProfileResult(InstallProfileStatus.ConfirmationRequiredDefault);
 
-        if (profile.Document.IsDevicePreferences && !confirmPreferencesCsv)
+        if (string.Equals(fileName, "prefs.csv", StringComparison.OrdinalIgnoreCase) && !confirmPreferencesCsv)
             return new InstallProfileResult(InstallProfileStatus.ConfirmationRequiredPreferences);
 
-        var receipt = await _store.InstallAsync(
-            profile, device, confirmDefaultCsv, confirmPreferencesCsv, cancellationToken)
-            .ConfigureAwait(false);
+        var csv = DeviceProfileSerializer.Serialize(
+            profile,
+            new ProfileSerializationContext(sourceSheetId));
+        var request = new DeviceInstallRequest(
+            new DeviceProfilePayload(fileName, csv),
+            confirmDefaultCsv,
+            confirmPreferencesCsv);
+
+        var receipt = await _store.InstallAsync(device, request, cancellationToken).ConfigureAwait(false);
         return new InstallProfileResult(InstallProfileStatus.Installed, receipt);
     }
 }
