@@ -74,9 +74,9 @@ public sealed class LiveInput : IDisposable
             // app stops for, because every setting on the page still works.
             try
             {
-                var device = Find();
-                if (device is null) { Post(null); Wait(1500); continue; }
-                Follow(device);
+                var found = Find();
+                if (found is null) { Post(null); Wait(1500); continue; }
+                Follow(found.Value);
                 // Follow returns when the device stops reporting, which is
                 // usually somebody unplugging it. Without this the retry is a
                 // spin on a device that will not open.
@@ -91,30 +91,57 @@ public sealed class LiveInput : IDisposable
         }
     }
 
-    static HidDevice? Find()
+    // What was found: the interface, the descriptor it published, and the
+    // collection inside it that is the stick.
+    readonly record struct Stick(HidDevice Device, ReportDescriptor Descriptor, DeviceItem Item);
+
+    // A QuadStick in most modes puts three HID interfaces behind one USB
+    // identity, because a profile can drive a gamepad, a mouse and a keyboard
+    // at once. They enumerate in no promised order, so asking for the first
+    // one at a matching vendor and product would some of the time hand back
+    // the mouse, and the mouse reports X and Y as well: the page would then
+    // draw the pointer's motion as the stick. Every interface is looked at and
+    // the one that says it is a stick is the one read.
+    static Stick? Find()
     {
         foreach (var (vendor, product) in Known)
         {
-            var found = DeviceList.Local.GetHidDeviceOrNull(vendor, product);
-            if (found is not null) return found;
+            foreach (var device in DeviceList.Local.GetHidDevices(vendor, product))
+            {
+                ReportDescriptor descriptor;
+                try { descriptor = device.GetReportDescriptor(); }
+                catch (Exception ex) when (ex is not OperationCanceledException) { continue; }
+
+                var item = StickItem(descriptor);
+                if (item is not null) return new Stick(device, descriptor, item);
+            }
         }
         return null;
     }
 
-    void Follow(HidDevice device)
-    {
-        var descriptor = device.GetReportDescriptor();
-        var item = descriptor.DeviceItems.FirstOrDefault();
-        if (item is null) { Post(null); Wait(2000); return; }
+    /// <summary>The collection in this interface's descriptor that is the
+    /// stick, or null if the interface is the mouse or the keyboard.</summary>
+    internal static DeviceItem? StickItem(ReportDescriptor descriptor) =>
+        descriptor.DeviceItems.FirstOrDefault(item => item.Usages.GetAllValues().Any(IsStick));
 
+    /// <summary>Whether a top-level usage names a stick. Which of the three the
+    /// device says depends on the emulation mode: mode 0 publishes Game Pad,
+    /// modes 1 and 5 publish Joystick.</summary>
+    internal static bool IsStick(uint usage) =>
+        usage is (uint)Usage.GenericDesktopJoystick
+              or (uint)Usage.GenericDesktopGamepad
+              or (uint)Usage.GenericDesktopMultiaxisController;
+
+    void Follow(Stick stick)
+    {
         // Reading by usage rather than by byte offset: the report shape is a
         // different one in every emulation mode, and the descriptor the device
         // itself publishes is the only thing that knows which.
-        using var stream = device.Open();
-        var receiver = descriptor.CreateHidDeviceInputReceiver();
-        var parser = item.CreateDeviceItemInputParser();
-        var buffer = new byte[descriptor.MaxInputReportLength];
-        string product = Name(device);
+        using var stream = stick.Device.Open();
+        var receiver = stick.Descriptor.CreateHidDeviceInputReceiver();
+        var parser = stick.Item.CreateDeviceItemInputParser();
+        var buffer = new byte[stick.Descriptor.MaxInputReportLength];
+        string product = Name(stick.Device);
         LiveState? last = null;
         receiver.Start(stream);
 
@@ -129,33 +156,40 @@ public sealed class LiveInput : IDisposable
             {
                 if (!parser.TryParseReport(buffer, 0, report)) continue;
 
-                double x = 0, y = 0;
-                var down = new List<int>();
-                for (int i = 0; i < parser.ValueCount; i++)
-                {
-                    var value = parser.GetValue(i);
-                    uint usage = value.Usages.FirstOrDefault();
-                    switch (usage)
-                    {
-                        // GetFractionalValue is 0 to 1 across the axis's own
-                        // range, so an eight bit axis and a sixteen bit one
-                        // both land on the same scale with centre at zero.
-                        case 0x00010030: x = value.GetFractionalValue() * 2 - 1; break; // X
-                        case 0x00010031: y = value.GetFractionalValue() * 2 - 1; break; // Y
-                        default:
-                            // Button page. A button reads 1 while it is held.
-                            if ((usage & 0xFFFF0000) == 0x00090000 && value.GetLogicalValue() != 0)
-                                down.Add((int)(usage & 0xFFFF));
-                            break;
-                    }
-                }
-
-                var now = new LiveState(Math.Clamp(x, -1, 1), Math.Clamp(y, -1, 1), down, product);
+                var now = Read(parser, product);
                 if (Same(now, last)) continue;
                 last = now;
                 Post(now);
             }
         }
+    }
+
+    /// <summary>Turn one parsed report into a reading. Split out so a test can
+    /// hand it a report the firmware would send.</summary>
+    internal static LiveState Read(DeviceItemInputParser parser, string product)
+    {
+        double x = 0, y = 0;
+        var down = new List<int>();
+        for (int i = 0; i < parser.ValueCount; i++)
+        {
+            var value = parser.GetValue(i);
+            uint usage = value.Usages.FirstOrDefault();
+            switch (usage)
+            {
+                // GetFractionalValue is 0 to 1 across the axis's own
+                // range, so an eight bit axis and a sixteen bit one
+                // both land on the same scale with centre at zero.
+                case (uint)Usage.GenericDesktopX: x = value.GetFractionalValue() * 2 - 1; break;
+                case (uint)Usage.GenericDesktopY: y = value.GetFractionalValue() * 2 - 1; break;
+                default:
+                    // Button page. A button reads 1 while it is held.
+                    if ((usage & 0xFFFF0000) == 0x00090000 && value.GetLogicalValue() != 0)
+                        down.Add((int)(usage & 0xFFFF));
+                    break;
+            }
+        }
+
+        return new LiveState(Math.Clamp(x, -1, 1), Math.Clamp(y, -1, 1), down, product);
     }
 
     // A stick at rest still jitters a count or two, and redrawing on every one
