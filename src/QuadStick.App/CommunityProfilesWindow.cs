@@ -48,7 +48,8 @@ public class CommunityProfilesWindow : Window
     /// never opens a real browser window.</summary>
     internal Func<Uri, Task> OpenUri { get; set; }
 
-    public CommunityProfilesWindow(MainWindow owner) : this(owner, new CommunityCatalogClient(), null) { }
+    public CommunityProfilesWindow(MainWindow owner)
+        : this(owner, new CommunityCatalogClient(owner.CommunityCatalog), null) { }
 
     /// <summary>Test seam: a catalog client with a fake handler and cache path,
     /// and the HttpClient the import should use.</summary>
