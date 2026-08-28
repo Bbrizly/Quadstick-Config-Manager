@@ -9,5 +9,6 @@ public interface IProfileLibraryStore
     void EnsureDirectory(string directory);
     string ReadText(string path);
     void WriteAtomic(string path, string text);
+    bool TryCreate(string path, string text);
     void Delete(string path);
 }
