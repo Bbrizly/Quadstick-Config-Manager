@@ -300,6 +300,9 @@ public partial class MainWindow
             {
                 Text = string.Join(" ", about), FontSize = Size("SmallSize"),
                 Classes = { "secondary" }, TextWrapping = TextWrapping.Wrap, MaxWidth = 760,
+                // A MaxWidth without this centres the text in whatever room is
+                // left, so the words drifted away from the control they explain.
+                HorizontalAlignment = HorizontalAlignment.Left,
             });
 
         if (def.Risk.Length > 0)
@@ -310,6 +313,7 @@ public partial class MainWindow
                 Text = string.Format(CultureInfo.CurrentCulture, Strings.Prefs_CarefulDefRisk, def.Risk),
                 FontSize = Size("SmallSize"), Classes = { "warn" },
                 TextWrapping = TextWrapping.Wrap, MaxWidth = 760,
+                HorizontalAlignment = HorizontalAlignment.Left,
             };
             AutomationProperties.SetName(risk, string.Format(CultureInfo.CurrentCulture,
                 Strings.Prefs_CarefulDefLabelDefRisk, def.Label, def.Risk));
@@ -323,6 +327,7 @@ public partial class MainWindow
                     Strings.DevicePage_NotInYourSettingsFile, fallback),
                 FontSize = Size("SmallSize"), Classes = { "secondary" },
                 TextWrapping = TextWrapping.Wrap, MaxWidth = 760,
+                HorizontalAlignment = HorizontalAlignment.Left,
             });
 
         return stack;
