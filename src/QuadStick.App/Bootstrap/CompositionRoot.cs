@@ -23,13 +23,23 @@ internal sealed class CompositionRoot
 
     internal static IReadOnlyList<string> FindDeviceRoots() => Device.FindCandidatesCached();
     internal static string DefaultDeviceBackupDirectory => Device.DefaultBackupDir();
-    internal static string DeviceLabelFor(string root) => MountedVolumeDeviceFileSource.LabelFor(root);
+    internal static string DeviceLabelFor(string root) => MountedVolumeDeviceAdapter.LabelFor(root);
 
     internal static DeviceFileManagementUseCase CreateDeviceFileManagement(
-        Func<IReadOnlyList<string>> findRoots) => new(
-            new MountedVolumeDeviceFileSource(findRoots),
-            new PhysicalProfileLibraryStore(),
-            new GoogleProfileSheetLinkResolver());
+        Func<IReadOnlyList<string>> findRoots)
+    {
+        var mounted = new MountedVolumeDeviceAdapter(findRoots);
+        return new DeviceFileManagementUseCase(
+            mounted,
+            mounted,
+            new PhysicalProfileLibraryStore());
+    }
+
+    internal static string? LinkedGoogleSheetUrl(ProfileFile profile) =>
+        SheetsUrl.TryGetEditUrlFromHeader(
+            profile.Document.HeaderVersion,
+            profile.Document.HeaderSource,
+            out var url) ? url : null;
 }
 
 public partial class MainWindow
