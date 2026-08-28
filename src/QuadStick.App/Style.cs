@@ -69,7 +69,7 @@ public static class Style
     // at least one of these; the last entry is Avalonia's portable fallback.
     public const string BrandFontFamily = "Cascadia Mono, JetBrains Mono, Menlo, DejaVu Sans Mono, monospace";
 
-    public static void RegisterInto(Application app)
+    public static void RegisterInto(Avalonia.Application app)
     {
         var d = new ResourceDictionary();
         foreach (var (key, value) in Numbers) d[key] = value;
@@ -86,7 +86,7 @@ public static class Style
     /// token through a dynamic resource follows on the next layout pass.</summary>
     public static void Set(string key, double value)
     {
-        var app = Application.Current!;
+        var app = Avalonia.Application.Current!;
         app.Resources[key] = value;
         if (key.EndsWith("Radius")) app.Resources[key + "Corner"] = new CornerRadius(value);
     }
