@@ -170,7 +170,7 @@ public sealed class DriveBackup
                     return new ShareLinkResult(ShareLinkKind.Failed, null, outcome.Message,
                         outcome.DownloadedCsv ?? downloadedCsv);
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new InvalidOperationException($"Unknown share outcome state: {outcome.State}.");
             }
         }
     }
