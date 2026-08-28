@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using QuadStick.Format;
+using QuadStick.Infrastructure.Google;
 
 namespace QuadStick.App;
 
@@ -134,7 +135,10 @@ public class DriveClient
 
     static object Tint(int sheetId, int row, int firstColumn, int lastColumn, string paletteKey)
     {
-        var (r, g, b) = Rgb(Palette.Light[paletteKey]);
+        // Spreadsheet formatting is provider output, not an Avalonia concern.
+        // Keep the exact existing light-theme tints here so moving Drive code
+        // cannot silently couple Infrastructure back to the UI assembly.
+        var (r, g, b) = Rgb(GoogleSheetPalette.Light[paletteKey]);
         return new
         {
             repeatCell = new
