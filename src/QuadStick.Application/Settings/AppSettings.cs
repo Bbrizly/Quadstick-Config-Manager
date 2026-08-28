@@ -1,9 +1,7 @@
-namespace QuadStick.App;
+namespace QuadStick.Application.Settings;
 
-// Persisted application state. This lives outside the Avalonia project so
-// application workflows and infrastructure persistence can share the model
-// without depending on presentation code. The namespace stays unchanged during
-// the migration to preserve source and serialized compatibility.
+// Persisted application state. Public field names intentionally remain stable
+// because they are the existing JSON contract.
 public sealed class AppSettings
 {
     public string Model = "FPS";
@@ -23,6 +21,39 @@ public sealed class AppSettings
     public bool UsageAnalytics = false;
     public bool AskAboutCrashes = true;
     public string InstallId = "";
+
+    public AppSettings DeepClone() => new()
+    {
+        Model = Model,
+        Theme = Theme,
+        InterfaceScalePercent = InterfaceScalePercent,
+        ReduceMotion = ReduceMotion,
+        RememberWindow = RememberWindow,
+        TutorialSeen = TutorialSeen,
+        DeviceCards = DeviceCards,
+        PickerGrouping = PickerGrouping,
+        WinW = WinW,
+        WinH = WinH,
+        WinX = WinX,
+        WinY = WinY,
+        DriveBackup = DriveBackup,
+        DriveLinks = DriveLinks.ToDictionary(pair => pair.Key, pair => pair.Value.DeepClone(), StringComparer.Ordinal),
+        Recents = new List<string>(Recents),
+        CustomNames = CustomNames.ToDictionary(
+            pair => pair.Key,
+            pair => new Dictionary<string, string>(pair.Value, StringComparer.Ordinal),
+            StringComparer.Ordinal),
+        TelemetryNoticeVersion = TelemetryNoticeVersion,
+        UsageAnalytics = UsageAnalytics,
+        AskAboutCrashes = AskAboutCrashes,
+        InstallId = InstallId,
+    };
+}
+
+public enum RemoteRevisionState
+{
+    Known = 0,
+    UnknownAfterWrite = 1,
 }
 
 // Per-profile remote-backup state, keyed by local profile path.
@@ -32,4 +63,14 @@ public sealed class DriveLink
     public string LastSeenModifiedTime = "";
     public bool BackupDirty = false;
     public bool LinkShared = false;
+    public RemoteRevisionState RevisionState = RemoteRevisionState.Known;
+
+    public DriveLink DeepClone() => new()
+    {
+        SpreadsheetId = SpreadsheetId,
+        LastSeenModifiedTime = LastSeenModifiedTime,
+        BackupDirty = BackupDirty,
+        LinkShared = LinkShared,
+        RevisionState = RevisionState,
+    };
 }
