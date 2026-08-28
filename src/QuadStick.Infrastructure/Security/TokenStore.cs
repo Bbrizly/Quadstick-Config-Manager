@@ -3,9 +3,8 @@ using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace QuadStick.App;
+namespace QuadStick.Infrastructure.Security;
 
-// Refresh token at rest. Platform stores keep it out of plain settings.
 public interface ITokenStore
 {
     string? Load();
@@ -24,14 +23,10 @@ public static class TokenStore
         : new InMemoryTokenStore();
 }
 
-// macOS Keychain via the legacy generic-password API. Less interop than the
-// CFDictionary path and supports in-place updates, so replacing a token never
-// deletes the old working credential before the new value is accepted.
 public class MacKeychainTokenStore : ITokenStore
 {
     const string Sec = "/System/Library/Frameworks/Security.framework/Security";
     const string CoreFoundation = "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation";
-
     readonly byte[] _service;
     readonly byte[] _account;
 
@@ -44,21 +39,15 @@ public class MacKeychainTokenStore : ITokenStore
     [DllImport(Sec)]
     static extern int SecKeychainAddGenericPassword(IntPtr keychain, uint serviceLen, byte[] service,
         uint accountLen, byte[] account, uint pwLen, byte[] pw, out IntPtr itemRef);
-
     [DllImport(Sec)]
     static extern int SecKeychainFindGenericPassword(IntPtr keychainOrArray, uint serviceLen, byte[] service,
         uint accountLen, byte[] account, out uint pwLen, out IntPtr pwData, out IntPtr itemRef);
-
     [DllImport(Sec)]
-    static extern int SecKeychainItemModifyAttributesAndData(
-        IntPtr itemRef, IntPtr attrList, uint length, byte[] data);
-
+    static extern int SecKeychainItemModifyAttributesAndData(IntPtr itemRef, IntPtr attrList, uint length, byte[] data);
     [DllImport(Sec)]
     static extern int SecKeychainItemFreeContent(IntPtr attrList, IntPtr data);
-
     [DllImport(Sec)]
     static extern int SecKeychainItemDelete(IntPtr itemRef);
-
     [DllImport(CoreFoundation)]
     static extern void CFRelease(IntPtr cf);
 
@@ -85,7 +74,6 @@ public class MacKeychainTokenStore : ITokenStore
         var pw = Encoding.UTF8.GetBytes(refreshToken);
         int find = SecKeychainFindGenericPassword(IntPtr.Zero, (uint)_service.Length, _service,
             (uint)_account.Length, _account, out _, out IntPtr oldData, out IntPtr itemRef);
-
         if (find == 0)
         {
             try
@@ -135,7 +123,6 @@ public class MacKeychainTokenStore : ITokenStore
     }
 }
 
-// Windows DPAPI (CurrentUser) to a file under AppData.
 [SupportedOSPlatform("windows")]
 public class WindowsDpapiTokenStore : ITokenStore
 {
@@ -143,8 +130,7 @@ public class WindowsDpapiTokenStore : ITokenStore
 
     public WindowsDpapiTokenStore()
     {
-        var dir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "QuadStickConfigManager");
         _path = Path.Combine(dir, "google-drive.token");
     }
@@ -194,8 +180,6 @@ public class WindowsDpapiTokenStore : ITokenStore
     }
 }
 
-// For tests and unsupported platforms. Google backup is disabled there, so no
-// persistent credential is silently written in plaintext.
 public class InMemoryTokenStore : ITokenStore
 {
     string? _token;
