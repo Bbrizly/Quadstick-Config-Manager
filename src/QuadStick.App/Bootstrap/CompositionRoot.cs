@@ -1,5 +1,7 @@
 using QuadStick.Application.Devices;
 using QuadStick.Infrastructure.Devices.MountedVolume;
+using QuadStick.Infrastructure.Files;
+using QuadStick.Format;
 
 namespace QuadStick.App;
 
@@ -15,6 +17,16 @@ internal sealed class CompositionRoot
         DiscoverDevices = new DiscoverDevicesUseCase(mountedDevice);
         InstallProfile = new InstallProfileUseCase(mountedDevice);
     }
+
+    internal static IReadOnlyList<string> FindDeviceRoots() => Device.FindCandidatesCached();
+    internal static string DefaultDeviceBackupDirectory => Device.DefaultBackupDir();
+    internal static string DeviceLabelFor(string root) => MountedVolumeDeviceFileSource.LabelFor(root);
+
+    internal static DeviceFileManagementUseCase CreateDeviceFileManagement(
+        Func<IReadOnlyList<string>> findRoots) => new(
+            new MountedVolumeDeviceFileSource(findRoots),
+            new PhysicalProfileLibraryStore(),
+            new GoogleProfileSheetLinkResolver());
 }
 
 public partial class MainWindow
