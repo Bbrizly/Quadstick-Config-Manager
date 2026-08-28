@@ -1,7 +1,7 @@
-using QuadStick.Format;
-
 namespace QuadStick.Application.Devices;
 
+/// <summary>Opaque device identity. Only the owning Infrastructure adapter may
+/// interpret Value.</summary>
 public sealed record DeviceId(string Value);
 
 public enum DeviceTransportKind
@@ -26,9 +26,20 @@ public sealed record DeviceDescriptor(
     string DisplayName,
     DeviceTransportKind Transport,
     DeviceCapabilities Capabilities,
-    string? Location = null);
+    string? Detail = null);
 
-public sealed record DeviceInstallReceipt(string InstalledPath, string? BackupPath);
+public sealed record DeviceProfilePayload(string FileName, string CsvText);
+
+public sealed record DeviceInstallRequest(
+    DeviceProfilePayload Payload,
+    bool AllowDefaultCsv,
+    bool AllowPreferencesCsv);
+
+public sealed record DeviceRecoveryReference(string DisplayLocation);
+
+public sealed record DeviceInstallReceipt(
+    string FileName,
+    DeviceRecoveryReference? Recovery = null);
 
 public interface IDeviceDiscovery
 {
@@ -36,14 +47,20 @@ public interface IDeviceDiscovery
     void InvalidateCache();
 }
 
+/// <summary>Resolves a user-selected mounted folder into an opaque device. The
+/// presentation may know that a folder picker was used; it never turns that
+/// path into a DeviceId itself.</summary>
+public interface IManualDeviceResolver
+{
+    Task<DeviceDescriptor?> ResolveMountedFolderAsync(
+        string folder,
+        CancellationToken cancellationToken = default);
+}
+
 public interface IDeviceProfileStore
 {
-    bool IsInstallTarget(DeviceId device);
-
     Task<DeviceInstallReceipt> InstallAsync(
-        ProfileFile profile,
         DeviceId device,
-        bool confirmDefaultCsv,
-        bool confirmPreferencesCsv,
+        DeviceInstallRequest request,
         CancellationToken cancellationToken = default);
 }
