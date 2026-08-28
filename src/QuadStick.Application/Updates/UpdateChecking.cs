@@ -1,4 +1,4 @@
-namespace QuadStick.App;
+namespace QuadStick.Application.Updates;
 
 public sealed record UpdateResult(string Message, string? DownloadUrl, bool IsNewer);
 
@@ -25,7 +25,7 @@ public static class UpdateVersion
     {
         var left = a.Split('.');
         var right = b.Split('.');
-        for (int i = 0; i < Math.Max(left.Length, right.Length); i++)
+        for (var i = 0; i < Math.Max(left.Length, right.Length); i++)
         {
             if (!int.TryParse(i < left.Length ? left[i] : "0", out var x)) return 0;
             if (!int.TryParse(i < right.Length ? right[i] : "0", out var y)) return 0;
