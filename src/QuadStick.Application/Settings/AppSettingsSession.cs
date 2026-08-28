@@ -97,12 +97,17 @@ public sealed class DriveLinkStore : IDriveLinkStore
     public bool TryRemove(string profilePath) =>
         _session.TryUpdate(settings => settings.DriveLinks.Remove(profilePath));
 
-    public bool TryMove(string oldPath, string newPath) =>
-        _session.TryUpdate(settings =>
+    public bool TryMove(string oldPath, string newPath)
+    {
+        var changed = false;
+        var persisted = _session.TryUpdate(settings =>
         {
             if (!settings.DriveLinks.TryGetValue(oldPath, out var link)
                 || settings.DriveLinks.ContainsKey(newPath)) return;
             settings.DriveLinks[newPath] = link.DeepClone();
             settings.DriveLinks.Remove(oldPath);
+            changed = true;
         });
+        return changed && persisted;
+    }
 }
