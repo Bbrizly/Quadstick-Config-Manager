@@ -64,7 +64,7 @@ public static partial class CrashReport
     // Exception.Message is deliberately never read. It can contain profile
     // values or user-provided names, and no scrubber can distinguish those
     // reliably from ordinary prose.
-    static IReadOnlyList<CrashFrame> Frames(Exception ex)
+    static List<CrashFrame> Frames(Exception ex)
     {
         var frames = new List<CrashFrame>();
         try
