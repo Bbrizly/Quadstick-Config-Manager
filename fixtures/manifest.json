@@ -6,7 +6,7 @@
       "id": "legacy-default-profile",
       "path": "tests/QuadStick.Format.Tests/corpus/default.csv",
       "kind": "profile-csv",
-      "sha256": "",
+      "sha256": "269427217a62f18cdb00f51b43beae6bdadd44cc6447252352f7b40b7e2a5448",
       "source": "repository-owned legacy test corpus",
       "license": "project MIT",
       "behavior_ids": ["CFG-PARSE", "CFG-NORMALIZE", "FW-AGREEMENT"]
@@ -15,7 +15,7 @@
       "id": "legacy-device-style-profile",
       "path": "tests/QuadStick.Format.Tests/corpus/device-style.csv",
       "kind": "profile-csv",
-      "sha256": "",
+      "sha256": "8b9851d57bafbdeccaf26c6c0e7180cdedf9fda93819bd671693e07af25e9aa4",
       "source": "repository-owned legacy test corpus",
       "license": "project MIT",
       "behavior_ids": ["CFG-PARSE", "CFG-NORMALIZE", "FW-AGREEMENT"]
@@ -24,7 +24,7 @@
       "id": "legacy-gta-mode1-profile",
       "path": "tests/QuadStick.Format.Tests/corpus/gta-mode1.csv",
       "kind": "profile-csv",
-      "sha256": "",
+      "sha256": "638eee2c8e466fb8f942bcb6e006315d7be5db3383cd1fbd171aac497504df1d",
       "source": "repository-owned legacy test corpus",
       "license": "project MIT",
       "behavior_ids": ["CFG-PARSE", "CFG-VALIDATE", "FW-AGREEMENT"]
@@ -33,7 +33,7 @@
       "id": "firmware-keywords-1476",
       "path": "tests/QuadStick.Format.Tests/corpus/firmware-1476.json",
       "kind": "firmware-keywords",
-      "sha256": "",
+      "sha256": "2c43aa77c7b043b70189d38d6c21a122c08164a9ffa9bc27ba3d73a1e5e62251",
       "source": "generated from public QuadStick firmware headers",
       "license": "source-derived test data; retain existing repository provenance",
       "behavior_ids": ["FW-1476", "VOCAB"]
@@ -42,7 +42,7 @@
       "id": "firmware-keywords-2373",
       "path": "tests/QuadStick.Format.Tests/corpus/firmware-2373.json",
       "kind": "firmware-keywords",
-      "sha256": "",
+      "sha256": "08b8c21ff72518ae735ec07f09f2d5df2b6096827135e0171b10c2c7e18d2ecf",
       "source": "generated from public QuadStick firmware headers",
       "license": "source-derived test data; retain existing repository provenance",
       "behavior_ids": ["FW-2373", "VOCAB"]
@@ -51,7 +51,7 @@
       "id": "legacy-xlsx-single-tab",
       "path": "tests/QuadStick.Format.Tests/corpus/single-tab.xlsx",
       "kind": "xlsx",
-      "sha256": "",
+      "sha256": "611380dfb5a42d168e3b154cfe113dd11118bd6110e61462e0f80d0c9f0d8e27",
       "source": "repository-owned legacy test corpus",
       "license": "project MIT",
       "behavior_ids": ["XLSX-IMPORT"]
@@ -60,7 +60,7 @@
       "id": "legacy-xlsx-multi-tab",
       "path": "tests/QuadStick.Format.Tests/corpus/multi-tab.xlsx",
       "kind": "xlsx",
-      "sha256": "",
+      "sha256": "eb590cfa243d6a908ab70ac74b511fed663c7295cd8effcf804b074e422c8362",
       "source": "repository-owned legacy test corpus",
       "license": "project MIT",
       "behavior_ids": ["XLSX-IMPORT", "CFG-MULTISHEET"]

@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   gate0:
-    name: Gate 0 / legacy + fixtures
+    name: Gate 0 / legacy + oracle
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -35,3 +35,7 @@ jobs:
           dotnet-version: "8.0.x"
       - name: Legacy tests stay green
         run: dotnet test QuadStick.sln --nologo -c Release
+      - name: Compile and self-check legacy parity oracle
+        run: dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- selfcheck
+      - name: Generate canonical oracle fixture outputs
+        run: dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- generate
