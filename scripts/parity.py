@@ -176,7 +176,18 @@ def main() -> int:
     verify_fingerprints()
 
     banner("Frozen legacy tests")
-    run(["dotnet", "test", "QuadStick.sln", "--nologo", "-c", "Release"])
+    run(
+        [
+            "dotnet",
+            "test",
+            "QuadStick.sln",
+            "--nologo",
+            "-c",
+            "Release",
+            "--settings",
+            "tools/parity.runsettings",
+        ]
+    )
     generate_oracles()
 
     banner("Rust quality gate")
