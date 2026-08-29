@@ -144,6 +144,13 @@ public class PreferenceOverrideRowTests
     static string[] Names(MainWindow w) => w.GetVisualDescendants().OfType<Control>()
         .Select(c => AutomationProperties.GetName(c) ?? "").Where(n => n.Length > 0).Distinct().ToArray();
 
+    // What the panel beside the device says, and nothing else on screen. The
+    // part tiles carry a summary of what is on them, so a whole-window sweep
+    // reads the Mode settings tile's own count as if the selected part held it.
+    static string[] PanelNames(MainWindow w) => w.GetVisualDescendants().OfType<Control>()
+        .First(c => c.Name == "ZoneDetailPanel").GetVisualDescendants().OfType<Control>()
+        .Select(c => AutomationProperties.GetName(c) ?? "").Where(n => n.Length > 0).Distinct().ToArray();
+
     [AvaloniaFact]
     public void The_card_view_calls_a_settings_row_a_setting_and_not_a_mapping()
     {
@@ -265,7 +272,7 @@ public class PreferenceOverrideRowTests
         w.SelectZoneForPreview("other");
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
-        Assert.DoesNotContain(Names(w), n => n.Contains("mouse_speed"));
+        Assert.DoesNotContain(PanelNames(w), n => n.Contains("mouse_speed"));
 
         f.Dirty = false;
         w.Close();

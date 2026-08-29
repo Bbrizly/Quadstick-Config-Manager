@@ -44,7 +44,26 @@ public static class Style
         ["ControlHeight"] = 48,
         ["IconButton"]    = 40,
         ["CardWidth"]     = 280,
+        // The three persistent destinations are intentionally icon-only. Keep
+        // their hit areas generous while the glyphs stay visually simple.
+        ["ShellNavButton"] = 64,
+        ["ShellNavIcon"]   = 32,
+        ["ShellSettingsButton"] = 64,
+        ["ShellSettingsIcon"]   = 40,
+        // The panel down the left of the editor. Wide enough for "Whole
+        // combos" and its mapping count on one row and for the three view keys
+        // side by side; every pixel past that comes off the device diagram.
+        ["SidebarWidth"]  = 340,
         ["CardHeight"]    = 112,
+
+        // The editor's own commands. A command button is a square plate, not a
+        // round chip: Save, Undo and Save as template are the three things you
+        // press all day, and at 40 in a circle they read as decoration beside
+        // Install. Install is the destination, so its glyph is the largest
+        // thing in the bar.
+        ["CommandButton"] = 56,
+        ["CommandIcon"]   = 26,
+        ["InstallIcon"]   = 36,
 
         // Weight of a hairline: the row separators, panel edges and rules.
         ["HairlineWidth"] = 1,
@@ -55,6 +74,8 @@ public static class Style
         ["ControlPadding"] = new(16, 10),
         ["CardPadding"]    = new(18, 16),
         ["TrackPadding"]   = new(3),
+        // A dropped menu keeps its items off its own rounded corners.
+        ["MenuPadding"]    = new(4),
         ["ZonePadding"]    = new(6),
         // A border is a Thickness, not a width, and a style setter takes the
         // resource as it finds it: a double here throws at styling time.

@@ -1,4 +1,5 @@
 using System.Linq;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
@@ -8,10 +9,12 @@ using Xunit;
 
 namespace QuadStick.App.Tests;
 
-// The shared window frame draws its own close button. It used to take focus
-// on open, so every prompt started on the control that means "cancel": Enter
-// on "Save your changes?" answered Cancel and the click that raised it looked
-// like it had done nothing.
+// The shared window frame every secondary window in the app wears. It used to
+// draw a close button of its own, a few pixels from the operating system's, so
+// on macOS every window asked to be closed twice: the red dot top left and an
+// x top right. It also used to take focus on open, so every prompt started on
+// the control that means "cancel": Enter on "Save your changes?" answered
+// Cancel and the click that raised it looked like it had done nothing.
 public class DialogShellTests
 {
     static Window Wrap(Control content, string title)
@@ -45,6 +48,20 @@ public class DialogShellTests
         w.UpdateLayout();
 
         Assert.True(box.IsFocused, "typing the name would have gone nowhere");
+        w.Close();
+    }
+
+    // One close control per window, and it is the operating system's.
+    [AvaloniaFact]
+    public void TheFrameDrawsNoCloseButtonOfItsOwn()
+    {
+        var w = Wrap(new Button { Content = "Done", IsCancel = true }, "Modes");
+        w.Show();
+        w.UpdateLayout();
+
+        Assert.DoesNotContain(w.GetVisualDescendants().OfType<Button>(),
+            b => (AutomationProperties.GetName(b) ?? "").StartsWith("Close ")
+                 || (b.Content as string) == "\u00d7");
         w.Close();
     }
 

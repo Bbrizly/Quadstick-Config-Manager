@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -19,7 +20,7 @@ public class ToolbarLayoutTests
         "ShareButton", "SaveButton", "UndoButton", "SaveTemplateButton",
         "InstallButton", "HelpButton", "ModeHelpButton",
         "ModesButton", "DeviceViewButton", "RailViewButton",
-        "ListViewButton", "AddRowButton", "UnusedButton",
+        "ListViewButton", "AddRowButton",
     };
 
     // Settings live in one file that every test in the run shares, so a scale
@@ -33,6 +34,15 @@ public class ToolbarLayoutTests
         Settings.Save(s);
         w.Close();
     }
+
+    static double Scaling(MainWindow w) =>
+        (w.Screens.ScreenFromWindow(w) ?? w.Screens.Primary) is { Scaling: > 0 } s ? s.Scaling : 1;
+
+    static double ScreenWidth(MainWindow w) =>
+        (w.Screens.ScreenFromWindow(w) ?? w.Screens.Primary)!.WorkingArea.Width / Scaling(w);
+
+    static double ScreenHeight(MainWindow w) =>
+        (w.Screens.ScreenFromWindow(w) ?? w.Screens.Primary)!.WorkingArea.Height / Scaling(w);
 
     static MainWindow Open(int scalePercent)
     {
@@ -88,22 +98,25 @@ public class ToolbarLayoutTests
         finally { Close(w); }
     }
 
-    // Min size doubles at 200% scale.
+    // Min size doubles at 200% scale. The width is the editor's own 760 plus
+    // the side panel, which is chrome the editor never gets back.
     [AvaloniaFact]
     public void The_window_minimum_grows_with_the_interface_scale()
     {
         var w = Open(100);
         try
         {
-            Assert.Equal(760, w.MinWidth);
+            Assert.Equal(1000, w.MinWidth);
             Assert.Equal(560, w.MinHeight);
 
             w.ApplyInterfaceScale(200);
-            Assert.Equal(1520, w.MinWidth);
-            Assert.Equal(1120, w.MinHeight);
+            // Doubled, or the display, whichever is smaller: a minimum wider
+            // than the screen is a window that cannot be put down anywhere.
+            Assert.Equal(Math.Min(2000, ScreenWidth(w)), w.MinWidth);
+            Assert.Equal(Math.Min(1120, ScreenHeight(w)), w.MinHeight);
 
             w.ApplyInterfaceScale(100);
-            Assert.Equal(760, w.MinWidth);
+            Assert.Equal(1000, w.MinWidth);
         }
         finally { Close(w); }
     }

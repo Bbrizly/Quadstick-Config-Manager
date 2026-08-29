@@ -327,6 +327,30 @@ public class GalleryWindow : Window
         return stack;
     }
 
+    // A command carries a glyph, not a word, so its specimen has to as well:
+    // the whole point of the style is how big the picture inside it comes out.
+    static Button GlyphBtn(string iconKey, params string[] classes)
+    {
+        var icon = new PathIcon();
+        icon.Bind(PathIcon.DataProperty, new DynamicResourceExtension(iconKey));
+        var b = new Button { Content = icon };
+        foreach (var c in classes) b.Classes.Add(c);
+        return b;
+    }
+
+    static Button InstallSpecimen()
+    {
+        var icon = new PathIcon();
+        icon.Bind(PathIcon.DataProperty, new DynamicResourceExtension("IconInstall"));
+        var b = new Button { Classes = { "primary", "install" } };
+        b.Content = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 10,
+            Children = { icon, new TextBlock { Text = "Install to QuadStick", VerticalAlignment = VerticalAlignment.Center } },
+        };
+        return b;
+    }
+
     static Button Btn(string text, params string[] classes)
     {
         var b = new Button { Content = text };
@@ -368,6 +392,10 @@ public class GalleryWindow : Window
                 Btn("Install to QuadStick", "primary")),
             Spec("icon", "Add and delete on every editor row, so it is pressed more than any other. 40px floor.",
                 Btn("+", "icon")),
+            Spec("command", "Save, Undo, Share: the things pressed all day. A square plate, not a round chip.",
+                GlyphBtn("IconSave", "command")),
+            Spec("install", "Install to QuadStick, pinned to the far right of the band. The biggest glyph in the app.",
+                InstallSpecimen()),
             Spec("quiet", "A command that must not compete with Save, like Modes or Advanced.",
                 Btn("Modes...", "quiet")),
             Spec("icon danger", "Delete one row. Red only where the thing is gone for good.",
@@ -582,7 +610,6 @@ public class GalleryWindow : Window
                     Children =
                     {
                         new TextBlock { Text = "dialogshell", Classes = { "dialogtitle" } },
-                        new Button { Content = "×", Classes = { "dialogclose" } },
                     },
                 },
             },

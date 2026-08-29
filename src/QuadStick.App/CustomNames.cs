@@ -65,7 +65,7 @@ public partial class MainWindow
     /// <summary>Test and preview hook: show the names table.</summary>
     public void SelectCustomNamesForPreview()
     {
-        if (_file is not null) SheetPicker.SelectedIndex = _file.Document.Sheets.Count;
+        if (_file is not null) SelectSheet(_file.Document.Sheets.Count);
     }
 
     void BuildCustomNameRows()

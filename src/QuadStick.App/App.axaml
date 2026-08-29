@@ -41,12 +41,6 @@
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
-    <Style Selector="Button.dialogclose">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="FontSize" Value="22"/>
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
-    </Style>
     <!-- A selected row is the app's own blue-grey wherever the list lives.
          Only the dialogs said so, so every list on a page picked up the
          system accent instead: one saturated blue nothing else on the screen
@@ -125,19 +119,19 @@
          for mouth stick and head mouse users, and a shorter button here sits
          centred in the bar with a dead strip above and below it. -->
     <Style Selector="Button.shellnav">
-      <Setter Property="Padding" Value="12,8"/>
+      <Setter Property="Width" Value="{DynamicResource ShellNavButton}"/>
+      <Setter Property="Height" Value="{DynamicResource ShellNavButton}"/>
+      <Setter Property="MinWidth" Value="{DynamicResource ShellNavButton}"/>
+      <Setter Property="MinHeight" Value="{DynamicResource ShellNavButton}"/>
+      <Setter Property="Padding" Value="0"/>
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="FontSize" Value="{DynamicResource SmallSize}"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style Selector="Button.shellnav PathIcon">
-      <Setter Property="Width" Value="17"/>
-      <Setter Property="Height" Value="17"/>
-      <Setter Property="VerticalAlignment" Value="Center"/>
-    </Style>
-    <Style Selector="Button.shellnav TextBlock">
+      <Setter Property="Width" Value="{DynamicResource ShellNavIcon}"/>
+      <Setter Property="Height" Value="{DynamicResource ShellNavIcon}"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
     <Style Selector="Button.shellnav:pointerover /template/ ContentPresenter">
@@ -156,8 +150,17 @@
       <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
     </Style>
     <Style Selector="Button.shellutility">
+      <Setter Property="Width" Value="{DynamicResource ShellSettingsButton}"/>
+      <Setter Property="Height" Value="{DynamicResource ShellSettingsButton}"/>
+      <Setter Property="MinWidth" Value="{DynamicResource ShellSettingsButton}"/>
+      <Setter Property="MinHeight" Value="{DynamicResource ShellSettingsButton}"/>
+      <Setter Property="Padding" Value="0"/>
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.shellutility PathIcon">
+      <Setter Property="Width" Value="{DynamicResource ShellSettingsIcon}"/>
+      <Setter Property="Height" Value="{DynamicResource ShellSettingsIcon}"/>
     </Style>
     <Style Selector="TextBlock.pagetitle">
       <Setter Property="FontSize" Value="32"/>
@@ -320,6 +323,54 @@
       <Setter Property="CornerRadius" Value="{DynamicResource IconRadiusCorner}"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <!-- An editor command: Save, Undo, Save as template. A square plate rather
+         than the round chip these used to be, so they read as the same kind of
+         thing as Install rather than as three small ornaments beside it, and
+         big enough to aim at with a mouth stick. -->
+    <Style Selector="Button.command">
+      <Setter Property="Width" Value="{DynamicResource CommandButton}"/>
+      <Setter Property="Height" Value="{DynamicResource CommandButton}"/>
+      <Setter Property="MinWidth" Value="{DynamicResource CommandButton}"/>
+      <Setter Property="MinHeight" Value="{DynamicResource CommandButton}"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource ControlRadiusCorner}"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.command PathIcon">
+      <Setter Property="Width" Value="{DynamicResource CommandIcon}"/>
+      <Setter Property="Height" Value="{DynamicResource CommandIcon}"/>
+    </Style>
+
+    <!-- Install is the one destination in the bar, so it is the tallest thing
+         in it and carries the biggest glyph. -->
+    <Style Selector="Button.install">
+      <Setter Property="MinHeight" Value="{DynamicResource CommandButton}"/>
+      <Setter Property="Padding" Value="18,10"/>
+      <Setter Property="FontSize" Value="{DynamicResource SubheadSize}"/>
+    </Style>
+    <Style Selector="Button.install PathIcon">
+      <Setter Property="Width" Value="{DynamicResource InstallIcon}"/>
+      <Setter Property="Height" Value="{DynamicResource InstallIcon}"/>
+    </Style>
+
+    <!-- A dropped menu is a panel like any other panel in the app: same plate,
+         same hairline, same corner. Fluent&apos;s default drew a thin system
+         popup with 12px items that did not belong to anything else on screen. -->
+    <Style Selector="FlyoutPresenter, MenuFlyoutPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBorderBrush}"/>
+      <Setter Property="BorderThickness" Value="{DynamicResource HairlineThickness}"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource PanelRadiusCorner}"/>
+      <Setter Property="Padding" Value="{DynamicResource MenuPadding}"/>
+    </Style>
+    <Style Selector="MenuFlyoutPresenter MenuItem">
+      <Setter Property="FontSize" Value="{DynamicResource BodySize}"/>
+      <Setter Property="MinHeight" Value="{DynamicResource ControlHeight}"/>
+      <Setter Property="Padding" Value="{DynamicResource ControlPadding}"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource CellRadiusCorner}"/>
     </Style>
 
     <Style Selector="TextBox">

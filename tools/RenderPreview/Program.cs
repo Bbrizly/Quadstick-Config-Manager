@@ -413,7 +413,7 @@ if (args.Contains("--pseudo"))
     // Scaled is the harsher one, since scale divides the width the layout gets.
     Capture($"{suffix}-8-narrow", w =>
     {
-        w.Width = 760; w.Height = 560;
+        w.Width = 1000; w.Height = 560; // the smallest the window goes now
         w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
         w.SetDeviceViewForPreview(false);
     });
@@ -437,6 +437,15 @@ if (args.Contains("--pseudo"))
         w.LoadProfile(ProfileFile.Load(File.ReadAllText(Path.Combine(corpus, "gta-mode1.csv"))));
         w.SelectCustomNamesForPreview();
         w.AddRowForPreview();
+    });
+
+    // Every secondary window wears the same frame, and this is the busiest one
+    // in it: four controls at the end of a row that fixed widths used to push
+    // off the edge, and the place a mode is added, renamed, moved and deleted.
+    CaptureOwned($"{suffix}-11-modes", owner =>
+    {
+        owner.LoadProfile(ProfileFile.Load(File.ReadAllText(Path.Combine(corpus, "gta-mode1.csv"))));
+        return new ModesWindow(owner);
     });
 
     Capture($"{suffix}-6-singleton", w =>

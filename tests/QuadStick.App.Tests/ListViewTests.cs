@@ -138,7 +138,10 @@ public class ListViewTests
         foreach (var sheet in new[] { 0, 1 })
         {
             w.SelectSheetForPreview(sheet);
-            foreach (var width in new double[] { 1180, 760 })
+            // The panel down the left side takes its width off the plate, so
+            // these are the old 1180 and the window's own minimum, both plus
+            // the panel: the same room for rows as before.
+            foreach (var width in new double[] { 1420, 1000 })
             {
                 w.Width = width;
                 Dispatcher.UIThread.RunJobs();
@@ -625,8 +628,7 @@ public class ListViewTests
         w.LoadProfile(file);
         w.SetDeviceViewForPreview(false);
 
-        var picker = w.GetVisualDescendants().OfType<ComboBox>().First(c => c.Name == "SheetPicker");
-        picker.SelectedIndex = 1; // the Preferences sheet
+        w.SelectSheetForPreview(1); // the Preferences sheet
         w.UpdateLayout();
 
         Assert.Contains(w.GetVisualDescendants().OfType<AutoCompleteBox>(),
@@ -885,9 +887,7 @@ public class ListViewTests
         file = ProfileFile.Load(csv);
         w.LoadProfile(file);
         w.SetDeviceViewForPreview(false);
-        if (sheetIndex > 0)
-            w.GetVisualDescendants().OfType<ComboBox>()
-                .First(c => c.Name == "SheetPicker").SelectedIndex = sheetIndex;
+        if (sheetIndex > 0) w.SelectSheetForPreview(sheetIndex);
         w.UpdateLayout();
         return w;
     }

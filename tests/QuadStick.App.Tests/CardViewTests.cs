@@ -380,7 +380,9 @@ public class CardViewTests
             "Outputs,Function,usb\n" +
             "x,normal,lip,mp_center_puff\n");
         var w = OpenOnLip(file);
-        w.Width = 1180;  // room for the one-line sentence; narrow stacks instead
+        // Room for the one-line sentence; narrow stacks instead. 1180 plus the
+        // width the side panel takes off the editor.
+        w.Width = 1420;
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 

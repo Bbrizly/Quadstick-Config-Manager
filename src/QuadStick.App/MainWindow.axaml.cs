@@ -819,11 +819,7 @@ public partial class MainWindow : Window
 
         UnusedButton.Click += (_, _) => ShowUnusedInputs();
 
-        SheetPicker.SelectionChanged += (_, _) =>
-        {
-            if (SheetPicker.SelectedIndex >= 0 && _file != null)
-            { _sheetIndex = SheetPicker.SelectedIndex; _selectedZone = null; RefreshEditor(); }
-        };
+        AddModeButton.Click += (_, _) => AddModeAndOpen();
 
         // Plain-language explainers, shown as dismissable popups so the answer
         // is one click away and never clutters the editing surface.
@@ -857,6 +853,10 @@ public partial class MainWindow : Window
             if (firstError is null) { Status(Strings.Main_NoErrorsToFix, StatusKind.Ready); return; }
             FocusIssueCell(firstError);
         };
+
+        // Refit the picture to whatever height the panel has now. Cheap: it
+        // sets one MaxHeight, it does not rebuild the diagram.
+        DeviceStageScroll.SizeChanged += (_, _) => FitDeviceStage();
 
         DeviceViewButton.Click += (_, _) => SetDeviceView(true, rail: false);
         RailViewButton.Click += (_, _) => SetDeviceView(true, rail: true);
@@ -1301,7 +1301,11 @@ public partial class MainWindow : Window
             capW = screen.WorkingArea.Width / scaling;
             capH = screen.WorkingArea.Height / scaling;
         }
-        MinWidth = Math.Min(760 * _uiScale, capW);
+        // 760 is what the editor itself needs; the panel down its left side is
+        // permanent chrome, so the window has to be that much wider or every
+        // layout inside gets 240px less than it was measured for. Capped to the
+        // screen either way.
+        MinWidth = Math.Min((760 + Size("SidebarWidth")) * _uiScale, capW);
         MinHeight = Math.Min(560 * _uiScale, capH);
     }
 
@@ -1345,9 +1349,6 @@ public partial class MainWindow : Window
     {
         var compact = RootPanel.Bounds.Width is > 0 and < 930;
         ShellBrandCaption.IsVisible = !compact;
-        ShellHomeLabel.IsVisible = !compact;
-        ShellDeviceLabel.IsVisible = !compact;
-        ShellCommunityLabel.IsVisible = !compact;
     }
 
     // ---- Settings page API: SettingsView.cs calls these so every
@@ -1370,15 +1371,21 @@ public partial class MainWindow : Window
     public static Control DialogShell(Window window, Control content)
     {
         window.FlowDirection = Localization.Direction;
-        var close = new Button { Content = "×", Classes = { "icon", "dialogclose" } };
         var windowTitle = string.IsNullOrWhiteSpace(window.Title) ? "window" : window.Title;
-        AutomationProperties.SetName(close, string.Format(CultureInfo.CurrentCulture, Strings.Main_CloseWindowTitleToLowerInvariant, windowTitle.ToLowerInvariant()));
-        close.Click += (_, _) => window.Close();
 
-        // Focus has to land inside the window or Escape never reaches it, but
-        // it must not land on the close button: every prompt then opened on
-        // the control that means cancel, so Enter on "Save your changes?"
-        // answered Cancel and the Home click that raised it did nothing.
+        // No close button of its own. The window already has the operating
+        // system's, and two of them a few pixels apart is how a port looks:
+        // on macOS the red dot sits top left and this one sat top right, so
+        // every window in the app asked to be closed twice. Escape and the
+        // window's own Done/Cancel are the other two ways out and both stay.
+        var shell = new Border { Classes = { "dialogshell" } };
+
+        // Focus has to land inside the window or Escape never reaches it, and
+        // it must not land on something that means cancel: a prompt that opens
+        // on Cancel answers Cancel to Enter, so "Save your changes?" threw the
+        // work away and the Home click that raised it looked like it did
+        // nothing. The shell itself is the last resort, for a window with
+        // nothing in it to focus at all.
         window.Opened += (_, _) =>
         {
             var inside = content.GetSelfAndVisualDescendants().OfType<Control>()
@@ -1387,7 +1394,7 @@ public partial class MainWindow : Window
             var first = inside.FirstOrDefault(c => c is TextBox)
                      ?? inside.FirstOrDefault(c => c is Button { IsDefault: true })
                      ?? inside.FirstOrDefault();
-            (first ?? close).Focus();
+            (first ?? shell).Focus();
         };
 
         var title = new TextBlock
@@ -1402,31 +1409,17 @@ public partial class MainWindow : Window
         var header = new Border
         {
             Classes = { "dialogheader" },
-            Child = new DockPanel
+            Child = new StackPanel
             {
-                Children =
-                {
-                    new StackPanel
-                    {
-                        Orientation = Orientation.Horizontal,
-                        Spacing = 10,
-                        Children =
-                        {
-                            statusDot,
-                            title,
-                        },
-                    },
-                    close,
-                },
+                Orientation = Orientation.Horizontal,
+                Spacing = 10,
+                Children = { statusDot, title },
             },
         };
-        DockPanel.SetDock(close, Dock.Right);
         DockPanel.SetDock(header, Dock.Top);
-        return new Border
-        {
-            Classes = { "dialogshell" },
-            Child = new DockPanel { Children = { header, content } },
-        };
+        shell.Focusable = true;
+        shell.Child = new DockPanel { Children = { header, content } };
+        return shell;
     }
 
     async Task ShowDialogInShellAsync(Window dialog)
@@ -1463,8 +1456,7 @@ public partial class MainWindow : Window
             ? 0
             : Math.Clamp(selectSheetIndex, 0, _file.Document.Sheets.Count - 1);
         _selectedZone = null;
-        RepopulateSheetPicker(_sheetIndex);
-        RefreshEditor();
+        RefreshEditor(); // rebuilds the modes list from the file it just changed
         if (status.Length > 0) Status(status, StatusKind.Ready);
     }
 
@@ -1505,7 +1497,7 @@ public partial class MainWindow : Window
         if (_file is not null)
         {
             next.OpenInEditor(_file, _savePath, ProfileSource.File, track: false);
-            next.RepopulateSheetPicker(_sheetIndex); // same mode open as before
+            next.SelectSheet(_sheetIndex); // same mode open as before
         }
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             desktop.MainWindow = next;
@@ -1657,7 +1649,9 @@ public partial class MainWindow : Window
     void ShowEditor()
     {
         ShowPage(EditorView, null);
-        SheetPicker.Focus(); // the name box would put a caret on the filename
+        // The mode the profile opens on, not the name box: that would put a
+        // caret on the filename.
+        (_modeRows.GetValueOrDefault(_sheetIndex) as Control ?? EditorSidebar).Focus();
 
     }
 
@@ -2125,7 +2119,6 @@ public partial class MainWindow : Window
         LoadDrafts(savePath);
         _draftedRevision = -1; // new file: its Revision counter is unrelated to the last one's
         _sheetIndex = 0;
-        RepopulateSheetPicker(0);
         FileNameBox.Text = BareName(file.Document.CsvFileName);
         var headerName = file.Document.HeaderName;
         var bareTitle = BareName(file.Document.CsvFileName);
@@ -2144,26 +2137,90 @@ public partial class MainWindow : Window
         }
     }
 
-    void RepopulateSheetPicker(int select)
+    /// <summary>Open a sheet in the editor. Everything on screen follows from
+    /// which one is open, so nothing sets _sheetIndex on its own except
+    /// ModesChanged, which knows the file changed shape underneath it.</summary>
+    void SelectSheet(int index)
     {
         if (_file is null) return;
-        // Numbered the way the device numbers them, and the way the modes list
-        // and the import review both do: only a mode takes a number. Numbering
-        // the rows instead put "2: Preferences" above "3: Drive" while every
-        // other screen called that same sheet mode 2.
+        // One past the last sheet is the names table: a view onto column L, not
+        // a sheet in the file. See CustomNames.cs.
+        index = Math.Clamp(index, 0, _file.Document.Sheets.Count);
+        if (index == _sheetIndex) return;
+        _sheetIndex = index;
+        _selectedZone = null;
+        RefreshEditor();
+    }
+
+    // The rows of the modes list by sheet index, so the one that is open can
+    // take focus back after the list is rebuilt under it.
+    readonly Dictionary<int, ToggleButton> _modeRows = new();
+
+    // The modes list down the left side. Numbered the way the device numbers
+    // them, and the way the modes window and the import review both do: only a
+    // mode takes a number. Numbering the rows instead put "2: Preferences"
+    // above "3: Drive" while every other screen called that same sheet mode 2.
+    void BuildModeList()
+    {
+        ModeList.Children.Clear();
+        _modeRows.Clear();
+        if (_file is null) return;
         int mode = 0;
-        var items = _file.Document.Sheets.Select(s => s.Type switch
+        var labels = _file.Document.Sheets.Select(sheet => sheet.Type switch
         {
             SheetType.Preferences => "Preferences",
             SheetType.Infrared => "Infrared",
             _ => string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeNumberAndName, ++mode,
-                    s.ModeName.Length > 0 ? s.ModeName : Strings.Main_UnnamedMode),
+                    sheet.ModeName.Length > 0 ? sheet.ModeName : Strings.Main_UnnamedMode),
         }).ToList();
-        // Last, and without a number: it is a view onto column L, not a sheet
-        // in the file. See CustomNames.cs.
-        items.Add(CustomNamesLabel);
-        SheetPicker.ItemsSource = items;
-        SheetPicker.SelectedIndex = select;
+        labels.Add(CustomNamesLabel);
+        for (int i = 0; i < labels.Count; i++) ModeList.Children.Add(ModeRow(i, labels[i]));
+    }
+
+    // The same selectable row a part gets, for the same reason: one list of
+    // things where one of them is open. See RailRow.
+    Control ModeRow(int index, string label)
+    {
+        var row = new ToggleButton
+        {
+            Classes = { "zone" },
+            Content = new TextBlock
+            { Text = label, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Left,
+            Padding = new Avalonia.Thickness(12, 9),
+            IsChecked = index == _sheetIndex,
+        };
+        AutomationProperties.SetName(row, label);
+        row.Click += (_, _) =>
+        {
+            SelectSheet(index);
+            // Pressing the open mode again must not leave the list with nothing
+            // checked, and the rebuild above threw this control away, so focus
+            // goes to whatever replaced it.
+            row.IsChecked = index == _sheetIndex;
+            _modeRows.GetValueOrDefault(index)?.Focus();
+        };
+        _modeRows[index] = row;
+        return row;
+    }
+
+    /// <summary>Add a mode and open it, the way the modes window adds one:
+    /// named past any "Mode N" already taken, so the plus never stops to ask.
+    /// Renaming it is one button below the list.</summary>
+    public int AddModeAndOpen()
+    {
+        if (_file is null) return -1;
+        var sheets = _file.Document.Sheets;
+        // Two modes with the same name are legal but unreadable in a list, so
+        // count past any name already taken.
+        var taken = sheets.Where(s => s.Type == SheetType.ProfileName)
+            .Select(s => s.ModeName).ToHashSet();
+        int n = sheets.Count(s => s.Type == SheetType.ProfileName) + 1;
+        while (taken.Contains($"Mode {n}")) n++;
+        int idx = _file.AddModeSheet($"Mode {n}");
+        ModesChanged(idx, Strings.Modes_ModeAdded);
+        return idx;
     }
 
     // One dialog serves every "name a mode" prompt (add, rename, duplicate);
@@ -2741,12 +2798,15 @@ public partial class MainWindow : Window
         }
         flyout.Content = new ScrollViewer { Content = body, MaxHeight = 420 };
         flyout.Opened += (_, _) => body.Focus();
-        flyout.ShowAt(UnusedButton);
+        // The button is off for this release, and a flyout cannot hang off a
+        // control that is not on screen, so it opens under the modes list.
+        flyout.ShowAt(UnusedButton.IsVisible ? UnusedButton : ModesButton);
     }
 
     void RefreshEditor()
     {
         bool device = _deviceView && CurrentSheet?.Type == SheetType.ProfileName;
+        BuildModeList();
         GridContainer.IsVisible = !device;
         DeviceContainer.IsVisible = device;
         DeviceViewButton.Classes.Set("primary", device && !_railView);
@@ -2759,33 +2819,48 @@ public partial class MainWindow : Window
         AutomationProperties.SetName(AddRowButton, OnCustomNames
             ? Strings.Main_AddARowToThe
             : Strings.Main_AddANewBindingRow);
-        // The words toggle only changes Device View labels; List View already
-        // shows the raw names, so hide it there rather than offer a dead control.
-        LabelStyleButton.IsVisible = device;
+        // The words toggle and the card style only change the split editor;
+        // Rows view already shows the raw names and has no cards, so they go
+        // rather than sit there dead.
+        LabelStyleButton.IsVisible = CardViewButton.IsVisible = device;
+        // Device View adds a mapping from the part you are looking at, which
+        // says where the row landed. In the band it made a row appear somewhere
+        // off screen, so the band belongs to Rows view only.
+        AddRowButton.IsVisible = RowCommandBar.IsVisible = !device;
+        // Which QuadStick, whether one is plugged in and which mode is open are
+        // facts about the machine in front of you, not about the view, so the
+        // panel says them whichever view is on.
         var connected = Device.FindCandidatesCached().Count > 0;
-        if (device)
+        DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
+            connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected, plainDot: !connected);
+        bool onMode = CurrentSheet?.Type == SheetType.ProfileName;
+        DeviceHeaderMode.IsVisible = onMode;
+        if (onMode)
         {
-            // Device View is the signature surface: a header row above the
-            // canvas repeats connection + mode so it reads as the primary
-            // editor, not a secondary tab.
-            DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
-                connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected, plainDot: !connected);
             var modeName = CurrentSheet is { } cs ? (cs.ModeName.Length > 0 ? cs.ModeName : cs.Type.ToString()) : "";
-            DeviceHeaderMode.Text = modeName.Length > 0
-                ? string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeNamed, modeName) : "";
             int modeNumber = CurrentModeNumber();
-            DeviceHeaderLights.Text = ModeLights.For(modeNumber) is { } lit
+            // Which mode, and what the device's own lights show for it: one
+            // line, because they are one fact about the thing in front of you.
+            var lights = ModeLights.For(modeNumber) is { } lit
                 ? string.Format(CultureInfo.CurrentCulture, Strings.Main_DeviceShowsModeLightsDescribeLit, ModeLights.Describe(lit))
                 : string.Format(CultureInfo.CurrentCulture, Strings.Main_DeviceHasNoLightPattern, modeNumber);
-            BuildDeviceView(); BuildZoneDetail();
+            DeviceHeaderMode.Text = modeName.Length > 0
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeNamed, modeName) + "  ·  " + lights
+                : lights;
         }
+        if (device) { BuildDeviceView(); BuildZoneDetail(); }
         else RebuildRows();
+        // The parts with nowhere to sit on the photo. The parts list already
+        // names every one of them, and Rows view shows every row there is, so
+        // the list in the panel is the diagram's own half of that job.
+        ZoneList.IsVisible = device && !_railView;
         // Preferences and Infrared sheets have no inputs, so the button only
         // exists on a mode. The count rides on the label, so the number is
         // there at a glance without opening anything. Refreshed here, the one
         // place every edit already funnels through, so it is never stale.
+        // Hidden for this release (see the XAML); the content is still kept
+        // live so turning it back on needs nothing but the IsVisible line.
         bool mode = CurrentSheet?.Type == SheetType.ProfileName;
-        UnusedButton.IsVisible = mode;
         if (mode)
         {
             int free = UnusedInputs().Count();
@@ -2821,6 +2896,8 @@ public partial class MainWindow : Window
     void BuildDeviceView()
     {
         DeviceCanvas.Children.Clear();
+        ZoneList.Children.Clear();
+        _stageBox = null;
         _zoneButtons.Clear();
         _cellBorders.Clear(); // stale entries from other zones/profiles would get issue-highlighted
         var byZone = BindingsByZone();
@@ -2881,20 +2958,41 @@ public partial class MainWindow : Window
         }
         // Shrinks to fit a narrow panel instead of clipping a hotspot off the
         // edge, and is never blown up past the photo's own size.
-        DeviceCanvas.Children.Add(new Viewbox
+        _stageBox = new Viewbox
         {
             Child = stage, Stretch = Stretch.Uniform,
             StretchDirection = StretchDirection.DownOnly,
             HorizontalAlignment = HorizontalAlignment.Center,
-        });
+        };
+        FitDeviceStage();
+        DeviceCanvas.Children.Add(_stageBox);
 
-        // ---- Secondary parts along the bottom: hole combos, switch jacks, USB,
-        // then unmapped rows last so "No input yet" lands at the bottom right. ----
-        var extras = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Avalonia.Thickness(0, 18, 0, 0) };
-        void AddExtra(Zone z) { var t = ZoneButton(z, byZone, 210, minHeight: 108); t.Margin = new Avalonia.Thickness(0, 0, 12, 12); extras.Children.Add(t); }
-        foreach (var z in visible.Where(z => z.Id is "combo" or "jacks" or "other")) AddExtra(z);
-        foreach (var z in visible.Where(z => z.Id is "unset")) AddExtra(z);
-        if (extras.Children.Count > 0) DeviceCanvas.Children.Add(extras);
+        // ---- Secondary parts, in the panel down the left side: hole combos,
+        // switch jacks, USB, per-mode settings, then unmapped rows last so "No
+        // input yet" reads as the end of the list. They have nowhere to sit on
+        // the photo, and under it they pushed the QuadStick itself off the top
+        // of the panel it is the whole point of. ----
+        foreach (var z in visible.Where(z => z.Id is "combo" or "jacks" or "other" or "settings")
+                                 .Concat(visible.Where(z => z.Id is "unset")))
+            ZoneList.Children.Add(RailRow(z, byZone, compact: true));
+    }
+
+    // The scaled photo, kept so a resize can refit it without a full rebuild.
+    Viewbox? _stageBox;
+
+    // Under this the labels on the picture stop being readable, so the panel
+    // scrolls instead of shrinking further.
+    const double StageFloorH = 280;
+
+    // A Viewbox inside a ScrollViewer is measured against infinite height, so
+    // it only ever scales to the width and then runs off the bottom. Capping it
+    // to the height actually on screen makes it fit both ways, and the floor
+    // below is where scrolling takes over.
+    void FitDeviceStage()
+    {
+        if (_stageBox is null) return;
+        double room = DeviceStageScroll.Bounds.Height;
+        _stageBox.MaxHeight = room > 0 ? Math.Max(StageFloorH, room) : StageH;
     }
 
     // The photo and its labels are laid out at one fixed size and scaled as a
@@ -3066,7 +3164,7 @@ public partial class MainWindow : Window
     // A part row for the Parts List view: the same selectable control as a
     // diagram tile, laid out as a wide row (name + mapping count) so the left
     // side becomes a plain list to arrow through. Feeds the same editor.
-    Control RailRow(Zone z, Dictionary<string, List<Binding>> byZone)
+    Control RailRow(Zone z, Dictionary<string, List<Binding>> byZone, bool compact = false)
     {
         byZone.TryGetValue(z.Id, out var bindings);
         int count = bindings?.Count ?? 0;
@@ -3094,7 +3192,10 @@ public partial class MainWindow : Window
         {
             Classes = { "zone" }, HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
-            Padding = new Avalonia.Thickness(14, 12), Content = row, IsChecked = selected,
+            // Tighter in the side panel: four of these plus the modes list
+            // and the view keys have to share one fixed-width column.
+            Padding = new Avalonia.Thickness(compact ? 10 : 14, compact ? 8 : 12),
+            Content = row, IsChecked = selected,
         };
         if (foreign) btn.Opacity = 0.5;
         SetZoneAccessibleName(btn, z, bindings, count, foreign, selected);
@@ -3611,8 +3712,20 @@ public partial class MainWindow : Window
                     ZoneDetailPanel.Children.Add(free);
                 }
             }
-            var add = new Button { Content = Strings.Main_MapSomethingToThis, Classes = { "quiet" } };
-            AutomationProperties.SetName(add, string.Format(CultureInfo.CurrentCulture, Strings.Main_AddANewMappingFor, zone.Title));
+            // A plus, not a sentence. This is the one thing you press on a part
+            // you are looking at, and the words competed with the list of what
+            // is free above it. The sentence stays on the name a screen reader
+            // reads and in the tooltip, so nothing is lost by dropping it.
+            var add = new Button
+            {
+                Content = Glyph("IconAdd", "OnAccent"),
+                Classes = { "primary", "command" },
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Avalonia.Thickness(0, 4, 0, 0),
+            };
+            var addName = string.Format(CultureInfo.CurrentCulture, Strings.Main_AddANewMappingFor, zone.Title);
+            AutomationProperties.SetName(add, addName);
+            ToolTip.SetTip(add, addName);
             add.Click += (_, _) => AddMappingWithInput(zone.DefaultInput);
             ZoneDetailPanel.Children.Add(add);
         }
@@ -3696,7 +3809,7 @@ public partial class MainWindow : Window
 
     public void AddRowForPreview() => AddRow();
 
-    public void SelectSheetForPreview(int index) => SheetPicker.SelectedIndex = index;
+    public void SelectSheetForPreview(int index) => SelectSheet(index);
 
     public ModeSheet? CurrentSheetForPreview => CurrentSheet;
 
@@ -4792,10 +4905,10 @@ public partial class MainWindow : Window
     {
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
 
-        // The whole-row delete: a red trash circle under the plus.
-        var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
+        // The whole-row delete: a red trash circle under the plus. Same control
+        // the Modes window deletes a mode with; see RowControls.
+        var del = RowControls.Delete(string.Format(CultureInfo.CurrentCulture, Strings.Main_DeleteRowBRow, b.Row));
         ToolTip.SetTip(del, Strings.Main_DeleteThisWholeRow);
-        AutomationProperties.SetName(del, string.Format(CultureInfo.CurrentCulture, Strings.Main_DeleteRowBRow, b.Row));
         del.Click += (_, _) => DeleteListRow(b);
         rowButtons.Children.Add(del);
         p.Children.Add(At(rowButtons, 4));
@@ -4810,11 +4923,10 @@ public partial class MainWindow : Window
         // edges) so the click targets stay put while a row is walked up or down.
         int rowIndex = CurrentSheet!.Bindings.IndexOf(b);
         int column = 6;
-        foreach (var (delta, word, angle) in new[] { (-1, "up", 180.0), (+1, "down", 0.0) })
+        foreach (var (delta, word) in new[] { (-1, "up"), (+1, "down") })
         {
-            var move = IconButton("IconChevron", string.Format(CultureInfo.CurrentCulture, Strings.Main_MoveRowBRowWord, b.Row, word));
-            // The chevron points right; +90 turns it down, 180+90 turns it up.
-            ((PathIcon)move.Content!).RenderTransform = new RotateTransform(angle + 90);
+            var move = RowControls.Move(delta < 0,
+                string.Format(CultureInfo.CurrentCulture, Strings.Main_MoveRowBRowWord, b.Row, word));
             move.Tag = (word, b.Row);
             move.IsEnabled = rowIndex + delta >= 0 && rowIndex + delta < CurrentSheet!.Bindings.Count;
             move.Click += (_, _) => MoveListRow(b, delta);
@@ -5256,17 +5368,19 @@ public partial class MainWindow : Window
         {
             int sheetIdx = _file.Document.Sheets.FindIndex(s => s.Bindings.Any(b => b.Row == row));
             if (sheetIdx >= 0 && sheetIdx != _sheetIndex)
-                SheetPicker.SelectedIndex = sheetIdx; // triggers RefreshEditor synchronously
+                SelectSheet(sheetIdx); // refreshes the editor synchronously
 
             if (_deviceView && sheetIdx >= 0)
             {
                 var binding = _file.Document.Sheets[sheetIdx].Bindings.First(b => b.Row == row);
                 var zoneId = binding.Inputs.Count > 0 ? ZoneOf(binding.Inputs[0]) : "unset";
-                if (_selectedZone != zoneId)
-                {
-                    _selectedZone = zoneId;
-                    BuildDeviceView(); BuildZoneDetail();
-                }
+                // In card mode a closed mapping has no cells at all, so jumping
+                // to a problem landed on nothing and looked like a dead click.
+                // Select the part AND open the row, then rebuild, every time:
+                // the row can be the wrong one even when the part is right.
+                _selectedZone = zoneId;
+                _expandedMapping = row;
+                BuildDeviceView(); BuildZoneDetail();
             }
         }
 

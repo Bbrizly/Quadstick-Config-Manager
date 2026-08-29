@@ -35,32 +35,36 @@
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4"
                   HorizontalAlignment="Center" VerticalAlignment="Center">
         <Button x:Name="ShellHomeButton" Classes="shellnav active"
+                ToolTip.Tip="{x:Static app:Strings.Shell_Home}"
                 AutomationProperties.Name="{x:Static app:Strings.Shell_Home}">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconHome}"/><TextBlock x:Name="ShellHomeLabel" Text="{x:Static app:Strings.Shell_Home}"/></StackPanel>
+          <PathIcon Data="{DynamicResource IconHome}"/>
         </Button>
         <!-- Three destinations, no commands. New and Open were commands sitting
              in a row of places, and both already live on Home where a profile
              gets started. -->
         <Button x:Name="ShellDeviceButton" Classes="shellnav"
+                ToolTip.Tip="{x:Static app:Strings.Shell_ManageFilesOnYourQuadStick}"
                 AutomationProperties.Name="{x:Static app:Strings.Shell_ManageFilesOnYourQuadStick}">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconDevice}"/><TextBlock x:Name="ShellDeviceLabel" Text="{x:Static app:Strings.Shell_Device}"/></StackPanel>
+          <PathIcon Data="{DynamicResource IconDevice}"/>
         </Button>
         <Button x:Name="ShellCommunityButton" Classes="shellnav"
+                ToolTip.Tip="{x:Static app:Strings.Shell_BrowseCommunityProfiles}"
                 AutomationProperties.Name="{x:Static app:Strings.Shell_BrowseCommunityProfiles}">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconCommunity}"/><TextBlock x:Name="ShellCommunityLabel" Text="{x:Static app:Strings.Shell_Community}"/></StackPanel>
+          <PathIcon Data="{DynamicResource IconCommunity}"/>
         </Button>
       </StackPanel>
 
       <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
         <ComboBox x:Name="AppearancePicker" MinWidth="112"
                   AutomationProperties.Name="{x:Static app:Strings.Shell_AppearanceChooseSystemLightOr}"/>
-        <!-- Deliberately the largest control in the chrome. It was a 40px key
-             with a 19px glyph and it is the one thing people go looking for
-             when the interface itself is the problem (scale, theme, contrast). -->
-        <Button x:Name="SettingsButton" Classes="icon shellutility" Content="⚙"
-                Width="52" Height="52" MinWidth="52" MinHeight="52" FontSize="30"
+        <!-- Deliberately the largest control in the chrome. It is the one thing
+             people go looking for when the interface itself is the problem
+             (scale, theme, contrast). -->
+        <Button x:Name="SettingsButton" Classes="shellutility"
                 ToolTip.Tip="{x:Static app:Strings.Shell_Settings}"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_OpenSettings}"/>
+                AutomationProperties.Name="{x:Static app:Strings.Shell_OpenSettings}">
+          <PathIcon Data="{DynamicResource IconSettings}"/>
+        </Button>
 
       </StackPanel>
     </Grid>
@@ -211,139 +215,100 @@
     <!-- ============ EDITOR ============ -->
     <DockPanel x:Name="EditorView" IsVisible="False">
 
-      <!-- Row 1: back, which profile, then what to do with it.
-           A WrapPanel, not a Grid. Interface scale divides the width the layout
-           actually gets (ScaleContent.Width = window / scale), so a 1180px
-           window at 200% lays out in 590 logical px. A row that cannot wrap
-           does not shrink there, it pushes its last buttons off the edge of
-           the window where nobody can reach them at all. Wrapping keeps every
-           command on screen and keeps its label, which matters more here than
-           a tidy line: this app is driven by mouth joysticks and switches, so
-           icon-only toolbars and side-scrolling are both hostile. -->
+      <!-- The command band. Wrapping, not a Grid: interface scale divides the
+           width the layout actually gets (ScaleContent.Width = window / scale),
+           so a 1180px window at 200% lays out in 590 logical px. A row that
+           cannot wrap does not shrink there, it pushes its last buttons off the
+           edge of the window where nobody can reach them at all. Wrapping keeps
+           every command on screen and keeps its label, which matters more here
+           than a tidy line: this app is driven by mouth joysticks and switches,
+           so icon-only toolbars and side-scrolling are both hostile. -->
       <Border DockPanel.Dock="Top" Classes="editorchrome">
         <StackPanel>
-      <WrapPanel Classes="toolbar" Margin="0,0,0,4">
-        <TextBlock Text="{x:Static app:Strings.Shell_Profile}" VerticalAlignment="Center" Classes="secondary"/>
-        <TextBox x:Name="FileNameBox" Width="230" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold"
-                 VerticalAlignment="Center"
-                 AutomationProperties.Name="{x:Static app:Strings.Shell_ProfileNameEditToRename}">
-          <TextBox.InnerRightContent>
-            <TextBlock Text="{x:Static app:Strings.Shell_Csv}" Classes="secondary" VerticalAlignment="Center" Margin="0,0,8,0"
-                       FontSize="{DynamicResource SubheadSize}"/>
-          </TextBox.InnerRightContent>
-        </TextBox>
-        <!-- Off for this release. See AgentFeature. -->
-        <Button x:Name="AgentButton" Classes="quiet" Content="{x:Static app:Strings.Shell_AskForAChange}"
-                IsVisible="{x:Static app:AgentFeature.Enabled}"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_DescribeAChangeInPlain}"/>
-        <!-- Save, Undo, Share and Help are the four everyone already knows by
-             shape. As words they were four equal-weight grey rectangles and the
-             one destination that matters, Install, had to shout over them.
-             AutomationProperties.Name still carries the full sentence, and each
-             one has a tooltip, so nothing is lost to a screen reader or to
-             somebody who does not recognise the glyph. -->
-        <Button x:Name="ShareButton" Classes="icon quiet" ToolTip.Tip="{x:Static app:Strings.Shell_ShareAsAGoogleSheet}"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_ShareThisProfileAsA}">
-          <PathIcon Data="{DynamicResource IconShare}"/>
+      <!-- Which profile on the left, where it is going on the right. Install is
+           the destination, so it is pinned to the far edge with Save beside it
+           and nothing else can push either of them off: a DockPanel, not a
+           WrapPanel item, because a wrapped Install lands in the middle of a
+           line and stops reading as the end of the job. Everything else stays
+           in a WrapPanel for the reason above. -->
+      <DockPanel Margin="0,0,0,4">
+        <Button x:Name="InstallButton" DockPanel.Dock="Right" Classes="primary install" Margin="10,0,0,6"
+                VerticalAlignment="Top"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_InstallThisProfileOntoA}">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <PathIcon Data="{DynamicResource IconInstall}"/>
+            <TextBlock Text="{x:Static app:Strings.Shell_InstallToQuadStick}" VerticalAlignment="Center"/>
+          </StackPanel>
         </Button>
-        <!-- Which profile | what to do with it. The gap used to do this job,
-             before the actions stopped being pinned to the right edge. -->
-        <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
-        <Button x:Name="SaveButton" Classes="icon" ToolTip.Tip="{x:Static app:Strings.Shell_SaveCtrlS}"
+        <Button x:Name="SaveButton" DockPanel.Dock="Right" Classes="command" Margin="10,0,0,6"
+                VerticalAlignment="Top"
+                ToolTip.Tip="{x:Static app:Strings.Shell_SaveCtrlS}"
                 AutomationProperties.Name="{x:Static app:Strings.Shell_SaveThisProfileShortcutControl}">
           <PathIcon Data="{DynamicResource IconSave}"/>
         </Button>
-        <Button x:Name="UndoButton" Classes="icon" ToolTip.Tip="{x:Static app:Strings.Shell_UndoCtrlZ}"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_UndoTheLastChangeShortcut}">
-          <PathIcon Data="{DynamicResource IconUndo}"/>
-        </Button>
-        <Button x:Name="SaveTemplateButton" Classes="icon quiet" ToolTip.Tip="{x:Static app:Strings.Shell_SaveAsATemplate}"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_SaveThisProfileAsA}">
-          <PathIcon Data="{DynamicResource IconTemplate}"/>
-        </Button>
-        <Button x:Name="InstallButton" Classes="primary"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_InstallThisProfileOntoA}">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <PathIcon Width="18" Height="18" Data="{DynamicResource IconInstall}"/>
-            <TextBlock Text="{x:Static app:Strings.Shell_InstallToQuadStick}"/>
-          </StackPanel>
-        </Button>
-        <Button x:Name="HelpButton" Classes="icon quiet" ToolTip.Tip="{x:Static app:Strings.Shell_HowItWorksF1}"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_OpenTheQuickGuideShortcut}">
-          <PathIcon Data="{DynamicResource IconHelp}"/>
-        </Button>
-      </WrapPanel>
+        <WrapPanel Classes="toolbar">
+          <TextBlock Text="{x:Static app:Strings.Shell_Profile}" VerticalAlignment="Center" Classes="secondary"/>
+          <TextBox x:Name="FileNameBox" Width="230" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   AutomationProperties.Name="{x:Static app:Strings.Shell_ProfileNameEditToRename}">
+            <TextBox.InnerRightContent>
+              <TextBlock Text="{x:Static app:Strings.Shell_Csv}" Classes="secondary" VerticalAlignment="Center" Margin="0,0,8,0"
+                         FontSize="{DynamicResource SubheadSize}"/>
+            </TextBox.InnerRightContent>
+          </TextBox>
+          <!-- Off for this release. See AgentFeature. -->
+          <Button x:Name="AgentButton" Classes="quiet" Content="{x:Static app:Strings.Shell_AskForAChange}"
+                  IsVisible="{x:Static app:AgentFeature.Enabled}"
+                  AutomationProperties.Name="{x:Static app:Strings.Shell_DescribeAChangeInPlain}"/>
+          <!-- Save, Undo, Share and Help are the four everyone already knows by
+               shape. As words they were four equal-weight grey rectangles and the
+               one destination that matters, Install, had to shout over them.
+               AutomationProperties.Name still carries the full sentence, and each
+               one has a tooltip, so nothing is lost to a screen reader or to
+               somebody who does not recognise the glyph. -->
+          <Button x:Name="ShareButton" Classes="command quiet" ToolTip.Tip="{x:Static app:Strings.Shell_ShareAsAGoogleSheet}"
+                  AutomationProperties.Name="{x:Static app:Strings.Shell_ShareThisProfileAsA}">
+            <PathIcon Data="{DynamicResource IconShare}"/>
+          </Button>
+          <!-- Which profile | what to do with it. The gap on the left of a
+               separator is the previous item's own 10px trailing margin, so the
+               separator only carries the gap on its right: matching numbers here
+               made the left side 16 and the right side 6. -->
+          <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="4,8,14,8"/>
+          <Button x:Name="UndoButton" Classes="command" ToolTip.Tip="{x:Static app:Strings.Shell_UndoCtrlZ}"
+                  AutomationProperties.Name="{x:Static app:Strings.Shell_UndoTheLastChangeShortcut}">
+            <PathIcon Data="{DynamicResource IconUndo}"/>
+          </Button>
+          <Button x:Name="SaveTemplateButton" Classes="command quiet" ToolTip.Tip="{x:Static app:Strings.Shell_SaveAsATemplate}"
+                  AutomationProperties.Name="{x:Static app:Strings.Shell_SaveThisProfileAsA}">
+            <PathIcon Data="{DynamicResource IconTemplate}"/>
+          </Button>
+          <Button x:Name="HelpButton" Classes="command quiet" ToolTip.Tip="{x:Static app:Strings.Shell_HowItWorksF1}"
+                  AutomationProperties.Name="{x:Static app:Strings.Shell_OpenTheQuickGuideShortcut}">
+            <PathIcon Data="{DynamicResource IconHelp}"/>
+          </Button>
+        </WrapPanel>
+      </DockPanel>
 
       <ContentControl x:Name="StatusHost" Margin="0,0,0,4"/>
 
-      <!-- Row 2: which mode (with a plain-language explainer), how to view it,
-           add a row, what is still free. Wraps, for the same reason as row 1. -->
-      <WrapPanel Classes="toolbar" Margin="0,0,0,-6">
-        <!-- The question mark reads as part of the label it explains, so it
-             comes first. Sat after the dropdown it looked like a third control
-             in the row and people read it as "mode, something, ?". -->
-        <Button x:Name="ModeHelpButton" Classes="icon quiet" Content="?"
-                ToolTip.Tip="{x:Static app:Strings.Shell_WhatIsAMode}"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_WhatIsAModeAnd}"/>
-        <TextBlock Text="{x:Static app:Strings.Shell_Mode}" VerticalAlignment="Center" FontSize="{DynamicResource BodySize}"/>
-        <ComboBox x:Name="SheetPicker" MinWidth="180"
-                  AutomationProperties.Name="{x:Static app:Strings.Shell_SelectWhichModeToEdit}"/>
-        <!-- "Modes..." named a dialog, not a job. Everything people come here
-             to do (add, rename, reorder, delete) is editing the set of them. -->
-        <Button x:Name="ModesButton" Classes="quiet"
-                ToolTip.Tip="{x:Static app:Strings.Shell_AddRenameReorderAndDelete}"
-                AutomationProperties.Name="{x:Static app:Strings.Shell_EditModesAddRenameReorder}">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <PathIcon Width="18" Height="18" Data="{DynamicResource IconTemplate}"/>
-            <TextBlock Text="{x:Static app:Strings.Shell_EditModes}"/>
-          </StackPanel>
-        </Button>
-        <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
-        <!-- These three are one mutually-exclusive choice, so they sit in a
-             shared track like a rocker switch bank rather than as loose,
-             independent buttons. Each key shows what it will give you: the
-             device, the parts of it, or the sheet the file actually is. The
-             word stays under the picture, because a glyph alone is a guess. -->
-        <!-- Label and track wrap as one item. Left loose in the WrapPanel, a
-             narrow window broke the line between them and left the word "View"
-             sitting alone over nothing. -->
-        <StackPanel Orientation="Horizontal" Spacing="2">
-        <TextBlock Text="{x:Static app:Strings.Shell_View}" VerticalAlignment="Center" Classes="secondary"
-                   FontSize="{DynamicResource SmallSize}" Margin="0,0,2,0"/>
-        <Border Classes="switchtrack">
-          <StackPanel Orientation="Horizontal" Spacing="2">
-            <Button x:Name="DeviceViewButton" Classes="switchkey viewkey"
-                    ToolTip.Tip="{x:Static app:Strings.Shell_SeeTheMappingsOnA}"
-                    AutomationProperties.Name="{x:Static app:Strings.Shell_ShowTheMappingsOnA}">
-              <StackPanel Spacing="3" HorizontalAlignment="Center">
-                <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewDevice}"/>
-                <TextBlock Text="{x:Static app:Strings.Shell_Device}" HorizontalAlignment="Center"/>
-              </StackPanel>
-            </Button>
-            <Button x:Name="RailViewButton" Classes="switchkey viewkey"
-                    ToolTip.Tip="{x:Static app:Strings.Shell_StepThroughThePartsOne}"
-                    AutomationProperties.Name="{x:Static app:Strings.Shell_ShowThePartsAsA}">
-              <StackPanel Spacing="3" HorizontalAlignment="Center">
-                <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewRail}"/>
-                <TextBlock Text="{x:Static app:Strings.Shell_Parts}" HorizontalAlignment="Center"/>
-              </StackPanel>
-            </Button>
-            <Button x:Name="ListViewButton" Classes="switchkey viewkey"
-                    ToolTip.Tip="{x:Static app:Strings.Shell_SeeTheRowsTheWay}"
-                    AutomationProperties.Name="{x:Static app:Strings.Shell_ShowTheMappingsAsA}">
-              <StackPanel Spacing="3" HorizontalAlignment="Center">
-                <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewSheet}"/>
-                <TextBlock Text="{x:Static app:Strings.Shell_Rows}" HorizontalAlignment="Center"/>
-              </StackPanel>
-            </Button>
-          </StackPanel>
-        </Border>
-        </StackPanel>
-        <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
+      <!-- Row 2: adding a row, which only Rows view can do. Which mode,
+           which view, the words and which QuadStick all used to sit here as a
+           second line of loose buttons; they live in the panel down the left
+           side now, where they read as a place instead of a row of controls
+           and where they cost the device diagram nothing. -->
+      <WrapPanel x:Name="RowCommandBar" Classes="toolbar" Margin="0,0,0,-6">
+        <!-- Rows view only. Device view adds a mapping by pressing the plus on
+             the part you are looking at, which says where the row landed; the
+             same button up here made a row appear somewhere off screen. -->
         <Button x:Name="AddRowButton" Content="{x:Static app:Strings.Shell_AddRow}"
                 AutomationProperties.Name="{x:Static app:Strings.Shell_AddANewBindingRow}"/>
-        <!-- Content is set in code so the button can carry the live count. -->
-        <Button x:Name="UnusedButton" Classes="quiet"
+        <!-- Off for this release: the count was worth less than the width it
+             took, and every part now says what is free on it in the panel next
+             to the device. The list itself still works and is still tested.
+             Content and name are kept live below so turning it back on is one
+             line in RefreshEditor. -->
+        <Button x:Name="UnusedButton" Classes="quiet" IsVisible="False"
                 AutomationProperties.Name="{x:Static app:Strings.Shell_ListTheInputsThisMode}"/>
       </WrapPanel>
         </StackPanel>
@@ -353,7 +318,7 @@
            editor; the full list expands above the bar on demand. When the file
            is clean it disappears entirely, since the top status line already
            says there are no problems. -->
-      <StackPanel x:Name="ProblemsDock" DockPanel.Dock="Bottom" Margin="16,10,16,16">
+      <StackPanel x:Name="ProblemsDock" DockPanel.Dock="Bottom" Margin="16,0,16,14">
         <Border x:Name="ProblemsListBorder" IsVisible="False" Height="150" Margin="0,0,0,8"
                 BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1" CornerRadius="6"
                 Background="{DynamicResource SurfaceBrush}">
@@ -368,9 +333,159 @@
         </Grid>
       </StackPanel>
 
-      <Panel Margin="16,14,16,0">
-        <Border x:Name="GridContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                BorderThickness="1" CornerRadius="{DynamicResource PanelRadiusCorner}" Padding="12">
+      <!-- The panel down the left side: where you are in the profile, and
+           what the window beside it is showing. Which mode, which view, which
+           QuadStick and the parts that have no place on the picture were all
+           loose controls in two bands across the top. Together they are one
+           place, and the diagram gets the height they were taking. -->
+      <!-- One frame for the whole editor workspace. The sidebar and the active
+           editor are still separate columns because they have different jobs,
+           but their shared frame makes the profile feel like one place. -->
+      <Border x:Name="EditorWorkspace" Margin="16,14"
+              Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource SurfaceBorderBrush}"
+              BorderThickness="1" CornerRadius="{DynamicResource PanelRadiusCorner}"
+              ClipToBounds="True">
+        <Grid ColumnDefinitions="Auto,*">
+        <Border x:Name="EditorSidebar" Grid.Column="0"
+                Width="{DynamicResource SidebarWidth}"
+                Background="{DynamicResource SurfaceSubtleBrush}"
+                BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,1,0">
+        <DockPanel Margin="12,14">
+
+          <!-- Pinned to the bottom, and separated: these change how the editor
+               is drawn, not what the profile says. -->
+          <StackPanel DockPanel.Dock="Bottom" Spacing="8">
+            <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="0,12,0,2"/>
+            <DockPanel>
+              <Button x:Name="DeviceHelpButton" DockPanel.Dock="Right" Classes="icon quiet" Content="?"
+                      AutomationProperties.Name="{x:Static app:Strings.Shell_HowDeviceViewWorksAnd}"/>
+              <TextBlock Text="{x:Static app:Strings.Shell_View}" VerticalAlignment="Center" Classes="secondary"
+                         FontSize="{DynamicResource SmallSize}"/>
+            </DockPanel>
+            <!-- These three are one mutually-exclusive choice, so they sit in a
+                 shared track like a rocker switch bank rather than as loose,
+                 independent buttons. Each key shows what it will give you: the
+                 device, the parts of it, or the sheet the file actually is. The
+                 word stays under the picture, because a glyph alone is a guess.
+                 Equal columns, not a stack: in a fixed-width panel the three
+                 keys have to share the width rather than take what their words
+                 happen to need. -->
+            <Border Classes="switchtrack">
+              <Grid ColumnDefinitions="*,*,*">
+                <Button x:Name="DeviceViewButton" Classes="switchkey viewkey"
+                        ToolTip.Tip="{x:Static app:Strings.Shell_SeeTheMappingsOnA}"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_ShowTheMappingsOnA}">
+                  <StackPanel Spacing="3" HorizontalAlignment="Center">
+                    <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewDevice}"/>
+                    <TextBlock Text="{x:Static app:Strings.Shell_Device}" HorizontalAlignment="Center"/>
+                  </StackPanel>
+                </Button>
+                <Button x:Name="RailViewButton" Grid.Column="1" Classes="switchkey viewkey"
+                        ToolTip.Tip="{x:Static app:Strings.Shell_StepThroughThePartsOne}"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_ShowThePartsAsA}">
+                  <StackPanel Spacing="3" HorizontalAlignment="Center">
+                    <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewRail}"/>
+                    <TextBlock Text="{x:Static app:Strings.Shell_Parts}" HorizontalAlignment="Center"/>
+                  </StackPanel>
+                </Button>
+                <Button x:Name="ListViewButton" Grid.Column="2" Classes="switchkey viewkey"
+                        ToolTip.Tip="{x:Static app:Strings.Shell_SeeTheRowsTheWay}"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_ShowTheMappingsAsA}">
+                  <StackPanel Spacing="3" HorizontalAlignment="Center">
+                    <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewSheet}"/>
+                    <TextBlock Text="{x:Static app:Strings.Shell_Rows}" HorizontalAlignment="Center"/>
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </Border>
+            <Button x:Name="LabelStyleButton" Classes="quiet"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                    FontSize="{DynamicResource SmallSize}"
+                    AutomationProperties.Name="{x:Static app:Strings.Shell_SwitchTheWordsUsedIn}"/>
+            <Button x:Name="CardViewButton" Classes="quiet"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                    FontSize="{DynamicResource SmallSize}"/>
+          </StackPanel>
+
+          <!-- The file's own contents: which mode, which QuadStick, which
+               parts. Scrolls as one, with the modes list capped inside it so a
+               profile with nine modes cannot push the parts out of reach. -->
+          <!-- The bar stays drawn rather than fading out: this panel is taller
+               than the window on any full profile, and a scrollbar that only
+               appears once you are already scrolling tells you nothing. -->
+          <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                        AllowAutoHide="False">
+            <StackPanel Spacing="8">
+              <!-- Modes are the spine of a profile, so they are the top of the
+                   panel and adding one is the plus at the end of their own
+                   heading. The question mark comes first because it reads as
+                   part of the word it explains. -->
+              <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
+                  <Button x:Name="ModeHelpButton" Classes="icon quiet" Content="?"
+                          ToolTip.Tip="{x:Static app:Strings.Shell_WhatIsAMode}"
+                          AutomationProperties.Name="{x:Static app:Strings.Shell_WhatIsAModeAnd}"/>
+                  <Button x:Name="AddModeButton" Classes="icon primary"
+                          ToolTip.Tip="{x:Static app:Strings.Modes_AddAMode}"
+                          AutomationProperties.Name="{x:Static app:Strings.Modes_AddAMode}">
+                    <PathIcon Data="{DynamicResource IconAdd}"/>
+                  </Button>
+                </StackPanel>
+                <TextBlock Text="{x:Static app:Strings.Modes_Modes}" VerticalAlignment="Center"
+                           FontWeight="Bold" FontSize="{DynamicResource BodySize}"/>
+              </DockPanel>
+              <!-- One row per sheet, numbered the way the device numbers them.
+                   Built in RefreshEditor, because a mode can be added, renamed
+                   or deleted from three other places. -->
+              <!-- Four rows and a slice of the fifth, so a long list says it is
+                   long instead of ending on a clean edge. -->
+              <ScrollViewer MaxHeight="194" HorizontalScrollBarVisibility="Disabled"
+                            VerticalScrollBarVisibility="Auto" AllowAutoHide="False">
+                <StackPanel x:Name="ModeList" Spacing="4"/>
+              </ScrollViewer>
+              <!-- "Modes..." named a dialog, not a job. Everything people come
+                   here to do (rename, reorder, delete) is editing the set. -->
+              <Button x:Name="ModesButton" Classes="quiet"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                      FontSize="{DynamicResource SmallSize}"
+                      ToolTip.Tip="{x:Static app:Strings.Shell_AddRenameReorderAndDelete}"
+                      AutomationProperties.Name="{x:Static app:Strings.Shell_EditModesAddRenameReorder}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <PathIcon Width="16" Height="16" Data="{DynamicResource IconTemplate}"/>
+                  <TextBlock Text="{x:Static app:Strings.Shell_EditModes}"/>
+                </StackPanel>
+              </Button>
+
+              <Border Height="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="0,8,0,2"/>
+              <TextBlock Text="{x:Static app:Strings.Shell_Configuration}"
+                         FontWeight="Bold" FontSize="{DynamicResource BodySize}"/>
+              <!-- Which QuadStick, whether one is plugged in, and which mode is
+                   on screen: the three facts the picture is drawn from. -->
+              <ComboBox x:Name="ModelPicker" HorizontalAlignment="Stretch"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_WhichQuadStickModelYouHave}"/>
+              <ContentControl x:Name="DeviceHeaderStatus" HorizontalAlignment="Left"/>
+              <!-- The mode, and what the device's own five lights show for it.
+                   The lights are drawn on the photo too; this is the same thing
+                   in words, for anyone the colours do not reach. -->
+              <TextBlock x:Name="DeviceHeaderMode" Classes="secondary" TextWrapping="Wrap"
+                         FontSize="{DynamicResource SmallSize}"/>
+              <!-- Whole combos, switch jacks, USB devices and rows with no
+                   input: real parts of the profile with nowhere to sit on the
+                   photo. Under the diagram they pushed the QuadStick, the one
+                   thing that view exists to show, off the top of the panel. -->
+              <StackPanel x:Name="ZoneList" Spacing="6"/>
+            </StackPanel>
+          </ScrollViewer>
+        </DockPanel>
+        </Border>
+
+        <!-- The active editor occupies the other column in the same workspace
+             frame; its own surface/border is removed so it cannot look like a
+             second unrelated container. -->
+        <Panel Grid.Column="1">
+        <Border x:Name="GridContainer" Background="Transparent" BorderBrush="Transparent"
+                BorderThickness="0" CornerRadius="0" Padding="12">
           <!-- Named so a deleted row's ghost snapshot can float over the list
                while it fades out; clipped so it never escapes the plate. -->
           <Panel x:Name="ListOverlay" ClipToBounds="True">
@@ -401,44 +516,29 @@
             </Border>
           </Panel>
         </Border>
-        <Border x:Name="DeviceContainer" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                BorderThickness="1" CornerRadius="{DynamicResource PanelRadiusCorner}" IsVisible="False">
-          <DockPanel>
-            <Border x:Name="DeviceHeaderRow" DockPanel.Dock="Top" Padding="14,10"
-                    BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,0,1">
-              <!-- Wraps for the same reason as the rows above: a fixed Grid here
-                   pushed the model picker and the card toggle off the edge. -->
-              <WrapPanel Classes="toolbar">
-                <ContentControl x:Name="DeviceHeaderStatus" VerticalAlignment="Center"/>
-                <TextBlock x:Name="DeviceHeaderMode" Classes="secondary"
-                           VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
-                <!-- What the device's own five lights show for this mode. The
-                     lights are drawn on the photo too; this is the same thing
-                     in words, for anyone the colours do not reach. -->
-                <TextBlock x:Name="DeviceHeaderLights" Classes="secondary"
-                           VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
-                <ComboBox x:Name="ModelPicker" MinWidth="180"
-                          AutomationProperties.Name="{x:Static app:Strings.Shell_WhichQuadStickModelYouHave}"/>
-                <Button x:Name="DeviceHelpButton" Classes="icon" Content="?"
-                        AutomationProperties.Name="{x:Static app:Strings.Shell_HowDeviceViewWorksAnd}"/>
-                <Button x:Name="LabelStyleButton" Classes="quiet"
-                        AutomationProperties.Name="{x:Static app:Strings.Shell_SwitchTheWordsUsedIn}"/>
-                <Button x:Name="CardViewButton" Classes="quiet"/>
-              </WrapPanel>
-            </Border>
+        <Border x:Name="DeviceContainer" Background="Transparent" BorderBrush="Transparent"
+                BorderThickness="0" CornerRadius="0" IsVisible="False">
             <!-- The device diagram owns the larger, left-hand share of the
                  editor so its parts sit at a comfortable size. The mappings
                  panel on the right stays readable through its minimum width. -->
             <!-- Even halves. At 1.2 to 1 the panel on the right was 460 wide at
                  the default window size, which is under what a mapping sentence
                  needs, so every long output name arrived as "Mouse right b...".
-                 The picture reads fine with the smaller half. -->
+                 The picture reads fine with the smaller half. The minimum below
+                 is what is left after the side panel takes its width: at the
+                 smallest window the app opens at, a floor of 340 here pushed
+                 the picture off its own column. Under 470 the cards already
+                 lay themselves out for a narrow panel (NarrowCards). -->
             <Grid ColumnDefinitions="1*,1*">
-              <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <StackPanel x:Name="DeviceCanvas" Margin="14"/>
+              <!-- Scrolls only when the space left is under the floor the
+                   picture stops being readable at; above that it fits itself to
+                   the room it has. See FitDeviceStage. -->
+              <ScrollViewer x:Name="DeviceStageScroll" Margin="12"
+                            HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="DeviceCanvas"/>
               </ScrollViewer>
               <Border Grid.Column="1" Background="{DynamicResource SurfaceSubtleBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                      BorderThickness="1,0,0,0" Padding="18" MinWidth="340">
+                      BorderThickness="1,0,0,0" Padding="18" MinWidth="280">
                 <Panel x:Name="ZoneOverlay" ClipToBounds="True">
                   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="ZoneDetailPanel" Spacing="14"/>
@@ -463,9 +563,10 @@
                 </Panel>
               </Border>
             </Grid>
-          </DockPanel>
         </Border>
-      </Panel>
+        </Panel>
+        </Grid>
+      </Border>
 
     </DockPanel>
 

@@ -2849,6 +2849,9 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Shell_CommunityProfiles" xml:space="preserve">
     <value>Community profiles</value>
   </data>
+  <data name="Shell_Configuration" xml:space="preserve">
+    <value>Configuration</value>
+  </data>
   <data name="Shell_CreateANewProfile" xml:space="preserve">
     <value>Create a new profile</value>
   </data>

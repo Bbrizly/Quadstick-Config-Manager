@@ -62,10 +62,16 @@ public class DeviceHotspotTests
             .OrderBy(x => x)
             .ToArray();
 
-    static string Caption(MainWindow w) =>
-        w.GetVisualDescendants().OfType<TextBlock>()
+    // The lights ride on the end of the mode line inside the device panel,
+    // so the caption is the tail of that sentence, not a line of its own.
+    static string Caption(MainWindow w)
+    {
+        var line = w.GetVisualDescendants().OfType<TextBlock>()
             .Select(t => t.Text ?? "")
-            .First(t => t.StartsWith("Device shows") || t.StartsWith("Device has no"));
+            .First(t => t.Contains("Device shows") || t.Contains("Device has no"));
+        int at = line.IndexOf("Device ", System.StringComparison.Ordinal);
+        return line[at..];
+    }
 
     // Mode 1 lights the leftmost of the five; mode 2 the one to its right.
     // Both patterns come from the firmware's own table, see ModeLightsTests.

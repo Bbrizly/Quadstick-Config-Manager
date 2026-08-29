@@ -5,6 +5,7 @@ using Avalonia.Headless.XUnit;
 using Avalonia.Input;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using Avalonia;
 using QuadStick.App;
 using QuadStick.Format;
 using Xunit;
@@ -56,6 +57,68 @@ public class ModesWindowTests
         Find(w, name).RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
+    }
+
+    // Every fixed width in a row added up to more than the window, so the last
+    // button was cut in half by the edge with no scrollbar to reach it. Run at
+    // the narrowest the window can be dragged, which is where it broke: the
+    // name box is the only thing in the row that can give, and it has to be the
+    // only thing that does.
+    [AvaloniaFact]
+    public void No_row_control_is_clipped_at_the_narrowest_the_window_goes()
+    {
+        var w = Open(ModePrefsMode);
+        var modes = new ModesWindow(w);
+        modes.Width = modes.MinWidth;
+        _ = modes.ShowDialog(w);
+        Dispatcher.UIThread.RunJobs();
+        modes.UpdateLayout();
+
+        double floor = (double)Application.Current!.FindResource("IconButton")!;
+        int seen = 0;
+        foreach (var b in modes.GetVisualDescendants().OfType<Button>())
+        {
+            var name = AutomationProperties.GetName(b) ?? "";
+            if (!name.StartsWith("Delete ") && !name.StartsWith("Move ") && !name.StartsWith("Make a copy")) continue;
+            seen++;
+            Assert.True(b.Bounds.Width >= floor,
+                $"\"{name}\" squeezed to {b.Bounds.Width:0}px, under the {floor:0}px click-target floor");
+            var corner = b.TranslatePoint(new Avalonia.Point(b.Bounds.Width, 0), modes);
+            Assert.True(corner.HasValue && corner.Value.X <= modes.Bounds.Width + 1,
+                $"\"{name}\" runs off the right edge: {corner?.X:0} > {modes.Bounds.Width:0}");
+        }
+        Assert.True(seen >= 6, $"only found {seen} row controls to check");
+
+        modes.Close();
+        w.OpenFile!.Dirty = false;
+        w.Close();
+    }
+
+    // Moving a mode and moving a row are the same job, so they are the same
+    // control. This window drew them as the typed characters "▲ ▼ ✕" while the
+    // editor drew the app's own icons, which is two answers to one question and
+    // a missing glyph away from a row of empty boxes.
+    [AvaloniaFact]
+    public void Move_and_delete_look_the_same_here_as_they_do_on_a_row()
+    {
+        var w = Open(ModePrefsMode);
+        var modes = new ModesWindow(w);
+        _ = modes.ShowDialog(w);
+        Dispatcher.UIThread.RunJobs();
+        modes.UpdateLayout();
+
+        foreach (var prefix in new[] { "Move ", "Delete ", "Make a copy" })
+        {
+            var b = modes.GetVisualDescendants().OfType<Button>()
+                .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith(prefix));
+            Assert.True(b.Content is Avalonia.Controls.PathIcon,
+                $"\"{prefix}\" is drawn with something other than the app's icon set");
+            Assert.Contains("icon", b.Classes);
+        }
+
+        modes.Close();
+        w.OpenFile!.Dirty = false;
+        w.Close();
     }
 
     static string[] ModeNames(MainWindow w) =>

@@ -48,9 +48,15 @@ public class ModesWindow : Window
         Title = Strings.Modes_Modes;
         // Wide enough for the whole row: the name box, the connection dropdown,
         // and the four round buttons after them. At 620 the last two were off
-        // the edge with no scrollbar to reach them.
-        Width = Math.Min(740 * owner.UiScale, 1200);
-        Height = Math.Min(520 * owner.UiScale, 900);
+        // the edge with no scrollbar to reach them, and 740 still clipped the
+        // delete button once the shell's own margins and the scrollbar were
+        // counted. The row is a Grid now, so this is the width it wants rather
+        // than the width it needs, but a floor still has to be set or the user
+        // can drag the window narrower than the delete button.
+        Width = Math.Min(880 * owner.UiScale, 1200);
+        Height = Math.Min(560 * owner.UiScale, 900);
+        MinWidth = Math.Min(720 * owner.UiScale, 1200);
+        MinHeight = Math.Min(400 * owner.UiScale, 900);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
         var add = new Button
@@ -197,20 +203,22 @@ public class ModesWindow : Window
             ? new TextBlock
             {
                 Text = Strings.Modes_PreferencesDeviceSettings,
-                Width = 240,
                 VerticalAlignment = VerticalAlignment.Center,
                 FontSize = Size("BodySize"),
                 Classes = { "muted" },
             }
             : NameBox(sheet, sheetIndex, ordinal);
 
-        var up = IconButton("▲", $"Move {name} up", position > 0, () => Move(sheetIndex, -1));
-        var down = IconButton("▼", $"Move {name} down", position < total - 1, () => Move(sheetIndex, 1));
-        var copy = IconButton("⧉", string.Format(CultureInfo.CurrentCulture, Strings.Modes_MakeACopyOfName, name), !isPrefs, () => Duplicate(sheetIndex, name));
+        // The same move, copy and delete controls the editor's rows use. They
+        // used to be typed characters here and drawn icons there, which made
+        // one job look like two. See RowControls.
+        var up = Wire(RowControls.Move(true, $"Move {name} up"), position > 0, () => Move(sheetIndex, -1));
+        var down = Wire(RowControls.Move(false, $"Move {name} down"), position < total - 1, () => Move(sheetIndex, 1));
+        var copy = Wire(RowControls.Icon("IconFiles", string.Format(CultureInfo.CurrentCulture, Strings.Modes_MakeACopyOfName, name)), !isPrefs, () => Duplicate(sheetIndex, name));
         // Only one preferences sheet is ever read, so a copy of it would be dead
-        // weight in the file. The button stays in place, greyed, so the columns
-        // still line up down the list.
-        copy.IsVisible = !isPrefs;
+        // weight in the file. The button stays in place, greyed: hidden, it took
+        // its column with it and every button on that row slid left out of line
+        // with the rows above and below.
 
         bool armed = _armedDelete == sheetIndex;
         // The last mode cannot go: a profile with no modes is not a profile.
@@ -218,31 +226,35 @@ public class ModesWindow : Window
         bool canDelete = isPrefs || ModeCount() > 1;
         var delete = armed
             ? TextButton(Strings.Modes_ReallyDelete, string.Format(CultureInfo.CurrentCulture, Strings.Modes_ReallyDeleteName, name), canDelete, () => Delete(sheetIndex))
-            : IconButton("✕", $"Delete {name}", canDelete, () => { _armedDelete = sheetIndex; Build(keepArmed: true); });
+            : Wire(RowControls.Delete($"Delete {name}"), canDelete, () => { _armedDelete = sheetIndex; Build(keepArmed: true); });
         delete.Classes.Add("danger");
 
-        var row = new StackPanel
+        // A Grid, not a StackPanel. Every fixed width added up to more than the
+        // window and the delete button was cut in half by the edge; the name
+        // column gives way now and nothing at the end can be pushed off.
+        var row = new Grid
         {
-            Orientation = Orientation.Horizontal,
-            Spacing = 8,
+            ColumnDefinitions = new ColumnDefinitions("28,*,Auto,Auto,Auto,Auto,Auto"),
             // The preferences row has no name box to hold the keyboard, so the
             // row itself takes focus after a move and keeps Alt+arrow working.
             Focusable = true,
-            Children =
-            {
-                new TextBlock
-                {
-                    Text = string.Format(CultureInfo.CurrentCulture, Strings.Modes_Position1, position + 1),
-                    Width = 28,
-                    TextAlignment = TextAlignment.Right,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    FontSize = Size("BodySize"),
-                    Classes = { "muted" },
-                },
-                label, isPrefs ? new Panel { Width = ChannelBoxWidth } : ChannelBox(sheet, sheetIndex, ordinal),
-                up, down, copy, delete,
-            },
         };
+        var position1 = new TextBlock
+        {
+            Text = string.Format(CultureInfo.CurrentCulture, Strings.Modes_Position1, position + 1),
+            TextAlignment = TextAlignment.Right,
+            VerticalAlignment = VerticalAlignment.Center,
+            FontSize = Size("BodySize"),
+            Classes = { "muted" },
+        };
+        var channel = isPrefs ? new Panel { Width = ChannelBoxWidth } : ChannelBox(sheet, sheetIndex, ordinal);
+        int column = 0;
+        foreach (var cell in new[] { position1, label, channel, up, down, copy, delete })
+        {
+            cell.Margin = new Thickness(column == 0 ? 0 : 8, 0, 0, 0);
+            Grid.SetColumn(cell, column++);
+            row.Children.Add(cell);
+        }
         // Alt with an arrow moves the row from anywhere on it, including the
         // preferences row, which has no name box to hold the keyboard.
         row.KeyDown += (_, e) =>
@@ -310,7 +322,7 @@ public class ModesWindow : Window
         var box = new TextBox
         {
             Text = sheet.ModeName,
-            Width = 240,
+            MinWidth = 160,
             // A tester renamed a mode to a whole paragraph; nothing past this
             // fits the mode picker or the side tube's speech anyway.
             MaxLength = 40,
@@ -323,16 +335,9 @@ public class ModesWindow : Window
         return box;
     }
 
-    Button IconButton(string glyph, string spokenName, bool enabled, Action onClick)
+    static Button Wire(Button b, bool enabled, Action onClick)
     {
-        var b = new Button
-        {
-            Content = glyph,
-            Classes = { "icon" },
-            IsEnabled = enabled,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-        AutomationProperties.SetName(b, spokenName);
+        b.IsEnabled = enabled;
         b.Click += (_, _) => onClick();
         return b;
     }
@@ -418,15 +423,11 @@ public class ModesWindow : Window
 
     void AddMode()
     {
-        if (_owner.OpenFile is null) return;
-        // Two modes with the same name are legal but unreadable in the picker,
-        // so count past any name already taken.
-        var taken = Modes().Select(t => t.Sheet.ModeName).ToHashSet();
-        int n = ModeCount() + 1;
-        while (taken.Contains($"Mode {n}")) n++;
-        int idx = _owner.OpenFile.AddModeSheet($"Mode {n}");
+        // The same add the plus at the top of the modes list does, naming and
+        // selecting included: one job, one implementation.
+        int idx = _owner.AddModeAndOpen();
+        if (idx < 0) return;
         Build();
-        _owner.ModesChanged(idx, Strings.Modes_ModeAdded);
         // No naming dialog: the new row is already there, so put the keyboard
         // in its name box and let the name be typed over.
         FocusName(Modes().FindIndex(t => t.Index == idx));
