@@ -1018,4 +1018,29 @@ public class ListViewTests
         file.Dirty = false;
         w.Close();
     }
+
+    // Moving a row across a long mode used to be twelve drags: the drag loop
+    // owns the pointer, so nothing scrolled while a row was in the air and the
+    // user could only reach as far as the screen showed.
+    [Theory]
+    [InlineData(10, 300, "pulls up")]      // pointer in the top band
+    [InlineData(295, 300, "pulls down")]   // pointer in the bottom band
+    [InlineData(150, 0, "sits still")]     // pointer in the middle
+    public void A_drag_at_the_edge_of_the_list_scrolls_it(double pointerY, double _, string what)
+    {
+        // viewport 300 tall, parked halfway down a 900-tall list.
+        var d = MainWindow.DragScrollDelta(pointerY, viewport: 300, offsetY: 300, maxY: 600);
+        if (what == "pulls up") Assert.True(d < 0);
+        else if (what == "pulls down") Assert.True(d > 0);
+        else Assert.Equal(0, d);
+    }
+
+    [Fact]
+    public void The_drag_scroll_never_runs_past_either_end_of_the_list()
+    {
+        Assert.Equal(0, MainWindow.DragScrollDelta(10, viewport: 300, offsetY: 0, maxY: 600));
+        Assert.Equal(0, MainWindow.DragScrollDelta(295, viewport: 300, offsetY: 600, maxY: 600));
+        // A list shorter than its viewport has nowhere to go in either direction.
+        Assert.Equal(0, MainWindow.DragScrollDelta(295, viewport: 300, offsetY: 0, maxY: 0));
+    }
 }

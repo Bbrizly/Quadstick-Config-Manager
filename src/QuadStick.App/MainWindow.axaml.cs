@@ -799,6 +799,8 @@ public partial class MainWindow : Window
         // exactly like a file explorer. Row-number presses mark themselves
         // Handled, so they never reach this.
         GridScroll.AddHandler(PointerPressedEvent, (_, _) => ClearSelection());
+        WireDragScroll(GridScroll);
+        WireDragScroll(DeviceStageScroll);
         SelectionDeleteButton.Click += (_, _) => DeleteSelectedRows();
         SelectionClearButton.Click += (_, _) => ClearSelection();
         SelectionMoveButton.Flyout = MoveMenu();
@@ -4713,7 +4715,10 @@ public partial class MainWindow : Window
             // The whole selection travels; the press above guaranteed the
             // pressed row is in it.
             data.Set(RowDragFormat, _selectedRows.OrderBy(r => r).ToArray());
-            _ = DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+            // Stopped here rather than on DragLeave or Drop: this runs however
+            // the drag ended, including a cancel outside the window.
+            _ = DragDrop.DoDragDrop(e, data, DragDropEffects.Move)
+                .ContinueWith(_ => StopDragScroll(), TaskScheduler.FromCurrentSynchronizationContext());
         };
         h.KeyDown += (_, e) =>
         {
@@ -4723,6 +4728,60 @@ public partial class MainWindow : Window
             e.Handled = true;
         };
         return h;
+    }
+
+    // A drag that reaches the top or bottom edge of the list pulls the list
+    // along, so a row can travel a hundred rows in one gesture. The drag loop
+    // owns the pointer, so the wheel and the scrollbar are not available while
+    // a row is in the air: without this the only way across a long mode is to
+    // drop, scroll, pick up again.
+    const double DragScrollBand = 48; // how close to an edge starts the pull
+    const double DragScrollStep = 14; // pixels a tick, about a screen a second
+
+    // Pure, so the arithmetic is tested without a real drag loop.
+    internal static double DragScrollDelta(double pointerY, double viewport, double offsetY, double maxY)
+    {
+        if (pointerY <= DragScrollBand) return -Math.Min(DragScrollStep, Math.Max(0, offsetY));
+        if (pointerY >= viewport - DragScrollBand) return Math.Min(DragScrollStep, Math.Max(0, maxY - offsetY));
+        return 0;
+    }
+
+    DispatcherTimer? _dragScroll;
+    ScrollViewer? _dragScrollView;
+    double _dragScrollY;
+
+    void WireDragScroll(ScrollViewer sv)
+    {
+        DragDrop.SetAllowDrop(sv, true);
+        // Bubbled from the row under the pointer, which does not mark the
+        // event handled. Over the empty space past the last row it arrives
+        // straight here.
+        sv.AddHandler(DragDrop.DragOverEvent, (_, e) =>
+        {
+            if (!e.Data.Contains(RowDragFormat)) return;
+            _dragScrollView = sv;
+            _dragScrollY = e.GetPosition(sv).Y;
+            _dragScroll ??= new DispatcherTimer(TimeSpan.FromMilliseconds(16),
+                DispatcherPriority.Normal, (_, _) => DragScrollTick());
+            _dragScroll.Start();
+        });
+    }
+
+    // Ticks off the last position the drag reported, not off a fresh pointer
+    // read: a drag held still at the edge stops sending moves and still has to
+    // keep scrolling.
+    void DragScrollTick()
+    {
+        if (_dragScrollView is not { } sv) return;
+        var maxY = Math.Max(0, sv.Extent.Height - sv.Viewport.Height);
+        var d = DragScrollDelta(_dragScrollY, sv.Viewport.Height, sv.Offset.Y, maxY);
+        if (d != 0) sv.Offset = new Vector(sv.Offset.X, sv.Offset.Y + d);
+    }
+
+    void StopDragScroll()
+    {
+        _dragScroll?.Stop();
+        _dragScrollView = null;
     }
 
     void WireRowDrop(Panel p, Binding b)
