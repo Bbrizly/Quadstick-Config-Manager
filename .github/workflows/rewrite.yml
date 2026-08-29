@@ -55,6 +55,7 @@ jobs:
           dotnet run --project tools/QcmCatalogOracle/QcmCatalogOracle.csproj -c Release -- fixtures/oracle/catalog-canonical.txt
           dotnet run --project tools/QcmParserOracle/QcmParserOracle.csproj -c Release -- fixtures/manifest.json fixtures/oracle
           dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- apply-canonical fixtures/profiles/profile-headerless.csv fixtures/ops/task15-core.json > fixtures/oracle/task15-core.apply.json
+          dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- apply-canonical fixtures/profiles/profile-headerless.csv fixtures/ops/task16-state.json > fixtures/oracle/task16-state.apply.json
       - name: Validate canonical outputs against parity schema
         shell: bash
         run: |
@@ -79,6 +80,7 @@ jobs:
       QCM_REQUIRE_VALIDATION_ORACLE: "1"
       QCM_REQUIRE_NORMALIZE_ORACLE: "1"
       QCM_REQUIRE_EDITOR_ORACLE: "1"
+      QCM_REQUIRE_EDITOR_STATE_ORACLE: "1"
     steps:
       - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7

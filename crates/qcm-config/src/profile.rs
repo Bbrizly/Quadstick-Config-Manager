@@ -1,36 +1,51 @@
-//! Lossless profile container and device-safe serialization.
+//! Lossless profile container, editor state and device-safe serialization.
 //!
-//! This ports the serialization/normalization portion of the frozen C#
-//! `ProfileFile`. Editor mutation, undo, dirty and revision semantics remain in
-//! later rewrite tasks.
+//! The raw grid is canonical mutable state. Parsed document/issues are always a
+//! projection of that grid. Undo stores exact raw-grid snapshots so odd columns,
+//! comments and formatting survive round-trips exactly like the frozen C# core.
 
 use crate::csv::{Grid, parse, write};
-use crate::{Issue, ProfileDocument, parse_and_validate};
+use crate::{Issue, ProfileDocument, SheetType, parse_and_validate};
 
 const HEADER_KEYWORD: &str = "QuadStick Configuration";
 const KEYWORD_COLUMNS: usize = 10; // A..J
+const MAX_UNDO: usize = 200;
 
-/// Parsed profile plus the lossless raw CSV grid.
+/// Parsed profile plus the lossless raw CSV grid and legacy editor state.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ProfileFile {
     pub grid: Grid,
     pub document: ProfileDocument,
     pub issues: Vec<Issue>,
     header_sheet_id: Option<String>,
+    undo: Vec<Grid>,
+    dirty: bool,
+    revision: u64,
+    // The raw grid associated with the last completed reparse. Editor methods
+    // mutate `grid` and then call `reparse()`: that call snapshots this baseline
+    // first. This preserves the C# rule that even a same-value SetCell consumes
+    // one undo/revision step, while true no-op commands never call reparse.
+    reparse_baseline: Grid,
 }
 
 impl ProfileFile {
     /// Load through the same two-step shape as the legacy implementation:
-    /// parse to a raw grid, then reparse the grid's canonical CSV projection.
+    /// parse to a raw grid, then parse/validate that exact grid without creating
+    /// editor history.
     #[must_use]
     pub fn load(csv_text: &str) -> Self {
+        let grid = parse(csv_text);
         let mut profile = Self {
-            grid: parse(csv_text),
+            reparse_baseline: grid.clone(),
+            grid,
             document: ProfileDocument::default(),
             issues: Vec::new(),
             header_sheet_id: None,
+            undo: Vec::new(),
+            dirty: false,
+            revision: 0,
         };
-        profile.reparse();
+        profile.parse_current();
         profile
     }
 
@@ -40,13 +55,79 @@ impl ProfileFile {
         self.header_sheet_id.as_deref()
     }
 
-    /// Set output-only bookkeeping for C1. `None` leaves the raw header alone.
+    /// Set output-only bookkeeping for C1. This is deliberately not an editor
+    /// mutation: no dirty bit, revision or undo entry changes.
     pub fn set_header_sheet_id(&mut self, sheet_id: Option<String>) {
         self.header_sheet_id = sheet_id;
     }
 
-    /// Serialize exactly as bytes sent to disk/device: stamp C1 when requested,
-    /// trim A..J, flatten embedded newlines in every column, then emit CRLF CSV.
+    #[must_use]
+    pub const fn dirty(&self) -> bool {
+        self.dirty
+    }
+
+    #[must_use]
+    pub const fn revision(&self) -> u64 {
+        self.revision
+    }
+
+    #[must_use]
+    pub fn can_undo(&self) -> bool {
+        !self.undo.is_empty()
+    }
+
+    /// Target-side convenience for the legacy `Dirty = false` save boundary.
+    /// Saving does not erase undo history and does not change revision.
+    pub fn mark_clean(&mut self) {
+        self.dirty = false;
+    }
+
+    pub fn clear_undo(&mut self) {
+        self.undo.clear();
+    }
+
+    /// Restore one exact raw-grid snapshot. Undo itself is a content mutation,
+    /// so legacy semantics mark dirty and bump revision again.
+    pub fn undo(&mut self) -> bool {
+        let Some(previous) = self.undo.pop() else {
+            return false;
+        };
+        self.grid = previous;
+        self.dirty = true;
+        self.revision = self.revision.saturating_add(1);
+        self.parse_current();
+        self.reparse_baseline = self.grid.clone();
+        true
+    }
+
+    /// The output-token mapping behind action names. First row wins when the
+    /// same case-insensitive name appears more than once, matching the legacy
+    /// Dictionary.TryAdd behavior. Row order is retained for deterministic use.
+    #[must_use]
+    pub fn action_tokens(&self) -> Vec<(String, String)> {
+        let mut result: Vec<(String, String)> = Vec::new();
+        for binding in self
+            .document
+            .sheets
+            .iter()
+            .filter(|sheet| sheet.sheet_type == SheetType::ProfileName)
+            .flat_map(|sheet| sheet.bindings.iter())
+        {
+            if binding.action_name.is_empty() || binding.output.is_empty() {
+                continue;
+            }
+            if result
+                .iter()
+                .any(|(name, _)| same_name(name, &binding.action_name))
+            {
+                continue;
+            }
+            result.push((binding.action_name.clone(), binding.output.clone()));
+        }
+        result
+    }
+
+    /// The file as it goes to disk and to the device.
     #[must_use]
     pub fn to_csv_text(&self) -> String {
         let safe = self
@@ -59,8 +140,8 @@ impl ProfileFile {
 
     /// Shape the raw grid the way the firmware expects it.
     ///
-    /// Returns whether the raw grid changed. Editor dirty/revision/undo effects
-    /// deliberately belong to TASK-016, not this format-only port.
+    /// One normalization call is exactly one editor mutation even when adding a
+    /// header requires an intermediate parse before separator repair.
     pub fn normalize_for_device_csv(&mut self) -> bool {
         let wrong_case = self.document.has_version_header && !self.header_cased_for_device();
         if self.document.has_version_header
@@ -82,7 +163,9 @@ impl ProfileFile {
                     name,
                 ],
             );
-            self.reparse();
+            // C# reparses here so later-sheet row numbers reflect the inserted
+            // header, but it already took its single Snapshot before mutation.
+            self.parse_current();
         } else if wrong_case {
             let trimmed = self.grid[0][0].trim_start();
             let rest = &trimmed[HEADER_KEYWORD.len()..];
@@ -107,7 +190,25 @@ impl ProfileFile {
         true
     }
 
+    /// Complete one successful editor mutation. All current editor operations
+    /// call this exactly once after their no-op guards. Snapshotting the previous
+    /// reparse baseline (rather than diffing bytes) preserves same-value edits.
     pub(crate) fn reparse(&mut self) {
+        self.snapshot_baseline();
+        self.parse_current();
+        self.reparse_baseline = self.grid.clone();
+    }
+
+    fn snapshot_baseline(&mut self) {
+        self.dirty = true;
+        self.revision = self.revision.saturating_add(1);
+        self.undo.push(self.reparse_baseline.clone());
+        if self.undo.len() > MAX_UNDO {
+            self.undo.remove(0);
+        }
+    }
+
+    fn parse_current(&mut self) {
         let raw_csv = write(&self.grid);
         let (document, issues) = parse_and_validate(&raw_csv);
         self.document = document;
@@ -155,6 +256,10 @@ impl ProfileFile {
             .filter(|row| *row >= 2 && !self.grid[*row - 2].is_empty())
             .collect()
     }
+}
+
+fn same_name(left: &str, right: &str) -> bool {
+    left.eq_ignore_ascii_case(right) || left.to_lowercase() == right.to_lowercase()
 }
 
 fn device_safe(row: &[String]) -> Vec<String> {
@@ -230,6 +335,9 @@ mod tests {
         let raw = profile.grid.clone();
         profile.set_header_sheet_id(Some("sheet-123".to_owned()));
         assert_eq!(profile.grid, raw);
+        assert!(!profile.dirty());
+        assert_eq!(profile.revision(), 0);
+        assert!(!profile.can_undo());
         assert!(
             profile
                 .to_csv_text()
@@ -250,6 +358,64 @@ mod tests {
             headerless
                 .to_csv_text()
                 .starts_with("Profile Name,,Mode\r\n")
+        );
+    }
+
+    #[test]
+    fn clean_boundary_keeps_undo_and_undo_makes_the_profile_dirty_again() {
+        let mut profile = ProfileFile::load(
+            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\ntriangle,normal,lip\n",
+        );
+        assert!(!profile.dirty());
+        assert_eq!(profile.revision(), 0);
+        profile.grid[3][0] = "circle".to_owned();
+        profile.reparse();
+        assert!(profile.dirty());
+        assert_eq!(profile.revision(), 1);
+        assert!(profile.can_undo());
+
+        profile.mark_clean();
+        assert!(!profile.dirty());
+        assert_eq!(profile.revision(), 1);
+        assert!(profile.can_undo());
+
+        assert!(profile.undo());
+        assert!(profile.dirty());
+        assert_eq!(profile.revision(), 2);
+        assert_eq!(profile.grid[3][0], "triangle");
+    }
+
+    #[test]
+    fn undo_depth_is_capped_at_200_snapshots() {
+        let mut profile = ProfileFile::load(
+            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\ntriangle,normal,lip\n",
+        );
+        for index in 0..201 {
+            profile.grid[3][0] = format!("token-{index}");
+            profile.reparse();
+        }
+        assert_eq!(profile.revision(), 201);
+        for _ in 0..200 {
+            assert!(profile.undo());
+        }
+        assert!(!profile.undo());
+        assert_eq!(profile.revision(), 401);
+        // The oldest of 201 snapshots was discarded, so we cannot return to
+        // the original triangle state; token-0 is the oldest retained state.
+        assert_eq!(profile.grid[3][0], "token-0");
+    }
+
+    #[test]
+    fn action_tokens_are_first_row_wins_case_insensitively() {
+        let profile = ProfileFile::load(
+            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb,,,,,,,,,Action\ntriangle,normal,lip,,,,,,,,,Jump\ncircle,normal,mp_center_sip,,,,,,,,,jump\nsquare,normal,mp_center_puff,,,,,,,,,Use\n",
+        );
+        assert_eq!(
+            profile.action_tokens(),
+            vec![
+                ("Jump".to_owned(), "triangle".to_owned()),
+                ("Use".to_owned(), "square".to_owned()),
+            ]
         );
     }
 }
