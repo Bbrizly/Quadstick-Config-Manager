@@ -12,6 +12,7 @@ env:
   QSCM_TELEMETRY: "0"
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -68,8 +69,7 @@ jobs:
           retention-days: 14
 
   rust-core:
-    name: Rust core / fmt + clippy + test
-    needs: gate0
+    name: Rust core / diagnostic fmt + clippy + test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -83,8 +83,10 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7
         with:
-          name: qcm-legacy-oracle-${{ github.sha }}
+          name: qcm-legacy-oracle-41240ab77f5486993a3dddc2ee90e630a39a946f
           path: fixtures/oracle
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: 33279712428
       - name: Install pinned Rust toolchain
         shell: bash
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
