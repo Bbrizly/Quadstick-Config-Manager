@@ -98,7 +98,8 @@ fn parse_sheet(grid: &Grid, start: usize, end: usize, is_first: bool) -> ModeShe
 
     let mut terminated = false;
     for row in start + 3..end {
-        let has_content = (0..KEYWORD_COLUMNS).any(|column| !cell(grid, row, column).trim().is_empty());
+        let has_content =
+            (0..KEYWORD_COLUMNS).any(|column| !cell(grid, row, column).trim().is_empty());
         if !has_content {
             if is_blank_line(&grid[row]) {
                 terminated = true;
