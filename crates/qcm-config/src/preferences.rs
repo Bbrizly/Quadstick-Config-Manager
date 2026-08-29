@@ -91,10 +91,7 @@ pub fn load_preferences() -> Result<Vec<PreferenceDefinition>, String> {
             .ok_or_else(|| "Each preference must be a JSON object.".to_owned())?;
         let definition = read_one(object)?;
         if !seen.insert(definition.name.clone()) {
-            return Err(format!(
-                "Duplicate preference name '{}'.",
-                definition.name
-            ));
+            return Err(format!("Duplicate preference name '{}'.", definition.name));
         }
         definitions.push(definition);
     }
@@ -149,9 +146,7 @@ fn read_one(object: &Map<String, Value>) -> Result<PreferenceDefinition, String>
         ));
     }
     if minimum.zip(maximum).is_some_and(|(min, max)| min > max) {
-        return Err(format!(
-            "Preference '{name}' has minimum above maximum."
-        ));
+        return Err(format!("Preference '{name}' has minimum above maximum."));
     }
     if editor != PreferenceEditor::Choice && !options.is_empty() {
         return Err(format!(
@@ -159,9 +154,7 @@ fn read_one(object: &Map<String, Value>) -> Result<PreferenceDefinition, String>
         ));
     }
     if editor == PreferenceEditor::Choice && options.is_empty() {
-        return Err(format!(
-            "Preference '{name}' is a choice with no options."
-        ));
+        return Err(format!("Preference '{name}' is a choice with no options."));
     }
     if !option_labels.is_empty() && option_labels.len() != options.len() {
         return Err(format!(
@@ -244,17 +237,13 @@ fn required(
     Ok(text.to_owned())
 }
 
-fn optional_text(
-    object: &Map<String, Value>,
-    field: &str,
-    name: &str,
-) -> Result<String, String> {
+fn optional_text(object: &Map<String, Value>, field: &str, name: &str) -> Result<String, String> {
     let Some(value) = object.get(field) else {
         return Ok(String::new());
     };
-    let text = value.as_str().ok_or_else(|| {
-        format!("Preference '{name}' has a non-text '{field}' field.")
-    })?;
+    let text = value
+        .as_str()
+        .ok_or_else(|| format!("Preference '{name}' has a non-text '{field}' field."))?;
     if text.is_empty() {
         return Err(format!(
             "Preference '{name}' has an empty '{field}' field. Leave it out instead."
@@ -263,10 +252,7 @@ fn optional_text(
     Ok(text.to_owned())
 }
 
-fn optional_default(
-    object: &Map<String, Value>,
-    name: &str,
-) -> Result<Option<String>, String> {
+fn optional_default(object: &Map<String, Value>, name: &str) -> Result<Option<String>, String> {
     let Some(value) = object.get("default") else {
         return Ok(None);
     };
@@ -290,11 +276,7 @@ fn optional_i32(
     })
 }
 
-fn optional_bool(
-    object: &Map<String, Value>,
-    field: &str,
-    name: &str,
-) -> Result<bool, String> {
+fn optional_bool(object: &Map<String, Value>, field: &str, name: &str) -> Result<bool, String> {
     let Some(value) = object.get(field) else {
         return Ok(false);
     };
@@ -317,9 +299,9 @@ fn optional_strings(
     let mut seen = BTreeSet::new();
     let mut result = Vec::with_capacity(values.len());
     for value in values {
-        let token = value.as_str().ok_or_else(|| {
-            format!("Preference '{name}' has a non-text entry in '{field}'.")
-        })?;
+        let token = value
+            .as_str()
+            .ok_or_else(|| format!("Preference '{name}' has a non-text entry in '{field}'."))?;
         if token.is_empty() {
             return Err(format!(
                 "Preference '{name}' has an empty entry in '{field}'."

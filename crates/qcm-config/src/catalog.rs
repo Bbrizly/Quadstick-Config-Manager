@@ -71,7 +71,12 @@ pub fn canonical_catalog() -> Result<Value, String> {
 }
 
 fn sorted_set(values: &[String]) -> Vec<String> {
-    values.iter().cloned().collect::<BTreeSet<_>>().into_iter().collect()
+    values
+        .iter()
+        .cloned()
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect()
 }
 
 fn sorted_static<const N: usize>(values: &[&str; N]) -> Vec<String> {

@@ -68,7 +68,12 @@ pub fn known_outputs(validation: &ValidationCatalog) -> BTreeSet<String> {
 pub fn functions_in_firmware_order(validation: &ValidationCatalog) -> Vec<String> {
     FIRMWARE_FUNCTION_ORDER
         .iter()
-        .filter(|name| validation.functions.iter().any(|function| function == **name))
+        .filter(|name| {
+            validation
+                .functions
+                .iter()
+                .any(|function| function == **name)
+        })
         .map(|name| (*name).to_owned())
         .collect()
 }
