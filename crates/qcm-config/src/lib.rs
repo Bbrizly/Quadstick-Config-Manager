@@ -6,6 +6,7 @@ pub mod issue;
 pub mod model;
 pub mod parser;
 pub mod preferences;
+pub mod profile;
 pub mod validation;
 pub mod vocab;
 
@@ -15,6 +16,7 @@ pub use issue::{Issue, IssueKind, Severity};
 pub use model::{Binding, ModeSheet, ProfileDocument, SheetType};
 pub use parser::{parse_structure, parse_with_issues};
 pub use preferences::{PreferenceDefinition, PreferenceEditor, load_preferences};
+pub use profile::ProfileFile;
 pub use validation::validate;
 pub use vocab::{ValidationCatalog, load_validation};
 
