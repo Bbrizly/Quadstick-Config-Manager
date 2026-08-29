@@ -7,6 +7,8 @@
 //! legacy behavior is retired.
 
 pub mod csv;
+pub mod issue;
+pub mod model;
 
 /// Frozen legacy implementation this crate is required to match.
 pub const LEGACY_BASE: &str = "f7783944387202bcafaeb7ff3f67789098fa6a4e";

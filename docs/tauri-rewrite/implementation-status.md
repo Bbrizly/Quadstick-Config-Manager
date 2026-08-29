@@ -15,7 +15,8 @@ This is the execution checkpoint. The numbered specification remains the source 
 | TASK-006 close Phase-0 ledgers | **DONE** | no UNASSESSED rows; serial closed-deferred; `gate0-review.md` |
 | TASK-007 Rust workspace | **IMPLEMENTED; CI VERIFYING** | root workspace + pinned Rust 1.98.0 + clippy/fmt/test gate |
 | TASK-008 exact CSV port | **IMPLEMENTED; C# DIFFERENTIAL CI VERIFYING** | `csv.rs`, edge tests, generated C# byte oracle |
-| TASK-009 model/issue types | NEXT | — |
+| TASK-009 model/issue types | **IMPLEMENTED; CI VERIFYING** | `model.rs`, `issue.rs`, no OS/Tauri dependencies |
+| TASK-010 vocab/catalog embedded data | NEXT | — |
 
 ## Gate 0 evidence
 
@@ -24,6 +25,10 @@ Rewrite parity CI on `f16fab62c8bfd1799f7b47491da3ed7c1da2bc3b` passed manifest 
 ## Rust parity rule
 
 A Rust implementation is not called parity-tested merely because its unit tests pass. For CSV, CI generates parse/write artifacts from the frozen C# implementation in `gate0`, transfers them as a workflow artifact, then Rust compares every cell and exact writer bytes in `rust-core`.
+
+## Dependency boundary
+
+Through TASK-009, `qcm-config` has **zero third-party runtime dependencies** and no Tauri/OS/network imports. Serde integration is intentionally deferred until it can be added with an exact generated lockfile rather than hand-authoring dependency metadata.
 
 ## Execution rule
 
