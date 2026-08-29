@@ -2,7 +2,7 @@
 
 ## Version policy
 
-At scaffold TASK-010, pin exact versions in `Cargo.lock` + `pnpm-lock.yaml`; commit toolchain/package-manager metadata. This spec records the current family/decision but does not freeze patch numbers months before implementation.
+Pin pure-Rust dependency versions when the Rust workspace is created in **TASK-007**, and pin frontend/Tauri dependencies in **TASK-030**. Commit `Cargo.lock` + `pnpm-lock.yaml` and toolchain/package-manager metadata. This specification records the current family/decision but does not freeze patch numbers months before implementation.
 
 Current research snapshot (2026-08-29):
 - Rust stable **1.98** (Rust Forge current release table, 2026-08-20).
