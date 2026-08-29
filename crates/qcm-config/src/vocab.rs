@@ -78,7 +78,7 @@ pub fn functions_in_firmware_order(validation: &ValidationCatalog) -> Vec<String
         .collect()
 }
 
-pub const fn function_arity(function: &str) -> Option<(usize, usize)> {
+pub fn function_arity(function: &str) -> Option<(usize, usize)> {
     match function {
         "normal" | "toggle" => Some((0, 0)),
         "duty" | "less_than" | "force_off" | "delayed_latch" | "delay_off" => Some((0, 1)),
