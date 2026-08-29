@@ -23,7 +23,8 @@ fn checked_in_csv_edge_fixtures_have_expected_grids_and_roundtrip() {
     ];
 
     for (name, expected) in cases {
-        let bytes = fs::read(repo(&format!("fixtures/profiles/{name}"))).expect("fixture must exist");
+        let bytes =
+            fs::read(repo(&format!("fixtures/profiles/{name}"))).expect("fixture must exist");
         let text = String::from_utf8(bytes.clone()).expect("CSV fixtures are UTF-8");
         let grid = parse(&text);
         assert_eq!(grid, expected, "parse mismatch for {name}");
@@ -37,15 +38,24 @@ fn csharp_csv_oracle_matches_every_edge_fixture() {
     for id in ["csv-empty", "csv-quoted", "csv-crlf"] {
         let artifact = repo(&format!("fixtures/oracle/{id}.csv-parity.txt"));
         if !artifact.exists() {
-            assert!(!required, "required C# CSV oracle artifact is missing: {}", artifact.display());
+            assert!(
+                !required,
+                "required C# CSV oracle artifact is missing: {}",
+                artifact.display()
+            );
             continue;
         }
-        let expected = parse_oracle(&fs::read_to_string(&artifact).expect("read C# oracle artifact"));
+        let expected =
+            parse_oracle(&fs::read_to_string(&artifact).expect("read C# oracle artifact"));
         let fixture = repo(&format!("fixtures/profiles/{id}.csv"));
         let text = fs::read_to_string(&fixture).expect("read CSV fixture");
         let actual = parse(&text);
         assert_eq!(actual, expected.rows, "C# parse parity failed for {id}");
-        assert_eq!(write(&actual).into_bytes(), expected.written, "C# write parity failed for {id}");
+        assert_eq!(
+            write(&actual).into_bytes(),
+            expected.written,
+            "C# write parity failed for {id}"
+        );
     }
 }
 

@@ -83,9 +83,7 @@ pub fn write(rows: &[Vec<String>]) -> String {
 }
 
 fn needs_quotes(field: &str) -> bool {
-    field
-        .chars()
-        .any(|c| matches!(c, ',' | '"' | '\n' | '\r'))
+    field.chars().any(|c| matches!(c, ',' | '"' | '\n' | '\r'))
 }
 
 #[cfg(test)]
