@@ -168,7 +168,7 @@ fn device_safe(row: &[String]) -> Vec<String> {
             };
             if safe.contains('\n') || safe.contains('\r') {
                 safe = safe
-                    .split(|character| character == '\n' || character == '\r')
+                    .split(['\n', '\r'])
                     .filter(|part| !part.is_empty())
                     .map(str::trim)
                     .collect::<Vec<_>>()
@@ -182,10 +182,7 @@ fn device_safe(row: &[String]) -> Vec<String> {
 }
 
 fn file_name_without_extension(name: &str) -> String {
-    let file_name = name
-        .rsplit(|character| character == '/' || character == '\\')
-        .next()
-        .unwrap_or(name);
+    let file_name = name.rsplit(['/', '\\']).next().unwrap_or(name);
     file_name
         .rfind('.')
         .map_or_else(|| file_name.to_owned(), |dot| file_name[..dot].to_owned())
