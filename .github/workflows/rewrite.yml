@@ -19,80 +19,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  gate0:
-    name: Gate 0 / legacy + oracle
+  parity:
+    name: Legacy + oracle + Rust parity
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Verify fixture manifest
-        run: python3 tools/fixtures/manifest.py verify
-      - name: Verify catalog source fingerprints
-        shell: bash
-        run: |
-          test "$(git hash-object src/QuadStick.Format/Data/validation.json)" = "dd793c1cd768f703dd3b6255c990f2e1c8ed2332"
-          test "$(git hash-object src/QuadStick.Format/Data/preferences.json)" = "71914f9691d890d4ab8a6f32fc76d7e8005c8f68"
-          test "$(git hash-object src/QuadStick.Format/Templates/default-template.csv)" = "21f23998d00de044a9bd1bc0899809c3f95a49b8"
-          test "$(git hash-object tests/QuadStick.Format.Tests/corpus/firmware-2373.json)" = "7f90d32e6efa819c8eacbfa0eab9184bfccb509b"
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
-      - name: Legacy tests stay green
-        run: dotnet test QuadStick.sln --nologo -c Release
-      - name: Compile and self-check legacy parity oracle under two host cultures
-        shell: bash
-        run: |
-          LANG=C dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- selfcheck
-          LANG=fr_FR.UTF-8 dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- selfcheck
-      - name: Generate canonical oracle fixture outputs
-        shell: bash
-        run: |
-          dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- generate
-          dotnet run --project tools/QcmCsvOracle/QcmCsvOracle.csproj -c Release -- fixtures/manifest.json fixtures/oracle
-          dotnet run --project tools/QcmCatalogOracle/QcmCatalogOracle.csproj -c Release -- fixtures/oracle/catalog-canonical.txt
-          dotnet run --project tools/QcmParserOracle/QcmParserOracle.csproj -c Release -- fixtures/manifest.json fixtures/oracle
-          dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- apply-canonical fixtures/profiles/profile-headerless.csv fixtures/ops/task15-core.json > fixtures/oracle/task15-core.apply.json
-          dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- apply-canonical fixtures/profiles/profile-headerless.csv fixtures/ops/task16-state.json > fixtures/oracle/task16-state.apply.json
-      - name: Validate canonical outputs against parity schema
-        shell: bash
-        run: |
-          python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
-          python3 tools/oracle/validate.py
-      - uses: actions/upload-artifact@v6
-        with:
-          name: qcm-legacy-oracle-${{ github.sha }}
-          path: fixtures/oracle/*
-          if-no-files-found: error
-          retention-days: 14
-
-  rust-core:
-    name: Rust core / fmt + clippy + test
-    needs: gate0
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      QCM_REQUIRE_CSV_ORACLE: "1"
-      QCM_REQUIRE_CATALOG_ORACLE: "1"
-      QCM_REQUIRE_PARSER_ORACLE: "1"
-      QCM_REQUIRE_VALIDATION_ORACLE: "1"
-      QCM_REQUIRE_NORMALIZE_ORACLE: "1"
-      QCM_REQUIRE_EDITOR_ORACLE: "1"
-      QCM_REQUIRE_EDITOR_STATE_ORACLE: "1"
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v7
-        with:
-          name: qcm-legacy-oracle-${{ github.sha }}
-          path: fixtures/oracle
       - name: Install pinned Rust toolchain
         shell: bash
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-      - name: Rustfmt
-        run: cargo fmt --all -- --check
-      - name: Clippy warnings are errors
-        run: cargo clippy --workspace --all-targets --locked -- -D warnings
-      - name: Rust tests
-        run: cargo test --workspace --locked
+      - name: Run complete differential parity gate
+        run: python3 scripts/parity.py
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: qcm-legacy-oracle-${{ github.sha }}
+          path: fixtures/oracle/*
+          if-no-files-found: warn
+          retention-days: 14
