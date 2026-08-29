@@ -49,6 +49,15 @@ foreach (var fixture in manifest.RootElement.GetProperty("fixtures").EnumerateAr
                 headerLabel = sheet.HeaderLabel,
                 channel = sheet.Channel,
                 startRow = sheet.StartRow,
+                bindings = sheet.Bindings.Select(binding => new
+                {
+                    row = binding.Row,
+                    output = binding.Output,
+                    function = binding.Function,
+                    inputs = binding.Inputs.ToArray(),
+                    inputCols = binding.InputCols.ToArray(),
+                    actionName = binding.ActionName,
+                }).ToArray(),
             }).ToArray(),
         },
     };

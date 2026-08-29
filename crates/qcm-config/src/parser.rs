@@ -1,14 +1,18 @@
 use crate::csv::{Grid, parse};
-use crate::model::{ModeSheet, ProfileDocument};
+use crate::model::{Binding, ModeSheet, ProfileDocument};
 use crate::vocab::{
     firmware_accepts_sheet_keyword, is_file_header, is_sheet_keyword, keyword_to_type,
 };
 
-/// Parse only the profile/header/sheet structure.
+const MAX_INPUT_COLUMNS: usize = 8; // C..J
+const KEYWORD_COLUMNS: usize = 2 + MAX_INPUT_COLUMNS; // A..J
+const ACTION_COLUMN: usize = 11; // L
+
+/// Parse the current profile/header/sheet/binding projection.
 ///
-/// Binding projection, validation and normalization deliberately live in later
-/// rewrite tasks. This function exists so section discovery can be proven
-/// independently against the frozen C# parser.
+/// Validation, firmware warnings and normalization deliberately live in later
+/// rewrite tasks. This projection mirrors the frozen C# parser closely enough
+/// that those later layers can be ported against the same document shape.
 #[must_use]
 pub fn parse_structure(csv_text: &str) -> ProfileDocument {
     let grid = parse(csv_text);
@@ -25,7 +29,10 @@ pub fn parse_structure(csv_text: &str) -> ProfileDocument {
 
     let starts = find_section_starts(&grid, scan_from);
     for (index, start) in starts.iter().copied().enumerate() {
-        document.sheets.push(parse_sheet(&grid, start, index == 0));
+        let end = starts.get(index + 1).copied().unwrap_or(grid.len());
+        document
+            .sheets
+            .push(parse_sheet(&grid, start, end, index == 0));
     }
 
     document
@@ -80,7 +87,7 @@ fn is_header_row(grid: &Grid, row: usize) -> bool {
     firmware_accepts_sheet_keyword(cell(grid, row, 0)) || cell(grid, row, 1).trim().is_empty()
 }
 
-fn parse_sheet(grid: &Grid, start: usize, is_first: bool) -> ModeSheet {
+fn parse_sheet(grid: &Grid, start: usize, end: usize, is_first: bool) -> ModeSheet {
     let value = |offset: usize, column: usize| cell(grid, start + offset, column).trim();
     let mut sheet = ModeSheet::new(keyword_to_type(value(0, 0)));
     sheet.mode_name = value(0, 2).to_owned();
@@ -88,6 +95,41 @@ fn parse_sheet(grid: &Grid, start: usize, is_first: bool) -> ModeSheet {
     sheet.header_label = value(2, 0).to_owned();
     sheet.channel = value(2, 2).to_owned();
     sheet.start_row = start + 1;
+
+    let mut terminated = false;
+    for row in start + 3..end {
+        let has_content = (0..KEYWORD_COLUMNS).any(|column| !cell(grid, row, column).trim().is_empty());
+        if !has_content {
+            if is_blank_line(&grid[row]) {
+                terminated = true;
+            }
+            continue;
+        }
+        if terminated {
+            continue;
+        }
+
+        let mut inputs = Vec::new();
+        let mut input_cols = Vec::new();
+        for column in 2..KEYWORD_COLUMNS {
+            let input = cell(grid, row, column).trim();
+            if !input.is_empty() {
+                inputs.push(input.to_owned());
+                input_cols.push(column);
+            }
+        }
+
+        let mut binding = Binding::new(
+            row + 1,
+            cell(grid, row, 0).trim(),
+            cell(grid, row, 1).trim(),
+            inputs,
+            input_cols,
+        );
+        binding.action_name = cell(grid, row, ACTION_COLUMN).trim().to_owned();
+        sheet.bindings.push(binding);
+    }
+
     sheet
 }
 
@@ -119,6 +161,7 @@ mod tests {
             "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\nx,normal,lip\nProfile switch,normal,lip\n",
         );
         assert_eq!(document.sheets.len(), 1);
+        assert_eq!(document.sheets[0].bindings.len(), 2);
     }
 
     #[test]
@@ -129,5 +172,40 @@ mod tests {
         assert_eq!(document.sheets.len(), 2);
         assert_eq!(document.sheets[1].mode_name, "Two");
         assert_eq!(document.sheets[1].channel, "bluetooth");
+    }
+
+    #[test]
+    fn binding_projection_keeps_input_gaps_and_action_name() {
+        let document = parse_structure(
+            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\nx,normal,lip,,,mp_left_sip,,,,,note,Action X,tail\n",
+        );
+        let binding = &document.sheets[0].bindings[0];
+        assert_eq!(binding.row, 4);
+        assert_eq!(binding.inputs, ["lip", "mp_left_sip"]);
+        assert_eq!(binding.input_cols, [2, 5]);
+        assert_eq!(binding.action_name, "Action X");
+    }
+
+    #[test]
+    fn comma_row_does_not_terminate_but_true_blank_does() {
+        let comma = parse_structure(
+            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\nx,normal,lip\n,,\ncircle,normal,lip\n",
+        );
+        assert_eq!(comma.sheets[0].bindings.len(), 2);
+
+        let blank = parse_structure(
+            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\nx,normal,lip\n\ncircle,normal,lip\n",
+        );
+        assert_eq!(blank.sheets[0].bindings.len(), 1);
+        assert_eq!(blank.sheets[0].bindings[0].output, "x");
+    }
+
+    #[test]
+    fn columns_after_j_do_not_make_a_binding_row() {
+        let document = parse_structure(
+            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\n,,,,,,,,,,note only,Action only,opaque\nx,normal,lip\n",
+        );
+        assert_eq!(document.sheets[0].bindings.len(), 1);
+        assert_eq!(document.sheets[0].bindings[0].output, "x");
     }
 }
