@@ -35,7 +35,15 @@ Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Lan
 // --pseudo draws the whole app in the pseudo language: every label that is
 // still plain English is one the move to Strings.resx missed, and every label
 // that runs out of its control is a layout that assumed English.
-if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
+// Relocalize as well as Apply: the preference catalog is translated as data
+// rather than as resources, and without this the pseudo pass drew all sixty
+// one setting labels in plain English, which is the half of this screen the
+// check exists to look at.
+if (args.Contains("--pseudo"))
+{
+    Localization.Apply("qps-ploc");
+    Localization.Relocalize();
+}
 
 // A prefs.csv shaped like the one a QuadStick ships with: a handful of the
 // settings written down, the rest left to the device's own defaults.
@@ -272,7 +280,15 @@ foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark"
 // --pseudo draws the whole app in the pseudo language: every label that is
 // still plain English is one the move to Strings.resx missed, and every label
 // that runs out of its control is a layout that assumed English.
-if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
+// Relocalize as well as Apply: the preference catalog is translated as data
+// rather than as resources, and without this the pseudo pass drew all sixty
+// one setting labels in plain English, which is the half of this screen the
+// check exists to look at.
+if (args.Contains("--pseudo"))
+{
+    Localization.Apply("qps-ploc");
+    Localization.Relocalize();
+}
 
     // The specimen sheet: what you compare against after a token changes.
     // Tall on purpose, or the render stops at the fold and hides the colours.
