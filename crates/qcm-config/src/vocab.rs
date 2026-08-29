@@ -1,3 +1,4 @@
+use crate::model::SheetType;
 use crate::preferences::PreferenceDefinition;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
@@ -94,4 +95,74 @@ pub fn preference_overrides(preferences: &[PreferenceDefinition]) -> BTreeSet<St
         .filter(|preference| preference.mode_override)
         .map(|preference| preference.name.clone())
         .collect()
+}
+
+#[must_use]
+pub fn is_sheet_keyword(a1: &str) -> bool {
+    contains_ascii_ignore_case(a1, "Profile")
+        || a1.trim().eq_ignore_ascii_case("Preferences")
+        || a1.trim().eq_ignore_ascii_case("Infrared")
+}
+
+#[must_use]
+pub fn is_file_header(a1: &str) -> bool {
+    starts_with_ascii_ignore_case(a1.trim_start(), FILE_HEADER_KEYWORD)
+}
+
+#[must_use]
+pub fn firmware_accepts_sheet_keyword(raw_a1: &str) -> bool {
+    raw_a1.starts_with("Profile")
+        || raw_a1.starts_with("Preferences")
+        || raw_a1.starts_with("Infrared")
+}
+
+#[must_use]
+pub fn keyword_to_type(a1: &str) -> SheetType {
+    if contains_ascii_ignore_case(a1, "Profile") {
+        SheetType::ProfileName
+    } else if a1.trim().eq_ignore_ascii_case("Preferences") {
+        SheetType::Preferences
+    } else {
+        SheetType::Infrared
+    }
+}
+
+fn contains_ascii_ignore_case(haystack: &str, needle: &str) -> bool {
+    haystack
+        .as_bytes()
+        .windows(needle.len())
+        .any(|window| window.eq_ignore_ascii_case(needle.as_bytes()))
+}
+
+fn starts_with_ascii_ignore_case(value: &str, prefix: &str) -> bool {
+    value
+        .as_bytes()
+        .get(..prefix.len())
+        .is_some_and(|start| start.eq_ignore_ascii_case(prefix.as_bytes()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        firmware_accepts_sheet_keyword, is_file_header, is_sheet_keyword, keyword_to_type,
+    };
+    use crate::model::SheetType;
+
+    #[test]
+    fn converter_and_firmware_keyword_rules_stay_separate() {
+        assert!(is_sheet_keyword("profile name"));
+        assert!(!firmware_accepts_sheet_keyword("profile name"));
+        assert!(is_sheet_keyword("GTA Profile"));
+        assert!(!firmware_accepts_sheet_keyword("GTA Profile"));
+        assert!(firmware_accepts_sheet_keyword("Profile Name"));
+        assert!(firmware_accepts_sheet_keyword("Infrared,Samsung"));
+    }
+
+    #[test]
+    fn file_header_and_sheet_type_match_legacy_helpers() {
+        assert!(is_file_header("  quadstick configuration"));
+        assert_eq!(keyword_to_type("My Profile"), SheetType::ProfileName);
+        assert_eq!(keyword_to_type(" preferences "), SheetType::Preferences);
+        assert_eq!(keyword_to_type("Infrared"), SheetType::Infrared);
+    }
 }
