@@ -53,7 +53,7 @@ public static class Style
         // The panel down the left of the editor. Wide enough for "Whole
         // combos" and its mapping count on one row and for the three view keys
         // side by side; every pixel past that comes off the device diagram.
-        ["SidebarWidth"]  = 340,
+        ["SidebarWidth"]  = 240,
         ["CardHeight"]    = 112,
 
         // The editor's own commands. A command button is a square plate, not a
