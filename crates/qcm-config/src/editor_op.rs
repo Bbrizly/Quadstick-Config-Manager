@@ -76,17 +76,13 @@ impl ProfileFile {
     pub fn apply_editor_op(&mut self, op: &EditorOp) -> bool {
         match op {
             EditorOp::SetCell { row, col, value } => self.set_cell(*row, *col, value.clone()),
-            EditorOp::SetOutput { row, token, action } => {
-                self.set_output(*row, token, action)
-            }
+            EditorOp::SetOutput { row, token, action } => self.set_output(*row, token, action),
             EditorOp::AddRow { sheet } => self.add_binding_row(*sheet).is_some(),
             EditorOp::DeleteRow { row } => self.delete_row(*row),
             EditorOp::MoveRow { from, to } => self.move_row(*from, *to),
             EditorOp::AddMode { name } => self.add_mode_sheet(name).is_some(),
             EditorOp::RenameMode { sheet, name } => self.rename_mode(*sheet, name),
-            EditorOp::SetModeChannel { sheet, channel } => {
-                self.set_mode_channel(*sheet, channel)
-            }
+            EditorOp::SetModeChannel { sheet, channel } => self.set_mode_channel(*sheet, channel),
             EditorOp::Normalize => self.normalize_for_device_csv(),
         }
     }
@@ -97,9 +93,7 @@ impl ProfileFile {
         if row == 0 || row > self.grid.len() {
             return "";
         }
-        self.grid[row - 1]
-            .get(col)
-            .map_or("", |value| value.trim())
+        self.grid[row - 1].get(col).map_or("", |value| value.trim())
     }
 
     /// Set one raw grid cell and immediately reparse.
@@ -162,7 +156,7 @@ impl ProfileFile {
     /// Action names in row order, de-duplicated case-insensitively.
     #[must_use]
     pub fn action_names(&self) -> Vec<String> {
-        let mut result = Vec::new();
+        let mut result: Vec<String> = Vec::new();
         for binding in self.nameable_bindings() {
             if binding.action_name.is_empty()
                 || result
@@ -283,8 +277,7 @@ impl ProfileFile {
             mode_name.to_owned(),
         ]);
         self.grid.push(Vec::new());
-        self.grid
-            .push(vec![label, "Function".to_owned(), channel]);
+        self.grid.push(vec![label, "Function".to_owned(), channel]);
         self.reparse();
         self.document.sheets.len().checked_sub(1)
     }
@@ -350,10 +343,7 @@ impl ProfileFile {
             .collect::<Vec<_>>();
         moving.sort_unstable();
         moving.dedup();
-        if moving.is_empty()
-            || to_row == 0
-            || to_row > self.grid.len()
-            || moving.contains(&to_row)
+        if moving.is_empty() || to_row == 0 || to_row > self.grid.len() || moving.contains(&to_row)
         {
             return false;
         }
@@ -702,7 +692,10 @@ impl ProfileFile {
     /// Move a visible mode/preferences sheet one slot, stepping over Infrared.
     pub fn move_mode(&mut self, sheet_index: usize, delta: isize) -> bool {
         let sheets = &self.document.sheets;
-        if delta == 0 || sheet_index >= sheets.len() || sheets[sheet_index].sheet_type == SheetType::Infrared {
+        if delta == 0
+            || sheet_index >= sheets.len()
+            || sheets[sheet_index].sheet_type == SheetType::Infrared
+        {
             return false;
         }
         let step: isize = if delta > 0 { 1 } else { -1 };
@@ -900,7 +893,12 @@ mod tests {
         assert_eq!(profile.document.sheets.len(), 2);
         assert_eq!(profile.document.sheets[0].bindings[0].output, "circle");
         assert_eq!(profile.document.sheets[0].bindings[0].action_name, "Jump");
-        assert!(profile.grid.iter().any(|row| row.get(ACTION_COLUMN).is_some_and(|v| v == "Action")));
+        assert!(
+            profile
+                .grid
+                .iter()
+                .any(|row| row.get(ACTION_COLUMN).is_some_and(|v| v == "Action"))
+        );
     }
 
     #[test]

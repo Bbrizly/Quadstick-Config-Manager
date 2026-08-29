@@ -40,7 +40,11 @@ fn typed_editor_sequence_matches_csharp_oracle() {
         })
         .collect::<Vec<_>>();
 
-    assert_eq!(results, expected["operations"], "operation-result parity failed");
+    assert_eq!(
+        Value::Array(results),
+        expected["operations"],
+        "operation-result parity failed"
+    );
     assert_eq!(
         serde_json::to_value(&actual.grid).expect("serialize Rust raw grid"),
         expected["snapshot"]["rawGrid"],
