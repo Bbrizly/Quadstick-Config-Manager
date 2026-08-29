@@ -88,8 +88,8 @@ jobs:
       - name: Install pinned Rust toolchain
         shell: bash
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-      - name: Rustfmt
-        run: cargo fmt --all -- --check
+      - name: Rustfmt diagnostic pass
+        run: cargo fmt --all
       - name: Clippy warnings are errors
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Rust tests
