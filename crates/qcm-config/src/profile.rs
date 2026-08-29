@@ -166,7 +166,7 @@ fn device_safe(row: &[String]) -> Vec<String> {
             } else {
                 value.clone()
             };
-            if safe.contains(['\n', '\r']) {
+            if safe.contains('\n') || safe.contains('\r') {
                 safe = safe
                     .split(|character| character == '\n' || character == '\r')
                     .filter(|part| !part.is_empty())
@@ -182,7 +182,10 @@ fn device_safe(row: &[String]) -> Vec<String> {
 }
 
 fn file_name_without_extension(name: &str) -> String {
-    let file_name = name.rsplit(['/', '\\']).next().unwrap_or(name);
+    let file_name = name
+        .rsplit(|character| character == '/' || character == '\\')
+        .next()
+        .unwrap_or(name);
     file_name
         .rfind('.')
         .map_or_else(|| file_name.to_owned(), |dot| file_name[..dot].to_owned())
@@ -230,19 +233,27 @@ mod tests {
         let raw = profile.grid.clone();
         profile.set_header_sheet_id(Some("sheet-123".to_owned()));
         assert_eq!(profile.grid, raw);
-        assert!(profile.to_csv_text().starts_with(
-            "QuadStick Configuration,Version 1.5,sheet-123,Name\r\n"
-        ));
+        assert!(
+            profile
+                .to_csv_text()
+                .starts_with("QuadStick Configuration,Version 1.5,sheet-123,Name\r\n")
+        );
 
         profile.set_header_sheet_id(None);
-        assert!(profile
-            .to_csv_text()
-            .starts_with("QuadStick Configuration,Version 1.5,old,Name\r\n"));
+        assert!(
+            profile
+                .to_csv_text()
+                .starts_with("QuadStick Configuration,Version 1.5,old,Name\r\n")
+        );
 
         let mut headerless = ProfileFile::load(
             "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\n",
         );
         headerless.set_header_sheet_id(Some("sheet-123".to_owned()));
-        assert!(headerless.to_csv_text().starts_with("Profile Name,,Mode\r\n"));
+        assert!(
+            headerless
+                .to_csv_text()
+                .starts_with("Profile Name,,Mode\r\n")
+        );
     }
 }
