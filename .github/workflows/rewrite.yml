@@ -28,8 +28,6 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Verify fixture manifest
-        run: python3 tools/fixtures/manifest.py verify
       - name: Verify catalog source fingerprints
         shell: bash
         run: |
@@ -42,25 +40,10 @@ jobs:
           dotnet-version: "8.0.x"
       - name: Legacy tests stay green
         run: dotnet test QuadStick.sln --nologo -c Release
-      - name: Compile and self-check legacy parity oracle under two host cultures
-        shell: bash
-        run: |
-          LANG=C dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- selfcheck
-          LANG=fr_FR.UTF-8 dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- selfcheck
-      - name: Generate canonical oracle fixture outputs
-        shell: bash
-        run: |
-          dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- generate
-          dotnet run --project tools/QcmCsvOracle/QcmCsvOracle.csproj -c Release -- fixtures/manifest.json fixtures/oracle
-          dotnet run --project tools/QcmCatalogOracle/QcmCatalogOracle.csproj -c Release -- fixtures/oracle/catalog-canonical.txt
-          dotnet run --project tools/QcmParserOracle/QcmParserOracle.csproj -c Release -- fixtures/manifest.json fixtures/oracle
-          dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- apply-canonical fixtures/profiles/profile-headerless.csv fixtures/ops/task15-core.json > fixtures/oracle/task15-core.apply.json
-          dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- apply-canonical fixtures/profiles/profile-headerless.csv fixtures/ops/task16-state.json > fixtures/oracle/task16-state.apply.json
-      - name: Validate canonical outputs against parity schema
-        shell: bash
-        run: |
-          python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
-          python3 tools/oracle/validate.py
+      - name: Install parity schema dependency
+        run: python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
+      - name: Generate and validate all C# parity oracles
+        run: python3 scripts/parity.py --generate-only
       - uses: actions/upload-artifact@v6
         with:
           name: qcm-legacy-oracle-${{ github.sha }}
@@ -69,18 +52,10 @@ jobs:
           retention-days: 14
 
   rust-core:
-    name: Rust core / fmt + clippy + test
+    name: Rust core / one-command parity
     needs: gate0
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    env:
-      QCM_REQUIRE_CSV_ORACLE: "1"
-      QCM_REQUIRE_CATALOG_ORACLE: "1"
-      QCM_REQUIRE_PARSER_ORACLE: "1"
-      QCM_REQUIRE_VALIDATION_ORACLE: "1"
-      QCM_REQUIRE_NORMALIZE_ORACLE: "1"
-      QCM_REQUIRE_EDITOR_ORACLE: "1"
-      QCM_REQUIRE_EDITOR_STATE_ORACLE: "1"
     steps:
       - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7
@@ -90,9 +65,5 @@ jobs:
       - name: Install pinned Rust toolchain
         shell: bash
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-      - name: Rustfmt
-        run: cargo fmt --all -- --check
-      - name: Clippy warnings are errors
-        run: cargo clippy --workspace --all-targets --locked -- -D warnings
-      - name: Rust tests
-        run: cargo test --workspace --locked
+      - name: Run strict Rust parity suite
+        run: python3 scripts/parity.py --rust-only
