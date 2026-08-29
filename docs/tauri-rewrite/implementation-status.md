@@ -13,16 +13,17 @@ This is the execution checkpoint. The numbered specification remains the source 
 | TASK-004 parity schema | **DONE; STRICT CI VERIFYING** | checked-in schema + `tools/oracle/validate.py` |
 | TASK-005 Avalonia baseline | **DONE WITH EXPLICIT UNKNOWNS** | `baseline-performance.md` |
 | TASK-006 close Phase-0 ledgers | **DONE** | no UNASSESSED rows; serial closed-deferred; `gate0-review.md` |
-| TASK-007 Rust workspace | **IMPLEMENTED; CI VERIFYING** | root workspace + pinned Rust 1.98.0 + `qcm-config` + clippy/fmt/test gate |
-| TASK-008 exact CSV port | NEXT | — |
+| TASK-007 Rust workspace | **IMPLEMENTED; CI VERIFYING** | root workspace + pinned Rust 1.98.0 + clippy/fmt/test gate |
+| TASK-008 exact CSV port | **IMPLEMENTED; C# DIFFERENTIAL CI VERIFYING** | `csv.rs`, edge tests, generated C# byte oracle |
+| TASK-009 model/issue types | NEXT | — |
 
 ## Gate 0 evidence
 
 Rewrite parity CI on `f16fab62c8bfd1799f7b47491da3ed7c1da2bc3b` passed manifest verification, the full legacy test suite, oracle compilation/self-check and canonical generation. Subsequent CI validates generated JSON against the checked-in JSON Schema before allowing Rust work to pass.
 
-## Toolchain evidence
+## Rust parity rule
 
-Rust 1.98.0 was released by the Rust project on 2026-08-20 and is the current stable toolchain at implementation start. `rust-toolchain.toml` pins it exactly.
+A Rust implementation is not called parity-tested merely because its unit tests pass. For CSV, CI generates parse/write artifacts from the frozen C# implementation in `gate0`, transfers them as a workflow artifact, then Rust compares every cell and exact writer bytes in `rust-core`.
 
 ## Execution rule
 

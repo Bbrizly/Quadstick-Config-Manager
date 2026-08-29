@@ -6,6 +6,8 @@
 //! and semantic parity with the frozen C# `QuadStick.Format` oracle before any
 //! legacy behavior is retired.
 
+pub mod csv;
+
 /// Frozen legacy implementation this crate is required to match.
 pub const LEGACY_BASE: &str = "f7783944387202bcafaeb7ff3f67789098fa6a4e";
 
