@@ -397,14 +397,37 @@ public sealed class ProfileFile
     // sheet, the second row is the (ignored) filename slot, the third carries
     // the output label/channel. No binding rows: an empty mode shows the "No
     // bindings yet" hint, not an instant validation error.
-    public int AddModeSheet(string modeName)
+    /// <summary>Add an empty mode. afterSheetIndex >= 0 lands it directly below
+    /// that sheet instead of at the end of the file; anything else appends.
+    /// Never above sheet 0, whose second row carries the profile filename.
+    /// Modes are counted by position, so where it lands is the number the
+    /// device will give it and every mode below it shifts down one.</summary>
+    public int AddModeSheet(string modeName, int afterSheetIndex = -1)
     {
         Snapshot();
         var first = Document.Sheets.FirstOrDefault(s => s.Type == SheetType.ProfileName);
         var label = first is { HeaderLabel.Length: > 0 } ? first.HeaderLabel : "PlayStation Outputs";
-        Grid.Add(new[] { "Profile Name", "", modeName });
-        Grid.Add(Array.Empty<string>()); // filename slot: ignored on a non-first sheet
-        Grid.Add(new[] { label, "Function", first?.Channel ?? "" });
+        var rows = new[]
+        {
+            new[] { "Profile Name", "", modeName },
+            Array.Empty<string>(), // filename slot: ignored on a non-first sheet
+            new[] { label, "Function", first?.Channel ?? "" },
+        };
+        if (afterSheetIndex >= 0 && afterSheetIndex < Document.Sheets.Count)
+        {
+            // End is the last row of that sheet, 1-based, so it is already the
+            // grid index of the row after it. That row is the next mode's
+            // "Profile Name", and the blank line the device needs above it is
+            // the one this sheet ends on, so the block lands below the blank
+            // and has to carry a fresh one for whatever it pushed down.
+            // Without it the device reads the pushed mode's keyword row as a
+            // binding of the new mode and never sees the mode at all.
+            var (_, end) = SheetRowRange(afterSheetIndex);
+            Grid.InsertRange(end, rows.Append(Array.Empty<string>()));
+            Reparse();
+            return afterSheetIndex + 1;
+        }
+        Grid.AddRange(rows);
         Reparse();
         return Document.Sheets.Count - 1;
     }

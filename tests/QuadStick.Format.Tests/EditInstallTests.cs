@@ -241,6 +241,63 @@ public class ProfileFileTests
         Assert.Equal(original, f.ToCsvText());
         Assert.False(f.Undo()); // stack exhausted
     }
+
+    // A new mode used to land at the end of the file however many modes were
+    // already there, so putting it beside the one it came from meant clicking
+    // it up the list one place at a time. The device counts Profile Name
+    // segments in file order, so where the block sits IS the mode number: the
+    // oracle reads the file back to prove the device sees the new order.
+    [Fact]
+    public void AddModeSheet_can_land_under_the_mode_you_are_on()
+    {
+        // Device shaped on purpose: the header line the reader bails without,
+        // and the blank row it needs above every mode after the first.
+        var f = ProfileFile.Load(
+            "QuadStick Configuration,Version 1.5,,game\n" +
+            "Profile Name,,Walking\n" +
+            "game.csv\n" +
+            "Output or Function,Function,usb\n" +
+            "x,normal,lip\n" +
+            "\n" +
+            "Profile Name,,Shooting\n" +
+            "\n" +
+            "Output or Function,Function,usb\n" +
+            "circle,normal,right_sip\n" +
+            "\n" +
+            "Profile Name,,Menus\n" +
+            "\n" +
+            "Output or Function,Function,usb\n" +
+            "square,normal,right_puff\n");
+        Assert.Equal(3, f.Document.Sheets.Count);
+
+        int idx = f.AddModeSheet("Driving", afterSheetIndex: 0);
+
+        Assert.Equal(1, idx);
+        Assert.Equal(new[] { "Walking", "Driving", "Shooting", "Menus" },
+            f.Document.Sheets.Select(x => x.ModeName).ToArray());
+        Assert.Empty(f.Document.Sheets[idx].Bindings);
+        // The modes it pushed down kept their rows.
+        Assert.Single(f.Document.Sheets[2].Bindings);
+        Assert.Equal("circle", f.Document.Sheets[2].Bindings[0].Output);
+
+        // What the device will make of it, read by its own loop.
+        var seen = FirmwareOracle.Read(f.ToCsvText());
+        Assert.Equal(4, seen.Count);
+        Assert.Empty(seen[1].Bindings);
+        Assert.Equal("circle", seen[2].Bindings[0].Output);
+
+        Assert.True(f.Undo());
+        Assert.Equal(3, f.Document.Sheets.Count);
+    }
+
+    [Fact]
+    public void AddModeSheet_still_appends_when_no_mode_is_named()
+    {
+        var f = ProfileFile.Load(Load("gta-mode1.csv"));
+        int count = f.Document.Sheets.Count;
+        // Out of range is not an error, it just means the end of the file.
+        Assert.Equal(count, f.AddModeSheet("Driving", afterSheetIndex: 99));
+    }
 }
 
 public class DeviceTests : IDisposable
