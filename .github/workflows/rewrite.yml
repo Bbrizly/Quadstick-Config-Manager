@@ -30,6 +30,13 @@ jobs:
           python-version: "3.13"
       - name: Verify fixture manifest
         run: python3 tools/fixtures/manifest.py verify
+      - name: Verify catalog source fingerprints
+        shell: bash
+        run: |
+          test "$(git hash-object src/QuadStick.Format/Data/validation.json)" = "dd793c1cd768f703dd3b6255c990f2e1c8ed2332"
+          test "$(git hash-object src/QuadStick.Format/Data/preferences.json)" = "71914f9691d890d4ab8a6f32fc76d7e8005c8f68"
+          test "$(git hash-object src/QuadStick.Format/Templates/default-template.csv)" = "21f23998d00de044a9bd1bc0899809c3f95a49b8"
+          test "$(git hash-object tests/QuadStick.Format.Tests/corpus/firmware-2373.json)" = "7f90d32e6efa819c8eacbfa0eab9184bfccb509b"
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
@@ -45,6 +52,7 @@ jobs:
         run: |
           dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- generate
           dotnet run --project tools/QcmCsvOracle/QcmCsvOracle.csproj -c Release -- fixtures/manifest.json fixtures/oracle
+          dotnet run --project tools/QcmCatalogOracle/QcmCatalogOracle.csproj -c Release > fixtures/oracle/catalog-canonical.txt
       - name: Validate canonical outputs against parity schema
         shell: bash
         run: |
@@ -64,6 +72,7 @@ jobs:
     timeout-minutes: 15
     env:
       QCM_REQUIRE_CSV_ORACLE: "1"
+      QCM_REQUIRE_CATALOG_ORACLE: "1"
     steps:
       - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7
