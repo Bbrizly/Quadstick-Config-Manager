@@ -25,9 +25,7 @@ pub fn parse_structure(csv_text: &str) -> ProfileDocument {
 
     let starts = find_section_starts(&grid, scan_from);
     for (index, start) in starts.iter().copied().enumerate() {
-        document
-            .sheets
-            .push(parse_sheet(&grid, start, index == 0));
+        document.sheets.push(parse_sheet(&grid, start, index == 0));
     }
 
     document

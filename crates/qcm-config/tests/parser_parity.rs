@@ -39,7 +39,10 @@ fn profile_structure_matches_csharp_oracle() {
         .expect("C# parser oracle must be JSON");
         let csv = fs::read_to_string(repo(fixture_path)).expect("read profile fixture");
         let actual = canonical_structure(id, &parse_structure(&csv));
-        assert_eq!(actual, expected, "C# parser structure parity failed for {id}");
+        assert_eq!(
+            actual, expected,
+            "C# parser structure parity failed for {id}"
+        );
     }
 }
 
