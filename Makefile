@@ -1,4 +1,4 @@
-# make test | run | gallery | build | package | pseudo | release VERSION=x.y.z | clean
+# make test | parity | run | gallery | build | package | pseudo | release VERSION=x.y.z | clean
 
 SLN := QuadStick.sln
 APP := src/QuadStick.App/QuadStick.App.csproj
@@ -6,12 +6,17 @@ DIST := dist
 # The Mac this is run on: builds the bundle you can actually launch to test.
 HOSTRID := osx-$(shell uname -m | sed 's/x86_64/x64/')
 
-.PHONY: all test run gallery build package pseudo release clean
+.PHONY: all test parity run gallery build package pseudo release clean
 
 all: test build
 
 test:
 	dotnet test $(SLN) --nologo -c Release
+
+# Regenerate the frozen C# oracle outputs and require the Rust core to match
+# them. Requires dotnet, the pinned Rust toolchain and jsonschema==4.26.0.
+parity:
+	python3 scripts/parity.py
 
 run:
 	dotnet run --project $(APP)
