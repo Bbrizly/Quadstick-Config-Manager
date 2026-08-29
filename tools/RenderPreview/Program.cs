@@ -157,16 +157,17 @@ if (args.Contains("--drew"))
     int PrefSheetOf(ProfileFile f) =>
         f.Document.Sheets.ToList().FindIndex(x => x.Type == SheetType.Preferences);
 
-    // 1. Device settings, in plain words and with the names QMP uses for them,
-    // so somebody who knows QMP finds a setting by the words they already have.
+    // 1. The device's own settings, on a screen of their own, in plain words
+    // and with the names QMP uses for them, so somebody who knows QMP finds a
+    // setting by the words they already have. This was a spreadsheet tab when
+    // Drew first saw it; it is one of the app's three destinations now.
     Capture("1-device-settings", w =>
-    {
-        var f = ProfileFile.Load(Prefs("mygame.csv", 4));
-        w.Height = 1500;   // the explanations are long; a 768 window shows two
-        w.LoadProfile(f);
-        w.SetDeviceViewForPreview(false);
-        w.SelectSheetForPreview(PrefSheetOf(f));
-    });
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff"));
+
+    // The same screen for the group Drew asked about by name, with the group
+    // list, the picture and the sliders in one shot.
+    Capture("1b-device-joystick", w =>
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Joystick"));
 
     // 2. Emulation mode in default.csv, the file the device boots into, set to
     // one of the four that take the drive away. Refused, not warned about.

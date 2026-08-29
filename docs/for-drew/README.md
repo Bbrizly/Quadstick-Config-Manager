@@ -1,7 +1,7 @@
 # For Drew, August 2026
 
-Seven screenshots, one per thing you asked for. Every screen here is the real
-app driven by a real profile, not a mockup.
+Eight screenshots, covering the five things you asked for. Every screen here
+is the real app driven by a real profile, not a mockup.
 
 Regenerate them with:
 
@@ -10,16 +10,20 @@ Regenerate them with:
 
 ## 1. Device settings without going back to QMP
 
-`1-device-settings.png`
+`1-device-settings.png`, `1b-device-joystick.png`
 
-All six settings you named are on the Preferences sheet with real controls: a
-dropdown for the emulation mode, spinners for the numbers, checkboxes for the
-flags. Each one carries the name QMP uses, so searching for the words you
-already have finds it. "Boot in PS4 Mode", "Titan 2 PS4 flag", "USB-A Host
-Mode" and "Low Threshold Delay" all appear in the text under their settings.
+This is a screen of its own now, not a spreadsheet tab: one of the three places
+the app goes, with the settings in groups down the left and a picture of the
+QuadStick above them showing which part the open group changes.
 
-Still to decide: whether these get sliders and a screen of their own rather
-than a spreadsheet tab.
+Every setting with a range is a slider with the exact number beside it, and the
+number is typeable, so you can drag or paste a value from a forum post. Every
+other setting is an on/off box, a dropdown or a number box. Nothing on the
+screen asks you to type a word and hope.
+
+Each one carries the name QMP uses, so searching for the words you already have
+finds it. "Boot in PS4 Mode", "Titan 2 PS4 flag", "USB-A Host Mode" and "Low
+Threshold Delay" all appear in the text under their settings.
 
 ## 2. Emulation modes in plain language
 
