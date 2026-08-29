@@ -220,7 +220,9 @@ fn check_device_line_limits(grid: &Grid, section_starts: &[usize], issues: &mut 
         };
         for (column, value) in row.iter().take(keyword_columns).enumerate() {
             let header_row_exempt = row_index == 0
-                && row.first().is_some_and(|first| first.starts_with("QuadStick"));
+                && row
+                    .first()
+                    .is_some_and(|first| first.starts_with("QuadStick"));
             if utf16_len(value) >= MAX_KEYWORD_LENGTH && !header_row_exempt {
                 issues.push(Issue::new(
                     Severity::Warning,
@@ -257,8 +259,9 @@ fn utf16_len(value: &str) -> usize {
 }
 
 fn cell_ref(column: usize, row: usize) -> String {
-    let letter = char::from_u32(u32::from(b'A') + u32::try_from(column).expect("small grid column"))
-        .expect("ASCII cell column");
+    let letter =
+        char::from_u32(u32::from(b'A') + u32::try_from(column).expect("small grid column"))
+            .expect("ASCII cell column");
     format!("{letter}{row}")
 }
 
@@ -343,20 +346,23 @@ mod tests {
     fn firmware_keyword_limit_is_63_utf16_units() {
         let safe = "x".repeat(63);
         let unsafe_value = "x".repeat(64);
-        let safe_csv = format!(
-            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\n{safe},normal,lip\n"
-        );
+        let safe_csv =
+            format!("Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\n{safe},normal,lip\n");
         let unsafe_csv = format!(
             "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\n{unsafe_value},normal,lip\n"
         );
-        assert!(!parse_with_issues(&safe_csv)
-            .1
-            .iter()
-            .any(|issue| issue.cell == "A4"));
-        assert!(parse_with_issues(&unsafe_csv)
-            .1
-            .iter()
-            .any(|issue| issue.cell == "A4" && issue.severity == Severity::Warning));
+        assert!(
+            !parse_with_issues(&safe_csv)
+                .1
+                .iter()
+                .any(|issue| issue.cell == "A4")
+        );
+        assert!(
+            parse_with_issues(&unsafe_csv)
+                .1
+                .iter()
+                .any(|issue| issue.cell == "A4" && issue.severity == Severity::Warning)
+        );
     }
 
     #[test]
@@ -369,13 +375,17 @@ mod tests {
         let unsafe_csv = format!(
             "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\n,,,,,,,,,,{unsafe_comment}\n"
         );
-        assert!(!parse_with_issues(&safe_csv)
-            .1
-            .iter()
-            .any(|issue| issue.cell == "A4" && issue.severity == Severity::Error));
-        assert!(parse_with_issues(&unsafe_csv)
-            .1
-            .iter()
-            .any(|issue| issue.cell == "A4" && issue.severity == Severity::Error));
+        assert!(
+            !parse_with_issues(&safe_csv)
+                .1
+                .iter()
+                .any(|issue| issue.cell == "A4" && issue.severity == Severity::Error)
+        );
+        assert!(
+            parse_with_issues(&unsafe_csv)
+                .1
+                .iter()
+                .any(|issue| issue.cell == "A4" && issue.severity == Severity::Error)
+        );
     }
 }

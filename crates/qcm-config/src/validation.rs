@@ -2,8 +2,8 @@ use crate::issue::{Issue, IssueKind, Severity};
 use crate::model::{Binding, ModeSheet, ProfileDocument, SheetType};
 use crate::preferences::{PreferenceDefinition, PreferenceEditor, load_preferences};
 use crate::vocab::{
-    CHANNELS, FIRMWARE_FUNCTION_ORDER, LEGACY_INPUTS, LEGACY_OUTPUTS, NONE_INPUT, ValidationCatalog,
-    function_arity, known_outputs, load_validation, preference_overrides,
+    CHANNELS, FIRMWARE_FUNCTION_ORDER, LEGACY_INPUTS, LEGACY_OUTPUTS, NONE_INPUT,
+    ValidationCatalog, function_arity, known_outputs, load_validation, preference_overrides,
 };
 use std::collections::{BTreeSet, HashMap};
 
@@ -34,7 +34,9 @@ impl Resources {
     }
 
     fn preference(&self, name: &str) -> Option<&PreferenceDefinition> {
-        self.preferences.iter().find(|definition| definition.name == name)
+        self.preferences
+            .iter()
+            .find(|definition| definition.name == name)
     }
 
     fn is_preference_override(&self, binding: &Binding) -> bool {
@@ -54,12 +56,7 @@ pub fn validate(document: &ProfileDocument) -> Vec<Issue> {
 
     for sheet in &document.sheets {
         if sheet.sheet_type == SheetType::Preferences {
-            validate_preferences_sheet(
-                sheet,
-                decides_boot_mode,
-                &resources,
-                &mut issues,
-            );
+            validate_preferences_sheet(sheet, decides_boot_mode, &resources, &mut issues);
             continue;
         }
         if sheet.sheet_type != SheetType::ProfileName {
@@ -94,12 +91,7 @@ pub fn validate(document: &ProfileDocument) -> Vec<Issue> {
         let mut mode_numbers: HashMap<String, (i32, usize)> = HashMap::new();
         for binding in &sheet.bindings {
             if resources.is_preference_override(binding) {
-                validate_preference_override(
-                    binding,
-                    decides_boot_mode,
-                    &resources,
-                    &mut issues,
-                );
+                validate_preference_override(binding, decides_boot_mode, &resources, &mut issues);
                 if binding.input_cols.first() == Some(&2)
                     && let Some(value) = binding.inputs.first()
                     && let Ok(number) = value.trim().parse::<i32>()
@@ -168,7 +160,10 @@ fn validate_file_name(document: &ProfileDocument, issues: &mut Vec<Issue>) {
 }
 
 fn is_invalid_filename_char(c: char) -> bool {
-    matches!(c, '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|' | ' ') || c.is_control()
+    matches!(
+        c,
+        '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|' | ' '
+    ) || c.is_control()
 }
 
 fn is_reserved_windows_name(name: &str) -> bool {
@@ -244,7 +239,10 @@ fn validate_output(binding: &Binding, resources: &Resources, issues: &mut Vec<Is
     if LEGACY_OUTPUTS.contains(&binding.output.as_str()) {
         issues.push(warning(cell, "This is a legacy firmware output alias."));
     } else {
-        issues.push(warning(cell, "This output is not in the documented output vocabulary."));
+        issues.push(warning(
+            cell,
+            "This output is not in the documented output vocabulary.",
+        ));
     }
 }
 
@@ -344,7 +342,13 @@ fn function_parameter_bounds(function: &str, index: usize) -> Option<(i64, i64)>
 
 fn validate_inputs(binding: &Binding, resources: &Resources, issues: &mut Vec<Issue>) {
     for (index, input) in binding.inputs.iter().enumerate() {
-        if resources.validation.inputs.iter().any(|known| known == input) || input == NONE_INPUT {
+        if resources
+            .validation
+            .inputs
+            .iter()
+            .any(|known| known == input)
+            || input == NONE_INPUT
+        {
             continue;
         }
         let column = binding.input_cols.get(index).copied().unwrap_or(2);
@@ -522,8 +526,12 @@ fn validate_against_catalog(
             let Ok(number) = value.parse::<i64>() else {
                 return;
             };
-            if definition.minimum.is_some_and(|minimum| number < i64::from(minimum))
-                || definition.maximum.is_some_and(|maximum| number > i64::from(maximum))
+            if definition
+                .minimum
+                .is_some_and(|minimum| number < i64::from(minimum))
+                || definition
+                    .maximum
+                    .is_some_and(|maximum| number > i64::from(maximum))
             {
                 issues.push(warning(
                     cell.to_owned(),
@@ -533,10 +541,7 @@ fn validate_against_catalog(
         }
         PreferenceEditor::Toggle => {
             if !already_rejected && value != "0" && value != "1" {
-                issues.push(warning(
-                    cell.to_owned(),
-                    "A toggle value should be 0 or 1.",
-                ));
+                issues.push(warning(cell.to_owned(), "A toggle value should be 0 or 1."));
             }
         }
         PreferenceEditor::Choice => {
@@ -698,8 +703,9 @@ fn effective_preference(
 }
 
 fn cell_ref(column: usize, row: usize) -> String {
-    let letter = char::from_u32(u32::from(b'A') + u32::try_from(column).expect("small grid column"))
-        .expect("ASCII cell column");
+    let letter =
+        char::from_u32(u32::from(b'A') + u32::try_from(column).expect("small grid column"))
+            .expect("ASCII cell column");
     format!("{letter}{row}")
 }
 
@@ -712,7 +718,12 @@ fn warning(cell: impl Into<String>, message: impl Into<String>) -> Issue {
 }
 
 fn error(cell: impl Into<String>, message: impl Into<String>) -> Issue {
-    Issue::new(Severity::Error, cell, message, "Correct the value before installing.")
+    Issue::new(
+        Severity::Error,
+        cell,
+        message,
+        "Correct the value before installing.",
+    )
 }
 
 #[cfg(test)]
@@ -736,12 +747,16 @@ mod tests {
     fn device_filename_limit_is_31_utf16_units() {
         let safe = format!("{}.csv", "a".repeat(27));
         let unsafe_name = format!("{}.csv", "a".repeat(28));
-        assert!(!validate(&profile(&safe))
-            .iter()
-            .any(|issue| issue.severity == Severity::Error));
-        assert!(validate(&profile(&unsafe_name))
-            .iter()
-            .any(|issue| issue.severity == Severity::Error && issue.cell == "A2"));
+        assert!(
+            !validate(&profile(&safe))
+                .iter()
+                .any(|issue| issue.severity == Severity::Error)
+        );
+        assert!(
+            validate(&profile(&unsafe_name))
+                .iter()
+                .any(|issue| issue.severity == Severity::Error && issue.cell == "A2")
+        );
     }
 
     #[test]
@@ -783,12 +798,13 @@ mod tests {
 
         let issues = validate(&document);
         assert!(issues.iter().any(|issue| {
-            issue.cell == format!("A{}", MAX_BINDINGS + 4)
-                && issue.severity == Severity::Warning
+            issue.cell == format!("A{}", MAX_BINDINGS + 4) && issue.severity == Severity::Warning
         }));
-        assert!(issues.iter().any(|issue| {
-            issue.cell == "A216" && issue.severity == Severity::Warning
-        }));
+        assert!(
+            issues
+                .iter()
+                .any(|issue| { issue.cell == "A216" && issue.severity == Severity::Warning })
+        );
     }
 
     #[test]
@@ -801,9 +817,11 @@ mod tests {
             vec!["7".into()],
             vec![2],
         ));
-        assert!(validate(&document)
-            .iter()
-            .any(|issue| issue.cell == "C4" && issue.severity == Severity::Error));
+        assert!(
+            validate(&document)
+                .iter()
+                .any(|issue| issue.cell == "C4" && issue.severity == Severity::Error)
+        );
     }
 
     #[test]
@@ -816,8 +834,10 @@ mod tests {
             vec!["lip".into()],
             vec![2],
         ));
-        assert!(validate(&document)
-            .iter()
-            .any(|issue| issue.cell == "B4" && issue.severity == Severity::Warning));
+        assert!(
+            validate(&document)
+                .iter()
+                .any(|issue| issue.cell == "B4" && issue.severity == Severity::Warning)
+        );
     }
 }
