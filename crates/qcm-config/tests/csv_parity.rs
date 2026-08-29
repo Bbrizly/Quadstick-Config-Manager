@@ -107,7 +107,9 @@ fn parse_oracle(text: &str) -> CsvOracle {
 fn decode_hex(hex: &str) -> Vec<u8> {
     assert!(hex.len().is_multiple_of(2), "odd hex length");
     hex.as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|pair| {
             let high = nibble(pair[0]);
             let low = nibble(pair[1]);
