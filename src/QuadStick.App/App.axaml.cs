@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 
 namespace QuadStick.App;
 
-public class App : Application
+public class App : Avalonia.Application
 {
     public override void Initialize()
     {
@@ -23,10 +23,8 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        CrashGuard.Install(); // before ANY window exists: nothing runs uncovered
+        CrashGuard.Install();
         var settings = Settings.Load();
-        // Before the first window, not after: a window reads its text once,
-        // while it is being built.
         Localization.Apply(settings.Language);
         Theme.RegisterInto(this);
         Theme.Apply(settings.Theme);

@@ -7,7 +7,11 @@ namespace QuadStick.Infrastructure.Settings;
 /// AppSettingsSession composed at startup.</summary>
 public static class Settings
 {
-    public static string DefaultPath => JsonAppSettingsStore.DefaultPath;
+    /// <summary>Test/render seam preserving the historical contract without
+    /// putting persistence back in App. Null uses the per-user production path.</summary>
+    public static string? PathOverride { get; set; }
+
+    public static string DefaultPath => PathOverride ?? JsonAppSettingsStore.DefaultPath;
 
     public static string? LastLoadWarning { get; private set; }
 
@@ -15,7 +19,7 @@ public static class Settings
 
     public static AppSettings Load(string? path = null)
     {
-        var result = new JsonAppSettingsStore(path).Load();
+        var result = new JsonAppSettingsStore(path ?? PathOverride).Load();
         LastLoadWarning = result.Warning;
         return result.Settings;
     }
@@ -24,5 +28,5 @@ public static class Settings
         _ = TrySave(settings, path);
 
     public static bool TrySave(AppSettings settings, string? path = null) =>
-        !FailSavesForTest && new JsonAppSettingsStore(path).TrySave(settings);
+        !FailSavesForTest && new JsonAppSettingsStore(path ?? PathOverride).TrySave(settings);
 }

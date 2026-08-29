@@ -27,4 +27,8 @@
                       StronglyTypedClassName="Strings" PublicClass="true"
                       StronglyTypedFileName="$(IntermediateOutputPath)Strings.Designer.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="QuadStick.Integration.Tests" />
+  </ItemGroup>
 </Project>
