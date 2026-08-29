@@ -152,7 +152,7 @@ impl ProfileFile {
             .iter()
             .skip(1)
             .map(|sheet| sheet.start_row)
-            .filter(|row| *row >= 2 && self.grid[*row - 2].len() > 0)
+            .filter(|row| *row >= 2 && !self.grid[*row - 2].is_empty())
             .collect()
     }
 }
@@ -246,9 +246,8 @@ mod tests {
                 .starts_with("QuadStick Configuration,Version 1.5,old,Name\r\n")
         );
 
-        let mut headerless = ProfileFile::load(
-            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\n",
-        );
+        let mut headerless =
+            ProfileFile::load("Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\n");
         headerless.set_header_sheet_id(Some("sheet-123".to_owned()));
         assert!(
             headerless
