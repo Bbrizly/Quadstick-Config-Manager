@@ -180,10 +180,25 @@ jobs:
     permissions:
       contents: write   # create the release and upload the downloads
     steps:
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7
         with:
           path: dist
           merge-multiple: true
+
+      # What changed, in words, above the list GitHub writes from the commits.
+      # A release with a hundred commits in it is unreadable as a commit list,
+      # and the people testing it are the ones who need to know what to look
+      # at. docs/release-notes/vX.Y.Z.md is that summary when it exists;
+      # downloads.md is the same table on every release.
+      - name: Notes for this version
+        shell: bash
+        run: |
+          : > body.md
+          notes="docs/release-notes/${GITHUB_REF_NAME}.md"
+          if [ -f "$notes" ]; then cat "$notes" >> body.md; printf '\n\n' >> body.md; fi
+          cat docs/release-notes/downloads.md >> body.md
+
       - uses: softprops/action-gh-release@v2
         with:
           name: QuadStick Config Manager ${{ github.ref_name }}
@@ -191,19 +206,4 @@ jobs:
           generate_release_notes: true
           fail_on_unmatched_files: true
           prerelease: ${{ contains(github.ref_name, '-') }}
-          body: |
-            Download the file for your computer, unzip, and run. No installer, works offline (except Sheets import, Drive backup, and optional usage data).
-
-            | File | Computer |
-            |------|----------|
-            | `QuadStickConfigManager-Windows-x64.zip` | Windows 10/11, 64-bit |
-            | `QuadStickConfigManager-macOS-AppleSilicon.zip` | Mac with Apple Silicon (M1/M2/M3/M4) |
-            | `QuadStickConfigManager-macOS-Intel.zip` | Intel Mac |
-            | `QuadStickConfigManager-Linux-x64.tar.gz` | Linux, 64-bit |
-
-            **Windows:** SmartScreen may warn on first launch (the app isn't code-signed). Click **More info -> Run anyway**.
-
-            **macOS:** the app isn't notarized yet, so the first launch needs **right-click the app -> Open -> Open**. If macOS says it "is damaged", run this in Terminal, then open it:
-            ```
-            xattr -dr com.apple.quarantine "/Applications/QuadStick Config Manager.app"
-            ```
+          body_path: body.md
