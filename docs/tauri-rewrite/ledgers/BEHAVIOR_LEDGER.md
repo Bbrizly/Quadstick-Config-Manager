@@ -48,6 +48,6 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-042 | E | Avalonia gallery | web tooling replacement | ASSESSED |
 | B-043 | E forbidden | generic JS filesystem | capability test absent | CONTRACTED |
 | B-044 | E forbidden | generic JS shell/process | capability test absent | CONTRACTED |
-| B-045 | D | production serial | OQ-001 | OPEN |
+| B-045 | D | production serial | frozen-source/history evidence | CLOSED-DEFERRED: no production `SerialPort` hit; do not implement without new evidence |
 
 Status moves to PARITY-TESTED/HARDWARE-VERIFIED only with linked TEST_LEDGER evidence.

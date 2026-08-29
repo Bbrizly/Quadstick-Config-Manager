@@ -35,7 +35,22 @@ jobs:
           dotnet-version: "8.0.x"
       - name: Legacy tests stay green
         run: dotnet test QuadStick.sln --nologo -c Release
-      - name: Compile and self-check legacy parity oracle
-        run: dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- selfcheck
+      - name: Compile and self-check legacy parity oracle under two host cultures
+        shell: bash
+        run: |
+          LANG=C dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- selfcheck
+          LANG=fr_FR.UTF-8 dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- selfcheck
       - name: Generate canonical oracle fixture outputs
         run: dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- generate
+      - name: Validate canonical outputs against parity schema
+        shell: bash
+        run: |
+          python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
+          python3 tools/oracle/validate.py
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: qcm-legacy-oracle-${{ github.sha }}
+          path: fixtures/oracle/*.json
+          if-no-files-found: warn
+          retention-days: 14

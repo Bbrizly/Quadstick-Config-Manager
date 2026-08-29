@@ -41,7 +41,7 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `GoogleClient.cs` | client config/helper | native Google adapter | MERGE | HTTP | 6 | ASSESSED |
 | `TokenStore.cs` | secure token | native secure store | REWRITE | OS integration | 6 | CONTRACTED |
 | `SettingsView.cs` | settings UI | React SettingsPage | REWRITE | component/AT | 5/6 | CONTRACTED |
-| settings persistence symbol(s) | persisted settings | qcm-core/native settings | REWRITE | migration tests | 5/9 | UNASSESSED |
+| `Theme.cs::{AppSettings,DriveLink,Settings,SettingsJsonContext}` | atomic persisted settings + migration schema | qcm-core/native settings | REWRITE/COMPAT-READ | migration/consent/link tests | 5/9 | CONTRACTED |
 | `Localization.cs`, `Plural.cs` | locale runtime | frontend i18n | REWRITE | pseudo/RTL | 5 | ASSESSED |
 | `Strings*.resx` | translations | generated frontend catalogs | CONVERT | key/placeholder | 5 | CONTRACTED |
 | `Theme.cs`, `Style.cs`, `Palette.cs`, `Icons.axaml` | design system | CSS/components/assets | REWRITE | visual/contrast | 5 | ASSESSED |
@@ -63,4 +63,4 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | Makefile | dev/release UX | mixed façade | MODIFY | command smoke | all | ASSESSED |
 | `PRIVACY.md` | public data contract | preserve/update truthfully | RETAIN | network privacy tests | 6/8 | CONTRACTED |
 
-**Gate 0 note:** rows still `UNASSESSED` (notably exact settings persistence symbols and any files added after baseline) must be resolved before implementation begins.
+**Gate 0:** no rows remain `UNASSESSED`. Files added to legacy `main` after the frozen SHA must be added here before parity can be claimed.
