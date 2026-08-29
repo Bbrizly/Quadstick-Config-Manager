@@ -507,7 +507,10 @@
          second window: one place to go back from, no nested close buttons, and
          the same keyboard path as Home and Community. -->
     <DockPanel x:Name="SettingsPage" IsVisible="False" Margin="28,22">
-      <Panel x:Name="SettingsPageBody" MaxWidth="1120" HorizontalAlignment="Center"/>
+      <!-- The page is the window wide. The panel inside holds the fields at a
+           measure somebody can read; capping the page instead left a third of
+           every large screen empty and the scroll bar out in the middle of it. -->
+      <Panel x:Name="SettingsPageBody"/>
     </DockPanel>
 
   </Panel>

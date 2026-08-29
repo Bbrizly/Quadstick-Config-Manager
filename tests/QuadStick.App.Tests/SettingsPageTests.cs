@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless;
@@ -82,6 +83,40 @@ public class SettingsPageTests
             .Count(c => AutomationProperties.GetName(c) == "Language: choose which language the app is written in");
         Assert.Equal(Localization.Languages.Length > 1 ? 1 : 0, rows);
 
+        w.Close();
+    }
+
+    // A dropdown narrower than the room it is given centres itself, so every
+    // control on this page used to sit forty pixels right of the label naming
+    // it, and the words and the thing they name read as two columns that had
+    // slipped. Each field is one left edge.
+    [AvaloniaFact]
+    public void Every_control_starts_where_its_label_starts()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        OpenSettings(w);
+
+        var combos = w.FindControl<Panel>("SettingsPageBody")!.GetVisualDescendants()
+            .OfType<ComboBox>()
+            .Where(c => c.IsVisible && c.Bounds.Width > 0
+                     && c.GetVisualParent() is StackPanel)
+            .ToArray();
+        Assert.NotEmpty(combos);
+        foreach (var combo in combos)
+        {
+            // The label above it, inside the same field.
+            var field = (StackPanel)combo.GetVisualParent()!;
+            var label = field.Children.OfType<TextBlock>().First();
+            Assert.Equal(
+                label.TranslatePoint(default, w)!.Value.X,
+                combo.TranslatePoint(default, w)!.Value.X,
+                1);
+        }
         w.Close();
     }
 

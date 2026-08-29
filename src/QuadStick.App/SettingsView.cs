@@ -106,10 +106,18 @@ public class SettingsView : UserControl
     static TextBlock Label(string text) =>
         new() { Text = text, FontSize = Size("BodySize") };
 
+    // Capped, and left where the label starts. A caption with the page's own
+    // width ran under the scroll bar, so the last words of every explanation
+    // on this screen were cut in half.
     static TextBlock Caption(string text) => new()
     {
-        Text = text, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+        Text = text, FontSize = Size("SmallSize"), Classes = { "muted" },
+        TextWrapping = TextWrapping.Wrap,
+        MaxWidth = FieldWidth, HorizontalAlignment = HorizontalAlignment.Left,
     };
+
+    // One measure for every control and every line of prose on this page.
+    const double FieldWidth = 560;
 
     static Control Field(string label, string? caption, params Control[] controls)
     {
@@ -117,32 +125,55 @@ public class SettingsView : UserControl
         group.Children.Add(Label(label));
         foreach (var c in controls) group.Children.Add(c);
         if (!string.IsNullOrWhiteSpace(caption)) group.Children.Add(Caption(caption));
-        return group;
-    }
 
-    // Each tab scrolls vertically only. Content stretches to the page width so
-    // labels wrap instead of running off the side.
-    static Control Tab(Control content)
-    {
-        if (content is Layoutable l)
+        // A stretching control in a column with room to spare centres itself,
+        // so every dropdown on this page sat a hundred pixels right of the
+        // label naming it. Capping the column makes "stretch" mean "fill up
+        // to the cap, starting where the label starts", and it still shrinks
+        // on a narrow window.
+        return new Grid
         {
-            l.MaxWidth = 1120;
-            l.HorizontalAlignment = HorizontalAlignment.Stretch;
-        }
-        return new ScrollViewer
-        {
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            Content = content,
+            ColumnDefinitions = new ColumnDefinitions
+            {
+                new ColumnDefinition(1, GridUnitType.Star) { MaxWidth = FieldWidth },
+            },
+            Children = { group },
         };
     }
 
+    // Each tab scrolls vertically only, inside a panel of its own, the way
+    // Home and the device settings hold their content. Before this the fields
+    // sat straight on the page background with the scroll bar floating in the
+    // gap beside them.
+    static Control Tab(Control content)
+    {
+        if (content is Layoutable l) l.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+        var card = new Border
+        {
+            BorderThickness = new Thickness(1),
+            Padding = new Thickness(20, 16),
+            Child = new ScrollViewer
+            {
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                Content = content,
+            },
+        };
+        MainWindow.BindBrushTo(card, Border.BackgroundProperty, "Surface");
+        MainWindow.BindBrushTo(card, Border.BorderBrushProperty, "SurfaceBorder");
+        card[!Border.CornerRadiusProperty] = new DynamicResourceExtension("PanelRadiusCorner");
+        return card;
+    }
+
+    // No width of its own: Field caps the column, and a narrower control
+    // inside a wider column centres, which is what left every dropdown here
+    // sitting forty pixels right of the label above it.
     static ComboBox ChoiceBox(IEnumerable<object> items, int selectedIndex) => new()
     {
         ItemsSource = items,
         SelectedIndex = selectedIndex,
         HorizontalAlignment = HorizontalAlignment.Stretch,
-        MaxWidth = 480,
     };
 
     static int ModelIndexOf(string modelName) => modelName switch

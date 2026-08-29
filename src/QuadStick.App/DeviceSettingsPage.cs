@@ -451,26 +451,9 @@ public partial class MainWindow
                 new Avalonia.Styling.Setter(ListBoxItem.PaddingProperty, new Thickness(10, 6)),
             },
         });
-        // The open group's fill is the same blue-grey the editor uses for a
-        // selected row, not the system accent: five different blues on one
-        // screen is what made the old page read as somebody else's app.
-        _deviceRail.Styles.Add(new Avalonia.Styling.Style(
-            x => x.OfType<ListBoxItem>().Class(":selected").Template().OfType<ContentPresenter>())
-        {
-            Setters =
-            {
-                new Avalonia.Styling.Setter(ContentPresenter.BackgroundProperty,
-                    new DynamicResourceExtension("SelectionTintBrush")),
-            },
-        });
         _deviceRail.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<ListBoxItem>().Class(":selected"))
         {
-            Setters =
-            {
-                new Avalonia.Styling.Setter(ListBoxItem.FontWeightProperty, FontWeight.Bold),
-                new Avalonia.Styling.Setter(ListBoxItem.ForegroundProperty,
-                    new DynamicResourceExtension("TextPrimaryBrush")),
-            },
+            Setters = { new Avalonia.Styling.Setter(ListBoxItem.FontWeightProperty, FontWeight.Bold) },
         });
         _deviceRail.SelectionChanged += (_, _) =>
         {

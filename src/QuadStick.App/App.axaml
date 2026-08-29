@@ -47,6 +47,19 @@
       <Setter Property="FontSize" Value="22"/>
       <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
     </Style>
+    <!-- A selected row is the app's own blue-grey wherever the list lives.
+         Only the dialogs said so, so every list on a page picked up the
+         system accent instead: one saturated blue nothing else on the screen
+         used, with white text on it. -->
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+    </Style>
+    <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+    </Style>
+    <Style Selector="ListBoxItem:selected">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    </Style>
     <Style Selector="Window.dialog ListBox">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>

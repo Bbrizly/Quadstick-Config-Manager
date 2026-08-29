@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Layout;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 
 namespace QuadStick.App;
@@ -121,12 +122,25 @@ public class CommunityProfilesView : UserControl
             if (e.Key == Key.Down && _list.ItemCount > 0) { FocusSelectedRow(); e.Handled = true; }
             else if (e.Key == Key.Enter) { e.Handled = true; StartImport(); }
         };
-        var scroll = new ScrollViewer
+        // The list is a panel, like the profile cards on Home and the settings
+        // on the device page. It used to be a bare grey slab with square
+        // corners running edge to edge under the buttons.
+        var scroll = new Border
         {
-            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
-            Content = _list,
+            BorderThickness = new Thickness(1),
+            Padding = new Thickness(6),
+            Child = new ScrollViewer
+            {
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                Content = _list,
+            },
         };
+        MainWindow.BindBrushTo(scroll, Border.BackgroundProperty, "Surface");
+        MainWindow.BindBrushTo(scroll, Border.BorderBrushProperty, "SurfaceBorder");
+        scroll[!Border.CornerRadiusProperty] = new DynamicResourceExtension("PanelRadiusCorner");
+        _list.Background = Brushes.Transparent;
+        _list.BorderThickness = new Thickness(0);
 
         _status = new TextBlock
         {
@@ -169,6 +183,7 @@ public class CommunityProfilesView : UserControl
         _summary.Margin = new Thickness(0, 0, 0, 4);
         _count.Margin = new Thickness(0, 0, 0, 10);
         _status.Margin = new Thickness(0, 12, 0, 0);
+        buttons.Margin = new Thickness(0, 14, 0, 0);
         panel.Children.Add(heading);
         panel.Children.Add(explain);
         panel.Children.Add(_search);

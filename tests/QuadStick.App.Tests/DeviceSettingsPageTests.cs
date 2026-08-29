@@ -569,4 +569,26 @@ public class DeviceSettingsPageTests
         }
         w.Close();
     }
+
+    // A selected row is the app's own blue-grey, wherever the list lives. Only
+    // the dialogs used to say so, so every list on a page fell back to the
+    // system accent: a saturated fill with white text on it that matched
+    // nothing else on the screen.
+    [AvaloniaFact]
+    public void ThePickedGroupIsTheAppsOwnColour()
+    {
+        var w = Open(category: "Joystick");
+        var row = Body(w).OfType<ListBoxItem>().FirstOrDefault(r => r.IsSelected);
+        Assert.NotNull(row);
+
+        var fill = row!.GetVisualDescendants()
+            .OfType<Avalonia.Controls.Presenters.ContentPresenter>().First().Background;
+        // The palette lives in theme dictionaries, so the brush has to be
+        // looked up for the variant the window is actually showing.
+        Assert.True(row.TryFindResource("SelectionTintBrush", row.ActualThemeVariant, out var found));
+        var want = Assert.IsAssignableFrom<Avalonia.Media.ISolidColorBrush>(found);
+        Assert.Equal(want.Color,
+            Assert.IsAssignableFrom<Avalonia.Media.ISolidColorBrush>(fill).Color);
+        w.Close();
+    }
 }
