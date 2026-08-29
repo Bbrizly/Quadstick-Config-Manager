@@ -76,6 +76,7 @@ jobs:
       QCM_REQUIRE_CATALOG_ORACLE: "1"
       QCM_REQUIRE_PARSER_ORACLE: "1"
       QCM_REQUIRE_VALIDATION_ORACLE: "1"
+      QCM_REQUIRE_NORMALIZE_ORACLE: "1"
     steps:
       - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7
