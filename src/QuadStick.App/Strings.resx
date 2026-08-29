@@ -322,6 +322,18 @@
   <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
     <value>{0} settings changed</value>
   </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>{0} setting changed. It is not on your QuadStick until you press Save.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>{0} settings changed. They are not on your QuadStick until you press Save.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>{0} setting changed. Plug in your QuadStick to save it.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>{0} settings changed. Plug in your QuadStick to save them.</value>
+  </data>
   <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
     <value>Could not read the settings on your QuadStick: {0}</value>
   </data>
@@ -357,6 +369,9 @@
   </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}, {1} to {2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>No changes yet.</value>
   </data>
   <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
     <value>No QuadStick is plugged in, so these are the settings a QuadStick has, not the ones yours is on. Plug one in and press Reload to see and change its own.</value>

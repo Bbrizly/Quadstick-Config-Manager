@@ -475,10 +475,21 @@
          a settings screen you tune while sipping needs the whole window. The
          body is built in code: the rows come from the preference catalog, so
          the layout follows the file that is actually on the device. -->
+    <!-- The bar is always here and its buttons grey out, rather than the bar
+         appearing on the first edit. It used to pop in, which pushed the
+         settings up under the pointer mid-drag, and it was rebuilt from
+         scratch on every slider tick. -->
     <DockPanel x:Name="DevicePage" IsVisible="False" Margin="28,22">
-      <Border x:Name="DeviceSaveBar" DockPanel.Dock="Bottom" IsVisible="False"
-              Classes="editorchrome" Margin="0,14,0,0" Padding="14,10">
-        <WrapPanel x:Name="DeviceSaveBarRow" Classes="toolbar" HorizontalAlignment="Center"/>
+      <Border x:Name="DeviceSaveBar" DockPanel.Dock="Bottom"
+              Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1"
+              CornerRadius="{DynamicResource PanelRadiusCorner}"
+              Margin="0,14,0,0" Padding="16,10">
+        <!-- A grid, not a wrapping toolbar: the line on the left gets longer
+             the moment something changes, and in a WrapPanel that pushed the
+             buttons onto a second row and made the bar taller. The whole
+             point of the bar is that it never changes size. -->
+        <Grid x:Name="DeviceSaveBarRow" ColumnDefinitions="*,Auto"/>
       </Border>
       <!-- No ScrollViewer here on purpose. The picture of the device and the
            list of groups stay put; only the open group's settings scroll, so

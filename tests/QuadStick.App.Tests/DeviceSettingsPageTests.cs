@@ -135,7 +135,7 @@ public class DeviceSettingsPageTests
         var w = Open();
         Assert.Equal(ProfileFile.Load(Prefs).ToCsvText(), w.DevicePrefsForPreview!.ToCsvText());
         Assert.Empty(w.ChangedDeviceSettings);
-        Assert.False(w.FindControl<Border>("DeviceSaveBar")!.IsVisible);
+        Assert.False(Save(w).IsEnabled);
         w.Close();
     }
 
@@ -186,27 +186,90 @@ public class DeviceSettingsPageTests
         w.Close();
     }
 
-    // Nothing goes to the device on its own. The bar that offers the write is
-    // the count of what would be written, and a value typed back to what the
-    // device already has is not one of them.
+    static Button Undo(MainWindow w) => w.FindControl<Border>("DeviceSaveBar")!
+        .GetVisualDescendants().OfType<Button>()
+        .First(b => AutomationProperties.GetName(b)
+            == "Put every setting back to the value that is on the QuadStick");
+
+    static Button Save(MainWindow w) => w.FindControl<Border>("DeviceSaveBar")!
+        .GetVisualDescendants().OfType<Button>()
+        .First(b => AutomationProperties.GetName(b)
+            == "Write the changed settings to prefs.csv on your QuadStick");
+
+    static string BarSays(MainWindow w) => string.Join(" ",
+        w.FindControl<Border>("DeviceSaveBar")!.GetVisualDescendants()
+            .OfType<TextBlock>().Select(t => t.Text ?? ""));
+
+    // Nothing goes to the device on its own. Save is offered for a real
+    // change and not for a value typed back to what the device already has.
     [AvaloniaFact]
     public void SavingIsOfferedOnlyWhenSomethingActuallyChanged()
     {
         var w = Open();
-        var bar = w.FindControl<Border>("DeviceSaveBar")!;
         var box = Named<NumericUpDown>(w, "Speaker volume");
+        Assert.False(Save(w).IsEnabled);
 
         box.Value = 60;
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
-        Assert.True(bar.IsVisible);
+        Assert.True(Save(w).IsEnabled);
         Assert.Equal(new[] { "volume" }, w.ChangedDeviceSettings.ToArray());
 
         box.Value = 40; // back to what the device has
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         Assert.Empty(w.ChangedDeviceSettings);
-        Assert.False(bar.IsVisible);
+        Assert.False(Save(w).IsEnabled);
+        w.Close();
+    }
+
+    // The bar used to appear on the first edit. Appearing is a layout change
+    // under whatever the pointer is dragging, which on this page is a slider
+    // somebody is holding with a mouth stick. It is always there now and its
+    // buttons go from grey to live instead.
+    [AvaloniaFact]
+    public void TheSaveBarIsThereBeforeAnythingIsChanged()
+    {
+        var w = Open();
+        var bar = w.FindControl<Border>("DeviceSaveBar")!;
+        Assert.True(bar.IsVisible);
+        double height = bar.Bounds.Height;
+
+        Assert.False(Undo(w).IsEnabled);
+        Assert.False(Save(w).IsEnabled);
+        Assert.Contains("No changes yet", BarSays(w), StringComparison.Ordinal);
+
+        Named<NumericUpDown>(w, "Speaker volume").Value = 60;
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        Assert.True(bar.IsVisible);
+        Assert.Equal(height, bar.Bounds.Height);
+        Assert.True(Undo(w).IsEnabled);
+        Assert.True(Save(w).IsEnabled);
+        Assert.Contains("1 setting changed", BarSays(w), StringComparison.Ordinal);
+        w.Close();
+    }
+
+    // The same controls, edit after edit. Rebuilding them on every change is
+    // what made a slider drag flicker, and it also threw away the focus of
+    // anyone driving the bar from the keyboard.
+    [AvaloniaFact]
+    public void ChangingASettingDoesNotRebuildTheSaveBar()
+    {
+        var w = Open();
+        var undo = Undo(w);
+        var box = Named<NumericUpDown>(w, "Speaker volume");
+
+        for (int v = 41; v <= 50; v++)
+        {
+            box.Value = v;
+            Dispatcher.UIThread.RunJobs();
+        }
+        w.UpdateLayout();
+
+        Assert.Same(undo, Undo(w));
+        Assert.True(undo.IsEnabled);
         w.Close();
     }
 
@@ -407,13 +470,103 @@ public class DeviceSettingsPageTests
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
-        var bar = w.FindControl<Border>("DeviceSaveBar")!;
-        Assert.True(bar.IsVisible);
         Assert.Equal("60", Cell(w, "volume"));
-        Assert.DoesNotContain(bar.GetVisualDescendants().OfType<Button>(),
-            b => AutomationProperties.GetName(b) == "Write the changed settings to prefs.csv on your QuadStick");
-        Assert.Contains(bar.GetVisualDescendants().OfType<TextBlock>(),
-            t => (t.Text ?? "").Contains("Plug in your QuadStick to save"));
+        // Undo works on an edit wherever the edit came from; Save has nowhere
+        // to write, so it stays off and the line says what to do about it.
+        Assert.True(Undo(w).IsEnabled);
+        Assert.False(Save(w).IsEnabled);
+        Assert.Contains("Plug in your QuadStick to save", BarSays(w), StringComparison.Ordinal);
+        w.Close();
+    }
+
+    // A text box asks somebody to already know what the device will accept.
+    // The firmware reads every preference but one as a number, so every
+    // control on this page is a number, an on/off box or a list of choices.
+    // The exception is the bluetooth address, which really is a string.
+    [AvaloniaFact]
+    public void NoGroupAsksAnybodyToTypeFreeText()
+    {
+        var w = Open();
+        foreach (var category in PreferenceCatalog.Categories)
+        {
+            w.ShowDeviceCategoryForPreview(category);
+            w.UpdateLayout();
+            var typed = Body(w).OfType<TextBox>()
+                // A NumericUpDown is a TextBox inside a spinner, and its own
+                // box is not one of these: it refuses anything but digits.
+                .Where(t => t.GetVisualAncestors().OfType<NumericUpDown>().FirstOrDefault() is null)
+                .Select(t => AutomationProperties.GetName(t))
+                .ToArray();
+            Assert.All(typed, name => Assert.Equal("Bluetooth remote address", name));
+        }
+        w.Close();
+    }
+
+    // Every row is at least a click target tall and its control sits in the
+    // middle of it, so a label and the thing it names line up whatever height
+    // the control happens to be.
+    [AvaloniaFact]
+    public void EveryRowIsAClickTargetTallAndItsControlIsCentred()
+    {
+        var w = Open(category: "Joystick");
+        double floor = (double)Avalonia.Application.Current!.FindResource("ControlHeight")!;
+
+        var rows = SettingRows(w);
+        Assert.Equal(
+            PreferenceCatalog.All.Count(d => d.Category == "Joystick"),
+            rows.Length); // every setting in the group has a row
+        foreach (var line in rows)
+        {
+            Assert.True(line.Bounds.Height >= floor,
+                $"a row is {line.Bounds.Height} tall against a floor of {floor}");
+
+            var control = line.Children.OfType<Control>().Single(c => Grid.GetColumn(c) == 1);
+            double middle = control.Bounds.Y + control.Bounds.Height / 2;
+            Assert.True(Math.Abs(middle - line.Bounds.Height / 2) < 1.5,
+                $"a control sits at {middle} in a row {line.Bounds.Height} tall");
+        }
+        w.Close();
+    }
+
+    // The label-and-control line of each setting: two columns, the label's
+    // one a fixed width and the control's a share of what is left.
+    static Grid[] SettingRows(MainWindow w) =>
+        Body(w).OfType<Grid>()
+            .Where(g => g.TemplatedParent is null
+                     && g.ColumnDefinitions.Count == 2
+                     && g.ColumnDefinitions[0].Width.IsAbsolute
+                     && g.ColumnDefinitions[1].Width.IsStar)
+            .ToArray();
+
+    // Sideways scrolling on a settings screen means somebody has to drag a
+    // bar to read a label. Nothing on this page is allowed to need one.
+    [AvaloniaFact]
+    public void NothingOnThePageScrollsSideways()
+    {
+        var w = Open();
+        foreach (var category in PreferenceCatalog.Categories)
+        {
+            w.ShowDeviceCategoryForPreview(category);
+            w.UpdateLayout();
+            // Only the scrollers this page builds, plus the group list. The
+            // ones inside a dropdown or a number box belong to those controls
+            // and are the theme's business, not the layout's.
+            var mine = Body(w).OfType<ScrollViewer>()
+                .Where(s => s.TemplatedParent is null or ListBox)
+                .ToArray();
+            Assert.NotEmpty(mine);
+            foreach (var scroll in mine)
+                Assert.Equal(ScrollBarVisibility.Disabled, scroll.HorizontalScrollBarVisibility);
+
+            // Turning the bar off only hides it. What proves nothing is cut
+            // off is that every row of settings actually fits the panel it is
+            // laid out in.
+            var panel = mine.Single(s => s.TemplatedParent is null);
+            foreach (var line in Body(w).OfType<Grid>()
+                         .Where(g => g.GetVisualAncestors().Contains(panel)))
+                Assert.True(line.Bounds.Width <= panel.Viewport.Width + 0.5,
+                    $"{category}: a row is {line.Bounds.Width} wide in a {panel.Viewport.Width} panel");
+        }
         w.Close();
     }
 }

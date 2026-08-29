@@ -108,7 +108,8 @@ public partial class MainWindow
 
         var words = new StackPanel
         {
-            Spacing = 4, VerticalAlignment = VerticalAlignment.Center, MaxWidth = 320,
+            Spacing = 4, VerticalAlignment = VerticalAlignment.Center, MaxWidth = 560,
+            HorizontalAlignment = HorizontalAlignment.Left,
             Children = { _bandParts, _bandRings, _bandLive, _bandPress },
         };
 
@@ -130,18 +131,22 @@ public partial class MainWindow
             },
         };
 
-        var row = new StackPanel
-        {
-            Orientation = Orientation.Horizontal, Spacing = 20,
-            Children = { photo, _bandPadBlock, words },
-        };
+        // A grid, not a stack: the words are the last column and take whatever
+        // the photo and the pad leave, so the band has no empty right half on
+        // the seven groups that do not draw a pad.
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*") };
+        Grid.SetColumn(_bandPadBlock, 1);
+        Grid.SetColumn(words, 2);
+        _bandPadBlock.Margin = new Thickness(20, 0, 0, 0);
+        words.Margin = new Thickness(20, 0, 0, 0);
+        row.Children.Add(photo);
+        row.Children.Add(_bandPadBlock);
+        row.Children.Add(words);
 
-        return new Border
-        {
-            Classes = { "editorchrome" }, Padding = new Thickness(16, 10),
-            Margin = new Thickness(0, 0, 0, 14),
-            Child = row,
-        };
+        var card = DeviceCard(row);
+        card.Padding = new Thickness(16, 12);
+        card.Margin = new Thickness(0, 0, 0, 14);
+        return card;
     }
 
     // Redrawn whenever the open group changes, a joystick setting is edited, or

@@ -339,6 +339,18 @@ if (args.Contains("--pseudo")) Localization.Apply("qps-ploc");
     Capture($"{suffix}-1i3-device-unplugged", w =>
         w.ShowDeviceSettingsForPreview(root: null, category: "Sound and lights"));
 
+    // The group with the on/off boxes and the dropdowns in it, and the same
+    // page at the narrowest window the app opens to. Sliders are the easy
+    // shape; these two are where a settings screen falls over.
+    Capture($"{suffix}-1i4-device-usb", w =>
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "USB and compatibility"));
+
+    Capture($"{suffix}-1i5-device-bluetooth", w =>
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Bluetooth"));
+
+    CaptureSized($"{suffix}-1i6-device-narrow", 860, 620, w =>
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff"));
+
     Capture($"{suffix}-1j-community", w => w.ShowCommunityPage());
 
     Capture($"{suffix}-2-editor", w =>
@@ -492,6 +504,18 @@ void Capture(string name, Action<MainWindow> setup)
     win.Show();
     Dispatcher.UIThread.RunJobs();
     setup(win);
+    CaptureWindow(name, win, shown: true);
+}
+
+// The same shot at a window size of its own, for the layouts that only go
+// wrong when there is less room than the default.
+void CaptureSized(string name, int width, int height, Action<MainWindow> setup)
+{
+    var win = new MainWindow { Width = width, Height = height };
+    win.Show();
+    Dispatcher.UIThread.RunJobs();
+    setup(win);
+    win.UpdateLayout();
     CaptureWindow(name, win, shown: true);
 }
 

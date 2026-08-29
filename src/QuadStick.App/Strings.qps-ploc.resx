@@ -322,6 +322,18 @@
   <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
     <value>[{0} šéttíñgš çháñgéd xxxxxxxx]</value>
   </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>[{0} šéttíñg çháñgéd. Ít íš ñót óñ ýóúr QúádŠtíçk úñtíl ýóú préšš Šávé. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>[{0} šéttíñgš çháñgéd. Théý áré ñót óñ ýóúr QúádŠtíçk úñtíl ýóú préšš Šávé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>[{0} šéttíñg çháñgéd. Plúg íñ ýóúr QúádŠtíçk tó šávé ít. xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>[{0} šéttíñgš çháñgéd. Plúg íñ ýóúr QúádŠtíçk tó šávé thém. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
     <value>[Çóúld ñót réád thé šéttíñgš óñ ýóúr QúádŠtíçk: {0} xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
@@ -357,6 +369,9 @@
   </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>[{0}, {1} tó {2} xxxxxx]</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>[Ñó çháñgéš ýét. xxxxxx]</value>
   </data>
   <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
     <value>[Ñó QúádŠtíçk íš plúggéd íñ, šó théšé áré thé šéttíñgš á QúádŠtíçk háš, ñót thé óñéš ýóúrš íš óñ. Plúg óñé íñ áñd préšš Rélóád tó šéé áñd çháñgé ítš ówñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -399,6 +414,9 @@
   </data>
   <data name="DevicePage_Setting_other" xml:space="preserve">
     <value>[{0} šéttíñgš xxxx]</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>[Thé módé líghtš óñ thé çášé xxxxxxxxxx]</value>
   </data>
   <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
     <value>[Thé šéttíñgš ýóú çháñgéd héré hávé ñót bééñ wríttéñ tó thé QúádŠtíçk. Réádíñg ít ágáíñ lóšéš thém. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>

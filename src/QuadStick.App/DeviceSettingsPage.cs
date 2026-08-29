@@ -3,8 +3,10 @@ using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.Threading;
@@ -49,6 +51,10 @@ public partial class MainWindow
     // The bytes as they were read. Undo restores from this, and it is what
     // proves a setting is back where it started rather than merely re-typed.
     string _devicePrefsAsRead = "";
+    // The same bytes, read out once into name and value. Every keystroke asks
+    // whether a setting is back where it started, and parsing the whole file
+    // to answer that made a slider drag stutter.
+    readonly Dictionary<string, string> _deviceAsRead = new(StringComparer.Ordinal);
     readonly HashSet<string> _deviceChanged = new(StringComparer.Ordinal);
     TextBlock? _deviceStatus;
 
@@ -171,7 +177,7 @@ public partial class MainWindow
     async Task LoadDeviceSettingsAsync()
     {
         _devicePrefs = null;
-        _devicePrefsAsRead = "";
+        SetDeviceAsRead("");
         _deviceRoot = null;
         _deviceChanged.Clear();
         BuildDevicePage(Strings.DevicePage_LookingForYourQuadStick, null);
@@ -222,7 +228,7 @@ public partial class MainWindow
             return;
         }
 
-        _devicePrefsAsRead = text;
+        SetDeviceAsRead(text);
         BuildDevicePage(string.Format(CultureInfo.CurrentCulture,
             Strings.DevicePage_FoundYourQuadStickAtRoot, root), _devicePrefs);
     }
@@ -230,8 +236,21 @@ public partial class MainWindow
     void ShowPrefs(string csv, string status)
     {
         _devicePrefs = ProfileFile.Load(csv);
-        _devicePrefsAsRead = csv;
+        SetDeviceAsRead(csv);
         BuildDevicePage(status, _devicePrefs);
+    }
+
+    // Keep the bytes and the lookup over them in step. Undo restores from the
+    // bytes; every "is this back where it started?" reads the lookup.
+    void SetDeviceAsRead(string csv)
+    {
+        _devicePrefsAsRead = csv;
+        _deviceAsRead.Clear();
+        if (csv.Length == 0) return;
+        var file = ProfileFile.Load(csv);
+        var sheet = file.Document.Sheets.FirstOrDefault(s => s.Type == SheetType.Preferences);
+        if (sheet is null) return;
+        foreach (var b in sheet.Bindings) _deviceAsRead[b.Output] = file.GetCell(b.Row, 1);
     }
 
     // The Preferences sheet inside prefs.csv, or null when the file has none.
@@ -246,10 +265,14 @@ public partial class MainWindow
         _deviceRail = null;
         _deviceList = null;
 
+        // No width cap. The page is the window: capping it at 1180 left a wide
+        // grey gutter down the right of every large screen while the settings
+        // themselves were squeezed. What has to stay readable is the prose,
+        // and each caption carries its own measure.
         var frame = new Grid
         {
             RowDefinitions = new RowDefinitions("Auto,*"),
-            MaxWidth = 1180, HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
         };
 
         var header = DevicePageHeader(status);
@@ -268,16 +291,21 @@ public partial class MainWindow
             Grid.SetColumn(rail, 0);
             split.Children.Add(rail);
 
-            _deviceList = new StackPanel { Spacing = 16 };
-            var right = new DockPanel { Margin = new Thickness(18, 0, 0, 0) };
+            _deviceList = new StackPanel();
+            var right = new DockPanel { Margin = new Thickness(16, 0, 0, 0) };
             var band = BuildDeviceBand();
             DockPanel.SetDock(band, Dock.Top);
             right.Children.Add(band);
-            right.Children.Add(new ScrollViewer
+            // The settings are a card, the way every other list of things in
+            // this app is. They used to sit straight on the page background
+            // with the scrollbar floating in the gap beside them, which read
+            // as an unfinished half of the screen rather than as one panel.
+            right.Children.Add(DeviceCard(new ScrollViewer
             {
                 Content = _deviceList,
-                HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-            });
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            }));
             Grid.SetColumn(right, 1);
             split.Children.Add(right);
 
@@ -288,6 +316,19 @@ public partial class MainWindow
 
         DevicePageBody.Children.Add(frame);
         RefreshDeviceSaveBar();
+    }
+
+    // The one panel shape this page uses, so the group list, the picture and
+    // the settings all read as the same kind of object as a profile card on
+    // Home. Bound rather than read once: the theme and the gallery's own
+    // sliders both change these while the page is up.
+    static Border DeviceCard(Control child)
+    {
+        var card = new Border { Child = child, BorderThickness = new Thickness(1) };
+        BindBrush(card, Border.BackgroundProperty, "Surface");
+        BindBrush(card, Border.BorderBrushProperty, "SurfaceBorder");
+        card[!Border.CornerRadiusProperty] = new DynamicResourceExtension("PanelRadiusCorner");
+        return card;
     }
 
     Control DevicePageHeader(string status)
@@ -373,11 +414,14 @@ public partial class MainWindow
         {
             ItemsSource = rows,
             SelectedItem = rows.FirstOrDefault(r => r.Category == _deviceCategory) ?? rows[0],
-            Width = 208,
+            Width = 210,
+            Background = Brushes.Transparent,
+            BorderThickness = new Thickness(0),
+            Padding = new Thickness(6),
             ItemTemplate = new FuncDataTemplate<DeviceGroupRow>((row, _) => new StackPanel
             {
                 Spacing = 1,
-                Margin = new Thickness(2, 4),
+                Margin = new Thickness(2, 3),
                 Children =
                 {
                     new TextBlock { Text = row.Label, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap },
@@ -390,13 +434,43 @@ public partial class MainWindow
             }),
         };
         AutomationProperties.SetName(_deviceRail, Strings.DevicePage_GroupsOfSettings);
+        // A list box hides its sideways bar rather than turning it off, which
+        // means it clips. Group names wrap in this list, and a language with a
+        // longer word for "USB and compatibility" has to be able to.
+        ScrollViewer.SetHorizontalScrollBarVisibility(_deviceRail, ScrollBarVisibility.Disabled);
         // The open group is bold as well as filled. A selected row that is only
         // a different shade of the background is a colour-only cue.
         // Avalonia.Styling.Style spelled out: this app has a Style class of
         // its own, and the using above is here for the selector helpers.
+        _deviceRail.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<ListBoxItem>())
+        {
+            Setters =
+            {
+                new Avalonia.Styling.Setter(ListBoxItem.CornerRadiusProperty,
+                    new DynamicResourceExtension("CellRadiusCorner")),
+                new Avalonia.Styling.Setter(ListBoxItem.PaddingProperty, new Thickness(10, 6)),
+            },
+        });
+        // The open group's fill is the same blue-grey the editor uses for a
+        // selected row, not the system accent: five different blues on one
+        // screen is what made the old page read as somebody else's app.
+        _deviceRail.Styles.Add(new Avalonia.Styling.Style(
+            x => x.OfType<ListBoxItem>().Class(":selected").Template().OfType<ContentPresenter>())
+        {
+            Setters =
+            {
+                new Avalonia.Styling.Setter(ContentPresenter.BackgroundProperty,
+                    new DynamicResourceExtension("SelectionTintBrush")),
+            },
+        });
         _deviceRail.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<ListBoxItem>().Class(":selected"))
         {
-            Setters = { new Avalonia.Styling.Setter(ListBoxItem.FontWeightProperty, FontWeight.Bold) },
+            Setters =
+            {
+                new Avalonia.Styling.Setter(ListBoxItem.FontWeightProperty, FontWeight.Bold),
+                new Avalonia.Styling.Setter(ListBoxItem.ForegroundProperty,
+                    new DynamicResourceExtension("TextPrimaryBrush")),
+            },
         });
         _deviceRail.SelectionChanged += (_, _) =>
         {
@@ -404,7 +478,11 @@ public partial class MainWindow
             _deviceCategory = pick.Category;
             FillDeviceList();
         };
-        return _deviceRail;
+        // Top, not stretched: a nine row list used to draw a white slab all
+        // the way to the bottom of the window whatever was in it.
+        var card = DeviceCard(_deviceRail);
+        card.VerticalAlignment = VerticalAlignment.Top;
+        return card;
     }
 
     // Only the open group is built. Nine groups of controls all alive at once
@@ -416,8 +494,21 @@ public partial class MainWindow
         _deviceList.Children.Clear();
         if (sheet is null) return;
 
-        foreach (var def in PreferenceCatalog.All.Where(d => d.Category == _deviceCategory))
-            _deviceList.Children.Add(DeviceSettingRow(sheet, def));
+        var group = PreferenceCatalog.All.Where(d => d.Category == _deviceCategory).ToList();
+        for (int i = 0; i < group.Count; i++)
+        {
+            // A hairline between rows and none after the last, so the card's
+            // own edge is the bottom of the list. Settings used to be told
+            // apart by a gap, which at this row height read as one long block.
+            var row = DeviceSettingRow(sheet, group[i]);
+            row.Padding = new Thickness(16, 12);
+            if (i < group.Count - 1)
+            {
+                row.BorderThickness = new Thickness(0, 0, 0, 1);
+                BindBrush(row, Border.BorderBrushProperty, "SurfaceBorder");
+            }
+            _deviceList.Children.Add(row);
+        }
 
         UpdateDeviceBand();
     }
@@ -434,7 +525,7 @@ public partial class MainWindow
     // what the setting does, and the facts about its value. QMP puts all of
     // this in tooltips, which a keyboard or screen reader user never sees, and
     // the first version of this page put it in paragraphs, which nobody read.
-    Control DeviceSettingRow(ModeSheet sheet, PreferenceDefinition def)
+    Border DeviceSettingRow(ModeSheet sheet, PreferenceDefinition def)
     {
         int row = DeviceRowFor(sheet, def.Name);
         bool present = row > 0;
@@ -444,14 +535,31 @@ public partial class MainWindow
         {
             Text = def.Label, FontWeight = FontWeight.Bold, FontSize = Size("BodySize"),
             TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(0, 0, 14, 0),
+            Margin = new Thickness(0, 0, 16, 0),
         };
         AutomationProperties.SetName(label, string.Format(CultureInfo.CurrentCulture,
             Strings.DevicePage_DefLabelWrittenAsDef, def.Label, def.Name));
 
-        var line = new Grid { ColumnDefinitions = new ColumnDefinitions("240,*") };
+        // The control column is a share of what is left rather than everything
+        // left, so a checkbox and a slider start at the same place on every
+        // row and a wide window does not stretch one slider across the screen.
+        // MinHeight is the click-target floor: every row is at least one, and
+        // that is also what centres a short label against a tall control.
+        var line = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions
+            {
+                new ColumnDefinition(DeviceLabelWidth, GridUnitType.Pixel),
+                // Capped, not fixed: the control fills up to its own width on
+                // a wide window and shrinks with a narrow one, so nothing on
+                // this page ever needs a sideways scrollbar.
+                new ColumnDefinition(1, GridUnitType.Star) { MaxWidth = DeviceControlWidth },
+            },
+            MinHeight = Size("ControlHeight"),
+        };
         line.Children.Add(label);
         var control = DeviceValueControl(sheet, def, row, value);
+        control.VerticalAlignment = VerticalAlignment.Center;
         Grid.SetColumn(control, 1);
         line.Children.Add(control);
 
@@ -492,8 +600,20 @@ public partial class MainWindow
             stack.Children.Add(risk);
         }
 
-        return stack;
+        return new Border { Child = stack };
     }
+
+    // Wide enough for a slider and its number side by side, and no wider. A
+    // control that grows with the window puts a 900 pixel slider on a big
+    // screen, where one pixel of travel is a whole step of the setting.
+    const double DeviceControlWidth = 420;
+
+    // Room for the longest label in the widest language before it wraps.
+    const double DeviceLabelWidth = 240;
+
+    // One width for every box a number goes in, whether it sits beside a
+    // slider or on its own.
+    const double DeviceNumberWidth = 124;
 
     // A MaxWidth on its own centres the words in whatever room is left, so the
     // caption drifts away from the control it explains.
@@ -536,7 +656,7 @@ public partial class MainWindow
             Minimum = lo, Maximum = hi, Value = start,
             SmallChange = 1, LargeChange = Math.Max(1, (hi - lo) / 10),
             TickFrequency = 1, IsSnapToTickEnabled = true,
-            MinWidth = 200, VerticalAlignment = VerticalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(slider, string.Format(CultureInfo.CurrentCulture,
             Strings.DevicePage_NameLoToHi, name, lo, hi));
@@ -546,7 +666,7 @@ public partial class MainWindow
             Value = start, Increment = 1, FormatString = "0",
             ParsingNumberStyle = NumberStyles.Integer, // "3.5" is refused, never rounded
             NumberFormat = CultureInfo.InvariantCulture.NumberFormat,
-            Minimum = lo, Maximum = hi, Width = 124,
+            Minimum = lo, Maximum = hi, Width = DeviceNumberWidth,
             VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(box, name);
@@ -574,8 +694,6 @@ public partial class MainWindow
         Grid.SetColumn(box, 1);
         box.Margin = new Thickness(12, 0, 0, 0);
         pair.Children.Add(box);
-        pair.MaxWidth = 400;
-        pair.HorizontalAlignment = HorizontalAlignment.Left;
         return pair;
     }
 
@@ -588,7 +706,8 @@ public partial class MainWindow
             ParsingNumberStyle = NumberStyles.Integer,
             NumberFormat = CultureInfo.InvariantCulture.NumberFormat,
             Minimum = def.Minimum ?? int.MinValue, Maximum = def.Maximum ?? int.MaxValue,
-            Width = 160, HorizontalAlignment = HorizontalAlignment.Left,
+            Width = DeviceNumberWidth, HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(box, name);
         box.ValueChanged += (_, e) =>
@@ -603,7 +722,12 @@ public partial class MainWindow
     // writes. The state is spelled out beside the box, never a tick alone.
     Control DeviceToggle(ModeSheet sheet, PreferenceDefinition def, int row, string value, string name)
     {
-        var box = new CheckBox { IsChecked = value == "1", HorizontalAlignment = HorizontalAlignment.Left };
+        var box = new CheckBox
+        {
+            IsChecked = value == "1",
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
         void Paint() => box.Content = new TextBlock
         {
             Text = box.IsChecked == true ? Strings.DevicePage_On1 : Strings.DevicePage_Off0,
@@ -628,7 +752,8 @@ public partial class MainWindow
         {
             ItemsSource = items,
             SelectedItem = items.FirstOrDefault(i => i.Token == value),
-            MinWidth = 300, MaxWidth = 400, HorizontalAlignment = HorizontalAlignment.Left,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(combo, name);
         combo.SelectionChanged += (_, _) =>
@@ -651,7 +776,9 @@ public partial class MainWindow
     {
         var box = new TextBox
         {
-            Text = value, MinWidth = 260, MaxWidth = 400, HorizontalAlignment = HorizontalAlignment.Left,
+            Text = value,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(box, name);
         int here = row;
@@ -708,35 +835,33 @@ public partial class MainWindow
         RefreshDeviceSaveBar();
     }
 
-    bool SameAsRead(string name, string exact)
-    {
-        if (_devicePrefsAsRead.Length == 0) return false;
-        var asRead = ProfileFile.Load(_devicePrefsAsRead);
-        var sheet = asRead.Document.Sheets.FirstOrDefault(s => s.Type == SheetType.Preferences);
-        if (sheet is null) return false;
-        foreach (var b in sheet.Bindings)
-            if (string.Equals(b.Output, name, StringComparison.Ordinal))
-                return string.Equals(asRead.GetCell(b.Row, 1), exact, StringComparison.Ordinal);
-        return false; // it was not in the file at all, so writing it is a change
-    }
+    // it was not in the file at all, so writing it is a change
+    bool SameAsRead(string name, string exact) =>
+        _deviceAsRead.TryGetValue(name, out var was)
+        && string.Equals(was, exact, StringComparison.Ordinal);
 
-    void RefreshDeviceSaveBar()
-    {
-        DeviceSaveBarRow.Children.Clear();
-        DeviceSaveBar.IsVisible = _deviceChanged.Count > 0;
-        if (_deviceChanged.Count == 0) return;
+    TextBlock? _deviceCount;
+    Button? _deviceUndo;
+    Button? _deviceSave;
 
-        var count = new TextBlock
+    // Built once, on the first draw of the page, and never again. The old
+    // version cleared and refilled this row on every change, which is every
+    // pixel of a slider drag: the bar flickered, and appearing at all pushed
+    // the settings up under the pointer that was dragging them.
+    void BuildDeviceSaveBar()
+    {
+        if (_deviceCount is not null) return;
+
+        _deviceCount = new TextBlock
         {
-            Text = Plural.Of(_deviceChanged.Count, "DevicePage_ChangedSetting"),
             FontSize = Size("BodySize"), VerticalAlignment = VerticalAlignment.Center,
+            TextWrapping = TextWrapping.Wrap,
         };
-        AutomationProperties.SetLiveSetting(count, AutomationLiveSetting.Polite);
+        AutomationProperties.SetLiveSetting(_deviceCount, AutomationLiveSetting.Polite);
 
-        var undo = new Button();
-        undo.Content = Strings.DevicePage_UndoChanges;
-        AutomationProperties.SetName(undo, Strings.DevicePage_PutEverySettingBackTo);
-        undo.Click += async (_, _) =>
+        _deviceUndo = new Button { Content = Strings.DevicePage_UndoChanges };
+        AutomationProperties.SetName(_deviceUndo, Strings.DevicePage_PutEverySettingBackTo);
+        _deviceUndo.Click += async (_, _) =>
         {
             if (!await ConfirmAsync(Strings.DevicePage_ThrowAwayYourChanges,
                 Strings.DevicePage_TheSettingsYouChangedHere)) return;
@@ -745,29 +870,42 @@ public partial class MainWindow
             BuildDevicePage(_deviceStatus?.Text ?? "", _devicePrefs);
         };
 
-        DeviceSaveBarRow.Children.Add(count);
-        DeviceSaveBarRow.Children.Add(undo);
+        _deviceSave = new Button { Classes = { "primary" } };
+        _deviceSave.Content = Strings.DevicePage_SaveToYourQuadStick;
+        AutomationProperties.SetName(_deviceSave, Strings.DevicePage_WriteTheChangedSettingsTo);
+        _deviceSave.Click += async (_, _) => await SaveDeviceSettingsAsync();
 
-        // A Save button with no device to save to is a button that lies. The
-        // edits are kept, so plugging the stick in and pressing Reload is not
-        // the way to lose them; the sentence says what to do instead.
-        if (_deviceRoot is null)
+        _deviceCount.Margin = new Thickness(0, 0, 16, 0);
+        var buttons = new StackPanel
         {
-            DeviceSaveBarRow.Children.Add(new TextBlock
-            {
-                Text = Strings.DevicePage_PlugInYourQuadStickTo,
-                FontSize = Size("BodySize"), Classes = { "warn" },
-                TextWrapping = TextWrapping.Wrap,
-                VerticalAlignment = VerticalAlignment.Center,
-            });
-            return;
-        }
+            Orientation = Orientation.Horizontal, Spacing = 10,
+            VerticalAlignment = VerticalAlignment.Center,
+            Children = { _deviceUndo, _deviceSave },
+        };
+        Grid.SetColumn(buttons, 1);
+        DeviceSaveBarRow.Children.Add(_deviceCount);
+        DeviceSaveBarRow.Children.Add(buttons);
+    }
 
-        var save = new Button { Classes = { "primary" } };
-        save.Content = Strings.DevicePage_SaveToYourQuadStick;
-        AutomationProperties.SetName(save, Strings.DevicePage_WriteTheChangedSettingsTo);
-        save.Click += async (_, _) => await SaveDeviceSettingsAsync();
-        DeviceSaveBarRow.Children.Add(save);
+    // Called on every edit, so it does no work beyond a word and two flags.
+    //
+    // A Save button with no device to save to is a button that lies, so with
+    // nothing plugged in it stays off and the line says what to do instead.
+    // The edits are kept either way: plugging the stick in and pressing Reload
+    // is not the way to lose them.
+    void RefreshDeviceSaveBar()
+    {
+        BuildDeviceSaveBar();
+        int n = _deviceChanged.Count;
+        bool attached = _deviceRoot is not null;
+
+        _deviceCount!.Text = n == 0
+            ? Strings.DevicePage_NoChangesYet
+            : Plural.Of(n, attached ? "DevicePage_ChangedNotSavedYet" : "DevicePage_ChangedPlugIn");
+        _deviceCount.Classes.Set("warn", n > 0 && !attached);
+
+        _deviceUndo!.IsEnabled = n > 0;
+        _deviceSave!.IsEnabled = n > 0 && attached;
     }
 
     // The same write every install uses, with the same backup, readback and
