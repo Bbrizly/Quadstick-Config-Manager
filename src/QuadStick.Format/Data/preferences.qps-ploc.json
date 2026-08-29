@@ -53,7 +53,8 @@
  },
  {
   "name": "anti_dead_zone",
-  "label": "[Áñtí déád žóñé xxxxx]"
+  "label": "[Áñtí déád žóñé xxxxx]",
+  "description": "[Áddš á fíxéd púšh tó évérý štíçk réádíñg, álóñg thé wáý thé štíçk íš póíñtíñg, tó gét pášt á déád žóñé thé gámé áddš óf ítš ówñ. Žéró íš óff. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
   "name": "joystick_warning",
@@ -183,7 +184,8 @@
  },
  {
   "name": "enable_rumble",
-  "label": "[Rúmblé xx]"
+  "label": "[Rúmblé xx]",
+  "description": "[Íñ Dúál Šhóçk 3 módé óñlý, pláýš thé gámé'š rúmblé áš á tóñé óñ thé QúádŠtíçk'š ówñ špéákér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
   "name": "bluetooth_device_mode",
@@ -192,19 +194,23 @@
  },
  {
   "name": "bluetooth_authentication_mode",
-  "label": "[Blúétóóth áúthéñtíçátíóñ módé xxxxxxxxxxx]"
+  "label": "[Blúétóóth áúthéñtíçátíóñ módé xxxxxxxxxxx]",
+  "description": "[Hów múçh páíríñg thé QúádŠtíçk áškš fór. Šéñt tó thé rádíó áš ítš ŠÁ šéttíñg, šó ít óñlý máttérš whílé Blúétóóth íš óñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
   "name": "bluetooth_connection_mode",
-  "label": "[Blúétóóth çóññéçtíóñ módé xxxxxxxxxx]"
+  "label": "[Blúétóóth çóññéçtíóñ módé xxxxxxxxxx]",
+  "description": "[Whéthér thé QúádŠtíçk wáítš tó bé çóññéçtéd tó ór çóññéçtš óút ítšélf. Šéñt tó thé rádíó áš ítš ŠM šéttíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
   "name": "bluetooth_remote_address",
-  "label": "[Blúétóóth rémóté áddréšš xxxxxxxxx]"
+  "label": "[Blúétóóth rémóté áddréšš xxxxxxxxx]",
+  "description": "[Thé Blúétóóth áddréšš thé QúádŠtíçk çóññéçtš óút tó. Léávé ít émptý úñléšš QúádŠtíçk šúppórt gávé ýóú óñé. Šíxtééñ çháráçtérš át móšt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
   "name": "bluetooth_remote_adapter",
-  "label": "[Blúétóóth rémóté ádáptér xxxxxxxxx]"
+  "label": "[Blúétóóth rémóté ádáptér xxxxxxxxx]",
+  "description": "[Mákéš thé QúádŠtíçk á Blúétóóth ádáptér fór šóméthíñg élšé. Ít štópš réádíñg ítš ówñ móúthpíéçé áñd štíçk whílé thíš íš óñ áñd thé Blúétóóth dévíçé módé íš ššp. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
   "name": "bluetooth_throttle",
@@ -244,6 +250,7 @@
  {
   "name": "enable_usb_a_device",
   "label": "[ÚŠB-Á dévíçé módé xxxxxx]",
+  "description": "[Whíçh ÚŠB šóçkét thé QúádŠtíçk áppéárš óñ. Žéró íš ítš ówñ pórt; ábóvé žéró íš thé ÚŠB-Á šóçkét, áñd thát álšó túrñš óff ÚŠB-Á hóšt módé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
   "risk": "[Píçkš whíçh ÚŠB pórt thé QúádŠtíçk áppéárš óñ, áñd ít béátš ÚŠB-Á hóšt módé. Á wróñg válúé çáñ léávé thé QúádŠtíçk úñšééñ bý ýóúr çóñšólé ór çómpútér. Çháñgé ít óñlý óñ ádvíçé fróm QúádŠtíçk šúppórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
@@ -335,6 +342,7 @@
  {
   "name": "watchdog_disable",
   "label": "[Díšáblé thé wátçhdóg xxxxxxxx]",
+  "description": "[Wáš méáñt tó štóp thé QúádŠtíçk réštártíñg ítšélf whéñ ít lóçkš úp. Ýóúr QúádŠtíçk ígñóréš ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
   "risk": "[Thé wátçhdóg réštártš ýóúr QúádŠtíçk íf ít štópš áñšwéríñg. Ñóthíñg réádš thíš šéttíñg, šó tódáý ít dóéš ñóthíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {

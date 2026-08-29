@@ -108,27 +108,31 @@
     "name": "anti_dead_zone",
     "label": "Anti dead zone",
     "category": "Joystick",
-    "editor": "text",
+    "editor": "integer",
+    "default": "0",
+    "description": "Adds a fixed push to every stick reading, along the way the stick is pointing, to get past a dead zone the game adds of its own. Zero is off.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h ANTI_DEAD_ZONE, read in DataFlow.c:1187 when it is above zero. Preferences.h:104 defaults to 0. No control or range is known, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h ANTI_DEAD_ZONE, read in DataFlow.c:1187 when it is above zero. Preferences.h:104 defaults to 0. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "joystick_warning",
     "label": "Joystick warning deflection",
     "category": "Joystick",
-    "editor": "text",
+    "editor": "integer",
+    "default": "400",
     "description": "Your QuadStick ignores this. Older ones warned you here for pushing the stick too far.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h JOYSTICK_WARN_DEFLECTION; the only use, DataFlow.c:414, is commented out. Firmware 1476 DataFlow.c:399 did compare it. No control or range is known, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h JOYSTICK_WARN_DEFLECTION; the only use, DataFlow.c:414, is commented out. Firmware 1476 DataFlow.c:399 did compare it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "joystick_alarm",
     "label": "Joystick alarm deflection",
     "category": "Joystick",
-    "editor": "text",
+    "editor": "integer",
+    "default": "500",
     "description": "Your QuadStick ignores this. Older ones sounded an alarm here for pushing the stick too far.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h JOYSTICK_ALARM_DEFLECTION; the only use, DataFlow.c:418, is commented out. Firmware 1476 DataFlow.c:403 did sound the tone. No control or range is known, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h JOYSTICK_ALARM_DEFLECTION; the only use, DataFlow.c:418, is commented out. Firmware 1476 DataFlow.c:403 did sound the tone. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "enable_auto_zero",
@@ -290,10 +294,11 @@
     "name": "enable_left_side_tube",
     "label": "Use the left side tube",
     "category": "Sip and puff",
-    "editor": "text",
+    "editor": "toggle",
+    "default": "0",
     "description": "Swaps the side tubes so the left one does mode control, for people who reach the left more easily.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h ENABLE_LEFT_SIDE_TUBE, read in DataFlow.c:983. Preferences.h:140 defaults to 0. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h ENABLE_LEFT_SIDE_TUBE, read in DataFlow.c:983. Preferences.h:140 defaults to 0. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. DataFlow.c:983 only asks whether it is non-zero."
   },
   {
     "name": "lip_position_minimum",
@@ -339,8 +344,16 @@
     "category": "Mouse",
     "editor": "choice",
     "default": "1",
-    "options": ["0", "1", "2"],
-    "optionLabels": ["Linear", "Mixed", "Parabolic"],
+    "options": [
+      "0",
+      "1",
+      "2"
+    ],
+    "optionLabels": [
+      "Linear",
+      "Mixed",
+      "Parabolic"
+    ],
     "description": "How a push turns into pointer speed. Parabolic gives fine control near the centre and speed at the edge.",
     "modeOverride": true,
     "source": "QMP-4 QuadStick.py choice_mouse_response ['Linear','Mixed','Parabolic'] saved as the chosen index; qsflash.py defaults '1'"
@@ -373,9 +386,11 @@
     "name": "enable_rumble",
     "label": "Rumble",
     "category": "Sound and lights",
-    "editor": "text",
+    "editor": "toggle",
+    "default": "0",
+    "description": "In Dual Shock 3 mode only, plays the game's rumble as a tone on the QuadStick's own speaker.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h ENABLE_RUMBLE, read in Joystick.c:1074. Preferences.h:142 defaults to 0. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h ENABLE_RUMBLE, read in Joystick.c:1074. Preferences.h:142 defaults to 0. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. Joystick.c:1074 only asks whether it is non-zero."
   },
   {
     "name": "bluetooth_device_mode",
@@ -383,7 +398,15 @@
     "category": "Bluetooth",
     "editor": "choice",
     "default": "none",
-    "options": ["none", "keyboard", "game_pad", "mouse", "combo", "joystick", "ssp"],
+    "options": [
+      "none",
+      "keyboard",
+      "game_pad",
+      "mouse",
+      "combo",
+      "joystick",
+      "ssp"
+    ],
     "description": "What the QuadStick pretends to be over Bluetooth.",
     "modeOverride": true,
     "source": "firmware 2373 preference_keywords.h bluetooth_device_mode_keywords, the same seven tokens as firmware 1476; QMP-4 QuadStick.py choice_BT_device_mode has them too; qsflash.py defaults 'none'"
@@ -394,7 +417,13 @@
     "category": "Bluetooth",
     "editor": "choice",
     "default": "2",
-    "options": ["0", "1", "2", "4"],
+    "description": "How much pairing the QuadStick asks for. Sent to the radio as its SA setting, so it only matters while Bluetooth is on.",
+    "options": [
+      "0",
+      "1",
+      "2",
+      "4"
+    ],
     "modeOverride": true,
     "source": "QMP-4 QuadStick.py choice_BT_auth_mode offers 0, 1, 2 and 4, and its qsflash.py writes '4'. Firmware 2373 Preferences.h:113 defaults to 2, where firmware 1476 Preferences.h:94 defaulted to 4, so the device's own default changed. It is sent to the radio as the SA command in Bluetooth.c:267."
   },
@@ -404,7 +433,16 @@
     "category": "Bluetooth",
     "editor": "choice",
     "default": "pair",
-    "options": ["slave", "master", "trigger", "auto", "dtr", "any", "pair"],
+    "description": "Whether the QuadStick waits to be connected to or connects out itself. Sent to the radio as its SM setting.",
+    "options": [
+      "slave",
+      "master",
+      "trigger",
+      "auto",
+      "dtr",
+      "any",
+      "pair"
+    ],
     "modeOverride": true,
     "source": "firmware 2373 preference_keywords.h bluetooth_connection_mode_keywords, the same seven tokens as firmware 1476; qsflash.py defaults 'pair'"
   },
@@ -414,6 +452,7 @@
     "category": "Bluetooth",
     "editor": "text",
     "default": "",
+    "description": "The Bluetooth address the QuadStick connects out to. Leave it empty unless QuadStick support gave you one. Sixteen characters at most.",
     "modeOverride": true,
     "source": "firmware 2373 preference_keywords.h BLUETOOTH_REMOTE_ADDRESS, given its own parsing in Configuration.c:662-671 and used in Bluetooth.c:304; QMP-4 qsflash.py defaults to an empty string. No address format is confirmed, so the value is left as typed."
   },
@@ -421,18 +460,21 @@
     "name": "bluetooth_remote_adapter",
     "label": "Bluetooth remote adapter",
     "category": "Bluetooth",
-    "editor": "text",
+    "editor": "toggle",
+    "default": "0",
+    "description": "Makes the QuadStick a Bluetooth adapter for something else. It stops reading its own mouthpiece and stick while this is on and the Bluetooth device mode is ssp.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h BLUETOOTH_REMOTE_ADAPTER, read in Joystick.c:344. Preferences.h:145 defaults to 0. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h BLUETOOTH_REMOTE_ADAPTER, read in Joystick.c:344. Preferences.h:145 defaults to 0. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. Joystick.c:344 only compares it to 1."
   },
   {
     "name": "bluetooth_throttle",
     "label": "Bluetooth throttle",
     "category": "Bluetooth",
-    "editor": "text",
+    "editor": "integer",
+    "default": "5",
     "description": "Smallest gap the QuadStick leaves between Bluetooth sends.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h BLUETOOTH_THROTTLE, compared in Bluetooth.c:423, :505, :507, :561 and :592. Preferences.h:143 defaults to 5, where firmware 1476 Preferences.h:121 defaulted to 15. No control or range is known and the unit is not stated, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h BLUETOOTH_THROTTLE, compared in Bluetooth.c:423, :505, :507, :561 and :592. Preferences.h:143 defaults to 5, where firmware 1476 Preferences.h:121 defaulted to 15. No control or range is known and the unit is not stated. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "digital_out_1",
@@ -458,19 +500,21 @@
     "name": "digital_out_3",
     "label": "Digital output 3",
     "category": "Inputs and outputs",
-    "editor": "text",
+    "editor": "toggle",
+    "default": "0",
     "description": "Turns output jack 3 on or off. A mode cannot change it.",
     "modeOverride": false,
-    "source": "firmware 2373 preference_keywords.h DIGITAL_OUT_3; Configuration.c:383 only switches relay 3 into relay mode when it is not zero. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h DIGITAL_OUT_3; Configuration.c:383 only switches relay 3 into relay mode when it is not zero. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. Configuration.c:383 only asks whether it is non-zero."
   },
   {
     "name": "digital_out_4",
     "label": "Digital output 4",
     "category": "Inputs and outputs",
-    "editor": "text",
+    "editor": "toggle",
+    "default": "0",
     "description": "Turns output jack 4 on or off. A mode cannot change it.",
     "modeOverride": false,
-    "source": "firmware 2373 preference_keywords.h DIGITAL_OUT_4; Configuration.c:384 only switches relay 4 into relay mode when it is not zero. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h DIGITAL_OUT_4; Configuration.c:384 only switches relay 4 into relay mode when it is not zero. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. Configuration.c:384 only asks whether it is non-zero."
   },
   {
     "name": "enable_swap_inputs",
@@ -496,10 +540,12 @@
     "name": "enable_usb_a_device",
     "label": "USB-A device mode",
     "category": "USB and compatibility",
-    "editor": "text",
+    "editor": "integer",
+    "default": "0",
+    "description": "Which USB socket the QuadStick appears on. Zero is its own port; above zero is the USB-A socket, and that also turns off USB-A host mode.",
     "modeOverride": true,
     "risk": "Picks which USB port the QuadStick appears on, and it beats USB-A host mode. A wrong value can leave the QuadStick unseen by your console or computer. Change it only on advice from QuadStick support.",
-    "source": "firmware 2373 preference_keywords.h ENABLE_USB_A_DEVICE, passed to USB_Init and USB_Connect in Joystick.c:599 and :630 and Configuration.c:354-357, and checked first in JoystickHost.c:590. Preferences.h:134 defaults to 0. QMP-4 QuadStick.py writes the separate enable_usb_a_host instead."
+    "source": "firmware 2373 preference_keywords.h ENABLE_USB_A_DEVICE, passed to USB_Init and USB_Connect in Joystick.c:599 and :630 and Configuration.c:354-357, and checked first in JoystickHost.c:590. Preferences.h:134 defaults to 0. QMP-4 QuadStick.py writes the separate enable_usb_a_host instead. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "enable_usb_a_host",
@@ -518,8 +564,26 @@
     "category": "USB and compatibility",
     "editor": "choice",
     "default": "0",
-    "options": ["0", "1", "2", "3", "4", "5", "6", "7"],
-    "optionLabels": ["QuadStick (PC and PS3)", "DualShock 3, no USB drive", "x360ce, for a PC", "Xbox 360 controller", "DualShock 4, for a PS4 (QMP's Boot in PS4 Mode)", "Nintendo Switch Pro Controller, no USB drive", "DualShock 4, no USB drive", "DualShock 4 wireless, no USB drive"],
+    "options": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "optionLabels": [
+      "QuadStick (PC and PS3)",
+      "DualShock 3, no USB drive",
+      "x360ce, for a PC",
+      "Xbox 360 controller",
+      "DualShock 4, for a PS4 (QMP's Boot in PS4 Mode)",
+      "Nintendo Switch Pro Controller, no USB drive",
+      "DualShock 4, no USB drive",
+      "DualShock 4 wireless, no USB drive"
+    ],
     "firmwareMayAddMore": true,
     "description": "Which controller the QuadStick pretends to be. The console has to know the one you pick, and some choices hide the QuadStick's drive from your computer.",
     "modeOverride": true,
@@ -541,73 +605,81 @@
     "name": "usb_1_multiplier_up",
     "label": "USB 1 up multiplier",
     "category": "USB and compatibility",
-    "editor": "text",
+    "editor": "integer",
+    "default": "100",
     "description": "Boosts up on the left stick of a controller plugged into the USB-A port.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_UP; Preferences.h:127 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_UP; Preferences.h:127 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "usb_1_multiplier_down",
     "label": "USB 1 down multiplier",
     "category": "USB and compatibility",
-    "editor": "text",
+    "editor": "integer",
+    "default": "100",
     "description": "Boosts down on the left stick of a controller plugged into the USB-A port.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_DOWN; Preferences.h:126 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_DOWN; Preferences.h:126 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "usb_1_multiplier_left",
     "label": "USB 1 left multiplier",
     "category": "USB and compatibility",
-    "editor": "text",
+    "editor": "integer",
+    "default": "100",
     "description": "Boosts left on the left stick of a controller plugged into the USB-A port.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_LEFT; Preferences.h:125 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_LEFT; Preferences.h:125 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "usb_1_multiplier_right",
     "label": "USB 1 right multiplier",
     "category": "USB and compatibility",
-    "editor": "text",
+    "editor": "integer",
+    "default": "100",
     "description": "Boosts right on the left stick of a controller plugged into the USB-A port.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_RIGHT; Preferences.h:124 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_1_MULTIPLIER_RIGHT; Preferences.h:124 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "usb_2_multiplier_up",
     "label": "USB 2 up multiplier",
     "category": "USB and compatibility",
-    "editor": "text",
+    "editor": "integer",
+    "default": "100",
     "description": "Boosts up on the right stick of a controller plugged into the USB-A port.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_UP; Preferences.h:131 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_UP; Preferences.h:131 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "usb_2_multiplier_down",
     "label": "USB 2 down multiplier",
     "category": "USB and compatibility",
-    "editor": "text",
+    "editor": "integer",
+    "default": "100",
     "description": "Boosts down on the right stick of a controller plugged into the USB-A port.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_DOWN; Preferences.h:130 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_DOWN; Preferences.h:130 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "usb_2_multiplier_left",
     "label": "USB 2 left multiplier",
     "category": "USB and compatibility",
-    "editor": "text",
+    "editor": "integer",
+    "default": "100",
     "description": "Boosts left on the right stick of a controller plugged into the USB-A port.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_LEFT; Preferences.h:129 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_LEFT; Preferences.h:129 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "usb_2_multiplier_right",
     "label": "USB 2 right multiplier",
     "category": "USB and compatibility",
-    "editor": "text",
+    "editor": "integer",
+    "default": "100",
     "description": "Boosts right on the right stick of a controller plugged into the USB-A port.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_RIGHT; Preferences.h:128 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h USB_2_MULTIPLIER_RIGHT; Preferences.h:128 defaults to 100. DataFlow.c:562-593 walks the eight multipliers in table order and scales each USB host input channel by the value over 100. QMP-4 has no control or default for it. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   },
   {
     "name": "usb_1_dead_zone",
@@ -648,6 +720,7 @@
     "category": "Advanced",
     "editor": "toggle",
     "default": "0",
+    "description": "Was meant to stop the QuadStick restarting itself when it locks up. Your QuadStick ignores it.",
     "modeOverride": true,
     "risk": "The watchdog restarts your QuadStick if it stops answering. Nothing reads this setting, so today it does nothing.",
     "source": "QMP-4 qsflash.py defaults '0'; firmware 2373 preference_keywords.h DISABLE_WATCHDOG, with the two minute watchdog set up in Joystick.c:569-573. Preferences.h:111 defaults to 0. The keyword table, the enum, the default macro and the Configuration.c:131 default table are the only places the name appears."
@@ -656,9 +729,10 @@
     "name": "debug",
     "label": "Debug output level",
     "category": "Advanced",
-    "editor": "text",
+    "editor": "integer",
+    "default": "1",
     "description": "Turns the QuadStick's console output on when it is above zero.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h DEBUG_VERBOSITY, read in Configuration.c:375. Preferences.h:119 defaults to 1. It is a level, not an on or off, so the value is left as typed."
+    "source": "firmware 2373 preference_keywords.h DEBUG_VERBOSITY, read in Configuration.c:375. Preferences.h:119 defaults to 1. Configuration.c:653-681 sends every preference except the two bluetooth keyword tables and bluetooth_remote_address through atoi, so the value is a whole number. No source states a range, so none is claimed here."
   }
 ]

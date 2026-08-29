@@ -222,11 +222,13 @@ public class PreferenceCatalogTests
         Assert.Equal("2", auth.Default);
         Assert.Contains("2", auth.Options);
 
-        // Text, so the new default of 5 is recorded in prose rather than
-        // written into anybody's file.
+        // A whole number with no bounds: the device reads it with atoi, and no
+        // source states a range, so the default is recorded and nothing else.
         Assert.True(PreferenceCatalog.TryGet("bluetooth_throttle", out var throttle));
-        Assert.Equal(PreferenceEditor.Text, throttle.Editor);
-        Assert.Null(throttle.Default);
+        Assert.Equal(PreferenceEditor.Integer, throttle.Editor);
+        Assert.Equal("5", throttle.Default);
+        Assert.Null(throttle.Minimum);
+        Assert.Null(throttle.Maximum);
         Assert.Contains("defaults to 5", throttle.Source, StringComparison.Ordinal);
 
         Assert.True(PreferenceCatalog.TryGet("enable_auto_zero", out var zero));
@@ -341,17 +343,45 @@ public class PreferenceCatalogTests
         }
     }
 
-    // enable_DS3_emulation was on this list until its eight values got names.
-    // It is off it because the values are the firmware's own, not a guess.
+    // These two were text while what their values MEAN was unsettled, and the
+    // editor got dragged along with it. The two questions are separate.
+    // Configuration.c:653-681 hands every preference but the two bluetooth
+    // keyword tables and bluetooth_remote_address to atoi, so a whole number
+    // is what the device reads either way. What stays unclaimed is the range
+    // and the list of values, and that is what this pins.
     [Theory]
     [InlineData("enable_usb_a_device")]
     [InlineData("debug")]
-    public void Disputed_settings_stay_raw(string name)
+    public void Disputed_settings_claim_no_range_and_no_option_list(string name)
     {
         Assert.True(PreferenceCatalog.TryGet(name, out var p));
-        Assert.Equal(PreferenceEditor.Text, p.Editor);
-        Assert.Null(p.Default);
+        Assert.Equal(PreferenceEditor.Integer, p.Editor);
+        Assert.Null(p.Minimum);
+        Assert.Null(p.Maximum);
         Assert.Empty(p.Options);
+    }
+
+    // The one preference the device keeps as a string. Everything else on this
+    // page is a number, so a plain text box anywhere else is a bug.
+    [Fact]
+    public void Only_the_bluetooth_address_is_free_text()
+    {
+        var text = PreferenceCatalog.All
+            .Where(p => p.Editor == PreferenceEditor.Text)
+            .Select(p => p.Name)
+            .ToArray();
+        Assert.Equal(new[] { "bluetooth_remote_address" }, text);
+    }
+
+    // A setting with no words under it is a control nobody can act on, and
+    // QMP's answer to that was a tooltip. Every one of the sixty one says
+    // what it does.
+    [Fact]
+    public void Every_setting_says_what_it_does()
+    {
+        foreach (var p in PreferenceCatalog.All)
+            Assert.False(string.IsNullOrWhiteSpace(p.Description),
+                $"{p.Name} has no description.");
     }
 
     [Theory]
