@@ -58,7 +58,10 @@ fn normalized_grid_and_serialized_bytes_match_csharp_oracle() {
             !actual.normalize_for_device_csv(),
             "second normalization unexpectedly changed {id}"
         );
-        assert_eq!(actual.grid, once_grid, "normalization grid is not idempotent for {id}");
+        assert_eq!(
+            actual.grid, once_grid,
+            "normalization grid is not idempotent for {id}"
+        );
         assert_eq!(
             actual.to_csv_text(),
             once_text,
