@@ -52,7 +52,7 @@ jobs:
         run: |
           dotnet run --project tools/QcmOracle/QcmOracle.csproj -c Release -- generate
           dotnet run --project tools/QcmCsvOracle/QcmCsvOracle.csproj -c Release -- fixtures/manifest.json fixtures/oracle
-          dotnet run --project tools/QcmCatalogOracle/QcmCatalogOracle.csproj -c Release > fixtures/oracle/catalog-canonical.txt
+          dotnet run --project tools/QcmCatalogOracle/QcmCatalogOracle.csproj -c Release -- fixtures/oracle/catalog-canonical.txt
       - name: Validate canonical outputs against parity schema
         shell: bash
         run: |

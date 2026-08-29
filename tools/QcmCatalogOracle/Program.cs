@@ -60,11 +60,26 @@ var result = new
     defaultTemplate = template,
 };
 
-Console.WriteLine(JsonSerializer.Serialize(result, new JsonSerializerOptions
+var rendered = JsonSerializer.Serialize(result, new JsonSerializerOptions
 {
     WriteIndented = true,
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-}));
+}) + "\n";
+
+if (args.Length == 0)
+{
+    Console.Write(rendered);
+}
+else if (args.Length == 1)
+{
+    var output = Path.GetFullPath(args[0]);
+    Directory.CreateDirectory(Path.GetDirectoryName(output)!);
+    File.WriteAllText(output, rendered, new UTF8Encoding(false));
+}
+else
+{
+    throw new InvalidOperationException("Usage: qcm-catalog-oracle [output-file]");
+}
 
 static string[] Sorted(IEnumerable<string> values) =>
     values.OrderBy(value => value, StringComparer.Ordinal).ToArray();
