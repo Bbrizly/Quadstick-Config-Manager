@@ -3,6 +3,8 @@ obj/
 dist/
 .vs/
 *.user
+# Rust workspace build output. Cargo.lock is committed for reproducible rewrite CI.
+target/
 # Fred Davison's Apps Script sources, shared privately as reference. Not ours to publish.
 docs/google_apps_script_projects/
 # Internal planning and design notes, kept locally, not published.
