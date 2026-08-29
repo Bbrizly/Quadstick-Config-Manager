@@ -107,7 +107,7 @@ impl ProfileFile {
         true
     }
 
-    fn reparse(&mut self) {
+    pub(crate) fn reparse(&mut self) {
         let raw_csv = write(&self.grid);
         let (document, issues) = parse_and_validate(&raw_csv);
         self.document = document;

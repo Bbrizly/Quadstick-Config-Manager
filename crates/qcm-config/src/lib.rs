@@ -2,6 +2,7 @@
 
 pub mod catalog;
 pub mod csv;
+pub mod editor_op;
 pub mod issue;
 pub mod model;
 pub mod parser;
@@ -12,6 +13,7 @@ pub mod vocab;
 
 pub use catalog::canonical_catalog;
 pub use csv::{Grid, parse as parse_csv, write as write_csv};
+pub use editor_op::{ACTION_COLUMN, EditorOp, MAX_ACTION_NAME, NOTE_COLUMN};
 pub use issue::{Issue, IssueKind, Severity};
 pub use model::{Binding, ModeSheet, ProfileDocument, SheetType};
 pub use parser::{parse_structure, parse_with_issues};
