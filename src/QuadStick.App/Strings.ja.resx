@@ -313,6 +313,141 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} 件の警告</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>{0} から {1} まで。</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>{0} 件の設定を変更しました。保存を押すまで QuadStick には書き込まれません。</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>{0} 件の設定を変更しました。保存を押すまで QuadStick には書き込まれません。</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>{0} 件の設定を変更しました。保存するには QuadStick を接続してください。</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>{0} 件の設定を変更しました。保存するには QuadStick を接続してください。</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} 件の設定を変更</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} 件の設定を変更</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>QuadStick の設定を読み取れませんでした: {0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>破線の円: 可動域の {0}% でデッドゾーンが終わります。実線の円: {1}% で信号が最大になります。</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}、ファイル上の名前は {1}</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>QuadStick が {0} で見つかりました。</value>
+  </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>設定のグループ</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>スティックをどれだけ動かす必要があるか。破線の円がデッドゾーン、実線の円が信号が最大になる位置、点が今のスティックの位置です。</value>
+  </data>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>まだ設定ファイルがないので、これは機器が既定で使う値です。保存すると設定ファイルが作られます。</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>ジョイスティックの可動域</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0}〜{1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>QuadStick を探しています...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}、{1}〜{2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>変更はまだありません。</value>
+  </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>QuadStick が接続されていないため、これは QuadStick が持つ設定であり、お使いの機器の設定ではありません。接続して「再読み込み」を押すと、その機器自身の設定を見て変更できます。</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>設定ファイルにありません。変更するまで機器は {0} を使います。</value>
+  </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>スティックを読み取っていません。QuadStick を USB で接続すると、位置がここに表示されます。</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>オフ (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>オン (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>保存するには QuadStick を接続してください。</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>すべての設定を QuadStick 上の値に戻します</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>QuadStick から設定を再読み込みします</value>
+  </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>{0} を読み取り中。何も押されていません。</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>{0} を読み取り中。現在押されているもの: {1}。</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>再読み込み</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>QuadStick に保存</value>
+  </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>{0} 件の設定</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>{0} 件の設定</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>本体のモードランプ</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>ここで変更した設定は QuadStick に書き込まれていません。読み直すと失われます。</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>スティックは横 {0}%、上 {1}% の位置です。</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>この設定に問題があるため、何も書き込まれませんでした: </value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>この設定は QuadStick 本体の prefs.csv にあります。1 つのゲームだけでなく、本体上のすべてのプロファイルに適用されます。</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>このグループは、機器の上で指し示せる部分を変更しません。</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>このグループが変更するもの: {0}。</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>変更を破棄しますか？</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>変更を元に戻す</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>変更した設定を QuadStick の prefs.csv に書き込みます</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>QuadStick の設定</value>
+  </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>キャンセル</value>
   </data>
@@ -859,6 +994,9 @@
   </data>
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>クラッシュレポートを送信しました。ありがとうございます。</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>yyyy年M月d日</value>
   </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>削除</value>
@@ -2043,6 +2181,9 @@
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}。{1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>QMP での呼び名: {0}。</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>行 {0} の設定値</value>
   </data>
@@ -2399,6 +2540,9 @@
   </data>
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>クラッシュレポートを送信する前に確認する</value>
+  </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>設定から戻る</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Google ドライブ バックアップ</value>

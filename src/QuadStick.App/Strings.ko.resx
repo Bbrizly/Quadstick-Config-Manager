@@ -313,6 +313,141 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>경고 {0}개</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>{0}부터 {1}까지.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>설정 {0}개를 바꿨습니다. 저장을 누르기 전까지는 QuadStick에 기록되지 않습니다.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>설정 {0}개를 바꿨습니다. 저장을 누르기 전까지는 QuadStick에 기록되지 않습니다.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>설정 {0}개를 바꿨습니다. 저장하려면 QuadStick을 연결하세요.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>설정 {0}개를 바꿨습니다. 저장하려면 QuadStick을 연결하세요.</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>설정 {0}개 변경됨</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>설정 {0}개 변경됨</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>QuadStick의 설정을 읽지 못했습니다: {0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>점선 원: 이동 범위의 {0}%에서 데드존이 끝납니다. 실선 원: {1}%에서 신호가 최대가 됩니다.</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}, 파일에는 {1}로 적힘</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>{0}에서 QuadStick을 찾았습니다.</value>
+  </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>설정 그룹</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>스틱을 얼마나 움직여야 하는지. 점선 원은 데드존, 실선 원은 신호가 최대가 되는 지점, 점은 지금 스틱의 위치입니다.</value>
+  </data>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>아직 설정 파일이 없어서 이 값들은 기기가 기본으로 쓰는 값입니다. 저장하면 파일이 만들어집니다.</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>조이스틱 이동 범위</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0}~{1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>QuadStick을 찾는 중...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}, {1}~{2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>아직 바꾼 것이 없습니다.</value>
+  </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>연결된 QuadStick이 없습니다. 여기 보이는 것은 QuadStick이 가지는 설정이지, 사용 중인 기기의 설정이 아닙니다. 기기를 연결하고 다시 읽기를 누르면 그 기기의 설정을 보고 바꿀 수 있습니다.</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>설정 파일에 없습니다. 바꾸기 전까지 기기는 {0}을(를) 사용합니다.</value>
+  </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>스틱을 읽고 있지 않습니다. QuadStick을 USB로 연결하면 위치가 여기에 표시됩니다.</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>끔 (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>켬 (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>저장하려면 QuadStick을 연결하세요.</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>모든 설정을 QuadStick에 있는 값으로 되돌립니다</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>QuadStick에서 설정을 다시 읽습니다</value>
+  </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>{0}을(를) 읽는 중. 눌린 것이 없습니다.</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>{0}을(를) 읽는 중. 지금 눌림: {1}.</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>다시 읽기</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>QuadStick에 저장</value>
+  </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>설정 {0}개</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>설정 {0}개</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>케이스의 모드 표시등</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>여기서 바꾼 설정은 QuadStick에 기록되지 않았습니다. 다시 읽으면 사라집니다.</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>스틱이 가로 {0}%, 위로 {1}% 위치에 있습니다.</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>이 설정에 문제가 있어 아무것도 기록하지 않았습니다: </value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>이 설정은 QuadStick 자체의 prefs.csv에 있습니다. 게임 하나가 아니라 기기에 있는 모든 프로필에 적용됩니다.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>이 그룹은 기기에서 가리킬 수 있는 부분을 바꾸지 않습니다.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>이 그룹이 바꾸는 것: {0}.</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>바꾼 내용을 버릴까요?</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>변경 취소</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>바꾼 설정을 QuadStick의 prefs.csv에 기록합니다</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>QuadStick 설정</value>
+  </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>취소</value>
   </data>
@@ -859,6 +994,9 @@
   </data>
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>충돌 보고서를 보냈습니다. 감사합니다.</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>yyyy년 M월 d일</value>
   </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>삭제</value>
@@ -2045,6 +2183,9 @@
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}. {1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>QMP에서 부르는 이름: {0}.</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>행 {0}의 설정 값</value>
   </data>
@@ -2401,6 +2542,9 @@
   </data>
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>충돌 보고서를 보내기 전에 묻기</value>
+  </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>설정에서 돌아가기</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Google Drive 백업</value>

@@ -313,6 +313,141 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} चेतावनियां</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>{0} से {1} तक।</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>{0} सेटिंग बदली गई। सहेजें दबाने तक यह आपके QuadStick पर नहीं जाएगी।</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>{0} सेटिंग्स बदली गईं। सहेजें दबाने तक ये आपके QuadStick पर नहीं जाएंगी।</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>{0} सेटिंग बदली गई। इसे सहेजने के लिए अपना QuadStick लगाएं।</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>{0} सेटिंग्स बदली गईं। इन्हें सहेजने के लिए अपना QuadStick लगाएं।</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} सेटिंग बदली गई</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} सेटिंग्स बदली गईं</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>आपके QuadStick की सेटिंग्स पढ़ी नहीं जा सकीं: {0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>बिंदीदार गोला: डेड ज़ोन पूरी गति के {0}% पर खत्म होता है। ठोस गोला: {1}% पर पूरा सिग्नल।</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}, फ़ाइल में {1} लिखा जाता है</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>आपका QuadStick {0} पर मिला।</value>
+  </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>सेटिंग्स के समूह</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>स्टिक को कितना हिलाना पड़ता है। बिंदीदार गोला डेड ज़ोन है, ठोस गोला वह जगह है जहाँ सिग्नल पूरा होता है, और बिंदु बताता है कि स्टिक अभी कहाँ है।</value>
+  </data>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>अभी इसमें सेटिंग्स फ़ाइल नहीं है, इसलिए ये वे मान हैं जिन पर यह लौटता है। सहेजने पर एक फ़ाइल बन जाएगी।</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>जॉयस्टिक की गति</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0} से {1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>आपका QuadStick खोजा जा रहा है...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}, {1} से {2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>अभी कोई बदलाव नहीं।</value>
+  </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>कोई QuadStick लगा हुआ नहीं है, इसलिए ये वे सेटिंग्स हैं जो एक QuadStick में होती हैं, आपके वाले की नहीं। एक लगाएं और फिर से पढ़ें दबाएं ताकि उसकी अपनी सेटिंग्स दिखें और बदली जा सकें।</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>आपकी सेटिंग्स फ़ाइल में नहीं है। आपके बदलने तक डिवाइस {0} इस्तेमाल करता है।</value>
+  </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>स्टिक पढ़ी नहीं जा रही। QuadStick को USB से लगाएं, उसकी स्थिति यहाँ दिखेगी।</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>बंद (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>चालू (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>इन्हें सहेजने के लिए अपना QuadStick लगाएं।</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>हर सेटिंग को उस मान पर लौटाएं जो QuadStick पर है</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>अपने QuadStick से सेटिंग्स फिर से पढ़ें</value>
+  </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>{0} पढ़ा जा रहा है। कुछ भी दबा हुआ नहीं है।</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>{0} पढ़ा जा रहा है। अभी दबा हुआ: {1}।</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>फिर से पढ़ें</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>अपने QuadStick पर सहेजें</value>
+  </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>{0} सेटिंग</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>{0} सेटिंग्स</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>केस पर मोड की बत्तियाँ</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>यहाँ बदली गई सेटिंग्स QuadStick पर लिखी नहीं गई हैं। इसे दोबारा पढ़ने पर वे चली जाएंगी।</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>स्टिक चौड़ाई में {0}% और ऊपर की ओर {1}% पर है।</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>इन सेटिंग्स में समस्या है, इसलिए कुछ भी नहीं लिखा गया: </value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>ये सेटिंग्स QuadStick पर ही prefs.csv में रहती हैं, इसलिए ये उस पर मौजूद हर प्रोफ़ाइल पर लागू होती हैं, सिर्फ़ एक गेम पर नहीं।</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>यह समूह डिवाइस पर ऐसा कुछ नहीं बदलता जिसे आप दिखा सकें।</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>यह समूह बदलता है: {0}।</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>अपने बदलाव छोड़ दें?</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>बदलाव वापस लें</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>बदली गई सेटिंग्स को अपने QuadStick की prefs.csv में लिखें</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>आपके QuadStick की सेटिंग्स</value>
+  </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>रद्द करें</value>
   </data>
@@ -859,6 +994,9 @@
   </data>
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>क्रैश रिपोर्ट भेज दी गई। धन्यवाद।</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>d MMM yyyy</value>
   </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>हटाएं</value>
@@ -2045,6 +2183,9 @@
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}। {1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>QMP इसे कहता है: {0}।</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>पंक्ति {0} के लिए सेटिंग मान</value>
   </data>
@@ -2401,6 +2542,9 @@
   </data>
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>क्रैश रिपोर्ट भेजने से पहले पूछें</value>
+  </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>सेटिंग्स से वापस जाएं</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Google Drive बैकअप</value>

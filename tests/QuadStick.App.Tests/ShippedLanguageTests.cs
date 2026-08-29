@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Globalization;
 using System.Resources;
 using QuadStick.Format;
@@ -39,6 +40,44 @@ public class ShippedLanguageTests
             Assert.True(said >= english * 9 / 10,
                 $"{rm.BaseName} in {tag}: {said} of {english} strings");
         }
+    }
+
+    // Nine in ten is a floor for scattered gaps. It cannot see a whole screen
+    // arriving untranslated, which is exactly what happened: the Device page
+    // landed after the translation pass and its forty five strings were
+    // English in all twelve languages while the count still read 96%.
+    //
+    // Keys are named for the screen they belong to, so a screen is a prefix.
+    // A screen that is entirely missing from a language is a screen nobody in
+    // that language can read, however healthy the total looks.
+    [Theory]
+    [MemberData(nameof(Shipped))]
+    public void No_whole_screen_is_missing_from_a_language(string tag)
+    {
+        var culture = CultureInfo.GetCultureInfo(tag);
+        var english = Strings.ResourceManager.GetResourceSet(CultureInfo.InvariantCulture, true, false)!
+            .Cast<DictionaryEntry>().Select(e => (string)e.Key).ToList();
+        var said = Strings.ResourceManager.GetResourceSet(culture, true, false)!
+            .Cast<DictionaryEntry>().Select(e => (string)e.Key).ToHashSet(StringComparer.Ordinal);
+
+        foreach (var screen in english.Select(Screen).Distinct())
+        {
+            var keys = english.Where(k => Screen(k) == screen).ToList();
+            // A screen of one or two strings is a helper, not a screen.
+            if (keys.Count < 5) continue;
+            int have = keys.Count(said.Contains);
+            Assert.True(have > 0, $"{tag}: the whole {screen} screen is missing, {keys.Count} strings");
+            Assert.True(have >= keys.Count / 2,
+                $"{tag}: {screen} has {have} of {keys.Count} strings");
+        }
+    }
+
+    // Keys read Screen_WhatItSays, so the screen is everything up to the
+    // first underscore.
+    static string Screen(string key)
+    {
+        int cut = key.IndexOf('_');
+        return cut < 0 ? key : key[..cut];
     }
 
     // The label class that slipped through the first translation pass: device

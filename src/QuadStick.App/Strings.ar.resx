@@ -313,6 +313,141 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} تحذيرات</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>من {0} إلى {1}.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>تم تغيير {0} إعداد. لن يصل إلى QuadStick حتى تضغط حفظ.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>تم تغيير {0} إعدادات. لن تصل إلى QuadStick حتى تضغط حفظ.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>تم تغيير {0} إعداد. وصّل QuadStick لحفظه.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>تم تغيير {0} إعدادات. وصّل QuadStick لحفظها.</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>تم تغيير {0} إعداد</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>تم تغيير {0} إعدادات</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>تعذّرت قراءة الإعدادات على QuadStick: {0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>الدائرة المتقطعة: تنتهي المنطقة الميتة عند {0}% من المسافة. الدائرة المصمتة: إشارة كاملة عند {1}%.</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}، مكتوب في الملف {1}</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>تم العثور على QuadStick في {0}.</value>
+  </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>مجموعات الإعدادات</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>كم يجب أن تتحرك العصا. الدائرة المتقطعة هي المنطقة الميتة، والدائرة المصمتة هي موضع الإشارة الكاملة، والنقطة تبيّن موضع العصا الآن.</value>
+  </data>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>ليس فيه ملف إعدادات بعد، لذا هذه هي القيم التي يرجع إليها الجهاز. الحفظ ينشئ ملفاً.</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>مدى حركة العصا</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0} إلى {1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>جارٍ البحث عن QuadStick...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}، {1} إلى {2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>لا تغييرات بعد.</value>
+  </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>لا يوجد QuadStick موصول، لذا هذه هي الإعدادات التي يملكها QuadStick، وليست إعدادات جهازك. وصّل جهازاً واضغط إعادة القراءة لترى إعداداته وتغيّرها.</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>غير موجود في ملف إعداداتك. يستخدم الجهاز {0} إلى أن تغيّره.</value>
+  </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>لا تتم قراءة العصا. وصّل QuadStick عبر USB ليظهر موضعها هنا.</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>إيقاف (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>تشغيل (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>وصّل QuadStick لحفظ هذه.</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>إعادة كل إعداد إلى القيمة الموجودة على QuadStick</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>إعادة قراءة الإعدادات من QuadStick</value>
+  </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>تتم قراءة {0}. لا شيء مضغوط.</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>تتم قراءة {0}. المضغوط الآن: {1}.</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>إعادة القراءة</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>حفظ على QuadStick</value>
+  </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>{0} إعداد</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>{0} إعدادات</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>أضواء الأوضاع على الهيكل</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>الإعدادات التي غيّرتها هنا لم تُكتب على QuadStick. إعادة قراءته تفقدها.</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>العصا عند {0}% عرضاً و{1}% إلى الأعلى.</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>في هذه الإعدادات مشكلة، لذا لم يُكتب شيء: </value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>هذه الإعدادات موجودة في prefs.csv على QuadStick نفسه، لذا تنطبق على كل ملف تعريف عليه، لا على لعبة واحدة فقط.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>هذه المجموعة لا تغيّر شيئاً يمكنك الإشارة إليه على الجهاز.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>تغيّر هذه المجموعة: {0}.</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>هل تريد التخلي عن تغييراتك؟</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>تراجع عن التغييرات</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>كتابة الإعدادات المغيّرة في prefs.csv على QuadStick</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>إعدادات QuadStick</value>
+  </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>إلغاء</value>
   </data>
@@ -859,6 +994,9 @@
   </data>
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>تم إرسال تقرير العطل. شكرًا لك.</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>d MMM yyyy</value>
   </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>حذف</value>
@@ -2045,6 +2183,9 @@
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}. {1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>يسمّيه QMP: {0}.</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>قيمة الإعداد للصف {0}</value>
   </data>
@@ -2401,6 +2542,9 @@
   </data>
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>اسأل قبل إرسال تقرير عطل</value>
+  </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>الرجوع من الإعدادات</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>نسخ احتياطي على Google Drive</value>

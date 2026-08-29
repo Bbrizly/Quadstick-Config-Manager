@@ -313,6 +313,141 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} avisos</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>De {0} a {1}.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>{0} definição alterada. Só ficará no seu QuadStick depois de carregar em Guardar.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>{0} definições alteradas. Só ficarão no seu QuadStick depois de carregar em Guardar.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>{0} definição alterada. Ligue o seu QuadStick para a guardar.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>{0} definições alteradas. Ligue o seu QuadStick para as guardar.</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} definição alterada</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} definições alteradas</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>Não foi possível ler as definições do seu QuadStick: {0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>Círculo tracejado: a zona morta acaba a {0}% do curso. Círculo cheio: sinal completo a {1}%.</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}, escrito {1}</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>O seu QuadStick foi encontrado em {0}.</value>
+  </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>Grupos de definições</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>Quanto o manípulo tem de se mover. O círculo tracejado é a zona morta, o círculo cheio é onde o sinal fica completo, e o ponto mostra onde o manípulo está agora.</value>
+  </data>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>Ainda não tem ficheiro de definições, por isso estes são os valores a que recorre. Guardar cria um.</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>Curso do joystick</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0} a {1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>A procurar o seu QuadStick...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}, {1} a {2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>Ainda sem alterações.</value>
+  </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>Não há nenhum QuadStick ligado, por isso estas são as definições que um QuadStick tem, não as do seu. Ligue um e carregue em Recarregar para ver e alterar as dele.</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>Não está no seu ficheiro de definições. O dispositivo usa {0} até o alterar.</value>
+  </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>O manípulo não está a ser lido. Ligue o QuadStick por USB e a posição dele aparece aqui.</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>Desligado (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>Ligado (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>Ligue o seu QuadStick para guardar isto.</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>Repor cada definição no valor que está no QuadStick</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>Ler outra vez as definições do seu QuadStick</value>
+  </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>A ler um {0}. Nada está premido.</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>A ler um {0}. Premido agora: {1}.</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>Recarregar</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>Guardar no seu QuadStick</value>
+  </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>{0} definição</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>{0} definições</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>As luzes de modo na caixa</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>As definições que alterou aqui não foram escritas no QuadStick. Voltar a lê-lo perde-as.</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>O manípulo está a {0}% na largura e a {1}% para cima.</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>Estas definições têm um problema, por isso não foi escrito nada: </value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>Estas definições estão em prefs.csv no próprio QuadStick, por isso aplicam-se a todos os perfis que ele tem, não só a um jogo.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>Este grupo não altera nada que possa apontar no dispositivo.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>Este grupo altera: {0}.</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>Deitar fora as suas alterações?</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>Anular alterações</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>Escrever as definições alteradas em prefs.csv no seu QuadStick</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>As definições do seu QuadStick</value>
+  </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>Cancelar</value>
   </data>
@@ -859,6 +994,9 @@ A maioria dos perfis tem apenas um modo, então esta lista costuma mostrar um ú
   </data>
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>Relatório de falha enviado. Obrigado.</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>d MMM yyyy</value>
   </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>Excluir</value>
@@ -2045,6 +2183,9 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}. {1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>O QMP chama-lhe: {0}.</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>Valor da configuração da linha {0}</value>
   </data>
@@ -2401,6 +2542,9 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   </data>
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>Perguntar antes de enviar um relatório de falha</value>
+  </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>Voltar das Definições</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Backup do Google Drive</value>

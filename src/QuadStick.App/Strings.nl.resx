@@ -313,6 +313,141 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} waarschuwingen</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>Van {0} tot {1}.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>{0} instelling gewijzigd. Die staat pas op uw QuadStick als u op Opslaan drukt.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>{0} instellingen gewijzigd. Die staan pas op uw QuadStick als u op Opslaan drukt.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>{0} instelling gewijzigd. Sluit uw QuadStick aan om die op te slaan.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>{0} instellingen gewijzigd. Sluit uw QuadStick aan om die op te slaan.</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} instelling gewijzigd</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} instellingen gewijzigd</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>De instellingen op uw QuadStick konden niet worden gelezen: {0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>Stippellijn: de dode zone eindigt op {0}% van de slag. Doorgetrokken lijn: vol signaal op {1}%.</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}, geschreven als {1}</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>Uw QuadStick is gevonden op {0}.</value>
+  </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>Groepen instellingen</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>Hoe ver de stick moet bewegen. De stippelcirkel is de dode zone, de doorgetrokken cirkel is waar het signaal vol is, en de stip laat zien waar de stick nu staat.</value>
+  </data>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>Er is nog geen instellingenbestand, dus dit zijn de waarden waarop hij terugvalt. Opslaan maakt er een aan.</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>Joystickslag</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0} tot {1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>Uw QuadStick wordt gezocht...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}, {1} tot {2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>Nog geen wijzigingen.</value>
+  </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>Er is geen QuadStick aangesloten, dus dit zijn de instellingen die een QuadStick heeft, niet die van de uwe. Sluit er een aan en druk op Opnieuw laden om zijn eigen instellingen te zien en te wijzigen.</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>Staat niet in uw instellingenbestand. Het apparaat gebruikt {0} tot u het wijzigt.</value>
+  </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>De stick wordt niet gelezen. Sluit de QuadStick via USB aan, dan verschijnt zijn positie hier.</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>Uit (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>Aan (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>Sluit uw QuadStick aan om dit op te slaan.</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>Elke instelling terugzetten op de waarde die op de QuadStick staat</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>De instellingen opnieuw van uw QuadStick lezen</value>
+  </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>Een {0} wordt gelezen. Er is niets ingedrukt.</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>Een {0} wordt gelezen. Nu ingedrukt: {1}.</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>Opnieuw laden</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>Opslaan op uw QuadStick</value>
+  </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>{0} instelling</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>{0} instellingen</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>De moduslampjes op de behuizing</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>De instellingen die u hier hebt gewijzigd zijn niet naar de QuadStick geschreven. Opnieuw lezen maakt ze ongedaan.</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>De stick staat op {0}% in de breedte en {1}% omhoog.</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>Deze instellingen hebben een probleem, dus er is niets geschreven: </value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>Deze instellingen staan in prefs.csv op de QuadStick zelf, dus ze gelden voor elk profiel erop, niet alleen voor één spel.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>Deze groep wijzigt niets dat u op het apparaat kunt aanwijzen.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>Deze groep wijzigt: {0}.</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>Uw wijzigingen weggooien?</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>Wijzigingen ongedaan maken</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>De gewijzigde instellingen naar prefs.csv op uw QuadStick schrijven</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>De instellingen van uw QuadStick</value>
+  </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>Annuleren</value>
   </data>
@@ -859,6 +994,9 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   </data>
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>Crashrapport verzonden. Bedankt.</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>d MMM yyyy</value>
   </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>Verwijderen</value>
@@ -2045,6 +2183,9 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}. {1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>QMP noemt het: {0}.</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>Instellingswaarde voor rij {0}</value>
   </data>
@@ -2401,6 +2542,9 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   </data>
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>Vragen voordat een crashrapport wordt verzonden</value>
+  </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>Terug vanuit Instellingen</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Google Drive-back-up</value>

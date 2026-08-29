@@ -313,6 +313,141 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} 个警告</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>从 {0} 到 {1}。</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>已更改 {0} 项设置。按下保存前不会写入你的 QuadStick。</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>已更改 {0} 项设置。按下保存前不会写入你的 QuadStick。</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>已更改 {0} 项设置。连接你的 QuadStick 才能保存。</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>已更改 {0} 项设置。连接你的 QuadStick 才能保存。</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>已更改 {0} 项设置</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>已更改 {0} 项设置</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>无法读取你的 QuadStick 上的设置：{0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>虚线圆：死区在行程的 {0}% 处结束。实线圆：在 {1}% 处信号达到最大。</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}，在文件中写作 {1}</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>在 {0} 找到了你的 QuadStick。</value>
+  </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>设置分组</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>摇杆需要移动多远。虚线圆是死区，实线圆是信号达到最大的位置，圆点是摇杆当前的位置。</value>
+  </data>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>它还没有设置文件，所以这些是设备回退使用的值。保存会新建一个。</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>摇杆行程</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0} 到 {1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>正在查找你的 QuadStick...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}，{1} 到 {2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>还没有更改。</value>
+  </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>没有连接 QuadStick，所以这些是 QuadStick 具备的设置，不是你这台的设置。连接一台并按重新读取，就能查看和修改它自己的设置。</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>不在你的设置文件里。在你更改之前，设备使用 {0}。</value>
+  </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>没有在读取摇杆。用 USB 连接 QuadStick，它的位置就会显示在这里。</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>关 (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>开 (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>连接你的 QuadStick 才能保存这些。</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>把每一项设置还原为 QuadStick 上的值</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>重新从你的 QuadStick 读取设置</value>
+  </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>正在读取 {0}。没有按下任何东西。</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>正在读取 {0}。当前按下：{1}。</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>重新读取</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>保存到你的 QuadStick</value>
+  </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>{0} 项设置</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>{0} 项设置</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>机身上的模式指示灯</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>你在这里更改的设置还没有写入 QuadStick。重新读取会丢失它们。</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>摇杆位于横向 {0}%、向上 {1}%。</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>这些设置有问题，所以什么都没有写入：</value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>这些设置位于 QuadStick 自身的 prefs.csv 中，因此适用于它上面的每一个配置，而不只是某一个游戏。</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>这一组不会更改设备上任何你能指出来的部件。</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>这一组更改：{0}。</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>放弃你的更改吗？</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>撤销更改</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>把更改后的设置写入你的 QuadStick 上的 prefs.csv</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>你的 QuadStick 的设置</value>
+  </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
@@ -859,6 +994,9 @@
   </data>
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>崩溃报告已发送。谢谢。</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>yyyy年M月d日</value>
   </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>删除</value>
@@ -2045,6 +2183,9 @@
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}。{1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>QMP 称它为：{0}。</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>行 {0} 的设置值</value>
   </data>
@@ -2401,6 +2542,9 @@
   </data>
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>发送崩溃报告前先询问</value>
+  </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>从设置返回</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Google Drive 备份</value>

@@ -313,6 +313,141 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} Warnungen</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>Alles von {0} bis {1}.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>{0} Einstellung geändert. Sie steht erst auf Ihrem QuadStick, wenn Sie auf Speichern drücken.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>{0} Einstellungen geändert. Sie stehen erst auf Ihrem QuadStick, wenn Sie auf Speichern drücken.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>{0} Einstellung geändert. Schließen Sie Ihren QuadStick an, um sie zu speichern.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>{0} Einstellungen geändert. Schließen Sie Ihren QuadStick an, um sie zu speichern.</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} Einstellung geändert</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} Einstellungen geändert</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>Die Einstellungen auf Ihrem QuadStick konnten nicht gelesen werden: {0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>Gestrichelter Ring: Die Totzone endet bei {0}% des Wegs. Durchgezogener Ring: volles Signal bei {1}%.</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}, geschrieben als {1}</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>Ihr QuadStick wurde gefunden unter {0}.</value>
+  </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>Gruppen von Einstellungen</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>Wie weit der Stick bewegt werden muss. Der gestrichelte Kreis ist die Totzone, der durchgezogene Kreis ist der Punkt, an dem das Signal voll ist, und der Punkt zeigt, wo der Stick gerade steht.</value>
+  </data>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>Er hat noch keine Einstellungsdatei, das sind also die Werte, auf die er zurückfällt. Beim Speichern wird eine angelegt.</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>Joystick-Weg</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0} bis {1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>Ihr QuadStick wird gesucht...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}, {1} bis {2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>Noch keine Änderungen.</value>
+  </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>Es ist kein QuadStick angeschlossen. Das sind also die Einstellungen, die ein QuadStick hat, nicht die, auf denen Ihrer steht. Schließen Sie einen an und drücken Sie Neu laden, um seine eigenen zu sehen und zu ändern.</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>Steht nicht in Ihrer Einstellungsdatei. Das Gerät verwendet {0}, bis Sie es ändern.</value>
+  </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>Der Stick wird nicht gelesen. Schließen Sie den QuadStick über USB an, dann wird seine Position hier angezeigt.</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>Aus (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>Ein (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>Schließen Sie Ihren QuadStick an, um das zu speichern.</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>Jede Einstellung auf den Wert zurücksetzen, der auf dem QuadStick steht</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>Die Einstellungen erneut von Ihrem QuadStick lesen</value>
+  </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>{0} wird gelesen. Nichts ist gedrückt.</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>{0} wird gelesen. Gerade gedrückt: {1}.</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>Neu laden</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>Auf Ihrem QuadStick speichern</value>
+  </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>{0} Einstellung</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>{0} Einstellungen</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>Die Moduslichter am Gehäuse</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>Die hier geänderten Einstellungen wurden nicht auf den QuadStick geschrieben. Wenn Sie ihn erneut lesen, gehen sie verloren.</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>Der Stick steht bei {0}% quer und {1}% nach oben.</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>Diese Einstellungen haben ein Problem, deshalb wurde nichts geschrieben: </value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>Diese Einstellungen liegen in prefs.csv auf dem QuadStick selbst. Sie gelten also für jedes Profil darauf, nicht nur für ein Spiel.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>Diese Gruppe ändert nichts, worauf Sie am Gerät zeigen können.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>Diese Gruppe ändert: {0}.</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>Ihre Änderungen verwerfen?</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>Änderungen rückgängig</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>Die geänderten Einstellungen in prefs.csv auf Ihrem QuadStick schreiben</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>Die Einstellungen Ihres QuadSticks</value>
+  </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
@@ -859,6 +994,9 @@ Die meisten Profile haben nur einen Modus, daher zeigt diese Liste oft einen ein
   </data>
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>Absturzbericht gesendet. Danke.</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>d. MMM yyyy</value>
   </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>Löschen</value>
@@ -2045,6 +2183,9 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}. {1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>QMP nennt es: {0}.</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>Einstellungswert für Zeile {0}</value>
   </data>
@@ -2401,6 +2542,9 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   </data>
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>Vor dem Senden eines Absturzberichts fragen</value>
+  </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>Zurück aus den Einstellungen</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Google Drive-Sicherung</value>

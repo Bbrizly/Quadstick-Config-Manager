@@ -313,6 +313,141 @@
   <data name="Count_Warning_other" xml:space="preserve">
     <value>{0} advertencias</value>
   </data>
+  <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
+    <value>De {0} a {1}.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
+    <value>{0} ajuste cambiado. No estará en su QuadStick hasta que pulse Guardar.</value>
+  </data>
+  <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
+    <value>{0} ajustes cambiados. No estarán en su QuadStick hasta que pulse Guardar.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
+    <value>{0} ajuste cambiado. Conecte su QuadStick para guardarlo.</value>
+  </data>
+  <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
+    <value>{0} ajustes cambiados. Conecte su QuadStick para guardarlos.</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} ajuste cambiado</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} ajustes cambiados</value>
+  </data>
+  <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
+    <value>No se pudieron leer los ajustes de su QuadStick: {0}</value>
+  </data>
+  <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
+    <value>Círculo discontinuo: la zona muerta acaba al {0}% del recorrido. Círculo continuo: señal completa al {1}%.</value>
+  </data>
+  <data name="DevicePage_DefLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="DevicePage_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}, escrito como {1}</value>
+  </data>
+  <data name="DevicePage_FoundYourQuadStickAtRoot" xml:space="preserve">
+    <value>Su QuadStick se encontró en {0}.</value>
+  </data>
+  <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
+    <value>Grupos de ajustes</value>
+  </data>
+  <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
+    <value>Cuánto tiene que moverse la palanca. El círculo discontinuo es la zona muerta, el círculo continuo es donde la señal es completa, y el punto es dónde está la palanca ahora.</value>
+  </data>
+  <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
+    <value>Todavía no tiene archivo de ajustes, así que estos son los valores que usa por defecto. Al guardar se crea uno.</value>
+  </data>
+  <data name="DevicePage_JoystickTravel" xml:space="preserve">
+    <value>Recorrido de la palanca</value>
+  </data>
+  <data name="DevicePage_LoToHi" xml:space="preserve">
+    <value>{0} a {1}</value>
+  </data>
+  <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
+    <value>Buscando su QuadStick...</value>
+  </data>
+  <data name="DevicePage_NameLoToHi" xml:space="preserve">
+    <value>{0}, {1} a {2}</value>
+  </data>
+  <data name="DevicePage_NoChangesYet" xml:space="preserve">
+    <value>Sin cambios todavía.</value>
+  </data>
+  <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
+    <value>No hay ningún QuadStick conectado, así que estos son los ajustes que tiene un QuadStick, no los del suyo. Conecte uno y pulse Recargar para ver y cambiar los suyos.</value>
+  </data>
+  <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
+    <value>No está en su archivo de ajustes. El dispositivo usa {0} hasta que lo cambie.</value>
+  </data>
+  <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
+    <value>No se está leyendo la palanca. Conecte el QuadStick por USB y su posición aparecerá aquí.</value>
+  </data>
+  <data name="DevicePage_Off0" xml:space="preserve">
+    <value>Apagado (0)</value>
+  </data>
+  <data name="DevicePage_On1" xml:space="preserve">
+    <value>Encendido (1)</value>
+  </data>
+  <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>Conecte su QuadStick para guardar esto.</value>
+  </data>
+  <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
+    <value>Devolver cada ajuste al valor que está en el QuadStick</value>
+  </data>
+  <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
+    <value>Volver a leer los ajustes de su QuadStick</value>
+  </data>
+  <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
+    <value>Leyendo un {0}. No hay nada pulsado.</value>
+  </data>
+  <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
+    <value>Leyendo un {0}. Pulsado ahora: {1}.</value>
+  </data>
+  <data name="DevicePage_Reload" xml:space="preserve">
+    <value>Recargar</value>
+  </data>
+  <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
+    <value>Guardar en su QuadStick</value>
+  </data>
+  <data name="DevicePage_Setting_one" xml:space="preserve">
+    <value>{0} ajuste</value>
+  </data>
+  <data name="DevicePage_Setting_other" xml:space="preserve">
+    <value>{0} ajustes</value>
+  </data>
+  <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
+    <value>Las luces de modo de la carcasa</value>
+  </data>
+  <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
+    <value>Los ajustes que cambió aquí no se han escrito en el QuadStick. Volver a leerlo los pierde.</value>
+  </data>
+  <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
+    <value>La palanca está al {0}% a lo ancho y al {1}% hacia arriba.</value>
+  </data>
+  <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
+    <value>Estos ajustes tienen un problema, así que no se escribió nada: </value>
+  </data>
+  <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
+    <value>Estos ajustes están en prefs.csv en el propio QuadStick, así que se aplican a todos los perfiles que tenga, no solo a un juego.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
+    <value>Este grupo no cambia nada que se pueda señalar en el dispositivo.</value>
+  </data>
+  <data name="DevicePage_ThisGroupChangesParts" xml:space="preserve">
+    <value>Este grupo cambia: {0}.</value>
+  </data>
+  <data name="DevicePage_ThrowAwayYourChanges" xml:space="preserve">
+    <value>¿Descartar sus cambios?</value>
+  </data>
+  <data name="DevicePage_UndoChanges" xml:space="preserve">
+    <value>Deshacer cambios</value>
+  </data>
+  <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
+    <value>Escribir los ajustes cambiados en prefs.csv de su QuadStick</value>
+  </data>
+  <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
+    <value>Los ajustes de su QuadStick</value>
+  </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>Cancelar</value>
   </data>
@@ -859,6 +994,9 @@ La mayoría de los perfiles tienen un solo modo, así que esta lista suele mostr
   </data>
   <data name="Main_CrashReportSentThankYou" xml:space="preserve">
     <value>Informe de fallo enviado. Gracias.</value>
+  </data>
+  <data name="Main_DMMMYyyy" xml:space="preserve">
+    <value>d MMM yyyy</value>
   </data>
   <data name="Main_Delete" xml:space="preserve">
     <value>Eliminar</value>
@@ -2045,6 +2183,9 @@ Azul, INPUTS: lo que hace su boca. Los nombres mp_… son orificios de la boquil
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}. {1}</value>
   </data>
+  <data name="Prefs_QMPCallsItDefAlsoCalled" xml:space="preserve">
+    <value>QMP lo llama: {0}.</value>
+  </data>
   <data name="Prefs_SettingValueForRow" xml:space="preserve">
     <value>Valor del ajuste de la fila {0}</value>
   </data>
@@ -2401,6 +2542,9 @@ Azul, INPUTS: lo que hace su boca. Los nombres mp_… son orificios de la boquil
   </data>
   <data name="Settings_AskCrashes" xml:space="preserve">
     <value>Preguntar antes de enviar un informe de fallo</value>
+  </data>
+  <data name="Settings_BackHelp" xml:space="preserve">
+    <value>Volver desde Ajustes</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Copia de seguridad en Google Drive</value>
