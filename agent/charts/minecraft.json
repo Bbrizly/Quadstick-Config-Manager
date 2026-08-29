@@ -1,0 +1,111 @@
+{
+  "game": "Minecraft (Bedrock Edition)",
+  "family": "minecraft",
+  "platform": "xbox",
+  "source": {
+    "url": "https://minecraft.wiki/w/Controls",
+    "note": "Cross-checked against https://minecraft.wiki/w/Tutorial:Playing_with_a_controller, both read directly. The official minecraft.net/en-us/article/minecraft-controls page failed to load (timeout) so it could not be used to verify the Back/View button, which is why that mapping is listed as disputed rather than included.",
+    "method": "read from the web by agent/research.py",
+    "verified_by_hand": false
+  },
+  "confidence": "researched, not checked by a person",
+  "controls": {
+    "left_joy_up": {
+      "action": "Move forward",
+      "critical": true
+    },
+    "left_joy_down": {
+      "action": "Move backward",
+      "critical": true
+    },
+    "left_joy_left": {
+      "action": "Strafe left",
+      "critical": true
+    },
+    "left_joy_right": {
+      "action": "Strafe right",
+      "critical": true
+    },
+    "right_joy_up": {
+      "action": "Look up",
+      "critical": true
+    },
+    "right_joy_down": {
+      "action": "Look down",
+      "critical": true
+    },
+    "right_joy_left": {
+      "action": "Look left",
+      "critical": true
+    },
+    "right_joy_right": {
+      "action": "Look right",
+      "critical": true
+    },
+    "A": {
+      "action": "Jump (Fly up while flying)",
+      "critical": true
+    },
+    "B": {
+      "action": "Sneak (Fly down while flying)",
+      "critical": true
+    },
+    "X": {
+      "action": "Open crafting menu",
+      "critical": false
+    },
+    "Y": {
+      "action": "Open inventory",
+      "critical": false
+    },
+    "left_bumper": {
+      "action": "Cycle held item left in hotbar",
+      "critical": true
+    },
+    "right_bumper": {
+      "action": "Cycle held item right in hotbar",
+      "critical": true
+    },
+    "left_trigger": {
+      "action": "Use item / place block",
+      "critical": true
+    },
+    "right_trigger": {
+      "action": "Attack entity / destroy block",
+      "critical": true
+    },
+    "left_stick": {
+      "action": "Sprint (Fly up slowly while flying)",
+      "critical": true
+    },
+    "right_stick": {
+      "action": "Fly down slowly while flying",
+      "critical": false
+    },
+    "dpad_N": {
+      "action": "Toggle first/third-person perspective",
+      "critical": false
+    },
+    "dpad_S": {
+      "action": "Drop selected item",
+      "critical": false
+    },
+    "dpad_W": {
+      "action": "Open emote wheel",
+      "critical": false
+    },
+    "dpad_E": {
+      "action": "Open chat",
+      "critical": false
+    },
+    "start": {
+      "action": "Open pause menu",
+      "critical": false
+    }
+  },
+  "disputed": {
+    "back": "No confirmed default function was found for the Back/View button on the pages read; official docs did not list it and the minecraft.net article could not be loaded (timed out) to cross-check.",
+    "guide": "Not documented as an in-game control (system button)."
+  },
+  "not_covered": []
+}

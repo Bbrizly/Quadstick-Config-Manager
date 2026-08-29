@@ -17,7 +17,7 @@ namespace QuadStick.App.Tests;
 // The community profiles browser. It is the only place in the app that asks
 // quadstick.com for anything, it never touches a QuadStick, and it has to be
 // usable by keyboard and screen reader alone, so all three are pinned here.
-public sealed class CommunityProfilesWindowTests : IDisposable
+public sealed class CommunityProfilesViewTests : IDisposable
 {
     const string IdCyber = "1AbCdEfGhIjKlMnOpQrStUvWxYz012345678";
     const string IdDoom = "2ZyXwVuTsRqPoNmLkJiHgFeDcBa987654321";
@@ -91,15 +91,17 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         return w;
     }
 
-    async Task<CommunityProfilesWindow> OpenAsync(
+    // The page, hosted in the window the same way the shell hosts it, so what
+    // the tests drive is the control the Community tab actually shows.
+    async Task<CommunityProfilesView> OpenAsync(
         MainWindow owner, HttpMessageHandler catalog, HttpMessageHandler? sheets = null)
     {
-        var win = new CommunityProfilesWindow(
+        var win = new CommunityProfilesView(
             owner,
             new CommunityCatalogClient(catalog, CachePath),
             sheets is null ? null : new HttpClient(sheets));
         win.OpenUri = _ => Task.CompletedTask; // never open a real browser in a test
-        _ = win.ShowDialog(owner);
+        owner.HostCommunityViewForPreview(win);
         Dispatcher.UIThread.RunJobs();
         await win.CatalogLoaded;
         Dispatcher.UIThread.RunJobs();
@@ -107,15 +109,15 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         return win;
     }
 
-    static Button Button(Window w, string automationName) =>
+    static Button Button(Control w, string automationName) =>
         w.GetVisualDescendants().OfType<Button>()
             .First(b => AutomationProperties.GetName(b) == automationName);
 
-    static TextBox Search(Window w) => w.GetVisualDescendants().OfType<TextBox>().First();
+    static TextBox Search(Control w) => w.GetVisualDescendants().OfType<TextBox>().First();
 
-    static ListBox Results(Window w) => w.GetVisualDescendants().OfType<ListBox>().First();
+    static ListBox Results(Control w) => w.GetVisualDescendants().OfType<ListBox>().First();
 
-    static string[] Rows(Window w)
+    static string[] Rows(Control w)
     {
         w.UpdateLayout();
         return Results(w).ItemsSource!.Cast<ListBoxItem>()
@@ -123,29 +125,29 @@ public sealed class CommunityProfilesWindowTests : IDisposable
             .ToArray();
     }
 
-    static string[] AllText(Window w)
+    static string[] AllText(Control w)
     {
         w.UpdateLayout();
         return w.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text ?? "").ToArray();
     }
 
-    static bool Says(Window w, string fragment) => AllText(w).Any(t => t.Contains(fragment));
+    static bool Says(Control w, string fragment) => AllText(w).Any(t => t.Contains(fragment));
 
-    static void Type(Window w, string text)
+    static void Type(Control w, string text)
     {
         Search(w).Text = text;
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
     }
 
-    static void Press(Window w, Control target, Key key)
+    static void Press(Control w, Control target, Key key)
     {
         target.RaiseEvent(new KeyEventArgs { RoutedEvent = InputElement.KeyDownEvent, Key = key, Source = target });
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
     }
 
-    static void Tap(Window w, string automationName)
+    static void Tap(Control w, string automationName)
     {
         Button(w, automationName).RaiseEvent(new RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
         Dispatcher.UIThread.RunJobs();
@@ -182,7 +184,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         var win = await OpenAsync(w, catalog);
 
         Assert.Equal(new[] { CatalogUrl }, catalog.Urls);
-        win.Close();
         w.Close();
     }
 
@@ -197,7 +198,7 @@ public sealed class CommunityProfilesWindowTests : IDisposable
             .Where(f => File.ReadAllText(f).Contains("new CommunityCatalogClient"))
             .Select(Path.GetFileName)
             .ToArray();
-        Assert.Equal(new[] { "CommunityProfilesWindow.cs" }, files);
+        Assert.Equal(new[] { "CommunityProfilesView.cs" }, files);
     }
 
     // CAT-05: a catalog pick reaches the device only through the editor and the
@@ -205,7 +206,7 @@ public sealed class CommunityProfilesWindowTests : IDisposable
     [Fact]
     public void The_window_never_touches_the_installer()
     {
-        var source = File.ReadAllText(Path.Combine(SourceDir, "CommunityProfilesWindow.cs"));
+        var source = File.ReadAllText(Path.Combine(SourceDir, "CommunityProfilesView.cs"));
         Assert.DoesNotContain("Device.Install", source);
         Assert.DoesNotContain("InstallFlow", source);
     }
@@ -241,7 +242,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         Assert.True(Says(win, "2 profiles from the copy saved on this computer"));
         Assert.True(Says(win, "1 row was skipped"));
         Assert.False(Says(win, "downloaded just now"));
-        win.Close();
         w.Close();
     }
 
@@ -261,7 +261,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
 
         Assert.Equal(new[] { CatalogUrl }, catalog.Urls);
         Assert.True(Says(win, "2 profiles, downloaded just now"));
-        win.Close();
         w.Close();
     }
 
@@ -278,8 +277,8 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         Assert.True(Says(win, "could not be downloaded"));
         Assert.True(Says(win, "press Refresh"));
         Assert.True(Button(win, "Download the community list again").IsEnabled);
-        Assert.True(Button(win, "Close this window").IsEnabled);
-        win.Close();
+        // The way off a dead page is the shell, which never scrolls away.
+        Assert.True(w.FindControl<Button>("ShellHomeButton")!.IsEnabled);
         w.Close();
     }
 
@@ -299,7 +298,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         Assert.Equal(new[] { "Cyberpunk 2077", "Doom Eternal" }, Rows(win));
         Assert.True(Says(win, "from the copy saved on this computer"));
         Assert.False(Says(win, "downloaded just now"));
-        win.Close();
         w.Close();
     }
 
@@ -334,7 +332,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
 
         Type(win, "");
         Assert.Equal(2, Rows(win).Length);
-        win.Close();
         w.Close();
     }
 
@@ -353,7 +350,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
                      "Import the selected profile into the editor",
                      "Open the selected profile's Google Sheet in your browser",
                      "Download the community list again",
-                     "Close this window",
                  })
             Assert.Contains(win.GetVisualDescendants().OfType<Button>(),
                 b => AutomationProperties.GetName(b) == wanted);
@@ -370,7 +366,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
                 "Doom Eternal. DoomEternal.csv, Xbox, joystick",
             },
             names);
-        win.Close();
         w.Close();
     }
 
@@ -388,7 +383,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         Results(win).SelectedIndex = 1;
         Dispatcher.UIThread.RunJobs();
         Assert.True(Says(win, "Doom Eternal is selected."));
-        win.Close();
         w.Close();
     }
 
@@ -405,7 +399,7 @@ public sealed class CommunityProfilesWindowTests : IDisposable
 
         Type(win, "doom");
         Press(win, Search(win), Key.Down);
-        var row = Assert.IsType<ListBoxItem>(win.FocusManager?.GetFocusedElement());
+        var row = Assert.IsType<ListBoxItem>(w.FocusManager?.GetFocusedElement());
 
         Press(win, row, Key.Enter);
         await Task.Yield();
@@ -457,7 +451,7 @@ public sealed class CommunityProfilesWindowTests : IDisposable
     // Importing gets out of the way afterwards: the profile is open in the
     // editor behind, so the window closes rather than covering it.
     [AvaloniaFact]
-    public async Task A_finished_import_closes_the_window()
+    public async Task A_finished_import_leaves_the_editor_showing()
     {
         SeedCache(GoodBody);
         var w = NewWindow();
@@ -467,7 +461,10 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         await Task.Yield();
         Dispatcher.UIThread.RunJobs();
 
-        Assert.False(win.IsVisible);
+        // The profile is what the user asked for, so the editor page takes the
+        // window and the community page steps out of the way.
+        Assert.True(w.FindControl<DockPanel>("EditorView")!.IsVisible);
+        Assert.False(w.FindControl<DockPanel>("CommunityPage")!.IsVisible);
         w.OpenFile!.Dirty = false;
         w.Close();
     }
@@ -492,7 +489,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
         Assert.True(Says(win, "not shared publicly"));
         var home = w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Name == "HomeStatusText");
         Assert.False(home.IsVisible);
-        win.Close();
         w.Close();
     }
 
@@ -511,7 +507,6 @@ public sealed class CommunityProfilesWindowTests : IDisposable
 
         Assert.Equal($"https://docs.google.com/spreadsheets/d/{IdCyber}/edit", opened?.ToString());
         Assert.True(Says(win, "Opened the Cyberpunk 2077 sheet in your browser."));
-        win.Close();
         w.Close();
     }
 

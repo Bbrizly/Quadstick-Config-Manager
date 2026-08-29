@@ -32,7 +32,8 @@ public sealed record PreferenceDefinition(
     string Risk,
     string Source,
     IReadOnlyList<string> OptionLabels,
-    bool FirmwareMayAddMore)
+    bool FirmwareMayAddMore,
+    string AlsoCalled)
 {
     /// <summary>The plain-language name for one option, or the option itself
     /// when the catalog has no better word for it. Only ever shown: the token
@@ -53,36 +54,141 @@ public sealed record PreferenceDefinition(
 // rather than reaching a device.
 public static class PreferenceCatalog
 {
-    // The order the editor shows these headings in.
+    // The order the editor shows these headings in. English, and staying
+    // English: preferences.json names a category on every entry and the two
+    // are compared letter for letter. CategoryLabel is what a person reads.
     static readonly string[] CategoryOrder =
     {
         "Joystick", "Sip and puff", "Lip sensor", "Mouse", "Sound and lights",
         "Bluetooth", "Inputs and outputs", "USB and compatibility", "Advanced",
     };
 
+    /// <summary>Where a category sits on a settings screen. A category this
+    /// build has never heard of sorts after the ones it knows, in the order the
+    /// data file gave them, rather than jumping to the top.</summary>
+    public static int CategoryRank(string category)
+    {
+        int i = Array.IndexOf(CategoryOrder, category);
+        return i < 0 ? CategoryOrder.Length : i;
+    }
+
+    /// <summary>A category heading in the language the app is being read in.
+    /// A category this build has never heard of is shown as it arrived.</summary>
+    public static string CategoryLabel(string category) => category switch
+    {
+        "Joystick" => Strings.Pref_Joystick,
+        "Sip and puff" => Strings.Pref_SipAndPuff,
+        "Lip sensor" => Strings.Pref_LipSensor,
+        "Mouse" => Strings.Pref_Mouse,
+        "Sound and lights" => Strings.Pref_SoundAndLights,
+        "Bluetooth" => Strings.Pref_Bluetooth,
+        "Inputs and outputs" => Strings.Pref_InputsAndOutputs,
+        "USB and compatibility" => Strings.Pref_UsbAndCompatibility,
+        "Advanced" => Strings.Pref_Advanced,
+        _ => category,
+    };
+
     static readonly string[] KnownFields =
     {
         "name", "label", "category", "editor", "default", "minimum", "maximum",
         "unit", "description", "options", "optionLabels", "modeOverride", "risk", "source",
-        "firmwareMayAddMore",
+        "firmwareMayAddMore", "alsoCalled",
     };
 
     static PreferenceCatalog()
     {
         using var s = typeof(PreferenceCatalog).Assembly.GetManifestResourceStream("PreferencesJson")
             ?? throw new InvalidOperationException("Embedded preferences.json missing.");
-        All = Parse(s);
+        English = Parse(s);
+        All = Translate(English);
         ByName = All.ToDictionary(d => d.Name, StringComparer.Ordinal);
     }
 
+    static readonly IReadOnlyList<PreferenceDefinition> English;
+
+    /// <summary>Re-reads the translation for the current language. The words
+    /// change; the names, bounds and defaults are the same objects' worth of
+    /// data either way. Called when the language changes while the app runs.</summary>
+    public static void Relocalize()
+    {
+        All = Translate(English);
+        ByName = All.ToDictionary(d => d.Name, StringComparer.Ordinal);
+    }
+
+    /// <summary>Puts the words a person reads into their language, and leaves
+    /// everything else exactly as preferences.json has it.</summary>
+    /// <remarks>
+    /// A translation is Data/preferences.&lt;tag&gt;.json, embedded as
+    /// PreferencesJson.&lt;tag&gt;, holding a name and whichever of label,
+    /// unit, description, risk and optionLabels have been done. A field that
+    /// is missing, or a preference that is not in the file at all, keeps the
+    /// English. Nothing here can reach a device: name, category, editor,
+    /// default, minimum, maximum, options and source are never read from it.
+    ///
+    /// This runs when the catalog is first touched and again from
+    /// <see cref="Relocalize"/> when the language changes while the app runs.
+    /// </remarks>
+    internal static IReadOnlyList<PreferenceDefinition> TranslateForTest(IReadOnlyList<PreferenceDefinition> english) =>
+        Translate(english);
+
+    static IReadOnlyList<PreferenceDefinition> Translate(IReadOnlyList<PreferenceDefinition> english)
+    {
+        using var stream = TranslationFor(CultureInfo.CurrentUICulture);
+        if (stream is null) return english;
+        using var doc = JsonDocument.Parse(stream);
+        var said = new Dictionary<string, JsonElement>(StringComparer.Ordinal);
+        foreach (var e in doc.RootElement.EnumerateArray())
+            if (e.TryGetProperty("name", out var n) && n.GetString() is { } name) said[name] = e;
+
+        return english.Select(d => said.TryGetValue(d.Name, out var t) ? d with
+        {
+            Label = Word(t, "label", d.Label),
+            Unit = Word(t, "unit", d.Unit),
+            Description = Word(t, "description", d.Description),
+            Risk = Word(t, "risk", d.Risk),
+            AlsoCalled = Word(t, "alsoCalled", d.AlsoCalled),
+            OptionLabels = Words(t, "optionLabels", d.OptionLabels),
+        } : d).ToList();
+    }
+
+    static Stream? TranslationFor(CultureInfo c)
+    {
+        var asm = typeof(PreferenceCatalog).Assembly;
+        var have = asm.GetManifestResourceNames();
+        // "pt-BR" before "pt": a regional file wins over the plain language.
+        // Matched without case, because the runtime writes the region half in
+        // its own case ("qps-ploc" comes back as "qps-Ploc") and a file named
+        // for a language should not have to guess which.
+        foreach (var tag in new[] { c.Name, c.TwoLetterISOLanguageName })
+        {
+            if (tag.Length == 0) continue;
+            var want = "PreferencesJson." + tag;
+            var found = Array.Find(have, n => string.Equals(n, want, StringComparison.OrdinalIgnoreCase));
+            if (found is not null) return asm.GetManifestResourceStream(found);
+        }
+        return null;
+    }
+
+    static string Word(JsonElement t, string field, string english) =>
+        t.TryGetProperty(field, out var v) && v.ValueKind == JsonValueKind.String
+            && v.GetString() is { Length: > 0 } said ? said : english;
+
+    // A part-translated option list would put one language's word next to
+    // another's, so it is all of them or none.
+    static IReadOnlyList<string> Words(JsonElement t, string field, IReadOnlyList<string> english) =>
+        t.TryGetProperty(field, out var v) && v.ValueKind == JsonValueKind.Array
+            && v.GetArrayLength() == english.Count
+            ? v.EnumerateArray().Select(x => x.GetString() ?? "").ToList()
+            : english;
+
     /// <summary>Every preference, in the file's order, which groups them by
     /// <see cref="Categories"/>.</summary>
-    public static IReadOnlyList<PreferenceDefinition> All { get; }
+    public static IReadOnlyList<PreferenceDefinition> All { get; private set; }
 
     /// <summary>Category headings in display order.</summary>
     public static IReadOnlyList<string> Categories => CategoryOrder;
 
-    static readonly Dictionary<string, PreferenceDefinition> ByName;
+    static Dictionary<string, PreferenceDefinition> ByName;
 
     /// <summary>Looks a name up the way the device does, case sensitively. An
     /// unknown name is normal: firmware newer than this catalog will have
@@ -218,6 +324,11 @@ public static class PreferenceCatalog
         var optionLabels = OptionalStrings(e, "optionLabels", name);
         var modeOverride = OptionalBool(e, "modeOverride", name);
         var mayAddMore = OptionalBool(e, "firmwareMayAddMore", name);
+        // What the QuadStick Manager Program puts on the same control. Somebody
+        // following a forum post or a QMP tutorial arrives holding that phrase,
+        // and it belongs beside the setting rather than inside the sentence
+        // saying what the setting does.
+        var alsoCalled = OptionalText(e, "alsoCalled", name);
 
         if (editor != PreferenceEditor.Integer && (min.HasValue || max.HasValue))
             throw new InvalidOperationException($"Preference '{name}' is not an integer, so it cannot carry bounds.");
@@ -258,7 +369,7 @@ public static class PreferenceCatalog
 
         return new PreferenceDefinition(
             name, label, category, editor, def, min, max, unit, description,
-            options, modeOverride, risk, source, optionLabels, mayAddMore);
+            options, modeOverride, risk, source, optionLabels, mayAddMore, alsoCalled);
     }
 
     static string Required(JsonElement e, string field, string? name = null)

@@ -1,6 +1,8 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.LogicalTree;
@@ -43,28 +45,31 @@ public class ModesWindow : Window
     {
         Classes.Add("dialog");
         _owner = owner;
-        Title = "Modes";
-        Width = Math.Min(620 * owner.UiScale, 1100);
+        Title = Strings.Modes_Modes;
+        // Wide enough for the whole row: the name box, the connection dropdown,
+        // and the four round buttons after them. At 620 the last two were off
+        // the edge with no scrollbar to reach them.
+        Width = Math.Min(740 * owner.UiScale, 1200);
         Height = Math.Min(520 * owner.UiScale, 900);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
         var add = new Button
         {
-            Content = "+ Add mode",
+            Content = Strings.Modes_AddMode,
             Classes = { "quiet" },
             FontSize = Size("BodySize"),
             HorizontalAlignment = HorizontalAlignment.Left,
         };
-        AutomationProperties.SetName(add, "Add a mode");
+        AutomationProperties.SetName(add, Strings.Modes_AddAMode);
         add.Click += (_, _) => AddMode();
         _prefs.Click += (_, _) => { _owner.AddPreferencesSheetToFile(); Build(); };
 
         var close = new Button
         {
-            Content = "Done", Classes = { "primary" }, IsCancel = true,
+            Content = Strings.Modes_Done, Classes = { "primary" }, IsCancel = true,
             FontSize = Size("SubheadSize"), Padding = new Thickness(28, 12), MinWidth = 150,
         };
-        AutomationProperties.SetName(close, "Close modes");
+        AutomationProperties.SetName(close, Strings.Modes_CloseModes);
         close.Click += (_, _) => Close();
         // A dialog can open with the keyboard still on the window behind it,
         // and then Escape never reaches this one. Focusing a real control on
@@ -79,7 +84,7 @@ public class ModesWindow : Window
             {
                 new TextBlock
                 {
-                    Text = "A mode is a full layout of your inputs. Switch between them while playing with the side tube, or with increment_mode and decrement_mode.",
+                    Text = Strings.Modes_AModeIsAFull,
                     TextWrapping = TextWrapping.Wrap,
                     FontSize = Size("BodySize"),
                     Classes = { "muted" },
@@ -165,11 +170,11 @@ public class ModesWindow : Window
         // Removing the sheet is now the ✕ on its own row, so this button only
         // ever adds one, and it hides once the sheet is in the list above.
         bool hasPrefs = sheets?.Any(s => s.Type == SheetType.Preferences) ?? false;
-        _prefs.Content = "+ Add a preferences sheet";
+        _prefs.Content = Strings.Modes_AddAPreferencesSheet;
         _prefs.FontSize = Size("BodySize");
         _prefs.IsVisible = sheets != null && !hasPrefs;
         AutomationProperties.SetName(_prefs,
-            "Add a preferences sheet, where device settings like sip and puff pressure live");
+            Strings.Modes_AddAPreferencesSheetWhere);
         _rebuilding = false;
     }
 
@@ -183,7 +188,7 @@ public class ModesWindow : Window
         // label here because the row already carries it twice: the position sits
         // in the first column, and the name box announces itself as "Name of
         // mode N" and takes focus before any of these buttons.
-        var name = isPrefs ? "the preferences sheet"
+        var name = isPrefs ? Strings.Modes_ThePreferencesSheet
             : sheet.ModeName.Length > 0 ? sheet.ModeName : $"Mode {ordinal}";
 
         // The preferences sheet has no name to type: the device finds it by the
@@ -191,7 +196,7 @@ public class ModesWindow : Window
         Control label = isPrefs
             ? new TextBlock
             {
-                Text = "Preferences (device settings)",
+                Text = Strings.Modes_PreferencesDeviceSettings,
                 Width = 240,
                 VerticalAlignment = VerticalAlignment.Center,
                 FontSize = Size("BodySize"),
@@ -201,7 +206,7 @@ public class ModesWindow : Window
 
         var up = IconButton("▲", $"Move {name} up", position > 0, () => Move(sheetIndex, -1));
         var down = IconButton("▼", $"Move {name} down", position < total - 1, () => Move(sheetIndex, 1));
-        var copy = IconButton("⧉", $"Make a copy of {name}", !isPrefs, () => Duplicate(sheetIndex, name));
+        var copy = IconButton("⧉", string.Format(CultureInfo.CurrentCulture, Strings.Modes_MakeACopyOfName, name), !isPrefs, () => Duplicate(sheetIndex, name));
         // Only one preferences sheet is ever read, so a copy of it would be dead
         // weight in the file. The button stays in place, greyed, so the columns
         // still line up down the list.
@@ -212,7 +217,7 @@ public class ModesWindow : Window
         // The preferences sheet is never the last mode, so it always can.
         bool canDelete = isPrefs || ModeCount() > 1;
         var delete = armed
-            ? TextButton("Really delete?", $"Really delete {name}", canDelete, () => Delete(sheetIndex))
+            ? TextButton(Strings.Modes_ReallyDelete, string.Format(CultureInfo.CurrentCulture, Strings.Modes_ReallyDeleteName, name), canDelete, () => Delete(sheetIndex))
             : IconButton("✕", $"Delete {name}", canDelete, () => { _armedDelete = sheetIndex; Build(keepArmed: true); });
         delete.Classes.Add("danger");
 
@@ -227,14 +232,15 @@ public class ModesWindow : Window
             {
                 new TextBlock
                 {
-                    Text = $"{position + 1}.",
+                    Text = string.Format(CultureInfo.CurrentCulture, Strings.Modes_Position1, position + 1),
                     Width = 28,
                     TextAlignment = TextAlignment.Right,
                     VerticalAlignment = VerticalAlignment.Center,
                     FontSize = Size("BodySize"),
                     Classes = { "muted" },
                 },
-                label, up, down, copy, delete,
+                label, isPrefs ? new Panel { Width = ChannelBoxWidth } : ChannelBox(sheet, sheetIndex, ordinal),
+                up, down, copy, delete,
             },
         };
         // Alt with an arrow moves the row from anywhere on it, including the
@@ -248,6 +254,57 @@ public class ModesWindow : Window
         return row;
     }
 
+    // Which connection a mode's outputs travel over, column C of its header
+    // row. It was readable, warned about and never settable: a profile could
+    // only get a Bluetooth mode by being imported from somebody who already had
+    // one. The preferences sheet has no channel, so its row holds a gap of the
+    // same width and the columns stay lined up.
+    const double ChannelBoxWidth = 210;
+
+    // Blank is a real value, not a missing one: Configuration.c:528 falls back
+    // to USB for a blank or unrecognised word. Anything already in the cell
+    // that is not one of these stays in the list exactly as typed, so opening
+    // this window can never quietly change somebody's file.
+    static readonly (string Token, string Label)[] ChannelChoices =
+    {
+        ("", Strings.Modes_NotSetUSBCable),
+        ("usb", Strings.Modes_USBCable),
+        ("bluetooth", "Bluetooth"),
+        ("both", Strings.Modes_USBAndBluetooth),
+        ("none", Strings.Modes_NeitherSendsNothing),
+    };
+
+    Control ChannelBox(ModeSheet sheet, int sheetIndex, int ordinal)
+    {
+        var items = ChannelChoices.ToList();
+        if (!items.Any(c => c.Token == sheet.Channel))
+            items.Insert(0, (sheet.Channel, string.Format(CultureInfo.CurrentCulture, Strings.Modes_SheetChannelNotAWord, sheet.Channel)));
+
+        var combo = new ComboBox
+        {
+            ItemsSource = items,
+            SelectedItem = items.First(c => c.Token == sheet.Channel),
+            Width = ChannelBoxWidth,
+            VerticalAlignment = VerticalAlignment.Center,
+            FontSize = Size("BodySize"),
+            ItemTemplate = new FuncDataTemplate<(string Token, string Label)>((c, _) =>
+                new TextBlock { Text = c.Label, FontSize = Size("BodySize") }, true),
+        };
+        AutomationProperties.SetName(combo,
+            string.Format(CultureInfo.CurrentCulture, Strings.Modes_ConnectionForModeOrdinalWhere, ordinal));
+        combo.SelectionChanged += (_, _) =>
+        {
+            if (_rebuilding || _owner.OpenFile is null) return;
+            if (combo.SelectedItem is not ValueTuple<string, string> picked) return;
+            if (!_owner.OpenFile.SetModeChannel(sheetIndex, picked.Item1)) return;
+            _owner.ModesChanged(sheetIndex, picked.Item1.Length == 0
+                ? Strings.Modes_ConnectionClearedTheDeviceFalls
+                : string.Format(CultureInfo.CurrentCulture, Strings.Modes_ConnectionSetToPickedItem2, picked.Item2.ToLowerInvariant()));
+            Build();
+        };
+        return combo;
+    }
+
     TextBox NameBox(ModeSheet sheet, int sheetIndex, int ordinal)
     {
         var box = new TextBox
@@ -259,7 +316,7 @@ public class ModesWindow : Window
             MaxLength = 40,
             VerticalAlignment = VerticalAlignment.Center,
         };
-        AutomationProperties.SetName(box, $"Name of mode {ordinal}");
+        AutomationProperties.SetName(box, string.Format(CultureInfo.CurrentCulture, Strings.Modes_NameOfModeOrdinal, ordinal));
         // Commit on lost focus, the same rule the editor's cells follow.
         box.LostFocus += (_, _) => Rename(sheetIndex, box.Text ?? "");
         box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Rename(sheetIndex, box.Text ?? ""); };
@@ -299,7 +356,7 @@ public class ModesWindow : Window
         if (_rebuilding || _owner.OpenFile is null) return;
         if (_owner.OpenFile.RenameMode(sheetIndex, text))
         {
-            _owner.ModesChanged(sheetIndex, "Mode renamed.");
+            _owner.ModesChanged(sheetIndex, Strings.Modes_ModeRenamed);
             Build();
             return;
         }
@@ -308,7 +365,7 @@ public class ModesWindow : Window
         // or a screen reader reads the mode as having no name at all.
         if (text.Trim().Length == 0)
         {
-            _owner.ModesChanged(sheetIndex, "A mode needs a name. The old one is still there.");
+            _owner.ModesChanged(sheetIndex, Strings.Modes_AModeNeedsAName);
             Build();
         }
     }
@@ -321,7 +378,7 @@ public class ModesWindow : Window
         int landed = FocusedSheetAfterMove(sheetIndex, delta);
         if (!_owner.OpenFile.MoveMode(sheetIndex, delta)) return;
         Build();
-        _owner.ModesChanged(landed, "Mode moved.");
+        _owner.ModesChanged(landed, Strings.Modes_ModeMoved);
         // Keep the keyboard on the mode that moved, so Alt with an arrow can be
         // pressed again straight away to move it further.
         FocusName(Modes().FindIndex(t => t.Index == landed));
@@ -345,7 +402,7 @@ public class ModesWindow : Window
         int idx = _owner.OpenFile.DuplicateMode(sheetIndex, name + " copy");
         if (idx < 0) return;
         Build();
-        _owner.ModesChanged(idx, "Mode copied.");
+        _owner.ModesChanged(idx, Strings.Modes_ModeCopied);
         FocusName(Modes().FindIndex(t => t.Index == idx));
     }
 
@@ -356,7 +413,7 @@ public class ModesWindow : Window
         if (!_owner.OpenFile.DeleteMode(sheetIndex)) { Build(); return; }
         Build();
         _owner.ModesChanged(Math.Max(0, sheetIndex - 1),
-            prefs ? "Preferences sheet removed. Control Z undoes it." : "Mode deleted. Control Z undoes it.");
+            prefs ? Strings.Modes_PreferencesSheetRemovedControlZ : Strings.Modes_ModeDeletedControlZUndoes);
     }
 
     void AddMode()
@@ -369,7 +426,7 @@ public class ModesWindow : Window
         while (taken.Contains($"Mode {n}")) n++;
         int idx = _owner.OpenFile.AddModeSheet($"Mode {n}");
         Build();
-        _owner.ModesChanged(idx, "Mode added.");
+        _owner.ModesChanged(idx, Strings.Modes_ModeAdded);
         // No naming dialog: the new row is already there, so put the keyboard
         // in its name box and let the name be typed over.
         FocusName(Modes().FindIndex(t => t.Index == idx));

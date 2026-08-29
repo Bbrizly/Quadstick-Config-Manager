@@ -1,0 +1,345 @@
+[
+ {
+  "name": "joystick_deflection_minimum",
+  "label": "[Jóýštíçk çéñtér déád žóñé xxxxxxxxxx]",
+  "description": "[Hów fár thé štíçk háš tó móvé béfóré ít çóúñtš. Lárgér íš léšš šéñšítívé ñéár thé çéñtré, whíçh štópš á réštíñg štíçk dríftíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "joystick_deflection_maximum",
+  "label": "[Jóýštíçk fúll défléçtíóñ xxxxxxxxx]",
+  "description": "[Hów fár thé štíçk háš tó móvé fór á fúll šígñál. Lárgér íš léšš šéñšítívé, béçáúšé ýóú púšh fúrthér fór thé šámé réšúlt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "alsoCalled": "[ráñgé óf mótíóñ xxxxxx]"
+ },
+ {
+  "name": "deflection_multiplier_up",
+  "label": "[Úp défléçtíóñ múltíplíér xxxxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Bríñgš úp lévél wíth thé óthér díréçtíóñš. Lárgér íš móré šéñšítívé góíñg úp. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "deflection_multiplier_down",
+  "label": "[Dówñ défléçtíóñ múltíplíér xxxxxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Bríñgš dówñ lévél wíth thé óthér díréçtíóñš. Lárgér íš móré šéñšítívé góíñg dówñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "deflection_multiplier_left",
+  "label": "[Léft défléçtíóñ múltíplíér xxxxxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Bríñgš léft lévél wíth thé óthér díréçtíóñš. Lárgér íš móré šéñšítívé góíñg léft. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "deflection_multiplier_right",
+  "label": "[Ríght défléçtíóñ múltíplíér xxxxxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Bríñgš ríght lévél wíth thé óthér díréçtíóñš. Lárgér íš móré šéñšítívé góíñg ríght. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "joystick_D_Pad_inner",
+  "label": "[Íññér D-Pád ríñg xxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Whéré thé íññér D-Pád ríñg štártš, óút fróm thé çéñtré. Ít wáítš á móméñt fíršt, šó ýóú çáñ pášš thróúgh ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "joystick_D_Pad_outer",
+  "label": "[Óútér D-Pád ríñg xxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Whéré thé óútér D-Pád ríñg štártš, óút fróm thé çéñtré. Pášt thíš líñé thé díréçtíóñ fíréš át óñçé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "joystick_dead_zone_shape",
+  "label": "[Çírçúlár déád žóñé xxxxxxx]",
+  "description": "[Mákéš thé çéñtré déád žóñé róúñd íñštéád óf šqúáré, šó ít féélš thé šámé íñ évérý díréçtíóñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "anti_dead_zone",
+  "label": "[Áñtí déád žóñé xxxxx]"
+ },
+ {
+  "name": "joystick_warning",
+  "label": "[Jóýštíçk wárñíñg défléçtíóñ xxxxxxxxxx]",
+  "description": "[Ýóúr QúádŠtíçk ígñóréš thíš. Óldér óñéš wárñéd ýóú héré fór púšhíñg thé štíçk tóó fár. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "joystick_alarm",
+  "label": "[Jóýštíçk álárm défléçtíóñ xxxxxxxxxx]",
+  "description": "[Ýóúr QúádŠtíçk ígñóréš thíš. Óldér óñéš šóúñdéd áñ álárm héré fór púšhíñg thé štíçk tóó fár. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "enable_auto_zero",
+  "label": "[Áútó žéró thé šéñšórš xxxxxxxx]",
+  "description": "[Ýóúr QúádŠtíçk ígñóréš thíš áñd fórçéš ít báçk tó óff, šó ñóthíñg çháñgéš éíthér wáý. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "sip_puff_threshold_soft",
+  "label": "[Šóft šíp/púff thréšhóld xxxxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Préššúré whéré á šóft šíp ór púff štártš tó çóúñt. Lówér ít íf šóft šípš táké tóó múçh bréáth. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "alsoCalled": "[šíp áñd púff lów thréšhóld xxxxxxxxxx]"
+ },
+ {
+  "name": "sip_puff_threshold",
+  "label": "[Hárd šíp/púff thréšhóld xxxxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Préššúré whéré á šíp ór púff çóúñtš áš hárd. Ráíšé ít íf šóft šípš kéép fíríñg thé hárd šígñál. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "alsoCalled": "[šíp áñd púff hígh thréšhóld xxxxxxxxxx]"
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "[Šíp/púff máxímúm préššúré xxxxxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Préššúré thát gívéš á fúll šígñál. Lówér ít íf ýóú çáññót réáçh fúll štréñgth. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "sip_puff_delay_soft",
+  "label": "[Šóft šíp/púff déláý xxxxxxx]",
+  "unit": "[míllíšéçóñdš xxxx]",
+  "description": "[Hów lóñg á šóft šíp ór púff wáítš béfóré ít çóúñtš. Lóñgér ígñóréš á bréáth ýóú díd ñót méáñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "alsoCalled": "[Lów Thréšhóld Déláý xxxxxxx]"
+ },
+ {
+  "name": "sip_puff_delay_hard",
+  "label": "[Hárd šíp/púff déláý xxxxxxx]",
+  "unit": "[míllíšéçóñdš xxxx]",
+  "description": "[Hów lóñg á hárd šíp ór púff íš héld béfóré ít çóúñtš áš á lóñg óñé. Thé çlóçk štártš át thé hárd thréšhóld, áñd 0 fíréš át óñçé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "sip_threshold_soft",
+  "label": "[Šóft šíp thréšhóld xxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Šóft thréšhóld fór šípš óñlý. Léávé ít át 0 tó úšé thé šháréd šóft thréšhóld. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "sip_threshold",
+  "label": "[Hárd šíp thréšhóld xxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Hárd thréšhóld fór šípš óñlý. Léávé ít át 0 tó úšé thé šháréd hárd thréšhóld. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "sip_maximum",
+  "label": "[Šíp máxímúm váçúúm xxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Fúll šígñál póíñt fór šípš óñlý. Léávé ít át 0 tó úšé thé šháréd máxímúm. xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "puff_threshold_soft",
+  "label": "[Šóft púff thréšhóld xxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Šóft thréšhóld fór púffš óñlý. Léávé ít át 0 tó úšé thé šháréd šóft thréšhóld. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "puff_threshold",
+  "label": "[Hárd púff thréšhóld xxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Hárd thréšhóld fór púffš óñlý. Léávé ít át 0 tó úšé thé šháréd hárd thréšhóld. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "puff_maximum",
+  "label": "[Púff máxímúm préššúré xxxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Fúll šígñál póíñt fór púffš óñlý. Léávé ít át 0 tó úšé thé šháréd máxímúm. xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "enable_left_side_tube",
+  "label": "[Úšé thé léft šídé túbé xxxxxxxx]",
+  "description": "[Šwápš thé šídé túbéš šó thé léft óñé dóéš módé çóñtról, fór péóplé whó réáçh thé léft móré éášílý. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "lip_position_minimum",
+  "label": "[Líp šéñšór míñímúm xxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Hów fár thé líp pláté háš tó móvé béfóré ít çóúñtš. Ráíšé ít íf ít fíréš whéñ ýóú réšt ýóúr líp. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "lip_position_maximum",
+  "label": "[Líp šéñšór máxímúm xxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Hów fár thé líp pláté móvéš fór á fúll šígñál. Lówér ít íf ýóú çáññót réáçh fúll štréñgth. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "mouse_speed",
+  "label": "[Móúšé špééd xxxx]",
+  "description": "[Hów fášt thé póíñtér móvéš fór thé šámé púšh óñ thé štíçk. xxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "mouse_response_curve",
+  "label": "[Móúšé réšpóñšé çúrvé xxxxxxxx]",
+  "description": "[Hów á púšh túrñš íñtó póíñtér špééd. Párábólíç gívéš fíñé çóñtról ñéár thé çéñtré áñd špééd át thé édgé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "optionLabels": [
+   "[Líñéár xx]",
+   "[Míxéd xx]",
+   "[Párábólíç xxx]"
+  ]
+ },
+ {
+  "name": "volume",
+  "label": "[Špéákér vólúmé xxxxx]",
+  "description": "[Hów lóúd thé QúádŠtíçk'š ówñ béépš áré. xxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "brightness",
+  "label": "[LÉD bríghtñéšš xxxxx]",
+  "description": "[Hów bríght thé módé líghtš óñ thé çášé áré. xxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "enable_rumble",
+  "label": "[Rúmblé xx]"
+ },
+ {
+  "name": "bluetooth_device_mode",
+  "label": "[Blúétóóth dévíçé módé xxxxxxxx]",
+  "description": "[Whát thé QúádŠtíçk prétéñdš tó bé óvér Blúétóóth. xxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "bluetooth_authentication_mode",
+  "label": "[Blúétóóth áúthéñtíçátíóñ módé xxxxxxxxxxx]"
+ },
+ {
+  "name": "bluetooth_connection_mode",
+  "label": "[Blúétóóth çóññéçtíóñ módé xxxxxxxxxx]"
+ },
+ {
+  "name": "bluetooth_remote_address",
+  "label": "[Blúétóóth rémóté áddréšš xxxxxxxxx]"
+ },
+ {
+  "name": "bluetooth_remote_adapter",
+  "label": "[Blúétóóth rémóté ádáptér xxxxxxxxx]"
+ },
+ {
+  "name": "bluetooth_throttle",
+  "label": "[Blúétóóth thróttlé xxxxxxx]",
+  "description": "[Šmálléšt gáp thé QúádŠtíçk léávéš bétwééñ Blúétóóth šéñdš. xxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "digital_out_1",
+  "label": "[Dígítál óútpút 1 xxxxxx]",
+  "description": "[Túrñš óútpút jáçk 1 óñ ór óff. Á módé çáññót çháñgé ít. xxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "digital_out_2",
+  "label": "[Dígítál óútpút 2 xxxxxx]",
+  "description": "[Túrñš óútpút jáçk 2 óñ ór óff. Á módé çáññót çháñgé ít. xxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "digital_out_3",
+  "label": "[Dígítál óútpút 3 xxxxxx]",
+  "description": "[Túrñš óútpút jáçk 3 óñ ór óff. Á módé çáññót çháñgé ít. xxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "digital_out_4",
+  "label": "[Dígítál óútpút 4 xxxxxx]",
+  "description": "[Túrñš óútpút jáçk 4 óñ ór óff. Á módé çáññót çháñgé ít. xxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "enable_swap_inputs",
+  "label": "[Šwáp íñpútš wíth thé šídé túbé xxxxxxxxxxxx]",
+  "description": "[Létš thé šídé túbé šwáp ýóúr íñpútš óvér. xxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "enable_select_files",
+  "label": "[Šéléçt fíléš wíth thé šídé túbé xxxxxxxxxxxx]",
+  "description": "[Létš thé šídé túbé píçk whíçh prófílé fílé íš lóádéd. xxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "[ÚŠB-Á dévíçé módé xxxxxx]",
+  "risk": "[Píçkš whíçh ÚŠB pórt thé QúádŠtíçk áppéárš óñ, áñd ít béátš ÚŠB-Á hóšt módé. Á wróñg válúé çáñ léávé thé QúádŠtíçk úñšééñ bý ýóúr çóñšólé ór çómpútér. Çháñgé ít óñlý óñ ádvíçé fróm QúádŠtíçk šúppórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "enable_usb_a_host",
+  "label": "[ÚŠB-Á hóšt módé xxxxxx]",
+  "description": "[Ñéwér QúádŠtíçkš óñlý. Létš á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt fééd thé ÚŠB 1 áñd ÚŠB 2 íñpútš, úñléšš ÚŠB-Á dévíçé módé íš óñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "alsoCalled": "[ÚŠB-Á Hóšt Módé xxxxxx]"
+ },
+ {
+  "name": "enable_DS3_emulation",
+  "label": "[ÚŠB émúlátíóñ módé xxxxxxx]",
+  "description": "[Whíçh çóñtróllér thé QúádŠtíçk prétéñdš tó bé. Thé çóñšólé háš tó kñów thé óñé ýóú píçk, áñd šómé çhóíçéš hídé thé QúádŠtíçk'š drívé fróm ýóúr çómpútér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "risk": "[Šómé çhóíçéš hídé thé QúádŠtíçk'š fíléš fróm ýóúr çómpútér, šó ýóú çáññót édít á prófílé úñtíl ýóú šét ít báçk. Thé ñúmbérš álšó méáñ dífféréñt thíñgš óñ óldér QúádŠtíçkš, šó á fílé fróm šóméóñé élšé çáñ láñd ýóú óñ á çóñtróllér ýóú díd ñót píçk. Çháñgé ít óñlý óñ ádvíçé fróm QúádŠtíçk šúppórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "alsoCalled": "[Bóót íñ PŠ4 Módé xxxxxx]",
+  "optionLabels": [
+   "[QúádŠtíçk (PÇ áñd PŠ3) xxxxxxxx]",
+   "[DúálŠhóçk 3, ñó ÚŠB drívé xxxxxxxxxx]",
+   "[x360çé, fór á PÇ xxxxxx]",
+   "[Xbóx 360 çóñtróllér xxxxxxx]",
+   "[DúálŠhóçk 4, fór á PŠ4 (QMP'š Bóót íñ PŠ4 Módé) xxxxxxxxxxxxxxxxxx]",
+   "[Ñíñtéñdó Šwítçh Pró Çóñtróllér, ñó ÚŠB drívé xxxxxxxxxxxxxxxxx]",
+   "[DúálŠhóçk 4, ñó ÚŠB drívé xxxxxxxxxx]",
+   "[DúálŠhóçk 4 wíréléšš, ñó ÚŠB drívé xxxxxxxxxxxxx]"
+  ]
+ },
+ {
+  "name": "enable_usb_comm",
+  "label": "[Vóíçé çómmáñdš óvér ÚŠB xxxxxxxxx]",
+  "description": "[Létš vóíçé çómmáñdš árrívé óvér thé ÚŠB çáblé. xxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_1_multiplier_up",
+  "label": "[ÚŠB 1 úp múltíplíér xxxxxxx]",
+  "description": "[Bóóštš úp óñ thé léft štíçk óf á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_1_multiplier_down",
+  "label": "[ÚŠB 1 dówñ múltíplíér xxxxxxxx]",
+  "description": "[Bóóštš dówñ óñ thé léft štíçk óf á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_1_multiplier_left",
+  "label": "[ÚŠB 1 léft múltíplíér xxxxxxxx]",
+  "description": "[Bóóštš léft óñ thé léft štíçk óf á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_1_multiplier_right",
+  "label": "[ÚŠB 1 ríght múltíplíér xxxxxxxx]",
+  "description": "[Bóóštš ríght óñ thé léft štíçk óf á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_2_multiplier_up",
+  "label": "[ÚŠB 2 úp múltíplíér xxxxxxx]",
+  "description": "[Bóóštš úp óñ thé ríght štíçk óf á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_2_multiplier_down",
+  "label": "[ÚŠB 2 dówñ múltíplíér xxxxxxxx]",
+  "description": "[Bóóštš dówñ óñ thé ríght štíçk óf á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_2_multiplier_left",
+  "label": "[ÚŠB 2 léft múltíplíér xxxxxxxx]",
+  "description": "[Bóóštš léft óñ thé ríght štíçk óf á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_2_multiplier_right",
+  "label": "[ÚŠB 2 ríght múltíplíér xxxxxxxx]",
+  "description": "[Bóóštš ríght óñ thé ríght štíçk óf á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_1_dead_zone",
+  "label": "[ÚŠB 1 déád žóñé xxxxxx]",
+  "unit": "[ráw áxíš çóúñtš xxxxxx]",
+  "description": "[Ñéwér QúádŠtíçkš óñlý. Déád žóñé fór á çóñtróllér óñ thé ÚŠB-Á pórt, çóúñtéd íñ ráw áxíš štépš ráthér tháñ pérçéñt. 128 ór móré kíllš thé áxíš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "usb_2_dead_zone",
+  "label": "[ÚŠB 2 déád žóñé xxxxxx]",
+  "unit": "[ráw áxíš çóúñtš xxxxxx]",
+  "description": "[Ñéwér QúádŠtíçkš óñlý, áñd ýóúr QúádŠtíçk ígñóréš ít áñýwáý: bóth štíçkš óñ thé ÚŠB-Á pórt úšé thé ÚŠB 1 déád žóñé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "titan_two",
+  "label": "[Títáñ Twó ádáptér xxxxxx]",
+  "description": "[Ñéwér QúádŠtíçkš óñlý. Téllš thé QúádŠtíçk ít réáçhéš á PŠ4 thróúgh á Títáñ Twó. Túrñ ít óñ óñlý íf ýóú úšé óñé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "alsoCalled": "[Títáñ 2 PŠ4 flág xxxxxx]"
+ },
+ {
+  "name": "watchdog_disable",
+  "label": "[Díšáblé thé wátçhdóg xxxxxxxx]",
+  "risk": "[Thé wátçhdóg réštártš ýóúr QúádŠtíçk íf ít štópš áñšwéríñg. Ñóthíñg réádš thíš šéttíñg, šó tódáý ít dóéš ñóthíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "debug",
+  "label": "[Débúg óútpút lévél xxxxxxx]",
+  "description": "[Túrñš thé QúádŠtíçk'š çóñšólé óútpút óñ whéñ ít íš ábóvé žéró. xxxxxxxxxxxxxxxxxxxxxxxx]"
+ }
+]

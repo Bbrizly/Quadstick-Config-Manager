@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace QuadStick.Format;
 
 // Checks a parsed profile against the format rules.
@@ -63,8 +65,8 @@ public static class Validator
             // per profile. Extras are read and thrown away without a sound.
             if (++profileSheets == 17)
                 issues.Add(new Issue(Severity.Warning, $"A{sheet.StartRow}",
-                    "The device supports 16 modes; it ignores this mode and any after it.",
-                    "Remove modes until there are at most 16."));
+                    Strings.Issue_TheDeviceSupports16Modes,
+                    Strings.Issue_RemoveModesUntilThereAre));
             // The binding loop's own i++ sits after the `continue` it takes
             // when the output cell matches neither an output nor a preference
             // keyword, so a blank or misspelled output costs no slot at all.
@@ -75,8 +77,8 @@ public static class Validator
                 .ToList();
             if (counted.Count > 128)
                 issues.Add(new Issue(Severity.Warning, $"A{counted[128].Row}",
-                    $"This mode has {counted.Count} rows with an output name; the device reads the first 128 and ignores the rest.",
-                    "Trim the mode to 128 rows."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_ThisModeHasCountedCount, counted.Count),
+                    Strings.Issue_TrimTheModeTo128));
 
             ValidateChannel(sheet, issues);
 
@@ -142,16 +144,16 @@ public static class Validator
             {
                 issues.Add(new Issue(Severity.Error, $"C{b.Row}",
                     IsWordValuedPreference(b.Output)
-                        ? $"\"{valueInC}\" is a word. \"{b.Output}\" takes a word on the settings sheet, but a mode row's value is read as a number, so the device sets it to 0 here."
-                        : $"\"{valueInC}\" is not a whole number. \"{b.Output}\" is a device setting; this cell is its value.",
-                    "Replace it with a whole number, e.g. \"50\"."));
+                        ? string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueInCIsAWordB, valueInC, b.Output)
+                        : string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueInCIsNotAWhole, valueInC, b.Output),
+                    Strings.Issue_ReplaceItWithAWhole));
                 rejected = true;
             }
             else if (TooBigForDevice(parsedInC))
             {
                 issues.Add(new Issue(Severity.Error, $"C{b.Row}",
-                    $"\"{valueInC}\" is too big for the device to read. {DeviceIntegerRange}",
-                    "Use a value inside that range."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueInCIsTooBigFor, valueInC, DeviceIntegerRange),
+                    Strings.Issue_UseAValueInsideThat));
                 rejected = true;
             }
             // A mode override reads its value from column C, so that is the
@@ -168,13 +170,13 @@ public static class Validator
         if (b.Function.Length > 0)
         {
             issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                $"\"{b.Output}\" is a device setting and the device reads its value from column C, which is empty here. Column B is skipped, so this row may set the value to 0.",
-                $"Put the value in column C: \"{b.Output},,{b.Function}\"."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_BOutputIsADevice, b.Output),
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_PutTheValueInColumn, b.Output, b.Function)));
             return;
         }
         issues.Add(new Issue(Severity.Warning, $"C{b.Row}",
-            $"\"{b.Output}\" is a device setting but no value follows it, so the device sets it to 0.",
-            "Put the value in column C."));
+            string.Format(CultureInfo.CurrentCulture, Strings.Issue_BOutputIsADevice2, b.Output),
+            Strings.Issue_PutTheValueInColumn2));
     }
 
     // A Preferences sheet (or a standalone prefs.csv) holds "name,value" rows:
@@ -209,22 +211,22 @@ public static class Validator
                 // read loop, so the setting does nothing at all.
                 var near = PreferenceCatalog.Closest(b.Output);
                 issues.Add(new Issue(Severity.Warning, $"A{b.Row}",
-                    $"The QuadStick has no preference called \"{b.Output}\", so it skips this row and the setting does nothing. It is saved exactly as you wrote it.",
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_TheQuadStickHasNoPreference, b.Output),
                     near is not null
-                        ? $"Did you mean \"{near}\"? (If your QuadStick's firmware is newer than this app, it may know \"{b.Output}\" and this warning is safe to ignore.)"
-                        : "Check the spelling against the preferences your device already has. (Firmware newer than this app will have names it has never heard of.)"));
+                        ? string.Format(CultureInfo.CurrentCulture, Strings.Issue_DidYouMeanNearIf, near, b.Output)
+                        : Strings.Issue_CheckTheSpellingAgainstThe));
             }
 
             if (value.Length == 0)
             {
                 if (valueInC != null)
                     issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                        $"On a Preferences sheet the device reads \"{b.Output}\"'s value from column B, but B is empty and the value sits in column C. (A mode sheet uses column C; a Preferences sheet uses column B.)",
-                        $"Move the value into column B: \"{b.Output},{valueInC}\"."));
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_OnAPreferencesSheetThe, b.Output),
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_MoveTheValueIntoColumn, b.Output, valueInC)));
                 else
                     issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                        $"\"{b.Output}\" has no value in column B, so the device reads it as 0.",
-                        "Put the preference's value in column B."));
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_BOutputHasNoValue, b.Output),
+                        Strings.Issue_PutThePreferenceSValue));
                 continue;
             }
 
@@ -238,8 +240,8 @@ public static class Validator
             if (!isNumber && !IsWordValuedPreference(b.Output))
             {
                 issues.Add(new Issue(Severity.Error, $"B{b.Row}",
-                    $"\"{value}\" in column B is the value of \"{b.Output}\" but is not a whole number.",
-                    "Most preferences take a whole number, e.g. \"50\"."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueInColumnBIs, value, b.Output),
+                    Strings.Issue_MostPreferencesTakeAWhole));
                 rejected = true;
             }
             // Only where the device really does use atoi. A bluetooth remote
@@ -249,8 +251,8 @@ public static class Validator
             else if (isNumber && !IsWordValuedPreference(b.Output) && TooBigForDevice(parsed))
             {
                 issues.Add(new Issue(Severity.Error, $"B{b.Row}",
-                    $"\"{value}\" is too big for the device to read. {DeviceIntegerRange}",
-                    "Use a value inside that range."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueIsTooBigFor, value, DeviceIntegerRange),
+                    Strings.Issue_UseAValueInsideThat));
                 rejected = true;
             }
 
@@ -287,12 +289,12 @@ public static class Validator
                     return; // not a number: the whole-number error above covers it
                 if (def.Minimum is int min && n < min)
                     issues.Add(new Issue(Severity.Warning, cell,
-                        $"\"{value}\" is below {min}, the lowest value the official manager offers for \"{def.Name}\". The device still takes it, but it is outside the tested range.",
-                        $"Use {min} or more."));
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueIsBelowMinThe, value, min, def.Name),
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_UseMinOrMore, min)));
                 else if (def.Maximum is int max && n > max)
                     issues.Add(new Issue(Severity.Warning, cell,
-                        $"\"{value}\" is above {max}, the highest value the official manager offers for \"{def.Name}\". The device still takes it, but it is outside the tested range.",
-                        $"Use {max} or less."));
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueIsAboveMaxThe, value, max, def.Name),
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_UseMaxOrLess, max)));
                 return;
 
             case PreferenceEditor.Toggle:
@@ -300,8 +302,8 @@ public static class Validator
                 // A toggle is read as a number, so a stray whole number is
                 // coerced rather than misread. The file still installs.
                 issues.Add(new Issue(Severity.Warning, cell,
-                    $"\"{value}\" is not an on/off value for \"{def.Name}\". The device reads it as a number, so anything other than 0 counts as on.",
-                    "Use 1 for on or 0 for off."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueIsNotAnOn, value, def.Name),
+                    Strings.Issue_Use1ForOnOr));
                 return;
 
             case PreferenceEditor.Choice:
@@ -315,11 +317,11 @@ public static class Validator
                 // refusing to install it would be the app overruling the device.
                 issues.Add(def.FirmwareMayAddMore
                     ? new Issue(Severity.Warning, cell,
-                        $"\"{value}\" is not a value this app knows for \"{def.Name}\". It is written to the file untouched, and a newer QuadStick may well read it.",
-                        $"The values it knows are: {string.Join(", ", def.Options)}.")
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueIsNotAValue, value, def.Name),
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_TheValuesItKnowsAre, string.Join(", ", def.Options)))
                     : new Issue(Severity.Error, cell,
-                        $"\"{value}\" is not one of the values \"{def.Name}\" accepts.",
-                        $"Use one of: {string.Join(", ", def.Options)}."));
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_ValueIsNotOneOf, value, def.Name),
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_UseOneOfStringJoin, string.Join(", ", def.Options))));
                 return;
 
             default: // Text: nothing is proven about its range, so nothing is claimed
@@ -368,8 +370,8 @@ public static class Validator
             if (!numbers.TryGetValue(upper, out var hi)) continue;
             if ((long)lo.Value + gap <= hi.Value) continue;
             issues.Add(new Issue(Severity.Warning, $"{valueColumn}{hi.Row}",
-                $"\"{upper}\" is {hi.Value} and \"{lower}\" is {lo.Value}. The two need at least {gap} between them, or the settings run into each other.",
-                $"Raise \"{upper}\" to {(long)lo.Value + gap} or more, or lower \"{lower}\"."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_UpperIsHiValueAnd, upper, hi.Value, lower, lo.Value, gap),
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_RaiseUpperToLongLo, upper, (long)lo.Value + gap, lower)));
         }
 
         foreach (var (soft, hard, max, direction) in SipPuffTrios)
@@ -397,14 +399,14 @@ public static class Validator
         // sip_puff_ row, and telling somebody to change a row their file does
         // not have is worse than saying nothing.
         issues.Add(new Issue(Severity.Warning, $"{valueColumn}{hi.Row}",
-            $"The {direction} thresholds run into each other: \"{hi.Name}\" is {hi.Value} and \"{lo.Name}\" is {lo.Value}. "
+            string.Format(CultureInfo.CurrentCulture, Strings.Issue_TheDirectionThresholdsRunInto, direction, hi.Name, hi.Value, lo.Name, lo.Value)
             + (lo.Value == hi.Value
-                ? "Two equal thresholds make the device divide by zero every time it reads the tube."
-                : "The two need at least 2 between them.")
+                ? Strings.Issue_TwoEqualThresholdsMakeThe
+                : Strings.Issue_TheTwoNeedAtLeast)
             + (hi.Name != upperName || lo.Name != lowerName
-                ? $" (A {direction} setting left at 0 uses the shared sip_puff_ value instead.)"
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Issue_ADirectionSettingLeftAt, direction)
                 : ""),
-            $"Raise \"{hi.Name}\" to {(long)lo.Value + 2} or more, or lower \"{lo.Name}\"."));
+            string.Format(CultureInfo.CurrentCulture, Strings.Issue_RaiseHiNameToLong, hi.Name, (long)lo.Value + 2, lo.Name)));
     }
 
     // The value a direction really ends up with, and the row that supplies it:
@@ -461,15 +463,15 @@ public static class Validator
     static readonly Dictionary<string, string> IgnoredByTheDevice = new(StringComparer.Ordinal)
     {
         ["enable_auto_zero"] =
-            "the firmware sets it back to 0 after every load, and the code that used it is commented out",
+            Strings.Issue_TheFirmwareSetsItBack,
         ["usb_2_dead_zone"] =
-            "nothing in the firmware ever reads it",
+            Strings.Issue_NothingInTheFirmwareEver,
         ["joystick_warning"] =
-            "the tone it used to trigger is commented out",
+            Strings.Issue_TheToneItUsedTo,
         ["joystick_alarm"] =
-            "the tone it used to trigger is commented out",
+            Strings.Issue_TheToneItUsedTo,
         ["watchdog_disable"] =
-            "it reaches the keyword table and the settings array and nothing else, so the two minute watchdog runs either way",
+            Strings.Issue_ItReachesTheKeywordTable,
     };
 
     // Only when the value asks for something. Writing 0 lines up with what the
@@ -480,8 +482,8 @@ public static class Validator
         if (!int.TryParse(value.Trim(), out var n) || n == 0) return;
 
         issues.Add(new Issue(Severity.Warning, cell,
-            $"\"{name}\" does nothing on current firmware: {why}. The row is saved exactly as you wrote it.",
-            "Remove the row, or leave it for an older QuadStick that still answers to it."));
+            string.Format(CultureInfo.CurrentCulture, Strings.Issue_NameDoesNothingOnCurrent, name, why),
+            Strings.Issue_RemoveTheRowOrLeave));
     }
 
     // One setting, one value, two firmwares that act on it differently. Both
@@ -495,11 +497,9 @@ public static class Validator
     static readonly Dictionary<(string Name, int Value), string> MeaningChangedIn2373 = new()
     {
         [("enable_DS3_emulation", 5)] =
-            "5 was \"PC only, no joystick\" until 2025 and is the Nintendo Switch Pro Controller now, "
-            + "so an updated QuadStick shows up to the console or PC as a different controller entirely",
+            Strings.Issue_5WasPCOnlyNo,
         [("joystick_deflection_minimum", 0)] =
-            "0 used to mean no dead zone at all, and firmware from 2025 substitutes 129 raw counts instead, "
-            + "so the stick gains a small dead zone this file never asked for",
+            Strings.Issue_0UsedToMeanNo,
     };
 
     static void WarnIfTheFirmwaresDisagree(string name, string value, string cell, List<Issue> issues)
@@ -508,9 +508,8 @@ public static class Validator
         if (!MeaningChangedIn2373.TryGetValue((name, n), out var what)) return;
 
         issues.Add(new Issue(Severity.Warning, cell,
-            $"\"{name}\" set to {n} means something different depending on the QuadStick's firmware: {what}. "
-            + "The row is saved exactly as you wrote it.",
-            "Check which firmware your QuadStick runs before relying on this row."));
+            string.Format(CultureInfo.CurrentCulture, Strings.Issue_NameSetToNMeans, name, n, what),
+            Strings.Issue_CheckWhichFirmwareYourQuadStick));
     }
 
     // A computer can only reach the QuadStick's files while the USB emulation
@@ -524,7 +523,7 @@ public static class Validator
     {
         [1] = "DualShock 3",
         [5] = "Nintendo Switch Pro Controller",
-        [6] = "DualShock 4 with no USB drive",
+        [6] = Strings.Issue_DualShock4WithNoUSB,
         [7] = "DualShock 4 wireless",
     };
 
@@ -543,14 +542,11 @@ public static class Validator
 
         issues.Add(decidesTheBootMode
             ? new Issue(Severity.Error, cell,
-                $"USB emulation mode {mode} ({what}) does not give a computer access to the QuadStick's drive, "
-                + "and this file is one the device boots with. Installing it would leave no way to edit any profile back, "
-                + "and recovery is a physical force-erase.",
-                "Use mode 0, 2, 3 or 4 here, and set the other mode in a game profile instead.")
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_USBEmulationModeModeWhat, mode, what),
+                Strings.Issue_UseMode023)
             : new Issue(Severity.Warning, cell,
-                $"USB emulation mode {mode} ({what}) does not give a computer access to the QuadStick's drive, "
-                + "so the files disappear from the computer while this profile is running.",
-                "Expected for this console. Switch the QuadStick back to another profile to edit its files again."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_USBEmulationModeModeWhat2, mode, what),
+                Strings.Issue_ExpectedForThisConsoleSwitch));
     }
 
     // The device reads a value with atoi, which is 32 bits wide. long.TryParse
@@ -558,9 +554,7 @@ public static class Validator
     // passed validation and then arrived on the device as a different number.
     static bool TooBigForDevice(long value) => value is < int.MinValue or > int.MaxValue;
 
-    const string DeviceIntegerRange =
-        "The device reads a value with a 32 bit atoi, so anything outside "
-        + "-2147483648 to 2147483647 arrives as a different number.";
+    static string DeviceIntegerRange => Strings.Issue_TheDeviceReadsAValue;
 
     static void ValidateFileName(ProfileDocument doc, List<Issue> issues)
     {
@@ -569,8 +563,8 @@ public static class Validator
         if (string.IsNullOrWhiteSpace(name))
         {
             issues.Add(new Issue(Severity.Error, cell,
-                "The cell under the first sheet's keyword must contain the CSV filename.",
-                "Set it to a name like \"mygame.csv\"."));
+                Strings.Issue_TheCellUnderTheFirst,
+                Strings.Issue_SetItToAName));
             return;
         }
         if (!name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)
@@ -583,8 +577,8 @@ public static class Validator
             || name.Any(char.IsControl))
         {
             issues.Add(new Issue(Severity.Error, cell,
-                $"\"{name}\" is not a valid configuration filename.",
-                "Use the form \"something.csv\" with no spaces or special characters."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_NameIsNotAValid, name),
+                Strings.Issue_UseTheFormSomethingCsv));
         }
         // Windows resolves these to devices whatever extension follows, so the
         // write appears to work and the file reads back empty. The install said
@@ -592,33 +586,32 @@ public static class Validator
         // at the one thing the user can actually change.
         if (SafeFileName.IsReservedOnWindows(name))
             issues.Add(new Issue(Severity.Error, cell,
-                $"\"{name}\" is a name Windows reserves for hardware, so it cannot be a file there.",
-                "Pick another name, for example \"game.csv\"."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_NameIsANameWindows, name),
+                Strings.Issue_PickAnotherNameForExample));
         // The device keeps each file name in a 31 character slot and reads past
         // the end of a longer one, so the profile cannot be opened and the name
         // after it in the device's own list reads as garbage as well. An error,
         // not a warning: the file installs and then never loads.
         if (SafeFileName.IsTooLongForDevice(name))
             issues.Add(new Issue(Severity.Error, cell,
-                $"\"{name}\" is too long, so the QuadStick will not be able to load it. "
-                + $"A profile name can be {SafeFileName.MaxDeviceFileNameLength} characters at most, counting \".csv\", and this one is {name.Length}.",
-                $"Shorten it to {SafeFileName.MaxDeviceFileNameLength} characters or fewer, for example \"game.csv\"."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_NameIsTooLongSo, name, SafeFileName.MaxDeviceFileNameLength, name.Length),
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength, SafeFileName.MaxDeviceFileNameLength)));
         if (string.Equals(name, "prefs.csv", StringComparison.OrdinalIgnoreCase))
             issues.Add(new Issue(Severity.Warning, cell,
-                "prefs.csv is the device preferences file, not a game configuration.",
-                "Use a different name unless you intend to change preferences."));
+                Strings.Issue_PrefsCsvIsTheDevice,
+                Strings.Issue_UseADifferentNameUnless));
         if (doc.IsDefaultConfig)
             issues.Add(new Issue(Severity.Warning, cell,
-                "This edits default.csv, the device's fallback file that is designed to stay unchanged. A wrong USB emulation value in it can disable flash-drive access, and recovery requires a physical force-erase.",
-                "Prefer a new filename. The installer will ask for explicit confirmation before writing default.csv."));
+                Strings.Issue_ThisEditsDefaultCsvThe,
+                Strings.Issue_PreferANewFilenameThe));
     }
 
     static void ValidateChannel(ModeSheet sheet, List<Issue> issues)
     {
         if (sheet.Channel.Length > 0 && !Vocab.Channels.Contains(sheet.Channel))
             issues.Add(new Issue(Severity.Warning, $"C{sheet.StartRow + 2}",
-                $"The device does not match \"{sheet.Channel}\" as a channel, so this mode connects over USB instead.",
-                "Use \"usb\", \"bluetooth\", \"both\", or \"none\", in lower case."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_TheDeviceDoesNotMatch, sheet.Channel),
+                Strings.Issue_UseUsbBluetoothBothOr));
 
         // "both" only exists in firmware 2373, where the channel is a bitmask.
         // Older firmware does not have the word, falls back to usb, and then
@@ -627,9 +620,8 @@ public static class Validator
         // out loud: the symptom is "the wireless half of my controller stopped".
         if (sheet.Channel == "both")
             issues.Add(new Issue(Severity.Warning, $"C{sheet.StartRow + 2}",
-                "\"both\" needs firmware from 2025 or newer. A QuadStick on older firmware does not know the word, "
-                + "runs this mode over USB only, and says nothing about the Bluetooth half.",
-                "Keep it if your QuadStick is up to date. If it is not, use \"usb\" or \"bluetooth\" and pick one."));
+                Strings.Issue_BothNeedsFirmwareFrom2025,
+                Strings.Issue_KeepItIfYourQuadStick));
 
         WarnAboutMouseAndKeyboardOffUsb(sheet, issues);
     }
@@ -654,11 +646,10 @@ public static class Validator
         if (rows.Count == 0) return;
 
         issues.Add(new Issue(Severity.Warning, $"C{sheet.StartRow + 2}",
-            $"This mode is on \"{sheet.Channel}\", and it has {rows.Count} mouse or keyboard "
-            + $"{(rows.Count == 1 ? "row" : "rows")}, the first on row {rows[0].Row}. Firmware from 2025 or newer only "
-            + "sends mouse and keyboard over USB when the channel includes USB, so over a cable those rows do nothing "
-            + "while the gamepad half of the mode keeps working. Older firmware sent them anyway.",
-            "Use \"both\" so the mode works on either connection, or \"usb\" if it is only ever plugged in."));
+            string.Format(CultureInfo.CurrentCulture,
+                rows.Count == 1 ? Strings.Issue_BluetoothOnlyKeyboardRow : Strings.Issue_BluetoothOnlyKeyboardRows,
+                sheet.Channel, rows.Count, rows[0].Row),
+            Strings.Issue_UseBothSoTheMode));
     }
 
     // reset_quadstick restarts the device. force_reset waits 300 ms and then,
@@ -674,13 +665,11 @@ public static class Validator
         var withPush = b.Inputs.Contains("push", StringComparer.Ordinal);
         issues.Add(new Issue(Severity.Warning, $"A{b.Row}",
             withPush
-                ? "\"reset_quadstick\" restarts the QuadStick, and this row fires it from the mouthpiece push switch. "
-                  + "If push is still held when the restart lands, the device goes into its firmware loader and stops "
-                  + "working as a controller until it is unplugged and plugged back in."
-                : "\"reset_quadstick\" restarts the QuadStick. Whatever you are playing loses the controller for a few seconds.",
+                ? Strings.Issue_ResetQuadstickRestartsTheQuadStick
+                : Strings.Issue_ResetQuadstickRestartsTheQuadStick2,
             withPush
-                ? "Fire it from something other than push, or from a combination push cannot hold on its own."
-                : "Keep it if that is what you want, and prefer an input that is hard to trigger by accident."));
+                ? Strings.Issue_FireItFromSomethingOther
+                : Strings.Issue_KeepItIfThatIs));
     }
 
     static void ValidateOutput(Binding b, List<Issue> issues)
@@ -695,11 +684,11 @@ public static class Validator
             // pick. Point at the name instead.
             issues.Add(b.ActionName.Length > 0
                 ? new Issue(Severity.Warning, $"A{b.Row}",
-                    $"\"{b.ActionName}\" has no button behind it yet, so this row does nothing on the QuadStick.",
-                    $"Open Custom output names and pick the button \"{b.ActionName}\" stands for.")
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_BActionNameHasNoButton, b.ActionName),
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_OpenCustomOutputNamesAnd, b.ActionName))
                 : new Issue(Severity.Warning, $"A{b.Row}",
-                    "This row has no output name. The device skips it and both official converters delete it, so the row does nothing.",
-                    "Pick the game button or action this row controls, e.g. \"x\" or \"left_trigger\"."));
+                    Strings.Issue_ThisRowHasNoOutput,
+                    Strings.Issue_PickTheGameButtonOr));
             return;
         }
         if (Vocab.IsKnownOutput(b.Output)) return;
@@ -713,11 +702,11 @@ public static class Validator
         // their QuadStick already answers to.
         issues.Add(Vocab.LegacyOutputs.Contains(b.Output)
             ? new Issue(Severity.Warning, $"A{b.Row}",
-                $"\"{b.Output}\" is a legacy output name: the firmware knows it but the current official list does not include it.",
-                "It should still work; prefer a current name if one exists, e.g. \"gyroscope_z_cw\".")
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_BOutputIsALegacy, b.Output),
+                Strings.Issue_ItShouldStillWorkPrefer)
             : new Issue(Severity.Warning, $"A{b.Row}",
-                $"\"{b.Output}\" is not a documented output name (PlayStation or XBox convention).",
-                "Pick an output from the editor's list, e.g. \"x\", \"left_trigger\", or \"mouse_up\"."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_BOutputIsNotA, b.Output),
+                Strings.Issue_PickAnOutputFromThe));
     }
 
     static void ValidateFunction(Binding b, List<Issue> issues)
@@ -728,8 +717,8 @@ public static class Validator
             // Firmware: an empty (or unrecognized) function cell falls back
             // to code 0, which is "normal". Legal, just implicit.
             issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                "No output function; the device treats a blank as \"normal\".",
-                "Set it to \"normal\" to make that explicit."));
+                Strings.Issue_NoOutputFunctionTheDevice,
+                Strings.Issue_SetItToNormalTo));
             return;
         }
         if (!Vocab.FunctionArity.TryGetValue(parts[0], out var arity))
@@ -742,9 +731,9 @@ public static class Validator
                 .FirstOrDefault(f => b.Function.StartsWith(f, StringComparison.Ordinal));
             issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
                 prefix is null
-                    ? $"\"{parts[0]}\" is not a documented output function, so the device falls back to \"normal\" for this row."
-                    : $"\"{parts[0]}\" is not a documented output function. It starts with \"{prefix}\", and the device stops matching there, so this row acts as \"{prefix}\".",
-                $"Use one of: {string.Join(", ", Vocab.FunctionArity.Keys)}."));
+                    ? string.Format(CultureInfo.CurrentCulture, Strings.Issue_Parts0IsNotA, parts[0])
+                    : string.Format(CultureInfo.CurrentCulture, Strings.Issue_Parts0IsNotA2, parts[0], prefix, prefix),
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_UseOneOfStringJoin2, string.Join(", ", Vocab.FunctionArity.Keys))));
             return;
         }
         // Every parameter is optional per the user manual: "tap 500",
@@ -753,8 +742,8 @@ public static class Validator
         var args = parts.Skip(1).ToArray();
         if (args.Length > arity.Max)
             issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                $"\"{parts[0]}\" takes at most {arity.Max} parameter(s), found {args.Length}. The device reads the ones it knows and drops the rest.",
-                "Remove the extra values."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_Parts0TakesAtMost, parts[0], arity.Max, args.Length),
+                Strings.Issue_RemoveTheExtraValues));
         // The device converts parameters with atoi: whole, non-negative
         // integers. The first parameter is stored in 14 bits (max 16383).
         // A decimal or negative value doesn't fail on the device, it just
@@ -767,23 +756,58 @@ public static class Validator
                 if (double.TryParse(args[i], System.Globalization.NumberStyles.Float,
                                     System.Globalization.CultureInfo.InvariantCulture, out _))
                     issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                        $"\"{args[i]}\" has a decimal part. The device reads whole numbers only, so it acts as \"{args[i].Split('.')[0]}\".",
-                        "Use a whole number."));
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_ArgsIHasADecimal, args[i], args[i].Split('.')[0]),
+                        Strings.Issue_UseAWholeNumber));
                 else
                     // atoi on a word gives 0. Wrong timing, not a broken file.
                     issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                        $"\"{args[i]}\" is not a number. Parameters to \"{parts[0]}\" must be whole numbers, and the device reads this one as 0.",
-                        "Replace it with a whole number, e.g. \"repeat 4\"."));
+                        string.Format(CultureInfo.CurrentCulture, Strings.Issue_ArgsIIsNotA, args[i], parts[0]),
+                        Strings.Issue_ReplaceItWithAWhole2));
             }
             else if (n < 0)
                 issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                    $"\"{args[i]}\" is negative; the device does not handle negative parameters predictably.",
-                    "Use a value of 0 or more."));
-            else if (i == 0 && n > 16383)
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_ArgsIIsNegativeThe, args[i]),
+                    Strings.Issue_UseAValueOf0));
+            else if (i == 0 && n > FunctionParameters.Ceiling)
                 issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                    $"\"{args[i]}\" is larger than 16383, the device's limit for the first parameter; it overflows into the second parameter.",
-                    "Use a value up to 16383."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_ArgsIIsLargerThan, args[i], FunctionParameters.Ceiling),
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_UseAValueUpTo, FunctionParameters.Ceiling)));
+            else
+                WarnIfOutOfRange(b, parts[0], args[i], i, n, issues);
         }
+    }
+
+    // Both numbers live in 14 bits, and a percent is scaled with
+    // `value * 1023 / 100`, so 100 is the top of the device's own scale. A
+    // number past either bound is read, just not as the number that was typed:
+    // a warning, never a rewrite. Nothing here fires for a function whose
+    // parameters this app cannot vouch for.
+    static void WarnIfOutOfRange(
+        Binding b, string function, string text, int index, long n, List<Issue> issues)
+    {
+        var spec = FunctionParameters.For(function);
+        if (index >= spec.Count) return;
+        var p = spec[index];
+        if (n >= p.Minimum && n <= p.Maximum) return;
+
+        // 0 is how a file says "leave this one out", and the device substitutes
+        // its own default for it. Saying that is worth more than calling it low.
+        if (n == 0)
+        {
+            issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_FunctionReads0ForP, function, p.Label.ToLowerInvariant(), p.Default),
+                string.Format(CultureInfo.CurrentCulture, Strings.Issue_LeaveItOutToMean, p.Label.ToLowerInvariant(), p.Minimum, p.Maximum)));
+            return;
+        }
+
+        issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
+            n > p.Maximum
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Issue_PLabelForFunctionIs, p.Label, function, text, p.Maximum)
+                  + (p.Unit == "percent"
+                      ? Strings.Issue_APercentOver100Is
+                      : string.Format(CultureInfo.CurrentCulture, Strings.Issue_TheDeviceStoresItIn, n % (FunctionParameters.Ceiling + 1)))
+                : string.Format(CultureInfo.CurrentCulture, Strings.Issue_PLabelForFunctionIs2, p.Label, function, text, p.Minimum),
+            $"Use {p.Minimum} to {p.Maximum}. {p.What}"));
     }
 
     static void ValidateInputs(Binding b, List<Issue> issues)
@@ -808,15 +832,15 @@ public static class Validator
             int col = i < b.InputCols.Count ? b.InputCols[i] : 2;
             if (Vocab.LegacyInputs.Contains(input))
                 issues.Add(new Issue(Severity.Warning, $"{(char)('A' + col)}{b.Row}",
-                    $"\"{input}\" is a legacy input name: the firmware knows it but the current official list does not include it.",
-                    "It should still work; prefer a current name if one exists."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_InputIsALegacyInput, input),
+                    Strings.Issue_ItShouldStillWorkPrefer2));
             else
                 // Usually a note somebody typed beside a binding ("Aim",
                 // "Comments"). The device does not match the keyword and moves
                 // on, so the binding still works and the file still installs.
                 issues.Add(new Issue(Severity.Warning, $"{(char)('A' + col)}{b.Row}",
-                    $"\"{input}\" is not a documented input name, so the device ignores it.",
-                    "Pick an input from the Inputs dropdown list, e.g. \"mp_left_sip\" or \"lip\", or move the text to the notes column.",
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_InputIsNotADocumented, input),
+                    Strings.Issue_PickAnInputFromThe,
                     IssueKind.UnknownInput));
         }
     }

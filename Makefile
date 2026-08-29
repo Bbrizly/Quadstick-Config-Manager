@@ -1,4 +1,4 @@
-# make test | run | gallery | build | package | release VERSION=x.y.z | clean
+# make test | run | gallery | build | package | pseudo | release VERSION=x.y.z | clean
 
 SLN := QuadStick.sln
 APP := src/QuadStick.App/QuadStick.App.csproj
@@ -6,7 +6,7 @@ DIST := dist
 # The Mac this is run on: builds the bundle you can actually launch to test.
 HOSTRID := osx-$(shell uname -m | sed 's/x86_64/x64/')
 
-.PHONY: all test run gallery build package release clean
+.PHONY: all test run gallery build package pseudo release clean
 
 all: test build
 
@@ -18,16 +18,19 @@ run:
 
 # The appearance workbench: every button, text style, field and colour token on
 # one page, with sliders and hex boxes that move the real app while it runs.
-# Copy the numbers it prints into Style.cs or Palette.cs.
 gallery:
 	dotnet run --project $(APP) -- --gallery
 
 build:
 	dotnet build $(SLN) -c Release --nologo
 
+# Rebuild the pseudo language after adding or changing any UI/domain text.
+pseudo:
+	python3 tools/strings/resx.py pseudo src/QuadStick.App/Strings.resx
+	python3 tools/strings/resx.py pseudo src/QuadStick.Core/Strings.resx
+	python3 tools/strings/resx.py prefs-pseudo src/QuadStick.Core/Preferences/Resources/preferences.json
+
 # Build the macOS .app locally to smoke-test the bundle before releasing.
-# CI (.github/workflows/build.yml) builds the full Windows/macOS/Linux matrix;
-# there is no need to cross-build platforms you can't run here.
 package: build
 	@mkdir -p $(DIST)
 	dotnet publish $(APP) -c Release -r $(HOSTRID) --self-contained true -o $(DIST)/pub --nologo
@@ -35,9 +38,7 @@ package: build
 	scripts/make-macos-app.sh $(DIST)/pub 0.0.0-dev "$(DIST)/Quadstick Config Manager.app"
 	@echo "Open '$(DIST)/Quadstick Config Manager.app' to test it."
 
-# Ship a release: verify, tag, push. That is the whole process. Pushing the
-# tag triggers CI, which builds every download and publishes the release.
-#   make release VERSION=1.2.3
+# Ship a release: verify, tag, push. Pushing the tag triggers CI.
 release:
 	@echo "$(VERSION)" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$$' \
 		|| { echo "Set a semver VERSION, e.g. make release VERSION=1.2.3"; exit 1; }

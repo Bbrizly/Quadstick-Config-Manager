@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -18,7 +19,7 @@ namespace QuadStick.App;
 // under the profile's path (AppSettings.CustomNames).
 public partial class MainWindow
 {
-    const string CustomNamesLabel = "Custom output names";
+    static string CustomNamesLabel => Strings.Names_CustomOutputNames;
 
     // "Shoot" and "shoot" are one name to whoever reads them, so the table
     // matches names the way ProfileFile does, ignoring case.
@@ -71,8 +72,8 @@ public partial class MainWindow
     {
         var header = ListGrid(CustomNameColumns);
         header.Children.Add(At(RowNumberHeaderSpacer(), 0));
-        header.Children.Add(At(Swatch("Output (real button)", OutputTint), 1));
-        header.Children.Add(At(Swatch("Your name for it", FunctionTint), 2));
+        header.Children.Add(At(Swatch(Strings.Names_OutputRealButton, OutputTint), 1));
+        header.Children.Add(At(Swatch(Strings.Names_YourNameForIt, FunctionTint), 2));
         RowsPanel.Children.Add(header);
 
         var rows = CustomNameRows();
@@ -82,9 +83,7 @@ public partial class MainWindow
         if (rows.Count == 0)
             RowsPanel.Children.Add(new TextBlock
             {
-                Text = "No names yet. Click \"Add row\", pick an output, and type your own word for it. "
-                     + "That word then shows up at the top of every output picker, under Custom. "
-                     + "The file still holds the real button, so the QuadStick works the same.",
+                Text = Strings.Names_NoNamesYetClickAdd,
                 TextWrapping = TextWrapping.Wrap, MaxWidth = 640,
                 FontSize = Size("BodySize"), Classes = { "muted" }, Margin = new Thickness(4, 12),
             });
@@ -110,7 +109,7 @@ public partial class MainWindow
         // Humanize, not TokenLabel: the raw/Xbox word toggle belongs to Device
         // View, and this table must not change wording when someone flips it.
         p.Children.Add(At(PickerCell(wrapper, token, OutputSuggestions, Humanize,
-            $"Output that {name} stands for", OutputTint, OutputCatalog.Catalog, "an output",
+            string.Format(CultureInfo.CurrentCulture, Strings.Names_OutputThatNameStandsFor, name), OutputTint, OutputCatalog.Catalog, Strings.Names_AnOutput,
             picked => RetargetCustomName(name, picked)), 1));
 
         var box = new TextBox
@@ -119,7 +118,7 @@ public partial class MainWindow
             FontSize = Size("BodySize"), VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetName(box, token.Length > 0
-            ? $"Your name for {Humanize(token)}" : "Your name for this output");
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Names_YourNameForHumanizeToken, Humanize(token)) : Strings.Names_YourNameForThisOutput);
         void Commit() { if (!_rebuildingRows) RenameCustomName(name, box.Text ?? ""); }
         box.LostFocus += (_, _) => Commit();
         box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
@@ -130,15 +129,15 @@ public partial class MainWindow
             Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error"),
             VerticalAlignment = VerticalAlignment.Center,
         };
-        ToolTip.SetTip(del, "Remove this name");
-        AutomationProperties.SetName(del, $"Remove the name {name}");
+        ToolTip.SetTip(del, Strings.Names_RemoveThisName);
+        AutomationProperties.SetName(del, string.Format(CultureInfo.CurrentCulture, Strings.Names_RemoveTheNameName, name));
         del.Click += (_, _) => DeleteCustomName(name);
         p.Children.Add(At(del, 3));
 
         int used = UsedBy(name);
         p.Children.Add(At(new TextBlock
         {
-            Text = used == 0 ? "not used yet" : $"on {used} mapping{(used == 1 ? "" : "s")}",
+            Text = used == 0 ? Strings.Names_NotUsedYet : $"on {used} mapping{(used == 1 ? "" : "s")}",
             FontSize = Size("SmallSize"), Classes = { "muted" },
             VerticalAlignment = VerticalAlignment.Center,
         }, 4));
@@ -151,14 +150,14 @@ public partial class MainWindow
 
     void AddCustomName()
     {
-        if (_file is null) { Status("Open or create a profile first."); return; }
+        if (_file is null) { Status(Strings.Names_OpenOrCreateAProfile); return; }
         var taken = CustomNameRows().Select(r => r.Name).ToHashSet(NameComparer);
-        var name = "New name";
-        for (int i = 2; taken.Contains(name); i++) name = $"New name {i}";
+        var name = Strings.Names_NewName;
+        for (int i = 2; taken.Contains(name); i++) name = string.Format(CultureInfo.CurrentCulture, Strings.Names_NewNameI, i);
         _drafts[name] = "";
         PersistDrafts();
         RebuildRows();
-        Status("Pick the output, then type your own name for it.");
+        Status(Strings.Names_PickTheOutputThenType);
     }
 
     void RenameCustomName(string oldName, string typed)
@@ -170,11 +169,11 @@ public partial class MainWindow
         // name in another case is a real edit, so the clash check skips the
         // row being renamed.
         if (name.Length == 0 || name.Length > ProfileFile.MaxActionName)
-        { RebuildRows(); Status($"A name has to be 1 to {ProfileFile.MaxActionName} characters.", StatusKind.Warning); return; }
+        { RebuildRows(); Status(string.Format(CultureInfo.CurrentCulture, Strings.Names_ANameHasToBe, ProfileFile.MaxActionName), StatusKind.Warning); return; }
         if (!ProfileFile.IsLegalActionName(name))
-        { RebuildRows(); Status($"\"{name}\" is already what the QuadStick calls one of its own buttons. Pick a different word.", StatusKind.Warning); return; }
+        { RebuildRows(); Status(string.Format(CultureInfo.CurrentCulture, Strings.Names_NameIsAlreadyWhatThe, name), StatusKind.Warning); return; }
         if (CustomNameRows().Any(r => NameComparer.Equals(r.Name, name) && !NameComparer.Equals(r.Name, oldName)))
-        { RebuildRows(); Status($"This profile already has a name called \"{name}\".", StatusKind.Warning); return; }
+        { RebuildRows(); Status(string.Format(CultureInfo.CurrentCulture, Strings.Names_ThisProfileAlreadyHasA, name), StatusKind.Warning); return; }
 
         _file?.RenameAction(oldName, name); // no-op when no mapping carries it
         if (_drafts.Remove(oldName, out var token)) _drafts[name] = token;
@@ -188,7 +187,7 @@ public partial class MainWindow
         _file?.RetargetAction(name, token); // moves every mapping carrying the name
         if (_drafts.ContainsKey(name)) _drafts[name] = token;
         PersistDrafts();
-        CustomNamesChanged($"{name} is now {Humanize(token)}.");
+        CustomNamesChanged(string.Format(CultureInfo.CurrentCulture, Strings.Names_NameIsNowHumanizeToken, name, Humanize(token)));
     }
 
     void DeleteCustomName(string name)
@@ -198,8 +197,9 @@ public partial class MainWindow
         _drafts.Remove(name);
         PersistDrafts();
         CustomNamesChanged(used == 0
-            ? $"Removed {name}."
-            : $"Removed {name}. {used} mapping{(used == 1 ? "" : "s")} now show the real button.");
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Names_Removed, name)
+            : string.Format(CultureInfo.CurrentCulture, Strings.Names_Removed, name)
+              + " " + Plural.Of(used, "Names_MappingNowReal"));
     }
 
     // A name can sit on rows in any mode, so the whole editor is redrawn, not

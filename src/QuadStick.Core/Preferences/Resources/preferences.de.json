@@ -1,0 +1,330 @@
+[
+ {
+  "name": "joystick_deflection_minimum",
+  "label": "Joystick-Totzone (Mitte)",
+  "description": "Totzone in der Mitte des Analogsticks, als Prozent des vollen Wegs. Setzen Sie sie hoch genug, um eine wandernde Maus oder einen wandernden Joystick zu stoppen. Größere Zahlen machen den Stick um die Mitte herum unempfindlicher. Das ist etwas anderes als die D-Pad-Ringe. Auf Firmware 2373 bedeutet ein Wert von 0 nicht mehr keine Totzone: Das Gerät setzt stattdessen 129 Rohwerte ein, und zwar bei jedem Scan neu, sodass dieser Wert über den beim Laden der Datei ermittelten Wert gewinnt."
+ },
+ {
+  "name": "joystick_deflection_maximum",
+  "label": "Joystick-Vollausschlag",
+  "description": "Wie weit der Stick bewegt werden muss, um ein volles Signal zu geben. QMP nennt das den Bewegungsbereich des Joysticks, und es ist das Nächste, was das Gerät an einer Empfindlichkeitsregelung hat: Größere Zahlen bedeuten mehr Weg für dieselbe Ausgabe, sodass sich der Joystick unempfindlicher anfühlt. QMP verwendet den größten seiner vier Richtungsregler."
+ },
+ {
+  "name": "deflection_multiplier_up",
+  "label": "Ausschlagfaktor Oben",
+  "unit": "Prozent",
+  "description": "Skaliert die Richtung Oben so, dass sie am selben Punkt wie die anderen Richtungen ein volles Signal erreicht. QMP berechnet das als größten Richtungsregler geteilt durch den für Oben, daher bedeutet ein größerer Faktor, dass Oben mit weniger Weg ein volles Signal erreicht und sich empfindlicher anfühlt."
+ },
+ {
+  "name": "deflection_multiplier_down",
+  "label": "Ausschlagfaktor Unten",
+  "unit": "Prozent",
+  "description": "Skaliert die Richtung Unten so, dass sie am selben Punkt wie die anderen Richtungen ein volles Signal erreicht. QMP berechnet das als größten Richtungsregler geteilt durch den für Unten, daher bedeutet ein größerer Faktor, dass Unten mit weniger Weg ein volles Signal erreicht und sich empfindlicher anfühlt."
+ },
+ {
+  "name": "deflection_multiplier_left",
+  "label": "Ausschlagfaktor Links",
+  "unit": "Prozent",
+  "description": "Skaliert die Richtung Links so, dass sie am selben Punkt wie die anderen Richtungen ein volles Signal erreicht. QMP berechnet das als größten Richtungsregler geteilt durch den für Links, daher bedeutet ein größerer Faktor, dass Links mit weniger Weg ein volles Signal erreicht und sich empfindlicher anfühlt."
+ },
+ {
+  "name": "deflection_multiplier_right",
+  "label": "Ausschlagfaktor Rechts",
+  "unit": "Prozent",
+  "description": "Skaliert die Richtung Rechts so, dass sie am selben Punkt wie die anderen Richtungen ein volles Signal erreicht. QMP berechnet das als größten Richtungsregler geteilt durch den für Rechts, daher bedeutet ein größerer Faktor, dass Rechts mit weniger Weg ein volles Signal erreicht und sich empfindlicher anfühlt."
+ },
+ {
+  "name": "joystick_D_Pad_inner",
+  "label": "Innerer D-Pad-Ring",
+  "unit": "Prozent",
+  "description": "Prozent des Vollausschlags, gemessen von der Mitte, an dem der innere D-Pad-Ring beginnt. Er löst erst nach einer kurzen Verzögerung aus, sodass Sie ihn auf dem Weg nach außen durchqueren können, ohne ihn auszulösen. Bei der Hälfte dieses Werts gilt eine Richtung nicht mehr als gehalten."
+ },
+ {
+  "name": "joystick_D_Pad_outer",
+  "label": "Äußerer D-Pad-Ring",
+  "unit": "Prozent",
+  "description": "Prozent des Vollausschlags, gemessen von der Mitte, an dem der äußere D-Pad-Ring beginnt. Jenseits dieser Linie löst eine Richtung sofort aus."
+ },
+ {
+  "name": "joystick_dead_zone_shape",
+  "label": "Runde Totzone",
+  "description": "Verwenden Sie eine runde Totzone in der Mitte statt einer eckigen."
+ },
+ {
+  "name": "anti_dead_zone",
+  "label": "Anti-Totzone"
+ },
+ {
+  "name": "joystick_warning",
+  "label": "Joystick-Warnausschlag",
+  "description": "Ausschlag, ab dem Firmware 1476 den Benutzer warnte, den Stick zu weit zu bewegen. Firmware 2373 akzeptiert den Namen zwar noch, ignoriert ihn aber: die Prüfung ist auskommentiert."
+ },
+ {
+  "name": "joystick_alarm",
+  "label": "Joystick-Alarmausschlag",
+  "description": "Ausschlag, ab dem Firmware 1476 einen Alarmton auslöste. Firmware 2373 akzeptiert den Namen zwar noch, ignoriert ihn aber: die Prüfung ist auskommentiert."
+ },
+ {
+  "name": "enable_auto_zero",
+  "label": "Sensoren automatisch nullen",
+  "description": "Firmware 2373 ignoriert das. Sie setzt die Einstellung nach jedem Laden einer Konfiguration zwangsweise auf 0 zurück, und beide Stellen, die sie sonst lesen würden, sind auskommentiert, daher ändert das Einschalten nichts, weder in einer Mode-Zeile noch auf dem Gerät."
+ },
+ {
+  "name": "sip_puff_threshold_soft",
+  "label": "Sanfter Sip/Puff-Schwellenwert",
+  "unit": "Prozent",
+  "description": "Druck- oder Vakuumpegel, ab dem ein sanfter Sip oder Puff beginnt."
+ },
+ {
+  "name": "sip_puff_threshold",
+  "label": "Harter Sip/Puff-Schwellenwert",
+  "unit": "Prozent",
+  "description": "Druck, bei dem die Ausgabe ausgelöst wird. QMP zeigt dies als den oberen Sip-und-Puff-Schwellenwert; sip_puff_threshold_soft ist der untere."
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "Sip/Puff-Maximaldruck",
+  "unit": "Prozent",
+  "description": "Maximaldruck, der auf ein volles Signal skaliert wird."
+ },
+ {
+  "name": "sip_puff_delay_soft",
+  "label": "Sanfte Sip/Puff-Verzögerung",
+  "unit": "Millisekunden",
+  "description": "Sanfte Sip- und Puff-Signale werden nach dieser kurzen Verzögerung erkannt. QMP zeigt dies als die Low Threshold Delay."
+ },
+ {
+  "name": "sip_puff_delay_hard",
+  "label": "Harte Sip/Puff-Verzögerung",
+  "unit": "Millisekunden",
+  "description": "Wie lange ein harter Sip oder Puff gehalten wird, bevor er als langes Signal zählt. Die Uhr startet, sobald der harte Schwellenwert überschritten wird, nicht wenn sich der Druck erstmals ändert. 0 bedeutet nicht unbestimmt, sondern dass das lange Signal sofort auslöst."
+ },
+ {
+  "name": "sip_threshold_soft",
+  "label": "Sanfter Sip-Schwellenwert",
+  "unit": "Prozent",
+  "description": "Vakuumpegel, ab dem ein sanfter Sip beginnt, seit Firmware 2373. Bei 0 gilt weiterhin der sanfte Sip/Puff-Schwellenwert für Sips; jeder andere Wert ersetzt ihn nur für Sips."
+ },
+ {
+  "name": "sip_threshold",
+  "label": "Harter Sip-Schwellenwert",
+  "unit": "Prozent",
+  "description": "Vakuumpegel, der einen harten Sip auslöst, seit Firmware 2373. Bei 0 gilt weiterhin der harte Sip/Puff-Schwellenwert für Sips; jeder andere Wert ersetzt ihn nur für Sips."
+ },
+ {
+  "name": "sip_maximum",
+  "label": "Sip-Maximalvakuum",
+  "unit": "Prozent",
+  "description": "Vakuum, das bei einem Sip auf ein volles Signal skaliert, seit Firmware 2373. Bei 0 gilt weiterhin das Sip/Puff-Maximum für Sips; jeder andere Wert ersetzt es nur für Sips."
+ },
+ {
+  "name": "puff_threshold_soft",
+  "label": "Sanfter Puff-Schwellenwert",
+  "unit": "Prozent",
+  "description": "Druck, ab dem ein sanfter Puff beginnt, seit Firmware 2373. Bei 0 gilt weiterhin der sanfte Sip/Puff-Schwellenwert für Puffs; jeder andere Wert ersetzt ihn nur für Puffs."
+ },
+ {
+  "name": "puff_threshold",
+  "label": "Harter Puff-Schwellenwert",
+  "unit": "Prozent",
+  "description": "Druck, der einen harten Puff auslöst, seit Firmware 2373. Bei 0 gilt weiterhin der harte Sip/Puff-Schwellenwert für Puffs; jeder andere Wert ersetzt ihn nur für Puffs."
+ },
+ {
+  "name": "puff_maximum",
+  "label": "Puff-Maximaldruck",
+  "unit": "Prozent",
+  "description": "Druck, der bei einem Puff auf ein volles Signal skaliert, seit Firmware 2373. Bei 0 gilt weiterhin das Sip/Puff-Maximum für Puffs; jeder andere Wert ersetzt es nur für Puffs."
+ },
+ {
+  "name": "enable_left_side_tube",
+  "label": "Linken Seitenschlauch verwenden",
+  "description": "Verwendet den linken Schlauch zur Modussteuerung, indem er mit dem rechten Schlauch getauscht wird."
+ },
+ {
+  "name": "lip_position_minimum",
+  "label": "Lip-Sensor-Minimum",
+  "unit": "Prozent",
+  "description": "Prozent der Lip-Sensor-Position, ab der das Signal aktiviert wird."
+ },
+ {
+  "name": "lip_position_maximum",
+  "label": "Lip-Sensor-Maximum",
+  "unit": "Prozent",
+  "description": "Prozent der Lip-Sensor-Bewegung, der ein volles Signal ergibt."
+ },
+ {
+  "name": "mouse_speed",
+  "label": "Mausgeschwindigkeit",
+  "description": "Mausgeschwindigkeit relativ zur Joystickbewegung."
+ },
+ {
+  "name": "mouse_response_curve",
+  "label": "Maus-Ansprechkurve",
+  "description": "0 ist linear, 1 ist gemischt, 2 ist parabolisch.",
+  "optionLabels": [
+   "Linear",
+   "Gemischt",
+   "Parabolisch"
+  ]
+ },
+ {
+  "name": "volume",
+  "label": "Lautsprecherlautstärke",
+  "description": "Lautsprecherlautstärke."
+ },
+ {
+  "name": "brightness",
+  "label": "LED-Helligkeit",
+  "description": "LED-Helligkeit."
+ },
+ {
+  "name": "enable_rumble",
+  "label": "Vibration"
+ },
+ {
+  "name": "bluetooth_device_mode",
+  "label": "Bluetooth-Gerätemodus",
+  "description": "Als was sich der QuadStick über Bluetooth ausgibt."
+ },
+ {
+  "name": "bluetooth_authentication_mode",
+  "label": "Bluetooth-Authentifizierungsmodus"
+ },
+ {
+  "name": "bluetooth_connection_mode",
+  "label": "Bluetooth-Verbindungsmodus"
+ },
+ {
+  "name": "bluetooth_remote_address",
+  "label": "Bluetooth-Remoteadresse"
+ },
+ {
+  "name": "bluetooth_remote_adapter",
+  "label": "Bluetooth-Remoteadapter"
+ },
+ {
+  "name": "bluetooth_throttle",
+  "label": "Bluetooth-Drosselung",
+  "description": "Das Gerät überspringt eine Bluetooth-Übertragung, wenn seit der letzten nicht genug Zeit vergangen ist."
+ },
+ {
+  "name": "digital_out_1",
+  "label": "Digitalausgang 1",
+  "description": "Das Gerät erkennt diesen Namen als Ausgabe, bevor er die Einstellungstabelle erreicht, daher ist es nur eine Geräteeinstellung, nie eine Übersteuerung durch einen Modus."
+ },
+ {
+  "name": "digital_out_2",
+  "label": "Digitalausgang 2",
+  "description": "Das Gerät erkennt diesen Namen als Ausgabe, bevor er die Einstellungstabelle erreicht, daher ist es nur eine Geräteeinstellung, nie eine Übersteuerung durch einen Modus."
+ },
+ {
+  "name": "digital_out_3",
+  "label": "Digitalausgang 3",
+  "description": "Das Gerät erkennt diesen Namen als Ausgabe, bevor er die Einstellungstabelle erreicht, daher ist es nur eine Geräteeinstellung, nie eine Übersteuerung durch einen Modus."
+ },
+ {
+  "name": "digital_out_4",
+  "label": "Digitalausgang 4",
+  "description": "Das Gerät erkennt diesen Namen als Ausgabe, bevor er die Einstellungstabelle erreicht, daher ist es nur eine Geräteeinstellung, nie eine Übersteuerung durch einen Modus."
+ },
+ {
+  "name": "enable_swap_inputs",
+  "label": "Eingänge mit dem Seitenschlauch tauschen",
+  "description": "Tauscht die Eingänge mithilfe des Seitenschlauchs."
+ },
+ {
+  "name": "enable_select_files",
+  "label": "Dateien mit dem Seitenschlauch auswählen",
+  "description": "Wählt eine Datei mithilfe des Seitenschlauchs aus."
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "USB-A-Gerätemodus",
+  "risk": "Das legt fest, über welchen USB-Port sich der QuadStick meldet. Das Gerät baut USB ab und neu auf, wenn sich das ändert, daher kann ein falscher Wert dazu führen, dass eine Konsole oder ein Computer ihn nicht sieht. Es hat außerdem Vorrang vor enable_usb_a_host: Solange dies gesetzt ist, wird der USB-A-Host-Stack abgeschaltet, egal was die Host-Einstellung sagt. Ändern Sie das nur auf Anraten des QuadStick-Supports."
+ },
+ {
+  "name": "enable_usb_a_host",
+  "label": "USB-A-Hostmodus",
+  "description": "Seit Firmware 2373. Wenn dies ein- und USB-A-Gerätemodus ausgeschaltet ist, betreibt das Gerät einen USB-Host am USB-A-Port, sodass ein dort eingesteckter Controller die usb_1-Eingabekanäle speist. Schalten Sie es aus, oder schalten Sie USB-A-Gerätemodus ein, und der Host wird abgebaut. USB-A-Gerätemodus gewinnt. QMP zeigt dies als USB-A Host Mode."
+ },
+ {
+  "name": "enable_DS3_emulation",
+  "label": "USB-Emulationsmodus",
+  "description": "Als welches USB-Gerät sich der QuadStick ausgibt. Auf Firmware 2373: 0 QuadStick nativ, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 für eine PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 ohne USB-Laufwerk, 7 reines DS4 kabellos. Wert 5 bedeutete auf Firmware 1476 nur PC, kein Joystick, daher verhält sich eine Datei mit dem Wert 5 nach einem Geräte-Update völlig anders. Die Modi 1, 5, 6 und 7 bieten überhaupt kein USB-Laufwerk an, daher sieht ein Computer die Dateien des QuadStick nicht, solange einer davon läuft. QMPs Boot in PS4 Mode ist Wert 4: Firmware 2373 Joystick.c:625 nennt diesen Wert in einem eigenen Kommentar \"boot in PS4 mode\".",
+  "risk": "Der Name sagt DS3, aber das Gerät liest ihn als USB-Emulationsmodus mit acht nummerierten Werten, nicht als Ein/Aus-Schalter. Was 5 bedeutet, hat sich zwischen Firmware 1476 und 2373 geändert, und eine Zahl, die die laufende Firmware nicht kennt, lässt das Gerät auf einer Emulation stehen, die niemand wollte. QCM behält, was eingegeben wird, und lehnt nichts ab, weil ein Wert, der für eine Firmware falsch ist, für eine andere richtig ist. Ändern Sie das nur auf Anraten des QuadStick-Supports.",
+  "optionLabels": [
+   "QuadStick (PC und PS3)",
+   "DualShock 3, kein USB-Laufwerk",
+   "x360ce, für einen PC",
+   "Xbox 360-Controller",
+   "DualShock 4, für eine PS4 (QMPs Boot in PS4 Mode)",
+   "Nintendo Switch Pro Controller, kein USB-Laufwerk",
+   "DualShock 4, kein USB-Laufwerk",
+   "DualShock 4 kabellos, kein USB-Laufwerk"
+  ]
+ },
+ {
+  "name": "enable_usb_comm",
+  "label": "Sprachbefehle über USB",
+  "description": "Aktiviert Sprachbefehle über USB."
+ },
+ {
+  "name": "usb_1_multiplier_up",
+  "label": "USB-1-Faktor Oben"
+ },
+ {
+  "name": "usb_1_multiplier_down",
+  "label": "USB-1-Faktor Unten"
+ },
+ {
+  "name": "usb_1_multiplier_left",
+  "label": "USB-1-Faktor Links"
+ },
+ {
+  "name": "usb_1_multiplier_right",
+  "label": "USB-1-Faktor Rechts"
+ },
+ {
+  "name": "usb_2_multiplier_up",
+  "label": "USB-2-Faktor Oben"
+ },
+ {
+  "name": "usb_2_multiplier_down",
+  "label": "USB-2-Faktor Unten"
+ },
+ {
+  "name": "usb_2_multiplier_left",
+  "label": "USB-2-Faktor Links"
+ },
+ {
+  "name": "usb_2_multiplier_right",
+  "label": "USB-2-Faktor Rechts"
+ },
+ {
+  "name": "usb_1_dead_zone",
+  "label": "USB-1-Totzone",
+  "unit": "rohe Achszählwerte",
+  "description": "Seit Firmware 2373. Totzone in der Mitte für einen Controller, der am USB-A-Host-Port eingesteckt ist, gezählt in rohen Schritten des zentrierten Achsbytes dieses Controllers, nicht in Prozent. Unter diesem Wert liest die Achse 0; darüber wird der Wert abgezogen, sodass der Weg bei null beginnt, und das Ergebnis wird auf plus oder minus 100 begrenzt. Bei 0 wird die Achse unverändert durchgereicht. Ein zentriertes Achsbyte erreicht in jede Richtung nur etwa 127, daher tötet 128 oder mehr die Achse ab."
+ },
+ {
+  "name": "usb_2_dead_zone",
+  "label": "USB-2-Totzone",
+  "unit": "rohe Achszählwerte",
+  "description": "Seit Firmware 2373, aber das Gerät ignoriert es. Der Name ist gültig und Dateien führen ihn, doch nichts in der Firmware liest den Wert: Jede USB-Host-Achse verwendet die USB-1-Totzone. Ihn in einer Mode-Zeile zu setzen bewirkt ebenfalls nichts."
+ },
+ {
+  "name": "titan_two",
+  "label": "Titan-Two-Adapter",
+  "description": "Seit Firmware 2373. Teilt dem Gerät mit, dass es eine PS4 über einen Titan Two erreicht statt direkt an die Konsole angeschlossen zu sein. Es überspringt dann den DS4-Authentifizierungs-Handshake und stoppt den periodischen erzwungenen USB-Neuverbindungsaufbau. QMP zeigt dies als das Titan 2 PS4 Flag."
+ },
+ {
+  "name": "watchdog_disable",
+  "label": "Watchdog deaktivieren",
+  "risk": "Das Gerät betreibt einen zweiminütigen Hardware-Watchdog, der es neu startet, wenn es nicht mehr reagiert. Weder Firmware 1476 noch 2373 liest diese Einstellung, daher bewirkt sie bei beiden nichts, und was eine spätere Firmware damit tun könnte, ist unbekannt."
+ },
+ {
+  "name": "debug",
+  "label": "Debug-Ausgabestufe",
+  "description": "Das Gerät schaltet seine Konsole ein, wenn dieser Wert über null liegt."
+ }
+]

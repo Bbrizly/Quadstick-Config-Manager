@@ -1,6 +1,8 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
@@ -104,8 +106,8 @@ public partial class MainWindow : Window
             status: (msg, warn) => Dispatcher.UIThread.Post(() =>
                 Status(msg, warn ? StatusKind.Warning : StatusKind.Info)),
             shareConfirm: () => Dispatcher.UIThread.InvokeAsync(() => ConfirmAsync(
-                "Share this sheet?",
-                "Anyone with this link can view this sheet (read only). Turn on link sharing and copy?")));
+                Strings.Main_ShareThisSheet,
+                Strings.Main_AnyoneWithThisLinkCan)));
         return _driveBackup;
     }
 
@@ -171,7 +173,7 @@ public partial class MainWindow : Window
                         // would report backup as used by anyone who saved once
                         // with Drive connected, working or not.
                         Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.DriveBackup);
-                        Status("Backed up to Google Drive.", StatusKind.Ready);
+                        Status(Strings.Main_BackedUpToGoogleDrive, StatusKind.Ready);
                         // The push writes the Drive link that draws a card's
                         // "on Google Drive" line. Home may already be on screen
                         // by the time it lands, so redraw it.
@@ -180,7 +182,7 @@ public partial class MainWindow : Window
             }
             catch (Exception ex)
             {
-                Dispatcher.UIThread.Post(() => Status($"Backup error: {ex.Message}", StatusKind.Warning));
+                Dispatcher.UIThread.Post(() => Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_BackupErrorExMessage, ex.Message), StatusKind.Warning));
             }
         });
     }
@@ -196,7 +198,7 @@ public partial class MainWindow : Window
         try { online = ProfileFile.Load(onlineCsv); } catch { }
         if (online is null || online.Document.Sheets.Count == 0)
         {
-            Status("The online copy of this profile is empty or unreadable, so your version on this computer was kept. Your next save replaces the sheet.", StatusKind.Warning);
+            Status(Strings.Main_TheOnlineCopyOfThis, StatusKind.Warning);
             return;
         }
 
@@ -213,11 +215,11 @@ public partial class MainWindow : Window
             ProfileFile.WriteAtomic(path, onlineCsv);
             if (_savePath == path)
                 OpenInEditor(online, path, ProfileSource.Drive);
-            Status("Loaded the online version of this profile. Your previous local copy is in the rescue folder.", StatusKind.Warning);
+            Status(Strings.Main_LoadedTheOnlineVersionOf, StatusKind.Warning);
         }
         catch (Exception ex)
         {
-            Status($"Could not load the online version: {ex.Message}", StatusKind.Error);
+            Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotLoadTheOnline, ex.Message), StatusKind.Error);
         }
     }
 
@@ -274,16 +276,16 @@ public partial class MainWindow : Window
         HomeDriveButton.IsVisible = GoogleAuth.IsConfigured;
         if (!GoogleAuth.IsConfigured)
         {
-            SetDriveButton("Backup off", "Error", enabled: false,
-                "Google Drive backup is not available in this build.");
+            SetDriveButton(Strings.Main_BackupOff, "Error", enabled: false,
+                Strings.Main_GoogleDriveBackupIsNot);
             return;
         }
         if (DriveConnected)
-            SetDriveButton("Backing up to Drive", "Success", enabled: true,
-                "Backing up to Google Drive. Click to import your other profiles.");
+            SetDriveButton(Strings.Main_BackingUpToDrive, "Success", enabled: true,
+                Strings.Main_BackingUpToGoogleDrive);
         else
-            SetDriveButton("Sign in to back up", "Warning", enabled: true,
-                "Click to sign in and back up your profiles to Google Drive.");
+            SetDriveButton(Strings.Main_SignInToBackUp, "Warning", enabled: true,
+                Strings.Main_ClickToSignInAnd);
     }
 
     void SetDriveButton(string text, string colorToken, bool enabled, string help)
@@ -311,8 +313,8 @@ public partial class MainWindow : Window
         if (!_driveArmed)
         {
             _driveArmed = true;
-            SetDriveButton("Press again to sign in", "Warning", enabled: true,
-                "Press again to open Google sign-in.");
+            SetDriveButton(Strings.Main_PressAgainToSignIn, "Warning", enabled: true,
+                Strings.Main_PressAgainToOpenGoogle);
             _driveArmTimer ??= new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
             _driveArmTimer.Tick -= DisarmDrive;
             _driveArmTimer.Tick += DisarmDrive;
@@ -340,7 +342,7 @@ public partial class MainWindow : Window
     // everything (restore-all from onboarding); false starts empty (cherry-pick).
     public async Task ShowDrivePickerAsync(bool preCheck)
     {
-        if (!await ReadyForDriveAsync("Import from Google Drive")) return;
+        if (!await ReadyForDriveAsync(Strings.Main_ImportFromGoogleDrive)) return;
         await new DrivePickerWindow(this, preCheck).ShowDialog(this);
     }
 
@@ -358,8 +360,30 @@ public partial class MainWindow : Window
 
     // The community list is fetched from here and nowhere else. Startup and a
     // home refresh never touch it, so the app opens with no network at all.
-    public async Task ShowCommunityProfilesAsync() =>
-        await new CommunityProfilesWindow(this).ShowDialog(this);
+    // Built once and kept. The catalog it downloaded is the reason: coming back
+    // to the page should not be another wait on quadstick.com.
+    CommunityProfilesView? _community;
+
+    internal CommunityProfilesView CommunityView =>
+        _community ??= new CommunityProfilesView(this);
+
+    /// <summary>Test seam: host a view built with fake HTTP handlers on the
+    /// Community page and show it, so a test drives the page the shell shows
+    /// rather than a control floating outside the window.</summary>
+    internal void HostCommunityViewForPreview(CommunityProfilesView view)
+    {
+        _community = view;
+        CommunityPageBody.Children.Clear();
+        ShowCommunityPage();
+    }
+
+    public void ShowCommunityPage()
+    {
+        _file = null; // no profile is open on a page; a stale dirty file re-asks "leave?" on the next action
+        if (CommunityPageBody.Children.Count == 0) CommunityPageBody.Children.Add(CommunityView);
+        ShowPage(CommunityPage, ShellCommunityButton);
+        CommunityView.Start();
+    }
 
     // Managing what is already on the QuadStick. Everything it does is file
     // work on a mounted drive; nothing here talks to the device any other way.
@@ -376,7 +400,7 @@ public partial class MainWindow : Window
     internal void OpenDeviceProfile(ProfileFile file)
     {
         OpenInEditor(file, null, ProfileSource.Device);
-        Status("Opened from your QuadStick. Save keeps a copy in your library; use Install to put changes back on the device.", StatusKind.Warning);
+        Status(Strings.Main_OpenedFromYourQuadStickSave, StatusKind.Warning);
     }
 
     // The picker reaches back through these. Backup() is non-null here:
@@ -407,19 +431,19 @@ public partial class MainWindow : Window
     // Offered right after a connect, the new-machine moment. Public wrapper
     // because ConfirmAsync is private (like ConfirmResetAsync).
     public Task<bool> ConfirmRestoreAfterConnectAsync() => ConfirmAsync(
-        "Restore your profiles?",
-        "Copy your backed up profiles from Google Drive to this computer now?");
+        Strings.Main_RestoreYourProfiles,
+        Strings.Main_CopyYourBackedUpProfiles);
 
     // The two sharing actions, one pair everywhere: the editor's Share flyout
     // and each home card's context menu. path is null for the open editor,
     // a real path for a home card.
     MenuFlyout ShareMenu(string? path)
     {
-        var copy = new MenuItem { Header = "Copy share link" };
-        AutomationProperties.SetName(copy, "Copy a link to this profile's Google Sheet");
+        var copy = new MenuItem { Header = Strings.Main_CopyShareLink };
+        AutomationProperties.SetName(copy, Strings.Main_CopyALinkToThis);
         copy.Click += async (_, _) => await CopyShareLinkAsync(path);
-        var open = new MenuItem { Header = "Open in Google Sheets" };
-        AutomationProperties.SetName(open, "Open this profile's Google Sheet in your browser");
+        var open = new MenuItem { Header = Strings.Main_OpenInGoogleSheets };
+        AutomationProperties.SetName(open, Strings.Main_OpenThisProfileSGoogle);
         open.Click += async (_, _) => await OpenInSheetsAsync(path);
         return new MenuFlyout { Items = { copy, open } };
     }
@@ -457,7 +481,7 @@ public partial class MainWindow : Window
     internal async Task CopyShareLinkAsync(string? path)
     {
         Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.ShareLink);
-        if (!await ReadyForDriveAsync("Copy share link", needsSave: path is null && _savePath is null)) return;
+        if (!await ReadyForDriveAsync(Strings.Main_CopyShareLink, needsSave: path is null && _savePath is null)) return;
 
         string csvText;
         if (path is null)
@@ -472,7 +496,7 @@ public partial class MainWindow : Window
             try { csvText = File.ReadAllText(path); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
-                Status($"Could not read {BareName(Path.GetFileName(path))}: {ex.Message}", StatusKind.Error);
+                Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotReadBareNamePath, BareName(Path.GetFileName(path)), ex.Message), StatusKind.Error);
                 return;
             }
         }
@@ -484,7 +508,7 @@ public partial class MainWindow : Window
 
         // A share now writes one tab per mode and colours the new ones, so it
         // is several requests, and the window looked idle for all of them.
-        Status("Putting this profile in Google Sheets...", StatusKind.Info);
+        Status(Strings.Main_PuttingThisProfileInGoogle, StatusKind.Info);
         ShareLinkResult result;
         try { result = await Backup()!.GetShareLinkAsync(path, csvText); }
         catch (Exception ex)
@@ -492,7 +516,7 @@ public partial class MainWindow : Window
             // Google answering in a shape the client did not expect escaped to
             // the crash guard, which swallows it. The status was left reading
             // "Putting this profile in Google Sheets..." for good.
-            Status($"Could not share this profile: {ex.Message}", StatusKind.Error);
+            Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotShareThisProfile, ex.Message), StatusKind.Error);
             return;
         }
 
@@ -526,14 +550,14 @@ public partial class MainWindow : Window
     // link first, which creates it.
     async Task OpenInSheetsAsync(string? path)
     {
-        if (!await ReadyForDriveAsync("Open in Google Sheets",
+        if (!await ReadyForDriveAsync(Strings.Main_OpenInGoogleSheets,
             needsSave: path is null && _savePath is null)) return;
 
         if (path is null)
         {
             if (_savePath is null)
             {
-                Status("Save this profile first, then copy a share link to create its sheet.", StatusKind.Info);
+                Status(Strings.Main_SaveThisProfileFirstThen, StatusKind.Info);
                 return;
             }
             path = _savePath;
@@ -542,7 +566,7 @@ public partial class MainWindow : Window
         var url = Backup()!.LinkedSheetUrl(path);
         if (url is null)
         {
-            Status("This profile has no Google Sheet yet. Use Copy share link first, which creates it.", StatusKind.Info);
+            Status(Strings.Main_ThisProfileHasNoGoogle, StatusKind.Info);
             return;
         }
         await Launcher.LaunchUriAsync(new Uri(url));
@@ -685,9 +709,10 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
+        FlowDirection = Localization.Direction;
         InitializeComponent();
         var v = typeof(MainWindow).Assembly.GetName().Version;
-        HomeVersionText.Text = $"v{v?.Major}.{v?.Minor}.{v?.Build} \u00b7 MIT \u00b7 not affiliated with QuadStick";
+        HomeVersionText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_VVMajorVMinor, v?.Major, v?.Minor, v?.Build);
 
         if (_settings.RememberWindow)
         {
@@ -721,7 +746,7 @@ public partial class MainWindow : Window
         HomeOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
         HomeAgentButton.Click += (_, _) => ShowAgent();
         AgentButton.Click += (_, _) => ShowAgent(changing: true);
-        HomeCommunityButton.Click += async (_, _) => await ShowCommunityProfilesAsync();
+        HomeCommunityButton.Click += (_, _) => ShowCommunityPage();
         HomeDeviceFilesButton.Click += async (_, _) => await ShowDeviceFilesAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
@@ -733,14 +758,11 @@ public partial class MainWindow : Window
         ShellHomeButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
         // The mark goes home too. Same guard, so unsaved work still asks first.
         ShellBrandButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) ShowHome(); };
-        ShellNewButton.Click += async (_, _) => { if (await ConfirmLeaveAsync()) NewFromTemplate(); };
-        ShellOpenButton.Click += async (_, _) => await GuardedAsync(OpenAsync);
-        // These two can open a profile over the one being edited, and the shell
-        // is the first place they were ever reachable from the editor.
+        // Both leave the editor, so both ask about unsaved work first.
         ShellDeviceButton.Click += async (_, _)
-            => { if (await ConfirmLeaveAsync()) await ShowDeviceFilesAsync(); };
+            => { if (await ConfirmLeaveAsync()) await ShowDevicePageAsync(); };
         ShellCommunityButton.Click += async (_, _)
-            => { if (await ConfirmLeaveAsync()) await ShowCommunityProfilesAsync(); };
+            => { if (await ConfirmLeaveAsync()) ShowCommunityPage(); };
 
         // Empty-library state offers the same three actions as the Start
         // cards above, so an empty library is never a dead end.
@@ -805,16 +827,10 @@ public partial class MainWindow : Window
 
         // Plain-language explainers, shown as dismissable popups so the answer
         // is one click away and never clutters the editing surface.
-        ModeHelpButton.Click += (_, _) => ShowInfoFlyout(ModeHelpButton, "What is a mode?",
-            "A mode is one full layout of your inputs. A profile can hold several and you switch "
-            + "between them while playing, for example a walking layout and a driving layout. To "
-            + "switch modes in the game, sip or puff the side tube, or map increment_mode / "
-            + "decrement_mode to an input.\n\n"
-            + "Most profiles have just one mode, so this list often shows a single entry. That is normal.");
-        DeviceHelpButton.Click += (_, _) => ShowInfoFlyout(DeviceHelpButton, "Using device view",
-            "Click any part of the QuadStick to see and change what it does in this mode. The number "
-            + "on each part is how many game buttons it presses. Parts your model does not have are "
-            + "dimmed.\n\n" + ModelDescription);
+        ModeHelpButton.Click += (_, _) => ShowInfoFlyout(ModeHelpButton, Strings.Main_WhatIsAMode,
+            Strings.Main_AModeIsOneFull);
+        DeviceHelpButton.Click += (_, _) => ShowInfoFlyout(DeviceHelpButton, Strings.Main_UsingDeviceView,
+            Strings.Main_ClickAnyPartOfThe + ModelDescription);
 
         ProblemsToggle.Click += (_, _) => ToggleProblems();
 
@@ -830,7 +846,7 @@ public partial class MainWindow : Window
             if (tb is { Text.Length: > 0 } && Clipboard is { } cb)
             {
                 await cb.SetTextAsync(tb.Text);
-                Status("Problem copied to the clipboard.", StatusKind.Info);
+                Status(Strings.Main_ProblemCopiedToTheClipboard, StatusKind.Info);
                 if (tb.Tag is Issue issue) FocusIssueCell(issue);
                 IssuesList.SelectedIndex = -1; // allow copying the same one again
             }
@@ -838,7 +854,7 @@ public partial class MainWindow : Window
         FixFirstButton.Click += (_, _) =>
         {
             var firstError = _file?.Issues.FirstOrDefault(i => i.Severity == Severity.Error);
-            if (firstError is null) { Status("No errors to fix.", StatusKind.Ready); return; }
+            if (firstError is null) { Status(Strings.Main_NoErrorsToFix, StatusKind.Ready); return; }
             FocusIssueCell(firstError);
         };
 
@@ -860,20 +876,18 @@ public partial class MainWindow : Window
         };
 
         var savedTheme = _settings.Theme;
-        AppearancePicker.ItemsSource = new[] { "System", "Light", "Dark" };
+        AppearancePicker.ItemsSource = QuadStick.App.Theme.Choices;
         AppearancePicker.SelectedIndex = savedTheme switch { "Light" => 1, "Dark" => 2, _ => 0 };
         // ApplyTheme sets SelectedIndex back to the same value on the way out,
         // which does not re-fire SelectionChanged, so this can't loop.
-        AppearancePicker.SelectionChanged += (_, _) => ApplyTheme((string)AppearancePicker.SelectedItem!);
+        // By position, not by the word on screen: the word is translated and
+        // the value saved to settings.json is not.
+        AppearancePicker.SelectionChanged += (_, _) => ApplyTheme(QuadStick.App.Theme.ChoiceAt(AppearancePicker.SelectedIndex));
 
         // Settings can connect or disconnect Drive, and the Home button reads
         // that state. Without the refresh it keeps the old label until the user
         // navigates away from Home and back.
-        SettingsButton.Click += async (_, _) =>
-        {
-            await new SettingsWindow(this).ShowDialog(this);
-            if (HomeView.IsVisible) RefreshHomeCards();
-        };
+        SettingsButton.Click += (_, _) => ShowSettingsPage();
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
         // key. Ctrl-combos are safe to fire even while a field has focus
@@ -895,6 +909,8 @@ public partial class MainWindow : Window
                 { ShowHelp(); e.Handled = true; }
                 else if (e.Key == Key.Escape && _selectedRows.Count > 0)
                 { ClearSelection(); e.Handled = true; }
+                else if (e.Key == Key.Escape && SettingsPage.IsVisible)
+                { LeaveSettingsPage(); e.Handled = true; }
                 else if (e.Key == Key.Escape && _expandedMapping >= 0 && DeviceContainer.IsVisible)
                 { _expandedMapping = -1; BuildZoneDetail(); e.Handled = true; }
                 else if (e.Key == Key.Delete && _selectedRows.Count > 0
@@ -994,26 +1010,15 @@ public partial class MainWindow : Window
 
     internal async Task ShowTelemetryNoticeAsync()
     {
-        var yes = new Button { Content = "Yes, share usage data", MinWidth = 180 };
-        var no = new Button { Content = "No thanks", MinWidth = 140, IsDefault = true, IsCancel = true };
-        AutomationProperties.SetName(yes, "Yes, share anonymous usage data");
-        AutomationProperties.SetName(no, "No thanks, do not share usage data");
+        var yes = new Button { Content = Strings.Main_YesShareUsageData, MinWidth = 180 };
+        var no = new Button { Content = Strings.Main_NoThanks, MinWidth = 140, IsDefault = true, IsCancel = true };
+        AutomationProperties.SetName(yes, Strings.Main_YesShareAnonymousUsageData);
+        AutomationProperties.SetName(no, Strings.Main_NoThanksDoNotShare);
 
         // Deliberately not "nothing is ever sent automatically", which stops
         // being true the moment the toggle is on. Say what each answer does.
-        const string body =
-            "This app can send anonymous usage data: which screens get used, whether "
-            + "installing to a QuadStick worked, and nothing else. While it is on, those "
-            + "events are sent as they happen.\n\n"
-            + "Never sent, whatever you pick: your profiles, file names, file paths, your "
-            + "Google account, and your name or machine name. Nothing you type is sent "
-            + "either, apart from the feedback box in Settings, which only sends when you "
-            + "press Send on it.\n\n"
-            + "Crash reports are separate. If the app ever crashes, it saves a report on "
-            + "your computer and asks you the next time you open it. You see it before it "
-            + "goes anywhere.\n\n"
-            + "What is sent goes to PostHog, on servers in the United States.\n\n"
-            + "You can change this any time in Settings, under Advanced.";
+        string body =
+            Strings.Main_ThisAppCanSendAnonymous;
 
         // Someone deciding here has to be able to read the whole policy here,
         // not hunt for it after the fact. The short version above is the only
@@ -1021,10 +1026,10 @@ public partial class MainWindow : Window
         // retention, the processor, and how to have the data deleted.
         var policy = new Button
         {
-            Content = "Read the privacy policy",
+            Content = Strings.Main_ReadThePrivacyPolicy,
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
         };
-        AutomationProperties.SetName(policy, "Read the privacy policy, opens in your browser");
+        AutomationProperties.SetName(policy, Strings.Main_ReadThePrivacyPolicyOpens);
         policy.Click += async (_, _) =>
         {
             try { await Launcher.LaunchUriAsync(new Uri(PrivacyPolicyUrl)); }
@@ -1033,7 +1038,7 @@ public partial class MainWindow : Window
 
         var dialog = new Window
         {
-            Title = "Help improve QuadStick Config Manager",
+            Title = Strings.Main_HelpImproveQuadStickConfigManager,
             SizeToContent = SizeToContent.WidthAndHeight,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Content = ZoomWrap(new StackPanel
@@ -1045,7 +1050,7 @@ public partial class MainWindow : Window
                 {
                     new TextBlock
                     {
-                        Text = "Help improve QuadStick Config Manager",
+                        Text = Strings.Main_HelpImproveQuadStickConfigManager,
                         FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap,
                     },
                     new TextBlock { Text = body, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize"), LineHeight = 22 },
@@ -1079,7 +1084,7 @@ public partial class MainWindow : Window
             // "Stays off" was only true of this session. The file still holds
             // whatever it held, so a failed turn-off comes back on next launch
             // unless the caller shows that.
-            Status("Could not save that preference. Nothing is sent now, but the change did not stick.",
+            Status(Strings.Main_CouldNotSaveThatPreference,
                    StatusKind.Warning);
             return false;
         }
@@ -1116,12 +1121,12 @@ public partial class MainWindow : Window
         }
         if (details is null || newest is null) return;
 
-        var send = new Button { Content = "Send report", MinWidth = 140 };
-        var later = new Button { Content = "Not now", MinWidth = 140, IsDefault = true, IsCancel = true };
-        var never = new Button { Content = "Stop asking", MinWidth = 140 };
-        AutomationProperties.SetName(send, "Send this crash report");
-        AutomationProperties.SetName(later, "Not now, keep the report and ask again later");
-        AutomationProperties.SetName(never, "Stop asking about crash reports");
+        var send = new Button { Content = Strings.Main_SendReport, MinWidth = 140 };
+        var later = new Button { Content = Strings.Main_NotNow, MinWidth = 140, IsDefault = true, IsCancel = true };
+        var never = new Button { Content = Strings.Main_StopAsking, MinWidth = 140 };
+        AutomationProperties.SetName(send, Strings.Main_SendThisCrashReport);
+        AutomationProperties.SetName(later, Strings.Main_NotNowKeepTheReport);
+        AutomationProperties.SetName(never, Strings.Main_StopAskingAboutCrashReports);
 
         var box = new TextBox
         {
@@ -1133,7 +1138,7 @@ public partial class MainWindow : Window
             FontSize = Size("SmallSize"),
             Height = 220,
         };
-        AutomationProperties.SetName(box, "Crash details used to build the report");
+        AutomationProperties.SetName(box, Strings.Main_CrashDetailsUsedToBuild);
 
         // Not "these are the exact bytes". Sending converts this into
         // PostHog's error format and the SDK adds more than the install ID:
@@ -1142,17 +1147,12 @@ public partial class MainWindow : Window
         // including the kernel build, and whether the CPU is Intel or ARM.
         // Verified against 2.12.0 by capturing a real send. "Nothing else is
         // added" was here before and was simply false.
-        const string note =
-            "The app crashed last time. These are the crash details it saved. There is no "
-            + "message text and no file paths in here, on purpose: only the type of error and "
-            + "the list of functions it happened in.\n\n"
-            + "Sending converts this into the crash reporter's own format. It also adds your "
-            + "anonymous install ID, the reporting library's version, your .NET and operating "
-            + "system versions, and whether your processor is Intel or ARM.";
+        string note =
+            Strings.Main_TheAppCrashedLastTime;
 
         var dialog = new Window
         {
-            Title = "Send a crash report?",
+            Title = Strings.Main_SendACrashReport,
             SizeToContent = SizeToContent.WidthAndHeight,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Content = ZoomWrap(new StackPanel
@@ -1164,7 +1164,7 @@ public partial class MainWindow : Window
                 {
                     new TextBlock
                     {
-                        Text = "Send a crash report?",
+                        Text = Strings.Main_SendACrashReport,
                         FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap,
                     },
                     new TextBlock { Text = note, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize"), LineHeight = 22 },
@@ -1195,18 +1195,18 @@ public partial class MainWindow : Window
                     if (await Telemetry.SendCrashReportAsync(details))
                     {
                         CrashReport.Discard(newest);
-                        Status("Crash report sent. Thank you.", StatusKind.Info);
+                        Status(Strings.Main_CrashReportSentThankYou, StatusKind.Info);
                     }
-                    else Status("Could not send the crash report. It is still on your computer.", StatusKind.Warning);
+                    else Status(Strings.Main_CouldNotSendTheCrash, StatusKind.Warning);
                 }
-                else Status("Could not send the crash report. It is still on your computer.", StatusKind.Warning);
+                else Status(Strings.Main_CouldNotSendTheCrash, StatusKind.Warning);
                 break;
 
             case CrashChoice.Never:
                 _settings.AskAboutCrashes = false;
                 CrashReport.Discard();
                 if (!Settings.TrySave(_settings))
-                    Status("Could not save that. You may be asked again next time.", StatusKind.Warning);
+                    Status(Strings.Main_CouldNotSaveThatYou, StatusKind.Warning);
                 break;
 
             case CrashChoice.Later:
@@ -1254,8 +1254,7 @@ public partial class MainWindow : Window
         if (rescues.Count == 0) return;
         var newest = rescues[0];
         HomeStatusText.Text =
-            $"Unsaved work from last time was recovered ({Path.GetFileNameWithoutExtension(newest)}). " +
-            "Open it from the button below, or dismiss to discard.";
+            string.Format(CultureInfo.CurrentCulture, Strings.Main_UnsavedWorkFromLastTime, Path.GetFileNameWithoutExtension(newest));
         HomeStatusText.IsVisible = true;
         RescuePanel.IsVisible = true;
         RescueOpenButton.Click += (_, _) =>
@@ -1265,12 +1264,12 @@ public partial class MainWindow : Window
                 OpenInEditor(ProfileFile.Load(File.ReadAllText(newest)), savePath: null, ProfileSource.Rescue);
                 if (_file is not null) _file.Dirty = true; // unsaved recovery: leaving must warn, not silently drop it
                 CrashGuard.DiscardRescues(); // now in the editor: the rescue files on disk are spent, don't re-offer them forever
-                Status("Recovered profile opened. Save it to keep it.", StatusKind.Warning);
+                Status(Strings.Main_RecoveredProfileOpenedSaveIt, StatusKind.Warning);
                 RescuePanel.IsVisible = false;
                 HomeStatusText.IsVisible = false; // the offer is spent; coming back Home must not still announce it
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-            { HomeStatusText.Text = $"Could not open the recovered file: {ex.Message}"; }
+            { HomeStatusText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotOpenTheRecovered, ex.Message); }
         };
         RescueDismissButton.Click += (_, _) =>
         {
@@ -1347,13 +1346,11 @@ public partial class MainWindow : Window
         var compact = RootPanel.Bounds.Width is > 0 and < 930;
         ShellBrandCaption.IsVisible = !compact;
         ShellHomeLabel.IsVisible = !compact;
-        ShellNewLabel.IsVisible = !compact;
-        ShellOpenLabel.IsVisible = !compact;
         ShellDeviceLabel.IsVisible = !compact;
         ShellCommunityLabel.IsVisible = !compact;
     }
 
-    // ---- Settings window API: SettingsWindow.cs calls these so every
+    // ---- Settings page API: SettingsView.cs calls these so every
     // setting applies live and persists through the same single source of
     // truth (_settings) the rest of the window already uses. ----
     public AppSettings CurrentSettings => _settings;
@@ -1372,9 +1369,10 @@ public partial class MainWindow : Window
     // blank window cannot.
     public static Control DialogShell(Window window, Control content)
     {
+        window.FlowDirection = Localization.Direction;
         var close = new Button { Content = "×", Classes = { "icon", "dialogclose" } };
         var windowTitle = string.IsNullOrWhiteSpace(window.Title) ? "window" : window.Title;
-        AutomationProperties.SetName(close, $"Close {windowTitle.ToLowerInvariant()}");
+        AutomationProperties.SetName(close, string.Format(CultureInfo.CurrentCulture, Strings.Main_CloseWindowTitleToLowerInvariant, windowTitle.ToLowerInvariant()));
         close.Click += (_, _) => window.Close();
 
         // Focus has to land inside the window or Escape never reaches it, but
@@ -1486,6 +1484,38 @@ public partial class MainWindow : Window
         finally { _pickerSyncing = false; }
     }
 
+    // Applied by rebuilding: a window bakes its text while it is being built,
+    // so the honest way to change its language is to build it again. The open
+    // profile is handed to the new window as the same object, edits and dirty
+    // flag intact; nothing is saved, discarded or asked about on the way.
+    public MainWindow SetLanguage(string tag)
+    {
+        bool onSettings = SettingsPage.IsVisible;
+        if (_settings.Language == tag) return this;
+        _settings.Language = tag;
+        Settings.Save(_settings);
+        Localization.Apply(tag);
+        Localization.Relocalize();
+        var next = new MainWindow
+        {
+            Position = Position,
+            Width = Width,
+            Height = Height,
+        };
+        if (_file is not null)
+        {
+            next.OpenInEditor(_file, _savePath, ProfileSource.File, track: false);
+            next.RepopulateSheetPicker(_sheetIndex); // same mode open as before
+        }
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            desktop.MainWindow = next;
+        next.Show();
+        if (onSettings) next.ShowSettingsPage();
+        _closeConfirmed = true; // the profile moved, it was not discarded
+        Close();
+        return next;
+    }
+
     public void SetInterfaceScale(int pct)
     {
         _settings.InterfaceScalePercent = pct;
@@ -1541,7 +1571,7 @@ public partial class MainWindow : Window
 
         _settings = new AppSettings();
         if (!Settings.TrySave(_settings))
-            Status("Could not save the reset. The old settings may come back next time.", StatusKind.Warning);
+            Status(Strings.Main_CouldNotSaveTheReset, StatusKind.Warning);
         QuadStick.App.Theme.Apply(_settings.Theme);
         AppearancePicker.SelectedIndex = 0;
         _reduceMotion = _settings.ReduceMotion;
@@ -1553,8 +1583,63 @@ public partial class MainWindow : Window
 
     // Small public wrapper: ConfirmAsync itself is private, and the Settings
     // window's Reset button needs the same confirm-dialog idiom.
-    public Task<bool> ConfirmResetAsync() => ConfirmAsync("Reset all settings?",
-        "Appearance, interface size, and the rest go back to their defaults.");
+    public Task<bool> ConfirmResetAsync() => ConfirmAsync(Strings.Main_ResetAllSettings,
+        Strings.Main_AppearanceInterfaceSizeAndThe);
+
+    // One page at a time, and the tab that named it is the one marked. Marking
+    // is a class and not a colour: "active" also changes the weight and the
+    // underline, so the current page is readable without seeing hue.
+    void ShowPage(Control page, Button? tab)
+    {
+        if (SettingsPage.IsVisible && !ReferenceEquals(page, SettingsPage))
+            SettingsView.OnLeaving();
+        foreach (var p in new Control[] { HomeView, EditorView, DevicePage, CommunityPage, SettingsPage })
+            p.IsVisible = ReferenceEquals(p, page);
+        foreach (var t in new[] { ShellHomeButton, ShellDeviceButton, ShellCommunityButton })
+            if (ReferenceEquals(t, tab)) t.Classes.Add("active"); else t.Classes.Remove("active");
+    }
+
+    SettingsView? _settingsView;
+    Control? _settingsReturnPage;
+
+    internal SettingsView SettingsView =>
+        _settingsView ??= new SettingsView(this);
+
+    /// <summary>Test seam: show the settings page inside the shell.</summary>
+    internal void ShowSettingsPageForPreview() => ShowSettingsPage();
+
+    public void ShowSettingsPage()
+    {
+        _settingsReturnPage = CurrentVisiblePage();
+        if (SettingsPageBody.Children.Count == 0)
+            SettingsPageBody.Children.Add(SettingsView);
+        ShowPage(SettingsPage, null);
+        SettingsView.FocusBack();
+        UpdateLayout();
+    }
+
+    public void LeaveSettingsPage() => ReturnFromSettingsPage();
+
+    void ReturnFromSettingsPage()
+    {
+        var page = _settingsReturnPage ?? HomeView;
+        _settingsReturnPage = null;
+        if (ReferenceEquals(page, HomeView)) ShowHome();
+        else if (ReferenceEquals(page, EditorView)) ShowPage(EditorView, null);
+        else if (ReferenceEquals(page, DevicePage)) ShowPage(DevicePage, ShellDeviceButton);
+        else if (ReferenceEquals(page, CommunityPage)) ShowCommunityPage();
+        else ShowHome();
+        if (HomeView.IsVisible) RefreshHomeCards();
+    }
+
+    Control CurrentVisiblePage()
+    {
+        if (HomeView.IsVisible) return HomeView;
+        if (EditorView.IsVisible) return EditorView;
+        if (DevicePage.IsVisible) return DevicePage;
+        if (CommunityPage.IsVisible) return CommunityPage;
+        return HomeView;
+    }
 
     void ShowHome()
     {
@@ -1563,19 +1648,15 @@ public partial class MainWindow : Window
         // again is not that moment, and a screen reader reads it out as if it
         // were. The startup rescue offer is written after this runs.
         HomeStatusText.IsVisible = false;
-        HomeView.IsVisible = true;
-        EditorView.IsVisible = false;
-        Title = "Quadstick: Config Manager (unofficial)"; // no profile is open on Home
+        ShowPage(HomeView, ShellHomeButton);
+        Title = Strings.Main_QuadstickConfigManagerUnofficial; // no profile is open on Home
         RefreshHomeCards();
-        ShellHomeButton.Classes.Add("active");
         HomeNewButton.Focus();
     }
 
     void ShowEditor()
     {
-        HomeView.IsVisible = false;
-        EditorView.IsVisible = true;
-        ShellHomeButton.Classes.Remove("active");
+        ShowPage(EditorView, null);
         SheetPicker.Focus(); // the name box would put a caret on the filename
 
     }
@@ -1620,15 +1701,15 @@ public partial class MainWindow : Window
     {
         LabelStyleButton.Content = _labelStyle switch
         {
-            0 => "Words: List names",
-            1 => "Words: Plain English",
-            _ => "Words: Xbox style",
+            0 => Strings.Main_WordsListNames,
+            1 => Strings.Main_WordsPlainEnglish,
+            _ => Strings.Main_WordsXboxStyle,
         };
         AutomationProperties.SetName(LabelStyleButton, _labelStyle switch
         {
-            0 => "Words are shown as raw list-view names. Switch to plain English.",
-            1 => "Words are shown in plain English. Switch to Xbox style button names.",
-            _ => "Words are shown as Xbox style button names. Switch to the raw list-view names.",
+            0 => Strings.Main_WordsAreShownAsRaw,
+            1 => Strings.Main_WordsAreShownInPlain,
+            _ => Strings.Main_WordsAreShownAsXbox,
         });
     }
 
@@ -1725,7 +1806,7 @@ public partial class MainWindow : Window
     // labelled QuadSticks apart.
     static TextBlock DriveHeading(string root) => new()
     {
-        Text = $"{DeviceFilesWindow.LabelFor(root)}  ({root})",
+        Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_DeviceFilesWindowLabelForRootRoot, DeviceFilesWindow.LabelFor(root), root),
         FontWeight = FontWeight.SemiBold,
         Margin = new Thickness(0, 4, 0, 2),
     };
@@ -1734,6 +1815,16 @@ public partial class MainWindow : Window
     // just to show "N sheets, M bindings". Cache it by path + last-write time so
     // an unchanged file is parsed once, not on every navigation back to Home.
     // A slow USB still costs one read the first time it's seen; that's inherent.
+    /// <summary>Rebuild or empty every static that baked text in the old
+    /// language, so the next window built reads entirely in the new one.</summary>
+    internal static void RelocalizeStatics()
+    {
+        AllZones = BuildZones();
+        _inputCatalog = null; // lazy; next read rebuilds with the new zone titles
+        _cardCache.Clear();
+        _factsCache.Clear();
+    }
+
     static readonly Dictionary<string, (long Stamp, string Sub)> _cardCache = new();
 
     // File names on the QuadStick decide the order the profile switch steps
@@ -1773,7 +1864,7 @@ public partial class MainWindow : Window
             var title = doc.Title;
             var meta = (title.Length > 0 && !title.Equals(Path.GetFileNameWithoutExtension(path),
                             StringComparison.OrdinalIgnoreCase) ? $"{title} · " : "")
-                + $"{Plural.Of(modes.Count, "mode")} · {Plural.Of(bindings, "binding")}";
+                + $"{Plural.Of(modes.Count, "Count_Mode")} · {Plural.Of(bindings, "Count_Binding")}";
 
             // The mode names are the one thing that says what a profile is for.
             // "Movement, Building, Driving" tells you it is a game setup; the
@@ -1793,7 +1884,7 @@ public partial class MainWindow : Window
         }
         catch
         {
-            facts = new CardFacts("Could not read this file", "", "");
+            facts = new CardFacts(Strings.Main_CouldNotReadThisFile, "", "");
         }
         _factsCache[path] = (stamp, facts);
         return facts;
@@ -1806,12 +1897,12 @@ public partial class MainWindow : Window
         try
         {
             var age = DateTime.Now - File.GetLastWriteTime(path);
-            if (age < TimeSpan.FromMinutes(2)) return "just now";
-            if (age < TimeSpan.FromHours(1)) return $"{(int)age.TotalMinutes} min ago";
-            if (age < TimeSpan.FromHours(24)) return $"{(int)age.TotalHours}h ago";
+            if (age < TimeSpan.FromMinutes(2)) return Strings.Main_JustNow;
+            if (age < TimeSpan.FromHours(1)) return string.Format(CultureInfo.CurrentCulture, Strings.Main_IntAgeTotalMinutesMinAgo, (int)age.TotalMinutes);
+            if (age < TimeSpan.FromHours(24)) return string.Format(CultureInfo.CurrentCulture, Strings.Main_IntAgeTotalHoursHAgo, (int)age.TotalHours);
             if (age < TimeSpan.FromDays(2)) return "yesterday";
-            if (age < TimeSpan.FromDays(30)) return $"{(int)age.TotalDays} days ago";
-            return File.GetLastWriteTime(path).ToString("d MMM yyyy");
+            if (age < TimeSpan.FromDays(30)) return string.Format(CultureInfo.CurrentCulture, Strings.Main_IntAgeTotalDaysDaysAgo, (int)age.TotalDays);
+            return File.GetLastWriteTime(path).ToString(Strings.Main_DMMMYyyy);
         }
         catch { return ""; }
     }
@@ -1869,9 +1960,9 @@ public partial class MainWindow : Window
             // had one more mode than the device would ever run.
             var modes = doc.Sheets.Where(s => s.Type == SheetType.ProfileName).ToList();
             sub = TitleNote(doc, path)
-                + $"{Plural.Of(modes.Count, "mode sheet")}, {Plural.Of(modes.Sum(s => s.Bindings.Count), "binding")}";
+                + $"{Plural.Of(modes.Count, "Count_ModeSheet")}, {Plural.Of(modes.Sum(s => s.Bindings.Count), "Count_Binding")}";
         }
-        catch { sub = "Could not read this file"; }
+        catch { sub = Strings.Main_CouldNotReadThisFile; }
         _cardCache[path] = (stamp, sub);
         return sub;
     }
@@ -1886,20 +1977,21 @@ public partial class MainWindow : Window
         var heading = position > 0 ? $"{position}. {bare}" : bare;
         var subtitle = CardSubtitle(path) + note;
         if (onDevice && name.Equals("default.csv", StringComparison.OrdinalIgnoreCase))
-            subtitle += " · the device's fallback file";
+            subtitle += Strings.Main_TheDeviceSFallbackFile;
         // Show that this profile has a copy on Drive. Kept out of CardSubtitle's
         // cache since link state changes on its own (connect, restore, turn off).
         // A dirty link means the last backup never landed: say so, or the card
         // tells someone their profile is safe when it is not.
         if (!onDevice && _settings.DriveLinks.TryGetValue(path, out var driveLink))
-            subtitle += driveLink.BackupDirty ? " · backup pending" : " · on Google Drive";
+            subtitle += driveLink.BackupDirty ? Strings.Main_BackupPending : " · on Google Drive";
 
         // Stretch, so cards in one row end level. A profile whose facts wrap to
         // an extra line used to stand taller than the two beside it.
         var card = new Button { Classes = { "card" }, VerticalAlignment = VerticalAlignment.Stretch };
         AutomationProperties.SetName(card,
-            $"Open {bare}, {subtitle}{(onDevice ? ", stored on the QuadStick" : ", in your profile library")}"
-            + (position > 0 ? $", number {position} in the profile switch order" : ""));
+            string.Format(CultureInfo.CurrentCulture,
+                onDevice ? Strings.Main_OpenOnDevice : Strings.Main_OpenInLibrary, bare, subtitle)
+            + (position > 0 ? string.Format(CultureInfo.CurrentCulture, Strings.Main_NumberPositionInTheProfile, position) : ""));
         // A tile, then the name, then what the profile actually is. The tile is
         // the recognition: same name always gets the same colour and initials,
         // so "Rocket League" and "GTA" are told apart across the room without
@@ -1943,7 +2035,7 @@ public partial class MainWindow : Window
         if (facts.Edited.Length > 0)
             lines.Children.Add(new TextBlock
             {
-                Text = "Edited " + facts.Edited, Classes = { "cardsub" },
+                Text = Strings.Main_Edited + facts.Edited, Classes = { "cardsub" },
                 FontSize = Size("SmallSize"), Opacity = 0.75,
             });
 
@@ -1954,8 +2046,8 @@ public partial class MainWindow : Window
         card.Click += async (_, _) =>
         {
             if (onDevice && name.Equals("prefs.csv", StringComparison.OrdinalIgnoreCase)
-                && !await ConfirmAsync("Edit device preferences?",
-                    "prefs.csv holds the QuadStick's own settings, not a game profile. A wrong value here changes how the whole device behaves. Only continue if you know which setting you are changing."))
+                && !await ConfirmAsync(Strings.Main_EditDevicePreferences,
+                    Strings.Main_PrefsCsvHoldsTheQuadStick))
                 return;
             try
             {
@@ -1965,13 +2057,13 @@ public partial class MainWindow : Window
                 OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), onDevice ? null : path,
                     onDevice ? ProfileSource.Device : ProfileSource.Library);
                 if (onDevice)
-                    Status("Opened from your QuadStick. Save keeps a copy in your library; use Install to put changes back on the device.", StatusKind.Warning);
+                    Status(Strings.Main_OpenedFromYourQuadStickSave, StatusKind.Warning);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
                 // Stay on Home: showing an empty editor to display an error
                 // strands the user in a dead view.
-                HomeStatusText.Text = $"Could not open {bare}: {ex.Message}";
+                HomeStatusText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotOpenBareEx, bare, ex.Message);
                 HomeStatusText.IsVisible = true;
             }
         };
@@ -1982,8 +2074,8 @@ public partial class MainWindow : Window
         if (!onDevice)
         {
             var menu = ShareMenu(path);
-            var del = new MenuItem { Header = "Delete profile" };
-            AutomationProperties.SetName(del, $"Delete {bare} from your profile library");
+            var del = new MenuItem { Header = Strings.Main_DeleteProfile };
+            AutomationProperties.SetName(del, string.Format(CultureInfo.CurrentCulture, Strings.Main_DeleteBareFromYourProfile, bare));
             del.Click += async (_, _) => await DeleteProfileAsync(path, bare);
             menu.Items.Add(new Separator());
             menu.Items.Add(del);
@@ -1997,19 +2089,18 @@ public partial class MainWindow : Window
     // Drive.
     async Task DeleteProfileAsync(string path, string bare)
     {
-        if (!await ConfirmAsync($"Delete {bare}?",
-            $"{Path.GetFileName(path)} is removed from this computer for good. "
-            + "A copy on your QuadStick or in Google Sheets is not touched."))
+        if (!await ConfirmAsync(string.Format(CultureInfo.CurrentCulture, Strings.Main_DeleteBare, bare),
+            string.Format(CultureInfo.CurrentCulture, Strings.Main_PathGetFileNamePathIsRemoved, Path.GetFileName(path))))
             return;
         try { File.Delete(path); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            HomeStatusText.Text = $"Could not delete {bare}: {ex.Message}";
+            HomeStatusText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotDeleteBareEx, bare, ex.Message);
             HomeStatusText.IsVisible = true;
             return;
         }
         RefreshHomeCards();
-        HomeStatusText.Text = $"Deleted {bare}.";
+        HomeStatusText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_DeletedBare, bare);
         HomeStatusText.IsVisible = true;
     }
 
@@ -2024,9 +2115,11 @@ public partial class MainWindow : Window
     // No default on source. It used to be File, which silently mislabelled the
     // Sheets import for anyone who forgot to pass one, and a wrong source is
     // worse than no source: it reads as a real measurement.
-    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source)
+    // track is false only when a profile moves between windows it is already
+    // open in (the language rebuild): the person did not open anything.
+    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source, bool track = true)
     {
-        Telemetry.Track(TelemetryEvent.ProfileOpened, source);
+        if (track) Telemetry.Track(TelemetryEvent.ProfileOpened, source);
         _file = file;
         _savePath = savePath;
         LoadDrafts(savePath);
@@ -2037,7 +2130,7 @@ public partial class MainWindow : Window
         var headerName = file.Document.HeaderName;
         var bareTitle = BareName(file.Document.CsvFileName);
         if (bareTitle.Length == 0) bareTitle = "untitled";
-        Title = "Quadstick: Config Manager (unofficial) - "
+        Title = Strings.Main_QuadstickConfigManagerUnofficial2
             + (headerName.Length > 0 ? $"{headerName} ({bareTitle})" : bareTitle);
         _selectedZone = null;
         ShowEditor();
@@ -2063,7 +2156,8 @@ public partial class MainWindow : Window
         {
             SheetType.Preferences => "Preferences",
             SheetType.Infrared => "Infrared",
-            _ => $"{++mode}: {(s.ModeName.Length > 0 ? s.ModeName : "(unnamed mode)")}",
+            _ => string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeNumberAndName, ++mode,
+                    s.ModeName.Length > 0 ? s.ModeName : Strings.Main_UnnamedMode),
         }).ToList();
         // Last, and without a number: it is a view onto column L, not a sheet
         // in the file. See CustomNames.cs.
@@ -2088,7 +2182,7 @@ public partial class MainWindow : Window
         };
         AutomationProperties.SetName(box, boxAccessibleName);
         var confirm = new Button { Content = confirmLabel, MinWidth = 140, IsDefault = true };
-        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        var cancel = new Button { Content = Strings.Main_Cancel, MinWidth = 140, IsCancel = true };
         var panel = new StackPanel
         {
             Margin = new Avalonia.Thickness(24),
@@ -2122,7 +2216,7 @@ public partial class MainWindow : Window
     // add, rename, reorder and delete all live next to the mode they act on.
     async Task ShowModesAsync()
     {
-        if (_file is null) { Status("Open or create a profile first."); return; }
+        if (_file is null) { Status(Strings.Main_OpenOrCreateAProfile); return; }
         await new ModesWindow(this).ShowDialog(this);
     }
 
@@ -2131,7 +2225,7 @@ public partial class MainWindow : Window
         if (_file is null) return;
         int idx = _file.AddPreferencesSheet();
         if (idx < 0) return;
-        ModesChanged(idx, "Preferences sheet added.");
+        ModesChanged(idx, Strings.Main_PreferencesSheetAdded);
     }
 
     internal sealed record Zone(string Id, string Title, string Display, string DefaultInput, string Blurb);
@@ -2139,30 +2233,35 @@ public partial class MainWindow : Window
     // Shared with the agent window, which draws the same device from the same
     // list. Two tables of the parts of a QuadStick would drift, and the one that
     // drifted would be teaching somebody their device wrong.
-    internal static readonly Zone[] AllZones =
+    internal static Zone[] AllZones { get; private set; } = BuildZones();
+
+    static Zone[] BuildZones() => new Zone[]
     {
-        new("joystick", "Joystick", "Joystick", "up",
-            "Moving the whole mouthpiece with your mouth works like a joystick. Up, down, left, right, and the 8 compass directions can each press something."),
-        new("mp_left", "Left mouthpiece hole", "Left", "mp_left_sip",
-            "Sip or puff on the left mouthpiece hole. A gentle sip or puff can do something different (the soft variants)."),
-        new("mp_center", "Center mouthpiece hole", "Center", "mp_center_sip",
-            "Sip or puff on the center mouthpiece hole. A gentle sip or puff can do something different (the soft variants)."),
-        new("mp_right", "Right mouthpiece hole", "Right", "mp_right_sip",
-            "Sip or puff on the right mouthpiece hole. A gentle sip or puff can do something different (the soft variants)."),
-        new("combo", "Hole combos", "Combos", "mp_left_center_sip",
-            "Two or more holes used at the same time, all three together, or the right hole with the side tube. Good for actions you never want to trigger by accident."),
-        new("side", "Side tube", "Side tube", "right_sip",
-            "Sip or puff on the side tube. A long hard sip here normally switches profiles, but you can map it too."),
-        new("lip", "Lip switch", "Lip switch", "lip",
-            "Press the lip switch or sensor with your lip. Often used for the fire button."),
-        new("jacks", "Switch jacks", "Switch jacks", "digital_in_1",
-            "External adaptive switches plugged into the 3.5 mm jacks on the back of the QuadStick (up to 4)."),
-        new("other", "USB devices", "USB devices", "usb_1_button_1",
-            "Extra USB joysticks or controllers plugged into the QuadStick's USB-A port."),
-        new("settings", "Mode settings", "Settings", "",
-            "Device settings this mode changes while it is running, like mouse speed or volume. They are not something you press, so they have no input: each one is a name and a value."),
-        new("unset", "No input yet", "No input yet", "",
-            "Rows that press a game button but have nothing triggering them yet. Give each one an input, or delete it."),
+        new("joystick", Strings.Main_Joystick, Strings.Main_Joystick, "up",
+            Strings.Main_MovingTheWholeMouthpieceWith),
+        new("mp_left", Strings.Main_LeftMouthpieceHole, Strings.Main_Left, "mp_left_sip",
+            Strings.Main_SipOrPuffOnThe),
+        new("mp_center", Strings.Main_CenterMouthpieceHole, Strings.Main_Center, "mp_center_sip",
+            Strings.Main_SipOrPuffOnThe2),
+        new("mp_right", Strings.Main_RightMouthpieceHole, Strings.Main_Right, "mp_right_sip",
+            Strings.Main_SipOrPuffOnThe3),
+        new("combo", Strings.Main_HoleCombos, Strings.Main_Combos, "mp_left_center_sip",
+            Strings.Main_TwoOrMoreHolesUsed),
+        new("side", Strings.Main_SideTube, Strings.Main_SideTube, "right_sip",
+            Strings.Main_SipOrPuffOnThe4),
+        new("lip", Strings.Main_LipSwitch, Strings.Main_LipSwitch, "lip",
+            Strings.Main_PressTheLipSwitchOr),
+        // Default input is digital_in_8: a switch plugged into the top jack
+        // with no splitter lands there, so it is the first thing a new mapping
+        // on this zone should be.
+        new("jacks", Strings.Main_SwitchJacks, Strings.Main_SwitchJacks, "digital_in_8",
+            Strings.Main_AdaptiveSwitchesPluggedIntoThe),
+        new("other", Strings.Main_USBDevices, Strings.Main_USBDevices, "usb_1_button_1",
+            Strings.Main_AJoystickOrControllerPlugged),
+        new("settings", Strings.Main_ModeSettings, "Settings", "",
+            Strings.Main_DeviceSettingsThisModeChanges),
+        new("unset", Strings.Main_NoInputYet, Strings.Main_NoInputYet, "",
+            Strings.Main_RowsThatPressAGame),
     };
 
     // mp_right_mode_* is the right hole and the side tube together: the firmware
@@ -2190,16 +2289,16 @@ public partial class MainWindow : Window
     // the same inputs; the FPS difference is joystick precision, not mapping.
     string ModelDescription => _model switch
     {
-        QsModel.Singleton => "Singleton: a single sip/puff tube on the joystick. Uses sip and puff patterns plus joystick movement.",
-        QsModel.Original => "Original: 3-hole mouthpiece, side tube, lip switch, rear jacks. Same inputs as the FPS.",
-        _ => "FPS: 3-hole mouthpiece, side tube, lip sensor, rear jacks. More precise joystick than the Original.",
+        QsModel.Singleton => Strings.Main_SingletonASingleSipPuff,
+        QsModel.Original => Strings.Main_Original3HoleMouthpieceSide,
+        _ => Strings.Main_FPS3HoleMouthpieceSide,
     };
 
     // "mp_left_puff_soft" reads as "soft puff" on the Left hole's own card.
     static string ShortInput(Zone z, Binding b)
     {
         var input = b.Inputs.Count > 0 ? b.Inputs[0] : "";
-        if (input.Length == 0) return "(no input)";
+        if (input.Length == 0) return Strings.Main_NoInput;
         var extra = b.Inputs.Count > 1 ? $" +{b.Inputs.Count - 1}" : "";
         return StripInput(input, z.Id) + extra;
     }
@@ -2211,7 +2310,7 @@ public partial class MainWindow : Window
     {
         // Avalonia calls item templates with a null item during measure, so a
         // null token can reach here before any real value is bound.
-        if (string.IsNullOrEmpty(input)) return "(no input)";
+        if (string.IsNullOrEmpty(input)) return Strings.Main_NoInput;
         var s = input;
         // Longest first: "mp_right_mode_" has to be tried before "mp_right_",
         // or the loop breaks on the short one and leaves the word "mode".
@@ -2237,11 +2336,11 @@ public partial class MainWindow : Window
     // to plain English.
     internal static readonly Dictionary<string, string> XboxStyle = new(StringComparer.Ordinal)
     {
-        ["x"] = "A button", ["circle"] = "B button", ["square"] = "X button",
-        ["triangle"] = "Y button", ["left_1"] = "Left bumper", ["right_1"] = "Right bumper",
-        ["left_2"] = "Left trigger", ["right_2"] = "Right trigger",
-        ["left_3"] = "Left stick click", ["right_3"] = "Right stick click",
-        ["select"] = "View button", ["start"] = "Menu button", ["ps3"] = "Xbox button",
+        ["x"] = Strings.Main_AButton, ["circle"] = Strings.Main_BButton, ["square"] = Strings.Main_XButton,
+        ["triangle"] = Strings.Main_YButton, ["left_1"] = Strings.Main_LeftBumper, ["right_1"] = Strings.Main_RightBumper,
+        ["left_2"] = Strings.Main_LeftTrigger, ["right_2"] = Strings.Main_RightTrigger,
+        ["left_3"] = Strings.Main_LeftStickClick, ["right_3"] = Strings.Main_RightStickClick,
+        ["select"] = Strings.Main_ViewButton, ["start"] = Strings.Main_MenuButton, ["ps3"] = Strings.Main_XboxButton,
     };
 
     // How an output/function token is shown in Device View: friendly words,
@@ -2264,6 +2363,11 @@ public partial class MainWindow : Window
     {
         // Avalonia templates a null item during measure before any value binds.
         if (string.IsNullOrEmpty(token) || !_friendlyLabels) return token ?? "";
+        // "Digital in 8" is the token with the underscores taken out; it says
+        // nothing about where to plug the switch. The socket does.
+        if (SwitchJacks.For(token) is { } jack) return jack.Label;
+        if (SwitchJacks.RearJoystick.Contains(token, StringComparer.Ordinal))
+            return string.Format(CultureInfo.CurrentCulture, Strings.Main_RearJoystickDirection, token["usb_1_".Length..]);
         var tz = ZoneOf(token);
         var bare = Humanize(StripInput(token, tz));
         if (bare.Length == 0) return bare;
@@ -2274,6 +2378,173 @@ public partial class MainWindow : Window
         if (tz == cardZone || tz is "other" or "unset") return bare;
         var disp = AllZones.FirstOrDefault(z => z.Id == tz)?.Display ?? tz;
         return $"{disp} · {low}";
+    }
+
+    // The back of the QuadStick, written out. Three switch jacks in the order
+    // they sit on the case, then the USB-A port, each row saying what a plug in
+    // it actually arrives as.
+    //
+    // Drawn as text and one glyph per port rather than as vector art: it has to
+    // stay legible at every interface size, read aloud in order, and survive a
+    // theme change. A picture of the panel would be nicer to look at and would
+    // say none of this.
+    // The back panel photo and its labels are laid out at one fixed size and
+    // scaled as a whole, so a label can never drift off the socket it names.
+    // Every number below is measured off Assets/QuadStickBack.png at 588x319.
+    // BackPanelTests pins that size, so swapping the photo fails loudly.
+    const double BackStageW = 720, BackStageH = 285;
+    const double BackPhotoX = 150, BackPhotoY = 27, BackPhotoW = 420, BackPhotoH = 228;
+    const double BackPillW = 145, BackPillH = 54;
+
+    // Each socket: where its label sits, and the point on the photo it names.
+    // The points are fractions of the photo, taken off the centre of each
+    // socket's opening. The three jacks run down the left edge of the case and
+    // the two USB ports down the right, so the labels sit outside the photo on
+    // the side their socket is on.
+    static readonly (string Name, string Detail, bool Left, double LabelY, double PointX, double PointY)[] BackSockets =
+    {
+        (SwitchJacks.PortLabel(SwitchJacks.TopPort), Strings.Main_OneSwitchIn8, true, 60, 0.1114, 0.2963),
+        (SwitchJacks.PortLabel(SwitchJacks.LipPort), Strings.Main_OneSwitchIn5, true, 122, 0.1114, 0.5000),
+        (SwitchJacks.PortLabel(SwitchJacks.BottomPort), Strings.Main_OneSwitchIn1, true, 184, 0.1114, 0.7147),
+        (Strings.Main_USBBPort, Strings.Main_ToTheComputer, false, 70, 0.9005, 0.3354),
+        (Strings.Main_USBAPort, Strings.Main_JoystickOrIn34, false, 150, 0.9107, 0.6254),
+    };
+
+    // Loaded once, the way the front photo is: this runs on every zone change.
+    static Avalonia.Media.Imaging.Bitmap? _backPhoto;
+
+    static Avalonia.Media.Imaging.Bitmap BackPhoto() =>
+        _backPhoto ??= new Avalonia.Media.Imaging.Bitmap(Avalonia.Platform.AssetLoader.Open(
+            new Uri("avares://QuadStickConfigManager/Assets/QuadStickBack.png")));
+
+    // The picture Drew asked for: the back of the case with each socket named
+    // and the number a plug lands on written beside it. The case's own green
+    // silkscreen says "In 7-8", which is the pair, never which of the two a
+    // single switch with no splitter actually gets.
+    Control BackPanelPicture()
+    {
+        var stage = new Canvas { Width = BackStageW, Height = BackStageH, FlowDirection = Avalonia.Media.FlowDirection.LeftToRight };
+        var photo = new Image
+        {
+            Source = BackPhoto(), Width = BackPhotoW, Height = BackPhotoH,
+            Stretch = Stretch.Uniform, IsHitTestVisible = false,
+        };
+        Canvas.SetLeft(photo, BackPhotoX);
+        Canvas.SetTop(photo, BackPhotoY);
+        stage.Children.Add(photo);
+
+        foreach (var (name, detail, left, labelY, fx, fy) in BackSockets)
+        {
+            double px = BackPhotoX + fx * BackPhotoW, py = BackPhotoY + fy * BackPhotoH;
+            double lx = left ? 0 : BackStageW - BackPillW;
+            double ax = left ? lx + BackPillW : lx;
+            foreach (var line in Leader(ax, labelY + BackPillH / 2, px, py)) stage.Children.Add(line);
+            stage.Children.Add(Marker(px, py));
+
+            var pill = new Border
+            {
+                Width = BackPillW, Height = BackPillH,
+                CornerRadius = new Avalonia.CornerRadius(5),
+                Padding = new Avalonia.Thickness(8, 5),
+                BorderThickness = new Avalonia.Thickness(1),
+                Child = new StackPanel
+                {
+                    Spacing = 1,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = name, FontSize = Size("SmallSize"),
+                            FontWeight = FontWeight.SemiBold,
+                        },
+                        new TextBlock
+                        {
+                            Text = detail, FontSize = Size("SmallSize"),
+                            Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+                        },
+                    },
+                },
+            };
+            BindBrush(pill, Border.BackgroundProperty, "Surface");
+            BindBrush(pill, Border.BorderBrushProperty, "Divider");
+            // The two lines are one fact, so a screen reader reads them as one
+            // sentence instead of announcing a fragment and then a number.
+            AutomationProperties.SetName(pill, string.Format(CultureInfo.CurrentCulture, Strings.Main_NameDetail, name, detail));
+            Canvas.SetLeft(pill, lx);
+            Canvas.SetTop(pill, labelY);
+            stage.Children.Add(pill);
+        }
+        // Shrinks to fit a narrow panel rather than clipping a label off the
+        // edge, and is never blown up past the photo's own size.
+        return new Viewbox
+        {
+            Child = stage, Stretch = Stretch.Uniform,
+            StretchDirection = StretchDirection.DownOnly,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Margin = new Avalonia.Thickness(0, 2, 0, 4),
+        };
+    }
+
+    Control BackPanelGuide()
+    {
+        var rows = new StackPanel { Spacing = 6 };
+        foreach (var (port, channels) in SwitchJacks.Ports)
+        {
+            // The USB-A data pins are not a socket anybody plugs a switch into.
+            // They are listed for completeness at the end, not as a port.
+            if (port == SwitchJacks.UsbDataPort) continue;
+            rows.Children.Add(PortRow("◎", port, SwitchJacks.Explain(port)));
+        }
+        rows.Children.Add(PortRow("▭", Strings.Main_USBAPort,
+            Strings.Main_AJoystickPluggedInHere + string.Join(", ", SwitchJacks.RearJoystick)
+            + Strings.Main_ItsButtonsAreUsb1));
+
+        var title = new TextBlock
+        {
+            Text = Strings.Main_BackOfTheQuadStick,
+            FontSize = Size("SmallSize"), FontWeight = FontWeight.Bold,
+        };
+        var box = new Border
+        {
+            CornerRadius = new Avalonia.CornerRadius(5),
+            Padding = new Avalonia.Thickness(10, 8),
+            Margin = new Avalonia.Thickness(0, 6, 0, 2),
+            MaxWidth = 860,
+            Child = new StackPanel { Spacing = 6, Children = { title, BackPanelPicture(), rows } },
+        };
+        BindBrush(box, Border.BackgroundProperty, "SurfaceSubtle");
+        return box;
+    }
+
+    Control PortRow(string glyph, string port, string explain)
+    {
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*") };
+        var mark = new TextBlock
+        {
+            Text = glyph, FontSize = Size("BodySize"),
+            Margin = new Avalonia.Thickness(0, 0, 8, 0),
+            VerticalAlignment = VerticalAlignment.Top,
+        };
+        var name = new TextBlock
+        {
+            Text = port, FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold,
+            Width = 96, VerticalAlignment = VerticalAlignment.Top,
+        };
+        var body = new TextBlock
+        {
+            Text = explain, FontSize = Size("SmallSize"),
+            Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+        };
+        Grid.SetColumn(name, 1);
+        Grid.SetColumn(body, 2);
+        grid.Children.Add(mark);
+        grid.Children.Add(name);
+        grid.Children.Add(body);
+        // The glyph is decoration; a screen reader reads the port and its
+        // sentence as one line instead of announcing a shape.
+        AutomationProperties.SetName(grid, string.Format(CultureInfo.CurrentCulture, Strings.Main_PortExplain, port, explain));
+        AutomationProperties.SetName(mark, "");
+        return grid;
     }
 
     Dictionary<string, List<Binding>> BindingsByZone()
@@ -2301,7 +2572,7 @@ public partial class MainWindow : Window
         return map;
     }
 
-    IEnumerable<Zone> VisibleZones(Dictionary<string, List<Binding>> byZone) =>
+    IEnumerable<Zone> VisibleZones(Dictionary<string, List<Binding>> byZone, bool withUsbPort = false) =>
         AllZones.Where(z => z.Id switch
         {
             // The Singleton has one mouthpiece tube: no left/right holes,
@@ -2309,9 +2580,15 @@ public partial class MainWindow : Window
             // profile actually maps them, so nothing is ever hidden-but-live.
             "mp_left" or "mp_right" or "combo" or "side" =>
                 _model != QsModel.Singleton || byZone.ContainsKey(z.Id),
+            // The rear USB-A port is a real socket on the case, so the device
+            // view always offers its card: reaching a joystick plugged in there
+            // needs somewhere to click. The toolbar's unused list leaves it out
+            // until the profile uses one, because twenty usb_1_* names in front
+            // of the mouthpiece is not what that list is for.
+            "other" => withUsbPort || byZone.ContainsKey(z.Id),
             // Not parts of the QuadStick, so they appear only when the profile
             // actually has rows in them.
-            "other" or "unset" or "settings" => byZone.ContainsKey(z.Id),
+            "unset" or "settings" => byZone.ContainsKey(z.Id),
             _ => true,
         });
 
@@ -2328,7 +2605,10 @@ public partial class MainWindow : Window
     // Inputs this mode has nothing mapped to. A force_off row does not count as
     // using its input: it only turns off an output that toggle or delayed_latch
     // left on, so the input is still free for a real mapping.
-    IEnumerable<string> UnusedInputs()
+    /// <param name="alsoZone">One zone to answer for whatever the toolbar list
+    /// leaves out. Standing on a part is a narrower question than "what is free
+    /// anywhere", and the rear USB-A port had no answer to it at all.</param>
+    IEnumerable<string> UnusedInputs(string? alsoZone = null)
     {
         var used = (CurrentSheet?.Bindings ?? [])
             .Where(b => FunctionName(b.Function) != "force_off")
@@ -2337,6 +2617,7 @@ public partial class MainWindow : Window
         // Same zone filter as the device view, so a Singleton is not told its
         // missing holes are free and the usb_* tokens stay out unless used.
         var zones = VisibleZones(BindingsByZone()).Select(z => z.Id).ToHashSet(StringComparer.Ordinal);
+        if (alsoZone is not null) zones.Add(alsoZone);
         return Vocab.Inputs
             .Where(i => !used.Contains(i) && zones.Contains(ZoneOf(i)))
             .OrderBy(GroupRank).ThenBy(x => x, StringComparer.Ordinal);
@@ -2346,22 +2627,46 @@ public partial class MainWindow : Window
     // "Side tube" because mp_right_mode_* is the right hole plus the side tube,
     // which the firmware names the mode tube.
     internal static string ComboPair(string token) =>
-        token.StartsWith("mp_triple_", StringComparison.Ordinal) ? "All three"
+        token.StartsWith("mp_triple_", StringComparison.Ordinal) ? Strings.Main_AllThree
         : token.StartsWith("mp_left_center_", StringComparison.Ordinal) ? "Left + Center"
         : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "Right + Center"
-        : token.StartsWith("mp_right_mode_", StringComparison.Ordinal) ? "Right + Side tube"
+        : token.StartsWith("mp_right_mode_", StringComparison.Ordinal) ? Strings.Main_RightSideTube
         : token.StartsWith("mp_left_right_", StringComparison.Ordinal) ? "Left + Right" : "Combo";
 
     // Chip text: the short form, since the zone heading above it already says
     // which part it is on. Combos are the exception. Every pairing strips to
     // the same word, so a combo chip has to name its pairing.
-    internal static string ChipLabel(string token, string zoneId) => zoneId != "combo"
+    // A chip on a card and a line in the unused list read the same way as the
+    // picker: "digital in 1" is the token with its underscores taken out and
+    // tells nobody which hole to plug into.
+    internal static string ChipLabel(string token, string zoneId) =>
+        SwitchJacks.For(token) is { } jack ? jack.Label
+        : SwitchJacks.RearJoystick.Contains(token, StringComparer.Ordinal)
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Main_RearJoystickDirection, token["usb_1_".Length..])
+        : zoneId != "combo"
         ? StripInput(token, zoneId)
         : (token.StartsWith("mp_triple_", StringComparison.Ordinal) ? "all 3 "
             : token.StartsWith("mp_left_center_", StringComparison.Ordinal) ? "L+C "
             : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "R+C "
             : token.StartsWith("mp_right_mode_", StringComparison.Ordinal) ? "R+S " : "L+R ")
           + StripInput(token, zoneId);
+
+    // Where a jack sorts: its socket's place on the case, then the lone
+    // channel before the splitter's second one. Anything that is not a jack
+    // keeps the order it arrived in.
+    static int JackRank(string token)
+    {
+        if (SwitchJacks.For(token) is { } jack)
+        {
+            int port = Array.FindIndex(SwitchJacks.Ports, p => p.Port == jack.Port);
+            return (port * 2) + (jack.Lone ? 0 : 1);
+        }
+        // On the USB card the four joystick directions lead. Alphabetical put
+        // them after sixteen button numbers, so the thing somebody plugging a
+        // joystick in is looking for was the last thing offered.
+        int dir = Array.IndexOf(SwitchJacks.RearJoystick, token);
+        return dir < 0 ? 0 : dir - SwitchJacks.RearJoystick.Length;
+    }
 
     // Flyout list grouped by part. Does not take editor space.
     void ShowUnusedInputs()
@@ -2376,8 +2681,8 @@ public partial class MainWindow : Window
         body.Children.Add(new TextBlock
         {
             Text = free.Count == 0
-                ? "Every input on your QuadStick is used in this mode."
-                : $"{free.Count} input{(free.Count == 1 ? "" : "s")} not used yet",
+                ? Strings.Main_EveryInputOnYourQuadStick
+                : Plural.Of(free.Count, "Count_UnusedInput"),
             FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap,
         });
         foreach (var zone in AllZones)
@@ -2403,7 +2708,7 @@ public partial class MainWindow : Window
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
             };
             AutomationProperties.SetName(head,
-                $"{zone.Title}, {inZone.Count} not used. Opens this part in device view.");
+                string.Format(CultureInfo.CurrentCulture, Strings.Main_ZoneTitleInZoneCountNot, zone.Title, inZone.Count));
             var zoneId = zone.Id;
             head.Click += (_, _) =>
             {
@@ -2429,7 +2734,7 @@ public partial class MainWindow : Window
                 // in the sheet, so it stays one hover (or one screen reader
                 // stop) away even though the chip shows the short form.
                 ToolTip.SetTip(chip, token);
-                AutomationProperties.SetName(chip, $"{token}, not used in this mode");
+                AutomationProperties.SetName(chip, string.Format(CultureInfo.CurrentCulture, Strings.Main_TokenNotUsedInThis, token));
                 chips.Children.Add(chip);
             }
             body.Children.Add(chips);
@@ -2450,10 +2755,10 @@ public partial class MainWindow : Window
         // The names table has no mappings to draw on the device, so the three
         // view keys would be dead there. Disabled beats silently doing nothing.
         DeviceViewButton.IsEnabled = RailViewButton.IsEnabled = ListViewButton.IsEnabled = !OnCustomNames;
-        AddRowButton.Content = OnCustomNames ? "+ Add name" : "+ Add row";
+        AddRowButton.Content = OnCustomNames ? Strings.Main_AddName : Strings.Main_AddRow;
         AutomationProperties.SetName(AddRowButton, OnCustomNames
-            ? "Add a row to the custom output names table"
-            : "Add a new binding row to this mode");
+            ? Strings.Main_AddARowToThe
+            : Strings.Main_AddANewBindingRow);
         // The words toggle only changes Device View labels; List View already
         // shows the raw names, so hide it there rather than offer a dead control.
         LabelStyleButton.IsVisible = device;
@@ -2464,13 +2769,14 @@ public partial class MainWindow : Window
             // canvas repeats connection + mode so it reads as the primary
             // editor, not a secondary tab.
             DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
-                connected ? "QuadStick connected" : "No QuadStick detected", plainDot: !connected);
+                connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected, plainDot: !connected);
             var modeName = CurrentSheet is { } cs ? (cs.ModeName.Length > 0 ? cs.ModeName : cs.Type.ToString()) : "";
-            DeviceHeaderMode.Text = modeName.Length > 0 ? $"Mode: {modeName}" : "";
+            DeviceHeaderMode.Text = modeName.Length > 0
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeNamed, modeName) : "";
             int modeNumber = CurrentModeNumber();
             DeviceHeaderLights.Text = ModeLights.For(modeNumber) is { } lit
-                ? $"Device shows {ModeLights.Describe(lit)}"
-                : $"Device has no light pattern for mode {modeNumber}";
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Main_DeviceShowsModeLightsDescribeLit, ModeLights.Describe(lit))
+                : string.Format(CultureInfo.CurrentCulture, Strings.Main_DeviceHasNoLightPattern, modeNumber);
             BuildDeviceView(); BuildZoneDetail();
         }
         else RebuildRows();
@@ -2483,11 +2789,11 @@ public partial class MainWindow : Window
         if (mode)
         {
             int free = UnusedInputs().Count();
-            UnusedButton.Content = $"Unused ({free})";
+            UnusedButton.Content = string.Format(CultureInfo.CurrentCulture, Strings.Main_UnusedFree, free);
             // Mirror the live count into the name, so a screen reader never
             // reads a stale label while the eye sees the number.
             AutomationProperties.SetName(UnusedButton,
-                $"{free} input{(free == 1 ? "" : "s")} not used yet. Opens the list.");
+                Plural.Of(free, "Count_UnusedInputOpens"));
         }
         RefreshIssues();
     }
@@ -2525,19 +2831,19 @@ public partial class MainWindow : Window
         {
             var rail = new StackPanel { Spacing = 6 };
             rail.Children.Add(new TextBlock
-            { Text = "Parts", FontSize = Size("SmallSize"), FontWeight = FontWeight.Bold, Classes = { "muted" }, Margin = new Avalonia.Thickness(2, 0, 0, 4) });
-            foreach (var z in VisibleZones(byZone))
+            { Text = Strings.Main_Parts, FontSize = Size("SmallSize"), FontWeight = FontWeight.Bold, Classes = { "muted" }, Margin = new Avalonia.Thickness(2, 0, 0, 4) });
+            foreach (var z in VisibleZones(byZone, withUsbPort: true))
                 rail.Children.Add(RailRow(z, byZone));
             DeviceCanvas.Children.Add(rail);
             return;
         }
 
-        var visible = VisibleZones(byZone).ToList();
+        var visible = VisibleZones(byZone, withUsbPort: true).ToList();
 
         // ---- Main diagram: the photo of the device with each part pinned
         // where it physically sits, so a part is found by looking at the thing
         // in your mouth instead of matching a name to a box. ----
-        var stage = new Canvas { Width = StageW, Height = StageH };
+        var stage = new Canvas { Width = StageW, Height = StageH, FlowDirection = Avalonia.Media.FlowDirection.LeftToRight };
         var photo = new Image
         {
             Source = DevicePhoto(), Width = PhotoW, Height = PhotoH,
@@ -2716,7 +3022,7 @@ public partial class MainWindow : Window
         // The full, editable list lives in the detail panel, opened on select.
         var countLabel = new TextBlock
         {
-            Text = count == 0 ? "Not mapped" : count == 1 ? "1 mapping" : $"{count} mappings",
+            Text = count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping"),
             FontSize = Size("SmallSize"), TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
         };
@@ -2729,7 +3035,7 @@ public partial class MainWindow : Window
         if (foreign)
             content.Children.Add(new TextBlock
             {
-                Text = circle || shortName ? "Not on model" : "Not on your model",
+                Text = circle || shortName ? Strings.Main_NotOnModel : Strings.Main_NotOnYourModel,
                 FontSize = Size("SmallSize"), Classes = { "muted" },
                 TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -2770,11 +3076,11 @@ public partial class MainWindow : Window
         var name = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
         name.Children.Add(new TextBlock { Text = z.Title, FontWeight = FontWeight.Bold, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap });
         if (foreign)
-            name.Children.Add(new TextBlock { Text = "Not on your model", FontSize = Size("SmallSize"), Classes = { "muted" } });
+            name.Children.Add(new TextBlock { Text = Strings.Main_NotOnYourModel, FontSize = Size("SmallSize"), Classes = { "muted" } });
 
         var cnt = new TextBlock
         {
-            Text = count == 0 ? "Not mapped" : count == 1 ? "1 mapping" : $"{count} mappings",
+            Text = count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping"),
             FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center,
         };
         if (count == 0) cnt.Classes.Add("muted"); else BindBrush(cnt, TextBlock.ForegroundProperty, "AccentText");
@@ -2799,11 +3105,13 @@ public partial class MainWindow : Window
     void SetZoneAccessibleName(Control btn, Zone z, List<Binding>? bindings, int count, bool foreign, bool selected)
     {
         var spoken = count == 0
-            ? "nothing mapped yet"
+            ? Strings.Main_NothingMappedYet
             : string.Join(", ", (bindings ?? new()).Take(4).Select(b => $"{ShortInput(z, b)} presses {OutputFieldValue(b)}"));
-        var warning = foreign ? $" Not available on your {ModelNames[(int)_model]}." : "";
+        var warning = foreign ? string.Format(CultureInfo.CurrentCulture, Strings.Main_NotAvailableOnYourModelNames, ModelNames[(int)_model]) : "";
         AutomationProperties.SetName(btn,
-            $"{z.Title}. {(selected ? "Selected. " : "")}{count} mapping{(count == 1 ? "" : "s")}. {spoken}.{warning} Press Enter to edit.");
+            string.Format(CultureInfo.CurrentCulture,
+                selected ? Strings.Main_ZoneSelected : Strings.Main_Zone,
+                z.Title, Plural.Of(count, "Count_Mapping"), spoken, warning));
     }
 
     void WireZoneSelect(ToggleButton btn, string zoneId)
@@ -2839,10 +3147,10 @@ public partial class MainWindow : Window
 
     void UpdateCardViewButton()
     {
-        CardViewButton.Content = _settings.DeviceCards ? "Detailed editor" : "Simple cards";
+        CardViewButton.Content = _settings.DeviceCards ? Strings.Main_DetailedEditor : Strings.Main_SimpleCards;
         AutomationProperties.SetName(CardViewButton, _settings.DeviceCards
-            ? "Mappings read as simple sentence cards. Switch to the detailed editor."
-            : "Mappings show the detailed editor. Switch to simple sentence cards.");
+            ? Strings.Main_MappingsReadAsSimpleSentence
+            : Strings.Main_MappingsShowTheDetailedEditor);
     }
 
     // One mapping as a plain sentence: "Decrement mode when you soft puff, as
@@ -2889,20 +3197,20 @@ public partial class MainWindow : Window
         // the point is to see exactly what the file holds.
         string output = b.ActionName.Length > 0 && _labelStyle != 0 ? b.ActionName
             : b.Output.Length > 0 ? TokenLabel(b.Output)
-            : "(nothing yet)";
+            : Strings.Main_NothingYet;
         // A settings row has no inputs: its column C is the value. Reading it
         // as "50 presses mouse_speed" was backwards, and it is the sentence a
         // screen reader user hears before deciding whether to open the row.
         bool setting = IsModePreferenceOverride(b);
         var inputs = b.Inputs.Count > 0
             ? b.Inputs.Select(i => _labelStyle == 0 ? i : StripInput(i, zone.Id)).ToList()
-            : new List<string> { setting ? "(no value)" : "(no input)" };
+            : new List<string> { setting ? Strings.Main_NoValue : Strings.Main_NoInput };
         // The words the pills sit between. The spoken sentence was fixed to say
         // "set X to 50" and the visible one was left saying "Press mouse_speed
         // when you 50", so the card on screen and the card in a screen reader
         // disagreed about the same row. Same fix, other direction.
-        string verb = setting ? "Set" : "Press";
-        string joiner = setting ? "to" : "when you";
+        string verb = setting ? Strings.Main_SetVerb : Strings.Main_PressVerb;
+        string joiner = setting ? Strings.Main_ToJoiner : Strings.Main_WhenYou;
         string func = _labelStyle == 0 ? b.Function : b.Function.Replace('_', ' ');
 
         // Every card uses the same column widths, so the outputs line up under
@@ -2950,7 +3258,7 @@ public partial class MainWindow : Window
             Cell(Word(verb), 0); Cell(Pill(output, OutputTint), 1);
             Cell(Word(joiner, left: true), 0, row: 1); Cell(inputPills, 1, row: 1);
             if (func.Length > 0)
-            { Cell(Word("as", left: true), 0, row: 2); Cell(Pill(func, FunctionTint), 1, row: 2); }
+            { Cell(Word(Strings.Main_AsJoiner, left: true), 0, row: 2); Cell(Pill(func, FunctionTint), 1, row: 2); }
         }
         else
         {
@@ -2967,7 +3275,7 @@ public partial class MainWindow : Window
                     ColumnDefinitions = new ColumnDefinitions("Auto,*"),
                     VerticalAlignment = VerticalAlignment.Center,
                 };
-                asFunc.Children.Add(Word("as"));
+                asFunc.Children.Add(Word(Strings.Main_AsJoiner));
                 var funcPill = Pill(func, FunctionTint);
                 funcPill.HorizontalAlignment = HorizontalAlignment.Left; // sits against "as", not adrift
                 Grid.SetColumn(funcPill, 1);
@@ -2997,11 +3305,12 @@ public partial class MainWindow : Window
         // the help already say that. A screen reader user was still being told
         // the opposite, which is the one place it costs the most.
         AutomationProperties.SetName(open, setting
-            ? $"Setting {n}: while this mode runs, set {b.Output} to "
-              + $"{(_file!.GetCell(b.Row, 2).Trim() is { Length: > 0 } v ? v : "nothing yet")}. Press Enter to edit."
-            : $"Mapping {n}: press {output} when you {string.Join(", then ", inputs)}"
-              + $"{(inputs.Count > 1 ? ", one after the other" : "")}"
-              + $"{(func.Length > 0 ? $", as {func}" : "")}. Press Enter to edit.");
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Main_SettingRowSpoken, n, b.Output,
+                _file!.GetCell(b.Row, 2).Trim() is { Length: > 0 } v ? v : Strings.Main_NothingYet)
+            : string.Format(CultureInfo.CurrentCulture,
+                inputs.Count > 1 ? Strings.Main_MappingRowSpokenInOrder : Strings.Main_MappingRowSpoken,
+                n, output, string.Join(Strings.Main_ThenJoin, inputs),
+                func.Length > 0 ? string.Format(CultureInfo.CurrentCulture, Strings.Main_AsFunction, func) : ""));
         open.Click += (_, _) =>
         {
             _expandedMapping = b.Row;
@@ -3043,7 +3352,7 @@ public partial class MainWindow : Window
         {
             ZoneDetailPanel.Children.Add(new TextBlock
             {
-                Text = "Nothing selected.\n\nPick a part of the QuadStick on the left to see what it does in this mode, change it, or map something new to it.",
+                Text = Strings.Main_NothingSelectedNNPickA,
                 FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
             });
             RepaintSelection();
@@ -3055,13 +3364,18 @@ public partial class MainWindow : Window
 
         var zoneTitle = new TextBlock
         {
-            Text = $"{zone.Title}  ·  {Plural.Of(bindings?.Count ?? 0, "mapping")}",
+            Text = zone.Title + "  ·  " + Plural.Of(bindings?.Count ?? 0, "Count_Mapping"),
             FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
         };
         AutomationProperties.SetLiveSetting(zoneTitle, AutomationLiveSetting.Polite);
         ZoneDetailPanel.Children.Add(zoneTitle);
         ZoneDetailPanel.Children.Add(new TextBlock
         { Text = zone.Blurb, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
+
+        // The two zones that live on the back of the case get the panel drawn
+        // out, because the numbering is the whole problem: nothing on the
+        // hardware says which jack is digital_in_8.
+        if (zone.Id is "jacks" or "other") ZoneDetailPanel.Children.Add(BackPanelGuide());
 
         if (bindings is { Count: > 0 })
         {
@@ -3090,14 +3404,14 @@ public partial class MainWindow : Window
                 var delIcon = Glyph("IconDelete", "Error");
                 delIcon.Width = delIcon.Height = 32; // double the usual 16, per the tester
                 var del = new Button { Classes = { "danger", "quiet" }, Padding = new Avalonia.Thickness(8, 2), Content = delIcon };
-                ToolTip.SetTip(del, "Remove this mapping");
+                ToolTip.SetTip(del, Strings.Main_RemoveThisMapping);
                 // ShortInput reads column C, which on a settings row is the
                 // value, so the destructive control in the card announced
                 // "Remove the 50 mapping" while the card above it had already
                 // been fixed to call the row a setting.
                 AutomationProperties.SetName(del, IsModePreferenceOverride(b)
-                    ? $"Remove the {b.Output} setting"
-                    : $"Remove the {ShortInput(zone, b)} mapping");
+                    ? string.Format(CultureInfo.CurrentCulture, Strings.Main_RemoveTheBOutputSetting, b.Output)
+                    : string.Format(CultureInfo.CurrentCulture, Strings.Main_RemoveTheShortInputZoneB, ShortInput(zone, b)));
                 del.Click += (_, _) =>
                 {
                     int deletedIndex = bindings!.IndexOf(b);
@@ -3115,8 +3429,8 @@ public partial class MainWindow : Window
                 if (cards)
                 {
                     // The way back to the sentence card, next to the trash.
-                    var done = new Button { Content = "Done", Classes = { "quiet" }, Padding = new Avalonia.Thickness(12, 2) };
-                    AutomationProperties.SetName(done, $"Close the editor for mapping {n} and go back to its card");
+                    var done = new Button { Content = Strings.Main_Done, Classes = { "quiet" }, Padding = new Avalonia.Thickness(12, 2) };
+                    AutomationProperties.SetName(done, string.Format(CultureInfo.CurrentCulture, Strings.Main_CloseTheEditorForMapping, n));
                     done.Click += (_, _) => { _expandedMapping = -1; BuildZoneDetail(); };
                     header.Children.Add(done);
                 }
@@ -3133,16 +3447,16 @@ public partial class MainWindow : Window
                     var prefDef = Definition(b.Output);
                     var prefValue = _file!.GetCell(b.Row, 2);
                     bool prefTyped = prefDef is not null && CanRepresent(prefDef, prefValue, 2);
-                    body.Children.Add(Labeled("Setting", OutputPicker(b, OutputsFor(CurrentSheet!),
-                        $"Setting changed by this row", OutputTint)));
-                    body.Children.Add(Labeled("Set it to", PrefsValueCell(b, prefTyped ? prefDef : null, 2)));
+                    body.Children.Add(Labeled(Strings.Main_SettingLabel, OutputPicker(b, OutputsFor(CurrentSheet!),
+                        Strings.Main_SettingChangedByThisRow, OutputTint)));
+                    body.Children.Add(Labeled(Strings.Main_SetItTo, PrefsValueCell(b, prefTyped ? prefDef : null, 2)));
                     if (prefDef is not null
                         && PreferenceInfoLine(b, prefDef, prefTyped ? _cellBorders.GetValueOrDefault($"C{b.Row}") : null, 2) is { } prefInfo)
                         body.Children.Add(prefInfo);
-                    body.Children.Add(Labeled("Note", NoteBox(b.Row, NoteColumn,
-                        "Note for this row. Saved in the file, ignored by the QuadStick")));
+                    body.Children.Add(Labeled(Strings.Main_NoteLabel, NoteBox(b.Row, NoteColumn,
+                        Strings.Main_NoteForThisRowSaved)));
                     body.Children.Add(ScopeBanner(ModeScope,
-                        "This row sets a QuadStick setting instead of pressing a button. It applies while this mode is running."));
+                        Strings.Main_ThisRowSetsAQuadStick));
                     ZoneDetailPanel.Children.Add(MappingCard(body));
                     continue;
                 }
@@ -3160,7 +3474,7 @@ public partial class MainWindow : Window
                     // edit lands on a blank cell and duplicates the input.
                     int col = i < b.InputCols.Count ? b.InputCols[i] : FirstFreeInputColumn(b);
                     var value = i < b.Inputs.Count ? b.Inputs[i] : "";
-                    var name = $"Input {i + 1} for this {zone.Display} mapping";
+                    var name = string.Format(CultureInfo.CurrentCulture, Strings.Main_InputI1ForThis, i + 1, zone.Display);
                     // The first input belongs to the part you are looking at, so
                     // a short dropdown covers it. Inputs after it can be any
                     // token on the device, which needs the searchable picker.
@@ -3175,7 +3489,7 @@ public partial class MainWindow : Window
                     if (i < b.Inputs.Count)
                     {
                         int idx = i;
-                        var rmv = IconButton("IconDelete", $"Remove this input from mapping {n}");
+                        var rmv = IconButton("IconDelete", string.Format(CultureInfo.CurrentCulture, Strings.Main_RemoveThisInputFromMapping, n));
                         rmv.Margin = new Avalonia.Thickness(8, 0, 0, 0);
                         rmv.Click += (_, _) =>
                         {
@@ -3192,9 +3506,9 @@ public partial class MainWindow : Window
                 }
                 if (inputCount < 8)
                 {
-                    var addInput = IconButton("IconAdd", $"Add another input to mapping {n}; you do the inputs one after the other, left to right");
+                    var addInput = IconButton("IconAdd", string.Format(CultureInfo.CurrentCulture, Strings.Main_AddAnotherInputToMapping, n));
                     addInput.Margin = new Avalonia.Thickness(8, 0, 0, 0);
-                    ToolTip.SetTip(addInput, "Add another input");
+                    ToolTip.SetTip(addInput, Strings.Main_AddAnotherInput);
                     int nextCol = FirstFreeInputColumn(b);
                     // The add button rides in the last input row, left of that
                     // row's trash, instead of hanging under the rows on its own.
@@ -3208,12 +3522,12 @@ public partial class MainWindow : Window
                     {
                         var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto") };
                         var newBox = DeviceInputPicker(b.Row, nextCol, "",
-                            $"Extra input for mapping {n}", zone.Id);
+                            string.Format(CultureInfo.CurrentCulture, Strings.Main_ExtraInputForMappingN, n), zone.Id);
                         Grid.SetColumn(newBox, 0);
                         row.Children.Add(newBox);
                         // The new row isn't committed until a value is picked, so its
                         // trash just drops the row instead of editing the file.
-                        var rmv = IconButton("IconDelete", $"Remove this empty input from mapping {n}");
+                        var rmv = IconButton("IconDelete", string.Format(CultureInfo.CurrentCulture, Strings.Main_RemoveThisEmptyInputFrom, n));
                         rmv.Margin = new Avalonia.Thickness(8, 0, 0, 0);
                         rmv.Click += (_, _) =>
                         {
@@ -3234,20 +3548,20 @@ public partial class MainWindow : Window
                     };
                     MoveAddTo(lastInputRow!);
                 }
-                body.Children.Add(Labeled("When you", inputsBox));
+                body.Children.Add(Labeled(Strings.Main_WhenYou2, inputsBox));
 
                 // ---- "Press" (game button) and "As" (how it presses) ----
-                body.Children.Add(Labeled("Press", OutputPicker(b, OutputsFor(CurrentSheet!),
-                    $"Game button pressed by {ShortInput(zone, b)}", OutputTint)));
-                body.Children.Add(Labeled("As", FunctionCombo(b, zone)));
-                body.Children.Add(Labeled("Note", NoteBox(b.Row, NoteColumn, $"Note for this mapping. Saved in the file, ignored by the QuadStick")));
+                body.Children.Add(Labeled(Strings.Main_PressVerb, OutputPicker(b, OutputsFor(CurrentSheet!),
+                    string.Format(CultureInfo.CurrentCulture, Strings.Main_GameButtonPressedByShortInput, ShortInput(zone, b)), OutputTint)));
+                body.Children.Add(Labeled(Strings.Main_AsLabel, FunctionCombo(b, zone)));
+                body.Children.Add(Labeled(Strings.Main_NoteLabel, NoteBox(b.Row, NoteColumn, Strings.Main_NoteForThisMappingSaved)));
 
                 ZoneDetailPanel.Children.Add(MappingCard(body));
             }
         }
         else
             ZoneDetailPanel.Children.Add(new TextBlock
-            { Text = "Nothing mapped here yet.", FontSize = Size("BodySize"), Classes = { "muted" } });
+            { Text = Strings.Main_NothingMappedHereYet, FontSize = Size("BodySize"), Classes = { "muted" } });
 
         // What this part can still do. The toolbar list answers "what is free
         // anywhere"; this answers "what is free right here", which is the
@@ -3256,12 +3570,16 @@ public partial class MainWindow : Window
         // and this app gets aimed at with a mouth stick.
         if (zone.Id != "unset")
         {
-            var freeHere = UnusedInputs().Where(i => ZoneOf(i) == zone.Id).ToList();
+            // Ordered by socket, top of the case down, so the first thing
+            // offered on the jacks is the top jack rather than digital_in_1.
+            // The USB-A data pins sort last: nothing plugs into them.
+            var freeHere = UnusedInputs(zone.Id).Where(i => ZoneOf(i) == zone.Id)
+                .OrderBy(JackRank).ToList();
             if (freeHere.Count > 0)
             {
                 ZoneDetailPanel.Children.Add(new TextBlock
                 {
-                    Text = $"Not used yet on this part ({freeHere.Count})",
+                    Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_NotUsedYetOnThis, freeHere.Count),
                     FontSize = Size("SmallSize"), Classes = { "secondary" },
                     Margin = new Avalonia.Thickness(0, 6, 0, 0), TextWrapping = TextWrapping.Wrap,
                 });
@@ -3286,15 +3604,15 @@ public partial class MainWindow : Window
                         HorizontalAlignment = HorizontalAlignment.Stretch,
                         HorizontalContentAlignment = HorizontalAlignment.Stretch,
                     };
-                    AutomationProperties.SetName(free, $"Map {token} to a new mapping on the {zone.Title}");
-                    ToolTip.SetTip(free, $"Start a new mapping on {token}");
+                    AutomationProperties.SetName(free, string.Format(CultureInfo.CurrentCulture, Strings.Main_MapTokenToANew, token, zone.Title));
+                    ToolTip.SetTip(free, string.Format(CultureInfo.CurrentCulture, Strings.Main_StartANewMappingOn, token));
                     var t = token;
                     free.Click += (_, _) => AddMappingWithInput(t, inputWasChosen: true);
                     ZoneDetailPanel.Children.Add(free);
                 }
             }
-            var add = new Button { Content = "+ Map something to this", Classes = { "quiet" } };
-            AutomationProperties.SetName(add, $"Add a new mapping for the {zone.Title}");
+            var add = new Button { Content = Strings.Main_MapSomethingToThis, Classes = { "quiet" } };
+            AutomationProperties.SetName(add, string.Format(CultureInfo.CurrentCulture, Strings.Main_AddANewMappingFor, zone.Title));
             add.Click += (_, _) => AddMappingWithInput(zone.DefaultInput);
             ZoneDetailPanel.Children.Add(add);
         }
@@ -3399,10 +3717,10 @@ public partial class MainWindow : Window
         if (!await ConfirmLeaveAsync()) return; // opening discards unsaved work
         var picks = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Open QuadStick profile",
+            Title = Strings.Main_OpenQuadStickProfile,
             FileTypeFilter = new[]
             {
-                new FilePickerFileType("QuadStick profile") { Patterns = new[] { "*.csv", "*.xlsx" } },
+                new FilePickerFileType(Strings.Main_QuadStickProfile) { Patterns = new[] { "*.csv", "*.xlsx" } },
             },
         });
         if (picks.Count == 0) return;
@@ -3418,11 +3736,11 @@ public partial class MainWindow : Window
                 var imported = ProfileFile.Load(read.Csv);
                 if (imported.Document.Sheets.Count == 0)
                 {
-                    Status($"{picks[0].Name}: {NoProfileTab(read.Csv, read.Skipped)}", StatusKind.Error);
+                    Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_Picks0NameNoProfileTabRead, picks[0].Name, NoProfileTab(read.Csv, read.Skipped)), StatusKind.Error);
                     return;
                 }
                 OpenInEditor(imported, savePath: null, ProfileSource.File);
-                Status($"Imported {Modes(imported)} from {picks[0].Name}. Save to keep it as a profile.",
+                Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_ImportedModesImportedFromPicks, Modes(imported), picks[0].Name),
                     StatusKind.Ready);
                 await ShowImportReviewAsync(imported, picks[0].Name, read.Skipped, read.Limitation,
                     renamed: read.Renamed);
@@ -3431,9 +3749,9 @@ public partial class MainWindow : Window
             OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), path, ProfileSource.File);
         }
         catch (InvalidDataException)
-        { Status($"Could not read {picks[0].Name}. It is not a readable spreadsheet.", StatusKind.Error); }
+        { Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotReadPicks0, picks[0].Name), StatusKind.Error); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        { Status($"Could not open {picks[0].Name}: {ex.Message}", StatusKind.Error); }
+        { Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotOpenPicks0, picks[0].Name, ex.Message), StatusKind.Error); }
     }
 
     // Returns true only once the file has actually reached disk, so
@@ -3451,7 +3769,7 @@ public partial class MainWindow : Window
             && Path.GetDirectoryName(_savePath) is string dir
             && Device.IsInstallTarget(dir))
         {
-            Status("This profile lives on the QuadStick. Use Install to write it back safely; Save As puts a copy in your library.", StatusKind.Warning);
+            Status(Strings.Main_ThisProfileLivesOnThe, StatusKind.Warning);
             _savePath = null; // fall through to Save As on the next save
             return false;
         }
@@ -3462,7 +3780,7 @@ public partial class MainWindow : Window
             var start = await StorageProvider.TryGetFolderFromPathAsync(LibraryDir);
             var pick = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Save profile CSV",
+                Title = Strings.Main_SaveProfileCSV,
                 SuggestedFileName = BareName(_file.Document.CsvFileName) is { Length: > 0 } sug ? sug : "profile",
                 SuggestedStartLocation = start,
                 DefaultExtension = "csv",
@@ -3477,7 +3795,7 @@ public partial class MainWindow : Window
             var pickedDir = Path.GetDirectoryName(picked);
             if (pickedDir is not null && Device.IsInstallTarget(pickedDir))
             {
-                Status("That folder is a QuadStick drive. Use Install to write to the device safely.", StatusKind.Warning);
+                Status(Strings.Main_ThatFolderIsAQuadStick, StatusKind.Warning);
                 return false;
             }
             _savePath = picked;
@@ -3492,13 +3810,13 @@ public partial class MainWindow : Window
             await Task.Run(() => ProfileFile.WriteAtomic(_savePath, text));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        { Status($"Could not save: {ex.Message}", StatusKind.Error); return false; }
+        { Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotSaveExMessage, ex.Message), StatusKind.Error); return false; }
         _file.Dirty = false;
         RememberRecent(_savePath); // Save As invents a path that no open ever saw
         PersistDrafts();           // and gives an untitled profile's names somewhere to live
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
         Telemetry.Track(TelemetryEvent.ProfileSaved);
-        Status($"Saved to {_savePath}.", StatusKind.Ready);
+        Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_SavedToSavePath, _savePath), StatusKind.Ready);
         // Local save is done. Push the exact bytes just written to the sheet in
         // the background; the save path never waits on the network.
         FireBackupPush(_savePath, text);
@@ -3576,10 +3894,10 @@ public partial class MainWindow : Window
 
         if (!SheetsUrl.TryGetXlsxExportUrl(pasted, out var workbookUrl)
             || !SheetsUrl.TryGetCsvExportUrl(pasted, out var csvUrl))
-        { HomeError("That does not look like a Google Sheets link. Paste the full link from your browser's address bar."); return; }
+        { HomeError(Strings.Main_ThatDoesNotLookLike); return; }
         try
         {
-            Progress("Downloading the spreadsheet...");
+            Progress(Strings.Main_DownloadingTheSpreadsheet);
             // A sheet this app made is read with the app's own token. The link
             // the user pastes is most often the one they copied from this very
             // profile a second ago, and the anonymous export below only answers
@@ -3616,7 +3934,7 @@ public partial class MainWindow : Window
             }
 
             if (text.TrimStart().StartsWith('<'))
-            { HomeError("Google returned a web page instead of the profile. The sheet is probably not shared publicly (File > Share > Anyone with the link)."); return; }
+            { HomeError(Strings.Main_GoogleReturnedAWebPage); return; }
             var imported = ProfileFile.Load(text);
             if (imported.Document.Sheets.Count == 0)
             { HomeError(NoProfileTab(text, skipped)); return; }
@@ -3627,24 +3945,22 @@ public partial class MainWindow : Window
             Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
             HomeStatusText.IsVisible = false; // the progress line has done its job
             OpenInEditor(imported, savePath: null, ProfileSource.Sheets);
-            Status($"Imported {Modes(imported)} from the spreadsheet.", StatusKind.Ready);
+            Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_ImportedModesImportedFromThe, Modes(imported)), StatusKind.Ready);
             // A published link hands back one tab and no way to ask for the
             // rest, so the review has to say that before it counts anything.
             // Without it, a profile missing four of its five modes would be
             // reported as a clean import, which is the worst thing this window
             // could ever say.
-            await ShowImportReviewAsync(imported, "This spreadsheet", skipped,
+            await ShowImportReviewAsync(imported, Strings.Main_ThisSpreadsheet, skipped,
                 wholeWorkbook ? tooLarge
-                    : "This link is a published one, and a published link only ever gives a single tab. "
-                    + "Any other mode tabs in the spreadsheet were not sent to us at all, so we cannot say "
-                    + "what is in them. To bring the whole profile in, share the sheet with \"Anyone with "
-                    + "the link\" in Google Sheets and import it again.",
+                    : Strings.Main_ThisLinkIsAPublished,
                 dialogOwner, renamed);
         }
         catch (InvalidDataException)
-        { HomeError("Could not read that spreadsheet. Download it as .xlsx and open it with the Open button instead."); }
+        { HomeError(Strings.Main_CouldNotReadThatSpreadsheet); }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
-        { HomeError($"Could not download the sheet: {(ex is TaskCanceledException ? "the connection timed out after 15 seconds" : ex.Message)}. Check your internet connection and the link."); }
+        { HomeError(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotDownloadTheSheet,
+                ex is TaskCanceledException ? Strings.Main_ConnectionTimedOut : ex.Message)); }
     }
 
     /// <summary>Why an import found no profile, in the words of what was
@@ -3653,26 +3969,26 @@ public partial class MainWindow : Window
     /// app's own share link, and the user could not tell which they had.</summary>
     internal static string NoProfileTab(string text, IReadOnlyList<SkippedTab> skipped)
     {
-        var start = "A profile tab starts with \"Profile Name\", \"Preferences\" or \"Infrared\" in cell A1.";
+        var start = Strings.Main_AProfileTabStartsWith;
         // Asked before the empty check, because a workbook whose every tab was
         // passed over converts to nothing, and "came back empty" would send the
         // user looking at their connection instead of at cell A1.
         if (skipped.Count > 0)
-            return $"No tab in that spreadsheet is a profile. {Naming(skipped)} {start}";
+            return string.Format(CultureInfo.CurrentCulture, Strings.Main_NoTabInThatSpreadsheet, Naming(skipped), start);
 
         if (text.Trim().Length == 0)
-            return "That spreadsheet came back empty. If you have just shared it, wait a moment and try again.";
+            return Strings.Main_ThatSpreadsheetCameBackEmpty;
 
         var a1 = Csv.Parse(text) is { Count: > 0 } grid && grid[0].Length > 0 ? grid[0][0].Trim() : "";
         return a1.Length == 0
-            ? $"That spreadsheet has no profile tab: cell A1 is empty. {start}"
-            : $"That spreadsheet has no profile tab: cell A1 says \"{Shortened(a1)}\". {start}";
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Main_ThatSpreadsheetHasNoProfile, start)
+            : string.Format(CultureInfo.CurrentCulture, Strings.Main_ThatSpreadsheetHasNoProfile2, Shortened(a1), start);
     }
 
     static string Naming(IReadOnlyList<SkippedTab> skipped) =>
         skipped.Count == 1
-            ? $"The tab \"{skipped[0].Name}\" was passed over."
-            : "These tabs were passed over: " + string.Join(", ", skipped.Select(t => $"\"{t.Name}\"")) + ".";
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Main_TheTabSkipped0Name, skipped[0].Name)
+            : Strings.Main_TheseTabsWerePassedOver + string.Join(", ", skipped.Select(t => $"\"{t.Name}\"")) + ".";
 
     // A1 can hold a paragraph somebody pasted. Enough of it to recognise.
     static string Shortened(string value) => value.Length <= 60 ? value : value[..57] + "...";
@@ -3696,16 +4012,16 @@ public partial class MainWindow : Window
 
     async Task SaveAsTemplateAsync()
     {
-        if (_file is null) { Status("Open or create a profile first."); return; }
+        if (_file is null) { Status(Strings.Main_OpenOrCreateAProfile); return; }
 
-        var suggested = Path.GetFileNameWithoutExtension(_file.Document.CsvFileName ?? "my template");
+        var suggested = Path.GetFileNameWithoutExtension(_file.Document.CsvFileName ?? Strings.Main_MyTemplate);
         var box = new TextBox { Text = suggested, HorizontalAlignment = HorizontalAlignment.Stretch };
-        AutomationProperties.SetName(box, "Name for this template");
-        var save = new Button { Content = "Save template", MinWidth = 140, IsDefault = true };
-        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        AutomationProperties.SetName(box, Strings.Main_NameForThisTemplate);
+        var save = new Button { Content = Strings.Main_SaveTemplate, MinWidth = 140, IsDefault = true };
+        var cancel = new Button { Content = Strings.Main_Cancel, MinWidth = 140, IsCancel = true };
         var dialog = new Window
         {
-            Title = "Save as template",
+            Title = Strings.Main_SaveAsTemplate,
             SizeToContent = SizeToContent.WidthAndHeight,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Content = ZoomWrap(new StackPanel
@@ -3715,8 +4031,8 @@ public partial class MainWindow : Window
                 MaxWidth = 480,
                 Children =
                 {
-                    new TextBlock { Text = "Save as template", FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
-                    new TextBlock { Text = "Keeps a copy you can start new profiles from any time, under Use template on the home screen. Editing or installing a profile never changes its template.", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                    new TextBlock { Text = Strings.Main_SaveAsTemplate, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = Strings.Main_KeepsACopyYouCan, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
                     box,
                     new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { save, cancel } },
                 },
@@ -3731,7 +4047,7 @@ public partial class MainWindow : Window
         if (!confirmed) return;
 
         var fileName = SafeTemplateName(box.Text ?? "");
-        if (fileName.Length == 0) { Status("A template needs a name.", StatusKind.Warning); return; }
+        if (fileName.Length == 0) { Status(Strings.Main_ATemplateNeedsAName, StatusKind.Warning); return; }
         try
         {
             Directory.CreateDirectory(TemplatesDir);
@@ -3739,9 +4055,9 @@ public partial class MainWindow : Window
             ProfileFile.WriteAtomic(Path.Combine(TemplatesDir, fileName), _file.ToCsvText());
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        { Status($"Could not save the template: {ex.Message}", StatusKind.Error); return; }
+        { Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotSaveTheTemplate, ex.Message), StatusKind.Error); return; }
         RefreshEditor(); // NormalizeForDeviceCsv may have shifted rows
-        Status($"Saved template {fileName}. Find it under Use template on the home screen.", StatusKind.Ready);
+        Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_SavedTemplateFileNameFindIt, fileName), StatusKind.Ready);
     }
 
     async Task UseTemplateAsync()
@@ -3754,7 +4070,7 @@ public partial class MainWindow : Window
             ? Directory.GetFiles(TemplatesDir, "*.csv").OrderBy(Path.GetFileName).ToArray()
             : Array.Empty<string>();
         if (templates.Length == 0)
-        { HomeError("You have not saved any templates yet. Open a profile and use Save as template to make one."); return; }
+        { HomeError(Strings.Main_YouHaveNotSavedAny); return; }
 
         if (!await ConfirmLeaveAsync()) return; // opening discards unsaved work
 
@@ -3767,22 +4083,22 @@ public partial class MainWindow : Window
             SelectedIndex = 0,
             MaxHeight = 320,
         };
-        AutomationProperties.SetName(list, "Your saved templates");
+        AutomationProperties.SetName(list, Strings.Main_YourSavedTemplates);
         void RefreshList(int selectIndex)
         {
             list.ItemsSource = templatePaths.Select(Path.GetFileNameWithoutExtension).ToList();
             list.SelectedIndex = selectIndex;
         }
 
-        var open = new Button { Content = "Use template", MinWidth = 140, IsDefault = true };
-        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
-        var rename = new Button { Content = "Rename", Classes = { "quiet" } };
-        var delete = new Button { Content = "Delete", Classes = { "danger", "quiet" } };
-        AutomationProperties.SetName(rename, "Rename selected template");
-        AutomationProperties.SetName(delete, "Delete selected template");
+        var open = new Button { Content = Strings.Main_UseTemplate, MinWidth = 140, IsDefault = true };
+        var cancel = new Button { Content = Strings.Main_Cancel, MinWidth = 140, IsCancel = true };
+        var rename = new Button { Content = Strings.Main_Rename, Classes = { "quiet" } };
+        var delete = new Button { Content = Strings.Main_Delete, Classes = { "danger", "quiet" } };
+        AutomationProperties.SetName(rename, Strings.Main_RenameSelectedTemplate);
+        AutomationProperties.SetName(delete, Strings.Main_DeleteSelectedTemplate);
         var dialog = new Window
         {
-            Title = "Use template",
+            Title = Strings.Main_UseTemplate,
             SizeToContent = SizeToContent.WidthAndHeight,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             Content = ZoomWrap(new StackPanel
@@ -3792,8 +4108,8 @@ public partial class MainWindow : Window
                 MaxWidth = 480,
                 Children =
                 {
-                    new TextBlock { Text = "Start from a template", FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
-                    new TextBlock { Text = "Opens a fresh copy you can edit and install. Your template stays as it is.", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                    new TextBlock { Text = Strings.Main_StartFromATemplate, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                    new TextBlock { Text = Strings.Main_OpensAFreshCopyYou, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
                     list,
                     new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { rename, delete } },
                     new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12, Children = { open, cancel } },
@@ -3809,49 +4125,49 @@ public partial class MainWindow : Window
         rename.Click += async (_, _) =>
         {
             var idx = list.SelectedIndex;
-            if (idx < 0) { Status("Select a template to rename first.", StatusKind.Warning); return; }
+            if (idx < 0) { Status(Strings.Main_SelectATemplateToRename, StatusKind.Warning); return; }
             var oldPath = templatePaths[idx];
-            var newName = await AskNameAsync("Rename template", Path.GetFileNameWithoutExtension(oldPath),
-                "Rename", "New name for this template");
+            var newName = await AskNameAsync(Strings.Main_RenameTemplate, Path.GetFileNameWithoutExtension(oldPath),
+                "Rename", Strings.Main_NewNameForThisTemplate);
             if (newName is null) return;
             var fileName = SafeTemplateName(newName);
-            if (fileName.Length == 0) { Status("A template needs a name.", StatusKind.Warning); return; }
+            if (fileName.Length == 0) { Status(Strings.Main_ATemplateNeedsAName, StatusKind.Warning); return; }
             var newPath = Path.Combine(TemplatesDir, fileName);
             if (!string.Equals(newPath, oldPath, StringComparison.Ordinal))
             {
                 if (File.Exists(newPath))
-                { Status($"A template named {Path.GetFileNameWithoutExtension(fileName)} already exists.", StatusKind.Warning); return; }
+                { Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_ATemplateNamedPathGetFileNameWithoutExtension, Path.GetFileNameWithoutExtension(fileName)), StatusKind.Warning); return; }
                 try { File.Move(oldPath, newPath); }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-                { Status($"Could not rename the template: {ex.Message}", StatusKind.Error); return; }
+                { Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotRenameTheTemplate, ex.Message), StatusKind.Error); return; }
                 templatePaths[idx] = newPath;
             }
             RefreshList(idx);
-            Status($"Renamed template to {Path.GetFileNameWithoutExtension(fileName)}.", StatusKind.Ready);
+            Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_RenamedTemplateToPathGetFileNameWithoutExtension, Path.GetFileNameWithoutExtension(fileName)), StatusKind.Ready);
         };
 
         delete.Click += async (_, _) =>
         {
             var idx = list.SelectedIndex;
-            if (idx < 0) { Status("Select a template to delete first.", StatusKind.Warning); return; }
+            if (idx < 0) { Status(Strings.Main_SelectATemplateToDelete, StatusKind.Warning); return; }
             var targetPath = templatePaths[idx];
             var name = Path.GetFileNameWithoutExtension(targetPath);
-            if (!await ConfirmAsync($"Delete template \"{name}\"?",
-                "Profiles you already made from this template are not affected. This cannot be undone."))
+            if (!await ConfirmAsync(string.Format(CultureInfo.CurrentCulture, Strings.Main_DeleteTemplateName, name),
+                Strings.Main_ProfilesYouAlreadyMadeFrom))
                 return;
             try { File.Delete(targetPath); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-            { Status($"Could not delete the template: {ex.Message}", StatusKind.Error); return; }
+            { Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotDeleteTheTemplate, ex.Message), StatusKind.Error); return; }
             templatePaths.RemoveAt(idx);
             if (templatePaths.Count == 0)
             {
                 dialog.Close();
-                HomeError("You have not saved any templates yet. Open a profile and use Save as template to make one.");
-                Status($"Deleted template {name}.", StatusKind.Ready);
+                HomeError(Strings.Main_YouHaveNotSavedAny);
+                Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_DeletedTemplateName, name), StatusKind.Ready);
                 return;
             }
             RefreshList(Math.Min(idx, templatePaths.Count - 1));
-            Status($"Deleted template {name}.", StatusKind.Ready);
+            Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_DeletedTemplateName, name), StatusKind.Ready);
         };
 
         await ShowDialogInShellAsync(dialog);
@@ -3863,10 +4179,10 @@ public partial class MainWindow : Window
             // savePath null: the copy is unsaved, so Save prompts for a new
             // location and the template file is never overwritten.
             OpenInEditor(ProfileFile.Load(await File.ReadAllTextAsync(path)), savePath: null, ProfileSource.New);
-            Status($"Started from template {Path.GetFileNameWithoutExtension(path)}. Save to keep this as its own profile.", StatusKind.Ready);
+            Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_StartedFromTemplatePathGetFileNameWithoutExtension, Path.GetFileNameWithoutExtension(path)), StatusKind.Ready);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        { HomeError($"Could not open that template: {ex.Message}"); }
+        { HomeError(string.Format(CultureInfo.CurrentCulture, Strings.Main_CouldNotOpenThatTemplate, ex.Message)); }
     }
 
     bool _closeConfirmed;
@@ -3885,7 +4201,7 @@ public partial class MainWindow : Window
         var full = v + ".csv";
         if (full == _file.Document.CsvFileName) return;
         _file.SetCell(_file.Document.FileNameCellRow, 0, full);
-        Title = $"Quadstick: Config Manager (unofficial) - {v}";
+        Title = string.Format(CultureInfo.CurrentCulture, Strings.Main_QuadstickConfigManagerUnofficialV, v);
         RefreshIssues(); // bad names surface immediately as errors
     }
 
@@ -3911,11 +4227,11 @@ public partial class MainWindow : Window
 
     async Task<bool> AskToSaveAsync()
     {
-        var title = "Save your changes?";
-        var message = "This profile has unsaved changes. Save them before leaving?";
-        var save = new Button { Content = "Save", MinWidth = 140, IsDefault = true };
-        var dontSave = new Button { Content = "Don't save", MinWidth = 140 };
-        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        var title = Strings.Main_SaveYourChanges;
+        var message = Strings.Main_ThisProfileHasUnsavedChanges;
+        var save = new Button { Content = Strings.Main_Save, MinWidth = 140, IsDefault = true };
+        var dontSave = new Button { Content = Strings.Main_DonTSave, MinWidth = 140 };
+        var cancel = new Button { Content = Strings.Main_Cancel, MinWidth = 140, IsCancel = true };
         var dialog = new Window
         {
             Title = title,
@@ -3956,10 +4272,10 @@ public partial class MainWindow : Window
 
     void UndoEdit()
     {
-        if (_file is null || !_file.Undo()) { Status("Nothing to undo."); return; }
+        if (_file is null || !_file.Undo()) { Status(Strings.Main_NothingToUndo); return; }
         FileNameBox.Text = BareName(_file.Document.CsvFileName);
         RefreshEditor();
-        Status("Change undone.", StatusKind.Ready);
+        Status(Strings.Main_ChangeUndone, StatusKind.Ready);
     }
 
     ModeSheet? CurrentSheet =>
@@ -3998,9 +4314,9 @@ public partial class MainWindow : Window
             {
                 Text = CurrentSheet.Type switch
                 {
-                    SheetType.Infrared => "No commands on this sheet yet. Click \"Add row\" to add one.",
-                    SheetType.Preferences => "No settings on this sheet yet. Click \"Add row\" to add one.",
-                    _ => "No bindings yet. Click \"Add row\" to connect an input to an output.",
+                    SheetType.Infrared => Strings.Main_NoCommandsOnThisSheet,
+                    SheetType.Preferences => Strings.Main_NoSettingsOnThisSheet,
+                    _ => Strings.Main_NoBindingsYetClickAdd,
                 },
                 FontSize = Size("BodySize"), Classes = { "muted" }, Margin = new Avalonia.Thickness(4, 12),
             });
@@ -4138,14 +4454,15 @@ public partial class MainWindow : Window
         // separates it from the next one.
         if (p.Children.OfType<Border>().FirstOrDefault(x => x.Tag is string) is { Tag: string baseName } h)
             AutomationProperties.SetName(h,
-                $"{baseName}{(sel ? ", selected" : "")}. Space selects, drag reorders");
+                string.Format(CultureInfo.CurrentCulture,
+            sel ? Strings.Main_RowSelected : Strings.Main_RowNotSelected, baseName));
     }
 
     void RepaintSelection()
     {
         foreach (var row in _rowPanels.Keys) PaintRow(row);
         SelectionBar.IsVisible = _selectedRows.Count > 0 && !DeviceContainer.IsVisible;
-        SelectionCount.Text = $"{_selectedRows.Count} selected";
+        SelectionCount.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_SelectedRowsCountSelected, _selectedRows.Count);
         DeviceSelectionBar.IsVisible = _selectedRows.Count > 0 && DeviceContainer.IsVisible;
         DeviceSelectionCount.Text = SelectionCount.Text;
     }
@@ -4174,7 +4491,7 @@ public partial class MainWindow : Window
             AnimateGapClose(RowsPanel, firstIndex + 1, gap); // +1: the header row is child 0
             RestoreListScroll(off, () => { });
         }
-        Status($"{rows.Count} row{(rows.Count == 1 ? "" : "s")} deleted. Ctrl+Z brings them back.", StatusKind.Ready);
+        Status(Plural.Of(rows.Count, "Count_RowDeleted"), StatusKind.Ready);
     }
 
     void ClearSelection()
@@ -4187,9 +4504,9 @@ public partial class MainWindow : Window
 
     MenuFlyout MoveMenu()
     {
-        var top = new MenuItem { Header = "To the top" };
+        var top = new MenuItem { Header = Strings.Main_ToTheTop };
         top.Click += (_, _) => MoveSelection(top: true);
-        var bottom = new MenuItem { Header = "To the bottom" };
+        var bottom = new MenuItem { Header = Strings.Main_ToTheBottom };
         bottom.Click += (_, _) => MoveSelection(top: false);
         return new MenuFlyout { Items = { top, bottom } };
     }
@@ -4212,7 +4529,7 @@ public partial class MainWindow : Window
             RebuildRows();
             RestoreListScroll(off, () => { });
         }
-        Status($"{srcs.Length} row{(srcs.Length == 1 ? "" : "s")} moved to the {(top ? "top" : "bottom")}. Ctrl+Z undoes it.", StatusKind.Ready);
+        Status(Plural.Of(srcs.Length, top ? "Count_RowMovedTop" : "Count_RowMovedBottom"), StatusKind.Ready);
     }
 
     void SelectFromClick(int row, KeyModifiers mods)
@@ -4248,7 +4565,7 @@ public partial class MainWindow : Window
         h.VerticalAlignment = VerticalAlignment.Center;
         h.Focusable = true; // Space selects for keyboard and switch users
         h.Tag = baseName;   // PaintRow appends ", selected" to this
-        ToolTip.SetTip(h, "Click to select, drag to reorder");
+        ToolTip.SetTip(h, Strings.Main_ClickToSelectDragTo);
         bool pressed = false, collapseOnRelease = false;
         var pressAt = new Avalonia.Point();
         h.PointerPressed += (_, e) =>
@@ -4323,7 +4640,7 @@ public partial class MainWindow : Window
     {
         var p = ListGrid(BindingColumns);
         p.Children.Add(At(RowNumberHeaderSpacer(), 0));
-        p.Children.Add(At(Swatch("Output (game button)", OutputTint), 1));
+        p.Children.Add(At(Swatch(Strings.Main_OutputGameButton, OutputTint), 1));
         p.Children.Add(At(Swatch("Function (behavior)", FunctionTint), 2));
         p.Children.Add(At(Swatch("Inputs (sips, puffs, joystick)", InputTint), 3));
         return p;
@@ -4340,9 +4657,13 @@ public partial class MainWindow : Window
         // against the taller stack instead of stretching or hugging the top.
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
         var outputs = OutputsFor(CurrentSheet!);
-        p.Children.Add(At(Mid(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, $"Output for row {b.Row}", OutputTint, outputs.Catalog, "an output",
+        p.Children.Add(At(Mid(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, string.Format(CultureInfo.CurrentCulture, Strings.Main_OutputForRowBRow, b.Row), OutputTint, outputs.Catalog, Strings.Main_AnOutput,
             picked => CommitOutputFromList(b, outputs, picked))), 1));
-        p.Children.Add(At(Mid(ListPickerCell(b.Row, 1, b.Function, FunctionSuggestions, $"Function for row {b.Row}", FunctionTint, null, "a function")), 2));
+        // List View is the raw grid, so the function's numbers explain
+        // themselves through the cell's name rather than a panel: same
+        // sentences Device View prints under its box.
+        p.Children.Add(At(Mid(ListPickerCell(b.Row, 1, b.Function, FunctionSuggestions,
+            string.Format(CultureInfo.CurrentCulture, Strings.Main_FunctionForRowBRow, b.Row, ParameterAccessibleName(b.Function)), FunctionTint, null, Strings.Main_AFunction)), 2));
 
         // A mode row whose output is a setting name is not a binding: the
         // device skips column B and reads column C as the setting's VALUE.
@@ -4402,13 +4723,13 @@ public partial class MainWindow : Window
             // The picker takes the column, the remove control sits beside it.
             var line = ListGrid("*,Auto");
             line.Children.Add(At(ListPickerCell(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "",
-                InputSuggestions, $"Input {i + 1} for row {b.Row}", InputTint, InputCatalog, "an input"), 0));
+                InputSuggestions, string.Format(CultureInfo.CurrentCulture, Strings.Main_InputI1ForRow, i + 1, b.Row), InputTint, InputCatalog, Strings.Main_AnInput), 0));
             // A round remove control beside each real input, so any input
             // can be taken out (not just emptied, and not just the last one).
             if (b.Inputs.Count > 1 && i < b.Inputs.Count)
             {
                 int idx = i;
-                var rmv = IconButton("IconDelete", $"Remove input {i + 1} from row {b.Row}");
+                var rmv = IconButton("IconDelete", string.Format(CultureInfo.CurrentCulture, Strings.Main_RemoveInputI1From, i + 1, b.Row));
                 rmv.Click += (_, _) =>
                 {
                     var off = GridScroll.Offset;
@@ -4437,8 +4758,8 @@ public partial class MainWindow : Window
         };
         if (inputCount < 8)
         {
-            var addInput = IconButton("IconAdd", $"Add another input to row {b.Row}");
-            ToolTip.SetTip(addInput, "Add another input");
+            var addInput = IconButton("IconAdd", string.Format(CultureInfo.CurrentCulture, Strings.Main_AddAnotherInputToRow, b.Row));
+            ToolTip.SetTip(addInput, Strings.Main_AddAnotherInput);
             int nextCol = FirstFreeInputColumn(b);
             addInput.Click += (_, _) =>
             {
@@ -4446,7 +4767,7 @@ public partial class MainWindow : Window
                 // In its own line, on the same columns as the committed inputs,
                 // so an empty picker lines up with the ones above it.
                 var newBox = ListPickerCell(b.Row, nextCol, "", InputSuggestions,
-                    $"Input {nextCol - 1} for row {b.Row}", InputTint, InputCatalog, "an input");
+                    string.Format(CultureInfo.CurrentCulture, Strings.Main_InputNextCol1ForRow, nextCol - 1, b.Row), InputTint, InputCatalog, Strings.Main_AnInput);
                 var newLine = ListGrid("*,Auto");
                 newLine.Children.Add(At(newBox, 0));
                 inputsBox.Children.Add(newLine);
@@ -4473,8 +4794,8 @@ public partial class MainWindow : Window
 
         // The whole-row delete: a red trash circle under the plus.
         var del = new Button { Classes = { "icon", "danger" }, Content = Glyph("IconDelete", "Error") };
-        ToolTip.SetTip(del, "Delete this whole row");
-        AutomationProperties.SetName(del, $"Delete row {b.Row}");
+        ToolTip.SetTip(del, Strings.Main_DeleteThisWholeRow);
+        AutomationProperties.SetName(del, string.Format(CultureInfo.CurrentCulture, Strings.Main_DeleteRowBRow, b.Row));
         del.Click += (_, _) => DeleteListRow(b);
         rowButtons.Children.Add(del);
         p.Children.Add(At(rowButtons, 4));
@@ -4482,7 +4803,7 @@ public partial class MainWindow : Window
         // The note wraps inside its column and grows the row taller, which is
         // the trade the whole layout makes: taller rows over a row that runs
         // off the side of the window.
-        var note = NoteBox(b.Row, NoteColumn, $"Note for row {b.Row}. Saved in the file, ignored by the QuadStick");
+        var note = NoteBox(b.Row, NoteColumn, string.Format(CultureInfo.CurrentCulture, Strings.Main_NoteForRowBRow, b.Row));
         p.Children.Add(At(Mid(note), 5));
 
         // Reorder within the mode. Both buttons always render (disabled at the
@@ -4491,7 +4812,7 @@ public partial class MainWindow : Window
         int column = 6;
         foreach (var (delta, word, angle) in new[] { (-1, "up", 180.0), (+1, "down", 0.0) })
         {
-            var move = IconButton("IconChevron", $"Move row {b.Row} {word}");
+            var move = IconButton("IconChevron", string.Format(CultureInfo.CurrentCulture, Strings.Main_MoveRowBRowWord, b.Row, word));
             // The chevron points right; +90 turns it down, 180+90 turns it up.
             ((PathIcon)move.Content!).RenderTransform = new RotateTransform(angle + 90);
             move.Tag = (word, b.Row);
@@ -4511,7 +4832,7 @@ public partial class MainWindow : Window
             TextWrapping = TextWrapping.Wrap,
             Margin = new Avalonia.Thickness(RowNumberWidth + 4, 0, 0, 0),
         };
-        AutomationProperties.SetName(badge, $"Row {b.Row} scope: {ModeScope}");
+        AutomationProperties.SetName(badge, string.Format(CultureInfo.CurrentCulture, Strings.Main_RowBRowScopeModeScope, b.Row, ModeScope));
         return badge;
     }
 
@@ -4659,7 +4980,7 @@ public partial class MainWindow : Window
         var box = new TextBox
         {
             Text = _file!.GetCell(row, col),
-            Watermark = "note",
+            Watermark = Strings.Main_Note,
             FontSize = Size("SmallSize"),
             // A long note used to sit on one clipped line. Wrapping needs a
             // width bound to grow vertically instead of sideways, so every
@@ -4692,7 +5013,7 @@ public partial class MainWindow : Window
     void AddRow()
     {
         if (OnCustomNames) { AddCustomName(); return; }
-        if (_file is null || CurrentSheet is null) { Status("Open or create a profile first."); return; }
+        if (_file is null || CurrentSheet is null) { Status(Strings.Main_OpenOrCreateAProfile); return; }
         int newRow = _file.AddBindingRow(CurrentSheet); // already reparses
         if (DeviceContainer.IsVisible)
         {
@@ -4971,7 +5292,7 @@ public partial class MainWindow : Window
         IssuesList.ItemsSource = _file.Issues.Count == 0
             ? new List<Control>
               {
-                  new TextBlock { Text = "No problems found.", FontSize = Size("SmallSize"),
+                  new TextBlock { Text = Strings.Main_NoProblemsFound, FontSize = Size("SmallSize"),
                                   Classes = { "success" }, Margin = new Avalonia.Thickness(4) },
               }
             : _file.Issues
@@ -4986,7 +5307,7 @@ public partial class MainWindow : Window
                 BindBrush(border, Border.BorderBrushProperty, severityLabel);
                 border.BorderThickness = new Avalonia.Thickness(3);
                 var baseName = border.Child is Control c ? AutomationProperties.GetName(c) : null;
-                AutomationProperties.SetName(border, $"{severityLabel}: {baseName}");
+                AutomationProperties.SetName(border, string.Format(CultureInfo.CurrentCulture, Strings.Main_SeverityLabelBaseName, severityLabel, baseName));
             }
 
         var errors = _file.Issues.Count(i => i.Severity == Severity.Error);
@@ -4995,10 +5316,10 @@ public partial class MainWindow : Window
         // them. "0 errors, 2 warnings. Errors block installing." read as a
         // refusal on a profile that installs fine.
         Status(errors + warns == 0
-                ? "No problems. Ready to save or install."
+                ? Strings.Main_NoProblemsReadyToSave
                 : errors == 0
-                    ? $"{Plural.Of(warns, "warning")}. The device skips those rows, so this still installs."
-                    : $"{Plural.Of(errors, "error")}, {Plural.Of(warns, "warning")}. Errors block installing.",
+                    ? Plural.Of(warns, "Count_Warning") + Strings.Main_TheDeviceSkipsThoseRows
+                    : Plural.Of(errors, "Count_Error") + ", " + Plural.Of(warns, "Count_Warning") + Strings.Main_ErrorsBlockInstalling,
             errors > 0 ? StatusKind.Error : warns > 0 ? StatusKind.Warning : StatusKind.Ready);
         UpdateProblemsToggle();
     }
@@ -5021,10 +5342,10 @@ public partial class MainWindow : Window
 
         var fix = new Button
         {
-            Content = "Move to notes", Classes = { "quiet" },
+            Content = Strings.Main_MoveToNotes, Classes = { "quiet" },
             Margin = new Avalonia.Thickness(0, 2, 0, 0), HorizontalAlignment = HorizontalAlignment.Left,
         };
-        AutomationProperties.SetName(fix, $"Move the text in cell {i.Cell} to the notes column");
+        AutomationProperties.SetName(fix, string.Format(CultureInfo.CurrentCulture, Strings.Main_MoveTheTextInCell, i.Cell));
         fix.Click += (_, _) => MoveIssueTextToNotes(i);
         return new StackPanel { Children = { tb, fix }, Tag = i };
     }
@@ -5035,7 +5356,7 @@ public partial class MainWindow : Window
         _file.MoveInputToNotes(row, i.Cell[0] - 'A');
         if (_deviceView) { BuildDeviceView(); BuildZoneDetail(); RefreshIssues(); }
         else { var off = GridScroll.Offset; RebuildRows(); RestoreListScroll(off, () => { }); }
-        Status($"Moved the text from {i.Cell} into the notes column.", StatusKind.Info);
+        Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_MovedTheTextFromI, i.Cell), StatusKind.Info);
     }
 
     // ---- Small shared UI builders for the redesigned editor ----
@@ -5115,18 +5436,31 @@ public partial class MainWindow : Window
                 sp.Children.Add(new TextBlock { Text = d, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
             return sp;
         });
-        AutomationProperties.SetName(combo, $"How {ShortInput(zone, b)} presses it. {FunctionExplain(current)}");
+        AutomationProperties.SetName(combo, string.Format(CultureInfo.CurrentCulture, Strings.Main_HowShortInputZoneBPresses, ShortInput(zone, b), FunctionExplain(current)));
 
+        bool startHasParams = Vocab.FunctionArity.TryGetValue(firstToken, out var startArity) && startArity.Max > 0;
         var paramsBox = new TextBox
         {
             Text = currentParams,
-            Watermark = "optional values, e.g. 1000",
+            Watermark = ParameterWatermark(firstToken),
             FontSize = Size("SmallSize"),
             Margin = new Avalonia.Thickness(0, 4, 0, 0),
-            IsVisible = Vocab.FunctionArity.TryGetValue(firstToken, out var startArity) && startArity.Max > 0,
+            IsVisible = startHasParams,
         };
-        AutomationProperties.SetName(paramsBox,
-            $"Optional parameter values for {firstToken}. Whole numbers separated by spaces, for example 1000");
+        AutomationProperties.SetName(paramsBox, ParameterAccessibleName(firstToken));
+
+        // The ranges and defaults sit under the box, not in a tooltip: a
+        // tooltip is unreachable by keyboard and silent to a screen reader,
+        // and this is the guidance somebody needs before typing, not after.
+        var paramsHint = new TextBlock
+        {
+            Text = ParameterHint(firstToken),
+            FontSize = Size("SmallSize"),
+            Classes = { "muted" },
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Avalonia.Thickness(0, 2, 0, 0),
+            IsVisible = startHasParams,
+        };
 
         void Commit()
         {
@@ -5150,8 +5484,10 @@ public partial class MainWindow : Window
             {
                 bool hasParams = Vocab.FunctionArity.TryGetValue(name, out var ar) && ar.Max > 0;
                 paramsBox.IsVisible = hasParams;
-                AutomationProperties.SetName(paramsBox,
-                    $"Optional parameter values for {name}. Whole numbers separated by spaces, for example 1000");
+                paramsHint.IsVisible = hasParams;
+                paramsHint.Text = ParameterHint(name);
+                paramsBox.Watermark = ParameterWatermark(name);
+                AutomationProperties.SetName(paramsBox, ParameterAccessibleName(name));
                 if (!hasParams) paramsBox.Text = "";
             }
             Commit();
@@ -5164,7 +5500,7 @@ public partial class MainWindow : Window
         // too. Without the wrapper, B{row} lives nowhere in _cellBorders.
         // RefreshIssues mirrors the wrapper child's accessible name onto the
         // highlight; the panel needs the combo's name or an error reads as nothing.
-        var stack = new StackPanel { Children = { combo, paramsBox } };
+        var stack = new StackPanel { Children = { combo, paramsBox, paramsHint } };
         AutomationProperties.SetName(stack, AutomationProperties.GetName(combo));
         var wrapper = new Border
         {
@@ -5180,7 +5516,7 @@ public partial class MainWindow : Window
     // The item that reveals a free-text box at the very bottom of a Device View
     // dropdown, so an exotic value is still reachable without making typing the
     // default. Reference-compared, never shown as a real token.
-    const string TypeYourOwn = "＋ Type your own…";
+    static string TypeYourOwn => Strings.Main_TypeYourOwn;
 
     // A pick-don't-type field for Device View: a dropdown of known tokens shown
     // in the current label style, committing the raw token to the cell. The
@@ -5239,10 +5575,10 @@ public partial class MainWindow : Window
             {
                 Text = "", ItemsSource = options, FilterMode = AutoCompleteFilterMode.Contains,
                 MinimumPrefixLength = 0, HorizontalAlignment = HorizontalAlignment.Stretch,
-                Watermark = "type a value, or leave blank to go back",
+                Watermark = Strings.Main_TypeAValueOrLeave,
             };
             box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
-            AutomationProperties.SetName(box, accessibleName + ". Type a custom value.");
+            AutomationProperties.SetName(box, accessibleName + Strings.Main_TypeACustomValue);
             void Commit()
             {
                 if (_file is null) return;
@@ -5276,7 +5612,7 @@ public partial class MainWindow : Window
         _cellBorders[$"A{b.Row}"] = wrapper;
         return PickerCell(wrapper, OutputFieldValue(b), outputs.Options,
             t => outputs.TokenFor.ContainsKey(t) ? t : TokenLabel(t),
-            accessibleName, tintKey, outputs.Catalog, "an output", picked =>
+            accessibleName, tintKey, outputs.Catalog, Strings.Main_AnOutput, picked =>
             {
                 CommitOutput(b.Row, outputs, picked);
                 RebuildDeviceAfterEdit(b.Row, 0);
@@ -5296,7 +5632,7 @@ public partial class MainWindow : Window
         };
         _cellBorders[$"{(char)('A' + col)}{row}"] = wrapper;
         return PickerCell(wrapper, current, InputSuggestions, t => InputOptionLabel(t, cardZone),
-            accessibleName, InputTint, InputCatalog, "an input", token =>
+            accessibleName, InputTint, InputCatalog, Strings.Main_AnInput, token =>
             {
                 if (_file is null || token == _file.GetCell(row, col)) return;
                 _file.SetCell(row, col, token);
@@ -5305,11 +5641,23 @@ public partial class MainWindow : Window
     }
 
     // Inputs group by the part of the device they live on, in AllZones order.
+    // Switch jacks then split again by the socket on the back, so picking one
+    // is "top jack, one switch" rather than knowing that means digital_in_8.
+    //
+    // Only Switch jacks gets a second level. ZoneOf sends everything it does
+    // not recognise to "other", typos included, and a category with a SubOrder
+    // shows nothing but its listed sockets: a token with no sub would be
+    // unreachable in the Detailed picker. Every digital_in has one, so this
+    // category is safe and USB devices is not. InputPickerGroupingTests holds
+    // that line.
     static TokenCatalog? _inputCatalog;
     static TokenCatalog InputCatalog => _inputCatalog ??= new(
-        t => (AllZones.First(z => z.Id == ZoneOf(t)).Title, ""),
+        t => (AllZones.First(z => z.Id == ZoneOf(t)).Title, SwitchJacks.PortLabel(SwitchJacks.For(t)?.Port ?? "")),
         AllZones.Select(z => z.Title).ToArray(),
-        new Dictionary<string, string[]>());
+        new Dictionary<string, string[]>
+        {
+            [Strings.Main_SwitchJacks] = SwitchJacks.Ports.Select(p => SwitchJacks.PortLabel(p.Port)).ToArray(),
+        });
 
     // A List View cell backed by the drill-down picker. Commits like
     // SuggestBox did: set the cell, refresh issues, and rebuild the rows
@@ -5441,8 +5789,8 @@ public partial class MainWindow : Window
             return it;
         }
 
-        var search = new TextBox { Watermark = "Search" };
-        AutomationProperties.SetName(search, "Search this list");
+        var search = new TextBox { Watermark = Strings.Main_Search };
+        AutomationProperties.SetName(search, Strings.Main_SearchThisList);
         var body = new StackPanel { Spacing = 2 };
         var scroll = new ScrollViewer { Content = body, MaxHeight = 400 };
 
@@ -5458,7 +5806,7 @@ public partial class MainWindow : Window
             DockPanel.SetDock(chevron, Dock.Right);
             line.Children.Add(chevron);
             line.Children.Add(new TextBlock
-            { Text = $"{title} ({count})", FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap });
+            { Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_TitleCount, title, count), FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap });
             // No "quiet" here on purpose: a category keeps the bordered
             // button look so "opens more" reads differently from the flat
             // rows that pick an output.
@@ -5468,7 +5816,7 @@ public partial class MainWindow : Window
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
             };
-            AutomationProperties.SetName(it, $"{title}, {count} options. Opens this category.");
+            AutomationProperties.SetName(it, string.Format(CultureInfo.CurrentCulture, Strings.Main_TitleCountOptionsOpensThis, title, count));
             it.Click += (_, _) => go();
             return it;
         }
@@ -5505,13 +5853,13 @@ public partial class MainWindow : Window
 
             var back = new Button
             {
-                Content = new TextBlock { Text = "‹ Back", FontSize = Size("BodySize") },
+                Content = new TextBlock { Text = Strings.Main_Back, FontSize = Size("BodySize") },
                 Classes = { "quiet" },
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Left,
             };
             AutomationProperties.SetName(back,
-                sub is null ? "Back to all categories" : $"Back to {cat}");
+                sub is null ? Strings.Main_BackToAllCategories : string.Format(CultureInfo.CurrentCulture, Strings.Main_BackToCat, cat));
             back.Click += (_, _) => { if (sub is null) ShowLevel(null, null); else ShowLevel(cat, null); };
             body.Children.Add(back);
             body.Children.Add(new TextBlock
@@ -5533,7 +5881,7 @@ public partial class MainWindow : Window
             // under it, not only the tokens filed directly on it.
             var items = TokensIn(cat, grouping == "Wide" ? null : sub ?? "");
             // Alphabetical puts f1, f10, f11 ... f2; sort by number.
-            if (sub == "Function keys") items = items.OrderBy(t => int.Parse(t.AsSpan(4))).ToList();
+            if (sub == Strings.Main_FunctionKeys) items = items.OrderBy(t => int.Parse(t.AsSpan(4))).ToList();
             foreach (var t in items) body.Children.Add(Item(t));
         }
 
@@ -5547,13 +5895,13 @@ public partial class MainWindow : Window
             if (hits.Count > 40)
                 body.Children.Add(new TextBlock
                 {
-                    Text = $"{hits.Count - 40} more. Keep typing to narrow it down.",
+                    Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_HitsCount40MoreKeep, hits.Count - 40),
                     FontSize = Size("SmallSize"), Classes = { "muted" },
                 });
             if (hits.Count == 0)
                 body.Children.Add(new TextBlock
                 {
-                    Text = "Nothing matches. Try fewer letters, or type your own below.",
+                    Text = Strings.Main_NothingMatchesTryFewerLetters,
                     FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
                 });
         }
@@ -5570,10 +5918,10 @@ public partial class MainWindow : Window
             {
                 Text = "", ItemsSource = options, FilterMode = AutoCompleteFilterMode.Contains,
                 MinimumPrefixLength = 0, HorizontalAlignment = HorizontalAlignment.Stretch,
-                Watermark = "type a value, or leave blank to cancel",
+                Watermark = Strings.Main_TypeAValueOrLeave2,
             };
             box[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
-            AutomationProperties.SetName(box, accessibleName + ". Type a custom value.");
+            AutomationProperties.SetName(box, accessibleName + Strings.Main_TypeACustomValue);
             var field = wrapper.Child; // the button to restore on cancel
             void Done()
             {
@@ -5593,7 +5941,7 @@ public partial class MainWindow : Window
         }
 
         var typeOwn = new Button { Content = TypeYourOwn, Classes = { "quiet" } };
-        AutomationProperties.SetName(typeOwn, "Type a custom value");
+        AutomationProperties.SetName(typeOwn, Strings.Main_TypeACustomValue2);
         // Swap after the flyout has fully closed and given focus back, or
         // the swap and the close fight over focus and the box dies unused.
         typeOwn.Click += (_, _) => { fly.Hide(); Dispatcher.UIThread.Post(ShowTyping); };
@@ -5621,7 +5969,7 @@ public partial class MainWindow : Window
             Flyout = fly,
         };
         open[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
-        AutomationProperties.SetName(open, $"{accessibleName}. Opens a searchable list.");
+        AutomationProperties.SetName(open, string.Format(CultureInfo.CurrentCulture, Strings.Main_AccessibleNameOpensASearchableList, accessibleName));
         wrapper.Child = open;
         return wrapper;
     }
@@ -5639,7 +5987,7 @@ public partial class MainWindow : Window
         { Text = title, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap });
         content.Children.Add(new TextBlock
         { Text = body, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap, LineHeight = 21 });
-        AutomationProperties.SetName(content, $"{title}. {body}. Press Escape to close.");
+        AutomationProperties.SetName(content, string.Format(CultureInfo.CurrentCulture, Strings.Main_TitleBodyPressEscapeTo, title, body));
         AutomationProperties.SetLiveSetting(content, AutomationLiveSetting.Polite);
         var flyout = new Flyout { Content = content, Placement = PlacementMode.Bottom };
         flyout.Opened += (_, _) => content.Focus();
@@ -5669,7 +6017,7 @@ public partial class MainWindow : Window
         if (errors + warns == 0)
         {
             iconKey = "IconCheck"; token = "Success";
-            label = _problemsExpanded ? "No problems (click to hide)" : "No problems";
+            label = _problemsExpanded ? Strings.Main_NoProblemsClickToHide : Strings.Main_NoProblems;
         }
         else
         {
@@ -5678,7 +6026,7 @@ public partial class MainWindow : Window
             if (warns > 0) parts.Add($"{warns} warning{(warns == 1 ? "" : "s")}");
             iconKey = errors > 0 ? "IconError" : "IconWarning";
             token = errors > 0 ? "Error" : "Warning";
-            label = string.Join(", ", parts) + (_problemsExpanded ? "  (click to hide)" : "  (click to view)");
+            label = string.Join(", ", parts) + (_problemsExpanded ? Strings.Main_ClickToHide : Strings.Main_ClickToView);
         }
         var text = new TextBlock { Text = label, FontSize = Size("BodySize"), VerticalAlignment = VerticalAlignment.Center };
         BindBrush(text, TextBlock.ForegroundProperty, token);
@@ -5688,9 +6036,44 @@ public partial class MainWindow : Window
         // screen-reader name so it never reads a stale "show or hide" while the
         // eye sees a number. The glyph+text content itself isn't announced.
         AutomationProperties.SetName(ProblemsToggle,
-            $"{label}. {(_problemsExpanded ? "Hides" : "Shows")} the list of problems.");
+            string.Format(CultureInfo.CurrentCulture,
+                _problemsExpanded ? Strings.Main_HidesTheProblems : Strings.Main_ShowsTheProblems, label));
         FixFirstButton.IsVisible = _problemsExpanded && errors > 0;
         ProblemsDock.IsVisible = _problemsExpanded || errors + warns > 0;
+    }
+
+    static string FunctionToken(string function) =>
+        (function ?? "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+
+    // The numbers beside a function are where people guess, and a guess here is
+    // silent: "greater_than 250" is a strength no input reaches, so the row
+    // simply never fires and nothing says why. Each line names one number, its
+    // unit, how far it goes, and what the device substitutes when it is left
+    // out. All of it read off firmware 2373, see FunctionParameters.
+    internal static string ParameterHint(string function)
+    {
+        var spec = FunctionParameters.For(FunctionToken(function));
+        return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Sentence));
+    }
+
+    // A screen reader gets the same sentences the sighted user reads under the
+    // box, because the ranges are the whole point of the field.
+    internal static string ParameterAccessibleName(string function)
+    {
+        var spec = FunctionParameters.For(FunctionToken(function));
+        return spec.Count == 0
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Main_FunctionTakesNoNumbers, function)
+            : string.Format(CultureInfo.CurrentCulture, Strings.Main_NumbersForFunctionOptionalWhole, function)
+              + string.Join(" ", spec.Select(x => x.Sentence));
+    }
+
+    // What to put in an empty box: the parameter names in order, so the shape
+    // of "repeat 5 2000" is visible before anything is typed.
+    internal static string ParameterWatermark(string function)
+    {
+        var spec = FunctionParameters.For(FunctionToken(function));
+        return spec.Count == 0 ? ""
+            : "optional: " + string.Join("  ", spec.Select(x => x.Label.ToLowerInvariant()));
     }
 
     // Plain words for what a Function does, keyed on its first token so
@@ -5701,24 +6084,24 @@ public partial class MainWindow : Window
         var name = (function ?? "").Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
         return name switch
         {
-            "normal" => "Held down for as long as your input is active.",
-            "toggle" => "One activation latches it on, the next releases it.",
-            "repeat" => "Rapid-fire taps while your input is held.",
-            "pulse" => "One short press each time you activate.",
-            "delayed_latch" => "A short activation taps it; a long one latches it on.",
-            "delay_on" => "Waits a moment after you activate, then presses.",
-            "delay_off" => "Keeps pressing for a moment after you release.",
-            "tap" => "A quick press sends one output; holding longer sends a different one.",
-            "force_off" => "Turns off an output that toggle or delayed_latch left on.",
-            "greater_than" => "Fires once your input passes a set strength.",
-            "less_than" => "Fires while your input stays under a set strength.",
-            "duty" => "Presses in a repeating on and off cycle.",
+            "normal" => Strings.Main_HeldDownForAsLong,
+            "toggle" => Strings.Main_OneActivationLatchesItOn,
+            "repeat" => Strings.Main_RapidFireTapsWhileYour,
+            "pulse" => Strings.Main_OneShortPressEachTime,
+            "delayed_latch" => Strings.Main_AShortActivationTapsIt,
+            "delay_on" => Strings.Main_WaitsAMomentAfterYou,
+            "delay_off" => Strings.Main_KeepsPressingForAMoment,
+            "tap" => Strings.Main_AQuickPressSendsOne,
+            "force_off" => Strings.Main_TurnsOffAnOutputThat,
+            "greater_than" => Strings.Main_FiresOnceYourInputPasses,
+            "less_than" => Strings.Main_FiresWhileYourInputStays,
+            "duty" => Strings.Main_PressesInARepeatingOn,
             // Not device settings: the device runs these only for real output
             // channels (DataFlow.c gates the whole function switch on the output
             // id). A row whose output is a setting name is read as a plain
             // setting override and its function cell is ignored.
-            "increment_value" => "Steps an analog output up a notch and leaves it there, like a trigger or a stick axis.",
-            "decrement_value" => "Steps an analog output down a notch and leaves it there, like a trigger or a stick axis.",
+            "increment_value" => Strings.Main_StepsAnAnalogOutputUp,
+            "decrement_value" => Strings.Main_StepsAnAnalogOutputDown,
             _ => "",
         };
     }
@@ -5734,7 +6117,7 @@ public partial class MainWindow : Window
         if (_file is null) return;
         var b = _file.Document.Sheets.SelectMany(s => s.Bindings).FirstOrDefault(x => x.Row == row);
         if (b is null || !Vocab.NothingFiresIt(b)) return;
-        Status($"Nothing presses \"{b.Output}\" now, so the QuadStick will not fire it.", StatusKind.Warning);
+        Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_NothingPressesBOutputNow, b.Output), StatusKind.Warning);
     }
 
     void Status(string text, StatusKind kind = StatusKind.Info)
@@ -5748,47 +6131,38 @@ public partial class MainWindow : Window
     // ground truth for the quick-guide copy.
     internal static (string Title, string Body)[] HelpSections() => new (string Title, string Body)[]
         {
-            ("What is a profile?",
-             "One CSV file that tells the QuadStick which sip, puff, lip press, or joystick move presses which game button. A profile has one or more mode sheets: full control layouts you switch between while playing (walking layout, driving layout, menus). Sip or puff the side tube, or bind increment_mode / decrement_mode, to switch modes in-game."),
+            (Strings.Main_WhatIsAProfile,
+             Strings.Main_OneCSVFileThatTells),
 
-            ("The three columns (same colors as the official spreadsheets)",
-             "Yellow, OUTPUT: the game button or action. PlayStation names (x, circle, left_1), Xbox names (A, B, left_trigger), mouse (mouse_up, mouse_left_button), keyboard (kb_space), and device setting names like mouse_speed. A setting name here sets that setting for the whole mode: the device ignores the function cell and reads the next cell as the value, not as an input.\n" +
-             "Pink, FUNCTION: how the press behaves.\n" +
-             "  normal: pressed while your input is active.\n" +
-             "  toggle: one activation latches it on, the next releases it. Great for aiming without holding a sip.\n" +
-             "  repeat [rate] [delay]: rapid-fire taps while held. \"repeat 5 2000\" holds 2 seconds, then taps 5x per second.\n" +
-             "  pulse [ms] [count]: one short press per activation. \"pulse 50 2\" double-taps.\n" +
-             "  delayed_latch [ms]: short activation = normal press, long activation = latch. Two behaviors from one input.\n" +
-             "  tap / delay_on: split one input into two outputs by press length.\n" +
-             "  force_off: releases another latched output. greater_than / less_than: threshold triggers. duty, increment_value, decrement_value: analog control.\n" +
-             "Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_sip). …_soft variants trigger on gentle pressure. right_sip / right_puff are the side tube. lip is the lip switch. left/right/up/down and N/NE/… are the joystick. Several inputs on one row are a sequence: you do them one after the other, left to right, and the last one fires the output."),
+            (Strings.Main_TheThreeColumnsSameColors,
+             Strings.Main_YellowOUTPUTTheGameButton),
 
-            ("Start from a working profile, not from scratch",
-             "New profile gives you the factory default layout, the same one shipped on every QuadStick. The community also shares hundreds of game profiles as Google Sheets: paste any share link on the home screen to import it. Profiles that keep each mode on its own tab come in whole, every tab as a mode. Open also takes a downloaded .xlsx workbook. Then adjust, rename, save."),
+            (Strings.Main_StartFromAWorkingProfile,
+             Strings.Main_NewProfileGivesYouThe),
 
-            ("Community profiles",
-             "The Community profiles card on the home screen searches the shared list of game profiles. Opening that window, and pressing Refresh in it, downloads the list from quadstick.com. Nothing about you is sent, and the last list is kept on this computer so the window still opens with no internet. Import opens the profile in the editor, the same as pasting its link. It never writes to your QuadStick: that still takes the Install button, and errors still block it."),
+            (Strings.Main_CommunityProfiles,
+             Strings.Main_TheCommunityProfilesCardOn),
 
             ("Renaming",
-             "The name box at the top of the editor is the profile's on-device name. Use no spaces; the .csv file extension is added for you. The profile named default is special: it is the device's fallback file and should stay unchanged."),
+             Strings.Main_TheNameBoxAtThe),
 
-            ("Device settings",
-             "prefs.csv is the QuadStick's own settings file, not a game profile: it changes how the whole device behaves, not just one game. A setting the app recognizes gets a real control, a number box, a checkbox, or a dropdown, so you cannot type a value the device would reject. A setting it does not recognize, or a value already in the file an exact control could not show without changing it, keeps a plain text box and is left exactly as it was. Installing prefs.csv back to the device always asks first, and backs up the file already there."),
+            (Strings.Main_DeviceSettings,
+             Strings.Main_PrefsCsvIsTheQuadStick),
 
-            ("Installing safely",
-             "Plug in the QuadStick; it shows up like a USB drive. Install backs up the old file to QuadStickBackups, writes a temp copy, checks it, then swaps it in. Errors block install. Overwriting default.csv always asks first."),
+            (Strings.Main_InstallingSafely,
+             Strings.Main_PlugInTheQuadStickIt),
 
-            ("Managing files on your QuadStick",
-             "The Manage files card, under On your QuadStick, works on a mounted QuadStick: its drive has to show up like a USB stick in Finder or File Explorer. From there you can copy a file to your library, open the Google Sheet it is linked to, or delete it; deleting backs it up to QuadStickBackups first. default.csv and prefs.csv are protected and cannot be deleted from this app. If the drive does not show up at all, this app has no other way to reach it; see QuadStick not showing up below."),
+            (Strings.Main_ManagingFilesOnYourQuadStick,
+             Strings.Main_TheManageFilesCardUnder),
 
-            ("QuadStick not showing up?",
-             "If the device is in PS4 boot mode, or virtual XBox / Dualshock controller emulation is enabled, the flash drive does not appear on the computer. Turn those off (in QMP or your prefs) and replug. On a Mac, the volume is named \"QUAD STICK\" in Finder."),
+            (Strings.Main_QuadStickNotShowingUp,
+             Strings.Main_IfTheDeviceIsIn),
 
             ("Keyboard",
-             "Tab moves between fields, arrows navigate suggestion lists, Enter confirms. Ctrl/Cmd+O open, S save, N new, Z undo, I install, D switch between Device view and List view, H this guide. F1 also opens this guide from anywhere. Selecting a problem, or the Fix first problem button, jumps focus straight to it. Every control announces itself to screen readers."),
+             Strings.Main_TabMovesBetweenFieldsArrows),
 
-            ("Found a problem?",
-             "Select a problem in the list to copy it. File at github.com/Bbrizly/Quadstick-Config-Manager/issues. Say what you did and what went wrong."),
+            (Strings.Main_FoundAProblem,
+             Strings.Main_SelectAProblemInThe),
         };
 
     void ShowHelp()
@@ -5796,7 +6170,7 @@ public partial class MainWindow : Window
         var sections = HelpSections();
 
         var panel = new StackPanel { Margin = new Avalonia.Thickness(24), Spacing = 14, MaxWidth = 640 };
-        panel.Children.Add(new TextBlock { Text = "Quick guide", FontSize = Size("TitleSize"), FontWeight = FontWeight.Bold });
+        panel.Children.Add(new TextBlock { Text = Strings.Main_QuickGuide, FontSize = Size("TitleSize"), FontWeight = FontWeight.Bold });
         foreach (var (title, body) in sections)
         {
             panel.Children.Add(new TextBlock
@@ -5807,7 +6181,7 @@ public partial class MainWindow : Window
 
         var win = new Window
         {
-            Title = "Quick guide",
+            Title = Strings.Main_QuickGuide,
             Width = Math.Min(720 * _uiScale, 1200), Height = Math.Min(680 * _uiScale, 900),
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
         };
@@ -5819,11 +6193,11 @@ public partial class MainWindow : Window
     async Task<string?> PickDeviceRootAsync(IReadOnlyList<string> candidates)
     {
         string? picked = null;
-        var cancel = new Button { Content = "Cancel", MinWidth = 140, IsCancel = true };
+        var cancel = new Button { Content = Strings.Main_Cancel, MinWidth = 140, IsCancel = true };
         var choices = new StackPanel { Spacing = 8 };
         var dialog = new Window
         {
-            Title = "Choose QuadStick",
+            Title = Strings.Main_ChooseQuadStick,
             SizeToContent = SizeToContent.WidthAndHeight,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
         };
@@ -5849,7 +6223,7 @@ public partial class MainWindow : Window
             };
             // Complex button content is invisible to screen readers without
             // an explicit name; this is a safety-relevant choice.
-            AutomationProperties.SetName(btn, $"Install to the QuadStick named {name}, at {root}");
+            AutomationProperties.SetName(btn, string.Format(CultureInfo.CurrentCulture, Strings.Main_InstallToTheQuadStickNamed, name, root));
             btn.Click += (_, _) => { picked = (string)btn.Tag!; dialog.Close(); };
             choices.Children.Add(btn);
         }
@@ -5860,8 +6234,8 @@ public partial class MainWindow : Window
             MaxWidth = 520,
             Children =
             {
-                new TextBlock { Text = "Multiple QuadSticks found", FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize") },
-                new TextBlock { Text = "Choose which drive to install to:", TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                new TextBlock { Text = Strings.Main_MultipleQuadSticksFound, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize") },
+                new TextBlock { Text = Strings.Main_ChooseWhichDriveToInstall, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
                 choices,
                 cancel,
             },
@@ -5873,8 +6247,8 @@ public partial class MainWindow : Window
 
     async Task<bool> ConfirmAsync(string title, string message)
     {
-        var yes = new Button { Content = "Yes, continue", MinWidth = 140 };
-        var no = new Button { Content = "Cancel", MinWidth = 140, IsDefault = true, IsCancel = true };
+        var yes = new Button { Content = Strings.Main_YesContinue, MinWidth = 140 };
+        var no = new Button { Content = Strings.Main_Cancel, MinWidth = 140, IsDefault = true, IsCancel = true };
         var dialog = new Window
         {
             Title = title,

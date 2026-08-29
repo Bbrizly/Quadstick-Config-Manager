@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -8,15 +9,18 @@ using Avalonia.Media;
 
 namespace QuadStick.App;
 
-// The community list of shared game profiles. Same idiom as DrivePickerWindow:
-// the list loads after the window opens, so home stays local and a network
-// failure shows in this window instead of crashing.
+// The community list of shared game profiles. One of the three places the app
+// goes, so it is a page in the shell and not a dialog over one: browsing a few
+// hundred profiles is not a question to answer before carrying on.
 //
-// This window never writes to a QuadStick. A pick becomes a Google Sheets link
+// The list loads after the page is first shown, so startup stays local and a
+// network failure shows on this page's own status line instead of crashing.
+//
+// This page never writes to a QuadStick. A pick becomes a Google Sheets link
 // and goes through MainWindow.ImportSheetsAsync, the one workbook import, which
 // opens the profile in the editor. Installing still needs the editor, the
 // validator, and the Install button, exactly as a hand pasted link does.
-public class CommunityProfilesWindow : Window
+public class CommunityProfilesView : UserControl
 {
     readonly MainWindow _owner;
     readonly CommunityCatalogClient _catalog;
@@ -39,51 +43,50 @@ public class CommunityProfilesWindow : Window
     readonly CancellationTokenSource _closing = new();
     bool _closed;
     Task _loaded = Task.CompletedTask;
+    bool _started;
 
-    /// <summary>The load started when the window opened. Tests await it; nothing
-    /// in the app has to.</summary>
+    /// <summary>The load started the first time the page was shown. Tests await
+    /// it; nothing in the app has to.</summary>
     internal Task CatalogLoaded => _loaded;
 
     /// <summary>How Open in Sheets reaches the browser. Tests swap it so a run
     /// never opens a real browser window.</summary>
     internal Func<Uri, Task> OpenUri { get; set; }
 
-    public CommunityProfilesWindow(MainWindow owner)
-        : this(owner, new CommunityCatalogClient(owner.CommunityCatalog), null) { }
+    public CommunityProfilesView(MainWindow owner) : this(owner, new CommunityCatalogClient(), null) { }
 
     /// <summary>Test seam: a catalog client with a fake handler and cache path,
     /// and the HttpClient the import should use.</summary>
-    internal CommunityProfilesWindow(MainWindow owner, CommunityCatalogClient catalog, HttpClient? importHttp = null)
+    internal CommunityProfilesView(MainWindow owner, CommunityCatalogClient catalog, HttpClient? importHttp = null)
     {
-        Classes.Add("dialog");
         _owner = owner;
         _catalog = catalog;
         _importHttp = importHttp;
-        OpenUri = uri => Launcher.LaunchUriAsync(uri); // this window's own launcher
-        Title = "Community profiles";
-        Width = Math.Min(640 * owner.UiScale, 1000);
-        Height = Math.Min(600 * owner.UiScale, 800);
-        WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        // A UserControl has no Launcher of its own; the window hosting it does.
+        OpenUri = uri => owner.Launcher.LaunchUriAsync(uri);
+
+        var heading = new TextBlock
+        {
+            Text = Strings.Community_CommunityProfiles, Classes = { "section" },
+        };
 
         var explain = new TextBlock
         {
-            Text = "Game profiles other QuadStick players have shared as Google Sheets. "
-                 + "Opening this window downloads the list from quadstick.com, and Refresh downloads it again. "
-                 + "Import opens the profile in the editor. Nothing here writes to your QuadStick.",
+            Text = Strings.Community_GameProfilesOtherQuadStickPlayers,
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         };
 
         _search = new TextBox
         {
-            Watermark = "Search by game, file name, console, or pointer",
+            Watermark = Strings.Community_SearchByGameFileName,
             HorizontalAlignment = HorizontalAlignment.Stretch,
         };
-        AutomationProperties.SetName(_search, "Search the community profiles");
+        AutomationProperties.SetName(_search, Strings.Community_SearchTheCommunityProfiles);
         _search.TextChanged += (_, _) => ApplyFilter();
 
         _summary = new TextBlock
         {
-            Text = "Loading the community list...",
+            Text = Strings.Community_LoadingTheCommunityList,
             FontSize = Size("BodySize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         };
         _count = new TextBlock
@@ -100,7 +103,7 @@ public class CommunityProfilesWindow : Window
         // One list, so the keyboard reaches every result with the arrows
         // instead of hundreds of tab stops.
         _list = new ListBox { SelectionMode = SelectionMode.Single };
-        AutomationProperties.SetName(_list, "Community profiles, use the arrow keys");
+        AutomationProperties.SetName(_list, Strings.Community_CommunityProfilesUseTheArrow);
         _list.SelectionChanged += (_, _) => OnSelectionChanged();
         // Enter goes through the same gate the button does. ImportAsync turns
         // the button off while it runs, which stopped a second click but not a
@@ -132,40 +135,41 @@ public class CommunityProfilesWindow : Window
         };
         AutomationProperties.SetLiveSetting(_status, AutomationLiveSetting.Polite);
 
-        _import = new Button { Content = "Import", Classes = { "primary" }, MinWidth = 130, IsEnabled = false };
-        AutomationProperties.SetName(_import, "Import the selected profile into the editor");
+        _import = new Button { Content = Strings.Community_Import, Classes = { "primary" }, MinWidth = 130, IsEnabled = false };
+        AutomationProperties.SetName(_import, Strings.Community_ImportTheSelectedProfileInto);
         _import.Click += async (_, _) => await ImportAsync();
 
-        _openSheet = new Button { Content = "Open in Sheets", MinWidth = 130, IsEnabled = false };
-        AutomationProperties.SetName(_openSheet, "Open the selected profile's Google Sheet in your browser");
+        _openSheet = new Button { Content = Strings.Community_OpenInSheets, MinWidth = 130, IsEnabled = false };
+        AutomationProperties.SetName(_openSheet, Strings.Community_OpenTheSelectedProfileS);
         _openSheet.Click += async (_, _) => await OpenInSheetsAsync();
 
-        _refresh = new Button { Content = "Refresh", MinWidth = 130 };
-        AutomationProperties.SetName(_refresh, "Download the community list again");
+        _refresh = new Button { Content = Strings.Community_Refresh, MinWidth = 130 };
+        AutomationProperties.SetName(_refresh, Strings.Community_DownloadTheCommunityListAgain);
         _refresh.Click += async (_, _) => await LoadAsync(refresh: true);
 
-        var close = new Button { Content = "Close", MinWidth = 130, IsCancel = true };
-        AutomationProperties.SetName(close, "Close this window");
-        close.Click += (_, _) => Close();
-
+        // No Close: the shell's own tabs are the way off this page, and a page
+        // that offers its own exit gives two answers to one question.
         var buttons = new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 12,
-            Children = { _import, _openSheet, _refresh, close },
+            Children = { _import, _openSheet, _refresh },
         };
 
-        var panel = new DockPanel { LastChildFill = true, Margin = new Thickness(24) };
+        var panel = new DockPanel { LastChildFill = true };
+        DockPanel.SetDock(heading, Dock.Top);
         DockPanel.SetDock(explain, Dock.Top);
         DockPanel.SetDock(_search, Dock.Top);
         DockPanel.SetDock(_summary, Dock.Top);
         DockPanel.SetDock(_count, Dock.Top);
         DockPanel.SetDock(_status, Dock.Bottom);
         DockPanel.SetDock(buttons, Dock.Bottom);
+        heading.Margin = new Thickness(0, 0, 0, 8);
         explain.Margin = new Thickness(0, 0, 0, 12);
         _search.Margin = new Thickness(0, 0, 0, 10);
         _summary.Margin = new Thickness(0, 0, 0, 4);
         _count.Margin = new Thickness(0, 0, 0, 10);
         _status.Margin = new Thickness(0, 12, 0, 0);
+        panel.Children.Add(heading);
         panel.Children.Add(explain);
         panel.Children.Add(_search);
         panel.Children.Add(_summary);
@@ -174,27 +178,32 @@ public class CommunityProfilesWindow : Window
         panel.Children.Add(buttons);
         panel.Children.Add(scroll);
 
-        Content = MainWindow.DialogShell(this, MainWindow.ZoomWrap(panel, owner.UiScale));
-
-        // Focus the search box so typing works from the first key press.
-        Opened += (_, _) => _search.Focus();
-        Opened += (_, _) => _loaded = LoadAsync();
+        // The shell already scales and themes what it hosts, so the page is
+        // the panel itself. Wrapping it in the dialog frame a second time was
+        // what re-parented a live control and threw.
+        Content = panel;
     }
 
-    // A fresh dialog may have no focused element, so handle Esc on the window.
-    protected override void OnKeyDown(KeyEventArgs e)
+    /// <summary>Shown for the first time: focus the search box and start the
+    /// download. Coming back to the page keeps the rows already loaded, so
+    /// browsing away and back is not another fifteen seconds of waiting.</summary>
+    internal void Start()
     {
-        base.OnKeyDown(e);
-        if (!e.Handled && e.Key == Key.Escape) { e.Handled = true; Close(); }
+        _search.Focus();
+        if (_started) return;
+        _started = true;
+        _loaded = LoadAsync();
     }
 
-    protected override void OnClosed(EventArgs e)
+    // The window went away with the fetch still in flight. The token is the
+    // only thing that stops it writing the cache and touching dead controls.
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         // Not disposed: the request in flight still holds this token, and the
         // source holds no timer or handle worth reclaiming by hand.
         _closed = true;
         _closing.Cancel();
-        base.OnClosed(e);
+        base.OnDetachedFromVisualTree(e);
     }
 
     /// <summary>The Google Sheets link for a profile. Built from the ID, never
@@ -222,7 +231,7 @@ public class CommunityProfilesWindow : Window
     async Task LoadAsync(bool refresh = false)
     {
         _refresh.IsEnabled = false;
-        _status.Text = refresh ? "Checking quadstick.com for new profiles..." : "Loading the community list...";
+        _status.Text = refresh ? Strings.Community_CheckingQuadstickComForNew : Strings.Community_LoadingTheCommunityList2;
         try
         {
             var result = await _catalog.LoadAsync(refresh, _closing.Token);
@@ -235,7 +244,7 @@ public class CommunityProfilesWindow : Window
             // open. The user pressed a button and deserves to know it did not
             // reach quadstick.com.
             _status.Text = refresh && result.FromCache
-                ? "Could not reach quadstick.com, so this is still the copy saved on this computer."
+                ? Strings.Community_CouldNotReachQuadstickCom
                 : "";
         }
         // The window was closed while the request was in flight. Nothing to say
@@ -247,8 +256,8 @@ public class CommunityProfilesWindow : Window
             // the window open: Refresh is right there, and the rest of the app
             // never needed this list.
             _all.Clear();
-            _summary.Text = "The community list could not be downloaded, and there is no saved copy on this computer.";
-            _status.Text = "Check your internet connection and press Refresh. Everything else in the app works without this list.";
+            _summary.Text = Strings.Community_TheCommunityListCouldNot;
+            _status.Text = Strings.Community_CheckYourInternetConnectionAnd;
         }
         finally
         {
@@ -267,16 +276,15 @@ public class CommunityProfilesWindow : Window
         string text;
         if (count == 0)
             text = result.FromCache
-                ? "The saved copy of the community list has no profiles in it."
-                : "The community list has no profiles in it right now.";
+                ? Strings.Community_TheSavedCopyOfThe
+                : Strings.Community_TheCommunityListHasNo;
         else
             text = result.FromCache
-                ? $"{Profiles(count)} from the copy saved on this computer. Press Refresh to check for new ones."
-                : $"{Profiles(count)}, downloaded just now.";
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Community_ProfilesCountFromTheCopy, Profiles(count))
+                : string.Format(CultureInfo.CurrentCulture, Strings.Community_ProfilesCountDownloadedJustNow, Profiles(count));
 
         if (result.SkippedRows > 0)
-            text += $" {result.SkippedRows} {(result.SkippedRows == 1 ? "row was" : "rows were")} "
-                  + "skipped because they did not name a shared Google Sheet.";
+            text += " " + Plural.Of(result.SkippedRows, "Community_SkippedRow");
         return text;
     }
 
@@ -293,12 +301,12 @@ public class CommunityProfilesWindow : Window
         _list.SelectedIndex = rows.Count > 0 ? 0 : -1;
 
         if (_all.Count == 0) _count.Text = "";
-        else if (query.Length == 0) _count.Text = $"Showing all {Profiles(_all.Count)}.";
-        else if (matches.Count == 0) _count.Text = $"No profiles match \"{query}\".";
-        else _count.Text = $"Showing {matches.Count} of {_all.Count} profiles matching \"{query}\".";
+        else if (query.Length == 0) _count.Text = string.Format(CultureInfo.CurrentCulture, Strings.Community_ShowingAllProfilesAllCount, Profiles(_all.Count));
+        else if (matches.Count == 0) _count.Text = string.Format(CultureInfo.CurrentCulture, Strings.Community_NoProfilesMatchQuery, query);
+        else _count.Text = string.Format(CultureInfo.CurrentCulture, Strings.Community_ShowingMatchesCountOfAll, matches.Count, _all.Count, query);
 
         if (!keepStatus && _all.Count > 0 && matches.Count == 0)
-            _status.Text = "Nothing matches that search. Clear the search box to see the whole list.";
+            _status.Text = Strings.Community_NothingMatchesThatSearchClear;
     }
 
     static bool Matches(CommunityProfile p, string query)
@@ -342,15 +350,15 @@ public class CommunityProfilesWindow : Window
         var picked = Selected;
         _import.IsEnabled = picked is not null;
         _openSheet.IsEnabled = picked is not null;
-        if (picked is not null) _status.Text = $"{picked.Name} is selected.";
+        if (picked is not null) _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Community_PickedNameIsSelected, picked.Name);
     }
 
     async Task ImportAsync()
     {
-        if (Selected is not { } picked) { _status.Text = "Pick a profile from the list first."; return; }
+        if (Selected is not { } picked) { _status.Text = Strings.Community_PickAProfileFromThe; return; }
 
         _import.IsEnabled = false;
-        _status.Text = $"Importing {picked.Name}...";
+        _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Community_ImportingPickedName, picked.Name);
         string? failure = null;
         try
         {
@@ -358,37 +366,35 @@ public class CommunityProfilesWindow : Window
             // screen next to the paste box, which nobody would see from here,
             // so they come back through the callback and land on this window's
             // own status line instead.
-            // The import review opens over THIS window, not over MainWindow:
-            // this one is modal, so a dialog owned by the main window would
-            // open behind a window the user cannot click.
-            await _owner.ImportSheetsAsync(EditUrl(picked), _importHttp, message => failure = message, this);
+            // The import review opens over MainWindow. This is a page inside
+            // that window now, so there is nothing else for a dialog to sit on.
+            await _owner.ImportSheetsAsync(EditUrl(picked), _importHttp, message => failure = message);
         }
         catch (Exception ex)
         {
-            failure = $"Could not import {picked.Name}: {ex.Message}";
+            failure = string.Format(CultureInfo.CurrentCulture, Strings.Community_CouldNotImportPickedName, picked.Name, ex.Message);
         }
         finally
         {
             _import.IsEnabled = Selected is not null;
         }
 
-        if (failure is not null) { _status.Text = failure; return; }
-        // The profile is open in the editor behind this window, so get out of
-        // the way rather than hiding the thing the user just asked for.
-        Close();
+        // A successful import loads the profile, which shows the editor page
+        // over this one. Nothing left to close.
+        if (failure is not null) _status.Text = failure;
     }
 
     async Task OpenInSheetsAsync()
     {
-        if (Selected is not { } picked) { _status.Text = "Pick a profile from the list first."; return; }
+        if (Selected is not { } picked) { _status.Text = Strings.Community_PickAProfileFromThe2; return; }
         try
         {
             await OpenUri(new Uri(EditUrl(picked)));
-            _status.Text = $"Opened the {picked.Name} sheet in your browser.";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Community_OpenedThePickedNameSheet, picked.Name);
         }
         catch (Exception ex)
         {
-            _status.Text = $"Could not open the sheet in your browser: {ex.Message}";
+            _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Community_CouldNotOpenTheSheet, ex.Message);
         }
     }
 

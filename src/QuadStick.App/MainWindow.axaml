@@ -19,8 +19,8 @@
            without hunting the nav row. -->
       <Button x:Name="ShellBrandButton" Grid.Column="0" Classes="shellbrandbutton"
               VerticalAlignment="Center"
-              AutomationProperties.Name="QuadStick Config Manager. Go to Home"
-              ToolTip.Tip="Go to Home">
+              AutomationProperties.Name="{x:Static app:Strings.Shell_QuadStickConfigManagerGoTo}"
+              ToolTip.Tip="{x:Static app:Strings.Shell_GoToHome}">
         <StackPanel Orientation="Horizontal" Spacing="11" VerticalAlignment="Center">
           <Border Width="38" Height="38" CornerRadius="9" ClipToBounds="True">
             <Image Source="avares://QuadStickConfigManager/Assets/AppIcon.png" Stretch="UniformToFill"/>
@@ -35,37 +35,32 @@
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4"
                   HorizontalAlignment="Center" VerticalAlignment="Center">
         <Button x:Name="ShellHomeButton" Classes="shellnav active"
-                AutomationProperties.Name="Home">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconHome}"/><TextBlock x:Name="ShellHomeLabel" Text="Home"/></StackPanel>
+                AutomationProperties.Name="{x:Static app:Strings.Shell_Home}">
+          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconHome}"/><TextBlock x:Name="ShellHomeLabel" Text="{x:Static app:Strings.Shell_Home}"/></StackPanel>
         </Button>
-        <Button x:Name="ShellNewButton" Classes="shellnav"
-                AutomationProperties.Name="Create a new profile">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconAdd}"/><TextBlock x:Name="ShellNewLabel" Text="New"/></StackPanel>
-        </Button>
-        <Button x:Name="ShellOpenButton" Classes="shellnav"
-                AutomationProperties.Name="Open a profile file">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconFolder}"/><TextBlock x:Name="ShellOpenLabel" Text="Open"/></StackPanel>
-        </Button>
+        <!-- Three destinations, no commands. New and Open were commands sitting
+             in a row of places, and both already live on Home where a profile
+             gets started. -->
         <Button x:Name="ShellDeviceButton" Classes="shellnav"
-                AutomationProperties.Name="Manage files on your QuadStick">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconDevice}"/><TextBlock x:Name="ShellDeviceLabel" Text="Device"/></StackPanel>
+                AutomationProperties.Name="{x:Static app:Strings.Shell_ManageFilesOnYourQuadStick}">
+          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconDevice}"/><TextBlock x:Name="ShellDeviceLabel" Text="{x:Static app:Strings.Shell_Device}"/></StackPanel>
         </Button>
         <Button x:Name="ShellCommunityButton" Classes="shellnav"
-                AutomationProperties.Name="Browse community profiles">
-          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconCommunity}"/><TextBlock x:Name="ShellCommunityLabel" Text="Community"/></StackPanel>
+                AutomationProperties.Name="{x:Static app:Strings.Shell_BrowseCommunityProfiles}">
+          <StackPanel Orientation="Horizontal" Spacing="7"><PathIcon Data="{DynamicResource IconCommunity}"/><TextBlock x:Name="ShellCommunityLabel" Text="{x:Static app:Strings.Shell_Community}"/></StackPanel>
         </Button>
       </StackPanel>
 
       <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
         <ComboBox x:Name="AppearancePicker" MinWidth="112"
-                  AutomationProperties.Name="Appearance: choose System, Light, or Dark theme"/>
+                  AutomationProperties.Name="{x:Static app:Strings.Shell_AppearanceChooseSystemLightOr}"/>
         <!-- Deliberately the largest control in the chrome. It was a 40px key
              with a 19px glyph and it is the one thing people go looking for
              when the interface itself is the problem (scale, theme, contrast). -->
         <Button x:Name="SettingsButton" Classes="icon shellutility" Content="⚙"
                 Width="52" Height="52" MinWidth="52" MinHeight="52" FontSize="30"
-                ToolTip.Tip="Settings"
-                AutomationProperties.Name="Open Settings"/>
+                ToolTip.Tip="{x:Static app:Strings.Shell_Settings}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_OpenSettings}"/>
 
       </StackPanel>
     </Grid>
@@ -87,47 +82,47 @@
           <Border Classes="homepanel">
             <StackPanel Spacing="14">
               <StackPanel Orientation="Horizontal" Spacing="12">
-                <TextBlock Classes="section" Text="Start a profile" VerticalAlignment="Center"/>
-                <TextBlock Text="Build, open, or find a setup" Classes="secondary"
+                <TextBlock Classes="section" Text="{x:Static app:Strings.Shell_StartAProfile}" VerticalAlignment="Center"/>
+                <TextBlock Text="{x:Static app:Strings.Shell_BuildOpenOrFindA}" Classes="secondary"
                            VerticalAlignment="Center"/>
               </StackPanel>
-              <WrapPanel x:Name="StartCards">
+              <WrapPanel x:Name="StartCards" HorizontalAlignment="Center">
                 <Button x:Name="HomeNewButton" Classes="homeaction featured"
-                        AutomationProperties.Name="Create a new profile from the factory default template">
-                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconAdd}"/><TextBlock Text="New profile" HorizontalAlignment="Center"/></StackPanel>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_CreateANewProfileFrom}">
+                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconAdd}"/><TextBlock Text="{x:Static app:Strings.Shell_NewProfile}" HorizontalAlignment="Center"/></StackPanel>
                 </Button>
                 <Button x:Name="HomeOpenButton" Classes="homeaction"
-                        AutomationProperties.Name="Open a profile CSV file from your computer">
-                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconFolder}"/><TextBlock Text="Open a file" HorizontalAlignment="Center"/></StackPanel>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_OpenAProfileCSVFile}">
+                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconFolder}"/><TextBlock Text="{x:Static app:Strings.Shell_OpenAFile}" HorizontalAlignment="Center"/></StackPanel>
                 </Button>
                 <Button x:Name="HomeTemplateButton" Classes="homeaction"
-                        AutomationProperties.Name="Start a new profile from one of your saved templates">
-                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconTemplate}"/><TextBlock Text="Use template" HorizontalAlignment="Center"/></StackPanel>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_StartANewProfileFrom}">
+                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconTemplate}"/><TextBlock Text="{x:Static app:Strings.Shell_UseTemplate}" HorizontalAlignment="Center"/></StackPanel>
                 </Button>
                 <!-- Off for this release. See AgentFeature: one switch, read here
                      at parse time so the card is never in the layout at all. -->
                 <Button x:Name="HomeAgentButton" Classes="homeaction"
                         IsVisible="{x:Static app:AgentFeature.Enabled}"
-                        AutomationProperties.Name="Name a game and have a profile built for it from the profiles you already have">
-                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconSparkles}"/><TextBlock Text="Set up a game" HorizontalAlignment="Center"/></StackPanel>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_NameAGameAndHave}">
+                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconSparkles}"/><TextBlock Text="{x:Static app:Strings.Shell_SetUpAGame}" HorizontalAlignment="Center"/></StackPanel>
                 </Button>
                 <Button x:Name="HomeCommunityButton" Classes="homeaction"
-                        AutomationProperties.Name="Browse the community list of shared game profiles and import one">
-                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconCommunity}"/><TextBlock Text="Community profiles" HorizontalAlignment="Center"/></StackPanel>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_BrowseTheCommunityListOf}">
+                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconCommunity}"/><TextBlock Text="{x:Static app:Strings.Shell_CommunityProfiles}" HorizontalAlignment="Center"/></StackPanel>
                 </Button>
                 <Button x:Name="HomeHelpButton" Classes="homeaction"
-                        AutomationProperties.Name="Open the quick guide that explains profiles, outputs, functions, and inputs">
-                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconHelp}"/><TextBlock Text="How it works" HorizontalAlignment="Center"/></StackPanel>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_OpenTheQuickGuideThat}">
+                  <StackPanel Spacing="9" HorizontalAlignment="Center"><PathIcon HorizontalAlignment="Center" Data="{DynamicResource IconHelp}"/><TextBlock Text="{x:Static app:Strings.Shell_HowItWorks}" HorizontalAlignment="Center"/></StackPanel>
                 </Button>
               </WrapPanel>
               <TextBlock x:Name="HomeStatusText" FontSize="{DynamicResource BodySize}" Classes="error"
                          TextWrapping="Wrap" MaxWidth="760" IsVisible="False"
                          AutomationProperties.LiveSetting="Assertive"/>
               <StackPanel x:Name="RescuePanel" Orientation="Horizontal" Spacing="10" IsVisible="False">
-                <Button x:Name="RescueOpenButton" Content="Open recovered work" Classes="primary"
-                        AutomationProperties.Name="Open the profile that was recovered after the last crash or force quit"/>
-                <Button x:Name="RescueDismissButton" Content="Dismiss"
-                        AutomationProperties.Name="Discard the recovered work permanently"/>
+                <Button x:Name="RescueOpenButton" Content="{x:Static app:Strings.Shell_OpenRecoveredWork}" Classes="primary"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_OpenTheProfileThatWas}"/>
+                <Button x:Name="RescueDismissButton" Content="{x:Static app:Strings.Shell_Dismiss}"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_DiscardTheRecoveredWorkPermanently}"/>
               </StackPanel>
             </StackPanel>
           </Border>
@@ -138,15 +133,15 @@
                    far right the button sat 700px from the words it belonged to
                    and read as unrelated furniture. -->
               <StackPanel Orientation="Horizontal" Spacing="14">
-                <TextBlock Classes="section" Text="On your QuadStick" VerticalAlignment="Center"/>
+                <TextBlock Classes="section" Text="{x:Static app:Strings.Shell_OnYourQuadStick}" VerticalAlignment="Center"/>
                 <Button x:Name="HomeDeviceFilesButton" VerticalAlignment="Center" Classes="quiet"
                         FontSize="{DynamicResource SmallSize}"
-                        AutomationProperties.Name="Manage the profile files on your QuadStick: copy, delete, and see the file selection order">
-                  <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconFiles}"/><TextBlock Text="Manage files"/></StackPanel>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_ManageTheProfileFilesOn}">
+                  <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconFiles}"/><TextBlock Text="{x:Static app:Strings.Shell_ManageFiles}"/></StackPanel>
                 </Button>
               </StackPanel>
               <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
-                         Text="Plug in your QuadStick to see its profiles. If the drive is hidden, turn off controller emulation and reconnect it."
+                         Text="{x:Static app:Strings.Shell_PlugInYourQuadStickTo}"
                          TextWrapping="Wrap"/>
               <StackPanel x:Name="DeviceCards" Spacing="6"/>
             </StackPanel>
@@ -154,19 +149,19 @@
 
           <Border Classes="homepanel">
             <StackPanel Spacing="12">
-              <TextBlock Classes="section" Text="Your profiles"/>
+              <TextBlock Classes="section" Text="{x:Static app:Strings.Shell_YourProfiles}"/>
               <StackPanel x:Name="LibraryEmptyPanel" Spacing="10">
                 <TextBlock FontSize="{DynamicResource BodySize}" Classes="secondary"
-                           Text="Profiles you save will show up here."/>
+                           Text="{x:Static app:Strings.Shell_ProfilesYouSaveWillShow}"/>
                 <StackPanel Orientation="Horizontal" Spacing="10">
-                  <Button x:Name="LibraryEmptyNewButton" AutomationProperties.Name="Create a new profile from the factory default template">
-                    <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconAdd}"/><TextBlock Text="New profile"/></StackPanel>
+                  <Button x:Name="LibraryEmptyNewButton" AutomationProperties.Name="{x:Static app:Strings.Shell_CreateANewProfileFrom}">
+                    <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconAdd}"/><TextBlock Text="{x:Static app:Strings.Shell_NewProfile}"/></StackPanel>
                   </Button>
-                  <Button x:Name="LibraryEmptyOpenButton" AutomationProperties.Name="Open a profile CSV file from your computer">
-                    <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconFolder}"/><TextBlock Text="Open a file"/></StackPanel>
+                  <Button x:Name="LibraryEmptyOpenButton" AutomationProperties.Name="{x:Static app:Strings.Shell_OpenAProfileCSVFile}">
+                    <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconFolder}"/><TextBlock Text="{x:Static app:Strings.Shell_OpenAFile}"/></StackPanel>
                   </Button>
-                  <Button x:Name="LibraryEmptyImportButton" AutomationProperties.Name="Import the profile from the pasted Google Sheets link">
-                    <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconLink}"/><TextBlock Text="Import from Sheets"/></StackPanel>
+                  <Button x:Name="LibraryEmptyImportButton" AutomationProperties.Name="{x:Static app:Strings.Shell_ImportTheProfileFromThe}">
+                    <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconLink}"/><TextBlock Text="{x:Static app:Strings.Shell_ImportFromSheets}"/></StackPanel>
                   </Button>
                 </StackPanel>
               </StackPanel>
@@ -177,19 +172,19 @@
           <Border Classes="homepanel">
             <StackPanel Spacing="12">
               <StackPanel Orientation="Horizontal" Spacing="14">
-                <TextBlock Classes="section" Text="Import from Sheets" VerticalAlignment="Center"/>
+                <TextBlock Classes="section" Text="{x:Static app:Strings.Shell_ImportFromSheets}" VerticalAlignment="Center"/>
                 <!-- Content, colour, and action are set per state in RefreshDriveButton. -->
                 <Button x:Name="HomeDriveButton" IsVisible="False" VerticalAlignment="Center"
                         FontSize="{DynamicResource SmallSize}"/>
               </StackPanel>
               <Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
                 <TextBox x:Name="SheetsUrlBox" Grid.Column="0" MinWidth="420"
-                         Watermark="Paste a Google Sheets profile link"
-                         AutomationProperties.Name="Google Sheets profile link"/>
+                         Watermark="{x:Static app:Strings.Shell_PasteAGoogleSheetsProfile}"
+                         AutomationProperties.Name="{x:Static app:Strings.Shell_GoogleSheetsProfileLink}"/>
                 <Button x:Name="ImportButton" Grid.Column="1" Margin="10,0,0,0"
                         Classes="primary" MinWidth="130"
-                        AutomationProperties.Name="Import the profile from the pasted Google Sheets link">
-                  <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconLink}"/><TextBlock Text="Import"/></StackPanel>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_ImportTheProfileFromThe}">
+                  <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconLink}"/><TextBlock Text="{x:Static app:Strings.Shell_Import}"/></StackPanel>
                 </Button>
               </Grid>
             </StackPanel>
@@ -200,7 +195,7 @@
           <StackPanel x:Name="RecentSection" IsVisible="False">
             <Border Classes="homepanel">
               <StackPanel Spacing="12">
-                <TextBlock Classes="section" Text="Opened from your computer"/>
+                <TextBlock Classes="section" Text="{x:Static app:Strings.Shell_OpenedFromYourComputer}"/>
                 <WrapPanel x:Name="RecentCards"/>
               </StackPanel>
             </Border>
@@ -228,53 +223,53 @@
       <Border DockPanel.Dock="Top" Classes="editorchrome">
         <StackPanel>
       <WrapPanel Classes="toolbar" Margin="0,0,0,4">
-        <TextBlock Text="Profile" VerticalAlignment="Center" Classes="secondary"/>
+        <TextBlock Text="{x:Static app:Strings.Shell_Profile}" VerticalAlignment="Center" Classes="secondary"/>
         <TextBox x:Name="FileNameBox" Width="230" FontSize="{DynamicResource SubheadSize}" FontWeight="Bold"
                  VerticalAlignment="Center"
-                 AutomationProperties.Name="Profile name. Edit to rename; .csv is added for you">
+                 AutomationProperties.Name="{x:Static app:Strings.Shell_ProfileNameEditToRename}">
           <TextBox.InnerRightContent>
-            <TextBlock Text=".csv" Classes="secondary" VerticalAlignment="Center" Margin="0,0,8,0"
+            <TextBlock Text="{x:Static app:Strings.Shell_Csv}" Classes="secondary" VerticalAlignment="Center" Margin="0,0,8,0"
                        FontSize="{DynamicResource SubheadSize}"/>
           </TextBox.InnerRightContent>
         </TextBox>
         <!-- Off for this release. See AgentFeature. -->
-        <Button x:Name="AgentButton" Classes="quiet" Content="Ask for a change"
+        <Button x:Name="AgentButton" Classes="quiet" Content="{x:Static app:Strings.Shell_AskForAChange}"
                 IsVisible="{x:Static app:AgentFeature.Enabled}"
-                AutomationProperties.Name="Describe a change in plain words and have it made to this profile. Nothing is changed until you approve it."/>
+                AutomationProperties.Name="{x:Static app:Strings.Shell_DescribeAChangeInPlain}"/>
         <!-- Save, Undo, Share and Help are the four everyone already knows by
              shape. As words they were four equal-weight grey rectangles and the
              one destination that matters, Install, had to shout over them.
              AutomationProperties.Name still carries the full sentence, and each
              one has a tooltip, so nothing is lost to a screen reader or to
              somebody who does not recognise the glyph. -->
-        <Button x:Name="ShareButton" Classes="icon quiet" ToolTip.Tip="Share as a Google Sheet"
-                AutomationProperties.Name="Share this profile as a Google Sheet">
+        <Button x:Name="ShareButton" Classes="icon quiet" ToolTip.Tip="{x:Static app:Strings.Shell_ShareAsAGoogleSheet}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_ShareThisProfileAsA}">
           <PathIcon Data="{DynamicResource IconShare}"/>
         </Button>
         <!-- Which profile | what to do with it. The gap used to do this job,
              before the actions stopped being pinned to the right edge. -->
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
-        <Button x:Name="SaveButton" Classes="icon" ToolTip.Tip="Save  (Ctrl+S)"
-                AutomationProperties.Name="Save this profile. Shortcut Control S">
+        <Button x:Name="SaveButton" Classes="icon" ToolTip.Tip="{x:Static app:Strings.Shell_SaveCtrlS}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_SaveThisProfileShortcutControl}">
           <PathIcon Data="{DynamicResource IconSave}"/>
         </Button>
-        <Button x:Name="UndoButton" Classes="icon" ToolTip.Tip="Undo  (Ctrl+Z)"
-                AutomationProperties.Name="Undo the last change. Shortcut Control Z">
+        <Button x:Name="UndoButton" Classes="icon" ToolTip.Tip="{x:Static app:Strings.Shell_UndoCtrlZ}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_UndoTheLastChangeShortcut}">
           <PathIcon Data="{DynamicResource IconUndo}"/>
         </Button>
-        <Button x:Name="SaveTemplateButton" Classes="icon quiet" ToolTip.Tip="Save as a template"
-                AutomationProperties.Name="Save this profile as a reusable template you can start new profiles from">
+        <Button x:Name="SaveTemplateButton" Classes="icon quiet" ToolTip.Tip="{x:Static app:Strings.Shell_SaveAsATemplate}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_SaveThisProfileAsA}">
           <PathIcon Data="{DynamicResource IconTemplate}"/>
         </Button>
         <Button x:Name="InstallButton" Classes="primary"
-                AutomationProperties.Name="Install this profile onto a connected QuadStick. Shortcut Control I">
+                AutomationProperties.Name="{x:Static app:Strings.Shell_InstallThisProfileOntoA}">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <PathIcon Width="18" Height="18" Data="{DynamicResource IconInstall}"/>
-            <TextBlock Text="Install to QuadStick"/>
+            <TextBlock Text="{x:Static app:Strings.Shell_InstallToQuadStick}"/>
           </StackPanel>
         </Button>
-        <Button x:Name="HelpButton" Classes="icon quiet" ToolTip.Tip="How it works  (F1)"
-                AutomationProperties.Name="Open the quick guide. Shortcut Control H or F1">
+        <Button x:Name="HelpButton" Classes="icon quiet" ToolTip.Tip="{x:Static app:Strings.Shell_HowItWorksF1}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_OpenTheQuickGuideShortcut}">
           <PathIcon Data="{DynamicResource IconHelp}"/>
         </Button>
       </WrapPanel>
@@ -288,19 +283,19 @@
              comes first. Sat after the dropdown it looked like a third control
              in the row and people read it as "mode, something, ?". -->
         <Button x:Name="ModeHelpButton" Classes="icon quiet" Content="?"
-                ToolTip.Tip="What is a mode?"
-                AutomationProperties.Name="What is a mode, and why is there only one?"/>
-        <TextBlock Text="Mode" VerticalAlignment="Center" FontSize="{DynamicResource BodySize}"/>
+                ToolTip.Tip="{x:Static app:Strings.Shell_WhatIsAMode}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_WhatIsAModeAnd}"/>
+        <TextBlock Text="{x:Static app:Strings.Shell_Mode}" VerticalAlignment="Center" FontSize="{DynamicResource BodySize}"/>
         <ComboBox x:Name="SheetPicker" MinWidth="180"
-                  AutomationProperties.Name="Select which mode to edit"/>
+                  AutomationProperties.Name="{x:Static app:Strings.Shell_SelectWhichModeToEdit}"/>
         <!-- "Modes..." named a dialog, not a job. Everything people come here
              to do (add, rename, reorder, delete) is editing the set of them. -->
         <Button x:Name="ModesButton" Classes="quiet"
-                ToolTip.Tip="Add, rename, reorder and delete modes"
-                AutomationProperties.Name="Edit modes: add, rename, reorder and delete">
+                ToolTip.Tip="{x:Static app:Strings.Shell_AddRenameReorderAndDelete}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_EditModesAddRenameReorder}">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <PathIcon Width="18" Height="18" Data="{DynamicResource IconTemplate}"/>
-            <TextBlock Text="Edit modes"/>
+            <TextBlock Text="{x:Static app:Strings.Shell_EditModes}"/>
           </StackPanel>
         </Button>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
@@ -313,43 +308,43 @@
              narrow window broke the line between them and left the word "View"
              sitting alone over nothing. -->
         <StackPanel Orientation="Horizontal" Spacing="2">
-        <TextBlock Text="View" VerticalAlignment="Center" Classes="secondary"
+        <TextBlock Text="{x:Static app:Strings.Shell_View}" VerticalAlignment="Center" Classes="secondary"
                    FontSize="{DynamicResource SmallSize}" Margin="0,0,2,0"/>
         <Border Classes="switchtrack">
           <StackPanel Orientation="Horizontal" Spacing="2">
             <Button x:Name="DeviceViewButton" Classes="switchkey viewkey"
-                    ToolTip.Tip="See the mappings on a picture of the QuadStick  (Ctrl+D)"
-                    AutomationProperties.Name="Show the mappings on a picture of the QuadStick. Shortcut Control D toggles this">
+                    ToolTip.Tip="{x:Static app:Strings.Shell_SeeTheMappingsOnA}"
+                    AutomationProperties.Name="{x:Static app:Strings.Shell_ShowTheMappingsOnA}">
               <StackPanel Spacing="3" HorizontalAlignment="Center">
                 <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewDevice}"/>
-                <TextBlock Text="Device" HorizontalAlignment="Center"/>
+                <TextBlock Text="{x:Static app:Strings.Shell_Device}" HorizontalAlignment="Center"/>
               </StackPanel>
             </Button>
             <Button x:Name="RailViewButton" Classes="switchkey viewkey"
-                    ToolTip.Tip="Step through the parts one at a time"
-                    AutomationProperties.Name="Show the parts as a simple list you arrow through, with the same editor on the right">
+                    ToolTip.Tip="{x:Static app:Strings.Shell_StepThroughThePartsOne}"
+                    AutomationProperties.Name="{x:Static app:Strings.Shell_ShowThePartsAsA}">
               <StackPanel Spacing="3" HorizontalAlignment="Center">
                 <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewRail}"/>
-                <TextBlock Text="Parts" HorizontalAlignment="Center"/>
+                <TextBlock Text="{x:Static app:Strings.Shell_Parts}" HorizontalAlignment="Center"/>
               </StackPanel>
             </Button>
             <Button x:Name="ListViewButton" Classes="switchkey viewkey"
-                    ToolTip.Tip="See the rows the way the sheet stores them  (Ctrl+D)"
-                    AutomationProperties.Name="Show the mappings as a list of rows. Shortcut Control D toggles this">
+                    ToolTip.Tip="{x:Static app:Strings.Shell_SeeTheRowsTheWay}"
+                    AutomationProperties.Name="{x:Static app:Strings.Shell_ShowTheMappingsAsA}">
               <StackPanel Spacing="3" HorizontalAlignment="Center">
                 <PathIcon Width="22" Height="22" HorizontalAlignment="Center" Data="{DynamicResource IconViewSheet}"/>
-                <TextBlock Text="Rows" HorizontalAlignment="Center"/>
+                <TextBlock Text="{x:Static app:Strings.Shell_Rows}" HorizontalAlignment="Center"/>
               </StackPanel>
             </Button>
           </StackPanel>
         </Border>
         </StackPanel>
         <Border Width="1" Background="{DynamicResource SurfaceBorderBrush}" Margin="6,4"/>
-        <Button x:Name="AddRowButton" Content="+ Add row"
-                AutomationProperties.Name="Add a new binding row to this mode"/>
+        <Button x:Name="AddRowButton" Content="{x:Static app:Strings.Shell_AddRow}"
+                AutomationProperties.Name="{x:Static app:Strings.Shell_AddANewBindingRow}"/>
         <!-- Content is set in code so the button can carry the live count. -->
         <Button x:Name="UnusedButton" Classes="quiet"
-                AutomationProperties.Name="List the inputs this mode has not used yet"/>
+                AutomationProperties.Name="{x:Static app:Strings.Shell_ListTheInputsThisMode}"/>
       </WrapPanel>
         </StackPanel>
       </Border>
@@ -363,13 +358,13 @@
                 BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1" CornerRadius="6"
                 Background="{DynamicResource SurfaceBrush}">
           <ListBox x:Name="IssuesList" FontSize="{DynamicResource SmallSize}" Background="Transparent"
-                   AutomationProperties.Name="List of validation problems. Select one to copy it."/>
+                   AutomationProperties.Name="{x:Static app:Strings.Shell_ListOfValidationProblemsSelect}"/>
         </Border>
         <Grid ColumnDefinitions="Auto,*,Auto">
           <Button x:Name="ProblemsToggle" Grid.Column="0" Classes="quiet" HorizontalContentAlignment="Left"
-                  AutomationProperties.Name="Show or hide the list of problems"/>
-          <Button x:Name="FixFirstButton" Grid.Column="2" Content="Fix first problem" Classes="quiet"
-                  AutomationProperties.Name="Jump to and focus the first error in the Problems list"/>
+                  AutomationProperties.Name="{x:Static app:Strings.Shell_ShowOrHideTheList}"/>
+          <Button x:Name="FixFirstButton" Grid.Column="2" Content="{x:Static app:Strings.Shell_FixFirstProblem}" Classes="quiet"
+                  AutomationProperties.Name="{x:Static app:Strings.Shell_JumpToAndFocusThe}"/>
         </Grid>
       </StackPanel>
 
@@ -396,12 +391,12 @@
                     BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1">
               <StackPanel Orientation="Horizontal" Spacing="10">
                 <TextBlock x:Name="SelectionCount" VerticalAlignment="Center" FontWeight="Bold"/>
-                <Button x:Name="SelectionMoveButton" Content="Move" Classes="quiet"
-                        AutomationProperties.Name="Move the selected rows to the top or bottom"/>
-                <Button x:Name="SelectionDeleteButton" Content="Delete" Classes="danger"
-                        AutomationProperties.Name="Delete the selected rows"/>
-                <Button x:Name="SelectionClearButton" Content="Clear" Classes="quiet"
-                        AutomationProperties.Name="Clear the selection"/>
+                <Button x:Name="SelectionMoveButton" Content="{x:Static app:Strings.Shell_Move}" Classes="quiet"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_MoveTheSelectedRowsTo}"/>
+                <Button x:Name="SelectionDeleteButton" Content="{x:Static app:Strings.Shell_Delete}" Classes="danger"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_DeleteTheSelectedRows}"/>
+                <Button x:Name="SelectionClearButton" Content="{x:Static app:Strings.Shell_Clear}" Classes="quiet"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_ClearTheSelection}"/>
               </StackPanel>
             </Border>
           </Panel>
@@ -423,11 +418,11 @@
                 <TextBlock x:Name="DeviceHeaderLights" Classes="secondary"
                            VerticalAlignment="Center" FontSize="{DynamicResource SmallSize}"/>
                 <ComboBox x:Name="ModelPicker" MinWidth="180"
-                          AutomationProperties.Name="Which QuadStick model you have"/>
+                          AutomationProperties.Name="{x:Static app:Strings.Shell_WhichQuadStickModelYouHave}"/>
                 <Button x:Name="DeviceHelpButton" Classes="icon" Content="?"
-                        AutomationProperties.Name="How device view works, and which parts your model has"/>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_HowDeviceViewWorksAnd}"/>
                 <Button x:Name="LabelStyleButton" Classes="quiet"
-                        AutomationProperties.Name="Switch the words used in device view between plain English and the raw list-view names"/>
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_SwitchTheWordsUsedIn}"/>
                 <Button x:Name="CardViewButton" Classes="quiet"/>
               </WrapPanel>
             </Border>
@@ -457,12 +452,12 @@
                           BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1">
                     <StackPanel Orientation="Horizontal" Spacing="10">
                       <TextBlock x:Name="DeviceSelectionCount" VerticalAlignment="Center" FontWeight="Bold"/>
-                      <Button x:Name="DeviceSelectionMoveButton" Content="Move" Classes="quiet"
-                              AutomationProperties.Name="Move the selected mappings to the top or bottom"/>
-                      <Button x:Name="DeviceSelectionDeleteButton" Content="Delete" Classes="danger"
-                              AutomationProperties.Name="Delete the selected mappings"/>
-                      <Button x:Name="DeviceSelectionClearButton" Content="Clear" Classes="quiet"
-                              AutomationProperties.Name="Clear the selection"/>
+                      <Button x:Name="DeviceSelectionMoveButton" Content="{x:Static app:Strings.Shell_Move}" Classes="quiet"
+                              AutomationProperties.Name="{x:Static app:Strings.Shell_MoveTheSelectedMappingsTo}"/>
+                      <Button x:Name="DeviceSelectionDeleteButton" Content="{x:Static app:Strings.Shell_Delete}" Classes="danger"
+                              AutomationProperties.Name="{x:Static app:Strings.Shell_DeleteTheSelectedMappings}"/>
+                      <Button x:Name="DeviceSelectionClearButton" Content="{x:Static app:Strings.Shell_Clear}" Classes="quiet"
+                              AutomationProperties.Name="{x:Static app:Strings.Shell_ClearTheSelection}"/>
                     </StackPanel>
                   </Border>
                 </Panel>
@@ -473,6 +468,37 @@
       </Panel>
 
     </DockPanel>
+
+    <!-- ============ DEVICE ============ -->
+    <!-- Tuning the QuadStick itself, not the profiles on it. A page and not a
+         dialog because it is one of the three places the app goes, and because
+         a settings screen you tune while sipping needs the whole window. The
+         body is built in code: the rows come from the preference catalog, so
+         the layout follows the file that is actually on the device. -->
+    <DockPanel x:Name="DevicePage" IsVisible="False" Margin="28,22">
+      <Border x:Name="DeviceSaveBar" DockPanel.Dock="Bottom" IsVisible="False"
+              Classes="editorchrome" Margin="0,14,0,0" Padding="14,10">
+        <WrapPanel x:Name="DeviceSaveBarRow" Classes="toolbar" HorizontalAlignment="Center"/>
+      </Border>
+      <!-- No ScrollViewer here on purpose. The picture of the device and the
+           list of groups stay put; only the open group's settings scroll, so
+           the part being tuned never leaves the screen. -->
+      <Panel x:Name="DevicePageBody"/>
+    </DockPanel>
+
+    <!-- ============ COMMUNITY ============ -->
+    <DockPanel x:Name="CommunityPage" IsVisible="False" Margin="28,22">
+      <Panel x:Name="CommunityPageBody"/>
+    </DockPanel>
+
+    <!-- ============ SETTINGS ============ -->
+    <!-- App settings (language, backup, privacy). A page in the shell, not a
+         second window: one place to go back from, no nested close buttons, and
+         the same keyboard path as Home and Community. -->
+    <DockPanel x:Name="SettingsPage" IsVisible="False" Margin="28,22">
+      <Panel x:Name="SettingsPageBody" MaxWidth="1120" HorizontalAlignment="Center"/>
+    </DockPanel>
+
   </Panel>
   </Grid>
   </LayoutTransformControl>

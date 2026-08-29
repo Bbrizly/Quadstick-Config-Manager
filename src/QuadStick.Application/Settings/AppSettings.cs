@@ -6,6 +6,7 @@ public sealed class AppSettings
 {
     public string Model = "FPS";
     public string Theme = "System";           // System | Light | Dark
+    public string Language = "System";        // System | shipped culture tag
     public int InterfaceScalePercent = 100;    // 100 | 125 | 150 | 200
     public bool ReduceMotion = false;
     public bool RememberWindow = true;
@@ -26,6 +27,7 @@ public sealed class AppSettings
     {
         Model = Model,
         Theme = Theme,
+        Language = Language,
         InterfaceScalePercent = InterfaceScalePercent,
         ReduceMotion = ReduceMotion,
         RememberWindow = RememberWindow,

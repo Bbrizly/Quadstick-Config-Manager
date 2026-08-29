@@ -1,0 +1,3044 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Auth_DoctypeHtmlHtmlBodyP" xml:space="preserve">
+    <value>&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;{0}&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan" xml:space="preserve">
+    <value>Aanmelden mislukt. U kunt dit tabblad sluiten.</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan2" xml:space="preserve">
+    <value>Aanmelden mislukt. U kunt dit tabblad sluiten.</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan3" xml:space="preserve">
+    <value>Aanmelden mislukt. U kunt dit tabblad sluiten.</value>
+  </data>
+  <data name="Auth_TheGoogleConnectionWasRevoked" xml:space="preserve">
+    <value>De Google-verbinding is ingetrokken of verlopen. Maak opnieuw verbinding om te blijven back-uppen.</value>
+  </data>
+  <data name="Auth_YouAreSignedInYou" xml:space="preserve">
+    <value>U bent aangemeld. U kunt dit tabblad sluiten.</value>
+  </data>
+  <data name="Backup_AlreadyExists" xml:space="preserve">
+    <value>bestaat al</value>
+  </data>
+  <data name="Backup_BackupPausedReconnectToGoogle" xml:space="preserve">
+    <value>Back-up gepauzeerd. Maak opnieuw verbinding met Google in Instellingen.</value>
+  </data>
+  <data name="Backup_BackupPending" xml:space="preserve">
+    <value>Back-up in behandeling</value>
+  </data>
+  <data name="Backup_BackupSheetNotFound" xml:space="preserve">
+    <value>Back-upblad niet gevonden</value>
+  </data>
+  <data name="Backup_BackupWasTurnedOffFor" xml:space="preserve">
+    <value>Back-up is uitgeschakeld voor dit profiel, dus er is niets gekopieerd.</value>
+  </data>
+  <data name="Backup_CouldNotCreateTheGoogle" xml:space="preserve">
+    <value>Kon het Google Sheet niet maken, dus er is nog niets om te delen.</value>
+  </data>
+  <data name="Backup_CouldNotReadTheSheet" xml:space="preserve">
+    <value>kon het blad niet lezen</value>
+  </data>
+  <data name="Backup_CouldNotReadTheSheet2" xml:space="preserve">
+    <value>kon het blad niet lezen</value>
+  </data>
+  <data name="Backup_CouldNotSaveBackupSettings" xml:space="preserve">
+    <value>Kon back-upinstellingen niet opslaan.</value>
+  </data>
+  <data name="Backup_CouldNotSaveTheLink" xml:space="preserve">
+    <value>kon de link niet opslaan</value>
+  </data>
+  <data name="Backup_CouldNotTurnOnLink" xml:space="preserve">
+    <value>Kon delen via link niet inschakelen, dus er is niets gekopieerd.</value>
+  </data>
+  <data name="Backup_CouldNotWriteTheFile" xml:space="preserve">
+    <value>kon het bestand niet schrijven</value>
+  </data>
+  <data name="Backup_DownloadFailed" xml:space="preserve">
+    <value>downloaden mislukt</value>
+  </data>
+  <data name="Backup_LinkCopied" xml:space="preserve">
+    <value>Link gekopieerd.</value>
+  </data>
+  <data name="Backup_LinkCopiedYourLatestChanges" xml:space="preserve">
+    <value>Link gekopieerd. Uw laatste wijzigingen zijn nog niet geüpload (back-up in behandeling).</value>
+  </data>
+  <data name="Backup_NotAValidProfile" xml:space="preserve">
+    <value>geen geldig profiel</value>
+  </data>
+  <data name="Backup_ReconnectedThisProfileToIts" xml:space="preserve">
+    <value>Dit profiel is opnieuw verbonden met zijn Google Sheet.</value>
+  </data>
+  <data name="Backup_SheetEditedOnline" xml:space="preserve">
+    <value>Blad online bewerkt</value>
+  </data>
+  <data name="Backup_TheGoogleSheetCouldNot" xml:space="preserve">
+    <value>Het Google Sheet kon niet als profiel worden gelezen, dus hier is niets gewijzigd.</value>
+  </data>
+  <data name="Backup_TheGoogleSheetForThis" xml:space="preserve">
+    <value>Het Google Sheet voor dit profiel is niet gevonden. Het is mogelijk verwijderd of naar de prullenbak verplaatst. Kies Ja om een nieuw blad te maken en daar een back-up naar te maken. Kies Annuleren om de back-up voor dit profiel uit te schakelen.</value>
+  </data>
+  <data name="Backup_ThisProfileSGoogleSheet" xml:space="preserve">
+    <value>Het Google Sheet van dit profiel is online bewerkt sinds uw laatste back-up. Kies Ja om het te vervangen door uw kopie (de online wijzigingen blijven in de revisiegeschiedenis van Drive). Kies Annuleren om de online versie te behouden en die in plaats daarvan in de editor te laden.</value>
+  </data>
+  <data name="Community_CheckYourInternetConnectionAnd" xml:space="preserve">
+    <value>Controleer uw internetverbinding en klik op Vernieuwen. Al het andere in de app werkt zonder deze lijst.</value>
+  </data>
+  <data name="Community_CheckingQuadstickComForNew" xml:space="preserve">
+    <value>quadstick.com wordt gecontroleerd op nieuwe profielen...</value>
+  </data>
+  <data name="Community_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Community_CloseThisWindow" xml:space="preserve">
+    <value>Dit venster sluiten</value>
+  </data>
+  <data name="Community_CommunityProfiles" xml:space="preserve">
+    <value>Communityprofielen</value>
+  </data>
+  <data name="Community_CommunityProfilesUseTheArrow" xml:space="preserve">
+    <value>Communityprofielen, gebruik de pijltoetsen</value>
+  </data>
+  <data name="Community_CouldNotImportPickedName" xml:space="preserve">
+    <value>Kon {0} niet importeren: {1}</value>
+  </data>
+  <data name="Community_CouldNotOpenTheSheet" xml:space="preserve">
+    <value>Kon het blad niet openen in uw browser: {0}</value>
+  </data>
+  <data name="Community_CouldNotReachQuadstickCom" xml:space="preserve">
+    <value>Kon quadstick.com niet bereiken, dus dit is nog steeds de kopie die op deze computer is opgeslagen.</value>
+  </data>
+  <data name="Community_DownloadTheCommunityListAgain" xml:space="preserve">
+    <value>De communitylijst opnieuw downloaden</value>
+  </data>
+  <data name="Community_GameProfilesOtherQuadStickPlayers" xml:space="preserve">
+    <value>Spelprofielen die andere QuadStick-spelers hebben gedeeld als Google Sheets. Dit venster openen downloadt de lijst van quadstick.com, en Vernieuwen downloadt hem opnieuw. Importeren opent het profiel in de editor. Niets hier schrijft naar uw QuadStick.</value>
+  </data>
+  <data name="Community_Import" xml:space="preserve">
+    <value>Importeren</value>
+  </data>
+  <data name="Community_ImportTheSelectedProfileInto" xml:space="preserve">
+    <value>Het geselecteerde profiel importeren in de editor</value>
+  </data>
+  <data name="Community_ImportingPickedName" xml:space="preserve">
+    <value>{0} wordt geïmporteerd...</value>
+  </data>
+  <data name="Community_LoadingTheCommunityList" xml:space="preserve">
+    <value>De communitylijst wordt geladen...</value>
+  </data>
+  <data name="Community_LoadingTheCommunityList2" xml:space="preserve">
+    <value>De communitylijst wordt geladen...</value>
+  </data>
+  <data name="Community_NoProfilesMatchQuery" xml:space="preserve">
+    <value>Geen profielen komen overeen met "{0}".</value>
+  </data>
+  <data name="Community_NothingMatchesThatSearchClear" xml:space="preserve">
+    <value>Niets komt overeen met deze zoekopdracht. Wis het zoekvak om de hele lijst te zien.</value>
+  </data>
+  <data name="Community_OpenInSheets" xml:space="preserve">
+    <value>Openen in Sheets</value>
+  </data>
+  <data name="Community_OpenTheSelectedProfileS" xml:space="preserve">
+    <value>Het Google Sheet van het geselecteerde profiel openen in uw browser</value>
+  </data>
+  <data name="Community_OpenedThePickedNameSheet" xml:space="preserve">
+    <value>Het blad {0} is geopend in uw browser.</value>
+  </data>
+  <data name="Community_PickAProfileFromThe" xml:space="preserve">
+    <value>Kies eerst een profiel uit de lijst.</value>
+  </data>
+  <data name="Community_PickAProfileFromThe2" xml:space="preserve">
+    <value>Kies eerst een profiel uit de lijst.</value>
+  </data>
+  <data name="Community_PickedNameIsSelected" xml:space="preserve">
+    <value>{0} is geselecteerd.</value>
+  </data>
+  <data name="Community_ProfilesCountDownloadedJustNow" xml:space="preserve">
+    <value>{0}, zojuist gedownload.</value>
+  </data>
+  <data name="Community_ProfilesCountFromTheCopy" xml:space="preserve">
+    <value>{0} uit de kopie die op deze computer is opgeslagen. Klik op Vernieuwen om te controleren op nieuwe.</value>
+  </data>
+  <data name="Community_Refresh" xml:space="preserve">
+    <value>Vernieuwen</value>
+  </data>
+  <data name="Community_SearchByGameFileName" xml:space="preserve">
+    <value>Zoeken op spel, bestandsnaam, console of pointer</value>
+  </data>
+  <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
+    <value>De communityprofielen doorzoeken</value>
+  </data>
+  <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
+    <value>Alle {0} worden weergegeven.</value>
+  </data>
+  <data name="Community_ShowingMatchesCountOfAll" xml:space="preserve">
+    <value>{0} van {1} profielen die overeenkomen met "{2}" worden weergegeven.</value>
+  </data>
+  <data name="Community_SkippedRow_one" xml:space="preserve">
+    <value>{0} rij is overgeslagen omdat er geen gedeeld Google Sheet in werd genoemd.</value>
+  </data>
+  <data name="Community_SkippedRow_other" xml:space="preserve">
+    <value>{0} rijen zijn overgeslagen omdat er geen gedeeld Google Sheet in werd genoemd.</value>
+  </data>
+  <data name="Community_TheCommunityListCouldNot" xml:space="preserve">
+    <value>De communitylijst kon niet worden gedownload, en er is geen opgeslagen kopie op deze computer.</value>
+  </data>
+  <data name="Community_TheCommunityListHasNo" xml:space="preserve">
+    <value>De communitylijst bevat op dit moment geen profielen.</value>
+  </data>
+  <data name="Community_TheSavedCopyOfThe" xml:space="preserve">
+    <value>De opgeslagen kopie van de communitylijst bevat geen profielen.</value>
+  </data>
+  <data name="Count_Binding_one" xml:space="preserve">
+    <value>{0} binding</value>
+  </data>
+  <data name="Count_Binding_other" xml:space="preserve">
+    <value>{0} bindingen</value>
+  </data>
+  <data name="Count_Error_one" xml:space="preserve">
+    <value>{0} fout</value>
+  </data>
+  <data name="Count_Error_other" xml:space="preserve">
+    <value>{0} fouten</value>
+  </data>
+  <data name="Count_Mapping_one" xml:space="preserve">
+    <value>{0} toewijzing</value>
+  </data>
+  <data name="Count_Mapping_other" xml:space="preserve">
+    <value>{0} toewijzingen</value>
+  </data>
+  <data name="Count_ModeSheet_one" xml:space="preserve">
+    <value>{0} modusblad</value>
+  </data>
+  <data name="Count_ModeSheet_other" xml:space="preserve">
+    <value>{0} modusbladen</value>
+  </data>
+  <data name="Count_Mode_one" xml:space="preserve">
+    <value>{0} modus</value>
+  </data>
+  <data name="Count_Mode_other" xml:space="preserve">
+    <value>{0} modi</value>
+  </data>
+  <data name="Count_RowDeleted_one" xml:space="preserve">
+    <value>{0} rij verwijderd. Ctrl+Z brengt hem terug.</value>
+  </data>
+  <data name="Count_RowDeleted_other" xml:space="preserve">
+    <value>{0} rijen verwijderd. Ctrl+Z brengt ze terug.</value>
+  </data>
+  <data name="Count_RowMovedBottom_one" xml:space="preserve">
+    <value>{0} rij naar onderen verplaatst. Ctrl+Z maakt dit ongedaan.</value>
+  </data>
+  <data name="Count_RowMovedBottom_other" xml:space="preserve">
+    <value>{0} rijen naar onderen verplaatst. Ctrl+Z maakt dit ongedaan.</value>
+  </data>
+  <data name="Count_RowMovedTop_one" xml:space="preserve">
+    <value>{0} rij naar boven verplaatst. Ctrl+Z maakt dit ongedaan.</value>
+  </data>
+  <data name="Count_RowMovedTop_other" xml:space="preserve">
+    <value>{0} rijen naar boven verplaatst. Ctrl+Z maakt dit ongedaan.</value>
+  </data>
+  <data name="Count_UnusedInputOpens_one" xml:space="preserve">
+    <value>{0} input nog niet gebruikt. Opent de lijst.</value>
+  </data>
+  <data name="Count_UnusedInputOpens_other" xml:space="preserve">
+    <value>{0} inputs nog niet gebruikt. Opent de lijst.</value>
+  </data>
+  <data name="Count_UnusedInput_one" xml:space="preserve">
+    <value>{0} input nog niet gebruikt</value>
+  </data>
+  <data name="Count_UnusedInput_other" xml:space="preserve">
+    <value>{0} inputs nog niet gebruikt</value>
+  </data>
+  <data name="Count_Warning_one" xml:space="preserve">
+    <value>{0} waarschuwing</value>
+  </data>
+  <data name="Count_Warning_other" xml:space="preserve">
+    <value>{0} waarschuwingen</value>
+  </data>
+  <data name="Device_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="Device_CancelChangeNothing" xml:space="preserve">
+    <value>Annuleren, niets wijzigen</value>
+  </data>
+  <data name="Device_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Device_CloseThisWindow" xml:space="preserve">
+    <value>Dit venster sluiten</value>
+  </data>
+  <data name="Device_CopiedFileNameFromWhere" xml:space="preserve">
+    <value>{0} gekopieerd van {1} naar {2}. Het bestand op de QuadStick is ongewijzigd.</value>
+  </data>
+  <data name="Device_CopiedTheFileSelectionGuide" xml:space="preserve">
+    <value>De handleiding voor bestandsselectie voor {0} is naar het klembord gekopieerd.</value>
+  </data>
+  <data name="Device_CopyFileNameFromGroup" xml:space="preserve">
+    <value>{0} van {1} naar uw profielbibliotheek kopiëren</value>
+  </data>
+  <data name="Device_CopyTheFileSelectionGuide" xml:space="preserve">
+    <value>De handleiding voor bestandsselectie voor {0} op {1} als tekst kopiëren</value>
+  </data>
+  <data name="Device_CopyThisGuide" xml:space="preserve">
+    <value>Deze handleiding kopiëren</value>
+  </data>
+  <data name="Device_CopyToLibrary" xml:space="preserve">
+    <value>Naar bibliotheek kopiëren</value>
+  </data>
+  <data name="Device_CouldNotBeReadAs" xml:space="preserve">
+    <value>kon niet als profiel worden gelezen</value>
+  </data>
+  <data name="Device_CouldNotBeReadJust" xml:space="preserve">
+    <value>kon zojuist niet worden gelezen</value>
+  </data>
+  <data name="Device_CouldNotCopyFileName" xml:space="preserve">
+    <value>Kon {0} niet kopiëren van {1}: {2}</value>
+  </data>
+  <data name="Device_CouldNotCopyTheGuide" xml:space="preserve">
+    <value>Kon de handleiding niet kopiëren: {0}</value>
+  </data>
+  <data name="Device_CouldNotDeleteFileName" xml:space="preserve">
+    <value>Kon {0} niet verwijderen van {1}: {2}</value>
+  </data>
+  <data name="Device_CouldNotListTheDrives" xml:space="preserve">
+    <value>Kon de stations niet weergeven: {0} Klik op Vernieuwen om het opnieuw te proberen.</value>
+  </data>
+  <data name="Device_CouldNotLookAtThe" xml:space="preserve">
+    <value>Kon de stations op deze computer niet bekijken.</value>
+  </data>
+  <data name="Device_CouldNotOpenFileName" xml:space="preserve">
+    <value>Kon {0} niet openen van {1}: {2}</value>
+  </data>
+  <data name="Device_CouldNotOpenFileName2" xml:space="preserve">
+    <value>Kon {0} niet openen van {1}: {2}</value>
+  </data>
+  <data name="Device_CouldNotOpenTheSheet" xml:space="preserve">
+    <value>Kon het blad niet openen in uw browser: {0}</value>
+  </data>
+  <data name="Device_CouldNotReadThisDrive" xml:space="preserve">
+    <value>Kon dit station niet lezen: {0}</value>
+  </data>
+  <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
+    <value>{0} verwijderen van de QuadStick op {1}</value>
+  </data>
+  <data name="Device_DeletedResultDeletedPathACopy" xml:space="preserve">
+    <value>{0} verwijderd. Een kopie is opgeslagen op {1}.</value>
+  </data>
+  <data name="Device_EditDevicePreferences" xml:space="preserve">
+    <value>Apparaatvoorkeuren bewerken?</value>
+  </data>
+  <data name="Device_EntryNumberEntryFileName" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Device_EverythingHereReadsAndWrites" xml:space="preserve">
+    <value>Alles hier leest en schrijft bestanden op het station van de QuadStick, verder niets. Bestanden zijn gegroepeerd per station waarop ze staan, en elke actie noemt het station dat wordt aangeraakt. Verwijderen bewaart eerst een kopie in uw back-upmap. default.csv en prefs.csv kunnen niet worden verwijderd, omdat het apparaat ze nodig heeft.</value>
+  </data>
+  <data name="Device_FileNameOnGroupLabel" xml:space="preserve">
+    <value>{0} op {1} bij {2}, {3}{4}</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup" xml:space="preserve">
+    <value>{0} op {1} is niet geopend.</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup2" xml:space="preserve">
+    <value>{0} op {1} noemt geen Google Sheet in de header, dus er is niets om te openen.</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup3" xml:space="preserve">
+    <value>{0} op {1} is beveiligd en kan niet worden verwijderd. Verwijderen kan het apparaat onbruikbaar maken.</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup4" xml:space="preserve">
+    <value>{0} op {1} is niet verwijderd.</value>
+  </data>
+  <data name="Device_FileNameTurnedUpIn" xml:space="preserve">
+    <value>{0} verscheen in uw bibliotheek terwijl het kopiëren bezig was, dus {1} is met rust gelaten. Kopieer het opnieuw om het te vervangen.</value>
+  </data>
+  <data name="Device_FileNameWasNotCopied" xml:space="preserve">
+    <value>{0} is niet gekopieerd. Uw bibliotheekbestand is ongewijzigd.</value>
+  </data>
+  <data name="Device_FileNameWillBeDeleted" xml:space="preserve">
+    <value>{0} wordt verwijderd van de QuadStick op {1}. Er wordt eerst een kopie opgeslagen in {2}, zodat u het terug kunt zetten met Installeren. Er wordt niets anders op dit of enig ander station aangeraakt.</value>
+  </data>
+  <data name="Device_FileSelectionOrderAndLights" xml:space="preserve">
+    <value>Volgorde van bestandsselectie en lampjes</value>
+  </data>
+  <data name="Device_FileSelectionOrderOnHead" xml:space="preserve">
+    <value>Volgorde van bestandsselectie op {0}</value>
+  </data>
+  <data name="Device_FilesOnTheQuadStickAt" xml:space="preserve">
+    <value>Bestanden op de QuadStick op {0}</value>
+  </data>
+  <data name="Device_FilesOnYourQuadStick" xml:space="preserve">
+    <value>Bestanden op uw QuadStick</value>
+  </data>
+  <data name="Device_FilesTotalAcrossGroupsCount" xml:space="preserve">
+    <value>{0} verdeeld over {1} QuadStick-stations. Elk station wordt hieronder apart vermeld.</value>
+  </data>
+  <data name="Device_LinkedToAGoogleSheet" xml:space="preserve">
+    <value>, gekoppeld aan een Google Sheet</value>
+  </data>
+  <data name="Device_LookForQuadStickDrivesAgain" xml:space="preserve">
+    <value>Opnieuw zoeken naar QuadStick-stations en de bestandslijst opnieuw laden</value>
+  </data>
+  <data name="Device_LookingForQuadStickDrivesAgain" xml:space="preserve">
+    <value>Opnieuw zoeken naar QuadStick-stations...</value>
+  </data>
+  <data name="Device_LookingForYourQuadStick" xml:space="preserve">
+    <value>Uw QuadStick wordt gezocht...</value>
+  </data>
+  <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
+    <value>er is geen lichtpatroon gedocumenteerd voor deze positie</value>
+  </data>
+  <data name="Device_NoLinkedGoogleSheetIn" xml:space="preserve">
+    <value>, geen gekoppeld Google Sheet in de header</value>
+  </data>
+  <data name="Device_NoQuadStickDriveIsPlugged" xml:space="preserve">
+    <value>Er is nu geen QuadStick-station aangesloten. Een QuadStick-station is een station met default.csv erop. Bij USB-emulatiemodus 6 verschijnt het station helemaal niet.</value>
+  </data>
+  <data name="Device_NumberFileNameNoLightPattern" xml:space="preserve">
+    <value>{0}. {1}: er is geen lichtpatroon gedocumenteerd voor deze positie</value>
+  </data>
+  <data name="Device_OpenFileNameFromGroup" xml:space="preserve">
+    <value>{0} van {1} openen in de editor</value>
+  </data>
+  <data name="Device_OpenLinkedSheet" xml:space="preserve">
+    <value>Gekoppeld blad openen</value>
+  </data>
+  <data name="Device_OpenTheGoogleSheetLinked" xml:space="preserve">
+    <value>Het Google Sheet openen dat is gekoppeld vanuit {0} op {1}</value>
+  </data>
+  <data name="Device_OpenedTheGoogleSheetLinked" xml:space="preserve">
+    <value>Het Google Sheet dat is gekoppeld vanuit {0} op {1} is geopend in uw browser.</value>
+  </data>
+  <data name="Device_PrefsCsvOnWhereGroup" xml:space="preserve">
+    <value>prefs.csv op {0} bevat de eigen instellingen van de QuadStick, geen spelprofiel. Een verkeerde waarde hier verandert het gedrag van het hele apparaat. Ga alleen verder als u weet welke instelling u wijzigt.</value>
+  </data>
+  <data name="Device_ProfilesOnGroupLabelAt" xml:space="preserve">
+    <value>Profielen op {0} bij {1}, gebruik de pijltoetsen</value>
+  </data>
+  <data name="Device_ProtectedItCannotBeDeleted" xml:space="preserve">
+    <value>, beveiligd, kan niet worden verwijderd</value>
+  </data>
+  <data name="Device_PushingTheProfileSwitchSteps" xml:space="preserve">
+    <value>De profielwisselstappen doorlopen de bestanden in deze volgorde, en de vijf lampjes tonen welke is geladen. prefs.csv bevat instellingen, geen profiel, dus staat nooit in de lijst. De kleuren worden hieronder zowel uitgeschreven als getoond.</value>
+  </data>
+  <data name="Device_QuadStickDriveGroupLabelAt" xml:space="preserve">
+    <value>QuadStick-station {0}, op {1}</value>
+  </data>
+  <data name="Device_ReadingNameForTheDevice" xml:space="preserve">
+    <value>{0} wordt gelezen voor de bestandslijst van het apparaat</value>
+  </data>
+  <data name="Device_Refresh" xml:space="preserve">
+    <value>Vernieuwen</value>
+  </data>
+  <data name="Device_ReplaceFileNameInYour" xml:space="preserve">
+    <value>{0} in uw bibliotheek vervangen?</value>
+  </data>
+  <data name="Device_TheDeviceSFallbackFile" xml:space="preserve">
+    <value>, het reservebestand van het apparaat</value>
+  </data>
+  <data name="Device_TheDeviceSOwnSettings" xml:space="preserve">
+    <value>het eigen instellingenbestand van het apparaat</value>
+  </data>
+  <data name="Device_ThisComputerWouldNotGive" xml:space="preserve">
+    <value>Deze computer gaf de app geen toegang tot het klembord, dus de handleiding is niet gekopieerd.</value>
+  </data>
+  <data name="Device_ThisDriveHasNoCsv" xml:space="preserve">
+    <value>Dit station bevat geen .csv-profielen.</value>
+  </data>
+  <data name="Device_YesContinue" xml:space="preserve">
+    <value>Ja, doorgaan</value>
+  </data>
+  <data name="Device_YourLibraryAlreadyHasFile" xml:space="preserve">
+    <value>Uw bibliotheek bevat al {0}. Als u {1} van {2} kopieert, wordt {3} overschreven. De kopie op de QuadStick wordt in beide gevallen niet gewijzigd.</value>
+  </data>
+  <data name="DrivePick_AlreadyInYourProfiles" xml:space="preserve">
+    <value>  (al in uw profielen)</value>
+  </data>
+  <data name="DrivePick_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="DrivePick_CloseThisWindow" xml:space="preserve">
+    <value>Dit venster sluiten</value>
+  </data>
+  <data name="DrivePick_CouldNotLoadYourBackups" xml:space="preserve">
+    <value>Kon uw back-ups niet laden:</value>
+  </data>
+  <data name="DrivePick_Import" xml:space="preserve">
+    <value>Importeren</value>
+  </data>
+  <data name="DrivePick_ImportFailed" xml:space="preserve">
+    <value>Importeren mislukt:</value>
+  </data>
+  <data name="DrivePick_ImportFromGoogleDrive" xml:space="preserve">
+    <value>Importeren vanuit Google Drive</value>
+  </data>
+  <data name="DrivePick_ImportTheSelectedProfiles" xml:space="preserve">
+    <value>De geselecteerde profielen importeren</value>
+  </data>
+  <data name="DrivePick_Importing" xml:space="preserve">
+    <value>Bezig met importeren...</value>
+  </data>
+  <data name="DrivePick_LoadingYourBackups" xml:space="preserve">
+    <value>Uw back-ups worden geladen...</value>
+  </data>
+  <data name="DrivePick_NoBackupsFoundInYour" xml:space="preserve">
+    <value>Nog geen back-ups gevonden in uw Google Drive.</value>
+  </data>
+  <data name="DrivePick_NothingSelectedToImport" xml:space="preserve">
+    <value>Niets geselecteerd om te importeren.</value>
+  </data>
+  <data name="DrivePick_PickTheProfilesToCopy" xml:space="preserve">
+    <value>Kies de profielen om naar deze computer te kopiëren. Alleen de bladen waarvan deze app een back-up heeft gemaakt, worden vermeld. Bladen die al in uw profielen staan, zijn grijs weergegeven.</value>
+  </data>
+  <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
+    <value>Uw Google Drive-back-ups</value>
+  </data>
+  <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
+    <value>Een verkeerd default.csv kan toegang tot het flashstation uitschakelen, en herstel vereist een fysieke geforceerde wisbeurt. Er wordt eerst een back-up gemaakt. Doorgaan?</value>
+  </data>
+  <data name="Install_BackingUpAndInstalling" xml:space="preserve">
+    <value>Bezig met back-uppen en installeren…</value>
+  </data>
+  <data name="Install_BackupPath" xml:space="preserve">
+    <value>Back-up: {0}</value>
+  </data>
+  <data name="Install_ChooseTheQuadStickDrive" xml:space="preserve">
+    <value>Kies het QuadStick-station</value>
+  </data>
+  <data name="Install_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Install_Close2" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Install_FixTheErrorsInThe" xml:space="preserve">
+    <value>Los de fouten in de lijst Problemen op voordat u installeert.</value>
+  </data>
+  <data name="Install_InstallCancelled" xml:space="preserve">
+    <value>Installeren geannuleerd.</value>
+  </data>
+  <data name="Install_InstallCancelled2" xml:space="preserve">
+    <value>Installeren geannuleerd.</value>
+  </data>
+  <data name="Install_InstallCancelled3" xml:space="preserve">
+    <value>Installeren geannuleerd.</value>
+  </data>
+  <data name="Install_InstallFailed" xml:space="preserve">
+    <value>Installeren mislukt</value>
+  </data>
+  <data name="Install_InstallPrefsCsvToThis" xml:space="preserve">
+    <value>prefs.csv op deze QuadStick installeren?</value>
+  </data>
+  <data name="Install_InstalledPathGetFileNameResultInstalledPath" xml:space="preserve">
+    <value>{0} geïnstalleerd op {1}.</value>
+  </data>
+  <data name="Install_InstallingProfile" xml:space="preserve">
+    <value>Profiel wordt geïnstalleerd</value>
+  </data>
+  <data name="Install_InstallingTo" xml:space="preserve">
+    <value>Wordt geïnstalleerd op</value>
+  </data>
+  <data name="Install_NoPreviousFile" xml:space="preserve">
+    <value>geen eerder bestand om een back-up van te maken</value>
+  </data>
+  <data name="Install_NoQuadStickDriveFoundA" xml:space="preserve">
+    <value>Geen QuadStick-station gevonden (een station met default.csv erop). Kies handmatig het station of een map.</value>
+  </data>
+  <data name="Install_OpenAProfileFirst" xml:space="preserve">
+    <value>Open eerst een profiel.</value>
+  </data>
+  <data name="Install_OverwriteDefaultCsv" xml:space="preserve">
+    <value>default.csv overschrijven?</value>
+  </data>
+  <data name="Install_PrefsCsvHoldsTheDevice" xml:space="preserve">
+    <value>prefs.csv bevat de eigen instellingen van het apparaat, dus dit verandert het gedrag van de QuadStick in elk profiel op {0}, niet alleen in één spel. Er wordt eerst een back-up gemaakt van het prefs.csv dat al op het station staat. Doorgaan?</value>
+  </data>
+  <data name="Install_TargetDriveRoot" xml:space="preserve">
+    <value>Doelstation: {0}</value>
+  </data>
+  <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
+    <value>Die map lijkt geen QuadStick te zijn (geen default.csv in de hoofdmap).</value>
+  </data>
+  <data name="Main_AButton" xml:space="preserve">
+    <value>A button</value>
+  </data>
+  <data name="Main_AFunction" xml:space="preserve">
+    <value>een functie</value>
+  </data>
+  <data name="Main_AJoystickOrControllerPlugged" xml:space="preserve">
+    <value>Een joystick of controller die is aangesloten op de USB-A-poort aan de achterkant van de QuadStick.</value>
+  </data>
+  <data name="Main_AJoystickPluggedInHere" xml:space="preserve">
+    <value>Een joystick die hier is aangesloten, komt binnen als</value>
+  </data>
+  <data name="Main_AModeIsOneFull" xml:space="preserve">
+    <value>Een modus is één volledige indeling van uw inputs. Een profiel kan er meerdere bevatten en u schakelt ertussen tijdens het spelen, bijvoorbeeld een loopindeling en een rijindeling. Om van modus te wisselen in het spel, zuigt of blaast u aan de zijbuis, of koppelt u increment_mode / decrement_mode aan een input.
+
+De meeste profielen hebben maar één modus, dus deze lijst toont vaak één item. Dat is normaal.</value>
+  </data>
+  <data name="Main_AProfileTabStartsWith" xml:space="preserve">
+    <value>Een profieltabblad begint met "Profile Name", "Preferences" of "Infrared" in cel A1.</value>
+  </data>
+  <data name="Main_AQuickPressSendsOne" xml:space="preserve">
+    <value>Een korte druk stuurt één output; langer vasthouden stuurt een andere.</value>
+  </data>
+  <data name="Main_AShortActivationTapsIt" xml:space="preserve">
+    <value>Een korte activering tikt hem aan; een lange zet hem vast aan.</value>
+  </data>
+  <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>Er bestaat al een sjabloon met de naam {0}.</value>
+  </data>
+  <data name="Main_ATemplateNeedsAName" xml:space="preserve">
+    <value>Een sjabloon heeft een naam nodig.</value>
+  </data>
+  <data name="Main_AccessibleNameOpensASearchableList" xml:space="preserve">
+    <value>{0}. Opent een doorzoekbare lijst.</value>
+  </data>
+  <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
+    <value>Adaptieve schakelaars die zijn aangesloten op de 3,5 mm-aansluitingen aan de achterkant van de QuadStick.</value>
+  </data>
+  <data name="Main_AddANewBindingRow" xml:space="preserve">
+    <value>Een nieuwe bindingsrij toevoegen aan deze modus</value>
+  </data>
+  <data name="Main_AddANewMappingFor" xml:space="preserve">
+    <value>Een nieuwe toewijzing toevoegen voor {0}</value>
+  </data>
+  <data name="Main_AddARowToThe" xml:space="preserve">
+    <value>Een rij toevoegen aan de tabel met aangepaste outputnamen</value>
+  </data>
+  <data name="Main_AddAnotherInput" xml:space="preserve">
+    <value>Nog een input toevoegen</value>
+  </data>
+  <data name="Main_AddAnotherInputToMapping" xml:space="preserve">
+    <value>Nog een input toevoegen aan toewijzing {0}; u doet de inputs één voor één, van links naar rechts</value>
+  </data>
+  <data name="Main_AddAnotherInputToRow" xml:space="preserve">
+    <value>Nog een input toevoegen aan rij {0}</value>
+  </data>
+  <data name="Main_AddName" xml:space="preserve">
+    <value>+ Naam toevoegen</value>
+  </data>
+  <data name="Main_AddRow" xml:space="preserve">
+    <value>+ Rij toevoegen</value>
+  </data>
+  <data name="Main_AllThree" xml:space="preserve">
+    <value>Alle drie</value>
+  </data>
+  <data name="Main_AnInput" xml:space="preserve">
+    <value>een input</value>
+  </data>
+  <data name="Main_AnOutput" xml:space="preserve">
+    <value>een output</value>
+  </data>
+  <data name="Main_AnyoneWithThisLinkCan" xml:space="preserve">
+    <value>Iedereen met deze link kan dit blad bekijken (alleen-lezen). Delen via link inschakelen en kopiëren?</value>
+  </data>
+  <data name="Main_AppearanceInterfaceSizeAndThe" xml:space="preserve">
+    <value>Uiterlijk, interfacegrootte en de rest gaan terug naar de standaardwaarden.</value>
+  </data>
+  <data name="Main_AsFunction" xml:space="preserve">
+    <value>, als {0}</value>
+  </data>
+  <data name="Main_AsJoiner" xml:space="preserve">
+    <value>als</value>
+  </data>
+  <data name="Main_AsLabel" xml:space="preserve">
+    <value>Als</value>
+  </data>
+  <data name="Main_BButton" xml:space="preserve">
+    <value>B button</value>
+  </data>
+  <data name="Main_Back" xml:space="preserve">
+    <value>‹ Terug</value>
+  </data>
+  <data name="Main_BackOfTheQuadStick" xml:space="preserve">
+    <value>Achterkant van de QuadStick</value>
+  </data>
+  <data name="Main_BackToAllCategories" xml:space="preserve">
+    <value>Terug naar alle categorieën</value>
+  </data>
+  <data name="Main_BackToCat" xml:space="preserve">
+    <value>Terug naar {0}</value>
+  </data>
+  <data name="Main_BackedUpToGoogleDrive" xml:space="preserve">
+    <value>Back-up gemaakt naar Google Drive.</value>
+  </data>
+  <data name="Main_BackingUpToDrive" xml:space="preserve">
+    <value>Bezig met back-uppen naar Drive</value>
+  </data>
+  <data name="Main_BackingUpToGoogleDrive" xml:space="preserve">
+    <value>Bezig met back-uppen naar Google Drive. Klik om uw andere profielen te importeren.</value>
+  </data>
+  <data name="Main_BackupErrorExMessage" xml:space="preserve">
+    <value>Back-upfout: {0}</value>
+  </data>
+  <data name="Main_BackupOff" xml:space="preserve">
+    <value>Back-up uit</value>
+  </data>
+  <data name="Main_BackupPending" xml:space="preserve">
+    <value> · back-up in behandeling</value>
+  </data>
+  <data name="Main_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="Main_Center" xml:space="preserve">
+    <value>Midden</value>
+  </data>
+  <data name="Main_CenterMouthpieceHole" xml:space="preserve">
+    <value>Middelste gat in het mondstuk</value>
+  </data>
+  <data name="Main_ChangeUndone" xml:space="preserve">
+    <value>Wijziging ongedaan gemaakt.</value>
+  </data>
+  <data name="Main_ChooseQuadStick" xml:space="preserve">
+    <value>QuadStick kiezen</value>
+  </data>
+  <data name="Main_ChooseWhichDriveToInstall" xml:space="preserve">
+    <value>Kies op welk station u wilt installeren:</value>
+  </data>
+  <data name="Main_ClickAnyPartOfThe" xml:space="preserve">
+    <value>Klik op een willekeurig onderdeel van de QuadStick om te zien en te wijzigen wat het doet in deze modus. Het getal op elk onderdeel geeft aan hoeveel spelknoppen het indrukt. Onderdelen die uw model niet heeft, zijn gedimd.
+
+</value>
+  </data>
+  <data name="Main_ClickToHide" xml:space="preserve">
+    <value>  (klik om te verbergen)</value>
+  </data>
+  <data name="Main_ClickToSelectDragTo" xml:space="preserve">
+    <value>Klik om te selecteren, sleep om te herschikken</value>
+  </data>
+  <data name="Main_ClickToSignInAnd" xml:space="preserve">
+    <value>Klik om aan te melden en een back-up van uw profielen naar Google Drive te maken.</value>
+  </data>
+  <data name="Main_ClickToView" xml:space="preserve">
+    <value>  (klik om te bekijken)</value>
+  </data>
+  <data name="Main_CloseTheEditorForMapping" xml:space="preserve">
+    <value>De editor voor toewijzing {0} sluiten en terug naar de kaart gaan</value>
+  </data>
+  <data name="Main_CloseWindowTitleToLowerInvariant" xml:space="preserve">
+    <value>{0} sluiten</value>
+  </data>
+  <data name="Main_Combos" xml:space="preserve">
+    <value>Combo's</value>
+  </data>
+  <data name="Main_CommunityProfiles" xml:space="preserve">
+    <value>Communityprofielen</value>
+  </data>
+  <data name="Main_ConnectionTimedOut" xml:space="preserve">
+    <value>de verbinding is verlopen na 15 seconden</value>
+  </data>
+  <data name="Main_CopyALinkToThis" xml:space="preserve">
+    <value>Een link naar het Google Sheet van dit profiel kopiëren</value>
+  </data>
+  <data name="Main_CopyShareLink" xml:space="preserve">
+    <value>Deellink kopiëren</value>
+  </data>
+  <data name="Main_CopyYourBackedUpProfiles" xml:space="preserve">
+    <value>Nu uw geback-upte profielen van Google Drive naar deze computer kopiëren?</value>
+  </data>
+  <data name="Main_CouldNotDeleteBareEx" xml:space="preserve">
+    <value>Kon {0} niet verwijderen: {1}</value>
+  </data>
+  <data name="Main_CouldNotDeleteTheTemplate" xml:space="preserve">
+    <value>Kon het sjabloon niet verwijderen: {0}</value>
+  </data>
+  <data name="Main_CouldNotDownloadTheSheet" xml:space="preserve">
+    <value>Kon het blad niet downloaden: {0}. Controleer uw internetverbinding en de link.</value>
+  </data>
+  <data name="Main_CouldNotLoadTheOnline" xml:space="preserve">
+    <value>Kon de online versie niet laden: {0}</value>
+  </data>
+  <data name="Main_CouldNotOpenBareEx" xml:space="preserve">
+    <value>Kon {0} niet openen: {1}</value>
+  </data>
+  <data name="Main_CouldNotOpenPicks0" xml:space="preserve">
+    <value>Kon {0} niet openen: {1}</value>
+  </data>
+  <data name="Main_CouldNotOpenThatTemplate" xml:space="preserve">
+    <value>Kon dat sjabloon niet openen: {0}</value>
+  </data>
+  <data name="Main_CouldNotOpenTheRecovered" xml:space="preserve">
+    <value>Kon het herstelde bestand niet openen: {0}</value>
+  </data>
+  <data name="Main_CouldNotReadBareNamePath" xml:space="preserve">
+    <value>Kon {0} niet lezen: {1}</value>
+  </data>
+  <data name="Main_CouldNotReadPicks0" xml:space="preserve">
+    <value>Kon {0} niet lezen. Het is geen leesbaar spreadsheet.</value>
+  </data>
+  <data name="Main_CouldNotReadThatSpreadsheet" xml:space="preserve">
+    <value>Kon dat spreadsheet niet lezen. Download het als .xlsx en open het in plaats daarvan met de knop Openen.</value>
+  </data>
+  <data name="Main_CouldNotReadThisFile" xml:space="preserve">
+    <value>Kon dit bestand niet lezen</value>
+  </data>
+  <data name="Main_CouldNotRenameTheTemplate" xml:space="preserve">
+    <value>Kon het sjabloon niet hernoemen: {0}</value>
+  </data>
+  <data name="Main_CouldNotSaveExMessage" xml:space="preserve">
+    <value>Kon niet opslaan: {0}</value>
+  </data>
+  <data name="Main_CouldNotSaveThatPreference" xml:space="preserve">
+    <value>Kon die voorkeur niet opslaan. Er wordt nu niets verzonden, maar de wijziging is niet blijven staan.</value>
+  </data>
+  <data name="Main_CouldNotSaveThatYou" xml:space="preserve">
+    <value>Kon dat niet opslaan. Mogelijk wordt u de volgende keer opnieuw gevraagd.</value>
+  </data>
+  <data name="Main_CouldNotSaveTheReset" xml:space="preserve">
+    <value>Kon de reset niet opslaan. De oude instellingen kunnen de volgende keer terugkomen.</value>
+  </data>
+  <data name="Main_CouldNotSaveTheTemplate" xml:space="preserve">
+    <value>Kon het sjabloon niet opslaan: {0}</value>
+  </data>
+  <data name="Main_CouldNotSendTheCrash" xml:space="preserve">
+    <value>Kon het crashrapport niet verzenden. Het staat nog op uw computer.</value>
+  </data>
+  <data name="Main_CouldNotShareThisProfile" xml:space="preserve">
+    <value>Kon dit profiel niet delen: {0}</value>
+  </data>
+  <data name="Main_CrashDetailsUsedToBuild" xml:space="preserve">
+    <value>Crashdetails die zijn gebruikt om het rapport samen te stellen</value>
+  </data>
+  <data name="Main_CrashReportSentThankYou" xml:space="preserve">
+    <value>Crashrapport verzonden. Bedankt.</value>
+  </data>
+  <data name="Main_Delete" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="Main_DeleteBare" xml:space="preserve">
+    <value>{0} verwijderen?</value>
+  </data>
+  <data name="Main_DeleteBareFromYourProfile" xml:space="preserve">
+    <value>Verwijder {0} uit uw profielbibliotheek</value>
+  </data>
+  <data name="Main_DeleteProfile" xml:space="preserve">
+    <value>Profiel verwijderen</value>
+  </data>
+  <data name="Main_DeleteRowBRow" xml:space="preserve">
+    <value>Rij {0} verwijderen</value>
+  </data>
+  <data name="Main_DeleteSelectedTemplate" xml:space="preserve">
+    <value>Geselecteerde sjabloon verwijderen</value>
+  </data>
+  <data name="Main_DeleteTemplateName" xml:space="preserve">
+    <value>Sjabloon "{0}" verwijderen?</value>
+  </data>
+  <data name="Main_DeleteThisWholeRow" xml:space="preserve">
+    <value>Deze hele rij verwijderen</value>
+  </data>
+  <data name="Main_DeletedBare" xml:space="preserve">
+    <value>{0} verwijderd.</value>
+  </data>
+  <data name="Main_DeletedTemplateName" xml:space="preserve">
+    <value>Sjabloon {0} verwijderd.</value>
+  </data>
+  <data name="Main_DetailedEditor" xml:space="preserve">
+    <value>Gedetailleerde editor</value>
+  </data>
+  <data name="Main_DeviceFilesWindowLabelForRootRoot" xml:space="preserve">
+    <value>{0}  ({1})</value>
+  </data>
+  <data name="Main_DeviceHasNoLightPattern" xml:space="preserve">
+    <value>Apparaat heeft geen lichtpatroon voor modus {0}</value>
+  </data>
+  <data name="Main_DeviceSettings" xml:space="preserve">
+    <value>Apparaatinstellingen</value>
+  </data>
+  <data name="Main_DeviceSettingsThisModeChanges" xml:space="preserve">
+    <value>Apparaatinstellingen die deze modus wijzigt terwijl hij actief is, zoals muissnelheid of volume. Dit zijn geen dingen die u indrukt, dus ze hebben geen input: elke instelling is een naam en een waarde.</value>
+  </data>
+  <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
+    <value>Apparaat toont {0}</value>
+  </data>
+  <data name="Main_DonTSave" xml:space="preserve">
+    <value>Niet opslaan</value>
+  </data>
+  <data name="Main_Done" xml:space="preserve">
+    <value>Gereed</value>
+  </data>
+  <data name="Main_DownloadingTheSpreadsheet" xml:space="preserve">
+    <value>De spreadsheet wordt gedownload...</value>
+  </data>
+  <data name="Main_EditDevicePreferences" xml:space="preserve">
+    <value>Apparaatvoorkeuren bewerken?</value>
+  </data>
+  <data name="Main_Edited" xml:space="preserve">
+    <value>Bewerkt </value>
+  </data>
+  <data name="Main_ErrorsBlockInstalling" xml:space="preserve">
+    <value>. Fouten blokkeren installeren.</value>
+  </data>
+  <data name="Main_EveryInputOnYourQuadStick" xml:space="preserve">
+    <value>Elke input op uw QuadStick wordt in deze modus gebruikt.</value>
+  </data>
+  <data name="Main_ExtraInputForMappingN" xml:space="preserve">
+    <value>Extra input voor toewijzing {0}</value>
+  </data>
+  <data name="Main_FPS3HoleMouthpieceSide" xml:space="preserve">
+    <value>FPS: mondstuk met 3 gaten, zijbuis, lipsensor, aansluitingen achter. Preciezere joystick dan de Original.</value>
+  </data>
+  <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
+    <value>Activeert zodra uw input een ingestelde sterkte overschrijdt.</value>
+  </data>
+  <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
+    <value>Activeert zolang uw input onder een ingestelde sterkte blijft.</value>
+  </data>
+  <data name="Main_FoundAProblem" xml:space="preserve">
+    <value>Een probleem gevonden?</value>
+  </data>
+  <data name="Main_FunctionForRowBRow" xml:space="preserve">
+    <value>Functie voor rij {0}. {1}</value>
+  </data>
+  <data name="Main_FunctionKeys" xml:space="preserve">
+    <value>Functietoetsen</value>
+  </data>
+  <data name="Main_FunctionTakesNoNumbers" xml:space="preserve">
+    <value>{0} accepteert geen getallen.</value>
+  </data>
+  <data name="Main_GameButtonPressedByShortInput" xml:space="preserve">
+    <value>Gameknop ingedrukt door {0}</value>
+  </data>
+  <data name="Main_GoogleDriveBackupIsNot" xml:space="preserve">
+    <value>Back-up naar Google Drive is niet beschikbaar in deze build.</value>
+  </data>
+  <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
+    <value>Google gaf een webpagina terug in plaats van het profiel. Het blad is waarschijnlijk niet openbaar gedeeld (Bestand &gt; Delen &gt; Iedereen met de link).</value>
+  </data>
+  <data name="Main_HeldDownForAsLong" xml:space="preserve">
+    <value>Blijft ingedrukt zolang uw input actief is.</value>
+  </data>
+  <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
+    <value>Help QuadStick Config Manager verbeteren</value>
+  </data>
+  <data name="Main_HidesTheProblems" xml:space="preserve">
+    <value>{0}. Verbergt de lijst met problemen.</value>
+  </data>
+  <data name="Main_HitsCount40MoreKeep" xml:space="preserve">
+    <value>{0} meer. Blijf typen om te verfijnen.</value>
+  </data>
+  <data name="Main_HoleCombos" xml:space="preserve">
+    <value>Gatcombinaties</value>
+  </data>
+  <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
+    <value>Hoe {0} het indrukt. {1}</value>
+  </data>
+  <data name="Main_IfTheDeviceIsIn" xml:space="preserve">
+    <value>Als het apparaat in PS4-opstartmodus staat, of als virtuele XBox-/Dualshock-controllersimulatie is ingeschakeld, verschijnt de flashdrive niet op de computer. Schakel dit uit (in QMP of uw voorkeuren) en sluit opnieuw aan. Op een Mac heet het volume "QUAD STICK" in Finder.</value>
+  </data>
+  <data name="Main_ImportFromGoogleDrive" xml:space="preserve">
+    <value>Importeren vanuit Google Drive</value>
+  </data>
+  <data name="Main_ImportedModesImportedFromPicks" xml:space="preserve">
+    <value>{0} geïmporteerd uit {1}. Sla op om het als profiel te bewaren.</value>
+  </data>
+  <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
+    <value>{0} geïmporteerd uit de spreadsheet.</value>
+  </data>
+  <data name="Main_InputI1ForRow" xml:space="preserve">
+    <value>Input {0} voor rij {1}</value>
+  </data>
+  <data name="Main_InputI1ForThis" xml:space="preserve">
+    <value>Input {0} voor deze {1}-toewijzing</value>
+  </data>
+  <data name="Main_InputNextCol1ForRow" xml:space="preserve">
+    <value>Input {0} voor rij {1}</value>
+  </data>
+  <data name="Main_InstallToTheQuadStickNamed" xml:space="preserve">
+    <value>Installeren op de QuadStick genaamd {0}, op {1}</value>
+  </data>
+  <data name="Main_InstallingSafely" xml:space="preserve">
+    <value>Veilig installeren</value>
+  </data>
+  <data name="Main_IntAgeTotalDaysDaysAgo" xml:space="preserve">
+    <value>{0} dagen geleden</value>
+  </data>
+  <data name="Main_IntAgeTotalHoursHAgo" xml:space="preserve">
+    <value>{0} u geleden</value>
+  </data>
+  <data name="Main_IntAgeTotalMinutesMinAgo" xml:space="preserve">
+    <value>{0} min geleden</value>
+  </data>
+  <data name="Main_ItsButtonsAreUsb1" xml:space="preserve">
+    <value>. De knoppen zijn usb_1_button_1 en hoger.</value>
+  </data>
+  <data name="Main_Joystick" xml:space="preserve">
+    <value>Joystick</value>
+  </data>
+  <data name="Main_JoystickOrIn34" xml:space="preserve">
+    <value>Joystick, of in 3-4</value>
+  </data>
+  <data name="Main_JustNow" xml:space="preserve">
+    <value>zojuist</value>
+  </data>
+  <data name="Main_KeepsACopyYouCan" xml:space="preserve">
+    <value>Bewaart een kopie waarmee u op elk moment nieuwe profielen kunt starten, onder Sjabloon gebruiken op het startscherm. Het bewerken of installeren van een profiel wijzigt de sjabloon nooit.</value>
+  </data>
+  <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
+    <value>Blijft nog even ingedrukt nadat u loslaat.</value>
+  </data>
+  <data name="Main_Left" xml:space="preserve">
+    <value>Links</value>
+  </data>
+  <data name="Main_LeftBumper" xml:space="preserve">
+    <value>Linkerbumper</value>
+  </data>
+  <data name="Main_LeftMouthpieceHole" xml:space="preserve">
+    <value>Linker mondstukgat</value>
+  </data>
+  <data name="Main_LeftStickClick" xml:space="preserve">
+    <value>Linkerstickklik</value>
+  </data>
+  <data name="Main_LeftTrigger" xml:space="preserve">
+    <value>Linkertrigger</value>
+  </data>
+  <data name="Main_LipSwitch" xml:space="preserve">
+    <value>Lipschakelaar</value>
+  </data>
+  <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
+    <value>De online versie van dit profiel is geladen. Uw vorige lokale kopie staat in de reddingsmap.</value>
+  </data>
+  <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
+    <value>Bestanden beheren op uw QuadStick</value>
+  </data>
+  <data name="Main_MapSomethingToThis" xml:space="preserve">
+    <value>+ Iets hieraan toewijzen</value>
+  </data>
+  <data name="Main_MapTokenToANew" xml:space="preserve">
+    <value>Wijs {0} toe aan een nieuwe toewijzing op {1}</value>
+  </data>
+  <data name="Main_MappingRowSpoken" xml:space="preserve">
+    <value>Toewijzing {0}: druk op {1} wanneer u {2}{3}. Druk op Enter om te bewerken.</value>
+  </data>
+  <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
+    <value>Toewijzing {0}: druk op {1} wanneer u {2}, na elkaar{3}. Druk op Enter om te bewerken.</value>
+  </data>
+  <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
+    <value>Toewijzingen worden getoond als eenvoudige zinskaarten. Schakel over naar de gedetailleerde editor.</value>
+  </data>
+  <data name="Main_MappingsShowTheDetailedEditor" xml:space="preserve">
+    <value>Toewijzingen tonen de gedetailleerde editor. Schakel over naar eenvoudige zinskaarten.</value>
+  </data>
+  <data name="Main_MenuButton" xml:space="preserve">
+    <value>Menuknop</value>
+  </data>
+  <data name="Main_ModeNamed" xml:space="preserve">
+    <value>Modus: {0}</value>
+  </data>
+  <data name="Main_ModeNumberAndName" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Main_ModeSettings" xml:space="preserve">
+    <value>Modusinstellingen</value>
+  </data>
+  <data name="Main_MoveRowBRowWord" xml:space="preserve">
+    <value>Verplaats rij {0} {1}</value>
+  </data>
+  <data name="Main_MoveTheTextInCell" xml:space="preserve">
+    <value>Verplaats de tekst in cel {0} naar de notitiekolom</value>
+  </data>
+  <data name="Main_MoveToNotes" xml:space="preserve">
+    <value>Verplaatsen naar notities</value>
+  </data>
+  <data name="Main_MovedTheTextFromI" xml:space="preserve">
+    <value>De tekst uit {0} is verplaatst naar de notitiekolom.</value>
+  </data>
+  <data name="Main_MovingTheWholeMouthpieceWith" xml:space="preserve">
+    <value>Het hele mondstuk met uw mond bewegen werkt als een joystick. Omhoog, omlaag, links, rechts en de 8 windrichtingen kunnen elk iets indrukken.</value>
+  </data>
+  <data name="Main_MultipleQuadSticksFound" xml:space="preserve">
+    <value>Meerdere QuadSticks gevonden</value>
+  </data>
+  <data name="Main_MyTemplate" xml:space="preserve">
+    <value>mijn sjabloon</value>
+  </data>
+  <data name="Main_NameDetail" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Main_NameForThisTemplate" xml:space="preserve">
+    <value>Naam voor deze sjabloon</value>
+  </data>
+  <data name="Main_NewNameForThisTemplate" xml:space="preserve">
+    <value>Nieuwe naam voor deze sjabloon</value>
+  </data>
+  <data name="Main_NewProfileGivesYouThe" xml:space="preserve">
+    <value>Nieuw profiel geeft u de standaard fabrieksindeling, dezelfde die op elke QuadStick wordt meegeleverd. De community deelt ook honderden gameprofielen als Google Sheets: plak een deellink op het startscherm om het te importeren. Profielen die elke modus op een eigen tabblad houden, worden volledig geïmporteerd, elk tabblad als een modus. Openen accepteert ook een gedownload .xlsx-werkboek. Pas daarna aan, hernoem en sla op.</value>
+  </data>
+  <data name="Main_NoBindingsYetClickAdd" xml:space="preserve">
+    <value>Nog geen koppelingen. Klik op "Rij toevoegen" om een input met een output te verbinden.</value>
+  </data>
+  <data name="Main_NoCommandsOnThisSheet" xml:space="preserve">
+    <value>Nog geen opdrachten op dit blad. Klik op "Rij toevoegen" om er een toe te voegen.</value>
+  </data>
+  <data name="Main_NoErrorsToFix" xml:space="preserve">
+    <value>Geen fouten om op te lossen.</value>
+  </data>
+  <data name="Main_NoInput" xml:space="preserve">
+    <value>(geen input)</value>
+  </data>
+  <data name="Main_NoInputYet" xml:space="preserve">
+    <value>Nog geen input</value>
+  </data>
+  <data name="Main_NoProblems" xml:space="preserve">
+    <value>Geen problemen</value>
+  </data>
+  <data name="Main_NoProblemsClickToHide" xml:space="preserve">
+    <value>Geen problemen (klik om te verbergen)</value>
+  </data>
+  <data name="Main_NoProblemsFound" xml:space="preserve">
+    <value>Geen problemen gevonden.</value>
+  </data>
+  <data name="Main_NoProblemsReadyToSave" xml:space="preserve">
+    <value>Geen problemen. Klaar om op te slaan of te installeren.</value>
+  </data>
+  <data name="Main_NoQuadStickDetected" xml:space="preserve">
+    <value>Geen QuadStick gedetecteerd</value>
+  </data>
+  <data name="Main_NoSettingsOnThisSheet" xml:space="preserve">
+    <value>Nog geen instellingen op dit blad. Klik op "Rij toevoegen" om er een toe te voegen.</value>
+  </data>
+  <data name="Main_NoTabInThatSpreadsheet" xml:space="preserve">
+    <value>Geen enkel tabblad in die spreadsheet is een profiel. {0} {1}</value>
+  </data>
+  <data name="Main_NoThanks" xml:space="preserve">
+    <value>Nee, bedankt</value>
+  </data>
+  <data name="Main_NoThanksDoNotShare" xml:space="preserve">
+    <value>Nee, bedankt, geen gebruiksgegevens delen</value>
+  </data>
+  <data name="Main_NoValue" xml:space="preserve">
+    <value>(geen waarde)</value>
+  </data>
+  <data name="Main_NotAvailableOnYourModelNames" xml:space="preserve">
+    <value> Niet beschikbaar op uw {0}.</value>
+  </data>
+  <data name="Main_NotMapped" xml:space="preserve">
+    <value>Niet toegewezen</value>
+  </data>
+  <data name="Main_NotNow" xml:space="preserve">
+    <value>Niet nu</value>
+  </data>
+  <data name="Main_NotNowKeepTheReport" xml:space="preserve">
+    <value>Niet nu, bewaar het rapport en vraag later opnieuw</value>
+  </data>
+  <data name="Main_NotOnModel" xml:space="preserve">
+    <value>Niet op dit model</value>
+  </data>
+  <data name="Main_NotOnYourModel" xml:space="preserve">
+    <value>Niet op uw model</value>
+  </data>
+  <data name="Main_NotUsedYetOnThis" xml:space="preserve">
+    <value>Nog niet gebruikt op dit onderdeel ({0})</value>
+  </data>
+  <data name="Main_Note" xml:space="preserve">
+    <value>notitie</value>
+  </data>
+  <data name="Main_NoteForRowBRow" xml:space="preserve">
+    <value>Notitie voor rij {0}. Opgeslagen in het bestand, genegeerd door de QuadStick</value>
+  </data>
+  <data name="Main_NoteForThisMappingSaved" xml:space="preserve">
+    <value>Notitie voor deze toewijzing. Opgeslagen in het bestand, genegeerd door de QuadStick</value>
+  </data>
+  <data name="Main_NoteForThisRowSaved" xml:space="preserve">
+    <value>Notitie voor deze rij. Opgeslagen in het bestand, genegeerd door de QuadStick</value>
+  </data>
+  <data name="Main_NoteLabel" xml:space="preserve">
+    <value>Notitie</value>
+  </data>
+  <data name="Main_NothingMappedHereYet" xml:space="preserve">
+    <value>Hier nog niets toegewezen.</value>
+  </data>
+  <data name="Main_NothingMappedYet" xml:space="preserve">
+    <value>nog niets toegewezen</value>
+  </data>
+  <data name="Main_NothingMatchesTryFewerLetters" xml:space="preserve">
+    <value>Niets komt overeen. Probeer minder letters, of typ hieronder uw eigen tekst.</value>
+  </data>
+  <data name="Main_NothingPressesBOutputNow" xml:space="preserve">
+    <value>Niets drukt nu op "{0}", dus de QuadStick activeert het niet.</value>
+  </data>
+  <data name="Main_NothingSelectedNNPickA" xml:space="preserve">
+    <value>Niets geselecteerd.
+
+Kies links een onderdeel van de QuadStick om te zien wat het in deze modus doet, het te wijzigen, of er iets nieuws aan toe te wijzen.</value>
+  </data>
+  <data name="Main_NothingToUndo" xml:space="preserve">
+    <value>Niets om ongedaan te maken.</value>
+  </data>
+  <data name="Main_NothingYet" xml:space="preserve">
+    <value>nog niets</value>
+  </data>
+  <data name="Main_NumberPositionInTheProfile" xml:space="preserve">
+    <value>, nummer {0} in de profielwisselvolgorde</value>
+  </data>
+  <data name="Main_NumbersForFunctionOptionalWhole" xml:space="preserve">
+    <value>Getallen voor {0}, optioneel, hele getallen gescheiden door spaties. </value>
+  </data>
+  <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
+    <value>Eén activering zet het aan, de volgende zet het weer uit.</value>
+  </data>
+  <data name="Main_OneCSVFileThatTells" xml:space="preserve">
+    <value>Eén CSV-bestand dat de QuadStick vertelt welke sip, puff, lipdruk of joystickbeweging welke gameknop indrukt. Een profiel heeft een of meer modusbladen: volledige besturingsindelingen waartussen u tijdens het spelen wisselt (loopindeling, rijindeling, menu's). Sip of puf op de zijbuis, of koppel increment_mode / decrement_mode, om in-game van modus te wisselen.</value>
+  </data>
+  <data name="Main_OneShortPressEachTime" xml:space="preserve">
+    <value>Eén korte druk telkens wanneer u activeert.</value>
+  </data>
+  <data name="Main_OneSwitchIn1" xml:space="preserve">
+    <value>Eén schakelaar: in 1</value>
+  </data>
+  <data name="Main_OneSwitchIn5" xml:space="preserve">
+    <value>Eén schakelaar: in 5</value>
+  </data>
+  <data name="Main_OneSwitchIn8" xml:space="preserve">
+    <value>Eén schakelaar: in 8</value>
+  </data>
+  <data name="Main_OpenInGoogleSheets" xml:space="preserve">
+    <value>Openen in Google Sheets</value>
+  </data>
+  <data name="Main_OpenInLibrary" xml:space="preserve">
+    <value>Open {0}, {1}, in uw profielbibliotheek</value>
+  </data>
+  <data name="Main_OpenOnDevice" xml:space="preserve">
+    <value>Open {0}, {1}, opgeslagen op de QuadStick</value>
+  </data>
+  <data name="Main_OpenOrCreateAProfile" xml:space="preserve">
+    <value>Open of maak eerst een profiel.</value>
+  </data>
+  <data name="Main_OpenQuadStickProfile" xml:space="preserve">
+    <value>QuadStick-profiel openen</value>
+  </data>
+  <data name="Main_OpenThisProfileSGoogle" xml:space="preserve">
+    <value>Het Google Sheet van dit profiel openen in uw browser</value>
+  </data>
+  <data name="Main_OpenedFromYourQuadStickSave" xml:space="preserve">
+    <value>Geopend vanaf uw QuadStick. Opslaan bewaart een kopie in uw bibliotheek; gebruik Installeren om wijzigingen terug te zetten op het apparaat.</value>
+  </data>
+  <data name="Main_OpensAFreshCopyYou" xml:space="preserve">
+    <value>Opent een nieuwe kopie die u kunt bewerken en installeren. Uw sjabloon blijft ongewijzigd.</value>
+  </data>
+  <data name="Main_Original3HoleMouthpieceSide" xml:space="preserve">
+    <value>Original: mondstuk met 3 gaten, zijbuis, lipschakelaar, aansluitingen achter. Dezelfde inputs als de FPS.</value>
+  </data>
+  <data name="Main_OutputForRowBRow" xml:space="preserve">
+    <value>Output voor rij {0}</value>
+  </data>
+  <data name="Main_OutputGameButton" xml:space="preserve">
+    <value>Output (gameknop)</value>
+  </data>
+  <data name="Main_Parts" xml:space="preserve">
+    <value>Onderdelen</value>
+  </data>
+  <data name="Main_PathGetFileNamePathIsRemoved" xml:space="preserve">
+    <value>{0} is definitief van deze computer verwijderd. Een kopie op uw QuadStick of in Google Sheets blijft ongemoeid.</value>
+  </data>
+  <data name="Main_Picks0NameNoProfileTabRead" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Main_PlugInTheQuadStickIt" xml:space="preserve">
+    <value>Sluit de QuadStick aan; deze verschijnt als een USB-stick. Installeren maakt een back-up van het oude bestand naar QuadStickBackups, schrijft een tijdelijke kopie, controleert deze en wisselt hem daarna in. Fouten blokkeren installeren. Het overschrijven van default.csv vraagt altijd eerst om bevestiging.</value>
+  </data>
+  <data name="Main_PortExplain" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Main_PreferencesSheetAdded" xml:space="preserve">
+    <value>Preferences-blad toegevoegd.</value>
+  </data>
+  <data name="Main_PrefsCsvHoldsTheQuadStick" xml:space="preserve">
+    <value>prefs.csv bevat de eigen instellingen van de QuadStick, geen gameprofiel. Een verkeerde waarde hier verandert het gedrag van het hele apparaat. Ga alleen verder als u weet welke instelling u wijzigt.</value>
+  </data>
+  <data name="Main_PrefsCsvIsTheQuadStick" xml:space="preserve">
+    <value>prefs.csv is het eigen instellingenbestand van de QuadStick, geen gameprofiel: het verandert het gedrag van het hele apparaat, niet van één spel. Een instelling die de app herkent, krijgt een echt bedieningselement: een getalveld, een selectievakje of een keuzelijst, zodat u geen waarde kunt typen die het apparaat zou afwijzen. Een instelling die de app niet herkent, of een waarde die al in het bestand staat en die een exact bedieningselement niet kon tonen zonder deze te wijzigen, behoudt een gewoon tekstveld en blijft precies zoals hij was. Het terugzetten van prefs.csv op het apparaat vraagt altijd eerst om bevestiging en maakt een back-up van het bestand dat er al staat.</value>
+  </data>
+  <data name="Main_PressAgainToOpenGoogle" xml:space="preserve">
+    <value>Druk nogmaals om bij Google aan te melden.</value>
+  </data>
+  <data name="Main_PressAgainToSignIn" xml:space="preserve">
+    <value>Druk nogmaals om aan te melden</value>
+  </data>
+  <data name="Main_PressTheLipSwitchOr" xml:space="preserve">
+    <value>Druk met uw lip op de lipschakelaar of -sensor. Vaak gebruikt voor de vuurknop.</value>
+  </data>
+  <data name="Main_PressVerb" xml:space="preserve">
+    <value>Drukken</value>
+  </data>
+  <data name="Main_PressesInARepeatingOn" xml:space="preserve">
+    <value>Drukt in een herhalende aan-uitcyclus.</value>
+  </data>
+  <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
+    <value>Probleem gekopieerd naar het klembord.</value>
+  </data>
+  <data name="Main_ProfilesYouAlreadyMadeFrom" xml:space="preserve">
+    <value>Profielen die u al van deze sjabloon hebt gemaakt, blijven ongewijzigd. Dit kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="Main_PuttingThisProfileInGoogle" xml:space="preserve">
+    <value>Dit profiel wordt in Google Sheets geplaatst...</value>
+  </data>
+  <data name="Main_QuadStickConnected" xml:space="preserve">
+    <value>QuadStick verbonden</value>
+  </data>
+  <data name="Main_QuadStickNotShowingUp" xml:space="preserve">
+    <value>QuadStick verschijnt niet?</value>
+  </data>
+  <data name="Main_QuadStickProfile" xml:space="preserve">
+    <value>QuadStick-profiel</value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficial" xml:space="preserve">
+    <value>Quadstick: Config Manager (niet officieel)</value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficial2" xml:space="preserve">
+    <value>Quadstick: Config Manager (niet officieel) - </value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficialV" xml:space="preserve">
+    <value>Quadstick: Config Manager (niet officieel) - {0}</value>
+  </data>
+  <data name="Main_QuickGuide" xml:space="preserve">
+    <value>Snelle handleiding</value>
+  </data>
+  <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
+    <value>Snelvuurtikken zolang uw input ingedrukt blijft.</value>
+  </data>
+  <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
+    <value>Privacybeleid lezen</value>
+  </data>
+  <data name="Main_ReadThePrivacyPolicyOpens" xml:space="preserve">
+    <value>Lees het privacybeleid, opent in uw browser</value>
+  </data>
+  <data name="Main_RearJoystickDirection" xml:space="preserve">
+    <value>Achterste joystick, {0}</value>
+  </data>
+  <data name="Main_RecoveredProfileOpenedSaveIt" xml:space="preserve">
+    <value>Hersteld profiel geopend. Sla het op om het te bewaren.</value>
+  </data>
+  <data name="Main_RemoveInputI1From" xml:space="preserve">
+    <value>Verwijder input {0} uit rij {1}</value>
+  </data>
+  <data name="Main_RemoveTheBOutputSetting" xml:space="preserve">
+    <value>Instelling {0} verwijderen</value>
+  </data>
+  <data name="Main_RemoveTheShortInputZoneB" xml:space="preserve">
+    <value>Toewijzing {0} verwijderen</value>
+  </data>
+  <data name="Main_RemoveThisEmptyInputFrom" xml:space="preserve">
+    <value>Verwijder deze lege input uit toewijzing {0}</value>
+  </data>
+  <data name="Main_RemoveThisInputFromMapping" xml:space="preserve">
+    <value>Verwijder deze input uit toewijzing {0}</value>
+  </data>
+  <data name="Main_RemoveThisMapping" xml:space="preserve">
+    <value>Deze toewijzing verwijderen</value>
+  </data>
+  <data name="Main_Rename" xml:space="preserve">
+    <value>Hernoemen</value>
+  </data>
+  <data name="Main_RenameSelectedTemplate" xml:space="preserve">
+    <value>Geselecteerde sjabloon hernoemen</value>
+  </data>
+  <data name="Main_RenameTemplate" xml:space="preserve">
+    <value>Sjabloon hernoemen</value>
+  </data>
+  <data name="Main_RenamedTemplateToPathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>Sjabloon hernoemd naar {0}.</value>
+  </data>
+  <data name="Main_ResetAllSettings" xml:space="preserve">
+    <value>Alle instellingen resetten?</value>
+  </data>
+  <data name="Main_RestoreYourProfiles" xml:space="preserve">
+    <value>Uw profielen herstellen?</value>
+  </data>
+  <data name="Main_Right" xml:space="preserve">
+    <value>Rechts</value>
+  </data>
+  <data name="Main_RightBumper" xml:space="preserve">
+    <value>Rechterbumper</value>
+  </data>
+  <data name="Main_RightMouthpieceHole" xml:space="preserve">
+    <value>Rechter mondstukgat</value>
+  </data>
+  <data name="Main_RightSideTube" xml:space="preserve">
+    <value>Rechts + zijbuis</value>
+  </data>
+  <data name="Main_RightStickClick" xml:space="preserve">
+    <value>Rechterstickklik</value>
+  </data>
+  <data name="Main_RightTrigger" xml:space="preserve">
+    <value>Rechtertrigger</value>
+  </data>
+  <data name="Main_RowBRowScopeModeScope" xml:space="preserve">
+    <value>Rij {0} bereik: {1}</value>
+  </data>
+  <data name="Main_RowNotSelected" xml:space="preserve">
+    <value>{0}. Spatie selecteert, slepen herschikt</value>
+  </data>
+  <data name="Main_RowSelected" xml:space="preserve">
+    <value>{0}, geselecteerd. Spatie selecteert, slepen herschikt</value>
+  </data>
+  <data name="Main_RowsThatPressAGame" xml:space="preserve">
+    <value>Rijen die een gameknop indrukken maar nog niets hebben dat ze activeert. Geef elke rij een input, of verwijder hem.</value>
+  </data>
+  <data name="Main_Save" xml:space="preserve">
+    <value>Opslaan</value>
+  </data>
+  <data name="Main_SaveAsTemplate" xml:space="preserve">
+    <value>Opslaan als sjabloon</value>
+  </data>
+  <data name="Main_SaveProfileCSV" xml:space="preserve">
+    <value>Profiel-CSV opslaan</value>
+  </data>
+  <data name="Main_SaveTemplate" xml:space="preserve">
+    <value>Sjabloon opslaan</value>
+  </data>
+  <data name="Main_SaveThisProfileFirstThen" xml:space="preserve">
+    <value>Sla dit profiel eerst op en kopieer daarna een deellink om het blad te maken.</value>
+  </data>
+  <data name="Main_SaveYourChanges" xml:space="preserve">
+    <value>Wijzigingen opslaan?</value>
+  </data>
+  <data name="Main_SavedTemplateFileNameFindIt" xml:space="preserve">
+    <value>Sjabloon {0} opgeslagen. U vindt hem onder Sjabloon gebruiken op het startscherm.</value>
+  </data>
+  <data name="Main_SavedToSavePath" xml:space="preserve">
+    <value>Opgeslagen in {0}.</value>
+  </data>
+  <data name="Main_Search" xml:space="preserve">
+    <value>Zoeken</value>
+  </data>
+  <data name="Main_SearchThisList" xml:space="preserve">
+    <value>Deze lijst doorzoeken</value>
+  </data>
+  <data name="Main_SelectAProblemInThe" xml:space="preserve">
+    <value>Selecteer een probleem in de lijst om het te kopiëren. Meld het op github.com/Bbrizly/Quadstick-Config-Manager/issues. Beschrijf wat u deed en wat er misging.</value>
+  </data>
+  <data name="Main_SelectATemplateToDelete" xml:space="preserve">
+    <value>Selecteer eerst een sjabloon om te verwijderen.</value>
+  </data>
+  <data name="Main_SelectATemplateToRename" xml:space="preserve">
+    <value>Selecteer eerst een sjabloon om te hernoemen.</value>
+  </data>
+  <data name="Main_SelectedRowsCountSelected" xml:space="preserve">
+    <value>{0} geselecteerd</value>
+  </data>
+  <data name="Main_SendACrashReport" xml:space="preserve">
+    <value>Een crashrapport verzenden?</value>
+  </data>
+  <data name="Main_SendReport" xml:space="preserve">
+    <value>Rapport verzenden</value>
+  </data>
+  <data name="Main_SendThisCrashReport" xml:space="preserve">
+    <value>Dit crashrapport verzenden</value>
+  </data>
+  <data name="Main_SetItTo" xml:space="preserve">
+    <value>Stel het in op</value>
+  </data>
+  <data name="Main_SetVerb" xml:space="preserve">
+    <value>Instellen</value>
+  </data>
+  <data name="Main_SettingChangedByThisRow" xml:space="preserve">
+    <value>Instelling gewijzigd door deze rij</value>
+  </data>
+  <data name="Main_SettingLabel" xml:space="preserve">
+    <value>Instelling</value>
+  </data>
+  <data name="Main_SettingRowSpoken" xml:space="preserve">
+    <value>Instelling {0}: terwijl deze modus actief is, stel {1} in op {2}. Druk op Enter om te bewerken.</value>
+  </data>
+  <data name="Main_SeverityLabelBaseName" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Main_ShareThisSheet" xml:space="preserve">
+    <value>Dit blad delen?</value>
+  </data>
+  <data name="Main_ShowsTheProblems" xml:space="preserve">
+    <value>{0}. Toont de lijst met problemen.</value>
+  </data>
+  <data name="Main_SideTube" xml:space="preserve">
+    <value>Zijbuis</value>
+  </data>
+  <data name="Main_SignInToBackUp" xml:space="preserve">
+    <value>Meld u aan om een back-up te maken</value>
+  </data>
+  <data name="Main_SimpleCards" xml:space="preserve">
+    <value>Eenvoudige kaarten</value>
+  </data>
+  <data name="Main_SingletonASingleSipPuff" xml:space="preserve">
+    <value>Singleton: één sip/puff-buis op de joystick. Gebruikt sip- en puff-patronen plus joystickbeweging.</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe" xml:space="preserve">
+    <value>Sip of puf op het linker mondstukgat. Een zachte sip of puf kan iets anders doen (de zachte varianten).</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe2" xml:space="preserve">
+    <value>Sip of puf op het middelste mondstukgat. Een zachte sip of puf kan iets anders doen (de zachte varianten).</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe3" xml:space="preserve">
+    <value>Sip of puf op het rechter mondstukgat. Een zachte sip of puf kan iets anders doen (de zachte varianten).</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
+    <value>Sip of puf op de zijbuis. Een lange stevige sip hier wisselt normaal van profiel, maar u kunt dit ook zelf toewijzen.</value>
+  </data>
+  <data name="Main_StartANewMappingOn" xml:space="preserve">
+    <value>Start een nieuwe toewijzing op {0}</value>
+  </data>
+  <data name="Main_StartFromATemplate" xml:space="preserve">
+    <value>Beginnen met een sjabloon</value>
+  </data>
+  <data name="Main_StartFromAWorkingProfile" xml:space="preserve">
+    <value>Begin met een werkend profiel, niet vanaf nul</value>
+  </data>
+  <data name="Main_StartedFromTemplatePathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>Gestart vanaf sjabloon {0}. Sla op om dit als eigen profiel te bewaren.</value>
+  </data>
+  <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
+    <value>Verlaagt een analoge output met een stap en laat hem daar staan, zoals een trigger of een stickas.</value>
+  </data>
+  <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
+    <value>Verhoogt een analoge output met een stap en laat hem daar staan, zoals een trigger of een stickas.</value>
+  </data>
+  <data name="Main_StopAsking" xml:space="preserve">
+    <value>Niet meer vragen</value>
+  </data>
+  <data name="Main_StopAskingAboutCrashReports" xml:space="preserve">
+    <value>Niet meer vragen over crashrapporten</value>
+  </data>
+  <data name="Main_SwitchJacks" xml:space="preserve">
+    <value>Schakelaaraansluitingen</value>
+  </data>
+  <data name="Main_TabMovesBetweenFieldsArrows" xml:space="preserve">
+    <value>Tab beweegt tussen velden, pijltjes navigeren door suggestielijsten, Enter bevestigt. Ctrl/Cmd+O openen, S opslaan, N nieuw, Z ongedaan maken, I installeren, D wisselen tussen Apparaatweergave en Lijstweergave, H deze handleiding. F1 opent deze handleiding ook overal vandaan. Het selecteren van een probleem, of de knop Eerste probleem oplossen, verplaatst de focus er direct naartoe. Elk bedieningselement kondigt zichzelf aan bij schermlezers.</value>
+  </data>
+  <data name="Main_ThatDoesNotLookLike" xml:space="preserve">
+    <value>Dat lijkt geen Google Sheets-link te zijn. Plak de volledige link uit de adresbalk van uw browser.</value>
+  </data>
+  <data name="Main_ThatFolderIsAQuadStick" xml:space="preserve">
+    <value>Die map is een QuadStick-station. Gebruik Installeren om veilig naar het apparaat te schrijven.</value>
+  </data>
+  <data name="Main_ThatSpreadsheetCameBackEmpty" xml:space="preserve">
+    <value>Die spreadsheet kwam leeg terug. Als u hem net hebt gedeeld, wacht dan even en probeer het opnieuw.</value>
+  </data>
+  <data name="Main_ThatSpreadsheetHasNoProfile" xml:space="preserve">
+    <value>Die spreadsheet heeft geen profieltabblad: cel A1 is leeg. {0}</value>
+  </data>
+  <data name="Main_ThatSpreadsheetHasNoProfile2" xml:space="preserve">
+    <value>Die spreadsheet heeft geen profieltabblad: cel A1 bevat "{0}". {1}</value>
+  </data>
+  <data name="Main_TheAppCrashedLastTime" xml:space="preserve">
+    <value>De app is de vorige keer vastgelopen. Dit zijn de crashgegevens die zijn opgeslagen. Er staan hier bewust geen berichttekst en geen bestandspaden in: alleen het type fout en de lijst met functies waarin het gebeurde.
+
+Verzenden zet dit om naar het eigen formaat van de crashrapportage. Er wordt ook uw anonieme installatie-ID aan toegevoegd, de versie van de rapportagebibliotheek, uw .NET- en besturingssysteemversie, en of uw processor Intel of ARM is.</value>
+  </data>
+  <data name="Main_TheCommunityProfilesCardOn" xml:space="preserve">
+    <value>De kaart Communityprofielen op het startscherm doorzoekt de gedeelde lijst met gameprofielen. Dat venster openen en daarin op Vernieuwen drukken, downloadt de lijst van quadstick.com. Er wordt niets over u verzonden, en de laatste lijst blijft op deze computer bewaard, zodat het venster ook zonder internet nog opent. Importeren opent het profiel in de editor, hetzelfde als het plakken van de link. Er wordt nooit naar uw QuadStick geschreven: daarvoor is nog steeds de knop Installeren nodig, en fouten blokkeren dat nog steeds.</value>
+  </data>
+  <data name="Main_TheDeviceSFallbackFile" xml:space="preserve">
+    <value> · het reservebestand van het apparaat</value>
+  </data>
+  <data name="Main_TheDeviceSkipsThoseRows" xml:space="preserve">
+    <value>. Het apparaat slaat die rijen over, dus dit wordt nog steeds geïnstalleerd.</value>
+  </data>
+  <data name="Main_TheManageFilesCardUnder" xml:space="preserve">
+    <value>De kaart Bestanden beheren, onder Op uw QuadStick, werkt met een gekoppelde QuadStick: het station moet als USB-stick verschijnen in Finder of Verkenner. Van daaruit kunt u een bestand naar uw bibliotheek kopiëren, het gekoppelde Google Sheet openen, of het verwijderen; verwijderen maakt eerst een back-up naar QuadStickBackups. default.csv en prefs.csv zijn beveiligd en kunnen niet vanuit deze app worden verwijderd. Als het station helemaal niet verschijnt, heeft deze app geen andere manier om het te bereiken; zie QuadStick verschijnt niet? hieronder.</value>
+  </data>
+  <data name="Main_TheNameBoxAtThe" xml:space="preserve">
+    <value>Het naamveld boven in de editor is de naam van het profiel op het apparaat. Gebruik geen spaties; de bestandsextensie .csv wordt automatisch toegevoegd. Het profiel met de naam default is bijzonder: het is het reservebestand van het apparaat en moet ongewijzigd blijven.</value>
+  </data>
+  <data name="Main_TheOnlineCopyOfThis" xml:space="preserve">
+    <value>De online kopie van dit profiel is leeg of onleesbaar, dus uw versie op deze computer is bewaard. Bij uw volgende keer opslaan wordt het blad vervangen.</value>
+  </data>
+  <data name="Main_TheTabSkipped0Name" xml:space="preserve">
+    <value>Het tabblad "{0}" is overgeslagen.</value>
+  </data>
+  <data name="Main_TheThreeColumnsSameColors" xml:space="preserve">
+    <value>De drie kolommen (dezelfde kleuren als de officiële spreadsheets)</value>
+  </data>
+  <data name="Main_ThenJoin" xml:space="preserve">
+    <value>, dan </value>
+  </data>
+  <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
+    <value>Deze tabbladen zijn overgeslagen: </value>
+  </data>
+  <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
+    <value>Deze app kan anonieme gebruiksgegevens verzenden: welke schermen worden gebruikt, of installeren naar een QuadStick lukte, en verder niets. Terwijl dit aanstaat, worden die gebeurtenissen verzonden zodra ze plaatsvinden.
+
+Nooit verzonden, wat u ook kiest: uw profielen, bestandsnamen, bestandspaden, uw Google-account, en uw naam of machinenaam. Ook wat u typt wordt niet verzonden, behalve het feedbackvak in Instellingen, dat alleen verzendt wanneer u daar op Verzenden drukt.
+
+Crashrapporten zijn apart. Als de app ooit vastloopt, slaat hij een rapport op uw computer op en vraagt hij u dit de volgende keer dat u de app opent. U ziet het voordat het ergens naartoe gaat.
+
+Wat wordt verzonden gaat naar PostHog, op servers in de Verenigde Staten.
+
+U kunt dit op elk moment wijzigen in Instellingen, onder Geavanceerd.</value>
+  </data>
+  <data name="Main_ThisLinkIsAPublished" xml:space="preserve">
+    <value>Dit is een gepubliceerde link, en een gepubliceerde link geeft altijd maar één tabblad. Eventuele andere modustabbladen in de spreadsheet zijn helemaal niet naar ons verzonden, dus we kunnen niet zeggen wat erin staat. Om het hele profiel binnen te halen, deelt u het blad met "Iedereen met de link" in Google Sheets en importeert u het opnieuw.</value>
+  </data>
+  <data name="Main_ThisProfileHasNoGoogle" xml:space="preserve">
+    <value>Dit profiel heeft nog geen Google Sheet. Gebruik eerst Deellink kopiëren, dat maakt er een aan.</value>
+  </data>
+  <data name="Main_ThisProfileHasUnsavedChanges" xml:space="preserve">
+    <value>Dit profiel heeft niet-opgeslagen wijzigingen. Opslaan voordat u vertrekt?</value>
+  </data>
+  <data name="Main_ThisProfileLivesOnThe" xml:space="preserve">
+    <value>Dit profiel staat op de QuadStick. Gebruik Installeren om het veilig terug te schrijven; Opslaan als plaatst een kopie in uw bibliotheek.</value>
+  </data>
+  <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
+    <value>Deze rij stelt een QuadStick-instelling in, in plaats van een knop in te drukken. Dit geldt terwijl deze modus actief is.</value>
+  </data>
+  <data name="Main_ThisSpreadsheet" xml:space="preserve">
+    <value>Deze spreadsheet</value>
+  </data>
+  <data name="Main_TitleBodyPressEscapeTo" xml:space="preserve">
+    <value>{0}. {1}. Druk op Escape om te sluiten.</value>
+  </data>
+  <data name="Main_TitleCount" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Main_TitleCountOptionsOpensThis" xml:space="preserve">
+    <value>{0}, {1} opties. Opent deze categorie.</value>
+  </data>
+  <data name="Main_ToJoiner" xml:space="preserve">
+    <value>tot</value>
+  </data>
+  <data name="Main_ToTheBottom" xml:space="preserve">
+    <value>Naar beneden</value>
+  </data>
+  <data name="Main_ToTheComputer" xml:space="preserve">
+    <value>Naar de computer</value>
+  </data>
+  <data name="Main_ToTheTop" xml:space="preserve">
+    <value>Naar boven</value>
+  </data>
+  <data name="Main_TokenNotUsedInThis" xml:space="preserve">
+    <value>{0}, niet gebruikt in deze modus</value>
+  </data>
+  <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
+    <value>Schakelt een output uit die toggle of delayed_latch heeft aangelaten.</value>
+  </data>
+  <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
+    <value>Twee of meer gaten tegelijk gebruikt, alle drie samen, of het rechter gat met de zijbuis. Handig voor acties die u nooit per ongeluk wilt activeren.</value>
+  </data>
+  <data name="Main_TypeACustomValue" xml:space="preserve">
+    <value>. Typ een aangepaste waarde.</value>
+  </data>
+  <data name="Main_TypeACustomValue2" xml:space="preserve">
+    <value>Typ een aangepaste waarde</value>
+  </data>
+  <data name="Main_TypeAValueOrLeave" xml:space="preserve">
+    <value>typ een waarde, of laat leeg om terug te gaan</value>
+  </data>
+  <data name="Main_TypeAValueOrLeave2" xml:space="preserve">
+    <value>typ een waarde, of laat leeg om te annuleren</value>
+  </data>
+  <data name="Main_TypeYourOwn" xml:space="preserve">
+    <value>＋ Typ uw eigen…</value>
+  </data>
+  <data name="Main_USBAPort" xml:space="preserve">
+    <value>USB-A-poort</value>
+  </data>
+  <data name="Main_USBBPort" xml:space="preserve">
+    <value>USB-B-poort</value>
+  </data>
+  <data name="Main_USBDevices" xml:space="preserve">
+    <value>USB-apparaten</value>
+  </data>
+  <data name="Main_UnnamedMode" xml:space="preserve">
+    <value>(naamloze modus)</value>
+  </data>
+  <data name="Main_UnsavedWorkFromLastTime" xml:space="preserve">
+    <value>Niet-opgeslagen werk van de vorige keer is hersteld ({0}). Open het via de knop hieronder, of sluit dit om het te verwerpen.</value>
+  </data>
+  <data name="Main_UnusedFree" xml:space="preserve">
+    <value>Ongebruikt ({0})</value>
+  </data>
+  <data name="Main_UseTemplate" xml:space="preserve">
+    <value>Sjabloon gebruiken</value>
+  </data>
+  <data name="Main_UsingDeviceView" xml:space="preserve">
+    <value>Apparaatweergave in gebruik</value>
+  </data>
+  <data name="Main_VVMajorVMinor" xml:space="preserve">
+    <value>v{0}.{1}.{2} · MIT · niet verbonden met QuadStick</value>
+  </data>
+  <data name="Main_ViewButton" xml:space="preserve">
+    <value>View-knop</value>
+  </data>
+  <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
+    <value>Wacht een moment nadat u activeert, en drukt dan.</value>
+  </data>
+  <data name="Main_WhatIsAMode" xml:space="preserve">
+    <value>Wat is een modus?</value>
+  </data>
+  <data name="Main_WhatIsAProfile" xml:space="preserve">
+    <value>Wat is een profiel?</value>
+  </data>
+  <data name="Main_WhenYou" xml:space="preserve">
+    <value>wanneer u</value>
+  </data>
+  <data name="Main_WhenYou2" xml:space="preserve">
+    <value>Wanneer u</value>
+  </data>
+  <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
+    <value>Woorden worden getoond als ruwe lijstweergavenamen. Schakel over naar gewoon Engels.</value>
+  </data>
+  <data name="Main_WordsAreShownAsXbox" xml:space="preserve">
+    <value>Woorden worden getoond als knopnamen in Xbox-stijl. Schakel over naar de ruwe lijstweergavenamen.</value>
+  </data>
+  <data name="Main_WordsAreShownInPlain" xml:space="preserve">
+    <value>Woorden worden getoond in gewoon Engels. Schakel over naar knopnamen in Xbox-stijl.</value>
+  </data>
+  <data name="Main_WordsListNames" xml:space="preserve">
+    <value>Woorden: Lijstnamen</value>
+  </data>
+  <data name="Main_WordsPlainEnglish" xml:space="preserve">
+    <value>Woorden: Gewoon Engels</value>
+  </data>
+  <data name="Main_WordsXboxStyle" xml:space="preserve">
+    <value>Woorden: Xbox-stijl</value>
+  </data>
+  <data name="Main_XButton" xml:space="preserve">
+    <value>X-knop</value>
+  </data>
+  <data name="Main_XboxButton" xml:space="preserve">
+    <value>Xbox-knop</value>
+  </data>
+  <data name="Main_YButton" xml:space="preserve">
+    <value>Y-knop</value>
+  </data>
+  <data name="Main_YellowOUTPUTTheGameButton" xml:space="preserve">
+    <value>Geel, OUTPUT: de spelknop of -actie. PlayStation-namen (x, circle, left_1), Xbox-namen (A, B, left_trigger), muis (mouse_up, mouse_left_button), toetsenbord (kb_space), en apparaatinstellingennamen zoals mouse_speed. Een instellingsnaam hier stelt die instelling in voor de hele modus: het apparaat negeert de functiecel en leest de volgende cel als de waarde, niet als een input.
+Roze, FUNCTION: hoe de druk zich gedraagt.
+  normal: ingedrukt zolang uw input actief is.
+  toggle: één activering zet hem aan, de volgende zet hem uit. Ideaal om te richten zonder een sip vast te houden.
+  repeat [rate] [delay]: snelvuurtikken zolang vastgehouden. "repeat 5 2000" houdt 2 seconden vast, en tikt daarna 5x per seconde.
+  pulse [ms] [count]: één korte druk per activering. "pulse 50 2" dubbelklikt.
+  delayed_latch [ms]: korte activering = normale druk, lange activering = vastzetten. Twee gedragingen uit één input.
+  tap / delay_on: splitst één input in twee outputs op basis van druklengte.
+  force_off: laat een andere vastgezette output los. greater_than / less_than: drempelwaardes activeren. duty, increment_value, decrement_value: analoge besturing.
+Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_sip). …_soft-varianten activeren bij lichte druk. right_sip / right_puff zijn de zijbuis. lip is de lipschakelaar. left/right/up/down en N/NE/… zijn de joystick. Meerdere inputs op één rij vormen een reeks: u voert ze na elkaar uit, van links naar rechts, en de laatste activeert de output.</value>
+  </data>
+  <data name="Main_YesContinue" xml:space="preserve">
+    <value>Ja, doorgaan</value>
+  </data>
+  <data name="Main_YesShareAnonymousUsageData" xml:space="preserve">
+    <value>Ja, anonieme gebruiksgegevens delen</value>
+  </data>
+  <data name="Main_YesShareUsageData" xml:space="preserve">
+    <value>Ja, gebruiksgegevens delen</value>
+  </data>
+  <data name="Main_YouHaveNotSavedAny" xml:space="preserve">
+    <value>U hebt nog geen sjablonen opgeslagen. Open een profiel en gebruik Opslaan als sjabloon om er een te maken.</value>
+  </data>
+  <data name="Main_YourSavedTemplates" xml:space="preserve">
+    <value>Uw opgeslagen sjablonen</value>
+  </data>
+  <data name="Main_Zone" xml:space="preserve">
+    <value>{0}. {1}. {2}.{3} Druk op Enter om te bewerken.</value>
+  </data>
+  <data name="Main_ZoneSelected" xml:space="preserve">
+    <value>{0}. Geselecteerd. {1}. {2}.{3} Druk op Enter om te bewerken.</value>
+  </data>
+  <data name="Main_ZoneTitleInZoneCountNot" xml:space="preserve">
+    <value>{0}, {1} niet gebruikt. Opent dit onderdeel in apparaatweergave.</value>
+  </data>
+  <data name="Modes_AModeIsAFull" xml:space="preserve">
+    <value>Een modus is een volledige indeling van uw inputs. Wissel ertussen tijdens het spelen met de zijbuis, of met increment_mode en decrement_mode.</value>
+  </data>
+  <data name="Modes_AModeNeedsAName" xml:space="preserve">
+    <value>Een modus heeft een naam nodig. De oude staat er nog.</value>
+  </data>
+  <data name="Modes_AddAMode" xml:space="preserve">
+    <value>Modus toevoegen</value>
+  </data>
+  <data name="Modes_AddAPreferencesSheet" xml:space="preserve">
+    <value>+ Voorkeurenblad toevoegen</value>
+  </data>
+  <data name="Modes_AddAPreferencesSheetWhere" xml:space="preserve">
+    <value>Voeg een voorkeurenblad toe, waar apparaatinstellingen zoals sip- en puff-druk staan</value>
+  </data>
+  <data name="Modes_AddMode" xml:space="preserve">
+    <value>+ Modus toevoegen</value>
+  </data>
+  <data name="Modes_CloseModes" xml:space="preserve">
+    <value>Modi sluiten</value>
+  </data>
+  <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
+    <value>Verbinding gewist. Het apparaat valt terug op de USB-kabel.</value>
+  </data>
+  <data name="Modes_ConnectionForModeOrdinalWhere" xml:space="preserve">
+    <value>Verbinding voor modus {0}. Waar de knopdrukken van deze modus naartoe gaan. Een modus die alleen op Bluetooth staat, stuurt geen muis of toetsenbord over een kabel.</value>
+  </data>
+  <data name="Modes_ConnectionSetToPickedItem2" xml:space="preserve">
+    <value>Verbinding ingesteld op {0}.</value>
+  </data>
+  <data name="Modes_Done" xml:space="preserve">
+    <value>Klaar</value>
+  </data>
+  <data name="Modes_MakeACopyOfName" xml:space="preserve">
+    <value>Maak een kopie van {0}</value>
+  </data>
+  <data name="Modes_ModeAdded" xml:space="preserve">
+    <value>Modus toegevoegd.</value>
+  </data>
+  <data name="Modes_ModeCopied" xml:space="preserve">
+    <value>Modus gekopieerd.</value>
+  </data>
+  <data name="Modes_ModeDeletedControlZUndoes" xml:space="preserve">
+    <value>Modus verwijderd. Control Z maakt dit ongedaan.</value>
+  </data>
+  <data name="Modes_ModeMoved" xml:space="preserve">
+    <value>Modus verplaatst.</value>
+  </data>
+  <data name="Modes_ModeRenamed" xml:space="preserve">
+    <value>Modus hernoemd.</value>
+  </data>
+  <data name="Modes_Modes" xml:space="preserve">
+    <value>Modi</value>
+  </data>
+  <data name="Modes_NameOfModeOrdinal" xml:space="preserve">
+    <value>Naam van modus {0}</value>
+  </data>
+  <data name="Modes_NeitherSendsNothing" xml:space="preserve">
+    <value>Geen van beide, stuurt niets</value>
+  </data>
+  <data name="Modes_NotSetUSBCable" xml:space="preserve">
+    <value>Niet ingesteld (USB-kabel)</value>
+  </data>
+  <data name="Modes_Position1" xml:space="preserve">
+    <value>{0}.</value>
+  </data>
+  <data name="Modes_PreferencesDeviceSettings" xml:space="preserve">
+    <value>Voorkeuren (apparaatinstellingen)</value>
+  </data>
+  <data name="Modes_PreferencesSheetRemovedControlZ" xml:space="preserve">
+    <value>Voorkeurenblad verwijderd. Control Z maakt dit ongedaan.</value>
+  </data>
+  <data name="Modes_ReallyDelete" xml:space="preserve">
+    <value>Echt verwijderen?</value>
+  </data>
+  <data name="Modes_ReallyDeleteName" xml:space="preserve">
+    <value>Echt {0} verwijderen</value>
+  </data>
+  <data name="Modes_SheetChannelNotAWord" xml:space="preserve">
+    <value>{0} (geen woord dat het apparaat kent)</value>
+  </data>
+  <data name="Modes_ThePreferencesSheet" xml:space="preserve">
+    <value>het voorkeurenblad</value>
+  </data>
+  <data name="Modes_USBAndBluetooth" xml:space="preserve">
+    <value>USB en Bluetooth</value>
+  </data>
+  <data name="Modes_USBCable" xml:space="preserve">
+    <value>USB-kabel</value>
+  </data>
+  <data name="Names_ANameHasToBe" xml:space="preserve">
+    <value>Een naam moet 1 tot {0} tekens lang zijn.</value>
+  </data>
+  <data name="Names_AnOutput" xml:space="preserve">
+    <value>een output</value>
+  </data>
+  <data name="Names_CustomOutputNames" xml:space="preserve">
+    <value>Aangepaste outputnamen</value>
+  </data>
+  <data name="Names_MappingNowReal_one" xml:space="preserve">
+    <value>{0} toewijzing toont nu de echte knop.</value>
+  </data>
+  <data name="Names_MappingNowReal_other" xml:space="preserve">
+    <value>{0} toewijzingen tonen nu de echte knop.</value>
+  </data>
+  <data name="Names_NameIsAlreadyWhatThe" xml:space="preserve">
+    <value>"{0}" is al hoe de QuadStick een van zijn eigen knoppen noemt. Kies een ander woord.</value>
+  </data>
+  <data name="Names_NameIsNowHumanizeToken" xml:space="preserve">
+    <value>{0} is nu {1}.</value>
+  </data>
+  <data name="Names_NewName" xml:space="preserve">
+    <value>Nieuwe naam</value>
+  </data>
+  <data name="Names_NewNameI" xml:space="preserve">
+    <value>Nieuwe naam {0}</value>
+  </data>
+  <data name="Names_NoNamesYetClickAdd" xml:space="preserve">
+    <value>Nog geen namen. Klik op "Rij toevoegen", kies een output en typ uw eigen woord ervoor. Dat woord verschijnt dan bovenaan elke outputkiezer, onder Aangepast. Het bestand bevat nog steeds de echte knop, dus de QuadStick werkt hetzelfde.</value>
+  </data>
+  <data name="Names_NotUsedYet" xml:space="preserve">
+    <value>nog niet gebruikt</value>
+  </data>
+  <data name="Names_OpenOrCreateAProfile" xml:space="preserve">
+    <value>Open of maak eerst een profiel.</value>
+  </data>
+  <data name="Names_OutputRealButton" xml:space="preserve">
+    <value>Output (echte knop)</value>
+  </data>
+  <data name="Names_OutputThatNameStandsFor" xml:space="preserve">
+    <value>Output waar {0} voor staat</value>
+  </data>
+  <data name="Names_PickTheOutputThenType" xml:space="preserve">
+    <value>Kies de output en typ dan uw eigen naam ervoor.</value>
+  </data>
+  <data name="Names_RemoveTheNameName" xml:space="preserve">
+    <value>Verwijder de naam {0}</value>
+  </data>
+  <data name="Names_RemoveThisName" xml:space="preserve">
+    <value>Deze naam verwijderen</value>
+  </data>
+  <data name="Names_Removed" xml:space="preserve">
+    <value>{0} verwijderd.</value>
+  </data>
+  <data name="Names_ThisProfileAlreadyHasA" xml:space="preserve">
+    <value>Dit profiel heeft al een naam genaamd "{0}".</value>
+  </data>
+  <data name="Names_YourNameForHumanizeToken" xml:space="preserve">
+    <value>Uw naam voor {0}</value>
+  </data>
+  <data name="Names_YourNameForIt" xml:space="preserve">
+    <value>Uw naam ervoor</value>
+  </data>
+  <data name="Names_YourNameForThisOutput" xml:space="preserve">
+    <value>Uw naam voor deze output</value>
+  </data>
+  <data name="Outputs_DeviceSettings" xml:space="preserve">
+    <value>Apparaatinstellingen</value>
+  </data>
+  <data name="Outputs_DeviceSettings2" xml:space="preserve">
+    <value>Apparaatinstellingen</value>
+  </data>
+  <data name="Outputs_FunctionKeys" xml:space="preserve">
+    <value>Functietoetsen</value>
+  </data>
+  <data name="Outputs_FunctionKeys2" xml:space="preserve">
+    <value>Functietoetsen</value>
+  </data>
+  <data name="Outputs_ModeSwitching" xml:space="preserve">
+    <value>Moduswisseling</value>
+  </data>
+  <data name="Outputs_ModeSwitching2" xml:space="preserve">
+    <value>Moduswisseling</value>
+  </data>
+  <data name="Outputs_ModifierKeys" xml:space="preserve">
+    <value>Modifiertoetsen</value>
+  </data>
+  <data name="Outputs_ModifierKeys2" xml:space="preserve">
+    <value>Modifiertoetsen</value>
+  </data>
+  <data name="Outputs_NumberPad" xml:space="preserve">
+    <value>Numeriek toetsenblok</value>
+  </data>
+  <data name="Outputs_NumberPad2" xml:space="preserve">
+    <value>Numeriek toetsenblok</value>
+  </data>
+  <data name="Outputs_OtherKeys" xml:space="preserve">
+    <value>Overige toetsen</value>
+  </data>
+  <data name="Outputs_OtherKeys2" xml:space="preserve">
+    <value>Overige toetsen</value>
+  </data>
+  <data name="Outputs_TVRemote" xml:space="preserve">
+    <value>Tv-afstandsbediening</value>
+  </data>
+  <data name="Outputs_TVRemote2" xml:space="preserve">
+    <value>Tv-afstandsbediening</value>
+  </data>
+  <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
+    <value>Over {0}: {1}</value>
+  </data>
+  <data name="Prefs_ActiveOnlyInThisMode" xml:space="preserve">
+    <value>Alleen actief in deze modus</value>
+  </data>
+  <data name="Prefs_ActiveWhileThisProfileIs" xml:space="preserve">
+    <value>Actief terwijl dit profiel geladen is</value>
+  </data>
+  <data name="Prefs_CarefulDefLabelDefRisk" xml:space="preserve">
+    <value>Voorzichtig, {0}: {1}</value>
+  </data>
+  <data name="Prefs_CarefulDefRisk" xml:space="preserve">
+    <value>Voorzichtig: {0}</value>
+  </data>
+  <data name="Prefs_DefCategorySettings" xml:space="preserve">
+    <value>{0}-instellingen</value>
+  </data>
+  <data name="Prefs_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}, geschreven als {1}</value>
+  </data>
+  <data name="Prefs_DeleteRowBRow" xml:space="preserve">
+    <value>Rij {0} verwijderen</value>
+  </data>
+  <data name="Prefs_DeleteThisWholeRow" xml:space="preserve">
+    <value>Deze hele rij verwijderen</value>
+  </data>
+  <data name="Prefs_DescriptionForRowSaved" xml:space="preserve">
+    <value>Beschrijving voor rij {0}. Opgeslagen in het bestand, genegeerd door de QuadStick</value>
+  </data>
+  <data name="Prefs_DeviceWideSettings" xml:space="preserve">
+    <value>Apparaatbrede instellingen</value>
+  </data>
+  <data name="Prefs_HexCode" xml:space="preserve">
+    <value>Hexcode</value>
+  </data>
+  <data name="Prefs_HexCodeForRow" xml:space="preserve">
+    <value>Hexcode voor rij {0}</value>
+  </data>
+  <data name="Prefs_MeasuredInDefUnit" xml:space="preserve">
+    <value>Gemeten in {0}.</value>
+  </data>
+  <data name="Prefs_NameColumnNameForRowB" xml:space="preserve">
+    <value>{0}-naam voor rij {1}</value>
+  </data>
+  <data name="Prefs_NotesForRow" xml:space="preserve">
+    <value>Notities voor rij {0}</value>
+  </data>
+  <data name="Prefs_NotesForRowSaved" xml:space="preserve">
+    <value>Notities voor rij {0}. Opgeslagen in het bestand, genegeerd door de QuadStick</value>
+  </data>
+  <data name="Prefs_PhraseExplain" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Prefs_SettingValueForRow" xml:space="preserve">
+    <value>Instellingswaarde voor rij {0}</value>
+  </data>
+  <data name="Prefs_SettingValueForRowRow" xml:space="preserve">
+    <value>Instellingswaarde voor rij {0}</value>
+  </data>
+  <data name="Prefs_SwapTheControlForA" xml:space="preserve">
+    <value>Verwissel het besturingselement voor een gewoon invoervak, voor een waarde buiten het geteste bereik.</value>
+  </data>
+  <data name="Prefs_TheseSettingsApplyWhileThis" xml:space="preserve">
+    <value>Deze instellingen gelden zolang dit profiel actief is, en gaan terug naar de eigen instellingen van het apparaat zodra een ander profiel wordt geladen.</value>
+  </data>
+  <data name="Prefs_ThisFileIsTheQuadStick" xml:space="preserve">
+    <value>Dit bestand bevat de eigen instellingen van de QuadStick. Elke wijziging hier geldt voor het hele apparaat, in elk profiel.</value>
+  </data>
+  <data name="Prefs_ThisIsUsuallySetTo" xml:space="preserve">
+    <value>Dit staat meestal ingesteld op {0}. Uw apparaat kan iets anders bevatten.</value>
+  </data>
+  <data name="Prefs_TypeAnExactValue" xml:space="preserve">
+    <value>Typ een exacte waarde</value>
+  </data>
+  <data name="Prefs_TypeAnExactValueFor" xml:space="preserve">
+    <value>Typ een exacte waarde voor {0}</value>
+  </data>
+  <data name="Prefs_UnitsForRow" xml:space="preserve">
+    <value>Eenheden voor rij {0}</value>
+  </data>
+  <data name="Review_ASettingSNameUsed" xml:space="preserve">
+    <value>de naam van een instelling, hier gebruikt om deze voor deze modus te overschrijven</value>
+  </data>
+  <data name="Review_AddItAsAWorking" xml:space="preserve">
+    <value>Voeg het toe als werkende modus</value>
+  </data>
+  <data name="Review_AddTheTabTabName" xml:space="preserve">
+    <value>Voeg het tabblad {0} toe aan dit profiel als werkende modus, door Profile Name over cel A1 te schrijven</value>
+  </data>
+  <data name="Review_AddedTheTabNameTab" xml:space="preserve">
+    <value>Het tabblad "{0}" toegevoegd als modus.</value>
+  </data>
+  <data name="Review_AddingItChangesCellA1" xml:space="preserve">
+    <value>Het toevoegen ervan wijzigt cel A1. Al het andere in het tabblad komt binnen zoals u het schreef.</value>
+  </data>
+  <data name="Review_AndYourPreferences" xml:space="preserve">
+    <value>, en uw voorkeuren</value>
+  </data>
+  <data name="Review_CToJInputsIn" xml:space="preserve">
+    <value>C tot J  inputs, op volgorde</value>
+  </data>
+  <data name="Review_CToJIsRoom" xml:space="preserve">
+    <value>C tot J is ruimte voor maximaal 8 inputs, geen verplichting. De meeste rijen gebruiken alleen C, en dat is een gewone trigger. Wanneer een rij er meer dan één vult, vormen ze een reeks: u voert ze na elkaar uit, van links naar rechts, en de laatste activeert de output. Lege cellen ertussen worden genegeerd.</value>
+  </data>
+  <data name="Review_CellMeaningRowColIsBindingThe" xml:space="preserve">
+    <value>{0}, de QuadStick kent dit woord niet</value>
+  </data>
+  <data name="Review_CellTheQuadStickWillTreat" xml:space="preserve">
+    <value>cel die de QuadStick anders zal behandelen dan hij leest</value>
+  </data>
+  <data name="Review_CellsTheQuadStickWillTreat" xml:space="preserve">
+    <value>cellen die de QuadStick anders zal behandelen dan ze lezen</value>
+  </data>
+  <data name="Review_ClearIt" xml:space="preserve">
+    <value>Wissen</value>
+  </data>
+  <data name="Review_CloseTheImportReviewEvery" xml:space="preserve">
+    <value>Sluit het importoverzicht. Elk antwoord dat u gaf, is al toegepast op het profiel erachter</value>
+  </data>
+  <data name="Review_ContentsOfCellWhereMeaning" xml:space="preserve">
+    <value>Inhoud van cel {0}, {1}</value>
+  </data>
+  <data name="Review_Done" xml:space="preserve">
+    <value>Klaar</value>
+  </data>
+  <data name="Review_EmptyCellWhere" xml:space="preserve">
+    <value>Lege cel {0}</value>
+  </data>
+  <data name="Review_GoBackToTheSimple" xml:space="preserve">
+    <value>Terug naar de eenvoudige weergave</value>
+  </data>
+  <data name="Review_HelperTabs_one" xml:space="preserve">
+    <value>{0}   dit tabblad bevat notities, geen bindingen. QMP en de Sheets-invoegtoepassing schrijven dit tabblad zodat u het kunt lezen, en uw QuadStick laadt het nooit. Er is niets verloren gegaan door het weg te laten.</value>
+  </data>
+  <data name="Review_HelperTabs_other" xml:space="preserve">
+    <value>{0}   deze tabbladen bevatten notities, geen bindingen. QMP en de Sheets-invoegtoepassing schrijven deze tabbladen zodat u ze kunt lezen, en uw QuadStick laadt ze nooit. Er is niets verloren gegaan door ze weg te laten.</value>
+  </data>
+  <data name="Review_ImportReview" xml:space="preserve">
+    <value>Importoverzicht</value>
+  </data>
+  <data name="Review_InfraredCommands" xml:space="preserve">
+    <value>Infraroodcommando's</value>
+  </data>
+  <data name="Review_IssueCellWordIsNow" xml:space="preserve">
+    <value>{0}   "{1}" is nu de eigen naam van deze rij, in kolom L.</value>
+  </data>
+  <data name="Review_IssueCellWordLeftAs" xml:space="preserve">
+    <value>{0}   "{1}" ongewijzigd gelaten. De QuadStick negeert het.</value>
+  </data>
+  <data name="Review_IssueCellWordMovedInto" xml:space="preserve">
+    <value>{0}   "{1}" verplaatst naar de notitiekolom.</value>
+  </data>
+  <data name="Review_KNoteLYourName" xml:space="preserve">
+    <value>K  notitie   L  uw naam voor de rij   M aan  nooit gelezen</value>
+  </data>
+  <data name="Review_KeepValueAsThisRow" xml:space="preserve">
+    <value>Houd "{0}" als de eigen naam van deze rij, in kolom L, waar de QuadStick nooit kijkt</value>
+  </data>
+  <data name="Review_KeepWordAsThisRow" xml:space="preserve">
+    <value>Houd "{0}" als de eigen naam van deze rij, in kolom L, waar de QuadStick nooit kijkt</value>
+  </data>
+  <data name="Review_LeaveIt" xml:space="preserve">
+    <value>Laten staan</value>
+  </data>
+  <data name="Review_LeaveItOut" xml:space="preserve">
+    <value>Weglaten</value>
+  </data>
+  <data name="Review_LeaveTheTabTabName" xml:space="preserve">
+    <value>Laat het tabblad {0} weg uit dit profiel, zoals de QuadStick ook doet</value>
+  </data>
+  <data name="Review_LeaveWordWhereItIs" xml:space="preserve">
+    <value>Laat "{0}" waar het is, en behoud de waarschuwing ervoor in de editor</value>
+  </data>
+  <data name="Review_LineTheQuadStickWouldNot" xml:space="preserve">
+    <value>regel die de QuadStick niet zou lezen</value>
+  </data>
+  <data name="Review_LinesTheQuadStickWouldNot" xml:space="preserve">
+    <value>regels die de QuadStick niet zou lezen</value>
+  </data>
+  <data name="Review_MakeThisTheRowS" xml:space="preserve">
+    <value>Maak dit de naam van de rij</value>
+  </data>
+  <data name="Review_ModeIsNamedAfterIts" xml:space="preserve">
+    <value>modus is genoemd naar het tabblad</value>
+  </data>
+  <data name="Review_ModeRModeNumberIsCalled" xml:space="preserve">
+    <value>Modus {0} heet "{1}", naar het tabblad. De naamcel van die modus was leeg.</value>
+  </data>
+  <data name="Review_ModeRModeNumberIsCalled2" xml:space="preserve">
+    <value>Modus {0} heet "{1}", naar het tabblad. De naamcel bevatte "{2}", de naam waarmee het sjabloon komt of een kopie van die van een andere modus.</value>
+  </data>
+  <data name="Review_ModesAreNamedAfterTheir" xml:space="preserve">
+    <value>modi zijn genoemd naar hun tabbladen</value>
+  </data>
+  <data name="Review_MoreThanOneModeEach" xml:space="preserve">
+    <value>Meer dan één modus draagt elk de namen</value>
+  </data>
+  <data name="Review_MoreThanOneModeIs" xml:space="preserve">
+    <value>Meer dan één modus heet</value>
+  </data>
+  <data name="Review_MoveItEarlier" xml:space="preserve">
+    <value>Eerder verplaatsen</value>
+  </data>
+  <data name="Review_MoveItLater" xml:space="preserve">
+    <value>Later verplaatsen</value>
+  </data>
+  <data name="Review_MoveThisToTheNote" xml:space="preserve">
+    <value>Verplaats dit naar de notitiekolom</value>
+  </data>
+  <data name="Review_MoveToNotes" xml:space="preserve">
+    <value>Verplaatsen naar notities</value>
+  </data>
+  <data name="Review_MoveValueFromWhereInto" xml:space="preserve">
+    <value>Verplaats "{0}" van {1} naar de notitiekolom, waar de QuadStick nooit kijkt</value>
+  </data>
+  <data name="Review_MoveValueToColumnLetterTarget" xml:space="preserve">
+    <value>Verplaats "{0}" naar {1}{2}, één stap {3} in de inputreeks van deze rij</value>
+  </data>
+  <data name="Review_MoveWordIntoTheNotes" xml:space="preserve">
+    <value>Verplaats "{0}" naar de notitiekolom, waar de QuadStick nooit kijkt</value>
+  </data>
+  <data name="Review_MovedValueFromWhereInto" xml:space="preserve">
+    <value>"{0}" verplaatst van {1} naar de notitiekolom.</value>
+  </data>
+  <data name="Review_MovedValueFromWhereInto2" xml:space="preserve">
+    <value>"{0}" verplaatst van {1} naar de naam van deze rij.</value>
+  </data>
+  <data name="Review_MovedWordIntoTheNotes" xml:space="preserve">
+    <value>"{0}" verplaatst naar de notitiekolom.</value>
+  </data>
+  <data name="Review_NeverReadByTheQuadStick" xml:space="preserve">
+    <value>nooit gelezen door de QuadStick</value>
+  </data>
+  <data name="Review_NoCellPicked" xml:space="preserve">
+    <value>Geen cel gekozen</value>
+  </data>
+  <data name="Review_NoCellPickedClickOne" xml:space="preserve">
+    <value>Geen cel gekozen. Klik er een aan, of tab naar het blad en gebruik de pijltjestoetsen.</value>
+  </data>
+  <data name="Review_NotABindingRowSo" xml:space="preserve">
+    <value>geen bindingsrij, dus de QuadStick leest hier niets</value>
+  </data>
+  <data name="Review_NotReadOnASettings" xml:space="preserve">
+    <value>niet gelezen op een instellingenblad</value>
+  </data>
+  <data name="Review_NotReadOnASettings2" xml:space="preserve">
+    <value>niet gelezen op een instellingenrij</value>
+  </data>
+  <data name="Review_NotReadThisTabWas" xml:space="preserve">
+    <value>niet gelezen, dit tabblad is weggelaten</value>
+  </data>
+  <data name="Review_NoteNeverReadByThe" xml:space="preserve">
+    <value>notitie, nooit gelezen door de QuadStick</value>
+  </data>
+  <data name="Review_NothingPressesBOutputNow" xml:space="preserve">
+    <value> Niets drukt nu op "{0}", dus de QuadStick zal het niet activeren.</value>
+  </data>
+  <data name="Review_OnlyPartOfTheSpreadsheet" xml:space="preserve">
+    <value>Slechts een deel van het spreadsheet kon worden gelezen</value>
+  </data>
+  <data name="Review_PartOfTheRowThat" xml:space="preserve">
+    <value>deel van de rij dat een modus opent</value>
+  </data>
+  <data name="Review_SaveCell" xml:space="preserve">
+    <value>Cel opslaan</value>
+  </data>
+  <data name="Review_ShowTheSpreadsheetWithThe" xml:space="preserve">
+    <value>Toon het spreadsheet met de interpretatie van de app erop gemarkeerd</value>
+  </data>
+  <data name="Review_ShowingTheFirstShownRows" xml:space="preserve">
+    <value>De eerste {0} rijen van {1} worden getoond. De rest is op dezelfde manier geïmporteerd.</value>
+  </data>
+  <data name="Review_SimpleView" xml:space="preserve">
+    <value>Eenvoudige weergave</value>
+  </data>
+  <data name="Review_SkippedByTheQuadStickOn" xml:space="preserve">
+    <value>overgeslagen door de QuadStick op een instellingenrij</value>
+  </data>
+  <data name="Review_SubjectNamesThatIsAllowed" xml:space="preserve">
+    <value>{0} {1}. Dat is toegestaan: uw QuadStick onderscheidt modi op basis van hun volgorde in het bestand, niet op naam, dus dit zijn aparte modi en ze zijn allemaal binnengekomen. Hernoem ze in Modi als u ze op het scherm uit elkaar wilt houden.</value>
+  </data>
+  <data name="Review_SummaryNoProfileDataWas" xml:space="preserve">
+    <value>{0} Er zijn geen profielgegevens overgeslagen.</value>
+  </data>
+  <data name="Review_SwapValueWithNeighbourMoving" xml:space="preserve">
+    <value>Verwissel "{0}" met "{1}", en verplaats het één stap {2} in de inputreeks van deze rij</value>
+  </data>
+  <data name="Review_SwappedValueAndNeighbourIn" xml:space="preserve">
+    <value>"{0}" en "{1}" verwisseld in rij {2}.</value>
+  </data>
+  <data name="Review_TabDidNotComeIn" xml:space="preserve">
+    <value>tabblad is niet binnengekomen</value>
+  </data>
+  <data name="Review_TabIsNotProfileData" xml:space="preserve">
+    <value>tabblad bevat geen profielgegevens</value>
+  </data>
+  <data name="Review_TabNameCellA1Has" xml:space="preserve">
+    <value>"{0}"   cel A1 moet "Profile Name" bevatten. Bij u staat er andere tekst in, dus dit tabblad is geen modus voor de app of voor uw QuadStick. Geen van beide gebruikt het vandaag.</value>
+  </data>
+  <data name="Review_TabNameIsNowA" xml:space="preserve">
+    <value>"{0}" is nu een modus in dit profiel. Cel A1 zegt nu "Profile Name" waar uw tekst stond.</value>
+  </data>
+  <data name="Review_TabNameLeftOutBecause" xml:space="preserve">
+    <value>"{0}", weggelaten omdat cel A1 geen soort blad benoemt:</value>
+  </data>
+  <data name="Review_TabNameWasAddedAs" xml:space="preserve">
+    <value>"{0}" is toegevoegd als modus.</value>
+  </data>
+  <data name="Review_TabNameWasLeftOut" xml:space="preserve">
+    <value>"{0}" is weggelaten, net zoals uw QuadStick dat vandaag ook doet.</value>
+  </data>
+  <data name="Review_TabNameWasLeftOut2" xml:space="preserve">
+    <value>"{0}" is weggelaten.</value>
+  </data>
+  <data name="Review_TabsAreNotProfileData" xml:space="preserve">
+    <value>tabbladen bevatten geen profielgegevens</value>
+  </data>
+  <data name="Review_TabsDidNotComeIn" xml:space="preserve">
+    <value>tabbladen zijn niet binnengekomen</value>
+  </data>
+  <data name="Review_ThatChangeWasUndone" xml:space="preserve">
+    <value>Die wijziging is ongedaan gemaakt.</value>
+  </data>
+  <data name="Review_TheQuadStickDoesNotKnow" xml:space="preserve">
+    <value>de QuadStick kent dit woord niet</value>
+  </data>
+  <data name="Review_TheSettingSName" xml:space="preserve">
+    <value>de naam van de instelling</value>
+  </data>
+  <data name="Review_TheSettingSValue" xml:space="preserve">
+    <value>de waarde van de instelling</value>
+  </data>
+  <data name="Review_TheSettingSValue2" xml:space="preserve">
+    <value>de waarde van de instelling</value>
+  </data>
+  <data name="Review_TheWordThatMakesThis" xml:space="preserve">
+    <value>het woord dat dit het instellingenblad maakt</value>
+  </data>
+  <data name="Review_TheWordThatMakesThis2" xml:space="preserve">
+    <value>het woord dat dit een modus maakt. Wijzig het en de modus verlaat het profiel</value>
+  </data>
+  <data name="Review_ThisModeSName" xml:space="preserve">
+    <value>de naam van deze modus</value>
+  </data>
+  <data name="Review_UndidTheLastCellChange" xml:space="preserve">
+    <value>De laatste celwijziging ongedaan gemaakt.</value>
+  </data>
+  <data name="Review_UndidTheLastImportChange" xml:space="preserve">
+    <value>De laatste importwijziging ongedaan gemaakt.</value>
+  </data>
+  <data name="Review_Undo" xml:space="preserve">
+    <value>Ongedaan maken</value>
+  </data>
+  <data name="Review_Undo2" xml:space="preserve">
+    <value>Ongedaan maken</value>
+  </data>
+  <data name="Review_UndoThisChangeAndAsk" xml:space="preserve">
+    <value>Maak deze wijziging ongedaan en vraag opnieuw: {0}</value>
+  </data>
+  <data name="Review_UndoThisChangeLastGridEdit" xml:space="preserve">
+    <value>Maak deze wijziging ongedaan: {0}</value>
+  </data>
+  <data name="Review_UnnamedMode" xml:space="preserve">
+    <value>(naamloze modus)</value>
+  </data>
+  <data name="Review_UseAsThisRowS" xml:space="preserve">
+    <value>Gebruiken als naam van deze rij</value>
+  </data>
+  <data name="Review_WeReadYourSheet" xml:space="preserve">
+    <value>We hebben uw blad gelezen.</value>
+  </data>
+  <data name="Review_WhatCameIn" xml:space="preserve">
+    <value>Wat binnenkwam</value>
+  </data>
+  <data name="Review_WordIsNowThisRow" xml:space="preserve">
+    <value>"{0}" is nu de naam van deze rij.</value>
+  </data>
+  <data name="Review_WordIsNowThisRow2" xml:space="preserve">
+    <value>"{0}" is nu de eigen naam van deze rij, in kolom L.</value>
+  </data>
+  <data name="Review_WordMovedIntoTheNotes" xml:space="preserve">
+    <value>"{0}" verplaatst naar de notitiekolom.</value>
+  </data>
+  <data name="Review_WordWasLeftWhereIt" xml:space="preserve">
+    <value>"{0}" is gelaten waar het was.</value>
+  </data>
+  <data name="Review_YourAnswersAreAlreadyPart" xml:space="preserve">
+    <value>Uw antwoorden maken al deel uit van het profiel. Er is nog niets opgeslagen op schijf, en Control Z in de editor maakt elk van deze wijzigingen ongedaan.</value>
+  </data>
+  <data name="Review_YourNameForTheRow" xml:space="preserve">
+    <value>uw naam voor de rij, nooit gelezen door de QuadStick</value>
+  </data>
+  <data name="Review_YourSheetCameInClean" xml:space="preserve">
+    <value>Uw blad is zonder problemen binnengekomen.</value>
+  </data>
+  <data name="Review_YourSpreadsheetArrowKeysPick" xml:space="preserve">
+    <value>Uw spreadsheet. Pijltjestoetsen kiezen een cel, Enter bewerkt hem, Delete maakt hem leeg.</value>
+  </data>
+  <data name="Review_YourSpreadsheetWithWhatWe" xml:space="preserve">
+    <value>Uw spreadsheet, met gemarkeerd wat we hebben gelezen. Een gekleurde cel is er een die de QuadStick leest. Een gewone cel is er een waar hij nooit naar kijkt, dus notities en uw eigen namen voor rijen zijn daar veilig. Klik op een cel om deze te wijzigen, of sleep deze naar een andere kolom in dezelfde rij. Elke wijziging hier is een wijziging aan het profiel dat achter dit venster open staat.</value>
+  </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>Weergave</value>
+  </data>
+  <data name="Settings_AppearanceHelp" xml:space="preserve">
+    <value>Weergave: kies Systeem, Licht of Donker thema</value>
+  </data>
+  <data name="Settings_AskCrashes" xml:space="preserve">
+    <value>Vragen voordat een crashrapport wordt verzonden</value>
+  </data>
+  <data name="Settings_Backup" xml:space="preserve">
+    <value>Google Drive-back-up</value>
+  </data>
+  <data name="Settings_BackupCaption" xml:space="preserve">
+    <value>Elke keer dat u een profiel opslaat, gaat er een kopie naar uw eigen Google Drive. Importeren zet ze terug op elke computer.</value>
+  </data>
+  <data name="Settings_BackupToggle" xml:space="preserve">
+    <value>Mijn profielen back-uppen naar Google Drive</value>
+  </data>
+  <data name="Settings_BackupUnavailable" xml:space="preserve">
+    <value>Deze build is nog niet verbonden met Google.</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="Settings_CancelConnect" xml:space="preserve">
+    <value>Verbinden met Google annuleren</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>Controleren op updates</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>Controleren...</value>
+  </data>
+  <data name="Settings_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Settings_CloseHelp" xml:space="preserve">
+    <value>Instellingen sluiten</value>
+  </data>
+  <data name="Settings_Connected" xml:space="preserve">
+    <value>Verbonden met Google Drive</value>
+  </data>
+  <data name="Settings_ContactIntro" xml:space="preserve">
+    <value>Een probleem gevonden, of gewoon even hallo zeggen? Zo bereikt u de maker hiervan.</value>
+  </data>
+  <data name="Settings_CopyInstallId" xml:space="preserve">
+    <value>Installatie-ID kopiëren</value>
+  </data>
+  <data name="Settings_CopyInstallIdHelp" xml:space="preserve">
+    <value>Kopieer de installatie-ID naar het klembord</value>
+  </data>
+  <data name="Settings_CrashCaption" xml:space="preserve">
+    <value>Een crash slaat een rapport op uw computer op. Er wordt niets verzonden totdat u het ziet en op Verzenden drukt.</value>
+  </data>
+  <data name="Settings_EmailHelp" xml:space="preserve">
+    <value>Stuur een e-mail, opent uw mailapp</value>
+  </data>
+  <data name="Settings_EmailLink" xml:space="preserve">
+    <value>E-mail: {0}</value>
+  </data>
+  <data name="Settings_FeedbackCaption" xml:space="preserve">
+    <value>Gaat naar de ontwikkelaar met uw anonieme installatie-ID en verder niets. Vereist dat gebruiksgegevens zijn ingeschakeld, onder Geavanceerd. De e-maillink hierboven werkt altijd.</value>
+  </data>
+  <data name="Settings_FeedbackFailed" xml:space="preserve">
+    <value>Dat kon niet worden verzonden. De e-maillink hierboven werkt altijd.</value>
+  </data>
+  <data name="Settings_FeedbackLabel" xml:space="preserve">
+    <value>Uw feedback</value>
+  </data>
+  <data name="Settings_FeedbackSent" xml:space="preserve">
+    <value>Dank u. Dat is verzonden.</value>
+  </data>
+  <data name="Settings_FeedbackWatermark" xml:space="preserve">
+    <value>Wat zou deze app beter maken?</value>
+  </data>
+  <data name="Settings_Grouping" xml:space="preserve">
+    <value>Groepering van kiezers</value>
+  </data>
+  <data name="Settings_GroupingCaption" xml:space="preserve">
+    <value>Gedetailleerd plaatst outputs onder een categorie en daarbinnen een groep. Breed toont elke output in een categorie tegelijk. Plat is één doorzoekbare lijst. Zoeken werkt in alle drie hetzelfde.</value>
+  </data>
+  <data name="Settings_GroupingHelp" xml:space="preserve">
+    <value>Groepering van kiezers: Gedetailleerd, Breed of Plat in de output- en inputkiezers</value>
+  </data>
+  <data name="Settings_ImportDrive" xml:space="preserve">
+    <value>Importeren vanuit Google Drive</value>
+  </data>
+  <data name="Settings_ImportDriveHelp" xml:space="preserve">
+    <value>Importeer uw profielen vanuit Google Drive</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="Settings_LanguageHelp" xml:space="preserve">
+    <value>Taal: kies in welke taal de app wordt weergegeven</value>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>Hetzelfde als mijn computer</value>
+  </data>
+  <data name="Settings_LinkedInHelp" xml:space="preserve">
+    <value>Open LinkedIn, wordt geopend in uw browser</value>
+  </data>
+  <data name="Settings_Model" xml:space="preserve">
+    <value>Standaard QuadStick-model</value>
+  </data>
+  <data name="Settings_NoInstallId" xml:space="preserve">
+    <value>Nog geen installatie-ID. Er wordt er een aangemaakt de eerste keer dat iets wordt verzonden.</value>
+  </data>
+  <data name="Settings_OpenDownload" xml:space="preserve">
+    <value>Open de downloadpagina</value>
+  </data>
+  <data name="Settings_OpenDownloadHelp" xml:space="preserve">
+    <value>Open de downloadpagina in uw browser</value>
+  </data>
+  <data name="Settings_OpenFolder" xml:space="preserve">
+    <value>Open instellingenmap</value>
+  </data>
+  <data name="Settings_OpenFolderHelp" xml:space="preserve">
+    <value>Open de instellingenmap</value>
+  </data>
+  <data name="Settings_Privacy" xml:space="preserve">
+    <value>Lees het privacybeleid</value>
+  </data>
+  <data name="Settings_PrivacyHelp" xml:space="preserve">
+    <value>Lees het privacybeleid, wordt geopend in uw browser</value>
+  </data>
+  <data name="Settings_Privacy_Heading" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
+  <data name="Settings_QuickGuide" xml:space="preserve">
+    <value>Snelgids</value>
+  </data>
+  <data name="Settings_Reconnect" xml:space="preserve">
+    <value>Opnieuw verbinden met Google</value>
+  </data>
+  <data name="Settings_ReconnectShort" xml:space="preserve">
+    <value>Opnieuw verbinden</value>
+  </data>
+  <data name="Settings_ReduceMotion" xml:space="preserve">
+    <value>Beweging beperken</value>
+  </data>
+  <data name="Settings_ReduceMotionCaption" xml:space="preserve">
+    <value>Schakelt de overvloeianimatie van de rondleiding uit.</value>
+  </data>
+  <data name="Settings_RememberWindow" xml:space="preserve">
+    <value>Venstergrootte en -positie onthouden</value>
+  </data>
+  <data name="Settings_ReplayTutorial" xml:space="preserve">
+    <value>Rondleiding opnieuw afspelen</value>
+  </data>
+  <data name="Settings_ReplayTutorialHelp" xml:space="preserve">
+    <value>Speel de rondleiding opnieuw af</value>
+  </data>
+  <data name="Settings_ReportBug" xml:space="preserve">
+    <value>Meld een bug op GitHub</value>
+  </data>
+  <data name="Settings_ReportBugHelp" xml:space="preserve">
+    <value>Meld een bug op GitHub, wordt geopend in uw browser</value>
+  </data>
+  <data name="Settings_Reset" xml:space="preserve">
+    <value>Alle instellingen terugzetten naar standaardwaarden</value>
+  </data>
+  <data name="Settings_Reverting" xml:space="preserve">
+    <value>Wordt teruggezet over {0}s</value>
+  </data>
+  <data name="Settings_SaveSize" xml:space="preserve">
+    <value>Grootte opslaan</value>
+  </data>
+  <data name="Settings_SaveSizeHelp" xml:space="preserve">
+    <value>Deze interfacegrootte behouden</value>
+  </data>
+  <data name="Settings_Scale" xml:space="preserve">
+    <value>Interfacegrootte</value>
+  </data>
+  <data name="Settings_ScaleCaption" xml:space="preserve">
+    <value>Maakt alle tekst en bedieningselementen groter of kleiner.</value>
+  </data>
+  <data name="Settings_ScaleHelp" xml:space="preserve">
+    <value>Interfacegrootte, in procent</value>
+  </data>
+  <data name="Settings_SendFeedback" xml:space="preserve">
+    <value>Feedback verzenden</value>
+  </data>
+  <data name="Settings_Sending" xml:space="preserve">
+    <value>Bezig met verzenden...</value>
+  </data>
+  <data name="Settings_ShowTutorial" xml:space="preserve">
+    <value>Toon de rondleiding de volgende keer dat ik de app open</value>
+  </data>
+  <data name="Settings_TabAdvanced" xml:space="preserve">
+    <value>Geavanceerd</value>
+  </data>
+  <data name="Settings_TabContact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="Settings_TabGeneral" xml:space="preserve">
+    <value>Algemeen</value>
+  </data>
+  <data name="Settings_TabHelp" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="Settings_Updates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="Settings_UpdatesCaption" xml:space="preserve">
+    <value>Deze app werkt zichzelf niet bij en controleert nooit uit zichzelf.</value>
+  </data>
+  <data name="Settings_UsageCaption" xml:space="preserve">
+    <value>Welke schermen worden gebruikt en of installeren gelukt is. Nooit uw profielen, bestandsnamen, paden, iets wat u typt, of uw Google-account.</value>
+  </data>
+  <data name="Settings_UsageData" xml:space="preserve">
+    <value>Anonieme gebruiksgegevens delen</value>
+  </data>
+  <data name="Settings_WaitingBrowser" xml:space="preserve">
+    <value>Wachten op uw browser...</value>
+  </data>
+  <data name="Settings_WebsiteHelp" xml:space="preserve">
+    <value>Open de website, wordt geopend in uw browser</value>
+  </data>
+  <data name="Settings_WebsiteLink" xml:space="preserve">
+    <value>Website: {0}</value>
+  </data>
+  <data name="Settings_YouAreOn" xml:space="preserve">
+    <value>U gebruikt {0}.</value>
+  </data>
+  <data name="Share_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="Share_CloseWithoutSharing" xml:space="preserve">
+    <value>Sluiten zonder delen</value>
+  </data>
+  <data name="Share_CouldNotConnectToGoogle" xml:space="preserve">
+    <value>Kan geen verbinding maken met Google. Controleer uw internetverbinding en probeer het opnieuw.</value>
+  </data>
+  <data name="Share_FinishLabelNotAvailableYetFinish" xml:space="preserve">
+    <value>{0}. Nog niet beschikbaar: voltooi eerst de bovenstaande stappen.</value>
+  </data>
+  <data name="Share_NotDoneYet" xml:space="preserve">
+    <value>Nog niet voltooid</value>
+  </data>
+  <data name="Share_NotDoneYet2" xml:space="preserve">
+    <value>Nog niet voltooid</value>
+  </data>
+  <data name="Share_SaveThisProfile" xml:space="preserve">
+    <value>Dit profiel opslaan</value>
+  </data>
+  <data name="Share_SetUpGoogleSheets" xml:space="preserve">
+    <value>Google Sheets instellen</value>
+  </data>
+  <data name="Share_SharingAProfilePutsIt" xml:space="preserve">
+    <value>Een profiel delen plaatst het in een Google Sheet op uw eigen Google Drive, en geeft u een link naar dat sheet. Niemand kan het zien totdat u de link doorstuurt.</value>
+  </data>
+  <data name="Share_StepDone" xml:space="preserve">
+    <value>Stap {0} van {1}, {2}, voltooid</value>
+  </data>
+  <data name="Share_StepNotDone" xml:space="preserve">
+    <value>Stap {0} van {1}, {2}, nog niet voltooid</value>
+  </data>
+  <data name="Share_StepNumberOfTotalTitle" xml:space="preserve">
+    <value>Stap {0} van {1}: {2}</value>
+  </data>
+  <data name="Share_StepNumberOfTotalTitle2" xml:space="preserve">
+    <value>Stap {0} van {1}, {2}, nog niet voltooid</value>
+  </data>
+  <data name="Share_ThisProfileWasNotSaved" xml:space="preserve">
+    <value>Dit profiel is niet opgeslagen, dus er is nog niets om in een sheet te plaatsen.</value>
+  </data>
+  <data name="Share_TitleAlreadyDone" xml:space="preserve">
+    <value>{0}. Al voltooid.</value>
+  </data>
+  <data name="Share_WaitingForGoogleInYour" xml:space="preserve">
+    <value>Wachten op Google in uw browser...</value>
+  </data>
+  <data name="Shell_AddANewBindingRow" xml:space="preserve">
+    <value>Voeg een nieuwe bindingsrij toe aan deze modus</value>
+  </data>
+  <data name="Shell_AddRenameReorderAndDelete" xml:space="preserve">
+    <value>Modi toevoegen, hernoemen, herordenen en verwijderen</value>
+  </data>
+  <data name="Shell_AddRow" xml:space="preserve">
+    <value>+ Rij toevoegen</value>
+  </data>
+  <data name="Shell_AppearanceChooseSystemLightOr" xml:space="preserve">
+    <value>Weergave: kies Systeem, Licht of Donker thema</value>
+  </data>
+  <data name="Shell_AskForAChange" xml:space="preserve">
+    <value>Om een wijziging vragen</value>
+  </data>
+  <data name="Shell_BrowseCommunityProfiles" xml:space="preserve">
+    <value>Blader door communityprofielen</value>
+  </data>
+  <data name="Shell_BrowseTheCommunityListOf" xml:space="preserve">
+    <value>Blader door de communitylijst met gedeelde spelprofielen en importeer er een</value>
+  </data>
+  <data name="Shell_BuildOpenOrFindA" xml:space="preserve">
+    <value>Een configuratie samenstellen, openen of vinden</value>
+  </data>
+  <data name="Shell_Clear" xml:space="preserve">
+    <value>Wissen</value>
+  </data>
+  <data name="Shell_ClearTheSelection" xml:space="preserve">
+    <value>De selectie wissen</value>
+  </data>
+  <data name="Shell_Community" xml:space="preserve">
+    <value>Community</value>
+  </data>
+  <data name="Shell_CommunityProfiles" xml:space="preserve">
+    <value>Communityprofielen</value>
+  </data>
+  <data name="Shell_CreateANewProfile" xml:space="preserve">
+    <value>Een nieuw profiel maken</value>
+  </data>
+  <data name="Shell_CreateANewProfileFrom" xml:space="preserve">
+    <value>Een nieuw profiel maken vanuit de fabrieksstandaardsjabloon</value>
+  </data>
+  <data name="Shell_Csv" xml:space="preserve">
+    <value>.csv</value>
+  </data>
+  <data name="Shell_Delete" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedMappings" xml:space="preserve">
+    <value>De geselecteerde toewijzingen verwijderen</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedRows" xml:space="preserve">
+    <value>De geselecteerde rijen verwijderen</value>
+  </data>
+  <data name="Shell_DescribeAChangeInPlain" xml:space="preserve">
+    <value>Beschrijf een wijziging in gewone woorden en laat deze op dit profiel toepassen. Er verandert niets totdat u het goedkeurt.</value>
+  </data>
+  <data name="Shell_Device" xml:space="preserve">
+    <value>Apparaat</value>
+  </data>
+  <data name="Shell_DiscardTheRecoveredWorkPermanently" xml:space="preserve">
+    <value>Het herstelde werk definitief verwerpen</value>
+  </data>
+  <data name="Shell_Dismiss" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Shell_EditModes" xml:space="preserve">
+    <value>Modi bewerken</value>
+  </data>
+  <data name="Shell_EditModesAddRenameReorder" xml:space="preserve">
+    <value>Modi bewerken: toevoegen, hernoemen, herordenen en verwijderen</value>
+  </data>
+  <data name="Shell_FixFirstProblem" xml:space="preserve">
+    <value>Los eerste probleem op</value>
+  </data>
+  <data name="Shell_GoToHome" xml:space="preserve">
+    <value>Ga naar Start</value>
+  </data>
+  <data name="Shell_GoogleSheetsProfileLink" xml:space="preserve">
+    <value>Google Sheets-profiellink</value>
+  </data>
+  <data name="Shell_Home" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Shell_HowDeviceViewWorksAnd" xml:space="preserve">
+    <value>Hoe apparaatweergave werkt, en welke onderdelen uw model heeft</value>
+  </data>
+  <data name="Shell_HowItWorks" xml:space="preserve">
+    <value>Hoe het werkt</value>
+  </data>
+  <data name="Shell_HowItWorksF1" xml:space="preserve">
+    <value>Hoe het werkt  (F1)</value>
+  </data>
+  <data name="Shell_Import" xml:space="preserve">
+    <value>Importeren</value>
+  </data>
+  <data name="Shell_ImportFromSheets" xml:space="preserve">
+    <value>Importeren vanuit Sheets</value>
+  </data>
+  <data name="Shell_ImportTheProfileFromThe" xml:space="preserve">
+    <value>Importeer het profiel vanuit de geplakte Google Sheets-link</value>
+  </data>
+  <data name="Shell_InstallThisProfileOntoA" xml:space="preserve">
+    <value>Installeer dit profiel op een aangesloten QuadStick. Sneltoets Control I</value>
+  </data>
+  <data name="Shell_InstallToQuadStick" xml:space="preserve">
+    <value>Installeren op QuadStick</value>
+  </data>
+  <data name="Shell_JumpToAndFocusThe" xml:space="preserve">
+    <value>Ga naar en focus de eerste fout in de lijst met problemen</value>
+  </data>
+  <data name="Shell_ListOfValidationProblemsSelect" xml:space="preserve">
+    <value>Lijst met validatieproblemen. Selecteer er een om te kopiëren.</value>
+  </data>
+  <data name="Shell_ListTheInputsThisMode" xml:space="preserve">
+    <value>Toon de inputs die deze modus nog niet gebruikt heeft</value>
+  </data>
+  <data name="Shell_ManageFiles" xml:space="preserve">
+    <value>Bestanden beheren</value>
+  </data>
+  <data name="Shell_ManageFilesOnYourQuadStick" xml:space="preserve">
+    <value>Beheer bestanden op uw QuadStick</value>
+  </data>
+  <data name="Shell_ManageTheProfileFilesOn" xml:space="preserve">
+    <value>Beheer de profielbestanden op uw QuadStick: kopiëren, verwijderen, en de bestandsselectievolgorde bekijken</value>
+  </data>
+  <data name="Shell_Mode" xml:space="preserve">
+    <value>Modus</value>
+  </data>
+  <data name="Shell_Move" xml:space="preserve">
+    <value>Verplaatsen</value>
+  </data>
+  <data name="Shell_MoveTheSelectedMappingsTo" xml:space="preserve">
+    <value>Verplaats de geselecteerde toewijzingen naar boven of onder</value>
+  </data>
+  <data name="Shell_MoveTheSelectedRowsTo" xml:space="preserve">
+    <value>Verplaats de geselecteerde rijen naar boven of onder</value>
+  </data>
+  <data name="Shell_NameAGameAndHave" xml:space="preserve">
+    <value>Noem een spel en laat er een profiel voor bouwen op basis van de profielen die u al heeft</value>
+  </data>
+  <data name="Shell_New" xml:space="preserve">
+    <value>Nieuw</value>
+  </data>
+  <data name="Shell_NewProfile" xml:space="preserve">
+    <value>Nieuw profiel</value>
+  </data>
+  <data name="Shell_OnYourQuadStick" xml:space="preserve">
+    <value>Op uw QuadStick</value>
+  </data>
+  <data name="Shell_Open" xml:space="preserve">
+    <value>Openen</value>
+  </data>
+  <data name="Shell_OpenAFile" xml:space="preserve">
+    <value>Een bestand openen</value>
+  </data>
+  <data name="Shell_OpenAProfileCSVFile" xml:space="preserve">
+    <value>Open een profiel-CSV-bestand vanaf uw computer</value>
+  </data>
+  <data name="Shell_OpenAProfileFile" xml:space="preserve">
+    <value>Een profielbestand openen</value>
+  </data>
+  <data name="Shell_OpenRecoveredWork" xml:space="preserve">
+    <value>Herstelde werk openen</value>
+  </data>
+  <data name="Shell_OpenSettings" xml:space="preserve">
+    <value>Instellingen openen</value>
+  </data>
+  <data name="Shell_OpenTheProfileThatWas" xml:space="preserve">
+    <value>Open het profiel dat is hersteld na de laatste crash of geforceerde afsluiting</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideShortcut" xml:space="preserve">
+    <value>Open de snelgids. Sneltoets Control H of F1</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideThat" xml:space="preserve">
+    <value>Open de snelgids die profielen, outputs, functies en inputs uitlegt</value>
+  </data>
+  <data name="Shell_OpenedFromYourComputer" xml:space="preserve">
+    <value>Geopend vanaf uw computer</value>
+  </data>
+  <data name="Shell_Parts" xml:space="preserve">
+    <value>Onderdelen</value>
+  </data>
+  <data name="Shell_PasteAGoogleSheetsProfile" xml:space="preserve">
+    <value>Plak een Google Sheets-profiellink</value>
+  </data>
+  <data name="Shell_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>Sluit uw QuadStick aan om de profielen te zien. Als de schijf verborgen is, schakel controlleremulatie uit en sluit hem opnieuw aan.</value>
+  </data>
+  <data name="Shell_Profile" xml:space="preserve">
+    <value>Profiel</value>
+  </data>
+  <data name="Shell_ProfileNameEditToRename" xml:space="preserve">
+    <value>Profielnaam. Bewerk om te hernoemen; .csv wordt automatisch toegevoegd</value>
+  </data>
+  <data name="Shell_ProfilesYouSaveWillShow" xml:space="preserve">
+    <value>Profielen die u opslaat, verschijnen hier.</value>
+  </data>
+  <data name="Shell_QuadStickConfigManagerGoTo" xml:space="preserve">
+    <value>QuadStick Config Manager. Ga naar Start</value>
+  </data>
+  <data name="Shell_Rows" xml:space="preserve">
+    <value>Rijen</value>
+  </data>
+  <data name="Shell_SaveAsATemplate" xml:space="preserve">
+    <value>Opslaan als sjabloon</value>
+  </data>
+  <data name="Shell_SaveCtrlS" xml:space="preserve">
+    <value>Opslaan  (Ctrl+S)</value>
+  </data>
+  <data name="Shell_SaveThisProfileAsA" xml:space="preserve">
+    <value>Sla dit profiel op als een herbruikbare sjabloon waarmee u nieuwe profielen kunt starten</value>
+  </data>
+  <data name="Shell_SaveThisProfileShortcutControl" xml:space="preserve">
+    <value>Sla dit profiel op. Sneltoets Control S</value>
+  </data>
+  <data name="Shell_SeeTheMappingsOnA" xml:space="preserve">
+    <value>Bekijk de toewijzingen op een afbeelding van de QuadStick  (Ctrl+D)</value>
+  </data>
+  <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
+    <value>Bekijk de rijen zoals het sheet ze opslaat  (Ctrl+D)</value>
+  </data>
+  <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
+    <value>Selecteer welke modus u wilt bewerken</value>
+  </data>
+  <data name="Shell_SetUpAGame" xml:space="preserve">
+    <value>Een spel instellen</value>
+  </data>
+  <data name="Shell_Settings" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="Shell_ShareAsAGoogleSheet" xml:space="preserve">
+    <value>Delen als Google Sheet</value>
+  </data>
+  <data name="Shell_ShareThisProfileAsA" xml:space="preserve">
+    <value>Deel dit profiel als Google Sheet</value>
+  </data>
+  <data name="Shell_ShowOrHideTheList" xml:space="preserve">
+    <value>De lijst met problemen tonen of verbergen</value>
+  </data>
+  <data name="Shell_ShowTheMappingsAsA" xml:space="preserve">
+    <value>Toon de toewijzingen als een lijst met rijen. Sneltoets Control D schakelt dit</value>
+  </data>
+  <data name="Shell_ShowTheMappingsOnA" xml:space="preserve">
+    <value>Toon de toewijzingen op een afbeelding van de QuadStick. Sneltoets Control D schakelt dit</value>
+  </data>
+  <data name="Shell_ShowThePartsAsA" xml:space="preserve">
+    <value>Toon de onderdelen als een eenvoudige lijst waar u doorheen pijlt, met dezelfde editor rechts</value>
+  </data>
+  <data name="Shell_StartANewProfileFrom" xml:space="preserve">
+    <value>Start een nieuw profiel vanuit een van uw opgeslagen sjablonen</value>
+  </data>
+  <data name="Shell_StartAProfile" xml:space="preserve">
+    <value>Een profiel starten</value>
+  </data>
+  <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
+    <value>Loop de onderdelen een voor een door</value>
+  </data>
+  <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
+    <value>Wissel de woorden in apparaatweergave tussen gewoon Engels en de ruwe namen uit lijstweergave</value>
+  </data>
+  <data name="Shell_UndoCtrlZ" xml:space="preserve">
+    <value>Ongedaan maken  (Ctrl+Z)</value>
+  </data>
+  <data name="Shell_UndoTheLastChangeShortcut" xml:space="preserve">
+    <value>Maak de laatste wijziging ongedaan. Sneltoets Control Z</value>
+  </data>
+  <data name="Shell_UseTemplate" xml:space="preserve">
+    <value>Sjabloon gebruiken</value>
+  </data>
+  <data name="Shell_View" xml:space="preserve">
+    <value>Weergave</value>
+  </data>
+  <data name="Shell_WhatIsAMode" xml:space="preserve">
+    <value>Wat is een modus?</value>
+  </data>
+  <data name="Shell_WhatIsAModeAnd" xml:space="preserve">
+    <value>Wat is een modus, en waarom is er maar één?</value>
+  </data>
+  <data name="Shell_WhichQuadStickModelYouHave" xml:space="preserve">
+    <value>Welk QuadStick-model u heeft</value>
+  </data>
+  <data name="Shell_YourProfiles" xml:space="preserve">
+    <value>Uw profielen</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Donker</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Licht</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>Systeem</value>
+  </data>
+  <data name="Tour_Back" xml:space="preserve">
+    <value>Terug</value>
+  </data>
+  <data name="Tour_BackToThePreviousStep" xml:space="preserve">
+    <value>Terug naar de vorige stap</value>
+  </data>
+  <data name="Tour_EveryProfileStartsFromA" xml:space="preserve">
+    <value>Elk profiel begint met een sjabloon.</value>
+  </data>
+  <data name="Tour_NewProfile" xml:space="preserve">
+    <value>Nieuw profiel</value>
+  </data>
+  <data name="Tour_Next" xml:space="preserve">
+    <value>Volgende</value>
+  </data>
+  <data name="Tour_NextStep" xml:space="preserve">
+    <value>Volgende stap</value>
+  </data>
+  <data name="Tour_PickAPart" xml:space="preserve">
+    <value>Kies een onderdeel</value>
+  </data>
+  <data name="Tour_PickAPartToSee" xml:space="preserve">
+    <value>Kies een onderdeel om te zien en te wijzigen wat het doet.</value>
+  </data>
+  <data name="Tour_SaveYourWorkToA" xml:space="preserve">
+    <value>Sla uw werk op in een bestand.</value>
+  </data>
+  <data name="Tour_SetLightOrDarkTo" xml:space="preserve">
+    <value>Stel licht of donker in naar wens.</value>
+  </data>
+  <data name="Tour_Skip" xml:space="preserve">
+    <value>Overslaan</value>
+  </data>
+  <data name="Tour_SkipTheTutorial" xml:space="preserve">
+    <value>De rondleiding overslaan</value>
+  </data>
+  <data name="Tour_StepTitleStepBody" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Tour_StepTourIndex1OfTourSteps" xml:space="preserve">
+    <value>Stap {0} van {1}</value>
+  </data>
+  <data name="Tour_ThisIsYourQuadStickEach" xml:space="preserve">
+    <value>Dit is uw QuadStick. Elk onderdeel is een besturingselement dat u kunt toewijzen.</value>
+  </data>
+  <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
+    <value>Dit laat zien hoe u een profiel maakt en installeert. U kunt op elk moment overslaan.</value>
+  </data>
+  <data name="Tour_WhenItSReadySend" xml:space="preserve">
+    <value>Wanneer het klaar is, stuurt u het naar uw QuadStick.</value>
+  </data>
+  <data name="Tour_YouCanReplayThisAnytime" xml:space="preserve">
+    <value>U kunt dit op elk moment opnieuw bekijken via Instellingen ▸ Help.</value>
+  </data>
+  <data name="Update_CouldNotCheckForUpdates" xml:space="preserve">
+    <value>Kan niet controleren op updates (GitHub antwoordde {0}). U gebruikt {1}.</value>
+  </data>
+  <data name="Update_CouldNotReachGitHubTo" xml:space="preserve">
+    <value>Kan GitHub niet bereiken om op updates te controleren. U gebruikt {0}.</value>
+  </data>
+  <data name="Update_GitHubDidNotNameA" xml:space="preserve">
+    <value>GitHub heeft geen release opgegeven. U gebruikt {0}.</value>
+  </data>
+  <data name="Update_GitHubIsAskingUsTo" xml:space="preserve">
+    <value>GitHub vraagt ons te wachten voordat we opnieuw controleren. Probeer het over een paar minuten opnieuw.</value>
+  </data>
+  <data name="Update_GitHubSentSomethingWeCould" xml:space="preserve">
+    <value>GitHub stuurde iets dat we niet konden lezen. U gebruikt {0}.</value>
+  </data>
+  <data name="Update_LatestAPreviewRelease" xml:space="preserve">
+    <value>{0} (een previewrelease)</value>
+  </data>
+  <data name="Update_YouAreOnCurrentLabel" xml:space="preserve">
+    <value>U gebruikt {0}. {1} is uit.</value>
+  </data>
+  <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
+    <value>U gebruikt {0}, de nieuwste versie.</value>
+  </data>
+</root>

@@ -1,0 +1,3044 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Auth_DoctypeHtmlHtmlBodyP" xml:space="preserve">
+    <value>&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;p&gt;{0}&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan" xml:space="preserve">
+    <value>登录失败。您可以关闭此标签页。</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan2" xml:space="preserve">
+    <value>登录失败。您可以关闭此标签页。</value>
+  </data>
+  <data name="Auth_SignInFailedYouCan3" xml:space="preserve">
+    <value>登录失败。您可以关闭此标签页。</value>
+  </data>
+  <data name="Auth_TheGoogleConnectionWasRevoked" xml:space="preserve">
+    <value>Google 连接已被撤销或已过期。请重新连接以继续备份。</value>
+  </data>
+  <data name="Auth_YouAreSignedInYou" xml:space="preserve">
+    <value>您已登录。您可以关闭此标签页。</value>
+  </data>
+  <data name="Backup_AlreadyExists" xml:space="preserve">
+    <value>已存在</value>
+  </data>
+  <data name="Backup_BackupPausedReconnectToGoogle" xml:space="preserve">
+    <value>备份已暂停。请在设置中重新连接 Google。</value>
+  </data>
+  <data name="Backup_BackupPending" xml:space="preserve">
+    <value>备份待处理</value>
+  </data>
+  <data name="Backup_BackupSheetNotFound" xml:space="preserve">
+    <value>未找到备份表格</value>
+  </data>
+  <data name="Backup_BackupWasTurnedOffFor" xml:space="preserve">
+    <value>此配置文件的备份已关闭，因此未复制任何内容。</value>
+  </data>
+  <data name="Backup_CouldNotCreateTheGoogle" xml:space="preserve">
+    <value>无法创建 Google 表格，因此目前没有可分享的内容。</value>
+  </data>
+  <data name="Backup_CouldNotReadTheSheet" xml:space="preserve">
+    <value>无法读取表格</value>
+  </data>
+  <data name="Backup_CouldNotReadTheSheet2" xml:space="preserve">
+    <value>无法读取表格</value>
+  </data>
+  <data name="Backup_CouldNotSaveBackupSettings" xml:space="preserve">
+    <value>无法保存备份设置。</value>
+  </data>
+  <data name="Backup_CouldNotSaveTheLink" xml:space="preserve">
+    <value>无法保存链接</value>
+  </data>
+  <data name="Backup_CouldNotTurnOnLink" xml:space="preserve">
+    <value>无法开启链接共享，因此未复制任何内容。</value>
+  </data>
+  <data name="Backup_CouldNotWriteTheFile" xml:space="preserve">
+    <value>无法写入文件</value>
+  </data>
+  <data name="Backup_DownloadFailed" xml:space="preserve">
+    <value>下载失败</value>
+  </data>
+  <data name="Backup_LinkCopied" xml:space="preserve">
+    <value>链接已复制。</value>
+  </data>
+  <data name="Backup_LinkCopiedYourLatestChanges" xml:space="preserve">
+    <value>链接已复制。您的最新更改尚未上传（备份待处理）。</value>
+  </data>
+  <data name="Backup_NotAValidProfile" xml:space="preserve">
+    <value>不是有效的配置文件</value>
+  </data>
+  <data name="Backup_ReconnectedThisProfileToIts" xml:space="preserve">
+    <value>已将此配置文件重新连接到其 Google 表格。</value>
+  </data>
+  <data name="Backup_SheetEditedOnline" xml:space="preserve">
+    <value>表格已在线编辑</value>
+  </data>
+  <data name="Backup_TheGoogleSheetCouldNot" xml:space="preserve">
+    <value>无法将该 Google 表格作为配置文件读取，因此这里没有做任何更改。</value>
+  </data>
+  <data name="Backup_TheGoogleSheetForThis" xml:space="preserve">
+    <value>找不到此配置文件对应的 Google 表格。它可能已被删除或移到回收站。选择“是”以创建新表格并备份到该表格。选择“取消”以关闭此配置文件的备份。</value>
+  </data>
+  <data name="Backup_ThisProfileSGoogleSheet" xml:space="preserve">
+    <value>自上次备份以来，此配置文件的 Google 表格已在线编辑过。选择“是”以用您的副本替换它（在线编辑会保留在 Drive 版本历史记录中）。选择“取消”以保留在线版本，并将其加载到编辑器中。</value>
+  </data>
+  <data name="Community_CheckYourInternetConnectionAnd" xml:space="preserve">
+    <value>请检查您的网络连接，然后点击“刷新”。应用中的其他功能都不需要此列表即可正常使用。</value>
+  </data>
+  <data name="Community_CheckingQuadstickComForNew" xml:space="preserve">
+    <value>正在从 quadstick.com 检查新配置文件…</value>
+  </data>
+  <data name="Community_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Community_CloseThisWindow" xml:space="preserve">
+    <value>关闭此窗口</value>
+  </data>
+  <data name="Community_CommunityProfiles" xml:space="preserve">
+    <value>社区配置文件</value>
+  </data>
+  <data name="Community_CommunityProfilesUseTheArrow" xml:space="preserve">
+    <value>社区配置文件，使用方向键</value>
+  </data>
+  <data name="Community_CouldNotImportPickedName" xml:space="preserve">
+    <value>无法导入 {0}：{1}</value>
+  </data>
+  <data name="Community_CouldNotOpenTheSheet" xml:space="preserve">
+    <value>无法在浏览器中打开表格：{0}</value>
+  </data>
+  <data name="Community_CouldNotReachQuadstickCom" xml:space="preserve">
+    <value>无法连接到 quadstick.com，因此这仍是保存在此计算机上的副本。</value>
+  </data>
+  <data name="Community_DownloadTheCommunityListAgain" xml:space="preserve">
+    <value>重新下载社区列表</value>
+  </data>
+  <data name="Community_GameProfilesOtherQuadStickPlayers" xml:space="preserve">
+    <value>其他 QuadStick 玩家以 Google 表格形式分享的游戏配置文件。打开此窗口会从 quadstick.com 下载列表，点击“刷新”会重新下载。“导入”会在编辑器中打开配置文件。此处的任何操作都不会写入您的 QuadStick。</value>
+  </data>
+  <data name="Community_Import" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="Community_ImportTheSelectedProfileInto" xml:space="preserve">
+    <value>将所选配置文件导入编辑器</value>
+  </data>
+  <data name="Community_ImportingPickedName" xml:space="preserve">
+    <value>正在导入 {0}…</value>
+  </data>
+  <data name="Community_LoadingTheCommunityList" xml:space="preserve">
+    <value>正在加载社区列表…</value>
+  </data>
+  <data name="Community_LoadingTheCommunityList2" xml:space="preserve">
+    <value>正在加载社区列表…</value>
+  </data>
+  <data name="Community_NoProfilesMatchQuery" xml:space="preserve">
+    <value>没有与“{0}”匹配的配置文件。</value>
+  </data>
+  <data name="Community_NothingMatchesThatSearchClear" xml:space="preserve">
+    <value>没有与该搜索匹配的内容。清空搜索框可查看完整列表。</value>
+  </data>
+  <data name="Community_OpenInSheets" xml:space="preserve">
+    <value>在表格中打开</value>
+  </data>
+  <data name="Community_OpenTheSelectedProfileS" xml:space="preserve">
+    <value>在浏览器中打开所选配置文件的 Google 表格</value>
+  </data>
+  <data name="Community_OpenedThePickedNameSheet" xml:space="preserve">
+    <value>已在浏览器中打开 {0} 表格。</value>
+  </data>
+  <data name="Community_PickAProfileFromThe" xml:space="preserve">
+    <value>请先从列表中选择一个配置文件。</value>
+  </data>
+  <data name="Community_PickAProfileFromThe2" xml:space="preserve">
+    <value>请先从列表中选择一个配置文件。</value>
+  </data>
+  <data name="Community_PickedNameIsSelected" xml:space="preserve">
+    <value>已选择 {0}。</value>
+  </data>
+  <data name="Community_ProfilesCountDownloadedJustNow" xml:space="preserve">
+    <value>{0}，刚刚下载。</value>
+  </data>
+  <data name="Community_ProfilesCountFromTheCopy" xml:space="preserve">
+    <value>{0}，来自保存在此计算机上的副本。点击“刷新”以检查新内容。</value>
+  </data>
+  <data name="Community_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Community_SearchByGameFileName" xml:space="preserve">
+    <value>按游戏、文件名、主机或指针搜索</value>
+  </data>
+  <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
+    <value>搜索社区配置文件</value>
+  </data>
+  <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
+    <value>显示全部 {0} 个。</value>
+  </data>
+  <data name="Community_ShowingMatchesCountOfAll" xml:space="preserve">
+    <value>显示与“{2}”匹配的 {1} 个配置文件中的 {0} 个。</value>
+  </data>
+  <data name="Community_SkippedRow_one" xml:space="preserve">
+    <value>跳过了 {0} 行，因为其未指明共享的 Google 表格。</value>
+  </data>
+  <data name="Community_SkippedRow_other" xml:space="preserve">
+    <value>跳过了 {0} 行，因为其未指明共享的 Google 表格。</value>
+  </data>
+  <data name="Community_TheCommunityListCouldNot" xml:space="preserve">
+    <value>无法下载社区列表，且此计算机上没有保存的副本。</value>
+  </data>
+  <data name="Community_TheCommunityListHasNo" xml:space="preserve">
+    <value>社区列表当前没有任何配置文件。</value>
+  </data>
+  <data name="Community_TheSavedCopyOfThe" xml:space="preserve">
+    <value>保存的社区列表副本中没有任何配置文件。</value>
+  </data>
+  <data name="Count_Binding_one" xml:space="preserve">
+    <value>{0} 个绑定</value>
+  </data>
+  <data name="Count_Binding_other" xml:space="preserve">
+    <value>{0} 个绑定</value>
+  </data>
+  <data name="Count_Error_one" xml:space="preserve">
+    <value>{0} 个错误</value>
+  </data>
+  <data name="Count_Error_other" xml:space="preserve">
+    <value>{0} 个错误</value>
+  </data>
+  <data name="Count_Mapping_one" xml:space="preserve">
+    <value>{0} 个映射</value>
+  </data>
+  <data name="Count_Mapping_other" xml:space="preserve">
+    <value>{0} 个映射</value>
+  </data>
+  <data name="Count_ModeSheet_one" xml:space="preserve">
+    <value>{0} 个模式表</value>
+  </data>
+  <data name="Count_ModeSheet_other" xml:space="preserve">
+    <value>{0} 个模式表</value>
+  </data>
+  <data name="Count_Mode_one" xml:space="preserve">
+    <value>{0} 个模式</value>
+  </data>
+  <data name="Count_Mode_other" xml:space="preserve">
+    <value>{0} 个模式</value>
+  </data>
+  <data name="Count_RowDeleted_one" xml:space="preserve">
+    <value>已删除 {0} 行。按 Ctrl+Z 可恢复。</value>
+  </data>
+  <data name="Count_RowDeleted_other" xml:space="preserve">
+    <value>已删除 {0} 行。按 Ctrl+Z 可恢复。</value>
+  </data>
+  <data name="Count_RowMovedBottom_one" xml:space="preserve">
+    <value>已将 {0} 行移到底部。按 Ctrl+Z 可撤销。</value>
+  </data>
+  <data name="Count_RowMovedBottom_other" xml:space="preserve">
+    <value>已将 {0} 行移到底部。按 Ctrl+Z 可撤销。</value>
+  </data>
+  <data name="Count_RowMovedTop_one" xml:space="preserve">
+    <value>已将 {0} 行移到顶部。按 Ctrl+Z 可撤销。</value>
+  </data>
+  <data name="Count_RowMovedTop_other" xml:space="preserve">
+    <value>已将 {0} 行移到顶部。按 Ctrl+Z 可撤销。</value>
+  </data>
+  <data name="Count_UnusedInputOpens_one" xml:space="preserve">
+    <value>{0} 个输入尚未使用。点击打开列表。</value>
+  </data>
+  <data name="Count_UnusedInputOpens_other" xml:space="preserve">
+    <value>{0} 个输入尚未使用。点击打开列表。</value>
+  </data>
+  <data name="Count_UnusedInput_one" xml:space="preserve">
+    <value>{0} 个输入尚未使用</value>
+  </data>
+  <data name="Count_UnusedInput_other" xml:space="preserve">
+    <value>{0} 个输入尚未使用</value>
+  </data>
+  <data name="Count_Warning_one" xml:space="preserve">
+    <value>{0} 个警告</value>
+  </data>
+  <data name="Count_Warning_other" xml:space="preserve">
+    <value>{0} 个警告</value>
+  </data>
+  <data name="Device_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Device_CancelChangeNothing" xml:space="preserve">
+    <value>取消，不做任何更改</value>
+  </data>
+  <data name="Device_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Device_CloseThisWindow" xml:space="preserve">
+    <value>关闭此窗口</value>
+  </data>
+  <data name="Device_CopiedFileNameFromWhere" xml:space="preserve">
+    <value>已将 {0} 从 {1} 复制到 {2}。QuadStick 上的文件未更改。</value>
+  </data>
+  <data name="Device_CopiedTheFileSelectionGuide" xml:space="preserve">
+    <value>已将 {0} 的文件选择指南复制到剪贴板。</value>
+  </data>
+  <data name="Device_CopyFileNameFromGroup" xml:space="preserve">
+    <value>将 {0} 从 {1} 复制到您的配置文件库</value>
+  </data>
+  <data name="Device_CopyTheFileSelectionGuide" xml:space="preserve">
+    <value>将 {1} 上 {0} 的文件选择指南以文本形式复制</value>
+  </data>
+  <data name="Device_CopyThisGuide" xml:space="preserve">
+    <value>复制此指南</value>
+  </data>
+  <data name="Device_CopyToLibrary" xml:space="preserve">
+    <value>复制到库</value>
+  </data>
+  <data name="Device_CouldNotBeReadAs" xml:space="preserve">
+    <value>无法作为配置文件读取</value>
+  </data>
+  <data name="Device_CouldNotBeReadJust" xml:space="preserve">
+    <value>刚才无法读取</value>
+  </data>
+  <data name="Device_CouldNotCopyFileName" xml:space="preserve">
+    <value>无法从 {1} 复制 {0}：{2}</value>
+  </data>
+  <data name="Device_CouldNotCopyTheGuide" xml:space="preserve">
+    <value>无法复制指南：{0}</value>
+  </data>
+  <data name="Device_CouldNotDeleteFileName" xml:space="preserve">
+    <value>无法从 {1} 删除 {0}：{2}</value>
+  </data>
+  <data name="Device_CouldNotListTheDrives" xml:space="preserve">
+    <value>无法列出驱动器：{0} 点击“刷新”重试。</value>
+  </data>
+  <data name="Device_CouldNotLookAtThe" xml:space="preserve">
+    <value>无法查看此计算机上的驱动器。</value>
+  </data>
+  <data name="Device_CouldNotOpenFileName" xml:space="preserve">
+    <value>无法从 {1} 打开 {0}：{2}</value>
+  </data>
+  <data name="Device_CouldNotOpenFileName2" xml:space="preserve">
+    <value>无法从 {1} 打开 {0}：{2}</value>
+  </data>
+  <data name="Device_CouldNotOpenTheSheet" xml:space="preserve">
+    <value>无法在浏览器中打开表格：{0}</value>
+  </data>
+  <data name="Device_CouldNotReadThisDrive" xml:space="preserve">
+    <value>无法读取此驱动器：{0}</value>
+  </data>
+  <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
+    <value>从 {1} 处的 QuadStick 删除 {0}</value>
+  </data>
+  <data name="Device_DeletedResultDeletedPathACopy" xml:space="preserve">
+    <value>已删除 {0}。副本已保存到 {1}。</value>
+  </data>
+  <data name="Device_EditDevicePreferences" xml:space="preserve">
+    <value>编辑设备首选项？</value>
+  </data>
+  <data name="Device_EntryNumberEntryFileName" xml:space="preserve">
+    <value>{0}。{1}</value>
+  </data>
+  <data name="Device_EverythingHereReadsAndWrites" xml:space="preserve">
+    <value>此处的所有操作只读写 QuadStick 驱动器上的文件，不涉及其他任何内容。文件按所在驱动器分组，每个操作都会说明它将影响哪个驱动器。删除前会先在您的备份文件夹中保留一份副本。default.csv 和 prefs.csv 无法删除，因为设备需要它们。</value>
+  </data>
+  <data name="Device_FileNameOnGroupLabel" xml:space="preserve">
+    <value>位于 {2} 的 {1} 上的 {0}，{3}{4}</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup" xml:space="preserve">
+    <value>{1} 上的 {0} 未被打开。</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup2" xml:space="preserve">
+    <value>{1} 上的 {0} 的表头中未指明 Google 表格，因此没有可打开的内容。</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup3" xml:space="preserve">
+    <value>{1} 上的 {0} 受保护，无法删除。删除它可能导致设备无法使用。</value>
+  </data>
+  <data name="Device_FileNameOnWhereGroup4" xml:space="preserve">
+    <value>{1} 上的 {0} 未被删除。</value>
+  </data>
+  <data name="Device_FileNameTurnedUpIn" xml:space="preserve">
+    <value>复制过程中，{0} 出现在您的库中，因此 {1} 未被处理。请再次复制以替换它。</value>
+  </data>
+  <data name="Device_FileNameWasNotCopied" xml:space="preserve">
+    <value>{0} 未被复制。您的库文件未更改。</value>
+  </data>
+  <data name="Device_FileNameWillBeDeleted" xml:space="preserve">
+    <value>{0} 将从 {1} 处的 QuadStick 中删除。系统会先在 {2} 保存一份副本，以便您使用“安装”将其放回。此驱动器或其他任何驱动器上的其他内容不会受到影响。</value>
+  </data>
+  <data name="Device_FileSelectionOrderAndLights" xml:space="preserve">
+    <value>文件选择顺序和指示灯</value>
+  </data>
+  <data name="Device_FileSelectionOrderOnHead" xml:space="preserve">
+    <value>{0} 上的文件选择顺序</value>
+  </data>
+  <data name="Device_FilesOnTheQuadStickAt" xml:space="preserve">
+    <value>{0} 处 QuadStick 上的文件</value>
+  </data>
+  <data name="Device_FilesOnYourQuadStick" xml:space="preserve">
+    <value>您 QuadStick 上的文件</value>
+  </data>
+  <data name="Device_FilesTotalAcrossGroupsCount" xml:space="preserve">
+    <value>{0}，分布在 {1} 个 QuadStick 驱动器上。每个驱动器都单独列在下方。</value>
+  </data>
+  <data name="Device_LinkedToAGoogleSheet" xml:space="preserve">
+    <value>，已关联到 Google 表格</value>
+  </data>
+  <data name="Device_LookForQuadStickDrivesAgain" xml:space="preserve">
+    <value>重新查找 QuadStick 驱动器并重新加载文件列表</value>
+  </data>
+  <data name="Device_LookingForQuadStickDrivesAgain" xml:space="preserve">
+    <value>正在重新查找 QuadStick 驱动器…</value>
+  </data>
+  <data name="Device_LookingForYourQuadStick" xml:space="preserve">
+    <value>正在查找您的 QuadStick…</value>
+  </data>
+  <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
+    <value>此位置没有记录的指示灯模式</value>
+  </data>
+  <data name="Device_NoLinkedGoogleSheetIn" xml:space="preserve">
+    <value>，表头中未关联 Google 表格</value>
+  </data>
+  <data name="Device_NoQuadStickDriveIsPlugged" xml:space="preserve">
+    <value>当前没有插入任何 QuadStick 驱动器。QuadStick 驱动器是指带有 default.csv 的驱动器。在 USB 模拟模式 6 下，驱动器根本不会出现。</value>
+  </data>
+  <data name="Device_NumberFileNameNoLightPattern" xml:space="preserve">
+    <value>{0}。{1}：此位置没有记录的指示灯模式</value>
+  </data>
+  <data name="Device_OpenFileNameFromGroup" xml:space="preserve">
+    <value>在编辑器中打开来自 {1} 的 {0}</value>
+  </data>
+  <data name="Device_OpenLinkedSheet" xml:space="preserve">
+    <value>打开关联的表格</value>
+  </data>
+  <data name="Device_OpenTheGoogleSheetLinked" xml:space="preserve">
+    <value>打开 {1} 上 {0} 关联的 Google 表格</value>
+  </data>
+  <data name="Device_OpenedTheGoogleSheetLinked" xml:space="preserve">
+    <value>已在浏览器中打开 {1} 上 {0} 关联的 Google 表格。</value>
+  </data>
+  <data name="Device_PrefsCsvOnWhereGroup" xml:space="preserve">
+    <value>{0} 上的 prefs.csv 保存的是 QuadStick 自身的设置，而不是游戏配置文件。此处的错误值会改变整个设备的行为。只有在您清楚自己要更改的设置时才继续。</value>
+  </data>
+  <data name="Device_ProfilesOnGroupLabelAt" xml:space="preserve">
+    <value>位于 {1} 的 {0} 上的配置文件，使用方向键</value>
+  </data>
+  <data name="Device_ProtectedItCannotBeDeleted" xml:space="preserve">
+    <value>，受保护，无法删除</value>
+  </data>
+  <data name="Device_PushingTheProfileSwitchSteps" xml:space="preserve">
+    <value>按此顺序在文件间执行配置文件切换步骤，五个指示灯显示当前加载的是哪一个。prefs.csv 是设置，不是配置文件，因此永远不会出现在列表中。颜色在下方以文字形式列出，同时也会显示。</value>
+  </data>
+  <data name="Device_QuadStickDriveGroupLabelAt" xml:space="preserve">
+    <value>QuadStick 驱动器 {0}，位于 {1}</value>
+  </data>
+  <data name="Device_ReadingNameForTheDevice" xml:space="preserve">
+    <value>正在读取 {0} 以获取设备文件列表</value>
+  </data>
+  <data name="Device_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Device_ReplaceFileNameInYour" xml:space="preserve">
+    <value>替换您库中的 {0}？</value>
+  </data>
+  <data name="Device_TheDeviceSFallbackFile" xml:space="preserve">
+    <value>，设备的后备文件</value>
+  </data>
+  <data name="Device_TheDeviceSOwnSettings" xml:space="preserve">
+    <value>设备自身的设置文件</value>
+  </data>
+  <data name="Device_ThisComputerWouldNotGive" xml:space="preserve">
+    <value>此计算机未向应用授予剪贴板权限，因此指南未被复制。</value>
+  </data>
+  <data name="Device_ThisDriveHasNoCsv" xml:space="preserve">
+    <value>此驱动器上没有 .csv 配置文件。</value>
+  </data>
+  <data name="Device_YesContinue" xml:space="preserve">
+    <value>是，继续</value>
+  </data>
+  <data name="Device_YourLibraryAlreadyHasFile" xml:space="preserve">
+    <value>您的库中已有 {0}。从 {2} 复制 {1} 将覆盖 {3}。无论如何，QuadStick 上的副本都不会更改。</value>
+  </data>
+  <data name="DrivePick_AlreadyInYourProfiles" xml:space="preserve">
+    <value>  （已在您的配置文件中）</value>
+  </data>
+  <data name="DrivePick_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="DrivePick_CloseThisWindow" xml:space="preserve">
+    <value>关闭此窗口</value>
+  </data>
+  <data name="DrivePick_CouldNotLoadYourBackups" xml:space="preserve">
+    <value>无法加载您的备份：</value>
+  </data>
+  <data name="DrivePick_Import" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="DrivePick_ImportFailed" xml:space="preserve">
+    <value>导入失败：</value>
+  </data>
+  <data name="DrivePick_ImportFromGoogleDrive" xml:space="preserve">
+    <value>从 Google Drive 导入</value>
+  </data>
+  <data name="DrivePick_ImportTheSelectedProfiles" xml:space="preserve">
+    <value>导入所选配置文件</value>
+  </data>
+  <data name="DrivePick_Importing" xml:space="preserve">
+    <value>正在导入…</value>
+  </data>
+  <data name="DrivePick_LoadingYourBackups" xml:space="preserve">
+    <value>正在加载您的备份…</value>
+  </data>
+  <data name="DrivePick_NoBackupsFoundInYour" xml:space="preserve">
+    <value>您的 Google Drive 中尚未找到任何备份。</value>
+  </data>
+  <data name="DrivePick_NothingSelectedToImport" xml:space="preserve">
+    <value>未选择任何要导入的内容。</value>
+  </data>
+  <data name="DrivePick_PickTheProfilesToCopy" xml:space="preserve">
+    <value>选择要复制到此计算机的配置文件。仅列出此应用备份过的表格。已存在于您配置文件中的项目会显示为灰色。</value>
+  </data>
+  <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
+    <value>您的 Google Drive 备份</value>
+  </data>
+  <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
+    <value>错误的 default.csv 可能导致闪存驱动器访问失效，恢复需要进行物理强制擦除。系统将先创建备份。是否继续？</value>
+  </data>
+  <data name="Install_BackingUpAndInstalling" xml:space="preserve">
+    <value>正在备份并安装…</value>
+  </data>
+  <data name="Install_BackupPath" xml:space="preserve">
+    <value>备份：{0}</value>
+  </data>
+  <data name="Install_ChooseTheQuadStickDrive" xml:space="preserve">
+    <value>选择 QuadStick 驱动器</value>
+  </data>
+  <data name="Install_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Install_Close2" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Install_FixTheErrorsInThe" xml:space="preserve">
+    <value>请先修复“问题”列表中的错误，然后再安装。</value>
+  </data>
+  <data name="Install_InstallCancelled" xml:space="preserve">
+    <value>安装已取消。</value>
+  </data>
+  <data name="Install_InstallCancelled2" xml:space="preserve">
+    <value>安装已取消。</value>
+  </data>
+  <data name="Install_InstallCancelled3" xml:space="preserve">
+    <value>安装已取消。</value>
+  </data>
+  <data name="Install_InstallFailed" xml:space="preserve">
+    <value>安装失败</value>
+  </data>
+  <data name="Install_InstallPrefsCsvToThis" xml:space="preserve">
+    <value>是否将 prefs.csv 安装到此 QuadStick？</value>
+  </data>
+  <data name="Install_InstalledPathGetFileNameResultInstalledPath" xml:space="preserve">
+    <value>已将 {0} 安装到 {1}。</value>
+  </data>
+  <data name="Install_InstallingProfile" xml:space="preserve">
+    <value>正在安装配置文件</value>
+  </data>
+  <data name="Install_InstallingTo" xml:space="preserve">
+    <value>正在安装到</value>
+  </data>
+  <data name="Install_NoPreviousFile" xml:space="preserve">
+    <value>没有可备份的先前文件</value>
+  </data>
+  <data name="Install_NoQuadStickDriveFoundA" xml:space="preserve">
+    <value>未找到 QuadStick 驱动器（即带有 default.csv 的驱动器）。请手动选择驱动器或文件夹。</value>
+  </data>
+  <data name="Install_OpenAProfileFirst" xml:space="preserve">
+    <value>请先打开一个配置文件。</value>
+  </data>
+  <data name="Install_OverwriteDefaultCsv" xml:space="preserve">
+    <value>是否覆盖 default.csv？</value>
+  </data>
+  <data name="Install_PrefsCsvHoldsTheDevice" xml:space="preserve">
+    <value>prefs.csv 保存的是设备自身的设置，因此这会改变 QuadStick 在 {0} 上每个配置文件中的行为，而不只是一个游戏。驱动器上现有的 prefs.csv 会先被备份。是否继续？</value>
+  </data>
+  <data name="Install_TargetDriveRoot" xml:space="preserve">
+    <value>目标驱动器：{0}</value>
+  </data>
+  <data name="Install_ThatFolderDoesNotLook" xml:space="preserve">
+    <value>该文件夹看起来不是 QuadStick（其根目录下没有 default.csv）。</value>
+  </data>
+  <data name="Main_AButton" xml:space="preserve">
+    <value>A button</value>
+  </data>
+  <data name="Main_AFunction" xml:space="preserve">
+    <value>一个功能</value>
+  </data>
+  <data name="Main_AJoystickOrControllerPlugged" xml:space="preserve">
+    <value>插入 QuadStick 背面 USB-A 端口的摇杆或控制器。</value>
+  </data>
+  <data name="Main_AJoystickPluggedInHere" xml:space="preserve">
+    <value>在此处插入的摇杆将显示为</value>
+  </data>
+  <data name="Main_AModeIsOneFull" xml:space="preserve">
+    <value>模式是您输入的一套完整布局。一个配置文件可以包含多个模式，您可以在游戏过程中切换，例如步行布局和驾驶布局。要在游戏中切换模式，请吸吮或吹气侧边管，或将 increment_mode / decrement_mode 映射到某个输入。
+
+大多数配置文件只有一个模式，因此此列表通常只显示一个条目。这是正常现象。</value>
+  </data>
+  <data name="Main_AProfileTabStartsWith" xml:space="preserve">
+    <value>配置文件工作表以单元格 A1 中的 "Profile Name"、"Preferences" 或 "Infrared" 开头。</value>
+  </data>
+  <data name="Main_AQuickPressSendsOne" xml:space="preserve">
+    <value>快速按下会发送一种输出，长按会发送另一种输出。</value>
+  </data>
+  <data name="Main_AShortActivationTapsIt" xml:space="preserve">
+    <value>短暂激活是轻触，长时间激活会将其锁定开启。</value>
+  </data>
+  <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>名为 {0} 的模板已存在。</value>
+  </data>
+  <data name="Main_ATemplateNeedsAName" xml:space="preserve">
+    <value>模板需要一个名称。</value>
+  </data>
+  <data name="Main_AccessibleNameOpensASearchableList" xml:space="preserve">
+    <value>{0}。打开可搜索的列表。</value>
+  </data>
+  <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
+    <value>插入 QuadStick 背面 3.5 毫米插孔的适配开关。</value>
+  </data>
+  <data name="Main_AddANewBindingRow" xml:space="preserve">
+    <value>为此模式添加新的绑定行</value>
+  </data>
+  <data name="Main_AddANewMappingFor" xml:space="preserve">
+    <value>为 {0} 添加新映射</value>
+  </data>
+  <data name="Main_AddARowToThe" xml:space="preserve">
+    <value>向自定义输出名称表添加一行</value>
+  </data>
+  <data name="Main_AddAnotherInput" xml:space="preserve">
+    <value>添加另一个输入</value>
+  </data>
+  <data name="Main_AddAnotherInputToMapping" xml:space="preserve">
+    <value>为映射 {0} 添加另一个输入；输入按从左到右的顺序依次进行</value>
+  </data>
+  <data name="Main_AddAnotherInputToRow" xml:space="preserve">
+    <value>为第 {0} 行添加另一个输入</value>
+  </data>
+  <data name="Main_AddName" xml:space="preserve">
+    <value>+ 添加名称</value>
+  </data>
+  <data name="Main_AddRow" xml:space="preserve">
+    <value>+ 添加行</value>
+  </data>
+  <data name="Main_AllThree" xml:space="preserve">
+    <value>全部三个</value>
+  </data>
+  <data name="Main_AnInput" xml:space="preserve">
+    <value>一个输入</value>
+  </data>
+  <data name="Main_AnOutput" xml:space="preserve">
+    <value>一个输出</value>
+  </data>
+  <data name="Main_AnyoneWithThisLinkCan" xml:space="preserve">
+    <value>拥有此链接的任何人都可以查看此表格（只读）。是否开启链接共享并复制？</value>
+  </data>
+  <data name="Main_AppearanceInterfaceSizeAndThe" xml:space="preserve">
+    <value>外观、界面大小及其余设置都将恢复为默认值。</value>
+  </data>
+  <data name="Main_AsFunction" xml:space="preserve">
+    <value>，作为 {0}</value>
+  </data>
+  <data name="Main_AsJoiner" xml:space="preserve">
+    <value>作为</value>
+  </data>
+  <data name="Main_AsLabel" xml:space="preserve">
+    <value>作为</value>
+  </data>
+  <data name="Main_BButton" xml:space="preserve">
+    <value>B button</value>
+  </data>
+  <data name="Main_Back" xml:space="preserve">
+    <value>‹ 返回</value>
+  </data>
+  <data name="Main_BackOfTheQuadStick" xml:space="preserve">
+    <value>QuadStick 背面</value>
+  </data>
+  <data name="Main_BackToAllCategories" xml:space="preserve">
+    <value>返回所有类别</value>
+  </data>
+  <data name="Main_BackToCat" xml:space="preserve">
+    <value>返回 {0}</value>
+  </data>
+  <data name="Main_BackedUpToGoogleDrive" xml:space="preserve">
+    <value>已备份到 Google Drive。</value>
+  </data>
+  <data name="Main_BackingUpToDrive" xml:space="preserve">
+    <value>正在备份到 Drive</value>
+  </data>
+  <data name="Main_BackingUpToGoogleDrive" xml:space="preserve">
+    <value>正在备份到 Google Drive。点击以导入您的其他配置文件。</value>
+  </data>
+  <data name="Main_BackupErrorExMessage" xml:space="preserve">
+    <value>备份错误：{0}</value>
+  </data>
+  <data name="Main_BackupOff" xml:space="preserve">
+    <value>备份已关闭</value>
+  </data>
+  <data name="Main_BackupPending" xml:space="preserve">
+    <value> · 备份待处理</value>
+  </data>
+  <data name="Main_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Main_Center" xml:space="preserve">
+    <value>居中</value>
+  </data>
+  <data name="Main_CenterMouthpieceHole" xml:space="preserve">
+    <value>中央吸嘴孔</value>
+  </data>
+  <data name="Main_ChangeUndone" xml:space="preserve">
+    <value>更改已撤销。</value>
+  </data>
+  <data name="Main_ChooseQuadStick" xml:space="preserve">
+    <value>选择 QuadStick</value>
+  </data>
+  <data name="Main_ChooseWhichDriveToInstall" xml:space="preserve">
+    <value>选择要安装到的驱动器：</value>
+  </data>
+  <data name="Main_ClickAnyPartOfThe" xml:space="preserve">
+    <value>点击 QuadStick 的任意部位，查看并更改它在此模式下的功能。每个部位上的数字表示它按下的游戏按钮数量。您的型号没有的部位会显示为灰色。
+
+</value>
+  </data>
+  <data name="Main_ClickToHide" xml:space="preserve">
+    <value>  （点击以隐藏）</value>
+  </data>
+  <data name="Main_ClickToSelectDragTo" xml:space="preserve">
+    <value>点击以选择，拖动以重新排序</value>
+  </data>
+  <data name="Main_ClickToSignInAnd" xml:space="preserve">
+    <value>点击以登录并将您的配置文件备份到 Google Drive。</value>
+  </data>
+  <data name="Main_ClickToView" xml:space="preserve">
+    <value>  （点击以查看）</value>
+  </data>
+  <data name="Main_CloseTheEditorForMapping" xml:space="preserve">
+    <value>关闭映射 {0} 的编辑器并返回其卡片</value>
+  </data>
+  <data name="Main_CloseWindowTitleToLowerInvariant" xml:space="preserve">
+    <value>关闭 {0}</value>
+  </data>
+  <data name="Main_Combos" xml:space="preserve">
+    <value>组合键</value>
+  </data>
+  <data name="Main_CommunityProfiles" xml:space="preserve">
+    <value>社区配置文件</value>
+  </data>
+  <data name="Main_ConnectionTimedOut" xml:space="preserve">
+    <value>连接在 15 秒后超时</value>
+  </data>
+  <data name="Main_CopyALinkToThis" xml:space="preserve">
+    <value>复制此配置文件 Google 表格的链接</value>
+  </data>
+  <data name="Main_CopyShareLink" xml:space="preserve">
+    <value>复制共享链接</value>
+  </data>
+  <data name="Main_CopyYourBackedUpProfiles" xml:space="preserve">
+    <value>是否现在将您已备份的配置文件从 Google Drive 复制到此计算机？</value>
+  </data>
+  <data name="Main_CouldNotDeleteBareEx" xml:space="preserve">
+    <value>无法删除 {0}：{1}</value>
+  </data>
+  <data name="Main_CouldNotDeleteTheTemplate" xml:space="preserve">
+    <value>无法删除模板：{0}</value>
+  </data>
+  <data name="Main_CouldNotDownloadTheSheet" xml:space="preserve">
+    <value>无法下载表格：{0}。请检查您的网络连接和链接。</value>
+  </data>
+  <data name="Main_CouldNotLoadTheOnline" xml:space="preserve">
+    <value>无法加载在线版本：{0}</value>
+  </data>
+  <data name="Main_CouldNotOpenBareEx" xml:space="preserve">
+    <value>无法打开 {0}：{1}</value>
+  </data>
+  <data name="Main_CouldNotOpenPicks0" xml:space="preserve">
+    <value>无法打开 {0}：{1}</value>
+  </data>
+  <data name="Main_CouldNotOpenThatTemplate" xml:space="preserve">
+    <value>无法打开该模板：{0}</value>
+  </data>
+  <data name="Main_CouldNotOpenTheRecovered" xml:space="preserve">
+    <value>无法打开恢复的文件：{0}</value>
+  </data>
+  <data name="Main_CouldNotReadBareNamePath" xml:space="preserve">
+    <value>无法读取 {0}：{1}</value>
+  </data>
+  <data name="Main_CouldNotReadPicks0" xml:space="preserve">
+    <value>无法读取 {0}。它不是可读取的电子表格。</value>
+  </data>
+  <data name="Main_CouldNotReadThatSpreadsheet" xml:space="preserve">
+    <value>无法读取该电子表格。请将其下载为 .xlsx 格式，然后改用“打开”按钮打开。</value>
+  </data>
+  <data name="Main_CouldNotReadThisFile" xml:space="preserve">
+    <value>无法读取此文件</value>
+  </data>
+  <data name="Main_CouldNotRenameTheTemplate" xml:space="preserve">
+    <value>无法重命名模板：{0}</value>
+  </data>
+  <data name="Main_CouldNotSaveExMessage" xml:space="preserve">
+    <value>无法保存：{0}</value>
+  </data>
+  <data name="Main_CouldNotSaveThatPreference" xml:space="preserve">
+    <value>无法保存该首选项。目前没有发送任何内容，但更改未能保留。</value>
+  </data>
+  <data name="Main_CouldNotSaveThatYou" xml:space="preserve">
+    <value>无法保存。下次可能会再次询问您。</value>
+  </data>
+  <data name="Main_CouldNotSaveTheReset" xml:space="preserve">
+    <value>无法保存重置操作。旧设置下次可能会恢复。</value>
+  </data>
+  <data name="Main_CouldNotSaveTheTemplate" xml:space="preserve">
+    <value>无法保存模板：{0}</value>
+  </data>
+  <data name="Main_CouldNotSendTheCrash" xml:space="preserve">
+    <value>无法发送崩溃报告。它仍保存在您的计算机上。</value>
+  </data>
+  <data name="Main_CouldNotShareThisProfile" xml:space="preserve">
+    <value>无法共享此配置文件：{0}</value>
+  </data>
+  <data name="Main_CrashDetailsUsedToBuild" xml:space="preserve">
+    <value>用于生成报告的崩溃详情</value>
+  </data>
+  <data name="Main_CrashReportSentThankYou" xml:space="preserve">
+    <value>崩溃报告已发送。谢谢。</value>
+  </data>
+  <data name="Main_Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Main_DeleteBare" xml:space="preserve">
+    <value>删除 {0}？</value>
+  </data>
+  <data name="Main_DeleteBareFromYourProfile" xml:space="preserve">
+    <value>从您的配置库中删除 {0}</value>
+  </data>
+  <data name="Main_DeleteProfile" xml:space="preserve">
+    <value>删除配置</value>
+  </data>
+  <data name="Main_DeleteRowBRow" xml:space="preserve">
+    <value>删除第 {0} 行</value>
+  </data>
+  <data name="Main_DeleteSelectedTemplate" xml:space="preserve">
+    <value>删除所选模板</value>
+  </data>
+  <data name="Main_DeleteTemplateName" xml:space="preserve">
+    <value>删除模板“{0}”？</value>
+  </data>
+  <data name="Main_DeleteThisWholeRow" xml:space="preserve">
+    <value>删除整行</value>
+  </data>
+  <data name="Main_DeletedBare" xml:space="preserve">
+    <value>已删除 {0}。</value>
+  </data>
+  <data name="Main_DeletedTemplateName" xml:space="preserve">
+    <value>已删除模板 {0}。</value>
+  </data>
+  <data name="Main_DetailedEditor" xml:space="preserve">
+    <value>详细编辑器</value>
+  </data>
+  <data name="Main_DeviceFilesWindowLabelForRootRoot" xml:space="preserve">
+    <value>{0}  ({1})</value>
+  </data>
+  <data name="Main_DeviceHasNoLightPattern" xml:space="preserve">
+    <value>设备没有为模式 {0} 设置指示灯样式</value>
+  </data>
+  <data name="Main_DeviceSettings" xml:space="preserve">
+    <value>设备设置</value>
+  </data>
+  <data name="Main_DeviceSettingsThisModeChanges" xml:space="preserve">
+    <value>此模式运行期间会更改的设备设置，例如鼠标速度或音量。它们不是您按下的东西，所以没有输入：每一项都只是一个名称和一个值。</value>
+  </data>
+  <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
+    <value>设备显示 {0}</value>
+  </data>
+  <data name="Main_DonTSave" xml:space="preserve">
+    <value>不保存</value>
+  </data>
+  <data name="Main_Done" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="Main_DownloadingTheSpreadsheet" xml:space="preserve">
+    <value>正在下载电子表格...</value>
+  </data>
+  <data name="Main_EditDevicePreferences" xml:space="preserve">
+    <value>编辑设备偏好设置？</value>
+  </data>
+  <data name="Main_Edited" xml:space="preserve">
+    <value>已编辑 </value>
+  </data>
+  <data name="Main_ErrorsBlockInstalling" xml:space="preserve">
+    <value>。错误会阻止安装。</value>
+  </data>
+  <data name="Main_EveryInputOnYourQuadStick" xml:space="preserve">
+    <value>您的 QuadStick 上的每个输入在此模式下都已被使用。</value>
+  </data>
+  <data name="Main_ExtraInputForMappingN" xml:space="preserve">
+    <value>映射 {0} 的额外输入</value>
+  </data>
+  <data name="Main_FPS3HoleMouthpieceSide" xml:space="preserve">
+    <value>FPS：三孔口控杆、侧管、唇部传感器、后置插孔。摇杆比 Original 更精准。</value>
+  </data>
+  <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
+    <value>当您的输入超过设定强度时触发一次。</value>
+  </data>
+  <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
+    <value>当您的输入保持在设定强度以下时持续触发。</value>
+  </data>
+  <data name="Main_FoundAProblem" xml:space="preserve">
+    <value>发现问题了？</value>
+  </data>
+  <data name="Main_FunctionForRowBRow" xml:space="preserve">
+    <value>第 {0} 行的功能。{1}</value>
+  </data>
+  <data name="Main_FunctionKeys" xml:space="preserve">
+    <value>功能键</value>
+  </data>
+  <data name="Main_FunctionTakesNoNumbers" xml:space="preserve">
+    <value>{0} 不接受数字。</value>
+  </data>
+  <data name="Main_GameButtonPressedByShortInput" xml:space="preserve">
+    <value>由 {0} 按下的游戏按钮</value>
+  </data>
+  <data name="Main_GoogleDriveBackupIsNot" xml:space="preserve">
+    <value>此版本不支持 Google Drive 备份。</value>
+  </data>
+  <data name="Main_GoogleReturnedAWebPage" xml:space="preserve">
+    <value>Google 返回的是一个网页，而不是配置文件。该表格可能未公开共享（文件 &gt; 共享 &gt; 知道链接的任何人）。</value>
+  </data>
+  <data name="Main_HeldDownForAsLong" xml:space="preserve">
+    <value>在您的输入保持激活期间持续按住。</value>
+  </data>
+  <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
+    <value>帮助改进 QuadStick Config Manager</value>
+  </data>
+  <data name="Main_HidesTheProblems" xml:space="preserve">
+    <value>{0}。隐藏问题列表。</value>
+  </data>
+  <data name="Main_HitsCount40MoreKeep" xml:space="preserve">
+    <value>还有 {0} 个。继续输入以缩小范围。</value>
+  </data>
+  <data name="Main_HoleCombos" xml:space="preserve">
+    <value>孔位组合</value>
+  </data>
+  <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
+    <value>{0} 如何按下它。{1}</value>
+  </data>
+  <data name="Main_IfTheDeviceIsIn" xml:space="preserve">
+    <value>如果设备处于 PS4 启动模式，或已启用虚拟 XBox / Dualshock 控制器模拟，闪存盘不会出现在电脑上。请关闭这些选项（在 QMP 或您的偏好设置中）后重新插拔。在 Mac 上，该卷在访达中名为“QUAD STICK”。</value>
+  </data>
+  <data name="Main_ImportFromGoogleDrive" xml:space="preserve">
+    <value>从 Google Drive 导入</value>
+  </data>
+  <data name="Main_ImportedModesImportedFromPicks" xml:space="preserve">
+    <value>已从 {1} 导入 {0}。保存以将其保留为配置文件。</value>
+  </data>
+  <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
+    <value>已从电子表格导入 {0}。</value>
+  </data>
+  <data name="Main_InputI1ForRow" xml:space="preserve">
+    <value>第 {1} 行的输入 {0}</value>
+  </data>
+  <data name="Main_InputI1ForThis" xml:space="preserve">
+    <value>此 {1} 映射的输入 {0}</value>
+  </data>
+  <data name="Main_InputNextCol1ForRow" xml:space="preserve">
+    <value>第 {1} 行的输入 {0}</value>
+  </data>
+  <data name="Main_InstallToTheQuadStickNamed" xml:space="preserve">
+    <value>安装到名为 {0} 的 QuadStick，位于 {1}</value>
+  </data>
+  <data name="Main_InstallingSafely" xml:space="preserve">
+    <value>正在安全安装</value>
+  </data>
+  <data name="Main_IntAgeTotalDaysDaysAgo" xml:space="preserve">
+    <value>{0} 天前</value>
+  </data>
+  <data name="Main_IntAgeTotalHoursHAgo" xml:space="preserve">
+    <value>{0} 小时前</value>
+  </data>
+  <data name="Main_IntAgeTotalMinutesMinAgo" xml:space="preserve">
+    <value>{0} 分钟前</value>
+  </data>
+  <data name="Main_ItsButtonsAreUsb1" xml:space="preserve">
+    <value>。它的按钮从 usb_1_button_1 起编号。</value>
+  </data>
+  <data name="Main_Joystick" xml:space="preserve">
+    <value>摇杆</value>
+  </data>
+  <data name="Main_JoystickOrIn34" xml:space="preserve">
+    <value>Joystick，或在 3-4 中</value>
+  </data>
+  <data name="Main_JustNow" xml:space="preserve">
+    <value>刚刚</value>
+  </data>
+  <data name="Main_KeepsACopyYouCan" xml:space="preserve">
+    <value>保留一份副本，您可以随时在主屏幕的“使用模板”下以此创建新配置。编辑或安装配置文件永远不会更改其模板。</value>
+  </data>
+  <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
+    <value>释放后仍会继续按住片刻。</value>
+  </data>
+  <data name="Main_Left" xml:space="preserve">
+    <value>左</value>
+  </data>
+  <data name="Main_LeftBumper" xml:space="preserve">
+    <value>左肩键</value>
+  </data>
+  <data name="Main_LeftMouthpieceHole" xml:space="preserve">
+    <value>左吸嘴孔</value>
+  </data>
+  <data name="Main_LeftStickClick" xml:space="preserve">
+    <value>左摇杆按键</value>
+  </data>
+  <data name="Main_LeftTrigger" xml:space="preserve">
+    <value>左扳机键</value>
+  </data>
+  <data name="Main_LipSwitch" xml:space="preserve">
+    <value>唇动开关</value>
+  </data>
+  <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
+    <value>已加载此配置文件的在线版本。您之前的本地副本保存在救援文件夹中。</value>
+  </data>
+  <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
+    <value>管理您 QuadStick 上的文件</value>
+  </data>
+  <data name="Main_MapSomethingToThis" xml:space="preserve">
+    <value>+ 映射到此处</value>
+  </data>
+  <data name="Main_MapTokenToANew" xml:space="preserve">
+    <value>将 {0} 映射到 {1} 上的新映射</value>
+  </data>
+  <data name="Main_MappingRowSpoken" xml:space="preserve">
+    <value>映射 {0}：当您 {2}{3} 时按下 {1}。按 Enter 键进行编辑。</value>
+  </data>
+  <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
+    <value>映射 {0}：当您先后 {2}{3} 时按下 {1}。按 Enter 键进行编辑。</value>
+  </data>
+  <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
+    <value>映射以简单语句卡片的形式呈现。切换到详细编辑器。</value>
+  </data>
+  <data name="Main_MappingsShowTheDetailedEditor" xml:space="preserve">
+    <value>映射以详细编辑器的形式呈现。切换到简单语句卡片。</value>
+  </data>
+  <data name="Main_MenuButton" xml:space="preserve">
+    <value>菜单按钮</value>
+  </data>
+  <data name="Main_ModeNamed" xml:space="preserve">
+    <value>模式：{0}</value>
+  </data>
+  <data name="Main_ModeNumberAndName" xml:space="preserve">
+    <value>{0}：{1}</value>
+  </data>
+  <data name="Main_ModeSettings" xml:space="preserve">
+    <value>模式设置</value>
+  </data>
+  <data name="Main_MoveRowBRowWord" xml:space="preserve">
+    <value>将第 {0} 行移动 {1}</value>
+  </data>
+  <data name="Main_MoveTheTextInCell" xml:space="preserve">
+    <value>将单元格 {0} 中的文本移动到备注列</value>
+  </data>
+  <data name="Main_MoveToNotes" xml:space="preserve">
+    <value>移动到备注</value>
+  </data>
+  <data name="Main_MovedTheTextFromI" xml:space="preserve">
+    <value>已将 {0} 中的文本移动到备注列。</value>
+  </data>
+  <data name="Main_MovingTheWholeMouthpieceWith" xml:space="preserve">
+    <value>用嘴移动整个口控杆的效果就像摇杆一样。上、下、左、右以及 8 个方位都可以各自按下不同的功能。</value>
+  </data>
+  <data name="Main_MultipleQuadSticksFound" xml:space="preserve">
+    <value>找到多个 QuadStick</value>
+  </data>
+  <data name="Main_MyTemplate" xml:space="preserve">
+    <value>我的模板</value>
+  </data>
+  <data name="Main_NameDetail" xml:space="preserve">
+    <value>{0}。{1}</value>
+  </data>
+  <data name="Main_NameForThisTemplate" xml:space="preserve">
+    <value>此模板的名称</value>
+  </data>
+  <data name="Main_NewNameForThisTemplate" xml:space="preserve">
+    <value>此模板的新名称</value>
+  </data>
+  <data name="Main_NewProfileGivesYouThe" xml:space="preserve">
+    <value>“新建配置”会给您出厂默认布局，与每台 QuadStick 出厂时所带的布局相同。社区还以 Google Sheets 的形式分享了数百个游戏配置：在主屏幕粘贴任意分享链接即可导入。如果配置将每个模式放在各自的标签页中，会整体导入，每个标签页对应一个模式。打开也支持已下载的 .xlsx 工作簿。然后进行调整、重命名、保存。</value>
+  </data>
+  <data name="Main_NoBindingsYetClickAdd" xml:space="preserve">
+    <value>尚无绑定。点击“添加行”将输入与输出连接起来。</value>
+  </data>
+  <data name="Main_NoCommandsOnThisSheet" xml:space="preserve">
+    <value>此表格中尚无命令。点击“添加行”以添加一个。</value>
+  </data>
+  <data name="Main_NoErrorsToFix" xml:space="preserve">
+    <value>没有需要修复的错误。</value>
+  </data>
+  <data name="Main_NoInput" xml:space="preserve">
+    <value>（无输入）</value>
+  </data>
+  <data name="Main_NoInputYet" xml:space="preserve">
+    <value>尚无输入</value>
+  </data>
+  <data name="Main_NoProblems" xml:space="preserve">
+    <value>没有问题</value>
+  </data>
+  <data name="Main_NoProblemsClickToHide" xml:space="preserve">
+    <value>没有问题（点击隐藏）</value>
+  </data>
+  <data name="Main_NoProblemsFound" xml:space="preserve">
+    <value>未发现问题。</value>
+  </data>
+  <data name="Main_NoProblemsReadyToSave" xml:space="preserve">
+    <value>没有问题，可以保存或安装。</value>
+  </data>
+  <data name="Main_NoQuadStickDetected" xml:space="preserve">
+    <value>未检测到 QuadStick</value>
+  </data>
+  <data name="Main_NoSettingsOnThisSheet" xml:space="preserve">
+    <value>此表格中尚无设置。点击“添加行”以添加一个。</value>
+  </data>
+  <data name="Main_NoTabInThatSpreadsheet" xml:space="preserve">
+    <value>该电子表格中没有任何标签页是配置文件。{0} {1}</value>
+  </data>
+  <data name="Main_NoThanks" xml:space="preserve">
+    <value>不用了</value>
+  </data>
+  <data name="Main_NoThanksDoNotShare" xml:space="preserve">
+    <value>不用了，不分享使用数据</value>
+  </data>
+  <data name="Main_NoValue" xml:space="preserve">
+    <value>（无值）</value>
+  </data>
+  <data name="Main_NotAvailableOnYourModelNames" xml:space="preserve">
+    <value> 您的 {0} 不支持此功能。</value>
+  </data>
+  <data name="Main_NotMapped" xml:space="preserve">
+    <value>未映射</value>
+  </data>
+  <data name="Main_NotNow" xml:space="preserve">
+    <value>暂时不要</value>
+  </data>
+  <data name="Main_NotNowKeepTheReport" xml:space="preserve">
+    <value>暂时不要，保留该报告，稍后再询问</value>
+  </data>
+  <data name="Main_NotOnModel" xml:space="preserve">
+    <value>此型号不支持</value>
+  </data>
+  <data name="Main_NotOnYourModel" xml:space="preserve">
+    <value>您的型号不支持</value>
+  </data>
+  <data name="Main_NotUsedYetOnThis" xml:space="preserve">
+    <value>此部件尚未使用（{0}）</value>
+  </data>
+  <data name="Main_Note" xml:space="preserve">
+    <value>备注</value>
+  </data>
+  <data name="Main_NoteForRowBRow" xml:space="preserve">
+    <value>第 {0} 行的备注。保存在文件中，QuadStick 会忽略它</value>
+  </data>
+  <data name="Main_NoteForThisMappingSaved" xml:space="preserve">
+    <value>此映射的备注。保存在文件中，QuadStick 会忽略它</value>
+  </data>
+  <data name="Main_NoteForThisRowSaved" xml:space="preserve">
+    <value>此行的备注。保存在文件中，QuadStick 会忽略它</value>
+  </data>
+  <data name="Main_NoteLabel" xml:space="preserve">
+    <value>备注</value>
+  </data>
+  <data name="Main_NothingMappedHereYet" xml:space="preserve">
+    <value>此处尚未映射任何内容。</value>
+  </data>
+  <data name="Main_NothingMappedYet" xml:space="preserve">
+    <value>尚未映射</value>
+  </data>
+  <data name="Main_NothingMatchesTryFewerLetters" xml:space="preserve">
+    <value>没有匹配项。请减少输入的字母，或在下方输入您自己的内容。</value>
+  </data>
+  <data name="Main_NothingPressesBOutputNow" xml:space="preserve">
+    <value>目前没有任何东西按下“{0}”，因此 QuadStick 不会触发它。</value>
+  </data>
+  <data name="Main_NothingSelectedNNPickA" xml:space="preserve">
+    <value>未选择任何内容。
+
+在左侧选择 QuadStick 的一个部件，查看它在此模式下的作用、更改它，或为它映射新的内容。</value>
+  </data>
+  <data name="Main_NothingToUndo" xml:space="preserve">
+    <value>没有可撤销的操作。</value>
+  </data>
+  <data name="Main_NothingYet" xml:space="preserve">
+    <value>尚无内容</value>
+  </data>
+  <data name="Main_NumberPositionInTheProfile" xml:space="preserve">
+    <value>，在配置切换顺序中排第 {0} 位</value>
+  </data>
+  <data name="Main_NumbersForFunctionOptionalWhole" xml:space="preserve">
+    <value>{0} 的数字，可选，用空格分隔的整数。 </value>
+  </data>
+  <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
+    <value>第一次激活将其锁定为开启，第二次将其释放。</value>
+  </data>
+  <data name="Main_OneCSVFileThatTells" xml:space="preserve">
+    <value>一个 CSV 文件，用来告诉 QuadStick 哪个 sip、puff、唇部按压或摇杆动作按下哪个游戏按钮。一个配置文件包含一个或多个模式表：您在游戏中切换的完整控制布局（行走布局、驾驶布局、菜单）。对侧管进行 sip 或 puff，或绑定 increment_mode / decrement_mode，即可在游戏中切换模式。</value>
+  </data>
+  <data name="Main_OneShortPressEachTime" xml:space="preserve">
+    <value>每次激活时短按一次。</value>
+  </data>
+  <data name="Main_OneSwitchIn1" xml:space="preserve">
+    <value>单个开关：位于 1 号插孔</value>
+  </data>
+  <data name="Main_OneSwitchIn5" xml:space="preserve">
+    <value>单个开关：位于 5 号插孔</value>
+  </data>
+  <data name="Main_OneSwitchIn8" xml:space="preserve">
+    <value>单个开关：位于 8 号插孔</value>
+  </data>
+  <data name="Main_OpenInGoogleSheets" xml:space="preserve">
+    <value>在 Google Sheets 中打开</value>
+  </data>
+  <data name="Main_OpenInLibrary" xml:space="preserve">
+    <value>在您的配置库中打开 {0}，{1}</value>
+  </data>
+  <data name="Main_OpenOnDevice" xml:space="preserve">
+    <value>打开存储在 QuadStick 上的 {0}，{1}</value>
+  </data>
+  <data name="Main_OpenOrCreateAProfile" xml:space="preserve">
+    <value>请先打开或新建一个配置文件。</value>
+  </data>
+  <data name="Main_OpenQuadStickProfile" xml:space="preserve">
+    <value>打开 QuadStick 配置文件</value>
+  </data>
+  <data name="Main_OpenThisProfileSGoogle" xml:space="preserve">
+    <value>在浏览器中打开此配置文件的 Google 表格</value>
+  </data>
+  <data name="Main_OpenedFromYourQuadStickSave" xml:space="preserve">
+    <value>已从您的 QuadStick 打开。保存会在您的配置库中留一份副本；使用安装可将更改写回设备。</value>
+  </data>
+  <data name="Main_OpensAFreshCopyYou" xml:space="preserve">
+    <value>打开一份全新副本，您可以编辑并安装。您的模板保持不变。</value>
+  </data>
+  <data name="Main_Original3HoleMouthpieceSide" xml:space="preserve">
+    <value>Original：三孔口控杆、侧管、唇动开关、后置插孔。输入与 FPS 相同。</value>
+  </data>
+  <data name="Main_OutputForRowBRow" xml:space="preserve">
+    <value>第 {0} 行的输出</value>
+  </data>
+  <data name="Main_OutputGameButton" xml:space="preserve">
+    <value>输出（游戏按钮）</value>
+  </data>
+  <data name="Main_Parts" xml:space="preserve">
+    <value>部件</value>
+  </data>
+  <data name="Main_PathGetFileNamePathIsRemoved" xml:space="preserve">
+    <value>{0} 将从此电脑上永久删除。QuadStick 或 Google Sheets 上的副本不受影响。</value>
+  </data>
+  <data name="Main_Picks0NameNoProfileTabRead" xml:space="preserve">
+    <value>{0}：{1}</value>
+  </data>
+  <data name="Main_PlugInTheQuadStickIt" xml:space="preserve">
+    <value>插入 QuadStick，它会像 USB 驱动器一样显示。安装会将旧文件备份到 QuadStickBackups，写入一份临时副本，检查后再替换进去。错误会阻止安装。覆盖 default.csv 时总会先询问。</value>
+  </data>
+  <data name="Main_PortExplain" xml:space="preserve">
+    <value>{0}。{1}</value>
+  </data>
+  <data name="Main_PreferencesSheetAdded" xml:space="preserve">
+    <value>已添加 Preferences 表。</value>
+  </data>
+  <data name="Main_PrefsCsvHoldsTheQuadStick" xml:space="preserve">
+    <value>prefs.csv 保存的是 QuadStick 本身的设置，不是游戏配置文件。这里的值一旦填错，会改变整台设备的行为。只有在您清楚自己要更改哪个设置时才继续。</value>
+  </data>
+  <data name="Main_PrefsCsvIsTheQuadStick" xml:space="preserve">
+    <value>prefs.csv 是 QuadStick 自身的设置文件，不是游戏配置文件：它改变的是整台设备的行为，而不只是某一款游戏。应用能识别的设置会显示为真正的控件，比如数字框、复选框或下拉菜单，因此您无法输入设备会拒绝的值。应用不认识的设置，或文件中已有、精确控件无法在不改变它的情况下显示的值，会保留为纯文本框，并原样保留。将 prefs.csv 安装回设备之前总会先询问，并会备份设备上已有的文件。</value>
+  </data>
+  <data name="Main_PressAgainToOpenGoogle" xml:space="preserve">
+    <value>再次按下以打开 Google 登录。</value>
+  </data>
+  <data name="Main_PressAgainToSignIn" xml:space="preserve">
+    <value>再次按下以登录</value>
+  </data>
+  <data name="Main_PressTheLipSwitchOr" xml:space="preserve">
+    <value>用嘴唇按压唇动开关或传感器。常用于开火按钮。</value>
+  </data>
+  <data name="Main_PressVerb" xml:space="preserve">
+    <value>按下</value>
+  </data>
+  <data name="Main_PressesInARepeatingOn" xml:space="preserve">
+    <value>以开关交替的方式重复按下。</value>
+  </data>
+  <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
+    <value>问题已复制到剪贴板。</value>
+  </data>
+  <data name="Main_ProfilesYouAlreadyMadeFrom" xml:space="preserve">
+    <value>您已用此模板创建的配置文件不受影响。此操作无法撤销。</value>
+  </data>
+  <data name="Main_PuttingThisProfileInGoogle" xml:space="preserve">
+    <value>正在将此配置文件放入 Google Sheets...</value>
+  </data>
+  <data name="Main_QuadStickConnected" xml:space="preserve">
+    <value>QuadStick 已连接</value>
+  </data>
+  <data name="Main_QuadStickNotShowingUp" xml:space="preserve">
+    <value>QuadStick 没有显示出来？</value>
+  </data>
+  <data name="Main_QuadStickProfile" xml:space="preserve">
+    <value>QuadStick 配置文件</value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficial" xml:space="preserve">
+    <value>Quadstick: Config Manager（非官方）</value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficial2" xml:space="preserve">
+    <value>Quadstick: Config Manager（非官方） - </value>
+  </data>
+  <data name="Main_QuadstickConfigManagerUnofficialV" xml:space="preserve">
+    <value>Quadstick: Config Manager（非官方） - {0}</value>
+  </data>
+  <data name="Main_QuickGuide" xml:space="preserve">
+    <value>快速指南</value>
+  </data>
+  <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
+    <value>输入保持时连续快速点按。</value>
+  </data>
+  <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
+    <value>阅读隐私政策</value>
+  </data>
+  <data name="Main_ReadThePrivacyPolicyOpens" xml:space="preserve">
+    <value>阅读隐私政策，将在浏览器中打开</value>
+  </data>
+  <data name="Main_RearJoystickDirection" xml:space="preserve">
+    <value>后置摇杆，{0}</value>
+  </data>
+  <data name="Main_RecoveredProfileOpenedSaveIt" xml:space="preserve">
+    <value>已打开恢复的配置文件。保存以保留它。</value>
+  </data>
+  <data name="Main_RemoveInputI1From" xml:space="preserve">
+    <value>从第 {1} 行移除输入 {0}</value>
+  </data>
+  <data name="Main_RemoveTheBOutputSetting" xml:space="preserve">
+    <value>移除 {0} 设置</value>
+  </data>
+  <data name="Main_RemoveTheShortInputZoneB" xml:space="preserve">
+    <value>移除 {0} 映射</value>
+  </data>
+  <data name="Main_RemoveThisEmptyInputFrom" xml:space="preserve">
+    <value>从映射 {0} 中移除此空输入</value>
+  </data>
+  <data name="Main_RemoveThisInputFromMapping" xml:space="preserve">
+    <value>从映射 {0} 中移除此输入</value>
+  </data>
+  <data name="Main_RemoveThisMapping" xml:space="preserve">
+    <value>移除此映射</value>
+  </data>
+  <data name="Main_Rename" xml:space="preserve">
+    <value>重命名</value>
+  </data>
+  <data name="Main_RenameSelectedTemplate" xml:space="preserve">
+    <value>重命名所选模板</value>
+  </data>
+  <data name="Main_RenameTemplate" xml:space="preserve">
+    <value>重命名模板</value>
+  </data>
+  <data name="Main_RenamedTemplateToPathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>已将模板重命名为 {0}。</value>
+  </data>
+  <data name="Main_ResetAllSettings" xml:space="preserve">
+    <value>重置所有设置？</value>
+  </data>
+  <data name="Main_RestoreYourProfiles" xml:space="preserve">
+    <value>恢复您的配置文件？</value>
+  </data>
+  <data name="Main_Right" xml:space="preserve">
+    <value>右</value>
+  </data>
+  <data name="Main_RightBumper" xml:space="preserve">
+    <value>右肩键</value>
+  </data>
+  <data name="Main_RightMouthpieceHole" xml:space="preserve">
+    <value>右吸嘴孔</value>
+  </data>
+  <data name="Main_RightSideTube" xml:space="preserve">
+    <value>右 + 侧管</value>
+  </data>
+  <data name="Main_RightStickClick" xml:space="preserve">
+    <value>右摇杆按键</value>
+  </data>
+  <data name="Main_RightTrigger" xml:space="preserve">
+    <value>右扳机键</value>
+  </data>
+  <data name="Main_RowBRowScopeModeScope" xml:space="preserve">
+    <value>第 {0} 行范围：{1}</value>
+  </data>
+  <data name="Main_RowNotSelected" xml:space="preserve">
+    <value>{0}。空格键选择，拖动可重新排序</value>
+  </data>
+  <data name="Main_RowSelected" xml:space="preserve">
+    <value>{0}，已选中。空格键选择，拖动可重新排序</value>
+  </data>
+  <data name="Main_RowsThatPressAGame" xml:space="preserve">
+    <value>按下游戏按钮但尚无任何触发条件的行。请为每一行指定一个输入，或将其删除。</value>
+  </data>
+  <data name="Main_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Main_SaveAsTemplate" xml:space="preserve">
+    <value>另存为模板</value>
+  </data>
+  <data name="Main_SaveProfileCSV" xml:space="preserve">
+    <value>保存配置 CSV</value>
+  </data>
+  <data name="Main_SaveTemplate" xml:space="preserve">
+    <value>保存模板</value>
+  </data>
+  <data name="Main_SaveThisProfileFirstThen" xml:space="preserve">
+    <value>请先保存此配置文件，然后复制分享链接以创建其表格。</value>
+  </data>
+  <data name="Main_SaveYourChanges" xml:space="preserve">
+    <value>保存您的更改？</value>
+  </data>
+  <data name="Main_SavedTemplateFileNameFindIt" xml:space="preserve">
+    <value>已保存模板 {0}。可在主屏幕的“使用模板”下找到它。</value>
+  </data>
+  <data name="Main_SavedToSavePath" xml:space="preserve">
+    <value>已保存到 {0}。</value>
+  </data>
+  <data name="Main_Search" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="Main_SearchThisList" xml:space="preserve">
+    <value>搜索此列表</value>
+  </data>
+  <data name="Main_SelectAProblemInThe" xml:space="preserve">
+    <value>在列表中选择一个问题以复制它。请到 github.com/Bbrizly/Quadstick-Config-Manager/issues 提交。说明您做了什么，以及出了什么问题。</value>
+  </data>
+  <data name="Main_SelectATemplateToDelete" xml:space="preserve">
+    <value>请先选择要删除的模板。</value>
+  </data>
+  <data name="Main_SelectATemplateToRename" xml:space="preserve">
+    <value>请先选择要重命名的模板。</value>
+  </data>
+  <data name="Main_SelectedRowsCountSelected" xml:space="preserve">
+    <value>已选择 {0} 项</value>
+  </data>
+  <data name="Main_SendACrashReport" xml:space="preserve">
+    <value>发送崩溃报告？</value>
+  </data>
+  <data name="Main_SendReport" xml:space="preserve">
+    <value>发送报告</value>
+  </data>
+  <data name="Main_SendThisCrashReport" xml:space="preserve">
+    <value>发送此崩溃报告</value>
+  </data>
+  <data name="Main_SetItTo" xml:space="preserve">
+    <value>将其设置为</value>
+  </data>
+  <data name="Main_SetVerb" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Main_SettingChangedByThisRow" xml:space="preserve">
+    <value>此行更改的设置</value>
+  </data>
+  <data name="Main_SettingLabel" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Main_SettingRowSpoken" xml:space="preserve">
+    <value>设置 {0}：此模式运行期间，将 {1} 设为 {2}。按 Enter 键进行编辑。</value>
+  </data>
+  <data name="Main_SeverityLabelBaseName" xml:space="preserve">
+    <value>{0}：{1}</value>
+  </data>
+  <data name="Main_ShareThisSheet" xml:space="preserve">
+    <value>分享此表格？</value>
+  </data>
+  <data name="Main_ShowsTheProblems" xml:space="preserve">
+    <value>{0}。显示问题列表。</value>
+  </data>
+  <data name="Main_SideTube" xml:space="preserve">
+    <value>侧管</value>
+  </data>
+  <data name="Main_SignInToBackUp" xml:space="preserve">
+    <value>登录以进行备份</value>
+  </data>
+  <data name="Main_SimpleCards" xml:space="preserve">
+    <value>简单卡片</value>
+  </data>
+  <data name="Main_SingletonASingleSipPuff" xml:space="preserve">
+    <value>Singleton：摇杆上的单个 sip/puff 管。使用 sip 和 puff 模式加上摇杆动作。</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe" xml:space="preserve">
+    <value>在左吸嘴孔上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe2" xml:space="preserve">
+    <value>在中央吸嘴孔上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe3" xml:space="preserve">
+    <value>在右吸嘴孔上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
+  </data>
+  <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
+    <value>在侧管上进行 sip 或 puff。这里长而用力的 sip 通常用于切换配置文件，但您也可以映射它。</value>
+  </data>
+  <data name="Main_StartANewMappingOn" xml:space="preserve">
+    <value>在 {0} 上开始一个新映射</value>
+  </data>
+  <data name="Main_StartFromATemplate" xml:space="preserve">
+    <value>从模板开始</value>
+  </data>
+  <data name="Main_StartFromAWorkingProfile" xml:space="preserve">
+    <value>从一个可用的配置文件开始，而不是从零开始</value>
+  </data>
+  <data name="Main_StartedFromTemplatePathGetFileNameWithoutExtension" xml:space="preserve">
+    <value>已从模板 {0} 开始。保存以将其保留为独立的配置文件。</value>
+  </data>
+  <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
+    <value>将模拟输出下调一档并保持在那里，例如扳机或摇杆轴。</value>
+  </data>
+  <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
+    <value>将模拟输出上调一档并保持在那里，例如扳机或摇杆轴。</value>
+  </data>
+  <data name="Main_StopAsking" xml:space="preserve">
+    <value>不再询问</value>
+  </data>
+  <data name="Main_StopAskingAboutCrashReports" xml:space="preserve">
+    <value>不再询问崩溃报告</value>
+  </data>
+  <data name="Main_SwitchJacks" xml:space="preserve">
+    <value>开关插孔</value>
+  </data>
+  <data name="Main_TabMovesBetweenFieldsArrows" xml:space="preserve">
+    <value>Tab 键在字段间移动，方向键在建议列表中导航，Enter 键确认。Ctrl/Cmd+O 打开，S 保存，N 新建，Z 撤销，I 安装，D 在设备视图和列表视图之间切换，H 打开本指南。F1 也可在任何位置打开本指南。选择一个问题，或点击“修复第一个问题”按钮，会将焦点直接跳转到它。每个控件都会向屏幕阅读器播报自身。</value>
+  </data>
+  <data name="Main_ThatDoesNotLookLike" xml:space="preserve">
+    <value>这看起来不像是 Google Sheets 链接。请从浏览器地址栏粘贴完整链接。</value>
+  </data>
+  <data name="Main_ThatFolderIsAQuadStick" xml:space="preserve">
+    <value>该文件夹是一个 QuadStick 驱动器。请使用安装以安全地写入设备。</value>
+  </data>
+  <data name="Main_ThatSpreadsheetCameBackEmpty" xml:space="preserve">
+    <value>该电子表格返回为空。如果您刚刚共享它，请稍等片刻后重试。</value>
+  </data>
+  <data name="Main_ThatSpreadsheetHasNoProfile" xml:space="preserve">
+    <value>该电子表格没有配置文件标签页：单元格 A1 为空。{0}</value>
+  </data>
+  <data name="Main_ThatSpreadsheetHasNoProfile2" xml:space="preserve">
+    <value>该电子表格没有配置文件标签页：单元格 A1 的内容是“{0}”。{1}</value>
+  </data>
+  <data name="Main_TheAppCrashedLastTime" xml:space="preserve">
+    <value>应用上次崩溃了。以下是它保存的崩溃详情。这里刻意不包含任何消息文本和文件路径：只有错误类型和发生错误的函数列表。
+
+发送会将其转换为崩溃报告工具自己的格式。同时还会附上您的匿名安装 ID、报告库的版本、您的 .NET 和操作系统版本，以及您的处理器是 Intel 还是 ARM。</value>
+  </data>
+  <data name="Main_TheCommunityProfilesCardOn" xml:space="preserve">
+    <value>主屏幕上的“社区配置”卡片会搜索共享的游戏配置列表。打开该窗口并点击其中的“刷新”，会从 quadstick.com 下载列表。不会发送任何关于您的信息，最近一次的列表会保存在本机上，因此没有网络时窗口依然能打开。导入会在编辑器中打开配置文件，效果与粘贴其链接相同。它绝不会写入您的 QuadStick：仍需点击“安装”按钮，且错误仍会阻止它。</value>
+  </data>
+  <data name="Main_TheDeviceSFallbackFile" xml:space="preserve">
+    <value> · 设备的备用文件</value>
+  </data>
+  <data name="Main_TheDeviceSkipsThoseRows" xml:space="preserve">
+    <value>。设备会跳过这些行，因此仍可安装。</value>
+  </data>
+  <data name="Main_TheManageFilesCardUnder" xml:space="preserve">
+    <value>“在您的 QuadStick 上”下的“管理文件”卡片，需要 QuadStick 已挂载才能使用：它的驱动器必须像 USB 存储设备一样出现在访达或文件资源管理器中。在那里您可以将文件复制到您的配置库、打开它关联的 Google 表格，或将其删除；删除前会先备份到 QuadStickBackups。default.csv 和 prefs.csv 受保护，无法从本应用中删除。如果驱动器完全没有出现，本应用没有其他方式访问它；请参阅下方的“QuadStick 没有显示出来？”。</value>
+  </data>
+  <data name="Main_TheNameBoxAtThe" xml:space="preserve">
+    <value>编辑器顶部的名称框是配置文件在设备上的名称。请不要使用空格；.csv 文件扩展名会自动为您添加。名为 default 的配置文件比较特殊：它是设备的备用文件，应保持不变。</value>
+  </data>
+  <data name="Main_TheOnlineCopyOfThis" xml:space="preserve">
+    <value>此配置文件的在线副本为空或无法读取，因此保留了您在本机上的版本。下次保存时会替换该表格。</value>
+  </data>
+  <data name="Main_TheTabSkipped0Name" xml:space="preserve">
+    <value>标签页“{0}”已被跳过。</value>
+  </data>
+  <data name="Main_TheThreeColumnsSameColors" xml:space="preserve">
+    <value>这三列（颜色与官方电子表格相同）</value>
+  </data>
+  <data name="Main_ThenJoin" xml:space="preserve">
+    <value>，然后 </value>
+  </data>
+  <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
+    <value>以下标签页已被跳过： </value>
+  </data>
+  <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
+    <value>本应用可以发送匿名使用数据：哪些界面被使用过、安装到 QuadStick 是否成功，仅此而已。开启后，这些事件会在发生时立即发送。
+
+无论您如何选择，以下内容绝不会发送：您的配置文件、文件名、文件路径、您的 Google 账号，以及您的姓名或电脑名称。您输入的任何内容也不会被发送，除了“设置”中的反馈框，它只有在您点击“发送”时才会发送。
+
+崩溃报告是另外一回事。如果应用发生崩溃，它会在您的电脑上保存一份报告，并在您下次打开应用时询问您。在它被发送到任何地方之前，您都会先看到它。
+
+发送的数据会发往 PostHog，服务器位于美国。
+
+您可以随时在“设置”的“高级”中更改此设置。</value>
+  </data>
+  <data name="Main_ThisLinkIsAPublished" xml:space="preserve">
+    <value>此链接是一个已发布的链接，而已发布的链接只会提供单个标签页。电子表格中的其他模式标签页根本没有发送给我们，因此我们无法得知其中的内容。要导入整个配置文件，请在 Google Sheets 中将表格共享给“知道链接的任何人”，然后重新导入。</value>
+  </data>
+  <data name="Main_ThisProfileHasNoGoogle" xml:space="preserve">
+    <value>此配置文件尚无 Google 表格。请先使用“复制分享链接”来创建它。</value>
+  </data>
+  <data name="Main_ThisProfileHasUnsavedChanges" xml:space="preserve">
+    <value>此配置文件有未保存的更改。是否在离开前保存？</value>
+  </data>
+  <data name="Main_ThisProfileLivesOnThe" xml:space="preserve">
+    <value>此配置文件存放在 QuadStick 上。请使用安装以安全地写回；另存为会在您的配置库中留一份副本。</value>
+  </data>
+  <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
+    <value>此行设置的是 QuadStick 的一项设置，而不是按下按钮。它在此模式运行期间生效。</value>
+  </data>
+  <data name="Main_ThisSpreadsheet" xml:space="preserve">
+    <value>此电子表格</value>
+  </data>
+  <data name="Main_TitleBodyPressEscapeTo" xml:space="preserve">
+    <value>{0}。{1}。按 Escape 键关闭。</value>
+  </data>
+  <data name="Main_TitleCount" xml:space="preserve">
+    <value>{0}（{1}）</value>
+  </data>
+  <data name="Main_TitleCountOptionsOpensThis" xml:space="preserve">
+    <value>{0}，{1} 个选项。展开此类别。</value>
+  </data>
+  <data name="Main_ToJoiner" xml:space="preserve">
+    <value>到</value>
+  </data>
+  <data name="Main_ToTheBottom" xml:space="preserve">
+    <value>到底部</value>
+  </data>
+  <data name="Main_ToTheComputer" xml:space="preserve">
+    <value>到电脑</value>
+  </data>
+  <data name="Main_ToTheTop" xml:space="preserve">
+    <value>到顶部</value>
+  </data>
+  <data name="Main_TokenNotUsedInThis" xml:space="preserve">
+    <value>{0}，此模式未使用</value>
+  </data>
+  <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
+    <value>关闭由 toggle 或 delayed_latch 保持开启的输出。</value>
+  </data>
+  <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
+    <value>同时使用两个或以上的孔，三个一起使用，或右孔配合侧管使用。适合那些您绝不希望意外触发的操作。</value>
+  </data>
+  <data name="Main_TypeACustomValue" xml:space="preserve">
+    <value>。输入自定义值。</value>
+  </data>
+  <data name="Main_TypeACustomValue2" xml:space="preserve">
+    <value>输入自定义值</value>
+  </data>
+  <data name="Main_TypeAValueOrLeave" xml:space="preserve">
+    <value>输入一个值，或留空以返回</value>
+  </data>
+  <data name="Main_TypeAValueOrLeave2" xml:space="preserve">
+    <value>输入一个值，留空则取消</value>
+  </data>
+  <data name="Main_TypeYourOwn" xml:space="preserve">
+    <value>＋ 输入自定义…</value>
+  </data>
+  <data name="Main_USBAPort" xml:space="preserve">
+    <value>USB-A 端口</value>
+  </data>
+  <data name="Main_USBBPort" xml:space="preserve">
+    <value>USB-B 端口</value>
+  </data>
+  <data name="Main_USBDevices" xml:space="preserve">
+    <value>USB 设备</value>
+  </data>
+  <data name="Main_UnnamedMode" xml:space="preserve">
+    <value>（未命名模式）</value>
+  </data>
+  <data name="Main_UnsavedWorkFromLastTime" xml:space="preserve">
+    <value>已恢复上次未保存的工作（{0}）。可从下方按钮打开，或关闭以放弃。</value>
+  </data>
+  <data name="Main_UnusedFree" xml:space="preserve">
+    <value>未使用（{0}）</value>
+  </data>
+  <data name="Main_UseTemplate" xml:space="preserve">
+    <value>使用模板</value>
+  </data>
+  <data name="Main_UsingDeviceView" xml:space="preserve">
+    <value>正在使用设备视图</value>
+  </data>
+  <data name="Main_VVMajorVMinor" xml:space="preserve">
+    <value>v{0}.{1}.{2} · MIT · 与 QuadStick 无关联</value>
+  </data>
+  <data name="Main_ViewButton" xml:space="preserve">
+    <value>查看按钮</value>
+  </data>
+  <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
+    <value>在您激活后等待片刻，然后按下。</value>
+  </data>
+  <data name="Main_WhatIsAMode" xml:space="preserve">
+    <value>什么是模式？</value>
+  </data>
+  <data name="Main_WhatIsAProfile" xml:space="preserve">
+    <value>什么是配置文件？</value>
+  </data>
+  <data name="Main_WhenYou" xml:space="preserve">
+    <value>当您</value>
+  </data>
+  <data name="Main_WhenYou2" xml:space="preserve">
+    <value>当您</value>
+  </data>
+  <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
+    <value>文字以原始列表视图名称显示。切换为通俗英语。</value>
+  </data>
+  <data name="Main_WordsAreShownAsXbox" xml:space="preserve">
+    <value>文字以 Xbox 风格按钮名称显示。切换为原始列表视图名称。</value>
+  </data>
+  <data name="Main_WordsAreShownInPlain" xml:space="preserve">
+    <value>文字以通俗英语显示。切换为 Xbox 风格按钮名称。</value>
+  </data>
+  <data name="Main_WordsListNames" xml:space="preserve">
+    <value>文字：列表名称</value>
+  </data>
+  <data name="Main_WordsPlainEnglish" xml:space="preserve">
+    <value>文字：通俗英语</value>
+  </data>
+  <data name="Main_WordsXboxStyle" xml:space="preserve">
+    <value>文字：Xbox 风格</value>
+  </data>
+  <data name="Main_XButton" xml:space="preserve">
+    <value>X 按钮</value>
+  </data>
+  <data name="Main_XboxButton" xml:space="preserve">
+    <value>Xbox 按钮</value>
+  </data>
+  <data name="Main_YButton" xml:space="preserve">
+    <value>Y 按钮</value>
+  </data>
+  <data name="Main_YellowOUTPUTTheGameButton" xml:space="preserve">
+    <value>黄色，OUTPUT（输出）：游戏按钮或动作。PlayStation 名称（x, circle, left_1）、Xbox 名称（A, B, left_trigger）、鼠标（mouse_up, mouse_left_button）、键盘（kb_space），以及像 mouse_speed 这样的设备设置名称。这里填设置名称，会为整个模式设定该设置：设备会忽略功能单元格，将下一个单元格读作值，而不是输入。
+粉色，FUNCTION（功能）：按下时的行为方式。
+  normal：输入激活时按下。
+  toggle：激活一次锁定为按下，再次激活释放。适合瞄准而不必一直吸气。
+  repeat [rate] [delay]：按住时快速连续点击。"repeat 5 2000" 先按住 2 秒，再以每秒 5 次的速度点击。
+  pulse [ms] [count]：每次激活按一次短按。"pulse 50 2" 是连按两次。
+  delayed_latch [ms]：短按 = 普通按下，长按 = 锁定。一个输入产生两种行为。
+  tap / delay_on：按下时长不同，将一个输入拆分为两个输出。
+  force_off：释放另一个已锁定的输出。greater_than / less_than：阈值触发。duty、increment_value、decrement_value：模拟量控制。
+蓝色，INPUTS（输入）：您的嘴部动作。mp_ 开头的名称是吹嘴上的孔（如 mp_left_sip）。带 _soft 的变体在轻压时触发。right_sip / right_puff 是侧管。lip 是嘴唇开关。left/right/up/down 和 N/NE/… 是摇杆方向。同一行中有多个输入时表示一个序列：依次从左到右完成，由最后一个触发输出。</value>
+  </data>
+  <data name="Main_YesContinue" xml:space="preserve">
+    <value>是，继续</value>
+  </data>
+  <data name="Main_YesShareAnonymousUsageData" xml:space="preserve">
+    <value>是，分享匿名使用数据</value>
+  </data>
+  <data name="Main_YesShareUsageData" xml:space="preserve">
+    <value>是，分享使用数据</value>
+  </data>
+  <data name="Main_YouHaveNotSavedAny" xml:space="preserve">
+    <value>您还没有保存任何模板。打开一个配置文件，使用“另存为模板”来创建一个。</value>
+  </data>
+  <data name="Main_YourSavedTemplates" xml:space="preserve">
+    <value>您保存的模板</value>
+  </data>
+  <data name="Main_Zone" xml:space="preserve">
+    <value>{0}。{1}。{2}。{3} 按 Enter 编辑。</value>
+  </data>
+  <data name="Main_ZoneSelected" xml:space="preserve">
+    <value>{0}。已选中。{1}。{2}。{3} 按 Enter 编辑。</value>
+  </data>
+  <data name="Main_ZoneTitleInZoneCountNot" xml:space="preserve">
+    <value>{0}，{1} 未使用。在设备视图中打开此部分。</value>
+  </data>
+  <data name="Modes_AModeIsAFull" xml:space="preserve">
+    <value>模式是您输入的完整布局。游戏时可用侧管切换，或使用 increment_mode 和 decrement_mode 切换。</value>
+  </data>
+  <data name="Modes_AModeNeedsAName" xml:space="preserve">
+    <value>模式需要一个名称。旧名称仍然保留。</value>
+  </data>
+  <data name="Modes_AddAMode" xml:space="preserve">
+    <value>添加模式</value>
+  </data>
+  <data name="Modes_AddAPreferencesSheet" xml:space="preserve">
+    <value>+ 添加 Preferences 表</value>
+  </data>
+  <data name="Modes_AddAPreferencesSheetWhere" xml:space="preserve">
+    <value>添加 Preferences 表，用于存放 Sip 和 Puff 压力等设备设置</value>
+  </data>
+  <data name="Modes_AddMode" xml:space="preserve">
+    <value>+ 添加模式</value>
+  </data>
+  <data name="Modes_CloseModes" xml:space="preserve">
+    <value>关闭模式</value>
+  </data>
+  <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
+    <value>连接已清除。设备将回退到 USB 数据线。</value>
+  </data>
+  <data name="Modes_ConnectionForModeOrdinalWhere" xml:space="preserve">
+    <value>模式 {0} 的连接。此模式的按键操作发送到哪里。仅使用 Bluetooth 的模式不会通过数据线发送鼠标或键盘信号。</value>
+  </data>
+  <data name="Modes_ConnectionSetToPickedItem2" xml:space="preserve">
+    <value>连接已设为 {0}。</value>
+  </data>
+  <data name="Modes_Done" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="Modes_MakeACopyOfName" xml:space="preserve">
+    <value>复制 {0}</value>
+  </data>
+  <data name="Modes_ModeAdded" xml:space="preserve">
+    <value>模式已添加。</value>
+  </data>
+  <data name="Modes_ModeCopied" xml:space="preserve">
+    <value>模式已复制。</value>
+  </data>
+  <data name="Modes_ModeDeletedControlZUndoes" xml:space="preserve">
+    <value>模式已删除。按 Control Z 可撤销。</value>
+  </data>
+  <data name="Modes_ModeMoved" xml:space="preserve">
+    <value>模式已移动。</value>
+  </data>
+  <data name="Modes_ModeRenamed" xml:space="preserve">
+    <value>模式已重命名。</value>
+  </data>
+  <data name="Modes_Modes" xml:space="preserve">
+    <value>模式</value>
+  </data>
+  <data name="Modes_NameOfModeOrdinal" xml:space="preserve">
+    <value>模式 {0} 的名称</value>
+  </data>
+  <data name="Modes_NeitherSendsNothing" xml:space="preserve">
+    <value>都不是，不发送任何信号</value>
+  </data>
+  <data name="Modes_NotSetUSBCable" xml:space="preserve">
+    <value>未设置（USB 数据线）</value>
+  </data>
+  <data name="Modes_Position1" xml:space="preserve">
+    <value>{0}。</value>
+  </data>
+  <data name="Modes_PreferencesDeviceSettings" xml:space="preserve">
+    <value>Preferences（设备设置）</value>
+  </data>
+  <data name="Modes_PreferencesSheetRemovedControlZ" xml:space="preserve">
+    <value>Preferences 表已移除。按 Control Z 可撤销。</value>
+  </data>
+  <data name="Modes_ReallyDelete" xml:space="preserve">
+    <value>确定要删除吗？</value>
+  </data>
+  <data name="Modes_ReallyDeleteName" xml:space="preserve">
+    <value>确认删除 {0}</value>
+  </data>
+  <data name="Modes_SheetChannelNotAWord" xml:space="preserve">
+    <value>{0}（设备无法识别的词）</value>
+  </data>
+  <data name="Modes_ThePreferencesSheet" xml:space="preserve">
+    <value>Preferences 表</value>
+  </data>
+  <data name="Modes_USBAndBluetooth" xml:space="preserve">
+    <value>USB 和 Bluetooth</value>
+  </data>
+  <data name="Modes_USBCable" xml:space="preserve">
+    <value>USB 数据线</value>
+  </data>
+  <data name="Names_ANameHasToBe" xml:space="preserve">
+    <value>名称长度必须为 1 到 {0} 个字符。</value>
+  </data>
+  <data name="Names_AnOutput" xml:space="preserve">
+    <value>一个输出</value>
+  </data>
+  <data name="Names_CustomOutputNames" xml:space="preserve">
+    <value>自定义输出名称</value>
+  </data>
+  <data name="Names_MappingNowReal_one" xml:space="preserve">
+    <value>{0} 个映射现在显示真实按钮。</value>
+  </data>
+  <data name="Names_MappingNowReal_other" xml:space="preserve">
+    <value>{0} 个映射现在显示真实按钮。</value>
+  </data>
+  <data name="Names_NameIsAlreadyWhatThe" xml:space="preserve">
+    <value>“{0}”已经是 QuadStick 对自己某个按钮的称呼。请换一个词。</value>
+  </data>
+  <data name="Names_NameIsNowHumanizeToken" xml:space="preserve">
+    <value>{0} 现在是 {1}。</value>
+  </data>
+  <data name="Names_NewName" xml:space="preserve">
+    <value>新名称</value>
+  </data>
+  <data name="Names_NewNameI" xml:space="preserve">
+    <value>新名称 {0}</value>
+  </data>
+  <data name="Names_NoNamesYetClickAdd" xml:space="preserve">
+    <value>还没有名称。点击“添加行”，选择一个输出，然后为它输入您自己的名字。该名字会出现在每个输出选择器顶部的“自定义”下。文件中仍保存着真实按钮，因此 QuadStick 的运作方式不变。</value>
+  </data>
+  <data name="Names_NotUsedYet" xml:space="preserve">
+    <value>尚未使用</value>
+  </data>
+  <data name="Names_OpenOrCreateAProfile" xml:space="preserve">
+    <value>请先打开或创建一个配置文件。</value>
+  </data>
+  <data name="Names_OutputRealButton" xml:space="preserve">
+    <value>输出（真实按钮）</value>
+  </data>
+  <data name="Names_OutputThatNameStandsFor" xml:space="preserve">
+    <value>{0} 所代表的输出</value>
+  </data>
+  <data name="Names_PickTheOutputThenType" xml:space="preserve">
+    <value>选择输出，然后为它输入您自己的名字。</value>
+  </data>
+  <data name="Names_RemoveTheNameName" xml:space="preserve">
+    <value>移除名称 {0}</value>
+  </data>
+  <data name="Names_RemoveThisName" xml:space="preserve">
+    <value>移除此名称</value>
+  </data>
+  <data name="Names_Removed" xml:space="preserve">
+    <value>已移除 {0}。</value>
+  </data>
+  <data name="Names_ThisProfileAlreadyHasA" xml:space="preserve">
+    <value>此配置文件中已存在名为“{0}”的名称。</value>
+  </data>
+  <data name="Names_YourNameForHumanizeToken" xml:space="preserve">
+    <value>您为 {0} 起的名字</value>
+  </data>
+  <data name="Names_YourNameForIt" xml:space="preserve">
+    <value>您为它起的名字</value>
+  </data>
+  <data name="Names_YourNameForThisOutput" xml:space="preserve">
+    <value>您为此输出起的名字</value>
+  </data>
+  <data name="Outputs_DeviceSettings" xml:space="preserve">
+    <value>设备设置</value>
+  </data>
+  <data name="Outputs_DeviceSettings2" xml:space="preserve">
+    <value>设备设置</value>
+  </data>
+  <data name="Outputs_FunctionKeys" xml:space="preserve">
+    <value>功能键</value>
+  </data>
+  <data name="Outputs_FunctionKeys2" xml:space="preserve">
+    <value>功能键</value>
+  </data>
+  <data name="Outputs_ModeSwitching" xml:space="preserve">
+    <value>模式切换</value>
+  </data>
+  <data name="Outputs_ModeSwitching2" xml:space="preserve">
+    <value>模式切换</value>
+  </data>
+  <data name="Outputs_ModifierKeys" xml:space="preserve">
+    <value>修饰键</value>
+  </data>
+  <data name="Outputs_ModifierKeys2" xml:space="preserve">
+    <value>修饰键</value>
+  </data>
+  <data name="Outputs_NumberPad" xml:space="preserve">
+    <value>数字键盘</value>
+  </data>
+  <data name="Outputs_NumberPad2" xml:space="preserve">
+    <value>数字键盘</value>
+  </data>
+  <data name="Outputs_OtherKeys" xml:space="preserve">
+    <value>其他按键</value>
+  </data>
+  <data name="Outputs_OtherKeys2" xml:space="preserve">
+    <value>其他按键</value>
+  </data>
+  <data name="Outputs_TVRemote" xml:space="preserve">
+    <value>电视遥控器</value>
+  </data>
+  <data name="Outputs_TVRemote2" xml:space="preserve">
+    <value>电视遥控器</value>
+  </data>
+  <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
+    <value>关于 {0}：{1}</value>
+  </data>
+  <data name="Prefs_ActiveOnlyInThisMode" xml:space="preserve">
+    <value>仅在此模式下生效</value>
+  </data>
+  <data name="Prefs_ActiveWhileThisProfileIs" xml:space="preserve">
+    <value>在此配置文件加载期间生效</value>
+  </data>
+  <data name="Prefs_CarefulDefLabelDefRisk" xml:space="preserve">
+    <value>注意，{0}：{1}</value>
+  </data>
+  <data name="Prefs_CarefulDefRisk" xml:space="preserve">
+    <value>注意：{0}</value>
+  </data>
+  <data name="Prefs_DefCategorySettings" xml:space="preserve">
+    <value>{0} 设置</value>
+  </data>
+  <data name="Prefs_DefLabelWrittenAsDef" xml:space="preserve">
+    <value>{0}，写作 {1}</value>
+  </data>
+  <data name="Prefs_DeleteRowBRow" xml:space="preserve">
+    <value>删除行 {0}</value>
+  </data>
+  <data name="Prefs_DeleteThisWholeRow" xml:space="preserve">
+    <value>删除整行</value>
+  </data>
+  <data name="Prefs_DescriptionForRowSaved" xml:space="preserve">
+    <value>行 {0} 的描述。保存在文件中，QuadStick 会忽略它</value>
+  </data>
+  <data name="Prefs_DeviceWideSettings" xml:space="preserve">
+    <value>设备全局设置</value>
+  </data>
+  <data name="Prefs_HexCode" xml:space="preserve">
+    <value>十六进制代码</value>
+  </data>
+  <data name="Prefs_HexCodeForRow" xml:space="preserve">
+    <value>行 {0} 的十六进制代码</value>
+  </data>
+  <data name="Prefs_MeasuredInDefUnit" xml:space="preserve">
+    <value>单位为 {0}。</value>
+  </data>
+  <data name="Prefs_NameColumnNameForRowB" xml:space="preserve">
+    <value>行 {1} 的 {0} 名称</value>
+  </data>
+  <data name="Prefs_NotesForRow" xml:space="preserve">
+    <value>行 {0} 的备注</value>
+  </data>
+  <data name="Prefs_NotesForRowSaved" xml:space="preserve">
+    <value>行 {0} 的备注。保存在文件中，QuadStick 会忽略它</value>
+  </data>
+  <data name="Prefs_PhraseExplain" xml:space="preserve">
+    <value>{0}。{1}</value>
+  </data>
+  <data name="Prefs_SettingValueForRow" xml:space="preserve">
+    <value>行 {0} 的设置值</value>
+  </data>
+  <data name="Prefs_SettingValueForRowRow" xml:space="preserve">
+    <value>行 {0} 的设置值</value>
+  </data>
+  <data name="Prefs_SwapTheControlForA" xml:space="preserve">
+    <value>将控件切换为普通输入框，适用于测试范围之外的值。</value>
+  </data>
+  <data name="Prefs_TheseSettingsApplyWhileThis" xml:space="preserve">
+    <value>这些设置仅在运行此配置文件期间生效，当加载其他配置文件时会恢复设备自身的设置。</value>
+  </data>
+  <data name="Prefs_ThisFileIsTheQuadStick" xml:space="preserve">
+    <value>此文件是 QuadStick 自身的设置。此处的每一项更改都会应用于整台设备，作用于每个配置文件。</value>
+  </data>
+  <data name="Prefs_ThisIsUsuallySetTo" xml:space="preserve">
+    <value>此项通常设为 {0}。您的设备中可能是其他值。</value>
+  </data>
+  <data name="Prefs_TypeAnExactValue" xml:space="preserve">
+    <value>输入确切的值</value>
+  </data>
+  <data name="Prefs_TypeAnExactValueFor" xml:space="preserve">
+    <value>为 {0} 输入确切的值</value>
+  </data>
+  <data name="Prefs_UnitsForRow" xml:space="preserve">
+    <value>行 {0} 的单位</value>
+  </data>
+  <data name="Review_ASettingSNameUsed" xml:space="preserve">
+    <value>设置的名称，此处用于为此模式覆盖该设置</value>
+  </data>
+  <data name="Review_AddItAsAWorking" xml:space="preserve">
+    <value>将其添加为可用模式</value>
+  </data>
+  <data name="Review_AddTheTabTabName" xml:space="preserve">
+    <value>将标签页 {0} 添加到此配置文件中作为可用模式，方法是在其 A1 单元格中写入 Profile Name</value>
+  </data>
+  <data name="Review_AddedTheTabNameTab" xml:space="preserve">
+    <value>已将“{0}”标签页添加为模式。</value>
+  </data>
+  <data name="Review_AddingItChangesCellA1" xml:space="preserve">
+    <value>添加它会更改 A1 单元格。标签页中的其他内容将按您所写的原样导入。</value>
+  </data>
+  <data name="Review_AndYourPreferences" xml:space="preserve">
+    <value>，以及您的 Preferences</value>
+  </data>
+  <data name="Review_CToJInputsIn" xml:space="preserve">
+    <value>C 到 J  按顺序输入</value>
+  </data>
+  <data name="Review_CToJIsRoom" xml:space="preserve">
+    <value>C 到 J 是最多 8 个输入的空间，并非必须填满。大多数行只用 C 一列，那就是一个简单的触发。当一行填了不止一个时，它们构成一个序列：从左到右依次完成，由最后一个触发输出。中间的空单元格会被忽略。</value>
+  </data>
+  <data name="Review_CellMeaningRowColIsBindingThe" xml:space="preserve">
+    <value>{0}，QuadStick 无法识别这个词</value>
+  </data>
+  <data name="Review_CellTheQuadStickWillTreat" xml:space="preserve">
+    <value>QuadStick 实际处理方式与其读取内容不同的单元格</value>
+  </data>
+  <data name="Review_CellsTheQuadStickWillTreat" xml:space="preserve">
+    <value>QuadStick 实际处理方式与其读取内容不同的单元格</value>
+  </data>
+  <data name="Review_ClearIt" xml:space="preserve">
+    <value>清除</value>
+  </data>
+  <data name="Review_CloseTheImportReviewEvery" xml:space="preserve">
+    <value>关闭导入审阅。您给出的每个答案都已应用到背后的配置文件中</value>
+  </data>
+  <data name="Review_ContentsOfCellWhereMeaning" xml:space="preserve">
+    <value>单元格 {0} 的内容，{1}</value>
+  </data>
+  <data name="Review_Done" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="Review_EmptyCellWhere" xml:space="preserve">
+    <value>空单元格 {0}</value>
+  </data>
+  <data name="Review_GoBackToTheSimple" xml:space="preserve">
+    <value>返回简单视图</value>
+  </data>
+  <data name="Review_HelperTabs_one" xml:space="preserve">
+    <value>{0}   此标签页是备注，不是绑定。QMP 和 Sheets 插件写入此标签页供您阅读，您的 QuadStick 从不加载它。省略它不会丢失任何内容。</value>
+  </data>
+  <data name="Review_HelperTabs_other" xml:space="preserve">
+    <value>{0}   这些标签页是备注，不是绑定。QMP 和 Sheets 插件写入这些标签页供您阅读，您的 QuadStick 从不加载它们。省略它们不会丢失任何内容。</value>
+  </data>
+  <data name="Review_ImportReview" xml:space="preserve">
+    <value>导入审阅</value>
+  </data>
+  <data name="Review_InfraredCommands" xml:space="preserve">
+    <value>Infrared 命令</value>
+  </data>
+  <data name="Review_IssueCellWordIsNow" xml:space="preserve">
+    <value>{0}   “{1}”现在是此行自己的名称，位于 L 列。</value>
+  </data>
+  <data name="Review_IssueCellWordLeftAs" xml:space="preserve">
+    <value>{0}   “{1}”保持原样。QuadStick 会忽略它。</value>
+  </data>
+  <data name="Review_IssueCellWordMovedInto" xml:space="preserve">
+    <value>{0}   “{1}”已移入备注列。</value>
+  </data>
+  <data name="Review_KNoteLYourName" xml:space="preserve">
+    <value>K  备注   L  您为该行起的名字   M 及以后  从不读取</value>
+  </data>
+  <data name="Review_KeepValueAsThisRow" xml:space="preserve">
+    <value>将“{0}”保留为此行自己的名称，位于 L 列，QuadStick 从不查看该列</value>
+  </data>
+  <data name="Review_KeepWordAsThisRow" xml:space="preserve">
+    <value>将“{0}”保留为此行自己的名称，位于 L 列，QuadStick 从不查看该列</value>
+  </data>
+  <data name="Review_LeaveIt" xml:space="preserve">
+    <value>保留</value>
+  </data>
+  <data name="Review_LeaveItOut" xml:space="preserve">
+    <value>省略它</value>
+  </data>
+  <data name="Review_LeaveTheTabTabName" xml:space="preserve">
+    <value>将标签页 {0} 排除在此配置文件之外，与 QuadStick 的做法一致</value>
+  </data>
+  <data name="Review_LeaveWordWhereItIs" xml:space="preserve">
+    <value>让“{0}”保持原位，并在编辑器中保留其警告</value>
+  </data>
+  <data name="Review_LineTheQuadStickWouldNot" xml:space="preserve">
+    <value>QuadStick 不会读取的行</value>
+  </data>
+  <data name="Review_LinesTheQuadStickWouldNot" xml:space="preserve">
+    <value>QuadStick 不会读取的行</value>
+  </data>
+  <data name="Review_MakeThisTheRowS" xml:space="preserve">
+    <value>将其设为该行的名称</value>
+  </data>
+  <data name="Review_ModeIsNamedAfterIts" xml:space="preserve">
+    <value>模式以其表格标签页命名</value>
+  </data>
+  <data name="Review_ModeRModeNumberIsCalled" xml:space="preserve">
+    <value>模式 {0} 被称为“{1}”，取自其表格标签页。该模式的名称单元格为空。</value>
+  </data>
+  <data name="Review_ModeRModeNumberIsCalled2" xml:space="preserve">
+    <value>模式 {0} 被称为“{1}”，取自其表格标签页。它的名称单元格写着“{2}”，这是模板自带的名称，或是另一个模式名称的副本。</value>
+  </data>
+  <data name="Review_ModesAreNamedAfterTheir" xml:space="preserve">
+    <value>模式以其表格标签页命名</value>
+  </data>
+  <data name="Review_MoreThanOneModeEach" xml:space="preserve">
+    <value>不止一个模式各自带有这些名称</value>
+  </data>
+  <data name="Review_MoreThanOneModeIs" xml:space="preserve">
+    <value>不止一个模式被命名为</value>
+  </data>
+  <data name="Review_MoveItEarlier" xml:space="preserve">
+    <value>提前移动</value>
+  </data>
+  <data name="Review_MoveItLater" xml:space="preserve">
+    <value>推后移动</value>
+  </data>
+  <data name="Review_MoveThisToTheNote" xml:space="preserve">
+    <value>将其移到备注列</value>
+  </data>
+  <data name="Review_MoveToNotes" xml:space="preserve">
+    <value>移到备注</value>
+  </data>
+  <data name="Review_MoveValueFromWhereInto" xml:space="preserve">
+    <value>将“{0}”从 {1} 移到备注列，QuadStick 从不查看该列</value>
+  </data>
+  <data name="Review_MoveValueToColumnLetterTarget" xml:space="preserve">
+    <value>将“{0}”移到 {1}{2}，即在该行输入序列中{3}一步</value>
+  </data>
+  <data name="Review_MoveWordIntoTheNotes" xml:space="preserve">
+    <value>将“{0}”移入备注列，QuadStick 从不查看该列</value>
+  </data>
+  <data name="Review_MovedValueFromWhereInto" xml:space="preserve">
+    <value>已将“{0}”从 {1} 移到备注列。</value>
+  </data>
+  <data name="Review_MovedValueFromWhereInto2" xml:space="preserve">
+    <value>已将“{0}”从 {1} 移到此行的名称。</value>
+  </data>
+  <data name="Review_MovedWordIntoTheNotes" xml:space="preserve">
+    <value>已将“{0}”移入备注列。</value>
+  </data>
+  <data name="Review_NeverReadByTheQuadStick" xml:space="preserve">
+    <value>QuadStick 从不读取</value>
+  </data>
+  <data name="Review_NoCellPicked" xml:space="preserve">
+    <value>未选择单元格</value>
+  </data>
+  <data name="Review_NoCellPickedClickOne" xml:space="preserve">
+    <value>未选择单元格。请点击一个，或按 Tab 切换到表格并使用方向键。</value>
+  </data>
+  <data name="Review_NotABindingRowSo" xml:space="preserve">
+    <value>不是绑定行，因此 QuadStick 不会在此读取任何内容</value>
+  </data>
+  <data name="Review_NotReadOnASettings" xml:space="preserve">
+    <value>在设置表中不会被读取</value>
+  </data>
+  <data name="Review_NotReadOnASettings2" xml:space="preserve">
+    <value>在设置行中不会被读取</value>
+  </data>
+  <data name="Review_NotReadThisTabWas" xml:space="preserve">
+    <value>未读取，此标签页被排除在外</value>
+  </data>
+  <data name="Review_NoteNeverReadByThe" xml:space="preserve">
+    <value>备注，QuadStick 从不读取</value>
+  </data>
+  <data name="Review_NothingPressesBOutputNow" xml:space="preserve">
+    <value> 现在没有任何操作按下“{0}”，因此 QuadStick 不会触发它。</value>
+  </data>
+  <data name="Review_OnlyPartOfTheSpreadsheet" xml:space="preserve">
+    <value>只有部分电子表格可以被读取</value>
+  </data>
+  <data name="Review_PartOfTheRowThat" xml:space="preserve">
+    <value>该行中用于打开模式的部分</value>
+  </data>
+  <data name="Review_SaveCell" xml:space="preserve">
+    <value>保存单元格</value>
+  </data>
+  <data name="Review_ShowTheSpreadsheetWithThe" xml:space="preserve">
+    <value>显示电子表格，并标出应用的读取结果</value>
+  </data>
+  <data name="Review_ShowingTheFirstShownRows" xml:space="preserve">
+    <value>正在显示 {1} 中的前 {0} 行。其余部分以相同方式导入。</value>
+  </data>
+  <data name="Review_SimpleView" xml:space="preserve">
+    <value>简单视图</value>
+  </data>
+  <data name="Review_SkippedByTheQuadStickOn" xml:space="preserve">
+    <value>在设置行中被 QuadStick 跳过</value>
+  </data>
+  <data name="Review_SubjectNamesThatIsAllowed" xml:space="preserve">
+    <value>{0} {1}。这是允许的：您的 QuadStick 通过文件中的顺序而非名称来区分模式，因此这些是各自独立的模式，且全部已导入。如果想在屏幕上区分它们，可以在“模式”中重命名。</value>
+  </data>
+  <data name="Review_SummaryNoProfileDataWas" xml:space="preserve">
+    <value>{0} 没有配置文件数据被跳过。</value>
+  </data>
+  <data name="Review_SwapValueWithNeighbourMoving" xml:space="preserve">
+    <value>将“{0}”与“{1}”互换，使其在该行输入序列中{2}一步</value>
+  </data>
+  <data name="Review_SwappedValueAndNeighbourIn" xml:space="preserve">
+    <value>已在行 {2} 中交换“{0}”和“{1}”。</value>
+  </data>
+  <data name="Review_TabDidNotComeIn" xml:space="preserve">
+    <value>标签页未导入</value>
+  </data>
+  <data name="Review_TabIsNotProfileData" xml:space="preserve">
+    <value>标签页不是配置文件数据</value>
+  </data>
+  <data name="Review_TabNameCellA1Has" xml:space="preserve">
+    <value>“{0}”   A1 单元格必须写“Profile Name”。您的单元格中是其他文字，因此这个标签页对应用和您的 QuadStick 来说都不是一个模式。目前两者都不会运行它。</value>
+  </data>
+  <data name="Review_TabNameIsNowA" xml:space="preserve">
+    <value>“{0}”现在是此配置文件中的一个模式。其 A1 单元格已写为“Profile Name”，替换了您原来的文字。</value>
+  </data>
+  <data name="Review_TabNameLeftOutBecause" xml:space="preserve">
+    <value>“{0}”，被排除在外，因为 A1 单元格没有标明表格类型：</value>
+  </data>
+  <data name="Review_TabNameWasAddedAs" xml:space="preserve">
+    <value>“{0}”已被添加为模式。</value>
+  </data>
+  <data name="Review_TabNameWasLeftOut" xml:space="preserve">
+    <value>“{0}”被排除在外，与您的 QuadStick 目前的做法一致。</value>
+  </data>
+  <data name="Review_TabNameWasLeftOut2" xml:space="preserve">
+    <value>“{0}”被排除在外。</value>
+  </data>
+  <data name="Review_TabsAreNotProfileData" xml:space="preserve">
+    <value>标签页不是配置文件数据</value>
+  </data>
+  <data name="Review_TabsDidNotComeIn" xml:space="preserve">
+    <value>标签页未导入</value>
+  </data>
+  <data name="Review_ThatChangeWasUndone" xml:space="preserve">
+    <value>该更改已撤销。</value>
+  </data>
+  <data name="Review_TheQuadStickDoesNotKnow" xml:space="preserve">
+    <value>QuadStick 无法识别这个词</value>
+  </data>
+  <data name="Review_TheSettingSName" xml:space="preserve">
+    <value>设置的名称</value>
+  </data>
+  <data name="Review_TheSettingSValue" xml:space="preserve">
+    <value>设置的值</value>
+  </data>
+  <data name="Review_TheSettingSValue2" xml:space="preserve">
+    <value>设置的值</value>
+  </data>
+  <data name="Review_TheWordThatMakesThis" xml:space="preserve">
+    <value>使此表成为设置表的关键词</value>
+  </data>
+  <data name="Review_TheWordThatMakesThis2" xml:space="preserve">
+    <value>使其成为模式的关键词。更改它，该模式就会离开配置文件</value>
+  </data>
+  <data name="Review_ThisModeSName" xml:space="preserve">
+    <value>此模式的名称</value>
+  </data>
+  <data name="Review_UndidTheLastCellChange" xml:space="preserve">
+    <value>已撤销上一次单元格更改。</value>
+  </data>
+  <data name="Review_UndidTheLastImportChange" xml:space="preserve">
+    <value>已撤销上一次导入更改。</value>
+  </data>
+  <data name="Review_Undo" xml:space="preserve">
+    <value>撤销</value>
+  </data>
+  <data name="Review_Undo2" xml:space="preserve">
+    <value>撤销</value>
+  </data>
+  <data name="Review_UndoThisChangeAndAsk" xml:space="preserve">
+    <value>撤销此更改并重新询问：{0}</value>
+  </data>
+  <data name="Review_UndoThisChangeLastGridEdit" xml:space="preserve">
+    <value>撤销此更改：{0}</value>
+  </data>
+  <data name="Review_UnnamedMode" xml:space="preserve">
+    <value>（未命名模式）</value>
+  </data>
+  <data name="Review_UseAsThisRowS" xml:space="preserve">
+    <value>用作此行的名称</value>
+  </data>
+  <data name="Review_WeReadYourSheet" xml:space="preserve">
+    <value>我们已读取您的表格。</value>
+  </data>
+  <data name="Review_WhatCameIn" xml:space="preserve">
+    <value>已导入的内容</value>
+  </data>
+  <data name="Review_WordIsNowThisRow" xml:space="preserve">
+    <value>“{0}”现在是此行的名称。</value>
+  </data>
+  <data name="Review_WordIsNowThisRow2" xml:space="preserve">
+    <value>“{0}”现在是此行自己的名称，位于 L 列。</value>
+  </data>
+  <data name="Review_WordMovedIntoTheNotes" xml:space="preserve">
+    <value>“{0}”已移入备注列。</value>
+  </data>
+  <data name="Review_WordWasLeftWhereIt" xml:space="preserve">
+    <value>“{0}”保持原位。</value>
+  </data>
+  <data name="Review_YourAnswersAreAlreadyPart" xml:space="preserve">
+    <value>您的答案已经成为配置文件的一部分。目前还没有保存到磁盘，编辑器中的 Control Z 可以撤销其中任何一项。</value>
+  </data>
+  <data name="Review_YourNameForTheRow" xml:space="preserve">
+    <value>您为该行起的名字，QuadStick 从不读取</value>
+  </data>
+  <data name="Review_YourSheetCameInClean" xml:space="preserve">
+    <value>您的表格已干净地导入。</value>
+  </data>
+  <data name="Review_YourSpreadsheetArrowKeysPick" xml:space="preserve">
+    <value>您的电子表格。方向键选择单元格，Enter 编辑，Delete 清空。</value>
+  </data>
+  <data name="Review_YourSpreadsheetWithWhatWe" xml:space="preserve">
+    <value>您的电子表格，标出了我们读取的内容。带底色的单元格是 QuadStick 会读取的。普通单元格是它从不查看的，因此备注和您为各行起的名字放在那里很安全。点击任意单元格即可更改，或将其拖到同一行的另一列。此处的每项更改都会应用到此窗口背后打开的配置文件。</value>
+  </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>外观</value>
+  </data>
+  <data name="Settings_AppearanceHelp" xml:space="preserve">
+    <value>外观：选择“系统”“浅色”或“深色”主题</value>
+  </data>
+  <data name="Settings_AskCrashes" xml:space="preserve">
+    <value>发送崩溃报告前先询问</value>
+  </data>
+  <data name="Settings_Backup" xml:space="preserve">
+    <value>Google Drive 备份</value>
+  </data>
+  <data name="Settings_BackupCaption" xml:space="preserve">
+    <value>每次保存配置文件时，都会有一份副本存入您自己的 Google Drive。导入可以将它们复制回任意一台电脑。</value>
+  </data>
+  <data name="Settings_BackupToggle" xml:space="preserve">
+    <value>将我的配置文件备份到 Google Drive</value>
+  </data>
+  <data name="Settings_BackupUnavailable" xml:space="preserve">
+    <value>此版本尚未连接 Google。</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Settings_CancelConnect" xml:space="preserve">
+    <value>取消连接 Google</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>正在检查…</value>
+  </data>
+  <data name="Settings_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Settings_CloseHelp" xml:space="preserve">
+    <value>关闭设置</value>
+  </data>
+  <data name="Settings_Connected" xml:space="preserve">
+    <value>已连接到 Google Drive</value>
+  </data>
+  <data name="Settings_ContactIntro" xml:space="preserve">
+    <value>发现了问题，或只是想打个招呼？这里是联系本应用作者的方式。</value>
+  </data>
+  <data name="Settings_CopyInstallId" xml:space="preserve">
+    <value>复制安装 ID</value>
+  </data>
+  <data name="Settings_CopyInstallIdHelp" xml:space="preserve">
+    <value>将安装 ID 复制到剪贴板</value>
+  </data>
+  <data name="Settings_CrashCaption" xml:space="preserve">
+    <value>崩溃发生时会在您的电脑上保存一份报告。在您看到它并点击“发送”之前，不会发送任何内容。</value>
+  </data>
+  <data name="Settings_EmailHelp" xml:space="preserve">
+    <value>发送邮件，打开您的邮件应用</value>
+  </data>
+  <data name="Settings_EmailLink" xml:space="preserve">
+    <value>邮箱：{0}</value>
+  </data>
+  <data name="Settings_FeedbackCaption" xml:space="preserve">
+    <value>会连同您的匿名安装 ID 一起发送给开发者，不含其他信息。需要在“高级”中开启使用数据。上方的邮箱链接始终可用。</value>
+  </data>
+  <data name="Settings_FeedbackFailed" xml:space="preserve">
+    <value>发送失败。上方的邮箱链接始终可用。</value>
+  </data>
+  <data name="Settings_FeedbackLabel" xml:space="preserve">
+    <value>您的反馈</value>
+  </data>
+  <data name="Settings_FeedbackSent" xml:space="preserve">
+    <value>谢谢，已发送。</value>
+  </data>
+  <data name="Settings_FeedbackWatermark" xml:space="preserve">
+    <value>怎样能让这个应用更好？</value>
+  </data>
+  <data name="Settings_Grouping" xml:space="preserve">
+    <value>选择器分组</value>
+  </data>
+  <data name="Settings_GroupingCaption" xml:space="preserve">
+    <value>“详细”将输出归到分类，再归到分类内的分组。“宽视图”一次显示某个分类下的全部输出。“平铺”是一个可搜索的单一列表。三种方式的搜索效果相同。</value>
+  </data>
+  <data name="Settings_GroupingHelp" xml:space="preserve">
+    <value>选择器分组：在输出和输入选择器中使用“详细”“宽视图”或“平铺”列表</value>
+  </data>
+  <data name="Settings_ImportDrive" xml:space="preserve">
+    <value>从 Google Drive 导入</value>
+  </data>
+  <data name="Settings_ImportDriveHelp" xml:space="preserve">
+    <value>从 Google Drive 导入您的配置文件</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Settings_LanguageHelp" xml:space="preserve">
+    <value>语言：选择应用的显示语言</value>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>与我的电脑相同</value>
+  </data>
+  <data name="Settings_LinkedInHelp" xml:space="preserve">
+    <value>打开 LinkedIn，将在浏览器中打开</value>
+  </data>
+  <data name="Settings_Model" xml:space="preserve">
+    <value>默认 QuadStick 型号</value>
+  </data>
+  <data name="Settings_NoInstallId" xml:space="preserve">
+    <value>尚无安装 ID。首次发送内容时会生成一个。</value>
+  </data>
+  <data name="Settings_OpenDownload" xml:space="preserve">
+    <value>打开下载页面</value>
+  </data>
+  <data name="Settings_OpenDownloadHelp" xml:space="preserve">
+    <value>在浏览器中打开下载页面</value>
+  </data>
+  <data name="Settings_OpenFolder" xml:space="preserve">
+    <value>打开设置文件夹</value>
+  </data>
+  <data name="Settings_OpenFolderHelp" xml:space="preserve">
+    <value>打开设置文件夹</value>
+  </data>
+  <data name="Settings_Privacy" xml:space="preserve">
+    <value>阅读隐私政策</value>
+  </data>
+  <data name="Settings_PrivacyHelp" xml:space="preserve">
+    <value>阅读隐私政策，将在浏览器中打开</value>
+  </data>
+  <data name="Settings_Privacy_Heading" xml:space="preserve">
+    <value>隐私</value>
+  </data>
+  <data name="Settings_QuickGuide" xml:space="preserve">
+    <value>快速指南</value>
+  </data>
+  <data name="Settings_Reconnect" xml:space="preserve">
+    <value>重新连接到 Google</value>
+  </data>
+  <data name="Settings_ReconnectShort" xml:space="preserve">
+    <value>重新连接</value>
+  </data>
+  <data name="Settings_ReduceMotion" xml:space="preserve">
+    <value>减少动效</value>
+  </data>
+  <data name="Settings_ReduceMotionCaption" xml:space="preserve">
+    <value>关闭教程的淡入淡出动画。</value>
+  </data>
+  <data name="Settings_RememberWindow" xml:space="preserve">
+    <value>记住窗口大小和位置</value>
+  </data>
+  <data name="Settings_ReplayTutorial" xml:space="preserve">
+    <value>重新播放教程</value>
+  </data>
+  <data name="Settings_ReplayTutorialHelp" xml:space="preserve">
+    <value>重新播放教程</value>
+  </data>
+  <data name="Settings_ReportBug" xml:space="preserve">
+    <value>在 GitHub 上报告问题</value>
+  </data>
+  <data name="Settings_ReportBugHelp" xml:space="preserve">
+    <value>在 GitHub 上报告问题，将在浏览器中打开</value>
+  </data>
+  <data name="Settings_Reset" xml:space="preserve">
+    <value>将所有设置重置为默认值</value>
+  </data>
+  <data name="Settings_Reverting" xml:space="preserve">
+    <value>{0} 秒后还原</value>
+  </data>
+  <data name="Settings_SaveSize" xml:space="preserve">
+    <value>保存大小</value>
+  </data>
+  <data name="Settings_SaveSizeHelp" xml:space="preserve">
+    <value>保留此界面大小</value>
+  </data>
+  <data name="Settings_Scale" xml:space="preserve">
+    <value>界面大小</value>
+  </data>
+  <data name="Settings_ScaleCaption" xml:space="preserve">
+    <value>使所有文字和控件变大或变小。</value>
+  </data>
+  <data name="Settings_ScaleHelp" xml:space="preserve">
+    <value>界面大小，以百分比表示</value>
+  </data>
+  <data name="Settings_SendFeedback" xml:space="preserve">
+    <value>发送反馈</value>
+  </data>
+  <data name="Settings_Sending" xml:space="preserve">
+    <value>正在发送…</value>
+  </data>
+  <data name="Settings_ShowTutorial" xml:space="preserve">
+    <value>下次打开应用时显示教程</value>
+  </data>
+  <data name="Settings_TabAdvanced" xml:space="preserve">
+    <value>高级</value>
+  </data>
+  <data name="Settings_TabContact" xml:space="preserve">
+    <value>联系方式</value>
+  </data>
+  <data name="Settings_TabGeneral" xml:space="preserve">
+    <value>常规</value>
+  </data>
+  <data name="Settings_TabHelp" xml:space="preserve">
+    <value>帮助</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Settings_Updates" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Settings_UpdatesCaption" xml:space="preserve">
+    <value>此应用不会自动更新，也从不自行检查更新。</value>
+  </data>
+  <data name="Settings_UsageCaption" xml:space="preserve">
+    <value>哪些界面被使用过，以及安装是否成功。绝不包括您的配置文件、文件名、路径、您输入的任何内容，或您的 Google 账户。</value>
+  </data>
+  <data name="Settings_UsageData" xml:space="preserve">
+    <value>共享匿名使用数据</value>
+  </data>
+  <data name="Settings_WaitingBrowser" xml:space="preserve">
+    <value>正在等待浏览器…</value>
+  </data>
+  <data name="Settings_WebsiteHelp" xml:space="preserve">
+    <value>打开网站，将在浏览器中打开</value>
+  </data>
+  <data name="Settings_WebsiteLink" xml:space="preserve">
+    <value>网站：{0}</value>
+  </data>
+  <data name="Settings_YouAreOn" xml:space="preserve">
+    <value>您当前使用的是 {0}。</value>
+  </data>
+  <data name="Share_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Share_CloseWithoutSharing" xml:space="preserve">
+    <value>不共享，直接关闭</value>
+  </data>
+  <data name="Share_CouldNotConnectToGoogle" xml:space="preserve">
+    <value>无法连接到 Google。请检查您的网络连接，然后重试。</value>
+  </data>
+  <data name="Share_FinishLabelNotAvailableYetFinish" xml:space="preserve">
+    <value>{0}。尚不可用：请先完成上面的步骤。</value>
+  </data>
+  <data name="Share_NotDoneYet" xml:space="preserve">
+    <value>尚未完成</value>
+  </data>
+  <data name="Share_NotDoneYet2" xml:space="preserve">
+    <value>尚未完成</value>
+  </data>
+  <data name="Share_SaveThisProfile" xml:space="preserve">
+    <value>保存此配置文件</value>
+  </data>
+  <data name="Share_SetUpGoogleSheets" xml:space="preserve">
+    <value>设置 Google Sheets</value>
+  </data>
+  <data name="Share_SharingAProfilePutsIt" xml:space="preserve">
+    <value>共享配置文件会将其放入您自己 Google 云端硬盘中的一个 Google 表格，并为您提供该表格的链接。在您发送链接之前，没有人能看到它。</value>
+  </data>
+  <data name="Share_StepDone" xml:space="preserve">
+    <value>第 {0} 步，共 {1} 步，{2}，已完成</value>
+  </data>
+  <data name="Share_StepNotDone" xml:space="preserve">
+    <value>第 {0} 步，共 {1} 步，{2}，尚未完成</value>
+  </data>
+  <data name="Share_StepNumberOfTotalTitle" xml:space="preserve">
+    <value>第 {0} 步，共 {1} 步：{2}</value>
+  </data>
+  <data name="Share_StepNumberOfTotalTitle2" xml:space="preserve">
+    <value>第 {0} 步，共 {1} 步，{2}，尚未完成</value>
+  </data>
+  <data name="Share_ThisProfileWasNotSaved" xml:space="preserve">
+    <value>此配置文件尚未保存，因此还没有内容可以放入表格。</value>
+  </data>
+  <data name="Share_TitleAlreadyDone" xml:space="preserve">
+    <value>{0}。已完成。</value>
+  </data>
+  <data name="Share_WaitingForGoogleInYour" xml:space="preserve">
+    <value>正在浏览器中等待 Google…</value>
+  </data>
+  <data name="Shell_AddANewBindingRow" xml:space="preserve">
+    <value>为此模式添加一个新的绑定行</value>
+  </data>
+  <data name="Shell_AddRenameReorderAndDelete" xml:space="preserve">
+    <value>添加、重命名、重新排序和删除模式</value>
+  </data>
+  <data name="Shell_AddRow" xml:space="preserve">
+    <value>+ 添加行</value>
+  </data>
+  <data name="Shell_AppearanceChooseSystemLightOr" xml:space="preserve">
+    <value>外观：选择“系统”、“浅色”或“深色”主题</value>
+  </data>
+  <data name="Shell_AskForAChange" xml:space="preserve">
+    <value>请求更改</value>
+  </data>
+  <data name="Shell_BrowseCommunityProfiles" xml:space="preserve">
+    <value>浏览社区配置文件</value>
+  </data>
+  <data name="Shell_BrowseTheCommunityListOf" xml:space="preserve">
+    <value>浏览社区共享的游戏配置文件列表，并导入其中一个</value>
+  </data>
+  <data name="Shell_BuildOpenOrFindA" xml:space="preserve">
+    <value>构建、打开或查找设置</value>
+  </data>
+  <data name="Shell_Clear" xml:space="preserve">
+    <value>清除</value>
+  </data>
+  <data name="Shell_ClearTheSelection" xml:space="preserve">
+    <value>清除所选内容</value>
+  </data>
+  <data name="Shell_Community" xml:space="preserve">
+    <value>社区</value>
+  </data>
+  <data name="Shell_CommunityProfiles" xml:space="preserve">
+    <value>社区配置文件</value>
+  </data>
+  <data name="Shell_CreateANewProfile" xml:space="preserve">
+    <value>创建新配置文件</value>
+  </data>
+  <data name="Shell_CreateANewProfileFrom" xml:space="preserve">
+    <value>从出厂默认模板创建新配置文件</value>
+  </data>
+  <data name="Shell_Csv" xml:space="preserve">
+    <value>.csv</value>
+  </data>
+  <data name="Shell_Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedMappings" xml:space="preserve">
+    <value>删除所选映射</value>
+  </data>
+  <data name="Shell_DeleteTheSelectedRows" xml:space="preserve">
+    <value>删除所选行</value>
+  </data>
+  <data name="Shell_DescribeAChangeInPlain" xml:space="preserve">
+    <value>用简单的话描述您想要的更改，系统会将其应用到此配置文件。在您确认之前，不会做出任何更改。</value>
+  </data>
+  <data name="Shell_Device" xml:space="preserve">
+    <value>设备</value>
+  </data>
+  <data name="Shell_DiscardTheRecoveredWorkPermanently" xml:space="preserve">
+    <value>永久放弃已恢复的工作</value>
+  </data>
+  <data name="Shell_Dismiss" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Shell_EditModes" xml:space="preserve">
+    <value>编辑模式</value>
+  </data>
+  <data name="Shell_EditModesAddRenameReorder" xml:space="preserve">
+    <value>编辑模式：添加、重命名、重新排序和删除</value>
+  </data>
+  <data name="Shell_FixFirstProblem" xml:space="preserve">
+    <value>修复第一个问题</value>
+  </data>
+  <data name="Shell_GoToHome" xml:space="preserve">
+    <value>前往主页</value>
+  </data>
+  <data name="Shell_GoogleSheetsProfileLink" xml:space="preserve">
+    <value>Google Sheets 配置文件链接</value>
+  </data>
+  <data name="Shell_Home" xml:space="preserve">
+    <value>主页</value>
+  </data>
+  <data name="Shell_HowDeviceViewWorksAnd" xml:space="preserve">
+    <value>设备视图如何工作，以及您的型号具有哪些部件</value>
+  </data>
+  <data name="Shell_HowItWorks" xml:space="preserve">
+    <value>工作原理</value>
+  </data>
+  <data name="Shell_HowItWorksF1" xml:space="preserve">
+    <value>工作原理  (F1)</value>
+  </data>
+  <data name="Shell_Import" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="Shell_ImportFromSheets" xml:space="preserve">
+    <value>从 Sheets 导入</value>
+  </data>
+  <data name="Shell_ImportTheProfileFromThe" xml:space="preserve">
+    <value>从粘贴的 Google Sheets 链接导入配置文件</value>
+  </data>
+  <data name="Shell_InstallThisProfileOntoA" xml:space="preserve">
+    <value>将此配置文件安装到已连接的 QuadStick。快捷键 Control I</value>
+  </data>
+  <data name="Shell_InstallToQuadStick" xml:space="preserve">
+    <value>安装到 QuadStick</value>
+  </data>
+  <data name="Shell_JumpToAndFocusThe" xml:space="preserve">
+    <value>跳转到问题列表中的第一个错误并将焦点移到该处</value>
+  </data>
+  <data name="Shell_ListOfValidationProblemsSelect" xml:space="preserve">
+    <value>验证问题列表。选择一项以复制。</value>
+  </data>
+  <data name="Shell_ListTheInputsThisMode" xml:space="preserve">
+    <value>列出此模式尚未使用的输入</value>
+  </data>
+  <data name="Shell_ManageFiles" xml:space="preserve">
+    <value>管理文件</value>
+  </data>
+  <data name="Shell_ManageFilesOnYourQuadStick" xml:space="preserve">
+    <value>管理您 QuadStick 上的文件</value>
+  </data>
+  <data name="Shell_ManageTheProfileFilesOn" xml:space="preserve">
+    <value>管理您 QuadStick 上的配置文件：复制、删除，并查看文件选择顺序</value>
+  </data>
+  <data name="Shell_Mode" xml:space="preserve">
+    <value>模式</value>
+  </data>
+  <data name="Shell_Move" xml:space="preserve">
+    <value>移动</value>
+  </data>
+  <data name="Shell_MoveTheSelectedMappingsTo" xml:space="preserve">
+    <value>将所选映射移动到顶部或底部</value>
+  </data>
+  <data name="Shell_MoveTheSelectedRowsTo" xml:space="preserve">
+    <value>将所选行移动到顶部或底部</value>
+  </data>
+  <data name="Shell_NameAGameAndHave" xml:space="preserve">
+    <value>输入游戏名称，系统会根据您已有的配置文件为其构建一个配置文件</value>
+  </data>
+  <data name="Shell_New" xml:space="preserve">
+    <value>新建</value>
+  </data>
+  <data name="Shell_NewProfile" xml:space="preserve">
+    <value>新建配置文件</value>
+  </data>
+  <data name="Shell_OnYourQuadStick" xml:space="preserve">
+    <value>在您的 QuadStick 上</value>
+  </data>
+  <data name="Shell_Open" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="Shell_OpenAFile" xml:space="preserve">
+    <value>打开文件</value>
+  </data>
+  <data name="Shell_OpenAProfileCSVFile" xml:space="preserve">
+    <value>从您的电脑打开一个配置文件 CSV 文件</value>
+  </data>
+  <data name="Shell_OpenAProfileFile" xml:space="preserve">
+    <value>打开配置文件</value>
+  </data>
+  <data name="Shell_OpenRecoveredWork" xml:space="preserve">
+    <value>打开已恢复的工作</value>
+  </data>
+  <data name="Shell_OpenSettings" xml:space="preserve">
+    <value>打开设置</value>
+  </data>
+  <data name="Shell_OpenTheProfileThatWas" xml:space="preserve">
+    <value>打开上次崩溃或强制退出后恢复的配置文件</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideShortcut" xml:space="preserve">
+    <value>打开快速指南。快捷键 Control H 或 F1</value>
+  </data>
+  <data name="Shell_OpenTheQuickGuideThat" xml:space="preserve">
+    <value>打开说明配置文件、输出、功能和输入的快速指南</value>
+  </data>
+  <data name="Shell_OpenedFromYourComputer" xml:space="preserve">
+    <value>从您的电脑打开</value>
+  </data>
+  <data name="Shell_Parts" xml:space="preserve">
+    <value>部件</value>
+  </data>
+  <data name="Shell_PasteAGoogleSheetsProfile" xml:space="preserve">
+    <value>粘贴 Google Sheets 配置文件链接</value>
+  </data>
+  <data name="Shell_PlugInYourQuadStickTo" xml:space="preserve">
+    <value>插入您的 QuadStick 以查看其配置文件。如果驱动器未显示，请关闭控制器模拟并重新连接设备。</value>
+  </data>
+  <data name="Shell_Profile" xml:space="preserve">
+    <value>配置文件</value>
+  </data>
+  <data name="Shell_ProfileNameEditToRename" xml:space="preserve">
+    <value>配置文件名。编辑以重命名；系统会自动为您添加 .csv</value>
+  </data>
+  <data name="Shell_ProfilesYouSaveWillShow" xml:space="preserve">
+    <value>您保存的配置文件会显示在这里。</value>
+  </data>
+  <data name="Shell_QuadStickConfigManagerGoTo" xml:space="preserve">
+    <value>QuadStick Config Manager。前往主页</value>
+  </data>
+  <data name="Shell_Rows" xml:space="preserve">
+    <value>行</value>
+  </data>
+  <data name="Shell_SaveAsATemplate" xml:space="preserve">
+    <value>另存为模板</value>
+  </data>
+  <data name="Shell_SaveCtrlS" xml:space="preserve">
+    <value>保存  (Ctrl+S)</value>
+  </data>
+  <data name="Shell_SaveThisProfileAsA" xml:space="preserve">
+    <value>将此配置文件保存为可重复使用的模板，供以后新建配置文件时使用</value>
+  </data>
+  <data name="Shell_SaveThisProfileShortcutControl" xml:space="preserve">
+    <value>保存此配置文件。快捷键 Control S</value>
+  </data>
+  <data name="Shell_SeeTheMappingsOnA" xml:space="preserve">
+    <value>在 QuadStick 图片上查看映射  (Ctrl+D)</value>
+  </data>
+  <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
+    <value>按表格存储的方式查看行  (Ctrl+D)</value>
+  </data>
+  <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
+    <value>选择要编辑的模式</value>
+  </data>
+  <data name="Shell_SetUpAGame" xml:space="preserve">
+    <value>设置游戏</value>
+  </data>
+  <data name="Shell_Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Shell_ShareAsAGoogleSheet" xml:space="preserve">
+    <value>以 Google 表格形式共享</value>
+  </data>
+  <data name="Shell_ShareThisProfileAsA" xml:space="preserve">
+    <value>将此配置文件以 Google 表格形式共享</value>
+  </data>
+  <data name="Shell_ShowOrHideTheList" xml:space="preserve">
+    <value>显示或隐藏问题列表</value>
+  </data>
+  <data name="Shell_ShowTheMappingsAsA" xml:space="preserve">
+    <value>以行列表形式显示映射。快捷键 Control D 可切换此设置</value>
+  </data>
+  <data name="Shell_ShowTheMappingsOnA" xml:space="preserve">
+    <value>在 QuadStick 图片上显示映射。快捷键 Control D 可切换此设置</value>
+  </data>
+  <data name="Shell_ShowThePartsAsA" xml:space="preserve">
+    <value>以简单列表形式显示部件，可用方向键逐个浏览，右侧是相同的编辑器</value>
+  </data>
+  <data name="Shell_StartANewProfileFrom" xml:space="preserve">
+    <value>从您保存的某个模板开始新建配置文件</value>
+  </data>
+  <data name="Shell_StartAProfile" xml:space="preserve">
+    <value>开始一个配置文件</value>
+  </data>
+  <data name="Shell_StepThroughThePartsOne" xml:space="preserve">
+    <value>逐个浏览各个部件</value>
+  </data>
+  <data name="Shell_SwitchTheWordsUsedIn" xml:space="preserve">
+    <value>在设备视图中，将所用词语在通俗说法与列表视图的原始名称之间切换</value>
+  </data>
+  <data name="Shell_UndoCtrlZ" xml:space="preserve">
+    <value>撤销  (Ctrl+Z)</value>
+  </data>
+  <data name="Shell_UndoTheLastChangeShortcut" xml:space="preserve">
+    <value>撤销上一次更改。快捷键 Control Z</value>
+  </data>
+  <data name="Shell_UseTemplate" xml:space="preserve">
+    <value>使用模板</value>
+  </data>
+  <data name="Shell_View" xml:space="preserve">
+    <value>视图</value>
+  </data>
+  <data name="Shell_WhatIsAMode" xml:space="preserve">
+    <value>什么是模式？</value>
+  </data>
+  <data name="Shell_WhatIsAModeAnd" xml:space="preserve">
+    <value>什么是模式，为什么只有一个？</value>
+  </data>
+  <data name="Shell_WhichQuadStickModelYouHave" xml:space="preserve">
+    <value>您使用的 QuadStick 型号</value>
+  </data>
+  <data name="Shell_YourProfiles" xml:space="preserve">
+    <value>您的配置文件</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>系统</value>
+  </data>
+  <data name="Tour_Back" xml:space="preserve">
+    <value>返回</value>
+  </data>
+  <data name="Tour_BackToThePreviousStep" xml:space="preserve">
+    <value>返回上一步</value>
+  </data>
+  <data name="Tour_EveryProfileStartsFromA" xml:space="preserve">
+    <value>每个配置文件都从一个模板开始。</value>
+  </data>
+  <data name="Tour_NewProfile" xml:space="preserve">
+    <value>新建配置文件</value>
+  </data>
+  <data name="Tour_Next" xml:space="preserve">
+    <value>下一步</value>
+  </data>
+  <data name="Tour_NextStep" xml:space="preserve">
+    <value>下一步</value>
+  </data>
+  <data name="Tour_PickAPart" xml:space="preserve">
+    <value>选择一个部件</value>
+  </data>
+  <data name="Tour_PickAPartToSee" xml:space="preserve">
+    <value>选择一个部件，查看并更改它的功能。</value>
+  </data>
+  <data name="Tour_SaveYourWorkToA" xml:space="preserve">
+    <value>将您的工作保存到文件。</value>
+  </data>
+  <data name="Tour_SetLightOrDarkTo" xml:space="preserve">
+    <value>设置浅色或深色，让眼睛更舒适。</value>
+  </data>
+  <data name="Tour_Skip" xml:space="preserve">
+    <value>跳过</value>
+  </data>
+  <data name="Tour_SkipTheTutorial" xml:space="preserve">
+    <value>跳过教程</value>
+  </data>
+  <data name="Tour_StepTitleStepBody" xml:space="preserve">
+    <value>{0}。{1}</value>
+  </data>
+  <data name="Tour_StepTourIndex1OfTourSteps" xml:space="preserve">
+    <value>第 {0} 步，共 {1} 步</value>
+  </data>
+  <data name="Tour_ThisIsYourQuadStickEach" xml:space="preserve">
+    <value>这是您的 QuadStick。每个部件都是您可以映射的控制器。</value>
+  </data>
+  <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
+    <value>这会向您展示如何制作并安装配置文件。您可以随时跳过。</value>
+  </data>
+  <data name="Tour_WhenItSReadySend" xml:space="preserve">
+    <value>准备好后，将其发送到您的 QuadStick。</value>
+  </data>
+  <data name="Tour_YouCanReplayThisAnytime" xml:space="preserve">
+    <value>您可以随时从“设置 ▸ 帮助”重新播放此内容。</value>
+  </data>
+  <data name="Update_CouldNotCheckForUpdates" xml:space="preserve">
+    <value>无法检查更新（GitHub 返回了 {0}）。您当前使用的是 {1}。</value>
+  </data>
+  <data name="Update_CouldNotReachGitHubTo" xml:space="preserve">
+    <value>无法连接到 GitHub 以检查更新。您当前使用的是 {0}。</value>
+  </data>
+  <data name="Update_GitHubDidNotNameA" xml:space="preserve">
+    <value>GitHub 未指定发行版本。您当前使用的是 {0}。</value>
+  </data>
+  <data name="Update_GitHubIsAskingUsTo" xml:space="preserve">
+    <value>GitHub 要求我们等待后再次检查。请在几分钟后重试。</value>
+  </data>
+  <data name="Update_GitHubSentSomethingWeCould" xml:space="preserve">
+    <value>GitHub 发送的内容无法读取。您当前使用的是 {0}。</value>
+  </data>
+  <data name="Update_LatestAPreviewRelease" xml:space="preserve">
+    <value>{0}（预览版）</value>
+  </data>
+  <data name="Update_YouAreOnCurrentLabel" xml:space="preserve">
+    <value>您当前使用的是 {0}。{1} 已发布。</value>
+  </data>
+  <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
+    <value>您当前使用的是 {0}，这是最新版本。</value>
+  </data>
+</root>

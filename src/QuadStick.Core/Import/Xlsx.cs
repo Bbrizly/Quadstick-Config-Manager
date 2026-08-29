@@ -195,8 +195,7 @@ public static partial class Xlsx
         string? limit = null;
         if (parts.Count > MaxSheets)
         {
-            limit = Truncated($"This spreadsheet has more than {MaxSheets} tabs, and we read the first "
-                + $"{MaxSheets}.", "Every tab past that was");
+            limit = Truncated(string.Format(CultureInfo.CurrentCulture, Strings.Sheet_ThisSpreadsheetHasMoreThan, MaxSheets, MaxSheets), Strings.Sheet_EveryTabPastThatWas);
             parts.RemoveAt(parts.Count - 1);
         }
 
@@ -224,10 +223,8 @@ public static partial class Xlsx
             // mode, so this is not a shape a real workbook has; it is still a
             // read that did not finish, and one of those has to say so.
             if (lostRows)
-                limit ??= $"The tab \"{name}\" has cells below row {MaxRows:N0}, far past where any "
-                    + "profile ends, so we stopped reading that tab there and cannot say what is under "
-                    + "it. If that is a stray cell left behind by a paste, deleting the empty rows at "
-                    + "the bottom of the tab and importing again will clear this.";
+                limit ??= string.Format(CultureInfo.CurrentCulture, Strings.Sheet_TabPastTheRowCap,
+                    name, MaxRows.ToString("N0", CultureInfo.CurrentCulture));
 
             // A tab is a mode only if its A1 says so. Everything else in the
             // workbook (Inputs, Outputs, notes, scratch) is not a profile.
@@ -298,13 +295,13 @@ public static partial class Xlsx
             int left = parts.Count - 1 - i;
             if (left > 0)
                 limit = Truncated(
-                    $"This spreadsheet is larger than {MaxWorkbookRows:N0} rows, far larger than any "
-                    + "profile, so we stopped reading part way through.",
+                    string.Format(CultureInfo.CurrentCulture, Strings.Sheet_WorkbookPastTheRowCap,
+                        MaxWorkbookRows.ToString("N0", CultureInfo.CurrentCulture)),
                     // A count would be a lie when the tab cap has already
                     // fired: the tabs past that one are not in this list to be
                     // counted, so the message names none rather than too few.
-                    limit is not null ? "Every tab from there on was"
-                    : left == 1 ? "One more tab was" : $"{left} more tabs were");
+                    limit is not null ? Strings.Sheet_EveryTabFromThereOn
+                    : left == 1 ? Strings.Sheet_OneMoreTabWas : string.Format(CultureInfo.CurrentCulture, Strings.Sheet_LeftMoreTabsWere, left));
             break;
         }
 
@@ -361,7 +358,7 @@ public static partial class Xlsx
     // template's, and the ones the community workbooks copy around.
     static readonly HashSet<string> GenericModeNames = new(StringComparer.OrdinalIgnoreCase)
     {
-        "Left Joystick", "Right Joystick", "Mouse Mode", "Left joy", "Right joy",
+        "Left Joystick", "Right Joystick", "Mouse Mode", Strings.Sheet_LeftJoy, Strings.Sheet_RightJoy,
         "Solo", "Mode", "Profile", "Profile Name", "Sheet1",
     };
 
@@ -377,8 +374,7 @@ public static partial class Xlsx
     // The same ending on both bounds, because the user's question is the same
     // one either way: what am I missing, and what do I do about it.
     static string Truncated(string cause, string missed) =>
-        $"{cause} {missed} not read at all, so we cannot say what is in there. Split the modes you need "
-        + "across smaller spreadsheets and import them one at a time.";
+        string.Format(CultureInfo.CurrentCulture, Strings.Sheet_CauseMissedNotReadAt, cause, missed);
 
     /// <summary>The tab's rows as a mode the app and the device would both
     /// read: A1 given the keyword it is missing, and the tab's own name used
@@ -567,8 +563,7 @@ public static partial class Xlsx
         // memory had already been spent.
         if (entry.Length > MaxPartBytes)
             throw new InvalidDataException(
-                $"That spreadsheet holds a part of {entry.Length / (1024 * 1024)} MB, far larger than any "
-                + "profile, so it was not read.");
+                string.Format(CultureInfo.CurrentCulture, Strings.Sheet_ThatSpreadsheetHoldsAPart, entry.Length / (1024 * 1024)));
         using var stream = entry.Open();
         using var reader = XmlReader.Create(stream, PartLimits);
         return XDocument.Load(reader);

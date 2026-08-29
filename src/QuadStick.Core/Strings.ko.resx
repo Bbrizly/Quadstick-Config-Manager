@@ -1,0 +1,686 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Device_DeclaredIsTooLongFor" xml:space="preserve">
+    <value>"{0}"은(는) QuadStick이 불러오기에 너무 길어서 아무것도 기록되지 않았습니다. 프로필 이름은 ".csv"를 포함해 최대 {1}자까지 가능한데 이 이름은 {2}자입니다. 셀 A2의 이름을 줄인 후 다시 설치하십시오.</value>
+  </data>
+  <data name="Device_FileNameIsNoLongerOn" xml:space="preserve">
+    <value>{0}이(가) 더 이상 장치에 없습니다. 목록을 새로 고친 후 다시 시도하십시오.</value>
+  </data>
+  <data name="Device_FileNameIsProtectedAndCannot" xml:space="preserve">
+    <value>{0}은(는) 보호되어 있어 삭제할 수 없습니다. 삭제하면 장치를 사용할 수 없게 될 수 있습니다.</value>
+  </data>
+  <data name="Device_NameIsNotAPlain" xml:space="preserve">
+    <value>"{0}"은(는) QuadStick이 저장할 수 있는 일반 파일 이름이 아니어서 아무것도 기록되지 않았습니다. 셀 A2를 "mygame.csv"와 같은 단순한 이름으로 바꾸십시오.</value>
+  </data>
+  <data name="Device_OnlyAPlainFileName" xml:space="preserve">
+    <value>장치 루트에 있는 일반 파일 이름만 삭제할 수 있으며, 경로는 삭제할 수 없습니다.</value>
+  </data>
+  <data name="Device_RefusingToOverwriteDefaultCsv" xml:space="preserve">
+    <value>명시적인 확인 없이는 default.csv를 덮어쓰지 않습니다. default.csv가 잘못되면 플래시 드라이브 접근이 불가능해질 수 있습니다.</value>
+  </data>
+  <data name="Device_RefusingToOverwritePrefsCsv" xml:space="preserve">
+    <value>명시적인 확인 없이는 prefs.csv를 덮어쓰지 않습니다. prefs.csv에는 장치 전체 설정이 들어 있으며, 잘못되면 QuadStick을 사용할 수 없게 될 수 있습니다.</value>
+  </data>
+  <data name="Device_ThatFileIsNotDirectly" xml:space="preserve">
+    <value>해당 파일은 장치 루트에 직접 있지 않아 삭제되지 않았습니다.</value>
+  </data>
+  <data name="Device_ThatFolderDoesNotLook" xml:space="preserve">
+    <value>해당 폴더는 QuadStick 드라이브로 보이지 않습니다 (루트에 default.csv가 없음). 장치를 연결했을 때 나타나는 USB 볼륨을 선택하십시오.</value>
+  </data>
+  <data name="Device_TheQuadStickWasDisconnectedWhile" xml:space="preserve">
+    <value>{0}을(를) 기록하는 동안 QuadStick 연결이 끊겼습니다. 이전 버전은 {1}에 안전하게 보관되어 있습니다. 장치를 다시 연결하고 {2}이(가) 아직 있는지 확인한 후 다시 설치하십시오.</value>
+  </data>
+  <data name="Device_ThisProfileHasValidationErrors" xml:space="preserve">
+    <value>이 프로필에는 검증 오류가 있어 설치할 수 없습니다:
+</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapAnd" xml:space="preserve">
+    <value>교체 도중 기록이 실패하여 {0}을(를) QuadStick에 다시 넣을 수 없었습니다. 이전 버전은 {1}에 안전하게 보관되어 있습니다. 수동으로 장치에 복사하십시오.</value>
+  </data>
+  <data name="Device_WritingFailedMidSwapThe" xml:space="preserve">
+    <value>교체 도중 기록이 실패했습니다. {0}의 이전 버전이 백업에서 복원되었습니다. 장치는 변경되지 않았습니다.</value>
+  </data>
+  <data name="Fn_10ASecond" xml:space="preserve">
+    <value>초당 10회</value>
+  </data>
+  <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
+    <value>1이면 출력이 켜진 상태로 고정됩니다. 1보다 크면 누르는 시간을 나타냅니다.</value>
+  </data>
+  <data name="Fn_CountsAsATap" xml:space="preserve">
+    <value>탭으로 인식됨</value>
+  </data>
+  <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
+    <value>입력이 이 값 이상이 되면 한 번 실행됩니다.</value>
+  </data>
+  <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
+    <value>입력이 이 값 미만인 동안 계속 실행됩니다.</value>
+  </data>
+  <data name="Fn_FirstHold" xml:space="preserve">
+    <value>첫 유지 시간</value>
+  </data>
+  <data name="Fn_HoldOn" xml:space="preserve">
+    <value>유지</value>
+  </data>
+  <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
+    <value>이 시간보다 길게 입력을 유지하면 출력이 탭 대신 켜진 상태로 고정됩니다.</value>
+  </data>
+  <data name="Fn_HoldToLatch" xml:space="preserve">
+    <value>유지하면 고정</value>
+  </data>
+  <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
+    <value>연속 실행이 시작되기 전까지 첫 탭을 이 시간만큼 유지합니다.</value>
+  </data>
+  <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
+    <value>누르고 있는 동안 유지</value>
+  </data>
+  <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
+    <value>아날로그 출력이 매번 얼마나 아래로 움직이는지입니다.</value>
+  </data>
+  <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
+    <value>아날로그 출력이 매번 얼마나 위로 움직이는지입니다.</value>
+  </data>
+  <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
+    <value>입력을 누르고 있는 동안 얼마나 빠르게 탭하는지입니다.</value>
+  </data>
+  <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
+    <value>각 누름이 지속되는 시간입니다.</value>
+  </data>
+  <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
+    <value>탭이 누르는 시간입니다. 1이면 대신 출력이 켜진 상태로 고정됩니다.</value>
+  </data>
+  <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
+    <value>한 번의 활성화가 몇 번의 누름을 보내는지입니다.</value>
+  </data>
+  <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
+    <value>입력을 누르고 있는 동안 이 빈도로 계속 단계 이동합니다.</value>
+  </data>
+  <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
+    <value>손을 뗀 후에도 출력을 이 시간만큼 계속 누른 상태로 유지합니다.</value>
+  </data>
+  <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
+    <value>이 시간 안에 손을 떼면 탭으로 인식됩니다. 더 길게 누르면 아무것도 실행되지 않습니다.</value>
+  </data>
+  <data name="Fn_NoExtraHold" xml:space="preserve">
+    <value>추가 유지 없음</value>
+  </data>
+  <data name="Fn_NoUpperLimit" xml:space="preserve">
+    <value>상한 없음</value>
+  </data>
+  <data name="Fn_OnePress" xml:space="preserve">
+    <value>한 번 누름</value>
+  </data>
+  <data name="Fn_OneStepPerActivation" xml:space="preserve">
+    <value>활성화당 한 단계</value>
+  </data>
+  <data name="Fn_ReleasedAtOnce" xml:space="preserve">
+    <value>즉시 해제됨</value>
+  </data>
+  <data name="Fn_RepeatEvery" xml:space="preserve">
+    <value>반복 간격</value>
+  </data>
+  <data name="Fn_Sentence" xml:space="preserve">
+    <value>{0}: {1}에서 {2}까지. 비워두면 {3}을 의미합니다. {4}</value>
+  </data>
+  <data name="Fn_SentenceWithUnit" xml:space="preserve">
+    <value>{0}: {1}에서 {2} {5}까지. 비워두면 {3}을 의미합니다. {4}</value>
+  </data>
+  <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
+    <value>입력이 이 값을 넘으면 다시 실행되지 않으므로, 두 숫자가 하나의 구간을 이룹니다.</value>
+  </data>
+  <data name="Fn_TapsASecond" xml:space="preserve">
+    <value>초당 탭 수</value>
+  </data>
+  <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
+    <value>최대 강도에서의 켜짐-꺼짐 주기 길이입니다. 입력이 약할수록 길어집니다.</value>
+  </data>
+  <data name="Fn_UpperLimit" xml:space="preserve">
+    <value>상한</value>
+  </data>
+  <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
+    <value>활성화 후 이 시간만큼 기다린 다음 누릅니다.</value>
+  </data>
+  <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
+    <value>다른 행의 고정된 출력을 해제하기 전에 이 시간만큼 기다립니다.</value>
+  </data>
+  <data name="Issue_0UsedToMeanNo" xml:space="preserve">
+    <value>0은 원래 데드존이 전혀 없다는 의미였지만, 2025년 펌웨어부터는 대신 원시 카운트 129를 사용하므로 이 파일이 요청하지 않은 작은 데드존이 스틱에 생깁니다</value>
+  </data>
+  <data name="Issue_5WasPCOnlyNo" xml:space="preserve">
+    <value>5는 2025년까지 "PC 전용, 조이스틱 없음"이었지만 지금은 Nintendo Switch Pro Controller이므로, 업데이트된 QuadStick은 콘솔이나 PC에 완전히 다른 컨트롤러로 인식됩니다</value>
+  </data>
+  <data name="Issue_ADirectionSettingLeftAt" xml:space="preserve">
+    <value> (0으로 남겨둔 {0} 설정은 대신 공유된 sip_puff_ 값을 사용합니다.)</value>
+  </data>
+  <data name="Issue_APercentOver100Is" xml:space="preserve">
+    <value>. 100을 넘는 퍼센트는 어떤 입력도 도달할 수 없는 수준이므로 이 행은 절대 실행되지 않습니다.</value>
+  </data>
+  <data name="Issue_ArgsIHasADecimal" xml:space="preserve">
+    <value>"{0}"에는 소수 부분이 있습니다. 장치는 정수만 읽으므로 "{1}"로 처리됩니다.</value>
+  </data>
+  <data name="Issue_ArgsIIsLargerThan" xml:space="preserve">
+    <value>"{0}"은(는) 첫 번째 매개변수에 대한 장치의 한계값 {1}보다 커서 두 번째 매개변수로 넘어갑니다.</value>
+  </data>
+  <data name="Issue_ArgsIIsNegativeThe" xml:space="preserve">
+    <value>"{0}"은(는) 음수입니다. 장치는 음수 매개변수를 예측 가능하게 처리하지 않습니다.</value>
+  </data>
+  <data name="Issue_ArgsIIsNotA" xml:space="preserve">
+    <value>"{0}"은(는) 숫자가 아닙니다. "{1}"의 매개변수는 정수여야 하며, 장치는 이 값을 0으로 읽습니다.</value>
+  </data>
+  <data name="Issue_BActionNameHasNoButton" xml:space="preserve">
+    <value>"{0}"에는 아직 연결된 버튼이 없어 이 행은 QuadStick에서 아무 동작도 하지 않습니다.</value>
+  </data>
+  <data name="Issue_BOutputHasNoValue" xml:space="preserve">
+    <value>"{0}"에는 열 B에 값이 없어 장치는 이를 0으로 읽습니다.</value>
+  </data>
+  <data name="Issue_BOutputIsADevice" xml:space="preserve">
+    <value>"{0}"은(는) 장치 설정이며 장치는 그 값을 열 C에서 읽는데, 이 행에서는 열 C가 비어 있습니다. 열 B는 건너뛰므로 이 행은 값을 0으로 설정할 수 있습니다.</value>
+  </data>
+  <data name="Issue_BOutputIsADevice2" xml:space="preserve">
+    <value>"{0}"은(는) 장치 설정이지만 뒤에 값이 없어 장치는 이를 0으로 설정합니다.</value>
+  </data>
+  <data name="Issue_BOutputIsALegacy" xml:space="preserve">
+    <value>"{0}"은(는) 이전 방식의 출력 이름입니다. 펌웨어는 인식하지만 현재 공식 목록에는 포함되어 있지 않습니다.</value>
+  </data>
+  <data name="Issue_BOutputIsNotA" xml:space="preserve">
+    <value>"{0}"은(는) 문서화된 출력 이름이 아닙니다 (PlayStation 또는 XBox 표기 방식).</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRow" xml:space="preserve">
+    <value>이 모드는 "{0}"에 있으며, 마우스 또는 키보드 행이 {1}개 있고, 행 {2}에 있습니다. 2025년 이상 펌웨어는 채널에 USB가 포함될 때만 마우스와 키보드를 USB로 전송하므로, 케이블 연결 시 그 행은 아무 동작도 하지 않지만 모드의 게임패드 부분은 계속 작동합니다. 이전 펌웨어는 어쨌든 전송했습니다.</value>
+  </data>
+  <data name="Issue_BluetoothOnlyKeyboardRows" xml:space="preserve">
+    <value>이 모드는 "{0}"에 있으며, 마우스 또는 키보드 행이 {1}개 있고, 첫 번째는 행 {2}에 있습니다. 2025년 이상 펌웨어는 채널에 USB가 포함될 때만 마우스와 키보드를 USB로 전송하므로, 케이블 연결 시 그 행들은 아무 동작도 하지 않지만 모드의 게임패드 부분은 계속 작동합니다. 이전 펌웨어는 어쨌든 전송했습니다.</value>
+  </data>
+  <data name="Issue_BothNeedsFirmwareFrom2025" xml:space="preserve">
+    <value>"both"는 2025년 이상의 펌웨어가 필요합니다. 이전 펌웨어의 QuadStick은 이 단어를 인식하지 못해 이 모드를 USB로만 실행하며, Bluetooth 부분에 대해서는 아무 알림도 하지 않습니다.</value>
+  </data>
+  <data name="Issue_CheckTheSpellingAgainstThe" xml:space="preserve">
+    <value>장치에 이미 있는 설정 항목과 철자를 대조해 확인하십시오. (이 앱보다 새로운 펌웨어에는 이 앱이 모르는 이름이 있을 수 있습니다.)</value>
+  </data>
+  <data name="Issue_CheckWhichFirmwareYourQuadStick" xml:space="preserve">
+    <value>이 행을 신뢰하기 전에 QuadStick이 실행 중인 펌웨어를 확인하십시오.</value>
+  </data>
+  <data name="Issue_DidYouMeanNearIf" xml:space="preserve">
+    <value>"{0}"을(를) 말씀하신 건가요? (QuadStick의 펌웨어가 이 앱보다 새롭다면 "{1}"을(를) 인식할 수 있으며, 이 경우 이 경고는 무시해도 됩니다.)</value>
+  </data>
+  <data name="Issue_DualShock4WithNoUSB" xml:space="preserve">
+    <value>USB 드라이브가 없는 DualShock 4</value>
+  </data>
+  <data name="Issue_ExpectedForThisConsoleSwitch" xml:space="preserve">
+    <value>이 콘솔에서는 예상된 동작입니다. 파일을 다시 편집하려면 QuadStick을 다른 프로필로 전환하십시오.</value>
+  </data>
+  <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
+    <value>push가 아닌 다른 것에서 실행하거나, push 단독으로는 유지할 수 없는 조합에서 실행하십시오.</value>
+  </data>
+  <data name="Issue_FunctionReads0ForP" xml:space="preserve">
+    <value>"{0}"은(는) {1}에 대한 0을 값이 전혀 없는 것으로 읽으므로, 장치는 {2}을(를) 사용합니다.</value>
+  </data>
+  <data name="Issue_InputIsALegacyInput" xml:space="preserve">
+    <value>"{0}"은(는) 이전 방식의 입력 이름입니다. 펌웨어는 인식하지만 현재 공식 목록에는 포함되어 있지 않습니다.</value>
+  </data>
+  <data name="Issue_InputIsNotADocumented" xml:space="preserve">
+    <value>"{0}"은(는) 문서화된 입력 이름이 아니어서 장치가 무시합니다.</value>
+  </data>
+  <data name="Issue_ItReachesTheKeywordTable" xml:space="preserve">
+    <value>키워드 테이블과 설정 배열에만 도달하고 그 외에는 아무것도 하지 않으므로, 2분 워치독은 어쨌든 실행됩니다</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer" xml:space="preserve">
+    <value>그래도 작동할 것입니다. 존재한다면 현재 이름을 사용하는 것이 좋습니다. 예: "gyroscope_z_cw".</value>
+  </data>
+  <data name="Issue_ItShouldStillWorkPrefer2" xml:space="preserve">
+    <value>그래도 작동할 것입니다. 존재한다면 현재 이름을 사용하는 것이 좋습니다.</value>
+  </data>
+  <data name="Issue_KeepItIfThatIs" xml:space="preserve">
+    <value>원하는 대로라면 그대로 두되, 실수로 작동하기 어려운 입력을 사용하는 것이 좋습니다.</value>
+  </data>
+  <data name="Issue_KeepItIfYourQuadStick" xml:space="preserve">
+    <value>QuadStick이 최신 상태라면 그대로 두십시오. 최신이 아니라면 "usb" 또는 "bluetooth" 중 하나를 선택해 사용하십시오.</value>
+  </data>
+  <data name="Issue_LeaveItOutToMean" xml:space="preserve">
+    <value>같은 의미로 두려면 비워두거나, {0}을(를) {1}에서 {2} 사이로 설정하십시오.</value>
+  </data>
+  <data name="Issue_MostPreferencesTakeAWhole" xml:space="preserve">
+    <value>대부분의 설정 항목은 정수를 사용합니다. 예: "50".</value>
+  </data>
+  <data name="Issue_MoveTheValueIntoColumn" xml:space="preserve">
+    <value>값을 열 B로 옮기십시오: "{0},{1}".</value>
+  </data>
+  <data name="Issue_NameDoesNothingOnCurrent" xml:space="preserve">
+    <value>"{0}"은(는) 현재 펌웨어에서 아무 동작도 하지 않습니다: {1}. 이 행은 입력한 그대로 저장됩니다.</value>
+  </data>
+  <data name="Issue_NameIsANameWindows" xml:space="preserve">
+    <value>"{0}"은(는) Windows가 하드웨어용으로 예약한 이름이어서 해당 위치에서 파일 이름으로 사용할 수 없습니다.</value>
+  </data>
+  <data name="Issue_NameIsNotAValid" xml:space="preserve">
+    <value>"{0}"은(는) 유효한 설정 파일 이름이 아닙니다.</value>
+  </data>
+  <data name="Issue_NameIsTooLongSo" xml:space="preserve">
+    <value>"{0}"이(가) 너무 길어서 QuadStick이 이 파일을 불러올 수 없습니다. 프로필 이름은 ".csv"를 포함해 최대 {1}자까지 가능하며, 이 이름은 {2}자입니다.</value>
+  </data>
+  <data name="Issue_NameSetToNMeans" xml:space="preserve">
+    <value>"{0}"을(를) {1}(으)로 설정하면 QuadStick의 펌웨어에 따라 의미가 달라집니다: {2}. 이 행은 입력한 그대로 저장됩니다.</value>
+  </data>
+  <data name="Issue_NoOutputFunctionTheDevice" xml:space="preserve">
+    <value>출력 기능이 없습니다. 장치는 빈 칸을 "normal"로 처리합니다.</value>
+  </data>
+  <data name="Issue_NothingInTheFirmwareEver" xml:space="preserve">
+    <value>펌웨어의 어떤 부분도 이 값을 읽지 않습니다</value>
+  </data>
+  <data name="Issue_OnAPreferencesSheetThe" xml:space="preserve">
+    <value>Preferences 시트에서는 장치가 "{0}"의 값을 B열에서 읽지만, B열이 비어 있고 값은 C열에 있습니다. (모드 시트는 C열을 사용하고, Preferences 시트는 B열을 사용합니다.)</value>
+  </data>
+  <data name="Issue_OpenCustomOutputNamesAnd" xml:space="preserve">
+    <value>Custom output names를 열어 "{0}"이(가) 나타내는 버튼을 선택하세요.</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs" xml:space="preserve">
+    <value>"{1}"의 {0}이(가) {2}(으)로, 장치의 한계인 {3}을(를) 초과했습니다</value>
+  </data>
+  <data name="Issue_PLabelForFunctionIs2" xml:space="preserve">
+    <value>"{1}"의 {0}이(가) {2}(으)로, 장치의 최소값인 {3} 미만입니다.</value>
+  </data>
+  <data name="Issue_Parts0IsNotA" xml:space="preserve">
+    <value>"{0}"은(는) 문서화된 출력 기능이 아니므로, 장치는 이 행에서 "normal"로 대체합니다.</value>
+  </data>
+  <data name="Issue_Parts0IsNotA2" xml:space="preserve">
+    <value>"{0}"은(는) 문서화된 출력 기능이 아닙니다. "{1}"로 시작하는데 장치는 그 지점에서 일치 검사를 멈추므로, 이 행은 "{2}"처럼 동작합니다.</value>
+  </data>
+  <data name="Issue_Parts0TakesAtMost" xml:space="preserve">
+    <value>"{0}"은(는) 매개변수를 최대 {1}개까지 받는데 {2}개가 발견되었습니다. 장치는 아는 것만 읽고 나머지는 버립니다.</value>
+  </data>
+  <data name="Issue_PickAnInputFromThe" xml:space="preserve">
+    <value>Inputs 드롭다운 목록에서 입력을 선택하세요. 예: "mp_left_sip" 또는 "lip". 아니면 텍스트를 메모 열로 옮기세요.</value>
+  </data>
+  <data name="Issue_PickAnOutputFromThe" xml:space="preserve">
+    <value>편집기 목록에서 출력을 선택하세요. 예: "x", "left_trigger", "mouse_up".</value>
+  </data>
+  <data name="Issue_PickAnotherNameForExample" xml:space="preserve">
+    <value>다른 이름을 선택하세요. 예: "game.csv".</value>
+  </data>
+  <data name="Issue_PickTheGameButtonOr" xml:space="preserve">
+    <value>이 행이 제어하는 게임 버튼이나 동작을 선택하세요. 예: "x" 또는 "left_trigger".</value>
+  </data>
+  <data name="Issue_PreferANewFilenameThe" xml:space="preserve">
+    <value>새 파일 이름을 사용하는 것이 좋습니다. 설치 프로그램은 default.csv를 쓰기 전에 명시적으로 확인을 요청합니다.</value>
+  </data>
+  <data name="Issue_PrefsCsvIsTheDevice" xml:space="preserve">
+    <value>prefs.csv는 게임 설정 파일이 아니라 장치 환경설정 파일입니다.</value>
+  </data>
+  <data name="Issue_PutThePreferenceSValue" xml:space="preserve">
+    <value>환경설정 값을 B열에 입력하세요.</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn" xml:space="preserve">
+    <value>값을 C열에 입력하세요: "{0},,{1}".</value>
+  </data>
+  <data name="Issue_PutTheValueInColumn2" xml:space="preserve">
+    <value>값을 C열에 입력하세요.</value>
+  </data>
+  <data name="Issue_RaiseHiNameToLong" xml:space="preserve">
+    <value>"{0}"을(를) {1} 이상으로 올리거나, "{2}"을(를) 낮추세요.</value>
+  </data>
+  <data name="Issue_RaiseUpperToLongLo" xml:space="preserve">
+    <value>"{0}"을(를) {1} 이상으로 올리거나, "{2}"을(를) 낮추세요.</value>
+  </data>
+  <data name="Issue_RemoveModesUntilThereAre" xml:space="preserve">
+    <value>모드가 최대 16개가 될 때까지 삭제하세요.</value>
+  </data>
+  <data name="Issue_RemoveTheExtraValues" xml:space="preserve">
+    <value>초과된 값을 제거하세요.</value>
+  </data>
+  <data name="Issue_RemoveTheRowOrLeave" xml:space="preserve">
+    <value>행을 삭제하거나, 아직 이 값을 인식하는 구형 QuadStick을 위해 그대로 두세요.</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole" xml:space="preserve">
+    <value>정수로 바꾸세요. 예: "50".</value>
+  </data>
+  <data name="Issue_ReplaceItWithAWhole2" xml:space="preserve">
+    <value>정수로 바꾸세요. 예: "repeat 4".</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick" xml:space="preserve">
+    <value>"reset_quadstick"은 QuadStick을 재시작하며, 이 행은 마우스피스의 push 스위치로 이를 실행합니다. 재시작이 이루어질 때 push가 계속 눌려 있으면 장치는 펌웨어 로더로 진입하여, 뽑았다가 다시 꽂을 때까지 컨트롤러로 작동하지 않습니다.</value>
+  </data>
+  <data name="Issue_ResetQuadstickRestartsTheQuadStick2" xml:space="preserve">
+    <value>"reset_quadstick"은 QuadStick을 재시작합니다. 플레이 중인 게임은 몇 초 동안 컨트롤러 연결이 끊깁니다.</value>
+  </data>
+  <data name="Issue_SetItToAName" xml:space="preserve">
+    <value>"mygame.csv"와 같은 이름으로 설정하세요.</value>
+  </data>
+  <data name="Issue_SetItToNormalTo" xml:space="preserve">
+    <value>이를 명확히 하려면 "normal"로 설정하세요.</value>
+  </data>
+  <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
+    <value>{0}자 이하로 줄이세요. 예: "game.csv".</value>
+  </data>
+  <data name="Issue_TheCellUnderTheFirst" xml:space="preserve">
+    <value>첫 시트의 키워드 아래 셀에는 CSV 파일 이름이 있어야 합니다.</value>
+  </data>
+  <data name="Issue_TheDeviceDoesNotMatch" xml:space="preserve">
+    <value>장치는 "{0}"을(를) 채널로 인식하지 못하므로, 이 모드는 대신 USB로 연결됩니다.</value>
+  </data>
+  <data name="Issue_TheDeviceReadsAValue" xml:space="preserve">
+    <value>장치는 32비트 atoi로 값을 읽으므로, -2147483648에서 2147483647 범위를 벗어난 값은 다른 숫자로 바뀌어 전달됩니다.</value>
+  </data>
+  <data name="Issue_TheDeviceStoresItIn" xml:space="preserve">
+    <value>. 장치는 이 값을 14비트로 저장하므로, {0}(으)로 전달됩니다.</value>
+  </data>
+  <data name="Issue_TheDeviceSupports16Modes" xml:space="preserve">
+    <value>장치는 모드를 16개까지 지원합니다. 이 모드와 그 뒤의 모드는 무시됩니다.</value>
+  </data>
+  <data name="Issue_TheDirectionThresholdsRunInto" xml:space="preserve">
+    <value>{0} 임계값이 서로 겹칩니다: "{1}"은(는) {2}이고 "{3}"은(는) {4}입니다.</value>
+  </data>
+  <data name="Issue_TheFirmwareSetsItBack" xml:space="preserve">
+    <value>펌웨어는 로드할 때마다 이 값을 0으로 되돌리며, 이를 사용하던 코드는 주석 처리되어 있습니다</value>
+  </data>
+  <data name="Issue_TheQuadStickHasNoPreference" xml:space="preserve">
+    <value>QuadStick에는 "{0}"이라는 환경설정이 없으므로, 이 행은 건너뛰어지고 설정은 아무 효과가 없습니다. 입력한 그대로 저장됩니다.</value>
+  </data>
+  <data name="Issue_TheToneItUsedTo" xml:space="preserve">
+    <value>이 값이 재생시키던 톤은 주석 처리되어 있습니다</value>
+  </data>
+  <data name="Issue_TheTwoNeedAtLeast" xml:space="preserve">
+    <value>두 값 사이에는 최소 2의 차이가 필요합니다.</value>
+  </data>
+  <data name="Issue_TheValuesItKnowsAre" xml:space="preserve">
+    <value>인식하는 값은 다음과 같습니다: {0}.</value>
+  </data>
+  <data name="Issue_ThisEditsDefaultCsvThe" xml:space="preserve">
+    <value>이 작업은 변경되지 않도록 설계된 장치의 기본 대체 파일인 default.csv를 편집합니다. 여기에 잘못된 USB 에뮬레이션 값이 들어가면 플래시 드라이브 접근이 비활성화될 수 있으며, 복구하려면 물리적인 강제 삭제(force-erase)가 필요합니다.</value>
+  </data>
+  <data name="Issue_ThisModeHasCountedCount" xml:space="preserve">
+    <value>이 모드에는 출력 이름이 있는 행이 {0}개 있습니다. 장치는 처음 128개만 읽고 나머지는 무시합니다.</value>
+  </data>
+  <data name="Issue_ThisRowHasNoOutput" xml:space="preserve">
+    <value>이 행에는 출력 이름이 없습니다. 장치는 이 행을 건너뛰고 공식 변환기 두 가지 모두 이를 삭제하므로, 이 행은 아무 효과가 없습니다.</value>
+  </data>
+  <data name="Issue_TrimTheModeTo128" xml:space="preserve">
+    <value>모드를 128행으로 줄이세요.</value>
+  </data>
+  <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
+    <value>두 임계값이 같으면 장치가 튜브를 읽을 때마다 0으로 나누게 됩니다.</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
+    <value>USB emulation mode {0} ({1})은(는) 컴퓨터가 QuadStick의 드라이브에 접근하지 못하게 하며, 이 파일은 장치가 부팅할 때 사용하는 파일입니다. 이를 설치하면 어떤 프로필도 다시 편집할 방법이 없어지며, 복구하려면 물리적인 강제 삭제가 필요합니다.</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeWhat2" xml:space="preserve">
+    <value>USB emulation mode {0} ({1})은(는) 컴퓨터가 QuadStick의 드라이브에 접근하지 못하게 하므로, 이 프로필이 실행되는 동안 파일이 컴퓨터에서 사라집니다.</value>
+  </data>
+  <data name="Issue_UpperIsHiValueAnd" xml:space="preserve">
+    <value>"{0}"은(는) {1}이고 "{2}"은(는) {3}입니다. 두 값 사이에는 최소 {4}의 차이가 필요하며, 그렇지 않으면 설정이 서로 겹칩니다.</value>
+  </data>
+  <data name="Issue_Use1ForOnOr" xml:space="preserve">
+    <value>켜짐은 1, 꺼짐은 0을 사용하세요.</value>
+  </data>
+  <data name="Issue_UseADifferentNameUnless" xml:space="preserve">
+    <value>환경설정을 변경할 의도가 아니라면 다른 이름을 사용하세요.</value>
+  </data>
+  <data name="Issue_UseAValueInsideThat" xml:space="preserve">
+    <value>해당 범위 안의 값을 사용하세요.</value>
+  </data>
+  <data name="Issue_UseAValueOf0" xml:space="preserve">
+    <value>0 이상의 값을 사용하세요.</value>
+  </data>
+  <data name="Issue_UseAValueUpTo" xml:space="preserve">
+    <value>{0} 이하의 값을 사용하세요.</value>
+  </data>
+  <data name="Issue_UseAWholeNumber" xml:space="preserve">
+    <value>정수를 사용하세요.</value>
+  </data>
+  <data name="Issue_UseBothSoTheMode" xml:space="preserve">
+    <value>두 연결 방식 모두에서 모드가 작동하도록 하려면 "both"를 사용하고, 항상 유선으로만 연결한다면 "usb"를 사용하세요.</value>
+  </data>
+  <data name="Issue_UseMaxOrLess" xml:space="preserve">
+    <value>{0} 이하를 사용하세요.</value>
+  </data>
+  <data name="Issue_UseMinOrMore" xml:space="preserve">
+    <value>{0} 이상을 사용하세요.</value>
+  </data>
+  <data name="Issue_UseMode023" xml:space="preserve">
+    <value>여기서는 모드 0, 2, 3 또는 4를 사용하고, 다른 모드는 게임 프로필에서 설정하세요.</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin" xml:space="preserve">
+    <value>다음 중 하나를 사용하세요: {0}.</value>
+  </data>
+  <data name="Issue_UseOneOfStringJoin2" xml:space="preserve">
+    <value>다음 중 하나를 사용하세요: {0}.</value>
+  </data>
+  <data name="Issue_UseTheFormSomethingCsv" xml:space="preserve">
+    <value>공백이나 특수 문자 없이 "something.csv" 형식을 사용하세요.</value>
+  </data>
+  <data name="Issue_UseUsbBluetoothBothOr" xml:space="preserve">
+    <value>소문자로 "usb", "bluetooth", "both", "none" 중 하나를 사용하세요.</value>
+  </data>
+  <data name="Issue_ValueInCIsAWordB" xml:space="preserve">
+    <value>"{0}"은(는) 단어입니다. "{1}"은(는) 설정 시트에서는 단어를 받지만, 모드 행의 값은 숫자로 읽히므로 장치는 여기서 이를 0으로 설정합니다.</value>
+  </data>
+  <data name="Issue_ValueInCIsNotAWhole" xml:space="preserve">
+    <value>"{0}"은(는) 정수가 아닙니다. "{1}"은(는) 장치 설정이며, 이 셀은 그 값입니다.</value>
+  </data>
+  <data name="Issue_ValueInCIsTooBigFor" xml:space="preserve">
+    <value>"{0}"은(는) 장치가 읽기에는 너무 큽니다. {1}</value>
+  </data>
+  <data name="Issue_ValueInColumnBIs" xml:space="preserve">
+    <value>B열의 "{0}"은(는) "{1}"의 값이지만 정수가 아닙니다.</value>
+  </data>
+  <data name="Issue_ValueIsAboveMaxThe" xml:space="preserve">
+    <value>"{0}"은(는) 공식 관리 프로그램이 "{2}"에 제공하는 최댓값 {1}을(를) 초과합니다. 장치는 이 값을 그대로 받아들이지만, 테스트된 범위를 벗어납니다.</value>
+  </data>
+  <data name="Issue_ValueIsBelowMinThe" xml:space="preserve">
+    <value>"{0}"은(는) 공식 관리 프로그램이 "{2}"에 제공하는 최솟값 {1} 미만입니다. 장치는 이 값을 그대로 받아들이지만, 테스트된 범위를 벗어납니다.</value>
+  </data>
+  <data name="Issue_ValueIsNotAValue" xml:space="preserve">
+    <value>"{0}"은(는) 이 앱이 "{1}"에 대해 알고 있는 값이 아닙니다. 값은 변경 없이 파일에 그대로 기록되며, 최신 QuadStick은 이를 읽을 수도 있습니다.</value>
+  </data>
+  <data name="Issue_ValueIsNotAnOn" xml:space="preserve">
+    <value>"{0}"은(는) "{1}"의 켜짐/꺼짐 값이 아닙니다. 장치는 이를 숫자로 읽으므로, 0이 아닌 모든 값은 켜짐으로 처리됩니다.</value>
+  </data>
+  <data name="Issue_ValueIsNotOneOf" xml:space="preserve">
+    <value>"{0}"은(는) "{1}"이(가) 허용하는 값 중 하나가 아닙니다.</value>
+  </data>
+  <data name="Issue_ValueIsTooBigFor" xml:space="preserve">
+    <value>"{0}"은(는) 장치가 읽기에는 너무 큽니다. {1}</value>
+  </data>
+  <data name="Jack_BottomJack" xml:space="preserve">
+    <value>하단 잭</value>
+  </data>
+  <data name="Jack_FirstSwitch" xml:space="preserve">
+    <value>첫 번째 스위치</value>
+  </data>
+  <data name="Jack_LipJack" xml:space="preserve">
+    <value>립 잭</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe" xml:space="preserve">
+    <value>스위치 하나를 상단 잭에 꽂으면 digital_in_8로 전달됩니다. 스플리터를 사용할 때만 digital_in_7도 함께 사용됩니다.</value>
+  </data>
+  <data name="Jack_PlugOneSwitchIntoThe2" xml:space="preserve">
+    <value>스위치 하나를 하단 잭에 꽂으면 digital_in_1로 전달됩니다. 스플리터를 사용할 때만 digital_in_2도 함께 사용됩니다.</value>
+  </data>
+  <data name="Jack_PortOneSwitch" xml:space="preserve">
+    <value>{0}, 스위치 1개</value>
+  </data>
+  <data name="Jack_PortSplitterPosition" xml:space="preserve">
+    <value>{0}, 스플리터, {1}</value>
+  </data>
+  <data name="Jack_SecondSwitch" xml:space="preserve">
+    <value>두 번째 스위치</value>
+  </data>
+  <data name="Jack_TheMiddleJackIsThe" xml:space="preserve">
+    <value>중간 잭은 립 스위치입니다. 여기에 스플리터를 사용하면 digital_in_5와 digital_in_6이 제공됩니다.</value>
+  </data>
+  <data name="Jack_TheUSBAPortS" xml:space="preserve">
+    <value>USB-A 포트 자체의 데이터 핀으로, 일반 스위치처럼 읽힙니다. 케이스 외부에서는 여기에 아무것도 꽂지 않습니다.</value>
+  </data>
+  <data name="Jack_TopJack" xml:space="preserve">
+    <value>상단 잭</value>
+  </data>
+  <data name="Jack_USBADataPins" xml:space="preserve">
+    <value>USB-A 데이터 핀</value>
+  </data>
+  <data name="Lights_NoLights" xml:space="preserve">
+    <value>조명 없음</value>
+  </data>
+  <data name="Parse_BeginTheCellWithThe" xml:space="preserve">
+    <value>셀을 시트 키워드로 시작하세요. 예: "Profile Name".</value>
+  </data>
+  <data name="Parse_DeleteRowsAboveTheFirst" xml:space="preserve">
+    <value>첫 시트 헤더 위의 행을 삭제하세요.</value>
+  </data>
+  <data name="Parse_FirstCellMustContainProfile" xml:space="preserve">
+    <value>첫 번째 셀에는 "Profile"이 포함되거나 "Preferences" 또는 "Infrared"여야 합니다. 발견된 값: "{0}".</value>
+  </data>
+  <data name="Parse_KeepANoteOnA" xml:space="preserve">
+    <value>메모는 한 줄로 작성하세요.</value>
+  </data>
+  <data name="Parse_KeepLettersNumbersSpacesAnd" xml:space="preserve">
+    <value>문자, 숫자, 공백, "_ . -"만 사용하거나, 텍스트를 메모 열로 옮기세요.</value>
+  </data>
+  <data name="Parse_MoveItAboveTheFirst" xml:space="preserve">
+    <value>첫 번째 빈 행 위로 옮기거나 삭제하세요.</value>
+  </data>
+  <data name="Parse_RawA1DoesNotSTARTWith" xml:space="preserve">
+    <value>"{0}"은(는) "Profile", "Preferences", "Infrared" 중 하나로 (정확한 대문자 표기로) 시작하지 않으므로, 장치는 이 시트 전체를 건너뜁니다.</value>
+  </data>
+  <data name="Parse_RowR1AppearsAfter" xml:space="preserve">
+    <value>{0}행은 빈 행 뒤에 있으며, 장치는 그 지점에서 이 모드 읽기를 멈추므로 이 행은 아무 효과가 없습니다.</value>
+  </data>
+  <data name="Parse_RowR1HasA" xml:space="preserve">
+    <value>{0}행의 셀에 두 줄 이상이 들어 있습니다. 장치는 각 줄을 별도의 행으로 읽으며, 그중 빈 줄이 있으면 이 모드의 나머지를 읽는 것을 멈추므로, 저장 시 이들을 한 줄로 합칩니다.</value>
+  </data>
+  <data name="Parse_RowR1IsLonger" xml:space="preserve">
+    <value>{0}행이 주석을 포함하여 {1}자를 초과합니다. 장치는 행을 1024바이트 버퍼로 읽어들이며, 넘치는 부분을 마치 다음 행인 것처럼 되돌려줍니다. 행이 끊기는 위치에 따라 모드가 일찍 끝나 그 아래의 모든 행이 사라질 수 있습니다.</value>
+  </data>
+  <data name="Parse_SectionStarts0ScanFromRowS" xml:space="preserve">
+    <value>첫 시트 키워드 이전의 {0}개 행은 어떤 시트에도 속하지 않습니다.</value>
+  </data>
+  <data name="Parse_SetCellA1ToThe" xml:space="preserve">
+    <value>A1 셀을 시트 유형 키워드로 설정하세요. 예: "Profile Name".</value>
+  </data>
+  <data name="Parse_ShortenItTo63Characters" xml:space="preserve">
+    <value>63자 이하로 줄이세요.</value>
+  </data>
+  <data name="Parse_ShortenTheRowSComments" xml:space="preserve">
+    <value>이 행의 주석을 줄이세요.</value>
+  </data>
+  <data name="Parse_ThisCellIsValueLength" xml:space="preserve">
+    <value>이 셀은 {0}자입니다. 장치는 64자를 넘으면 셀의 끝을 찾는 것을 멈추므로, 이 셀과 이 행에서 그 뒤에 오는 모든 것을 빈 값으로 읽습니다.</value>
+  </data>
+  <data name="Parse_ValueContainsValueAtThe" xml:space="preserve">
+    <value>"{0}"에 "{1}"이(가) 포함되어 있습니다. 장치는 그 문자에서 셀을 끝내므로, 이를 두 개의 셀("{2}"와 "{3}")로 읽고, 이 행에서 그 뒤의 모든 값이 한 열씩 밀립니다.</value>
+  </data>
+  <data name="Pref_Advanced" xml:space="preserve">
+    <value>고급</value>
+  </data>
+  <data name="Pref_Bluetooth" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="Pref_InputsAndOutputs" xml:space="preserve">
+    <value>입력 및 출력</value>
+  </data>
+  <data name="Pref_Joystick" xml:space="preserve">
+    <value>조이스틱</value>
+  </data>
+  <data name="Pref_LipSensor" xml:space="preserve">
+    <value>립 센서</value>
+  </data>
+  <data name="Pref_Mouse" xml:space="preserve">
+    <value>마우스</value>
+  </data>
+  <data name="Pref_SipAndPuff" xml:space="preserve">
+    <value>Sip과 Puff</value>
+  </data>
+  <data name="Pref_SoundAndLights" xml:space="preserve">
+    <value>소리 및 조명</value>
+  </data>
+  <data name="Pref_UsbAndCompatibility" xml:space="preserve">
+    <value>USB 및 호환성</value>
+  </data>
+  <data name="Sheet_CauseMissedNotReadAt" xml:space="preserve">
+    <value>{0} {1}은(는) 전혀 읽히지 않아서 그 안에 무엇이 있는지 알 수 없습니다. 필요한 모드를 더 작은 스프레드시트로 나누어 한 번에 하나씩 가져오세요.</value>
+  </data>
+  <data name="Sheet_EveryTabFromThereOn" xml:space="preserve">
+    <value>그 이후의 모든 탭은</value>
+  </data>
+  <data name="Sheet_EveryTabPastThatWas" xml:space="preserve">
+    <value>그 이후의 모든 탭은</value>
+  </data>
+  <data name="Sheet_LeftJoy" xml:space="preserve">
+    <value>Left joy</value>
+  </data>
+  <data name="Sheet_LeftMoreTabsWere" xml:space="preserve">
+    <value>{0}개의 탭이 더</value>
+  </data>
+  <data name="Sheet_OneMoreTabWas" xml:space="preserve">
+    <value>탭 1개가 더</value>
+  </data>
+  <data name="Sheet_RightJoy" xml:space="preserve">
+    <value>Right joy</value>
+  </data>
+  <data name="Sheet_TabPastTheRowCap" xml:space="preserve">
+    <value>"{0}" 탭에는 {1}행보다 아래에 셀이 있으며, 이는 어떤 프로필이 끝나는 지점보다 훨씬 아래입니다. 그래서 그 지점에서 탭 읽기를 멈추었고 그 아래에 무엇이 있는지 알 수 없습니다. 붙여넣기로 남은 우연한 셀이라면, 탭 하단의 빈 행을 삭제하고 다시 가져오면 이 문제가 사라집니다.</value>
+  </data>
+  <data name="Sheet_ThatSpreadsheetHoldsAPart" xml:space="preserve">
+    <value>해당 스프레드시트는 {0} MB 크기의 부분을 포함하고 있으며, 이는 어떤 프로필보다 훨씬 커서 읽히지 않았습니다.</value>
+  </data>
+  <data name="Sheet_ThisSpreadsheetHasMoreThan" xml:space="preserve">
+    <value>이 스프레드시트에는 {0}개보다 많은 탭이 있으며, 처음 {1}개만 읽었습니다.</value>
+  </data>
+  <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
+    <value>이 스프레드시트는 {0}행보다 커서, 어떤 프로필보다 훨씬 크므로 도중에 읽기를 멈추었습니다.</value>
+  </data>
+</root>

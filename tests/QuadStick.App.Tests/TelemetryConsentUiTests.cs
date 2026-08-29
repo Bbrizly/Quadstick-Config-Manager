@@ -127,13 +127,17 @@ public class TelemetryConsentUiTests
     // A TabControl only builds the selected tab, so the box does not exist as a
     // visual until Advanced is showing. Selecting it is what a user does to
     // reach the setting anyway.
-    static CheckBox UsageBox(SettingsWindow s)
+    static CheckBox UsageBox(MainWindow w)
     {
-        var tabs = s.GetVisualDescendants().OfType<TabControl>().First();
+        w.ShowSettingsPage();
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        var tabs = w.GetVisualDescendants().OfType<TabControl>().First();
         tabs.SelectedItem = tabs.Items.OfType<TabItem>().First(t => (string?)t.Header == "Advanced");
         Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
 
-        return s.GetVisualDescendants().OfType<CheckBox>()
+        return w.GetVisualDescendants().OfType<CheckBox>()
             .First(c => AutomationProperties.GetName(c) == "Share anonymous usage data");
     }
 
@@ -152,9 +156,7 @@ public class TelemetryConsentUiTests
         w.CurrentSettings.UsageAnalytics = true;
         w.CurrentSettings.TelemetryNoticeVersion = Telemetry.NoticeVersion;
 
-        var settings = new SettingsWindow(w);
-        _ = settings.ShowDialog(w);
-        var usage = UsageBox(settings);
+        var usage = UsageBox(w);
         Assert.True(usage.IsChecked);
 
         try
@@ -168,7 +170,6 @@ public class TelemetryConsentUiTests
         finally
         {
             Settings.FailSavesForTest = false;
-            settings.Close();
             w.Close();
         }
     }
@@ -187,9 +188,7 @@ public class TelemetryConsentUiTests
         w.CurrentSettings.UsageAnalytics = true;
         w.CurrentSettings.TelemetryNoticeVersion = Telemetry.NoticeVersion;
 
-        var settings = new SettingsWindow(w);
-        _ = settings.ShowDialog(w);
-        var usage = UsageBox(settings);
+        var usage = UsageBox(w);
 
         try
         {
@@ -203,7 +202,6 @@ public class TelemetryConsentUiTests
         finally
         {
             Settings.FailSavesForTest = false;
-            settings.Close();
             w.Close();
         }
     }

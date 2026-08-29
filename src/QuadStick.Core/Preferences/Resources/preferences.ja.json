@@ -1,0 +1,330 @@
+[
+ {
+  "name": "joystick_deflection_minimum",
+  "label": "ジョイスティック中央の不感帯",
+  "description": "アナログスティックの中央不感帯を、最大可動域に対する割合で指定します。マウスやジョイスティックが勝手に動いてしまうのを止められるだけの値に設定してください。数値が大きいほど、中央付近でのスティックの感度は下がります。これはD-Padリングとは別の設定です。ファームウェア2373では、値が0でも不感帯なしを意味しなくなりました。デバイスは代わりに生カウントで129を使い、これはスキャンのたびに再適用されるため、ファイル読み込み時に計算された値より優先されます。"
+ },
+ {
+  "name": "joystick_deflection_maximum",
+  "label": "ジョイスティックの最大振れ幅",
+  "description": "フルシグナルになるまでにスティックをどれだけ動かす必要があるかを指定します。QMPではこれをジョイスティックの可動域と呼んでおり、デバイスが持つ感度調整に最も近い設定です。数値が大きいほど、同じ出力を得るのに必要な移動量が増えるため、ジョイスティックの感度は下がったように感じられます。QMPは4つの方向スライダーのうち最大のものを採用します。"
+ },
+ {
+  "name": "deflection_multiplier_up",
+  "label": "上方向の振れ幅倍率",
+  "unit": "パーセント",
+  "description": "上方向が他の方向と同じ位置でフルシグナルに達するように調整します。QMPはこれを、最大の方向スライダーを上方向のスライダーで割って算出するため、倍率が大きいほど上方向は少ない移動でフルシグナルに達し、より敏感に感じられます。"
+ },
+ {
+  "name": "deflection_multiplier_down",
+  "label": "下方向の振れ幅倍率",
+  "unit": "パーセント",
+  "description": "下方向が他の方向と同じ位置でフルシグナルに達するように調整します。QMPはこれを、最大の方向スライダーを下方向のスライダーで割って算出するため、倍率が大きいほど下方向は少ない移動でフルシグナルに達し、より敏感に感じられます。"
+ },
+ {
+  "name": "deflection_multiplier_left",
+  "label": "左方向の振れ幅倍率",
+  "unit": "パーセント",
+  "description": "左方向が他の方向と同じ位置でフルシグナルに達するように調整します。QMPはこれを、最大の方向スライダーを左方向のスライダーで割って算出するため、倍率が大きいほど左方向は少ない移動でフルシグナルに達し、より敏感に感じられます。"
+ },
+ {
+  "name": "deflection_multiplier_right",
+  "label": "右方向の振れ幅倍率",
+  "unit": "パーセント",
+  "description": "右方向が他の方向と同じ位置でフルシグナルに達するように調整します。QMPはこれを、最大の方向スライダーを右方向のスライダーで割って算出するため、倍率が大きいほど右方向は少ない移動でフルシグナルに達し、より敏感に感じられます。"
+ },
+ {
+  "name": "joystick_D_Pad_inner",
+  "label": "D-Pad内側リング",
+  "unit": "パーセント",
+  "description": "中央から測った最大振れ幅に対する割合で、D-Pad内側リングが始まる位置を指定します。これは短い遅延の後にのみ発動するため、外側へ移動する途中で通過しても反応しません。この値の半分が、方向の保持が終わる位置です。"
+ },
+ {
+  "name": "joystick_D_Pad_outer",
+  "label": "D-Pad外側リング",
+  "unit": "パーセント",
+  "description": "中央から測った最大振れ幅に対する割合で、D-Pad外側リングが始まる位置を指定します。この線を越えると、方向は即座に発動します。"
+ },
+ {
+  "name": "joystick_dead_zone_shape",
+  "label": "円形の不感帯",
+  "description": "中央の不感帯を四角形ではなく円形にします。"
+ },
+ {
+  "name": "anti_dead_zone",
+  "label": "アンチデッドゾーン"
+ },
+ {
+  "name": "joystick_warning",
+  "label": "ジョイスティック警告振れ幅",
+  "description": "これを超えるとファームウェア1476はスティックを動かしすぎだとユーザーに警告していました。ファームウェア2373もこの名前は受け付けますが無視します。このチェックはコメントアウトされています。"
+ },
+ {
+  "name": "joystick_alarm",
+  "label": "ジョイスティック警報振れ幅",
+  "description": "これを超えるとファームウェア1476は警報音を鳴らしていました。ファームウェア2373もこの名前は受け付けますが無視します。このチェックはコメントアウトされています。"
+ },
+ {
+  "name": "enable_auto_zero",
+  "label": "センサーを自動ゼロ調整する",
+  "description": "ファームウェア2373はこれを無視します。設定を読み込むたびにこの値を強制的に0に戻し、これを読み取るはずだった2箇所もコメントアウトされているため、モード行でもデバイス上でも、オンにしても何も変わりません。"
+ },
+ {
+  "name": "sip_puff_threshold_soft",
+  "label": "ソフトsip/puffしきい値",
+  "unit": "パーセント",
+  "description": "ソフトなsipまたはpuffが始まる圧力または吸引の水準です。"
+ },
+ {
+  "name": "sip_puff_threshold",
+  "label": "ハードsip/puffしきい値",
+  "unit": "パーセント",
+  "description": "出力を発動する圧力です。QMPではこれをsip and puff high thresholdと表示しており、sip_puff_threshold_softが低い方のしきい値です。"
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "sip/puff最大圧力",
+  "unit": "パーセント",
+  "description": "フルシグナルに換算される最大圧力です。"
+ },
+ {
+  "name": "sip_puff_delay_soft",
+  "label": "ソフトsip/puff遅延",
+  "unit": "ミリ秒",
+  "description": "ソフトなsipとpuffの信号は、この短い遅延の後に検知されます。QMPではこれをLow Threshold Delayと表示しています。"
+ },
+ {
+  "name": "sip_puff_delay_hard",
+  "label": "ハードsip/puff遅延",
+  "unit": "ミリ秒",
+  "description": "ハードなsipまたはpuffが、ロング信号として扱われるまでにどれだけ保持される必要があるかです。計測は圧力が最初に動いた時ではなく、ハードしきい値を超えた時点から始まります。0は未設定ではなく、ロング信号が即座に発動することを意味します。"
+ },
+ {
+  "name": "sip_threshold_soft",
+  "label": "ソフトsipしきい値",
+  "unit": "パーセント",
+  "description": "ソフトなsipが始まる吸引の水準です。ファームウェア2373以降で利用できます。0の場合、ソフトsip/puffしきい値がsipにも適用され続けます。それ以外の値はsipに限ってこれを置き換えます。"
+ },
+ {
+  "name": "sip_threshold",
+  "label": "ハードsipしきい値",
+  "unit": "パーセント",
+  "description": "ハードなsipを発動する吸引の水準です。ファームウェア2373以降で利用できます。0の場合、ハードsip/puffしきい値がsipにも適用され続けます。それ以外の値はsipに限ってこれを置き換えます。"
+ },
+ {
+  "name": "sip_maximum",
+  "label": "sip最大吸引",
+  "unit": "パーセント",
+  "description": "sipでフルシグナルに換算される吸引です。ファームウェア2373以降で利用できます。0の場合、sip/puff最大圧力がsipにも適用され続けます。それ以外の値はsipに限ってこれを置き換えます。"
+ },
+ {
+  "name": "puff_threshold_soft",
+  "label": "ソフトpuffしきい値",
+  "unit": "パーセント",
+  "description": "ソフトなpuffが始まる圧力です。ファームウェア2373以降で利用できます。0の場合、ソフトsip/puffしきい値がpuffにも適用され続けます。それ以外の値はpuffに限ってこれを置き換えます。"
+ },
+ {
+  "name": "puff_threshold",
+  "label": "ハードpuffしきい値",
+  "unit": "パーセント",
+  "description": "ハードなpuffを発動する圧力です。ファームウェア2373以降で利用できます。0の場合、ハードsip/puffしきい値がpuffにも適用され続けます。それ以外の値はpuffに限ってこれを置き換えます。"
+ },
+ {
+  "name": "puff_maximum",
+  "label": "puff最大圧力",
+  "unit": "パーセント",
+  "description": "puffでフルシグナルに換算される圧力です。ファームウェア2373以降で利用できます。0の場合、sip/puff最大圧力がpuffにも適用され続けます。それ以外の値はpuffに限ってこれを置き換えます。"
+ },
+ {
+  "name": "enable_left_side_tube",
+  "label": "左側のチューブを使う",
+  "description": "右のチューブと入れ替えて、左のチューブをモード制御に使います。"
+ },
+ {
+  "name": "lip_position_minimum",
+  "label": "リップセンサー最小値",
+  "unit": "パーセント",
+  "description": "信号が発動するリップセンサー位置の割合です。"
+ },
+ {
+  "name": "lip_position_maximum",
+  "label": "リップセンサー最大値",
+  "unit": "パーセント",
+  "description": "フルシグナルになるリップセンサーの移動量の割合です。"
+ },
+ {
+  "name": "mouse_speed",
+  "label": "マウス速度",
+  "description": "ジョイスティックの動きに対するマウスの速度です。"
+ },
+ {
+  "name": "mouse_response_curve",
+  "label": "マウス応答カーブ",
+  "description": "0は線形、1は混合、2は放物線です。",
+  "optionLabels": [
+   "線形",
+   "混合",
+   "放物線"
+  ]
+ },
+ {
+  "name": "volume",
+  "label": "スピーカー音量",
+  "description": "スピーカーの音量です。"
+ },
+ {
+  "name": "brightness",
+  "label": "LED輝度",
+  "description": "LEDの輝度です。"
+ },
+ {
+  "name": "enable_rumble",
+  "label": "振動"
+ },
+ {
+  "name": "bluetooth_device_mode",
+  "label": "Bluetoothデバイスモード",
+  "description": "QuadStickがBluetooth上で何を装うかです。"
+ },
+ {
+  "name": "bluetooth_authentication_mode",
+  "label": "Bluetooth認証モード"
+ },
+ {
+  "name": "bluetooth_connection_mode",
+  "label": "Bluetooth接続モード"
+ },
+ {
+  "name": "bluetooth_remote_address",
+  "label": "Bluetoothリモートアドレス"
+ },
+ {
+  "name": "bluetooth_remote_adapter",
+  "label": "Bluetoothリモートアダプター"
+ },
+ {
+  "name": "bluetooth_throttle",
+  "label": "Bluetoothスロットル",
+  "description": "前回の送信から十分な時間が経っていない場合、デバイスはBluetooth送信をスキップします。"
+ },
+ {
+  "name": "digital_out_1",
+  "label": "デジタル出力1",
+  "description": "デバイスはこの名前を、設定テーブルに到達する前に出力として照合するため、これはデバイス設定にしかならず、モードによる上書きにはなりません。"
+ },
+ {
+  "name": "digital_out_2",
+  "label": "デジタル出力2",
+  "description": "デバイスはこの名前を、設定テーブルに到達する前に出力として照合するため、これはデバイス設定にしかならず、モードによる上書きにはなりません。"
+ },
+ {
+  "name": "digital_out_3",
+  "label": "デジタル出力3",
+  "description": "デバイスはこの名前を、設定テーブルに到達する前に出力として照合するため、これはデバイス設定にしかならず、モードによる上書きにはなりません。"
+ },
+ {
+  "name": "digital_out_4",
+  "label": "デジタル出力4",
+  "description": "デバイスはこの名前を、設定テーブルに到達する前に出力として照合するため、これはデバイス設定にしかならず、モードによる上書きにはなりません。"
+ },
+ {
+  "name": "enable_swap_inputs",
+  "label": "サイドチューブで入力を入れ替える",
+  "description": "サイドチューブを使って入力を入れ替えます。"
+ },
+ {
+  "name": "enable_select_files",
+  "label": "サイドチューブでファイルを選択する",
+  "description": "サイドチューブを使ってファイルを選択します。"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "USB-Aデバイスモード",
+  "risk": "QuadStickがどのUSBポートに自らを提示するかを決めます。これを変更するとデバイスはUSBを切断して再接続するため、誤った値だとコンソールやコンピューターから認識されなくなることがあります。これはenable_usb_a_hostより優先されます。これが設定されている間は、ホスト側の設定にかかわらずUSB-Aホストスタックは停止します。QuadStickサポートの指示があった場合のみ変更してください。"
+ },
+ {
+  "name": "enable_usb_a_host",
+  "label": "USB-Aホストモード",
+  "description": "ファームウェア2373以降で利用できます。これがオンでUSB-Aデバイスモードがオフの場合、デバイスはUSB-AポートでUSBホストとして動作し、そこに接続したコントローラーはusb_1の入力チャンネルに供給されます。これをオフにするか、USB-Aデバイスモードをオンにすると、ホストは停止します。USB-Aデバイスモードが優先されます。QMPではこれをUSB-A Host Modeと表示しています。"
+ },
+ {
+  "name": "enable_DS3_emulation",
+  "label": "USBエミュレーションモード",
+  "description": "QuadStickがどのUSBデバイスを装うかです。ファームウェア2373では: 0 QuadStickネイティブ、1 DualShock 3、2 x360ce、3 Xbox 360、4 PS4用DualShock 4、5 Nintendo Switch Pro Controller、6 USBドライブなしのDualShock 4、7 通常のDS4ワイヤレス。値5はファームウェア1476ではPC専用でジョイスティックなしを意味していたため、5を持つファイルはデバイスを更新すると全く異なる動作になります。モード1、5、6、7はUSBドライブを一切提供しないため、これらが動作している間はコンピューターからQuadStickのファイルを見ることができません。QMPのBoot in PS4 Modeは値4です。ファームウェア2373のJoystick.c:625では、この値を独自のコメントで\"boot in PS4 mode\"と呼んでいます。",
+  "risk": "名前はDS3となっていますが、デバイスはこれをオン/オフのスイッチではなく、8個の番号付きの値を持つUSBエミュレーションモードとして読み取ります。5が意味する内容はファームウェア1476と2373の間で変わっており、実行中のファームウェアが認識しない番号を指定すると、誰も意図していないエミュレーションのままデバイスが動作し続けます。QCMは入力された値をそのまま保持し、拒否することはありません。あるファームウェアでは誤りの値でも、別のファームウェアでは正しい値だからです。QuadStickサポートの指示があった場合のみ変更してください。",
+  "optionLabels": [
+   "QuadStick(PCおよびPS3)",
+   "DualShock 3、USBドライブなし",
+   "x360ce、PC向け",
+   "Xbox 360コントローラー",
+   "DualShock 4、PS4向け(QMPのBoot in PS4 Mode)",
+   "Nintendo Switch Pro Controller、USBドライブなし",
+   "DualShock 4、USBドライブなし",
+   "DualShock 4ワイヤレス、USBドライブなし"
+  ]
+ },
+ {
+  "name": "enable_usb_comm",
+  "label": "USB経由の音声コマンド",
+  "description": "USB経由の音声コマンドを有効にします。"
+ },
+ {
+  "name": "usb_1_multiplier_up",
+  "label": "USB 1 上方向倍率"
+ },
+ {
+  "name": "usb_1_multiplier_down",
+  "label": "USB 1 下方向倍率"
+ },
+ {
+  "name": "usb_1_multiplier_left",
+  "label": "USB 1 左方向倍率"
+ },
+ {
+  "name": "usb_1_multiplier_right",
+  "label": "USB 1 右方向倍率"
+ },
+ {
+  "name": "usb_2_multiplier_up",
+  "label": "USB 2 上方向倍率"
+ },
+ {
+  "name": "usb_2_multiplier_down",
+  "label": "USB 2 下方向倍率"
+ },
+ {
+  "name": "usb_2_multiplier_left",
+  "label": "USB 2 左方向倍率"
+ },
+ {
+  "name": "usb_2_multiplier_right",
+  "label": "USB 2 右方向倍率"
+ },
+ {
+  "name": "usb_1_dead_zone",
+  "label": "USB 1 不感帯",
+  "unit": "生の軸カウント",
+  "description": "ファームウェア2373以降で利用できます。USB-Aホストポートに接続されたコントローラーの中央不感帯を、パーセントではなく、そのコントローラーの中央化された軸バイトの生のステップ数で指定します。この値未満では軸は0として読み取られ、これを超えるとこの値が差し引かれて移動量がゼロから始まり、結果はプラスマイナス100に制限されます。0の場合、軸はそのまま通過します。中央化された軸バイトはどちらの方向にも約127までしか達しないため、128以上を指定すると軸が機能しなくなります。"
+ },
+ {
+  "name": "usb_2_dead_zone",
+  "label": "USB 2 不感帯",
+  "unit": "生の軸カウント",
+  "description": "ファームウェア2373以降で存在しますが、デバイスはこれを無視します。名前自体は有効でファイルにも記録されますが、ファームウェアのどこもこの値を読み取りません。すべてのUSBホスト軸はUSB 1の不感帯を使います。モード行で設定しても同様に何も起こりません。"
+ },
+ {
+  "name": "titan_two",
+  "label": "Titan Twoアダプター",
+  "description": "ファームウェア2373以降で利用できます。コンソールに直接接続するのではなく、Titan Two経由でPS4に接続していることをデバイスに伝えます。これによりデバイスはDS4認証ハンドシェイクをスキップし、定期的な強制USB再接続を停止します。QMPではこれをTitan 2 PS4フラグと表示しています。"
+ },
+ {
+  "name": "watchdog_disable",
+  "label": "ウォッチドッグを無効にする",
+  "risk": "デバイスは応答しなくなった場合に再起動する2分間のハードウェアウォッチドッグを動かしています。ファームウェア1476にも2373にもこの設定を読み取る箇所はなく、どちらでも何も起こりません。将来のファームウェアがこれをどう扱うかは分かりません。"
+ },
+ {
+  "name": "debug",
+  "label": "デバッグ出力レベル",
+  "description": "この値がゼロより大きい場合、デバイスはコンソールを有効にします。"
+ }
+]

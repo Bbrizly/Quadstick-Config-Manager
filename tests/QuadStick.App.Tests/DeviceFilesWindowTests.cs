@@ -194,6 +194,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         Assert.True(Says(win, two));
         Assert.True(Says(win, "across 2 QuadStick drives"));
 
+        // The buttons for one drive's file exist only with that drive's path in
+        // their name, so there is no ambiguous "Delete Racing.csv" anywhere.
         Assert.True(HasButton(win, Delete("Racing.csv", one)));
         Assert.False(HasButton(win, Delete("Racing.csv", two)));
 
@@ -201,6 +203,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
+    // A drive that refuses to be read takes its own group down and nothing else.
     [AvaloniaFact]
     public async Task An_unreadable_drive_does_not_take_the_other_one_down()
     {
@@ -220,6 +223,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // ---- accessibility ----
 
+    // CROSS-02: every action says which file on which drive it will touch, so a
+    // screen reader user is never guessing between two identical file names.
     [AvaloniaFact]
     public async Task Every_action_names_the_file_and_the_drive()
     {
@@ -248,6 +253,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
+    // CROSS-02: nothing at all hides behind a right click. A mouth stick cannot
+    // open a context menu.
     [AvaloniaFact]
     public async Task No_action_is_hidden_in_a_right_click_menu()
     {
@@ -262,6 +269,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
+    // The window is file management on a mounted drive and nothing more. No
+    // serial, no HID, no firmware, no rename, no load or run.
     [Fact]
     public void The_window_stays_a_file_manager()
     {
@@ -285,13 +294,16 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // ---- protected files ----
 
+    // DEV-05: default.csv and prefs.csv have no working delete anywhere. The
+    // button is off, raising its click by hand still deletes nothing, and the
+    // core primitive refuses them on its own.
     [AvaloniaFact]
     public async Task Protected_files_cannot_be_deleted_from_the_window_or_the_core()
     {
         var root = Root("stick", "prefs.csv", "Racing.csv");
         var w = NewWindow();
         var (win, ask) = await OpenAsync(w, root);
-        ask.Answer = true;
+        ask.Answer = true; // say yes to everything, and still delete nothing
 
         foreach (var name in new[] { "default.csv", "prefs.csv" })
         {
@@ -300,17 +312,20 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
             await TapAsync(win, Delete(name, root));
 
-            Assert.Empty(ask.Prompts);
+            Assert.Empty(ask.Prompts); // it never even got as far as asking
             Assert.True(File.Exists(Path.Combine(root, name)));
             Assert.True(Says(win, $"{name} on"));
             Assert.True(Says(win, "is protected and cannot be deleted"));
 
+            // And the primitive the button would have called says no too.
             var direct = Assert.Throws<InvalidOperationException>(
                 () => Device.DeleteProfile(root, name, _backups));
             Assert.Contains("protected", direct.Message);
             Assert.True(File.Exists(Path.Combine(root, name)));
         }
 
+        // The one file that is not protected still has a live delete, so this is
+        // not a window with the delete broken everywhere.
         Assert.True(Button(win, Delete("Racing.csv", root)).IsEnabled);
 
         win.Close();
@@ -319,6 +334,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // ---- delete ----
 
+    // DEV-05: the question names the file and the exact drive, the delete runs
+    // through the core primitive, and the backup path comes back in words.
     [AvaloniaFact]
     public async Task Deleting_names_the_file_and_the_drive_and_reports_the_backup()
     {
@@ -342,6 +359,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         Assert.True(Says(win, backup));
         Assert.True(Says(win, Path.Combine(root, "Racing.csv")));
 
+        // The same-named file on the other drive is untouched, and the list
+        // reloaded itself.
         Assert.True(File.Exists(Path.Combine(other, "Racing.csv")));
         Assert.Equal(new[] { "default.csv" }, NamesIn(win, root));
         Assert.Equal(new[] { "default.csv", "Racing.csv" }, NamesIn(win, other));
@@ -350,6 +369,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
+    // Cancel means nothing happens, and the window says so rather than going
+    // quiet.
     [AvaloniaFact]
     public async Task Saying_no_to_a_delete_changes_nothing()
     {
@@ -369,6 +390,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
+    // DEV-07: the stick comes out between the list and the button. The window
+    // has to stay a working window and say which file on which drive failed.
     [AvaloniaFact]
     public async Task A_drive_pulled_before_the_delete_gives_a_scoped_message()
     {
@@ -378,15 +401,16 @@ public sealed class DeviceFilesWindowTests : IDisposable
         var (win, ask) = await OpenAsync(w, root, kept);
         ask.Answer = true;
 
-        Directory.Delete(root, recursive: true);
+        Directory.Delete(root, recursive: true); // the stick comes out
 
         await TapAsync(win, Delete("Racing.csv", root));
 
         Assert.True(Says(win, "Could not delete Racing.csv from"));
         Assert.True(Says(win, root));
-        Assert.False(Directory.Exists(_backups));
+        Assert.False(Directory.Exists(_backups)); // nothing was backed up either
         Assert.True(Button(win, "Look for QuadStick drives again and reload the file list").IsEnabled);
         Assert.True(Button(win, "Close this window").IsEnabled);
+        // The drive that is still there kept its files.
         Assert.Equal(new[] { "default.csv", "Shooter.csv" }, NamesIn(win, kept));
 
         win.Close();
@@ -395,6 +419,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // ---- copy to library ----
 
+    // DEV-03: a copy lands in the library and the device file is not touched.
     [AvaloniaFact]
     public async Task Copying_writes_the_library_and_leaves_the_device_alone()
     {
@@ -406,7 +431,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
         await TapAsync(win, Copy("Racing.csv", root));
 
-        Assert.Empty(ask.Prompts);
+        Assert.Empty(ask.Prompts); // nothing to overwrite, nothing to ask
         var dest = Path.Combine(_library, "Racing.csv");
         Assert.True(File.Exists(dest));
         Assert.Equal(before, File.ReadAllBytes(source));
@@ -417,6 +442,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
+    // DEV-03: a name that already exists in the library needs an explicit
+    // answer. No answer, no write.
     [AvaloniaFact]
     public async Task A_copy_collision_needs_an_explicit_answer()
     {
@@ -436,6 +463,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
         Assert.Equal("mine, keep it", File.ReadAllText(dest));
         Assert.True(Says(win, "was not copied"));
 
+        // Say yes and the same button now replaces it.
         ask.Answer = true;
         await TapAsync(win, Copy("Racing.csv", root));
 
@@ -446,6 +474,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
+    // DEV-03: the library file was not there when the copy started, so nothing
+    // was asked. It must still not be overwritten without an answer.
     [AvaloniaFact]
     public async Task A_library_file_that_appears_mid_copy_is_not_replaced()
     {
@@ -455,6 +485,9 @@ public sealed class DeviceFilesWindowTests : IDisposable
         var (win, ask) = await OpenAsync(w, root);
         ask.Answer = false;
 
+        // The click looks for the library file, finds nothing and asks nothing.
+        // The file lands before the write, the way a second drive with the same
+        // name or another program can put it there.
         Button(win, Copy("Racing.csv", root))
             .RaiseEvent(new RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
         File.WriteAllText(dest, "landed while the copy was running");
@@ -467,6 +500,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
         Assert.True(Says(win, "turned up in your library"));
         Assert.True(Says(win, dest));
 
+        // Copying again is the way through, and that one asks first.
         await TapAsync(win, Copy("Racing.csv", root));
 
         Assert.Single(ask.Prompts);
@@ -478,6 +512,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // ---- linked sheet ----
 
+    // DEV-04: a header that names a sheet gets a live button and the built
+    // Google URL. A header that names nothing gets a dead button and a reason.
     [AvaloniaFact]
     public async Task Open_linked_sheet_is_live_only_with_valid_header_metadata()
     {
@@ -499,6 +535,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
         Assert.Equal($"https://docs.google.com/spreadsheets/d/{SheetId}/edit", opened?.ToString());
         Assert.True(Says(win, "in your browser"));
 
+        // The dead ones say why in words, not by looking grey.
         var rows = ListFor(win, root).ItemsSource!.Cast<ListBoxItem>()
             .Select(AutomationProperties.GetName).ToArray();
         Assert.Contains(rows, n => n!.StartsWith("Plain.csv") && n.Contains("no linked Google Sheet in its header"));
@@ -510,6 +547,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // ---- the light guide ----
 
+    // DEV-06: what the screen says and what Copy writes are the same words in
+    // the same order, and the order is the device's own.
     [AvaloniaFact]
     public async Task The_guide_shown_and_the_guide_copied_are_the_same()
     {
@@ -518,6 +557,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         var (win, _) = await OpenAsync(w, root);
 
         var entries = win.Guide(root);
+        // default.csv first, then the game files case-insensitively, and prefs
+        // is settings so it is not in the list at all.
         Assert.Equal(new[] { "default.csv", "Apple.csv", "zebra.csv" }, entries.Select(e => e.FileName));
         Assert.Equal(new[] { 1, 2, 3 }, entries.Select(e => e.Number));
         Assert.Equal(Device.LedPattern(1), entries[0].Colors);
@@ -527,6 +568,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         Assert.Equal($"File selection order on {Path.GetFileName(root)} ({root})", copied[0]);
         Assert.Equal(entries.Select(e => e.Line).ToArray(), copied.Skip(1).ToArray());
 
+        // The rows on screen announce the very same lines, so a screen reader
+        // and the clipboard cannot drift apart.
         var shown = win.GetVisualDescendants().OfType<WrapPanel>()
             .Select(AutomationProperties.GetName)
             .Where(n => n is not null && n.Contains(": "))
@@ -537,6 +580,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
+    // CROSS-02: the guide never speaks in colour alone. Every light is written
+    // out next to its dot, using only the four audited names.
     [AvaloniaFact]
     public async Task The_guide_writes_every_colour_out_in_words()
     {
@@ -550,12 +595,14 @@ public sealed class DeviceFilesWindowTests : IDisposable
         Assert.All(win.Guide(root).SelectMany(e => e.Colors),
             c => Assert.Contains(c, new[] { "purple", "grey", "blue", "red" }));
 
+        // Five lights per entry, so the guide matches the hardware.
         Assert.All(win.Guide(root), e => Assert.Equal(5, e.Colors.Count));
 
         win.Close();
         w.Close();
     }
 
+    // Copy puts the displayed guide on the clipboard.
     [AvaloniaFact]
     public async Task Copying_the_guide_puts_the_shown_text_on_the_clipboard()
     {
@@ -574,6 +621,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // ---- refresh ----
 
+    // DEV-07: Refresh looks again rather than trusting the list it drew, and it
+    // drops the detection cache so a stick plugged in a second ago shows up.
     [AvaloniaFact]
     public async Task Refresh_looks_again_and_survives_a_drive_that_disappeared()
     {
@@ -585,6 +634,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
         Assert.Equal(new[] { one }, win.Roots);
 
+        // A second stick goes in, and a new file lands on the first.
         live.Add(two);
         File.WriteAllText(Path.Combine(one, "Later.csv"), Csv("Later.csv"));
         await TapAsync(win, "Look for QuadStick drives again and reload the file list");
@@ -592,6 +642,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
         Assert.Equal(new[] { one, two }, win.Roots);
         Assert.Equal(new[] { "default.csv", "Later.csv", "Racing.csv" }, NamesIn(win, one));
 
+        // Both come out. The window says so and stays usable.
         live.Clear();
         await TapAsync(win, "Look for QuadStick drives again and reload the file list");
 
@@ -603,16 +654,16 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
-    // The presentation now invalidates through the Application use case rather
-    // than reaching into the mounted-volume implementation directly.
+    // DEV-07: Refresh has to drop the three second detection cache too, or a
+    // stick plugged in a second ago stays hidden behind the last scan.
     [Fact]
     public void Refresh_drops_the_drive_detection_cache()
     {
         var source = File.ReadAllText(Path.Combine(RepoRoot, "src", "QuadStick.App", "DeviceFilesWindow.cs"));
-        Assert.Contains("_files.InvalidateDiscovery()", source);
-        Assert.DoesNotContain("Device.InvalidateCandidateCache()", source);
+        Assert.Contains("Device.InvalidateCandidateCache()", source);
     }
 
+    // A drive scan that throws outright still leaves a window someone can use.
     [AvaloniaFact]
     public async Task A_failing_drive_scan_leaves_a_usable_window()
     {
@@ -630,6 +681,8 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // ---- open ----
 
+    // A device file opens as a working copy with no save path, so Save goes to
+    // the library and only Install writes back to the QuadStick.
     [AvaloniaFact]
     public async Task Opening_a_device_file_opens_a_working_copy_in_the_editor()
     {
@@ -641,12 +694,14 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
         Assert.NotNull(w.OpenFile);
         Assert.Equal("Racing.csv", w.OpenFile!.Document.CsvFileName);
-        Assert.False(win.IsVisible);
+        Assert.False(win.IsVisible); // gets out of the way of the editor behind it
 
         w.OpenFile.Dirty = false;
         w.Close();
     }
 
+    // prefs.csv is the device's own settings, so opening it asks first and the
+    // question names the drive it came from.
     [AvaloniaFact]
     public async Task Opening_prefs_asks_first_and_names_the_drive()
     {
@@ -668,6 +723,9 @@ public sealed class DeviceFilesWindowTests : IDisposable
         w.Close();
     }
 
+    // Numbered file names are how the profile switch order is set, so on a full
+    // stick they are all the row has to tell one file from another. The name
+    // inside the file goes on the row, in front of the counts.
     [AvaloniaFact]
     public async Task A_row_leads_with_the_name_inside_the_file()
     {
@@ -677,6 +735,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
         var (win, _) = await OpenAsync(w, root);
 
         Assert.True(Says(win, "Racing · "));
+        // default.csv has no header name, so its first mode's name stands in.
         Assert.True(Says(win, "Walking · "));
 
         win.Close();

@@ -9,7 +9,7 @@ using Avalonia.Media;
 namespace QuadStick.App;
 
 // Drive restore picker. One dialog for bulk restore and cherry-pick, from
-// home, settings, and onboarding. Same idiom as SettingsWindow.
+// home, settings, and onboarding. Same idiom as other workflow windows.
 //
 // Sheets load after the window opens, not in the ctor, so home stays local
 // and a Drive failure shows in the status line instead of crashing.
@@ -27,20 +27,19 @@ public class DrivePickerWindow : Window
         Classes.Add("dialog");
         _owner = owner;
         _preCheck = preCheck;
-        Title = "Import from Google Drive";
+        Title = Strings.DrivePick_ImportFromGoogleDrive;
         Width = Math.Min(560 * owner.UiScale, 1000);
         Height = Math.Min(560 * owner.UiScale, 800);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
         var heading = new TextBlock
         {
-            Text = "Your Google Drive backups",
+            Text = Strings.DrivePick_YourGoogleDriveBackups,
             FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold,
         };
         var explain = new TextBlock
         {
-            Text = "Pick the profiles to copy onto this computer. Only the sheets this "
-                 + "app backed up are listed. Ones already in your profiles are greyed out.",
+            Text = Strings.DrivePick_PickTheProfilesToCopy,
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         };
 
@@ -54,17 +53,17 @@ public class DrivePickerWindow : Window
 
         _status = new TextBlock
         {
-            Text = "Loading your backups...",
+            Text = Strings.DrivePick_LoadingYourBackups,
             FontSize = Size("BodySize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         };
         AutomationProperties.SetLiveSetting(_status, AutomationLiveSetting.Polite);
 
-        _import = new Button { Content = "Import", Classes = { "primary" }, MinWidth = 140, IsEnabled = false };
-        AutomationProperties.SetName(_import, "Import the selected profiles");
+        _import = new Button { Content = Strings.DrivePick_Import, Classes = { "primary" }, MinWidth = 140, IsEnabled = false };
+        AutomationProperties.SetName(_import, Strings.DrivePick_ImportTheSelectedProfiles);
         _import.Click += async (_, _) => await ImportAsync();
 
-        var cancel = new Button { Content = "Close", MinWidth = 140, IsCancel = true };
-        AutomationProperties.SetName(cancel, "Close this window");
+        var cancel = new Button { Content = Strings.DrivePick_Close, MinWidth = 140, IsCancel = true };
+        AutomationProperties.SetName(cancel, Strings.DrivePick_CloseThisWindow);
         cancel.Click += (_, _) => Close();
 
         var buttons = new StackPanel
@@ -111,7 +110,7 @@ public class DrivePickerWindow : Window
             foreach (var s in sheets)
             {
                 var label = $"{s.Name}, {ShortDate(s.ModifiedTime)}";
-                if (s.AlreadyLinked) label += "  (already in your profiles)";
+                if (s.AlreadyLinked) label += Strings.DrivePick_AlreadyInYourProfiles;
                 var check = new CheckBox
                 {
                     Content = label,
@@ -125,14 +124,14 @@ public class DrivePickerWindow : Window
             }
 
             if (sheets.Count == 0)
-                _status.Text = "No backups found in your Google Drive yet.";
+                _status.Text = Strings.DrivePick_NoBackupsFoundInYour;
             else
                 _status.Text = "";
             _import.IsEnabled = _rows.Any(r => r.Check.IsEnabled);
         }
         catch (Exception ex)
         {
-            _status.Text = "Could not load your backups: " + ex.Message;
+            _status.Text = Strings.DrivePick_CouldNotLoadYourBackups + ex.Message;
         }
     }
 
@@ -142,10 +141,10 @@ public class DrivePickerWindow : Window
             .Where(r => r.Check.IsChecked == true && !r.Info.AlreadyLinked)
             .Select(r => (r.Info.Id, r.Info.Name))
             .ToList();
-        if (picks.Count == 0) { _status.Text = "Nothing selected to import."; return; }
+        if (picks.Count == 0) { _status.Text = Strings.DrivePick_NothingSelectedToImport; return; }
 
         _import.IsEnabled = false;
-        _status.Text = "Importing...";
+        _status.Text = Strings.DrivePick_Importing;
         try
         {
             var summary = await _owner.RestoreFromDriveAsync(picks);
@@ -157,7 +156,7 @@ public class DrivePickerWindow : Window
         }
         catch (Exception ex)
         {
-            _status.Text = "Import failed: " + ex.Message;
+            _status.Text = Strings.DrivePick_ImportFailed + ex.Message;
         }
         finally
         {

@@ -696,6 +696,22 @@ public sealed class ProfileFile
         return true;
     }
 
+    /// <summary>Sets which connection a mode's outputs travel over. Column C
+    /// of the mode's header row, two rows under its keyword: the same cell
+    /// Parser reads as <see cref="ModeSheet.Channel"/>.</summary>
+    /// <remarks>Written verbatim, blank included. Configuration.c:528 falls
+    /// back to USB for a blank or unrecognised word, so clearing the cell is a
+    /// real choice and not a broken file.</remarks>
+    public bool SetModeChannel(int sheetIndex, string channel)
+    {
+        if (sheetIndex < 0 || sheetIndex >= Document.Sheets.Count) return false;
+        var sheet = Document.Sheets[sheetIndex];
+        if (sheet.Type != SheetType.ProfileName) return false;
+        if (channel == sheet.Channel) return false;
+        SetCell(sheet.StartRow + 2, 2, channel);
+        return true;
+    }
+
     // Copy a whole mode to the end of the grid under a new name. Returns the new
     // sheet's index, or -1 if the target is not a nameable mode.
     public int DuplicateMode(int sheetIndex, string newName)

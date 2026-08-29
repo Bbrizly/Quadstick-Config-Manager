@@ -1,87 +1,62 @@
-using System.Runtime.ExceptionServices;
-using QuadStick.Application.Backup;
-using QuadStick.Application.Settings;
-using QuadStick.Infrastructure.Files;
-using QuadStick.Infrastructure.Google;
+using System.Net;
+using System.Text;
+using QuadStick.Format;
 
 namespace QuadStick.App;
 
-/// <summary>Presentation facade for remote-backup decisions and status. It never
-/// owns Drive state policy or provider mechanics.</summary>
+// Background backup engine. No Avalonia reference, so tests run without a
+// windowing stack. MainWindow owns the prompts, status line, and
+// rescue-and-reload; this class owns the Drive calls and link state.
+//
+// One rule: a local save never waits on the network, and a backup failure
+// never reaches the save. Failures set backupDirty plus a status message and
+// retry on the next save, on open, and on Reconnect.
 public sealed class DriveBackup
 {
-    readonly DriveBackupWorkflow _workflow;
+    readonly DriveClient _client;
+    readonly Func<AppSettings> _getSettings;
+    // Save settings, returning success. Push paths ignore the result (best
+    // effort); restore checks it, since an imported-but-unlinked profile would
+    // fork a duplicate sheet on its next save.
+    readonly Func<bool> _trySave;
+    // title, body -> the user's pick.
     readonly Func<string, string, Task<ConflictChoice>> _conflictPrompt;
+    // title, body -> true recreate as a new sheet, false turn backup off.
     readonly Func<string, string, Task<bool>> _recreatePrompt;
+    // Share confirm yes/no. Called at most once per sheet, on first copy.
+    // Marshalled to the UI thread by the caller.
     readonly Func<Task<bool>> _shareConfirm;
+    // message, isWarning. Marshalled to the UI thread by the caller.
     readonly Action<string, bool> _status;
 
-    const string ConflictTitle = "Sheet edited online";
-    const string ConflictBody =
-        "This profile's Google Sheet was edited online since your last backup. "
-        + "Choose Yes to replace it with your copy (the online edits stay in "
-        + "Drive revision history). Choose Cancel to keep the online version and "
-        + "load it into the editor instead.";
+    static string ConflictTitle => Strings.Backup_SheetEditedOnline;
+    // The buttons are fixed Yes/Cancel, so the mapping lives in the words.
+    static string ConflictBody => Strings.Backup_ThisProfileSGoogleSheet;
 
-    const string RecreateTitle = "Backup sheet not found";
-    const string RecreateBody =
-        "The Google Sheet for this profile could not be found. It may have been "
-        + "deleted or moved to trash. Choose Yes to create a new sheet and back "
-        + "up to it. Choose Cancel to turn backup off for this profile.";
+    static string RecreateTitle => Strings.Backup_BackupSheetNotFound;
+    static string RecreateBody => Strings.Backup_TheGoogleSheetForThis;
 
-    // Compatibility store for existing tests/callers that still supply the
-    // historical settings delegates. Mutations are rolled back in memory when
-    // persistence fails, matching AppSettingsSession transaction semantics.
-    sealed class DelegateDriveLinkStore : IDriveLinkStore
+    static string PendingMessage => Strings.Backup_BackupPending;
+    static string PausedMessage => Strings.Backup_BackupPausedReconnectToGoogle;
+
+    // One Drive op at a time. A background push and a share-link copy can race
+    // on the same unlinked profile and each create a sheet; the gate serializes
+    // them so the second sees the first one's link.
+    // ponytail: one global gate, per-profile gates if backups ever feel slow.
+    readonly SemaphoreSlim _gate = new(1, 1);
+
+    async Task<T> Locked<T>(Func<Task<T>> op, CancellationToken ct)
     {
-        readonly Func<AppSettings> _get;
-        readonly Func<bool> _save;
+        await _gate.WaitAsync(ct);
+        try { return await op(); }
+        finally { _gate.Release(); }
+    }
 
-        public DelegateDriveLinkStore(Func<AppSettings> get, Func<bool> save)
-        { _get = get; _save = save; }
-
-        public DriveLink? Get(string profilePath) =>
-            _get().DriveLinks.TryGetValue(profilePath, out var link) ? link.DeepClone() : null;
-
-        public IReadOnlyDictionary<string, DriveLink> Snapshot() =>
-            _get().DriveLinks.ToDictionary(
-                pair => pair.Key,
-                pair => pair.Value.DeepClone(),
-                StringComparer.Ordinal);
-
-        public bool TrySet(string profilePath, DriveLink link)
-        {
-            var settings = _get();
-            var hadOld = settings.DriveLinks.TryGetValue(profilePath, out var old);
-            settings.DriveLinks[profilePath] = link.DeepClone();
-            if (_save()) return true;
-            if (hadOld) settings.DriveLinks[profilePath] = old!.DeepClone();
-            else settings.DriveLinks.Remove(profilePath);
-            return false;
-        }
-
-        public bool TryRemove(string profilePath)
-        {
-            var settings = _get();
-            if (!settings.DriveLinks.TryGetValue(profilePath, out var old)) return true;
-            settings.DriveLinks.Remove(profilePath);
-            if (_save()) return true;
-            settings.DriveLinks[profilePath] = old.DeepClone();
-            return false;
-        }
-
-        public bool TryMove(string oldPath, string newPath)
-        {
-            var settings = _get();
-            if (!settings.DriveLinks.TryGetValue(oldPath, out var link)
-                || settings.DriveLinks.ContainsKey(newPath)) return false;
-            settings.DriveLinks[newPath] = link.DeepClone();
-            settings.DriveLinks.Remove(oldPath);
-            if (_save()) return true;
-            settings.DriveLinks[oldPath] = link.DeepClone();
-            settings.DriveLinks.Remove(newPath);
-            return false;
-        }
+    // A failed settings write shows in the status line, not swallowed (spec
+    // rule). Restore checks _trySave itself, since it must also undo the write.
+    void SaveState()
+    {
+        if (!_trySave()) _status(Strings.Backup_CouldNotSaveBackupSettings, true);
     }
 
     public DriveBackup(
@@ -92,171 +67,531 @@ public sealed class DriveBackup
         Func<string, string, Task<bool>> recreatePrompt,
         Action<string, bool> status,
         Func<Task<bool>> shareConfirm)
-        : this(
-            new DriveBackupWorkflow(
-                new GoogleDriveBackupProvider(client),
-                new DelegateDriveLinkStore(getSettings, trySave),
-                new PhysicalProfileLibraryStore()),
-            conflictPrompt,
-            recreatePrompt,
-            status,
-            shareConfirm)
-    { }
-
-    internal DriveBackup(
-        DriveBackupWorkflow workflow,
-        Func<string, string, Task<ConflictChoice>> conflictPrompt,
-        Func<string, string, Task<bool>> recreatePrompt,
-        Action<string, bool> status,
-        Func<Task<bool>> shareConfirm)
     {
-        _workflow = workflow;
+        _client = client;
+        _getSettings = getSettings;
+        _trySave = trySave;
         _conflictPrompt = conflictPrompt;
         _recreatePrompt = recreatePrompt;
         _status = status;
         _shareConfirm = shareConfirm;
     }
 
-    public async Task<PushResult> PushAsync(string profilePath, string csvText, CancellationToken ct = default)
+    // Push one profile's grid to its sheet. KeptOnline carries the sheet CSV,
+    // since the rescue, overwrite, and reload need MainWindow state we lack.
+    public Task<PushResult> PushAsync(string profilePath, string csvText, CancellationToken ct = default) =>
+        Locked(() => PushCoreAsync(profilePath, csvText, ct), ct);
+
+    async Task<PushResult> PushCoreAsync(string profilePath, string csvText, CancellationToken ct)
     {
-        ConflictChoice? conflict = null;
-        bool? recreate = null;
-        while (true)
+        var settings = _getSettings();
+        settings.DriveLinks.TryGetValue(profilePath, out var link);
+        try
         {
-            var outcome = await _workflow.PushAsync(profilePath, csvText, conflict, recreate, ct);
-            Emit(outcome.SettingsSaveFailed, outcome.Notice);
-            switch (outcome.State)
-            {
-                case BackupPushState.RequiresConflictDecision:
-                    conflict = await _conflictPrompt(ConflictTitle, ConflictBody);
-                    continue;
-                case BackupPushState.RequiresMissingRemoteDecision:
-                    recreate = await _recreatePrompt(RecreateTitle, RecreateBody);
-                    continue;
-                default:
-                    return ToPublic(outcome);
-            }
+            if (link is null)
+                return await CreateAndRecordAsync(profilePath, csvText, ct);
+
+            // Set dirty before any network work, so a crash mid-push still
+            // retries on next launch. Success below clears it.
+            link.BackupDirty = true;
+            SaveState();
+
+            // Conflict check: read modifiedTime before touching the sheet.
+            var current = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
+            if (current == link.LastSeenModifiedTime)
+                return await PushAndRecordAsync(link, csvText, ct);
+
+            // Edited online since our last write. Ask once.
+            var choice = await _conflictPrompt(ConflictTitle, ConflictBody);
+            if (choice == ConflictChoice.ReplaceWithMine)
+                return await PushAndRecordAsync(link, csvText, ct);
+
+            // Keep online: download and hand the bytes back for the caller to
+            // rescue, overwrite, and reload. Record the online time now so the
+            // next save does not fire a self-inflicted conflict prompt.
+            var online = await DownloadProfileAsync(link.SpreadsheetId, ct);
+            link.LastSeenModifiedTime = current;
+            link.BackupDirty = false;
+            SaveState();
+            return new PushResult(PushResultKind.KeptOnline, online);
+        }
+        catch (DriveApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return await Handle404Async(profilePath, csvText, link, ct);
+        }
+        catch (GoogleAuthRevokedException)
+        {
+            return Paused(link);
+        }
+        // Keep online, and then the sheet did not read as a profile. The local
+        // file is left exactly as it is: an unreadable download is the one
+        // thing that must never be written over somebody's bindings.
+        catch (InvalidDataException)
+        {
+            if (link != null) link.BackupDirty = true;
+            SaveState();
+            _status(Strings.Backup_TheGoogleSheetCouldNot, true);
+            return new PushResult(PushResultKind.Failed);
+        }
+        catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException)
+        {
+            return FailPending(link);
         }
     }
 
-    public async Task<PushResult?> RetryIfDirtyAsync(string profilePath, string csvText)
+    // 404 on push: never silently recreate (the id may be trashed, revoked, or
+    // a stale link others share). Ask once.
+    async Task<PushResult> Handle404Async(string profilePath, string csvText, DriveLink? link, CancellationToken ct)
     {
-        ConflictChoice? conflict = null;
-        bool? recreate = null;
-        while (true)
+        var recreate = await _recreatePrompt(RecreateTitle, RecreateBody);
+        if (!recreate)
         {
-            var outcome = await _workflow.RetryIfDirtyAsync(profilePath, csvText, conflict, recreate);
-            if (outcome is null) return null;
-            Emit(outcome.SettingsSaveFailed, outcome.Notice);
-            switch (outcome.State)
-            {
-                case BackupPushState.RequiresConflictDecision:
-                    conflict = await _conflictPrompt(ConflictTitle, ConflictBody);
-                    continue;
-                case BackupPushState.RequiresMissingRemoteDecision:
-                    recreate = await _recreatePrompt(RecreateTitle, RecreateBody);
-                    continue;
-                default:
-                    return ToPublic(outcome);
-            }
+            // Turn backup off: drop the link, nothing dirty.
+            _getSettings().DriveLinks.Remove(profilePath);
+            SaveState();
+            return new PushResult(PushResultKind.RecreatedOff);
+        }
+        try
+        {
+            return await CreateAndRecordAsync(profilePath, csvText, ct);
+        }
+        catch (GoogleAuthRevokedException)
+        {
+            return Paused(link);
+        }
+        catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException)
+        {
+            return FailPending(link);
         }
     }
 
-    static PushResult ToPublic(BackupPushOutcome outcome) => outcome.State switch
+    // First backup: create the sheet named after the file, push the grid, then
+    // read back and record our own write's modifiedTime.
+    async Task<PushResult> CreateAndRecordAsync(string profilePath, string csvText, CancellationToken ct)
     {
-        BackupPushState.Pushed => new PushResult(PushResultKind.Pushed),
-        BackupPushState.KeptOnline => new PushResult(PushResultKind.KeptOnline, outcome.DownloadedCsv),
-        BackupPushState.RecreatedOff => new PushResult(PushResultKind.RecreatedOff),
-        BackupPushState.Failed => new PushResult(PushResultKind.Failed),
-        BackupPushState.Paused => new PushResult(PushResultKind.Paused),
-        _ => throw new InvalidOperationException("A required backup decision was not resolved."),
-    };
+        var title = Path.GetFileNameWithoutExtension(profilePath);
+        var id = await _client.CreateSpreadsheetAsync(title, ct);
+        // Record the sheet the moment it exists, dirty until the push lands, so
+        // a failure past here retries to THIS sheet, not a second one.
+        var link = new DriveLink { SpreadsheetId = id, BackupDirty = true };
+        _getSettings().DriveLinks[profilePath] = link;
+        SaveState();
+        await _client.PushTabsAsync(id, Tabs(csvText), ct);
+        link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(id, ct);
+        link.BackupDirty = false;
+        SaveState();
+        return new PushResult(PushResultKind.Pushed);
+    }
 
+    // Push to an existing sheet, then re-read modifiedTime so the next conflict
+    // check compares against our own write, not the stale value.
+    async Task<PushResult> PushAndRecordAsync(DriveLink link, string csvText, CancellationToken ct)
+    {
+        await _client.PushTabsAsync(link.SpreadsheetId, Tabs(csvText), ct);
+        link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
+        link.BackupDirty = false;
+        SaveState();
+        return new PushResult(PushResultKind.Pushed);
+    }
+
+    // One worksheet tab per mode, which is how the community writes a profile
+    // and the only shape this app's own Sheets import reads back.
+    static IReadOnlyList<ProfileTab> Tabs(string csvText) => SheetTabs.Split(ProfileFile.Load(csvText));
+
+    // The sheet as profile CSV. Downloaded as a workbook, because a CSV export
+    // is the first tab alone and both callers write the result over the user's
+    // local file. A sheet somebody replaced with something that is not a
+    // workbook comes back as its own bytes, so the parse below still gets to
+    // say what is wrong with it.
+    async Task<string> DownloadProfileAsync(string id, CancellationToken ct)
+    {
+        var bytes = await _client.DownloadWorkbookAsync(id, ct);
+        if (!Xlsx.LooksLikeXlsx(bytes)) return Encoding.UTF8.GetString(bytes);
+        using var stream = new MemoryStream(bytes);
+        return Xlsx.ToCsv(stream);
+    }
+
+    // 403/429/5xx/network: generic failure. Mark dirty, save, show pending.
+    PushResult FailPending(DriveLink? link)
+    {
+        if (link != null) link.BackupDirty = true;
+        SaveState();
+        _status(PendingMessage, true);
+        return new PushResult(PushResultKind.Failed);
+    }
+
+    // Revoked or expired token: pause backup, point the user at Reconnect.
+    PushResult Paused(DriveLink? link)
+    {
+        if (link != null) link.BackupDirty = true;
+        SaveState();
+        _status(PausedMessage, true);
+        return new PushResult(PushResultKind.Paused);
+    }
+
+    // Retry on profile open. No-op unless the link exists and is dirty; then a
+    // normal push with the same conflict rules. Returns null when there was
+    // nothing to retry, so the caller can skip the KeptOnline handling.
+    public Task<PushResult?> RetryIfDirtyAsync(string profilePath, string csvText) =>
+        Locked<PushResult?>(async () =>
+        {
+            var settings = _getSettings();
+            if (settings.DriveLinks.TryGetValue(profilePath, out var link) && link.BackupDirty)
+                return await PushCoreAsync(profilePath, csvText, CancellationToken.None);
+            return null;
+        }, CancellationToken.None);
+
+    /// <summary>This app made that sheet, so it can be read with the token
+    /// instead of over the public web. A link the user copied one second ago is
+    /// the commonest thing they paste into Import, and the anonymous export of
+    /// a sheet is only readable once link sharing is on and has settled.</summary>
+    /// <summary>Re-link a profile that moved. The sheet id travels in cell C1 of
+    /// the file itself, so a profile that was renamed or moved to another folder
+    /// can say which sheet is its own, and this puts the settings entry back
+    /// under the new path instead of forking a second sheet on the next save.
+    ///
+    /// Three refusals, all of them about not touching a sheet that is not this
+    /// file's to touch:
+    ///   - the path already has a link, so there is nothing to recover;
+    ///   - no entry holds that id, so the sheet was not made by this app for
+    ///     this user, and adopting it would push a stranger's profile over it;
+    ///   - the file the id is already linked to still exists, so this is a copy
+    ///     of a profile rather than a move, and a copy must never inherit the
+    ///     original's backup and start overwriting it.
+    /// True when the link was moved across.</summary>
     public bool TryRecoverLink(string profilePath, string spreadsheetId)
     {
-        var outcome = _workflow.TryRecoverLink(profilePath, spreadsheetId);
-        if (outcome.SettingsSaveFailed) _status("Could not save backup settings.", true);
-        if (outcome.Recovered) _status("Reconnected this profile to its Google Sheet.", false);
-        return outcome.Recovered;
-    }
+        if (string.IsNullOrWhiteSpace(spreadsheetId)) return false;
+        var settings = _getSettings();
+        if (settings.DriveLinks.ContainsKey(profilePath)) return false;
 
-    public string? LinkedSheetId(string profilePath) => _workflow.LinkedSheetId(profilePath);
-    public bool Knows(string spreadsheetId) => _workflow.Knows(spreadsheetId);
-    public string? LinkedSheetUrl(string profilePath) => _workflow.LinkedSheetUrl(profilePath);
-
-    public async Task<string> ReadProfileAsync(string spreadsheetId, CancellationToken ct = default)
-    {
-        try { return await _workflow.ReadProfileAsync(spreadsheetId, ct); }
-        catch (RemoteStorageException ex) { RethrowProvider(ex); throw; }
-    }
-
-    public async Task<ShareLinkResult> GetShareLinkAsync(
-        string profilePath,
-        string csvText,
-        CancellationToken ct = default)
-    {
-        ConflictChoice? conflict = null;
-        bool? recreate = null;
-        bool? share = null;
-        string? downloadedCsv = null;
-
-        while (true)
-        {
-            var outcome = await _workflow.GetShareLinkAsync(
-                profilePath, csvText, conflict, recreate, share, ct);
-            downloadedCsv ??= outcome.DownloadedCsv;
-            Emit(outcome.SettingsSaveFailed, outcome.Notice);
-
-            switch (outcome.State)
+        string? oldPath = null;
+        foreach (var (path, link) in settings.DriveLinks)
+            if (string.Equals(link.SpreadsheetId, spreadsheetId, StringComparison.Ordinal))
             {
-                case BackupShareState.RequiresConflictDecision:
-                    conflict = await _conflictPrompt(ConflictTitle, ConflictBody);
-                    continue;
-                case BackupShareState.RequiresMissingRemoteDecision:
-                    recreate = await _recreatePrompt(RecreateTitle, RecreateBody);
-                    continue;
-                case BackupShareState.RequiresShareConfirmation:
-                    share = await _shareConfirm();
-                    continue;
-                case BackupShareState.Copied:
-                    return new ShareLinkResult(ShareLinkKind.Copied, outcome.Url, outcome.Message,
-                        outcome.DownloadedCsv ?? downloadedCsv);
-                case BackupShareState.CopiedStale:
-                    return new ShareLinkResult(ShareLinkKind.CopiedStale, outcome.Url, outcome.Message,
-                        outcome.DownloadedCsv ?? downloadedCsv);
-                case BackupShareState.Cancelled:
-                    return new ShareLinkResult(ShareLinkKind.Cancelled, null, outcome.Message,
-                        outcome.DownloadedCsv ?? downloadedCsv);
-                case BackupShareState.Failed:
-                    return new ShareLinkResult(ShareLinkKind.Failed, null, outcome.Message,
-                        outcome.DownloadedCsv ?? downloadedCsv);
-                default:
-                    throw new InvalidOperationException($"Unknown share outcome state: {outcome.State}.");
+                if (File.Exists(path)) return false; // a copy, not a move
+                oldPath = path;
+            }
+        if (oldPath is null) return false;
+
+        settings.DriveLinks[profilePath] = settings.DriveLinks[oldPath];
+        settings.DriveLinks.Remove(oldPath);
+        SaveState();
+        _status(Strings.Backup_ReconnectedThisProfileToIts, false);
+        return true;
+    }
+
+    /// <summary>The sheet a profile is linked to, for stamping into the file.
+    /// Null when there is no link, which leaves whatever is already in the
+    /// cell alone.</summary>
+    public string? LinkedSheetId(string profilePath) =>
+        _getSettings().DriveLinks.TryGetValue(profilePath, out var link) ? link.SpreadsheetId : null;
+
+    public bool Knows(string spreadsheetId) =>
+        _getSettings().DriveLinks.Values.Any(l =>
+            string.Equals(l.SpreadsheetId, spreadsheetId, StringComparison.Ordinal));
+
+    /// <summary>The sheet as profile CSV, read with the app's own token. Throws
+    /// the same exceptions as any other Drive call, plus InvalidDataException
+    /// when what comes back is not a workbook.</summary>
+    public Task<string> ReadProfileAsync(string spreadsheetId, CancellationToken ct = default) =>
+        Locked(() => DownloadProfileAsync(spreadsheetId, ct), ct);
+
+    // The share URL for a linked profile, or null when it has no sheet yet.
+    // Used by "Open in Google Sheets".
+    public string? LinkedSheetUrl(string profilePath) =>
+        _getSettings().DriveLinks.TryGetValue(profilePath, out var link) ? Url(link.SpreadsheetId) : null;
+
+    static string Url(string spreadsheetId) =>
+        $"https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit?usp=sharing";
+
+    // "Copy share link", the spec's five step sequence. Returns the clipboard
+    // URL plus a message, or a Cancelled/Failed result. Step 1 (the local save)
+    // is the caller's job, since the state map is keyed by path: no path, no
+    // sheet.
+    public Task<ShareLinkResult> GetShareLinkAsync(string profilePath, string csvText, CancellationToken ct = default) =>
+        Locked(() => GetShareLinkCoreAsync(profilePath, csvText, ct), ct);
+
+    async Task<ShareLinkResult> GetShareLinkCoreAsync(string profilePath, string csvText, CancellationToken ct)
+    {
+        var settings = _getSettings();
+        settings.DriveLinks.TryGetValue(profilePath, out var link);
+
+        // The dirty push below can hit the conflict prompt; Keep online hands
+        // back the sheet CSV, which must reach the caller so the local file
+        // still gets rescued, overwritten, and reloaded mid-share.
+        string? keptOnlineCsv = null;
+
+        // Step 2: not linked yet. Run the first backup (create + push). A blank
+        // sheet would share as blank, so a failed first push copies nothing.
+        if (link is null)
+        {
+            var first = await PushCoreAsync(profilePath, csvText, ct);
+            if (first.Kind != PushResultKind.Pushed)
+                return new ShareLinkResult(ShareLinkKind.Failed, null,
+                    Strings.Backup_CouldNotCreateTheGoogle);
+            link = settings.DriveLinks[profilePath];
+        }
+        // Step 3: linked but the last backup did not land. Push. If it fails,
+        // still copy the link but say the latest changes are not up yet: a
+        // good earlier backup beats no link offline.
+        else if (link.BackupDirty)
+        {
+            var push = await PushCoreAsync(profilePath, csvText, ct);
+            if (push.Kind == PushResultKind.KeptOnline)
+                keptOnlineCsv = push.DownloadedCsv;
+            else if (push.Kind == PushResultKind.RecreatedOff)
+                return new ShareLinkResult(ShareLinkKind.Failed, null,
+                    Strings.Backup_BackupWasTurnedOffFor);
+            else if (push.Kind is PushResultKind.Failed or PushResultKind.Paused)
+                return new ShareLinkResult(ShareLinkKind.CopiedStale, Url(link.SpreadsheetId),
+                    Strings.Backup_LinkCopiedYourLatestChanges);
+
+            // Re-read link: a 404 push may have created a new sheet.
+            link = settings.DriveLinks[profilePath];
+        }
+
+        // Step 4: share the sheet once (anyone with the link can view). An
+        // already shared sheet skips this and is a pure clipboard write below.
+        if (!link.LinkShared)
+        {
+            if (!await _shareConfirm())
+                return new ShareLinkResult(ShareLinkKind.Cancelled, null, "", keptOnlineCsv);
+            try
+            {
+                await _client.ShareAnyoneReaderAsync(link.SpreadsheetId, ct);
+                link.LinkShared = true;
+                // The grant can bump modifiedTime; re-read it now so the next
+                // save does not see a phantom edit and prompt a conflict.
+                link.LastSeenModifiedTime = await _client.GetModifiedTimeAsync(link.SpreadsheetId, ct);
+                SaveState();
+            }
+            catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException or GoogleAuthRevokedException)
+            {
+                // An unshared link is useless, so copy nothing.
+                return new ShareLinkResult(ShareLinkKind.Failed, null,
+                    Strings.Backup_CouldNotTurnOnLink, keptOnlineCsv);
             }
         }
+
+        // Step 5: hand back the URL for the clipboard.
+        return new ShareLinkResult(ShareLinkKind.Copied, Url(link.SpreadsheetId), Strings.Backup_LinkCopied, keptOnlineCsv);
     }
 
-    public async Task<List<DriveSheetInfo>> ListForPickerAsync(CancellationToken ct = default)
+    // ---- Restore (bulk import from Drive) ----
+
+    // List every backup sheet this app made, tagged linked or not. Linked only
+    // counts when the mapped local file still exists, so a deleted CSV can
+    // never grey out the sheet restore exists to bring back. Matched by
+    // spreadsheetId, so a rename does not fool it.
+    //
+    // Missing does not mean deleted: an unmounted drive, a folder being synced,
+    // a permissions blip. So the entry is ignored for this listing and left
+    // alone. Dropping it would fork a duplicate sheet the moment the file came
+    // back and got saved.
+    public Task<List<DriveSheetInfo>> ListForPickerAsync(CancellationToken ct = default) =>
+        Locked(() => ListForPickerCoreAsync(ct), ct);
+
+    async Task<List<DriveSheetInfo>> ListForPickerCoreAsync(CancellationToken ct)
     {
-        try { return await _workflow.ListForPickerAsync(ct); }
-        catch (RemoteStorageException ex) { RethrowProvider(ex); throw; }
+        var sheets = await _client.ListSpreadsheetsAsync(ct);
+
+        var settings = _getSettings();
+        var linkedIds = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var (path, link) in settings.DriveLinks)
+            if (File.Exists(path)) linkedIds.Add(link.SpreadsheetId);
+
+        return sheets
+            .Select(s => new DriveSheetInfo(s.Id, s.Name, s.ModifiedTime, linkedIds.Contains(s.Id)))
+            .ToList();
     }
 
+    // Import the picked sheets into libraryDir and link each. Per-file failures
+    // are recorded and never abort the batch.
     public Task<RestoreSummary> RestoreAsync(
-        IReadOnlyList<(string Id, string Name)> picks,
-        string libraryDir,
-        CancellationToken ct = default) =>
-        _workflow.RestoreAsync(picks, libraryDir, ct);
+        IReadOnlyList<(string Id, string Name)> picks, string libraryDir, CancellationToken ct = default) =>
+        Locked(() => RestoreCoreAsync(picks, libraryDir, ct), ct);
 
-    void Emit(bool settingsSaveFailed, string? notice)
+    async Task<RestoreSummary> RestoreCoreAsync(
+        IReadOnlyList<(string Id, string Name)> picks, string libraryDir, CancellationToken ct)
     {
-        if (settingsSaveFailed) _status("Could not save backup settings.", true);
-        if (!string.IsNullOrEmpty(notice)) _status(notice, true);
+        var settings = _getSettings();
+        var imported = new List<string>();
+        var skipped = new List<(string Name, string Reason)>();
+        var failed = new List<(string Name, string Reason)>();
+
+        // A fresh machine has no library folder yet, and restore is exactly the
+        // moment that must still work.
+        Directory.CreateDirectory(libraryDir);
+
+        // Existing file names, case-insensitive: a collision is a skip, never an
+        // overwrite. The local file is the source of truth.
+        var onDisk = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var f in Directory.GetFiles(libraryDir, "*.csv"))
+            onDisk.Add(Path.GetFileName(f));
+        // Names claimed within this batch, so two picks that sanitize to the
+        // same name get a numbered suffix instead of fighting over one file.
+        var batchNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var pick in picks)
+        {
+            var reportName = Path.GetFileNameWithoutExtension(SafeFileName.ForCsv(pick.Name));
+            try
+            {
+                var csv = await DownloadProfileAsync(pick.Id, ct);
+
+                // Validate by parsing, so a bad sheet is a per-file failure,
+                // not a written-then-broken profile.
+                ProfileFile parsed;
+                try { parsed = ProfileFile.Load(csv); }
+                catch { failed.Add((reportName, Strings.Backup_CouldNotReadTheSheet)); continue; }
+                if (parsed.Document.Sheets.Count == 0)
+                { failed.Add((reportName, Strings.Backup_NotAValidProfile)); continue; }
+
+                var fileName = SafeFileName.ForCsv(pick.Name, batchNames);
+                batchNames.Add(fileName);
+                reportName = Path.GetFileNameWithoutExtension(fileName);
+
+                if (onDisk.Contains(fileName))
+                { skipped.Add((reportName, Strings.Backup_AlreadyExists)); continue; }
+
+                // Read metadata BEFORE writing the file, so a network failure
+                // lands before the disk has anything to undo: a failed import
+                // can never leave an unlinked local file.
+                var mt = await _client.GetModifiedTimeAsync(pick.Id, ct);
+
+                var dest = Path.Combine(libraryDir, fileName);
+                ProfileFile.WriteAtomic(dest, csv);
+
+                // Link now, so future saves push to this sheet instead of
+                // forking a duplicate.
+                settings.DriveLinks[dest] = new DriveLink
+                {
+                    SpreadsheetId = pick.Id,
+                    LastSeenModifiedTime = mt,
+                    BackupDirty = false,
+                    LinkShared = false,
+                };
+
+                // Imported must mean linked. If the link cannot be saved, undo
+                // the write so the file cannot silently fork a new sheet.
+                if (!_trySave())
+                {
+                    settings.DriveLinks.Remove(dest);
+                    try { File.Delete(dest); } catch { /* the write may already be gone */ }
+                    failed.Add((reportName, Strings.Backup_CouldNotSaveTheLink));
+                    continue;
+                }
+
+                onDisk.Add(fileName);
+                imported.Add(reportName);
+            }
+            catch (Exception ex) when (ex is DriveApiException or HttpRequestException or TaskCanceledException or GoogleAuthRevokedException)
+            {
+                failed.Add((reportName, Strings.Backup_DownloadFailed));
+            }
+            // The download arrived and is not a workbook this reader can open.
+            catch (InvalidDataException)
+            {
+                failed.Add((reportName, Strings.Backup_CouldNotReadTheSheet2));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // A disk failure on one file must not abort the batch either.
+                failed.Add((reportName, Strings.Backup_CouldNotWriteTheFile));
+            }
+        }
+
+        return new RestoreSummary(imported, skipped, failed);
     }
+}
 
-    static void RethrowProvider(RemoteStorageException exception)
+// One backup sheet as the picker shows it. AlreadyLinked greys it out; the
+// picker never imports one already linked to a local profile on disk.
+public sealed class DriveSheetInfo
+{
+    public string Id { get; }
+    public string Name { get; }
+    public string ModifiedTime { get; }
+    public bool AlreadyLinked { get; }
+
+    public DriveSheetInfo(string id, string name, string modifiedTime, bool alreadyLinked)
     {
-        if (exception.InnerException is { } inner)
-            ExceptionDispatchInfo.Capture(inner).Throw();
+        Id = id;
+        Name = name;
+        ModifiedTime = modifiedTime;
+        AlreadyLinked = alreadyLinked;
+    }
+}
+
+// What a restore run did. The three lists feed the picker's summary line, and
+// Message is the ready-to-show one-liner ("3 imported, 1 skipped: mygame
+// already exists").
+public sealed class RestoreSummary
+{
+    public IReadOnlyList<string> Imported { get; }
+    public IReadOnlyList<(string Name, string Reason)> Skipped { get; }
+    public IReadOnlyList<(string Name, string Reason)> Failed { get; }
+    public string Message { get; }
+
+    public RestoreSummary(
+        IReadOnlyList<string> imported,
+        IReadOnlyList<(string Name, string Reason)> skipped,
+        IReadOnlyList<(string Name, string Reason)> failed)
+    {
+        Imported = imported;
+        Skipped = skipped;
+        Failed = failed;
+
+        var parts = new List<string> { $"{imported.Count} imported" };
+        if (skipped.Count > 0)
+            parts.Add($"{skipped.Count} skipped: " + string.Join(", ", skipped.Select(s => $"{s.Name} {s.Reason}")));
+        if (failed.Count > 0)
+            parts.Add($"{failed.Count} failed: " + string.Join(", ", failed.Select(f => $"{f.Name} {f.Reason}")));
+        Message = string.Join(", ", parts);
+    }
+}
+
+// The user's pick on the conflict prompt.
+public enum ConflictChoice { KeepOnline, ReplaceWithMine }
+
+// What a push did, enough for the caller and the tests to branch on.
+public enum PushResultKind { Pushed, KeptOnline, RecreatedOff, Failed, Paused }
+
+public sealed class PushResult
+{
+    public PushResultKind Kind { get; }
+    // Only set for KeptOnline: the downloaded sheet CSV the caller writes over
+    // the local file after rescuing it.
+    public string? DownloadedCsv { get; }
+
+    public PushResult(PushResultKind kind, string? downloadedCsv = null)
+    {
+        Kind = kind;
+        DownloadedCsv = downloadedCsv;
+    }
+}
+
+// What "Copy share link" ended up doing. Copied and CopiedStale both carry a
+// URL for the clipboard; Cancelled and Failed do not.
+public enum ShareLinkKind { Copied, CopiedStale, Cancelled, Failed }
+
+public sealed class ShareLinkResult
+{
+    public ShareLinkKind Kind { get; }
+    // The share URL to put on the clipboard. Null on Cancelled and Failed.
+    public string? Url { get; }
+    // A ready-to-show line for the status bar.
+    public string Message { get; }
+    // Set when the dirty push hit a conflict and the user kept the online
+    // version: the caller must still rescue and overwrite the local file.
+    public string? DownloadedCsv { get; }
+
+    public ShareLinkResult(ShareLinkKind kind, string? url, string message, string? downloadedCsv = null)
+    {
+        Kind = kind;
+        Url = url;
+        Message = message;
+        DownloadedCsv = downloadedCsv;
     }
 }

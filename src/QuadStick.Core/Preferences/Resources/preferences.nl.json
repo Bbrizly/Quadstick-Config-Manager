@@ -1,0 +1,330 @@
+[
+ {
+  "name": "joystick_deflection_minimum",
+  "label": "Dode zone in het midden van de joystick",
+  "description": "Dode zone in het midden voor de analoge stick, als percentage van de volledige uitslag. Zet dit hoog genoeg om een zwevende muis of joystick te stoppen. Grotere getallen maken de stick minder gevoelig rond het midden. Dit staat los van de D-Pad-ringen. Op firmware 2373 betekent een waarde van 0 niet langer geen dode zone: het apparaat vervangt dit door 129 ruwe tellingen, en het doet dit opnieuw bij elke scan, waardoor dit voorrang krijgt op de waarde die is berekend toen het bestand werd geladen."
+ },
+ {
+  "name": "joystick_deflection_maximum",
+  "label": "Volledige uitslag van de joystick",
+  "description": "Hoe ver de stick moet bewegen voor een volledig signaal. QMP noemt dit het bewegingsbereik van de joystick en het is het dichtste wat het apparaat heeft bij een gevoeligheidsregeling: grotere getallen betekenen meer uitslag voor dezelfde uitvoer, waardoor de joystick minder gevoelig aanvoelt. QMP neemt de grootste van zijn vier richtingsschuiven."
+ },
+ {
+  "name": "deflection_multiplier_up",
+  "label": "Vermenigvuldigingsfactor uitslag omhoog",
+  "unit": "procent",
+  "description": "Schaalt de richting omhoog zodat deze op hetzelfde punt een volledig signaal bereikt als de andere richtingen. QMP berekent dit als de grootste richtingsschuif gedeeld door die voor omhoog, dus een grotere vermenigvuldigingsfactor betekent dat omhoog bij minder uitslag een volledig signaal bereikt en gevoeliger aanvoelt."
+ },
+ {
+  "name": "deflection_multiplier_down",
+  "label": "Vermenigvuldigingsfactor uitslag omlaag",
+  "unit": "procent",
+  "description": "Schaalt de richting omlaag zodat deze op hetzelfde punt een volledig signaal bereikt als de andere richtingen. QMP berekent dit als de grootste richtingsschuif gedeeld door die voor omlaag, dus een grotere vermenigvuldigingsfactor betekent dat omlaag bij minder uitslag een volledig signaal bereikt en gevoeliger aanvoelt."
+ },
+ {
+  "name": "deflection_multiplier_left",
+  "label": "Vermenigvuldigingsfactor uitslag links",
+  "unit": "procent",
+  "description": "Schaalt de richting links zodat deze op hetzelfde punt een volledig signaal bereikt als de andere richtingen. QMP berekent dit als de grootste richtingsschuif gedeeld door die voor links, dus een grotere vermenigvuldigingsfactor betekent dat links bij minder uitslag een volledig signaal bereikt en gevoeliger aanvoelt."
+ },
+ {
+  "name": "deflection_multiplier_right",
+  "label": "Vermenigvuldigingsfactor uitslag rechts",
+  "unit": "procent",
+  "description": "Schaalt de richting rechts zodat deze op hetzelfde punt een volledig signaal bereikt als de andere richtingen. QMP berekent dit als de grootste richtingsschuif gedeeld door die voor rechts, dus een grotere vermenigvuldigingsfactor betekent dat rechts bij minder uitslag een volledig signaal bereikt en gevoeliger aanvoelt."
+ },
+ {
+  "name": "joystick_D_Pad_inner",
+  "label": "Binnenste D-Pad-ring",
+  "unit": "procent",
+  "description": "Percentage van de volledige uitslag, gemeten vanaf het midden, waar de binnenste D-Pad-ring begint. Deze activeert pas na een korte vertraging, zodat u er onderweg naar buiten doorheen kunt bewegen zonder hem te activeren. De helft van deze waarde is waar een richting stopt met vastgehouden worden."
+ },
+ {
+  "name": "joystick_D_Pad_outer",
+  "label": "Buitenste D-Pad-ring",
+  "unit": "procent",
+  "description": "Percentage van de volledige uitslag, gemeten vanaf het midden, waar de buitenste D-Pad-ring begint. Voorbij deze lijn activeert een richting meteen."
+ },
+ {
+  "name": "joystick_dead_zone_shape",
+  "label": "Ronde dode zone",
+  "description": "Gebruik een ronde dode zone in het midden in plaats van een vierkante."
+ },
+ {
+  "name": "anti_dead_zone",
+  "label": "Anti-dode-zone"
+ },
+ {
+  "name": "joystick_warning",
+  "label": "Waarschuwingsuitslag joystick",
+  "description": "Uitslag waarboven firmware 1476 de gebruiker waarschuwde dat de stick te ver werd bewogen. Firmware 2373 accepteert de naam nog steeds, maar negeert hem: de controle is uitgecommentarieerd."
+ },
+ {
+  "name": "joystick_alarm",
+  "label": "Alarmuitslag joystick",
+  "description": "Uitslag waarboven firmware 1476 een alarmtoon liet klinken. Firmware 2373 accepteert de naam nog steeds, maar negeert hem: de controle is uitgecommentarieerd."
+ },
+ {
+  "name": "enable_auto_zero",
+  "label": "Sensoren automatisch nulstellen",
+  "description": "Firmware 2373 negeert dit. Ze zet de instelling na elke configuratielaadbeurt terug op 0, en beide plekken die de instelling zouden hebben gelezen zijn uitgecommentarieerd, dus het inschakelen ervan verandert niets, noch in een modusrij, noch op het apparaat."
+ },
+ {
+  "name": "sip_puff_threshold_soft",
+  "label": "Zachte sip/puff-drempel",
+  "unit": "procent",
+  "description": "Druk- of vacuümniveau waarop een zachte sip of puff begint."
+ },
+ {
+  "name": "sip_puff_threshold",
+  "label": "Harde sip/puff-drempel",
+  "unit": "procent",
+  "description": "Druk waarbij de uitvoer wordt geactiveerd. QMP toont dit als de hoge sip and puff-drempel; sip_puff_threshold_soft is de lage."
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "Maximale sip/puff-druk",
+  "unit": "procent",
+  "description": "Maximale druk die wordt geschaald naar een volledig signaal."
+ },
+ {
+  "name": "sip_puff_delay_soft",
+  "label": "Vertraging zachte sip/puff",
+  "unit": "milliseconden",
+  "description": "Zachte sip- en puff-signalen worden na deze korte vertraging waargenomen. QMP toont dit als de Low Threshold Delay."
+ },
+ {
+  "name": "sip_puff_delay_hard",
+  "label": "Vertraging harde sip/puff",
+  "unit": "milliseconden",
+  "description": "Hoe lang een harde sip of puff wordt vastgehouden voordat deze als lang signaal telt. De klok start zodra de harde drempel wordt overschreden, niet zodra de druk voor het eerst verandert. 0 betekent niet niet-ingesteld, het betekent dat het lange signaal meteen wordt geactiveerd."
+ },
+ {
+  "name": "sip_threshold_soft",
+  "label": "Zachte sip-drempel",
+  "unit": "procent",
+  "description": "Vacuümniveau waarop een zachte sip begint, sinds firmware 2373. Bij 0 geldt de zachte sip/puff-drempel nog steeds voor sips; elke andere waarde vervangt deze uitsluitend voor sips."
+ },
+ {
+  "name": "sip_threshold",
+  "label": "Harde sip-drempel",
+  "unit": "procent",
+  "description": "Vacuümniveau dat een harde sip activeert, sinds firmware 2373. Bij 0 geldt de harde sip/puff-drempel nog steeds voor sips; elke andere waarde vervangt deze uitsluitend voor sips."
+ },
+ {
+  "name": "sip_maximum",
+  "label": "Maximaal vacuüm bij sip",
+  "unit": "procent",
+  "description": "Vacuüm dat bij een sip schaalt naar een volledig signaal, sinds firmware 2373. Bij 0 geldt het sip/puff-maximum nog steeds voor sips; elke andere waarde vervangt deze uitsluitend voor sips."
+ },
+ {
+  "name": "puff_threshold_soft",
+  "label": "Zachte puff-drempel",
+  "unit": "procent",
+  "description": "Druk waarop een zachte puff begint, sinds firmware 2373. Bij 0 geldt de zachte sip/puff-drempel nog steeds voor puffs; elke andere waarde vervangt deze uitsluitend voor puffs."
+ },
+ {
+  "name": "puff_threshold",
+  "label": "Harde puff-drempel",
+  "unit": "procent",
+  "description": "Druk die een harde puff activeert, sinds firmware 2373. Bij 0 geldt de harde sip/puff-drempel nog steeds voor puffs; elke andere waarde vervangt deze uitsluitend voor puffs."
+ },
+ {
+  "name": "puff_maximum",
+  "label": "Maximale puff-druk",
+  "unit": "procent",
+  "description": "Druk die bij een puff schaalt naar een volledig signaal, sinds firmware 2373. Bij 0 geldt het sip/puff-maximum nog steeds voor puffs; elke andere waarde vervangt deze uitsluitend voor puffs."
+ },
+ {
+  "name": "enable_left_side_tube",
+  "label": "Gebruik de linker zijbuis",
+  "description": "Gebruikt de linkerbuis voor modusbediening door deze te verwisselen met de rechterbuis."
+ },
+ {
+  "name": "lip_position_minimum",
+  "label": "Minimum lipsensor",
+  "unit": "procent",
+  "description": "Percentage lipsensorpositie waarbij het signaal wordt geactiveerd."
+ },
+ {
+  "name": "lip_position_maximum",
+  "label": "Maximum lipsensor",
+  "unit": "procent",
+  "description": "Percentage lipsensorbeweging dat een volledig signaal geeft."
+ },
+ {
+  "name": "mouse_speed",
+  "label": "Muissnelheid",
+  "description": "Muissnelheid ten opzichte van joystickbeweging."
+ },
+ {
+  "name": "mouse_response_curve",
+  "label": "Reactiecurve muis",
+  "description": "0 is lineair, 1 is gemengd, 2 is parabolisch.",
+  "optionLabels": [
+   "Lineair",
+   "Gemengd",
+   "Parabolisch"
+  ]
+ },
+ {
+  "name": "volume",
+  "label": "Luidsprekervolume",
+  "description": "Luidsprekervolume."
+ },
+ {
+  "name": "brightness",
+  "label": "Ledhelderheid",
+  "description": "Ledhelderheid."
+ },
+ {
+  "name": "enable_rumble",
+  "label": "Trilfunctie"
+ },
+ {
+  "name": "bluetooth_device_mode",
+  "label": "Bluetooth-apparaatmodus",
+  "description": "Waarvoor de QuadStick zich uitgeeft via Bluetooth."
+ },
+ {
+  "name": "bluetooth_authentication_mode",
+  "label": "Bluetooth-verificatiemodus"
+ },
+ {
+  "name": "bluetooth_connection_mode",
+  "label": "Bluetooth-verbindingsmodus"
+ },
+ {
+  "name": "bluetooth_remote_address",
+  "label": "Bluetooth-extern adres"
+ },
+ {
+  "name": "bluetooth_remote_adapter",
+  "label": "Bluetooth-externe adapter"
+ },
+ {
+  "name": "bluetooth_throttle",
+  "label": "Bluetooth-throttling",
+  "description": "Het apparaat slaat een Bluetooth-verzending over wanneer er niet genoeg tijd is verstreken sinds de vorige."
+ },
+ {
+  "name": "digital_out_1",
+  "label": "Digitale uitgang 1",
+  "description": "Het apparaat herkent deze naam als uitvoer voordat deze de voorkeurentabel bereikt, dus dit is uitsluitend een apparaatinstelling, nooit een modus-override."
+ },
+ {
+  "name": "digital_out_2",
+  "label": "Digitale uitgang 2",
+  "description": "Het apparaat herkent deze naam als uitvoer voordat deze de voorkeurentabel bereikt, dus dit is uitsluitend een apparaatinstelling, nooit een modus-override."
+ },
+ {
+  "name": "digital_out_3",
+  "label": "Digitale uitgang 3",
+  "description": "Het apparaat herkent deze naam als uitvoer voordat deze de voorkeurentabel bereikt, dus dit is uitsluitend een apparaatinstelling, nooit een modus-override."
+ },
+ {
+  "name": "digital_out_4",
+  "label": "Digitale uitgang 4",
+  "description": "Het apparaat herkent deze naam als uitvoer voordat deze de voorkeurentabel bereikt, dus dit is uitsluitend een apparaatinstelling, nooit een modus-override."
+ },
+ {
+  "name": "enable_swap_inputs",
+  "label": "Verwissel invoer met de zijbuis",
+  "description": "Verwissel de invoer met behulp van de zijbuis."
+ },
+ {
+  "name": "enable_select_files",
+  "label": "Selecteer bestanden met de zijbuis",
+  "description": "Selecteer een bestand met behulp van de zijbuis."
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "USB-A-apparaatmodus",
+  "risk": "Dit bepaalt op welke USB-poort de QuadStick zich presenteert. Het apparaat breekt USB af en maakt opnieuw verbinding wanneer dit wijzigt, dus een verkeerde waarde kan ervoor zorgen dat een console of computer het apparaat niet meer ziet. Dit wint ook van enable_usb_a_host: zolang dit ingesteld is, wordt de USB-A-hoststack afgesloten, wat de hostinstelling ook zegt. Wijzig dit alleen op advies van QuadStick support."
+ },
+ {
+  "name": "enable_usb_a_host",
+  "label": "USB-A-hostmodus",
+  "description": "Sinds firmware 2373. Met dit ingeschakeld en USB-A-apparaatmodus uitgeschakeld, draait het apparaat een USB-host op de USB-A-poort, zodat een daar aangesloten controller de usb_1-invoerkanalen voedt. Schakel dit uit, of schakel USB-A-apparaatmodus in, en de host wordt afgebroken. USB-A-apparaatmodus wint. QMP toont dit als USB-A Host Mode."
+ },
+ {
+  "name": "enable_DS3_emulation",
+  "label": "USB-emulatiemodus",
+  "description": "Voor welk USB-apparaat de QuadStick zich uitgeeft. Op firmware 2373: 0 QuadStick native, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 voor een PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 zonder USB-station, 7 rechtstreeks DS4 draadloos. Waarde 5 betekende op firmware 1476 alleen pc, geen joystick, dus een bestand met 5 gedraagt zich compleet anders zodra het apparaat is bijgewerkt. Modi 1, 5, 6 en 7 bieden helemaal geen USB-station, dus een computer kan de bestanden van de QuadStick niet zien terwijl een van deze actief is. QMP's Boot in PS4 Mode is waarde 4: firmware 2373 Joystick.c:625 noemt die waarde in zijn eigen opmerking \"boot in PS4 mode\".",
+  "risk": "De naam zegt DS3, maar het apparaat leest dit als een USB-emulatiemodus met acht genummerde waarden, geen aan/uit-schakelaar. Wat 5 betekent, is veranderd tussen firmware 1476 en 2373, en een getal dat de actieve firmware niet kent, laat het apparaat op een emulatie staan die niemand heeft gevraagd. QCM behoudt wat er ook wordt ingetypt en weigert niets, omdat een waarde die verkeerd is voor de ene firmware juist is voor de andere. Wijzig dit alleen op advies van QuadStick support.",
+  "optionLabels": [
+   "QuadStick (pc en PS3)",
+   "DualShock 3, geen USB-station",
+   "x360ce, voor een pc",
+   "Xbox 360-controller",
+   "DualShock 4, voor een PS4 (QMP's Boot in PS4 Mode)",
+   "Nintendo Switch Pro Controller, geen USB-station",
+   "DualShock 4, geen USB-station",
+   "DualShock 4 draadloos, geen USB-station"
+  ]
+ },
+ {
+  "name": "enable_usb_comm",
+  "label": "Spraakopdrachten via USB",
+  "description": "Schakel spraakopdrachten via USB in."
+ },
+ {
+  "name": "usb_1_multiplier_up",
+  "label": "USB 1-vermenigvuldigingsfactor omhoog"
+ },
+ {
+  "name": "usb_1_multiplier_down",
+  "label": "USB 1-vermenigvuldigingsfactor omlaag"
+ },
+ {
+  "name": "usb_1_multiplier_left",
+  "label": "USB 1-vermenigvuldigingsfactor links"
+ },
+ {
+  "name": "usb_1_multiplier_right",
+  "label": "USB 1-vermenigvuldigingsfactor rechts"
+ },
+ {
+  "name": "usb_2_multiplier_up",
+  "label": "USB 2-vermenigvuldigingsfactor omhoog"
+ },
+ {
+  "name": "usb_2_multiplier_down",
+  "label": "USB 2-vermenigvuldigingsfactor omlaag"
+ },
+ {
+  "name": "usb_2_multiplier_left",
+  "label": "USB 2-vermenigvuldigingsfactor links"
+ },
+ {
+  "name": "usb_2_multiplier_right",
+  "label": "USB 2-vermenigvuldigingsfactor rechts"
+ },
+ {
+  "name": "usb_1_dead_zone",
+  "label": "USB 1-dode zone",
+  "unit": "ruwe astellingen",
+  "description": "Sinds firmware 2373. Dode zone in het midden voor een controller die is aangesloten op de USB-A-hostpoort, geteld in ruwe stappen van de gecentreerde as-byte van die controller, niet in procenten. Onder de waarde leest de as 0; erboven wordt de waarde eraf getrokken zodat de uitslag vanaf nul begint, en het resultaat wordt begrensd tot plus of min 100. Bij 0 gaat de as ongewijzigd door. Een gecentreerde as-byte bereikt in beide richtingen maar ongeveer 127, dus 128 of meer maakt de as onbruikbaar."
+ },
+ {
+  "name": "usb_2_dead_zone",
+  "label": "USB 2-dode zone",
+  "unit": "ruwe astellingen",
+  "description": "Sinds firmware 2373, maar het apparaat negeert dit. De naam is geldig en bestanden bevatten hem, maar niets in de firmware leest de waarde: elke USB-host-as gebruikt de USB 1-dode zone. Deze instellen in een modusrij doet ook niets."
+ },
+ {
+  "name": "titan_two",
+  "label": "Titan Two-adapter",
+  "description": "Sinds firmware 2373. Vertelt het apparaat dat het een PS4 bereikt via een Titan Two in plaats van rechtstreeks op de console aangesloten te zijn. Het slaat dan de DS4-verificatiehandshake over en stopt de periodieke geforceerde USB-herverbinding. QMP toont dit als de Titan 2 PS4-vlag."
+ },
+ {
+  "name": "watchdog_disable",
+  "label": "Schakel de watchdog uit",
+  "risk": "Het apparaat draait een hardware-watchdog van twee minuten die het herstart als het niet meer reageert. Niets in firmware 1476 of 2373 leest deze instelling, dus op beide doet ze niets, en wat een latere firmware ermee zou doen is onbekend."
+ },
+ {
+  "name": "debug",
+  "label": "Debug-uitvoerniveau",
+  "description": "Het apparaat schakelt zijn console in wanneer dit boven nul ligt."
+ }
+]

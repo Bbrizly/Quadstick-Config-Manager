@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace QuadStick.Format;
 
 // QuadStick profile CSV → sheets and bindings.
@@ -41,14 +43,14 @@ public static class Parser
         if (sectionStarts.Count == 0)
         {
             issues.Add(new Issue(Severity.Error, "A1",
-                $"First cell must contain \"Profile\" or be \"Preferences\" or \"Infrared\". Found \"{Cell(grid, scanFrom, 0)}\".",
-                "Set cell A1 to the sheet type keyword, e.g. \"Profile Name\"."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Parse_FirstCellMustContainProfile, Cell(grid, scanFrom, 0)),
+                Strings.Parse_SetCellA1ToThe));
             return (doc, issues);
         }
         if (sectionStarts[0] != scanFrom)
             issues.Add(new Issue(Severity.Warning, $"A{scanFrom + 1}",
-                $"{sectionStarts[0] - scanFrom} row(s) before the first sheet keyword are not part of any sheet.",
-                "Delete rows above the first sheet header."));
+                string.Format(CultureInfo.CurrentCulture, Strings.Parse_SectionStarts0ScanFromRowS, sectionStarts[0] - scanFrom),
+                Strings.Parse_DeleteRowsAboveTheFirst));
 
         for (int s = 0; s < sectionStarts.Count; s++)
         {
@@ -62,8 +64,8 @@ public static class Parser
             var rawA1 = Cell(grid, start, 0);
             if (!Vocab.FirmwareAcceptsSheetKeyword(rawA1))
                 issues.Add(new Issue(Severity.Error, $"A{start + 1}",
-                    $"\"{rawA1}\" does not START with \"Profile\", \"Preferences\" or \"Infrared\" (capitalized exactly), so the device skips this whole sheet.",
-                    "Begin the cell with the sheet keyword, e.g. \"Profile Name\"."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Parse_RawA1DoesNotSTARTWith, rawA1),
+                    Strings.Parse_BeginTheCellWithThe));
         }
 
         CheckDeviceLineLimits(grid, sectionStarts, issues);
@@ -117,14 +119,14 @@ public static class Parser
             // it changes the user's own text.
             if (grid[r].Any(c => c.AsSpan().IndexOfAny('\n', '\r') >= 0))
                 issues.Add(new Issue(Severity.Warning, $"A{r + 1}",
-                    $"Row {r + 1} has a cell holding more than one line. The device reads each line as a separate row, and a blank line among them stops it reading the rest of this mode, so saving joins them into one line.",
-                    "Keep a note on a single line."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Parse_RowR1HasA, r + 1),
+                    Strings.Parse_KeepANoteOnA));
 
             var line = Csv.Write(new[] { grid[r] });
             if (System.Text.Encoding.UTF8.GetByteCount(line) > MaxLineBytes)
                 issues.Add(new Issue(Severity.Error, $"A{r + 1}",
-                    $"Row {r + 1} is longer than {MaxLineBytes} characters including comments. The device reads a row into a 1024-byte buffer and hands back the overflow as if it were the next row. Depending on where the row happens to break, that can end the mode early and drop every row below it.",
-                    "Shorten the row's comments."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Parse_RowR1IsLonger, r + 1, MaxLineBytes),
+                    Strings.Parse_ShortenTheRowSComments));
             // A preferences row is name,value: the device stops after column B,
             // so the long descriptions the official prefs.csv keeps in C and
             // beyond are as safe as a profile's comment columns.
@@ -134,8 +136,8 @@ public static class Parser
                 var value = grid[r][c];
                 if (value.Length >= MaxKeywordLength && !(r == 0 && grid[r].Length > 0 && grid[r][0].StartsWith("QuadStick", StringComparison.Ordinal)))
                     issues.Add(new Issue(Severity.Warning, $"{(char)('A' + c)}{r + 1}",
-                        $"This cell is {value.Length} characters. The device stops looking for the end of a cell after 64, so it reads this cell and everything after it on this row as empty.",
-                        "Shorten it to 63 characters or fewer."));
+                        string.Format(CultureInfo.CurrentCulture, Strings.Parse_ThisCellIsValueLength, value.Length),
+                        Strings.Parse_ShortenItTo63Characters));
 
                 // Only the rows the device actually runs next_word over: the
                 // label row it takes the channel from, and the rows below it.
@@ -145,8 +147,8 @@ public static class Parser
                 // validator leaves those sheets alone anyway.
                 if (sheet != SheetType.Infrared && r >= sheetStart + 2 && SplitPoint(value) is int at)
                     issues.Add(new Issue(Severity.Warning, $"{(char)('A' + c)}{r + 1}",
-                        $"\"{value}\" contains \"{value[at]}\". The device ends a cell at that character, so it reads it as two cells (\"{value[..at]}\" and \"{value[(at + 1)..]}\") and everything after it on this row moves along one column.",
-                        "Keep letters, numbers, spaces, and \"_ . -\" only, or move the text to the notes column."));
+                        string.Format(CultureInfo.CurrentCulture, Strings.Parse_ValueContainsValueAtThe, value, value[at], value[..at], value[(at + 1)..]),
+                        Strings.Parse_KeepLettersNumbersSpacesAnd));
             }
         }
     }
@@ -282,8 +284,8 @@ public static class Parser
                 // ignored (or, if one starts with a sheet keyword, read as a
                 // phantom sheet). Both official converters drop such rows.
                 issues.Add(new Issue(Severity.Warning, $"A{r + 1}",
-                    $"Row {r + 1} appears after a blank row, where the device stops reading this mode, so this row does nothing.",
-                    "Move it above the first blank row or delete it."));
+                    string.Format(CultureInfo.CurrentCulture, Strings.Parse_RowR1AppearsAfter, r + 1),
+                    Strings.Parse_MoveItAboveTheFirst));
                 continue;
             }
 

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -105,7 +106,7 @@ public class ImportReviewWindow : Window
         _skipped = skipped.ToList();
         _renamed = renamed ?? Array.Empty<TabRename>();
 
-        Title = "Import review";
+        Title = Strings.Review_ImportReview;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
         _heading = new TextBlock { FontSize = Size("SubheadSize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap };
@@ -150,9 +151,9 @@ public class ImportReviewWindow : Window
         // Both, deliberately: every decision has already been applied and shown,
         // so Enter and Esc mean the same safe thing, which is "I am finished
         // looking". Neither one can silently commit something unseen.
-        _done = new Button { Content = "Done", Classes = { "primary" }, MinWidth = 140, IsDefault = true, IsCancel = true };
+        _done = new Button { Content = Strings.Review_Done, Classes = { "primary" }, MinWidth = 140, IsDefault = true, IsCancel = true };
         AutomationProperties.SetName(_done,
-            "Close the import review. Every answer you gave has already been applied to the profile behind it");
+            Strings.Review_CloseTheImportReviewEvery);
         _done.Click += (_, _) => Close();
         // Esc closes as well as Enter, and neither one is a cancel: a decision
         // is applied the moment it is pressed. Someone reaching for Esc to back
@@ -160,8 +161,7 @@ public class ImportReviewWindow : Window
         // the way back actually is.
         var closingNote = new TextBlock
         {
-            Text = "Your answers are already part of the profile. Nothing is saved to disk yet, "
-                 + "and Control Z in the editor undoes any of it.",
+            Text = Strings.Review_YourAnswersAreAlreadyPart,
             FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
             VerticalAlignment = VerticalAlignment.Center, MaxWidth = 520,
         };
@@ -227,34 +227,34 @@ public class ImportReviewWindow : Window
         // anything.
         bool clean = _limitation is null && lost.Count == 0 && open.Count == 0;
 
-        _heading.Text = clean ? "Your sheet came in clean." : "We read your sheet.";
+        _heading.Text = clean ? Strings.Review_YourSheetCameInClean : Strings.Review_WeReadYourSheet;
         _subheading.Text = clean
-            ? $"{Summary()} No profile data was skipped."
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Review_SummaryNoProfileDataWas, Summary())
             : $"{_source}: {Summary()}";
-        _advancedButton.Content = _advanced ? "Simple view" : "Advanced";
+        _advancedButton.Content = _advanced ? Strings.Review_SimpleView : "Advanced";
         AutomationProperties.SetName(_advancedButton, _advanced
-            ? "Go back to the simple view"
-            : "Show the spreadsheet with the app's reading marked on it");
+            ? Strings.Review_GoBackToTheSimple
+            : Strings.Review_ShowTheSpreadsheetWithThe);
 
         _body.Children.Clear();
 
         if (_limitation is not null)
-            _body.Children.Add(Section("Only part of the spreadsheet could be read",
+            _body.Children.Add(Section(Strings.Review_OnlyPartOfTheSpreadsheet,
                 new[] { Line(_limitation, null) }));
 
         if (errors.Count > 0)
             _body.Children.Add(Section(
-                Count(errors.Count, "line the QuadStick would not read", "lines the QuadStick would not read"),
+                Count(errors.Count, Strings.Review_LineTheQuadStickWouldNot, Strings.Review_LinesTheQuadStickWouldNot),
                 errors.Select(i => Line($"{i.Cell}   {i.Message}", i.Fix))));
 
         if (lost.Count > 0)
             _body.Children.Add(Section(
-                Count(lost.Count, "tab did not come in", "tabs did not come in"),
+                Count(lost.Count, Strings.Review_TabDidNotComeIn, Strings.Review_TabsDidNotComeIn),
                 lost.Select(SkippedRow)));
 
         if (helpers.Count > 0)
             _body.Children.Add(Section(
-                Count(helpers.Count, "tab is not profile data", "tabs are not profile data"),
+                Count(helpers.Count, Strings.Review_TabIsNotProfileData, Strings.Review_TabsAreNotProfileData),
                 new[] { Line(HelperTabText(helpers), null) }));
 
         // Not a loss and not an error, so it does not make the import unclean.
@@ -262,7 +262,7 @@ public class ImportReviewWindow : Window
         // is the whole of how a mode is recognised.
         if (_renamed.Count > 0)
             _body.Children.Add(Section(
-                Count(_renamed.Count, "mode is named after its sheet tab", "modes are named after their sheet tabs"),
+                Count(_renamed.Count, Strings.Review_ModeIsNamedAfterIts, Strings.Review_ModesAreNamedAfterTheir),
                 _renamed.Select(r => Line(RenameText(r), null))));
 
         // One heading for every warning, because the messages already say which
@@ -272,14 +272,14 @@ public class ImportReviewWindow : Window
         // accurate sentence is worse than a broad one.
         if (warnings.Count > 0)
             _body.Children.Add(Section(
-                Count(warnings.Count, "cell the QuadStick will treat differently than it reads",
-                                      "cells the QuadStick will treat differently than they read"),
+                Count(warnings.Count, Strings.Review_CellTheQuadStickWillTreat,
+                                      Strings.Review_CellsTheQuadStickWillTreat),
                 warnings.Select(WarningRow)));
 
         foreach (var key in _settled.Keys.ToList())
             _body.Children.Add(SettledRow(key));
 
-        _body.Children.Add(Section("What came in", new[] { ModeTable() }));
+        _body.Children.Add(Section(Strings.Review_WhatCameIn, new[] { ModeTable() }));
 
         _advancedHost.IsVisible = _advanced;
         if (_advanced && _advancedHost.Children.Count == 0) AdvancedView();
@@ -301,7 +301,7 @@ public class ImportReviewWindow : Window
         // look like it had rows the device would never fire.
         var bindings = _file.Document.Sheets
             .Where(s => s.Type == SheetType.ProfileName).Sum(s => s.Bindings.Count);
-        var prefs = _file.Document.Sheets.Any(s => s.Type == SheetType.Preferences) ? ", and your preferences" : "";
+        var prefs = _file.Document.Sheets.Any(s => s.Type == SheetType.Preferences) ? Strings.Review_AndYourPreferences : "";
         return $"{Count(modes, "mode", "modes")} and {Count(bindings, "binding", "bindings")}{prefs}.";
     }
 
@@ -317,21 +317,19 @@ public class ImportReviewWindow : Window
     static string HelperTabText(IReadOnlyList<SkippedTab> helpers)
     {
         var names = string.Join(", ", helpers.Select(t => $"\"{t.Name}\""));
-        var subject = helpers.Count == 1 ? "This tab is" : "These tabs are";
-        var it = helpers.Count == 1 ? "it" : "them";
-        return $"{names}   {subject} notes, not bindings. QMP and the Sheets add-on write "
-            + $"{(helpers.Count == 1 ? "this tab" : "these tabs")} for you to read, and your QuadStick "
-            + $"never loads {it}. Nothing was lost by leaving {it} out.";
+        // One whole sentence per wording. Built a phrase at a time it reads
+        // fine in English and falls apart in a language that puts its words in
+        // another order.
+        return string.Format(CultureInfo.CurrentCulture,
+            Plural.Wording(helpers.Count, "Review_HelperTabs"), names);
     }
 
     // Says where the name came from and what it replaced, so the user can put
     // the old one back by hand if the tab was the wrong one to trust.
     static string RenameText(TabRename r) =>
         r.CellC1.Length == 0
-            ? $"Mode {r.ModeNumber} is called \"{r.TabName}\", after its sheet tab. That mode's name cell "
-              + "was empty."
-            : $"Mode {r.ModeNumber} is called \"{r.TabName}\", after its sheet tab. Its name cell said "
-              + $"\"{r.CellC1}\", which is the name the template comes with or a copy of another mode's.";
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Review_ModeRModeNumberIsCalled, r.ModeNumber, r.TabName)
+            : string.Format(CultureInfo.CurrentCulture, Strings.Review_ModeRModeNumberIsCalled2, r.ModeNumber, r.TabName, r.CellC1);
 
     Control SkippedRow(SkippedTab tab)
     {
@@ -339,35 +337,34 @@ public class ImportReviewWindow : Window
         // QuadStick skips this tab today, exactly as the app did, so bringing
         // it in is a new mode the device has never run, not a rescue of one it
         // was running.
-        var add = new Button { Content = "Add it as a working mode", MinWidth = 190 };
+        var add = new Button { Content = Strings.Review_AddItAsAWorking, MinWidth = 190 };
         AutomationProperties.SetName(add,
-            $"Add the tab {tab.Name} to this profile as a working mode, by writing Profile Name over its cell A1");
+            string.Format(CultureInfo.CurrentCulture, Strings.Review_AddTheTabTabName, tab.Name));
         add.Click += (_, _) =>
         {
             var index = _file.AppendSheetRows(Xlsx.RepairedAsMode(tab));
             if (index < 0) return;
             _skipped.Remove(tab);
             Settle($"tab:{tab.Name}",
-                $"\"{tab.Name}\" is now a mode in this profile. Its cell A1 says \"Profile Name\" where your text was.",
+                string.Format(CultureInfo.CurrentCulture, Strings.Review_TabNameIsNowA, tab.Name),
                 () => _skipped.Add(tab), touchedTheFile: true);
-            _owner.ModesChanged(index, $"Added the \"{tab.Name}\" tab as a mode.");
-            AfterDecision($"\"{tab.Name}\" was added as a mode.");
+            _owner.ModesChanged(index, string.Format(CultureInfo.CurrentCulture, Strings.Review_AddedTheTabNameTab, tab.Name));
+            AfterDecision(string.Format(CultureInfo.CurrentCulture, Strings.Review_TabNameWasAddedAs, tab.Name));
         };
 
-        var leave = new Button { Content = "Leave it out", MinWidth = 130 };
-        AutomationProperties.SetName(leave, $"Leave the tab {tab.Name} out of this profile, as the QuadStick does");
+        var leave = new Button { Content = Strings.Review_LeaveItOut, MinWidth = 130 };
+        AutomationProperties.SetName(leave, string.Format(CultureInfo.CurrentCulture, Strings.Review_LeaveTheTabTabName, tab.Name));
         leave.Click += (_, _) =>
         {
             _skipped.Remove(tab);
-            Settle($"tab:{tab.Name}", $"\"{tab.Name}\" was left out, the same as your QuadStick does today.",
+            Settle($"tab:{tab.Name}", string.Format(CultureInfo.CurrentCulture, Strings.Review_TabNameWasLeftOut, tab.Name),
                 () => _skipped.Add(tab), touchedTheFile: false);
-            AfterDecision($"\"{tab.Name}\" was left out.");
+            AfterDecision(string.Format(CultureInfo.CurrentCulture, Strings.Review_TabNameWasLeftOut2, tab.Name));
         };
 
         return Line(
-            $"\"{tab.Name}\"   cell A1 has to say \"Profile Name\". Yours has other text in it, so this "
-            + "tab is not a mode to the app or to your QuadStick. Neither one is running it today.",
-            "Adding it changes cell A1. Everything else in the tab comes in as you wrote it.",
+            string.Format(CultureInfo.CurrentCulture, Strings.Review_TabNameCellA1Has, tab.Name),
+            Strings.Review_AddingItChangesCellA1,
             add, leave);
     }
 
@@ -385,36 +382,36 @@ public class ImportReviewWindow : Window
 
         if (_file.CanMoveInputToActionName(row, col))
         {
-            var name = new Button { Content = "Use as this row's name", MinWidth = 180 };
+            var name = new Button { Content = Strings.Review_UseAsThisRowS, MinWidth = 180 };
             AutomationProperties.SetName(name,
-                $"Keep \"{word}\" as this row's own name, in column L, where the QuadStick never looks");
+                string.Format(CultureInfo.CurrentCulture, Strings.Review_KeepWordAsThisRow, word));
             name.Click += (_, _) =>
             {
                 if (!_file.MoveInputToActionName(row, col)) return;
-                Settle(IssueKey(issue), $"{issue.Cell}   \"{word}\" is now this row's own name, in column L.", () => { }, touchedTheFile: true);
-                _owner.ModesChanged(SheetIndexOf(row), $"\"{word}\" is now this row's name.");
-                AfterDecision($"\"{word}\" is now this row's own name, in column L.");
+                Settle(IssueKey(issue), string.Format(CultureInfo.CurrentCulture, Strings.Review_IssueCellWordIsNow, issue.Cell, word), () => { }, touchedTheFile: true);
+                _owner.ModesChanged(SheetIndexOf(row), string.Format(CultureInfo.CurrentCulture, Strings.Review_WordIsNowThisRow, word));
+                AfterDecision(string.Format(CultureInfo.CurrentCulture, Strings.Review_WordIsNowThisRow2, word));
             };
             buttons.Add(name);
         }
 
-        var note = new Button { Content = "Move to notes", MinWidth = 140 };
-        AutomationProperties.SetName(note, $"Move \"{word}\" into the notes column, where the QuadStick never looks");
+        var note = new Button { Content = Strings.Review_MoveToNotes, MinWidth = 140 };
+        AutomationProperties.SetName(note, string.Format(CultureInfo.CurrentCulture, Strings.Review_MoveWordIntoTheNotes, word));
         note.Click += (_, _) =>
         {
             if (!_file.MoveInputToNotes(row, col)) return;
-            Settle(IssueKey(issue), $"{issue.Cell}   \"{word}\" moved into the notes column.", () => { }, touchedTheFile: true);
-            _owner.ModesChanged(SheetIndexOf(row), $"Moved \"{word}\" into the notes column.");
-            AfterDecision($"\"{word}\" moved into the notes column.");
+            Settle(IssueKey(issue), string.Format(CultureInfo.CurrentCulture, Strings.Review_IssueCellWordMovedInto, issue.Cell, word), () => { }, touchedTheFile: true);
+            _owner.ModesChanged(SheetIndexOf(row), string.Format(CultureInfo.CurrentCulture, Strings.Review_MovedWordIntoTheNotes, word));
+            AfterDecision(string.Format(CultureInfo.CurrentCulture, Strings.Review_WordMovedIntoTheNotes, word));
         };
         buttons.Add(note);
 
-        var leave = new Button { Content = "Leave it", MinWidth = 110 };
-        AutomationProperties.SetName(leave, $"Leave \"{word}\" where it is, and keep its warning in the editor");
+        var leave = new Button { Content = Strings.Review_LeaveIt, MinWidth = 110 };
+        AutomationProperties.SetName(leave, string.Format(CultureInfo.CurrentCulture, Strings.Review_LeaveWordWhereItIs, word));
         leave.Click += (_, _) =>
         {
-            Settle(IssueKey(issue), $"{issue.Cell}   \"{word}\" left as it is. The QuadStick ignores it.", () => { }, touchedTheFile: false);
-            AfterDecision($"\"{word}\" was left where it is.");
+            Settle(IssueKey(issue), string.Format(CultureInfo.CurrentCulture, Strings.Review_IssueCellWordLeftAs, issue.Cell, word), () => { }, touchedTheFile: false);
+            AfterDecision(string.Format(CultureInfo.CurrentCulture, Strings.Review_WordWasLeftWhereIt, word));
         };
         buttons.Add(leave);
 
@@ -448,16 +445,16 @@ public class ImportReviewWindow : Window
 
         if (key == _undoable)
         {
-            var undo = new Button { Content = "Undo", MinWidth = 110, HorizontalAlignment = HorizontalAlignment.Left };
-            AutomationProperties.SetName(undo, $"Undo this change and ask again: {text}");
+            var undo = new Button { Content = Strings.Review_Undo, MinWidth = 110, HorizontalAlignment = HorizontalAlignment.Left };
+            AutomationProperties.SetName(undo, string.Format(CultureInfo.CurrentCulture, Strings.Review_UndoThisChangeAndAsk, text));
             undo.Click += (_, _) =>
             {
                 if (!_file.Undo()) return;
                 _settled.Remove(key);
                 _undoable = null;
                 restore();
-                _owner.ModesChanged(0, "Undid the last import change.");
-                AfterDecision("That change was undone.");
+                _owner.ModesChanged(0, Strings.Review_UndidTheLastImportChange);
+                AfterDecision(Strings.Review_ThatChangeWasUndone);
             };
             panel.Children.Add(undo);
         }
@@ -534,7 +531,7 @@ public class ImportReviewWindow : Window
                 Text = s.Type switch
                 {
                     SheetType.Preferences => "Preferences",
-                    SheetType.Infrared => "Infrared commands",
+                    SheetType.Infrared => Strings.Review_InfraredCommands,
                     _ => $"Mode {mode}: {DisplayName(s)}",
                 },
                 FontSize = Size("BodySize"), Margin = new Thickness(0, 0, 24, 4), TextWrapping = TextWrapping.Wrap,
@@ -590,13 +587,11 @@ public class ImportReviewWindow : Window
     static string RepeatedModeText(IReadOnlyList<string> repeated)
     {
         var names = string.Join(", ", repeated.Select(n => $"\"{n}\""));
-        var subject = repeated.Count == 1 ? "More than one mode is named" : "More than one mode each carry the names";
-        return $"{subject} {names}. That is allowed: your QuadStick tells modes apart by their "
-            + "order in the file, not by their name, so these are separate modes and all of them came in. "
-            + "Rename them in Modes if you want to tell them apart on screen.";
+        var subject = repeated.Count == 1 ? Strings.Review_MoreThanOneModeIs : Strings.Review_MoreThanOneModeEach;
+        return string.Format(CultureInfo.CurrentCulture, Strings.Review_SubjectNamesThatIsAllowed, subject, names);
     }
 
-    static string DisplayName(ModeSheet s) => s.ModeName.Trim().Length > 0 ? s.ModeName.Trim() : "(unnamed mode)";
+    static string DisplayName(ModeSheet s) => s.ModeName.Trim().Length > 0 ? s.ModeName.Trim() : Strings.Review_UnnamedMode;
 
     // ---- advanced view ----
 
@@ -620,10 +615,7 @@ public class ImportReviewWindow : Window
         var panel = _advancedHost;
         panel.Children.Add(new TextBlock
         {
-            Text = "Your spreadsheet, with what we read marked on it. A tinted cell is one the QuadStick "
-                 + "reads. A plain cell is one it never looks at, so notes and your own names for rows are "
-                 + "safe there. Click any cell to change it, or drag it to another column in the same row. "
-                 + "Every change here is a change to the profile open behind this window.",
+            Text = Strings.Review_YourSpreadsheetWithWhatWe,
             FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
         });
         panel.Children.Add(Legend());
@@ -640,7 +632,7 @@ public class ImportReviewWindow : Window
             if (tab.Kind != SkippedTabKind.UnreadableA1) continue;
             panel.Children.Add(new TextBlock
             {
-                Text = $"\"{tab.Name}\", left out because cell A1 does not name a kind of sheet:",
+                Text = string.Format(CultureInfo.CurrentCulture, Strings.Review_TabNameLeftOutBecause, tab.Name),
                 FontSize = Size("BodySize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
             });
             // Read only: these rows are not in the profile, so there is nothing
@@ -751,7 +743,7 @@ public class ImportReviewWindow : Window
     // emptying it already has its own warning that says the device reads 0.
     string Consequence(int row, bool hadInput) =>
         hadInput && BindingAt(row) is { } b && Vocab.NothingFiresIt(b)
-            ? $" Nothing presses \"{b.Output}\" now, so the QuadStick will not fire it."
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Review_NothingPressesBOutputNow, b.Output)
             : "";
 
     // Rebuild without throwing the reader back to the top of a 400 row grid, or
@@ -833,7 +825,7 @@ public class ImportReviewWindow : Window
             else if (e.Key == Key.Escape) { e.Handled = true; RefreshInspector(); _gridHost?.Focus(); }
         };
 
-        var commit = new Button { Content = "Save cell", MinWidth = 110 };
+        var commit = new Button { Content = Strings.Review_SaveCell, MinWidth = 110 };
         commit.Click += (_, _) => CommitInspector();
 
         _inspectorActions = new WrapPanel();
@@ -847,12 +839,12 @@ public class ImportReviewWindow : Window
         // edit never detaches a control that the grid is laid out beside.
         _undoSaid = new TextBlock { FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center };
         BindBrush(_undoSaid, TextBlock.ForegroundProperty, "Success");
-        _undoButton = new Button { Content = "Undo", MinWidth = 90 };
+        _undoButton = new Button { Content = Strings.Review_Undo2, MinWidth = 90 };
         _undoButton.Click += (_, _) =>
         {
             if (!_file.Undo()) return;
             _lastGridEdit = null;
-            _owner.ModesChanged(0, "Undid the last cell change.");
+            _owner.ModesChanged(0, Strings.Review_UndidTheLastCellChange);
             Rebuild();
         };
         _undoLine = new StackPanel
@@ -873,7 +865,7 @@ public class ImportReviewWindow : Window
         _undoLine.IsVisible = _lastGridEdit is not null;
         if (_lastGridEdit is null) return;
         _undoSaid.Text = _lastGridEdit;
-        AutomationProperties.SetName(_undoButton, $"Undo this change: {_lastGridEdit}");
+        AutomationProperties.SetName(_undoButton, string.Format(CultureInfo.CurrentCulture, Strings.Review_UndoThisChangeLastGridEdit, _lastGridEdit));
     }
 
     void CommitInspector()
@@ -902,10 +894,10 @@ public class ImportReviewWindow : Window
         if (_selected is not { } at || at.Row < 1 || at.Row > _file.Grid.Count)
         {
             _selected = null;
-            _inspectorHead.Text = "No cell picked. Click one, or press Tab to the sheet and use the arrow keys.";
+            _inspectorHead.Text = Strings.Review_NoCellPickedClickOne;
             _inspectorValue.Text = "";
             _inspectorValue.IsEnabled = false;
-            AutomationProperties.SetName(_inspectorValue, "No cell picked");
+            AutomationProperties.SetName(_inspectorValue, Strings.Review_NoCellPicked);
             return;
         }
 
@@ -919,7 +911,7 @@ public class ImportReviewWindow : Window
             : $"{where}   {meaning}   {issue.Message}";
         _inspectorValue.IsEnabled = true;
         _inspectorValue.Text = value;
-        AutomationProperties.SetName(_inspectorValue, $"Contents of cell {where}, {meaning}");
+        AutomationProperties.SetName(_inspectorValue, string.Format(CultureInfo.CurrentCulture, Strings.Review_ContentsOfCellWhereMeaning, where, meaning));
 
         void Action(string label, string spoken, Func<bool> can, Action<Action<string, Func<bool>>> run)
         {
@@ -932,22 +924,22 @@ public class ImportReviewWindow : Window
             _inspectorActions.Children.Add(b);
         }
 
-        Action("Clear it", $"Empty cell {where}",
+        Action(Strings.Review_ClearIt, string.Format(CultureInfo.CurrentCulture, Strings.Review_EmptyCellWhere, where),
             () => value.Length > 0,
             apply => apply($"Emptied {where}.", () => { _file.SetCell(at.Row, at.Col, ""); return true; }));
 
         // Named for the picked cell, because the simple view's own "Move to
         // notes" for the same warning is on screen right above this.
-        Action("Move this to the note column",
-            $"Move \"{value}\" from {where} into the note column, where the QuadStick never looks",
+        Action(Strings.Review_MoveThisToTheNote,
+            string.Format(CultureInfo.CurrentCulture, Strings.Review_MoveValueFromWhereInto, value, where),
             () => _file.CanMoveCell(at.Row, at.Col, ProfileFile.NoteColumn),
-            apply => apply($"Moved \"{value}\" from {where} into the note column.",
+            apply => apply(string.Format(CultureInfo.CurrentCulture, Strings.Review_MovedValueFromWhereInto, value, where),
                 () => _file.MoveCell(at.Row, at.Col, ProfileFile.NoteColumn)));
 
-        Action("Make this the row's name",
-            $"Keep \"{value}\" as this row's own name, in column L, where the QuadStick never looks",
+        Action(Strings.Review_MakeThisTheRowS,
+            string.Format(CultureInfo.CurrentCulture, Strings.Review_KeepValueAsThisRow, value),
             () => _file.CanMoveCell(at.Row, at.Col, ProfileFile.ActionColumn),
-            apply => apply($"Moved \"{value}\" from {where} into this row's name.",
+            apply => apply(string.Format(CultureInfo.CurrentCulture, Strings.Review_MovedValueFromWhereInto2, value, where),
                 () => _file.MoveCell(at.Row, at.Col, ProfileFile.ActionColumn)));
 
         // C to J are a sequence, done left to right, so which column an input
@@ -967,13 +959,13 @@ public class ImportReviewWindow : Window
         {
             var neighbour = _file.GetCell(at.Row, target).Trim();
             var spoken = neighbour.Length > 0
-                ? $"Swap \"{value}\" with \"{neighbour}\", moving it one step {direction} in this row's sequence of inputs"
-                : $"Move \"{value}\" to {ColumnLetter(target)}{at.Row}, one step {direction} in this row's sequence of inputs";
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Review_SwapValueWithNeighbourMoving, value, neighbour, direction)
+                : string.Format(CultureInfo.CurrentCulture, Strings.Review_MoveValueToColumnLetterTarget, value, ColumnLetter(target), at.Row, direction);
             Action(label, spoken,
                 () => _file.CanSwapInputs(at.Row, at.Col, target),
                 apply => apply(
                     neighbour.Length > 0
-                        ? $"Swapped \"{value}\" and \"{neighbour}\" in row {at.Row}."
+                        ? string.Format(CultureInfo.CurrentCulture, Strings.Review_SwappedValueAndNeighbourIn, value, neighbour, at.Row)
                         : $"Moved \"{value}\" from {where} to {ColumnLetter(target)}{at.Row}.",
                     () => _file.SwapInputs(at.Row, at.Col, target)));
         }
@@ -1007,9 +999,9 @@ public class ImportReviewWindow : Window
             && !Vocab.IsPreferenceOverride(_file.GetCell(at.Row, 0), _file.GetCell(at.Row, 1));
 
         if (reorderable && at.Col is > FirstInput and <= LastInput)
-            Nudge("Move it earlier", "earlier", at.Col - 1);
+            Nudge(Strings.Review_MoveItEarlier, "earlier", at.Col - 1);
         if (reorderable && at.Col is >= FirstInput and < LastInput)
-            Nudge("Move it later", "later", at.Col + 1);
+            Nudge(Strings.Review_MoveItLater, "later", at.Col + 1);
     }
 
     Control Legend()
@@ -1018,9 +1010,9 @@ public class ImportReviewWindow : Window
         void Add(Control c) { c.Margin = new Thickness(0, 0, 10, 6); wrap.Children.Add(c); }
         Add(Swatch("A  output", OutputTint));
         Add(Swatch("B  function", FunctionTint));
-        Add(Swatch("C to J  inputs, in order", InputTint));
-        Add(Swatch("K  note   L  your name for the row   M on  never read", null));
-        Add(Swatch("the QuadStick does not know this word", null, warn: true));
+        Add(Swatch(Strings.Review_CToJInputsIn, InputTint));
+        Add(Swatch(Strings.Review_KNoteLYourName, null));
+        Add(Swatch(Strings.Review_TheQuadStickDoesNotKnow, null, warn: true));
 
         // C to J is room, not a requirement, and the old chip read like a rule
         // the sheet had to satisfy. It is also where people learn that a second
@@ -1030,10 +1022,7 @@ public class ImportReviewWindow : Window
         panel.Children.Add(wrap);
         panel.Children.Add(new TextBlock
         {
-            Text = "C to J is room for up to 8 inputs, not a requirement. Most rows use C on its own, "
-                 + "and that is a plain trigger. When a row fills more than one, they are a sequence: "
-                 + "you do them one after the other, left to right, and the last one fires the output. "
-                 + "Blank cells in between are ignored.",
+            Text = Strings.Review_CToJIsRoom,
             FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
         });
         return panel;
@@ -1135,7 +1124,7 @@ public class ImportReviewWindow : Window
             wrapper.Children.Add(grid);
             wrapper.Children.Add(new TextBlock
             {
-                Text = $"Showing the first {shown} rows of {rows.Count}. The rest imported the same way.",
+                Text = string.Format(CultureInfo.CurrentCulture, Strings.Review_ShowingTheFirstShownRows, shown, rows.Count),
                 FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
             });
             content = wrapper;
@@ -1149,7 +1138,7 @@ public class ImportReviewWindow : Window
         _gridCols = cols;
         var host = new Border { Focusable = true, Child = content, Padding = new Thickness(2) };
         AutomationProperties.SetName(host,
-            "Your spreadsheet. Arrow keys pick a cell, Enter edits it, Delete empties it.");
+            Strings.Review_YourSpreadsheetArrowKeysPick);
         host.KeyDown += (_, e) => GridKey(e);
         host.GotFocus += (_, _) => { if (_selected is null && _gridRows > 0) Select(1, 0); };
         _gridHost = host;
@@ -1266,9 +1255,9 @@ public class ImportReviewWindow : Window
         0 => "output",
         1 => "function",
         >= 2 and < Parser.KeywordColumns => "input",
-        Parser.KeywordColumns => "note, never read by the QuadStick",
-        Parser.ActionColumn => "your name for the row, never read by the QuadStick",
-        _ => "never read by the QuadStick",
+        Parser.KeywordColumns => Strings.Review_NoteNeverReadByThe,
+        Parser.ActionColumn => Strings.Review_YourNameForTheRow,
+        _ => Strings.Review_NeverReadByTheQuadStick,
     };
 
     // What a cell actually is, which is not the same as what its column would
@@ -1283,15 +1272,15 @@ public class ImportReviewWindow : Window
 
         if (sheet is not null && sheet.StartRow == row)
             return prefsSheet
-                ? "the word that makes this the settings sheet"
+                ? Strings.Review_TheWordThatMakesThis
                 : col switch
                 {
-                    0 => "the word that makes this a mode. Change it and the mode leaves the profile",
-                    2 => "this mode's name",
-                    _ => "part of the row that opens a mode",
+                    0 => Strings.Review_TheWordThatMakesThis2,
+                    2 => Strings.Review_ThisModeSName,
+                    _ => Strings.Review_PartOfTheRowThat,
                 };
 
-        if (!isBinding) return "not a binding row, so the QuadStick reads nothing here";
+        if (!isBinding) return Strings.Review_NotABindingRowSo;
 
         // A settings sheet reuses the same columns for something else, and so
         // does a settings row parked inside a mode. Calling either one's value
@@ -1300,18 +1289,18 @@ public class ImportReviewWindow : Window
         if (prefsSheet)
             return col switch
             {
-                0 => "the setting's name",
-                1 => "the setting's value",
-                _ => "not read on a settings sheet",
+                0 => Strings.Review_TheSettingSName,
+                1 => Strings.Review_TheSettingSValue,
+                _ => Strings.Review_NotReadOnASettings,
             };
 
         if (Vocab.IsPreferenceOverride(_file.GetCell(row, 0), _file.GetCell(row, 1)))
             return col switch
             {
-                0 => "a setting's name, used here to override it for this mode",
-                1 => "skipped by the QuadStick on a settings row",
-                2 => "the setting's value",
-                _ => "not read on a settings row",
+                0 => Strings.Review_ASettingSNameUsed,
+                1 => Strings.Review_SkippedByTheQuadStickOn,
+                2 => Strings.Review_TheSettingSValue2,
+                _ => Strings.Review_NotReadOnASettings2,
             };
 
         return ColumnMeaning(col);
@@ -1355,8 +1344,8 @@ public class ImportReviewWindow : Window
     string Describe(int row, int col, string text, bool isBinding, bool warn, bool dimmed) =>
         $"{ColumnLetter(col)}{row}, "
         + (text.Length > 0 ? $"\"{text}\", " : "empty, ")
-        + (dimmed ? "not read, this tab was left out"
-           : warn ? $"{CellMeaning(row, col, isBinding)}, the QuadStick does not know this word"
+        + (dimmed ? Strings.Review_NotReadThisTabWas
+           : warn ? string.Format(CultureInfo.CurrentCulture, Strings.Review_CellMeaningRowColIsBindingThe, CellMeaning(row, col, isBinding))
            : CellMeaning(row, col, isBinding));
 
     // A, B, ... Z, AA, AB. Spreadsheets number columns this way and so does
