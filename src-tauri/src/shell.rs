@@ -19,7 +19,6 @@ use qcm_core::settings::{AppSettingsDto, Settings, SettingsStore};
 use serde_json::Value;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
-/// Everything the editor/settings side of one running app owns.
 pub struct Shell<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> {
     sessions: Mutex<ProfileSessions<Arc<L>>>,
     settings: Mutex<Settings<S>>,
@@ -50,7 +49,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             capabilities: CapabilitiesDto {
                 profile_editing: true,
                 device_install: true,
-                live_input: false,
+                live_input: true,
                 community_catalog: false,
                 google_backup: false,
                 agent: false,
@@ -75,8 +74,6 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         Ok(self.sessions().open_new(&request.name))
     }
 
-    /// Ask for a file and open it. `None` means the user cancelled, which is not
-    /// an error and leaves nothing open.
     pub fn choose_and_open_profile(&self) -> Result<Option<EditorSnapshot>, QcmError> {
         let Some(target) = self.picker.pick_open()? else {
             return Ok(None);
@@ -143,17 +140,11 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             .map(|outcome| CloseOutcomeDto::from(&outcome))
     }
 
-    /// Clone the canonical working profile for a prepared device install.
-    /// The install service normalizes its own clone, so planning a write cannot
-    /// mutate editor state or advance its revision.
     pub fn profile_for_install(&self, session_raw: &str) -> Result<ProfileFile, QcmError> {
         let session = session_id(session_raw)?;
         Ok(self.sessions().session(session)?.file().clone())
     }
 
-    /// Turn bytes read through the scoped device port into a normal editor
-    /// working copy. Save still cannot write back to the device; only the
-    /// install transaction can do that.
     pub fn open_device_copy(
         &self,
         device: StorageDeviceId,
