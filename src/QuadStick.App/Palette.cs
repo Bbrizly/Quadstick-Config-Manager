@@ -42,6 +42,10 @@ public static class Palette
         // green NewRowTint (the tester read green selection as "horrendous").
         // Deep enough to read at a glance; the first pass was too faint.
         ["SelectionTint"] = "#C2D3EE",
+        // A row the QuadStick is sending right now. Warm, so it cannot be read
+        // as either the blue selection or the green new row, and it comes and
+        // goes on its own while the other two are the user's own doing.
+        ["LiveTint"]      = "#FBD9B4",
     };
 
     public static readonly IReadOnlyDictionary<string, string> Dark = new Dictionary<string, string>
@@ -64,6 +68,7 @@ public static class Palette
         ["InputTint"]     = "#1E2F3F",
         ["NewRowTint"]    = "#1C3A28",
         ["SelectionTint"] = "#33475F",
+        ["LiveTint"]      = "#4A3418",
     };
 
     // (foreground token, background token, minimum ratio).
@@ -86,6 +91,7 @@ public static class Palette
         ("TextPrimary",   "InputTint",     4.5),
         ("TextPrimary",   "NewRowTint",    4.5),
         ("TextPrimary",   "SelectionTint", 4.5),
+        ("TextPrimary",   "LiveTint",      4.5),
         // Real on-screen pairs the gate previously missed: the status bar
         // renders its colors on AppBackground, and the zone detail panel
         // puts secondary/accent text on SurfaceSubtle.

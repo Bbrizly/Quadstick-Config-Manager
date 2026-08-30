@@ -118,7 +118,7 @@ public class LiveInputTests
         buffer[5] = 0x40;  // left Y, a quarter down, which reads as up
 
         Assert.True(parser.TryParseReport(buffer, 0, descriptor.InputReports.First()));
-        var live = LiveInput.Read(parser, "QuadStick");
+        var live = LiveInput.Read(parser, "QuadStick", ps3Layout: true, null);
 
         Assert.Equal(0.51, live.X, 2);
         Assert.Equal(-0.50, live.Y, 2);
@@ -137,11 +137,211 @@ public class LiveInputTests
         buffer[5] = 0x80;
 
         Assert.True(parser.TryParseReport(buffer, 0, descriptor.InputReports.First()));
-        var live = LiveInput.Read(parser, "QuadStick");
+        var live = LiveInput.Read(parser, "QuadStick", ps3Layout: true, null);
 
         Assert.True(System.Math.Abs(live.X) < 0.01, $"X was {live.X}");
         Assert.True(System.Math.Abs(live.Y) < 0.01, $"Y was {live.Y}");
         Assert.Empty(live.Buttons);
+    }
+
+    // What the device is sending, in the words a profile is written in.
+    //
+    // The report only ever carries the OUTPUT. Which part of the mouthpiece
+    // produced it lives in the file the device has loaded, which the app cannot
+    // see, so nothing here turns a report back into an input.
+
+    const int HatIdle = 15;    // USBJOYSTICK_HAT_POS_IDLE in ps3.h
+    const byte Centre = 0x80;  // where DataFlow.c parks every axis before it adds
+
+    // One report in the shape USB_PS3_Report_Data_t packs: thirteen button bits
+    // low to high, three pad bits, the hat in the next nibble, a pad nibble,
+    // then left_X, left_Y, right_X, right_Y. Byte 0 is the report id HidSharp
+    // reserves and this descriptor does not use.
+    static byte[] Report(int[] buttons, int hat = HatIdle, byte leftX = Centre,
+        byte leftY = Centre, byte rightX = Centre, byte rightY = Centre)
+    {
+        var descriptor = new ReportDescriptor(GamepadDescriptor);
+        var buffer = new byte[descriptor.MaxInputReportLength];
+        ushort bits = 0;
+        foreach (var b in buttons) bits |= (ushort)(1 << (b - 1));
+        buffer[1] = (byte)(bits & 0xFF);
+        buffer[2] = (byte)(bits >> 8);
+        buffer[3] = (byte)(hat & 0x0F);
+        buffer[4] = leftX; buffer[5] = leftY; buffer[6] = rightX; buffer[7] = rightY;
+        return buffer;
+    }
+
+    static LiveState Sending(byte[] report, LiveState? previous = null)
+    {
+        var descriptor = new ReportDescriptor(GamepadDescriptor);
+        var parser = LiveInput.StickItem(descriptor)!.CreateDeviceItemInputParser();
+        Assert.True(parser.TryParseReport(report, 0, descriptor.InputReports.First()));
+        Assert.True(LiveInput.DeclaresPs3Report(parser));
+        return LiveInput.Read(parser, "QuadStick", ps3Layout: true, previous);
+    }
+
+    static readonly int[] Nothing = System.Array.Empty<int>();
+
+    [Fact]
+    public void NothingHeldIsNothingBeingSent()
+    {
+        Assert.Empty(Sending(Report(Nothing)).Outputs);
+    }
+
+    [Theory]
+    [InlineData(1, "square")]
+    [InlineData(2, "x")]
+    [InlineData(3, "circle")]
+    [InlineData(4, "triangle")]
+    [InlineData(5, "left_1")]
+    [InlineData(6, "right_1")]
+    [InlineData(7, "left_2")]
+    [InlineData(8, "right_2")]
+    [InlineData(9, "select")]
+    [InlineData(10, "start")]
+    [InlineData(11, "left_3")]
+    [InlineData(12, "right_3")]
+    [InlineData(13, "ps3")]
+    public void EachButtonComesBackAsTheWordTheProfileUses(int button, string output)
+    {
+        Assert.Contains(output, Sending(Report(new[] { button })).Outputs);
+    }
+
+    // left_1 and left_bumper are one slot, so a profile written either way
+    // lights. The alias block at the end of output_keywords.h.
+    [Fact]
+    public void AButtonIsEveryWordTheFirmwareMapsToIt()
+    {
+        var outputs = Sending(Report(new[] { 5 })).Outputs;
+        Assert.Contains("left_1", outputs);
+        Assert.Contains("left_bumper", outputs);
+        Assert.Contains("xac_left_A", outputs);
+        Assert.DoesNotContain("right_1", outputs);
+    }
+
+    [Fact]
+    public void TwoButtonsAtOnceAreBothSent()
+    {
+        var outputs = Sending(Report(new[] { 1, 10 })).Outputs;
+        Assert.Contains("square", outputs);
+        Assert.Contains("start", outputs);
+    }
+
+    [Fact]
+    public void LettingGoStopsSendingIt()
+    {
+        Assert.Contains("square", Sending(Report(new[] { 1 })).Outputs);
+        Assert.DoesNotContain("square", Sending(Report(Nothing)).Outputs);
+    }
+
+    [Theory]
+    [InlineData(0, "dpad_N")]
+    [InlineData(1, "dpad_NE")]
+    [InlineData(2, "dpad_E")]
+    [InlineData(3, "dpad_SE")]
+    [InlineData(4, "dpad_S")]
+    [InlineData(5, "dpad_SW")]
+    [InlineData(6, "dpad_W")]
+    [InlineData(7, "dpad_NW")]
+    public void TheHatSwitchIsADirectionOnTheDPad(int hat, string output)
+    {
+        Assert.Contains(output, Sending(Report(Nothing, hat)).Outputs);
+    }
+
+    // 15 sits past the logical maximum of 7 because the descriptor declares the
+    // hat with a null state. Reading it as a direction lights dpad_NW forever.
+    [Fact]
+    public void ACentredHatIsNotADirection()
+    {
+        Assert.Empty(Sending(Report(Nothing, HatIdle)).Outputs);
+    }
+
+    // left_Y counts DOWN from centre as the stick goes up: DataFlow.c does
+    // ps3.left_Y -= joystickvalues[LEFT_JOYSTICK_UP].
+    [Fact]
+    public void TheLeftStickPushedUpSendsLeftJoyUp()
+    {
+        var outputs = Sending(Report(Nothing, HatIdle, leftY: 0x10)).Outputs;
+        Assert.Contains("left_joy_up", outputs);
+        Assert.DoesNotContain("left_joy_down", outputs);
+    }
+
+    [Fact]
+    public void TheRightStickIsReadAsTheRightStick()
+    {
+        var outputs = Sending(Report(Nothing, HatIdle, rightX: 0xF0)).Outputs;
+        Assert.Contains("right_joy_right", outputs);
+        Assert.DoesNotContain("left_joy_right", outputs);
+    }
+
+    // A mouth-held stick wanders. Once a row is lit it stays lit until the
+    // stick comes well back, so holding a deflection near the edge does not
+    // strobe the row on and off.
+    [Fact]
+    public void AStickHeldNearTheThresholdDoesNotFlicker()
+    {
+        var lit = Sending(Report(Nothing, HatIdle, leftX: 0xD0));
+        Assert.Contains("left_joy_right", lit.Outputs);
+        Assert.Contains("left_joy_right", Sending(Report(Nothing, HatIdle, leftX: 0xA5), lit).Outputs);
+        Assert.DoesNotContain("left_joy_right", Sending(Report(Nothing, HatIdle, leftX: 0xA5)).Outputs);
+    }
+
+    // A mode nobody has taught the app has to say so. Reporting no outputs and
+    // calling that understood would draw a still screen while somebody sips.
+    [Fact]
+    public void AModeTheAppCannotReadSaysSoInsteadOfSayingNothing()
+    {
+        var descriptor = new ReportDescriptor(GamepadDescriptor);
+        var parser = LiveInput.StickItem(descriptor)!.CreateDeviceItemInputParser();
+        Assert.True(parser.TryParseReport(Report(new[] { 1 }), 0, descriptor.InputReports.First()));
+
+        var state = LiveInput.Read(parser, "Some other pad", ps3Layout: false, null);
+        Assert.False(state.OutputsUnderstood);
+        Assert.Empty(state.Outputs);
+    }
+
+    // The identity is only half of it. A firmware that moved a button would
+    // still answer to the mode 0 vendor and product, so the descriptor has to
+    // agree before a report is read as mode 0.
+    [Fact]
+    public void OnlyTheModeZeroReportShapeIsReadAsModeZero()
+    {
+        var gamepad = new ReportDescriptor(GamepadDescriptor);
+        Assert.True(LiveInput.DeclaresPs3Report(
+            LiveInput.StickItem(gamepad)!.CreateDeviceItemInputParser()));
+
+        // Eight buttons and no hat: the Dual Shock 3 opening, which is a
+        // different report and must not be read with the mode 0 table.
+        var other = new ReportDescriptor(JoystickOpening);
+        Assert.False(LiveInput.DeclaresPs3Report(
+            LiveInput.StickItem(other)!.CreateDeviceItemInputParser()));
+    }
+
+    // A typo in the table is a row that can never light, silently.
+    [Fact]
+    public void EveryWordInTheTableIsARealOutput()
+    {
+        foreach (var word in LiveInput.Ps3OutputWords)
+            Assert.True(QuadStick.Format.Vocab.AllOutputs.Contains(word), word);
+    }
+
+    // A keyboard, a mouse, an infrared code and a digital out leave the device
+    // on a connection this never opens, so their rows can never light. Claiming
+    // one here would be the app saying a row is being sent when it cannot know.
+    [Fact]
+    public void OutputsTheGamepadReportDoesNotCarryAreNotInTheTable()
+    {
+        string[] elsewhere = { "kb_", "mouse_", "ir_", "digital_out" };
+        foreach (var word in LiveInput.Ps3OutputWords)
+            Assert.DoesNotContain(elsewhere, prefix => word.StartsWith(prefix, System.StringComparison.Ordinal));
+    }
+
+    // A word copied onto the wrong line lights an unrelated row.
+    [Fact]
+    public void NoWordIsOnTwoSlots()
+    {
+        var all = LiveInput.Ps3OutputWords.ToList();
+        Assert.Equal(all.Count, all.Distinct().Count());
     }
 
     // Which USB identity to look for is the emulation mode's answer, and the

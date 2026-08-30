@@ -45,7 +45,7 @@ public class LiveDetectionTests
 
         // No drive mounted, and the reader has the gamepad open anyway. That is
         // a QuadStick, and every emulation mode reaches this state.
-        w.ShowLiveInputForPreview(new LiveState(0, 0, Array.Empty<int>(), "QuadStick"));
+        w.ShowLiveInputForPreview(new LiveState(0, 0, Array.Empty<int>(), "QuadStick", new HashSet<string>(), true));
         Assert.Equal(Strings.Main_QuadStickConnected, ChipText(w));
     }
 
@@ -53,7 +53,7 @@ public class LiveDetectionTests
     public void A_stick_unplugged_goes_back_to_saying_nothing_is_here()
     {
         var w = Open();
-        w.ShowLiveInputForPreview(new LiveState(0, 0, Array.Empty<int>(), "QuadStick"));
+        w.ShowLiveInputForPreview(new LiveState(0, 0, Array.Empty<int>(), "QuadStick", new HashSet<string>(), true));
         w.ShowLiveInputForPreview(null);
         Assert.Equal(Strings.Main_NoQuadStickDetected, ChipText(w));
     }

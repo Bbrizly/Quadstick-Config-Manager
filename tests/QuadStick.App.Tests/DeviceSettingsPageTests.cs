@@ -480,7 +480,7 @@ public class DeviceSettingsPageTests
         var w = Open(Prefs, "Joystick");
         Assert.Contains(Said(w), t => t.StartsWith("The stick is not being read", StringComparison.Ordinal));
 
-        w.ShowLiveInputForPreview(new LiveState(0.5, -0.5, Array.Empty<int>(), "QuadStick"));
+        w.ShowLiveInputForPreview(new LiveState(0.5, -0.5, Array.Empty<int>(), "QuadStick", new HashSet<string>(), true));
         w.UpdateLayout();
         Assert.Contains(Said(w), t => t == "The stick is at 50% across and 50% up.");
 

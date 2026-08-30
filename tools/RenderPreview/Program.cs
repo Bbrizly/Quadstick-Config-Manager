@@ -178,6 +178,47 @@ if (args.Contains("--visuals"))
     return;
 }
 
+// --live draws the editor with the QuadStick sending something, which is the
+// only way to see the lit row against the row beside it. A headless test can
+// count the dots but cannot say whether the dot lands on the row number or
+// whether the tint survives the theme.
+if (args.Contains("--live"))
+{
+    const string Profile =
+        "Profile Name,,Solo\n" + "game.csv\n" + "Outputs,Function,usb\n" +
+        "square,normal,lip\n" + "circle,normal,right_sip\n" +
+        "square,normal,hard_puff\n" + "triangle,tap 200,mp_center_puff\n" +
+        "left_joy_up,normal,js_up\n" + "kb_a,normal,soft_sip\n";
+    var sending = new LiveState(0, -0.6, Array.Empty<int>(), "QuadStick",
+        new HashSet<string> { "square", "left_joy_up" }, true);
+
+    foreach (var theme in new[] { ThemeVariant.Light, ThemeVariant.Dark })
+    {
+        Application.Current!.RequestedThemeVariant = theme;
+        Capture($"live-list-{theme}", w =>
+        {
+            w.Width = 1400; w.Height = 800;
+            w.LoadProfile(ProfileFile.Load(Profile));
+            w.SetDeviceViewForPreview(false);
+            w.UpdateLayout();
+            w.ShowLiveInputForPreview(sending);
+            w.UpdateLayout();
+        });
+        Capture($"live-device-{theme}", w =>
+        {
+            w.Width = 1400; w.Height = 800;
+            w.LoadProfile(ProfileFile.Load(Profile));
+            w.SetDeviceViewForPreview(true);
+            w.SelectZoneForPreview("lip");
+            w.UpdateLayout();
+            w.ShowLiveInputForPreview(sending);
+            w.UpdateLayout();
+        });
+    }
+    Console.WriteLine("live written");
+    return;
+}
+
 if (args.Contains("--models"))
 {
     for (int i = 0; i < 3; i++)
@@ -401,7 +442,8 @@ if (args.Contains("--pseudo"))
     Capture($"{suffix}-1i-device", w =>
     {
         w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Joystick");
-        w.ShowLiveInputForPreview(new LiveState(0.42, -0.30, PressedForShot(), "QuadStick"));
+        w.ShowLiveInputForPreview(new LiveState(0.42, -0.30, PressedForShot(), "QuadStick",
+            new HashSet<string>(), true));
     });
 
     // The group somebody opens to tune a mouthpiece, and the same page with

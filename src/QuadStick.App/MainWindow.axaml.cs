@@ -4078,6 +4078,7 @@ public partial class MainWindow : Window
         // view they are in, so a mapping card gets the gesture for free.
         WireRowMenu(p, b);
         _rowPanels[b.Row] = p;
+        p.Children.Add(At(LivePip(b.Row), 0));
         PaintRow(b.Row);
         return p;
     }
@@ -4089,6 +4090,7 @@ public partial class MainWindow : Window
         _narrowCards = NarrowCards(ZoneDetailPanel.Bounds.Width);
         ZoneDetailPanel.Children.Clear();
         _rowPanels.Clear(); // device view owns the selection targets while visible
+        _livePips.Clear();
         _dupes = DuplicateUses.In(CurrentSheet?.Bindings);
         var zone = AllZones.FirstOrDefault(z => z.Id == _selectedZone);
         if (zone is null)
@@ -5093,6 +5095,7 @@ public partial class MainWindow : Window
         RowsPanel.Children.Clear();
         _cellBorders.Clear();
         _rowPanels.Clear();
+        _livePips.Clear();
         _rebuildingRows = false;
         if (OnCustomNames) { BuildCustomNameRows(); RefreshIssues(); return; }
         if (CurrentSheet is null) { RefreshIssues(); return; }
@@ -5277,6 +5280,61 @@ public partial class MainWindow : Window
     bool _selectionMode;
     readonly Dictionary<int, Panel> _rowPanels = new();
 
+    // Which rows the QuadStick is sending the output of this instant, and the
+    // dot on each row that says so. Both views fill _rowPanels, so both light.
+    readonly HashSet<int> _liveRows = new();
+    readonly Dictionary<int, Control> _livePips = new();
+
+    // The row lights because the device is sending that row's OUTPUT, which is
+    // the only half the app can know. The device never says which input
+    // produced it, nor which file or mode it is running, so lighting the input
+    // would be a guess about a file that may not even be the one on screen.
+    // Two rows carrying the same output both light, which is the truth and is
+    // what the duplicate mark already warns about.
+    //
+    // ponytail: a report says what is being sent, and a device that stops
+    // reporting without closing its stream would leave the last one lit. The
+    // reader posts null when it loses the stick, which clears everything here;
+    // add a silence timeout if a real device is ever seen to hang mid-press.
+    void UpdateLiveRows()
+    {
+        var now = new HashSet<int>();
+        if (_live is { OutputsUnderstood: true } state && CurrentSheet is { } sheet)
+            foreach (var b in sheet.Bindings)
+                if (state.Outputs.Contains(b.Output)) now.Add(b.Row);
+        if (now.SetEquals(_liveRows)) return;
+        // Only the rows that changed, so holding a button does not repaint the
+        // mode: a stick sends hundreds of reports a second.
+        var changed = new HashSet<int>(now);
+        changed.SymmetricExceptWith(_liveRows);
+        _liveRows.Clear();
+        foreach (var row in now) _liveRows.Add(row);
+        foreach (var row in changed) PaintRow(row);
+    }
+
+    /// <summary>The dot at a row's left edge while the device is sending that
+    /// row's output. Built with the row and hidden, so a report only flips
+    /// IsVisible: rebuilding a row per report would fight the person typing in
+    /// it. A shape rather than a colour, because nothing here may be signalled
+    /// by colour alone.</summary>
+    Control LivePip(int row)
+    {
+        var pip = new Border
+        {
+            Width = 8, Height = 8,
+            CornerRadius = new Avalonia.CornerRadius(4),
+            Margin = new Avalonia.Thickness(2, 0, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Center,
+            IsVisible = false,
+            IsHitTestVisible = false, // the row number under it is the drag handle
+        };
+        BindBrush(pip, Border.BackgroundProperty, "Accent");
+        AutomationProperties.SetName(pip, Strings.Main_SendingNow);
+        _livePips[row] = pip;
+        return pip;
+    }
+
     // Which outputs and inputs this mode uses more than once. Recomputed once
     // per rebuild rather than per cell, which would be quadratic on a long mode.
     DuplicateUses.Counts _dupes = DuplicateUses.Counts.None;
@@ -5297,15 +5355,24 @@ public partial class MainWindow : Window
     {
         if (!_rowPanels.TryGetValue(row, out var p)) return;
         bool sel = _selectedRows.Contains(row);
+        bool live = _liveRows.Contains(row);
+        if (_livePips.TryGetValue(row, out var pip)) pip.IsVisible = live;
+        // Selection outranks the light. It is the user's own state and a button
+        // somebody is holding must not take it off the screen; the dot says the
+        // row is live either way.
         if (sel) BindBrush(p, Panel.BackgroundProperty, "SelectionTint");
+        else if (live) BindBrush(p, Panel.BackgroundProperty, "LiveTint");
         else if (Equals(p.Tag, "mapping-card")) BindBrush(p, Panel.BackgroundProperty, "Surface");
         else p.ClearValue(Panel.BackgroundProperty);
         // By tag, not by position: a row grid also holds the hairline that
         // separates it from the next one.
         if (p.Children.OfType<Border>().FirstOrDefault(x => x.Tag is string) is { Tag: string baseName } h)
-            AutomationProperties.SetName(h,
-                string.Format(CultureInfo.CurrentCulture,
-            sel ? Strings.Main_RowSelected : Strings.Main_RowNotSelected, baseName));
+        {
+            var said = string.Format(CultureInfo.CurrentCulture,
+                sel ? Strings.Main_RowSelected : Strings.Main_RowNotSelected, baseName);
+            if (live) said = string.Format(CultureInfo.CurrentCulture, Strings.Main_RowSendingNow, said);
+            AutomationProperties.SetName(h, said);
+        }
     }
 
     void RepaintSelection()
@@ -5804,6 +5871,9 @@ public partial class MainWindow : Window
         WireRowDrop(p, b);
         WireRowMenu(p, b);
         _rowPanels[b.Row] = p;
+        // Added before the paint: a row rebuilt while its output is being sent
+        // has to come back lit.
+        p.Children.Add(At(LivePip(b.Row), 0));
         PaintRow(b.Row);
         // Inputs stack DOWN (below), so every other cell centers vertically
         // against the taller stack instead of stretching or hugging the top.

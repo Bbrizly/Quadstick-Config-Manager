@@ -121,6 +121,7 @@ public partial class MainWindow
         _live = state;
         UpdateDeviceBand();
         RefreshDeviceHeaderStatus();
+        UpdateLiveRows();
     }
 
     /// <summary>Test seam: Undo without the confirmation dialog, which a
@@ -158,6 +159,11 @@ public partial class MainWindow
             // that moves while some other page is showing costs a layout pass
             // nobody can see.
             if (DevicePage.IsVisible) UpdateDeviceBand();
+            // The rows are the editor's picture, and they light on the same
+            // reports. Cheap to ask on every one: it compares the rows it would
+            // light against the rows already lit and repaints only the
+            // difference, so holding a button repaints nothing.
+            UpdateLiveRows();
             // Only the found and lost edges move the chip. Every other report
             // is the stick moving, and re-scanning the mounted drives for each
             // of those would walk /Volumes several times a second.
@@ -174,9 +180,18 @@ public partial class MainWindow
     void RefreshDeviceHeaderStatus()
     {
         var connected = _live is not null || FindDeviceRoots().Count > 0;
-        DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
+        var chip = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
             connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected,
             plainDot: !connected);
+        // What a lit row does and does not prove, said on the control that
+        // claims the stick is here. A stick in an emulation mode whose report
+        // the app has not been taught will light nothing, and a screen that
+        // stays still while somebody sips has to explain itself rather than
+        // look broken.
+        ToolTip.SetTip(chip, !connected ? null
+            : _live is { OutputsUnderstood: false } ? Strings.Main_ThisEmulationModeIsNot
+            : Strings.Main_WhatALitRowMeans);
+        DeviceHeaderStatus.Content = chip;
     }
 
     void StopLiveInput()

@@ -1600,6 +1600,18 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
   <data name="Main_RowNotSelected" xml:space="preserve">
     <value>[{0}. Špáçé šéléçtš, drág réórdérš xxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_RowSendingNow" xml:space="preserve">
+    <value>[{0}. Thé QúádŠtíçk íš šéñdíñg thíš ñów xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_SendingNow" xml:space="preserve">
+    <value>[Thé QúádŠtíçk íš šéñdíñg thíš ñów xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_WhatALitRowMeans" xml:space="preserve">
+    <value>[Á rów líghtš whílé thé QúádŠtíçk íš šéñdíñg thát rów'š óútpút. Thé dévíçé ñévér šáýš whíçh fílé ór módé ít íš rúññíñg, šó á rów çáñ líght fróm á dífféréñt prófílé tháñ thé óñé ópéñ héré. Móúšé, kéýbóárd áñd íñfráréd óútpútš léávé óñ áñóthér çóññéçtíóñ áñd ñévér líght. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
+    <value>[Thé ápp háš ñót bééñ táúght tó réád thíš émúlátíóñ módé'š répórt, šó ñó rów wíll líght whílé thé QúádŠtíçk íš íñ ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Main_RowSelected" xml:space="preserve">
     <value>[{0}, šéléçtéd. Špáçé šéléçtš, drág réórdérš xxxxxxxxxxxxxxxxx]</value>
   </data>

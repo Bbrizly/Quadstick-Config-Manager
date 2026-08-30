@@ -1600,6 +1600,18 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   <data name="Main_RowNotSelected" xml:space="preserve">
     <value>{0}. Space selects, drag reorders</value>
   </data>
+  <data name="Main_RowSendingNow" xml:space="preserve">
+    <value>{0}. The QuadStick is sending this now</value>
+  </data>
+  <data name="Main_SendingNow" xml:space="preserve">
+    <value>The QuadStick is sending this now</value>
+  </data>
+  <data name="Main_WhatALitRowMeans" xml:space="preserve">
+    <value>A row lights while the QuadStick is sending that row's output. The device never says which file or mode it is running, so a row can light from a different profile than the one open here. Mouse, keyboard and infrared outputs leave on another connection and never light.</value>
+  </data>
+  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
+    <value>The app has not been taught to read this emulation mode's report, so no row will light while the QuadStick is in it.</value>
+  </data>
   <data name="Main_RowSelected" xml:space="preserve">
     <value>{0}, selected. Space selects, drag reorders</value>
   </data>
