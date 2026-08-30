@@ -1,12 +1,8 @@
 //! The desktop shell.
 //!
 //! This crate owns the window, native adapters and the narrow command surface.
-//! Device operations are now registered through TASK-033; live-input channels
-//! arrive with TASK-034.
-//!
-//! [`adapters`] is the only place in the app that sees a path. `qcm-core` holds
-//! the rules, this crate holds the operating system, and the ports between them
-//! carry opaque ids and validated names in both directions.
+//! Paths, drive letters, HID paths and OS handles stop at adapters; the WebView
+//! sees typed snapshots, opaque ids and caller-scoped channels only.
 
 pub mod adapters;
 pub mod commands;
@@ -14,15 +10,13 @@ pub mod device_ipc;
 pub mod device_shell;
 pub mod ipc;
 pub mod shell;
+pub mod streaming;
 
 #[must_use]
 pub fn core_policy() -> &'static str {
     qcm_core::CORE_CRATE_POLICY
 }
 
-/// Every command this build registers.
-///
-/// Kept as one audit list so the capability surface cannot silently grow.
 #[must_use]
 pub fn registered_commands() -> &'static [&'static str] {
     &[
@@ -46,6 +40,10 @@ pub fn registered_commands() -> &'static [&'static str] {
         "commit_delete_device_profile",
         "open_device_profile",
         "open_device_preferences",
+        "start_live_input",
+        "stop_live_input",
+        "subscribe_devices_changed",
+        "unsubscribe_devices_changed",
     ]
 }
 
@@ -53,6 +51,8 @@ pub fn run() {
     tauri::Builder::default()
         .manage(shell::native_shell())
         .manage(device_shell::native_device_shell())
+        .manage(streaming::LiveRuntime::new())
+        .manage(streaming::DeviceInvalidationHub::default())
         .invoke_handler(tauri::generate_handler![
             commands::get_app_snapshot,
             commands::get_settings,
@@ -74,6 +74,10 @@ pub fn run() {
             commands::commit_delete_device_profile,
             commands::open_device_profile,
             commands::open_device_preferences,
+            commands::start_live_input,
+            commands::stop_live_input,
+            commands::subscribe_devices_changed,
+            commands::unsubscribe_devices_changed,
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window");
@@ -90,7 +94,9 @@ mod tests {
     }
 
     #[test]
-    fn device_commands_are_auditable_as_one_surface() {
+    fn command_surface_is_auditable_and_contains_no_global_event_api() {
+        let commands = super::registered_commands();
+        assert_eq!(commands.len(), 24);
         for expected in [
             "list_devices",
             "refresh_devices",
@@ -102,10 +108,20 @@ mod tests {
             "commit_delete_device_profile",
             "open_device_profile",
             "open_device_preferences",
+            "start_live_input",
+            "stop_live_input",
+            "subscribe_devices_changed",
+            "unsubscribe_devices_changed",
         ] {
-            assert!(super::registered_commands().contains(&expected));
+            assert!(commands.contains(&expected), "{expected}");
         }
-        assert!(!super::registered_commands().contains(&"rename_device_profile"));
-        assert!(!super::registered_commands().contains(&"reorder_device_profiles"));
+        for absent in [
+            "emit_live_frame",
+            "listen_live_frame",
+            "rename_device_profile",
+            "reorder_device_profiles",
+        ] {
+            assert!(!commands.contains(&absent), "{absent}");
+        }
     }
 }
