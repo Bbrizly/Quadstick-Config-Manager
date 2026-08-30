@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text;
 using QuadStick.Format;
@@ -562,11 +563,11 @@ public sealed class RestoreSummary
         Skipped = skipped;
         Failed = failed;
 
-        var parts = new List<string> { $"{imported.Count} imported" };
+        var parts = new List<string> { string.Format(CultureInfo.CurrentCulture, Strings.Drive_RestoreImported, imported.Count) };
         if (skipped.Count > 0)
-            parts.Add($"{skipped.Count} skipped: " + string.Join(", ", skipped.Select(s => $"{s.Name} {s.Reason}")));
+            parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Drive_RestoreSkipped, skipped.Count) + string.Join(", ", skipped.Select(s => $"{s.Name} {s.Reason}")));
         if (failed.Count > 0)
-            parts.Add($"{failed.Count} failed: " + string.Join(", ", failed.Select(f => $"{f.Name} {f.Reason}")));
+            parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Drive_RestoreFailed, failed.Count) + string.Join(", ", failed.Select(f => $"{f.Name} {f.Reason}")));
         Message = string.Join(", ", parts);
     }
 }

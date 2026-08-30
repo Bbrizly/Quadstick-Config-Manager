@@ -532,7 +532,7 @@ public class ImportReviewWindow : Window
                 {
                     SheetType.Preferences => "Preferences",
                     SheetType.Infrared => Strings.Review_InfraredCommands,
-                    _ => $"Mode {mode}: {DisplayName(s)}",
+                    _ => string.Format(CultureInfo.CurrentCulture, Strings.Review_ModeNumberTitle, mode, DisplayName(s)),
                 },
                 FontSize = Size("BodySize"), Margin = new Thickness(0, 0, 24, 4), TextWrapping = TextWrapping.Wrap,
             };
@@ -875,7 +875,9 @@ public class ImportReviewWindow : Window
         if (text == _file.GetCell(at.Row, at.Col)) return;
         var where = $"{ColumnLetter(at.Col)}{at.Row}";
         ApplyGridEdit(at.Row,
-            text.Trim().Length == 0 ? $"Emptied {where}." : $"Set {where} to \"{text.Trim()}\".",
+            text.Trim().Length == 0
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Review_EmptiedCell, where)
+                : string.Format(CultureInfo.CurrentCulture, Strings.Review_SetCellTo, where, text.Trim()),
             () => { _file.SetCell(at.Row, at.Col, text); return true; });
     }
 
@@ -926,7 +928,8 @@ public class ImportReviewWindow : Window
 
         Action(Strings.Review_ClearIt, string.Format(CultureInfo.CurrentCulture, Strings.Review_EmptyCellWhere, where),
             () => value.Length > 0,
-            apply => apply($"Emptied {where}.", () => { _file.SetCell(at.Row, at.Col, ""); return true; }));
+            apply => apply(string.Format(CultureInfo.CurrentCulture, Strings.Review_EmptiedCell, where),
+                () => { _file.SetCell(at.Row, at.Col, ""); return true; }));
 
         // Named for the picked cell, because the simple view's own "Move to
         // notes" for the same warning is on screen right above this.
@@ -966,7 +969,7 @@ public class ImportReviewWindow : Window
                 apply => apply(
                     neighbour.Length > 0
                         ? string.Format(CultureInfo.CurrentCulture, Strings.Review_SwappedValueAndNeighbourIn, value, neighbour, at.Row)
-                        : $"Moved \"{value}\" from {where} to {ColumnLetter(target)}{at.Row}.",
+                        : string.Format(CultureInfo.CurrentCulture, Strings.Review_MovedFromTo, value, where, $"{ColumnLetter(target)}{at.Row}"),
                     () => _file.SwapInputs(at.Row, at.Col, target)));
         }
 
@@ -1092,7 +1095,7 @@ public class ImportReviewWindow : Window
         {
             int rowNumber = r + 1;
             grid.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
-            var num = CellBox(rowNumber.ToString(), null, false, $"row {rowNumber}", muted: true);
+            var num = CellBox(rowNumber.ToString(), null, false, string.Format(CultureInfo.CurrentCulture, Strings.Review_RowNumber, rowNumber), muted: true);
             Grid.SetRow(num, r + 1); Grid.SetColumn(num, 0);
             grid.Children.Add(num);
 
@@ -1170,7 +1173,7 @@ public class ImportReviewWindow : Window
                 // An empty cell has nothing to clear, and clearing it anyway
                 // would push an undo step that undoes nothing visible.
                 if (_file.GetCell(r, c).Length > 0)
-                    ApplyGridEdit(r, $"Emptied {ColumnLetter(c)}{r}.",
+                    ApplyGridEdit(r, string.Format(CultureInfo.CurrentCulture, Strings.Review_EmptiedCell, $"{ColumnLetter(c)}{r}"),
                         () => { _file.SetCell(r, c, ""); return true; });
                 e.Handled = true;
                 return;
@@ -1230,7 +1233,8 @@ public class ImportReviewWindow : Window
             var word = _file.GetCell(src[0], src[1]);
             Select(row, col);
             ApplyGridEdit(row,
-                $"Moved \"{word}\" from {ColumnLetter(src[1])}{src[0]} to {ColumnLetter(col)}{row}.",
+                string.Format(CultureInfo.CurrentCulture, Strings.Review_MovedFromTo, word,
+                    $"{ColumnLetter(src[1])}{src[0]}", $"{ColumnLetter(col)}{row}"),
                 () => _file.MoveCell(row, src[1], col));
         });
     }

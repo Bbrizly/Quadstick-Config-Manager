@@ -3314,4 +3314,82 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
     <value>Used {0} times in this mode</value>
   </data>
+  <data name="Count_Profile_one" xml:space="preserve">
+    <value>{0} profile</value>
+  </data>
+  <data name="Count_Profile_other" xml:space="preserve">
+    <value>{0} profiles</value>
+  </data>
+  <data name="Count_File_one" xml:space="preserve">
+    <value>{0} file</value>
+  </data>
+  <data name="Count_File_other" xml:space="preserve">
+    <value>{0} files</value>
+  </data>
+  <data name="Names_UsedOnCount" xml:space="preserve">
+    <value>on {0}</value>
+  </data>
+  <data name="Names_RenamedOldToNew" xml:space="preserve">
+    <value>Renamed {0} to {1}.</value>
+  </data>
+  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
+    <value>{0} on {1}.</value>
+  </data>
+  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
+    <value>Delete {0} from {1}?</value>
+  </data>
+  <data name="Drive_RestoreImported" xml:space="preserve">
+    <value>{0} imported</value>
+  </data>
+  <data name="Drive_RestoreSkipped" xml:space="preserve">
+    <value>{0} skipped: </value>
+  </data>
+  <data name="Drive_RestoreFailed" xml:space="preserve">
+    <value>{0} failed: </value>
+  </data>
+  <data name="Review_RowNumber" xml:space="preserve">
+    <value>row {0}</value>
+  </data>
+  <data name="Review_EmptiedCell" xml:space="preserve">
+    <value>Emptied {0}.</value>
+  </data>
+  <data name="Review_MovedFromTo" xml:space="preserve">
+    <value>Moved “{0}” from {1} to {2}.</value>
+  </data>
+  <data name="Review_SetCellTo" xml:space="preserve">
+    <value>Set {0} to “{1}”.</value>
+  </data>
+  <data name="Review_ModeNumberTitle" xml:space="preserve">
+    <value>Mode {0}: {1}</value>
+  </data>
+  <data name="Main_InFolder" xml:space="preserve">
+    <value> · in {0}</value>
+  </data>
+  <data name="Main_PlusMore" xml:space="preserve">
+    <value> +{0} more</value>
+  </data>
+  <data name="Main_MappingNumber" xml:space="preserve">
+    <value>Mapping {0}</value>
+  </data>
+  <data name="Main_RowNumber" xml:space="preserve">
+    <value>Row {0}</value>
+  </data>
+  <data name="Main_PickWord" xml:space="preserve">
+    <value>pick {0}</value>
+  </data>
+  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
+    <value>Mode {0}</value>
+  </data>
+  <data name="Modes_MoveNameUp" xml:space="preserve">
+    <value>Move {0} up</value>
+  </data>
+  <data name="Modes_MoveNameDown" xml:space="preserve">
+    <value>Move {0} down</value>
+  </data>
+  <data name="Modes_DeleteName" xml:space="preserve">
+    <value>Delete {0}</value>
+  </data>
+  <data name="Settings_InstallIdIs" xml:space="preserve">
+    <value>Install ID: {0}</value>
+  </data>
 </root>

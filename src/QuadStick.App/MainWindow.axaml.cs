@@ -1785,7 +1785,8 @@ public partial class MainWindow : Window
         RecentSection.IsVisible = recents.Count > 0;
         foreach (var path in recents)
             RecentCards.Children.Add(ProfileCard(path, onDevice: false,
-                note: $" · in {Path.GetFileName(Path.GetDirectoryName(path))}"));
+                note: string.Format(CultureInfo.CurrentCulture, Strings.Main_InFolder,
+                    Path.GetFileName(Path.GetDirectoryName(path)))));
 
         DeviceCards.Children.Clear();
         var drives = FindDeviceRoots()
@@ -1922,7 +1923,7 @@ public partial class MainWindow : Window
             if (names.Count > 1)
             {
                 shown = string.Join(", ", names.Take(3));
-                if (names.Count > 3) shown += $" +{names.Count - 3} more";
+                if (names.Count > 3) shown += string.Format(CultureInfo.CurrentCulture, Strings.Main_PlusMore, names.Count - 3);
             }
             facts = new CardFacts(meta, shown, EditedNote(path));
         }
@@ -4009,7 +4010,7 @@ public partial class MainWindow : Window
         var handleBox = new Border
         { Child = dragIcon, Padding = new Avalonia.Thickness(10), BorderThickness = new Avalonia.Thickness(0, 0, 1, 0) };
         BindBrush(handleBox, Border.BorderBrushProperty, "SurfaceSubtle");
-        var handle = WireDragHandle(handleBox, b, $"Mapping {n}");
+        var handle = WireDragHandle(handleBox, b, string.Format(CultureInfo.CurrentCulture, Strings.Main_MappingNumber, n));
 
         // Keep the sentence's full-width grid. The reorder pair overlays the
         // quiet right edge of the card instead of stealing a whole layout
@@ -4580,7 +4581,7 @@ public partial class MainWindow : Window
     static string Modes(ProfileFile f)
     {
         int n = f.Document.Sheets.Count(s => s.Type == SheetType.ProfileName);
-        return $"{n} mode{(n == 1 ? "" : "s")}";
+        return Plural.Of(n, "Count_Mode");
     }
 
     /// <summary>The import review. Every import ends here, clean or not: the
@@ -5459,7 +5460,8 @@ public partial class MainWindow : Window
     }
 
     Control DragHandle(Binding b, int number) =>
-        WireDragHandle(new Border { Child = RowNumberLabel(number) }, b, $"Row {number}");
+        WireDragHandle(new Border { Child = RowNumberLabel(number) }, b,
+            string.Format(CultureInfo.CurrentCulture, Strings.Main_RowNumber, number));
 
     // Shared by the list-view row numbers and the device-view card handles:
     // click selects (with Ctrl/Cmd/Shift), Space selects, a real movement
@@ -6914,7 +6916,9 @@ public partial class MainWindow : Window
         void ShowValue(string token)
         {
             bool empty = token.Length == 0;
-            openLabel.Text = empty ? $"pick {pickWord}" : labelFor(token);
+            openLabel.Text = empty
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Main_PickWord, pickWord)
+                : labelFor(token);
             openLabel.FontStyle = empty ? FontStyle.Italic : FontStyle.Normal;
             openLabel.Classes.Set("muted", empty);
             // The cell is one line and trims, so a long value ends in an

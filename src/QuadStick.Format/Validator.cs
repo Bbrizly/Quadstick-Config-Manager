@@ -807,7 +807,7 @@ public static class Validator
                       ? Strings.Issue_APercentOver100Is
                       : string.Format(CultureInfo.CurrentCulture, Strings.Issue_TheDeviceStoresItIn, n % (FunctionParameters.Ceiling + 1)))
                 : string.Format(CultureInfo.CurrentCulture, Strings.Issue_PLabelForFunctionIs2, p.Label, function, text, p.Minimum),
-            $"Use {p.Minimum} to {p.Maximum}. {p.What}"));
+            string.Format(CultureInfo.CurrentCulture, Strings.Issue_UseMinToMaxWhat, p.Minimum, p.Maximum, p.What)));
     }
 
     static void ValidateInputs(Binding b, List<Issue> issues)

@@ -138,7 +138,8 @@ public partial class MainWindow
         int used = UsedBy(name);
         p.Children.Add(At(new TextBlock
         {
-            Text = used == 0 ? Strings.Names_NotUsedYet : $"on {used} mapping{(used == 1 ? "" : "s")}",
+            Text = used == 0 ? Strings.Names_NotUsedYet
+                : string.Format(CultureInfo.CurrentCulture, Strings.Names_UsedOnCount, Plural.Of(used, "Count_Mapping")),
             FontSize = Size("SmallSize"), Classes = { "muted" },
             VerticalAlignment = VerticalAlignment.Center,
         }, 4));
@@ -179,7 +180,7 @@ public partial class MainWindow
         _file?.RenameAction(oldName, name); // no-op when no mapping carries it
         if (_drafts.Remove(oldName, out var token)) _drafts[name] = token;
         PersistDrafts();
-        CustomNamesChanged($"Renamed {oldName} to {name}.");
+        CustomNamesChanged(string.Format(CultureInfo.CurrentCulture, Strings.Names_RenamedOldToNew, oldName, name));
     }
 
     void RetargetCustomName(string name, string token)

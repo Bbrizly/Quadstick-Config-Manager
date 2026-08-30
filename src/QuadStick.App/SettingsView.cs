@@ -591,7 +591,7 @@ public class SettingsView : UserControl
         var idText = new TextBlock
         {
             Text = s.InstallId.Length == 0 ? Strings.Settings_NoInstallId
-                                           : $"Install ID: {s.InstallId}",
+                                           : string.Format(CultureInfo.CurrentCulture, Strings.Settings_InstallIdIs, s.InstallId),
             FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap, Classes = { "muted" },
         };
 
@@ -624,7 +624,7 @@ public class SettingsView : UserControl
             var live = _owner.CurrentSettings.UsageAnalytics;
             idText.Text = _owner.CurrentSettings.InstallId.Length == 0
                 ? Strings.Settings_NoInstallId
-                : $"Install ID: {_owner.CurrentSettings.InstallId}";
+                : string.Format(CultureInfo.CurrentCulture, Strings.Settings_InstallIdIs, _owner.CurrentSettings.InstallId);
             copyId.IsEnabled = _owner.CurrentSettings.InstallId.Length > 0;
             if (_feedbackSend is not null) _feedbackSend.IsEnabled = live;
         };

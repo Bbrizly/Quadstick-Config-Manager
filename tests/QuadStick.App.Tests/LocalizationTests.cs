@@ -77,6 +77,22 @@ public class LocalizationTests
         },
         // The page the browser lands on after signing in, around the message.
         ["GoogleAuth.cs"] = new[] { "$\"<!doctype html><html><body><p>{message}</p></body></html>\"" },
+        // A default mode name is written into the profile, and the device
+        // renders a name as CP437: give it a word it cannot draw and it shows
+        // the mangled 8.3 file name instead. So the name a new or copied mode
+        // gets is English in every language. ModesWindow.spoken is the half a
+        // screen reader reads.
+        ["MainWindow.axaml.cs"] = new[] { "$\"Mode {n}\"" },
+        ["ModesWindow.cs"] = new[] { "$\"Mode {ordinal}\"" },
+        // A Google Sheets tab title, which is the backup's own bytes and not
+        // this app's interface. "Preferences" and "Infrared" beside it are
+        // firmware keywords for the same reason.
+        ["SheetTabs.cs"] = new[] { "$\"Mode {index + 1}\"" },
+        // A line in the crash log, read by whoever is fixing the crash.
+        ["CrashGuard.cs"] = new[]
+        {
+            "$\"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] handled, {where}: {ex}\\n\\n\"",
+        },
     };
 
     const string Literal = @"\$?@?""(?:[^""\\\n]|\\.)*""";
@@ -97,6 +113,23 @@ public class LocalizationTests
     // slip through on: neither has a bare letter-space-letter in it, so both
     // sat in the toolbar in English through thirteen translations.
     static readonly Regex Prose = new("[a-zA-Z][,.:;)]? [a-z(]");
+
+    // A literal with an interpolation hole in it is a sentence the rule above
+    // cannot see: the brace between "Delete" and "from" is not a lowercase
+    // letter, so "Delete {file} from {group}?" read as two fragments and went
+    // out in thirteen languages. Stand the holes in for one character and look
+    // for a word beside one, across a space.
+    //
+    // The space is what tells a sentence from a machine string. Prose puts one
+    // between a word and a hole ("Mode {n}", "{count} profiles"); a URL, a file
+    // name and a resource key never do ("keyboard:{id}", "{name}-{stamp}.csv"),
+    // so those stay out of it without needing to be listed.
+    const char Slot = '\u0001';
+    static readonly Regex Hole = new(@"\{[^{}]*\}");
+    static readonly Regex BesideAHole = new(
+        $"[A-Za-z]{{2,}}[,.:;)]?\\s+{Slot}|{Slot}[,.:;)]?\\s+[A-Za-z]{{2,}}");
+    static bool SentenceAroundAHole(string lit) =>
+        BesideAHole.IsMatch(Hole.Replace(lit, Slot.ToString()));
 
     public static TheoryData<string> AppSources()
     {
@@ -132,7 +165,7 @@ public class LocalizationTests
             if (recent.Any(l => l.Contains("throw ", StringComparison.Ordinal))) continue;
 
             foreach (var lit in Sink.Matches(line).Select(m => m.Groups[1].Value)
-                         .Concat(AnyLiteral.Matches(line).Select(m => m.Value).Where(v => Prose.IsMatch(v)))
+                         .Concat(AnyLiteral.Matches(line).Select(m => m.Value).Where(v => Prose.IsMatch(v) || SentenceAroundAHole(v)))
                          .Distinct())
                 if (Regex.IsMatch(lit, "[A-Za-z]") && !keep.Contains(lit))
                     found.Add($"{name}:{lineNo}  {lit}");
