@@ -3141,14 +3141,19 @@ public partial class MainWindow : Window
     DeviceDiagram Diagram => DeviceDiagram.For(_model);
 
     const double StageW = 700;
-    const double PillW = 160, PillH = 116, SmallPillH = 100;
+    // SmallPillH is the bottom band's reserve as well as the callout's floor,
+    // so it has to be as tall as a ruled three-row callout actually draws.
+    const double PillW = 160, PillH = 116, SmallPillH = 124;
 
     // Room kept above the photo for the top callouts, over what the diagram
     // itself asks for. A callout is as tall as the words in it: "Increment
     // mode" and "Right trigger" take two lines each, and at 116px the card ran
-    // down onto the device. The whole stage is inside a Viewbox, so paying for
-    // the room costs a little scale and nothing else.
-    const double TopCalloutRoom = 48, TopCalloutGap = 10;
+    // down onto the device. Spacing the ruled rows out added a few pixels to
+    // each of the four, and at 48 the Side tube callout, whose two actions
+    // take two lines each, hung 38px off the top of the stage.
+    // The whole stage is inside a Viewbox, so paying for the room costs a
+    // little scale and nothing else.
+    const double TopCalloutRoom = 96, TopCalloutGap = 10;
 
     // Larger type makes the top callouts taller. Move the photo down by the
     // same amount and move the lower band with it, so the controls never sit
@@ -3275,7 +3280,11 @@ public partial class MainWindow : Window
             {
                 Text = t,
                 FontSize = Size("SmallSize"),
-                TextWrapping = TextWrapping.Wrap,
+                // WrapWithOverflow, not Wrap: the action column is narrow, and
+                // plain Wrap broke "Decrement mode" into "Decremen" / "t mode".
+                // Better a word that runs past its column than a word cut in
+                // half, which is not the name of anything.
+                TextWrapping = TextWrapping.WrapWithOverflow,
                 VerticalAlignment = VerticalAlignment.Center,
             };
             if (!summary.IsMapped) block.Classes.Add("muted");
@@ -3334,7 +3343,7 @@ public partial class MainWindow : Window
         // Per-row grids had to guess that width, and 70px was both too much for
         // "Sip" and too little for a language that spells "Soft puff" longer.
         var panel = new Grid { HorizontalAlignment = HorizontalAlignment.Stretch,
-                               ColumnDefinitions = new ColumnDefinitions("Auto,4,*") };
+                               ColumnDefinitions = new ColumnDefinitions("Auto,10,*") };
         foreach (var summary in rows)
         {
             panel.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
@@ -3346,7 +3355,11 @@ public partial class MainWindow : Window
                 Text = summary.FriendlyGestureName,
                 FontSize = Size("SmallSize"),
                 FontWeight = FontWeight.SemiBold,
-                TextWrapping = TextWrapping.NoWrap,
+                // Wrap, not NoWrap: the callout is a fixed width, so the Auto
+                // column gets squeezed and a no-wrap name is cut to "Soft Puf".
+                // A gesture name the user cannot read is the one word here
+                // that has to survive.
+                TextWrapping = TextWrapping.Wrap,
                 TextAlignment = TextAlignment.Right,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -3354,8 +3367,11 @@ public partial class MainWindow : Window
             var action = SummaryActionVisuals(summary);
             action.VerticalAlignment = VerticalAlignment.Center;
             action.HorizontalAlignment = HorizontalAlignment.Left;
-            // Room for the rules to sit in without touching the words.
-            gesture.Margin = action.Margin = new Thickness(0, 2);
+            // Room for the rules to sit in without touching the words: the
+            // gesture used to end flush against the gutter, so the last letter
+            // read as if it had been cut off.
+            gesture.Margin = new Thickness(0, 5, 4, 5);
+            action.Margin = new Thickness(4, 5, 0, 5);
             int r = panel.RowDefinitions.Count - 1;
             Grid.SetRow(gesture, r);
             Grid.SetRow(action, r);
@@ -3384,7 +3400,7 @@ public partial class MainWindow : Window
         panel.Children.Add(down);
         // The last rule separates the part's name from its table.
         var ruled = new Border
-        { Child = panel, BorderThickness = new Thickness(0, 1, 0, 0), Padding = new Thickness(0, 2, 0, 0) };
+        { Child = panel, BorderThickness = new Thickness(0, 1, 0, 0), Padding = new Thickness(0, 5, 0, 0) };
         BindBrush(ruled, Border.BorderBrushProperty, "SurfaceSubtle");
         return ruled;
     }
