@@ -36,7 +36,18 @@ public sealed class AppSettings
     // On by default, but inert until a token is stored, so it never touches
     // the network until the user signs in.
     public bool DriveBackup = true;
+
+    // QCM-owned backup sheets only. The backup writer is intentionally allowed
+    // to reshape these spreadsheets, so user-picked legacy sheets must NEVER
+    // be put in this map.
     public Dictionary<string, DriveLink> DriveLinks = new(); // key: profile file path
+
+    // User-owned Drive documents are a different product contract: QCM may
+    // project/edit recognized QuadStick cells, but it must preserve unrelated
+    // tabs, formulas and formatting. Key is GoogleAccountId + ':' + DriveFileId,
+    // which also prevents one remote document being linked twice by accident.
+    public Dictionary<string, LinkedDriveDocument> LinkedDriveDocuments = new();
+
     // Profiles opened from outside the library folder, newest first. Without
     // this they leave no trace in the app: Save writes them back where they
     // came from and Home only ever lists the library.
@@ -65,13 +76,56 @@ public sealed class AppSettings
     public string InstallId = "";            // "" = not yet generated
 }
 
-// Per-profile backup state, keyed by profile file path.
+// Per-profile state for a QCM-owned backup sheet. Existing settings files
+// deserialize exactly as before; this type deliberately stays backup-only.
 public sealed class DriveLink
 {
     public string SpreadsheetId = "";
     public string LastSeenModifiedTime = "";
     public bool BackupDirty = false;
     public bool LinkShared = false;
+}
+
+public enum LinkedDriveSourceKind
+{
+    GoogleSheet,
+    Csv,
+}
+
+public enum LinkedDriveSyncState
+{
+    Synced,
+    LocalDirty,
+    RemoteDirty,
+    Conflict,
+    OfflinePending,
+    ReadOnly,
+    AuthRequired,
+    FileRemoved,
+    InvalidRemote,
+    SyncError,
+}
+
+// Persistent identity/state for a user-owned Drive document. Large snapshots
+// and pending patches belong in atomic sidecar files, not settings.json: that
+// lets the sync engine persist "queue work first, advance the Drive cursor
+// second" without turning settings into a giant transaction log.
+public sealed class LinkedDriveDocument
+{
+    public string GoogleAccountId = "";       // Drive about.user.permissionId
+    public string DriveFileId = "";           // stable across rename/move
+    public string? DriveId;                    // Shared Drive id, null for My Drive
+    public string MimeType = "";
+    public LinkedDriveSourceKind SourceKind = LinkedDriveSourceKind.GoogleSheet;
+    public string LocalPath = "";
+    public string LocalProfileId = "";        // app-generated stable id
+    public string LastKnownVersion = "";
+    public string BaseSnapshotPath = "";
+    public string PendingLocalPatchPath = "";
+    public LinkedDriveSyncState SyncState = LinkedDriveSyncState.Synced;
+    // QuadStick mode identity follows Google's numeric sheetId, not the tab
+    // title, so a browser rename does not disconnect the mode.
+    public Dictionary<string, int> ModeSheetIds = new();
 }
 
 public static class Settings
@@ -129,6 +183,8 @@ public static class Settings
 [JsonSerializable(typeof(AppSettings))]
 [JsonSerializable(typeof(DriveLink))]
 [JsonSerializable(typeof(Dictionary<string, DriveLink>))]
+[JsonSerializable(typeof(LinkedDriveDocument))]
+[JsonSerializable(typeof(Dictionary<string, LinkedDriveDocument>))]
 internal partial class SettingsJsonContext : JsonSerializerContext { }
 
 public static class Theme
