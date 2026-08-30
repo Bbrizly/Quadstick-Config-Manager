@@ -233,6 +233,8 @@ button:hover {
 }
 
 .dialog-panel {
+  position: static;
+  margin: 0;
   width: min(560px, 100%);
   max-height: calc(100vh - 2 * var(--qcm-space-xl));
   overflow: auto;

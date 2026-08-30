@@ -7,7 +7,7 @@ import tokenCss from "../styles/tokens.css?raw";
 import { App } from "./App";
 
 afterEach(() => {
-  delete document.documentElement.dataset.theme;
+  delete document.documentElement.dataset["theme"];
 });
 
 describe("TASK-036 app shell", () => {
@@ -38,10 +38,10 @@ describe("TASK-036 app shell", () => {
     const appearance = screen.getByRole("combobox", { name: "Appearance" });
 
     fireEvent.change(appearance, { target: { value: "dark" } });
-    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(document.documentElement.dataset["theme"]).toBe("dark");
 
     fireEvent.change(appearance, { target: { value: "light" } });
-    expect(document.documentElement.dataset.theme).toBe("light");
+    expect(document.documentElement.dataset["theme"]).toBe("light");
 
     fireEvent.change(appearance, { target: { value: "system" } });
     expect(document.documentElement).not.toHaveAttribute("data-theme");

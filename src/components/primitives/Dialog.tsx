@@ -11,7 +11,7 @@ export interface DialogProps {
 }
 
 export function Dialog({ open, title, onClose, children, actions }: DialogProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
   useEffect(() => {
@@ -49,10 +49,10 @@ export function Dialog({ open, title, onClose, children, actions }: DialogProps)
 
   return (
     <div className="dialog-backdrop" data-testid="dialog-backdrop">
-      <div
+      <dialog
         ref={panelRef}
+        open
         className="dialog-panel"
-        role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
@@ -62,7 +62,7 @@ export function Dialog({ open, title, onClose, children, actions }: DialogProps)
         </h2>
         {children}
         {actions === undefined ? null : <div className="dialog-actions">{actions}</div>}
-      </div>
+      </dialog>
     </div>
   );
 }

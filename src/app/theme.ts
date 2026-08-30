@@ -7,8 +7,8 @@ export function applyThemePreference(
   root: HTMLElement = document.documentElement,
 ): void {
   if (preference === "system") {
-    delete root.dataset.theme;
+    delete root.dataset["theme"];
     return;
   }
-  root.dataset.theme = preference;
+  root.dataset["theme"] = preference;
 }

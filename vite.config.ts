@@ -40,6 +40,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ["src/test/setup.ts"],
     include: ["src/**/*.test.{ts,tsx}"],
-    css: false,
+    // css is stubbed to "" by default, which silently empties a `?raw`
+    // import too. Only the raw ones are let through, so no stylesheet is
+    // ever injected into jsdom.
+    css: { include: [/\?raw/] },
   },
 });
