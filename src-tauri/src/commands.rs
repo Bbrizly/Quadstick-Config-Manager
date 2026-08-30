@@ -2,7 +2,8 @@
 //!
 //! Every wrapper does three things only: parse through our stable request
 //! boundary, call a shell method, and redact the error. No command accepts or
-//! returns a host path.
+//! returns a host path. Streaming is caller-scoped through typed IPC channels;
+//! there are no global telemetry-frame events.
 
 use crate::device_ipc::{
     DeletePlanDto, DeleteReceiptDto, DeviceLibrarySnapshotDto, DevicePresenceSnapshotDto,
@@ -11,11 +12,16 @@ use crate::device_ipc::{
 use crate::device_shell::{DeviceOperationError, DeviceShellState};
 use crate::ipc::{AppSnapshotDto, CloseOutcomeDto, parse};
 use crate::shell::ShellState;
-use qcm_core::error::QcmErrorDto;
+use crate::streaming::{
+    DeviceInvalidationDto, DeviceInvalidationHub, LiveRuntime, LiveSnapshotDto, SubscriptionDto,
+};
+use qcm_core::error::{QcmErrorDto, StorageStage};
 use qcm_core::profiles::{EditorSnapshot, SaveReceiptDto};
 use qcm_core::settings::AppSettingsDto;
+use serde::Serialize;
 use serde_json::Value;
 use tauri::State;
+use tauri::ipc::Channel;
 
 type Failure = Box<QcmErrorDto>;
 
@@ -25,6 +31,20 @@ fn redact<T>(result: Result<T, qcm_core::QcmError>) -> Result<T, Failure> {
 
 fn redact_operation<T>(result: Result<T, DeviceOperationError>) -> Result<T, Failure> {
     result.map_err(|failure| Box::new(QcmErrorDto::new(&failure.error, failure.operation)))
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct InstallProgressDto {
+    pub stage: String,
+}
+
+impl From<StorageStage> for InstallProgressDto {
+    fn from(stage: StorageStage) -> Self {
+        Self {
+            stage: stage.as_str().to_owned(),
+        }
+    }
 }
 
 #[tauri::command]
@@ -110,15 +130,25 @@ pub fn list_devices(
 #[tauri::command]
 pub fn refresh_devices(
     state: State<'_, DeviceShellState>,
+    invalidation: State<'_, DeviceInvalidationHub>,
 ) -> Result<DevicePresenceSnapshotDto, Failure> {
-    redact(state.refresh_devices())
+    let snapshot = redact(state.refresh_devices())?;
+    if snapshot.changed {
+        invalidation.notify();
+    }
+    Ok(snapshot)
 }
 
 #[tauri::command]
 pub fn choose_device_folder(
     state: State<'_, DeviceShellState>,
+    invalidation: State<'_, DeviceInvalidationHub>,
 ) -> Result<Option<DevicePresenceSnapshotDto>, Failure> {
-    redact(state.choose_device_folder())
+    let snapshot = redact(state.choose_device_folder())?;
+    if snapshot.as_ref().is_some_and(|value| value.changed) {
+        invalidation.notify();
+    }
+    Ok(snapshot)
 }
 
 #[tauri::command]
@@ -143,9 +173,15 @@ pub fn prepare_install(
 #[tauri::command]
 pub fn commit_install(
     state: State<'_, DeviceShellState>,
+    invalidation: State<'_, DeviceInvalidationHub>,
     request: Value,
+    progress: Channel<InstallProgressDto>,
 ) -> Result<InstallReceiptDto, Failure> {
-    redact_operation(state.commit_install(request))
+    let receipt = redact_operation(state.commit_install_with_progress(request, |stage| {
+        let _ = progress.send(InstallProgressDto::from(stage));
+    }))?;
+    invalidation.notify();
+    Ok(receipt)
 }
 
 #[tauri::command]
@@ -159,9 +195,12 @@ pub fn prepare_delete_device_profile(
 #[tauri::command]
 pub fn commit_delete_device_profile(
     state: State<'_, DeviceShellState>,
+    invalidation: State<'_, DeviceInvalidationHub>,
     request: Value,
 ) -> Result<DeleteReceiptDto, Failure> {
-    redact_operation(state.commit_delete(request))
+    let receipt = redact_operation(state.commit_delete(request))?;
+    invalidation.notify();
+    Ok(receipt)
 }
 
 #[tauri::command]
@@ -192,4 +231,33 @@ pub fn open_device_preferences(
         opened.name,
         &opened.csv_text,
     ))
+}
+
+#[tauri::command]
+pub fn start_live_input(
+    state: State<'_, LiveRuntime>,
+    on_frame: Channel<LiveSnapshotDto>,
+) -> SubscriptionDto {
+    state.subscribe(on_frame)
+}
+
+#[tauri::command]
+pub fn stop_live_input(state: State<'_, LiveRuntime>, subscription_id: String) {
+    state.unsubscribe(&subscription_id);
+}
+
+#[tauri::command]
+pub fn subscribe_devices_changed(
+    state: State<'_, DeviceInvalidationHub>,
+    on_changed: Channel<DeviceInvalidationDto>,
+) -> SubscriptionDto {
+    state.subscribe(on_changed)
+}
+
+#[tauri::command]
+pub fn unsubscribe_devices_changed(
+    state: State<'_, DeviceInvalidationHub>,
+    subscription_id: String,
+) {
+    state.unsubscribe(&subscription_id);
 }
