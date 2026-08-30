@@ -7,8 +7,9 @@
 //! taken after the file it is supposed to rescue has already gone.
 //!
 //! The modules split by job, not by type. [`discovery`] finds drives and hands
-//! out opaque handles and [`install`] is the write transaction; the library
-//! operations follow in TASK-025 as another `impl` block on [`Devices`].
+//! out opaque handles, [`install`] is the write transaction, [`library`] is
+//! everything else the device library window needs. All three are `impl` blocks
+//! on [`Devices`].
 //!
 //! No path appears anywhere in here. The service names a device by an opaque id
 //! and a file by a validated direct-child name, and the adapter behind the port
@@ -16,6 +17,7 @@
 
 pub mod discovery;
 pub mod install;
+pub mod library;
 
 use crate::clock::Clock;
 use crate::confirmation::ConfirmationLedger;
@@ -26,6 +28,10 @@ use std::time::Duration;
 
 pub use discovery::{DEFAULT_SCAN_TTL, DeviceHandle, DeviceScan, DeviceSummary};
 pub use install::{InstallFailure, InstallPlan, InstallReceipt};
+pub use library::{
+    DeletePlan, DeleteReceipt, DeviceFileText, GuideEntry, LedColour, led_pattern, selection_guide,
+    selection_order,
+};
 
 /// The device side of the app.
 #[derive(Debug)]

@@ -52,6 +52,21 @@ Inspect `DeviceFilesWindow`, `Device.cs`, tests and any LED/current-file numberi
 
 **Deadline:** TASK-025.
 
+**Answered at TASK-025.** The shipped app has no reorder mechanism at all, so
+the question of rename versus metadata write does not arise. `DeviceFilesWindow`
+says so in its own header comment: it does not rename, load or run anything.
+What exists is `Device.SelectionOrder`, the app's model of the order the device
+steps through files when the user cycles profiles: `default.csv` first,
+`prefs.csv` excluded because it is settings rather than a profile, AppleDouble
+sidecars excluded, and the rest ordinal case-insensitive. The file number is the
+1-based position in that order, and `LedPattern(n)` is the audited QuadStick
+Manager Program table, copied as data with nothing past 32 extrapolated. That is
+ported exactly and no reorder command is invented.
+
+What is still open is narrower and belongs to hardware: whether the device's own
+cycling order really is that ordering on a real stick. Nothing in this rewrite
+depends on the answer, because nothing writes anything to change it.
+
 ## OQ-006 — Linux secure token store
 
 Current Google backup is unavailable on Linux. Decide whether initial Tauri parity preserves that or adds Secret Service/keyring as B improvement after KDE/GNOME reliability test.

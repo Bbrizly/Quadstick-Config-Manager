@@ -26,8 +26,8 @@ pub use confirmation::{
     DEFAULT_CONFIRMATION_TTL,
 };
 pub use devices::{
-    DEFAULT_SCAN_TTL, DeviceHandle, DeviceScan, DeviceSummary, Devices, InstallFailure,
-    InstallPlan, InstallReceipt,
+    DEFAULT_SCAN_TTL, DeleteReceipt, DeviceHandle, DeviceScan, DeviceSummary, Devices, GuideEntry,
+    InstallFailure, InstallPlan, InstallReceipt, LedColour, led_pattern, selection_order,
 };
 pub use error::{
     BackupLocationDisplay, ConfigError, ConfirmationError, DeviceError, ErrorCode, InternalError,
