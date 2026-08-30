@@ -131,8 +131,7 @@ export class TauriQcmClient implements QcmClient {
     confirmationId?: string,
     onProgress: (progress: InstallProgress) => void = () => undefined,
   ): Promise<InstallReceipt> {
-    const progress = new Channel<InstallProgress>();
-    progress.onmessage = onProgress;
+    const progress = new Channel<InstallProgress>(onProgress);
     return callArgs<InstallReceipt>("commit_install", {
       request: { planId, confirmationId },
       progress,
@@ -168,8 +167,7 @@ export class TauriQcmClient implements QcmClient {
   }
 
   async startLiveInput(onFrame: (frame: LiveSnapshot) => void): Promise<Subscription> {
-    const onFrameChannel = new Channel<LiveSnapshot>();
-    onFrameChannel.onmessage = onFrame;
+    const onFrameChannel = new Channel<LiveSnapshot>(onFrame);
     const native = await callArgs<NativeSubscription>("start_live_input", {
       onFrame: onFrameChannel,
     });
@@ -179,8 +177,7 @@ export class TauriQcmClient implements QcmClient {
   async subscribeDevicesChanged(
     onChanged: (event: DeviceInvalidation) => void,
   ): Promise<Subscription> {
-    const onChangedChannel = new Channel<DeviceInvalidation>();
-    onChangedChannel.onmessage = onChanged;
+    const onChangedChannel = new Channel<DeviceInvalidation>(onChanged);
     const native = await callArgs<NativeSubscription>("subscribe_devices_changed", {
       onChanged: onChangedChannel,
     });
