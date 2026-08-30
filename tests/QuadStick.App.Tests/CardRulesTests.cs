@@ -1,5 +1,6 @@
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -9,9 +10,9 @@ using Xunit;
 
 namespace QuadStick.App.Tests;
 
-// A sentence card is a table: an outline round the sentence, and a hairline
-// between every pair of neighbouring cells. Without the rules a run of cards
-// is phrases floating in a box, which is what the tester read them as.
+// Cards and diagram callouts are tables: an outline, and a hairline between
+// every pair of neighbouring cells. Without the rules they are phrases
+// floating in a box, which is what the tester read them as.
 public class CardRulesTests
 {
     static ProfileFile OneLipMapping() => ProfileFile.Load(
@@ -68,6 +69,51 @@ public class CardRulesTests
             Assert.Equal(0, c.BorderThickness.Left);
             Assert.Equal(0, c.BorderThickness.Top);
         }
+
+        w.Close();
+    }
+
+    // The diagram callouts carry the same rules: one down the gutter between
+    // the gesture and its action, one above every row after the first, and one
+    // under the part's name.
+    [AvaloniaFact]
+    public void Diagram_callout_rows_are_ruled_like_a_table()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.Model = "FPS";
+        s.RememberWindow = false;
+        Settings.Save(s);
+
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "circle,normal,mp_center_puff\n" +
+            "square,normal,mp_center_sip\n");
+        file.Dirty = false;
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(true);
+        w.UpdateLayout();
+
+        var callout = w.GetVisualDescendants().OfType<ToggleButton>()
+            .First(b => (AutomationProperties.GetName(b) ?? "")
+                .StartsWith("Center mouthpiece hole", StringComparison.Ordinal));
+
+        // Four gestures, so three rules across and one down the gutter.
+        var table = callout.GetVisualDescendants().OfType<Grid>()
+            .First(g => g.ColumnDefinitions.Count == 3 && g.RowDefinitions.Count == 4);
+        var rules = table.Children.OfType<Border>().ToList();
+        Assert.Equal(3, rules.Count(r => r.Height == 1 && Grid.GetColumnSpan(r) == 3));
+        Assert.Equal(1, rules.Count(r => r.Width == 1 && Grid.GetColumn(r) == 1
+                                         && Grid.GetRowSpan(r) == 4));
+
+        // And the name above the table is ruled off from it.
+        var under = Assert.IsType<Border>(table.Parent);
+        Assert.Equal(1, under.BorderThickness.Top);
+        Assert.Equal(0, under.BorderThickness.Bottom);
 
         w.Close();
     }

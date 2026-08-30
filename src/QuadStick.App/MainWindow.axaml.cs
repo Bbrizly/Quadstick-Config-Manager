@@ -3354,6 +3354,8 @@ public partial class MainWindow : Window
             var action = SummaryActionVisuals(summary);
             action.VerticalAlignment = VerticalAlignment.Center;
             action.HorizontalAlignment = HorizontalAlignment.Left;
+            // Room for the rules to sit in without touching the words.
+            gesture.Margin = action.Margin = new Thickness(0, 2);
             int r = panel.RowDefinitions.Count - 1;
             Grid.SetRow(gesture, r);
             Grid.SetRow(action, r);
@@ -3361,7 +3363,30 @@ public partial class MainWindow : Window
             panel.Children.Add(gesture);
             panel.Children.Add(action);
         }
-        return panel;
+
+        // Rules, so a callout reads as a small table instead of four pairs of
+        // words floating in a box: the middle gutter carries the line between
+        // the columns, and every row after the first draws the line above it.
+        int rowCount = panel.RowDefinitions.Count;
+        for (int r = 1; r < rowCount; r++)
+        {
+            var across = new Border { Height = 1, VerticalAlignment = VerticalAlignment.Top };
+            BindBrush(across, Border.BackgroundProperty, "SurfaceSubtle");
+            Grid.SetRow(across, r);
+            Grid.SetColumnSpan(across, 3);
+            panel.Children.Add(across);
+        }
+        if (rowCount == 0) return panel;
+        var down = new Border { Width = 1, HorizontalAlignment = HorizontalAlignment.Center };
+        BindBrush(down, Border.BackgroundProperty, "SurfaceSubtle");
+        Grid.SetColumn(down, 1);
+        Grid.SetRowSpan(down, rowCount);
+        panel.Children.Add(down);
+        // The last rule separates the part's name from its table.
+        var ruled = new Border
+        { Child = panel, BorderThickness = new Thickness(0, 1, 0, 0), Padding = new Thickness(0, 2, 0, 0) };
+        BindBrush(ruled, Border.BorderBrushProperty, "SurfaceSubtle");
+        return ruled;
     }
 
     Control JoystickSummaryContent()
