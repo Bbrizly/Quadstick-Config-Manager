@@ -5,7 +5,10 @@
 //! candidate root, and the storage adapter turns it into its normal opaque
 //! device id on the next discovery.
 
-use crate::adapters::storage::{is_quadstick, volumes::{PlatformVolumes, VolumeSource}};
+use crate::adapters::storage::{
+    is_quadstick,
+    volumes::{PlatformVolumes, VolumeSource},
+};
 use qcm_core::error::{DeviceError, QcmError};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
