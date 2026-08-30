@@ -35,10 +35,31 @@ Only these, and all of them are release validation rather than development:
 - The `FindCandidates()` removable and macOS `/Volumes` heuristic. An unmounted
   volume cannot be enumerated. The logic is small and the root is injectable, so
   everything above it still tests without hardware.
+- A full volume, and a stick pulled during the replace, against the real
+  adapter. Both are covered against the fake at every stage, but the adapter's
+  own beside-then-rename restore and its create-then-write cleanup cannot be
+  driven from `std::fs`.
 - TASK-053 soak: repeated physical reconnects, sleep and wake.
 - TASK-056 release candidate matrix: install, readback, delete, order,
   preferences and live input on a real unit before shipping.
 - TASK-060 mobile feasibility, which needs phones as well.
+
+## Needs a dependency decision
+
+The Windows volume enumeration in `src-tauri/src/adapters/storage/volumes.rs`
+cannot tell a removable drive from a fixed one. `GetDriveTypeW` is the only way
+to ask, it needs an `unsafe` call, and the workspace sets
+`unsafe_code = "forbid"`. The adapter therefore probes drive letters, skips
+`%SystemDrive%` and lets the marker decide, which is broader than the shipped
+rule: a second fixed disk with a `default.csv` in its root would be offered.
+
+The same call answers free space, which is why every platform currently reports
+`None` for it.
+
+Two ways out, and picking one is not an agent's call: add a Windows API crate
+and lift `forbid` to `deny` with a documented allow in one module, or accept the
+broader rule and say so in the install dialog. `39-dependency-plan.md` has no
+approved crate for either.
 
 ## Actually needs credentials
 

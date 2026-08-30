@@ -1,9 +1,13 @@
 //! The desktop shell.
 //!
-//! This crate owns the window and nothing else yet. No commands, no adapters,
-//! no device code: TASK-031 adds the client contracts and TASK-032 the commands
-//! that sit behind them. `qcm-core` is already linked so the dependency
-//! direction is fixed from the first build, not retrofitted.
+//! This crate owns the window and the adapters. No commands yet: TASK-031 adds
+//! the client contracts and TASK-032 the commands that sit behind them.
+//!
+//! [`adapters`] is the only place in the app that sees a path. `qcm-core` holds
+//! the rules, this crate holds the operating system, and the ports between them
+//! carry opaque ids and validated names in both directions.
+
+pub mod adapters;
 
 /// The promise `qcm-core` makes about itself, read through the linked crate.
 ///

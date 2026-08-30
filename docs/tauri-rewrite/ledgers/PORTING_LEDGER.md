@@ -14,7 +14,7 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `FunctionParameters.cs` | function metadata | qcm-config | REWRITE | parser/validator | 2 | CONTRACTED |
 | `ModeLights.cs` | LED patterns | qcm-core/devices/library.rs | REWRITE | 1–32 exact | 2/3 | PORTED |
 | `Data/**`, Templates | embedded contract data | qcm-config assets | REUSE/GENERATE | hash/parity | 2 | CONTRACTED |
-| `Device.cs` discovery | mount detection | qcm-core/devices/discovery.rs + native storage adapter | SPLIT/REWRITE | fake; adapter and hardware pending | 3 | PORTED |
+| `Device.cs` discovery | mount detection | qcm-core/devices/discovery.rs + src-tauri storage adapter | SPLIT/REWRITE | fake+temp-dir; hardware pending | 3 | PORTED |
 | `Device.cs` filename rules | safe target names | qcm-config/core | SPLIT | unit parity | 2/3 | PORTED |
 | `Device.cs` install | safe transaction | qcm-core/devices/install.rs | REWRITE | fault at every stage; hardware pending | 3 | PORTED |
 | `Device.cs` library/delete | device files, order, LED table, prefs read | qcm-core/devices/library.rs | REWRITE | DeviceFileManagementTests ported; hardware pending | 3 | PORTED |

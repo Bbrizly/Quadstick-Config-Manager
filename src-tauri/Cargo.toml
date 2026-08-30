@@ -26,3 +26,8 @@ serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 # No plugins. Filesystem, shell, HTTP and HID stay behind native commands.
 tauri = { version = "=2.11.5", features = [] }
+
+# The adapter tests drive the storage adapter with a real profile, the way the
+# install flow will.
+[dev-dependencies]
+qcm-config = { path = "../crates/qcm-config" }
