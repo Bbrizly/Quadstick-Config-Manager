@@ -1,12 +1,12 @@
 /**
  * The only frontend file allowed to import `@tauri-apps/*`.
  *
- * Every native call is named here, and every payload is nested under `request`
- * so malformed input is converted by Rust into the same stable error DTO as a
- * valid request that was refused.
+ * Every native call is named here. Domain payloads stay under `request`; Tauri
+ * `Channel`s are top-level command arguments because they are transport, not
+ * domain data.
  */
 
-import { invoke } from "@tauri-apps/api/core";
+import { Channel, invoke } from "@tauri-apps/api/core";
 
 import type {
   AppSettings,
@@ -15,23 +15,50 @@ import type {
   CloseOutcome,
   DeletePlan,
   DeleteReceipt,
+  DeviceInvalidation,
   DeviceLibrarySnapshot,
   DevicePresenceSnapshot,
   EditorOp,
   EditorSnapshot,
   InstallPlan,
+  InstallProgress,
   InstallReceipt,
+  LiveSnapshot,
   SaveReceipt,
   SettingsPatch,
+  Subscription,
 } from "./contracts";
 import { asQcmError, type QcmClient } from "./qcmClient";
 
+interface NativeSubscription {
+  readonly subscriptionId: string;
+}
+
 async function call<T>(command: string, request?: unknown): Promise<T> {
+  return callArgs<T>(command, request === undefined ? undefined : { request });
+}
+
+async function callArgs<T>(command: string, args?: Record<string, unknown>): Promise<T> {
   try {
-    return await invoke<T>(command, request === undefined ? undefined : { request });
+    return await invoke<T>(command, args);
   } catch (reason) {
     throw asQcmError(reason);
   }
+}
+
+function disposal(command: string, subscriptionId: string): Subscription {
+  let disposed = false;
+  return {
+    dispose(): void {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
+      // React effect cleanup cannot await. Native removal is idempotent; a
+      // teardown transport failure is deliberately not promoted into UI state.
+      void invoke(command, { subscriptionId }).catch(() => undefined);
+    },
+  };
 }
 
 export class TauriQcmClient implements QcmClient {
@@ -99,8 +126,17 @@ export class TauriQcmClient implements QcmClient {
     return call<InstallPlan>("prepare_install", { sessionId, deviceId });
   }
 
-  commitInstall(planId: string, confirmationId?: string): Promise<InstallReceipt> {
-    return call<InstallReceipt>("commit_install", { planId, confirmationId });
+  commitInstall(
+    planId: string,
+    confirmationId?: string,
+    onProgress: (progress: InstallProgress) => void = () => undefined,
+  ): Promise<InstallReceipt> {
+    const progress = new Channel<InstallProgress>();
+    progress.onmessage = onProgress;
+    return callArgs<InstallReceipt>("commit_install", {
+      request: { planId, confirmationId },
+      progress,
+    });
   }
 
   prepareDeleteDeviceProfile(
@@ -130,6 +166,26 @@ export class TauriQcmClient implements QcmClient {
   openDevicePreferences(deviceId: string, expectedGeneration: number): Promise<EditorSnapshot> {
     return call<EditorSnapshot>("open_device_preferences", { deviceId, expectedGeneration });
   }
+
+  async startLiveInput(onFrame: (frame: LiveSnapshot) => void): Promise<Subscription> {
+    const onFrameChannel = new Channel<LiveSnapshot>();
+    onFrameChannel.onmessage = onFrame;
+    const native = await callArgs<NativeSubscription>("start_live_input", {
+      onFrame: onFrameChannel,
+    });
+    return disposal("stop_live_input", native.subscriptionId);
+  }
+
+  async subscribeDevicesChanged(
+    onChanged: (event: DeviceInvalidation) => void,
+  ): Promise<Subscription> {
+    const onChangedChannel = new Channel<DeviceInvalidation>();
+    onChangedChannel.onmessage = onChanged;
+    const native = await callArgs<NativeSubscription>("subscribe_devices_changed", {
+      onChanged: onChangedChannel,
+    });
+    return disposal("unsubscribe_devices_changed", native.subscriptionId);
+  }
 }
 
 /** Every command name this client calls, for the API ledger to be checked against. */
@@ -154,4 +210,8 @@ export const TAURI_COMMANDS = [
   "commit_delete_device_profile",
   "open_device_profile",
   "open_device_preferences",
+  "start_live_input",
+  "stop_live_input",
+  "subscribe_devices_changed",
+  "unsubscribe_devices_changed",
 ] as const;
