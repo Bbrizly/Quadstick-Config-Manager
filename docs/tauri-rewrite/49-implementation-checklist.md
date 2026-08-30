@@ -4,30 +4,30 @@ Work top-to-bottom. A checked box means its task acceptance criteria and linked 
 
 ## Phase 0 — freeze current reality
 
-- [ ] TASK-001 Complete source/test/tool inventory at the implementation-base SHA.
-- [ ] TASK-002 Build fixture manifest and copy safe existing fixtures.
-- [ ] TASK-003 Build deterministic C# oracle exporter.
-- [ ] TASK-004 Define canonical parity JSON schema and hash policy.
-- [ ] TASK-005 Record current performance/resource baseline.
-- [ ] TASK-006 Finish behavior/porting/test ledgers, including agent pipeline and serial evidence.
+- [x] TASK-001 Complete source/test/tool inventory at the implementation-base SHA.
+- [x] TASK-002 Build fixture manifest and copy safe existing fixtures.
+- [x] TASK-003 Build deterministic C# oracle exporter.
+- [x] TASK-004 Define canonical parity JSON schema and hash policy.
+- [x] TASK-005 Record current performance/resource baseline.
+- [x] TASK-006 Finish behavior/porting/test ledgers, including agent pipeline and serial evidence.
 
 **Gate 0:** no runtime-critical source is UNASSESSED; fixture/oracle output is reproducible.
 
 ## Phase 1/2 — pure Rust config parity
 
-- [ ] TASK-007 Create Rust workspace and `qcm-config` crate only.
-- [ ] TASK-008 Port CSV raw-grid parse/write.
-- [ ] TASK-009 Port model and issue types.
-- [ ] TASK-010 Port vocab/embedded validation/template data.
-- [ ] TASK-011 Port header/sheet parser.
-- [ ] TASK-012 Port binding/preferences/IR parsing.
-- [ ] TASK-013 Port validator and firmware limits.
-- [ ] TASK-014 Port device-safe serializer/normalization.
-- [ ] TASK-015 Port profile editor operations.
-- [ ] TASK-016 Port undo/dirty/revision/action-name semantics.
-- [ ] TASK-017 Add C#↔Rust differential suite.
-- [ ] TASK-018 Add property/fuzz/size-limit suite.
-- [ ] TASK-019 Reimplement qsf against Rust core and compare JSON contract.
+- [x] TASK-007 Create Rust workspace and `qcm-config` crate only.
+- [x] TASK-008 Port CSV raw-grid parse/write.
+- [x] TASK-009 Port model and issue types.
+- [x] TASK-010 Port vocab/embedded validation/template data.
+- [x] TASK-011 Port header/sheet parser.
+- [x] TASK-012 Port binding/preferences/IR parsing.
+- [x] TASK-013 Port validator and firmware limits.
+- [x] TASK-014 Port device-safe serializer/normalization.
+- [x] TASK-015 Port profile editor operations.
+- [x] TASK-016 Port undo/dirty/revision/action-name semantics.
+- [x] TASK-017 Add C#↔Rust differential suite.
+- [x] TASK-018 Add property/fuzz/size-limit suite.
+- [x] TASK-019 Reimplement qsf against Rust core and compare JSON contract.
 
 **Gate 2:** config parser/serializer/mutations pass oracle; no lossy raw-grid behavior.
 
