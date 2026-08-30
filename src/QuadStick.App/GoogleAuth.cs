@@ -31,6 +31,13 @@ public class GoogleAuth
     string? _accessToken;
     DateTimeOffset _accessExpiry;
 
+    // Drive backup used to make only one request at a time, but linked-sheet
+    // sync will have independent change tracking and content requests. Without
+    // a gate, two stale-token callers can both refresh at once. Google normally
+    // tolerates that, but it wastes requests and makes token state needlessly
+    // racy. The second caller re-checks the cache after it acquires the gate.
+    readonly SemaphoreSlim _refreshGate = new(1, 1);
+
     public GoogleAuth(ITokenStore store, HttpMessageHandler? handler = null)
     {
         _store = store;
@@ -160,23 +167,39 @@ public class GoogleAuth
     }
 
     // Cached access token, refreshed with the stored refresh token when stale.
+    // Double-check after the gate: while this caller waited, another one may
+    // already have refreshed the token.
     public async Task<string> GetAccessTokenAsync(CancellationToken ct = default)
     {
-        if (_accessToken != null && DateTimeOffset.UtcNow < _accessExpiry - TimeSpan.FromSeconds(60))
-            return _accessToken;
+        if (FreshAccessToken() is string cached) return cached;
 
-        var refresh = _store.Load() ?? throw new GoogleAuthException("Not connected to Google.");
-        var form = new Dictionary<string, string>
+        await _refreshGate.WaitAsync(ct);
+        try
         {
-            ["client_id"] = ClientId,
-            ["refresh_token"] = refresh,
-            ["grant_type"] = "refresh_token",
-        };
-        using var resp = await PostTokenAsync(form, ct);
-        using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync(ct));
-        CacheAccess(doc.RootElement);
-        return _accessToken!;
+            if (FreshAccessToken() is string refreshed) return refreshed;
+
+            var refresh = _store.Load() ?? throw new GoogleAuthException("Not connected to Google.");
+            var form = new Dictionary<string, string>
+            {
+                ["client_id"] = ClientId,
+                ["refresh_token"] = refresh,
+                ["grant_type"] = "refresh_token",
+            };
+            using var resp = await PostTokenAsync(form, ct);
+            using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync(ct));
+            CacheAccess(doc.RootElement);
+            return _accessToken!;
+        }
+        finally
+        {
+            _refreshGate.Release();
+        }
     }
+
+    string? FreshAccessToken() =>
+        _accessToken != null && DateTimeOffset.UtcNow < _accessExpiry - TimeSpan.FromSeconds(60)
+            ? _accessToken
+            : null;
 
     async Task<HttpResponseMessage> PostTokenAsync(Dictionary<string, string> form, CancellationToken ct)
     {
