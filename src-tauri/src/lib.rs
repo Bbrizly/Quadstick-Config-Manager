@@ -47,8 +47,35 @@ pub fn registered_commands() -> &'static [&'static str] {
     ]
 }
 
+/// The WebView is an untrusted presentation surface. It may load the app's own
+/// custom-protocol origin and, in a development build only, the pinned Vite
+/// server. Everything else is refused before a navigation commits.
+fn navigation_allowed_for(url: &tauri::webview::Url, development: bool) -> bool {
+    let packaged = matches!(
+        (url.scheme(), url.host_str(), url.port()),
+        ("tauri", Some("localhost"), None) | ("http", Some("tauri.localhost"), None)
+    );
+    if packaged {
+        return true;
+    }
+
+    development
+        && url.scheme() == "http"
+        && url.host_str() == Some("localhost")
+        && url.port() == Some(1420)
+}
+
+fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
+    tauri::plugin::Builder::new("qcm-navigation-guard")
+        .on_navigation(|_webview, url| navigation_allowed_for(url, cfg!(debug_assertions)))
+        .build()
+}
+
 pub fn run() {
     tauri::Builder::default()
+        // Internal lifecycle guard only. This plugin exposes no commands and no
+        // capability permission; it exists solely to reject remote navigation.
+        .plugin(navigation_guard())
         .manage(shell::native_shell())
         .manage(device_shell::native_device_shell())
         .manage(streaming::LiveRuntime::new())
@@ -85,6 +112,8 @@ pub fn run() {
 
 #[cfg(test)]
 mod tests {
+    use tauri::webview::Url;
+
     #[test]
     fn shell_is_linked_against_the_native_core() {
         assert_eq!(
@@ -122,6 +151,47 @@ mod tests {
             "reorder_device_profiles",
         ] {
             assert!(!commands.contains(&absent), "{absent}");
+        }
+        assert!(commands.iter().all(|command| !command.starts_with("plugin:")));
+    }
+
+    #[test]
+    fn packaged_navigation_is_local_only() {
+        for allowed in [
+            "tauri://localhost/index.html",
+            "tauri://localhost/editor?session=session-1",
+            "http://tauri.localhost/index.html",
+        ] {
+            let url = Url::parse(allowed).expect("valid app URL");
+            assert!(super::navigation_allowed_for(&url, false), "{allowed}");
+        }
+
+        for forbidden in [
+            "https://example.com/",
+            "http://example.com/",
+            "file:///tmp/profile.html",
+            "data:text/html,hello",
+            "http://localhost:1420/",
+            "http://tauri.localhost:80/index.html",
+        ] {
+            let url = Url::parse(forbidden).expect("valid forbidden URL");
+            assert!(!super::navigation_allowed_for(&url, false), "{forbidden}");
+        }
+    }
+
+    #[test]
+    fn development_navigation_allows_only_the_pinned_vite_origin() {
+        let vite = Url::parse("http://localhost:1420/").expect("valid Vite URL");
+        assert!(super::navigation_allowed_for(&vite, true));
+
+        for forbidden in [
+            "http://localhost:1421/",
+            "https://localhost:1420/",
+            "http://127.0.0.1:1420/",
+            "https://example.com/",
+        ] {
+            let url = Url::parse(forbidden).expect("valid forbidden URL");
+            assert!(!super::navigation_allowed_for(&url, true), "{forbidden}");
         }
     }
 }
