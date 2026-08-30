@@ -638,7 +638,7 @@ fn the_app_snapshot_claims_only_what_is_wired() {
     let app = harness();
     let snapshot = app.shell.app_snapshot();
     assert!(snapshot.capabilities.profile_editing);
-    assert!(!snapshot.capabilities.device_install);
+    assert!(snapshot.capabilities.device_install);
     assert!(!snapshot.capabilities.live_input);
     assert!(!snapshot.capabilities.community_catalog);
     assert!(!snapshot.capabilities.google_backup);
@@ -716,7 +716,7 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 10);
+    assert_eq!(registered.len(), 20);
     for name in [
         "get_app_snapshot",
         "get_settings",
@@ -728,15 +728,22 @@ fn every_command_this_build_registers_is_on_the_list() {
         "save_profile",
         "save_profile_as",
         "close_profile",
+        "list_devices",
+        "refresh_devices",
+        "choose_device_folder",
+        "get_device_library",
+        "prepare_install",
+        "commit_install",
+        "prepare_delete_device_profile",
+        "commit_delete_device_profile",
+        "open_device_profile",
+        "open_device_preferences",
     ] {
         assert!(registered.contains(&name), "{name}");
     }
-    // Nothing device-shaped is registered yet. TASK-033 owns those, and a
-    // command that exists before its confirmation plan does is the failure mode
-    // the preparation/commit split was designed to prevent.
     for later in [
-        "commit_install",
-        "delete_device_profile",
+        "rename_device_profile",
+        "reorder_device_profiles",
         "start_live_input",
     ] {
         assert!(!registered.contains(&later), "{later}");
