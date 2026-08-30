@@ -21,6 +21,11 @@ crate-type = ["lib", "cdylib", "staticlib"]
 tauri-build = { version = "=2.6.3", features = [] }
 
 [dependencies]
+# Descriptor access and blocking HID reads. The macOS shared-device option keeps
+# the visualizer from needlessly fighting a game for the same controller; the
+# Windows native backend avoids a bundled C backend there. Linux keeps hidraw,
+# which is the backend that exposes descriptor/interface semantics we need.
+hidapi = { version = "=2.6.6", features = ["macos-shared-device", "windows-native"] }
 qcm-config = { path = "../crates/qcm-config" }
 qcm-core = { path = "../crates/qcm-core" }
 # The native file picker. Not a Tauri plugin: it is reached only from inside a
