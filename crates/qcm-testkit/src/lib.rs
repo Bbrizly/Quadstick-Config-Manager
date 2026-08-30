@@ -6,8 +6,10 @@
 //! nobody can pull a USB stick out at exactly the wrong microsecond on demand.
 //! These fakes make each of those moments a line in a test.
 
+pub mod live_input;
 pub mod local;
 pub mod storage;
 
+pub use live_input::{FAKE_DEVICE, FakeLiveInput, FakeSession};
 pub use local::FakeProfileLibrary;
 pub use storage::{FakeBackupStore, FakeQuadStick, Fault, TEMP_SUFFIX};

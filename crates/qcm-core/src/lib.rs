@@ -15,6 +15,7 @@ pub mod clock;
 pub mod confirmation;
 pub mod devices;
 pub mod error;
+pub mod live;
 pub mod operation;
 pub mod ports;
 pub mod profiles;
@@ -34,8 +35,16 @@ pub use error::{
     NameRejection, OsDetail, ProfileError, QcmError, QcmErrorDto, RecoveryAction,
     RecoveryActionDto, StorageError, StorageStage, TargetState,
 };
+pub use live::{
+    DEFAULT_ERROR_AFTER, DEFAULT_RECONNECT_AFTER, DEFAULT_RESCAN_AFTER, DEFAULT_STALE_AFTER,
+    LiveInputManager, LiveInputSettings, LiveSnapshot, LiveStatus, LiveStream, LiveStreamStats,
+    Motion,
+};
 pub use operation::{
     FingerprintBuilder, Operation, OperationFingerprint, OperationId, OperationIds, OperationKind,
+};
+pub use ports::live_input::{
+    CandidateKind, LiveCandidate, LiveDeviceId, LiveInputPort, LiveInputSession, Reading,
 };
 pub use ports::local::{
     LocalProfileId, LocalProfileRef, LocalProfileStore, LocalWriteReceipt, ProfileDisplayName,

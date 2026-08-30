@@ -64,8 +64,37 @@ discovery with the shipped 3 second scan cache, the install transaction, and the
 library operations. `src-tauri/src/adapters/storage/` is the only place in the
 app that sees a path.
 
-There is still no HID and no frontend beyond the scaffold, and no command
-surface: nothing in `src-tauri` is wired to a Tauri command yet.
+Live input is in as far as it can go without a HID decision. `qcm-core/src/live/`
+holds the manager and the bounded stream over a `LiveInputPort`, and
+`qcm-testkit` carries the fake that drives them. The manager owns the search,
+the four backoff timers, the jitter filter, the stale window and the stop and
+restart, all ported from `LiveInput.cs`. Nothing in it can fail: every way live
+input goes wrong ends as a state the window renders, because the settings page
+works without it.
+
+Two things are load-bearing there. The stream holds one snapshot and the newest
+wins, so a disconnect can never be overtaken by a pressed frame queued behind it
+(ADR-015). And motion lives inside the `Reading` variant of the status, so no
+other state can spell a held button: a stop, a stale window, an unplug and a
+port failure all clear the visualizer by construction rather than by remembering
+to. A stuck button here is somebody's input held down with nothing left that can
+release it.
+
+What is not in: no HID crate, no real adapter, no VID/PID table, no descriptor
+parsing. TASK-026 and TASK-027 own those and need a dependency decision that has
+not been made. TASK-028 built the port, the manager and the fake, and stops
+there.
+
+TASK-029 is resolved and implemented nothing, which was the right answer. The
+premise of OQ-001 turned out to be false: `System.IO.Ports` has never been a
+dependency of this app in any commit, and the only occurrence of `SerialPort`
+outside the docs is a test asserting the device-files window does not contain
+it. Serial and the Bluetooth console stay classified D. The evidence is in
+`51-open-questions.md` and the stale dependency line that started it is
+corrected in `02-current-system-inventory.md`.
+
+There is still no frontend beyond the scaffold and no command surface: nothing
+in `src-tauri` is wired to a Tauri command yet.
 
 OQ-004 is answered for now and recorded in `51-open-questions.md`: local save stays at parity with the legacy `WriteAtomic`. `SavePlan` and `commit_save` are the seam a device-grade backup-and-read-back contract drops into without moving the command surface. Two smaller deferrals sit behind the same seam. The C1 Google-sheet stamp the legacy `SaveAsync` applied belongs to the Drive work in TASK-045, so nothing stamps it yet. And there is no size cap on opening a local profile, because the frozen implementation has none to match; `ConfigError::TooLarge` exists for whoever adds one.
 
@@ -105,6 +134,20 @@ something to paper over.
 Free space is reported as `None` on every platform for the same reason. The core
 already treats that as "the platform will not say" rather than as zero, so a
 drive that cannot report its size is never shown as full.
+
+TASK-028 added no external crate either. The live input port, manager, bounded
+stream and fake are `std` alone: a `Mutex` for the one-slot buffer, an `Arc` for
+the shared read side, and the existing `Clock` for every deadline. The port is
+blocking for the reason the storage port already records, and the manager is
+pumped by whoever owns a thread rather than owning one itself, which is what
+keeps `qcm-core` free of a runtime.
+
+The port's fallible calls return the existing `DeviceError` family rather than a
+new one. That flattens "the stick was unplugged" and "the operating system would
+not hand it over" onto `NotFound`, which is deliberate: the shipped reader draws
+the same distinction, which is none, because both mean no live reading and the
+page still works. If TASK-027 finds a case where the two need different words on
+screen, `DeviceError` grows a variant then, with the evidence for it.
 
 TASK-020, TASK-021 and TASK-022 added no external crate at all. `qcm-core` depends on `qcm-config` and `serde`, with `serde_json` and `qcm-testkit` for tests; `qcm-testkit` depends on `qcm-core` alone. Neither has Tauri, an OS crate, a network client or anything that writes a file: both ports are traits, and the adapters that touch a real volume or a real folder arrive later.
 

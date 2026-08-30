@@ -16,5 +16,6 @@
 | ADR-012 | strangler migration | ACCEPTED | project cancellation/re-scope |
 | ADR-013 | mobile later/native adapters | ACCEPTED/DEFERRED | physical mobile proof |
 | ADR-014 | signed Tauri updater | ACCEPTED IN PRINCIPLE | store-only distribution/endpoint decision |
+| ADR-015 | live input coalesces to one latest snapshot | ACCEPTED | a consumer that needs every intermediate report |
 
 Open questions OQ-001..OQ-020 are not ADRs until a decision is made. When resolved, either amend an ADR with date/evidence or add a new ADR; do not bury architectural changes in implementation PR prose.

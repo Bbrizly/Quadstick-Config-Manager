@@ -48,6 +48,6 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-042 | E | Avalonia gallery | web tooling replacement | ASSESSED |
 | B-043 | E forbidden | generic JS filesystem | capability test absent | CONTRACTED |
 | B-044 | E forbidden | generic JS shell/process | capability test absent | CONTRACTED |
-| B-045 | D | production serial | frozen-source/history evidence | CLOSED-DEFERRED: no production `SerialPort` hit; do not implement without new evidence |
+| B-045 | D | production serial | OQ-001 resolution 2026-08-30 | CLOSED-DEFERRED: `System.IO.Ports` was never a dependency in any commit, and the only source hit is a test asserting its absence; do not implement without new evidence |
 
 Status moves to PARITY-TESTED/HARDWARE-VERIFIED only with linked TEST_LEDGER evidence.

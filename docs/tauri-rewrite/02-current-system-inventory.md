@@ -46,9 +46,13 @@
 
 ## Current external/native dependencies
 
-Avalonia 11.1.3; CommunityToolkit.Mvvm 8.2.2; CsvHelper 31.0.2; HidSharp 2.1.0; System.IO.Ports 8.0.0; System.Management 8.0.0; Microsoft.Extensions configuration/logging.
+Read out of `QuadStick.App.csproj` rather than remembered, 2026-08-30:
 
-**Important:** dependency presence does not prove runtime use. In particular, serial parity remains evidence-gated.
+Avalonia 11.1.3 (`Avalonia`, `Avalonia.Desktop`, `Avalonia.Themes.Fluent`, `Avalonia.Fonts.Inter`); HidSharp 2.6.4; System.Security.Cryptography.ProtectedData 8.0.0; PostHog 2.12.0. `QuadStick.Format` has no package reference at all. Tests add xunit and `Avalonia.Headless.XUnit`; `tools/RenderPreview` adds `Avalonia.Headless`.
+
+**Corrected 2026-08-30 (TASK-029).** This line previously listed CommunityToolkit.Mvvm, CsvHelper, System.IO.Ports, System.Management and Microsoft.Extensions, and gave HidSharp as 2.1.0. None of those five packages is a dependency, and `git log --all -p` over the project files shows none of them ever was. The note was wrong, not out of date. `System.IO.Ports` was the stated premise of OQ-001, so check a dependency claim against the project file before building on it.
+
+**Important:** dependency presence does not prove runtime use, and neither does a document saying a dependency is present. Serial parity remains evidence-gated; see the OQ-001 resolution in `51-open-questions.md`.
 
 ## Current release surface
 
