@@ -1,8 +1,8 @@
 use qcm_config::ProfileFile;
+use qcm_core::QcmError;
 use qcm_core::clock::ManualClock;
 use qcm_core::devices::Devices;
 use qcm_core::error::ErrorCode;
-use qcm_core::QcmError;
 use qcm_tauri_lib::adapters::device_picker::DeviceFolderPicker;
 use qcm_tauri_lib::device_shell::DeviceShell;
 use qcm_testkit::{FakeBackupStore, FakeQuadStick};
@@ -48,7 +48,10 @@ fn discovery_returns_only_opaque_device_identity() {
 
     assert_eq!(snapshot.devices.len(), 1);
     assert_eq!(snapshot.devices[0].device_id, device.to_string());
-    assert_eq!(snapshot.devices[0].generation, drive.generation(device).unwrap().raw());
+    assert_eq!(
+        snapshot.devices[0].generation,
+        drive.generation(device).unwrap().raw()
+    );
     let json = serde_json::to_string(&snapshot).unwrap();
     assert!(!json.contains('/'));
     assert!(!json.contains("\\\\"));
