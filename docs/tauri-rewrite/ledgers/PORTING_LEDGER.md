@@ -16,7 +16,7 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `Data/**`, Templates | embedded contract data | qcm-config assets | REUSE/GENERATE | hash/parity | 2 | CONTRACTED |
 | `Device.cs` discovery | mount detection | qcm-core/devices/discovery.rs + native storage adapter | SPLIT/REWRITE | fake; adapter and hardware pending | 3 | PORTED |
 | `Device.cs` filename rules | safe target names | qcm-config/core | SPLIT | unit parity | 2/3 | PORTED |
-| `Device.cs` install | safe transaction | qcm-core/storage | REWRITE | fault+hardware | 3 | CONTRACTED |
+| `Device.cs` install | safe transaction | qcm-core/devices/install.rs | REWRITE | fault at every stage; hardware pending | 3 | PORTED |
 | `Device.cs` library/delete | device files | qcm-core/storage | REWRITE | parity+hardware | 3 | CONTRACTED |
 | `MainWindow.axaml` | shell/layout | React AppShell/Editor | REWRITE | component/E2E/AT | 5/6 | CONTRACTED |
 | `MainWindow.axaml.cs` | orchestration/editor/UI | qcm-core + React features | SPLIT | behavior matrix | 3–7 | CONTRACTED |

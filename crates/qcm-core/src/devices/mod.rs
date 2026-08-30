@@ -7,22 +7,25 @@
 //! taken after the file it is supposed to rescue has already gone.
 //!
 //! The modules split by job, not by type. [`discovery`] finds drives and hands
-//! out opaque handles; the write transaction and the library operations follow
-//! in TASK-024 and TASK-025 as further `impl` blocks on [`Devices`].
+//! out opaque handles and [`install`] is the write transaction; the library
+//! operations follow in TASK-025 as another `impl` block on [`Devices`].
 //!
 //! No path appears anywhere in here. The service names a device by an opaque id
 //! and a file by a validated direct-child name, and the adapter behind the port
 //! is the only thing that ever sees a mount point.
 
 pub mod discovery;
+pub mod install;
 
 use crate::clock::Clock;
 use crate::confirmation::ConfirmationLedger;
+use crate::operation::OperationIds;
 use crate::ports::storage::{BackupStore, DeviceStorage};
 use discovery::Scan;
 use std::time::Duration;
 
 pub use discovery::{DEFAULT_SCAN_TTL, DeviceHandle, DeviceScan, DeviceSummary};
+pub use install::{InstallFailure, InstallPlan, InstallReceipt};
 
 /// The device side of the app.
 #[derive(Debug)]
@@ -31,6 +34,7 @@ pub struct Devices<S: DeviceStorage, B: BackupStore, C: Clock + Clone> {
     backups: B,
     clock: C,
     confirmations: ConfirmationLedger<C>,
+    operations: OperationIds,
     scan: Option<Scan>,
     scan_ttl: Duration,
 }
@@ -48,6 +52,7 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
             storage,
             backups,
             clock,
+            operations: OperationIds::new(),
             scan: None,
             scan_ttl,
         }

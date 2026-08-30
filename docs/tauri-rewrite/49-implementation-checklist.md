@@ -37,7 +37,7 @@ Work top-to-bottom. A checked box means its task acceptance criteria and linked 
 - [x] TASK-021 Implement stable error/confirmation/operation model.
 - [x] TASK-022 Define device-storage ports and `qcm-testkit` fake storage.
 - [x] TASK-023 Implement mounted QuadStick discovery + opaque IDs.
-- [ ] TASK-024 Port safe install transaction with fault injection.
+- [x] TASK-024 Port safe install transaction with fault injection.
 - [ ] TASK-025 Port device library/delete/order/preferences operations.
 - [ ] TASK-026 Run HID library/report-descriptor spike on real hardware.
 - [ ] TASK-027 Implement descriptor-driven HID adapter/worker.

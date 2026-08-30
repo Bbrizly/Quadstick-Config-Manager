@@ -10,6 +10,7 @@
 //! that touches a real volume lives outside, and `qcm-testkit` supplies a fake
 //! so every device-safety test runs without hardware.
 
+pub mod cancel;
 pub mod clock;
 pub mod confirmation;
 pub mod devices;
@@ -18,12 +19,16 @@ pub mod operation;
 pub mod ports;
 pub mod profiles;
 
+pub use cancel::{CancelSignal, NeverCancels};
 pub use clock::{Clock, ManualClock, Moment, SystemClock};
 pub use confirmation::{
     ConfirmationId, ConfirmationKind, ConfirmationLedger, ConfirmationRequirement,
     DEFAULT_CONFIRMATION_TTL,
 };
-pub use devices::{DEFAULT_SCAN_TTL, DeviceHandle, DeviceScan, DeviceSummary, Devices};
+pub use devices::{
+    DEFAULT_SCAN_TTL, DeviceHandle, DeviceScan, DeviceSummary, Devices, InstallFailure,
+    InstallPlan, InstallReceipt,
+};
 pub use error::{
     BackupLocationDisplay, ConfigError, ConfirmationError, DeviceError, ErrorCode, InternalError,
     NameRejection, OsDetail, ProfileError, QcmError, QcmErrorDto, RecoveryAction,

@@ -30,6 +30,7 @@ This is the execution checkpoint. The numbered specification remains the source 
 | TASK-021 stable errors/operations/confirmations | **DONE** | `qcm-core/src/{error,operation,confirmation,clock}.rs`; redaction suite covers every error family |
 | TASK-022 storage port + fake device | **DONE** | `qcm-core/src/ports/storage.rs` + `qcm-testkit`; every fault stage exercised without hardware |
 | TASK-023 mounted QuadStick discovery (core) | **DONE (adapter and hardware pending)** | `qcm-core/src/devices/discovery.rs`; 3 s scan cache, opaque ids, marker rechecked on every lookup |
+| TASK-024 safe install transaction | **DONE (no hardware yet)** | `qcm-core/src/devices/install.rs`; every stage fault-injected, restored/unchanged/uncertain asserted, no cancel inside the swap |
 | TASK-030 Tauri 2 + React + Vite scaffold | **DONE** | `src-tauri/` + root React app; `pnpm typecheck`/`pnpm test`/`pnpm lint`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked` and `pnpm tauri build` (macOS `.app` + `.dmg`) all green locally |
 
 ### TASK-030 pins
@@ -58,10 +59,11 @@ The session manager is the type any UI will drive: opaque session ids, an origin
 
 `qcm-core/src/devices/` has started. It holds one service that owns the storage
 port, the off-device backup area and the confirmation ledger, and so far one job
-on it: discovery, with the shipped 3 second scan cache in front of it.
+on it: discovery, with the shipped 3 second scan cache in front of it, and the
+install transaction.
 
-There is still no install transaction, no library operations, no storage
-adapter, no HID and no frontend beyond the scaffold.
+There is still no library operation, no storage adapter, no HID and no frontend
+beyond the scaffold.
 
 OQ-004 is answered for now and recorded in `51-open-questions.md`: local save stays at parity with the legacy `WriteAtomic`. `SavePlan` and `commit_save` are the seam a device-grade backup-and-read-back contract drops into without moving the command surface. Two smaller deferrals sit behind the same seam. The C1 Google-sheet stamp the legacy `SaveAsync` applied belongs to the Drive work in TASK-045, so nothing stamps it yet. And there is no size cap on opening a local profile, because the frozen implementation has none to match; `ConfigError::TooLarge` exists for whoever adds one.
 
