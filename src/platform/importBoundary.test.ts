@@ -40,6 +40,12 @@ function offenders(needle: RegExp, allowed: readonly string[]): string[] {
     .toSorted();
 }
 
+function adapterCommandCalls(): string[] {
+  const adapter = sources[ADAPTER] ?? "";
+  const nativeCall = /\b(?:call|callArgs|disposal)\s*(?:<[^>\n]+>)?\s*\(\s*"([a-z0-9_:-]+)"/gu;
+  return [...adapter.matchAll(nativeCall)].map((match) => match[1] ?? "").filter(Boolean).toSorted();
+}
+
 describe("import boundary", () => {
   it("finds the frontend sources it is meant to be checking", () => {
     expect(Object.keys(sources).length).toBeGreaterThan(5);
@@ -56,11 +62,11 @@ describe("import boundary", () => {
     expect(offenders(IPC_GLOBAL, [RESOLVER])).toEqual([]);
   });
 
-  // Nothing outside the adapter may name a command. A component that knows a
-  // command name is a component that will eventually call it.
-  it("keeps command names inside the adapter", () => {
-    for (const command of TAURI_COMMANDS) {
-      expect(offenders(new RegExp(`"${command}"`), [ADAPTER])).toEqual([]);
-    }
+  // Domain words legitimately appear in contracts and mocks, so scanning every
+  // quoted string for a command name produces false positives. Instead, extract
+  // only the adapter helpers that can actually reach native code and require
+  // that those call sites exactly match the exported command ledger.
+  it("keeps native command call sites synchronized with the adapter ledger", () => {
+    expect(adapterCommandCalls()).toEqual([...TAURI_COMMANDS].toSorted());
   });
 });
