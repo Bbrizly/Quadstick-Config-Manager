@@ -290,6 +290,84 @@ public class ProfileFileTests
         Assert.Equal(3, f.Document.Sheets.Count);
     }
 
+    // Copying a block of rows into another mode is the thing a tester did by
+    // hand, row by row, because the app had no way to do it.
+    [Fact]
+    public void CopyRowsToSheet_lands_the_rows_inside_the_target_mode()
+    {
+        var f = ProfileFile.Load(
+            "QuadStick Configuration,Version 1.5,,game\n" +
+            "Profile Name,,Walking\n" +
+            "game.csv\n" +
+            "Output or Function,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,normal,right_sip\n" +
+            "\n" +
+            "Profile Name,,Shooting\n" +
+            "\n" +
+            "Output or Function,Function,usb\n" +
+            "square,normal,right_puff\n" +
+            "\n" +
+            "Profile Name,,Menus\n" +
+            "\n" +
+            "Output or Function,Function,usb\n" +
+            "start,normal,lip\n");
+
+        var walking = f.Document.Sheets[0];
+        var rows = walking.Bindings.Select(b => b.Row).ToArray();
+        // Into the middle mode on purpose: a sheet with another one below it
+        // ends on the blank row the device needs, and copies that land past
+        // that blank quietly join the mode underneath instead.
+        Assert.Equal(2, f.CopyRowsToSheet(rows, 1));
+
+        // The source mode is untouched, the target gained both in order, and
+        // the mode below it gained nothing.
+        Assert.Equal(new[] { "x", "circle" },
+            f.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+        Assert.Equal(new[] { "square", "x", "circle" },
+            f.Document.Sheets[1].Bindings.Select(b => b.Output).ToArray());
+        Assert.Equal(new[] { "start" },
+            f.Document.Sheets[2].Bindings.Select(b => b.Output).ToArray());
+
+        // And the device agrees, read by its own loop.
+        var seen = FirmwareOracle.Read(f.ToCsvText());
+        Assert.Equal(3, seen.Count);
+        Assert.Equal(new[] { "square", "x", "circle" },
+            seen[1].Bindings.Select(b => b.Output).ToArray());
+        Assert.Equal(new[] { "start" },
+            seen[2].Bindings.Select(b => b.Output).ToArray());
+
+        Assert.True(f.Undo());
+        Assert.Single(f.Document.Sheets[1].Bindings);
+    }
+
+    // The copy is its own row: editing it must not reach back into the row it
+    // came from. Cloning is what makes that true, and nothing else pins it.
+    [Fact]
+    public void A_copied_row_is_independent_of_the_row_it_came_from()
+    {
+        var f = ProfileFile.Load(
+            "QuadStick Configuration,Version 1.5,,game\n" +
+            "Profile Name,,Walking\n" +
+            "game.csv\n" +
+            "Output or Function,Function,usb\n" +
+            "x,normal,lip\n" +
+            "\n" +
+            "Profile Name,,Shooting\n" +
+            "\n" +
+            "Output or Function,Function,usb\n" +
+            "square,normal,right_puff\n");
+
+        int source = f.Document.Sheets[0].Bindings[0].Row;
+        Assert.Equal(1, f.CopyRowsToSheet(new[] { source }, 1));
+
+        var copy = f.Document.Sheets[1].Bindings.Last();
+        f.SetCell(copy.Row, 0, "triangle");
+
+        Assert.Equal("x", f.Document.Sheets[0].Bindings[0].Output);
+        Assert.Equal("triangle", f.Document.Sheets[1].Bindings.Last().Output);
+    }
+
     [Fact]
     public void AddModeSheet_still_appends_when_no_mode_is_named()
     {

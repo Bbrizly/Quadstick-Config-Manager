@@ -523,6 +523,28 @@ public sealed class ProfileFile
         Reparse();
     }
 
+    /// <summary>Copy grid rows into another sheet, keeping their order, in one
+    /// undoable step. The rows are cloned, so editing a copy leaves the
+    /// original alone. Returns how many landed.</summary>
+    public int CopyRowsToSheet(IEnumerable<int> rows, int sheetIndex)
+    {
+        if (sheetIndex < 0 || sheetIndex >= Document.Sheets.Count) return 0;
+        var picked = rows.Where(r => r >= 1 && r <= Grid.Count)
+            .Distinct().OrderBy(r => r).ToList();
+        if (picked.Count == 0) return 0;
+        Snapshot();
+        var block = picked.Select(r => (string[])Grid[r - 1].Clone()).ToList();
+        // A sheet ends on the blank row the device needs above the next
+        // keyword. Landing past it puts the copies in the mode below, which
+        // reads as the copy silently going to the wrong mode.
+        var (start, end) = SheetRowRange(sheetIndex);
+        int at = end;
+        while (at > start && Grid[at - 1].All(string.IsNullOrWhiteSpace)) at--;
+        Grid.InsertRange(at, block);
+        Reparse();
+        return block.Count;
+    }
+
     // Swap two whole grid rows, so column-K comments travel with their row.
     public void SwapRows(int rowA, int rowB)
     {
