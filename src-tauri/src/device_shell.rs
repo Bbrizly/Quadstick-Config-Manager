@@ -4,14 +4,15 @@
 //! operation id and, when necessary, a one-shot confirmation id; it never gets
 //! the bytes, generation authority, staged-write handle or a filesystem path.
 
-use crate::adapters::device_picker::{DeviceFolderPicker, DeviceVolumeSource, NativeDeviceFolderPicker};
+use crate::adapters::device_picker::{
+    DeviceFolderPicker, DeviceVolumeSource, NativeDeviceFolderPicker,
+};
 use crate::adapters::storage::{FileSystemBackupStore, FileSystemDeviceStorage};
 use crate::device_ipc::{
-    CommitDeleteRequest, CommitInstallRequest, DeletePlanDto, DeleteReceiptDto,
-    DeviceFileRequest, DeviceGenerationRequest, DeviceLibrarySnapshotDto,
-    DevicePresenceSnapshotDto, DeviceProfileEntryDto, DeviceRequest, DeviceSummaryDto,
-    InstallPlanDto, InstallReceiptDto, OpenDeviceFile, confirmation_id, device_id,
-    operation_id, optional_confirmation_id,
+    CommitDeleteRequest, CommitInstallRequest, DeletePlanDto, DeleteReceiptDto, DeviceFileRequest,
+    DeviceGenerationRequest, DeviceLibrarySnapshotDto, DevicePresenceSnapshotDto,
+    DeviceProfileEntryDto, DeviceRequest, DeviceSummaryDto, InstallPlanDto, InstallReceiptDto,
+    OpenDeviceFile, confirmation_id, device_id, operation_id, optional_confirmation_id,
 };
 use crate::ipc::parse;
 use qcm_config::ProfileFile;
@@ -72,12 +73,7 @@ impl Clock for SharedSystemClock {
     }
 }
 
-pub struct DeviceShell<
-    S: DeviceStorage,
-    B: BackupStore,
-    C: Clock + Clone,
-    P: DeviceFolderPicker,
-> {
+pub struct DeviceShell<S: DeviceStorage, B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker> {
     devices: Mutex<Devices<S, B, C>>,
     picker: P,
     install_plans: Mutex<BTreeMap<OperationId, InstallPlan>>,
@@ -172,10 +168,7 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker>
         Ok(dto)
     }
 
-    pub fn commit_install(
-        &self,
-        raw: Value,
-    ) -> Result<InstallReceiptDto, DeviceOperationError> {
+    pub fn commit_install(&self, raw: Value) -> Result<InstallReceiptDto, DeviceOperationError> {
         let request: CommitInstallRequest =
             parse(raw, "commit_install request").map_err(DeviceOperationError::plain)?;
         let operation = operation_id(&request.plan_id).map_err(DeviceOperationError::plain)?;
@@ -194,7 +187,9 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker>
         self.devices()
             .install(plan, confirmation)
             .map(|receipt| InstallReceiptDto::from(&receipt))
-            .map_err(|failure| DeviceOperationError::for_operation(failure.operation, failure.error))
+            .map_err(|failure| {
+                DeviceOperationError::for_operation(failure.operation, failure.error)
+            })
     }
 
     pub fn prepare_delete(&self, raw: Value) -> Result<DeletePlanDto, QcmError> {
@@ -211,10 +206,7 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker>
         Ok(dto)
     }
 
-    pub fn commit_delete(
-        &self,
-        raw: Value,
-    ) -> Result<DeleteReceiptDto, DeviceOperationError> {
+    pub fn commit_delete(&self, raw: Value) -> Result<DeleteReceiptDto, DeviceOperationError> {
         let request: CommitDeleteRequest = parse(raw, "commit_delete_device_profile request")
             .map_err(DeviceOperationError::plain)?;
         let operation = operation_id(&request.plan_id).map_err(DeviceOperationError::plain)?;
