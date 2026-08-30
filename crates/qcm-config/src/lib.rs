@@ -19,7 +19,10 @@ pub use model::{Binding, ModeSheet, ProfileDocument, SheetType};
 pub use parser::{parse_structure, parse_with_issues};
 pub use preferences::{PreferenceDefinition, PreferenceEditor, load_preferences};
 pub use profile::ProfileFile;
-pub use validation::validate;
+pub use validation::{
+    MAX_DEVICE_FILE_NAME_LENGTH, is_invalid_filename_char, is_reserved_windows_name,
+    is_too_long_for_device, validate,
+};
 pub use vocab::{ValidationCatalog, load_validation};
 
 /// Parse and validate in the same order as legacy `ProfileFile.Load`:

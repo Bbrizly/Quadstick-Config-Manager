@@ -7,7 +7,10 @@ use crate::vocab::{
 };
 use std::collections::{BTreeSet, HashMap};
 
-const MAX_DEVICE_FILE_NAME_LENGTH: usize = 31;
+/// Firmware 2373 holds each root file name in a 32 byte slot and fills it with
+/// `strncpy(..., 32)`, so a 32nd character leaves no terminator and the device
+/// reads on into the next name. 31 is the longest name it can still open.
+pub const MAX_DEVICE_FILE_NAME_LENGTH: usize = 31;
 const MAX_BINDINGS: usize = 128;
 const MAX_PROFILES: usize = 16;
 const FUNCTION_PARAMETER_CEILING: i64 = 16_383;
@@ -159,14 +162,19 @@ fn validate_file_name(document: &ProfileDocument, issues: &mut Vec<Issue>) {
     }
 }
 
-fn is_invalid_filename_char(c: char) -> bool {
+/// One character rule for every layer that names a device file. The device
+/// layer shares it so a name the validator refuses cannot be written anyway.
+pub fn is_invalid_filename_char(c: char) -> bool {
     matches!(
         c,
         '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|' | ' '
     ) || c.is_control()
 }
 
-fn is_reserved_windows_name(name: &str) -> bool {
+/// Windows resolves these to devices whatever extension follows, so the write
+/// appears to work and the read back comes back empty. The segment before the
+/// first dot decides: `CON.old.csv` is the console too.
+pub fn is_reserved_windows_name(name: &str) -> bool {
     let first = name.split('.').next().unwrap_or(name);
     matches!(
         first.to_ascii_uppercase().as_str(),
@@ -711,6 +719,13 @@ fn cell_ref(column: usize, row: usize) -> String {
 
 fn utf16_len(value: &str) -> usize {
     value.encode_utf16().count()
+}
+
+/// Length measured the way the legacy `SafeFileName.IsTooLongForDevice` measured
+/// it, in UTF-16 units, so both implementations refuse the same names.
+#[must_use]
+pub fn is_too_long_for_device(name: &str) -> bool {
+    utf16_len(name) > MAX_DEVICE_FILE_NAME_LENGTH
 }
 
 fn warning(cell: impl Into<String>, message: impl Into<String>) -> Issue {
