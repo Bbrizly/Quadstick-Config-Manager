@@ -29,6 +29,7 @@ interface TauriConfig {
 
 const capability = JSON.parse(capabilityText) as CapabilityFile;
 const config = JSON.parse(tauriConfigText) as TauriConfig;
+const commandNames: readonly string[] = TAURI_COMMANDS;
 
 const FORBIDDEN_PLUGIN_PACKAGES = [
   "tauri-plugin-fs",
@@ -117,15 +118,15 @@ describe("TASK-035 WebView security boundary", () => {
       "commit_install",
       "start_live_input",
     ]) {
-      expect(TAURI_COMMANDS).toContain(domain);
+      expect(commandNames).toContain(domain);
     }
-    expect(TAURI_COMMANDS.every((command) => !command.startsWith("plugin:"))).toBe(true);
+    expect(commandNames.every((command) => !command.startsWith("plugin:"))).toBe(true);
 
     // A compromised component cannot obtain one of these calls through the one
     // frontend adapter. The native capability assertion above separately keeps
     // the corresponding Tauri plugin command unavailable to the WebView.
     for (const forbidden of FORBIDDEN_PLUGIN_COMMANDS) {
-      expect(TAURI_COMMANDS).not.toContain(forbidden as (typeof TAURI_COMMANDS)[number]);
+      expect(commandNames).not.toContain(forbidden);
     }
   });
 
