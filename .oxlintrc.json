@@ -1,0 +1,35 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react",
+    "typescript",
+    "unicorn",
+    "jsx-a11y"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2023": true
+  },
+  "ignorePatterns": [
+    "dist-ui",
+    "dist",
+    "node_modules",
+    "src/QuadStick.App",
+    "src/QuadStick.Format",
+    "src-tauri/gen",
+    "target",
+    "agent",
+    "docs",
+    "tools",
+    "ios"
+  ],
+  "rules": {
+    "no-console": "error",
+    "react/react-in-jsx-scope": "off"
+  }
+}

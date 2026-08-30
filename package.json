@@ -1,0 +1,43 @@
+{
+  "name": "quadstick-config-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "QuadStick Config Manager desktop shell (Tauri 2 + React rewrite)",
+  "license": "MIT",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=24.19.0 <25"
+  },
+  "scripts": {
+    "dev": "tauri dev",
+    "dev:web": "vite",
+    "build": "tauri build",
+    "build:web": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --build --force",
+    "lint": "oxlint .",
+    "test": "vitest run",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.11.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.11.4",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@vitejs/plugin-react": "6.1.1",
+    "jsdom": "30.0.1",
+    "oxlint": "1.80.0",
+    "typescript": "5.9.3",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
+  }
+}

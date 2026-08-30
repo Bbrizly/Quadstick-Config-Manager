@@ -1,0 +1,32 @@
+/* Tokens only. The real palette arrives with the UI migration; nothing here may
+   signal state by colour alone. */
+:root {
+  color-scheme: light dark;
+  --qcm-bg: #ffffff;
+  --qcm-fg: #17181c;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --qcm-bg: #17181c;
+    --qcm-fg: #f2f3f5;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--qcm-bg);
+  color: var(--qcm-fg);
+}
+
+.boot {
+  padding: 2rem;
+}
+
+.boot h1 {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem;
+}
