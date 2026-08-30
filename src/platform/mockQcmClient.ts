@@ -162,13 +162,20 @@ const MOCK_LIGHTS: readonly (readonly LedColour[])[] = [
 ];
 
 function deviceNameIsPlain(name: string): boolean {
+  const invalid = [...name].some(
+    (character) =>
+      character === "\\" ||
+      character === "/" ||
+      character === ":" ||
+      character.charCodeAt(0) < 32,
+  );
   return (
     name.length > 4 &&
     name.length <= 255 &&
     name === name.trim() &&
     !name.startsWith(".") &&
     name.toLowerCase().endsWith(".csv") &&
-    !/[\\/:\u0000-\u001f]/u.test(name)
+    !invalid
   );
 }
 
