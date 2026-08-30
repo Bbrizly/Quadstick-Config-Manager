@@ -24,9 +24,7 @@ fn redact<T>(result: Result<T, qcm_core::QcmError>) -> Result<T, Failure> {
 }
 
 fn redact_operation<T>(result: Result<T, DeviceOperationError>) -> Result<T, Failure> {
-    result.map_err(|failure| {
-        Box::new(QcmErrorDto::new(&failure.error, failure.operation))
-    })
+    result.map_err(|failure| Box::new(QcmErrorDto::new(&failure.error, failure.operation)))
 }
 
 #[tauri::command]
@@ -137,8 +135,7 @@ pub fn prepare_install(
     device_state: State<'_, DeviceShellState>,
     request: Value,
 ) -> Result<InstallPlanDto, Failure> {
-    let request: PrepareInstallRequest =
-        redact(parse(request, "prepare_install request"))?;
+    let request: PrepareInstallRequest = redact(parse(request, "prepare_install request"))?;
     let file = redact(profile_state.profile_for_install(&request.session_id))?;
     redact(device_state.prepare_install(&request.device_id, &file))
 }
