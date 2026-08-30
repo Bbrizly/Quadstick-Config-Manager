@@ -78,7 +78,6 @@ public partial class MainWindow : Window
     double _uiScale = 1.0;
     bool _reduceMotion;
 
-    enum QsModel { FPS, Original, Singleton }
     static readonly string[] ModelNames = { "QuadStick FPS", "QuadStick Original", "QuadStick Singleton" };
 
     void SaveModel() { _settings.Model = _model.ToString(); Settings.Save(_settings); }
@@ -2634,11 +2633,6 @@ public partial class MainWindow : Window
     IEnumerable<Zone> VisibleZones(Dictionary<string, List<Binding>> byZone, bool withUsbPort = false) =>
         AllZones.Where(z => z.Id switch
         {
-            // The Singleton has one mouthpiece tube: no left/right holes,
-            // no combos, no separate side tube. Still show them if the
-            // profile actually maps them, so nothing is ever hidden-but-live.
-            "mp_left" or "mp_right" or "combo" or "side" =>
-                _model != QsModel.Singleton || byZone.ContainsKey(z.Id),
             // The rear USB-A port is a real socket on the case, so the device
             // view always offers its card: reaching a joystick plugged in there
             // needs somewhere to click. The toolbar's unused list leaves it out
@@ -2648,7 +2642,11 @@ public partial class MainWindow : Window
             // Not parts of the QuadStick, so they appear only when the profile
             // actually has rows in them.
             "unset" or "settings" => byZone.ContainsKey(z.Id),
-            _ => true,
+            // A part the model does not have is still shown when the profile
+            // maps it, marked, so nothing is ever hidden-but-live. A Singleton
+            // has no left or right hole, no combos, no side tube, no lip switch
+            // and no switch jacks, so an unmapped one of those is not offered.
+            _ => ModelHasZone(z.Id) || byZone.ContainsKey(z.Id),
         });
 
     // A function cell holds its parameters too ("force_off 500", "delay 250"),
@@ -2919,43 +2917,89 @@ public partial class MainWindow : Window
 
         var visible = VisibleZones(byZone, withUsbPort: true).ToList();
 
+        // Say it, do not just mark it. A profile written for an FPS opened on a
+        // Singleton keeps every row and every card, but the diagram cannot draw
+        // a hole the device has not got, so the difference is named in words
+        // above the picture instead of being left to a dimmed card.
+        var foreign = ForeignMappedZones(byZone).ToList();
+        if (foreign.Count > 0)
+        {
+            var warning = new TextBlock
+            {
+                Name = "ModelMismatchWarning",
+                Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_ThisProfileMapsPartsYour,
+                    Plural.Of(foreign.Count, "Count_Part"), ModelNames[(int)_model]),
+                FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap,
+                Margin = new Avalonia.Thickness(2, 0, 2, 10),
+            };
+            BindBrush(warning, TextBlock.ForegroundProperty, "Warning");
+            DeviceCanvas.Children.Add(warning);
+        }
+
         // ---- Main diagram: the photo of the device with each part pinned
         // where it physically sits, so a part is found by looking at the thing
         // in your mouth instead of matching a name to a box. ----
-        var stage = new Canvas { Width = StageW, Height = StageH, FlowDirection = Avalonia.Media.FlowDirection.LeftToRight };
-        var photo = new Image
+        var d = Diagram;
+        var photoY = DevicePhotoY;
+        var stage = new Canvas
         {
-            Source = DevicePhoto(), Width = PhotoW, Height = PhotoH,
-            Stretch = Stretch.Uniform,
+            Name = "DeviceStage", Width = StageW, Height = DeviceStageHeight,
+            FlowDirection = Avalonia.Media.FlowDirection.LeftToRight,
+        };
+
+        // The catalog photos are square with wide transparent margins, so the
+        // device is drawn full size inside a window clipped to the part worth
+        // showing. Cropping here rather than in the file keeps the supplied
+        // asset untouched.
+        var frame = new Canvas
+        {
+            Name = "DevicePhotoFrame",
+            Width = d.PhotoW, Height = d.PhotoH, ClipToBounds = true,
             IsHitTestVisible = false, // the labels are the controls, not the picture
         };
-        Canvas.SetLeft(photo, PhotoX);
-        Canvas.SetTop(photo, PhotoY);
-        stage.Children.Add(photo);
+        var photo = new Image
+        {
+            Source = DevicePhoto(_model),
+            Width = d.FullSize.Width, Height = d.FullSize.Height,
+            Stretch = Stretch.Fill, IsHitTestVisible = false,
+        };
+        Canvas.SetLeft(photo, d.FullOffset.X);
+        Canvas.SetTop(photo, d.FullOffset.Y);
+        frame.Children.Add(photo);
+        Canvas.SetLeft(frame, d.PhotoX);
+        Canvas.SetTop(frame, photoY);
+        stage.Children.Add(frame);
 
         // The device's own mode lights, lit the way the firmware lights them.
         // The header says the same thing in words, because a colour on its own
         // is not a cue every reader gets.
         int mode = CurrentModeNumber();
         var lights = ModeLights.For(mode);
-        for (int i = 0; lights is not null && i < lights.Length; i++)
+        for (int i = 0; d.Lights is { } row && lights is not null && i < lights.Length; i++)
             if (lights[i] != ModeLight.Off)
-                foreach (var dot in Led(lights[i], PhotoX + (LedX + i * LedGap) * PhotoW, PhotoY + LedY * PhotoH))
+            {
+                var at = d.OnPhoto(row.X + i * row.Gap, row.Y);
+                foreach (var dot in Led(lights[i], d.PhotoX + at.X, photoY + at.Y))
                     stage.Children.Add(dot);
+            }
 
-        foreach (var (id, lx, ly, px, py) in Hotspots)
+        foreach (var spot in d.Hotspots)
         {
-            var z = visible.FirstOrDefault(v => v.Id == id);
+            var z = visible.FirstOrDefault(v => v.Id == spot.Zone);
             if (z is null) continue;
+            var at = d.OnPhoto(spot.PointX, spot.PointY);
+            double pointX = d.PhotoX + at.X, pointY = photoY + at.Y;
+            double labelY = spot.Bottom ? DeviceBottomLabelY : 0;
+            double calloutHeight = spot.Bottom ? SmallPillH : PillH;
             // The leader line leaves the edge of the label facing the part.
-            double ax = lx + PillW / 2, ay = ly < py ? ly + PillH : ly;
-            foreach (var line in Leader(ax, ay, px, py)) stage.Children.Add(line);
-            stage.Children.Add(Marker(px, py));
+            double ax = spot.LabelX + PillW / 2, ay = labelY < pointY ? labelY + calloutHeight : labelY;
+            foreach (var line in Leader(ax, ay, pointX, pointY)) stage.Children.Add(line);
+            stage.Children.Add(Marker(pointX, pointY));
 
-            var label = ZoneButton(z, byZone, PillW, minHeight: PillH, shortName: true);
+            var label = ZoneButton(z, byZone, PillW, minHeight: calloutHeight, shortName: true);
             label.Width = PillW;
-            Canvas.SetLeft(label, lx);
-            Canvas.SetTop(label, ly);
+            Canvas.SetLeft(label, spot.LabelX);
+            Canvas.SetTop(label, labelY);
             stage.Children.Add(label);
         }
         // Shrinks to fit a narrow panel instead of clipping a hotspot off the
@@ -2965,6 +3009,7 @@ public partial class MainWindow : Window
             Child = stage, Stretch = Stretch.Uniform,
             StretchDirection = StretchDirection.DownOnly,
             HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Top,
         };
         FitDeviceStage();
         DeviceCanvas.Children.Add(_stageBox);
@@ -2974,9 +3019,17 @@ public partial class MainWindow : Window
         // input yet" reads as the end of the list. They have nowhere to sit on
         // the photo, and under it they pushed the QuadStick itself off the top
         // of the panel it is the whole point of. ----
-        foreach (var z in visible.Where(z => z.Id is "combo" or "jacks" or "other" or "settings")
-                                 .Concat(visible.Where(z => z.Id is "unset")))
+        // Anything the diagram has no marker for goes here too. Parts the model
+        // does not have are collected behind one card rather than given a row
+        // each: on a Singleton that was five extra rows shoving the modes list
+        // and the view keys off the panel, for parts that device has not got.
+        var pinned = d.Hotspots.Select(h => h.Zone).ToHashSet(StringComparer.Ordinal);
+        var railed = visible.Where(z => z.Id is not "unset" && !pinned.Contains(z.Id)).ToList();
+        foreach (var z in railed.Where(z => ModelHasZone(z.Id))
+                                .Concat(visible.Where(z => z.Id is "unset")))
             ZoneList.Children.Add(RailRow(z, byZone, compact: true));
+        var offModel = railed.Where(z => !ModelHasZone(z.Id)).ToList();
+        if (offModel.Count > 0) ZoneList.Children.Add(OffModelCard(offModel, byZone));
     }
 
     // The scaled photo, kept so a resize can refit it without a full rebuild.
@@ -2994,37 +3047,29 @@ public partial class MainWindow : Window
     {
         if (_stageBox is null) return;
         double room = DeviceStageScroll.Bounds.Height;
-        _stageBox.MaxHeight = room > 0 ? Math.Max(StageFloorH, room) : StageH;
+        _stageBox.MaxHeight = room > 0 ? Math.Max(StageFloorH, room) : DeviceStageHeight;
     }
 
     // The photo and its labels are laid out at one fixed size and scaled as a
-    // whole, so a label can never drift off the part it names. Every number
-    // below is measured off Assets/QuadStick.png at 1536x1024. Replacing that
-    // file means measuring them again; DeviceHotspotTests pins the size so a
-    // swap fails loudly instead of quietly pointing at the wrong hole.
-    const double StageW = 600, StageH = 468;
-    const double PhotoX = 80, PhotoY = 84, PhotoW = 440, PhotoH = 293;
-    const double PillW = 116, PillH = 68;
+    // whole, so a label can never drift off the part it names. The photo, the
+    // parts on it and their measured positions live in DeviceDiagram, one entry
+    // per model, so an Original owner is never shown an FPS.
+    DeviceDiagram Diagram => DeviceDiagram.For(_model);
 
-    // The five mode lights across the top of the case, as fractions of the
-    // photo. Measured off Assets/QuadStick.png: the domes' paired specular
-    // glints give the centre of each, and a line fitted through the five gives
-    // the spacing. None of them is lit in this photo; the app draws its own.
-    const double LedX = 0.2407, LedGap = 0.1000, LedY = 0.1729;
+    const double StageW = 700;
+    const double PillW = 160, PillH = 116, SmallPillH = 100;
 
-
-    // Each part: where its label sits, and the point on the photo it names.
-    // Labels sit in clear space above and below the device because six of them
-    // dropped straight onto the parts cover the parts and each other.
-    static readonly (string Id, double LabelX, double LabelY, double PointX, double PointY)[] Hotspots =
-    {
-        ("joystick", 150, 390, 217, 253),   // the left arch of the gimbal, clear of the lip disc
-        ("mp_left", 38, 0, 218, 224),
-        ("mp_center", 174, 0, 273, 224),
-        ("mp_right", 310, 0, 327, 224),
-        ("side", 446, 0, 407, 222),         // the bore of the side tube, not its body
-        ("lip", 318, 390, 269, 286),
-    };
+    // Larger type makes the top callouts taller. Move the photo down by the
+    // same amount and move the lower band with it, so the controls never sit
+    // on top of the device at an accessibility scale.
+    double DevicePhotoY => Diagram.PhotoY + Math.Max(0, (_uiScale - 1.0) * 98);
+    // The lower band clears the bottom of the photo wherever the photo ends up,
+    // which is a different place on each of the three models.
+    double DeviceBottomLabelY => DevicePhotoY + Diagram.PhotoH + 13;
+    // A model with nothing pinned below gives that band back to the photo.
+    double DeviceStageHeight => Diagram.Hotspots.Any(h => h.Bottom)
+        ? DeviceBottomLabelY + SmallPillH + 20
+        : DevicePhotoY + Diagram.PhotoH + 20;
 
     // Leader lines and markers are drawn twice: a thick line in the surface
     // colour under a thin one in the text colour, so they stay visible over
@@ -3077,13 +3122,18 @@ public partial class MainWindow : Window
         return dot;
     }
 
-    // Loaded once: BuildDeviceView runs on every edit and decoding the PNG
-    // each time showed up as a stutter on the mapping panel.
-    static Avalonia.Media.Imaging.Bitmap? _devicePhoto;
+    // Decoded once per model: BuildDeviceView runs on every edit and decoding
+    // the PNG each time showed up as a stutter on the mapping panel.
+    static readonly Dictionary<QsModel, Avalonia.Media.Imaging.Bitmap> _devicePhotos = new();
 
-    static Avalonia.Media.Imaging.Bitmap DevicePhoto() =>
-        _devicePhoto ??= new Avalonia.Media.Imaging.Bitmap(Avalonia.Platform.AssetLoader.Open(
-            new Uri("avares://QuadStickConfigManager/Assets/QuadStick.png")));
+    static Avalonia.Media.Imaging.Bitmap DevicePhoto(QsModel model)
+    {
+        if (_devicePhotos.TryGetValue(model, out var cached)) return cached;
+        var bmp = new Avalonia.Media.Imaging.Bitmap(
+            Avalonia.Platform.AssetLoader.Open(new Uri(DeviceDiagram.For(model).Asset)));
+        _devicePhotos[model] = bmp;
+        return bmp;
+    }
 
     // The device numbers modes by counting Profile Name segments as it reads
     // the file, so a mode's number is its position among those, not its row in
@@ -3095,9 +3145,17 @@ public partial class MainWindow : Window
     // Which parts the selected model physically has. Zones the model lacks
     // still show when a profile maps them, but marked, so a profile made for
     // an FPS is never silently broken on a Singleton.
+    // "settings" and "unset" are rows in the file rather than hardware, so no
+    // model owns them and they are never called foreign.
     bool ModelHasZone(string zoneId) =>
-        _model != QsModel.Singleton
-        || zoneId is not ("mp_left" or "mp_right" or "combo" or "side" or "lip" or "jacks");
+        zoneId is "settings" or "unset" || Diagram.HasZone(zoneId);
+
+    // Parts this profile maps that the selected model does not have. The rows
+    // stay editable and the zone cards stay reachable; this is what the banner
+    // over the diagram names, because a marked card somebody has to scroll to
+    // is not the same as being told.
+    IEnumerable<Zone> ForeignMappedZones(Dictionary<string, List<Binding>> byZone) =>
+        AllZones.Where(z => byZone.ContainsKey(z.Id) && !ModelHasZone(z.Id));
 
     Control ZoneButton(Zone z, Dictionary<string, List<Binding>> byZone, double minWidth,
                        double minHeight = 84, bool circle = false, bool shortName = false)
@@ -3166,6 +3224,89 @@ public partial class MainWindow : Window
     // A part row for the Parts List view: the same selectable control as a
     // diagram tile, laid out as a wide row (name + mapping count) so the left
     // side becomes a plain list to arrow through. Feeds the same editor.
+    // The parts this model has not got, behind one card. A profile written for
+    // an FPS opened on a Singleton maps five of them, and five dimmed rows in
+    // the side panel is five rows of somebody else's device in front of the
+    // list of modes.
+    //
+    // The card opens a flyout to the right holding the same rows the panel
+    // would have shown, so nothing is lost: the mappings are still there, still
+    // named, still one click from the editor. They are just not in the way of
+    // the parts the device actually has.
+    Control OffModelCard(List<Zone> zones, Dictionary<string, List<Binding>> byZone)
+    {
+        int total = zones.Sum(z => byZone.GetValueOrDefault(z.Id)?.Count ?? 0);
+        string title = string.Format(CultureInfo.CurrentCulture,
+            Strings.Main_NotOnYourModelName, ModelNames[(int)_model]);
+
+        var name = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+        name.Children.Add(new TextBlock
+        {
+            Text = title, FontWeight = FontWeight.Bold,
+            FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+        });
+        name.Children.Add(new TextBlock
+        {
+            Text = Plural.Of(zones.Count, "Count_Part"),
+            FontSize = Size("SmallSize"), Classes = { "muted" },
+        });
+
+        var cnt = new TextBlock
+        {
+            Text = Plural.Of(total, "Count_Mapping"),
+            FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center,
+        };
+        BindBrush(cnt, TextBlock.ForegroundProperty, "AccentText");
+
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        row.Children.Add(name);
+        Grid.SetColumn(cnt, 1);
+        row.Children.Add(cnt);
+
+        var body = new StackPanel
+        {
+            Spacing = 4, MinWidth = 240, MaxWidth = 320, Margin = new Avalonia.Thickness(4),
+            Focusable = true, // focus lands here so a reader reads the list, not silence
+        };
+        body.Children.Add(new TextBlock
+        {
+            Text = title, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"),
+            TextWrapping = TextWrapping.Wrap,
+        });
+        body.Children.Add(new TextBlock
+        {
+            Text = Strings.Main_TheseRowsAreKeptInThe, FontSize = Size("SmallSize"),
+            Classes = { "secondary" }, TextWrapping = TextWrapping.Wrap,
+            Margin = new Avalonia.Thickness(0, 0, 0, 4),
+        });
+
+        var flyout = new Flyout { Content = body, Placement = PlacementMode.RightEdgeAlignedTop };
+        foreach (var z in zones)
+        {
+            // The same row the panel would have drawn, so a part is named,
+            // counted and selected here exactly as it is anywhere else.
+            var item = (ToggleButton)RailRow(z, byZone, compact: true);
+            item.Click += (_, _) => flyout.Hide();
+            body.Children.Add(item);
+        }
+
+        var card = new Button
+        {
+            Classes = { "zone" }, HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            Padding = new Avalonia.Thickness(10, 8),
+            Content = row, Flyout = flyout,
+        };
+        AutomationProperties.SetName(card, string.Format(CultureInfo.CurrentCulture,
+            Strings.Main_NotOnYourModelNameParts, title,
+            Plural.Of(zones.Count, "Count_Part"), Plural.Of(total, "Count_Mapping")));
+        // Selecting one of these rebuilds the panel, and the row that was
+        // clicked no longer exists. Point every off-model part's focus at the
+        // card, which does.
+        foreach (var z in zones) _zoneButtons[z.Id] = card;
+        return card;
+    }
+
     Control RailRow(Zone z, Dictionary<string, List<Binding>> byZone, bool compact = false)
     {
         byZone.TryGetValue(z.Id, out var bindings);
@@ -3802,6 +3943,8 @@ public partial class MainWindow : Window
 
     public void SelectZoneForPreview(string zoneId)
     { _selectedZone = zoneId; BuildDeviceView(); BuildZoneDetail(); }
+
+    internal string? SelectedZoneForPreview => _selectedZone;
 
     public void SetModelForPreview(int index)
     { ModelPicker.SelectedIndex = index; }

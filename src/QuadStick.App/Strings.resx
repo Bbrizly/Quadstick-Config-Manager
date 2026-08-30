@@ -277,6 +277,12 @@
   <data name="Count_Mode_other" xml:space="preserve">
     <value>{0} modes</value>
   </data>
+  <data name="Count_Part_one" xml:space="preserve">
+    <value>{0} part</value>
+  </data>
+  <data name="Count_Part_other" xml:space="preserve">
+    <value>{0} parts</value>
+  </data>
   <data name="Count_RowDeleted_one" xml:space="preserve">
     <value>{0} row deleted. Ctrl+Z brings it back.</value>
   </data>
@@ -1318,6 +1324,18 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_NotOnModel" xml:space="preserve">
     <value>Not on model</value>
+  </data>
+  <data name="Main_NotOnYourModelName" xml:space="preserve">
+    <value>Not on your {0}</value>
+  </data>
+  <data name="Main_NotOnYourModelNameParts" xml:space="preserve">
+    <value>{0}. {1}, {2}. Opens the list.</value>
+  </data>
+  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
+    <value>These rows are kept in the file and can still be edited. Pick a part to open its mappings.</value>
+  </data>
+  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
+    <value>This profile maps {0} your {1} does not have. They are in the list on the left, and can still be edited.</value>
   </data>
   <data name="Main_NotOnYourModel" xml:space="preserve">
     <value>Not on your model</value>

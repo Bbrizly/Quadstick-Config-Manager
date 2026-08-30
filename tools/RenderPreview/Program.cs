@@ -139,6 +139,27 @@ AppBuilder.Configure<App>()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
     .SetupWithoutStarting();
 
+// --models draws the device view once per QuadStick, which is the only way to
+// see that each model got its own photo and that its callouts sit where the
+// device actually has parts. A wrong hotspot reads as fine in a test and is
+// obvious here.
+if (args.Contains("--models"))
+{
+    for (int i = 0; i < 3; i++)
+    {
+        int model = i;
+        Capture($"model-{model}", w =>
+        {
+            w.Width = 1500;
+            w.Height = 1000;
+            w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+            w.SetModelForPreview(model);
+            w.SetDeviceViewForPreview(true);
+            w.UpdateLayout();
+        });
+    }
+}
+
 // The set for Drew: one shot per thing he asked for, named after his own
 // numbering, so a reply to his email can point at a picture instead of
 // describing a screen. Light theme only, since these go in an email.
