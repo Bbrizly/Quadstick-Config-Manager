@@ -740,6 +740,12 @@ impl fmt::Display for QcmError {
 
 impl std::error::Error for QcmError {}
 
+impl From<ConfigError> for QcmError {
+    fn from(error: ConfigError) -> Self {
+        Self::Config(error)
+    }
+}
+
 impl From<StorageError> for QcmError {
     fn from(error: StorageError) -> Self {
         Self::Storage(error)

@@ -12,12 +12,12 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `Vocab.cs` | vocab | qcm-config/vocab.rs | REWRITE/generated | set/count parity | 2 | CONTRACTED |
 | `PreferenceCatalog.cs` | preference metadata | qcm-config/preferences.rs | REWRITE | catalog parity | 2 | CONTRACTED |
 | `FunctionParameters.cs` | function metadata | qcm-config | REWRITE | parser/validator | 2 | CONTRACTED |
-| `ModeLights.cs` | LED patterns | qcm-config | REWRITE | 1–32 exact | 2 | CONTRACTED |
+| `ModeLights.cs` | LED patterns | qcm-core/devices/library.rs | REWRITE | 1–32 exact | 2/3 | PORTED |
 | `Data/**`, Templates | embedded contract data | qcm-config assets | REUSE/GENERATE | hash/parity | 2 | CONTRACTED |
-| `Device.cs` discovery | mount detection | native storage adapter | SPLIT/REWRITE | fake+hardware | 3 | CONTRACTED |
+| `Device.cs` discovery | mount detection | qcm-core/devices/discovery.rs + src-tauri storage adapter | SPLIT/REWRITE | fake+temp-dir; hardware pending | 3 | PORTED |
 | `Device.cs` filename rules | safe target names | qcm-config/core | SPLIT | unit parity | 2/3 | PORTED |
-| `Device.cs` install | safe transaction | qcm-core/storage | REWRITE | fault+hardware | 3 | CONTRACTED |
-| `Device.cs` library/delete | device files | qcm-core/storage | REWRITE | parity+hardware | 3 | CONTRACTED |
+| `Device.cs` install | safe transaction | qcm-core/devices/install.rs | REWRITE | fault at every stage; hardware pending | 3 | PORTED |
+| `Device.cs` library/delete | device files, order, LED table, prefs read | qcm-core/devices/library.rs | REWRITE | DeviceFileManagementTests ported; hardware pending | 3 | PORTED |
 | `MainWindow.axaml` | shell/layout | React AppShell/Editor | REWRITE | component/E2E/AT | 5/6 | CONTRACTED |
 | `MainWindow.axaml.cs` | orchestration/editor/UI | qcm-core + React features | SPLIT | behavior matrix | 3–7 | CONTRACTED |
 | `MainWindow.axaml.cs::{SaveAsync,ConfirmLeaveAsync,_savePath}` | open/save/save-as/close-dirty policy | qcm-core/profiles + local store port | SPLIT | session tests | 3 | PORTED |

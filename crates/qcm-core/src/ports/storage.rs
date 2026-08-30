@@ -438,6 +438,84 @@ pub trait BackupStore {
     fn store(&self, name: &DeviceFileName, bytes: &[u8]) -> Result<BackupReceipt, StorageError>;
 }
 
+/// Both ports forward through a reference, so one adapter can back the device
+/// service, a diagnostics view and a test at the same time without any of them
+/// owning it. Every method takes `&self` already, which is what makes this
+/// nothing more than forwarding.
+impl<T: DeviceStorage + ?Sized> DeviceStorage for &T {
+    fn discover(&self) -> Result<Vec<StorageProbe>, StorageError> {
+        (**self).discover()
+    }
+
+    fn revalidate(&self, device: StorageDeviceId) -> Result<StorageProbe, StorageError> {
+        (**self).revalidate(device)
+    }
+
+    fn list_files(
+        &self,
+        device: StorageDeviceId,
+        expected: DeviceGeneration,
+    ) -> Result<DeviceListing, StorageError> {
+        (**self).list_files(device, expected)
+    }
+
+    fn read_file(
+        &self,
+        device: StorageDeviceId,
+        expected: DeviceGeneration,
+        name: &DeviceFileName,
+    ) -> Result<Vec<u8>, StorageError> {
+        (**self).read_file(device, expected, name)
+    }
+
+    fn stage_write(
+        &self,
+        device: StorageDeviceId,
+        expected: DeviceGeneration,
+        target: &SafeDeviceFileName,
+        bytes: &[u8],
+    ) -> Result<StagedWrite, StorageError> {
+        (**self).stage_write(device, expected, target, bytes)
+    }
+
+    fn verify_staged(&self, staged: &StagedWrite, expected: &[u8]) -> Result<(), StorageError> {
+        (**self).verify_staged(staged, expected)
+    }
+
+    fn commit_staged(&self, staged: StagedWrite) -> Result<(), CommitFailure> {
+        (**self).commit_staged(staged)
+    }
+
+    fn discard_staged(&self, staged: StagedWrite) -> Result<(), StorageError> {
+        (**self).discard_staged(staged)
+    }
+
+    fn restore_file(
+        &self,
+        device: StorageDeviceId,
+        expected: DeviceGeneration,
+        name: &DeviceFileName,
+        bytes: &[u8],
+    ) -> Result<(), StorageError> {
+        (**self).restore_file(device, expected, name, bytes)
+    }
+
+    fn delete_file(
+        &self,
+        device: StorageDeviceId,
+        expected: DeviceGeneration,
+        name: &DeviceFileName,
+    ) -> Result<(), StorageError> {
+        (**self).delete_file(device, expected, name)
+    }
+}
+
+impl<T: BackupStore + ?Sized> BackupStore for &T {
+    fn store(&self, name: &DeviceFileName, bytes: &[u8]) -> Result<BackupReceipt, StorageError> {
+        (**self).store(name, bytes)
+    }
+}
+
 /// The delete rules, in one place, because both the fake and the real adapter
 /// have to enforce them and the window is not allowed to be the thing that
 /// remembers. Order matters: a protected name is refused before anything is

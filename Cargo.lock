@@ -2435,6 +2435,7 @@ dependencies = [
 name = "qcm-tauri"
 version = "0.1.0"
 dependencies = [
+ "qcm-config",
  "qcm-core",
  "serde",
  "serde_json",
