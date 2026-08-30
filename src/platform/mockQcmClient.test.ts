@@ -218,7 +218,7 @@ describe("MockQcmClient", () => {
     const snapshot = await client.getAppSnapshot();
     expect(snapshot.capabilities.profileEditing).toBe(true);
     expect(snapshot.capabilities.deviceInstall).toBe(true);
-    expect(snapshot.capabilities.liveInput).toBe(false);
+    expect(snapshot.capabilities.liveInput).toBe(true);
   });
 
   it("reports a failed save rather than clearing dirty anyway", async () => {
