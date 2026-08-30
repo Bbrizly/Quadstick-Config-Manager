@@ -49,7 +49,7 @@ Work top-to-bottom. A checked box means its task acceptance criteria and linked 
 ## Phase 4/5 — shell and frontend foundation
 
 - [x] TASK-030 Scaffold Tauri 2 + React + Vite using pinned toolchains.
-- [ ] TASK-031 Define `QcmClient`, DTOs and `MockQcmClient`.
+- [x] TASK-031 Define `QcmClient`, DTOs and `MockQcmClient`.
 - [ ] TASK-032 Implement profile/settings Tauri commands.
 - [ ] TASK-033 Implement device/storage Tauri commands and confirmation plans.
 - [ ] TASK-034 Implement low-rate events + live/progress Channels.

@@ -32,8 +32,15 @@ Evidence paths are target placeholders until implemented.
 | T-026 | privacy launch network | integration traffic spy | packet/support review | PLANNED |
 | T-027 | error redaction | `qcm-core/tests/redaction.rs` every family | bug-report screenshot review | IMPLEMENTED |
 | T-028 | session revision/atomic batch/close-dirty | `qcm-core/tests/profile_sessions.rs` on the fake library | leave prompt with a real save | IMPLEMENTED |
+| T-029 | frontend client contract + import boundary | `src/platform/mockQcmClient.test.ts` scenarios + `src/platform/importBoundary.test.ts` | browser run of the mock with no Tauri | IMPLEMENTED |
 
 Critical behavior cannot move to PARITY-TESTED without at least one T row; storage/HID required parity also needs hardware evidence.
+
+T-029 is IMPLEMENTED, not PARITY-TESTED. `MockQcmClient` is a fake written to
+the same contract as the native commands, not an oracle. It holds the revision
+rule, the all-or-nothing batch and the error codes, and it deliberately models
+no format behavior at all. What it cannot prove is that the two halves agree,
+which is what a UI driven against both in TASK-038 is for.
 
 T-006, T-007 and T-008 are IMPLEMENTED, not PARITY-TESTED. They are unit and
 temp-directory tests written from the shipped `Device.cs` and its three test

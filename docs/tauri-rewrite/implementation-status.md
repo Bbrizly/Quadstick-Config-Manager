@@ -33,6 +33,7 @@ This is the execution checkpoint. The numbered specification remains the source 
 | TASK-024 safe install transaction | **DONE (no hardware yet)** | `qcm-core/src/devices/install.rs`; every stage fault-injected, restored/unchanged/uncertain asserted, no cancel inside the swap |
 | TASK-025 device library/delete/order/preferences | **DONE (no hardware yet)** | `qcm-core/src/devices/library.rs`; `DeviceFileManagementTests` ported, LED table 1-32 exact, backup before delete |
 | TASK-030 Tauri 2 + React + Vite scaffold | **DONE** | `src-tauri/` + root React app; `pnpm typecheck`/`pnpm test`/`pnpm lint`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked` and `pnpm tauri build` (macOS `.app` + `.dmg`) all green locally |
+| TASK-031 QcmClient contracts + mock | **DONE (PORTED)** | `src/platform/**`; 19 mock contract scenarios plus an import-boundary test and an oxlint `no-restricted-imports` rule |
 
 ### TASK-030 pins
 
