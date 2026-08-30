@@ -7,7 +7,8 @@
  {
   "name": "joystick_deflection_maximum",
   "label": "ジョイスティックの最大振れ幅",
-  "description": "フルシグナルになるまでにスティックをどれだけ動かす必要があるかを指定します。QMPではこれをジョイスティックの可動域と呼んでおり、デバイスが持つ感度調整に最も近い設定です。数値が大きいほど、同じ出力を得るのに必要な移動量が増えるため、ジョイスティックの感度は下がったように感じられます。QMPは4つの方向スライダーのうち最大のものを採用します。"
+  "description": "フルシグナルになるまでにスティックをどれだけ動かす必要があるかを指定します。QMPではこれをジョイスティックの可動域と呼んでおり、デバイスが持つ感度調整に最も近い設定です。数値が大きいほど、同じ出力を得るのに必要な移動量が増えるため、ジョイスティックの感度は下がったように感じられます。QMPは4つの方向スライダーのうち最大のものを採用します。",
+  "alsoCalled": "可動域"
  },
  {
   "name": "deflection_multiplier_up",
@@ -52,7 +53,8 @@
  },
  {
   "name": "anti_dead_zone",
-  "label": "アンチデッドゾーン"
+  "label": "アンチデッドゾーン",
+  "description": "スティックが向いている方向に、読み取り値ごとに一定の押し出しを加え、ゲーム自身が設けているデッドゾーンを越えさせます。ゼロでオフです。"
  },
  {
   "name": "joystick_warning",
@@ -73,13 +75,15 @@
   "name": "sip_puff_threshold_soft",
   "label": "ソフトsip/puffしきい値",
   "unit": "パーセント",
-  "description": "ソフトなsipまたはpuffが始まる圧力または吸引の水準です。"
+  "description": "ソフトなsipまたはpuffが始まる圧力または吸引の水準です。",
+  "alsoCalled": "吸う・吹くの低いしきい値"
  },
  {
   "name": "sip_puff_threshold",
   "label": "ハードsip/puffしきい値",
   "unit": "パーセント",
-  "description": "出力を発動する圧力です。QMPではこれをsip and puff high thresholdと表示しており、sip_puff_threshold_softが低い方のしきい値です。"
+  "description": "出力を発動する圧力です。QMPではこれをsip and puff high thresholdと表示しており、sip_puff_threshold_softが低い方のしきい値です。",
+  "alsoCalled": "吸う・吹くの高いしきい値"
  },
  {
   "name": "sip_puff_maximum",
@@ -91,7 +95,8 @@
   "name": "sip_puff_delay_soft",
   "label": "ソフトsip/puff遅延",
   "unit": "ミリ秒",
-  "description": "ソフトなsipとpuffの信号は、この短い遅延の後に検知されます。QMPではこれをLow Threshold Delayと表示しています。"
+  "description": "ソフトなsipとpuffの信号は、この短い遅延の後に検知されます。QMPではこれをLow Threshold Delayと表示しています。",
+  "alsoCalled": "低いしきい値の遅延"
  },
  {
   "name": "sip_puff_delay_hard",
@@ -179,7 +184,8 @@
  },
  {
   "name": "enable_rumble",
-  "label": "振動"
+  "label": "振動",
+  "description": "Dual Shock 3 モードのときだけ、ゲームの振動を QuadStick 自身のスピーカーから音として鳴らします。"
  },
  {
   "name": "bluetooth_device_mode",
@@ -188,19 +194,23 @@
  },
  {
   "name": "bluetooth_authentication_mode",
-  "label": "Bluetooth認証モード"
+  "label": "Bluetooth認証モード",
+  "description": "QuadStick が求めるペアリングの強さです。無線モジュールに SA 設定として送られるため、Bluetooth がオンのときだけ意味を持ちます。"
  },
  {
   "name": "bluetooth_connection_mode",
-  "label": "Bluetooth接続モード"
+  "label": "Bluetooth接続モード",
+  "description": "QuadStick が接続されるのを待つか、自分から接続しに行くかです。無線モジュールに SM 設定として送られます。"
  },
  {
   "name": "bluetooth_remote_address",
-  "label": "Bluetoothリモートアドレス"
+  "label": "Bluetoothリモートアドレス",
+  "description": "QuadStick が接続しに行く Bluetooth アドレスです。QuadStick サポートから指定がない限り空のままにしてください。最大 16 文字です。"
  },
  {
   "name": "bluetooth_remote_adapter",
-  "label": "Bluetoothリモートアダプター"
+  "label": "Bluetoothリモートアダプター",
+  "description": "QuadStick を他の機器のための Bluetooth アダプターにします。これがオンで、Bluetooth のデバイスモードが ssp の間、自身のマウスピースとスティックは読み取らなくなります。"
  },
  {
   "name": "bluetooth_throttle",
@@ -240,12 +250,14 @@
  {
   "name": "enable_usb_a_device",
   "label": "USB-Aデバイスモード",
-  "risk": "QuadStickがどのUSBポートに自らを提示するかを決めます。これを変更するとデバイスはUSBを切断して再接続するため、誤った値だとコンソールやコンピューターから認識されなくなることがあります。これはenable_usb_a_hostより優先されます。これが設定されている間は、ホスト側の設定にかかわらずUSB-Aホストスタックは停止します。QuadStickサポートの指示があった場合のみ変更してください。"
+  "risk": "QuadStickがどのUSBポートに自らを提示するかを決めます。これを変更するとデバイスはUSBを切断して再接続するため、誤った値だとコンソールやコンピューターから認識されなくなることがあります。これはenable_usb_a_hostより優先されます。これが設定されている間は、ホスト側の設定にかかわらずUSB-Aホストスタックは停止します。QuadStickサポートの指示があった場合のみ変更してください。",
+  "description": "QuadStick がどの USB 端子に現れるかです。ゼロは自身のポート、ゼロより大きい値は USB-A 端子で、その場合 USB-A ホストモードもオフになります。"
  },
  {
   "name": "enable_usb_a_host",
   "label": "USB-Aホストモード",
-  "description": "ファームウェア2373以降で利用できます。これがオンでUSB-Aデバイスモードがオフの場合、デバイスはUSB-AポートでUSBホストとして動作し、そこに接続したコントローラーはusb_1の入力チャンネルに供給されます。これをオフにするか、USB-Aデバイスモードをオンにすると、ホストは停止します。USB-Aデバイスモードが優先されます。QMPではこれをUSB-A Host Modeと表示しています。"
+  "description": "ファームウェア2373以降で利用できます。これがオンでUSB-Aデバイスモードがオフの場合、デバイスはUSB-AポートでUSBホストとして動作し、そこに接続したコントローラーはusb_1の入力チャンネルに供給されます。これをオフにするか、USB-Aデバイスモードをオンにすると、ホストは停止します。USB-Aデバイスモードが優先されます。QMPではこれをUSB-A Host Modeと表示しています。",
+  "alsoCalled": "USB-A ホストモード"
  },
  {
   "name": "enable_DS3_emulation",
@@ -261,7 +273,8 @@
    "Nintendo Switch Pro Controller、USBドライブなし",
    "DualShock 4、USBドライブなし",
    "DualShock 4ワイヤレス、USBドライブなし"
-  ]
+  ],
+  "alsoCalled": "PS4 モードで起動"
  },
  {
   "name": "enable_usb_comm",
@@ -270,35 +283,43 @@
  },
  {
   "name": "usb_1_multiplier_up",
-  "label": "USB 1 上方向倍率"
+  "label": "USB 1 上方向倍率",
+  "description": "USB-A ポートに接続したコントローラーの左スティックの上方向を強めます。"
  },
  {
   "name": "usb_1_multiplier_down",
-  "label": "USB 1 下方向倍率"
+  "label": "USB 1 下方向倍率",
+  "description": "USB-A ポートに接続したコントローラーの左スティックの下方向を強めます。"
  },
  {
   "name": "usb_1_multiplier_left",
-  "label": "USB 1 左方向倍率"
+  "label": "USB 1 左方向倍率",
+  "description": "USB-A ポートに接続したコントローラーの左スティックの左方向を強めます。"
  },
  {
   "name": "usb_1_multiplier_right",
-  "label": "USB 1 右方向倍率"
+  "label": "USB 1 右方向倍率",
+  "description": "USB-A ポートに接続したコントローラーの左スティックの右方向を強めます。"
  },
  {
   "name": "usb_2_multiplier_up",
-  "label": "USB 2 上方向倍率"
+  "label": "USB 2 上方向倍率",
+  "description": "USB-A ポートに接続したコントローラーの右スティックの上方向を強めます。"
  },
  {
   "name": "usb_2_multiplier_down",
-  "label": "USB 2 下方向倍率"
+  "label": "USB 2 下方向倍率",
+  "description": "USB-A ポートに接続したコントローラーの右スティックの下方向を強めます。"
  },
  {
   "name": "usb_2_multiplier_left",
-  "label": "USB 2 左方向倍率"
+  "label": "USB 2 左方向倍率",
+  "description": "USB-A ポートに接続したコントローラーの右スティックの左方向を強めます。"
  },
  {
   "name": "usb_2_multiplier_right",
-  "label": "USB 2 右方向倍率"
+  "label": "USB 2 右方向倍率",
+  "description": "USB-A ポートに接続したコントローラーの右スティックの右方向を強めます。"
  },
  {
   "name": "usb_1_dead_zone",
@@ -315,12 +336,14 @@
  {
   "name": "titan_two",
   "label": "Titan Twoアダプター",
-  "description": "ファームウェア2373以降で利用できます。コンソールに直接接続するのではなく、Titan Two経由でPS4に接続していることをデバイスに伝えます。これによりデバイスはDS4認証ハンドシェイクをスキップし、定期的な強制USB再接続を停止します。QMPではこれをTitan 2 PS4フラグと表示しています。"
+  "description": "ファームウェア2373以降で利用できます。コンソールに直接接続するのではなく、Titan Two経由でPS4に接続していることをデバイスに伝えます。これによりデバイスはDS4認証ハンドシェイクをスキップし、定期的な強制USB再接続を停止します。QMPではこれをTitan 2 PS4フラグと表示しています。",
+  "alsoCalled": "Titan 2 の PS4 フラグ"
  },
  {
   "name": "watchdog_disable",
   "label": "ウォッチドッグを無効にする",
-  "risk": "デバイスは応答しなくなった場合に再起動する2分間のハードウェアウォッチドッグを動かしています。ファームウェア1476にも2373にもこの設定を読み取る箇所はなく、どちらでも何も起こりません。将来のファームウェアがこれをどう扱うかは分かりません。"
+  "risk": "デバイスは応答しなくなった場合に再起動する2分間のハードウェアウォッチドッグを動かしています。ファームウェア1476にも2373にもこの設定を読み取る箇所はなく、どちらでも何も起こりません。将来のファームウェアがこれをどう扱うかは分かりません。",
+  "description": "QuadStick がハングしたときに自分で再起動するのを止めるためのものでした。お使いの QuadStick はこれを無視します。"
  },
  {
   "name": "debug",

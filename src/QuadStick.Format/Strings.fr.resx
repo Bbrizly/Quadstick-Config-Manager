@@ -491,6 +491,9 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Utilisez {0} ou plus.</value>
   </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Utilisez {0} à {1}. {2}</value>
+  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Utilisez ici le mode 0, 2, 3 ou 4, et réglez l'autre mode dans un profil de jeu à la place.</value>
   </data>

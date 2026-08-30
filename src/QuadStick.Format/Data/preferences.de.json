@@ -7,7 +7,8 @@
  {
   "name": "joystick_deflection_maximum",
   "label": "Joystick-Vollausschlag",
-  "description": "Wie weit der Stick bewegt werden muss, um ein volles Signal zu geben. QMP nennt das den Bewegungsbereich des Joysticks, und es ist das Nächste, was das Gerät an einer Empfindlichkeitsregelung hat: Größere Zahlen bedeuten mehr Weg für dieselbe Ausgabe, sodass sich der Joystick unempfindlicher anfühlt. QMP verwendet den größten seiner vier Richtungsregler."
+  "description": "Wie weit der Stick bewegt werden muss, um ein volles Signal zu geben. QMP nennt das den Bewegungsbereich des Joysticks, und es ist das Nächste, was das Gerät an einer Empfindlichkeitsregelung hat: Größere Zahlen bedeuten mehr Weg für dieselbe Ausgabe, sodass sich der Joystick unempfindlicher anfühlt. QMP verwendet den größten seiner vier Richtungsregler.",
+  "alsoCalled": "Bewegungsumfang"
  },
  {
   "name": "deflection_multiplier_up",
@@ -52,7 +53,8 @@
  },
  {
   "name": "anti_dead_zone",
-  "label": "Anti-Totzone"
+  "label": "Anti-Totzone",
+  "description": "Fügt jeder Stick-Messung einen festen Schub in die Richtung hinzu, in die der Stick zeigt, um eine tote Zone zu überwinden, die das Spiel selbst hinzufügt. Null ist aus."
  },
  {
   "name": "joystick_warning",
@@ -73,13 +75,15 @@
   "name": "sip_puff_threshold_soft",
   "label": "Sanfter Sip/Puff-Schwellenwert",
   "unit": "Prozent",
-  "description": "Druck- oder Vakuumpegel, ab dem ein sanfter Sip oder Puff beginnt."
+  "description": "Druck- oder Vakuumpegel, ab dem ein sanfter Sip oder Puff beginnt.",
+  "alsoCalled": "unterer Schwellwert für Saugen und Pusten"
  },
  {
   "name": "sip_puff_threshold",
   "label": "Harter Sip/Puff-Schwellenwert",
   "unit": "Prozent",
-  "description": "Druck, bei dem die Ausgabe ausgelöst wird. QMP zeigt dies als den oberen Sip-und-Puff-Schwellenwert; sip_puff_threshold_soft ist der untere."
+  "description": "Druck, bei dem die Ausgabe ausgelöst wird. QMP zeigt dies als den oberen Sip-und-Puff-Schwellenwert; sip_puff_threshold_soft ist der untere.",
+  "alsoCalled": "oberer Schwellwert für Saugen und Pusten"
  },
  {
   "name": "sip_puff_maximum",
@@ -91,7 +95,8 @@
   "name": "sip_puff_delay_soft",
   "label": "Sanfte Sip/Puff-Verzögerung",
   "unit": "Millisekunden",
-  "description": "Sanfte Sip- und Puff-Signale werden nach dieser kurzen Verzögerung erkannt. QMP zeigt dies als die Low Threshold Delay."
+  "description": "Sanfte Sip- und Puff-Signale werden nach dieser kurzen Verzögerung erkannt. QMP zeigt dies als die Low Threshold Delay.",
+  "alsoCalled": "Verzögerung des unteren Schwellwerts"
  },
  {
   "name": "sip_puff_delay_hard",
@@ -179,7 +184,8 @@
  },
  {
   "name": "enable_rumble",
-  "label": "Vibration"
+  "label": "Vibration",
+  "description": "Nur im Dual-Shock-3-Modus: gibt die Vibration des Spiels als Ton über den eigenen Lautsprecher des QuadStick aus."
  },
  {
   "name": "bluetooth_device_mode",
@@ -188,19 +194,23 @@
  },
  {
   "name": "bluetooth_authentication_mode",
-  "label": "Bluetooth-Authentifizierungsmodus"
+  "label": "Bluetooth-Authentifizierungsmodus",
+  "description": "Wie viel Kopplung der QuadStick verlangt. Wird als SA-Einstellung an das Funkmodul gesendet und zählt daher nur, solange Bluetooth an ist."
  },
  {
   "name": "bluetooth_connection_mode",
-  "label": "Bluetooth-Verbindungsmodus"
+  "label": "Bluetooth-Verbindungsmodus",
+  "description": "Ob der QuadStick auf eine Verbindung wartet oder sich selbst verbindet. Wird als SM-Einstellung an das Funkmodul gesendet."
  },
  {
   "name": "bluetooth_remote_address",
-  "label": "Bluetooth-Remoteadresse"
+  "label": "Bluetooth-Remoteadresse",
+  "description": "Die Bluetooth-Adresse, zu der der QuadStick sich verbindet. Lassen Sie das Feld leer, außer der QuadStick-Support hat Ihnen eine genannt. Höchstens sechzehn Zeichen."
  },
  {
   "name": "bluetooth_remote_adapter",
-  "label": "Bluetooth-Remoteadapter"
+  "label": "Bluetooth-Remoteadapter",
+  "description": "Macht den QuadStick zu einem Bluetooth-Adapter für etwas anderes. Er liest sein eigenes Mundstück und seinen Stick nicht mehr, solange dies an ist und der Bluetooth-Gerätemodus ssp lautet."
  },
  {
   "name": "bluetooth_throttle",
@@ -240,12 +250,14 @@
  {
   "name": "enable_usb_a_device",
   "label": "USB-A-Gerätemodus",
-  "risk": "Das legt fest, über welchen USB-Port sich der QuadStick meldet. Das Gerät baut USB ab und neu auf, wenn sich das ändert, daher kann ein falscher Wert dazu führen, dass eine Konsole oder ein Computer ihn nicht sieht. Es hat außerdem Vorrang vor enable_usb_a_host: Solange dies gesetzt ist, wird der USB-A-Host-Stack abgeschaltet, egal was die Host-Einstellung sagt. Ändern Sie das nur auf Anraten des QuadStick-Supports."
+  "risk": "Das legt fest, über welchen USB-Port sich der QuadStick meldet. Das Gerät baut USB ab und neu auf, wenn sich das ändert, daher kann ein falscher Wert dazu führen, dass eine Konsole oder ein Computer ihn nicht sieht. Es hat außerdem Vorrang vor enable_usb_a_host: Solange dies gesetzt ist, wird der USB-A-Host-Stack abgeschaltet, egal was die Host-Einstellung sagt. Ändern Sie das nur auf Anraten des QuadStick-Supports.",
+  "description": "An welcher USB-Buchse der QuadStick erscheint. Null ist sein eigener Anschluss; über null ist die USB-A-Buchse, und das schaltet auch den USB-A-Host-Modus aus."
  },
  {
   "name": "enable_usb_a_host",
   "label": "USB-A-Hostmodus",
-  "description": "Seit Firmware 2373. Wenn dies ein- und USB-A-Gerätemodus ausgeschaltet ist, betreibt das Gerät einen USB-Host am USB-A-Port, sodass ein dort eingesteckter Controller die usb_1-Eingabekanäle speist. Schalten Sie es aus, oder schalten Sie USB-A-Gerätemodus ein, und der Host wird abgebaut. USB-A-Gerätemodus gewinnt. QMP zeigt dies als USB-A Host Mode."
+  "description": "Seit Firmware 2373. Wenn dies ein- und USB-A-Gerätemodus ausgeschaltet ist, betreibt das Gerät einen USB-Host am USB-A-Port, sodass ein dort eingesteckter Controller die usb_1-Eingabekanäle speist. Schalten Sie es aus, oder schalten Sie USB-A-Gerätemodus ein, und der Host wird abgebaut. USB-A-Gerätemodus gewinnt. QMP zeigt dies als USB-A Host Mode.",
+  "alsoCalled": "USB-A-Host-Modus"
  },
  {
   "name": "enable_DS3_emulation",
@@ -261,7 +273,8 @@
    "Nintendo Switch Pro Controller, kein USB-Laufwerk",
    "DualShock 4, kein USB-Laufwerk",
    "DualShock 4 kabellos, kein USB-Laufwerk"
-  ]
+  ],
+  "alsoCalled": "im PS4-Modus starten"
  },
  {
   "name": "enable_usb_comm",
@@ -270,35 +283,43 @@
  },
  {
   "name": "usb_1_multiplier_up",
-  "label": "USB-1-Faktor Oben"
+  "label": "USB-1-Faktor Oben",
+  "description": "Verstärkt Oben am linken Stick eines Controllers, der am USB-A-Anschluss steckt."
  },
  {
   "name": "usb_1_multiplier_down",
-  "label": "USB-1-Faktor Unten"
+  "label": "USB-1-Faktor Unten",
+  "description": "Verstärkt Unten am linken Stick eines Controllers, der am USB-A-Anschluss steckt."
  },
  {
   "name": "usb_1_multiplier_left",
-  "label": "USB-1-Faktor Links"
+  "label": "USB-1-Faktor Links",
+  "description": "Verstärkt Links am linken Stick eines Controllers, der am USB-A-Anschluss steckt."
  },
  {
   "name": "usb_1_multiplier_right",
-  "label": "USB-1-Faktor Rechts"
+  "label": "USB-1-Faktor Rechts",
+  "description": "Verstärkt Rechts am linken Stick eines Controllers, der am USB-A-Anschluss steckt."
  },
  {
   "name": "usb_2_multiplier_up",
-  "label": "USB-2-Faktor Oben"
+  "label": "USB-2-Faktor Oben",
+  "description": "Verstärkt Oben am rechten Stick eines Controllers, der am USB-A-Anschluss steckt."
  },
  {
   "name": "usb_2_multiplier_down",
-  "label": "USB-2-Faktor Unten"
+  "label": "USB-2-Faktor Unten",
+  "description": "Verstärkt Unten am rechten Stick eines Controllers, der am USB-A-Anschluss steckt."
  },
  {
   "name": "usb_2_multiplier_left",
-  "label": "USB-2-Faktor Links"
+  "label": "USB-2-Faktor Links",
+  "description": "Verstärkt Links am rechten Stick eines Controllers, der am USB-A-Anschluss steckt."
  },
  {
   "name": "usb_2_multiplier_right",
-  "label": "USB-2-Faktor Rechts"
+  "label": "USB-2-Faktor Rechts",
+  "description": "Verstärkt Rechts am rechten Stick eines Controllers, der am USB-A-Anschluss steckt."
  },
  {
   "name": "usb_1_dead_zone",
@@ -315,12 +336,14 @@
  {
   "name": "titan_two",
   "label": "Titan-Two-Adapter",
-  "description": "Seit Firmware 2373. Teilt dem Gerät mit, dass es eine PS4 über einen Titan Two erreicht statt direkt an die Konsole angeschlossen zu sein. Es überspringt dann den DS4-Authentifizierungs-Handshake und stoppt den periodischen erzwungenen USB-Neuverbindungsaufbau. QMP zeigt dies als das Titan 2 PS4 Flag."
+  "description": "Seit Firmware 2373. Teilt dem Gerät mit, dass es eine PS4 über einen Titan Two erreicht statt direkt an die Konsole angeschlossen zu sein. Es überspringt dann den DS4-Authentifizierungs-Handshake und stoppt den periodischen erzwungenen USB-Neuverbindungsaufbau. QMP zeigt dies als das Titan 2 PS4 Flag.",
+  "alsoCalled": "PS4-Flag des Titan 2"
  },
  {
   "name": "watchdog_disable",
   "label": "Watchdog deaktivieren",
-  "risk": "Das Gerät betreibt einen zweiminütigen Hardware-Watchdog, der es neu startet, wenn es nicht mehr reagiert. Weder Firmware 1476 noch 2373 liest diese Einstellung, daher bewirkt sie bei beiden nichts, und was eine spätere Firmware damit tun könnte, ist unbekannt."
+  "risk": "Das Gerät betreibt einen zweiminütigen Hardware-Watchdog, der es neu startet, wenn es nicht mehr reagiert. Weder Firmware 1476 noch 2373 liest diese Einstellung, daher bewirkt sie bei beiden nichts, und was eine spätere Firmware damit tun könnte, ist unbekannt.",
+  "description": "Sollte verhindern, dass der QuadStick sich selbst neu startet, wenn er hängt. Ihr QuadStick ignoriert es."
  },
  {
   "name": "debug",
