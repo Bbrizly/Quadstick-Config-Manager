@@ -49,7 +49,10 @@ impl StubPicker {
 
     fn will_save_as(&self, name: &str) -> LocalProfileRef {
         let target = self.library.slot(name);
-        self.save_as.lock().expect("lock").push(Some(target.clone()));
+        self.save_as
+            .lock()
+            .expect("lock")
+            .push(Some(target.clone()));
         target
     }
 
@@ -94,7 +97,11 @@ fn harness() -> Harness {
         Arc::clone(&picker),
         FakeSettingsFile::new(),
     );
-    Harness { shell, picker, library }
+    Harness {
+        shell,
+        picker,
+        library,
+    }
 }
 
 fn code(error: &QcmErrorDto) -> &str {
@@ -131,7 +138,10 @@ fn a_new_profile_opens_clean_with_nothing_to_undo() {
 fn a_name_past_the_limit_is_refused_rather_than_shortened() {
     let app = harness();
     let long = "a".repeat(129);
-    let error = dto(app.shell.new_profile(json!({ "name": long })).expect_err("129 is past the limit"));
+    let error = dto(app
+        .shell
+        .new_profile(json!({ "name": long }))
+        .expect_err("129 is past the limit"));
     assert_eq!(code(&error), "QCM_REQUEST_TOO_LARGE");
     assert!(error.message.contains("128"));
 }
@@ -139,10 +149,21 @@ fn a_name_past_the_limit_is_refused_rather_than_shortened() {
 #[test]
 fn a_payload_the_command_cannot_read_is_still_a_code() {
     let app = harness();
-    for malformed in [json!({}), json!({ "name": 5 }), json!("racing"), Value::Null] {
-        let error = dto(app.shell.new_profile(malformed.clone()).expect_err("malformed request"));
+    for malformed in [
+        json!({}),
+        json!({ "name": 5 }),
+        json!("racing"),
+        Value::Null,
+    ] {
+        let error = dto(app
+            .shell
+            .new_profile(malformed.clone())
+            .expect_err("malformed request"));
         assert_eq!(code(&error), "QCM_REQUEST_MALFORMED", "{malformed}");
-        assert_eq!(error.action.as_ref().map(|a| a.kind.as_str()), Some("report_bug"));
+        assert_eq!(
+            error.action.as_ref().map(|a| a.kind.as_str()),
+            Some("report_bug")
+        );
     }
 }
 
@@ -150,14 +171,23 @@ fn a_payload_the_command_cannot_read_is_still_a_code() {
 fn a_cancelled_open_dialog_opens_nothing_and_is_not_an_error() {
     let app = harness();
     app.picker.will_cancel_open();
-    assert!(app.shell.choose_and_open_profile().expect("a cancel is a result").is_none());
+    assert!(
+        app.shell
+            .choose_and_open_profile()
+            .expect("a cancel is a result")
+            .is_none()
+    );
 }
 
 #[test]
 fn a_chosen_file_opens_with_its_own_grid() {
     let app = harness();
     app.picker.will_open("Racing.csv", SAMPLE);
-    let snapshot = app.shell.choose_and_open_profile().expect("the file opens").expect("not cancelled");
+    let snapshot = app
+        .shell
+        .choose_and_open_profile()
+        .expect("the file opens")
+        .expect("not cancelled");
     assert_eq!(snapshot.save_target.as_deref(), Some("Racing.csv"));
     assert_eq!(snapshot.grid[3][0], "cross");
     assert!(!snapshot.dirty);
@@ -168,23 +198,35 @@ fn an_edit_made_against_a_stale_revision_is_refused_and_changes_nothing() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
     let session = opened.session_id.clone();
-    let edited = app.shell.apply_editor_ops(json!({
-        "sessionId": session,
-        "expectedRevision": opened.revision,
-        "ops": [set_cell(4, "circle")],
-    })).expect("the first edit lands");
-    let error = dto(app.shell.apply_editor_ops(json!({
-        "sessionId": session,
-        "expectedRevision": opened.revision,
-        "ops": [set_cell(4, "square")],
-    })).expect_err("the second edit was stale"));
+    let edited = app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": session,
+            "expectedRevision": opened.revision,
+            "ops": [set_cell(4, "circle")],
+        }))
+        .expect("the first edit lands");
+    let error = dto(app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": session,
+            "expectedRevision": opened.revision,
+            "ops": [set_cell(4, "square")],
+        }))
+        .expect_err("the second edit was stale"));
     assert_eq!(code(&error), "QCM_PROFILE_REVISION_CONFLICT");
-    assert_eq!(error.action.as_ref().map(|a| a.kind.as_str()), Some("reopen_profile"));
-    let now = app.shell.apply_editor_ops(json!({
-        "sessionId": session,
-        "expectedRevision": edited.revision,
-        "ops": [],
-    })).expect("read back");
+    assert_eq!(
+        error.action.as_ref().map(|a| a.kind.as_str()),
+        Some("reopen_profile")
+    );
+    let now = app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": session,
+            "expectedRevision": edited.revision,
+            "ops": [],
+        }))
+        .expect("read back");
     assert_eq!(now.grid, edited.grid);
 }
 
@@ -193,17 +235,23 @@ fn a_batch_with_one_bad_operation_applies_none_of_it() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
     let before = opened.grid.clone();
-    let error = dto(app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": [set_cell(4, "circle"), set_cell(0, "nowhere")],
-    })).expect_err("row zero is not a row"));
+    let error = dto(app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": [set_cell(4, "circle"), set_cell(0, "nowhere")],
+        }))
+        .expect_err("row zero is not a row"));
     assert_eq!(code(&error), "QCM_PROFILE_OPERATION_REJECTED");
-    let now = app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": [],
-    })).expect("nothing moved");
+    let now = app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": [],
+        }))
+        .expect("nothing moved");
     assert_eq!(now.grid, before);
     assert!(!now.dirty);
 }
@@ -213,17 +261,23 @@ fn a_batch_past_the_limit_is_refused_before_anything_is_applied() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
     let ops: Vec<Value> = (0..257).map(|_| set_cell(4, "circle")).collect();
-    let error = dto(app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": ops,
-    })).expect_err("257 is past limit"));
+    let error = dto(app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": ops,
+        }))
+        .expect_err("257 is past limit"));
     assert_eq!(code(&error), "QCM_REQUEST_TOO_LARGE");
-    let now = app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": [],
-    })).expect("profile unchanged");
+    let now = app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": [],
+        }))
+        .expect("profile unchanged");
     assert!(!now.dirty);
 }
 
@@ -232,11 +286,14 @@ fn one_operation_carrying_a_wall_of_text_is_refused() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
     let wall = "x".repeat(4097);
-    let error = dto(app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": [set_cell(4, &wall)],
-    })).expect_err("too large"));
+    let error = dto(app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": [set_cell(4, &wall)],
+        }))
+        .expect_err("too large"));
     assert_eq!(code(&error), "QCM_REQUEST_TOO_LARGE");
 }
 
@@ -244,7 +301,10 @@ fn one_operation_carrying_a_wall_of_text_is_refused() {
 fn a_forged_session_id_is_an_unknown_session_and_not_a_crash() {
     let app = harness();
     for forged in ["session-999", "not-an-id", "", "session--1"] {
-        let error = dto(app.shell.undo_editor(json!({ "sessionId": forged, "expectedRevision": 1 })).expect_err("unknown"));
+        let error = dto(app
+            .shell
+            .undo_editor(json!({ "sessionId": forged, "expectedRevision": 1 }))
+            .expect_err("unknown"));
         assert_eq!(code(&error), "QCM_PROFILE_UNKNOWN_SESSION", "{forged}");
     }
 }
@@ -253,10 +313,13 @@ fn a_forged_session_id_is_an_unknown_session_and_not_a_crash() {
 fn undo_with_nothing_to_take_back_says_so() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
-    let error = dto(app.shell.undo_editor(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-    })).expect_err("nothing to undo"));
+    let error = dto(app
+        .shell
+        .undo_editor(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+        }))
+        .expect_err("nothing to undo"));
     assert_eq!(code(&error), "QCM_PROFILE_NOTHING_TO_UNDO");
 }
 
@@ -265,15 +328,21 @@ fn undo_takes_back_the_last_edit() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
     let before = opened.grid.clone();
-    let edited = app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": [set_cell(4, "circle")],
-    })).expect("edit");
-    let undone = app.shell.undo_editor(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": edited.revision,
-    })).expect("undo");
+    let edited = app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": [set_cell(4, "circle")],
+        }))
+        .expect("edit");
+    let undone = app
+        .shell
+        .undo_editor(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": edited.revision,
+        }))
+        .expect("undo");
     assert_eq!(undone.grid, before);
 }
 
@@ -281,12 +350,18 @@ fn undo_takes_back_the_last_edit() {
 fn saving_a_profile_that_has_never_been_saved_asks_for_a_place_first() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
-    let error = dto(app.shell.save_profile(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-    })).expect_err("nowhere to write"));
+    let error = dto(app
+        .shell
+        .save_profile(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+        }))
+        .expect_err("nowhere to write"));
     assert_eq!(code(&error), "QCM_PROFILE_NEEDS_SAVE_TARGET");
-    assert_eq!(error.action.as_ref().map(|a| a.kind.as_str()), Some("choose_save_location"));
+    assert_eq!(
+        error.action.as_ref().map(|a| a.kind.as_str()),
+        Some("choose_save_location")
+    );
 }
 
 #[test]
@@ -294,15 +369,21 @@ fn a_cancelled_save_as_leaves_the_profile_exactly_as_it_was() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
     app.picker.will_cancel_save_as();
-    let receipt = app.shell.save_profile_as(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-    })).expect("cancel result");
+    let receipt = app
+        .shell
+        .save_profile_as(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+        }))
+        .expect("cancel result");
     assert!(receipt.is_none());
-    let error = dto(app.shell.save_profile(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-    })).expect_err("still nowhere"));
+    let error = dto(app
+        .shell
+        .save_profile(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+        }))
+        .expect_err("still nowhere"));
     assert_eq!(code(&error), "QCM_PROFILE_NEEDS_SAVE_TARGET");
 }
 
@@ -311,10 +392,14 @@ fn save_as_writes_the_bytes_and_the_receipt_names_no_place() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
     let target = app.picker.will_save_as("Racing.csv");
-    let receipt = app.shell.save_profile_as(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-    })).expect("save").expect("not cancelled");
+    let receipt = app
+        .shell
+        .save_profile_as(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+        }))
+        .expect("save")
+        .expect("not cancelled");
     assert_eq!(receipt.name, "Racing.csv");
     assert!(receipt.bytes > 0);
     assert!(!looks_like_absolute_path(&receipt.name));
@@ -328,15 +413,20 @@ fn save_as_writes_the_bytes_and_the_receipt_names_no_place() {
 fn a_stale_save_as_is_refused_without_a_dialog_ever_opening() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
-    app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": [set_cell(4, "circle")],
-    })).expect("edit");
-    let error = dto(app.shell.save_profile_as(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-    })).expect_err("stale"));
+    app.shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": [set_cell(4, "circle")],
+        }))
+        .expect("edit");
+    let error = dto(app
+        .shell
+        .save_profile_as(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+        }))
+        .expect_err("stale"));
     assert_eq!(code(&error), "QCM_PROFILE_REVISION_CONFLICT");
     assert_eq!(app.picker.times_opened(), 0);
 }
@@ -346,19 +436,28 @@ fn a_plain_save_writes_back_to_the_place_save_as_named() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
     let target = app.picker.will_save_as("Racing.csv");
-    let first = app.shell.save_profile_as(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-    })).expect("save as").expect("not cancelled");
-    let edited = app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": first.revision,
-        "ops": [set_cell(4, "circle")],
-    })).expect("edit");
-    app.shell.save_profile(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": edited.revision,
-    })).expect("save");
+    let first = app
+        .shell
+        .save_profile_as(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+        }))
+        .expect("save as")
+        .expect("not cancelled");
+    let edited = app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": first.revision,
+            "ops": [set_cell(4, "circle")],
+        }))
+        .expect("edit");
+    app.shell
+        .save_profile(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": edited.revision,
+        }))
+        .expect("save");
     assert_eq!(app.picker.times_opened(), 1);
     assert_eq!(app.library.writes(&target), 2);
     assert!(app.library.text(&target).expect("bytes").contains("circle"));
@@ -368,31 +467,48 @@ fn a_plain_save_writes_back_to_the_place_save_as_named() {
 fn closing_a_dirty_profile_without_an_answer_keeps_it_open() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
-    app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": [set_cell(4, "circle")],
-    })).expect("edit");
-    let outcome = app.shell.close_profile(json!({
-        "sessionId": opened.session_id,
-        "disposition": "if_clean",
-    })).expect("ask");
-    assert_eq!(serde_json::to_value(&outcome).expect("serializes"), json!({ "kind": "keptOpenUnsavedChanges" }));
-    let discarded = app.shell.close_profile(json!({
-        "sessionId": opened.session_id,
-        "disposition": "discard",
-    })).expect("discard");
-    assert_eq!(serde_json::to_value(&discarded).expect("serializes"), json!({ "kind": "closed" }));
+    app.shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": [set_cell(4, "circle")],
+        }))
+        .expect("edit");
+    let outcome = app
+        .shell
+        .close_profile(json!({
+            "sessionId": opened.session_id,
+            "disposition": "if_clean",
+        }))
+        .expect("ask");
+    assert_eq!(
+        serde_json::to_value(&outcome).expect("serializes"),
+        json!({ "kind": "keptOpenUnsavedChanges" })
+    );
+    let discarded = app
+        .shell
+        .close_profile(json!({
+            "sessionId": opened.session_id,
+            "disposition": "discard",
+        }))
+        .expect("discard");
+    assert_eq!(
+        serde_json::to_value(&discarded).expect("serializes"),
+        json!({ "kind": "closed" })
+    );
 }
 
 #[test]
 fn a_disposition_the_app_does_not_offer_is_refused() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
-    let error = dto(app.shell.close_profile(json!({
-        "sessionId": opened.session_id,
-        "disposition": "whatever",
-    })).expect_err("no fourth answer"));
+    let error = dto(app
+        .shell
+        .close_profile(json!({
+            "sessionId": opened.session_id,
+            "disposition": "whatever",
+        }))
+        .expect_err("no fourth answer"));
     assert_eq!(code(&error), "QCM_REQUEST_OUT_OF_RANGE");
 }
 
@@ -401,14 +517,20 @@ fn closing_with_save_writes_first_and_reports_the_receipt() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
     let target = app.picker.will_save_as("Racing.csv");
-    app.shell.save_profile_as(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-    })).expect("save").expect("not cancelled");
-    let outcome = app.shell.close_profile(json!({
-        "sessionId": opened.session_id,
-        "disposition": "save",
-    })).expect("save and close");
+    app.shell
+        .save_profile_as(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+        }))
+        .expect("save")
+        .expect("not cancelled");
+    let outcome = app
+        .shell
+        .close_profile(json!({
+            "sessionId": opened.session_id,
+            "disposition": "save",
+        }))
+        .expect("save and close");
     let value = serde_json::to_value(&outcome).expect("serializes");
     assert_eq!(value["kind"], "savedAndClosed");
     assert_eq!(value["receipt"]["name"], "Racing.csv");
@@ -419,10 +541,13 @@ fn closing_with_save_writes_first_and_reports_the_receipt() {
 fn a_settings_value_the_app_does_not_offer_is_refused_not_rounded() {
     let app = harness();
     let before = app.shell.get_settings();
-    let error = dto(app.shell.update_settings(json!({
-        "expectedRevision": before.revision,
-        "patch": { "interfaceScalePercent": 137 },
-    })).expect_err("invalid scale"));
+    let error = dto(app
+        .shell
+        .update_settings(json!({
+            "expectedRevision": before.revision,
+            "patch": { "interfaceScalePercent": 137 },
+        }))
+        .expect_err("invalid scale"));
     assert_eq!(code(&error), "QCM_REQUEST_OUT_OF_RANGE");
     assert!(error.message.contains("interface scale"));
     assert_eq!(app.shell.get_settings(), before);
@@ -432,10 +557,13 @@ fn a_settings_value_the_app_does_not_offer_is_refused_not_rounded() {
 fn a_settings_change_moves_the_revision_and_nothing_else() {
     let app = harness();
     let before = app.shell.get_settings();
-    let after = app.shell.update_settings(json!({
-        "expectedRevision": before.revision,
-        "patch": { "theme": "dark", "interfaceScalePercent": 150 },
-    })).expect("legal values");
+    let after = app
+        .shell
+        .update_settings(json!({
+            "expectedRevision": before.revision,
+            "patch": { "theme": "dark", "interfaceScalePercent": 150 },
+        }))
+        .expect("legal values");
     assert_eq!(after.theme, "dark");
     assert_eq!(after.interface_scale_percent, 150);
     assert_eq!(after.revision, before.revision + 1);
@@ -446,14 +574,19 @@ fn a_settings_change_moves_the_revision_and_nothing_else() {
 fn a_settings_change_made_against_a_stale_revision_is_refused() {
     let app = harness();
     let before = app.shell.get_settings();
-    app.shell.update_settings(json!({
-        "expectedRevision": before.revision,
-        "patch": { "reduceMotion": true },
-    })).expect("first change");
-    let error = dto(app.shell.update_settings(json!({
-        "expectedRevision": before.revision,
-        "patch": { "theme": "dark" },
-    })).expect_err("stale"));
+    app.shell
+        .update_settings(json!({
+            "expectedRevision": before.revision,
+            "patch": { "reduceMotion": true },
+        }))
+        .expect("first change");
+    let error = dto(app
+        .shell
+        .update_settings(json!({
+            "expectedRevision": before.revision,
+            "patch": { "theme": "dark" },
+        }))
+        .expect_err("stale"));
     assert_eq!(code(&error), "QCM_PROFILE_REVISION_CONFLICT");
     assert_eq!(app.shell.get_settings().theme, "system");
 }
@@ -475,8 +608,13 @@ fn the_app_snapshot_claims_only_what_is_wired() {
 #[test]
 fn an_editor_snapshot_never_names_a_place_on_this_machine() {
     let app = harness();
-    app.picker.will_open("/Users/bassam/Documents/Racing.csv", SAMPLE);
-    let snapshot = app.shell.choose_and_open_profile().expect("open").expect("not cancelled");
+    app.picker
+        .will_open("/Users/bassam/Documents/Racing.csv", SAMPLE);
+    let snapshot = app
+        .shell
+        .choose_and_open_profile()
+        .expect("open")
+        .expect("not cancelled");
     assert_eq!(snapshot.save_target.as_deref(), Some("Racing.csv"));
     let json = serde_json::to_string(&snapshot).expect("serializes");
     assert!(!json.contains("/Users/"), "{json}");
@@ -487,14 +625,22 @@ fn an_editor_snapshot_never_names_a_place_on_this_machine() {
 fn a_failed_save_reports_the_failure_without_the_path_in_it() {
     let library = Arc::new(FakeProfileLibrary::new());
     let picker = Arc::new(StubPicker::new(Arc::clone(&library)));
-    let shell = Shell::new(Arc::clone(&library), Arc::clone(&picker), FakeSettingsFile::new());
-    let opened = shell.new_profile(json!({ "name": "racing.csv" })).expect("open");
+    let shell = Shell::new(
+        Arc::clone(&library),
+        Arc::clone(&picker),
+        FakeSettingsFile::new(),
+    );
+    let opened = shell
+        .new_profile(json!({ "name": "racing.csv" }))
+        .expect("open");
     picker.will_save_as("Racing.csv");
     library.fail_next_write();
-    let error = dto(shell.save_profile_as(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-    })).expect_err("write failed"));
+    let error = dto(shell
+        .save_profile_as(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+        }))
+        .expect_err("write failed"));
     assert_eq!(error.code, "QCM_STORAGE_FULL");
     assert_eq!(error.target_state.as_deref(), Some("unchanged"));
     for token in error.message.split_whitespace() {
@@ -506,11 +652,14 @@ fn a_failed_save_reports_the_failure_without_the_path_in_it() {
 fn no_command_takes_a_path() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
-    let error = dto(app.shell.save_profile(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "path": "/Users/bassam/Documents/Racing.csv",
-    })).expect_err("extra field changes nothing"));
+    let error = dto(app
+        .shell
+        .save_profile(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "path": "/Users/bassam/Documents/Racing.csv",
+        }))
+        .expect_err("extra field changes nothing"));
     assert_eq!(code(&error), "QCM_PROFILE_NEEDS_SAVE_TARGET");
 }
 
@@ -555,18 +704,24 @@ fn every_command_this_build_registers_is_on_the_list() {
 fn a_batch_of_edits_is_one_call_and_many_undo_steps() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
-    let after = app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": [set_cell(4, "circle"), set_cell(4, "square")],
-    })).expect("both land");
+    let after = app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": [set_cell(4, "circle"), set_cell(4, "square")],
+        }))
+        .expect("both land");
     assert_eq!(after.revision, opened.revision + 2);
     assert!(after.can_undo);
     assert!(after.dirty);
-    let once = app.shell.undo_editor(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": after.revision,
-    })).expect("undo");
+    let once = app
+        .shell
+        .undo_editor(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": after.revision,
+        }))
+        .expect("undo");
     assert_eq!(once.grid[3][0], "circle");
 }
 
@@ -574,10 +729,13 @@ fn a_batch_of_edits_is_one_call_and_many_undo_steps() {
 fn an_unknown_operation_is_a_malformed_request_and_not_a_silent_skip() {
     let app = harness();
     let opened = new_profile(&app.shell, "racing.csv");
-    let error = dto(app.shell.apply_editor_ops(json!({
-        "sessionId": opened.session_id,
-        "expectedRevision": opened.revision,
-        "ops": [{ "op": "delete_everything" }],
-    })).expect_err("unknown operation"));
+    let error = dto(app
+        .shell
+        .apply_editor_ops(json!({
+            "sessionId": opened.session_id,
+            "expectedRevision": opened.revision,
+            "ops": [{ "op": "delete_everything" }],
+        }))
+        .expect_err("unknown operation"));
     assert_eq!(code(&error), "QCM_REQUEST_MALFORMED");
 }

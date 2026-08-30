@@ -33,9 +33,16 @@ pub enum LiveStatusDto {
     Stopped,
     Searching,
     XinputOnly,
-    Stale { product: String },
-    Reading { product: String, motion: LiveMotionDto },
-    Unavailable { code: String },
+    Stale {
+        product: String,
+    },
+    Reading {
+        product: String,
+        motion: LiveMotionDto,
+    },
+    Unavailable {
+        code: String,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
@@ -114,7 +121,10 @@ impl LiveRuntime {
     }
 
     pub fn subscribe(&self, channel: Channel<LiveSnapshotDto>) -> SubscriptionDto {
-        let id = self.next_id.fetch_add(1, Ordering::Relaxed).saturating_add(1);
+        let id = self
+            .next_id
+            .fetch_add(1, Ordering::Relaxed)
+            .saturating_add(1);
         let should_start = {
             let mut control = self.control();
             control.listeners.insert(id, channel);
@@ -223,11 +233,16 @@ pub struct DeviceInvalidationHub {
 
 impl DeviceInvalidationHub {
     fn listeners(&self) -> MutexGuard<'_, BTreeMap<u64, Channel<DeviceInvalidationDto>>> {
-        self.listeners.lock().unwrap_or_else(PoisonError::into_inner)
+        self.listeners
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
     }
 
     pub fn subscribe(&self, channel: Channel<DeviceInvalidationDto>) -> SubscriptionDto {
-        let id = self.next_id.fetch_add(1, Ordering::Relaxed).saturating_add(1);
+        let id = self
+            .next_id
+            .fetch_add(1, Ordering::Relaxed)
+            .saturating_add(1);
         self.listeners().insert(id, channel);
         SubscriptionDto {
             subscription_id: format!("devices-{id}"),
@@ -244,7 +259,10 @@ impl DeviceInvalidationHub {
     /// whose WebView went away without disposing; pruning them here prevents a
     /// dead window from living forever in native state.
     pub fn notify(&self) {
-        let revision = self.revision.fetch_add(1, Ordering::Relaxed).saturating_add(1);
+        let revision = self
+            .revision
+            .fetch_add(1, Ordering::Relaxed)
+            .saturating_add(1);
         let event = DeviceInvalidationDto { revision };
         let listeners: Vec<(u64, Channel<DeviceInvalidationDto>)> = self
             .listeners()

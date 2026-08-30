@@ -127,7 +127,9 @@ impl LiveInputPort for HidLiveInput {
             .cloned()
             .ok_or(DeviceError::NotFound)?;
         let api = HidApi::new().map_err(|_| DeviceError::NotFound)?;
-        let handle = api.open_path(path.as_c_str()).map_err(|_| DeviceError::NotFound)?;
+        let handle = api
+            .open_path(path.as_c_str())
+            .map_err(|_| DeviceError::NotFound)?;
         let layout = descriptor_layout(&handle).ok_or(DeviceError::NotFound)?;
         let product = handle
             .get_product_string()
@@ -322,9 +324,15 @@ impl HidLayout {
                 (1, 0xB) => global = globals.pop()?,
 
                 // Local: Usage, Usage Minimum, Usage Maximum.
-                (2, 0x0) => local.usages.push(resolve_usage(global.usage_page, unsigned, size)),
-                (2, 0x1) => local.usage_min = Some(resolve_usage(global.usage_page, unsigned, size)),
-                (2, 0x2) => local.usage_max = Some(resolve_usage(global.usage_page, unsigned, size)),
+                (2, 0x0) => local
+                    .usages
+                    .push(resolve_usage(global.usage_page, unsigned, size)),
+                (2, 0x1) => {
+                    local.usage_min = Some(resolve_usage(global.usage_page, unsigned, size))
+                }
+                (2, 0x2) => {
+                    local.usage_max = Some(resolve_usage(global.usage_page, unsigned, size))
+                }
 
                 // Main Collection / End Collection.
                 (0, 0xA) => {
@@ -386,8 +394,7 @@ impl HidLayout {
         self.fields.iter().any(|field| {
             let page = usage_page(field.usage);
             let id = usage_id(field.usage);
-            (page == GENERIC_DESKTOP_PAGE && matches!(id, USAGE_X | USAGE_Y))
-                || page == BUTTON_PAGE
+            (page == GENERIC_DESKTOP_PAGE && matches!(id, USAGE_X | USAGE_Y)) || page == BUTTON_PAGE
         })
     }
 
@@ -401,7 +408,11 @@ impl HidLayout {
 
     fn read(&self, bytes: &[u8]) -> Option<Reading> {
         let numbered = self.report_bits.keys().any(Option::is_some);
-        let report_id = if numbered { bytes.first().copied() } else { None };
+        let report_id = if numbered {
+            bytes.first().copied()
+        } else {
+            None
+        };
         let prefix_bits = usize::from(numbered) * 8;
         let mut x = 0.0;
         let mut y = 0.0;
@@ -439,14 +450,17 @@ impl HidLayout {
 }
 
 fn in_stick_application(collections: &[CollectionState]) -> bool {
-    collections.iter().any(|collection| {
-        collection.kind == 0x01 && collection.usage.is_some_and(is_stick_usage)
-    })
+    collections
+        .iter()
+        .any(|collection| collection.kind == 0x01 && collection.usage.is_some_and(is_stick_usage))
 }
 
 fn is_stick_usage(usage: u32) -> bool {
     usage_page(usage) == GENERIC_DESKTOP_PAGE
-        && matches!(usage_id(usage), USAGE_JOYSTICK | USAGE_GAMEPAD | USAGE_MULTIAXIS)
+        && matches!(
+            usage_id(usage),
+            USAGE_JOYSTICK | USAGE_GAMEPAD | USAGE_MULTIAXIS
+        )
 }
 
 fn resolve_usage(page: u16, value: u32, size: usize) -> u32 {
@@ -469,7 +483,9 @@ fn unsigned_value(bytes: &[u8]) -> u32 {
     bytes
         .iter()
         .enumerate()
-        .fold(0_u32, |value, (shift, byte)| value | (u32::from(*byte) << (shift * 8)))
+        .fold(0_u32, |value, (shift, byte)| {
+            value | (u32::from(*byte) << (shift * 8))
+        })
 }
 
 fn signed_value(bytes: &[u8]) -> i32 {
@@ -536,14 +552,13 @@ mod tests {
         0x95, 0x04, // Report Count 4
         0x81, 0x02, // Input variable
         0x75, 0x04, // pad to byte
-        0x95, 0x01,
-        0x81, 0x03, // Input constant
+        0x95, 0x01, 0x81, 0x03, // Input constant
         0xC0, // End Collection
     ];
 
     const MOUSE: &[u8] = &[
-        0x05, 0x01, 0x09, 0x02, 0xA1, 0x01, 0x15, 0x00, 0x26, 0xFF, 0x00, 0x75, 0x08,
-        0x95, 0x02, 0x09, 0x30, 0x09, 0x31, 0x81, 0x02, 0xC0,
+        0x05, 0x01, 0x09, 0x02, 0xA1, 0x01, 0x15, 0x00, 0x26, 0xFF, 0x00, 0x75, 0x08, 0x95, 0x02,
+        0x09, 0x30, 0x09, 0x31, 0x81, 0x02, 0xC0,
     ];
 
     #[test]
@@ -572,8 +587,8 @@ mod tests {
     #[test]
     fn missing_axis_defaults_to_centre_instead_of_reusing_an_offset() {
         let descriptor = [
-            0x05, 0x01, 0x09, 0x04, 0xA1, 0x01, 0x15, 0x00, 0x26, 0xFF, 0x00, 0x75,
-            0x08, 0x95, 0x01, 0x09, 0x30, 0x81, 0x02, 0xC0,
+            0x05, 0x01, 0x09, 0x04, 0xA1, 0x01, 0x15, 0x00, 0x26, 0xFF, 0x00, 0x75, 0x08, 0x95,
+            0x01, 0x09, 0x30, 0x81, 0x02, 0xC0,
         ];
         let layout = HidLayout::parse(&descriptor).expect("joystick descriptor");
         let reading = layout.read(&[255]).expect("report");
@@ -584,9 +599,8 @@ mod tests {
     #[test]
     fn numbered_report_uses_id_prefix_without_treating_it_as_axis_data() {
         let descriptor = [
-            0x05, 0x01, 0x09, 0x05, 0xA1, 0x01, 0x85, 0x07, 0x15, 0x00, 0x26,
-            0xFF, 0x00, 0x75, 0x08, 0x95, 0x02, 0x09, 0x30, 0x09, 0x31, 0x81, 0x02,
-            0xC0,
+            0x05, 0x01, 0x09, 0x05, 0xA1, 0x01, 0x85, 0x07, 0x15, 0x00, 0x26, 0xFF, 0x00, 0x75,
+            0x08, 0x95, 0x02, 0x09, 0x30, 0x09, 0x31, 0x81, 0x02, 0xC0,
         ];
         let layout = HidLayout::parse(&descriptor).expect("gamepad descriptor");
         let reading = layout.read(&[7, 128, 255]).expect("report seven");

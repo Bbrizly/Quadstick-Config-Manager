@@ -152,7 +152,11 @@ mod tests {
         ] {
             assert!(!commands.contains(&absent), "{absent}");
         }
-        assert!(commands.iter().all(|command| !command.starts_with("plugin:")));
+        assert!(
+            commands
+                .iter()
+                .all(|command| !command.starts_with("plugin:"))
+        );
     }
 
     #[test]
