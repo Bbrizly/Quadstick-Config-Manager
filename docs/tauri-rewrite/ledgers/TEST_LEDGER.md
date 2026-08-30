@@ -10,7 +10,7 @@ Evidence paths are target placeholders until implemented.
 | T-004 | editor ops/undo/revision | differential | keyboard editor | PLANNED |
 | T-005 | safe filenames/traversal | unit/IPC negative | — | PLANNED |
 | T-006 | discovery stale/multiple | fake/integration | real multiple/remount | PLANNED |
-| T-007 | install transaction faults | qcm-testkit every stage | unplug/full/read-only | PLANNED |
+| T-007 | install transaction faults | qcm-testkit every stage | unplug/full/read-only | FAKE READY |
 | T-008 | library/delete/order | fake parity | real device | PLANNED |
 | T-009 | HID descriptor/normalize | captured fixtures | real modes 3 OS | PLANNED |
 | T-010 | HID backoff/leak | fake soak | 2h/reconnect | PLANNED |
@@ -30,5 +30,6 @@ Evidence paths are target placeholders until implemented.
 | T-024 | performance | benchmarks | target vs baseline | PLANNED |
 | T-025 | packaging | CI build/sign verify | clean machines | PLANNED |
 | T-026 | privacy launch network | integration traffic spy | packet/support review | PLANNED |
+| T-027 | error redaction | `qcm-core/tests/redaction.rs` every family | bug-report screenshot review | IMPLEMENTED |
 
 Critical behavior cannot move to PARITY-TESTED without at least one T row; storage/HID required parity also needs hardware evidence.

@@ -15,7 +15,7 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `ModeLights.cs` | LED patterns | qcm-config | REWRITE | 1–32 exact | 2 | CONTRACTED |
 | `Data/**`, Templates | embedded contract data | qcm-config assets | REUSE/GENERATE | hash/parity | 2 | CONTRACTED |
 | `Device.cs` discovery | mount detection | native storage adapter | SPLIT/REWRITE | fake+hardware | 3 | CONTRACTED |
-| `Device.cs` filename rules | safe target names | qcm-config/core | SPLIT | unit parity | 2/3 | CONTRACTED |
+| `Device.cs` filename rules | safe target names | qcm-config/core | SPLIT | unit parity | 2/3 | PORTED |
 | `Device.cs` install | safe transaction | qcm-core/storage | REWRITE | fault+hardware | 3 | CONTRACTED |
 | `Device.cs` library/delete | device files | qcm-core/storage | REWRITE | parity+hardware | 3 | CONTRACTED |
 | `MainWindow.axaml` | shell/layout | React AppShell/Editor | REWRITE | component/E2E/AT | 5/6 | CONTRACTED |

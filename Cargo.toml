@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/qcm-config", "crates/qcm-core"]
+members = ["crates/qcm-config", "crates/qcm-core", "crates/qcm-testkit"]
 
 [workspace.package]
 edition = "2024"
