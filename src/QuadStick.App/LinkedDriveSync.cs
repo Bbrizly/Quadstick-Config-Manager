@@ -11,9 +11,15 @@ namespace QuadStick.App;
 /// </summary>
 public sealed class LinkedDriveChangeTracker
 {
-    readonly LinkedDriveClient _client;
+    readonly Func<string, string?, CancellationToken, Task<LinkedDriveChangePage>> _listChanges;
 
-    public LinkedDriveChangeTracker(LinkedDriveClient client) => _client = client;
+    public LinkedDriveChangeTracker(LinkedDriveClient client)
+        : this(client.ListChangesAsync) { }
+
+    // Test seam and useful boundary for a future alternate change source.
+    public LinkedDriveChangeTracker(
+        Func<string, string?, CancellationToken, Task<LinkedDriveChangePage>> listChanges) =>
+        _listChanges = listChanges;
 
     public async Task<string> DrainAsync(
         string pageToken,
@@ -29,7 +35,7 @@ public sealed class LinkedDriveChangeTracker
 
         while (true)
         {
-            var page = await _client.ListChangesAsync(token, driveId, ct);
+            var page = await _listChanges(token, driveId, ct);
             foreach (var change in page.Changes)
             {
                 if (change.ChangeType != "file" || string.IsNullOrWhiteSpace(change.FileId)) continue;
@@ -105,6 +111,8 @@ public sealed record LinkedMergeResult(
 /// </summary>
 public static class LinkedProfileMerge
 {
+    static readonly IReadOnlySet<LinkedCellKey> NoCells = new HashSet<LinkedCellKey>();
+
     public static LinkedMergeResult Merge(
         LinkedProfileSnapshot @base,
         LinkedProfileSnapshot local,
@@ -120,8 +128,8 @@ public static class LinkedProfileMerge
                 Array.Empty<LinkedSheetCellUpdate>());
         }
 
-        var formula = remote.FormulaCells ?? EmptySet<LinkedCellKey>.Instance;
-        var protectedCells = remote.ProtectedCells ?? EmptySet<LinkedCellKey>.Instance;
+        var formula = remote.FormulaCells ?? NoCells;
+        var protectedCells = remote.ProtectedCells ?? NoCells;
         var keys = new HashSet<LinkedCellKey>(@base.Cells.Keys);
         keys.UnionWith(local.Cells.Keys);
         keys.UnionWith(remote.Cells.Keys);
@@ -172,21 +180,6 @@ public static class LinkedProfileMerge
 
     static string Value(IReadOnlyDictionary<LinkedCellKey, string> cells, LinkedCellKey key) =>
         cells.TryGetValue(key, out var value) ? value : "";
-
-    sealed class EmptySet<T> : IReadOnlySet<T>
-    {
-        public static readonly EmptySet<T> Instance = new();
-        public int Count => 0;
-        public bool Contains(T item) => false;
-        public IEnumerator<T> GetEnumerator() => Enumerable.Empty<T>().GetEnumerator();
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
-        public bool IsProperSubsetOf(IEnumerable<T> other) => false;
-        public bool IsProperSupersetOf(IEnumerable<T> other) => !other.Any();
-        public bool IsSubsetOf(IEnumerable<T> other) => true;
-        public bool IsSupersetOf(IEnumerable<T> other) => !other.Any();
-        public bool Overlaps(IEnumerable<T> other) => false;
-        public bool SetEquals(IEnumerable<T> other) => !other.Any();
-    }
 }
 
 /// <summary>
