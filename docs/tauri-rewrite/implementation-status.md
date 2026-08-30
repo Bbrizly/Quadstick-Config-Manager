@@ -29,6 +29,17 @@ This is the execution checkpoint. The numbered specification remains the source 
 | TASK-020 profile session manager | **NOT STARTED** | no `qcm-core/profiles` module yet |
 | TASK-021 stable errors/operations/confirmations | **DONE** | `qcm-core/src/{error,operation,confirmation,clock}.rs`; redaction suite covers every error family |
 | TASK-022 storage port + fake device | **DONE** | `qcm-core/src/ports/storage.rs` + `qcm-testkit`; every fault stage exercised without hardware |
+| TASK-030 Tauri 2 + React + Vite scaffold | **DONE** | `src-tauri/` + root React app; `pnpm typecheck`/`pnpm test`/`pnpm lint`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked` and `pnpm tauri build` (macOS `.app` + `.dmg`) all green locally |
+
+### TASK-030 pins
+
+Tauri 2.11.5 with tauri-build 2.6.3 and `@tauri-apps/cli` 2.11.4 / `@tauri-apps/api` 2.11.1, React 19.2.8, Vite 8.2.2, TypeScript 5.9.3, Vitest 4.1.11, oxlint 1.80.0, Node 24.19.0, pnpm 11.7.0. Every version is exact, and `Cargo.lock` and `pnpm-lock.yaml` are committed.
+
+TypeScript is held at 5.9.3, not the 7.0.2 that is current. The type-aware lint and testing tools in use still cap the compiler below 6.1, so 7.x would mean dropping one of them.
+
+The shell has no commands and no adapters. It opens a window, renders React and links `qcm-core` so the dependency direction is fixed from the first build. `src-tauri/capabilities/main.json` grants the window nothing: no filesystem, shell, opener, HTTP or process permission. The production CSP allows `'self'` only plus the Tauri IPC origin, with `object-src`, `frame-src`, `frame-ancestors` and `form-action` set to `'none'`. TASK-035 owns the negative permission tests that hold that line.
+
+The shell's bundle identity is deliberately separate from the shipping app: identifier `com.bbrizly.quadstickconfigmanager.rewrite`, product name `QuadStick Config Manager Rewrite`, so both can be installed side by side until cutover. Vite writes to `dist-ui/` because `dist/` already holds the .NET installers.
 
 ## Current verified checkpoint
 
