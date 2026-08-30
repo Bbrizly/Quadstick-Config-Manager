@@ -3438,6 +3438,9 @@ public partial class MainWindow : Window
         Grid.SetColumn(open, 1);
         p.Children.Add(open);
         WireRowDrop(p, b);
+        // Same menu as a list row: copy, move and delete already know which
+        // view they are in, so a mapping card gets the gesture for free.
+        WireRowMenu(p, b);
         _rowPanels[b.Row] = p;
         PaintRow(b.Row);
         return p;
@@ -4808,6 +4811,93 @@ public partial class MainWindow : Window
         });
     }
 
+    // "N: Name", the way the modes list, the modes window and the import
+    // review all say it. Only a mode takes a number, and two modes may share
+    // a name, so the number is the half that actually identifies one.
+    string ModeLabel(int sheetIndex)
+    {
+        var sheets = _file!.Document.Sheets;
+        int mode = 0;
+        for (int i = 0; i <= sheetIndex && i < sheets.Count; i++)
+            if (sheets[i].Type == SheetType.ProfileName) mode++;
+        return string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeNumberAndName, mode,
+            sheets[sheetIndex].ModeName.Length > 0 ? sheets[sheetIndex].ModeName : Strings.Main_UnnamedMode);
+    }
+
+    // Right click is how a spreadsheet user reaches copy, move and delete, and
+    // it was the one gesture the list had no answer for: a tester rebuilt a
+    // whole mode by hand because of it. The menu acts on the selection, so a
+    // right click on an unselected row takes it first, the way a file
+    // explorer does.
+    void WireRowMenu(Control row, Binding b)
+    {
+        var menu = new MenuFlyout();
+        // Built on open, not on build: the mode list, the selection and what
+        // is legal to do with it all move underneath it.
+        menu.Opening += (_, _) =>
+        {
+            if (!_selectedRows.Contains(b.Row)) SelectFromClick(b.Row, KeyModifiers.None);
+            menu.Items.Clear();
+            foreach (var item in RowMenuItems()) menu.Items.Add(item);
+        };
+        row.ContextFlyout = menu;
+    }
+
+    IEnumerable<Control> RowMenuItems()
+    {
+        var copy = new MenuItem { Header = Strings.Main_CopyToMode };
+        foreach (var item in CopyToModeItems()) copy.Items.Add(item);
+        // Left visible and dead rather than hidden: a one mode profile has
+        // nowhere to copy to, and a menu that changes shape teaches nothing.
+        copy.IsEnabled = copy.Items.Count > 0;
+
+        var move = new MenuItem { Header = Strings.Main_Move };
+        var top = new MenuItem { Header = Strings.Main_ToTheTop };
+        top.Click += (_, _) => MoveSelection(top: true);
+        var bottom = new MenuItem { Header = Strings.Main_ToTheBottom };
+        bottom.Click += (_, _) => MoveSelection(top: false);
+        move.Items.Add(top);
+        move.Items.Add(bottom);
+
+        var del = new MenuItem { Header = Strings.Main_Delete };
+        del.Click += (_, _) => DeleteSelectedRows();
+
+        return new Control[] { copy, move, new Separator(), del };
+    }
+
+    // Every other mode in the file. Not this one: a copy landing back where it
+    // started is the one destination nobody means.
+    IEnumerable<MenuItem> CopyToModeItems()
+    {
+        if (_file is null) yield break;
+        var sheets = _file.Document.Sheets;
+        for (int i = 0; i < sheets.Count; i++)
+        {
+            if (sheets[i].Type != SheetType.ProfileName || i == _sheetIndex) continue;
+            int target = i;
+            var item = new MenuItem { Header = ModeLabel(target) };
+            item.Click += (_, _) => CopySelectionToMode(target);
+            yield return item;
+        }
+    }
+
+    void CopySelectionToMode(int sheetIndex)
+    {
+        if (_file is null || _selectedRows.Count == 0) return;
+        if (sheetIndex < 0 || sheetIndex >= _file.Document.Sheets.Count) return;
+        var rows = _selectedRows.ToArray();
+        var off = GridScroll.Offset;
+        int n = _file.CopyRowsToSheet(rows, sheetIndex);
+        if (n == 0) return;
+        _selectedRows.Clear(); _selAnchor = -1; // copying above here renumbers these rows
+        if (DeviceContainer.IsVisible) { BuildDeviceView(); BuildZoneDetail(); RefreshIssues(); }
+        else { RebuildRows(); RestoreListScroll(off, () => { }); }
+        // The copies land in a mode that is not on screen. Being told is the
+        // only way the user learns it worked, or how many went.
+        Status(string.Format(CultureInfo.CurrentCulture,
+            Plural.Wording(n, "Count_RowCopied"), n, ModeLabel(sheetIndex)), StatusKind.Ready);
+    }
+
     Control HeaderRow()
     {
         var p = ListGrid(BindingColumns);
@@ -4823,6 +4913,7 @@ public partial class MainWindow : Window
         var p = ListGrid(BindingColumns);
         p.Children.Add(At(DragHandle(b, number), 0));
         WireRowDrop(p, b);
+        WireRowMenu(p, b);
         _rowPanels[b.Row] = p;
         PaintRow(b.Row);
         // Inputs stack DOWN (below), so every other cell centers vertically

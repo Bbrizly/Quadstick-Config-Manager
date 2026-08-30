@@ -3185,4 +3185,16 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>[Ýóú áré óñ {0}, whíçh íš thé látéšt. xxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Count_RowCopied_one" xml:space="preserve">
+    <value>[{0} rów çópíéd tó {1}. Çtrl+Ž úñdóéš ít. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Count_RowCopied_other" xml:space="preserve">
+    <value>[{0} rówš çópíéd tó {1}. Çtrl+Ž úñdóéš ít. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_CopyToMode" xml:space="preserve">
+    <value>[Çópý tó módé xxxx]</value>
+  </data>
+  <data name="Main_Move" xml:space="preserve">
+    <value>[Móvé x]</value>
+  </data>
 </root>

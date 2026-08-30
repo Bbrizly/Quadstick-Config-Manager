@@ -3188,4 +3188,16 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>You are on {0}, which is the latest.</value>
   </data>
+  <data name="Count_RowCopied_one" xml:space="preserve">
+    <value>{0} row copied to {1}. Ctrl+Z undoes it.</value>
+  </data>
+  <data name="Count_RowCopied_other" xml:space="preserve">
+    <value>{0} rows copied to {1}. Ctrl+Z undoes it.</value>
+  </data>
+  <data name="Main_CopyToMode" xml:space="preserve">
+    <value>Copy to mode</value>
+  </data>
+  <data name="Main_Move" xml:space="preserve">
+    <value>Move</value>
+  </data>
 </root>
