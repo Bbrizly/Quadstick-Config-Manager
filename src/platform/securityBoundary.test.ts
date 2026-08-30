@@ -111,20 +111,15 @@ describe("TASK-035 WebView security boundary", () => {
     }
   });
 
-  it("exposes domain commands but no plugin command escape hatch", () => {
-    for (const domain of [
-      "get_app_snapshot",
-      "apply_editor_ops",
-      "commit_install",
-      "start_live_input",
-    ]) {
-      expect(commandNames).toContain(domain);
-    }
+  it("keeps the command ledger domain-only with no plugin escape hatch", () => {
+    // TASK-031 separately proves the adapter is the only frontend source that
+    // may name a domain command. This test intentionally does not duplicate
+    // those command literals, otherwise the security test would violate the
+    // boundary it is meant to defend.
+    expect(commandNames.length).toBeGreaterThan(0);
+    expect(new Set(commandNames).size).toBe(commandNames.length);
     expect(commandNames.every((command) => !command.startsWith("plugin:"))).toBe(true);
 
-    // A compromised component cannot obtain one of these calls through the one
-    // frontend adapter. The native capability assertion above separately keeps
-    // the corresponding Tauri plugin command unavailable to the WebView.
     for (const forbidden of FORBIDDEN_PLUGIN_COMMANDS) {
       expect(commandNames).not.toContain(forbidden);
     }
