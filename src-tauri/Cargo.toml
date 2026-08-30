@@ -1,0 +1,28 @@
+[package]
+name = "qcm-tauri"
+version = "0.1.0"
+description = "QuadStick Config Manager desktop shell"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+# cdylib/staticlib are what the mobile targets link against. Desktop only needs
+# the lib, but dropping them now would mean re-testing the whole build later.
+[lib]
+name = "qcm_tauri_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "=2.6.3", features = [] }
+
+[dependencies]
+qcm-core = { path = "../crates/qcm-core" }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"
+# No plugins. Filesystem, shell, HTTP and HID stay behind native commands.
+tauri = { version = "=2.11.5", features = [] }
