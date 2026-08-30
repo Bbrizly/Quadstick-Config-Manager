@@ -14,7 +14,19 @@ Unknowns are not excuses to guess. Each has a resolution path and phase deadline
 
 **Deadline:** Gate 0.
 
-**Status:** OPEN.
+**Status:** RESOLVED 2026-08-30. Serial is not a current behavior. Nothing was implemented and no serial crate was added.
+
+**Evidence (TASK-029).** The premise of the question is wrong, and that is what decided it.
+
+1. `System.IO.Ports` has never been a dependency of this app. `git log --all -p -- src/QuadStick.App/QuadStick.App.csproj` shows every `PackageReference` ever added or removed, and `Ports` is not among them. The current set is Avalonia (four packages), HidSharp 2.6.4, `System.Security.Cryptography.ProtectedData` and PostHog. No other project file in the solution references it either. The claim in `02-current-system-inventory.md` that `System.IO.Ports 8.0.0` and `System.Management 8.0.0` are current dependencies was a stale note; it is corrected in place rather than worked around.
+2. The only occurrence of `SerialPort` or `System.IO.Ports` anywhere outside `docs/` is a **negative** assertion. `tests/QuadStick.App.Tests/DeviceFilesWindowTests.cs::The_window_stays_a_file_manager` reads `DeviceFilesWindow.cs` and fails if the source contains any of `SerialPort`, `HidDevice`, `Firmware`, `System.IO.Ports`, `Bluetooth`, `Device.Install`. It is a guard against serial code appearing, not serial code.
+3. History agrees. `git log --all -S"SerialPort"` outside `docs/` returns exactly the two commits that added that guard test (`ddbac6e`, `e2cb264`, 2026-08-01). There is no commit that added, used and removed a serial path.
+4. Every `Bluetooth` hit in the app is profile **content**, not a transport. `ModesWindow.cs` edits a mode's connection field (`usb`, `bluetooth`, `both`) and `preferences.json` carries `bluetooth_device_mode`, `bluetooth_authentication_mode`, `bluetooth_connection_mode`, `bluetooth_remote_address`, `bluetooth_remote_adapter`, `bluetooth_throttle`. Those are bytes the app writes into a CSV for the firmware to read. The release note "a mode can be set to USB or Bluetooth on its own" (`docs/release-notes/v1.7.0.md`) is that editor field.
+5. The device's own serial console exists as a **device** feature the app configures and never speaks. The `debug` preference is described as turning the QuadStick's console output on when it is above zero; the app writes the number. `LiveInput.cs` says the same thing from the other side: "Nothing here asks it for anything, turns its console on, or writes to it."
+6. Nothing shipped can reach a serial path. The live read is HidSharp over HID; install, library and delete are the mounted FAT volume; there is no window, menu item, command or CI step mentioning serial, COM, tty or baud.
+7. The one forward-looking mention is a plan, not a route. `docs/specs/20260813-shipaton-ios-app.md` proposes "Serial port reader for the telemetry feed (System.IO.Ports, already the plan for the desktop visualizer)" for an unbuilt SipSight companion. A proposed reader for a product that was never built is not parity.
+
+**Consequence.** Serial/Bluetooth console stays classified D (deferred), matching `gate0-review.md`, `implementation-baseline.md` and `BEHAVIOR_LEDGER.md` B-045. `15-serial-transport.md` remains the spec for the day evidence changes. No `serialport` or `tokio-serial` dependency enters the workspace. Any future sip/puff pressure telemetry over serial or BLE is a new capability with its own protocol spec and hardware spike, never a parity claim. No owner interview was needed: the code answered.
 
 ## OQ-002 — Can storage and HID interfaces be reliably correlated to one physical QuadStick?
 

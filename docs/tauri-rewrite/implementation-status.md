@@ -64,6 +64,14 @@ discovery with the shipped 3 second scan cache, the install transaction, and the
 library operations. `src-tauri/src/adapters/storage/` is the only place in the
 app that sees a path.
 
+TASK-029 is resolved and implemented nothing, which was the right answer. The
+premise of OQ-001 turned out to be false: `System.IO.Ports` has never been a
+dependency of this app in any commit, and the only occurrence of `SerialPort`
+outside the docs is a test asserting the device-files window does not contain
+it. Serial and the Bluetooth console stay classified D. The evidence is in
+`51-open-questions.md` and the stale dependency line that started it is
+corrected in `02-current-system-inventory.md`.
+
 There is still no HID and no frontend beyond the scaffold, and no command
 surface: nothing in `src-tauri` is wired to a Tauri command yet.
 
