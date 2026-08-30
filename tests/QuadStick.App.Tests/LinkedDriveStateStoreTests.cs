@@ -97,6 +97,22 @@ public class LinkedDriveStateStoreTests
     }
 
     [Fact]
+    public void Corrupt_snapshot_fails_closed_instead_of_looking_missing()
+    {
+        var dir = Directory.CreateTempSubdirectory().FullName;
+        try
+        {
+            var store = new LinkedDriveStateStore(dir);
+            var path = store.BaseSnapshotPath(store.LinkKey("acct", "file"));
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            File.WriteAllText(path, "definitely-not-a-snapshot");
+
+            Assert.Throws<InvalidDataException>(() => store.LoadSnapshot(path));
+        }
+        finally { Directory.Delete(dir, recursive: true); }
+    }
+
+    [Fact]
     public void Acknowledge_removes_only_completed_file()
     {
         var dir = Directory.CreateTempSubdirectory().FullName;
