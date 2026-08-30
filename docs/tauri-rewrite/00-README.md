@@ -4,7 +4,7 @@
 
 Rebuild QuadStick Config Manager from .NET 8/Avalonia 11.1.3 into **Tauri 2 + React 19.2 + TypeScript + Rust**, without losing firmware compatibility, device-write safety, accessibility behavior, localization, backup/recovery guarantees, or test evidence.
 
-This branch is a **blueprint only**. Production code remains C#/Avalonia.
+The C#/Avalonia application remains the production fallback while implementation advances in isolation on `rewrite/tauri-rust`. The rewrite does not replace `main` until the cutover gates pass.
 
 ## Audit baseline
 
@@ -48,13 +48,17 @@ qcm-config  device ports cloud/settings ports
 
 ## Read order
 
-**Everyone:** 01 → 06 → 07 → 11 → 44 → 48 → 50.
+**Everyone:** 01 → 06 → 07 → 11 → 44 → 48 → 52.
 
 **Rust/config:** 10, 11, 12–19, 33–39.  
 **Frontend:** 20–25.  
 **Device/platform:** 12–18, 28–32.  
 **Release/security:** 26–27, 40–47.  
-**Agents:** `AGENTS.md`, then 49–50 and all ledgers.
+**Agents:** `AGENTS.md`, then 52 → 49 → 50 and all ledgers.
+
+## Execution authority
+
+`52-final-product-execution-spec.md` governs dependency ordering, safe parallelism, consolidation cadence, remote-checkpoint policy, and the separate implementation/automated/physical/credential/human/release validation states. `49-implementation-checklist.md` remains the canonical phase/task acceptance checklist, and `50-first-implementation-tasks.md` remains the detailed task contract. If task ordering or blocker classification conflicts, use 52; stricter behavioral or safety requirements elsewhere still win.
 
 ## Critical findings
 
@@ -85,9 +89,10 @@ Every nontrivial decision has an ADR. Unknown hardware/mobile/serial facts remai
 - Definition of done: `48-definition-of-done.md`
 - Master checklist: `49-implementation-checklist.md`
 - Mechanical tasks: `50-first-implementation-tasks.md`
-- Unknowns: `51-open-questions.md`
+- Open questions: `51-open-questions.md`
+- **Execution authority: `52-final-product-execution-spec.md`**
 - Port status: `ledgers/PORTING_LEDGER.md`
 
-## Rule for starting implementation
+## Rule for continuing implementation
 
-Do not start UI feature porting before Phase 1 config/oracle contracts exist and Phase 2's Rust config core passes differential tests. The first implementation task is **TASK-001**, not “create a React app and start copying screens.”
+Use `52-final-product-execution-spec.md` to select the next unmet dependency and safe parallel wave. A task with pending physical, credential, human, or release validation is not automatically implementation-blocked; keep that validation debt explicit instead of stopping buildable work.
