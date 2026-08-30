@@ -5,6 +5,7 @@
 //! point may appear inside an adapter and nowhere above one.
 
 pub mod device_picker;
+pub mod hid;
 pub mod library;
 pub mod picker;
 pub mod settings;
