@@ -2,6 +2,8 @@
 
 Work top-to-bottom. A checked box means its task acceptance criteria and linked ledger updates are complete; it does **not** mean “code exists.”
 
+**Execution ordering:** use `52-final-product-execution-spec.md`. This file remains the canonical task/phase acceptance checklist, but pending physical, credential, human, or release validation does not by itself make implementation blocked. Track those validation dimensions separately as defined in 52.
+
 ## Phase 0 — freeze current reality
 
 - [x] TASK-001 Complete source/test/tool inventory at the implementation-base SHA.
