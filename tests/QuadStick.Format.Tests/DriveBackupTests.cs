@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using QuadStick.App;
 using Xunit;
 
@@ -72,6 +73,53 @@ public class DriveBackupTests
         Assert.Equal("sheetNew", link.SpreadsheetId);
         Assert.Equal("t-created", link.LastSeenModifiedTime);
         Assert.False(link.BackupDirty);
+    }
+
+    [Fact]
+    public async Task FirstPush_UsesTheProfileTitleForTheSpreadsheetName()
+    {
+        string? createBody = null;
+        var (backup, _, _) = Make(r =>
+        {
+            if (IsCreate(r))
+            {
+                createBody = r.Content!.ReadAsStringAsync().GetAwaiter().GetResult();
+                return Json("{\"spreadsheetId\":\"sheetNew\"}");
+            }
+            if (IsModified(r)) return Json("{\"modifiedTime\":\"t-created\"}");
+            return Json("{}");
+        });
+
+        await backup.PushAsync("/lib/re9.csv",
+            "QuadStick Configuration,Version 1.5,,Resident Evil 9\n"
+            + "Profile Name,,Solo\nre9.csv\nOutputs,Function,usb\nx,normal,lip\n");
+
+        using var doc = JsonDocument.Parse(createBody!);
+        Assert.Equal("Resident Evil 9", doc.RootElement.GetProperty("properties").GetProperty("title").GetString());
+    }
+
+    [Fact]
+    public async Task EditingAfterTheFirstBackupUpdatesTheSameSpreadsheet()
+    {
+        int creates = 0;
+        int modifiedReads = 0;
+        int valueUpdates = 0;
+        var (backup, settings, _) = Make(r =>
+        {
+            if (IsCreate(r)) { creates++; return Json("{\"spreadsheetId\":\"same-sheet\"}"); }
+            if (IsValuesUpdate(r)) { valueUpdates++; return Json("{}"); }
+            if (IsModified(r))
+                return Json($"{{\"modifiedTime\":\"{(modifiedReads++ < 2 ? "t-created" : "t-updated")}\"}}");
+            return Json("{}");
+        });
+
+        await backup.PushAsync("/lib/re9.csv", Grid);
+        var result = await backup.PushAsync("/lib/re9.csv", "x,circle\r\nchanged,cross\r\n");
+
+        Assert.Equal(PushResultKind.Pushed, result.Kind);
+        Assert.Equal(1, creates);
+        Assert.Equal(2, valueUpdates);
+        Assert.Equal("same-sheet", settings.DriveLinks["/lib/re9.csv"].SpreadsheetId);
     }
 
     [Fact]
