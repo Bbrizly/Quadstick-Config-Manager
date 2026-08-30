@@ -3200,4 +3200,10 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Main_Move" xml:space="preserve">
     <value>Move</value>
   </data>
+  <data name="Main_DuplicateMark" xml:space="preserve">
+    <value>×{0}</value>
+  </data>
+  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
+    <value>Used {0} times in this mode</value>
+  </data>
 </root>

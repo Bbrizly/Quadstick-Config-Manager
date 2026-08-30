@@ -3197,4 +3197,10 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Main_Move" xml:space="preserve">
     <value>[Móvé x]</value>
   </data>
+  <data name="Main_DuplicateMark" xml:space="preserve">
+    <value>[×{0} x]</value>
+  </data>
+  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
+    <value>[Úšéd {0} tíméš íñ thíš módé xxxxxxxxxx]</value>
+  </data>
 </root>

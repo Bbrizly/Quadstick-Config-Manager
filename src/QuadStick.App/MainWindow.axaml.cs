@@ -4413,6 +4413,7 @@ public partial class MainWindow : Window
         _rebuildingRows = false;
         if (OnCustomNames) { BuildCustomNameRows(); RefreshIssues(); return; }
         if (CurrentSheet is null) { RefreshIssues(); return; }
+        _dupes = DuplicateUses.In(CurrentSheet.Bindings);
 
         // Selected rows that left the sheet (deleted, or another sheet is
         // showing now) must not tint whatever row wears their number next.
@@ -4549,6 +4550,10 @@ public partial class MainWindow : Window
     readonly HashSet<int> _selectedRows = new();
     int _selAnchor = -1;
     readonly Dictionary<int, Panel> _rowPanels = new();
+
+    // Which outputs and inputs this mode uses more than once. Recomputed once
+    // per rebuild rather than per cell, which would be quadratic on a long mode.
+    DuplicateUses.Counts _dupes = DuplicateUses.Counts.None;
 
     // The rows the user can actually see and select right now: only this
     // part's mappings in device view, the whole mode in list view. Shift
@@ -4811,6 +4816,45 @@ public partial class MainWindow : Window
         });
     }
 
+    // The spreadsheet fills a cell when its value appears elsewhere in the
+    // same mode, and a tester who lost that mark said it cost them "a lot of
+    // mental memorization" and one combination they never noticed was free.
+    // A fill cannot carry it here, because nothing in this app may be said by
+    // colour alone, so the mark is the count itself, in words for a reader.
+    Control? DuplicateChip(int count)
+    {
+        if (count < 2) return null;
+        var chip = new Border
+        {
+            Padding = new Avalonia.Thickness(5, 0),
+            CornerRadius = new Avalonia.CornerRadius(8),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Avalonia.Thickness(4, 0, 0, 0),
+            Child = new TextBlock
+            {
+                Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_DuplicateMark, count),
+                FontSize = Size("SmallSize"),
+                VerticalAlignment = VerticalAlignment.Center,
+            },
+        };
+        BindBrush(chip, Border.BackgroundProperty, "NewRowTint");
+        var said = string.Format(CultureInfo.CurrentCulture, Strings.Main_UsedNTimesInThisMode, count);
+        AutomationProperties.SetName(chip, said);
+        ToolTip.SetTip(chip, said);
+        return chip;
+    }
+
+    // The cell as it was when its value is used once, so a profile with no
+    // repeats looks exactly as it did.
+    Control WithDuplicateMark(Control cell, int count)
+    {
+        if (DuplicateChip(count) is not { } chip) return cell;
+        var line = ListGrid("*,Auto");
+        line.Children.Add(At(cell, 0));
+        line.Children.Add(At(chip, 1));
+        return line;
+    }
+
     // "N: Name", the way the modes list, the modes window and the import
     // review all say it. Only a mode takes a number, and two modes may share
     // a name, so the number is the half that actually identifies one.
@@ -4920,8 +4964,9 @@ public partial class MainWindow : Window
         // against the taller stack instead of stretching or hugging the top.
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
         var outputs = OutputsFor(CurrentSheet!);
-        p.Children.Add(At(Mid(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, string.Format(CultureInfo.CurrentCulture, Strings.Main_OutputForRowBRow, b.Row), OutputTint, outputs.Catalog, Strings.Main_AnOutput,
-            picked => CommitOutputFromList(b, outputs, picked))), 1));
+        p.Children.Add(At(Mid(WithDuplicateMark(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, string.Format(CultureInfo.CurrentCulture, Strings.Main_OutputForRowBRow, b.Row), OutputTint, outputs.Catalog, Strings.Main_AnOutput,
+            picked => CommitOutputFromList(b, outputs, picked)),
+            _dupes.Output(b.Output))), 1));
         // List View is the raw grid, so the function's numbers explain
         // themselves through the cell's name rather than a panel: same
         // sentences Device View prints under its box.
@@ -4985,8 +5030,10 @@ public partial class MainWindow : Window
             int col = i < b.InputCols.Count ? b.InputCols[i] : FirstFreeInputColumn(b);
             // The picker takes the column, the remove control sits beside it.
             var line = ListGrid("*,Auto");
-            line.Children.Add(At(ListPickerCell(b.Row, col, i < b.Inputs.Count ? b.Inputs[i] : "",
-                InputSuggestions, string.Format(CultureInfo.CurrentCulture, Strings.Main_InputI1ForRow, i + 1, b.Row), InputTint, InputCatalog, Strings.Main_AnInput), 0));
+            var inputToken = i < b.Inputs.Count ? b.Inputs[i] : "";
+            line.Children.Add(At(WithDuplicateMark(ListPickerCell(b.Row, col, inputToken,
+                InputSuggestions, string.Format(CultureInfo.CurrentCulture, Strings.Main_InputI1ForRow, i + 1, b.Row), InputTint, InputCatalog, Strings.Main_AnInput),
+                _dupes.Input(inputToken)), 0));
             // A round remove control beside each real input, so any input
             // can be taken out (not just emptied, and not just the last one).
             if (b.Inputs.Count > 1 && i < b.Inputs.Count)
