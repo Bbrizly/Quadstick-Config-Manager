@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Avalonia;
 using Avalonia.Automation;
@@ -344,6 +345,37 @@ public class DeviceHotspotTests
                     w.Close();
                 }
             }
+    }
+
+    // The width one word needs, in the type the callout draws it in. A wrapped
+    // TextBlock asks for no more than the room it is given, so its DesiredSize
+    // says nothing about a word that does not fit; the word has to be measured
+    // on its own.
+    static double WordWidth(TextBlock t, string word) =>
+        new FormattedText(word, CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
+            new Typeface(t.FontFamily, t.FontStyle, t.FontWeight), t.FontSize, null).Width;
+
+    // A callout is a fixed width, so a word wider than its column is drawn
+    // running off the edge and the card cuts it: "Decrement mode" read
+    // "Decremen mode", which is not the name of anything. Xbox style is the
+    // wordiest of the three ("View button", not "Select"), so it is the one
+    // that has to fit.
+    [AvaloniaFact]
+    public void No_word_in_a_callout_is_cut_off()
+    {
+        var w = Open();
+        try
+        {
+            w.CycleLabelStyleForPreview(); // plain English -> Xbox style
+            w.UpdateLayout();
+            foreach (var card in Stage(w).Children.OfType<ToggleButton>())
+                foreach (var text in card.GetVisualDescendants().OfType<TextBlock>())
+                    foreach (var word in (text.Text ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                        Assert.True(WordWidth(text, word) <= text.Bounds.Width + 0.5,
+                            $"'{word}' needs {WordWidth(text, word)}px and the "
+                            + $"{AutomationProperties.GetName(card)?.Split('.')[0]} callout gives it {text.Bounds.Width}px");
+        }
+        finally { w.Close(); }
     }
 
     // Every marker sits inside the photo it is pointing into. A fraction typed

@@ -97,15 +97,15 @@ sealed record DeviceDiagram(
         "avares://QuadStickConfigManager/Assets/QuadStickFPS.png",
         new PixelSize(1536, 1024),
         Source: Whole,
-        PhotoX: 130, PhotoY: 132, PhotoW: 440,
+        PhotoX: 175, PhotoY: 132, PhotoW: 560,
         Hotspots: new[]
         {
-            new Hotspot("mp_left", 10, false, 0.3136, 0.4778),
-            new Hotspot("mp_center", 180, false, 0.4386, 0.4778),
-            new Hotspot("mp_right", 350, false, 0.5614, 0.4778),
-            new Hotspot("side", 520, false, 0.7432, 0.4710),   // the bore of the side tube, not its body
-            new Hotspot("joystick", 185, true, 0.3114, 0.5768), // the left arch of the gimbal, clear of the lip disc
-            new Hotspot("lip", 355, true, 0.4295, 0.6894),
+            new Hotspot("mp_left", 0, false, 0.3136, 0.4778),
+            new Hotspot("mp_center", 230, false, 0.4386, 0.4778),
+            new Hotspot("mp_right", 460, false, 0.5614, 0.4778),
+            new Hotspot("side", 690, false, 0.7432, 0.4710),   // the bore of the side tube, not its body
+            new Hotspot("joystick", 245, true, 0.3114, 0.5768), // the left arch of the gimbal, clear of the lip disc
+            new Hotspot("lip", 475, true, 0.4295, 0.6894),
         },
         // The domes' paired specular glints give the centre of each, and a line
         // fitted through the five gives the spacing. None is lit in the photo;
@@ -131,14 +131,14 @@ sealed record DeviceDiagram(
         "avares://QuadStickConfigManager/Assets/QuadStickSingleton.png",
         Catalog2048,
         Source: new Rect(0.2124, 0.1738, 0.5747, 0.6523),
-        PhotoX: 140, PhotoY: 132, PhotoW: 420,
+        PhotoX: 185, PhotoY: 132, PhotoW: 540,
         Hotspots: new[]
         {
             // The left arch of the gimbal, not its centre: the mouthpiece tube
             // comes straight down out of the middle, so a marker there and the
             // one on the mouthpiece would swap sides and cross their leaders.
-            new Hotspot("joystick", 40, false, 0.375, 0.500),
-            new Hotspot("mp_center", 500, false, 0.480, 0.715),  // the mouthpiece on the end of the tube
+            new Hotspot("joystick", 70, false, 0.375, 0.500),
+            new Hotspot("mp_center", 690, false, 0.480, 0.715),  // the mouthpiece on the end of the tube
         },
         Lights: new ModeLightRow(0.332, 0.0586, 0.239),
         Zones: SingletonZones);

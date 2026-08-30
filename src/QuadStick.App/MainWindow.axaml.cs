@@ -3087,11 +3087,12 @@ public partial class MainWindow : Window
             stage.Children.Add(label);
         }
         // Shrinks to fit a narrow panel instead of clipping a hotspot off the
-        // edge, and is never blown up past the photo's own size.
+        // edge, and grows into a wide one: on a large window the diagram used
+        // to sit at its drawn size with half the panel empty under it.
         _stageBox = new Viewbox
         {
             Child = stage, Stretch = Stretch.Uniform,
-            StretchDirection = StretchDirection.DownOnly,
+            StretchDirection = StretchDirection.Both,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Top,
         };
@@ -3131,8 +3132,16 @@ public partial class MainWindow : Window
     {
         if (_stageBox is null) return;
         double room = DeviceStageScroll.Bounds.Height;
-        _stageBox.MaxHeight = room > 0 ? Math.Max(StageFloorH, room) : DeviceStageHeight;
+        _stageBox.MaxHeight = room > 0
+            ? Math.Clamp(room, StageFloorH, DeviceStageHeight * StageGrowth)
+            : DeviceStageHeight;
+        _stageBox.MaxWidth = StageW * StageGrowth;
     }
+
+    // How far past its drawn size the diagram may grow. The photos are 1536px
+    // and 2048px wide, so this much upscale is still under the pixels the file
+    // has; past it the labels start to look like a poster.
+    const double StageGrowth = 1.35;
 
     // The photo and its labels are laid out at one fixed size and scaled as a
     // whole, so a label can never drift off the part it names. The photo, the
@@ -3140,20 +3149,21 @@ public partial class MainWindow : Window
     // per model, so an Original owner is never shown an FPS.
     DeviceDiagram Diagram => DeviceDiagram.For(_model);
 
-    const double StageW = 700;
+    const double StageW = 910;
+    // PillW holds the widest gesture name beside the widest action name with
+    // the rule and its margins between them: at 160 the action column was 66px
+    // and "Decrement mode" was drawn past the card edge and cut to "Decremen".
+    // Four of these sit side by side, so the stage is as wide as they are.
     // SmallPillH is the bottom band's reserve as well as the callout's floor,
     // so it has to be as tall as a ruled three-row callout actually draws.
-    const double PillW = 160, PillH = 116, SmallPillH = 124;
+    const double PillW = 220, PillH = 116, SmallPillH = 124;
 
     // Room kept above the photo for the top callouts, over what the diagram
-    // itself asks for. A callout is as tall as the words in it: "Increment
-    // mode" and "Right trigger" take two lines each, and at 116px the card ran
-    // down onto the device. Spacing the ruled rows out added a few pixels to
-    // each of the four, and at 48 the Side tube callout, whose two actions
-    // take two lines each, hung 38px off the top of the stage.
-    // The whole stage is inside a Viewbox, so paying for the room costs a
-    // little scale and nothing else.
-    const double TopCalloutRoom = 96, TopCalloutGap = 10;
+    // itself asks for. A callout is as tall as the words in it, and a card
+    // with a two line row grew up off the top of the stage at 96. The whole
+    // stage is inside a Viewbox, so paying for the room costs a little scale
+    // and nothing else.
+    const double TopCalloutRoom = 116, TopCalloutGap = 10;
 
     // Larger type makes the top callouts taller. Move the photo down by the
     // same amount and move the lower band with it, so the controls never sit
