@@ -129,7 +129,6 @@ export interface AppSnapshot {
   readonly settings: AppSettings;
 }
 
-/** One mounted QuadStick as a window is allowed to know it. */
 export interface DeviceSummary {
   readonly deviceId: string;
   readonly generation: number;
@@ -152,7 +151,6 @@ export interface DeviceProfileEntry {
   readonly protected: boolean;
 }
 
-/** The selectable device library. prefs.csv is deliberately separate. */
 export interface DeviceLibrarySnapshot {
   readonly deviceId: string;
   readonly generation: number;
@@ -190,6 +188,11 @@ export interface InstallReceipt {
   readonly stages: readonly string[];
 }
 
+/** One storage stage that the native transaction has actually completed. */
+export interface InstallProgress {
+  readonly stage: string;
+}
+
 export interface DeletePlan {
   readonly planId: string;
   readonly name: string;
@@ -202,6 +205,32 @@ export interface DeleteReceipt {
   readonly deviceId: string;
   readonly name: string;
   readonly backup: string;
+}
+
+export interface LiveMotion {
+  readonly x: number;
+  readonly y: number;
+  readonly buttons: readonly number[];
+}
+
+export type LiveStatus =
+  | { readonly kind: "stopped" }
+  | { readonly kind: "searching" }
+  | { readonly kind: "xinputOnly" }
+  | { readonly kind: "stale"; readonly product: string }
+  | { readonly kind: "reading"; readonly product: string; readonly motion: LiveMotion }
+  | { readonly kind: "unavailable"; readonly code: string };
+
+/** Sequence + monotonic timestamp make stale/reordered UI frames detectable. */
+export interface LiveSnapshot {
+  readonly seq: number;
+  readonly atMillis: number;
+  readonly status: LiveStatus;
+}
+
+/** A hint to re-query device presence/library state; never a state payload. */
+export interface DeviceInvalidation {
+  readonly revision: number;
 }
 
 export type RecoveryAction =
