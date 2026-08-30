@@ -2921,9 +2921,9 @@ public partial class MainWindow : Window
         UnusedButton.IsVisible = mode;
         // Which QuadStick and whether one is plugged in are facts about the
         // machine in front of you, so the panel says them whichever view is on.
-        var connected = Device.FindCandidatesCached().Count > 0;
-        DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
-            connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected, plainDot: !connected);
+        // The live reader says it again the moment a stick is plugged in or
+        // pulled out, so this is a redraw and not the only time it is asked.
+        RefreshDeviceHeaderStatus();
         if (device) { BuildDeviceView(); BuildZoneDetail(); }
         else RebuildRows();
         // The parts with nowhere to sit on the photo. The parts list already

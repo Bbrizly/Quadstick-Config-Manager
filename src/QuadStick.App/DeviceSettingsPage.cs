@@ -74,7 +74,6 @@ public partial class MainWindow
     {
         _file = null; // no profile is open on a page; a stale dirty file re-asks "leave?" on the next action
         ShowPage(DevicePage, ShellDeviceButton);
-        WatchDevicePage();
         StartLiveInput();
         await LoadDeviceSettingsAsync();
     }
@@ -121,6 +120,7 @@ public partial class MainWindow
     {
         _live = state;
         UpdateDeviceBand();
+        RefreshDeviceHeaderStatus();
     }
 
     /// <summary>Test seam: Undo without the confirmation dialog, which a
@@ -140,27 +140,43 @@ public partial class MainWindow
 
     // ---- live reading ----
 
-    bool _deviceWatched;
-
-    // Reading the stick costs a thread parked on a USB read, so it runs while
-    // this page is the page and stops the moment it is not.
-    void WatchDevicePage()
+    /// <summary>Start reading the stick, for as long as the window is open.
+    /// Idempotent, so the device page can ask for it without knowing whether
+    /// the app already did.</summary>
+    /// <remarks>The app starts this in App.OnFrameworkInitializationCompleted,
+    /// which the headless tests and the render tool never reach. Neither has a
+    /// QuadStick to read, and neither wants a thread parked on a USB
+    /// enumeration for the length of the run.</remarks>
+    internal void StartLiveInput()
     {
-        if (_deviceWatched) return;
-        _deviceWatched = true;
-        DevicePage.PropertyChanged += (_, e) =>
+        if (_liveInput is not null) return;
+        _liveInput = new LiveInput(state =>
         {
-            if (e.Property == Visual.IsVisibleProperty && !DevicePage.IsVisible) StopLiveInput();
-        };
+            bool was = _live is not null;
+            _live = state;
+            // The band is the device page's picture. Redrawing it for a stick
+            // that moves while some other page is showing costs a layout pass
+            // nobody can see.
+            if (DevicePage.IsVisible) UpdateDeviceBand();
+            // Only the found and lost edges move the chip. Every other report
+            // is the stick moving, and re-scanning the mounted drives for each
+            // of those would walk /Volumes several times a second.
+            if (was != (state is not null)) RefreshDeviceHeaderStatus();
+        });
+        Closed += (_, _) => StopLiveInput();
     }
 
-    void StartLiveInput()
+    /// <summary>Whether a QuadStick is plugged in, said in the sidebar of the
+    /// profile editor. Two separate pieces of evidence, because a QuadStick
+    /// answers as a gamepad in every emulation mode but only mounts its drive
+    /// in some: asking the drive alone calls a stick in Xbox mode missing.
+    /// </summary>
+    void RefreshDeviceHeaderStatus()
     {
-        _liveInput ??= new LiveInput(state =>
-        {
-            _live = state;
-            UpdateDeviceBand();
-        });
+        var connected = _live is not null || FindDeviceRoots().Count > 0;
+        DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
+            connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected,
+            plainDot: !connected);
     }
 
     void StopLiveInput()

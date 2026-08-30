@@ -31,7 +31,17 @@ public class App : Application
         Theme.RegisterInto(this);
         Theme.Apply(settings.Theme);
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.MainWindow = WindowFor(desktop.Args);
+        {
+            var window = WindowFor(desktop.Args);
+            // Only the real app reads the stick, and it reads it for as long as
+            // the app is open rather than while one page is showing. The
+            // headless tests and the render tool build a MainWindow without
+            // coming through here: no machine running those has a QuadStick,
+            // and a thread parked on a USB enumeration per test window is a
+            // cost the suite should not pay.
+            (window as MainWindow)?.StartLiveInput();
+            desktop.MainWindow = window;
+        }
         base.OnFrameworkInitializationCompleted();
     }
 }
