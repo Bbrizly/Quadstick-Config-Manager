@@ -1,54 +1,56 @@
 # Tauri capabilities and permission plan
 
-## Default-deny posture
+## Implemented default-deny posture
 
-Tauri 2 capabilities determine which WebViews/windows may invoke plugin/core commands. Official Tauri guidance supports narrowly scoped capabilities. QCM should grant **less** to the frontend than many example apps because native domain commands wrap privileged work.
+The main WebView is deliberately lower privilege than the native application. `src-tauri/capabilities/main.json` is local-only, bound to the `main` window, and grants **zero plugin permissions**. Filesystem, shell, opener, HTTP, process, updater, secure-store and HID access stay behind native domain code.
 
-## Main window capability
+Custom QCM commands are the only privileged surface the frontend uses. They accept typed/bounded request shapes, resolve opaque identities in Rust, revalidate device state, and return redacted DTOs rather than host paths or raw operating-system errors.
 
-Expected frontend permissions:
-- only core window/webview functions actually used (minimize, maximize, close, drag where required);
-- application metadata if not already provided by `get_app_snapshot`.
+## Production browser boundary
 
-Expected **not granted** directly to WebView:
-- filesystem plugin write/read scopes;
-- shell execution;
-- generic opener URLs;
-- arbitrary HTTP client;
-- process execution;
-- updater install/check if domain commands wrap it;
-- keychain/stronghold access;
-- HID/serial native plugins.
+`src-tauri/tauri.conf.json` enforces:
 
-## Why Rust command wrapping still matters
+- `withGlobalTauri: false`;
+- prototype freezing enabled;
+- asset protocol disabled with an empty scope;
+- production CSP with `default-src 'self'` and `script-src 'self'`;
+- frontend network limited to Tauri IPC (`'self'`, `ipc:`, `http://ipc.localhost`);
+- objects, frames, frame ancestors and form submission disabled;
+- no remote script/style/network wildcard.
 
-Custom Tauri commands are native code and must validate requests themselves. A capability saying the main window can call `commit_install` does not mean every target is valid. `commit_install` resolves opaque IDs and revalidates marker/path/confirmation.
+The native shell additionally registers an `on_navigation` guard. Packaged builds accept only QCM's own `tauri://localhost` or `http://tauri.localhost` origins. Debug development additionally accepts exactly `http://localhost:1420`. HTTP(S) remote sites, `file:` and `data:` navigations are rejected before they commit.
 
-## Window labels
+## No broad frontend plugins
 
-If future secondary windows are introduced (e.g. OAuth helper is **not** one; OAuth uses system browser), grant capabilities per window label. A component gallery/dev window should have no production native write permissions.
+The shipped rewrite dependency manifests intentionally do **not** include Tauri fs, shell, HTTP, opener, process, store/stronghold or updater plugins. Native file picking uses `rfd` inside a QCM command; it does not give the WebView a generic dialog/path API. HID uses the native Rust adapter and never exposes HID handles or paths over IPC.
 
-## CSP
+## Enforcement
 
-Production CSP goals:
-- no inline/eval scripts unless build system absolutely requires a hashed exception;
-- no remote script/style origins;
-- image/font origins restricted to packaged resources/data only where necessary;
-- remote API communication ideally zero from frontend because Rust owns Google/community/update/telemetry network;
-- frame/object embedding disabled;
-- external links opened outside WebView.
+`src/platform/securityBoundary.test.ts` is the static security gate. It fails if:
 
-Write the exact Tauri/WebView-compatible CSP after scaffold generation and test all platforms; do not copy a browser-only CSP that breaks Tauri IPC.
+- the main capability gains a permission;
+- the Tauri global or asset protocol is enabled;
+- the production CSP gains broad network/script sources;
+- one of the forbidden plugin packages enters Cargo/npm manifests;
+- the frontend command ledger exposes a `plugin:*` escape hatch.
 
-## Protocol/API allowlist
+`src/platform/importBoundary.test.ts` separately ensures only the platform adapter may import `@tauri-apps/*` or know native command names. Rust tests pin the allowed and forbidden navigation origins and assert the registered QCM command list contains no `plugin:` command.
 
-No arbitrary `fetch` to local file/custom protocols. Any custom scheme must have one documented resource purpose and traversal tests.
+## Future permissions
 
-## Review checklist
+A future feature does not get a generic plugin permission merely because a Tauri plugin exists. Add privilege only when all of the following are true:
 
-- [ ] enumerate `src-tauri/capabilities/*.json`;
-- [ ] enumerate plugins in Cargo/config;
-- [ ] match each permission to API ledger/feature;
-- [ ] verify frontend imports cannot invoke unwrapped privileged plugins;
-- [ ] package release config separately from dev-only permissions;
-- [ ] test malicious/invalid IPC requests directly, not only through UI.
+1. a domain command cannot safely express the operation;
+2. the permission is scoped to the exact window/resource needed;
+3. the API ledger and threat model are updated;
+4. the security harness gains a positive reason and a negative abuse test.
+
+Secondary windows must receive their own capability instead of inheriting `main`. OAuth remains a system-browser flow, not a privileged embedded remote page.
+
+## TASK-035 state
+
+Implementation: **DONE**.
+
+Automated verification code: **DONE, execution deferred with the current CI sweep**.
+
+Physical hardware validation: **N/A**.
