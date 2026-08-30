@@ -38,10 +38,6 @@ use crate::ports::storage::{
 };
 use qcm_config::{ProfileFile, Severity, is_too_long_for_device};
 
-/// Everything decided before the device is touched.
-///
-/// Not `Clone`, and [`Devices::install`] consumes it, so the same plan cannot be
-/// executed twice against one confirmation.
 #[derive(Debug, PartialEq, Eq)]
 pub struct InstallPlan {
     operation: OperationId,
@@ -68,14 +64,11 @@ impl InstallPlan {
         &self.target
     }
 
-    /// Exactly the bytes that will be written. Normalization already happened,
-    /// on a copy, so nothing between here and the device reformats anything.
     #[must_use]
     pub fn bytes(&self) -> &[u8] {
         &self.bytes
     }
 
-    /// The acknowledgement this write cannot proceed without, if any.
     #[must_use]
     pub const fn confirmation(&self) -> Option<&ConfirmationRequirement> {
         self.confirmation.as_ref()
@@ -87,43 +80,27 @@ impl InstallPlan {
     }
 }
 
-/// An install that finished.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct InstallReceipt {
     pub operation: OperationId,
     pub device: StorageDeviceId,
     pub target: SafeDeviceFileName,
     pub bytes: usize,
-    /// Where the old profile went, when there was one to save.
     pub backup: Option<BackupLocationDisplay>,
-    /// True when the installed file was reopened and matched byte for byte.
-    ///
-    /// The read-back that makes this safe is the one before the swap: the temp
-    /// file is compared byte for byte and the target is untouched until it
-    /// matches. This second look is a confirmation on top of that, and a drive
-    /// pulled in the moment after a successful replace can deny it without
-    /// making the replace any less real.
     pub confirmed_on_device: bool,
-    /// Every stage that completed, in order.
     pub stages: Vec<StorageStage>,
 }
 
-/// An install that did not finish, and what it left behind.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct InstallFailure {
     pub operation: OperationId,
     pub error: QcmError,
-    /// Where it broke.
     pub stage: StorageStage,
-    /// What is under the target name now. Never a guess.
     pub target: TargetState,
-    /// The rescue copy, if one was made. Kept on every failure past the backup
-    /// stage, because it is the way out of the worst of them.
     pub backup: Option<BackupLocationDisplay>,
     pub stages: Vec<StorageStage>,
 }
 
-/// Bookkeeping while the transaction runs.
 struct Run {
     operation: OperationId,
     stages: Vec<StorageStage>,
@@ -131,8 +108,9 @@ struct Run {
 }
 
 impl Run {
-    fn done(&mut self, stage: StorageStage) {
+    fn done(&mut self, stage: StorageStage, progress: &mut impl FnMut(StorageStage)) {
         self.stages.push(stage);
+        progress(stage);
     }
 
     fn fail(
@@ -153,15 +131,6 @@ impl Run {
 }
 
 impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
-    /// Work out what installing this profile would do, and hand back the
-    /// acknowledgement it needs first.
-    ///
-    /// The checks are in the shipped order. The name-length one comes before the
-    /// problem list because it has a single fix and the user has to be able to
-    /// read it: the firmware keeps each root file name in a 31 character slot
-    /// and copies it in without room for a terminator, so a longer name copies
-    /// onto the stick fine, then cannot be opened, and the name after it in the
-    /// device's own list prints as garbage too.
     pub fn plan_install(
         &mut self,
         device: StorageDeviceId,
@@ -193,9 +162,6 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
             .into());
         };
 
-        // Read off the profile's own declared name, the same value that becomes
-        // the target, so the gate cannot be dodged by installing under a
-        // different name than the sheet says.
         let kind = if file.document.is_default_config() {
             Some(ConfirmationKind::OverwriteDefaultCsv)
         } else if file.document.is_device_preferences() {
@@ -204,17 +170,10 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
             None
         };
 
-        // Before the confirmation is minted rather than after: nobody should be
-        // asked whether they really mean to overwrite default.csv on a folder
-        // that turns out not to be a QuadStick at all.
         let handle = self.resolve_device(device)?;
-
         let target = SafeDeviceFileName::new(declared)
             .map_err(|reason| StorageError::NameRejected { reason })?;
 
-        // A copy, so the profile the user still has open is not touched. The
-        // legacy install did the same and its test pins it: installing must not
-        // add the version header to the open editor or mark it dirty.
         let mut outgoing = file.clone();
         outgoing.normalize_for_device_csv();
         let bytes = outgoing.to_csv_text().into_bytes();
@@ -250,26 +209,44 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
         })
     }
 
-    /// Run a plan with no way to cancel it.
     pub fn install(
         &mut self,
         plan: InstallPlan,
         confirmation: Option<ConfirmationId>,
     ) -> Result<InstallReceipt, InstallFailure> {
-        self.install_with_cancel(plan, confirmation, &NeverCancels)
+        self.install_with_progress(plan, confirmation, |_| {})
     }
 
-    /// Run a plan.
+    /// Run a plan and report only stages that have actually completed.
     ///
-    /// `cancel` is read three times, all of them before the temp file exists,
-    /// and never again. Once the old directory entry can be displaced the only
-    /// safe direction is forward or back to the old bytes, and a cancel honoured
-    /// in there would leave a disabled user with nothing under that name.
+    /// The callback is observational. It cannot cancel or change the transaction,
+    /// and it is never called for a stage that failed. That keeps progress UI
+    /// subordinate to the receipt/failure rather than turning UI state into a
+    /// second transaction model.
+    pub fn install_with_progress(
+        &mut self,
+        plan: InstallPlan,
+        confirmation: Option<ConfirmationId>,
+        progress: impl FnMut(StorageStage),
+    ) -> Result<InstallReceipt, InstallFailure> {
+        self.install_with_cancel_and_progress(plan, confirmation, &NeverCancels, progress)
+    }
+
     pub fn install_with_cancel(
         &mut self,
         plan: InstallPlan,
         confirmation: Option<ConfirmationId>,
         cancel: &impl CancelSignal,
+    ) -> Result<InstallReceipt, InstallFailure> {
+        self.install_with_cancel_and_progress(plan, confirmation, cancel, |_| {})
+    }
+
+    fn install_with_cancel_and_progress(
+        &mut self,
+        plan: InstallPlan,
+        confirmation: Option<ConfirmationId>,
+        cancel: &impl CancelSignal,
+        mut progress: impl FnMut(StorageStage),
     ) -> Result<InstallReceipt, InstallFailure> {
         let mut run = Run {
             operation: plan.operation,
@@ -286,9 +263,6 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
             ));
         }
 
-        // The device is proven again here, not trusted from the plan. A stick
-        // pulled and pushed back between the dialog and the button comes back
-        // with a new generation and is refused.
         let handle = self
             .resolve_device(plan.handle.device)
             .map_err(|error| run.fail(StorageStage::Revalidate, TargetState::Unchanged, error))?;
@@ -302,7 +276,7 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
                 }),
             ));
         }
-        run.done(StorageStage::Revalidate);
+        run.done(StorageStage::Revalidate, &mut progress);
 
         if let Err(error) = self.redeem(&plan, confirmation) {
             return Err(run.fail(StorageStage::Revalidate, TargetState::Unchanged, error));
@@ -326,11 +300,8 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
                 return Err(run.fail(StorageStage::ReadFile, TargetState::Unchanged, error));
             }
         };
-        run.done(StorageStage::ReadFile);
+        run.done(StorageStage::ReadFile, &mut progress);
 
-        // Off the device, before anything moves. The firmware deletes files it
-        // does not recognize at startup, so a backup on the stick that just
-        // failed is no backup at all.
         if let Some(old) = &existing {
             match self.backups.store(&name, old) {
                 Ok(receipt) => run.backup = Some(receipt.location),
@@ -338,7 +309,7 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
                     return Err(run.fail(StorageStage::Backup, TargetState::Unchanged, error));
                 }
             }
-            run.done(StorageStage::Backup);
+            run.done(StorageStage::Backup, &mut progress);
         }
 
         if cancel.cancelled() {
@@ -348,8 +319,9 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
                 QcmError::Cancelled,
             ));
         }
-        // Last look. Everything past here is the swap.
-
+        // Last cancellation point. Everything past here is the unsafe swap
+        // region and must run forward or restore; progress can observe it but
+        // never interrupt it.
         let staged = self
             .storage
             .stage_write(handle.device, handle.generation, &plan.target, &plan.bytes)
@@ -357,30 +329,30 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
                 let stage = stage_of(&error).unwrap_or(StorageStage::TempWrite);
                 run.fail(stage, TargetState::Unchanged, error)
             })?;
-        run.done(StorageStage::TempWrite);
+        run.done(StorageStage::TempWrite, &mut progress);
 
         if let Err(error) = self.storage.verify_staged(&staged, &plan.bytes) {
             self.discard(staged);
             return Err(run.fail(StorageStage::TempReadBack, TargetState::Unchanged, error));
         }
-        run.done(StorageStage::TempReadBack);
+        run.done(StorageStage::TempReadBack, &mut progress);
 
         match self.storage.commit_staged(staged) {
             Ok(()) => {
-                run.done(StorageStage::ReplaceAfterDisplace);
+                run.done(StorageStage::ReplaceAfterDisplace, &mut progress);
                 Ok(self.finish(run, handle, plan, &name))
             }
-            Err(failure) => Err(self.recover(run, handle, &name, existing.as_deref(), failure)),
+            Err(failure) => Err(self.recover(
+                run,
+                handle,
+                &name,
+                existing.as_deref(),
+                failure,
+                &mut progress,
+            )),
         }
     }
 
-    /// Read the installed file back and compare.
-    ///
-    /// A mismatch means the replace put something on the device that is neither
-    /// the old profile nor the new one, so the old bytes go back the safe way
-    /// and the failure says so. A read that cannot happen at all leaves the
-    /// install standing: `commit_staged` already returned, and the byte for byte
-    /// check before the swap is what makes that answer trustworthy.
     fn finish(
         &mut self,
         run: Run,
@@ -395,7 +367,6 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
             Ok(found) => found == plan.bytes,
             Err(_) => false,
         };
-        // A cached device row is stale the moment free space moves.
         self.invalidate_device_cache();
         InstallReceipt {
             operation: run.operation,
@@ -408,7 +379,6 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
         }
     }
 
-    /// Deal with a replace that did not happen.
     fn recover(
         &mut self,
         mut run: Run,
@@ -416,11 +386,10 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
         name: &DeviceFileName,
         existing: Option<&[u8]>,
         failure: CommitFailure,
+        progress: &mut impl FnMut(StorageStage),
     ) -> InstallFailure {
         let CommitFailure { error, staged } = failure;
         if let Some(staged) = staged {
-            // The temp is still sitting beside the profile and nothing else will
-            // remove it. A user cannot tell it apart from the real thing.
             self.discard(staged);
         }
         let reported = error.target_state().unwrap_or(TargetState::Uncertain);
@@ -429,10 +398,7 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
             return run.fail(stage, reported, error);
         }
 
-        // The old entry is provably gone and the drive is still answering.
         let Some(old) = existing else {
-            // Nothing was there to begin with, so nothing was lost. The name is
-            // still empty, which is what Missing says.
             return run.fail(
                 StorageStage::ReplaceAfterDisplace,
                 TargetState::Missing,
@@ -444,15 +410,13 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
             .restore_file(handle.device, handle.generation, name, old)
         {
             Ok(()) => {
-                run.done(StorageStage::RestoreReplace);
+                run.done(StorageStage::RestoreReplace, progress);
                 run.fail(
                     StorageStage::ReplaceAfterDisplace,
                     TargetState::Restored,
                     error,
                 )
             }
-            // Two failures deep. What is under the name now cannot be proven, so
-            // the message says exactly that and points at the rescue copy.
             Err(restore) => run.fail(
                 StorageStage::RestoreWrite,
                 TargetState::Uncertain,
@@ -464,8 +428,6 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
         }
     }
 
-    /// Best effort by contract. A temp that will not delete is litter, and
-    /// litter must never replace the error that led to the discard.
     fn discard(&self, staged: StagedWrite) {
         let _ = self.storage.discard_staged(staged);
     }
@@ -490,7 +452,6 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
     }
 }
 
-/// The stage a storage error names, where it names one.
 const fn stage_of(error: &StorageError) -> Option<StorageStage> {
     match error {
         StorageError::ReadOnly { stage }
@@ -502,8 +463,6 @@ const fn stage_of(error: &StorageError) -> Option<StorageStage> {
     }
 }
 
-/// Keep the cause with the report. A restore failure that arrives with nothing
-/// in it about what actually broke leaves a crash record no one can act on.
 fn os_detail(error: &StorageError) -> crate::error::OsDetail {
     crate::error::OsDetail::new(format!("{error:?}"))
 }
