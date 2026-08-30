@@ -7,7 +7,9 @@
 //! These fakes make each of those moments a line in a test.
 
 pub mod local;
+pub mod settings;
 pub mod storage;
 
 pub use local::FakeProfileLibrary;
+pub use settings::FakeSettingsFile;
 pub use storage::{FakeBackupStore, FakeQuadStick, Fault, TEMP_SUFFIX};

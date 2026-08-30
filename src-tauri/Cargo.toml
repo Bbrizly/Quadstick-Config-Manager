@@ -21,7 +21,12 @@ crate-type = ["lib", "cdylib", "staticlib"]
 tauri-build = { version = "=2.6.3", features = [] }
 
 [dependencies]
+qcm-config = { path = "../crates/qcm-config" }
 qcm-core = { path = "../crates/qcm-core" }
+# The native file picker. Not a Tauri plugin: it is reached only from inside a
+# command, so the window keeps its empty permission list and cannot open a
+# dialog of its own.
+rfd = "=0.17.2"
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 # No plugins. Filesystem, shell, HTTP and HID stay behind native commands.
@@ -30,4 +35,4 @@ tauri = { version = "=2.11.5", features = [] }
 # The adapter tests drive the storage adapter with a real profile, the way the
 # install flow will.
 [dev-dependencies]
-qcm-config = { path = "../crates/qcm-config" }
+qcm-testkit = { path = "../crates/qcm-testkit" }

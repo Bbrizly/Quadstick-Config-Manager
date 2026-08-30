@@ -50,7 +50,7 @@ Work top-to-bottom. A checked box means its task acceptance criteria and linked 
 
 - [x] TASK-030 Scaffold Tauri 2 + React + Vite using pinned toolchains.
 - [x] TASK-031 Define `QcmClient`, DTOs and `MockQcmClient`.
-- [ ] TASK-032 Implement profile/settings Tauri commands.
+- [x] TASK-032 Implement profile/settings Tauri commands.
 - [ ] TASK-033 Implement device/storage Tauri commands and confirmation plans.
 - [ ] TASK-034 Implement low-rate events + live/progress Channels.
 - [ ] TASK-035 Lock capabilities/CSP and add negative permission tests.

@@ -8,8 +8,8 @@
 use qcm_core::confirmation::ConfirmationKind;
 use qcm_core::error::{
     BackupLocationDisplay, ConfigError, ConfirmationError, DeviceError, InternalError,
-    NameRejection, OsDetail, ProfileError, QcmError, QcmErrorDto, StorageError, StorageStage,
-    TargetState, looks_like_absolute_path, scrub,
+    NameRejection, OsDetail, ProfileError, QcmError, QcmErrorDto, RequestError, StorageError,
+    StorageStage, TargetState, looks_like_absolute_path, scrub,
 };
 use qcm_core::operation::{OperationId, OperationIds};
 use qcm_core::ports::storage::{DeviceFileName, DeviceGeneration};
@@ -120,6 +120,15 @@ fn every_error() -> Vec<QcmError> {
         QcmError::Confirmation(ConfirmationError::Expired),
         QcmError::Confirmation(ConfirmationError::Mismatch),
         QcmError::Confirmation(ConfirmationError::AlreadyUsed),
+        QcmError::Request(RequestError::Malformed {
+            what: "apply_editor_ops request",
+        }),
+        QcmError::Request(RequestError::TooLarge {
+            what: "profile name",
+            limit: 128,
+            actual: 4096,
+        }),
+        QcmError::Request(RequestError::OutOfRange { what: "theme" }),
         QcmError::Cancelled,
         QcmError::Internal(InternalError {
             what: "editor snapshot",

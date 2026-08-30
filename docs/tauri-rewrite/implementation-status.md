@@ -34,6 +34,7 @@ This is the execution checkpoint. The numbered specification remains the source 
 | TASK-025 device library/delete/order/preferences | **DONE (no hardware yet)** | `qcm-core/src/devices/library.rs`; `DeviceFileManagementTests` ported, LED table 1-32 exact, backup before delete |
 | TASK-030 Tauri 2 + React + Vite scaffold | **DONE** | `src-tauri/` + root React app; `pnpm typecheck`/`pnpm test`/`pnpm lint`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked` and `pnpm tauri build` (macOS `.app` + `.dmg`) all green locally |
 | TASK-031 QcmClient contracts + mock | **DONE (PORTED)** | `src/platform/**`; 19 mock contract scenarios plus an import-boundary test and an oxlint `no-restricted-imports` rule |
+| TASK-032 profile/settings commands | **DONE (PORTED)** | `src-tauri/src/{commands,ipc,shell}.rs` + `adapters/{library,picker,settings}.rs`; 30 direct command tests and 8 real-filesystem adapter tests |
 
 ### TASK-030 pins
 
@@ -65,8 +66,34 @@ discovery with the shipped 3 second scan cache, the install transaction, and the
 library operations. `src-tauri/src/adapters/storage/` is the only place in the
 app that sees a path.
 
-There is still no HID and no frontend beyond the scaffold, and no command
-surface: nothing in `src-tauri` is wired to a Tauri command yet.
+The command surface has started. `src-tauri` registers ten commands: the app
+snapshot, get and update settings, and new, open, apply, undo, save, save as and
+close for a profile. Each is a wrapper around a method on `shell::Shell`, which
+is generic over the local library, the picker and the settings store, so the
+whole surface is driven in tests by fakes with no window and no dialog to
+automate.
+
+Three things about that surface are worth writing down.
+
+Every command takes one raw JSON request and reads it itself rather than letting
+Tauri deserialize a typed argument. A typed argument that fails to deserialize
+is rejected by the framework as a plain string, and a string is neither a stable
+code the UI can switch on nor something the redaction rule has ever looked at.
+`QcmError::Request` is the family that arrival lands in.
+
+The file picker is `rfd`, a plain Rust dialog, not `tauri-plugin-dialog`.
+`capabilities/main.json` still grants the window nothing, and the only thing
+that can open a dialog is a command in this crate. The path it returns is turned
+into an opaque id inside the adapter and never travels further.
+
+Settings persist before the value in memory moves. The legacy `Settings.Save`
+swallowed a failed write, which left a window showing a theme the next launch
+would not have. And an interface scale of 137 is refused with the field named
+rather than rounded to 125: the legacy app could clamp because a slider produced
+the value, and a command can be called by anything.
+
+There is still no HID, no device command surface, no events or Channels, and no
+UI beyond the scaffold. TASK-033, TASK-034 and TASK-038 own those.
 
 OQ-004 is answered for now and recorded in `51-open-questions.md`: local save stays at parity with the legacy `WriteAtomic`. `SavePlan` and `commit_save` are the seam a device-grade backup-and-read-back contract drops into without moving the command surface. Two smaller deferrals sit behind the same seam. The C1 Google-sheet stamp the legacy `SaveAsync` applied belongs to the Drive work in TASK-045, so nothing stamps it yet. And there is no size cap on opening a local profile, because the frozen implementation has none to match; `ConfigError::TooLarge` exists for whoever adds one.
 
@@ -106,6 +133,14 @@ something to paper over.
 Free space is reported as `None` on every platform for the same reason. The core
 already treats that as "the platform will not say" rather than as zero, so a
 drive that cannot report its size is never shown as full.
+
+TASK-032 added one crate: `rfd` 0.17.2, pinned exactly, for the native file
+dialog. It is not a Tauri plugin, which is the point: a plugin would need a
+permission in `capabilities/main.json` and would be reachable from the window,
+and this is reachable only from inside a command. On macOS its default backend
+is AppKit and on Windows `IFileDialog`; on Linux it is the XDG portal. The
+commands are synchronous so they run on Tauri's main thread, which is where a
+native modal belongs.
 
 TASK-020, TASK-021 and TASK-022 added no external crate at all. `qcm-core` depends on `qcm-config` and `serde`, with `serde_json` and `qcm-testkit` for tests; `qcm-testkit` depends on `qcm-core` alone. Neither has Tauri, an OS crate, a network client or anything that writes a file: both ports are traits, and the adapters that touch a real volume or a real folder arrive later.
 

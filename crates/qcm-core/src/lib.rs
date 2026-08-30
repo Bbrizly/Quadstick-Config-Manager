@@ -18,6 +18,7 @@ pub mod error;
 pub mod operation;
 pub mod ports;
 pub mod profiles;
+pub mod settings;
 
 pub use cancel::{CancelSignal, NeverCancels};
 pub use clock::{Clock, ManualClock, Moment, SystemClock};
@@ -32,7 +33,7 @@ pub use devices::{
 pub use error::{
     BackupLocationDisplay, ConfigError, ConfirmationError, DeviceError, ErrorCode, InternalError,
     NameRejection, OsDetail, ProfileError, QcmError, QcmErrorDto, RecoveryAction,
-    RecoveryActionDto, StorageError, StorageStage, TargetState,
+    RecoveryActionDto, RequestError, StorageError, StorageStage, TargetState,
 };
 pub use operation::{
     FingerprintBuilder, Operation, OperationFingerprint, OperationId, OperationIds, OperationKind,
@@ -50,6 +51,10 @@ pub use ports::storage::{
 pub use profiles::{
     CloseOutcome, CloseRequest, EditorSnapshot, ProfileOrigin, ProfileSession, ProfileSessions,
     ProfileSourceDto, SavePlan, SaveReceipt, SaveReceiptDto, SessionId,
+};
+pub use settings::{
+    AppSettings, AppSettingsDto, InterfaceScale, LanguageChoice, ModelChoice, PickerGrouping,
+    Settings, SettingsPatch, SettingsStore, ThemeChoice,
 };
 
 /// Same promise `qcm-config` makes, one layer up.
