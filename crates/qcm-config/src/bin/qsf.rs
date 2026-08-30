@@ -56,10 +56,29 @@ fn usage() {
 }
 
 fn emit(value: &Value) {
+    let mut value = value.clone();
+    strip_null_properties(&mut value);
     println!(
         "{}",
-        serde_json::to_string_pretty(value).expect("qsf JSON values are serializable")
+        serde_json::to_string_pretty(&value).expect("qsf JSON values are serializable")
     );
+}
+
+fn strip_null_properties(value: &mut Value) {
+    match value {
+        Value::Object(map) => {
+            map.retain(|_, value| !value.is_null());
+            for value in map.values_mut() {
+                strip_null_properties(value);
+            }
+        }
+        Value::Array(items) => {
+            for item in items {
+                strip_null_properties(item);
+            }
+        }
+        _ => {}
+    }
 }
 
 fn inspect(paths: &[String]) -> Result<i32, String> {
@@ -229,8 +248,14 @@ fn apply(args: &[String]) -> Result<i32, String> {
         }
         index += 2;
     }
-    let Some(ops_path) = ops_path else { usage(); return Ok(2); };
-    let Some(out_path) = out_path else { usage(); return Ok(2); };
+    let Some(ops_path) = ops_path else {
+        usage();
+        return Ok(2);
+    };
+    let Some(out_path) = out_path else {
+        usage();
+        return Ok(2);
+    };
     if from.is_none() && template.is_none() {
         usage();
         return Ok(2);
@@ -458,9 +483,7 @@ fn reject_binding(
     let preferences = load_preferences()?;
     let outputs = known_outputs(&validation);
     let overrides = preference_overrides(&preferences);
-    if !outputs.contains(output)
-        && !overrides.contains(output)
-        && !LEGACY_OUTPUTS.contains(&output)
+    if !outputs.contains(output) && !overrides.contains(output) && !LEGACY_OUTPUTS.contains(&output)
     {
         return Ok(Some(format!(
             "'{output}' is not an output the device knows (case sensitive). See qsf vocab."
@@ -469,7 +492,9 @@ fn reject_binding(
 
     let parts = function.split_whitespace().collect::<Vec<_>>();
     let Some(name) = parts.first() else {
-        return Ok(Some("function is empty; 'normal' is the plain one".to_owned()));
+        return Ok(Some(
+            "function is empty; 'normal' is the plain one".to_owned(),
+        ));
     };
     let Some((_, max)) = function_arity(name) else {
         return Ok(Some(format!(
@@ -623,7 +648,10 @@ fn a1(row: usize, col: usize) -> String {
     let mut name = String::new();
     let mut n = col;
     loop {
-        name.insert(0, char::from(b'A' + u8::try_from(n % 26).expect("column remainder")));
+        name.insert(
+            0,
+            char::from(b'A' + u8::try_from(n % 26).expect("column remainder")),
+        );
         if n < 26 {
             break;
         }
