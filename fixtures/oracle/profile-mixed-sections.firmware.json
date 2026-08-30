@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "firmware-canonical",
+  "source": {
+    "name": "profile-mixed-sections.csv",
+    "sha256": "f91e0d8272d47f156525ac358513952878a327aae47e72929c058024c2bc3166",
+    "kind": "csv"
+  },
+  "modes": [
+    {
+      "index": 0,
+      "channel": "usb",
+      "bindings": [
+        {
+          "output": "x",
+          "function": "normal",
+          "inputs": [
+            "lip"
+          ]
+        }
+      ]
+    }
+  ],
+  "serialized": {
+    "sha256": "eda44987b6900d788558d30893b745c427c5e2a2a7cb226e32ec9c696e89f6b5",
+    "utf8Bytes": 273,
+    "text": "QuadStick Configuration,Version 1.5,source-id,Mixed\r\nProfile Name,,Play\r\nmixed.csv\r\nOutputs,Function,usb\r\nx,normal,lip\r\n\r\nPreferences,,Settings\r\n\r\nPreference,Value,\r\nvolume,,50\r\n\r\nInfrared,Samsung Most Models - Set #: 595,TV\r\n\r\nCommand,Value,bluetooth\r\nir_play,normal,lip\r\n"
+  }
+}

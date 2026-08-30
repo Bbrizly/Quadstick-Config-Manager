@@ -1,0 +1,3589 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "inspect-canonical",
+  "source": {
+    "name": "multi-tab.xlsx",
+    "sha256": "eb590cfa243d6a908ab70ac74b511fed663c7295cd8effcf804b074e422c8362",
+    "kind": "xlsx"
+  },
+  "import": {
+    "skipped": [
+      {
+        "name": "Inputs",
+        "kind": "Helper",
+        "rows": 0
+      },
+      {
+        "name": "Outputs",
+        "kind": "Helper",
+        "rows": 0
+      }
+    ],
+    "limitation": null,
+    "renamed": [
+      {
+        "modeNumber": 1,
+        "tabName": "Main",
+        "cellC1": "Mouse Mode"
+      },
+      {
+        "modeNumber": 2,
+        "tabName": "Flight",
+        "cellC1": "Mouse Mode"
+      },
+      {
+        "modeNumber": 3,
+        "tabName": "Mouse",
+        "cellC1": "Mouse Mode"
+      }
+    ]
+  },
+  "snapshot": {
+    "rawGrid": [
+      [
+        "Profile Name",
+        "",
+        "Main",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Pan Mode"
+      ],
+      [
+        "nomanssky.csv",
+        "",
+        "Normal",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Alternate"
+      ],
+      [
+        "Output or Function",
+        "Function",
+        "usb",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "usb"
+      ],
+      [
+        "kb_w",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "kb_f",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "kb_left_shift",
+        "force_off",
+        "right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Sprint"
+      ],
+      [
+        "kb_left_alt",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "increment_mode",
+        "normal",
+        "mp_left_right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Basic mouse only configuration for PC users",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "skip to mouse mode"
+      ],
+      [
+        "increment_mode",
+        "normal",
+        "mp_left_right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Basic mouse only configuration for PC users"
+      ],
+      [
+        "increment_mode",
+        "delay_on 500",
+        "right_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Basic mouse only configuration for PC users"
+      ],
+      [
+        "decrement_mode",
+        "delay_on 500",
+        "right_puff_soft"
+      ],
+      [
+        "kb_grave_accent_and_tilde",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "kb_a",
+        "greater_than 8",
+        "left",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Left"
+      ],
+      [
+        "mouse_up",
+        "greater_than 90",
+        "up",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Camera Adjust (Right Stick)"
+      ],
+      [
+        "kb_d",
+        "greater_than 8",
+        "right",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Right"
+      ],
+      [
+        "mouse_down",
+        "greater_than 90",
+        "down",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Camera Adjust (Right Stick)"
+      ],
+      [
+        "kb_w",
+        "greater_than 8",
+        "up",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Up"
+      ],
+      [
+        "mouse_left",
+        "greater_than 90",
+        "left",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Camera Adjust (Right Stick)"
+      ],
+      [
+        "kb_s",
+        "greater_than 8",
+        "down",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Down"
+      ],
+      [
+        "kb_w",
+        "force_off",
+        "down"
+      ],
+      [
+        "kb_left_shift",
+        "force_off",
+        "down"
+      ],
+      [
+        "mouse_right",
+        "greater_than 90",
+        "right",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Camera Adjust (Right Stick)"
+      ],
+      [
+        "kb_w",
+        "delayed_latch 50",
+        "lip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Auto forward"
+      ],
+      [
+        "kb_space",
+        "normal",
+        "mp_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "swim up/Jump/climb with jet pack"
+      ],
+      [
+        "kb_q",
+        "normal",
+        "mp_center_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "swim down/melee"
+      ],
+      [
+        "kb_e",
+        "normal",
+        "mp_left_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "interact"
+      ],
+      [
+        "kb_g",
+        "normal",
+        "mp_right_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Terrain manipulation"
+      ],
+      [
+        "kb_c",
+        "normal",
+        "mp_left_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "scan"
+      ],
+      [
+        "kb_t",
+        "normal",
+        "mp_left_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "activate torch"
+      ],
+      [
+        "kb_f",
+        "delayed_latch 50",
+        "mp_right_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "activate zoom/Analyzer Goggles "
+      ],
+      [
+        "kb_z",
+        "normal",
+        "mp_left_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Build"
+      ],
+      [
+        "kb_tab",
+        "normal",
+        "mp_left_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Repair/inventory"
+      ],
+      [
+        "kb_p",
+        "normal",
+        "mp_left_right_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Information "
+      ],
+      [
+        "kb_left_control",
+        "normal",
+        "mp_right_center_sip_soft"
+      ],
+      [
+        "kb_left_alt",
+        "delayed_latch 50",
+        "mp_right_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Scale/rotate"
+      ],
+      [
+        "mouse_right_button",
+        "normal",
+        "mp_right_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Show HUD/increase zoom"
+      ],
+      [
+        "kb_left_shift",
+        "delayed_latch 150",
+        "mp_left_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Sprint"
+      ],
+      [
+        "mouse_left_button",
+        "normal",
+        "mp_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "fire weapon"
+      ],
+      [
+        "mouse_middle_button",
+        "normal",
+        "mp_right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "fire grenade"
+      ],
+      [
+        "mouse_wheel_up",
+        "normal",
+        "mp_left_center_sip_soft"
+      ],
+      [
+        "mouse_wheel_down",
+        "normal",
+        "mp_left_center_puff_soft"
+      ],
+      [
+        "kb_r",
+        "normal",
+        "mp_triple_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "reload weapon"
+      ],
+      [
+        "kb_x",
+        "delayed_latch 500",
+        "mp_center_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "change weapon mode"
+      ],
+      [
+        "kb_semicolon",
+        "pulse 1 1",
+        "mp_right_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Activate Interactor"
+      ],
+      [
+        "kb_escape",
+        "normal",
+        "mp_triple_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Menu"
+      ],
+      [
+        "kb_grave_accent_and_tilde",
+        "delayed_latch 50",
+        "right_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Voice chat"
+      ],
+      [
+        "kb_right_alt",
+        "normal",
+        "mp_triple_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Switch screens"
+      ],
+      [
+        "kb_tab",
+        "normal",
+        "mp_triple_puff_soft"
+      ],
+      [
+        "kb_left_control",
+        "delayed_latch 300",
+        "mp_triple_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Click at gaze point",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Click at gaze point"
+      ],
+      [
+        "kb_left_shift",
+        "delayed_latch 300",
+        "mp_triple_puff"
+      ],
+      [
+        "kb_f7",
+        "delayed_latch 300",
+        "mp_triple_puff"
+      ],
+      [
+        ""
+      ],
+      [
+        "Profile Name",
+        "",
+        "Flight",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Pan Mode"
+      ],
+      [
+        "nomanssky.csv",
+        "",
+        "Normal",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Alternate"
+      ],
+      [
+        "Output or Function",
+        "Function",
+        "usb",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "usb"
+      ],
+      [
+        "kb_left_shift",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "kb_w",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "increment_mode",
+        "normal",
+        "mp_left_right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Basic mouse only configuration for PC users",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "skip to mouse mode"
+      ],
+      [
+        "increment_mode",
+        "delay_on 500",
+        "right_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Basic mouse only configuration for PC users"
+      ],
+      [
+        "decrement_mode",
+        "delay_on 500",
+        "right_puff_soft"
+      ],
+      [
+        "kb_grave_accent_and_tilde",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "kb_a",
+        "normal",
+        "mp_left_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Roll left"
+      ],
+      [
+        "mouse_up",
+        "greater_than 8",
+        "up",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Camera Adjust (Right Stick)"
+      ],
+      [
+        "kb_d",
+        "normal",
+        "mp_left_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Roll right"
+      ],
+      [
+        "mouse_down",
+        "greater_than 8",
+        "down",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Camera Adjust (Right Stick)"
+      ],
+      [
+        "kb_w",
+        "normal",
+        "mp_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Thrust"
+      ],
+      [
+        "mouse_left",
+        "greater_than 8",
+        "left",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Camera Adjust (Right Stick)"
+      ],
+      [
+        "kb_s",
+        "normal",
+        "mp_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Brake"
+      ],
+      [
+        "mouse_right",
+        "greater_than 8",
+        "right",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Camera Adjust (Right Stick)"
+      ],
+      [
+        "kb_w",
+        "delayed_latch 200",
+        "mp_right_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Auto forward"
+      ],
+      [
+        "kb_left_shift",
+        "delayed_latch 200",
+        "mp_left_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Boost"
+      ],
+      [
+        "kb_e",
+        "normal",
+        "mp_right_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Exit ship"
+      ],
+      [
+        "kb_e",
+        "normal",
+        "mp_right_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Initiate landing"
+      ],
+      [
+        "mouse_left_button",
+        "normal",
+        "mp_left_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Fire weapons"
+      ],
+      [
+        "kb_x",
+        "normal",
+        "mp_triple_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "change weapon mode"
+      ],
+      [
+        "kb_c",
+        "normal",
+        "mp_right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "scan"
+      ],
+      [
+        "kb_space",
+        "normal",
+        "lip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "pulse engine"
+      ],
+      [
+        "kb_m",
+        "normal",
+        "mp_center_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Galactic map"
+      ],
+      [
+        "kb_semicolon",
+        "pulse 1 1",
+        "mp_right_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Activate Interactor"
+      ],
+      [
+        "kb_escape",
+        "normal",
+        "mp_triple_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Menu"
+      ],
+      [
+        "kb_grave_accent_and_tilde",
+        "delayed_latch 50",
+        "right_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Voice chat"
+      ],
+      [
+        "kb_right_alt",
+        "normal",
+        "mp_triple_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Switch screens"
+      ],
+      [
+        "kb_tab",
+        "normal",
+        "mp_triple_puff_soft"
+      ],
+      [
+        "kb_left_control",
+        "delayed_latch 300",
+        "mp_left_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Click at gaze point",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Click at gaze point"
+      ],
+      [
+        "kb_left_shift",
+        "delayed_latch 300",
+        "mp_left_center_sip"
+      ],
+      [
+        "kb_f7",
+        "delayed_latch 300",
+        "mp_left_center_sip"
+      ],
+      [
+        ""
+      ],
+      [
+        "Profile Name",
+        "",
+        "Mouse",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Comments"
+      ],
+      [
+        "fairytail.csv",
+        "",
+        "Normal"
+      ],
+      [
+        "Output or Function",
+        "Function",
+        "usb"
+      ],
+      [
+        "increment_mode",
+        "delay_on 500",
+        "right_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Basic mouse only configuration for PC users"
+      ],
+      [
+        "decrement_mode",
+        "delay_on 500",
+        "right_puff_soft"
+      ],
+      [
+        "kb_grave_accent_and_tilde",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "kb_left_control",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "kb_left_shift",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "kb_left_alt",
+        "force_off",
+        "right_puff"
+      ],
+      [
+        "kb_keypad_0",
+        "delay_on 200",
+        "right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Play"
+      ],
+      [
+        "kb_keypad_1",
+        "delay_on 200",
+        "mp_left_center_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Instant replay"
+      ],
+      [
+        "kb_keypad_3",
+        "delay_on 200",
+        "mp_left_center_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Fast-forward"
+      ],
+      [
+        "kb_left_shift",
+        "delay_on 200",
+        "mp_right_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Cycle between Japanese and English"
+      ],
+      [
+        "kb_left_alt",
+        "delay_on 200",
+        "mp_right_sip_soft"
+      ],
+      [
+        "digital_out1_toggle",
+        "delay_on 200",
+        "mp_right_sip_soft"
+      ],
+      [
+        "kb_left_control",
+        "normal",
+        "mp_left_right_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "hiragana"
+      ],
+      [
+        "kb_caps_lock",
+        "normal",
+        "mp_left_right_sip"
+      ],
+      [
+        "kb_left_alt",
+        "normal",
+        "mp_left_right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "katakana"
+      ],
+      [
+        "kb_caps_lock",
+        "normal",
+        "mp_left_right_puff"
+      ],
+      [
+        "mouse_left",
+        "normal",
+        "left"
+      ],
+      [
+        "mouse_right",
+        "normal",
+        "right"
+      ],
+      [
+        "mouse_up",
+        "normal",
+        "up"
+      ],
+      [
+        "mouse_down",
+        "normal",
+        "down"
+      ],
+      [
+        "mouse_wheel_down",
+        "normal",
+        "mp_right_puff"
+      ],
+      [
+        "mouse_wheel_up",
+        "normal",
+        "mp_right_sip"
+      ],
+      [
+        "mouse_left_button",
+        "delayed_latch 1000",
+        "mp_center_puff"
+      ],
+      [
+        "mouse_right_button",
+        "normal",
+        "mp_center_sip"
+      ],
+      [
+        "mouse_middle_button",
+        "normal",
+        "mp_right_puff_soft"
+      ],
+      [
+        "kb_enter",
+        "normal",
+        "lip"
+      ],
+      [
+        "kb_escape",
+        "normal",
+        "mp_right_center_puff_soft"
+      ],
+      [
+        "kb_tab",
+        "normal",
+        "mp_left_puff"
+      ],
+      [
+        "kb_backspace",
+        "normal",
+        "mp_left_center_sip"
+      ],
+      [
+        "kb_space",
+        "normal",
+        "mp_left_center_puff"
+      ],
+      [
+        "kb_keypad_minus",
+        "normal",
+        "mp_left_puff_soft"
+      ],
+      [
+        "kb_keypad_plus",
+        "normal",
+        "mp_left_sip_soft"
+      ],
+      [
+        "kb_left_control",
+        "normal",
+        "mp_triple_sip"
+      ],
+      [
+        "kb_c",
+        "normal",
+        "mp_triple_sip"
+      ],
+      [
+        "kb_left_control",
+        "normal",
+        "mp_triple_puff"
+      ],
+      [
+        "kb_v",
+        "normal",
+        "mp_triple_puff"
+      ],
+      [
+        "kb_right_alt",
+        "normal",
+        "mp_triple_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Switch screens"
+      ],
+      [
+        "kb_tab",
+        "normal",
+        "mp_triple_puff_soft"
+      ],
+      [
+        "kb_grave_accent_and_tilde",
+        "delayed_latch 50",
+        "right_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Voice chat"
+      ],
+      [
+        "kb_left_control",
+        "delay_on 1000",
+        "mp_right_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Activate eye gaze"
+      ],
+      [
+        "kb_left_shift",
+        "delay_on 1000",
+        "mp_right_center_sip"
+      ],
+      [
+        "kb_f4",
+        "delay_on 1000",
+        "mp_right_center_sip"
+      ],
+      [
+        "kb_left_control",
+        "delay_on 1000",
+        "mp_right_center_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Disable interactors"
+      ],
+      [
+        "kb_left_shift",
+        "delay_on 1000",
+        "mp_right_center_puff_soft"
+      ],
+      [
+        "kb_f8",
+        "delay_on 1000",
+        "mp_right_center_puff_soft"
+      ],
+      [
+        "kb_left_control",
+        "normal",
+        "mp_right_center_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Click at gaze point",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Click at gaze point"
+      ],
+      [
+        "kb_left_shift",
+        "normal",
+        "mp_right_center_sip_soft"
+      ],
+      [
+        "kb_f7",
+        "normal",
+        "mp_right_center_sip_soft"
+      ],
+      [
+        "kb_pause",
+        "normal",
+        "mp_right_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Click interactor",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Activate interactor"
+      ],
+      [
+        "kb_left_shift",
+        "normal",
+        "mp_triple_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Mathematica enter"
+      ],
+      [
+        "kb_enter",
+        "normal",
+        "mp_triple_sip_soft"
+      ],
+      [
+        ""
+      ],
+      [
+        "Preferences",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Pan Mode"
+      ],
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Alternate"
+      ],
+      [
+        "Preference",
+        "Value",
+        "Units",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "usb"
+      ],
+      [
+        "sip_puff_delay_soft",
+        "130",
+        "ms",
+        "Time delay before detecting Soft Sip/Puff or Inner Joystick Zone"
+      ]
+    ],
+    "document": {
+      "csvFileName": "nomanssky.csv",
+      "fileNameCellRow": 2,
+      "hasVersionHeader": false,
+      "headerVersion": "",
+      "headerSource": "",
+      "headerName": "",
+      "title": "Main",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Main",
+          "csvFileName": "nomanssky.csv",
+          "headerLabel": "Output or Function",
+          "channel": "usb",
+          "startRow": 1,
+          "bindings": [
+            {
+              "row": 4,
+              "output": "kb_w",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 5,
+              "output": "kb_f",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 6,
+              "output": "kb_left_shift",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 7,
+              "output": "kb_left_alt",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 8,
+              "output": "increment_mode",
+              "function": "normal",
+              "inputs": [
+                "mp_left_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 9,
+              "output": "increment_mode",
+              "function": "normal",
+              "inputs": [
+                "mp_left_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 10,
+              "output": "increment_mode",
+              "function": "delay_on 500",
+              "inputs": [
+                "right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 11,
+              "output": "decrement_mode",
+              "function": "delay_on 500",
+              "inputs": [
+                "right_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 12,
+              "output": "kb_grave_accent_and_tilde",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 13,
+              "output": "kb_a",
+              "function": "greater_than 8",
+              "inputs": [
+                "left"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 14,
+              "output": "mouse_up",
+              "function": "greater_than 90",
+              "inputs": [
+                "up"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 15,
+              "output": "kb_d",
+              "function": "greater_than 8",
+              "inputs": [
+                "right"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 16,
+              "output": "mouse_down",
+              "function": "greater_than 90",
+              "inputs": [
+                "down"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 17,
+              "output": "kb_w",
+              "function": "greater_than 8",
+              "inputs": [
+                "up"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 18,
+              "output": "mouse_left",
+              "function": "greater_than 90",
+              "inputs": [
+                "left"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 19,
+              "output": "kb_s",
+              "function": "greater_than 8",
+              "inputs": [
+                "down"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 20,
+              "output": "kb_w",
+              "function": "force_off",
+              "inputs": [
+                "down"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 21,
+              "output": "kb_left_shift",
+              "function": "force_off",
+              "inputs": [
+                "down"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 22,
+              "output": "mouse_right",
+              "function": "greater_than 90",
+              "inputs": [
+                "right"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 23,
+              "output": "kb_w",
+              "function": "delayed_latch 50",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 24,
+              "output": "kb_space",
+              "function": "normal",
+              "inputs": [
+                "mp_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 25,
+              "output": "kb_q",
+              "function": "normal",
+              "inputs": [
+                "mp_center_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 26,
+              "output": "kb_e",
+              "function": "normal",
+              "inputs": [
+                "mp_left_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 27,
+              "output": "kb_g",
+              "function": "normal",
+              "inputs": [
+                "mp_right_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 28,
+              "output": "kb_c",
+              "function": "normal",
+              "inputs": [
+                "mp_left_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 29,
+              "output": "kb_t",
+              "function": "normal",
+              "inputs": [
+                "mp_left_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 30,
+              "output": "kb_f",
+              "function": "delayed_latch 50",
+              "inputs": [
+                "mp_right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 31,
+              "output": "kb_z",
+              "function": "normal",
+              "inputs": [
+                "mp_left_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 32,
+              "output": "kb_tab",
+              "function": "normal",
+              "inputs": [
+                "mp_left_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 33,
+              "output": "kb_p",
+              "function": "normal",
+              "inputs": [
+                "mp_left_right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 34,
+              "output": "kb_left_control",
+              "function": "normal",
+              "inputs": [
+                "mp_right_center_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 35,
+              "output": "kb_left_alt",
+              "function": "delayed_latch 50",
+              "inputs": [
+                "mp_right_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 36,
+              "output": "mouse_right_button",
+              "function": "normal",
+              "inputs": [
+                "mp_right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 37,
+              "output": "kb_left_shift",
+              "function": "delayed_latch 150",
+              "inputs": [
+                "mp_left_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 38,
+              "output": "mouse_left_button",
+              "function": "normal",
+              "inputs": [
+                "mp_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 39,
+              "output": "mouse_middle_button",
+              "function": "normal",
+              "inputs": [
+                "mp_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 40,
+              "output": "mouse_wheel_up",
+              "function": "normal",
+              "inputs": [
+                "mp_left_center_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 41,
+              "output": "mouse_wheel_down",
+              "function": "normal",
+              "inputs": [
+                "mp_left_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 42,
+              "output": "kb_r",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 43,
+              "output": "kb_x",
+              "function": "delayed_latch 500",
+              "inputs": [
+                "mp_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 44,
+              "output": "kb_semicolon",
+              "function": "pulse 1 1",
+              "inputs": [
+                "mp_right_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 45,
+              "output": "kb_escape",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 46,
+              "output": "kb_grave_accent_and_tilde",
+              "function": "delayed_latch 50",
+              "inputs": [
+                "right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 47,
+              "output": "kb_right_alt",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 48,
+              "output": "kb_tab",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 49,
+              "output": "kb_left_control",
+              "function": "delayed_latch 300",
+              "inputs": [
+                "mp_triple_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 50,
+              "output": "kb_left_shift",
+              "function": "delayed_latch 300",
+              "inputs": [
+                "mp_triple_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 51,
+              "output": "kb_f7",
+              "function": "delayed_latch 300",
+              "inputs": [
+                "mp_triple_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "type": "ProfileName",
+          "modeName": "Flight",
+          "csvFileName": null,
+          "headerLabel": "Output or Function",
+          "channel": "usb",
+          "startRow": 53,
+          "bindings": [
+            {
+              "row": 56,
+              "output": "kb_left_shift",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 57,
+              "output": "kb_w",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 58,
+              "output": "increment_mode",
+              "function": "normal",
+              "inputs": [
+                "mp_left_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 59,
+              "output": "increment_mode",
+              "function": "delay_on 500",
+              "inputs": [
+                "right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 60,
+              "output": "decrement_mode",
+              "function": "delay_on 500",
+              "inputs": [
+                "right_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 61,
+              "output": "kb_grave_accent_and_tilde",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 62,
+              "output": "kb_a",
+              "function": "normal",
+              "inputs": [
+                "mp_left_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 63,
+              "output": "mouse_up",
+              "function": "greater_than 8",
+              "inputs": [
+                "up"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 64,
+              "output": "kb_d",
+              "function": "normal",
+              "inputs": [
+                "mp_left_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 65,
+              "output": "mouse_down",
+              "function": "greater_than 8",
+              "inputs": [
+                "down"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 66,
+              "output": "kb_w",
+              "function": "normal",
+              "inputs": [
+                "mp_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 67,
+              "output": "mouse_left",
+              "function": "greater_than 8",
+              "inputs": [
+                "left"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 68,
+              "output": "kb_s",
+              "function": "normal",
+              "inputs": [
+                "mp_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 69,
+              "output": "mouse_right",
+              "function": "greater_than 8",
+              "inputs": [
+                "right"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 70,
+              "output": "kb_w",
+              "function": "delayed_latch 200",
+              "inputs": [
+                "mp_right_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 71,
+              "output": "kb_left_shift",
+              "function": "delayed_latch 200",
+              "inputs": [
+                "mp_left_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 72,
+              "output": "kb_e",
+              "function": "normal",
+              "inputs": [
+                "mp_right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 73,
+              "output": "kb_e",
+              "function": "normal",
+              "inputs": [
+                "mp_right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 74,
+              "output": "mouse_left_button",
+              "function": "normal",
+              "inputs": [
+                "mp_left_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 75,
+              "output": "kb_x",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 76,
+              "output": "kb_c",
+              "function": "normal",
+              "inputs": [
+                "mp_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 77,
+              "output": "kb_space",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 78,
+              "output": "kb_m",
+              "function": "normal",
+              "inputs": [
+                "mp_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 79,
+              "output": "kb_semicolon",
+              "function": "pulse 1 1",
+              "inputs": [
+                "mp_right_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 80,
+              "output": "kb_escape",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 81,
+              "output": "kb_grave_accent_and_tilde",
+              "function": "delayed_latch 50",
+              "inputs": [
+                "right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 82,
+              "output": "kb_right_alt",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 83,
+              "output": "kb_tab",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 84,
+              "output": "kb_left_control",
+              "function": "delayed_latch 300",
+              "inputs": [
+                "mp_left_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 85,
+              "output": "kb_left_shift",
+              "function": "delayed_latch 300",
+              "inputs": [
+                "mp_left_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 86,
+              "output": "kb_f7",
+              "function": "delayed_latch 300",
+              "inputs": [
+                "mp_left_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "type": "ProfileName",
+          "modeName": "Mouse",
+          "csvFileName": null,
+          "headerLabel": "Output or Function",
+          "channel": "usb",
+          "startRow": 88,
+          "bindings": [
+            {
+              "row": 91,
+              "output": "increment_mode",
+              "function": "delay_on 500",
+              "inputs": [
+                "right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 92,
+              "output": "decrement_mode",
+              "function": "delay_on 500",
+              "inputs": [
+                "right_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 93,
+              "output": "kb_grave_accent_and_tilde",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 94,
+              "output": "kb_left_control",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 95,
+              "output": "kb_left_shift",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 96,
+              "output": "kb_left_alt",
+              "function": "force_off",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 97,
+              "output": "kb_keypad_0",
+              "function": "delay_on 200",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 98,
+              "output": "kb_keypad_1",
+              "function": "delay_on 200",
+              "inputs": [
+                "mp_left_center_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 99,
+              "output": "kb_keypad_3",
+              "function": "delay_on 200",
+              "inputs": [
+                "mp_left_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 100,
+              "output": "kb_left_shift",
+              "function": "delay_on 200",
+              "inputs": [
+                "mp_right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 101,
+              "output": "kb_left_alt",
+              "function": "delay_on 200",
+              "inputs": [
+                "mp_right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 102,
+              "output": "digital_out1_toggle",
+              "function": "delay_on 200",
+              "inputs": [
+                "mp_right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 103,
+              "output": "kb_left_control",
+              "function": "normal",
+              "inputs": [
+                "mp_left_right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 104,
+              "output": "kb_caps_lock",
+              "function": "normal",
+              "inputs": [
+                "mp_left_right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 105,
+              "output": "kb_left_alt",
+              "function": "normal",
+              "inputs": [
+                "mp_left_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 106,
+              "output": "kb_caps_lock",
+              "function": "normal",
+              "inputs": [
+                "mp_left_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 107,
+              "output": "mouse_left",
+              "function": "normal",
+              "inputs": [
+                "left"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 108,
+              "output": "mouse_right",
+              "function": "normal",
+              "inputs": [
+                "right"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 109,
+              "output": "mouse_up",
+              "function": "normal",
+              "inputs": [
+                "up"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 110,
+              "output": "mouse_down",
+              "function": "normal",
+              "inputs": [
+                "down"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 111,
+              "output": "mouse_wheel_down",
+              "function": "normal",
+              "inputs": [
+                "mp_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 112,
+              "output": "mouse_wheel_up",
+              "function": "normal",
+              "inputs": [
+                "mp_right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 113,
+              "output": "mouse_left_button",
+              "function": "delayed_latch 1000",
+              "inputs": [
+                "mp_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 114,
+              "output": "mouse_right_button",
+              "function": "normal",
+              "inputs": [
+                "mp_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 115,
+              "output": "mouse_middle_button",
+              "function": "normal",
+              "inputs": [
+                "mp_right_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 116,
+              "output": "kb_enter",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 117,
+              "output": "kb_escape",
+              "function": "normal",
+              "inputs": [
+                "mp_right_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 118,
+              "output": "kb_tab",
+              "function": "normal",
+              "inputs": [
+                "mp_left_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 119,
+              "output": "kb_backspace",
+              "function": "normal",
+              "inputs": [
+                "mp_left_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 120,
+              "output": "kb_space",
+              "function": "normal",
+              "inputs": [
+                "mp_left_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 121,
+              "output": "kb_keypad_minus",
+              "function": "normal",
+              "inputs": [
+                "mp_left_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 122,
+              "output": "kb_keypad_plus",
+              "function": "normal",
+              "inputs": [
+                "mp_left_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 123,
+              "output": "kb_left_control",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 124,
+              "output": "kb_c",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 125,
+              "output": "kb_left_control",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 126,
+              "output": "kb_v",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 127,
+              "output": "kb_right_alt",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 128,
+              "output": "kb_tab",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 129,
+              "output": "kb_grave_accent_and_tilde",
+              "function": "delayed_latch 50",
+              "inputs": [
+                "right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 130,
+              "output": "kb_left_control",
+              "function": "delay_on 1000",
+              "inputs": [
+                "mp_right_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 131,
+              "output": "kb_left_shift",
+              "function": "delay_on 1000",
+              "inputs": [
+                "mp_right_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 132,
+              "output": "kb_f4",
+              "function": "delay_on 1000",
+              "inputs": [
+                "mp_right_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 133,
+              "output": "kb_left_control",
+              "function": "delay_on 1000",
+              "inputs": [
+                "mp_right_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 134,
+              "output": "kb_left_shift",
+              "function": "delay_on 1000",
+              "inputs": [
+                "mp_right_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 135,
+              "output": "kb_f8",
+              "function": "delay_on 1000",
+              "inputs": [
+                "mp_right_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 136,
+              "output": "kb_left_control",
+              "function": "normal",
+              "inputs": [
+                "mp_right_center_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 137,
+              "output": "kb_left_shift",
+              "function": "normal",
+              "inputs": [
+                "mp_right_center_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 138,
+              "output": "kb_f7",
+              "function": "normal",
+              "inputs": [
+                "mp_right_center_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 139,
+              "output": "kb_pause",
+              "function": "normal",
+              "inputs": [
+                "mp_right_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 140,
+              "output": "kb_left_shift",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 141,
+              "output": "kb_enter",
+              "function": "normal",
+              "inputs": [
+                "mp_triple_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "type": "Preferences",
+          "modeName": "",
+          "csvFileName": null,
+          "headerLabel": "Preference",
+          "channel": "Units",
+          "startRow": 143,
+          "bindings": [
+            {
+              "row": 146,
+              "output": "sip_puff_delay_soft",
+              "function": "130",
+              "inputs": [
+                "ms",
+                "Time delay before detecting Soft Sip/Puff or Inner Joystick Zone"
+              ],
+              "inputCols": [
+                2,
+                3
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [],
+    "editor": {
+      "dirty": false,
+      "revision": 0,
+      "canUndo": false
+    },
+    "serialized": {
+      "sha256": "3f045ac2e4f828ee8bdd8d0a2fb01d79fd220c879f8e164c25ecbba02140d0a5",
+      "utf8Bytes": 7909,
+      "text": "Profile Name,,Main,,,,,,,,Pan Mode\r\nnomanssky.csv,,Normal,,,,,,,,Alternate\r\nOutput or Function,Function,usb,,,,,,,,usb\r\nkb_w,force_off,right_puff\r\nkb_f,force_off,right_puff\r\nkb_left_shift,force_off,right_puff,,,,,,,,,,,,,,,,Sprint\r\nkb_left_alt,force_off,right_puff\r\nincrement_mode,normal,mp_left_right_puff,,,,,,,,Basic mouse only configuration for PC users,,,,,,,,skip to mouse mode\r\nincrement_mode,normal,mp_left_right_puff,,,,,,,,Basic mouse only configuration for PC users\r\nincrement_mode,delay_on 500,right_sip_soft,,,,,,,,Basic mouse only configuration for PC users\r\ndecrement_mode,delay_on 500,right_puff_soft\r\nkb_grave_accent_and_tilde,force_off,right_puff\r\nkb_a,greater_than 8,left,,,,,,,,,,,,,,,,Left\r\nmouse_up,greater_than 90,up,,,,,,,,,,,,,,,,Camera Adjust (Right Stick)\r\nkb_d,greater_than 8,right,,,,,,,,,,,,,,,,Right\r\nmouse_down,greater_than 90,down,,,,,,,,,,,,,,,,Camera Adjust (Right Stick)\r\nkb_w,greater_than 8,up,,,,,,,,,,,,,,,,Up\r\nmouse_left,greater_than 90,left,,,,,,,,,,,,,,,,Camera Adjust (Right Stick)\r\nkb_s,greater_than 8,down,,,,,,,,,,,,,,,,Down\r\nkb_w,force_off,down\r\nkb_left_shift,force_off,down\r\nmouse_right,greater_than 90,right,,,,,,,,,,,,,,,,Camera Adjust (Right Stick)\r\nkb_w,delayed_latch 50,lip,,,,,,,,,,,,,,,,Auto forward\r\nkb_space,normal,mp_center_sip,,,,,,,,,,,,,,,,swim up/Jump/climb with jet pack\r\nkb_q,normal,mp_center_sip_soft,,,,,,,,,,,,,,,,swim down/melee\r\nkb_e,normal,mp_left_puff,,,,,,,,,,,,,,,,interact\r\nkb_g,normal,mp_right_puff_soft,,,,,,,,,,,,,,,,Terrain manipulation\r\nkb_c,normal,mp_left_sip,,,,,,,,,,,,,,,,scan\r\nkb_t,normal,mp_left_puff_soft,,,,,,,,,,,,,,,,activate torch\r\nkb_f,delayed_latch 50,mp_right_sip,,,,,,,,,,,,,,,,activate zoom/Analyzer Goggles \r\nkb_z,normal,mp_left_center_sip,,,,,,,,,,,,,,,,Build\r\nkb_tab,normal,mp_left_sip_soft,,,,,,,,,,,,,,,,Repair/inventory\r\nkb_p,normal,mp_left_right_sip_soft,,,,,,,,,,,,,,,,Information \r\nkb_left_control,normal,mp_right_center_sip_soft\r\nkb_left_alt,delayed_latch 50,mp_right_center_sip,,,,,,,,,,,,,,,,Scale/rotate\r\nmouse_right_button,normal,mp_right_sip_soft,,,,,,,,,,,,,,,,Show HUD/increase zoom\r\nkb_left_shift,delayed_latch 150,mp_left_center_puff,,,,,,,,,,,,,,,,Sprint\r\nmouse_left_button,normal,mp_center_puff,,,,,,,,,,,,,,,,fire weapon\r\nmouse_middle_button,normal,mp_right_puff,,,,,,,,,,,,,,,,fire grenade\r\nmouse_wheel_up,normal,mp_left_center_sip_soft\r\nmouse_wheel_down,normal,mp_left_center_puff_soft\r\nkb_r,normal,mp_triple_sip,,,,,,,,,,,,,,,,reload weapon\r\nkb_x,delayed_latch 500,mp_center_puff_soft,,,,,,,,,,,,,,,,change weapon mode\r\nkb_semicolon,pulse 1 1,mp_right_center_puff,,,,,,,,,,,,,,,,Activate Interactor\r\nkb_escape,normal,mp_triple_sip_soft,,,,,,,,,,,,,,,,Menu\r\nkb_grave_accent_and_tilde,delayed_latch 50,right_sip,,,,,,,,,,,,,,,,Voice chat\r\nkb_right_alt,normal,mp_triple_puff_soft,,,,,,,,Switch screens\r\nkb_tab,normal,mp_triple_puff_soft\r\nkb_left_control,delayed_latch 300,mp_triple_puff,,,,,,,,Click at gaze point,,,,,,,,Click at gaze point\r\nkb_left_shift,delayed_latch 300,mp_triple_puff\r\nkb_f7,delayed_latch 300,mp_triple_puff\r\n\r\nProfile Name,,Flight,,,,,,,,Pan Mode\r\nnomanssky.csv,,Normal,,,,,,,,Alternate\r\nOutput or Function,Function,usb,,,,,,,,usb\r\nkb_left_shift,force_off,right_puff\r\nkb_w,force_off,right_puff\r\nincrement_mode,normal,mp_left_right_puff,,,,,,,,Basic mouse only configuration for PC users,,,,,,,,skip to mouse mode\r\nincrement_mode,delay_on 500,right_sip_soft,,,,,,,,Basic mouse only configuration for PC users\r\ndecrement_mode,delay_on 500,right_puff_soft\r\nkb_grave_accent_and_tilde,force_off,right_puff\r\nkb_a,normal,mp_left_sip,,,,,,,,,,,,,,,,Roll left\r\nmouse_up,greater_than 8,up,,,,,,,,,,,,,,,,Camera Adjust (Right Stick)\r\nkb_d,normal,mp_left_puff,,,,,,,,,,,,,,,,Roll right\r\nmouse_down,greater_than 8,down,,,,,,,,,,,,,,,,Camera Adjust (Right Stick)\r\nkb_w,normal,mp_center_puff,,,,,,,,,,,,,,,,Thrust\r\nmouse_left,greater_than 8,left,,,,,,,,,,,,,,,,Camera Adjust (Right Stick)\r\nkb_s,normal,mp_center_sip,,,,,,,,,,,,,,,,Brake\r\nmouse_right,greater_than 8,right,,,,,,,,,,,,,,,,Camera Adjust (Right Stick)\r\nkb_w,delayed_latch 200,mp_right_center_sip,,,,,,,,,,,,,,,,Auto forward\r\nkb_left_shift,delayed_latch 200,mp_left_puff_soft,,,,,,,,,,,,,,,,Boost\r\nkb_e,normal,mp_right_sip,,,,,,,,,,,,,,,,Exit ship\r\nkb_e,normal,mp_right_sip_soft,,,,,,,,,,,,,,,,Initiate landing\r\nmouse_left_button,normal,mp_left_center_puff,,,,,,,,,,,,,,,,Fire weapons\r\nkb_x,normal,mp_triple_sip,,,,,,,,,,,,,,,,change weapon mode\r\nkb_c,normal,mp_right_puff,,,,,,,,,,,,,,,,scan\r\nkb_space,normal,lip,,,,,,,,,,,,,,,,pulse engine\r\nkb_m,normal,mp_center_puff_soft,,,,,,,,,,,,,,,,Galactic map\r\nkb_semicolon,pulse 1 1,mp_right_center_puff,,,,,,,,,,,,,,,,Activate Interactor\r\nkb_escape,normal,mp_triple_sip_soft,,,,,,,,,,,,,,,,Menu\r\nkb_grave_accent_and_tilde,delayed_latch 50,right_sip,,,,,,,,,,,,,,,,Voice chat\r\nkb_right_alt,normal,mp_triple_puff_soft,,,,,,,,Switch screens\r\nkb_tab,normal,mp_triple_puff_soft\r\nkb_left_control,delayed_latch 300,mp_left_center_sip,,,,,,,,Click at gaze point,,,,,,,,Click at gaze point\r\nkb_left_shift,delayed_latch 300,mp_left_center_sip\r\nkb_f7,delayed_latch 300,mp_left_center_sip\r\n\r\nProfile Name,,Mouse,,,,,,,,Comments\r\nfairytail.csv,,Normal\r\nOutput or Function,Function,usb\r\nincrement_mode,delay_on 500,right_sip_soft,,,,,,,,Basic mouse only configuration for PC users\r\ndecrement_mode,delay_on 500,right_puff_soft\r\nkb_grave_accent_and_tilde,force_off,right_puff\r\nkb_left_control,force_off,right_puff\r\nkb_left_shift,force_off,right_puff\r\nkb_left_alt,force_off,right_puff\r\nkb_keypad_0,delay_on 200,right_puff,,,,,,,,,,,,,,,,Play\r\nkb_keypad_1,delay_on 200,mp_left_center_sip_soft,,,,,,,,,,,,,,,,Instant replay\r\nkb_keypad_3,delay_on 200,mp_left_center_puff_soft,,,,,,,,,,,,,,,,Fast-forward\r\nkb_left_shift,delay_on 200,mp_right_sip_soft,,,,,,,,,,,,,,,,Cycle between Japanese and English\r\nkb_left_alt,delay_on 200,mp_right_sip_soft\r\ndigital_out1_toggle,delay_on 200,mp_right_sip_soft\r\nkb_left_control,normal,mp_left_right_sip,,,,,,,,,,,,,,,,hiragana\r\nkb_caps_lock,normal,mp_left_right_sip\r\nkb_left_alt,normal,mp_left_right_puff,,,,,,,,,,,,,,,,katakana\r\nkb_caps_lock,normal,mp_left_right_puff\r\nmouse_left,normal,left\r\nmouse_right,normal,right\r\nmouse_up,normal,up\r\nmouse_down,normal,down\r\nmouse_wheel_down,normal,mp_right_puff\r\nmouse_wheel_up,normal,mp_right_sip\r\nmouse_left_button,delayed_latch 1000,mp_center_puff\r\nmouse_right_button,normal,mp_center_sip\r\nmouse_middle_button,normal,mp_right_puff_soft\r\nkb_enter,normal,lip\r\nkb_escape,normal,mp_right_center_puff_soft\r\nkb_tab,normal,mp_left_puff\r\nkb_backspace,normal,mp_left_center_sip\r\nkb_space,normal,mp_left_center_puff\r\nkb_keypad_minus,normal,mp_left_puff_soft\r\nkb_keypad_plus,normal,mp_left_sip_soft\r\nkb_left_control,normal,mp_triple_sip\r\nkb_c,normal,mp_triple_sip\r\nkb_left_control,normal,mp_triple_puff\r\nkb_v,normal,mp_triple_puff\r\nkb_right_alt,normal,mp_triple_puff_soft,,,,,,,,Switch screens\r\nkb_tab,normal,mp_triple_puff_soft\r\nkb_grave_accent_and_tilde,delayed_latch 50,right_sip,,,,,,,,,,,,,,,,Voice chat\r\nkb_left_control,delay_on 1000,mp_right_center_sip,,,,,,,,Activate eye gaze\r\nkb_left_shift,delay_on 1000,mp_right_center_sip\r\nkb_f4,delay_on 1000,mp_right_center_sip\r\nkb_left_control,delay_on 1000,mp_right_center_puff_soft,,,,,,,,Disable interactors\r\nkb_left_shift,delay_on 1000,mp_right_center_puff_soft\r\nkb_f8,delay_on 1000,mp_right_center_puff_soft\r\nkb_left_control,normal,mp_right_center_sip_soft,,,,,,,,Click at gaze point,,,,,,,,Click at gaze point\r\nkb_left_shift,normal,mp_right_center_sip_soft\r\nkb_f7,normal,mp_right_center_sip_soft\r\nkb_pause,normal,mp_right_center_puff,,,,,,,,Click interactor,,,,,,,,Activate interactor\r\nkb_left_shift,normal,mp_triple_sip_soft,,,,,,,,,,,,,,,,Mathematica enter\r\nkb_enter,normal,mp_triple_sip_soft\r\n\r\nPreferences,,,,,,,,,,Pan Mode\r\n,,,,,,,,,,Alternate\r\nPreference,Value,Units,,,,,,,,usb\r\nsip_puff_delay_soft,130,ms,Time delay before detecting Soft Sip/Puff or Inner Joystick Zone\r\n"
+    }
+  }
+}

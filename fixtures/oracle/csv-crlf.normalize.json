@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "normalize-canonical",
+  "source": {
+    "name": "csv-crlf.csv",
+    "sha256": "7b80bae4f56bdb4b6b952938c42715cde7b1610cb021e70148d164c80663c230",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "QuadStick Configuration",
+        "Version 1.5",
+        "",
+        "config"
+      ],
+      [
+        "a",
+        "b"
+      ],
+      [
+        "c",
+        "d"
+      ]
+    ],
+    "document": {
+      "csvFileName": null,
+      "fileNameCellRow": 2,
+      "hasVersionHeader": true,
+      "headerVersion": "Version 1.5",
+      "headerSource": "",
+      "headerName": "config",
+      "title": "config",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": []
+    },
+    "issues": [
+      {
+        "severity": "Error",
+        "cell": "A1",
+        "kind": "None",
+        "message": "First cell must contain \u0022Profile\u0022 or be \u0022Preferences\u0022 or \u0022Infrared\u0022. Found \u0022a\u0022.",
+        "fix": "Set cell A1 to the sheet type keyword, e.g. \u0022Profile Name\u0022."
+      },
+      {
+        "severity": "Error",
+        "cell": "A2",
+        "kind": "None",
+        "message": "The cell under the first sheet\u0027s keyword must contain the CSV filename.",
+        "fix": "Set it to a name like \u0022mygame.csv\u0022."
+      }
+    ],
+    "editor": {
+      "dirty": true,
+      "revision": 1,
+      "canUndo": true
+    },
+    "serialized": {
+      "sha256": "61f17323dd046975167bb794ce62e3c4b08a2bf1d43ee70c4e837811ce953300",
+      "utf8Bytes": 55,
+      "text": "QuadStick Configuration,Version 1.5,,config\r\na,b\r\nc,d\r\n"
+    }
+  }
+}

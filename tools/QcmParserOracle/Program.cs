@@ -62,11 +62,7 @@ foreach (var fixture in manifest.RootElement.GetProperty("fixtures").EnumerateAr
         },
     };
 
-    var rendered = JsonSerializer.Serialize(result, new JsonSerializerOptions
-    {
-        WriteIndented = true,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    }) + "\n";
+    var rendered = JsonSerializer.Serialize(result, OracleJson.Options) + "\n";
     File.WriteAllText(
         Path.Combine(outputDir, $"{id}.parser-structure.txt"),
         rendered,
@@ -82,4 +78,15 @@ static string FindRepoRoot()
         dir = dir.Parent;
     }
     throw new InvalidOperationException("Run qcm-parser-oracle from inside the repository.");
+}
+
+
+// One cached options instance: CA1869, and the oracle must serialize identically every run.
+static class OracleJson
+{
+    internal static readonly JsonSerializerOptions Options = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
 }

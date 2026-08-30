@@ -60,11 +60,7 @@ var result = new
     defaultTemplate = template,
 };
 
-var rendered = JsonSerializer.Serialize(result, new JsonSerializerOptions
-{
-    WriteIndented = true,
-    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-}) + "\n";
+var rendered = JsonSerializer.Serialize(result, OracleJson.Options) + "\n";
 
 if (args.Length == 0)
 {
@@ -93,4 +89,15 @@ static string FindRepoRoot()
         dir = dir.Parent;
     }
     throw new InvalidOperationException("Run qcm-catalog-oracle from inside the repository.");
+}
+
+
+// One cached options instance: CA1869, and the oracle must serialize identically every run.
+static class OracleJson
+{
+    internal static readonly JsonSerializerOptions Options = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
 }

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "firmware-canonical",
+  "source": {
+    "name": "default.csv",
+    "sha256": "269427217a62f18cdb00f51b43beae6bdadd44cc6447252352f7b40b7e2a5448",
+    "kind": "csv"
+  },
+  "modes": [],
+  "serialized": {
+    "sha256": "fad00d785146202433161655d075991739f7cb2a3bfe425c20954902ef026dd9",
+    "utf8Bytes": 1254,
+    "text": "Profile Name,,Left Joystick,,,,,,,,Comments\r\ndefault.csv,,,,,,,,,,\r\nPlayStation Outputs,Function,usb,,,,,,,,\r\nincrement_mode,normal,right_sip,,,,,,,,\r\ndecrement_mode,normal,right_puff,,,,,,,,\r\ndpad_N,normal,,,,,,,,,\r\ndpad_NE,normal,,,,,,,,,\r\ndpad_E,normal,,,,,,,,,\r\ndpad_SE,normal,,,,,,,,,\r\ndpad_S,normal,,,,,,,,,\r\ndpad_SW,normal,,,,,,,,,\r\ndpad_W,normal,,,,,,,,,\r\ndpad_NW,normal,,,,,,,,,\r\nleft_joy_left,normal,left,,,,,,,,\r\nleft_joy_right,normal,right,,,,,,,,\r\nleft_joy_up,normal,up,,,,,,,,\r\nleft_joy_down,normal,down,,,,,,,,\r\nright_joy_left,normal,,,,,,,,,\r\nright_joy_right,normal,,,,,,,,,\r\nright_joy_up,normal,,,,,,,,,\r\nright_joy_down,normal,,,,,,,,,\r\nleft_1,normal,mp_left_sip,,,,,,,,\r\nleft_2,normal,mp_left_puff,,,,,,,,\r\nleft_3,normal,mp_left_center_sip,,,,,,,,\r\nright_1,normal,mp_right_sip,,,,,,,,\r\nright_2,normal,mp_right_puff,,,,,,,,\r\nright_3,normal,mp_right_center_sip,,,,,,,,\r\nx,normal,lip,,,,,,,,\r\ncircle,normal,mp_center_puff,,,,,,,,\r\nsquare,normal,mp_center_sip,,,,,,,,\r\ntriangle,normal,mp_right_center_puff,,,,,,,,\r\nselect,normal,mp_left_sip_soft,,,,,,,,Share or Create\r\nps3,normal,mp_center_sip_soft,,,,,,,,Home or Guide or PS\r\nstart,normal,mp_right_sip_soft,,,,,,,,Options\r\ntouch,normal,mp_left_puff_soft,,,,,,,,Press Touchpad or Capture\r\n"
+  }
+}

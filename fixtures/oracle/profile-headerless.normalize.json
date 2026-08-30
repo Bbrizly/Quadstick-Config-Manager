@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "normalize-canonical",
+  "source": {
+    "name": "profile-headerless.csv",
+    "sha256": "f63230e49d66c522a0d830400284d535a0e0c22be6eec3f5de8a55bd503b4ff6",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "QuadStick Configuration",
+        "Version 1.5",
+        "",
+        "config"
+      ],
+      [
+        "Profile Name",
+        "",
+        "Mode 1"
+      ],
+      [
+        "config.csv"
+      ],
+      [
+        "PlayStation Outputs",
+        "Function",
+        "usb"
+      ],
+      [
+        "triangle",
+        "normal",
+        "lip"
+      ]
+    ],
+    "document": {
+      "csvFileName": "config.csv",
+      "fileNameCellRow": 3,
+      "hasVersionHeader": true,
+      "headerVersion": "Version 1.5",
+      "headerSource": "",
+      "headerName": "config",
+      "title": "config",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Mode 1",
+          "csvFileName": "config.csv",
+          "headerLabel": "PlayStation Outputs",
+          "channel": "usb",
+          "startRow": 2,
+          "bindings": [
+            {
+              "row": 5,
+              "output": "triangle",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [],
+    "editor": {
+      "dirty": true,
+      "revision": 1,
+      "canUndo": true
+    },
+    "serialized": {
+      "sha256": "f1b4c9bbd0ab2a547b51757fbc4004a862cdfbdf552ee72f94f8f3dc7716ef51",
+      "utf8Bytes": 134,
+      "text": "QuadStick Configuration,Version 1.5,,config\r\nProfile Name,,Mode 1\r\nconfig.csv\r\nPlayStation Outputs,Function,usb\r\ntriangle,normal,lip\r\n"
+    }
+  }
+}
