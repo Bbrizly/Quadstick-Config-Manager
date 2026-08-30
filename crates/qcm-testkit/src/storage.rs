@@ -103,6 +103,9 @@ impl FakeDevice {
 struct State {
     devices: Vec<FakeDevice>,
     faults: Vec<Planned>,
+    /// How many times the port was asked to enumerate. The only way to prove a
+    /// scan cache above the port actually stopped a scan.
+    discoveries: usize,
     next_id: u64,
     next_token: u64,
     next_generation: u64,
@@ -262,6 +265,13 @@ impl FakeQuadStick {
         .unwrap_or_default()
     }
 
+    /// How many times [`DeviceStorage::discover`] has run. A cache that claims
+    /// to collapse a burst of lookups has to show this number standing still.
+    #[must_use]
+    pub fn discover_count(&self) -> usize {
+        self.state().discoveries
+    }
+
     #[must_use]
     pub fn generation(&self, device: StorageDeviceId) -> Option<DeviceGeneration> {
         self.read_device(device, |found| found.generation)
@@ -375,6 +385,7 @@ impl State {
 impl DeviceStorage for FakeQuadStick {
     fn discover(&self) -> Result<Vec<StorageProbe>, StorageError> {
         let mut state = self.state();
+        state.discoveries += 1;
         state.fire(
             StorageDeviceId::from_raw(0),
             StorageStage::Discover,

@@ -29,6 +29,7 @@ This is the execution checkpoint. The numbered specification remains the source 
 | TASK-020 profile session manager | **DONE** | `qcm-core/src/profiles/**` + `ports/local.rs`; session/revision/close-dirty suite green against the fake library |
 | TASK-021 stable errors/operations/confirmations | **DONE** | `qcm-core/src/{error,operation,confirmation,clock}.rs`; redaction suite covers every error family |
 | TASK-022 storage port + fake device | **DONE** | `qcm-core/src/ports/storage.rs` + `qcm-testkit`; every fault stage exercised without hardware |
+| TASK-023 mounted QuadStick discovery (core) | **DONE (adapter and hardware pending)** | `qcm-core/src/devices/discovery.rs`; 3 s scan cache, opaque ids, marker rechecked on every lookup |
 | TASK-030 Tauri 2 + React + Vite scaffold | **DONE** | `src-tauri/` + root React app; `pnpm typecheck`/`pnpm test`/`pnpm lint`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked` and `pnpm tauri build` (macOS `.app` + `.dmg`) all green locally |
 
 ### TASK-030 pins
@@ -55,7 +56,12 @@ Phase 3 has started at the contract end. `crates/` now holds three crates: `qcm-
 
 The session manager is the type any UI will drive: opaque session ids, an origin that is not the same thing as a save target, a revision-tagged snapshot, all-or-nothing typed edit batches under `expected_revision`, a prepare/commit save split, and an explicit answer required before unsaved work is dropped. No path crosses its boundary in either direction.
 
-None of it is wired to anything yet. There is still no discovery adapter, no install transaction, no library operations, no HID, no Tauri project and no frontend. Both ports are traits, and every implementation of them is a fake.
+`qcm-core/src/devices/` has started. It holds one service that owns the storage
+port, the off-device backup area and the confirmation ledger, and so far one job
+on it: discovery, with the shipped 3 second scan cache in front of it.
+
+There is still no install transaction, no library operations, no storage
+adapter, no HID and no frontend beyond the scaffold.
 
 OQ-004 is answered for now and recorded in `51-open-questions.md`: local save stays at parity with the legacy `WriteAtomic`. `SavePlan` and `commit_save` are the seam a device-grade backup-and-read-back contract drops into without moving the command surface. Two smaller deferrals sit behind the same seam. The C1 Google-sheet stamp the legacy `SaveAsync` applied belongs to the Drive work in TASK-045, so nothing stamps it yet. And there is no size cap on opening a local profile, because the frozen implementation has none to match; `ConfigError::TooLarge` exists for whoever adds one.
 

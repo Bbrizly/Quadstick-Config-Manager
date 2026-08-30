@@ -12,6 +12,7 @@
 
 pub mod clock;
 pub mod confirmation;
+pub mod devices;
 pub mod error;
 pub mod operation;
 pub mod ports;
@@ -22,6 +23,7 @@ pub use confirmation::{
     ConfirmationId, ConfirmationKind, ConfirmationLedger, ConfirmationRequirement,
     DEFAULT_CONFIRMATION_TTL,
 };
+pub use devices::{DEFAULT_SCAN_TTL, DeviceHandle, DeviceScan, DeviceSummary, Devices};
 pub use error::{
     BackupLocationDisplay, ConfigError, ConfirmationError, DeviceError, ErrorCode, InternalError,
     NameRejection, OsDetail, ProfileError, QcmError, QcmErrorDto, RecoveryAction,
