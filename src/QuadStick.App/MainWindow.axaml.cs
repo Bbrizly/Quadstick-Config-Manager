@@ -3402,6 +3402,47 @@ public partial class MainWindow : Window
     // as a muted second line, and a click opens the detailed editor for just
     // this mapping. The handle on the left selects and drags, exactly like a
     // list-view row number.
+    // Hairline rules between the sentence cells, so a column of cards reads
+    // as a table you scan down instead of phrases floating in a box. The last
+    // filled column and row skip theirs: the card's own outline is that edge,
+    // and a rule past the last cell would hang in space on a mapping with no
+    // "as" behavior.
+    static Control RuleGrid(Grid g)
+    {
+        int lastCol = 0, lastRow = 0;
+        foreach (var c in g.Children)
+        {
+            lastCol = Math.Max(lastCol, Grid.GetColumn(c) + Grid.GetColumnSpan(c) - 1);
+            lastRow = Math.Max(lastRow, Grid.GetRow(c) + Grid.GetRowSpan(c) - 1);
+        }
+        foreach (var child in g.Children.ToList())
+        {
+            int col = Grid.GetColumn(child), row = Grid.GetRow(child);
+            int colSpan = Grid.GetColumnSpan(child), rowSpan = Grid.GetRowSpan(child);
+            g.Children.Remove(child);
+            var cell = new Border
+            {
+                Child = child,
+                Padding = new Avalonia.Thickness(3, 2),
+                BorderThickness = new Avalonia.Thickness(0, 0,
+                    col + colSpan - 1 < lastCol ? 1 : 0,
+                    row + rowSpan - 1 < lastRow ? 1 : 0),
+            };
+            BindBrush(cell, Border.BorderBrushProperty, "SurfaceSubtle");
+            Grid.SetColumn(cell, col); Grid.SetRow(cell, row);
+            Grid.SetColumnSpan(cell, colSpan); Grid.SetRowSpan(cell, rowSpan);
+            g.Children.Add(cell);
+        }
+        var box = new Border
+        {
+            Child = g,
+            BorderThickness = new Avalonia.Thickness(1),
+            CornerRadius = new Avalonia.CornerRadius(4),
+        };
+        BindBrush(box, Border.BorderBrushProperty, "SurfaceSubtle");
+        return box;
+    }
+
     Control SentenceCard(Zone zone, Binding b, int n)
     {
         Control Pill(string text, string tint)
@@ -3528,7 +3569,7 @@ public partial class MainWindow : Window
             }
         }
 
-        var body = new StackPanel { Spacing = 4, Children = { line } };
+        var body = new StackPanel { Spacing = 4, Children = { RuleGrid(line) } };
         var note = _file!.GetCell(b.Row, NoteColumn);
         if (note.Length > 0)
             body.Children.Add(new TextBlock
@@ -3570,9 +3611,10 @@ public partial class MainWindow : Window
         // tester found the old 24px-wide strip too small to hit.
         var dragIcon = Glyph("IconDrag", "TextSecondary");
         dragIcon.Width = dragIcon.Height = 24;
-        var handle = WireDragHandle(new Border
-        { Child = dragIcon, Padding = new Avalonia.Thickness(10) },
-            b, $"Mapping {n}");
+        var handleBox = new Border
+        { Child = dragIcon, Padding = new Avalonia.Thickness(10), BorderThickness = new Avalonia.Thickness(0, 0, 1, 0) };
+        BindBrush(handleBox, Border.BorderBrushProperty, "SurfaceSubtle");
+        var handle = WireDragHandle(handleBox, b, $"Mapping {n}");
 
         var p = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
         p.Children.Add(handle);
