@@ -12,15 +12,19 @@ import type {
   CloseOutcome,
   DeletePlan,
   DeleteReceipt,
+  DeviceInvalidation,
   DeviceLibrarySnapshot,
   DevicePresenceSnapshot,
   EditorOp,
   EditorSnapshot,
   InstallPlan,
+  InstallProgress,
   InstallReceipt,
+  LiveSnapshot,
   QcmErrorPayload,
   SaveReceipt,
   SettingsPatch,
+  Subscription,
 } from "./contracts";
 
 export interface QcmClient {
@@ -51,7 +55,11 @@ export interface QcmClient {
    * state; it is not authority and carries no bytes.
    */
   prepareInstall(sessionId: string, deviceId: string): Promise<InstallPlan>;
-  commitInstall(planId: string, confirmationId?: string): Promise<InstallReceipt>;
+  commitInstall(
+    planId: string,
+    confirmationId?: string,
+    onProgress?: (progress: InstallProgress) => void,
+  ): Promise<InstallReceipt>;
 
   prepareDeleteDeviceProfile(
     deviceId: string,
@@ -67,6 +75,12 @@ export interface QcmClient {
     name: string,
   ): Promise<EditorSnapshot>;
   openDevicePreferences(deviceId: string, expectedGeneration: number): Promise<EditorSnapshot>;
+
+  /** Capacity-one native live stream. Dispose is required and idempotent. */
+  startLiveInput(onFrame: (frame: LiveSnapshot) => void): Promise<Subscription>;
+
+  /** Invalidation only: callers re-query state instead of trusting event payloads. */
+  subscribeDevicesChanged(onChanged: (event: DeviceInvalidation) => void): Promise<Subscription>;
 }
 
 export class QcmCommandError extends Error {
