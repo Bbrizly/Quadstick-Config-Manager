@@ -4,5 +4,6 @@
 //! them takes a path, so no caller, including a compromised window, can name a
 //! place on the machine to read or write.
 
+pub mod live_input;
 pub mod local;
 pub mod storage;

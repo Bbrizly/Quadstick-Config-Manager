@@ -30,7 +30,8 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `DeviceSettingsPage.cs` | prefs page | React device settings | REWRITE | E2E/AT | 6 | CONTRACTED |
 | `PreferenceEditor.cs` | prefs controls | React + qcm-config | SPLIT | parity | 6 | CONTRACTED |
 | `DeviceBand.cs` | visual/live explanation | React SVG/text component | REWRITE | component/AT | 6 | CONTRACTED |
-| `LiveInput.cs` | HID | native HID + live manager | REWRITE | captures+hardware | 3 | CONTRACTED |
+| `LiveInput.cs` state machine, jitter filter, backoff | live manager + bounded stream | qcm-core/live/ over `LiveInputPort` | SPLIT/REWRITE | `qcm-core/tests/live_input.rs` on the fake | 3 | PORTED |
+| `LiveInput.cs` VID/PID table, descriptor read, HidSharp | HID enumeration and report parsing | src-tauri HID adapter (TASK-027) | REWRITE | captures+hardware | 3 | CONTRACTED |
 | `ImportReviewWindow.cs` | import review | React import + core | REWRITE | E2E/AT | 6 | CONTRACTED |
 | `CommunityCatalog.cs` | community data | qcm-core/native HTTP | SPLIT | HTTP/privacy | 6 | CONTRACTED |
 | `CommunityProfilesView.cs` | community UI | React CommunityPage | REWRITE | E2E/AT | 6 | CONTRACTED |

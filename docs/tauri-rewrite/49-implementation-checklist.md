@@ -41,7 +41,7 @@ Work top-to-bottom. A checked box means its task acceptance criteria and linked 
 - [x] TASK-025 Port device library/delete/order/preferences operations.
 - [ ] TASK-026 Run HID library/report-descriptor spike on real hardware.
 - [ ] TASK-027 Implement descriptor-driven HID adapter/worker.
-- [ ] TASK-028 Implement live-input manager/bounded stream.
+- [x] TASK-028 Implement live-input manager/bounded stream.
 - [x] TASK-029 Resolve serial production-use question; implement nothing if E/not required.
 
 **Gate 3:** core works without UI; physical QuadStick install/readback + live input pass on primary desktop platform.
