@@ -2,9 +2,9 @@
  * Browser-side contract fake.
  *
  * It mirrors command semantics that UI code depends on: revisions, cancellation,
- * opaque device identity, stale generations and one-shot destructive plans. It
- * deliberately does not parse, validate or normalize QuadStick CSV; Rust owns
- * those rules.
+ * opaque device identity, stale generations, one-shot destructive plans and
+ * explicitly-owned streams. It deliberately does not parse, validate or
+ * normalize QuadStick CSV; Rust owns those rules.
  */
 
 import type {
@@ -14,6 +14,7 @@ import type {
   CloseOutcome,
   DeletePlan,
   DeleteReceipt,
+  DeviceInvalidation,
   DeviceLibrarySnapshot,
   DevicePresenceSnapshot,
   DeviceProfileEntry,
@@ -21,15 +22,18 @@ import type {
   EditorOp,
   EditorSnapshot,
   InstallPlan,
+  InstallProgress,
   InstallReceipt,
   Issue,
   LedColour,
+  LiveSnapshot,
   Mode,
   ProfileSource,
   QcmErrorPayload,
   RecoveryAction,
   SaveReceipt,
   SettingsPatch,
+  Subscription,
 } from "./contracts";
 import { ERROR_CODES, INTERFACE_SCALES } from "./contracts";
 import { QcmCommandError, type QcmClient } from "./qcmClient";
@@ -203,6 +207,11 @@ export class MockQcmClient implements QcmClient {
   #devicePickerAnswers: DevicePickerAnswer[] = [];
   #lastDeviceSignature = "";
 
+  #nextSubscription = 1;
+  #liveListeners = new Map<number, (frame: LiveSnapshot) => void>();
+  #deviceListeners = new Map<number, (event: DeviceInvalidation) => void>();
+  #deviceRevision = 0;
+
   willOpen(name: string): void {
     this.#openAnswers.push({ cancelled: false, name });
   }
@@ -227,7 +236,18 @@ export class MockQcmClient implements QcmClient {
     return this.#dialogsOpened;
   }
 
-  /** Test/story seam: add a mounted QuadStick without inventing a host path. */
+  get liveListenerCount(): number {
+    return this.#liveListeners.size;
+  }
+
+  get deviceListenerCount(): number {
+    return this.#deviceListeners.size;
+  }
+
+  emitLive(frame: LiveSnapshot): void {
+    for (const listener of this.#liveListeners.values()) listener(frame);
+  }
+
   plugDevice(displayName = "QUADSTICK", files: Readonly<Record<string, string>> = {}): string {
     const id = `dev-${String(this.#nextDevice)}`;
     this.#nextDevice += 1;
@@ -236,29 +256,36 @@ export class MockQcmClient implements QcmClient {
     const stored = new Map<string, string>([["default.csv", "QuadStick Configuration File,\n"]]);
     for (const [name, text] of Object.entries(files)) stored.set(name, text);
     this.#devices.set(id, { id, generation, displayName, writable: true, files: stored });
+    this.#notifyDevicesChanged();
     return id;
   }
 
   unplugDevice(deviceId: string): void {
-    this.#devices.delete(deviceId);
+    if (this.#devices.delete(deviceId)) this.#notifyDevicesChanged();
   }
 
-  /** Same opaque device after a remount, but a new generation. */
   remountDevice(deviceId: string): void {
     const device = this.#devices.get(deviceId);
     if (device === undefined) return;
     device.generation = this.#nextGeneration;
     this.#nextGeneration += 1;
+    this.#notifyDevicesChanged();
   }
 
   setDeviceFile(deviceId: string, name: string, text: string): void {
     const device = this.#devices.get(deviceId);
-    if (device !== undefined) device.files.set(name, text);
+    if (device !== undefined) {
+      device.files.set(name, text);
+      this.#notifyDevicesChanged();
+    }
   }
 
   setDeviceWritable(deviceId: string, writable: boolean): void {
     const device = this.#devices.get(deviceId);
-    if (device !== undefined) device.writable = writable;
+    if (device !== undefined && device.writable !== writable) {
+      device.writable = writable;
+      this.#notifyDevicesChanged();
+    }
   }
 
   willCancelDeviceFolder(): void {
@@ -276,7 +303,7 @@ export class MockQcmClient implements QcmClient {
       capabilities: {
         profileEditing: true,
         deviceInstall: true,
-        liveInput: false,
+        liveInput: true,
         communityCatalog: false,
         googleBackup: false,
         agent: false,
@@ -549,7 +576,11 @@ export class MockQcmClient implements QcmClient {
     });
   }
 
-  commitInstall(planId: string, confirmationId?: string): Promise<InstallReceipt> {
+  commitInstall(
+    planId: string,
+    confirmationId?: string,
+    onProgress: (progress: InstallProgress) => void = () => undefined,
+  ): Promise<InstallReceipt> {
     const plan = this.#installPlans.get(planId);
     if (plan === undefined) {
       return Promise.reject(
@@ -573,11 +604,18 @@ export class MockQcmClient implements QcmClient {
         fail(ERROR_CODES.confirmationMismatch, "That confirmation belongs to another operation.", "confirm_again", true, planId),
       );
     }
+
     const existed = device.files.has(plan.target);
+    const stages = ["revalidate", "read_file"];
+    if (existed) stages.push("backup");
+    stages.push("temp_write", "temp_read_back", "replace_after_displace");
+    for (const stage of stages) onProgress({ stage });
+
     const backup = existed
       ? `QuadStickBackups/mock-${String(this.#nextBackup++)}-${plan.target}`
       : null;
     device.files.set(plan.target, plan.text);
+    this.#notifyDevicesChanged();
     return Promise.resolve({
       operationId: planId,
       deviceId: plan.deviceId,
@@ -585,7 +623,7 @@ export class MockQcmClient implements QcmClient {
       bytes: plan.text.length,
       backup,
       confirmedOnDevice: true,
-      stages: ["revalidate", "temp_write", "temp_read_back", "replace_after_displace"],
+      stages,
     });
   }
 
@@ -664,6 +702,7 @@ export class MockQcmClient implements QcmClient {
     }
     device.files.delete(plan.name);
     const backup = `QuadStickBackups/mock-${String(this.#nextBackup++)}-${plan.name}`;
+    this.#notifyDevicesChanged();
     return Promise.resolve({ operationId: planId, deviceId: plan.deviceId, name: plan.name, backup });
   }
 
@@ -704,6 +743,20 @@ export class MockQcmClient implements QcmClient {
       );
     }
     return Promise.resolve(this.#openDeviceCopy(device, "prefs.csv"));
+  }
+
+  startLiveInput(onFrame: (frame: LiveSnapshot) => void): Promise<Subscription> {
+    const id = this.#mintSubscription();
+    this.#liveListeners.set(id, onFrame);
+    return Promise.resolve(this.#subscription(this.#liveListeners, id));
+  }
+
+  subscribeDevicesChanged(
+    onChanged: (event: DeviceInvalidation) => void,
+  ): Promise<Subscription> {
+    const id = this.#mintSubscription();
+    this.#deviceListeners.set(id, onChanged);
+    return Promise.resolve(this.#subscription(this.#deviceListeners, id));
   }
 
   #write(session: MockSession, name: string): Promise<SaveReceipt> {
@@ -816,6 +869,29 @@ export class MockQcmClient implements QcmClient {
     const id = `cnf-${String(this.#nextConfirmation)}`;
     this.#nextConfirmation += 1;
     return id;
+  }
+
+  #mintSubscription(): number {
+    const id = this.#nextSubscription;
+    this.#nextSubscription += 1;
+    return id;
+  }
+
+  #subscription<T>(listeners: Map<number, T>, id: number): Subscription {
+    let disposed = false;
+    return {
+      dispose(): void {
+        if (disposed) return;
+        disposed = true;
+        listeners.delete(id);
+      },
+    };
+  }
+
+  #notifyDevicesChanged(): void {
+    this.#deviceRevision += 1;
+    const event: DeviceInvalidation = { revision: this.#deviceRevision };
+    for (const listener of this.#deviceListeners.values()) listener(event);
   }
 }
 
