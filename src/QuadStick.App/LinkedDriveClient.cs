@@ -54,12 +54,32 @@ public sealed class LinkedDriveClient
     public async Task<LinkedDriveFileMetadata> GetFileMetadataAsync(string fileId, CancellationToken ct = default)
     {
         var fields = Uri.EscapeDataString(
-            "id,name,mimeType,version,modifiedTime,driveId,trashed,webViewLink," +
+            "id,name,mimeType,version,modifiedTime,driveId,trashed,webViewLink,appProperties," +
             "capabilities(canEdit,canModifyContent,canDownload)");
         using var resp = await SendAsync(HttpMethod.Get,
             $"{DriveFiles}/{Uri.EscapeDataString(fileId)}?supportsAllDrives=true&fields={fields}", null, ct);
         using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync(ct));
         return ParseMetadata(doc.RootElement);
+    }
+
+    /// <summary>
+    /// Mark an editable Picker-selected file as user-linked. appProperties are
+    /// private to QCM's Drive app and survive rename/move and another QCM
+    /// install, so the backup picker can exclude this file later instead of
+    /// mistaking it for a QCM-owned backup. Read-only links simply skip this.
+    /// </summary>
+    public async Task MarkAsLinkedProfileAsync(string fileId, CancellationToken ct = default)
+    {
+        var body = JsonSerializer.Serialize(new
+        {
+            appProperties = new Dictionary<string, string>
+            {
+                ["qcmDocumentKind"] = "linked-profile",
+            },
+        });
+        using var resp = await SendAsync(HttpMethod.Patch,
+            $"{DriveFiles}/{Uri.EscapeDataString(fileId)}?supportsAllDrives=true",
+            () => new StringContent(body, Encoding.UTF8, "application/json"), ct);
     }
 
     /// <summary>Get a durable cursor for future user/Shared-Drive changes.</summary>
@@ -84,7 +104,7 @@ public sealed class LinkedDriveClient
     {
         var fields = Uri.EscapeDataString(
             "nextPageToken,newStartPageToken,changes(fileId,removed,changeType,time,driveId," +
-            "file(id,name,mimeType,version,modifiedTime,driveId,trashed,webViewLink," +
+            "file(id,name,mimeType,version,modifiedTime,driveId,trashed,webViewLink,appProperties," +
             "capabilities(canEdit,canModifyContent,canDownload)))");
         var url = $"{DriveRoot}/changes?pageToken={Uri.EscapeDataString(pageToken)}" +
                   "&pageSize=1000&includeRemoved=true&includeItemsFromAllDrives=true" +
@@ -302,18 +322,28 @@ public sealed class LinkedDriveClient
     {
         var caps = file.TryGetProperty("capabilities", out var c) ? c : default;
         bool Cap(string name) => caps.ValueKind == JsonValueKind.Object &&
-                                 caps.TryGetProperty(name, out var v) && v.GetBoolean();
+                                 caps.TryGetProperty(name, out var value) && value.GetBoolean();
+        var appProperties = new Dictionary<string, string>(StringComparer.Ordinal);
+        if (file.TryGetProperty("appProperties", out var props) && props.ValueKind == JsonValueKind.Object)
+            foreach (var prop in props.EnumerateObject())
+                appProperties[prop.Name] = prop.Value.GetString() ?? "";
+
         return new LinkedDriveFileMetadata(
             file.TryGetProperty("id", out var id) ? id.GetString() ?? "" : "",
             file.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
             file.TryGetProperty("mimeType", out var m) ? m.GetString() ?? "" : "",
-            file.TryGetProperty("version", out var v) ? v.GetString() ?? v.GetRawText().Trim('"') : "",
+            file.TryGetProperty("version", out var version) ? Scalar(version) : "",
             file.TryGetProperty("modifiedTime", out var mt) ? mt.GetString() ?? "" : "",
             file.TryGetProperty("driveId", out var di) ? di.GetString() : null,
             file.TryGetProperty("trashed", out var tr) && tr.GetBoolean(),
             file.TryGetProperty("webViewLink", out var w) ? w.GetString() : null,
+            appProperties,
             new LinkedDriveCapabilities(Cap("canEdit"), Cap("canModifyContent"), Cap("canDownload")));
     }
+
+    static string Scalar(JsonElement value) => value.ValueKind == JsonValueKind.String
+        ? value.GetString() ?? ""
+        : value.GetRawText().Trim('"');
 
     static LinkedSheetCell ParseCell(JsonElement cell)
     {
@@ -365,12 +395,23 @@ public sealed class LinkedDriveClient
 
             var body = await resp.Content.ReadAsStringAsync(ct);
             var status = resp.StatusCode;
-            var retryAfter = resp.Headers.RetryAfter?.Delta;
+            var retryAfter = RetryAfter(resp);
             bool retry = attempt + 1 < maxAttempts && IsTransient(status, body);
             resp.Dispose();
             if (!retry) throw new LinkedDriveApiException(status, body);
             await Task.Delay(Backoff(attempt, retryAfter), ct);
         }
+    }
+
+    static TimeSpan? RetryAfter(HttpResponseMessage response)
+    {
+        if (response.Headers.RetryAfter?.Delta is { } delta) return delta;
+        if (response.Headers.RetryAfter?.Date is { } date)
+        {
+            var wait = date - DateTimeOffset.UtcNow;
+            return wait > TimeSpan.Zero ? wait : TimeSpan.Zero;
+        }
+        return null;
     }
 
     static bool IsTransient(HttpStatusCode status, string body)
@@ -407,7 +448,12 @@ public sealed record LinkedDriveFileMetadata(
     string? DriveId,
     bool Trashed,
     string? WebViewLink,
-    LinkedDriveCapabilities Capabilities);
+    IReadOnlyDictionary<string, string> AppProperties,
+    LinkedDriveCapabilities Capabilities)
+{
+    public bool IsMarkedLinkedProfile =>
+        AppProperties.TryGetValue("qcmDocumentKind", out var kind) && kind == "linked-profile";
+}
 
 public sealed record LinkedDriveChange(
     string FileId,
@@ -453,7 +499,12 @@ public sealed record LinkedSheetCell(
     string? FormattedValue,
     bool IsFormula)
 {
-    public string TextForProfile => UserValue ?? EffectiveValue ?? FormattedValue ?? "";
+    // A formula-backed QuadStick field is projected from its calculated value
+    // but remains marked formula/read-only. Returning the formula source itself
+    // would feed '=VLOOKUP(...)' into the profile parser as if it were a token.
+    public string TextForProfile => IsFormula
+        ? EffectiveValue ?? FormattedValue ?? ""
+        : UserValue ?? EffectiveValue ?? FormattedValue ?? "";
 }
 
 public sealed record LinkedSheetGrid(
@@ -473,7 +524,7 @@ public sealed class LinkedDriveApiException : Exception
     public string ResponseBody { get; }
 
     public LinkedDriveApiException(HttpStatusCode statusCode, string responseBody)
-        : base($"Google API returned {(int)statusCode}: {responseBody}")
+        : base($"{(int)statusCode}: {responseBody}")
     {
         StatusCode = statusCode;
         ResponseBody = responseBody;
