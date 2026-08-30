@@ -67,3 +67,23 @@ jobs:
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
       - name: Run strict Rust parity suite
         run: python3 scripts/parity.py --rust-only
+
+  fuzz-smoke:
+    name: Fuzz smoke / parse + normalize + apply
+    needs: rust-core
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install pinned nightly
+        run: rustup toolchain install nightly-2026-08-20 --profile minimal
+      - name: Install pinned cargo-fuzz
+        run: cargo +nightly-2026-08-20 install cargo-fuzz --version 0.13.2 --locked
+      - name: Build fuzz targets
+        run: cargo +nightly-2026-08-20 fuzz build
+      - name: Parse fuzz smoke
+        run: cargo +nightly-2026-08-20 fuzz run parse fuzz/corpus/parse -- -runs=256 -max_len=65536 -timeout=2 -max_total_time=15
+      - name: Normalize fuzz smoke
+        run: cargo +nightly-2026-08-20 fuzz run normalize fuzz/corpus/normalize -- -runs=256 -max_len=65536 -timeout=2 -max_total_time=15
+      - name: Editor-op fuzz smoke
+        run: cargo +nightly-2026-08-20 fuzz run apply_ops fuzz/corpus/apply_ops -- -runs=256 -max_len=65536 -timeout=2 -max_total_time=15
