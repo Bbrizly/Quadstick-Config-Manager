@@ -21,6 +21,13 @@ public sealed class AppSettings
     public bool RememberWindow = true;
     public bool TutorialSeen = false;
     public bool DeviceCards = true;            // device view mappings as sentence cards
+    // The same choice for Rows view, kept apart because the two views start
+    // from opposite ends: Device View opens as sentences, Rows opens as the
+    // sheet it is.
+    public bool RowCards = false;
+    // How simple mapping cards read: the original output-first sentence, or
+    // the input-first form ("Sip to X as normal.").
+    public string CardSentenceStyle = "PressWhen"; // PressWhen | InputToOutput
     // How deep the output and input pickers file their choices. Detailed is
     // the drill-down; someone who knows the token they want should not have to
     // walk two levels to reach it.

@@ -24,6 +24,7 @@ public class SequenceWordingTests
         var s = Settings.Load();
         s.TutorialSeen = true;
         s.DeviceCards = true;
+        s.CardSentenceStyle = "PressWhen";
         s.RememberWindow = false;
         s.Model = "FPS";
         Settings.Save(s);

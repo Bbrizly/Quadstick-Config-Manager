@@ -33,6 +33,18 @@ public class LocalizationTests
         ["Localization.cs"] = new[] { "\"English\"", "\"Pseudo (finds missed text)\"" },
         // A company's name, not a word.
         ["SettingsView.cs"] = new[] { "\"LinkedIn\"" },
+        // A font stack, read by the text engine and not by anybody.
+        ["Style.cs"] = new[]
+        {
+            "\"Cascadia Mono, JetBrains Mono, Menlo, DejaVu Sans Mono, monospace\"",
+        },
+        // The name of a resource key, built from a prefix and a plural class.
+        ["Plural.cs"] = new[] { "$\"{keyPrefix}_{Category(n, c)}\"" },
+        // The picker's keyboard groups are keys as well as labels: the same
+        // string names the group in the catalog and matches a token to it. The
+        // whole category vocabulary here ("Controller", "Letters", "Numbers")
+        // is still English and wants moving together, not one entry at a time.
+        ["OutputCatalog.cs"] = new[] { "\"Space, Enter, arrows\"" },
         // A category is named the same way in preferences.json and here, and
         // the two are compared letter for letter. PreferenceCatalog.CategoryLabel
         // is the half a person reads.
@@ -80,7 +92,11 @@ public class LocalizationTests
     // Anything that reads like a sentence, wherever it sits. This is what
     // catches text passed to a helper the rule above has never heard of.
     static readonly Regex AnyLiteral = new(Literal);
-    static readonly Regex Prose = new("[a-zA-Z] [a-z]");
+    // A word, then a space, then another word. The punctuation classes are
+    // what "Function (behavior)" and "Inputs (sips, puffs, joystick)" used to
+    // slip through on: neither has a bare letter-space-letter in it, so both
+    // sat in the toolbar in English through thirteen translations.
+    static readonly Regex Prose = new("[a-zA-Z][,.:;)]? [a-z(]");
 
     public static TheoryData<string> AppSources()
     {

@@ -398,12 +398,17 @@ public class GalleryWindow : Window
                 InstallSpecimen()),
             Spec("quiet", "A command that must not compete with Save, like Modes or Advanced.",
                 Btn("Modes...", "quiet")),
+            Spec("sidebarToggle", "A compact preference in the editor sidebar. The hit area stays comfortable while two choices share one row.",
+                Row(Btn("Words: Plain English", "quiet", "sidebarToggle"),
+                    Btn("Simple cards", "quiet", "sidebarToggle"))),
             Spec("icon danger", "Delete one row. Red only where the thing is gone for good.",
                 Btn("x", "icon", "danger")),
             Spec("danger", "Delete a profile. Rare, deliberate, never what focus lands on first.",
                 Btn("Delete", "danger")),
             Spec("homeaction", "A labeled launch command on the home console; clear without relying on an icon.",
                 Btn("Open a file", "homeaction")),
+            Spec("primary addrow", "Add a row, in the editor band. A plus alone is a glyph to decode, so it keeps words and a command-sized target.",
+                AddRowSpecimen()),
             Spec("disabled", "Nothing to undo yet. It stays on screen and says so, rather than vanishing.",
                 new Button { Content = "Undo", IsEnabled = false })));
 
@@ -495,7 +500,11 @@ public class GalleryWindow : Window
             Spec("zone", "A part of the device, unselected.",
                 Zone("Lip", false)),
             Spec("zone checked", "The same part, selected. An outline and a wash, never a fill.",
-                Zone("Hard sip", true))));
+                Zone("Hard sip", true)),
+            Spec("zone modeRow", "A mode in the sidebar list. Hovering keeps the card and tints it, because blending into the sidebar read as the row vanishing.",
+                ModeRowSpecimen()),
+            Spec("modeHelp, modeHelpMark", "The heading over that list. The question mark is a cue inside the label, not a second target beside it.",
+                ModeHelpSpecimen())));
         return stack;
     }
 
@@ -520,6 +529,52 @@ public class GalleryWindow : Window
 
     static Control Zone(string name, bool on) => new ToggleButton
     { Classes = { "zone" }, Content = name, IsChecked = on, MinWidth = 120, MinHeight = 72 };
+
+    static Control ModeRowSpecimen() => new ToggleButton
+    {
+        Classes = { "zone", "modeRow" }, Content = "2: Driving", IsChecked = false,
+        MinWidth = 180, HorizontalContentAlignment = HorizontalAlignment.Left,
+    };
+
+    // Both halves in one specimen, because neither is a control on its own:
+    // the mark only ever appears inside the label button.
+    static Control ModeHelpSpecimen() => new Button
+    {
+        Classes = { "modeHelp" },
+        Content = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 4,
+            Children =
+            {
+                new TextBlock { Text = "Modes", FontWeight = FontWeight.Bold, VerticalAlignment = VerticalAlignment.Center },
+                new Border
+                {
+                    Classes = { "modeHelpMark" }, VerticalAlignment = VerticalAlignment.Center,
+                    Child = new TextBlock
+                    {
+                        Text = "?", FontSize = 11,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    },
+                },
+            },
+        },
+    };
+
+    static Control AddRowSpecimen()
+    {
+        var icon = new PathIcon();
+        icon.Bind(PathIcon.DataProperty, new DynamicResourceExtension("IconAdd"));
+        return new Button
+        {
+            Classes = { "primary", "addrow" },
+            Content = new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 8,
+                Children = { icon, new TextBlock { Text = "Add row", VerticalAlignment = VerticalAlignment.Center } },
+            },
+        };
+    }
 
     Control FieldSpecimens() => Row(
         Spec("TextBox", "A name, a note, a value. The 48px height is a target floor, not a look.",

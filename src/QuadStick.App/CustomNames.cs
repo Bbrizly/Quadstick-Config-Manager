@@ -110,7 +110,8 @@ public partial class MainWindow
         // View, and this table must not change wording when someone flips it.
         p.Children.Add(At(PickerCell(wrapper, token, OutputSuggestions, Humanize,
             string.Format(CultureInfo.CurrentCulture, Strings.Names_OutputThatNameStandsFor, name), OutputTint, OutputCatalog.Catalog, Strings.Names_AnOutput,
-            picked => RetargetCustomName(name, picked)), 1));
+            picked => RetargetCustomName(name, picked),
+            picked => OutputVisuals.Render(OutputVisuals.For(picked, Humanize))), 1));
 
         var box = new TextBox
         {

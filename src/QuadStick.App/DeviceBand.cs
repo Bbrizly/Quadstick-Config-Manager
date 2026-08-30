@@ -341,6 +341,9 @@ public partial class MainWindow
     // written back, so an unreadable value falls back instead of failing.
     double DeviceNumber(string name, double fallback)
     {
+        if (_devicePreview.TryGetValue(name, out var preview)
+            && double.TryParse(preview, NumberStyles.Integer, CultureInfo.InvariantCulture, out var previewValue))
+            return previewValue;
         var sheet = DevicePrefsSheet;
         if (sheet is null || _devicePrefs is null) return fallback;
         foreach (var b in sheet.Bindings)

@@ -629,11 +629,35 @@ public partial class MainWindow : Window
     static readonly HashSet<string> JoystickDirs = new(StringComparer.OrdinalIgnoreCase)
     { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
 
-    static readonly List<string> OutputSuggestions = WithModeOverrides(Vocab.KnownOutputs);
-    static readonly List<string> OutputSuggestionsPs = WithModeOverrides(Vocab.OutputsPs3);
-    static readonly List<string> OutputSuggestionsXbox = WithModeOverrides(Vocab.OutputsXbox);
+    static readonly List<string> OutputSuggestions = WithModeOverrides(Vocab.AllOutputs);
+    static readonly List<string> OutputSuggestionsPs = WithModeOverrides(
+        Vocab.OutputsPs3.Concat(Vocab.LegacyOutputs).ToHashSet(StringComparer.Ordinal));
+    static readonly List<string> OutputSuggestionsXbox = WithModeOverrides(
+        Vocab.OutputsXbox.Concat(Vocab.LegacyOutputs).ToHashSet(StringComparer.Ordinal));
     static readonly List<string> FunctionSuggestions = Vocab.FunctionArity.Keys.OrderBy(x => x).ToList();
-    static readonly List<string> InputSuggestions = Vocab.Inputs.OrderBy(GroupRank).ThenBy(x => x).ToList();
+    // A stick is a shape, not a word list. Alphabetical opened the joystick
+    // with any_direction and then scattered the compass (E, E_inner, N, NE,
+    // NE_inner, N_inner, NW...), so finding "down" meant reading all 22. This
+    // is the order the hardware is described in: the four directions, then the
+    // outer eight-way ring, then the inner one. A tester asked for exactly
+    // this, in the one menu, without another level to click through.
+    static readonly string[] JoystickOrder =
+    {
+        "up", "down", "left", "right", "center", "any_direction",
+        "N", "NE", "E", "SE", "S", "SW", "W", "NW",
+        "N_inner", "NE_inner", "E_inner", "SE_inner", "S_inner", "SW_inner", "W_inner", "NW_inner",
+    };
+
+    // Anything not listed sorts after the lot and keeps its alphabetical place,
+    // so a token added to the firmware still appears instead of vanishing.
+    static int JoystickRank(string input)
+    {
+        int i = Array.IndexOf(JoystickOrder, input);
+        return i < 0 ? JoystickOrder.Length : i;
+    }
+
+    static readonly List<string> InputSuggestions =
+        Vocab.AllInputs.OrderBy(GroupRank).ThenBy(JoystickRank).ThenBy(x => x, StringComparer.Ordinal).ToList();
     static readonly List<string> NoSuggestions = new();
 
     // A3 of each sheet names the output convention ("PlayStation Outputs" /
@@ -680,8 +704,15 @@ public partial class MainWindow : Window
     // other rows' "Game" lists somehow: rebuild when the naming changed.
     void CommitOutputFromList(Binding b, OutputCatalog.ProfileOutputs outputs, string picked)
     {
+        if (_file is null) return;
+        var oldOutput = _file.GetCell(b.Row, 0);
+        var oldName = _file.GetCell(b.Row, ProfileFile.ActionColumn);
         CommitOutput(b.Row, outputs, picked);
-        if (_file is null || _file.GetCell(b.Row, ProfileFile.ActionColumn) == b.ActionName) return;
+        // A different output can change every duplicate badge in this mode.
+        // List View used to rebuild only when an action name changed, leaving
+        // the count stale until the person left and came back to Rows.
+        if (_file.GetCell(b.Row, 0) == oldOutput
+            && _file.GetCell(b.Row, ProfileFile.ActionColumn) == oldName) return;
         var off = GridScroll.Offset;
         Dispatcher.UIThread.Post(() => { RebuildRows(); RestoreListScroll(off, () => { }); });
     }
@@ -697,7 +728,7 @@ public partial class MainWindow : Window
     static int GroupRank(string input) => input switch
     {
         _ when input.StartsWith("mp_") => 0,                                         // mouthpiece
-        "lip" or "lip_soft" => 1,                                                    // lip switch
+        "push" or "lip" or "lip_soft" => 1,                                         // mouthpiece switch
         _ when input.StartsWith("right_") => 2,                                      // side tube
         "left" or "right" or "up" or "down" or "any_direction" or "center" => 3,     // joystick
         _ when JoystickDirs.Contains(input) || JoystickDirs.Contains(input.Replace("_inner", "")) => 3,
@@ -792,6 +823,7 @@ public partial class MainWindow : Window
         InstallButton.Click += async (_, _) => await RunInstallFlowAsync();
         HelpButton.Click += (_, _) => ShowHelp();
         AddRowButton.Click += (_, _) => AddRow();
+        SelectionModeButton.Click += (_, _) => ToggleSelectionMode();
         ModesButton.Click += async (_, _) => await ShowModesAsync();
         ShareButton.Flyout = ShareMenu(null); // null = the open editor's profile
         // A click that lands on nothing selectable drops the row selection,
@@ -803,18 +835,17 @@ public partial class MainWindow : Window
         SelectionDeleteButton.Click += (_, _) => DeleteSelectedRows();
         SelectionClearButton.Click += (_, _) => ClearSelection();
         SelectionMoveButton.Flyout = MoveMenu();
-        DeviceSelectionDeleteButton.Click += (_, _) => DeleteSelectedRows();
-        DeviceSelectionClearButton.Click += (_, _) => ClearSelection();
-        DeviceSelectionMoveButton.Flyout = MoveMenu();
 
         // Device view mappings read as plain sentences by default; this flips
         // to the detailed editor for users who want every field on screen.
+        // Rows view has the same pair the other way round, and its own setting.
         CardViewButton.Click += (_, _) =>
         {
-            _settings.DeviceCards = !_settings.DeviceCards;
+            if (_deviceView) _settings.DeviceCards = !_settings.DeviceCards;
+            else _settings.RowCards = !_settings.RowCards;
             Settings.Save(_settings);
             UpdateCardViewButton();
-            BuildZoneDetail();
+            if (_deviceView) BuildZoneDetail(); else RebuildRows();
         };
         UpdateCardViewButton();
 
@@ -914,6 +945,8 @@ public partial class MainWindow : Window
                 { LeaveSettingsPage(); e.Handled = true; }
                 else if (e.Key == Key.Escape && _expandedMapping >= 0 && DeviceContainer.IsVisible)
                 { _expandedMapping = -1; BuildZoneDetail(); e.Handled = true; }
+                else if (e.Key == Key.Escape && _expandedMapping >= 0 && _settings.RowCards)
+                { _expandedMapping = -1; RebuildRows(); e.Handled = true; }
                 else if (e.Key == Key.Delete && _selectedRows.Count > 0
                          && e.Source is not (TextBox or AutoCompleteBox))
                 { DeleteSelectedRows(); e.Handled = true; }
@@ -1304,8 +1337,8 @@ public partial class MainWindow : Window
         }
         // 760 is what the editor itself needs; the panel down its left side is
         // permanent chrome, so the window has to be that much wider or every
-        // layout inside gets 240px less than it was measured for. Capped to the
-        // screen either way.
+        // layout inside gets the sidebar width less than it was measured for.
+        // Capped to the screen either way.
         MinWidth = Math.Min((760 + Size("SidebarWidth")) * _uiScale, capW);
         MinHeight = Math.Min(560 * _uiScale, capH);
     }
@@ -1539,6 +1572,20 @@ public partial class MainWindow : Window
         RefreshEditor();
     }
 
+    /// <summary>Which order the compact mapping cards use for their plain
+    /// English sentence. This is a presentation preference only: the profile
+    /// file and the detailed editor are unchanged.</summary>
+    public static readonly string[] CardSentenceStyles = { "PressWhen", "InputToOutput" };
+
+    public void SetCardSentenceStyle(string choice)
+    {
+        if (!CardSentenceStyles.Contains(choice) || _settings.CardSentenceStyle == choice) return;
+        _settings.CardSentenceStyle = choice;
+        Settings.Save(_settings);
+        if (_deviceView && CurrentSheet?.Type == SheetType.ProfileName)
+        { BuildDeviceView(); BuildZoneDetail(); }
+    }
+
     public void SetDefaultModel(int index)
     {
         if (_pickerSyncing || index < 0 || index >= ModelNames.Length) return;
@@ -1681,15 +1728,17 @@ public partial class MainWindow : Window
         else AddRowButton.Focus();
     }
 
-    // Cycle Device View between plain-English words, Xbox-style button names,
-    // and the raw list-view/CSV token names, and rebuild so every dropdown
-    // label follows suit.
+    // Cycle the editor between plain-English words, Xbox-style button names,
+    // and the raw CSV token names, and rebuild so every dropdown label follows
+    // suit. Rows View honours the same switch: raw names get the file's own
+    // spelling and no button art, the other two get the words and the art.
     void ToggleLabelStyle()
     {
         _labelStyle = (_labelStyle + 1) % 3;
         UpdateLabelStyleButton();
-        if (_deviceView && CurrentSheet?.Type == SheetType.ProfileName)
-        { BuildDeviceView(); BuildZoneDetail(); }
+        if (CurrentSheet?.Type != SheetType.ProfileName) return;
+        if (_deviceView) { BuildDeviceView(); BuildZoneDetail(); }
+        else RebuildRows();
     }
 
     void UpdateLabelStyleButton()
@@ -2184,12 +2233,14 @@ public partial class MainWindow : Window
     {
         var row = new ToggleButton
         {
-            Classes = { "zone" },
+            Classes = { "zone", "modeRow" },
             Content = new TextBlock
             { Text = label, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
             HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Left,
-            Padding = new Avalonia.Thickness(12, 9),
+            // Navigation rows are deliberately denser than editor controls:
+            // three choices can stay visible before the list needs scrolling.
+            Padding = new Avalonia.Thickness(8, 6),
             IsChecked = index == _sheetIndex,
         };
         AutomationProperties.SetName(row, label);
@@ -2219,7 +2270,12 @@ public partial class MainWindow : Window
             .Select(s => s.ModeName).ToHashSet();
         int n = sheets.Count(s => s.Type == SheetType.ProfileName) + 1;
         while (taken.Contains($"Mode {n}")) n++;
-        int idx = _file.AddModeSheet($"Mode {n}");
+        // Under the mode you are looking at, not at the bottom of the file. A
+        // new mode belongs beside the one it was made from, and the only way
+        // back up the list is one press per place.
+        int after = _sheetIndex >= 0 && _sheetIndex < sheets.Count
+            && sheets[_sheetIndex].Type == SheetType.ProfileName ? _sheetIndex : -1;
+        int idx = _file.AddModeSheet($"Mode {n}", after);
         ModesChanged(idx, Strings.Modes_ModeAdded);
         return idx;
     }
@@ -2335,8 +2391,9 @@ public partial class MainWindow : Window
         _ when input.StartsWith("mp_left") => "mp_left",
         _ when input.StartsWith("mp_center") => "mp_center",
         _ when input.StartsWith("mp_right") => "mp_right",
-        "right_sip" or "right_puff" or "right_sip_soft" or "right_puff_soft" => "side",
-        "lip" => "lip",
+        "right_sip" or "right_puff" or "right_sip_soft" or "right_puff_soft"
+            or "right_sip_long" or "right_puff_long" => "side",
+        "push" or "lip" or "lip_soft" => "lip",
         _ when input.StartsWith("digital_in") => "jacks",
         "left" or "right" or "up" or "down" or "any_direction" or "center" => "joystick",
         _ when JoystickDirs.Contains(input) || JoystickDirs.Contains(input.Replace("_inner", "")) => "joystick",
@@ -2404,13 +2461,46 @@ public partial class MainWindow : Window
     // How an output/function token is shown in Device View: friendly words,
     // Xbox-style names, or the raw token exactly as List View and the CSV
     // spell it.
+    // The six tokens whose plain English name is the Xbox one. The firmware
+    // sets ps3.L1 from left_1, ps3.R2 from right_2 and so on, and comments them
+    // "shoulder", "trigger" and "joystick push button" (DataFlow.c). L1 and LB
+    // are one button under two names, so both styles say what it is; Humanize
+    // was calling it "Right 1", which names nothing on any controller.
+    static readonly HashSet<string> SharedWithXbox = new(StringComparer.Ordinal)
+    { "left_1", "left_2", "left_3", "right_1", "right_2", "right_3" };
+
     string TokenLabel(string token)
     {
         // Avalonia templates a null item during measure before any value binds.
         var t = token ?? "";
-        return _labelStyle == 0 ? t
-            : _labelStyle == 2 && XboxStyle.TryGetValue(t, out var xbox) ? xbox
-            : Humanize(t);
+        if (_labelStyle == 0) return t;
+        // "Ps3" and "Xac" are what Humanize makes of two names that are printed
+        // on hardware. Neither is a word, so neither gets sentence case.
+        if (t == "ps3") return _labelStyle == 2 ? Strings.Main_XboxButton : "PS";
+        if ((_labelStyle == 2 || SharedWithXbox.Contains(t))
+            && XboxStyle.TryGetValue(t, out var xbox)) return xbox;
+        var plain = Humanize(t);
+        return plain.StartsWith("Xac ", StringComparison.Ordinal) ? "XAC" + plain[3..] : plain;
+    }
+
+    // Keep the existing Words switch as the single source of truth for both
+    // labels and controller prompt art. This affects presentation only; the
+    // resolver still carries the raw token unchanged.
+    OutputVisual VisualFor(string token, Func<string, string>? label = null) =>
+        // List names is the file as the device reads it. A picture of a
+        // controller button is the one thing that view is not for, so this
+        // hands back a wordless kind and every caller draws the token.
+        _labelStyle == 0
+            ? new(token ?? "", OutputVisualKind.Generic, (label ?? TokenLabel)(token ?? ""))
+            : OutputVisuals.For(token, label ?? TokenLabel,
+                _labelStyle == 2 ? ControllerPromptStyle.Xbox : null);
+
+    static string OutputDisplayLabel(Binding binding, Func<string, string> tokenLabel,
+                                     int labelStyle)
+    {
+        return binding.ActionName.Length > 0 && labelStyle != 0
+            ? binding.ActionName
+            : tokenLabel(binding.Output);
     }
 
     // Label for an input token in a dropdown that can list inputs from more than
@@ -2429,7 +2519,11 @@ public partial class MainWindow : Window
         var tz = ZoneOf(token);
         var bare = Humanize(StripInput(token, tz));
         if (bare.Length == 0) return bare;
-        var low = $"{char.ToLowerInvariant(bare[0])}{bare[1..]}";
+        // A compass point is a name, not the start of a sentence: lowering
+        // only its first letter turned NE into nE and NW_inner into nW inner.
+        var low = bare.Split(' ')[0].All(char.IsUpper)
+            ? bare
+            : $"{char.ToLowerInvariant(bare[0])}{bare[1..]}";
         // Every pairing strips to the same word ("sip"), so a combo token must
         // always name its pairing or the list reads as duplicates.
         if (tz == "combo") return $"{ComboPair(token)} · {low}";
@@ -2671,11 +2765,20 @@ public partial class MainWindow : Window
             .Where(b => FunctionName(b.Function) != "force_off")
             .SelectMany(b => b.Inputs)
             .ToHashSet(StringComparer.Ordinal);
-        // Same zone filter as the device view, so a Singleton is not told its
-        // missing holes are free and the usb_* tokens stay out unless used.
-        var zones = VisibleZones(BindingsByZone()).Select(z => z.Id).ToHashSet(StringComparer.Ordinal);
+        // Same model filter as the device view, so a Singleton is not told its
+        // missing holes are free. The unused picker does include the rear
+        // USB-A port even before it has a mapping: its joystick directions are
+        // precisely the inputs a person needs to discover and choose here.
+        var zones = VisibleZones(BindingsByZone(), withUsbPort: true)
+            .Select(z => z.Id).ToHashSet(StringComparer.Ordinal);
         if (alsoZone is not null) zones.Add(alsoZone);
-        return Vocab.Inputs
+        // validation.json does not list the four rear-joystick directions,
+        // although the firmware accepts them and the device view already
+        // knows how to name them. Include them here so “Joystick / North” is
+        // actually a selectable unused input, not just something shown after
+        // a person has somehow typed it first.
+        return Vocab.AllInputs.Concat(SwitchJacks.RearJoystick)
+            .Distinct(StringComparer.Ordinal)
             .Where(i => !used.Contains(i) && zones.Contains(ZoneOf(i)))
             .OrderBy(GroupRank).ThenBy(x => x, StringComparer.Ordinal);
     }
@@ -2725,7 +2828,8 @@ public partial class MainWindow : Window
         return dir < 0 ? 0 : dir - SwitchJacks.RearJoystick.Length;
     }
 
-    // Flyout list grouped by part. Does not take editor space.
+    // Flyout list grouped by part. It is an input picker, not a detour through
+    // Device View: each input itself starts a mapping in the view already open.
     void ShowUnusedInputs()
     {
         var free = UnusedInputs().ToList();
@@ -2746,67 +2850,46 @@ public partial class MainWindow : Window
         {
             var inZone = free.Where(i => ZoneOf(i) == zone.Id).ToList();
             if (inZone.Count == 0) continue;
-            var headLine = new DockPanel();
-            var chevron = Glyph("IconChevron", "TextSecondary");
-            DockPanel.SetDock(chevron, Dock.Right);
-            headLine.Children.Add(chevron);
-            headLine.Children.Add(new TextBlock
+            body.Children.Add(new TextBlock
             {
                 Text = zone.Title, Classes = { "secondary" },
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = Size("SmallSize"), TextWrapping = TextWrapping.Wrap,
+                FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"),
+                Margin = new Avalonia.Thickness(0, 8, 0, 2), TextWrapping = TextWrapping.Wrap,
             });
-            var head = new Button
-            {
-                Content = headLine,
-                Classes = { "quiet" },
-                Margin = new Avalonia.Thickness(0, 8, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                HorizontalContentAlignment = HorizontalAlignment.Stretch,
-            };
-            AutomationProperties.SetName(head,
-                string.Format(CultureInfo.CurrentCulture, Strings.Main_ZoneTitleInZoneCountNot, zone.Title, inZone.Count));
-            var zoneId = zone.Id;
-            head.Click += (_, _) =>
-            {
-                flyout.Hide();
-                // Focus the zone button after the diagram rebuilds.
-                SetDeviceView(true);
-                SelectZoneForPreview(zoneId);
-                AfterLayout(() => _zoneButtons.GetValueOrDefault(zoneId)?.Focus());
-            };
-            body.Children.Add(head);
             var chips = new WrapPanel();
             foreach (var token in inZone)
             {
-                var text = new TextBlock { Text = ChipLabel(token, zone.Id), FontSize = Size("SmallSize") };
-                var chip = new Border
+                var input = new Button
                 {
-                    Child = text, CornerRadius = new CornerRadius(10), BorderThickness = new Thickness(1),
-                    Padding = new Thickness(8, 2), Margin = new Thickness(0, 0, 4, 4),
+                    Content = new TextBlock { Text = ChipLabel(token, zone.Id), FontSize = Size("SmallSize") },
+                    Classes = { "quiet" }, Padding = new Thickness(8, 3),
+                    Margin = new Thickness(0, 0, 4, 4),
                 };
-                BindBrush(chip, Border.BackgroundProperty, "Surface");
-                BindBrush(chip, Border.BorderBrushProperty, "SurfaceBorder");
-                // The raw token is what the tester types into a cell and reads
-                // in the sheet, so it stays one hover (or one screen reader
-                // stop) away even though the chip shows the short form.
-                ToolTip.SetTip(chip, token);
-                AutomationProperties.SetName(chip, string.Format(CultureInfo.CurrentCulture, Strings.Main_TokenNotUsedInThis, token));
-                chips.Children.Add(chip);
+                var t = token;
+                AutomationProperties.SetName(input,
+                    string.Format(CultureInfo.CurrentCulture, Strings.Main_MapTokenToANew, t, zone.Title));
+                ToolTip.SetTip(input, t);
+                input.Click += (_, _) =>
+                {
+                    flyout.Hide();
+                    AddMappingWithInput(t, inputWasChosen: true);
+                };
+                chips.Children.Add(input);
             }
             body.Children.Add(chips);
         }
         flyout.Content = new ScrollViewer { Content = body, MaxHeight = 420 };
         flyout.Opened += (_, _) => body.Focus();
-        // The button is off for this release, and a flyout cannot hang off a
-        // control that is not on screen, so it opens under the modes list.
-        flyout.ShowAt(UnusedButton.IsVisible ? UnusedButton : ModesButton);
+        flyout.ShowAt(UnusedButton);
     }
 
     void RefreshEditor()
     {
         bool device = _deviceView && CurrentSheet?.Type == SheetType.ProfileName;
         BuildModeList();
+        // The list is rebuilt whenever a sheet changes. After it is measured,
+        // reveal the fresh selected row in Modes' own viewport.
+        AfterLayout(ScrollSelectedModeIntoView);
         GridContainer.IsVisible = !device;
         DeviceContainer.IsVisible = device;
         DeviceViewButton.Classes.Set("primary", device && !_railView);
@@ -2815,52 +2898,40 @@ public partial class MainWindow : Window
         // The names table has no mappings to draw on the device, so the three
         // view keys would be dead there. Disabled beats silently doing nothing.
         DeviceViewButton.IsEnabled = RailViewButton.IsEnabled = ListViewButton.IsEnabled = !OnCustomNames;
-        AddRowButton.Content = OnCustomNames ? Strings.Main_AddName : Strings.Main_AddRow;
+        AddRowButton.Content = AddRowContent(OnCustomNames ? Strings.Main_AddName : Strings.Main_AddRow);
         AutomationProperties.SetName(AddRowButton, OnCustomNames
             ? Strings.Main_AddARowToThe
             : Strings.Main_AddANewBindingRow);
-        // The words toggle and the card style only change the split editor;
-        // Rows view already shows the raw names and has no cards, so they go
-        // rather than sit there dead.
-        LabelStyleButton.IsVisible = CardViewButton.IsVisible = device;
+        // The words toggle and the card style follow the mappings into Rows
+        // view: the same Words switch, the same sentences. Neither has anything
+        // to say on a preferences sheet or on the names table.
+        LabelStyleButton.IsVisible = CardViewButton.IsVisible =
+            CurrentSheet?.Type == SheetType.ProfileName && !OnCustomNames;
+        // Each view carries its own card setting, so the word on the button
+        // changes when the view does.
+        UpdateCardViewButton();
         // Device View adds a mapping from the part you are looking at, which
         // says where the row landed. In the band it made a row appear somewhere
         // off screen, so the band belongs to Rows view only.
-        AddRowButton.IsVisible = RowCommandBar.IsVisible = !device;
-        // Which QuadStick, whether one is plugged in and which mode is open are
-        // facts about the machine in front of you, not about the view, so the
-        // panel says them whichever view is on.
+        AddRowButton.IsVisible = !device;
+        // Only modes have inputs. The picker is available in every mode view:
+        // it now adds the exact input the user chose without changing views.
+        bool mode = CurrentSheet?.Type == SheetType.ProfileName;
+        UnusedButton.IsVisible = mode;
+        // Which QuadStick and whether one is plugged in are facts about the
+        // machine in front of you, so the panel says them whichever view is on.
         var connected = Device.FindCandidatesCached().Count > 0;
         DeviceHeaderStatus.Content = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
             connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected, plainDot: !connected);
-        bool onMode = CurrentSheet?.Type == SheetType.ProfileName;
-        DeviceHeaderMode.IsVisible = onMode;
-        if (onMode)
-        {
-            var modeName = CurrentSheet is { } cs ? (cs.ModeName.Length > 0 ? cs.ModeName : cs.Type.ToString()) : "";
-            int modeNumber = CurrentModeNumber();
-            // Which mode, and what the device's own lights show for it: one
-            // line, because they are one fact about the thing in front of you.
-            var lights = ModeLights.For(modeNumber) is { } lit
-                ? string.Format(CultureInfo.CurrentCulture, Strings.Main_DeviceShowsModeLightsDescribeLit, ModeLights.Describe(lit))
-                : string.Format(CultureInfo.CurrentCulture, Strings.Main_DeviceHasNoLightPattern, modeNumber);
-            DeviceHeaderMode.Text = modeName.Length > 0
-                ? string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeNamed, modeName) + "  ·  " + lights
-                : lights;
-        }
         if (device) { BuildDeviceView(); BuildZoneDetail(); }
         else RebuildRows();
         // The parts with nowhere to sit on the photo. The parts list already
         // names every one of them, and Rows view shows every row there is, so
         // the list in the panel is the diagram's own half of that job.
         ZoneList.IsVisible = device && !_railView;
-        // Preferences and Infrared sheets have no inputs, so the button only
-        // exists on a mode. The count rides on the label, so the number is
-        // there at a glance without opening anything. Refreshed here, the one
-        // place every edit already funnels through, so it is never stale.
-        // Hidden for this release (see the XAML); the content is still kept
-        // live so turning it back on needs nothing but the IsVisible line.
-        bool mode = CurrentSheet?.Type == SheetType.ProfileName;
+        // The count rides on the label, so the number is there at a glance
+        // without opening anything. Refreshed here, the one place every edit
+        // already funnels through, so it is never stale.
         if (mode)
         {
             int free = UnusedInputs().Count();
@@ -2871,6 +2942,13 @@ public partial class MainWindow : Window
                 Plural.Of(free, "Count_UnusedInputOpens"));
         }
         RefreshIssues();
+        RepaintSelection();
+    }
+
+    void ScrollSelectedModeIntoView()
+    {
+        if (_modeRows.GetValueOrDefault(_sheetIndex) is { } selected)
+            selected.BringIntoView();
     }
 
     // The "refactor": NOT an incremental diff engine. Device View still rebuilds
@@ -2939,8 +3017,8 @@ public partial class MainWindow : Window
         // ---- Main diagram: the photo of the device with each part pinned
         // where it physically sits, so a part is found by looking at the thing
         // in your mouth instead of matching a name to a box. ----
-        var d = Diagram;
         var photoY = DevicePhotoY;
+        var d = Diagram;
         var stage = new Canvas
         {
             Name = "DeviceStage", Width = StageW, Height = DeviceStageHeight,
@@ -2989,17 +3067,22 @@ public partial class MainWindow : Window
             if (z is null) continue;
             var at = d.OnPhoto(spot.PointX, spot.PointY);
             double pointX = d.PhotoX + at.X, pointY = photoY + at.Y;
-            double labelY = spot.Bottom ? DeviceBottomLabelY : 0;
             double calloutHeight = spot.Bottom ? SmallPillH : PillH;
+            // A top callout hangs from a fixed bottom edge just above the photo
+            // and grows upward into the room above, so a card with a two line
+            // row can never reach down onto the device. A bottom one still
+            // starts at the band under the photo.
+            double calloutBottom = photoY - TopCalloutGap;
             // The leader line leaves the edge of the label facing the part.
-            double ax = spot.LabelX + PillW / 2, ay = labelY < pointY ? labelY + calloutHeight : labelY;
+            double ax = spot.LabelX + PillW / 2, ay = spot.Bottom ? DeviceBottomLabelY : calloutBottom;
             foreach (var line in Leader(ax, ay, pointX, pointY)) stage.Children.Add(line);
             stage.Children.Add(Marker(pointX, pointY));
 
             var label = ZoneButton(z, byZone, PillW, minHeight: calloutHeight, shortName: true);
             label.Width = PillW;
             Canvas.SetLeft(label, spot.LabelX);
-            Canvas.SetTop(label, labelY);
+            if (spot.Bottom) Canvas.SetTop(label, DeviceBottomLabelY);
+            else Canvas.SetBottom(label, DeviceStageHeight - calloutBottom);
             stage.Children.Add(label);
         }
         // Shrinks to fit a narrow panel instead of clipping a hotspot off the
@@ -3059,10 +3142,17 @@ public partial class MainWindow : Window
     const double StageW = 700;
     const double PillW = 160, PillH = 116, SmallPillH = 100;
 
+    // Room kept above the photo for the top callouts, over what the diagram
+    // itself asks for. A callout is as tall as the words in it: "Increment
+    // mode" and "Right trigger" take two lines each, and at 116px the card ran
+    // down onto the device. The whole stage is inside a Viewbox, so paying for
+    // the room costs a little scale and nothing else.
+    const double TopCalloutRoom = 48, TopCalloutGap = 10;
+
     // Larger type makes the top callouts taller. Move the photo down by the
     // same amount and move the lower band with it, so the controls never sit
     // on top of the device at an accessibility scale.
-    double DevicePhotoY => Diagram.PhotoY + Math.Max(0, (_uiScale - 1.0) * 98);
+    double DevicePhotoY => Diagram.PhotoY + TopCalloutRoom + Math.Max(0, (_uiScale - 1.0) * 98);
     // The lower band clears the bottom of the photo wherever the photo ends up,
     // which is a different place on each of the three models.
     double DeviceBottomLabelY => DevicePhotoY + Diagram.PhotoH + 13;
@@ -3144,9 +3234,9 @@ public partial class MainWindow : Window
 
     // Which parts the selected model physically has. Zones the model lacks
     // still show when a profile maps them, but marked, so a profile made for
-    // an FPS is never silently broken on a Singleton.
-    // "settings" and "unset" are rows in the file rather than hardware, so no
-    // model owns them and they are never called foreign.
+    // an FPS is never silently broken on a Singleton. "settings" and "unset"
+    // are rows in the file rather than hardware, so no model owns them and
+    // they are never called foreign.
     bool ModelHasZone(string zoneId) =>
         zoneId is "settings" or "unset" || Diagram.HasZone(zoneId);
 
@@ -3156,6 +3246,195 @@ public partial class MainWindow : Window
     // is not the same as being told.
     IEnumerable<Zone> ForeignMappedZones(Dictionary<string, List<Binding>> byZone) =>
         AllZones.Where(z => byZone.ContainsKey(z.Id) && !ModelHasZone(z.Id));
+
+    string SummaryActionText(GestureSummary summary)
+    {
+        var names = summary.Actions
+            .Where(a => !a.IsSupport && a.FriendlyOutput.Length > 0)
+            .Select(a => OutputDisplayLabel(a.Binding, TokenLabel, _labelStyle))
+            .Distinct(StringComparer.CurrentCulture)
+            .ToList();
+        if (names.Count == 0) return "—";
+        if (summary.HasComplexBehavior)
+        {
+            if (summary.SequenceUses.Count > 0 && summary.Actions.Count == 1)
+                return $"{names[0]} · {Strings.Main_Sequence}";
+            return $"{names[0]} · {Plural.Of(summary.Actions.Count, "Count_Action")}";
+        }
+        if (names.Count <= 4) return string.Join(" · ", names);
+        return $"{string.Join(" · ", names.Take(3))} · +{names.Count - 3}";
+    }
+
+    Control SummaryActionVisuals(GestureSummary summary)
+    {
+        var spoken = SummaryActionText(summary);
+        TextBlock Words(string t)
+        {
+            var block = new TextBlock
+            {
+                Text = t,
+                FontSize = Size("SmallSize"),
+                TextWrapping = TextWrapping.Wrap,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            if (!summary.IsMapped) block.Classes.Add("muted");
+            return block;
+        }
+
+        var named = summary.Actions
+            .Where(a => !a.IsSupport && a.FriendlyOutput.Length > 0)
+            .Select(a => (a.Binding, Label: OutputDisplayLabel(a.Binding, TokenLabel, _labelStyle)))
+            .DistinctBy(x => x.Label, StringComparer.CurrentCulture)
+            .ToList();
+
+        // "· 3 actions" and "· +2" count things rather than name them, and no
+        // picture says a count. Those summaries stay the sentence they were.
+        if (named.Count == 0 || summary.HasComplexBehavior || named.Count > 4)
+            return Words(spoken);
+
+        // A B button drawn beside the word "B button" says it twice. The
+        // prompt stands alone; anything the device only does as an idea, and
+        // anything the user has given a name of their own, stays as words.
+        //
+        // WrapPanel, not StackPanel: a horizontal StackPanel hands its children
+        // unlimited width, so "Decrement mode" never wrapped and the callout
+        // card cut it off mid-word.
+        var row = new WrapPanel
+        {
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        foreach (var (binding, label) in named)
+        {
+            if (row.Children.Count > 0)
+            {
+                var dot = Words("\u00b7");
+                dot.Margin = new Thickness(4, 0);
+                row.Children.Add(dot);
+            }
+            var visual = VisualFor(binding.Output);
+            // RequiresTextLabel: a moving stick and a mouse direction draw the
+            // control but not which way it goes, so those keep their words.
+            row.Children.Add(visual.IsSelfDescribing && !visual.RequiresTextLabel
+                                 && binding.ActionName.Length == 0
+                ? OutputVisuals.Render(visual, includeLabel: false, compact: true)
+                : Words(label));
+        }
+        AutomationProperties.SetName(row, spoken);
+        return row;
+    }
+
+    Control MouthpieceSummary(string zone)
+    {
+        var rows = DeviceSummary.Mouthpiece(CurrentSheet, zone, TokenLabel);
+        // One grid for the whole card, not one per row: an Auto first column
+        // sizes to the widest gesture name here and hands every pixel it does
+        // not need to the action, which is the column that runs out of room.
+        // Per-row grids had to guess that width, and 70px was both too much for
+        // "Sip" and too little for a language that spells "Soft puff" longer.
+        var panel = new Grid { HorizontalAlignment = HorizontalAlignment.Stretch,
+                               ColumnDefinitions = new ColumnDefinitions("Auto,4,*") };
+        foreach (var summary in rows)
+        {
+            panel.RowDefinitions.Add(new RowDefinition(GridLength.Auto));
+            // The gesture reads back to the gutter and the action reads out
+            // from it, so the eye has one edge to follow down each side and the
+            // gap in the middle says which column is which.
+            var gesture = new TextBlock
+            {
+                Text = summary.FriendlyGestureName,
+                FontSize = Size("SmallSize"),
+                FontWeight = FontWeight.SemiBold,
+                TextWrapping = TextWrapping.NoWrap,
+                TextAlignment = TextAlignment.Right,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            var action = SummaryActionVisuals(summary);
+            action.VerticalAlignment = VerticalAlignment.Center;
+            action.HorizontalAlignment = HorizontalAlignment.Left;
+            int r = panel.RowDefinitions.Count - 1;
+            Grid.SetRow(gesture, r);
+            Grid.SetRow(action, r);
+            Grid.SetColumn(action, 2);
+            panel.Children.Add(gesture);
+            panel.Children.Add(action);
+        }
+        return panel;
+    }
+
+    Control JoystickSummaryContent()
+    {
+        var summary = DeviceSummary.Joystick(CurrentSheet);
+        var panel = new StackPanel { Spacing = 1, HorizontalAlignment = HorizontalAlignment.Center };
+        if (summary.IsRecognized)
+        {
+            panel.Children.Add(new TextBlock
+            {
+                Text = Strings.Main_Movement, FontSize = Size("SmallSize"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+            // The stick has its own controller prompt, so draw it. The name
+            // stays on the control for anyone reading the screen aloud. An
+            // output with no prompt of its own falls to the words below.
+            if (summary.RoleToken.Length > 0
+                && VisualFor(summary.RoleToken) is { IsSelfDescribing: true } roleVisual)
+            {
+                var art = OutputVisuals.Render(roleVisual, includeLabel: false, compact: true);
+                art.HorizontalAlignment = HorizontalAlignment.Center;
+                AutomationProperties.SetName(art, summary.Role);
+                panel.Children.Add(art);
+            }
+            else panel.Children.Add(new TextBlock
+            {
+                Text = summary.Role, FontSize = Size("SmallSize"),
+                FontWeight = FontWeight.SemiBold, TextWrapping = TextWrapping.Wrap,
+                TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center,
+            });
+            if (summary.ExtraActionCount > 0)
+                panel.Children.Add(new TextBlock
+                {
+                    Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_ExtraActions, summary.ExtraActionCount),
+                    FontSize = Size("SmallSize"), Classes = { "muted" },
+                    TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                });
+        }
+        else
+        {
+            panel.Children.Add(new TextBlock
+            {
+                Text = summary.ActionCount == 0
+                    ? Strings.Main_NotMapped
+                    : Plural.Of(summary.ActionCount, "Count_Action"),
+                FontSize = Size("SmallSize"),
+                Classes = { "muted" }, TextAlignment = TextAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            });
+            if (summary.ActionCount > 0)
+                panel.Children.Add(new TextBlock
+                {
+                    Text = Strings.Main_ViewDetails, FontSize = Size("SmallSize"),
+                    TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center,
+                });
+        }
+        return panel;
+    }
+
+    string SummaryAccessibleText(Zone z)
+    {
+        if (z.Id is "mp_left" or "mp_center" or "mp_right" or "side" or "lip")
+            return string.Join(", ", DeviceSummary.Mouthpiece(CurrentSheet, z.Id, TokenLabel)
+                .Select(s => $"{s.FriendlyGestureName}: {SummaryActionText(s)}"));
+        if (z.Id == "joystick")
+        {
+            var summary = DeviceSummary.Joystick(CurrentSheet);
+            return summary.IsRecognized
+                ? $"{Strings.Main_Movement}: {summary.Role}"
+                : summary.ActionCount == 0 ? Strings.Main_NotMapped : Plural.Of(summary.ActionCount, "Count_Action");
+        }
+        return "";
+    }
 
     Control ZoneButton(Zone z, Dictionary<string, List<Binding>> byZone, double minWidth,
                        double minHeight = 84, bool circle = false, bool shortName = false)
@@ -3176,17 +3455,22 @@ public partial class MainWindow : Window
             HorizontalAlignment = HorizontalAlignment.Center,
         });
 
-        // One clean status line: a count, never a truncated dump of bindings.
-        // The full, editable list lives in the detail panel, opened on select.
-        var countLabel = new TextBlock
+        if (z.Id is "mp_left" or "mp_center" or "mp_right" or "side" or "lip")
+            content.Children.Add(MouthpieceSummary(z.Id));
+        else if (z.Id == "joystick")
+            content.Children.Add(JoystickSummaryContent());
+        else
         {
-            Text = count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping"),
-            FontSize = Size("SmallSize"), TextAlignment = TextAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-        };
-        if (count == 0) countLabel.Classes.Add("muted");
-        else BindBrush(countLabel, TextBlock.ForegroundProperty, "AccentText");
-        content.Children.Add(countLabel);
+            var countLabel = new TextBlock
+            {
+                Text = count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping"),
+                FontSize = Size("SmallSize"), TextAlignment = TextAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+            if (count == 0) countLabel.Classes.Add("muted");
+            else BindBrush(countLabel, TextBlock.ForegroundProperty, "AccentText");
+            content.Children.Add(countLabel);
+        }
 
         // Every foreign part says so in TEXT, circles included: dimming alone
         // is a contrast-only cue that low-vision users cannot rely on.
@@ -3348,9 +3632,13 @@ public partial class MainWindow : Window
 
     void SetZoneAccessibleName(Control btn, Zone z, List<Binding>? bindings, int count, bool foreign, bool selected)
     {
-        var spoken = count == 0
-            ? Strings.Main_NothingMappedYet
-            : string.Join(", ", (bindings ?? new()).Take(4).Select(b => $"{ShortInput(z, b)} presses {OutputFieldValue(b)}"));
+        var summary = SummaryAccessibleText(z);
+        var spoken = summary.Length > 0
+            ? summary
+            : count == 0
+                ? Strings.Main_NothingMappedYet
+                : string.Join(", ", (bindings ?? new()).Take(4).Select(b => string.Format(CultureInfo.CurrentCulture,
+                    Strings.Main_InputPressesOutput, ShortInput(z, b), OutputFieldValue(b))));
         var warning = foreign ? string.Format(CultureInfo.CurrentCulture, Strings.Main_NotAvailableOnYourModelNames, ModelNames[(int)_model]) : "";
         AutomationProperties.SetName(btn,
             string.Format(CultureInfo.CurrentCulture,
@@ -3389,19 +3677,23 @@ public partial class MainWindow : Window
     // rebuild cannot change the width that decided it.
     bool NarrowCards(double width) => width > 0 && width < NarrowCardWidth;
 
+    // Cards are per view: Device View opens as sentences, Rows View opens as
+    // the sheet it is.
+    bool CardsHere => _deviceView ? _settings.DeviceCards : _settings.RowCards;
+
     void UpdateCardViewButton()
     {
-        CardViewButton.Content = _settings.DeviceCards ? Strings.Main_DetailedEditor : Strings.Main_SimpleCards;
-        AutomationProperties.SetName(CardViewButton, _settings.DeviceCards
+        CardViewButton.Content = CardsHere ? Strings.Main_DetailedEditor : Strings.Main_SimpleCards;
+        AutomationProperties.SetName(CardViewButton, CardsHere
             ? Strings.Main_MappingsReadAsSimpleSentence
             : Strings.Main_MappingsShowTheDetailedEditor);
     }
 
-    // One mapping as a plain sentence: "Decrement mode when you soft puff, as
-    // normal." The output and inputs wear their column colors, the note reads
-    // as a muted second line, and a click opens the detailed editor for just
-    // this mapping. The handle on the left selects and drags, exactly like a
-    // list-view row number.
+    // One mapping as a plain sentence: "Press X when you lip, as normal." or
+    // "Lip to X as normal." The output and inputs wear their column colors,
+    // the note reads as a muted second line, and a click opens the detailed
+    // editor for just this mapping. The handle on the left selects and drags;
+    // there is no second reorder control competing with the sentence.
     // Hairline rules between the sentence cells, so a column of cards reads
     // as a table you scan down instead of phrases floating in a box. The last
     // filled column and row skip theirs: the card's own outline is that edge,
@@ -3445,25 +3737,44 @@ public partial class MainWindow : Window
 
     Control SentenceCard(Zone zone, Binding b, int n)
     {
-        Control Pill(string text, string tint)
+        Control Pill(string text, string tint, OutputVisual? visual = null, bool showText = true,
+                     int duplicateCount = 0)
         {
-            var bd = new Border
+            var pillContent = new StackPanel
             {
-                CornerRadius = new Avalonia.CornerRadius(4), Padding = new Avalonia.Thickness(7, 2),
-                Margin = new Avalonia.Thickness(0, 2), VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Child = new TextBlock
+                Orientation = Orientation.Horizontal,
+                Spacing = visual is { IsSelfDescribing: true } ? 5 : 0,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            if (visual is { IsSelfDescribing: true })
+                pillContent.Children.Add(OutputVisuals.Render(visual, includeLabel: false, compact: true));
+            if (showText)
+                pillContent.Children.Add(new TextBlock
                 {
                     Text = text, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold,
-                    // The columns are fixed shares, so in a narrow window a long
-                    // name has to give way. Trimming keeps every card one line
-                    // tall; wrapping used to stack it one letter per line. The
-                    // whole name stays one hover (or one click) away.
-                    TextTrimming = TextTrimming.CharacterEllipsis,
-                },
+                    // Wrap, not trim: trimming does not make a control ask for
+                    // less room, so the pill kept its full width, pushed the
+                    // card past the 30% detail panel and the edge cut it off.
+                    // Wrapping makes the card taller, which the panel scrolls.
+                    TextWrapping = TextWrapping.Wrap,
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+            // Keep the count inside the sentence pill. Wrapping the pill in a
+            // second grid put its text to the left of the count and broke the
+            // centred columns that make narrow cards readable.
+            if (DuplicateChip(duplicateCount) is { } duplicate)
+                pillContent.Children.Add(duplicate);
+            var bd = new Border
+            {
+                CornerRadius = new Avalonia.CornerRadius(4),
+                Padding = new Avalonia.Thickness(7, 2),
+                Margin = new Avalonia.Thickness(0, 2), VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Child = pillContent,
             };
             BindBrush(bd, Border.BackgroundProperty, tint);
             ToolTip.SetTip(bd, text);
+            AutomationProperties.SetName(bd, text);
             return bd;
         }
         // The joining words are grey and small on purpose: they are the same on
@@ -3472,6 +3783,7 @@ public partial class MainWindow : Window
         Control Word(string text, bool left = false) => new TextBlock
         {
             Text = text, FontSize = Size("SmallSize"), Classes = { "muted" },
+            TextWrapping = TextWrapping.Wrap,
             VerticalAlignment = VerticalAlignment.Center, Margin = new Avalonia.Thickness(5, 2),
             // Stacked lines read down a left edge; a single line does not care.
             HorizontalAlignment = left ? HorizontalAlignment.Left : HorizontalAlignment.Stretch,
@@ -3497,6 +3809,7 @@ public partial class MainWindow : Window
         string verb = setting ? Strings.Main_SetVerb : Strings.Main_PressVerb;
         string joiner = setting ? Strings.Main_ToJoiner : Strings.Main_WhenYou;
         string func = _labelStyle == 0 ? b.Function : b.Function.Replace('_', ' ');
+        bool inputFirst = !setting && _settings.CardSentenceStyle == "InputToOutput";
 
         // Every card uses the same column widths, so the outputs line up under
         // each other and so do the inputs: reading a list of cards is then
@@ -3505,12 +3818,26 @@ public partial class MainWindow : Window
         // cannot shift the card below it. In a narrow panel the sentence takes
         // two lines instead of squeezing every name down to an ellipsis.
         var line = _narrowCards
-            ? new Grid
-            {
-                ColumnDefinitions = new ColumnDefinitions("Auto,*"),
-                RowDefinitions = new RowDefinitions("Auto,Auto,Auto"),
-            }
-            : new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,4*,Auto,3*,4*") };
+            ? inputFirst
+                ? new Grid
+                {
+                    // Keep the requested sentence together: input, "to",
+                    // output. The behavior drops to a quiet second line.
+                    ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*"),
+                    RowDefinitions = new RowDefinitions("Auto,Auto"),
+                }
+                : new Grid
+                {
+                    // Both shares, not Auto for the words: an Auto column is
+                    // measured against infinity, so in a language whose "when
+                    // you" is half again as long the words took the width and
+                    // the pill beside them hung off the edge of the card.
+                    ColumnDefinitions = new ColumnDefinitions("*,*"),
+                    RowDefinitions = new RowDefinitions("Auto,Auto,Auto"),
+                }
+            : inputFirst
+                ? new Grid { ColumnDefinitions = new ColumnDefinitions("3*,Auto,3*,Auto,3*") }
+                : new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,4*,Auto,3*,4*") };
         void Cell(Control c, int col, int row = 0)
         {
             Grid.SetColumn(c, col); Grid.SetRow(c, row);
@@ -3532,23 +3859,81 @@ public partial class MainWindow : Window
             // pills saying "and" only moved the contradiction from the screen
             // reader to the screen.
             if (i > 0) inputPills.Children.Add(Word("then"));
-            inputPills.Children.Add(Pill(inputs[i], InputTint));
+            var token = i < b.Inputs.Count ? b.Inputs[i] : "";
+            inputPills.Children.Add(Pill(inputs[i], InputTint,
+                duplicateCount: _dupes.Input(token)));
         }
 
-        if (_narrowCards)
+        // Outputs use the same generated visual language in the concise card
+        // as they do in the editor: controller face buttons, D-pad directions,
+        // and keyboard keycaps remain recognizable at a glance.
+        var outputVisual = b.Output.Length > 0
+            ? VisualFor(b.Output)
+            : null;
+        // RequiresTextLabel is the third case: a mouse silhouette and a moving
+        // thumb stick draw the control but not which way it goes, so those keep
+        // their words here too. Without it left_joy_left and left_joy_right
+        // were the same picture with nothing beside it.
+        var showOutputText = outputVisual is null
+            || !outputVisual.IsSelfDescribing
+            || outputVisual.RequiresTextLabel
+            || b.ActionName.Length > 0;
+        Control OutputPill() => Pill(output, OutputTint, outputVisual, showOutputText,
+            _dupes.Output(b.Output));
+
+        if (_narrowCards && inputFirst)
+        {
+            inputPills.HorizontalAlignment = HorizontalAlignment.Left;
+            Cell(inputPills, 0, row: 0);
+            Cell(Word(Strings.Main_ToJoiner), 1, row: 0);
+            var outputPill = OutputPill();
+            outputPill.HorizontalAlignment = HorizontalAlignment.Left;
+            Cell(outputPill, 2, row: 0);
+            if (func.Length > 0)
+            {
+                // Keep "as normal" as one little phrase. Putting the pill in
+                // the grid's second column made it float halfway across the
+                // card when the output column had spare room.
+                var asLine = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 0,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Children = { Word(Strings.Main_AsJoiner, left: true) },
+                };
+                var funcPill = Pill(func, FunctionTint);
+                funcPill.HorizontalAlignment = HorizontalAlignment.Left;
+                asLine.Children.Add(funcPill);
+                Cell(asLine, 0, row: 1);
+                Grid.SetColumnSpan(asLine, 3);
+            }
+        }
+        else if (_narrowCards)
         {
             // One phrase per line, words left, pills sharing one centered
             // column. Everything still lines up, and a long name has the whole
             // card to itself instead of a quarter of it.
-            Cell(Word(verb), 0); Cell(Pill(output, OutputTint), 1);
+            Cell(Word(verb), 0); Cell(OutputPill(), 1);
             Cell(Word(joiner, left: true), 0, row: 1); Cell(inputPills, 1, row: 1);
             if (func.Length > 0)
             { Cell(Word(Strings.Main_AsJoiner, left: true), 0, row: 2); Cell(Pill(func, FunctionTint), 1, row: 2); }
         }
+        else if (inputFirst)
+        {
+            Cell(inputPills, 0);
+            Cell(Word(Strings.Main_ToJoiner), 1);
+            Cell(OutputPill(), 2);
+            if (func.Length > 0)
+            {
+                Cell(Word(Strings.Main_AsJoiner), 3);
+                Cell(Pill(func, FunctionTint), 4);
+            }
+        }
         else
         {
             Cell(Word(verb), 0);
-            Cell(Pill(output, OutputTint), 1);
+            Cell(OutputPill(), 1);
             Cell(Word(joiner), 2);
             Cell(inputPills, 3);
             if (func.Length > 0)
@@ -3573,17 +3958,22 @@ public partial class MainWindow : Window
         var note = _file!.GetCell(b.Row, NoteColumn);
         if (note.Length > 0)
             body.Children.Add(new TextBlock
-            { Text = note, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
+            {
+                Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_NoteSummary,
+                    Strings.Main_NoteLabel, note),
+                FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
+            });
 
         var open = new Button
         {
             Content = body, Classes = { "quiet" },
+            Padding = new Avalonia.Thickness(10, 8),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             // Stretch, not Left: the sentence grid needs the card's full width
             // for its column shares to come out the same on every card.
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
-            Padding = new Avalonia.Thickness(10, 8),
         };
+        ToolTip.SetTip(open, Strings.Main_EditMappingOrAddNote);
         // "and" would say a chord, and several inputs on one row are a sequence
         // in time: the device matches them against the last inputs used, newest
         // first, so they have to be done one after the other. The tooltip and
@@ -3592,14 +3982,19 @@ public partial class MainWindow : Window
         AutomationProperties.SetName(open, setting
             ? string.Format(CultureInfo.CurrentCulture, Strings.Main_SettingRowSpoken, n, b.Output,
                 _file!.GetCell(b.Row, 2).Trim() is { Length: > 0 } v ? v : Strings.Main_NothingYet)
-            : string.Format(CultureInfo.CurrentCulture,
-                inputs.Count > 1 ? Strings.Main_MappingRowSpokenInOrder : Strings.Main_MappingRowSpoken,
-                n, output, string.Join(Strings.Main_ThenJoin, inputs),
-                func.Length > 0 ? string.Format(CultureInfo.CurrentCulture, Strings.Main_AsFunction, func) : ""));
+            : inputFirst
+                ? string.Format(CultureInfo.CurrentCulture,
+                    Strings.Main_MappingInputFirstSpoken,
+                    n, string.Join(Strings.Main_ThenJoin, inputs), output,
+                    func.Length > 0 ? string.Format(CultureInfo.CurrentCulture, Strings.Main_AsFunction, func) : "")
+                : string.Format(CultureInfo.CurrentCulture,
+                    inputs.Count > 1 ? Strings.Main_MappingRowSpokenInOrder : Strings.Main_MappingRowSpoken,
+                    n, output, string.Join(Strings.Main_ThenJoin, inputs),
+                    func.Length > 0 ? string.Format(CultureInfo.CurrentCulture, Strings.Main_AsFunction, func) : ""));
         open.Click += (_, _) =>
         {
             _expandedMapping = b.Row;
-            BuildZoneDetail();
+            if (_deviceView) BuildZoneDetail(); else RebuildRows();
             AfterLayout(() =>
             {
                 if (_cellBorders.TryGetValue($"C{b.Row}", out var border))
@@ -3616,10 +4011,16 @@ public partial class MainWindow : Window
         BindBrush(handleBox, Border.BorderBrushProperty, "SurfaceSubtle");
         var handle = WireDragHandle(handleBox, b, $"Mapping {n}");
 
+        // Keep the sentence's full-width grid. The reorder pair overlays the
+        // quiet right edge of the card instead of stealing a whole layout
+        // column and making long sequences wrap earlier than they should.
         var p = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        p.Tag = "mapping-card";
+        BindBrush(p, Panel.BackgroundProperty, "Surface");
         p.Children.Add(handle);
         Grid.SetColumn(open, 1);
         p.Children.Add(open);
+
         WireRowDrop(p, b);
         // Same menu as a list row: copy, move and delete already know which
         // view they are in, so a mapping card gets the gesture for free.
@@ -3636,6 +4037,7 @@ public partial class MainWindow : Window
         _narrowCards = NarrowCards(ZoneDetailPanel.Bounds.Width);
         ZoneDetailPanel.Children.Clear();
         _rowPanels.Clear(); // device view owns the selection targets while visible
+        _dupes = DuplicateUses.In(CurrentSheet?.Bindings);
         var zone = AllZones.FirstOrDefault(z => z.Id == _selectedZone);
         if (zone is null)
         {
@@ -3651,15 +4053,42 @@ public partial class MainWindow : Window
         var byZone = BindingsByZone();
         byZone.TryGetValue(zone.Id, out var bindings);
 
+        int mappingCount = bindings?.Count ?? 0;
         var zoneTitle = new TextBlock
         {
-            Text = zone.Title + "  ·  " + Plural.Of(bindings?.Count ?? 0, "Count_Mapping"),
+            Text = zone.Title,
             FontSize = Size("SectionSize"), FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap,
+            VerticalAlignment = VerticalAlignment.Center,
         };
         AutomationProperties.SetLiveSetting(zoneTitle, AutomationLiveSetting.Polite);
-        ZoneDetailPanel.Children.Add(zoneTitle);
-        ZoneDetailPanel.Children.Add(new TextBlock
-        { Text = zone.Blurb, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
+
+        // Keep the part name as the heading. The count is supporting context,
+        // not part of the title, and the one-click explanation belongs behind
+        // the same question-mark pattern used for modes.
+        var help = new Button { Classes = { "icon", "quiet" }, Content = "?" };
+        ToolTip.SetTip(help, zone.Title);
+        AutomationProperties.SetName(help, zone.Title);
+        help.Click += (_, _) => ShowInfoFlyout(help, zone.Title, zone.Blurb);
+
+        var count = new TextBlock
+        {
+            Text = mappingCount.ToString(CultureInfo.CurrentCulture),
+            FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center,
+        };
+        if (mappingCount == 0) count.Classes.Add("muted");
+        else BindBrush(count, TextBlock.ForegroundProperty, "AccentText");
+
+        var meta = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 4,
+            VerticalAlignment = VerticalAlignment.Center,
+            Children = { help, count },
+        };
+        var heading = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        heading.Children.Add(zoneTitle);
+        Grid.SetColumn(meta, 1);
+        heading.Children.Add(meta);
+        ZoneDetailPanel.Children.Add(heading);
 
         // The two zones that live on the back of the case get the panel drawn
         // out, because the numbering is the whole problem: nothing on the
@@ -3668,7 +4097,7 @@ public partial class MainWindow : Window
 
         if (bindings is { Count: > 0 })
         {
-            var zoneInputs = Vocab.Inputs.Where(i => ZoneOf(i) == zone.Id).OrderBy(GroupRank).ThenBy(x => x).ToList();
+            var zoneInputs = Vocab.AllInputs.Where(i => ZoneOf(i) == zone.Id).OrderBy(GroupRank).ThenBy(x => x).ToList();
             bool cards = _settings.DeviceCards;
             int n = 0;
             foreach (var b in bindings)
@@ -3711,8 +4140,10 @@ public partial class MainWindow : Window
                     if (card is not null) GhostRowAway(card, ZoneOverlay); // snapshot while still attached
                     _file!.DeleteRow(b.Row);
                     BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
-                    // Cards start at child 2: the zone title and blurb sit above.
-                    AnimateGapClose(ZoneDetailPanel, 2 + deletedIndex, gap);
+                    // The heading stays above the cards; its explanation is in
+                    // the help popup rather than taking a permanent second row.
+                    int firstMapping = zone.Id is "jacks" or "other" ? 2 : 1;
+                    AnimateGapClose(ZoneDetailPanel, firstMapping + deletedIndex, gap);
                     FocusZoneDetailSibling(zone.Id, deletedIndex);
                 };
                 if (cards)
@@ -3771,8 +4202,9 @@ public partial class MainWindow : Window
                         ? TokenField(b.Row, col, value, zoneInputs,
                             t => InputOptionLabel(t, zone.Id), name, InputTint)
                         : DeviceInputPicker(b.Row, col, value, name, zone.Id);
-                    Grid.SetColumn(inputBox, 0);
-                    row.Children.Add(inputBox);
+                    var markedInput = WithDuplicateMark(inputBox, _dupes.Input(value));
+                    Grid.SetColumn(markedInput, 0);
+                    row.Children.Add(markedInput);
                     // Every committed input gets a trash. Removing the last one
                     // leaves an empty box on purpose. That IS the "no input" state.
                     if (i < b.Inputs.Count)
@@ -3840,8 +4272,10 @@ public partial class MainWindow : Window
                 body.Children.Add(Labeled(Strings.Main_WhenYou2, inputsBox));
 
                 // ---- "Press" (game button) and "As" (how it presses) ----
-                body.Children.Add(Labeled(Strings.Main_PressVerb, OutputPicker(b, OutputsFor(CurrentSheet!),
-                    string.Format(CultureInfo.CurrentCulture, Strings.Main_GameButtonPressedByShortInput, ShortInput(zone, b)), OutputTint)));
+                body.Children.Add(Labeled(Strings.Main_PressVerb, WithDuplicateMark(
+                    OutputPicker(b, OutputsFor(CurrentSheet!),
+                        string.Format(CultureInfo.CurrentCulture, Strings.Main_GameButtonPressedByShortInput, ShortInput(zone, b)), OutputTint),
+                    _dupes.Output(b.Output))));
                 body.Children.Add(Labeled(Strings.Main_AsLabel, FunctionCombo(b, zone)));
                 body.Children.Add(Labeled(Strings.Main_NoteLabel, NoteBox(b.Row, NoteColumn, Strings.Main_NoteForThisMappingSaved)));
 
@@ -3921,30 +4355,42 @@ public partial class MainWindow : Window
     }
 
     // Column A is the output, C is the input. A chosen input needs an output
-    // picked, so focus A. A guessed input needs changing, so focus C.
+    // picked, so focus A. A guessed input needs changing, so focus C. This is
+    // shared by a part's free-input list and the global unused-input picker;
+    // the latter must preserve Rows View instead of sending someone to the
+    // device diagram merely for choosing "North".
     void AddMappingWithInput(string input, bool inputWasChosen = false)
     {
         if (_file is null || CurrentSheet is null) return;
         int newRow = _file.AddBindingRow(CurrentSheet);
         _file.SetCell(newRow, 2, input);
         _expandedMapping = newRow; // a brand new mapping opens ready to edit
+        if (!DeviceContainer.IsVisible)
+        {
+            RebuildRows();
+            RefreshIssues();
+            AfterLayout(() => FocusNewMappingCell(newRow, inputWasChosen));
+            return;
+        }
         // Follow the input to its own part, so seeding a combo token from the
         // combo card does not leave the detail panel showing a different one.
         _selectedZone = ZoneOf(input);
         BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
         // Take the user to the mapping they just created (mirrors AddRow in List View).
         // The cells are ComboBox-backed (TokenField), so focus them as Controls.
-        AfterLayout(() =>
-        {
-            if (_cellBorders.TryGetValue($"{(inputWasChosen ? 'A' : 'C')}{newRow}", out var newBorder))
-            {
-                newBorder.BringIntoView(); (newBorder.Child as Control)?.Focus();
-                // Rise the whole new mapping card in, not just the cell.
-                var card = newBorder.GetVisualAncestors().OfType<Border>()
-                    .FirstOrDefault(x => x.Parent == ZoneDetailPanel);
-                if (card is not null) AnimateIn(card);
-            }
-        });
+        AfterLayout(() => FocusNewMappingCell(newRow, inputWasChosen));
+    }
+
+    void FocusNewMappingCell(int row, bool inputWasChosen)
+    {
+        if (!_cellBorders.TryGetValue($"{(inputWasChosen ? 'A' : 'C')}{row}", out var newBorder)) return;
+        newBorder.BringIntoView();
+        (newBorder.Child as Control)?.Focus();
+        // Rise the whole new mapping card in, not just the cell. Rows view
+        // deliberately has no card container to animate.
+        var card = newBorder.GetVisualAncestors().OfType<Border>()
+            .FirstOrDefault(x => x.Parent == ZoneDetailPanel);
+        if (card is not null) AnimateIn(card);
     }
 
     public void LoadProfile(ProfileFile file) => OpenInEditor(file, savePath: null, ProfileSource.File);
@@ -4605,13 +5051,26 @@ public partial class MainWindow : Window
         _selectedRows.RemoveWhere(r => CurrentSheet.Bindings.All(x => x.Row != r));
 
         bool prefs = CurrentSheet.Type != SheetType.ProfileName;
-        RowsPanel.Children.Add(prefs ? PrefsHeaderRow() : HeaderRow());
+        // Sentence cards have no columns, so the column header would be a lie
+        // above them. Width decides how a card wraps, same as in Device View.
+        bool cards = !prefs && _settings.RowCards;
+        if (cards) _narrowCards = NarrowCards(RowsPanel.Bounds.Width);
+        else RowsPanel.Children.Add(prefs ? PrefsHeaderRow() : HeaderRow());
         // The sheet row, not the line's place in the list. The user's other copy
         // of this profile is a spreadsheet, and every conversation about a
         // binding is "row 14". The screen reader was already saying b.Row while
         // the label beside it said 1.
+        int n = 0;
         foreach (var b in CurrentSheet.Bindings)
-            RowsPanel.Children.Add(prefs ? PrefsRow(b, b.Row) : BindingRow(b, b.Row));
+        {
+            n++;
+            // Accordion, the way Device View does it: every mapping is one
+            // sentence, and the one being edited opens into the full row.
+            if (cards && b.Row != _expandedMapping)
+            { RowsPanel.Children.Add(SentenceCard(ZoneOfBinding(b), b, n)); continue; }
+            var row = prefs ? PrefsRow(b, b.Row) : BindingRow(b, b.Row);
+            RowsPanel.Children.Add(cards ? WithDoneButton(row) : row);
+        }
 
         if (CurrentSheet.Bindings.Count == 0)
             RowsPanel.Children.Add(new TextBlock
@@ -4628,6 +5087,23 @@ public partial class MainWindow : Window
         RefreshIssues();
     }
 
+    // The part a row belongs to, for a card built outside Device View. ZoneOf
+    // sends anything it does not know, empty included, to "other".
+    Zone ZoneOfBinding(Binding b) =>
+        AllZones.First(z => z.Id == ZoneOf(b.Inputs.Count > 0 ? b.Inputs[0] : ""));
+
+    // The way back to the sentence in Rows View. Device View puts Done in the
+    // open card's own header; a list row has no header to put it in.
+    Control WithDoneButton(Control row)
+    {
+        var done = new Button
+        { Content = Strings.Main_Done, Classes = { "quiet" }, Padding = new Avalonia.Thickness(12, 2),
+          HorizontalAlignment = HorizontalAlignment.Left };
+        AutomationProperties.SetName(done, Strings.Main_Done);
+        done.Click += (_, _) => { _expandedMapping = -1; RebuildRows(); };
+        return new StackPanel { Spacing = 4, Children = { row, done } };
+    }
+
     // A tinted, rounded column header used by both the bindings and preferences
     // header rows. No width of its own: the row's columns own that.
     static Control Swatch(string text, string tintKey)
@@ -4635,11 +5111,16 @@ public partial class MainWindow : Window
         var border = new Border
         {
             CornerRadius = new Avalonia.CornerRadius(5),
-            Padding = new Avalonia.Thickness(8, 4),
+            // 6, not 8: at the narrowest window "(behavior)" was four pixels
+            // over its column and broke across the middle of the word.
+            Padding = new Avalonia.Thickness(6, 4),
             Child = new TextBlock
             {
                 Text = text, FontWeight = FontWeight.Bold, FontSize = Size("SmallSize"),
-                TextWrapping = TextWrapping.Wrap,
+                // WrapWithOverflow, not Wrap: a header breaks between its words
+                // and never through the middle of one. Wrap read "Function
+                // (behavio / r)" at the width this column gets.
+                TextWrapping = TextWrapping.WrapWithOverflow,
             },
         };
         BindBrush(border, Border.BackgroundProperty, tintKey);
@@ -4685,8 +5166,15 @@ public partial class MainWindow : Window
     static double Fixed(double content) => content + CellGap;
 
     // handle, output, function, inputs, add/delete, note, up, down.
+    // The function column holds one short word ("normal", "tap"); the inputs
+    // column holds the part and what was done to it ("Side tube - sip"), and
+    // was trimming that to "Side tube..." at any normal window width.
+    // Output and inputs both take room off the note, which is an optional line
+    // of somebody's own text: a row that has one can wrap it, and a row that
+    // does not was paying for it. "Increment mode" beside a "used twice" chip
+    // had so little left that it broke across the middle of the word.
     static string BindingColumns =>
-        $"{RowNumberWidth + 4},2.2*,1.8*,2.4*,{Fixed(IconButtonSize * 2 + IconButtonGap)},2*,{Fixed(IconButtonSize)},{Fixed(IconButtonSize)}";
+        $"{RowNumberWidth + 4},2.6*,1.45*,2.95*,{Fixed(IconButtonSize * 2 + IconButtonGap)},1.4*,{Fixed(IconButtonSize)},{Fixed(IconButtonSize)}";
 
     // Puts a cell in its column, with the gap that used to be the panel's
     // Spacing. Added to whatever margin the cell already carries, and called
@@ -4734,6 +5222,7 @@ public partial class MainWindow : Window
     // a click on empty space clears. Keyed by CSV row on the current sheet.
     readonly HashSet<int> _selectedRows = new();
     int _selAnchor = -1;
+    bool _selectionMode;
     readonly Dictionary<int, Panel> _rowPanels = new();
 
     // Which outputs and inputs this mode uses more than once. Recomputed once
@@ -4757,6 +5246,7 @@ public partial class MainWindow : Window
         if (!_rowPanels.TryGetValue(row, out var p)) return;
         bool sel = _selectedRows.Contains(row);
         if (sel) BindBrush(p, Panel.BackgroundProperty, "SelectionTint");
+        else if (Equals(p.Tag, "mapping-card")) BindBrush(p, Panel.BackgroundProperty, "Surface");
         else p.ClearValue(Panel.BackgroundProperty);
         // By tag, not by position: a row grid also holds the hairline that
         // separates it from the next one.
@@ -4769,10 +5259,36 @@ public partial class MainWindow : Window
     void RepaintSelection()
     {
         foreach (var row in _rowPanels.Keys) PaintRow(row);
-        SelectionBar.IsVisible = _selectedRows.Count > 0 && !DeviceContainer.IsVisible;
-        SelectionCount.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_SelectedRowsCountSelected, _selectedRows.Count);
-        DeviceSelectionBar.IsVisible = _selectedRows.Count > 0 && DeviceContainer.IsVisible;
-        DeviceSelectionCount.Text = SelectionCount.Text;
+        bool selecting = _selectionMode || _selectedRows.Count > 0;
+        SelectionCommandBar.IsVisible = selecting;
+        SelectionModeButton.Classes.Set("primary", _selectionMode);
+        SelectionCount.Text = _selectedRows.Count > 0
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Main_SelectedRowsCountSelected, _selectedRows.Count)
+            : Strings.Shell_SelectRowsToMoveDeleteOrClear;
+        SelectionMoveButton.IsEnabled = _selectedRows.Count > 0;
+        SelectionDeleteButton.IsEnabled = _selectedRows.Count > 0;
+        SelectionClearButton.IsEnabled = _selectedRows.Count > 0;
+        AutomationProperties.SetName(SelectionMoveButton, DeviceContainer.IsVisible
+            ? Strings.Shell_MoveTheSelectedMappingsTo
+            : Strings.Shell_MoveTheSelectedRowsTo);
+        AutomationProperties.SetName(SelectionDeleteButton, DeviceContainer.IsVisible
+            ? Strings.Shell_DeleteTheSelectedMappings
+            : Strings.Shell_DeleteTheSelectedRows);
+    }
+
+    void ToggleSelectionMode()
+    {
+        _selectionMode = !_selectionMode;
+        if (!_selectionMode)
+        {
+            ClearSelection();
+            RepaintSelection(); // ClearSelection is deliberately a no-op when empty.
+        }
+        else
+        {
+            RepaintSelection();
+            Status(Strings.Shell_SelectRowsToMoveDeleteOrClear, StatusKind.Info);
+        }
     }
 
     void DeleteSelectedRows()
@@ -4810,13 +5326,90 @@ public partial class MainWindow : Window
         RepaintSelection();
     }
 
+    // Row numbers change when rows move, but the CSV grid rows themselves do
+    // not. Remember those objects before a move and resolve their new numbers
+    // afterwards, so a selection follows the mappings it names.
+    HashSet<string[]> SelectedGridRows()
+    {
+        var selected = new HashSet<string[]>(); // arrays compare by identity
+        if (_file is null) return selected;
+        foreach (int row in _selectedRows)
+            if (row is >= 1 && row <= _file.Grid.Count)
+                selected.Add(_file.Grid[row - 1]);
+        return selected;
+    }
+
+    void RestoreSelectedGridRows(HashSet<string[]> selected)
+    {
+        _selectedRows.Clear();
+        if (_file is not null)
+            for (int i = 0; i < _file.Grid.Count; i++)
+                if (selected.Contains(_file.Grid[i])) _selectedRows.Add(i + 1);
+        _selAnchor = _selectedRows.Count == 0 ? -1 : _selectedRows.Min();
+    }
+
+    // A rebuild preserves the old offset by default. That is right for an
+    // ordinary edit, but after a move it can leave the selected mappings off
+    // screen at their new home.
+    void ScrollSelectedRowsIntoView()
+    {
+        var rows = _selectedRows.OrderBy(r => r)
+            .Select(r => _rowPanels.GetValueOrDefault(r))
+            .Where(p => p is not null).Cast<Panel>().ToList();
+        if (rows.Count == 0) return;
+        if (DeviceContainer.IsVisible)
+        {
+            // Cards live in their own ScrollViewer. The last card is the one
+            // furthest along the moved block, so bringing it into view proves
+            // the whole move reached its destination.
+            rows[^1].BringIntoView();
+            return;
+        }
+        if (GridScroll.Viewport.Height <= 0) return;
+
+        var top = rows[0].TranslatePoint(new Point(0, 0), RowsPanel);
+        var bottom = rows[^1].TranslatePoint(new Point(0, rows[^1].Bounds.Height), RowsPanel);
+        if (top is not { } first || bottom is not { } last) return;
+
+        double current = GridScroll.Offset.Y;
+        double target = first.Y < current ? first.Y
+            : last.Y > current + GridScroll.Viewport.Height
+                ? last.Y - GridScroll.Viewport.Height
+                : current;
+        double maxY = Math.Max(0, GridScroll.Extent.Height - GridScroll.Viewport.Height);
+        GridScroll.Offset = new Vector(GridScroll.Offset.X, Math.Clamp(target, 0, maxY));
+    }
+
     MenuFlyout MoveMenu()
     {
-        var top = new MenuItem { Header = Strings.Main_ToTheTop };
-        top.Click += (_, _) => MoveSelection(top: true);
-        var bottom = new MenuItem { Header = Strings.Main_ToTheBottom };
-        bottom.Click += (_, _) => MoveSelection(top: false);
-        return new MenuFlyout { Items = { top, bottom } };
+        var menu = new MenuFlyout();
+        void Populate()
+        {
+            menu.Items.Clear();
+
+            var copy = new MenuItem { Header = Strings.Main_CopyToMode };
+            foreach (var item in CopyToModeItems()) copy.Items.Add(item);
+            copy.IsEnabled = copy.Items.Count > 0;
+            menu.Items.Add(copy);
+            menu.Items.Add(new Separator());
+
+            var top = new MenuItem { Header = Strings.Main_ToTheTop };
+            top.Click += (_, _) => MoveSelection(top: true);
+            var bottom = new MenuItem { Header = Strings.Main_ToTheBottom };
+            bottom.Click += (_, _) => MoveSelection(top: false);
+            menu.Items.Add(top);
+            menu.Items.Add(bottom);
+        }
+
+        // This flyout is attached while the window is being built, before a
+        // profile exists. Its destinations must therefore be made when it
+        // opens, not once at startup, or the visible Move button can never
+        // offer Copy to mode.
+        // Populate once as well, so the move choices are present for keyboard
+        // and automation paths that inspect the flyout before its first open.
+        Populate();
+        menu.Opening += (_, _) => Populate();
+        return menu;
     }
 
     void MoveSelection(bool top)
@@ -4827,15 +5420,20 @@ public partial class MainWindow : Window
         var anchors = VisibleSelectableRows().Where(r => !_selectedRows.Contains(r)).ToList();
         if (anchors.Count == 0) return;
         var srcs = _selectedRows.OrderBy(r => r).ToArray();
-        _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
+        var selected = SelectedGridRows();
         var off = GridScroll.Offset;
         if (top) _file.MoveRowsBefore(srcs, anchors[0]);
         else _file.MoveRowsAfter(srcs, anchors[^1]);
-        if (DeviceContainer.IsVisible) { BuildDeviceView(); BuildZoneDetail(); RefreshIssues(); }
+        RestoreSelectedGridRows(selected);
+        if (DeviceContainer.IsVisible)
+        {
+            BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+            AfterLayout(ScrollSelectedRowsIntoView);
+        }
         else
         {
             RebuildRows();
-            RestoreListScroll(off, () => { });
+            RestoreListScroll(off, ScrollSelectedRowsIntoView);
         }
         Status(Plural.Of(srcs.Length, top ? "Count_RowMovedTop" : "Count_RowMovedBottom"), StatusKind.Ready);
     }
@@ -4990,13 +5588,18 @@ public partial class MainWindow : Window
             PaintRow(b.Row);
             if (e.Data.Get(RowDragFormat) is not int[] srcs || srcs.Contains(b.Row)) return;
             var off = GridScroll.Offset;
-            _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
+            var selected = SelectedGridRows();
             _file!.MoveRows(srcs, b.Row);
-            if (DeviceContainer.IsVisible) { BuildDeviceView(); BuildZoneDetail(); RefreshIssues(); }
+            RestoreSelectedGridRows(selected);
+            if (DeviceContainer.IsVisible)
+            {
+                BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                AfterLayout(ScrollSelectedRowsIntoView);
+            }
             else
             {
                 RebuildRows();
-                RestoreListScroll(off, () => { });
+                RestoreListScroll(off, ScrollSelectedRowsIntoView);
             }
         });
     }
@@ -5011,18 +5614,22 @@ public partial class MainWindow : Window
         if (count < 2) return null;
         var chip = new Border
         {
-            Padding = new Avalonia.Thickness(5, 0),
-            CornerRadius = new Avalonia.CornerRadius(8),
+            Padding = new Avalonia.Thickness(8, 2),
+            BorderThickness = new Avalonia.Thickness(1),
+            CornerRadius = new Avalonia.CornerRadius(10),
             VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Avalonia.Thickness(4, 0, 0, 0),
+            Margin = new Avalonia.Thickness(6, 0, 0, 0),
             Child = new TextBlock
             {
                 Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_DuplicateMark, count),
-                FontSize = Size("SmallSize"),
+                FontSize = Math.Max(14, Size("BodySize")),
+                FontWeight = Avalonia.Media.FontWeight.Bold,
                 VerticalAlignment = VerticalAlignment.Center,
             },
         };
-        BindBrush(chip, Border.BackgroundProperty, "NewRowTint");
+        BindBrush(chip, Border.BackgroundProperty, "Accent");
+        BindBrush(chip, Border.BorderBrushProperty, "Accent");
+        BindBrush((TextBlock)chip.Child, TextBlock.ForegroundProperty, "OnAccent");
         var said = string.Format(CultureInfo.CurrentCulture, Strings.Main_UsedNTimesInThisMode, count);
         AutomationProperties.SetName(chip, said);
         ToolTip.SetTip(chip, said);
@@ -5132,8 +5739,8 @@ public partial class MainWindow : Window
         var p = ListGrid(BindingColumns);
         p.Children.Add(At(RowNumberHeaderSpacer(), 0));
         p.Children.Add(At(Swatch(Strings.Main_OutputGameButton, OutputTint), 1));
-        p.Children.Add(At(Swatch("Function (behavior)", FunctionTint), 2));
-        p.Children.Add(At(Swatch("Inputs (sips, puffs, joystick)", InputTint), 3));
+        p.Children.Add(At(Swatch(Strings.Main_FunctionBehavior, FunctionTint), 2));
+        p.Children.Add(At(Swatch(Strings.Main_InputsSipsPuffsJoystick, InputTint), 3));
         return p;
     }
 
@@ -5150,7 +5757,9 @@ public partial class MainWindow : Window
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
         var outputs = OutputsFor(CurrentSheet!);
         p.Children.Add(At(Mid(WithDuplicateMark(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, string.Format(CultureInfo.CurrentCulture, Strings.Main_OutputForRowBRow, b.Row), OutputTint, outputs.Catalog, Strings.Main_AnOutput,
-            picked => CommitOutputFromList(b, outputs, picked)),
+            picked => CommitOutputFromList(b, outputs, picked),
+            _labelStyle == 0 ? null
+                : token => OutputVisuals.Render(VisualFor(token), TokenLabel(token), compact: true)),
             _dupes.Output(b.Output))), 1));
         // List View is the raw grid, so the function's numbers explain
         // themselves through the cell's name rather than a panel: same
@@ -5217,7 +5826,8 @@ public partial class MainWindow : Window
             var line = ListGrid("*,Auto");
             var inputToken = i < b.Inputs.Count ? b.Inputs[i] : "";
             line.Children.Add(At(WithDuplicateMark(ListPickerCell(b.Row, col, inputToken,
-                InputSuggestions, string.Format(CultureInfo.CurrentCulture, Strings.Main_InputI1ForRow, i + 1, b.Row), InputTint, InputCatalog, Strings.Main_AnInput),
+                InputSuggestions, string.Format(CultureInfo.CurrentCulture, Strings.Main_InputI1ForRow, i + 1, b.Row), InputTint, InputCatalog, Strings.Main_AnInput,
+                labelFor: t => InputOptionLabel(t, "")),
                 _dupes.Input(inputToken)), 0));
             // A round remove control beside each real input, so any input
             // can be taken out (not just emptied, and not just the last one).
@@ -5262,7 +5872,8 @@ public partial class MainWindow : Window
                 // In its own line, on the same columns as the committed inputs,
                 // so an empty picker lines up with the ones above it.
                 var newBox = ListPickerCell(b.Row, nextCol, "", InputSuggestions,
-                    string.Format(CultureInfo.CurrentCulture, Strings.Main_InputNextCol1ForRow, nextCol - 1, b.Row), InputTint, InputCatalog, Strings.Main_AnInput);
+                    string.Format(CultureInfo.CurrentCulture, Strings.Main_InputNextCol1ForRow, nextCol - 1, b.Row), InputTint, InputCatalog, Strings.Main_AnInput,
+                    labelFor: t => InputOptionLabel(t, ""));
                 var newLine = ListGrid("*,Auto");
                 newLine.Children.Add(At(newBox, 0));
                 inputsBox.Children.Add(newLine);
@@ -5343,8 +5954,9 @@ public partial class MainWindow : Window
         if (i < 0 || j < 0 || j >= sheet.Bindings.Count) return;
         int destRow = sheet.Bindings[j].Row;
         var off = GridScroll.Offset;
-        _selectedRows.Clear(); _selAnchor = -1; // rows renumber under a stale selection
+        var selected = SelectedGridRows();
         _file.SwapRows(b.Row, destRow);
+        RestoreSelectedGridRows(selected);
         RebuildRows();
         RestoreListScroll(off, () =>
         {
@@ -5357,6 +5969,7 @@ public partial class MainWindow : Window
             { moveButton.BringIntoView(); moveButton.Focus(); }
             else if (_cellBorders.TryGetValue($"A{destRow}", out var border))
             { border.BringIntoView(); (border.Child as Control)?.Focus(); }
+            ScrollSelectedRowsIntoView();
         });
     }
 
@@ -5714,7 +6327,11 @@ public partial class MainWindow : Window
         int count = remaining?.Count ?? 0;
         if (count > 0)
         {
-            int childIndex = 2 + Math.Min(deletedIndex, count - 1); // 0: title, 1: blurb, 2+: cards
+            // The heading is child 0. Back-panel guidance, when present, is
+            // child 1, so the first mapping follows it rather than the old
+            // permanent description line.
+            int firstMapping = zoneId is "jacks" or "other" ? 2 : 1;
+            int childIndex = firstMapping + Math.Min(deletedIndex, count - 1);
             if (childIndex < ZoneDetailPanel.Children.Count
                 && ZoneDetailPanel.Children[childIndex] is Control card
                 && FindFocusable(card) is { } target)
@@ -5894,6 +6511,24 @@ public partial class MainWindow : Window
         var icon = new PathIcon { Width = 16, Height = 16, Data = (Geometry)Application.Current!.FindResource(iconKey)! };
         BindBrush(icon, IconElement.ForegroundProperty, tokenKey);
         return icon;
+    }
+
+    static Control AddRowContent(string label)
+    {
+        // The localized labels conventionally begin with "+". The icon carries
+        // that job in the toolbar, so remove just that duplicate marker while
+        // retaining the translated action name.
+        string text = label.StartsWith("+ ", StringComparison.Ordinal) ? label[2..] : label;
+        return new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            Spacing = 9,
+            Children =
+            {
+                Glyph("IconAdd", "OnAccent"),
+                new TextBlock { Text = text, VerticalAlignment = VerticalAlignment.Center },
+            },
+        };
     }
 
     static Button IconButton(string iconKey, string accessibleName)
@@ -6083,7 +6718,12 @@ public partial class MainWindow : Window
                 if (v != _file.GetCell(row, col)) _file.SetCell(row, col, v);
                 RebuildDeviceAfterEdit(row, col);
             }
-            box.LostFocus += (_, _) => Commit();
+            // Replacing the ComboBox briefly moves focus while the new box is
+            // being attached. That blur is not the user leaving an empty field.
+            // Only an actual focus loss after the box was usable may cancel it.
+            bool armed = false;
+            box.GotFocus += (_, _) => armed = true;
+            box.LostFocus += (_, _) => { if (armed) Commit(); };
             box.KeyDown += (_, e) => { if (e.Key == Key.Enter) Commit(); };
             wrapper.Child = box;
             Dispatcher.UIThread.Post(() => box.Focus(), DispatcherPriority.Loaded);
@@ -6112,6 +6752,11 @@ public partial class MainWindow : Window
             {
                 CommitOutput(b.Row, outputs, picked);
                 RebuildDeviceAfterEdit(b.Row, 0);
+            },
+            token =>
+            {
+                var label = outputs.TokenFor.ContainsKey(token) ? token : TokenLabel(token);
+                return OutputVisuals.Render(VisualFor(token, _ => label));
             });
     }
 
@@ -6163,9 +6808,14 @@ public partial class MainWindow : Window
     // uses it: a pick there writes two cells, and the value on screen is the
     // row's action name, not the cell's text, so the usual no-op guard would
     // swallow a pick that only clears the name.
+    // labelFor is how the cell reads, never what it writes: a pick still
+    // commits the raw token. Without it every list cell showed the file's own
+    // bytes, so the Words switch changed the output column and left the input
+    // beside it saying mp_right_sip.
     Control ListPickerCell(int row, int col, string value, IReadOnlyList<string> options,
                            string accessibleName, string tintKey, TokenCatalog? catalog, string pickWord,
-                           Action<string>? setValue = null)
+                           Action<string>? setValue = null, Func<string, Control>? visualFor = null,
+                           Func<string, string>? labelFor = null)
     {
         var wrapper = new Border
         {
@@ -6177,7 +6827,7 @@ public partial class MainWindow : Window
         };
         var key = $"{(char)('A' + col)}{row}";
         _cellBorders[key] = wrapper;
-        return PickerCell(wrapper, value, options, t => t, accessibleName, tintKey, catalog, pickWord, token =>
+        return PickerCell(wrapper, value, options, labelFor ?? (t => t), accessibleName, tintKey, catalog, pickWord, token =>
         {
             if (_file is null) return;
             var old = _file.GetCell(row, col);
@@ -6214,6 +6864,10 @@ public partial class MainWindow : Window
             // sheet has had the same guard since it was written and two rules
             // for the same thing are how they drift apart.
             if ((col is >= 2 and < 10 && (old.Length == 0) != (token.Length == 0))
+                // Any replaced input can change the duplicate count on this
+                // row and every other row using the old or new token. Rebuild
+                // after the flyout closes, without making the person change views.
+                || (setValue is null && col is >= 2 and < 10)
                 || (col is 0 or 1 && (IsSettingRow(row) != wasSetting
                                       || SettingDefinition(row) != wasDefinition)))
             {
@@ -6228,7 +6882,7 @@ public partial class MainWindow : Window
                     });
                 });
             }
-        });
+        }, visualFor);
     }
 
     // The drill-down picker every big token list shares. The field is a
@@ -6240,14 +6894,20 @@ public partial class MainWindow : Window
     // matches. Picking hands the raw token to commitCell.
     Control PickerCell(Border wrapper, string current, IReadOnlyList<string> options,
                        Func<string, string> labelFor, string accessibleName, string tintKey,
-                       TokenCatalog? catalog, string pickWord, Action<string> commitCell)
+                       TokenCatalog? catalog, string pickWord, Action<string> commitCell,
+                       Func<string, Control>? visualFor = null)
     {
         var cur = (current ?? "").Trim();
         var all = new List<string>(options);
         if (cur.Length > 0 && !all.Contains(cur)) all.Insert(0, cur);
 
         var fly = new Flyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
-        var openLabel = new TextBlock { TextWrapping = TextWrapping.Wrap };
+        var openLabel = new TextBlock { TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis };
+        Button? openButton = null;
+
+        Control ValueContent(string token) => token.Length == 0 || visualFor is null
+            ? openLabel
+            : visualFor(token);
 
         // An empty cell must read as empty at a glance: the placeholder is
         // muted and italic, a real value is plain and full strength.
@@ -6257,6 +6917,13 @@ public partial class MainWindow : Window
             openLabel.Text = empty ? $"pick {pickWord}" : labelFor(token);
             openLabel.FontStyle = empty ? FontStyle.Italic : FontStyle.Normal;
             openLabel.Classes.Set("muted", empty);
+            // The cell is one line and trims, so a long value ends in an
+            // ellipsis. The tip is where the rest of it stays reachable.
+            if (openButton is not null)
+            {
+                openButton.Content = ValueContent(token);
+                ToolTip.SetTip(openButton, empty ? null : labelFor(token));
+            }
         }
         ShowValue(cur);
 
@@ -6274,8 +6941,10 @@ public partial class MainWindow : Window
         {
             var it = new Button
             {
-                Content = new TextBlock
-                { Text = labelFor(token), FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap },
+                Content = visualFor is null
+                    ? new TextBlock
+                    { Text = labelFor(token), FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap }
+                    : visualFor(token),
                 Classes = { "quiet" },
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Left,
@@ -6459,11 +7128,12 @@ public partial class MainWindow : Window
 
         var open = new Button
         {
-            Content = openLabel,
+            Content = ValueContent(cur),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Left,
             Flyout = fly,
         };
+        openButton = open;
         open[!TemplatedControl.BackgroundProperty] = new DynamicResourceExtension(tintKey + "Brush");
         AutomationProperties.SetName(open, string.Format(CultureInfo.CurrentCulture, Strings.Main_AccessibleNameOpensASearchableList, accessibleName));
         wrapper.Child = open;
@@ -6517,9 +7187,12 @@ public partial class MainWindow : Window
         }
         else
         {
+            // Plural.Of, not an "s" glued on: Count_Error and Count_Warning
+            // already exist and every other count in the app goes through them.
+            // The pseudo run drew this one button in English.
             var parts = new List<string>();
-            if (errors > 0) parts.Add($"{errors} error{(errors == 1 ? "" : "s")}");
-            if (warns > 0) parts.Add($"{warns} warning{(warns == 1 ? "" : "s")}");
+            if (errors > 0) parts.Add(Plural.Of(errors, "Count_Error"));
+            if (warns > 0) parts.Add(Plural.Of(warns, "Count_Warning"));
             iconKey = errors > 0 ? "IconError" : "IconWarning";
             token = errors > 0 ? "Error" : "Warning";
             label = string.Join(", ", parts) + (_problemsExpanded ? Strings.Main_ClickToHide : Strings.Main_ClickToView);
@@ -6535,7 +7208,11 @@ public partial class MainWindow : Window
             string.Format(CultureInfo.CurrentCulture,
                 _problemsExpanded ? Strings.Main_HidesTheProblems : Strings.Main_ShowsTheProblems, label));
         FixFirstButton.IsVisible = _problemsExpanded && errors > 0;
-        ProblemsDock.IsVisible = _problemsExpanded || errors + warns > 0;
+        // The validation/status line now lives in this bottom status area, so
+        // keep the area present even when the file is clean. This preserves
+        // save/install feedback without adding another toolbar row above the
+        // device.
+        ProblemsDock.IsVisible = true;
     }
 
     static string FunctionToken(string function) =>

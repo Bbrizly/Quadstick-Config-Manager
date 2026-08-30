@@ -302,6 +302,23 @@ public class SettingsView : UserControl
         };
         panel.Children.Add(Field(Strings.Settings_Model, null, model));
 
+        var cardSentence = ChoiceBox(
+            new object[]
+            {
+                Strings.Settings_CardSentenceStyleCurrent,
+                Strings.Settings_CardSentenceStyleInputFirst,
+            },
+            _owner.CurrentSettings.CardSentenceStyle == "InputToOutput" ? 1 : 0);
+        AutomationProperties.SetName(cardSentence, Strings.Settings_CardSentenceStyleHelp);
+        cardSentence.SelectionChanged += (_, _) =>
+        {
+            if (cardSentence.SelectedIndex < 0) return;
+            _owner.SetCardSentenceStyle(cardSentence.SelectedIndex == 1
+                ? "InputToOutput" : "PressWhen");
+        };
+        panel.Children.Add(Field(Strings.Settings_CardSentenceStyle,
+            Strings.Settings_CardSentenceStyleCaption, cardSentence));
+
         panel.Children.Add(BackupArea());
         panel.Children.Add(UpdateArea());
 

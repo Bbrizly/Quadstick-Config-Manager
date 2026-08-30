@@ -244,7 +244,7 @@ public class ModesWindowTests
     }
 
     [AvaloniaFact]
-    public void Adding_a_mode_appends_a_row_ready_to_be_named()
+    public void Adding_a_mode_lands_under_the_open_one_ready_to_be_named()
     {
         var w = Open(ModePrefsMode);
         var modes = new ModesWindow(w);
@@ -254,11 +254,12 @@ public class ModesWindowTests
         Tap(modes, "Add a mode");
         Dispatcher.UIThread.RunJobs();
 
-        Assert.Equal(3, ModeNames(w).Length);
+        // Driving is the open mode, so the new one is 2 and Aiming becomes 3.
+        Assert.Equal(new[] { "Driving", "Mode 3", "Aiming" }, ModeNames(w));
         // The new row exists and holds the keyboard, so the name can be typed
         // straight away instead of through a separate naming dialog.
         var box = modes.GetVisualDescendants().OfType<TextBox>()
-            .First(t => AutomationProperties.GetName(t) == "Name of mode 3");
+            .First(t => AutomationProperties.GetName(t) == "Name of mode 2");
         Assert.True(box.IsKeyboardFocusWithin);
 
         modes.Close();

@@ -39,6 +39,7 @@
     <AvaloniaResource Include="Assets/QuadStickBack.png" />
     <AvaloniaResource Include="Assets/QuadStickFPS.png" />
     <AvaloniaResource Include="Assets/QuadStickSingleton.png" />
+    <AvaloniaResource Include="Assets/OutputVisuals/**/*.png" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="QuadStick.App.Tests" />

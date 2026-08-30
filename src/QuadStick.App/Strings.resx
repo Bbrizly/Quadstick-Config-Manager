@@ -1181,6 +1181,15 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_Left" xml:space="preserve">
     <value>Left</value>
   </data>
+  <data name="Main_FunctionBehavior" xml:space="preserve">
+    <value>Function (behavior)</value>
+  </data>
+  <data name="Main_InputPressesOutput" xml:space="preserve">
+    <value>{0} presses {1}</value>
+  </data>
+  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
+    <value>Inputs (sips, puffs, joystick)</value>
+  </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>Left bumper</value>
   </data>
@@ -1213,6 +1222,12 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>Mapping {0}: press {1} when you {2}, one after the other{3}. Press Enter to edit.</value>
+  </data>
+  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
+    <value>Mapping {0}: {1} to {2}{3}. Press Enter to edit.</value>
+  </data>
+  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
+    <value>Click to edit this mapping or add a note.</value>
   </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>Mappings read as simple sentence cards. Switch to the detailed editor.</value>
@@ -1322,6 +1337,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_NotNowKeepTheReport" xml:space="preserve">
     <value>Not now, keep the report and ask again later</value>
   </data>
+  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
+    <value>This profile maps {0} your {1} does not have. They are in the list on the left, and can still be edited.</value>
+  </data>
   <data name="Main_NotOnModel" xml:space="preserve">
     <value>Not on model</value>
   </data>
@@ -1334,9 +1352,6 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
     <value>These rows are kept in the file and can still be edited. Pick a part to open its mappings.</value>
   </data>
-  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
-    <value>This profile maps {0} your {1} does not have. They are in the list on the left, and can still be edited.</value>
-  </data>
   <data name="Main_NotOnYourModel" xml:space="preserve">
     <value>Not on your model</value>
   </data>
@@ -1345,6 +1360,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_Note" xml:space="preserve">
     <value>note</value>
+  </data>
+  <data name="Main_NoteSummary" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
   <data name="Main_NoteForRowBRow" xml:space="preserve">
     <value>Note for row {0}. Saved in the file, ignored by the QuadStick</value>
@@ -1687,6 +1705,54 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
     <value>Sip or puff on the side tube. A long hard sip here normally switches profiles, but you can map it too.</value>
   </data>
+  <data name="Main_SoftPuff" xml:space="preserve">
+    <value>Soft Puff</value>
+  </data>
+  <data name="Main_Puff" xml:space="preserve">
+    <value>Puff</value>
+  </data>
+  <data name="Main_Sip" xml:space="preserve">
+    <value>Sip</value>
+  </data>
+  <data name="Main_SoftSip" xml:space="preserve">
+    <value>Soft Sip</value>
+  </data>
+  <data name="Main_Lip" xml:space="preserve">
+    <value>Lip</value>
+  </data>
+  <data name="Main_SoftLip" xml:space="preserve">
+    <value>Soft Lip</value>
+  </data>
+  <data name="Main_Push" xml:space="preserve">
+    <value>Push</value>
+  </data>
+  <data name="Main_Movement" xml:space="preserve">
+    <value>Movement</value>
+  </data>
+  <data name="Main_LeftStick" xml:space="preserve">
+    <value>Left Stick</value>
+  </data>
+  <data name="Main_RightStick" xml:space="preserve">
+    <value>Right Stick</value>
+  </data>
+  <data name="Main_Mouse" xml:space="preserve">
+    <value>Mouse</value>
+  </data>
+  <data name="Main_ExtraActions" xml:space="preserve">
+    <value>+ {0} extra actions</value>
+  </data>
+  <data name="Main_ViewDetails" xml:space="preserve">
+    <value>View details →</value>
+  </data>
+  <data name="Main_Sequence" xml:space="preserve">
+    <value>sequence</value>
+  </data>
+  <data name="Count_Action_one" xml:space="preserve">
+    <value>{0} action</value>
+  </data>
+  <data name="Count_Action_other" xml:space="preserve">
+    <value>{0} actions</value>
+  </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>Start a new mapping on {0}</value>
   </data>
@@ -1899,7 +1965,7 @@ You can change this any time in Settings, under Advanced.</value>
     <value>Words: List names</value>
   </data>
   <data name="Main_WordsPlainEnglish" xml:space="preserve">
-    <value>Words: Plain English</value>
+    <value>Plain English</value>
   </data>
   <data name="Main_WordsXboxStyle" xml:space="preserve">
     <value>Words: Xbox style</value>
@@ -2146,6 +2212,12 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>TV remote</value>
+  </data>
+  <data name="Prefs_OffZero" xml:space="preserve">
+    <value>Off (0)</value>
+  </data>
+  <data name="Prefs_OnOne" xml:space="preserve">
+    <value>On (1)</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>About {0}: {1}</value>
@@ -2587,6 +2659,21 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Settings_Checking" xml:space="preserve">
     <value>Checking...</value>
+  </data>
+  <data name="Settings_CardSentenceStyle" xml:space="preserve">
+    <value>Mapping card wording</value>
+  </data>
+  <data name="Settings_CardSentenceStyleCaption" xml:space="preserve">
+    <value>Choose whether cards start with the output or the input. This changes only how cards read, not what the QuadStick does.</value>
+  </data>
+  <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
+    <value>Mapping card wording: choose output-first or input-first sentences</value>
+  </data>
+  <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
+    <value>Press X when you sip</value>
+  </data>
+  <data name="Settings_CardSentenceStyleInputFirst" xml:space="preserve">
+    <value>Sip to X</value>
   </data>
   <data name="Settings_Close" xml:space="preserve">
     <value>Close</value>
@@ -3058,6 +3145,9 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
     <value>Select which mode to edit</value>
+  </data>
+  <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
+    <value>Select rows to move, delete, or clear</value>
   </data>
   <data name="Shell_SetUpAGame" xml:space="preserve">
     <value>Set up a game</value>

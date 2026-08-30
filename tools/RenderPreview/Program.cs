@@ -16,9 +16,18 @@ using QuadStick.Format;
 // one, the walkthrough is drawn from it at every step, because a guide that
 // looks fine with three rows can be unusable with fifty.
 
-var outDir = args.Length > 0 ? args[0] : "/tmp/qscm-renders";
-var corpus = args.Length > 1 ? args[1] : "tests/QuadStick.Format.Tests/corpus";
-var mapEvent = args.Length > 2 && File.Exists(args[2]) ? File.ReadAllText(args[2]) : null;
+// Flags are not positions: "RenderPreview out --pseudo" used to read --pseudo
+// as the corpus folder and die halfway through the run looking for a profile
+// inside it. --lang's value is skipped for the same reason.
+var positional = new List<string>();
+for (int i = 0; i < args.Length; i++)
+{
+    if (!args[i].StartsWith("--", StringComparison.Ordinal)) { positional.Add(args[i]); continue; }
+    if (args[i] == "--lang") i++;
+}
+var outDir = positional.Count > 0 ? positional[0] : "/tmp/qscm-renders";
+var corpus = positional.Count > 1 ? positional[1] : "tests/QuadStick.Format.Tests/corpus";
+var mapEvent = positional.Count > 2 && File.Exists(positional[2]) ? File.ReadAllText(positional[2]) : null;
 Directory.CreateDirectory(outDir);
 
 // Screenshots are the app as it ships, not as this machine has it. Reading the
@@ -26,24 +35,16 @@ Directory.CreateDirectory(outDir);
 // last chose into the docs: every device-view shot went out saying "Not on
 // model" because a Singleton was picked here months ago.
 var langAt = Array.IndexOf(args, "--lang");
-var lang = langAt >= 0 && langAt + 1 < args.Length ? args[langAt + 1] : Localization.FollowSystem;
+// --pseudo is a language like any other here. It used to Apply its own tag a
+// few lines below and then have Localization.Apply(lang) put the machine's
+// language straight back, so every "pseudo" shot came out in English and the
+// check this exists for has been passing on nothing.
+var lang = args.Contains("--pseudo") ? "qps-ploc"
+    : langAt >= 0 && langAt + 1 < args.Length ? args[langAt + 1] : Localization.FollowSystem;
 
 var cfgDir = Directory.CreateTempSubdirectory("qscm-cfg-").FullName;
 Settings.PathOverride = Path.Combine(cfgDir, "settings.json");
 Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Language = lang });
-
-// --pseudo draws the whole app in the pseudo language: every label that is
-// still plain English is one the move to Strings.resx missed, and every label
-// that runs out of its control is a layout that assumed English.
-// Relocalize as well as Apply: the preference catalog is translated as data
-// rather than as resources, and without this the pseudo pass drew all sixty
-// one setting labels in plain English, which is the half of this screen the
-// check exists to look at.
-if (args.Contains("--pseudo"))
-{
-    Localization.Apply("qps-ploc");
-    Localization.Relocalize();
-}
 
 // A prefs.csv shaped like the one a QuadStick ships with: a handful of the
 // settings written down, the rest left to the device's own defaults.
@@ -71,7 +72,12 @@ const string SamplePrefs =
 // --lang <tag> draws it in a shipped language. The store shots need one set
 // per language, and Arabic is the one that has to be looked at rather than
 // asserted: the window mirrors and the device photo must not follow it.
+// Relocalize as well as Apply: the preference catalog is translated as data
+// rather than as resources, and without this the pseudo pass drew all sixty
+// one setting labels in plain English, which is the half of that screen the
+// check exists to look at.
 Localization.Apply(lang);
+Localization.Relocalize();
 
 // A library that looks like somebody's. Real community workbooks, under the
 // names their games have, so every card carries real modes and real counts:
@@ -143,6 +149,35 @@ AppBuilder.Configure<App>()
 // see that each model got its own photo and that its callouts sit where the
 // device actually has parts. A wrong hotspot reads as fine in a test and is
 // obvious here.
+if (args.Contains("--visuals"))
+{
+    foreach (var style in new[] { ControllerPromptStyle.Playstation, ControllerPromptStyle.Xbox })
+    {
+        var sheet = new WrapPanel { Width = 900 };
+        foreach (var token in new[]
+        {
+            "dpad_N","dpad_NE","dpad_E","dpad_SE","dpad_S","dpad_SW","dpad_W","dpad_NW",
+            "x","circle","square","triangle",
+            "left_stick","right_stick","left_3","right_3",
+            "left_1","right_1","left_2","right_2",
+            "left_bumper","right_bumper","left_trigger","right_trigger",
+            "left_joy_up","left_joy_left","right_joy_left","right_joy_down",
+            "kb_a","kb_space","decrement_mode",
+        })
+        {
+            var cell = new StackPanel { Width = 110, Margin = new Thickness(6) };
+            cell.Children.Add(OutputVisuals.Render(OutputVisuals.For(token, null, style),
+                includeLabel: false));
+            cell.Children.Add(new TextBlock { Text = token, FontSize = 11 });
+            sheet.Children.Add(cell);
+        }
+        var win = new Window { Width = 940, Height = 620, Content = sheet };
+        CaptureWindow($"visuals-{style}", win);
+    }
+    Console.WriteLine("visuals written");
+    return;
+}
+
 if (args.Contains("--models"))
 {
     for (int i = 0; i < 3; i++)

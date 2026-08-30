@@ -60,8 +60,10 @@ public class DeviceHotspotTests
 
     static (string Name, Rect Box)[] Labels(MainWindow w) =>
         Stage(w).Children.OfType<ToggleButton>()
-            .Select(b => (AutomationProperties.GetName(b) ?? "",
-                          new Rect(Canvas.GetLeft(b), Canvas.GetTop(b), b.Bounds.Width, b.Bounds.Height)))
+            // Bounds, not the Canvas.Left/Top pair: a top callout is pinned by
+            // its bottom edge so it can grow upward, and Canvas.GetTop reads
+            // NaN for those. Bounds is the rectangle it was actually given.
+            .Select(b => (AutomationProperties.GetName(b) ?? "", b.Bounds))
             .ToArray();
 
     // The lit mode lights: the leader-line markers are ellipses too, but they

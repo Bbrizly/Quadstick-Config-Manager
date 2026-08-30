@@ -51,6 +51,43 @@ public class ListViewTests
         w.Close();
     }
 
+    // The Words switch used to reach the output column and stop there, so a
+    // row read "B button" beside a raw right_sip. Same switch, same row.
+    [AvaloniaFact]
+    public void The_words_switch_reaches_the_input_column_too()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        w.LoadProfile(ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "circle,normal,right_sip\n"));
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        string InputCell() => (((Button)w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Input 1 for row")))
+            .Content as TextBlock)?.Text ?? "";
+
+        var friendly = InputCell();
+        Assert.NotEqual("right_sip", friendly);
+        Assert.Contains("sip", friendly, StringComparison.OrdinalIgnoreCase);
+
+        // Plain English, then Xbox style, then the file's own words.
+        w.CycleLabelStyleForPreview();
+        w.CycleLabelStyleForPreview();
+        w.UpdateLayout();
+        Assert.Equal("right_sip", InputCell());
+
+        w.CycleLabelStyleForPreview();
+        w.Close();
+    }
+
     // The one thing the row layout owes a mouth-stick user: a row that fits the
     // window it is in. Panning sideways to reach the note or the delete button
     // is not a movement this app can ask for, and the fixed-width cells used to
@@ -280,7 +317,7 @@ public class ListViewTests
             .First(t => (AutomationProperties.GetName(t) ?? "") == "Search this list").Text = "mp_left_puff";
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
         panel.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "mp_left_puff")
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Left \u00b7 puff")
             .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs(); // the rebuild is deferred out of the event
         w.UpdateLayout();
@@ -385,8 +422,8 @@ public class ListViewTests
         w.Close();
     }
 
-    // While rows are selected a bar says how many and offers Delete and
-    // Clear; the Delete key works too, and one undo restores everything.
+    // While rows are selected the top command strip says how many and offers
+    // Delete and Clear; the Delete key works too, and one undo restores everything.
     [AvaloniaFact]
     public void The_selection_bar_deletes_selected_rows_together()
     {
@@ -421,10 +458,10 @@ public class ListViewTests
             w.MouseDown(pt, MouseButton.Left, mods);
             w.MouseUp(pt, MouseButton.Left, mods);
         }
-        var bar = w.GetVisualDescendants().OfType<Border>().First(x => x.Name == "SelectionBar");
+        var bar = w.GetVisualDescendants().OfType<StackPanel>().First(x => x.Name == "SelectionCommandBar");
         var count = w.GetVisualDescendants().OfType<TextBlock>().First(x => x.Name == "SelectionCount");
 
-        Assert.False(bar.IsVisible); // nothing selected, no bar
+        Assert.False(bar.IsVisible); // nothing selected, no bulk commands
 
         Click(1);
         Click(3, RawInputModifiers.Control);
@@ -448,6 +485,37 @@ public class ListViewTests
         w.KeyPressQwerty(PhysicalKey.Delete, RawInputModifiers.None);
         Assert.Equal(new[] { "x", "square" },
             file.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void The_select_command_opens_bulk_row_controls_before_a_row_is_picked()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        var bulk = w.GetVisualDescendants().OfType<StackPanel>().First(x => x.Name == "SelectionCommandBar");
+        var select = w.GetVisualDescendants().OfType<Button>().First(x => x.Name == "SelectionModeButton");
+        var move = w.GetVisualDescendants().OfType<Button>().First(x => x.Name == "SelectionMoveButton");
+
+        Assert.False(bulk.IsVisible);
+        select.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Assert.True(bulk.IsVisible);
+        Assert.False(move.IsEnabled); // commands wait for the user to choose a row
 
         file.Dirty = false;
         w.Close();
@@ -503,8 +571,7 @@ public class ListViewTests
         w.Close();
     }
 
-    // The bar floats over the list corner; selecting must never push the
-    // rows down (the tester called the jump "very bad").
+    // Bulk commands belong in the top strip, above the rows they affect.
     [AvaloniaFact]
     public void The_selection_bar_floats_without_moving_the_rows()
     {
@@ -533,14 +600,15 @@ public class ListViewTests
             .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3},")
                      || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {n + 3}."));
 
-        double before = Handle(1).TranslatePoint(new Point(0, 0), w)!.Value.Y;
         var pt = Handle(1).TranslatePoint(new Point(3, 3), w)!.Value;
         w.MouseDown(pt, MouseButton.Left, RawInputModifiers.None);
         w.MouseUp(pt, MouseButton.Left, RawInputModifiers.None);
         w.UpdateLayout();
 
-        Assert.True(w.GetVisualDescendants().OfType<Border>().First(x => x.Name == "SelectionBar").IsVisible);
-        Assert.Equal(before, Handle(1).TranslatePoint(new Point(0, 0), w)!.Value.Y);
+        var commands = w.GetVisualDescendants().OfType<StackPanel>().First(x => x.Name == "SelectionCommandBar");
+        Assert.True(commands.IsVisible);
+        Assert.True(commands.TranslatePoint(new Point(0, 0), w)!.Value.Y
+                    < Handle(1).TranslatePoint(new Point(0, 0), w)!.Value.Y);
 
         file.Dirty = false;
         w.Close();
@@ -601,6 +669,51 @@ public class ListViewTests
 
         Assert.True(file.Undo()); // one step per move
         Assert.Equal(new[] { "circle", "square", "x" }, Order());
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // Moving a group must keep that group selected and follow it to its new
+    // home. Otherwise "To the bottom" looks like it made the selection vanish.
+    [AvaloniaFact]
+    public void Moving_selected_rows_to_the_bottom_keeps_them_selected_and_visible()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load("Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\n"
+            + string.Join("", Enumerable.Range(1, 30).Select(n => $"key_{n},normal,lip\n")));
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        Border Handle(int row) => w.GetVisualDescendants().OfType<Border>()
+            .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {row},")
+                     || (AutomationProperties.GetName(x) ?? "").StartsWith($"Row {row}."));
+        void Click(int row, RawInputModifiers mods = RawInputModifiers.None)
+        {
+            var pt = Handle(row).TranslatePoint(new Point(3, 3), w)!.Value;
+            w.MouseDown(pt, MouseButton.Left, mods);
+            w.MouseUp(pt, MouseButton.Left, mods);
+        }
+        var move = ((MenuFlyout)w.GetVisualDescendants().OfType<Button>()
+            .First(b => b.Name == "SelectionMoveButton").Flyout!).Items.OfType<MenuItem>()
+            .First(m => (string?)m.Header == "To the bottom");
+
+        Click(4);
+        Click(5, RawInputModifiers.Control);
+        move.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        Assert.Contains("selected", AutomationProperties.GetName(Handle(32))!);
+        Assert.Contains("selected", AutomationProperties.GetName(Handle(33))!);
+        Assert.True(w.FindControl<ScrollViewer>("GridScroll")!.Offset.Y > 0);
 
         file.Dirty = false;
         w.Close();
@@ -757,7 +870,7 @@ public class ListViewTests
         panel = OpenFly(Cell("Input 1 for row 4"));
         Assert.NotNull(Find(panel, "Joystick,"));
         Tap(panel, "Left mouthpiece hole,");
-        Tap(panel, "mp_left_puff");
+        Tap(panel, "Left \u00b7 puff");
         Assert.Equal("mp_left_puff", file.Document.Sheets[0].Bindings[0].Inputs[0]);
 
         file.Dirty = false;

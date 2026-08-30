@@ -227,6 +227,39 @@
     <Style Selector="Button.quiet PathIcon">
       <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
     </Style>
+    <!-- The circled question mark is a cue inside the full label button, not
+         a fiddly separate target beside the section name. -->
+    <Style Selector="Button.modeHelp">
+      <Setter Property="MinWidth" Value="0"/>
+      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.modeHelp:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="Border.modeHelpMark">
+      <Setter Property="Width" Value="16"/>
+      <Setter Property="Height" Value="16"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource TextSecondaryBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+    </Style>
+    <!-- The two view preferences share the bottom row of the sidebar. Keep
+         their hit areas comfortable while letting the shorter labels sit
+         beside one another without looking cramped. -->
+    <Style Selector="Button.sidebarToggle">
+      <Setter Property="MinWidth" Value="0"/>
+      <Setter Property="Padding" Value="6,4"/>
+      <Setter Property="FontSize" Value="{DynamicResource SidebarToggleTextSize}"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
     <Style Selector="Button.danger">
       <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}"/>
     </Style>
@@ -269,6 +302,20 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="ToggleButton.zone:checked:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource InputTintBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <!-- Modes are the sidebar's active navigation. A hover keeps its card
+         surface and uses a clear blue tint instead of blending into the
+         sidebar background, which made the row look as if it had vanished. -->
+    <Style Selector="ToggleButton.modeRow:pointerover">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.modeRow:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.modeRow:checked:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource InputTintBrush}"/>
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
     </Style>
@@ -340,6 +387,18 @@
       <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style Selector="Button.command PathIcon">
+      <Setter Property="Width" Value="{DynamicResource CommandIcon}"/>
+      <Setter Property="Height" Value="{DynamicResource CommandIcon}"/>
+    </Style>
+
+    <!-- Adding a mapping is the editor's primary creation action, not a tiny
+         glyph users have to decode. It keeps the plus but pairs it with words
+         and a generous target suitable for head-mouse and mouth-stick use. -->
+    <Style Selector="Button.addrow">
+      <Setter Property="MinHeight" Value="{DynamicResource CommandButton}"/>
+      <Setter Property="Padding" Value="16,0"/>
+    </Style>
+    <Style Selector="Button.addrow PathIcon">
       <Setter Property="Width" Value="{DynamicResource CommandIcon}"/>
       <Setter Property="Height" Value="{DynamicResource CommandIcon}"/>
     </Style>

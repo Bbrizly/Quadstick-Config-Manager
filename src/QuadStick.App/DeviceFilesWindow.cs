@@ -710,7 +710,10 @@ public class DeviceFilesWindow : Window
     async Task<bool> ConfirmDialogAsync(string title, string message)
     {
         var yes = new Button { Content = Strings.Device_YesContinue, MinWidth = 140 };
-        AutomationProperties.SetName(yes, title + " Yes, continue.");
+        // The spoken name is the dialog's own title and the button's own word,
+        // both already translated. It used to end in a hardcoded English
+        // "Yes, continue." whatever language the app was in.
+        AutomationProperties.SetName(yes, title + " " + Strings.Device_YesContinue);
         var no = new Button { Content = Strings.Device_Cancel, MinWidth = 140, IsDefault = true, IsCancel = true };
         AutomationProperties.SetName(no, Strings.Device_CancelChangeNothing);
         var dialog = new Window

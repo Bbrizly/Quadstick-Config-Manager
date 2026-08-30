@@ -35,6 +35,12 @@ public class ComboZoneTests
     public void One_hole_on_its_own_stays_on_that_hole(string input) =>
         Assert.Equal("mp_right", MainWindow.ZoneOf(input));
 
+    [Theory]
+    [InlineData("lip")]
+    [InlineData("lip_soft")]
+    public void Lip_inputs_stay_in_the_lip_zone(string input) =>
+        Assert.Equal("lip", MainWindow.ZoneOf(input));
+
     // The prefix list breaks on its first match, so "mp_right_" matching first
     // left the word "mode" in the label.
     [Theory]

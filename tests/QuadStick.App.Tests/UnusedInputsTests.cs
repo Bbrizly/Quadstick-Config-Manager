@@ -44,17 +44,17 @@ public class UnusedInputsTests
     static Button Toggle(MainWindow w) => w.GetVisualDescendants().OfType<Button>()
         .First(b => b.Name == "UnusedButton");
 
-    // The chips show the short form; the raw token lives on the automation name,
-    // which is what a screen reader and this test both read.
+    // Each unused input is an actual mapping command. The raw token remains in
+    // its accessible name even though the button shows the shorter part label.
     static string[] Listed(MainWindow w)
     {
         Toggle(w).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
-        return w.GetVisualDescendants().OfType<Border>()
+        return w.GetVisualDescendants().OfType<Button>()
             .Select(b => AutomationProperties.GetName(b) ?? "")
-            .Where(n => n.EndsWith(", not used in this mode"))
-            .Select(n => n[..n.IndexOf(',')])
+            .Where(n => n.StartsWith("Map ") && n.Contains(" to a new mapping on "))
+            .Select(n => n[4..n.IndexOf(" to a new mapping on ", StringComparison.Ordinal)])
             .ToArray();
     }
 
@@ -150,23 +150,62 @@ public class UnusedInputsTests
         Done(w, file);
     }
 
-    // The global list is for reading; its headings are the way into the part
-    // where you can act.
+    // Choosing an unused input begins the mapping in the view already open.
+    // It must not jump to Device View: that made choosing Joystick North feel
+    // like navigation instead of an edit.
     [AvaloniaFact]
-    public void A_zone_heading_opens_that_part_in_device_view()
+    public void An_unused_input_starts_a_mapping_without_changing_view()
     {
-        var w = Open(Header + "x,normal,lip\n");
+        var w = Open(Header + "x,normal,lip\n", out var file);
         Toggle(w).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 
-        var head = w.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Center mouthpiece hole,"));
-        head.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        var north = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Map usb_1_up to a new mapping on "));
+        north.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+
+        Assert.True(w.GetVisualDescendants().OfType<Control>().First(c => c.Name == "GridContainer").IsVisible);
+        Assert.Contains(w.CurrentSheetForPreview!.Bindings, b => b.Inputs.Contains("usb_1_up"));
+        Done(w, file);
+    }
+
+    [AvaloniaFact]
+    public void A_part_header_keeps_its_description_in_its_question_mark()
+    {
+        var w = Open(Header
+            + "x,normal,mp_right_sip\n"
+            + "y,normal,mp_right_puff\n"
+            + "z,normal,mp_right_sip_soft\n");
+        w.SetDeviceViewForPreview(true);
+        w.SelectZoneForPreview("mp_right");
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 
         var detail = w.GetVisualDescendants().OfType<StackPanel>().First(p => p.Name == "ZoneDetailPanel");
-        var title = detail.Children.OfType<TextBlock>().First().Text ?? "";
-        Assert.StartsWith("Center mouthpiece hole", title);
+        var heading = Assert.IsType<Grid>(detail.Children[0]);
+        var title = Assert.Single(heading.Children.OfType<TextBlock>());
+        var count = heading.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == "3");
+        var help = heading.GetVisualDescendants().OfType<Button>().Single(b => (string?)b.Content == "?");
+
+        Assert.True(count.FontSize < title.FontSize);
+        Assert.Equal("Right mouthpiece hole", AutomationProperties.GetName(help));
+        Assert.DoesNotContain(detail.GetVisualDescendants().OfType<TextBlock>(),
+            t => t.Text == "Sip or puff on the right mouthpiece hole. A gentle sip or puff can do something different (the soft variants).");
         w.Close();
+    }
+
+    // The unused picker is useful while comparing either editor view, and its
+    // toolbar position no longer changes when the view changes.
+    [AvaloniaFact]
+    public void The_unused_count_is_on_screen_in_every_mode_view()
+    {
+        var w = Open("Profile Name,,Solo\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n", out var f);
+        Assert.True(Toggle(w).IsVisible);
+
+        w.SetDeviceViewForPreview(true);
+        w.UpdateLayout();
+        Assert.True(Toggle(w).IsVisible);
+
+        Done(w, f);
     }
 }

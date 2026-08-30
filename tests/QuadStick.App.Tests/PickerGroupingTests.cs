@@ -131,4 +131,48 @@ public sealed class PickerGroupingTests : IDisposable
         Assert.Equal("Detailed", new AppSettings().PickerGrouping);
         Assert.Equal("Detailed", MainWindow.PickerGroupings[0]);
     }
+
+    // The input cell for the first binding, opened. Its buttons are named by
+    // the raw token, so the order they come back in is the order on screen.
+    static Control OpenInputPicker(MainWindow w)
+    {
+        var button = w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Input 1 for row 4"));
+        var flyout = (Flyout)button.Flyout!;
+        flyout.ShowAt(button);
+        Dispatcher.UIThread.RunJobs();
+        var content = (Control)flyout.Content!;
+        content.UpdateLayout();
+        return content;
+    }
+
+    // A tester called the input picker the best part of the app "except for the
+    // joystick section which is alphabetized". Alphabetical opened it with
+    // any_direction and put E and E_inner above left, so the four directions
+    // were scattered through 22 rows. They asked for the hardware's own order,
+    // in the same menu, and that is what this holds.
+    [AvaloniaFact]
+    public void The_joystick_lists_its_directions_before_its_rings()
+    {
+        var w = Open("Detailed");
+        var picker = OpenInputPicker(w);
+
+        Press(picker, "Joystick,");
+        var names = Buttons(picker).Where(n => n != "Back to all categories").ToArray();
+
+        // Named the way the cell reads them, not the way the file spells them.
+        Assert.Equal(new[]
+        {
+            "Joystick \u00b7 up", "Joystick \u00b7 down", "Joystick \u00b7 left",
+            "Joystick \u00b7 right", "Joystick \u00b7 center", "Joystick \u00b7 any direction",
+        }, names.Take(6));
+        // Then the outer ring, clockwise from north, then the inner one.
+        // A compass point keeps its capitals; "nE" is not a direction.
+        Assert.Equal(new[] { "N", "NE", "E", "SE", "S", "SW", "W", "NW" }
+            .Select(d => $"Joystick \u00b7 {d}"), names.Skip(6).Take(8));
+        Assert.Equal("Joystick \u00b7 N inner", names[14]);
+        Assert.Equal("Joystick \u00b7 NW inner", names[21]);
+
+        w.Close();
+    }
 }

@@ -23,6 +23,14 @@ public static class Vocab
         KnownOutputs = known;
         KnownOutputsLoose = new HashSet<string>(known, StringComparer.OrdinalIgnoreCase);
 
+        var allInputs = new HashSet<string>(Inputs, StringComparer.Ordinal);
+        allInputs.UnionWith(LegacyInputs);
+        AllInputs = allInputs;
+
+        var allOutputs = new HashSet<string>(known, StringComparer.Ordinal);
+        allOutputs.UnionWith(LegacyOutputs);
+        AllOutputs = allOutputs;
+
         var fnNames = Set(root.GetProperty("functions"));
         FunctionArity = FunctionParameters.All.Where(kv => fnNames.Contains(kv.Key))
             .ToDictionary(kv => kv.Key, kv => (0, kv.Value.Length), StringComparer.Ordinal);
@@ -48,9 +56,15 @@ public static class Vocab
     public static readonly IReadOnlyList<string> FunctionsInFirmwareOrder;
 
     public static readonly IReadOnlySet<string> Inputs;
+    // The picker vocabulary is the current validation vocabulary plus words
+    // still accepted by the firmware but no longer returned by validation.
+    // Keep Inputs itself unchanged: validators should continue to distinguish
+    // current names from legacy names and explain that difference to users.
+    public static readonly IReadOnlySet<string> AllInputs;
     public static readonly IReadOnlySet<string> OutputsPs3;
     public static readonly IReadOnlySet<string> OutputsXbox;
     public static readonly IReadOnlySet<string> KnownOutputs;
+    public static readonly IReadOnlySet<string> AllOutputs;
 
     // The same outputs, matched loosely, for UI rules that hold a name a human
     // typed against a token. Never for validating a file: the device itself

@@ -159,6 +159,38 @@ public class RowMenuTests
         w.Close();
     }
 
+    // Context menus are unreliable on some touchpads and switch setups. The
+    // visible selected-rows menu must offer the same destination picker, so
+    // copying a block never depends on a right click.
+    [AvaloniaFact]
+    public void The_selected_rows_menu_copies_a_block_to_another_mode()
+    {
+        var w = Open(TwoModes, out var file);
+        Click(w, 1);
+        Click(w, 2, RawInputModifiers.Shift);
+
+        var actionsButton = w.GetVisualDescendants().OfType<Button>()
+            .Single(b => b.Name == "SelectionMoveButton");
+        var actions = (MenuFlyout)actionsButton.Flyout!;
+        actions.ShowAt(actionsButton);
+        Dispatcher.UIThread.RunJobs();
+
+        var copy = actions.Items.OfType<MenuItem>().Single(m => (string?)m.Header == "Copy to mode");
+        var toShooting = Assert.Single(copy.Items.OfType<MenuItem>());
+        Assert.Equal("2: Shooting", toShooting.Header);
+
+        actions.Hide();
+        toShooting.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(MenuItem.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        Assert.Equal(new[] { "square", "x", "circle" },
+            file.Document.Sheets[1].Bindings.Select(b => b.Output).ToArray());
+
+        file.Dirty = false;
+        w.Close();
+    }
+
     // Nothing to copy into is a dead entry, not a missing one: a menu that
     // changes shape between profiles teaches nobody where anything is.
     [AvaloniaFact]

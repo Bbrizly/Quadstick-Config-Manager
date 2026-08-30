@@ -1,8 +1,11 @@
 using System.Linq;
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -123,6 +126,36 @@ public class DeviceSettingsPageTests
         Dispatcher.UIThread.RunJobs();
         Assert.Equal(15, slider.Value);
         Assert.Equal("15", Cell(w, "volume"));
+        w.Close();
+    }
+
+    // Dragging must keep the thumb and its number responsive without making
+    // the persisted setting or save bar do work for every pixel of movement.
+    // The final value becomes the edit when the pointer is released.
+    [AvaloniaFact]
+    public void ASliderDragCommitsOnlyWhenReleased()
+    {
+        var w = Open();
+        var slider = Named<Slider>(w, "Speaker volume, 0 to 100");
+        var box = Named<NumericUpDown>(w, "Speaker volume");
+        var thumb = slider.TranslatePoint(new Point(slider.Bounds.Width * .4,
+            slider.Bounds.Height / 2), w)!.Value;
+
+        w.MouseDown(thumb, MouseButton.Left, RawInputModifiers.None);
+        slider.Value = 75;
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal(75m, box.Value);
+        Assert.Equal("40", Cell(w, "volume"));
+        Assert.Empty(w.ChangedDeviceSettings);
+        Assert.False(Save(w).IsEnabled);
+
+        w.MouseUp(thumb, MouseButton.Left, RawInputModifiers.None);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal("75", Cell(w, "volume"));
+        Assert.Equal(new[] { "volume" }, w.ChangedDeviceSettings.ToArray());
+        Assert.True(Save(w).IsEnabled);
         w.Close();
     }
 
@@ -408,6 +441,34 @@ public class DeviceSettingsPageTests
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         Assert.Contains(Said(w), t => t.Contains("dead zone ends at 15%"));
+        w.Close();
+    }
+
+    // The pad is a live preview, not a save-state indicator. A held slider
+    // drag must animate its dead-zone ring immediately; Undo must then draw
+    // the original setting again.
+    [AvaloniaFact]
+    public void ASliderDragPreviewsTheJoystickPadAndUndoResetsIt()
+    {
+        var w = Open(Prefs, "Joystick");
+        var slider = Named<Slider>(w, "Joystick center dead zone, 0 to 20");
+        var thumb = slider.TranslatePoint(new Point(slider.Bounds.Width * .4,
+            slider.Bounds.Height / 2), w)!.Value;
+
+        w.MouseDown(thumb, MouseButton.Left, RawInputModifiers.None);
+        slider.Value = 15;
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Contains(Said(w), t => t.Contains("dead zone ends at 15%"));
+        Assert.Empty(w.ChangedDeviceSettings);
+
+        w.MouseUp(thumb, MouseButton.Left, RawInputModifiers.None);
+        Dispatcher.UIThread.RunJobs();
+        w.UndoDeviceChangesForPreview();
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Contains(Said(w), t => t.Contains("dead zone ends at 8%"));
+        Assert.Empty(w.ChangedDeviceSettings);
         w.Close();
     }
 

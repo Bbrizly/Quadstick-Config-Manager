@@ -5,6 +5,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Templates;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
@@ -56,6 +58,9 @@ public partial class MainWindow
     // to answer that made a slider drag stutter.
     readonly Dictionary<string, string> _deviceAsRead = new(StringComparer.Ordinal);
     readonly HashSet<string> _deviceChanged = new(StringComparer.Ordinal);
+    // A pointer-held slider can paint its effect on the device diagram without
+    // changing prefs.csv or the save state until it is released.
+    readonly Dictionary<string, string> _devicePreview = new(StringComparer.Ordinal);
     TextBlock? _deviceStatus;
 
     string _deviceCategory = PreferenceCatalog.Categories[0];
@@ -124,6 +129,7 @@ public partial class MainWindow
     {
         _devicePrefs = ProfileFile.Load(_devicePrefsAsRead);
         _deviceChanged.Clear();
+        _devicePreview.Clear();
         BuildDevicePage(_deviceStatus?.Text ?? "", _devicePrefs);
     }
 
@@ -246,6 +252,7 @@ public partial class MainWindow
     {
         _devicePrefsAsRead = csv;
         _deviceAsRead.Clear();
+        _devicePreview.Clear();
         if (csv.Length == 0) return;
         var file = ProfileFile.Load(csv);
         var sheet = file.Document.Sheets.FirstOrDefault(s => s.Type == SheetType.Preferences);
@@ -654,6 +661,32 @@ public partial class MainWindow
         };
         AutomationProperties.SetName(box, name);
 
+        // The thumb, its number, and the device preview must follow a pointer
+        // drag immediately, but updating the saved model and save bar for every
+        // pixel steals time from the drag itself. Hold that update until
+        // release; keyboard, accessibility, and typed-number changes commit
+        // immediately.
+        bool pointerHeld = false;
+        string? pending = null;
+        void CommitPending()
+        {
+            if (!pointerHeld) return;
+            pointerHeld = false;
+            _devicePreview.Remove(def.Name);
+            if (pending is { } final) CommitDeviceValue(sheet, def, ref row, final);
+            pending = null;
+        }
+
+        // The Slider's thumb handles these events itself, so listen for the
+        // bubbled handled event as well. That also covers release after the
+        // pointer has left the control while its thumb holds capture.
+        slider.AddHandler(InputElement.PointerPressedEvent, (_, _) => pointerHeld = true,
+            RoutingStrategies.Bubble, handledEventsToo: true);
+        slider.AddHandler(InputElement.PointerReleasedEvent, (_, _) => CommitPending(),
+            RoutingStrategies.Bubble, handledEventsToo: true);
+        slider.AddHandler(InputElement.PointerCaptureLostEvent, (_, _) => CommitPending(),
+            RoutingStrategies.Bubble, handledEventsToo: true);
+
         // Each control writes the cell and mirrors the other. The guards stop
         // the pair echoing: without them a drag re-enters through the spinner.
         bool echo = false;
@@ -662,7 +695,13 @@ public partial class MainWindow
             if (e.Property != RangeBase.ValueProperty || echo) return;
             int v = (int)Math.Round(slider.Value);
             echo = true; box.Value = v; echo = false;
-            CommitDeviceValue(sheet, def, ref row, v.ToString(CultureInfo.InvariantCulture));
+            string exact = v.ToString(CultureInfo.InvariantCulture);
+            if (pointerHeld)
+            {
+                pending = exact;
+                PreviewDeviceValue(def.Name, exact);
+            }
+            else CommitDeviceValue(sheet, def, ref row, exact);
         };
         box.ValueChanged += (_, e) =>
         {
@@ -818,6 +857,16 @@ public partial class MainWindow
         RefreshDeviceSaveBar();
     }
 
+    // The device diagram has only three setting-driven previews. Keeping this
+    // narrow means a long slider drag does not redraw it when there is nothing
+    // visual to show, while the dead-zone rings and LEDs stay live.
+    void PreviewDeviceValue(string name, string exact)
+    {
+        _devicePreview[name] = exact;
+        if (name is "brightness" or "joystick_deflection_minimum" or "joystick_deflection_maximum")
+            UpdateDeviceBand();
+    }
+
     // it was not in the file at all, so writing it is a change
     bool SameAsRead(string name, string exact) =>
         _deviceAsRead.TryGetValue(name, out var was)
@@ -850,6 +899,7 @@ public partial class MainWindow
                 Strings.DevicePage_TheSettingsYouChangedHere)) return;
             _devicePrefs = ProfileFile.Load(_devicePrefsAsRead);
             _deviceChanged.Clear();
+            _devicePreview.Clear();
             BuildDevicePage(_deviceStatus?.Text ?? "", _devicePrefs);
         };
 
