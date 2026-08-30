@@ -184,13 +184,15 @@ public partial class MainWindow
             connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected,
             plainDot: !connected);
         // What a lit row does and does not prove, said on the control that
-        // claims the stick is here. A stick in an emulation mode whose report
-        // the app has not been taught will light nothing, and a screen that
-        // stays still while somebody sips has to explain itself rather than
-        // look broken.
+        // claims the stick is here. A screen that stays still while somebody
+        // sips has to explain itself rather than look broken, and there are two
+        // ways to get there: a mode whose report the app cannot read, and a
+        // mode it cannot open at all. Mode 3 is the second. It publishes XInput
+        // rather than HID, so the drive is the only evidence it is here, and
+        // promising that rows will light would be a promise this cannot keep.
         ToolTip.SetTip(chip, !connected ? null
-            : _live is { OutputsUnderstood: false } ? Strings.Main_ThisEmulationModeIsNot
-            : Strings.Main_WhatALitRowMeans);
+            : _live is { OutputsUnderstood: true } ? Strings.Main_WhatALitRowMeans
+            : Strings.Main_ThisEmulationModeIsNot);
         DeviceHeaderStatus.Content = chip;
     }
 

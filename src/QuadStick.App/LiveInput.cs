@@ -246,22 +246,35 @@ public sealed class LiveInput : IDisposable
             ps3Layout ? Ps3Outputs(down, hat, x, y, z, rz, previous) : NoOutputs, ps3Layout);
     }
 
-    /// <summary>Whether this interface declares the mode 0 report: thirteen
-    /// buttons and a hat switch, which is HID_DESCRIPTOR_PS3_JOYSTICK. A
-    /// firmware that added a button would fail this and be read as a mode
-    /// nobody has taught the app, which is the safe answer.</summary>
+    /// <summary>Whether this interface declares the mode 0 report: buttons 1 to
+    /// 13, a hat switch, and X, Y, Z and Rz, which is HID_DESCRIPTOR_PS3_JOYSTICK
+    /// and no other descriptor in the firmware. A firmware that moved or added
+    /// a button fails this and is read as a mode nobody has taught the app,
+    /// which is the safe answer. The vendor page tail is not checked, because
+    /// nothing here reads it.</summary>
     internal static bool DeclaresPs3Report(DeviceItemInputParser parser)
     {
         var buttons = new HashSet<int>();
+        var axes = new HashSet<uint>();
         bool hat = false;
         for (int i = 0; i < parser.ValueCount; i++)
         {
             uint usage = parser.GetValue(i).Usages.FirstOrDefault();
             if (usage == (uint)Usage.GenericDesktopHatSwitch) hat = true;
+            else if (Axes.Contains(usage)) axes.Add(usage);
             else if ((usage & 0xFFFF0000) == 0x00090000) buttons.Add((int)(usage & 0xFFFF));
         }
-        return hat && buttons.Count == 13 && buttons.Max() == 13;
+        return hat && axes.Count == Axes.Length
+            && buttons.Count == 13 && buttons.Max() == 13;
     }
+
+    // The two sticks, in the order the descriptor declares them over left_X,
+    // left_Y, right_X, right_Y.
+    static readonly uint[] Axes =
+    {
+        (uint)Usage.GenericDesktopX, (uint)Usage.GenericDesktopY,
+        (uint)Usage.GenericDesktopZ, (uint)Usage.GenericDesktopRz,
+    };
 
     static readonly IReadOnlySet<string> NoOutputs =
         new HashSet<string>(StringComparer.Ordinal);
@@ -308,6 +321,12 @@ public sealed class LiveInput : IDisposable
     }
 
     // Which button number in the mode 0 report each profile word comes out on.
+    //
+    // The Xbox spellings are on here on purpose. output_keywords.h is one table
+    // that the firmware searches whatever emulation mode it is in, so a row
+    // written "left_bumper" produces ps3.L1 on a device in mode 0 exactly as
+    // "left_1" does. The outputs_ps3 and outputs_xbox lists in validation.json
+    // are the validator's suggestions per mode, not what the device accepts.
     // The numbers are the usages HID_DESCRIPTOR_PS3_JOYSTICK declares, 1 to 13,
     // over the bits of USB_PS3_Report_Data_t in that order: square, X, O,
     // triangle, L1, R1, L2, R2, select, start, L3, R3, PS3. The words on each

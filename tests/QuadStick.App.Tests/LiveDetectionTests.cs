@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
@@ -56,6 +57,33 @@ public class LiveDetectionTests
         w.ShowLiveInputForPreview(new LiveState(0, 0, Array.Empty<int>(), "QuadStick", new HashSet<string>(), true));
         w.ShowLiveInputForPreview(null);
         Assert.Equal(Strings.Main_NoQuadStickDetected, ChipText(w));
+    }
+
+    static object? ChipTip(MainWindow w) =>
+        ToolTip.GetTip(w.GetVisualDescendants().OfType<Control>()
+            .First(c => c.Name == "DeviceHeaderStatus").GetVisualDescendants().OfType<Control>()
+            .First(c => ToolTip.GetTip(c) is not null));
+
+    // A stick the app can see but cannot read has to say so. Emulation mode 3
+    // is XInput rather than HID, so the mounted drive is the only evidence it
+    // is here, and a note promising that rows will light would be a promise
+    // nothing can keep.
+    [AvaloniaFact]
+    public void A_stick_that_cannot_be_read_does_not_promise_that_rows_will_light()
+    {
+        var w = new MainWindow { FindDeviceRoots = () => new[] { "/Volumes/QUADSTICK" } };
+        w.Show();
+        var file = ProfileFile.NewFromTemplate("mygame.csv");
+        file.Dirty = false;
+        w.LoadProfile(file);
+        w.UpdateLayout();
+        Assert.Equal(Strings.Main_QuadStickConnected, ChipText(w));
+        Assert.Equal(Strings.Main_ThisEmulationModeIsNot, ChipTip(w));
+
+        // The reader finds it, and now the note can explain what lights.
+        w.ShowLiveInputForPreview(new LiveState(0, 0, Array.Empty<int>(), "QuadStick",
+            new HashSet<string>(), true));
+        Assert.Equal(Strings.Main_WhatALitRowMeans, ChipTip(w));
     }
 
     [AvaloniaFact]

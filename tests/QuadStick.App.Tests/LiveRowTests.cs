@@ -132,6 +132,28 @@ public class LiveRowTests
         Assert.Equal(1, Lit(w));
     }
 
+    // A row number belongs to a sheet, so row 4 of one profile is a different
+    // binding from row 4 of the next. A lit row carried across would be the app
+    // showing a binding that is not being sent, which is the one thing it must
+    // never do.
+    [AvaloniaFact]
+    public void A_lit_row_does_not_carry_over_to_another_profile()
+    {
+        var w = Open();
+        w.ShowLiveInputForPreview(Sending("square"));
+        w.UpdateLayout();
+        Assert.Equal(2, Lit(w));
+
+        // Row 4 here is triangle, not the square that was lit in the last one.
+        var other = ProfileFile.Load(
+            "Profile Name,,Other\n" + "other.csv\n" + "Outputs,Function,usb\n" +
+            "triangle,normal,lip\n" + "circle,normal,right_sip\n");
+        other.Dirty = false;
+        w.LoadProfile(other);
+        w.UpdateLayout();
+        Assert.Equal(0, Lit(w));
+    }
+
     // Rows are torn down and rebuilt on every edit. A row rebuilt while its
     // output is still being sent has to come back lit.
     [AvaloniaFact]

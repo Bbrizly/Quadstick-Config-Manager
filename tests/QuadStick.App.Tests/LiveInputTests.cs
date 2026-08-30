@@ -317,6 +317,19 @@ public class LiveInputTests
             LiveInput.StickItem(other)!.CreateDeviceItemInputParser()));
     }
 
+    // A profile may spell a mode 0 button the Xbox way. output_keywords.h is one
+    // table the firmware searches whatever mode it is in, so "A" produces
+    // ps3.X on a device in mode 0 exactly as "x" does, and its row lights.
+    [Fact]
+    public void TheXboxSpellingOfAModeZeroButtonLightsToo()
+    {
+        var outputs = Sending(Report(new[] { 2 })).Outputs;
+        Assert.Contains("x", outputs);
+        Assert.Contains("A", outputs);
+        Assert.DoesNotContain("square", outputs);
+        Assert.DoesNotContain("X", outputs);   // X is the Xbox word for square
+    }
+
     // A typo in the table is a row that can never light, silently.
     [Fact]
     public void EveryWordInTheTableIsARealOutput()

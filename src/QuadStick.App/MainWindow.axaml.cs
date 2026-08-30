@@ -4091,6 +4091,7 @@ public partial class MainWindow : Window
         ZoneDetailPanel.Children.Clear();
         _rowPanels.Clear(); // device view owns the selection targets while visible
         _livePips.Clear();
+        UpdateLiveRows(); // against the mode about to be drawn, not the last one
         _dupes = DuplicateUses.In(CurrentSheet?.Bindings);
         var zone = AllZones.FirstOrDefault(z => z.Id == _selectedZone);
         if (zone is null)
@@ -5104,6 +5105,11 @@ public partial class MainWindow : Window
         // Selected rows that left the sheet (deleted, or another sheet is
         // showing now) must not tint whatever row wears their number next.
         _selectedRows.RemoveWhere(r => CurrentSheet.Bindings.All(x => x.Row != r));
+        // Same trap for the lit rows, and worse: a row number belongs to a
+        // sheet, so the row 6 of another mode or another profile is a
+        // different binding. Worked out against the sheet about to be built,
+        // before a single row is, so nothing is ever drawn lit that is not.
+        UpdateLiveRows();
 
         bool prefs = CurrentSheet.Type != SheetType.ProfileName;
         // Sentence cards have no columns, so the column header would be a lie
