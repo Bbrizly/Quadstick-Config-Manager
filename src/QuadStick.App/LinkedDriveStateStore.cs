@@ -9,6 +9,8 @@ namespace QuadStick.App;
 /// settings.json is intentionally not the transaction log. Change cursors,
 /// pending remote file ids and BASE snapshots must survive an app crash in a
 /// known order, so each is an independently atomic file under app data.
+/// Corrupt state fails closed: pretending a broken queue is empty after its
+/// Drive cursor advanced would silently lose a remote edit.
 /// </summary>
 public sealed class LinkedDriveStateStore
 {
@@ -31,18 +33,18 @@ public sealed class LinkedDriveStateStore
     public string? ReadCursor(string streamKey)
     {
         var path = CursorPath(streamKey);
-        try
-        {
-            if (!File.Exists(path)) return null;
-            var value = File.ReadAllText(path, Encoding.UTF8).Trim();
-            return value.Length == 0 ? null : value;
-        }
-        catch { return null; }
+        if (!File.Exists(path)) return null;
+        var value = File.ReadAllText(path, Encoding.UTF8).Trim();
+        if (value.Length == 0)
+            throw new InvalidDataException("empty linked-drive cursor");
+        return value;
     }
 
     public Task CommitCursorAsync(string streamKey, string cursor, CancellationToken ct = default)
     {
         ct.ThrowIfCancellationRequested();
+        if (string.IsNullOrWhiteSpace(cursor))
+            throw new ArgumentException("cursor must not be empty", nameof(cursor));
         WriteAtomicDurable(CursorPath(streamKey), cursor + "\n");
         return Task.CompletedTask;
     }
@@ -66,16 +68,12 @@ public sealed class LinkedDriveStateStore
     public IReadOnlyList<string> ReadPendingFileIds(string streamKey)
     {
         var path = QueuePath(streamKey);
-        try
-        {
-            if (!File.Exists(path)) return Array.Empty<string>();
-            return File.ReadAllLines(path, Encoding.UTF8)
-                .Select(line => line.Trim())
-                .Where(line => line.Length > 0)
-                .Distinct(StringComparer.Ordinal)
-                .ToList();
-        }
-        catch { return Array.Empty<string>(); }
+        if (!File.Exists(path)) return Array.Empty<string>();
+        return File.ReadAllLines(path, Encoding.UTF8)
+            .Select(line => line.Trim())
+            .Where(line => line.Length > 0)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
     }
 
     /// <summary>
@@ -114,12 +112,14 @@ public sealed class LinkedDriveStateStore
 
     public LinkedProfileSnapshot? LoadSnapshot(string path)
     {
+        if (!File.Exists(path)) return null;
         try
         {
-            if (!File.Exists(path)) return null;
             var lines = File.ReadAllLines(path, Encoding.UTF8);
-            if (lines.Length < 2 || lines[0] != "QCM-LINKED-SNAPSHOT\t1") return null;
-            if (!lines[1].StartsWith("S\t", StringComparison.Ordinal)) return null;
+            if (lines.Length < 2 || lines[0] != "QCM-LINKED-SNAPSHOT\t1")
+                throw new InvalidDataException("unsupported linked-drive snapshot");
+            if (!lines[1].StartsWith("S\t", StringComparison.Ordinal))
+                throw new InvalidDataException("linked-drive snapshot has no structure signature");
 
             var signature = UnB64(lines[1][2..]);
             var cells = new Dictionary<LinkedCellKey, string>();
@@ -130,10 +130,12 @@ public sealed class LinkedDriveStateStore
             {
                 if (line.Length == 0) continue;
                 var parts = line.Split('\t');
-                if (parts.Length != 6 || parts[0] != "C") return null;
+                if (parts.Length != 6 || parts[0] != "C")
+                    throw new InvalidDataException("malformed linked-drive snapshot row");
                 if (!int.TryParse(parts[1], out var sheetId) ||
                     !int.TryParse(parts[2], out var row) ||
-                    !int.TryParse(parts[3], out var column)) return null;
+                    !int.TryParse(parts[3], out var column))
+                    throw new InvalidDataException("malformed linked-drive snapshot coordinates");
                 var key = new LinkedCellKey(sheetId, row, column);
                 cells[key] = UnB64(parts[5]);
                 if (parts[4].Contains('F')) formulas.Add(key);
@@ -142,7 +144,11 @@ public sealed class LinkedDriveStateStore
 
             return new LinkedProfileSnapshot(signature, cells, formulas, protectedCells);
         }
-        catch { return null; }
+        catch (InvalidDataException) { throw; }
+        catch (Exception ex) when (ex is FormatException or IOException or UnauthorizedAccessException)
+        {
+            throw new InvalidDataException("could not read linked-drive snapshot", ex);
+        }
     }
 
     public void DeleteLinkState(string linkKey)
