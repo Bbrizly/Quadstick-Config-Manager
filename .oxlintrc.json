@@ -30,6 +30,25 @@
   ],
   "rules": {
     "no-console": "error",
-    "react/react-in-jsx-scope": "off"
-  }
+    "react/react-in-jsx-scope": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@tauri-apps/*", "@tauri-apps/**"],
+            "message": "Go through src/platform/qcmClient. Only tauriQcmClient.ts may import the Tauri API, so every screen can render in a browser against MockQcmClient."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/platform/tauriQcmClient.ts"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
 }

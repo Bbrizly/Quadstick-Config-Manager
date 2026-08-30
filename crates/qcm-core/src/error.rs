@@ -46,6 +46,9 @@ pub enum ErrorCode {
     ConfirmationExpired,
     ConfirmationMismatch,
     ConfirmationAlreadyUsed,
+    RequestMalformed,
+    RequestTooLarge,
+    RequestOutOfRange,
     Cancelled,
     Internal,
 }
@@ -84,6 +87,9 @@ impl ErrorCode {
             Self::ConfirmationExpired => "QCM_CONFIRMATION_EXPIRED",
             Self::ConfirmationMismatch => "QCM_CONFIRMATION_MISMATCH",
             Self::ConfirmationAlreadyUsed => "QCM_CONFIRMATION_ALREADY_USED",
+            Self::RequestMalformed => "QCM_REQUEST_MALFORMED",
+            Self::RequestTooLarge => "QCM_REQUEST_TOO_LARGE",
+            Self::RequestOutOfRange => "QCM_REQUEST_OUT_OF_RANGE",
             Self::Cancelled => "QCM_CANCELLED",
             Self::Internal => "QCM_INTERNAL",
         }
@@ -333,6 +339,30 @@ pub enum ConfigError {
     HasBlockingProblems { errors: usize },
 }
 
+/// A request that never got as far as the rule it was asking for.
+///
+/// The command layer is the only thing that raises these. Every field is a
+/// `&'static str` written in this repository, so a rejected request can say
+/// which field was wrong without echoing back what was in it: a malformed
+/// payload is exactly where a path or a pasted secret would arrive.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RequestError {
+    /// The payload could not be read as this command's request at all.
+    Malformed { what: &'static str },
+    /// A field was longer than the command accepts. The limit is ours, so it
+    /// is printable; the value is the caller's, so it is not.
+    TooLarge {
+        what: &'static str,
+        limit: usize,
+        actual: usize,
+    },
+    /// A value outside the set the setting allows.
+    ///
+    /// Refused, never rounded to the nearest legal one. A setting quietly
+    /// changed can leave someone with hardware that no longer answers.
+    OutOfRange { what: &'static str },
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ProfileError {
     UnknownSession,
@@ -489,6 +519,8 @@ pub enum QcmError {
     Device(DeviceError),
     Storage(StorageError),
     Confirmation(ConfirmationError),
+    /// The window sent something this command cannot act on.
+    Request(RequestError),
     /// The user asked to stop. A result, not a fault.
     Cancelled,
     Internal(InternalError),
@@ -533,6 +565,11 @@ impl QcmError {
                 ConfirmationError::Expired => ErrorCode::ConfirmationExpired,
                 ConfirmationError::Mismatch => ErrorCode::ConfirmationMismatch,
                 ConfirmationError::AlreadyUsed => ErrorCode::ConfirmationAlreadyUsed,
+            },
+            Self::Request(error) => match error {
+                RequestError::Malformed { .. } => ErrorCode::RequestMalformed,
+                RequestError::TooLarge { .. } => ErrorCode::RequestTooLarge,
+                RequestError::OutOfRange { .. } => ErrorCode::RequestOutOfRange,
             },
             Self::Cancelled => ErrorCode::Cancelled,
             Self::Internal(_) => ErrorCode::Internal,
@@ -591,6 +628,14 @@ impl QcmError {
                 | ConfirmationError::Mismatch
                 | ConfirmationError::AlreadyUsed => RecoveryAction::ConfirmAgain,
             },
+            // A malformed payload is the window's bug, not something the user
+            // can retype their way out of, so the offer is to report it.
+            Self::Request(error) => match error {
+                RequestError::Malformed { .. } => RecoveryAction::ReportBug,
+                RequestError::TooLarge { .. } | RequestError::OutOfRange { .. } => {
+                    RecoveryAction::Retry
+                }
+            },
             Self::Cancelled => RecoveryAction::Retry,
             Self::Internal(_) => RecoveryAction::ReportBug,
         }
@@ -641,6 +686,19 @@ impl QcmError {
                 }
                 ConfirmationError::AlreadyUsed => {
                     "That confirmation was already used once.".to_owned()
+                }
+            },
+            Self::Request(error) => match error {
+                RequestError::Malformed { what } => {
+                    format!("The app sent a request it could not fill in ({what}).")
+                }
+                RequestError::TooLarge {
+                    what,
+                    limit,
+                    actual,
+                } => format!("{what} was {actual} long, and the limit is {limit}."),
+                RequestError::OutOfRange { what } => {
+                    format!("{what} is not one of the values this setting takes.")
                 }
             },
             Self::Cancelled => "Cancelled.".to_owned(),
@@ -767,6 +825,12 @@ impl From<DeviceError> for StorageError {
 impl From<ProfileError> for QcmError {
     fn from(error: ProfileError) -> Self {
         Self::Profile(error)
+    }
+}
+
+impl From<RequestError> for QcmError {
+    fn from(error: RequestError) -> Self {
+        Self::Request(error)
     }
 }
 

@@ -144,6 +144,30 @@ pub trait LocalProfileStore {
     fn is_on_quadstick(&self, target: &LocalProfileRef) -> Result<bool, StorageError>;
 }
 
+/// One library, two owners.
+///
+/// The shell's file picker has to mint a reference for the file the user just
+/// chose, and the session manager has to read and write through the same table
+/// of ids. Sharing the store is what keeps a path inside the adapter: without
+/// this, one of the two would have to hand the other a path to get an id back.
+impl<T: LocalProfileStore + ?Sized> LocalProfileStore for std::sync::Arc<T> {
+    fn read(&self, target: &LocalProfileRef) -> Result<String, StorageError> {
+        (**self).read(target)
+    }
+
+    fn write(
+        &self,
+        target: &LocalProfileRef,
+        text: &str,
+    ) -> Result<LocalWriteReceipt, StorageError> {
+        (**self).write(target, text)
+    }
+
+    fn is_on_quadstick(&self, target: &LocalProfileRef) -> Result<bool, StorageError> {
+        (**self).is_on_quadstick(target)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::{LocalProfileId, ProfileDisplayName};

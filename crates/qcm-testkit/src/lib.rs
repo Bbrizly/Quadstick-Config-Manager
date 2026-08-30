@@ -8,8 +8,10 @@
 
 pub mod live_input;
 pub mod local;
+pub mod settings;
 pub mod storage;
 
 pub use live_input::{FAKE_DEVICE, FakeLiveInput, FakeSession};
 pub use local::FakeProfileLibrary;
+pub use settings::FakeSettingsFile;
 pub use storage::{FakeBackupStore, FakeQuadStick, Fault, TEMP_SUFFIX};

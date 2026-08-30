@@ -1,21 +1,27 @@
 # API ledger
 
-Every registered Tauri command/event/Channel must appear here. `PLANNED` means it must not yet exist in production.
+Every registered Tauri command/event/Channel must appear here. `PLANNED` means it must not yet exist in production; `REGISTERED` means this build wires it.
+
+`src-tauri/src/lib.rs::registered_commands` is the machine-readable copy of the
+`REGISTERED` rows, and a test in `src-tauri/tests/profile_commands.rs` holds the
+two lists to the same length. Every command takes one raw JSON request and reads
+it itself, so a malformed payload comes back as `QCM_REQUEST_MALFORMED` rather
+than as a framework string the UI cannot switch on.
 
 | API | Kind | Privilege | Validation | Status |
 |---|---|---|---|---|
-| get_app_snapshot | command | low | none | PLANNED |
-| get_settings | command | low | none | PLANNED |
-| update_settings | command | persisted | expected revision + value ranges | PLANNED |
-| new_profile | command | state | template enum/name bounds | PLANNED |
-| choose_and_open_profile | command | file-read via picker | picker + size/decode | PLANNED |
+| get_app_snapshot | command | low | none | REGISTERED |
+| get_settings | command | low | none | REGISTERED |
+| update_settings | command | persisted | expected revision + closed value sets | REGISTERED |
+| new_profile | command | state | name length | REGISTERED |
+| choose_and_open_profile | command | file-read via picker | native picker mints the only id | REGISTERED |
 | open_device_profile | command | device-read | opaque file ID/generation | PLANNED |
 | open_community_profile | command | network/read | catalog ID/size/parse | PLANNED |
-| apply_editor_ops | command | state | session/revision/op bounds | PLANNED |
-| undo_editor | command | state | session/revision | PLANNED |
-| save_profile | command | local file write | scoped source/revision | PLANNED |
-| save_profile_as | command | local picker/write | picker/revision | PLANNED |
-| close_profile | command | state | dirty disposition | PLANNED |
+| apply_editor_ops | command | state | session/revision/batch and text bounds | REGISTERED |
+| undo_editor | command | state | session/revision | REGISTERED |
+| save_profile | command | local file write | scoped source/revision | REGISTERED |
+| save_profile_as | command | local picker/write | picker/revision checked first | REGISTERED |
+| close_profile | command | state | dirty disposition | REGISTERED |
 | validate_profile | command | none | session | PLANNED |
 | export_profile | command | file write | picker/format | PLANNED |
 | list_devices | command | device metadata | none | PLANNED |
@@ -56,3 +62,9 @@ Every registered Tauri command/event/Channel must appear here. `PLANNED` means i
 | operation progress | Channel | low/medium | operation ID/stages | PLANNED |
 
 Forbidden APIs: generic read/write/list path, shell exec, arbitrary HTTP, arbitrary serial/HID commands.
+
+The file picker is not on this list and is not a plugin. `rfd` is a plain Rust
+dialog called from inside `choose_and_open_profile` and `save_profile_as`, so
+`capabilities/main.json` still grants the window nothing and the window has no
+way to open a dialog of its own. The path it returns never leaves the adapter:
+the library mints an opaque id for it and that is what travels.

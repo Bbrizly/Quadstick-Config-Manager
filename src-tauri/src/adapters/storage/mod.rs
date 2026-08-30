@@ -133,7 +133,7 @@ impl Mounted {
     }
 }
 
-fn is_quadstick(root: &Path) -> bool {
+pub(crate) fn is_quadstick(root: &Path) -> bool {
     root.join(MARKER).is_file()
 }
 
@@ -158,7 +158,7 @@ fn writable(root: &Path) -> bool {
 }
 
 /// Map an I/O failure onto the family that decides what the user can do next.
-fn map_io(error: &io::Error, stage: StorageStage, target: TargetState) -> StorageError {
+pub(crate) fn map_io(error: &io::Error, stage: StorageStage, target: TargetState) -> StorageError {
     match error.kind() {
         io::ErrorKind::PermissionDenied => StorageError::PermissionDenied { stage },
         io::ErrorKind::StorageFull | io::ErrorKind::QuotaExceeded => {
