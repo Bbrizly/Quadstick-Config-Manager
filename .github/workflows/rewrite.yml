@@ -86,7 +86,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add crates/qcm-config/src/bin/qsf.rs
+          git add -f crates/qcm-config/src/bin/qsf.rs
           git commit -m "style(rust): fix qsf formatting and JSON null omission"
           git push origin HEAD:rewrite/task19-rust-qsf-spike
 
