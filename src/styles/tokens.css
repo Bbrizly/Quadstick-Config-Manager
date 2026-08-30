@@ -1,0 +1,120 @@
+/* TASK-036 ports the shipping Avalonia presentation tokens verbatim. Feature
+   colors stay semantic so later editor/device UI never hard-codes palette values. */
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --qcm-bg: #e6e9ed;
+  --qcm-surface: #ffffff;
+  --qcm-surface-subtle: #f1f3f7;
+  --qcm-border: #cbd1d9;
+  --qcm-text: #16191c;
+  --qcm-text-secondary: #4e545b;
+  --qcm-accent: #0b4f8a;
+  --qcm-accent-text: #084a80;
+  --qcm-on-accent: #ffffff;
+  --qcm-error: #a6291f;
+  --qcm-success: #0f6b34;
+  --qcm-warning: #7a4b00;
+  --qcm-focus: #1e6fd1;
+  --qcm-output-tint: #f3e2ae;
+  --qcm-function-tint: #f6dce4;
+  --qcm-input-tint: #d3e6f5;
+  --qcm-new-row-tint: #cdeed8;
+  --qcm-selection-tint: #c2d3ee;
+
+  --qcm-title-size: 30px;
+  --qcm-section-size: 22px;
+  --qcm-subhead-size: 17px;
+  --qcm-body-size: 15px;
+  --qcm-small-size: 14px;
+
+  --qcm-space-xs: 4px;
+  --qcm-space-sm: 8px;
+  --qcm-space-md: 12px;
+  --qcm-space-lg: 16px;
+  --qcm-space-xl: 24px;
+  --qcm-space-2xl: 32px;
+
+  --qcm-radius-cell: 6px;
+  --qcm-radius-control: 8px;
+  --qcm-radius-track: 10px;
+  --qcm-radius-panel: 12px;
+  --qcm-radius-icon: 20px;
+
+  --qcm-control-height: 48px;
+  --qcm-icon-button: 40px;
+  --qcm-shell-nav-button: 64px;
+  --qcm-shell-nav-icon: 32px;
+  --qcm-shell-settings-button: 64px;
+  --qcm-hairline: 1px;
+
+  --qcm-font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --qcm-brand-font: "Cascadia Mono", "JetBrains Mono", Menlo, "DejaVu Sans Mono", monospace;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --qcm-bg: #0f1216;
+  --qcm-surface: #1f252c;
+  --qcm-surface-subtle: #2a313a;
+  --qcm-border: #3a434e;
+  --qcm-text: #f0f4f6;
+  --qcm-text-secondary: #aab4bc;
+  --qcm-accent: #6ea8ff;
+  --qcm-accent-text: #8fbeff;
+  --qcm-on-accent: #06121f;
+  --qcm-error: #f2b4b0;
+  --qcm-success: #7fde9b;
+  --qcm-warning: #e8c36a;
+  --qcm-focus: #72ddf3;
+  --qcm-output-tint: #3c3420;
+  --qcm-function-tint: #3a2530;
+  --qcm-input-tint: #1e2f3f;
+  --qcm-new-row-tint: #1c3a28;
+  --qcm-selection-tint: #33475f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --qcm-bg: #0f1216;
+    --qcm-surface: #1f252c;
+    --qcm-surface-subtle: #2a313a;
+    --qcm-border: #3a434e;
+    --qcm-text: #f0f4f6;
+    --qcm-text-secondary: #aab4bc;
+    --qcm-accent: #6ea8ff;
+    --qcm-accent-text: #8fbeff;
+    --qcm-on-accent: #06121f;
+    --qcm-error: #f2b4b0;
+    --qcm-success: #7fde9b;
+    --qcm-warning: #e8c36a;
+    --qcm-focus: #72ddf3;
+    --qcm-output-tint: #3c3420;
+    --qcm-function-tint: #3a2530;
+    --qcm-input-tint: #1e2f3f;
+    --qcm-new-row-tint: #1c3a28;
+    --qcm-selection-tint: #33475f;
+  }
+}
+
+@media (forced-colors: active) {
+  :root,
+  :root[data-theme="light"],
+  :root[data-theme="dark"] {
+    --qcm-bg: Canvas;
+    --qcm-surface: Canvas;
+    --qcm-surface-subtle: Canvas;
+    --qcm-border: CanvasText;
+    --qcm-text: CanvasText;
+    --qcm-text-secondary: CanvasText;
+    --qcm-accent: Highlight;
+    --qcm-accent-text: LinkText;
+    --qcm-on-accent: HighlightText;
+    --qcm-error: CanvasText;
+    --qcm-success: CanvasText;
+    --qcm-warning: CanvasText;
+    --qcm-focus: Highlight;
+    --qcm-selection-tint: Highlight;
+  }
+}
