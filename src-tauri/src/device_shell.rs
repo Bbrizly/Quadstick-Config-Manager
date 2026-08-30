@@ -18,7 +18,7 @@ use crate::ipc::parse;
 use qcm_config::ProfileFile;
 use qcm_core::clock::{Clock, Moment, SystemClock};
 use qcm_core::devices::{DeletePlan, Devices, InstallPlan};
-use qcm_core::error::{DeviceError, QcmError, RequestError, StorageError};
+use qcm_core::error::{DeviceError, QcmError, RequestError, StorageError, StorageStage};
 use qcm_core::operation::OperationId;
 use qcm_core::ports::storage::{
     BackupStore, DeviceFileName, DeviceGeneration, DeviceStorage, PREFERENCES_FILE_NAME,
@@ -50,7 +50,6 @@ impl DeviceOperationError {
     }
 }
 
-/// A cloneable monotonic clock for the one device service a running app owns.
 #[derive(Debug, Clone)]
 pub struct SharedSystemClock(Arc<SystemClock>);
 
@@ -125,9 +124,6 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker>
         })
     }
 
-    /// Open a native folder picker. Cancellation is `None`; a chosen folder is
-    /// marker-checked inside the adapter, added to discovery, and returned only
-    /// through a fresh opaque snapshot.
     pub fn choose_device_folder(&self) -> Result<Option<DevicePresenceSnapshotDto>, QcmError> {
         if !self.picker.pick_device_folder()? {
             return Ok(None);
@@ -169,6 +165,16 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker>
     }
 
     pub fn commit_install(&self, raw: Value) -> Result<InstallReceiptDto, DeviceOperationError> {
+        self.commit_install_with_progress(raw, |_| {})
+    }
+
+    /// Commit one prepared plan while observing only completed storage stages.
+    /// The callback receives no paths or bytes and has no cancellation authority.
+    pub fn commit_install_with_progress(
+        &self,
+        raw: Value,
+        progress: impl FnMut(StorageStage),
+    ) -> Result<InstallReceiptDto, DeviceOperationError> {
         let request: CommitInstallRequest =
             parse(raw, "commit_install request").map_err(DeviceOperationError::plain)?;
         let operation = operation_id(&request.plan_id).map_err(DeviceOperationError::plain)?;
@@ -185,7 +191,7 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker>
         })?;
 
         self.devices()
-            .install(plan, confirmation)
+            .install_with_progress(plan, confirmation, progress)
             .map(|receipt| InstallReceiptDto::from(&receipt))
             .map_err(|failure| {
                 DeviceOperationError::for_operation(failure.operation, failure.error)
