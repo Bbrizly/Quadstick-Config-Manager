@@ -1,32 +1,25 @@
-//! What the commands actually do.
+//! What the profile/settings commands actually do.
 //!
 //! Every command is a thin wrapper around a method here, so the whole command
 //! surface can be driven by a test with a fake library, a fake picker and a fake
-//! settings file. There is no OS dialog to automate and no window to build: the
-//! things a test cannot drive are the adapters, and they are behind ports.
-//!
-//! Two rules run through all of it. Every mutation carries the revision it was
-//! made against, and a stale one is refused rather than applied. And a cancelled
-//! picker is a result, not a failure: the profile is left exactly as it was.
+//! settings file. Device I/O lives in `device_shell`; the only bridge is a
+//! cloned working profile in or a device working copy out.
 
 use crate::adapters::picker::ProfilePicker;
 use crate::ipc::{
     AppSnapshotDto, ApplyEditorOpsRequest, CapabilitiesDto, CloseOutcomeDto, CloseProfileRequest,
     NewProfileRequest, SessionRevisionRequest, UpdateSettingsRequest, parse, session_id,
 };
+use qcm_config::ProfileFile;
 use qcm_core::error::QcmError;
 use qcm_core::ports::local::LocalProfileStore;
+use qcm_core::ports::storage::{DeviceFileName, DeviceGeneration, StorageDeviceId};
 use qcm_core::profiles::{EditorSnapshot, ProfileSessions, SaveReceiptDto};
 use qcm_core::settings::{AppSettingsDto, Settings, SettingsStore};
 use serde_json::Value;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
-/// Everything one running app owns.
-///
-/// The library is shared with the picker: a file the user just chose has to
-/// become an opaque id inside the adapter layer, and the only alternative is
-/// passing a path up to the command that asked, which is the thing this whole
-/// boundary exists to prevent.
+/// Everything the editor/settings side of one running app owns.
 pub struct Shell<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> {
     sessions: Mutex<ProfileSessions<Arc<L>>>,
     settings: Mutex<Settings<S>>,
@@ -42,8 +35,6 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         }
     }
 
-    /// A poisoned lock means a thread panicked while holding it. The state is
-    /// still what it was, and a second panic on top only buries the first.
     fn sessions(&self) -> MutexGuard<'_, ProfileSessions<Arc<L>>> {
         self.sessions.lock().unwrap_or_else(PoisonError::into_inner)
     }
@@ -58,7 +49,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             platform: std::env::consts::OS.to_owned(),
             capabilities: CapabilitiesDto {
                 profile_editing: true,
-                device_install: false,
+                device_install: true,
                 live_input: false,
                 community_catalog: false,
                 google_backup: false,
@@ -87,9 +78,6 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
     /// Ask for a file and open it. `None` means the user cancelled, which is not
     /// an error and leaves nothing open.
     pub fn choose_and_open_profile(&self) -> Result<Option<EditorSnapshot>, QcmError> {
-        // The dialog is opened before the lock is taken. It is modal and can
-        // sit there for as long as the user likes; nothing else should be
-        // waiting on the session table while it does.
         let Some(target) = self.picker.pick_open()? else {
             return Ok(None);
         };
@@ -118,15 +106,10 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             .map(|receipt| SaveReceiptDto::from(&receipt))
     }
 
-    /// Save somewhere the user names now. `None` means they cancelled the
-    /// dialog, and the profile keeps whatever target it already had.
     pub fn save_profile_as(&self, raw: Value) -> Result<Option<SaveReceiptDto>, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "save_profile_as request")?;
         let session = session_id(&request.session_id)?;
 
-        // Checked before the dialog, not only after it. Making somebody pick a
-        // file and then telling them the profile moved on is a worse answer
-        // than telling them first, and `save_as` checks it again anyway.
         let suggested = {
             let sessions = self.sessions();
             let open = sessions.session(session)?;
@@ -159,12 +142,30 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             .close(session, close)
             .map(|outcome| CloseOutcomeDto::from(&outcome))
     }
+
+    /// Clone the canonical working profile for a prepared device install.
+    /// The install service normalizes its own clone, so planning a write cannot
+    /// mutate editor state or advance its revision.
+    pub fn profile_for_install(&self, session_raw: &str) -> Result<ProfileFile, QcmError> {
+        let session = session_id(session_raw)?;
+        Ok(self.sessions().session(session)?.file().clone())
+    }
+
+    /// Turn bytes read through the scoped device port into a normal editor
+    /// working copy. Save still cannot write back to the device; only the
+    /// install transaction can do that.
+    pub fn open_device_copy(
+        &self,
+        device: StorageDeviceId,
+        generation: DeviceGeneration,
+        name: DeviceFileName,
+        csv_text: &str,
+    ) -> EditorSnapshot {
+        self.sessions()
+            .open_device_copy(device, generation, name, csv_text)
+    }
 }
 
-/// The concrete shell a running app holds.
-///
-/// Named once here so the commands can take `State<'_, ShellState>` and the
-/// tests can build the same type over fakes.
 pub type ShellState = Shell<
     crate::adapters::library::FileSystemProfileLibrary<
         crate::adapters::storage::volumes::PlatformVolumes,
@@ -175,7 +176,6 @@ pub type ShellState = Shell<
     crate::adapters::settings::SettingsFile,
 >;
 
-/// Build the state the window runs on.
 #[must_use]
 pub fn native_shell() -> ShellState {
     use crate::adapters::library::FileSystemProfileLibrary;

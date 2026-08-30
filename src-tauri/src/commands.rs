@@ -1,20 +1,15 @@
-//! The registered commands.
+//! Registered Tauri commands.
 //!
-//! Each one is a wrapper and nothing else: read the state, call the method,
-//! redact the error. The work is in [`crate::shell`] so a test can drive the
-//! whole surface without a window.
-//!
-//! They are synchronous on purpose. Tauri runs a synchronous command on the main
-//! thread, which is where a native file dialog has to be opened on macOS. An
-//! async command would move the picker onto a worker and the modal would have to
-//! be marshalled back. Nothing here does enough work to be worth that: the files
-//! are a few kilobytes of CSV.
-//!
-//! Nothing here takes a path, and nothing here returns one. The window names a
-//! profile by an opaque session id and a file by a display name, and the only
-//! thing that can turn either into a place on the machine is an adapter.
+//! Every wrapper does three things only: parse through our stable request
+//! boundary, call a shell method, and redact the error. No command accepts or
+//! returns a host path.
 
-use crate::ipc::{AppSnapshotDto, CloseOutcomeDto};
+use crate::device_ipc::{
+    DeletePlanDto, DeleteReceiptDto, DeviceLibrarySnapshotDto, DevicePresenceSnapshotDto,
+    InstallPlanDto, InstallReceiptDto, PrepareInstallRequest,
+};
+use crate::device_shell::{DeviceOperationError, DeviceShellState};
+use crate::ipc::{AppSnapshotDto, CloseOutcomeDto, parse};
 use crate::shell::ShellState;
 use qcm_core::error::QcmErrorDto;
 use qcm_core::profiles::{EditorSnapshot, SaveReceiptDto};
@@ -22,16 +17,16 @@ use qcm_core::settings::AppSettingsDto;
 use serde_json::Value;
 use tauri::State;
 
-/// Every command answers with this shape on failure. A raw string never
-/// crosses: the window switches on `code`, and `message` is the fallback text.
-///
-/// Boxed because the DTO is the wider of the two arms and every command returns
-/// it. `Box` is transparent to serde, so the JSON a window receives is the same
-/// object either way.
 type Failure = Box<QcmErrorDto>;
 
 fn redact<T>(result: Result<T, qcm_core::QcmError>) -> Result<T, Failure> {
     result.map_err(|error| Box::new(QcmErrorDto::from(&error)))
+}
+
+fn redact_operation<T>(result: Result<T, DeviceOperationError>) -> Result<T, Failure> {
+    result.map_err(|failure| {
+        Box::new(QcmErrorDto::new(&failure.error, failure.operation))
+    })
 }
 
 #[tauri::command]
@@ -105,4 +100,99 @@ pub fn close_profile(
     request: Value,
 ) -> Result<CloseOutcomeDto, Failure> {
     redact(state.close_profile(request))
+}
+
+#[tauri::command]
+pub fn list_devices(
+    state: State<'_, DeviceShellState>,
+) -> Result<DevicePresenceSnapshotDto, Failure> {
+    redact(state.list_devices())
+}
+
+#[tauri::command]
+pub fn refresh_devices(
+    state: State<'_, DeviceShellState>,
+) -> Result<DevicePresenceSnapshotDto, Failure> {
+    redact(state.refresh_devices())
+}
+
+#[tauri::command]
+pub fn choose_device_folder(
+    state: State<'_, DeviceShellState>,
+) -> Result<Option<DevicePresenceSnapshotDto>, Failure> {
+    redact(state.choose_device_folder())
+}
+
+#[tauri::command]
+pub fn get_device_library(
+    state: State<'_, DeviceShellState>,
+    request: Value,
+) -> Result<DeviceLibrarySnapshotDto, Failure> {
+    redact(state.get_device_library(request))
+}
+
+#[tauri::command]
+pub fn prepare_install(
+    profile_state: State<'_, ShellState>,
+    device_state: State<'_, DeviceShellState>,
+    request: Value,
+) -> Result<InstallPlanDto, Failure> {
+    let request: PrepareInstallRequest =
+        redact(parse(request, "prepare_install request"))?;
+    let file = redact(profile_state.profile_for_install(&request.session_id))?;
+    redact(device_state.prepare_install(&request.device_id, &file))
+}
+
+#[tauri::command]
+pub fn commit_install(
+    state: State<'_, DeviceShellState>,
+    request: Value,
+) -> Result<InstallReceiptDto, Failure> {
+    redact_operation(state.commit_install(request))
+}
+
+#[tauri::command]
+pub fn prepare_delete_device_profile(
+    state: State<'_, DeviceShellState>,
+    request: Value,
+) -> Result<DeletePlanDto, Failure> {
+    redact(state.prepare_delete(request))
+}
+
+#[tauri::command]
+pub fn commit_delete_device_profile(
+    state: State<'_, DeviceShellState>,
+    request: Value,
+) -> Result<DeleteReceiptDto, Failure> {
+    redact_operation(state.commit_delete(request))
+}
+
+#[tauri::command]
+pub fn open_device_profile(
+    profile_state: State<'_, ShellState>,
+    device_state: State<'_, DeviceShellState>,
+    request: Value,
+) -> Result<EditorSnapshot, Failure> {
+    let opened = redact(device_state.open_device_profile(request))?;
+    Ok(profile_state.open_device_copy(
+        opened.device,
+        opened.generation,
+        opened.name,
+        &opened.csv_text,
+    ))
+}
+
+#[tauri::command]
+pub fn open_device_preferences(
+    profile_state: State<'_, ShellState>,
+    device_state: State<'_, DeviceShellState>,
+    request: Value,
+) -> Result<EditorSnapshot, Failure> {
+    let opened = redact(device_state.open_device_preferences(request))?;
+    Ok(profile_state.open_device_copy(
+        opened.device,
+        opened.generation,
+        opened.name,
+        &opened.csv_text,
+    ))
 }

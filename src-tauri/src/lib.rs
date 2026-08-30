@@ -1,26 +1,20 @@
 //! The desktop shell.
 //!
-//! This crate owns the window, the adapters and the command surface. The
-//! profile and settings commands are registered; the device, live-input and
-//! event surfaces arrive with TASK-033 and TASK-034.
+//! This crate owns the window, native adapters and the narrow command surface.
+//! Device operations are now registered through TASK-033; live-input channels
+//! arrive with TASK-034.
 //!
 //! [`adapters`] is the only place in the app that sees a path. `qcm-core` holds
 //! the rules, this crate holds the operating system, and the ports between them
 //! carry opaque ids and validated names in both directions.
-//!
-//! The window is granted no plugin permission at all, so there is no generic
-//! filesystem, shell or network call for it to make. The file picker is a plain
-//! Rust dialog opened from inside a command, not a plugin the window can reach.
 
 pub mod adapters;
 pub mod commands;
+pub mod device_ipc;
+pub mod device_shell;
 pub mod ipc;
 pub mod shell;
 
-/// The promise `qcm-core` makes about itself, read through the linked crate.
-///
-/// The point is the link, not the string. If the shell ever stops depending on
-/// the native core this stops compiling.
 #[must_use]
 pub fn core_policy() -> &'static str {
     qcm_core::CORE_CRATE_POLICY
@@ -28,8 +22,7 @@ pub fn core_policy() -> &'static str {
 
 /// Every command this build registers.
 ///
-/// One list, so the API ledger and the capability audit have a single thing to
-/// read. TASK-033 and TASK-034 append to it; nothing else may.
+/// Kept as one audit list so the capability surface cannot silently grow.
 #[must_use]
 pub fn registered_commands() -> &'static [&'static str] {
     &[
@@ -43,14 +36,23 @@ pub fn registered_commands() -> &'static [&'static str] {
         "save_profile",
         "save_profile_as",
         "close_profile",
+        "list_devices",
+        "refresh_devices",
+        "choose_device_folder",
+        "get_device_library",
+        "prepare_install",
+        "commit_install",
+        "prepare_delete_device_profile",
+        "commit_delete_device_profile",
+        "open_device_profile",
+        "open_device_preferences",
     ]
 }
 
-/// Builds and runs the window. Panics if the WebView cannot be created, which
-/// is unrecoverable: there is no UI left to report it in.
 pub fn run() {
     tauri::Builder::default()
         .manage(shell::native_shell())
+        .manage(device_shell::native_device_shell())
         .invoke_handler(tauri::generate_handler![
             commands::get_app_snapshot,
             commands::get_settings,
@@ -62,6 +64,16 @@ pub fn run() {
             commands::save_profile,
             commands::save_profile_as,
             commands::close_profile,
+            commands::list_devices,
+            commands::refresh_devices,
+            commands::choose_device_folder,
+            commands::get_device_library,
+            commands::prepare_install,
+            commands::commit_install,
+            commands::prepare_delete_device_profile,
+            commands::commit_delete_device_profile,
+            commands::open_device_profile,
+            commands::open_device_preferences,
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window");
@@ -75,5 +87,25 @@ mod tests {
             super::core_policy(),
             "pure-rust-no-tauri-no-os-no-network-no-filesystem-write"
         );
+    }
+
+    #[test]
+    fn device_commands_are_auditable_as_one_surface() {
+        for expected in [
+            "list_devices",
+            "refresh_devices",
+            "choose_device_folder",
+            "get_device_library",
+            "prepare_install",
+            "commit_install",
+            "prepare_delete_device_profile",
+            "commit_delete_device_profile",
+            "open_device_profile",
+            "open_device_preferences",
+        ] {
+            assert!(super::registered_commands().contains(&expected));
+        }
+        assert!(!super::registered_commands().contains(&"rename_device_profile"));
+        assert!(!super::registered_commands().contains(&"reorder_device_profiles"));
     }
 }
