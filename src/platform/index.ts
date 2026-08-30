@@ -2,9 +2,7 @@
  * The platform boundary.
  *
  * Everything the UI knows about the native side comes from here. Import from
- * `../platform`, never from `@tauri-apps/*`: the import boundary test and the
- * oxlint config both hold that line, and the reason is that every screen has to
- * render in a browser against the mock before its command exists.
+ * `../platform`, never from `@tauri-apps/*`.
  */
 
 export type {
@@ -13,11 +11,22 @@ export type {
   Capabilities,
   CloseDisposition,
   CloseOutcome,
+  ConfirmationKind,
+  ConfirmationRequirement,
+  DeletePlan,
+  DeleteReceipt,
+  DeviceLibrarySnapshot,
+  DevicePresenceSnapshot,
+  DeviceProfileEntry,
+  DeviceSummary,
   EditorOp,
   EditorSnapshot,
+  InstallPlan,
+  InstallReceipt,
   InterfaceScale,
   Issue,
   IssueSeverity,
+  LedColour,
   Mode,
   ModelChoice,
   PickerGrouping,

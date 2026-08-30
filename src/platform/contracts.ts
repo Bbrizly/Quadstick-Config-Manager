@@ -1,17 +1,11 @@
 /**
  * The shapes that cross the native boundary.
  *
- * Every type here mirrors a Rust DTO by hand. That is deliberate: generating
- * them would tie the wire to whatever the core's types happen to look like
- * today, and the core's types are the compatibility surface against the frozen
- * C# implementation. Two hand-written halves that a contract test compares is
- * the cheaper mistake.
- *
- * Nothing here carries a path. A profile is named by an opaque session id and a
- * file by a display name, in both directions.
+ * Nothing here carries a host path. Profiles use session ids, devices use
+ * opaque device ids + generations, and destructive work uses one-shot plan and
+ * confirmation ids.
  */
 
-/** Where an open profile came from, in the form a window may print. */
 export type ProfileSource =
   | { readonly kind: "new" }
   | { readonly kind: "local"; readonly name: string }
@@ -33,14 +27,6 @@ export interface Issue {
   readonly kind: string;
 }
 
-/**
- * One section of the profile, listed the way the firmware reads it.
- *
- * `number` is the position the device counts to, not a name. Two modes may
- * share a name and that is normal, so the number is what a window shows beside
- * one. It is null for the sheets the firmware reads on their own keyword and
- * never numbers.
- */
 export interface Mode {
   readonly index: number;
   readonly number: number | null;
@@ -51,23 +37,14 @@ export interface Mode {
   readonly bindingCount: number;
 }
 
-/**
- * Everything a window needs to draw one open profile.
- *
- * A read-only mirror of native truth, tagged with the revision it was taken at.
- * Never serialize this back to CSV, and never work out `dirty` by comparing
- * objects: both are the native side's job.
- */
 export interface EditorSnapshot {
   readonly sessionId: string;
   readonly revision: number;
   readonly dirty: boolean;
   readonly canUndo: boolean;
   readonly source: ProfileSource;
-  /** The name Save writes to. `null` means Save has to become Save As. */
   readonly saveTarget: string | null;
   readonly title: string;
-  /** The raw grid, which is the canonical state, odd columns and all. */
   readonly grid: readonly (readonly string[])[];
   readonly issues: readonly Issue[];
   readonly errorCount: number;
@@ -81,16 +58,13 @@ export interface SaveReceipt {
   readonly bytes: number;
 }
 
-/** What the caller wants done about unsaved work. There is no fourth answer. */
 export type CloseDisposition = "if_clean" | "save" | "discard";
 
 export type CloseOutcome =
   | { readonly kind: "closed" }
   | { readonly kind: "savedAndClosed"; readonly receipt: SaveReceipt }
-  /** Still open, still dirty. The window has to ask the user. */
   | { readonly kind: "keptOpenUnsavedChanges" };
 
-/** The typed editor operations. The `op` tag is the native enum's own name. */
 export type EditorOp =
   | { readonly op: "set_cell"; readonly row: number; readonly col: number; readonly value: string }
   | {
@@ -111,7 +85,6 @@ export type ThemeChoice = "system" | "light" | "dark";
 export type ModelChoice = "fps" | "original" | "singleton";
 export type PickerGrouping = "detailed" | "wide" | "flat";
 
-/** The four sizes the app offers. Anything else is refused, never rounded. */
 export const INTERFACE_SCALES = [100, 125, 150, 200] as const;
 export type InterfaceScale = (typeof INTERFACE_SCALES)[number];
 
@@ -119,7 +92,6 @@ export interface AppSettings {
   readonly revision: number;
   readonly model: ModelChoice;
   readonly theme: ThemeChoice;
-  /** `system` follows the machine; anything else is a language tag. */
   readonly language: string;
   readonly interfaceScalePercent: number;
   readonly reduceMotion: boolean;
@@ -129,7 +101,6 @@ export interface AppSettings {
   readonly tutorialSeen: boolean;
 }
 
-/** A change to some settings and not the others. */
 export interface SettingsPatch {
   readonly model?: ModelChoice;
   readonly theme?: ThemeChoice;
@@ -142,12 +113,6 @@ export interface SettingsPatch {
   readonly tutorialSeen?: boolean;
 }
 
-/**
- * Which parts of the app are wired, not which parts are planned.
- *
- * A window uses these to decide what to show, so a flag that is true before its
- * commands exist is a button that does nothing.
- */
 export interface Capabilities {
   readonly profileEditing: boolean;
   readonly deviceInstall: boolean;
@@ -164,7 +129,81 @@ export interface AppSnapshot {
   readonly settings: AppSettings;
 }
 
-/** The single next thing to offer. Every failure answers with one of these. */
+/** One mounted QuadStick as a window is allowed to know it. */
+export interface DeviceSummary {
+  readonly deviceId: string;
+  readonly generation: number;
+  readonly displayName: string;
+  readonly writable: boolean;
+  readonly freeBytes: number | null;
+}
+
+export interface DevicePresenceSnapshot {
+  readonly devices: readonly DeviceSummary[];
+  readonly changed: boolean;
+}
+
+export type LedColour = "purple" | "grey" | "blue" | "red";
+
+export interface DeviceProfileEntry {
+  readonly name: string;
+  readonly fileNumber: number;
+  readonly lights: readonly LedColour[];
+  readonly protected: boolean;
+}
+
+/** The selectable device library. prefs.csv is deliberately separate. */
+export interface DeviceLibrarySnapshot {
+  readonly deviceId: string;
+  readonly generation: number;
+  readonly files: readonly DeviceProfileEntry[];
+  readonly protectedFiles: readonly string[];
+  readonly unnameable: number;
+}
+
+export type ConfirmationKind =
+  | "overwrite_default_csv"
+  | "overwrite_device_preferences"
+  | "overwrite_existing_profile"
+  | "delete_device_profile";
+
+export interface ConfirmationRequirement {
+  readonly confirmationId: string;
+  readonly kind: ConfirmationKind;
+  readonly summary: string;
+}
+
+export interface InstallPlan {
+  readonly planId: string;
+  readonly target: string;
+  readonly bytes: number;
+  readonly confirmation: ConfirmationRequirement | null;
+}
+
+export interface InstallReceipt {
+  readonly operationId: string;
+  readonly deviceId: string;
+  readonly target: string;
+  readonly bytes: number;
+  readonly backup: string | null;
+  readonly confirmedOnDevice: boolean;
+  readonly stages: readonly string[];
+}
+
+export interface DeletePlan {
+  readonly planId: string;
+  readonly name: string;
+  readonly bytes: number;
+  readonly confirmation: ConfirmationRequirement;
+}
+
+export interface DeleteReceipt {
+  readonly operationId: string;
+  readonly deviceId: string;
+  readonly name: string;
+  readonly backup: string;
+}
+
 export type RecoveryAction =
   | "retry"
   | "reconnect_device"
@@ -181,39 +220,47 @@ export type RecoveryAction =
   | "restore_backup_by_hand"
   | "report_bug";
 
-/**
- * The only failure shape a window ever sees.
- *
- * `code` is stable and is what recovery UI switches on. `message` is fallback
- * English for a surface with nothing localized yet; it never carries a path.
- */
 export interface QcmErrorPayload {
   readonly code: string;
   readonly message: string;
   readonly recoverable: boolean;
   readonly action: { readonly kind: RecoveryAction } | null;
   readonly operationId: string | null;
-  /** What is on the device now, where the failure can prove it. */
   readonly targetState: "unchanged" | "missing" | "replaced" | "restored" | "uncertain" | null;
   readonly backup: string | null;
 }
 
-/**
- * The codes this task's commands can produce.
- *
- * Not the whole list: device, confirmation and network codes arrive with the
- * commands that raise them. Named so a `switch` over recovery UI is checked.
- */
 export const ERROR_CODES = {
   configUnreadable: "QCM_CONFIG_PARSE_UNREADABLE",
+  configTooLarge: "QCM_CONFIG_PARSE_TOO_LARGE",
+  configHasBlockingProblems: "QCM_CONFIG_VALIDATION_BLOCKING",
   profileUnknownSession: "QCM_PROFILE_UNKNOWN_SESSION",
   profileRevisionConflict: "QCM_PROFILE_REVISION_CONFLICT",
   profileNothingToUndo: "QCM_PROFILE_NOTHING_TO_UNDO",
   profileOperationRejected: "QCM_PROFILE_OPERATION_REJECTED",
   profileNeedsSaveTarget: "QCM_PROFILE_NEEDS_SAVE_TARGET",
   profileSaveTargetOnDevice: "QCM_PROFILE_SAVE_TARGET_ON_DEVICE",
+  deviceNotFound: "QCM_DEVICE_NOT_FOUND",
+  deviceStale: "QCM_DEVICE_STALE",
+  deviceBusy: "QCM_DEVICE_BUSY",
+  deviceNotQuadStick: "QCM_DEVICE_NOT_QUADSTICK",
+  deviceRemovedDuringWrite: "QCM_DEVICE_REMOVED_DURING_WRITE",
+  storagePermissionDenied: "QCM_STORAGE_PERMISSION_DENIED",
+  storageReadOnly: "QCM_STORAGE_READ_ONLY",
   storageFull: "QCM_STORAGE_FULL",
+  storageBackupFailed: "QCM_STORAGE_BACKUP_FAILED",
+  storageVerifyFailed: "QCM_STORAGE_VERIFY_FAILED",
+  storageRestoreFailed: "QCM_STORAGE_RESTORE_FAILED",
+  storageSwapFailed: "QCM_STORAGE_SWAP_FAILED",
+  storageNameRejected: "QCM_STORAGE_NAME_REJECTED",
+  storageProtectedFile: "QCM_STORAGE_PROTECTED_FILE",
+  storageFileNotFound: "QCM_STORAGE_FILE_NOT_FOUND",
   storageIo: "QCM_STORAGE_IO",
+  confirmationRequired: "QCM_CONFIRMATION_REQUIRED",
+  confirmationUnknown: "QCM_CONFIRMATION_UNKNOWN",
+  confirmationExpired: "QCM_CONFIRMATION_EXPIRED",
+  confirmationMismatch: "QCM_CONFIRMATION_MISMATCH",
+  confirmationAlreadyUsed: "QCM_CONFIRMATION_ALREADY_USED",
   requestMalformed: "QCM_REQUEST_MALFORMED",
   requestTooLarge: "QCM_REQUEST_TOO_LARGE",
   requestOutOfRange: "QCM_REQUEST_OUT_OF_RANGE",
@@ -221,14 +268,6 @@ export const ERROR_CODES = {
   internal: "QCM_INTERNAL",
 } as const;
 
-/**
- * A subscription handle.
- *
- * There are no events or streams yet: TASK-034 adds the low-rate events and the
- * live-input Channel. The type is here so the methods that return one cannot be
- * added without an owner for the teardown, which is what a React effect running
- * twice in StrictMode needs.
- */
 export interface Subscription {
   dispose(): void;
 }

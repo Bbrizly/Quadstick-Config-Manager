@@ -30,9 +30,6 @@ describe("MockQcmClient", () => {
     expect(snapshot.grid[1]?.[0]).toBe("racing.csv");
   });
 
-  // The mode number is what a window shows beside a mode, because the firmware
-  // counts Profile Name segments and never looks at the name. Two modes sharing
-  // a name is normal.
   it("numbers modes by position, not by name", async () => {
     const client = new MockQcmClient();
     const snapshot = await client.newProfile("racing.csv");
@@ -220,7 +217,7 @@ describe("MockQcmClient", () => {
     const client = new MockQcmClient();
     const snapshot = await client.getAppSnapshot();
     expect(snapshot.capabilities.profileEditing).toBe(true);
-    expect(snapshot.capabilities.deviceInstall).toBe(false);
+    expect(snapshot.capabilities.deviceInstall).toBe(true);
     expect(snapshot.capabilities.liveInput).toBe(false);
   });
 

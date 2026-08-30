@@ -1,13 +1,9 @@
 /**
- * The only file in the frontend allowed to import `@tauri-apps/*`.
+ * The only frontend file allowed to import `@tauri-apps/*`.
  *
- * An import boundary test holds that line, and the oxlint config states it, so
- * a component that reaches for `invoke` fails the build rather than review.
- *
- * Every command is called with one `request` object. The native side reads that
- * object itself instead of letting the framework deserialize a typed argument,
- * which is what makes a malformed payload come back as a typed error rather
- * than a framework string.
+ * Every native call is named here, and every payload is nested under `request`
+ * so malformed input is converted by Rust into the same stable error DTO as a
+ * valid request that was refused.
  */
 
 import { invoke } from "@tauri-apps/api/core";
@@ -17,8 +13,14 @@ import type {
   AppSnapshot,
   CloseDisposition,
   CloseOutcome,
+  DeletePlan,
+  DeleteReceipt,
+  DeviceLibrarySnapshot,
+  DevicePresenceSnapshot,
   EditorOp,
   EditorSnapshot,
+  InstallPlan,
+  InstallReceipt,
   SaveReceipt,
   SettingsPatch,
 } from "./contracts";
@@ -76,6 +78,58 @@ export class TauriQcmClient implements QcmClient {
   closeProfile(sessionId: string, disposition: CloseDisposition): Promise<CloseOutcome> {
     return call<CloseOutcome>("close_profile", { sessionId, disposition });
   }
+
+  listDevices(): Promise<DevicePresenceSnapshot> {
+    return call<DevicePresenceSnapshot>("list_devices");
+  }
+
+  refreshDevices(): Promise<DevicePresenceSnapshot> {
+    return call<DevicePresenceSnapshot>("refresh_devices");
+  }
+
+  chooseDeviceFolder(): Promise<DevicePresenceSnapshot | null> {
+    return call<DevicePresenceSnapshot | null>("choose_device_folder");
+  }
+
+  getDeviceLibrary(deviceId: string): Promise<DeviceLibrarySnapshot> {
+    return call<DeviceLibrarySnapshot>("get_device_library", { deviceId });
+  }
+
+  prepareInstall(sessionId: string, deviceId: string): Promise<InstallPlan> {
+    return call<InstallPlan>("prepare_install", { sessionId, deviceId });
+  }
+
+  commitInstall(planId: string, confirmationId?: string): Promise<InstallReceipt> {
+    return call<InstallReceipt>("commit_install", { planId, confirmationId });
+  }
+
+  prepareDeleteDeviceProfile(
+    deviceId: string,
+    expectedGeneration: number,
+    name: string,
+  ): Promise<DeletePlan> {
+    return call<DeletePlan>("prepare_delete_device_profile", {
+      deviceId,
+      expectedGeneration,
+      name,
+    });
+  }
+
+  commitDeleteDeviceProfile(planId: string, confirmationId: string): Promise<DeleteReceipt> {
+    return call<DeleteReceipt>("commit_delete_device_profile", { planId, confirmationId });
+  }
+
+  openDeviceProfile(
+    deviceId: string,
+    expectedGeneration: number,
+    name: string,
+  ): Promise<EditorSnapshot> {
+    return call<EditorSnapshot>("open_device_profile", { deviceId, expectedGeneration, name });
+  }
+
+  openDevicePreferences(deviceId: string, expectedGeneration: number): Promise<EditorSnapshot> {
+    return call<EditorSnapshot>("open_device_preferences", { deviceId, expectedGeneration });
+  }
 }
 
 /** Every command name this client calls, for the API ledger to be checked against. */
@@ -90,4 +144,14 @@ export const TAURI_COMMANDS = [
   "save_profile",
   "save_profile_as",
   "close_profile",
+  "list_devices",
+  "refresh_devices",
+  "choose_device_folder",
+  "get_device_library",
+  "prepare_install",
+  "commit_install",
+  "prepare_delete_device_profile",
+  "commit_delete_device_profile",
+  "open_device_profile",
+  "open_device_preferences",
 ] as const;
