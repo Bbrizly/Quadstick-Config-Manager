@@ -16,5 +16,9 @@ workspace = true
 qcm-config = { path = "../qcm-config" }
 serde = { version = "1.0.229", features = ["derive"] }
 
+# The session tests drive the ports through their fakes. A dev-dependency back
+# on qcm-testkit is a cycle only in the test graph, which Cargo allows and which
+# keeps the fakes in one place instead of a second copy living here.
 [dev-dependencies]
+qcm-testkit = { path = "../qcm-testkit" }
 serde_json = "1.0.151"

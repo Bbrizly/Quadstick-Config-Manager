@@ -15,6 +15,7 @@ pub mod confirmation;
 pub mod error;
 pub mod operation;
 pub mod ports;
+pub mod profiles;
 
 pub use clock::{Clock, ManualClock, Moment, SystemClock};
 pub use confirmation::{
@@ -29,11 +30,19 @@ pub use error::{
 pub use operation::{
     FingerprintBuilder, Operation, OperationFingerprint, OperationId, OperationIds, OperationKind,
 };
+pub use ports::local::{
+    LocalProfileId, LocalProfileRef, LocalProfileStore, LocalWriteReceipt, ProfileDisplayName,
+};
 pub use ports::storage::{
     BackupReceipt, BackupStore, CommitFailure, DeviceDisplayName, DeviceFileEntry, DeviceFileName,
     DeviceFileRole, DeviceGeneration, DeviceListing, DeviceStorage, MARKER_FILE_NAME,
     PREFERENCES_FILE_NAME, SafeDeviceFileName, StagedWrite, StorageCapabilities, StorageDeviceId,
     StorageProbe,
+};
+
+pub use profiles::{
+    CloseOutcome, CloseRequest, EditorSnapshot, ProfileOrigin, ProfileSession, ProfileSessions,
+    ProfileSourceDto, SavePlan, SaveReceipt, SaveReceiptDto, SessionId,
 };
 
 /// Same promise `qcm-config` makes, one layer up.

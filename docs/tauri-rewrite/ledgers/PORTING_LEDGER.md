@@ -8,7 +8,7 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `Parser.cs` | firmware parser | qcm-config/parser.rs | REWRITE | oracle/fuzz | 2 | CONTRACTED |
 | `Validator.cs` | validation | qcm-config/validator.rs | REWRITE | issue parity | 2 | CONTRACTED |
 | `Model.cs` | parsed types | qcm-config/model.rs | REWRITE | canonical snapshots | 2 | CONTRACTED |
-| `ProfileFile.cs` | raw grid/editor/undo/normalize | qcm-config/profile.rs + core session | SPLIT/REWRITE | mutation parity | 2/3 | CONTRACTED |
+| `ProfileFile.cs` | raw grid/editor/undo/normalize | qcm-config/profile.rs + core session | SPLIT/REWRITE | mutation parity | 2/3 | PORTED |
 | `Vocab.cs` | vocab | qcm-config/vocab.rs | REWRITE/generated | set/count parity | 2 | CONTRACTED |
 | `PreferenceCatalog.cs` | preference metadata | qcm-config/preferences.rs | REWRITE | catalog parity | 2 | CONTRACTED |
 | `FunctionParameters.cs` | function metadata | qcm-config | REWRITE | parser/validator | 2 | CONTRACTED |
@@ -20,6 +20,7 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `Device.cs` library/delete | device files | qcm-core/storage | REWRITE | parity+hardware | 3 | CONTRACTED |
 | `MainWindow.axaml` | shell/layout | React AppShell/Editor | REWRITE | component/E2E/AT | 5/6 | CONTRACTED |
 | `MainWindow.axaml.cs` | orchestration/editor/UI | qcm-core + React features | SPLIT | behavior matrix | 3–7 | CONTRACTED |
+| `MainWindow.axaml.cs::{SaveAsync,ConfirmLeaveAsync,_savePath}` | open/save/save-as/close-dirty policy | qcm-core/profiles + local store port | SPLIT | session tests | 3 | PORTED |
 | `RowControls.cs` | row editing controls | React editor | REWRITE | component | 6 | ASSESSED |
 | `OutputCatalog.cs` | display output labels | qcm-config/UI catalog | SPLIT | label tests | 2/6 | ASSESSED |
 | `CustomNames.cs` | custom naming | qcm-config/UI | SPLIT | parity | 2/6 | ASSESSED |

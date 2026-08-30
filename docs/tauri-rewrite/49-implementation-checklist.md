@@ -33,7 +33,7 @@ Work top-to-bottom. A checked box means its task acceptance criteria and linked 
 
 ## Phase 3 — core and hardware adapters
 
-- [ ] TASK-020 Create `qcm-core` profile session manager.
+- [x] TASK-020 Create `qcm-core` profile session manager.
 - [x] TASK-021 Implement stable error/confirmation/operation model.
 - [x] TASK-022 Define device-storage ports and `qcm-testkit` fake storage.
 - [ ] TASK-023 Implement mounted QuadStick discovery + opaque IDs.

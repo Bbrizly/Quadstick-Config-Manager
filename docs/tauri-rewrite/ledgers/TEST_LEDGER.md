@@ -31,5 +31,6 @@ Evidence paths are target placeholders until implemented.
 | T-025 | packaging | CI build/sign verify | clean machines | PLANNED |
 | T-026 | privacy launch network | integration traffic spy | packet/support review | PLANNED |
 | T-027 | error redaction | `qcm-core/tests/redaction.rs` every family | bug-report screenshot review | IMPLEMENTED |
+| T-028 | session revision/atomic batch/close-dirty | `qcm-core/tests/profile_sessions.rs` on the fake library | leave prompt with a real save | IMPLEMENTED |
 
 Critical behavior cannot move to PARITY-TESTED without at least one T row; storage/HID required parity also needs hardware evidence.

@@ -44,6 +44,8 @@ Current `ProfileFile.WriteAtomic` is simpler than `Device.Install`. Characterize
 
 **Deadline:** TASK-020/032.
 
+**TASK-020 (2026-08-29): parity, improvement deferred.** Local save stays at `WriteAtomic` behavior, because `06-behavioral-compatibility-contract.md` governs and a stronger local contract is a class-B improvement. `ProfileSessions::prepare_save` returns a `SavePlan` carrying the exact bytes and the target, and `commit_save` is the only step that touches the store, so backup, read-back and restore land in one body without moving the command surface. Still open for TASK-032/040.
+
 ## OQ-005 — Device profile reordering mechanism/file-number semantics
 
 Inspect `DeviceFilesWindow`, `Device.cs`, tests and any LED/current-file numbering rules end-to-end. Do not equate alphabetical display sort with firmware load order.

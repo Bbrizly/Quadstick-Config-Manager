@@ -56,6 +56,12 @@ fn every_error() -> Vec<QcmError> {
             actual: 6,
         }),
         QcmError::Profile(ProfileError::NothingToUndo),
+        QcmError::Profile(ProfileError::OperationRejected {
+            index: 2,
+            op: "delete_row",
+        }),
+        QcmError::Profile(ProfileError::NeedsSaveTarget),
+        QcmError::Profile(ProfileError::SaveTargetOnDevice),
         QcmError::Device(DeviceError::NotFound),
         QcmError::Device(DeviceError::Stale {
             expected: DeviceGeneration::from_raw(2),

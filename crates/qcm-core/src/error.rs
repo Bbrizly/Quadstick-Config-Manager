@@ -22,6 +22,9 @@ pub enum ErrorCode {
     ProfileUnknownSession,
     ProfileRevisionConflict,
     ProfileNothingToUndo,
+    ProfileOperationRejected,
+    ProfileNeedsSaveTarget,
+    ProfileSaveTargetOnDevice,
     DeviceNotFound,
     DeviceStale,
     DeviceBusy,
@@ -57,6 +60,9 @@ impl ErrorCode {
             Self::ProfileUnknownSession => "QCM_PROFILE_UNKNOWN_SESSION",
             Self::ProfileRevisionConflict => "QCM_PROFILE_REVISION_CONFLICT",
             Self::ProfileNothingToUndo => "QCM_PROFILE_NOTHING_TO_UNDO",
+            Self::ProfileOperationRejected => "QCM_PROFILE_OPERATION_REJECTED",
+            Self::ProfileNeedsSaveTarget => "QCM_PROFILE_NEEDS_SAVE_TARGET",
+            Self::ProfileSaveTargetOnDevice => "QCM_PROFILE_SAVE_TARGET_ON_DEVICE",
             Self::DeviceNotFound => "QCM_DEVICE_NOT_FOUND",
             Self::DeviceStale => "QCM_DEVICE_STALE",
             Self::DeviceBusy => "QCM_DEVICE_BUSY",
@@ -100,6 +106,7 @@ pub enum RecoveryAction {
     WaitForCurrentOperation,
     ChooseAnotherFile,
     ChooseAnotherName,
+    ChooseSaveLocation,
     FreeSpaceOnDevice,
     MakeDeviceWritable,
     ConfirmAgain,
@@ -119,6 +126,7 @@ impl RecoveryAction {
             Self::WaitForCurrentOperation => "wait_for_current_operation",
             Self::ChooseAnotherFile => "choose_another_file",
             Self::ChooseAnotherName => "choose_another_name",
+            Self::ChooseSaveLocation => "choose_save_location",
             Self::FreeSpaceOnDevice => "free_space_on_device",
             Self::MakeDeviceWritable => "make_device_writable",
             Self::ConfirmAgain => "confirm_again",
@@ -328,8 +336,23 @@ pub enum ConfigError {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ProfileError {
     UnknownSession,
-    RevisionConflict { expected: u64, actual: u64 },
+    RevisionConflict {
+        expected: u64,
+        actual: u64,
+    },
     NothingToUndo,
+    /// One operation in a batch did not apply, so none of the batch did. The
+    /// position is carried because the window submitted the list and is the
+    /// only thing that can say which control it came from.
+    OperationRejected {
+        index: usize,
+        op: &'static str,
+    },
+    /// Save has nowhere to write yet. A new profile and a working copy read off
+    /// a device both start here, which is why both go through Save As first.
+    NeedsSaveTarget,
+    /// The chosen place is on a mounted QuadStick. Save never writes there.
+    SaveTargetOnDevice,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -484,6 +507,9 @@ impl QcmError {
                 ProfileError::UnknownSession => ErrorCode::ProfileUnknownSession,
                 ProfileError::RevisionConflict { .. } => ErrorCode::ProfileRevisionConflict,
                 ProfileError::NothingToUndo => ErrorCode::ProfileNothingToUndo,
+                ProfileError::OperationRejected { .. } => ErrorCode::ProfileOperationRejected,
+                ProfileError::NeedsSaveTarget => ErrorCode::ProfileNeedsSaveTarget,
+                ProfileError::SaveTargetOnDevice => ErrorCode::ProfileSaveTargetOnDevice,
             },
             Self::Device(error) => device_code(error),
             Self::Storage(error) => match error {
@@ -534,7 +560,12 @@ impl QcmError {
                 ProfileError::UnknownSession | ProfileError::RevisionConflict { .. } => {
                     RecoveryAction::ReopenProfile
                 }
-                ProfileError::NothingToUndo => RecoveryAction::Retry,
+                ProfileError::NothingToUndo | ProfileError::OperationRejected { .. } => {
+                    RecoveryAction::Retry
+                }
+                ProfileError::NeedsSaveTarget | ProfileError::SaveTargetOnDevice => {
+                    RecoveryAction::ChooseSaveLocation
+                }
             },
             Self::Device(error) => device_action(error),
             Self::Storage(error) => match error {
@@ -586,6 +617,16 @@ impl QcmError {
                     "This profile changed since the edit was made (expected revision {expected}, found {actual})."
                 ),
                 ProfileError::NothingToUndo => "There is nothing left to undo.".to_owned(),
+                ProfileError::OperationRejected { index, op } => format!(
+                    "That change could not be made, so none of the batch was applied (operation {index}, {op})."
+                ),
+                ProfileError::NeedsSaveTarget => {
+                    "This profile has not been saved anywhere yet.".to_owned()
+                }
+                ProfileError::SaveTargetOnDevice => {
+                    "This profile lives on the QuadStick. Saving writes to your computer; use Install to put it back on the device."
+                        .to_owned()
+                }
             },
             Self::Device(error) => device_message(error),
             Self::Storage(error) => Self::storage_message(error),
@@ -714,6 +755,12 @@ impl From<DeviceError> for QcmError {
 impl From<DeviceError> for StorageError {
     fn from(error: DeviceError) -> Self {
         Self::Device(error)
+    }
+}
+
+impl From<ProfileError> for QcmError {
+    fn from(error: ProfileError) -> Self {
+        Self::Profile(error)
     }
 }
 
