@@ -5,7 +5,9 @@
 //! native.
 
 use qcm_core::confirmation::{ConfirmationId, ConfirmationRequirement};
-use qcm_core::devices::{DeletePlan, DeleteReceipt, DeviceSummary, GuideEntry, InstallPlan, InstallReceipt};
+use qcm_core::devices::{
+    DeletePlan, DeleteReceipt, DeviceSummary, GuideEntry, InstallPlan, InstallReceipt,
+};
 use qcm_core::error::{ProfileError, QcmError, RequestError};
 use qcm_core::operation::OperationId;
 use qcm_core::ports::storage::{DeviceGeneration, StorageDeviceId, StorageProbe};
@@ -63,13 +65,21 @@ pub fn device_id(raw: &str) -> Result<StorageDeviceId, QcmError> {
 }
 
 pub fn operation_id(raw: &str) -> Result<OperationId, QcmError> {
-    OperationId::from_str(raw)
-        .map_err(|()| RequestError::OutOfRange { what: "operation id" }.into())
+    OperationId::from_str(raw).map_err(|()| {
+        RequestError::OutOfRange {
+            what: "operation id",
+        }
+        .into()
+    })
 }
 
 pub fn confirmation_id(raw: &str) -> Result<ConfirmationId, QcmError> {
-    ConfirmationId::from_str(raw)
-        .map_err(|()| RequestError::OutOfRange { what: "confirmation id" }.into())
+    ConfirmationId::from_str(raw).map_err(|()| {
+        RequestError::OutOfRange {
+            what: "confirmation id",
+        }
+        .into()
+    })
 }
 
 pub fn optional_confirmation_id(raw: Option<&str>) -> Result<Option<ConfirmationId>, QcmError> {
