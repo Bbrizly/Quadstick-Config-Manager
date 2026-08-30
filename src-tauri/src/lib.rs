@@ -176,11 +176,19 @@ mod tests {
             "file:///tmp/profile.html",
             "data:text/html,hello",
             "http://localhost:1420/",
-            "http://tauri.localhost:80/index.html",
+            "http://tauri.localhost:8080/index.html",
+            "https://tauri.localhost/index.html",
         ] {
             let url = Url::parse(forbidden).expect("valid forbidden URL");
             assert!(!super::navigation_allowed_for(&url, false), "{forbidden}");
         }
+
+        // The url crate drops a port equal to the scheme default, so :80 here
+        // is the allowed origin spelled out, not a second one to reject.
+        let spelled_out = "http://tauri.localhost:80/index.html";
+        let url = Url::parse(spelled_out).expect("valid URL");
+        assert_eq!(url.port(), None);
+        assert!(super::navigation_allowed_for(&url, false));
     }
 
     #[test]
