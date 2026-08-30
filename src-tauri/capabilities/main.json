@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "main",
-  "description": "Default deny. The window gets no plugin permission at all: no filesystem, no shell, no opener, no HTTP, no process. Every privileged action goes through a native command that validates its own request. TASK-035 adds the negative tests that hold this line.",
+  "description": "Default deny. The window gets no plugin permission at all: no filesystem, no shell, no opener, no HTTP, no process. Every privileged action goes through a native command that validates its own request. The TASK-035 negative tests hold this line.",
   "local": true,
   "windows": ["main"],
   "permissions": []
