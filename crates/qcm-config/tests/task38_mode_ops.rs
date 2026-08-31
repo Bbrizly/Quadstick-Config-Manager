@@ -30,9 +30,8 @@ fn typed_duplicate_move_and_delete_use_whole_sheet_semantics() {
 
 #[test]
 fn typed_delete_refuses_to_remove_the_last_mode() {
-    let mut profile = ProfileFile::load(
-        "Profile Name,,Only\nconfig.csv\nOutputs,Function,usb\nx,normal,lip\n",
-    );
+    let mut profile =
+        ProfileFile::load("Profile Name,,Only\nconfig.csv\nOutputs,Function,usb\nx,normal,lip\n");
     assert!(!profile.apply_editor_op(&EditorOp::DeleteMode { sheet: 0 }));
     assert_eq!(profile.document.sheets.len(), 1);
 }
