@@ -36,7 +36,7 @@ Tasks are tracked on independent axes so hardware or credential debt is not conf
 | TASK-035 capabilities + CSP | **DONE** | **PASS** | N/A | exact-head run `33338800870` |
 | TASK-036 accessible app shell/design tokens | **DONE** | **PASS** | final manual AT later | exact-head run `33338801740` |
 | TASK-037 localization migration | **DONE** | **PASS** — exact-head run `33347003405` | final manual locale/AT hardening later | deterministic shipping RESX → React catalogs, pseudo, RTL, error localization |
-| TASK-038 editor parity UI | **IMPLEMENTING** | feature-branch tests/gate pending | final AT pass later | snapshot-driven modes/bindings/issues/raw-grid UI |
+| TASK-038 editor parity UI | **IMPLEMENTING** | exact-head gate running | final AT pass later | canonical snapshot refresh; typed whole-mode ops; modes/bindings/issues/raw-grid UI; mock E2E |
 
 The TASK-035/TASK-036 integration was also exercised by draft PR #5's synthetic merge run `33339138829`, which passed Gate 0, Rust parity, frontend checks and fuzz smoke against then-current `main`.
 
@@ -55,6 +55,10 @@ Device discovery/library/install/delete/open-preferences use opaque IDs/generati
 TASK-037 uses `src/QuadStick.App/Strings*.resx` as the shipping translation source of truth. The React catalogs are generated deterministically; absent satellite entries fall back to English, placeholders must remain compatible, pseudo-loc is generated from English, Arabic sets `dir=rtl`, and firmware/file tokens are not translated by config serialization. Stable Rust error codes are mapped to localized frontend messages instead of treating Rust fallback English as presentation authority.
 
 The normal rewrite gate regenerates catalogs and fails if committed generated output is stale.
+
+## Editor boundary
+
+TASK-038 does not make React a profile engine. The UI renders `EditorSnapshot`, sends typed `EditorOp` values with the revision it saw, and replaces its projection only with the returned Rust snapshot. Whole-mode duplicate/delete/reorder call the already-ported whole-sheet Rust semantics. A revision conflict uses the narrow read-only `get_profile_snapshot` domain command to re-fetch canonical state instead of retrying or reconstructing state in JavaScript. Raw-grid editing is an intentional advanced projection of the same session and still travels through `set_cell`.
 
 ## Remaining validation debt
 
