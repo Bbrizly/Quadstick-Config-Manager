@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
 import quadStickPhoto from "../../QuadStick.App/Assets/QuadStick.png";
 import { useI18n, type MessageKey } from "../../i18n";
 import type { LiveSnapshot, QcmClient } from "../../platform";
+import "./visualizer.css";
 
 export interface VisualizerBinding {
   readonly row: number;
@@ -41,10 +42,9 @@ type ZoneId =
   | "settings"
   | "unset";
 
-// Ported from MainWindow.axaml.cs. The stage/photo sizes and the six physical
-// callouts were measured against the shipping QuadStick.png, so the React view
-// points at the same physical places as the Avalonia view rather than inventing
-// a second diagram.
+// Ported from MainWindow.axaml.cs. These values were measured against the
+// shipping QuadStick.png, so the Tauri view points at the same physical parts
+// as the stable application rather than introducing a second diagram.
 const STAGE = { width: 600, height: 468, photoX: 80, photoY: 84, photoW: 440, photoH: 293 } as const;
 const ZONES: readonly ZoneDefinition[] = [
   { id: "joystick", titleKey: "Main_Joystick", shortKey: "Main_Joystick", labelX: 150, labelY: 390, pointX: 217, pointY: 253 },
@@ -75,7 +75,10 @@ function zoneOf(input: string): ZoneId {
   if (["right_sip", "right_puff", "right_sip_soft", "right_puff_soft"].includes(input)) return "side";
   if (input === "lip") return "lip";
   if (input.startsWith("digital_in")) return "jacks";
-  if (["left", "right", "up", "down", "any_direction", "center", "N", "NE", "E", "SE", "S", "SW", "W", "NW"].includes(input) || input.endsWith("_inner")) return "joystick";
+  if (
+    ["left", "right", "up", "down", "any_direction", "center", "N", "NE", "E", "SE", "S", "SW", "W", "NW"].includes(input) ||
+    input.endsWith("_inner")
+  ) return "joystick";
   return "other";
 }
 
@@ -117,7 +120,7 @@ export function QuadStickVisualizer({
   modeNumber,
   onSelectRow,
 }: QuadStickVisualizerProps) {
-  const { t } = useI18n();
+  const { t, plural } = useI18n();
   const [practice, setPractice] = useState(false);
   const [live, setLive] = useState<LiveSnapshot | null>(null);
   const [focusedZone, setFocusedZone] = useState(0);
@@ -138,10 +141,7 @@ export function QuadStickVisualizer({
   }, [rows, selectedRow]);
 
   useEffect(() => {
-    if (!practice) {
-      setLive(null);
-      return;
-    }
+    if (!practice) return;
     let disposed = false;
     let subscription: { dispose(): void } | null = null;
     void client.startLiveInput((frame) => {
@@ -155,7 +155,6 @@ export function QuadStickVisualizer({
     return () => {
       disposed = true;
       subscription?.dispose();
-      setLive(null);
     };
   }, [client, practice]);
 
@@ -177,6 +176,11 @@ export function QuadStickVisualizer({
     hotspotRefs.current[next]?.focus();
   };
 
+  const togglePractice = (): void => {
+    if (practice) setLive(null);
+    setPractice((value) => !value);
+  };
+
   return (
     <section className="quadstick-visualizer" aria-labelledby="quadstick-visualizer-title">
       <header className="visualizer-header">
@@ -188,18 +192,14 @@ export function QuadStickVisualizer({
           type="button"
           className={practice ? "practice-toggle active" : "practice-toggle"}
           aria-pressed={practice}
-          onClick={() => setPractice((value) => !value)}
+          onClick={togglePractice}
         >
           {practice ? t("Main_UsingDeviceView") : t("DevicePage_JoystickTravel")}
         </button>
       </header>
 
       <div className="visualizer-stage-scroll">
-        <div
-          className="visualizer-stage"
-          style={{ width: STAGE.width, height: STAGE.height }}
-          dir="ltr"
-        >
+        <div className="visualizer-stage" style={{ width: STAGE.width, height: STAGE.height }} dir="ltr">
           <img
             className="quadstick-photo"
             src={quadStickPhoto}
@@ -250,7 +250,7 @@ export function QuadStickVisualizer({
                   onClick={() => selectZone(zone)}
                 >
                   <strong>{t(zone.shortKey)}</strong>
-                  <span>{count === 0 ? t("Main_NotMapped") : t("Count_Mapping_other", [count])}</span>
+                  <span>{count === 0 ? t("Main_NotMapped") : plural("Count_Mapping", count, [count])}</span>
                   {active ? <span className="live-word">{t("Main_UsingDeviceView")}</span> : null}
                 </button>
               </div>
@@ -261,12 +261,15 @@ export function QuadStickVisualizer({
 
       {extraZones.length > 0 ? (
         <div className="visualizer-extra-zones" aria-label={t("Main_Parts")}>
-          {extraZones.map((zone) => (
-            <button key={zone.id} type="button" onClick={() => selectZone(zone)}>
-              <strong>{t(zone.titleKey)}</strong>
-              <span>{t("Count_Mapping_other", [rowsByZone.get(zone.id)?.length ?? 0])}</span>
-            </button>
-          ))}
+          {extraZones.map((zone) => {
+            const count = rowsByZone.get(zone.id)?.length ?? 0;
+            return (
+              <button key={zone.id} type="button" onClick={() => selectZone(zone)}>
+                <strong>{t(zone.titleKey)}</strong>
+                <span>{plural("Count_Mapping", count, [count])}</span>
+              </button>
+            );
+          })}
         </div>
       ) : null}
 
@@ -286,6 +289,8 @@ export function QuadStickVisualizer({
                   <li key={`${zone.id}-${String(row.row)}`}>
                     <button
                       type="button"
+                      data-binding-row={row.row}
+                      data-testid={`binding-row-${String(row.row)}`}
                       aria-pressed={selectedRow === row.row}
                       onClick={() => onSelectRow(row.row)}
                     >
