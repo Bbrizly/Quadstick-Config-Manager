@@ -83,9 +83,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git diff -- src/i18n/catalogs > /tmp/catalogs.before
           python3 tools/i18n/generate_frontend_catalogs.py
+          git diff -- src/i18n/catalogs > /tmp/catalogs.after
+          if ! cmp -s /tmp/catalogs.before /tmp/catalogs.after; then
+            echo "Localization catalog generation is not idempotent" >&2
+            diff -u /tmp/catalogs.before /tmp/catalogs.after || true
+            exit 1
+          fi
           git diff --check
-          git diff --exit-code -- src/i18n/catalogs
       - name: Commit finalized generated state and remove this workflow
         shell: bash
         run: |
