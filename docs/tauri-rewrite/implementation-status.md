@@ -36,7 +36,7 @@ Tasks are tracked on independent axes so hardware or credential debt is not conf
 | TASK-035 capabilities + CSP | **DONE** | **PASS** | N/A | exact-head run `33338800870` |
 | TASK-036 accessible app shell/design tokens | **DONE** | **PASS** | final manual AT later | exact-head run `33338801740` |
 | TASK-037 localization migration | **DONE** | **PASS** — exact-head run `33347003405` | final manual locale/AT hardening later | deterministic shipping RESX → React catalogs, pseudo, RTL, error localization |
-| TASK-038 editor parity UI | **IMPLEMENTING** | exact-head gate running | final AT pass later | canonical snapshot refresh; typed whole-mode ops; modes/bindings/issues/raw-grid UI; mock E2E |
+| TASK-038 editor parity UI | **DONE** | **PENDING exact-head parity gate** | final AT pass later | finalizer run `33354437900`; canonical snapshot refresh; typed whole-mode ops; modes/bindings/issues/raw-grid UI; mock E2E |
 
 The TASK-035/TASK-036 integration was also exercised by draft PR #5's synthetic merge run `33339138829`, which passed Gate 0, Rust parity, frontend checks and fuzz smoke against then-current `main`.
 
@@ -72,4 +72,4 @@ These are not blanket blockers for implementing later product slices.
 
 ## Next implementation boundary
 
-Finish TASK-038 editor parity UI and promote only after its exact-head gate. TASK-040A local file workflow follows.
+Run the full exact-head parity gate for the finalized TASK-038 branch and promote only if it passes. TASK-040A local CSV open/edit/undo/save/reopen follows from that verified integration head.
