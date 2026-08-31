@@ -3395,8 +3395,13 @@ public partial class MainWindow : Window
             // Room for the rules to sit in without touching the words: the
             // gesture used to end flush against the gutter, so the last letter
             // read as if it had been cut off.
-            gesture.Margin = new Thickness(0, 5, 4, 5);
+            gesture.Margin = new Thickness(0, 5, 6, 5);
             action.Margin = new Thickness(4, 5, 0, 5);
+            // The name is right aligned, so it sits on the edge of its own
+            // layout box and a bold "f" draws a hair past the width the layout
+            // measured. Without the padding the tail of "Soft Puff" is shaved
+            // off, and widening the column cannot help: the text moves with it.
+            gesture.Padding = new Thickness(0, 0, 2, 0);
             int r = panel.RowDefinitions.Count - 1;
             // The tint goes in first so it sits behind the words. A gesture with
             // nothing mapped to it gets none: there is no row for the device to

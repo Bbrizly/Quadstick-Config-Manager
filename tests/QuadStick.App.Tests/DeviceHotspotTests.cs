@@ -355,6 +355,34 @@ public class DeviceHotspotTests
         new FormattedText(word, CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
             new Typeface(t.FontFamily, t.FontStyle, t.FontWeight), t.FontSize, null).Width;
 
+    // The gesture names are right aligned against the rule between the two
+    // columns, so each one sits on the edge of its own box. A bold "f" inks
+    // past the advance width the layout measures, and a box sized to that
+    // measurement exactly shaved the tail off "Soft Puff" and "Puff". Word
+    // widths alone miss it: every word fits, the line as a whole does not.
+    [AvaloniaFact]
+    public void A_callout_name_is_not_shaved_by_its_own_edge()
+    {
+        var w = Open();
+        try
+        {
+            int checked_ = 0;
+            foreach (var card in Stage(w).Children.OfType<ToggleButton>())
+                foreach (var text in card.GetVisualDescendants().OfType<TextBlock>()
+                             .Where(t => t.TextAlignment == TextAlignment.Right))
+                {
+                    double line = WordWidth(text, text.Text ?? "");
+                    if (line > text.Bounds.Width) continue; // wrapped: the word check covers it
+                    checked_++;
+                    Assert.True(text.Bounds.Width - line >= 2,
+                        $"'{text.Text}' is drawn in {text.Bounds.Width}px of the "
+                        + $"{line}px it measures, so its last letter is cut");
+                }
+            Assert.True(checked_ > 0, "no callout names were measured");
+        }
+        finally { w.Close(); }
+    }
+
     // A callout is a fixed width, so a word wider than its column is drawn
     // running off the edge and the card cuts it: "Decrement mode" read
     // "Decremen mode", which is not the name of anything. Xbox style is the
