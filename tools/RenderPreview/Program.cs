@@ -45,6 +45,10 @@ var lang = args.Contains("--pseudo") ? "qps-ploc"
 var cfgDir = Directory.CreateTempSubdirectory("qscm-cfg-").FullName;
 Settings.PathOverride = Path.Combine(cfgDir, "settings.json");
 Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Language = lang });
+// Same reason, for the other folder this machine has of its own: a draft left
+// behind by a crash months ago put a red "unsaved work was recovered" banner
+// across the middle of the Home screenshot that shipped in the README.
+CrashGuard.RescueDirOverride = Path.Combine(cfgDir, "rescue");
 
 // A prefs.csv shaped like the one a QuadStick ships with: a handful of the
 // settings written down, the rest left to the device's own defaults.
@@ -143,6 +147,94 @@ AppBuilder.Configure<App>()
     .UseSkia()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
     .SetupWithoutStarting();
+
+// The set the README and the site use, named the way they are named there, so
+// refreshing them is a render and a copy rather than a guess about which of
+// forty renders was which one. Both themes, because both pages swap on the
+// reader's. Wider than the old 1180: the panel beside the device view lost its
+// mapping count off the right edge at that width.
+if (args.Contains("--docs"))
+{
+    const int W = 1440, H = 900;
+    // Home is taller than the rest on purpose. With a QuadStick plugged in it
+    // carries the device's own files above the library, and a shot that cuts
+    // the library in half is missing the thing it is there to show.
+    const int HomeH = 1280;
+
+    // Light rows this profile really has. A hard-coded output token lights
+    // nothing the moment the hero profile changes, and a shot of the feature
+    // with the feature not visible is worse than no shot.
+    HashSet<string> LitRows(ProfileFile f)
+    {
+        var lit = new HashSet<string>(StringComparer.Ordinal);
+        for (int row = 0; row < 60 && lit.Count < 3; row++)
+        {
+            var output = f.GetCell(row, 0).Trim();
+            if (output.Length == 0 || f.GetCell(row, 2).Trim().Length == 0) continue;
+            if (!Vocab.AllOutputs.Contains(output, StringComparer.Ordinal)) continue;
+            lit.Add(output);
+        }
+        return lit;
+    }
+
+    foreach (var (suffix, variant) in new[] { ("", ThemeVariant.Light), ("-dark", ThemeVariant.Dark) })
+    {
+        Application.Current!.RequestedThemeVariant = variant;
+        // Fresh settings per theme: opening a profile below files it under
+        // recents, and the second pass would otherwise show a Home the first
+        // one did not.
+        Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Language = lang });
+
+        CaptureSized($"screenshot-home{suffix}", W, HomeH, _ => { });
+
+        CaptureSized($"screenshot-device-view{suffix}", W, H, w =>
+        {
+            w.OpenPathForPreview(hero);
+            w.SelectZoneForPreview("joystick");
+        });
+
+        // A different profile from the hero on purpose, one whose first screen
+        // is bound rather than a column of "pick an input", since that is what
+        // the row view is for.
+        CaptureSized($"screenshot-editor{suffix}", W, H, w =>
+        {
+            var dense = Path.Combine(lib, "Apex Legends.csv");
+            w.OpenPathForPreview(File.Exists(dense) ? dense : hero);
+            w.SetDeviceViewForPreview(false);
+        });
+
+        // One of each, because the two are not treated the same: a word where
+        // a device setting's number goes is an error and blocks the install,
+        // an input name the device does not know is a warning and does not.
+        CaptureSized($"screenshot-errors{suffix}", W, H, w =>
+        {
+            var f = ProfileFile.Load(File.ReadAllText(hero));
+            f.SetCell(4, 0, "mouse_speed");
+            f.SetCell(4, 2, "fast");
+            f.SetCell(5, 2, "left_sip");
+            w.LoadProfile(f);
+            w.SetDeviceViewForPreview(false);
+            w.ShowProblemsForPreview();
+        });
+
+        CaptureSized($"screenshot-device-settings{suffix}", W, H, w =>
+            w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff"));
+
+        // A row lit while the device is sending it, driven by the same seam the
+        // row-lighting tests use. No stick in the room, the real UI state.
+        CaptureSized($"screenshot-live{suffix}", W, H, w =>
+        {
+            var f = ProfileFile.Load(File.ReadAllText(hero));
+            w.LoadProfile(f);
+            w.SetDeviceViewForPreview(false);
+            w.ShowLiveInputForPreview(new LiveState(
+                0, -0.6, Array.Empty<int>(), "QuadStick", LitRows(f), true));
+        });
+    }
+
+    Console.WriteLine("docs set written");
+    return;
+}
 
 // The set that goes with a release announcement, all at 1920x1080 so they sit
 // in a row without one of them being half the size of its neighbours. Light
