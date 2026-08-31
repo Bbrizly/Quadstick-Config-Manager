@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QuadStick Config Manager · edit your sip &amp; puff profiles safely</title>
-<meta name="description" content="A free, open-source desktop app for editing and installing QuadStick game profiles on Windows and macOS. Catches mistakes in plain English before they reach the device.">
+<meta name="description" content="A free, open-source desktop app for editing and installing QuadStick game profiles on Windows, macOS and Linux. Catches mistakes in plain English before they reach the device.">
 
 <!-- favicon: the real logo on a dark tile, so it reads on light and dark tab strips -->
 <link rel="icon" type="image/png" href="favicon.png">
@@ -426,7 +426,7 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="kicker">What you get</span>
-      <h2 class="display">Two ways to see a profile. Neither of them is a raw spreadsheet.</h2>
+      <h2 class="display">Two ways to see a profile, and one screen for the stick itself.</h2>
     </div>
 
     <!-- feature 1: device view -->
@@ -441,7 +441,7 @@
           <span class="key out"><span class="sw"></span>Output: the game button</span>
         </div>
       </div>
-      <div class="shot"><img src="screenshot-device-view.png" alt="The device view: a photo of the QuadStick with every part labelled and its mapping count, and the joystick's four mappings written out beside it as sentences." loading="lazy"></div>
+      <div class="shot"><img src="screenshot-device-view.png" alt="The device view: a photo of the QuadStick with a callout beside each part saying what a sip, puff or soft version of either does, and the joystick's four mappings written out in the panel beside it." loading="lazy"></div>
     </div>
 
     <!-- feature 2: list view -->
@@ -461,6 +461,26 @@
         <p>Click any problem to copy it straight into a bug report.</p>
       </div>
       <div class="shot"><img src="screenshot-errors.png" alt="The problems panel: one error and two warnings written out in plain English, each naming its cell, with the bad cells outlined in red." loading="lazy"></div>
+    </div>
+
+    <!-- feature 4: device settings -->
+    <div class="feature flip reveal">
+      <div class="feat-copy">
+        <h3>Tune the stick itself, not just the game.</h3>
+        <p>The Device screen reads <code style="font-size:.85em">prefs.csv</code> off the QuadStick and gives every setting a real control: a slider with the exact number beside it, a box where it's a flag, a dropdown where it's a list. Each one says what it does, and what the device falls back to when your file leaves it out.</p>
+        <p>Nothing reaches the stick until you press Save, and nothing you didn't type gets rewritten.</p>
+      </div>
+      <div class="shot"><img src="screenshot-device-settings.png" alt="The device settings screen: the sip and puff group, each setting on a slider with its exact number beside it and a line saying what it changes." loading="lazy"></div>
+    </div>
+
+    <!-- feature 5: live -->
+    <div class="feature reveal">
+      <div class="feat-copy">
+        <h3>Watch the stick working while you set it up.</h3>
+        <p>Plug a QuadStick in and the app finds it on its own. While it sends an output, the row bound to that output lights up, in the list and on the picture. Sip on the mouthpiece and the sip row stays lit for as long as the sip lasts.</p>
+        <p>You can check a binding does what you meant without opening the game.</p>
+      </div>
+      <div class="shot"><img src="screenshot-live.png" alt="The list view with three rows lit while the QuadStick is sending them, each lit row marked with a dot as well as colour." loading="lazy"></div>
     </div>
   </div>
 </section>
