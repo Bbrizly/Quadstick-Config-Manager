@@ -37,6 +37,9 @@ describe("TASK-038 editor workspace", () => {
       const current = await client.getProfileSnapshot(opened.sessionId);
       expect(current.grid[3]?.[0]).toBe("circle");
     });
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /Undo/u })).toBeEnabled();
+    });
 
     fireEvent.keyDown(window, { key: "z", ctrlKey: true });
     await waitFor(async () => {
