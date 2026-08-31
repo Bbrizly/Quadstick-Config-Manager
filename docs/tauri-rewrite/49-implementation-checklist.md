@@ -1,8 +1,8 @@
 # Master implementation checklist
 
-Work top-to-bottom. A checked box means its task acceptance criteria and linked ledger updates are complete; it does **not** mean “code exists.”
+Work top-to-bottom. A checked box means its implementation acceptance criteria and linked automated evidence are complete; it does **not** imply that separately tracked physical, credential, human, or release validation has passed.
 
-**Execution ordering:** use `52-final-product-execution-spec.md`. This file remains the canonical task/phase acceptance checklist, but pending physical, credential, human, or release validation does not by itself make implementation blocked. Track those validation dimensions separately as defined in 52.
+**Execution ordering:** use `52-final-product-execution-spec.md`. Pending physical, credential, human, or release validation does not by itself make implementation blocked. Track those dimensions separately as defined there.
 
 ## Phase 0 — freeze current reality
 
@@ -42,24 +42,24 @@ Work top-to-bottom. A checked box means its task acceptance criteria and linked 
 - [x] TASK-024 Port safe install transaction with fault injection.
 - [x] TASK-025 Port device library/delete/order/preferences operations.
 - [ ] TASK-026 Run HID library/report-descriptor spike on real hardware.
-- [ ] TASK-027 Implement descriptor-driven HID adapter/worker.
+- [x] TASK-027 Implement descriptor-driven HID adapter/worker. Physical backend validation remains pending under TASK-026/RC hardware rows.
 - [x] TASK-028 Implement live-input manager/bounded stream.
 - [x] TASK-029 Resolve serial production-use question; implement nothing if E/not required.
 
-**Gate 3:** core works without UI; physical QuadStick install/readback + live input pass on primary desktop platform.
+**Gate 3:** core automated implementation is available without UI; physical QuadStick install/readback + live input remain separately tracked release evidence.
 
 ## Phase 4/5 — shell and frontend foundation
 
 - [x] TASK-030 Scaffold Tauri 2 + React + Vite using pinned toolchains.
 - [x] TASK-031 Define `QcmClient`, DTOs and `MockQcmClient`.
 - [x] TASK-032 Implement profile/settings Tauri commands.
-- [ ] TASK-033 Implement device/storage Tauri commands and confirmation plans.
-- [ ] TASK-034 Implement low-rate events + live/progress Channels.
-- [ ] TASK-035 Lock capabilities/CSP and add negative permission tests.
-- [ ] TASK-036 Build accessible app shell/design tokens/settings foundation.
+- [x] TASK-033 Implement device/storage Tauri commands and confirmation plans.
+- [x] TASK-034 Implement low-rate invalidation + live/progress Channels.
+- [x] TASK-035 Lock capabilities/CSP and add negative permission tests.
+- [x] TASK-036 Build accessible app shell/design tokens/settings foundation.
 - [ ] TASK-037 Migrate all localization catalogs + pseudo-loc/RTL pipeline.
 
-**Gate 5:** browser/mock and native minimal shell can open/edit/save through core with no generic native capability.
+**Gate 5:** browser/mock and native shell use the typed QcmClient boundary with no generic native capability. TASK-037 closes the remaining frontend-foundation localization row.
 
 ## Phase 6 — product parity slices
 
@@ -75,7 +75,7 @@ Work top-to-bottom. A checked box means its task acceptance criteria and linked 
 - [ ] TASK-047 Implement signed update check/install flow.
 - [ ] TASK-048 Port agent workflow/corpus/eval integration around typed EditorOps.
 
-**Gate 6:** every A feature has automated evidence; no required red feature-parity row.
+**Gate 6:** every required feature has automated evidence; no required red feature-parity row.
 
 ## Phase 7/8 — hardening
 

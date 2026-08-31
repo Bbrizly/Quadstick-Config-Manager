@@ -1,0 +1,34 @@
+{
+  "baselineKeyCount": 1035,
+  "locales": [
+    "en",
+    "ar",
+    "de",
+    "es",
+    "fr",
+    "hi",
+    "it",
+    "ja",
+    "ko",
+    "nl",
+    "pl",
+    "pt",
+    "zh-Hans"
+  ],
+  "rewriteKeyCount": 12,
+  "sourceSha256": {
+    "ar": "c7b8b430145b2b150af874aef0af19d9f04ff26be1327d5cf17f4bc6a80d1ee1",
+    "de": "99c3a7ed340fa9bec55072573b244dc5131cf7ef414c15715d65f4d77b620102",
+    "en": "140762f2260e2ad4a612644494ba7c8ddb99515f323d36c274c0778dce6db556",
+    "es": "a5d98b20c83981f485ac9a3f01a958662b545b950ca790533193c00375657509",
+    "fr": "27a402269ab27e0b7c68ea2dae0cc70c9f696f32beadd1167c5d016e9ed6b518",
+    "hi": "26102bf34e59d91c6e05e05ad1a4d74a87b0fdea8e5dec1b364577d0c18b7a90",
+    "it": "82bb1e270bf958ee14075b3281d4a736ae049d8eebb1f80cb95768ebb9ce3e3a",
+    "ja": "262795488e2786165149ffc535089ae00fbc84ca783b6c34deb4861d102f6f10",
+    "ko": "75e8b26f2a41fc09d4569f57c8c9bd2e2a5bee37563418e3e76faea105771cbb",
+    "nl": "daac12dbd12accb3555383eaf667498f6c97ee11335ddc69546e6fdc90fc8e49",
+    "pl": "162c39a9f16aae941f742321cbd4380c57192958f011ebc9f6c05bdcbab9eca8",
+    "pt": "00d1cb618365333721beab003c571c2a2c0032b4ac4047c9fe996b226065e8cd",
+    "zh-Hans": "48a855103c578a654d5b05973cd12eaa24a2ea61058112ed45cc9ed5f9bde4f2"
+  }
+}

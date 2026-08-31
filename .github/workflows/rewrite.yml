@@ -35,6 +35,11 @@ jobs:
           test "$(git hash-object src/QuadStick.Format/Data/preferences.json)" = "71914f9691d890d4ab8a6f32fc76d7e8005c8f68"
           test "$(git hash-object src/QuadStick.Format/Templates/default-template.csv)" = "21f23998d00de044a9bd1bc0899809c3f95a49b8"
           test "$(git hash-object tests/QuadStick.Format.Tests/corpus/firmware-2373.json)" = "7f90d32e6efa819c8eacbfa0eab9184bfccb509b"
+      - name: Verify generated frontend localization catalogs
+        shell: bash
+        run: |
+          python3 tools/i18n/generate_frontend_catalogs.py
+          git diff --exit-code -- src/i18n/catalogs
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
@@ -65,9 +70,6 @@ jobs:
       - name: Install pinned Rust toolchain
         shell: bash
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
-      # The Tauri shell is a workspace member, so --workspace clippy and tests
-      # now link WebKitGTK; hidapi's Linux backend also resolves libudev through
-      # pkg-config. Keep these native build prerequisites explicit in the gate.
       - name: Install Tauri Linux prerequisites
         run: |
           sudo apt-get update
