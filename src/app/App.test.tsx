@@ -56,11 +56,18 @@ describe("TASK-036/037 app shell", () => {
     settings.focus();
     fireEvent.click(settings);
     const dialog = screen.getByRole("dialog", { name: "Settings" });
+    const language = screen.getByRole("combobox", { name: "Language" });
     const done = screen.getByRole("button", { name: "Done" });
     expect(dialog).toHaveAttribute("aria-modal", "true");
     expect(done).toHaveFocus();
+
+    // Done is the last focusable control. Tab wraps to the first, and
+    // Shift+Tab from the first wraps back to Done.
     fireEvent.keyDown(document, { key: "Tab" });
+    expect(language).toHaveFocus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
     expect(done).toHaveFocus();
+
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(settings).toHaveFocus();
