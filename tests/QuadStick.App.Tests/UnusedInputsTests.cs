@@ -1,6 +1,9 @@
 using System.Linq;
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Layout;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -191,6 +194,42 @@ public class UnusedInputsTests
         Assert.Equal("Right mouthpiece hole", AutomationProperties.GetName(help));
         Assert.DoesNotContain(detail.GetVisualDescendants().OfType<TextBlock>(),
             t => t.Text == "Sip or puff on the right mouthpiece hole. A gentle sip or puff can do something different (the soft variants).");
+        w.Close();
+    }
+
+    // The panel's scroll bar floats over its content instead of taking room off
+    // it, so a heading drawn to the full width put the mapping count under the
+    // bar and the part read as half a glyph. A count nobody can read is the
+    // panel not saying what it knows.
+    [AvaloniaFact]
+    public void A_part_header_keeps_its_count_clear_of_the_scroll_bar()
+    {
+        var s = Settings.Load();
+        s.DeviceCards = true;   // shared settings file: pin what the panel draws
+        Settings.Save(s);
+
+        // Enough mappings on one part that the panel has to scroll, or the bar
+        // is not there and the test proves nothing.
+        var rows = string.Concat(Enumerable.Range(0, 14)
+            .Select(i => $"kb_{(char)('a' + i)},normal,mp_right_sip\n"));
+        var w = Open(Header + rows);
+        w.SetDeviceViewForPreview(true);
+        w.SelectZoneForPreview("mp_right");
+        Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
+
+        var detail = w.GetVisualDescendants().OfType<StackPanel>().First(p => p.Name == "ZoneDetailPanel");
+        var scroll = detail.GetVisualAncestors().OfType<ScrollViewer>().First();
+        var bar = scroll.GetVisualDescendants().OfType<ScrollBar>()
+            .First(b => b.Orientation == Orientation.Vertical);
+        Assert.True(bar.IsVisible);
+
+        var heading = Assert.IsType<Grid>(detail.Children[0]);
+        var count = heading.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == "14");
+
+        var countRight = count.TranslatePoint(new Point(count.Bounds.Width, 0), scroll)!.Value.X;
+        var barLeft = bar.TranslatePoint(new Point(0, 0), scroll)!.Value.X;
+        Assert.True(countRight <= barLeft,
+            $"the count ends at {countRight} and the scroll bar starts at {barLeft}");
         w.Close();
     }
 

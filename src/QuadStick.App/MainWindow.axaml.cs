@@ -4192,7 +4192,15 @@ public partial class MainWindow : Window
             VerticalAlignment = VerticalAlignment.Center,
             Children = { help, count },
         };
-        var heading = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        // The panel's scroll bar floats over the content rather than taking room
+        // off it, so a heading drawn to the full width put the count under the
+        // bar and the part read as half a glyph. Only the heading is inset: the
+        // cards below carry their own border and nothing to read out there.
+        var heading = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+            Margin = new Thickness(0, 0, 16, 0),
+        };
         heading.Children.Add(zoneTitle);
         Grid.SetColumn(meta, 1);
         heading.Children.Add(meta);
