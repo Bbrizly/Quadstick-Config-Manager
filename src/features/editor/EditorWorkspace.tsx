@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
 import { localizedErrorMessage } from "../../i18n/errors";
@@ -204,6 +204,9 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   const [busy, setBusy] = useState(false);
   const [armedDelete, setArmedDelete] = useState<number | null>(null);
   const [message, setMessage] = useState("");
+  const latestSnapshot = useRef(snapshot);
+  const operationBusy = useRef(false);
+  latestSnapshot.current = snapshot;
 
   const selectedMode = snapshot.modes.find(
     (mode) => mode.index === selectedSheet && mode.kind === "mode",
@@ -227,7 +230,8 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
         return;
       }
       try {
-        const current = await client.getProfileSnapshot(snapshot.sessionId);
+        const current = await client.getProfileSnapshot(latestSnapshot.current.sessionId);
+        latestSnapshot.current = current;
         onSnapshot(current);
       } catch (refreshReason) {
         showFailure(refreshReason);
@@ -235,25 +239,29 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
       }
       setMessage(localizedErrorMessage(error.payload, t));
     },
-    [client, onSnapshot, showFailure, snapshot.sessionId, t],
+    [client, onSnapshot, showFailure, t],
   );
 
   const apply = useCallback(
     async (ops: readonly EditorOp[], after?: (next: EditorSnapshot) => void): Promise<void> => {
-      if (busy || ops.length === 0) return;
+      if (operationBusy.current || ops.length === 0) return;
+      operationBusy.current = true;
       setBusy(true);
+      const current = latestSnapshot.current;
       try {
-        const next = await client.applyEditorOps(snapshot.sessionId, snapshot.revision, ops);
+        const next = await client.applyEditorOps(current.sessionId, current.revision, ops);
+        latestSnapshot.current = next;
         onSnapshot(next);
         setMessage("");
         after?.(next);
       } catch (reason) {
         await refreshAfterConflict(reason);
       } finally {
+        operationBusy.current = false;
         setBusy(false);
       }
     },
-    [busy, client, onSnapshot, refreshAfterConflict, snapshot.revision, snapshot.sessionId],
+    [client, onSnapshot, refreshAfterConflict],
   );
 
   const setCell = useCallback(
@@ -264,36 +272,44 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   );
 
   const undo = useCallback(async (): Promise<void> => {
-    if (busy || !snapshot.canUndo) return;
+    const current = latestSnapshot.current;
+    if (operationBusy.current || !current.canUndo) return;
+    operationBusy.current = true;
     setBusy(true);
     try {
-      const next = await client.undoEditor(snapshot.sessionId, snapshot.revision);
+      const next = await client.undoEditor(current.sessionId, current.revision);
+      latestSnapshot.current = next;
       onSnapshot(next);
       setMessage("");
     } catch (reason) {
       await refreshAfterConflict(reason);
     } finally {
+      operationBusy.current = false;
       setBusy(false);
     }
-  }, [busy, client, onSnapshot, refreshAfterConflict, snapshot]);
+  }, [client, onSnapshot, refreshAfterConflict]);
 
   const save = useCallback(async (): Promise<void> => {
-    if (busy) return;
+    if (operationBusy.current) return;
+    operationBusy.current = true;
     setBusy(true);
+    const current = latestSnapshot.current;
     try {
-      const receipt = snapshot.saveTarget === null
-        ? await client.saveProfileAs(snapshot.sessionId, snapshot.revision)
-        : await client.saveProfile(snapshot.sessionId, snapshot.revision);
+      const receipt = current.saveTarget === null
+        ? await client.saveProfileAs(current.sessionId, current.revision)
+        : await client.saveProfile(current.sessionId, current.revision);
       if (receipt === null) return;
-      const next = await client.getProfileSnapshot(snapshot.sessionId);
+      const next = await client.getProfileSnapshot(current.sessionId);
+      latestSnapshot.current = next;
       onSnapshot(next);
       setMessage(t("Main_SavedToSavePath", [receipt.name]));
     } catch (reason) {
       await refreshAfterConflict(reason);
     } finally {
+      operationBusy.current = false;
       setBusy(false);
     }
-  }, [busy, client, onSnapshot, refreshAfterConflict, snapshot, t]);
+  }, [client, onSnapshot, refreshAfterConflict, t]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
