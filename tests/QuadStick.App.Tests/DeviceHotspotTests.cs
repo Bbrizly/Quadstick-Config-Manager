@@ -449,7 +449,7 @@ public class DeviceHotspotTests
         {
             var left = OffModelRows(w).First(b =>
                 (AutomationProperties.GetName(b) ?? "").StartsWith(Strings.Main_LeftMouthpieceHole, StringComparison.Ordinal));
-            left.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+            Ui.Click(left);
             w.UpdateLayout();
 
             Assert.Equal("mp_left", w.SelectedZoneForPreview);

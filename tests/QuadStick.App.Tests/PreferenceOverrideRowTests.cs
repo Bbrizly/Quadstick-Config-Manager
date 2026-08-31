@@ -170,7 +170,7 @@ public class PreferenceOverrideRowTests
         var w = OpenCards(Header + "mouse_speed,,50\n", out var f);
         var card = w.GetVisualDescendants().OfType<Button>()
             .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Setting 1:"));
-        card.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(card);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         var said = Names(w);
@@ -304,7 +304,7 @@ public class PreferenceOverrideRowTests
         var w = OpenCards(Header + "mouse_speed,,50\n", out var f);
         var card = w.GetVisualDescendants().OfType<Button>()
             .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Setting 1:"));
-        card.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(card);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 

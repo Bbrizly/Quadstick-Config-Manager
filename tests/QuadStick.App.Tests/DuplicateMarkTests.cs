@@ -68,11 +68,8 @@ public class DuplicateMarkTests
             .First(t => AutomationProperties.GetName(t) == "Search this list").Text = token;
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
-        content.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") is var label
-                && (string.Equals(label, token, StringComparison.OrdinalIgnoreCase)
-                    || label.EndsWith($"· {token}", StringComparison.OrdinalIgnoreCase)))
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(content.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") is var label && (string.Equals(label, token, StringComparison.OrdinalIgnoreCase) || label.EndsWith($"· {token}", StringComparison.OrdinalIgnoreCase))));
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
     }

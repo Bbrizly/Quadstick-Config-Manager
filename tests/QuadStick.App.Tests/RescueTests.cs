@@ -37,8 +37,8 @@ public class RescueTests
         var banner = w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Name == "HomeStatusText");
         Assert.True(banner.IsVisible); // the offer shows on launch
 
-        w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "RescueOpenButton")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => b.Name == "RescueOpenButton"));
 
         Assert.False(banner.IsVisible); // taken: never announced again this session
         Assert.Empty(CrashGuard.PendingRescues()); // and the file on disk is spent

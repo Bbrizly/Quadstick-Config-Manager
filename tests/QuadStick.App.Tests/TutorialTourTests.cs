@@ -36,7 +36,7 @@ public class TutorialTourTests
     {
         // RaiseEvent fires on a disabled button, a real pointer does not.
         Assert.True(b.IsEffectivelyEnabled, $"{AutomationProperties.GetName(b)} is disabled");
-        b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(b);
         Dispatcher.UIThread.RunJobs();
     }
 

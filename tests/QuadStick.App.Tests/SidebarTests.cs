@@ -86,7 +86,7 @@ public class SidebarTests
     public void Pressing_a_row_opens_that_sheet()
     {
         var w = Open();
-        Rows(w)[2].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Rows(w)[2]);
         w.UpdateLayout();
 
         var rows = Rows(w);
@@ -103,7 +103,7 @@ public class SidebarTests
     public void Pressing_the_open_mode_again_leaves_it_open()
     {
         var w = Open();
-        Rows(w)[0].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Rows(w)[0]);
         w.UpdateLayout();
 
         Assert.True(Rows(w)[0].IsChecked);
@@ -114,7 +114,7 @@ public class SidebarTests
     public void The_plus_adds_a_mode_and_opens_it()
     {
         var w = Open();
-        Named(w, "AddModeButton").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Named(w, "AddModeButton"));
         w.UpdateLayout();
 
         // Driving is open, so the new mode goes under Driving and Aiming
@@ -172,7 +172,7 @@ public class SidebarTests
             // Build a list taller than the available Modes viewport.
             for (int i = 0; i < 12; i++)
             {
-                Named(w, "AddModeButton").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                Ui.Click(Named(w, "AddModeButton"));
                 Dispatcher.UIThread.RunJobs();
             }
             w.UpdateLayout();
@@ -180,7 +180,7 @@ public class SidebarTests
             var scroll = (ScrollViewer)Named(w, "ModeListScroll");
             scroll.Offset = new Vector(0, 0);
             var lastMode = Rows(w)[^2]; // the final row is Custom Names
-            lastMode.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Ui.Click(lastMode);
             Dispatcher.UIThread.RunJobs();
             w.UpdateLayout();
             Dispatcher.UIThread.RunJobs();

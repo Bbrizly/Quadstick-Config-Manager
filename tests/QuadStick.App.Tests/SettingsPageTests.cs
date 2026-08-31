@@ -193,7 +193,7 @@ public class SettingsPageTests
 
         var back = w.GetVisualDescendants().OfType<Button>()
             .First(b => AutomationProperties.GetName(b) == "Go back from Settings");
-        back.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(back);
 
         Assert.True(w.FindControl<DockPanel>("EditorView")!.IsVisible);
         Assert.False(w.FindControl<DockPanel>("SettingsPage")!.IsVisible);

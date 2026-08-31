@@ -91,7 +91,7 @@ public class ImportReviewWindowTests
     {
         var b = Find(w, content) ?? throw new InvalidOperationException(
             $"No \"{content}\" button. Buttons: {string.Join(", ", w.GetVisualDescendants().OfType<Button>().Select(x => x.Content))}");
-        b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(b);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
     }

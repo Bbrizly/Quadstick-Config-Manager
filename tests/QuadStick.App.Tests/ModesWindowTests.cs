@@ -54,7 +54,7 @@ public class ModesWindowTests
 
     static void Tap(Window w, string name)
     {
-        Find(w, name).RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Find(w, name));
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
     }

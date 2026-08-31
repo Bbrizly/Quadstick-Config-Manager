@@ -171,7 +171,7 @@ public class SmokeTests
         var w = NewWindow();
         if (!GoogleAuth.IsConfigured || w.DriveConnected) { w.Close(); return; } // only the yellow state arms
         var drive = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "HomeDriveButton");
-        drive.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(drive);
         var word = DriveButtonWord(drive);
         Assert.Equal("Press again to sign in", word);
         w.Close();

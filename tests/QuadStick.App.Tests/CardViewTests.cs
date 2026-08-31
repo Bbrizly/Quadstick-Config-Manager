@@ -61,7 +61,7 @@ public class CardViewTests
             AutomationProperties.GetName(Card(w, 1)!));
         Assert.NotNull(Card(w, 2));
 
-        Card(w, 2)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Card(w, 2)!);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         Assert.NotNull(Card(w, 1));  // still a card
@@ -70,16 +70,15 @@ public class CardViewTests
             b => (AutomationProperties.GetName(b) ?? "").StartsWith("Close the editor for mapping 2"));
 
         // Accordion: opening the first closes the second.
-        Card(w, 1)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Card(w, 1)!);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         Assert.Null(Card(w, 1));
         Assert.NotNull(Card(w, 2));
 
         // Done goes back to the sentence.
-        w.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Close the editor for mapping 1"))
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Close the editor for mapping 1")));
         w.UpdateLayout();
         Assert.NotNull(Card(w, 1));
 
@@ -183,13 +182,13 @@ public class CardViewTests
         Assert.NotNull(Card(w, 1));
 
         var toggle = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "CardViewButton");
-        toggle.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(toggle);
         w.UpdateLayout();
         Assert.Null(Card(w, 1)); // both mappings show the detailed editor now
         Assert.Null(Card(w, 2));
         Assert.False(Settings.Load().DeviceCards); // remembered for next launch
 
-        toggle.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(toggle);
         w.UpdateLayout();
         Assert.NotNull(Card(w, 1));
         Assert.True(Settings.Load().DeviceCards);
@@ -230,8 +229,8 @@ public class CardViewTests
             w.GetVisualDescendants().OfType<TextBlock>().First(x => x.Name == "SelectionCount").Text);
 
         // And deleting takes only the lip rows, never the joystick rows.
-        w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "SelectionDeleteButton")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => b.Name == "SelectionDeleteButton"));
         Assert.Equal(new[] { "square", "triangle" },
             file.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
 
@@ -247,7 +246,7 @@ public class CardViewTests
         var file = TwoLipMappings();
         var w = OpenOnLip(file);
 
-        Card(w, 1)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Card(w, 1)!);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
@@ -288,8 +287,8 @@ public class CardViewTests
         Assert.Equal("2 selected",
             w.GetVisualDescendants().OfType<TextBlock>().First(x => x.Name == "SelectionCount").Text);
 
-        w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "SelectionDeleteButton")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => b.Name == "SelectionDeleteButton"));
         w.UpdateLayout();
         Assert.Empty(file.Document.Sheets[0].Bindings);
         Assert.False(bar.IsVisible);
@@ -326,7 +325,7 @@ public class CardViewTests
             .FirstOrDefault(b => (AutomationProperties.GetName(b) ?? "").StartsWith(prefix));
         void Tap(Control panel, string prefix)
         {
-            Find(panel, prefix)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Ui.Click(Find(panel, prefix)!);
             Dispatcher.UIThread.RunJobs();
             w.UpdateLayout();
         }
@@ -386,9 +385,8 @@ public class CardViewTests
         press.Flyout!.ShowAt(press);
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
         var panel = (Control)((Flyout)press.Flyout!).Content!;
-        panel.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "Type a custom value")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(panel.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Type a custom value"));
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 
         // The box is alive, in the field's place, and focused for typing.
@@ -419,7 +417,7 @@ public class CardViewTests
         Assert.True(handle.Bounds.Width >= 40, $"handle width {handle.Bounds.Width}");
         Assert.True(handle.Bounds.Height >= 40, $"handle height {handle.Bounds.Height}");
 
-        Card(w, 1)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Card(w, 1)!);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
@@ -582,7 +580,7 @@ public class CardViewTests
         Assert.True(add.Bounds.X < trash.Bounds.X, "the plus goes left of the trash");
 
         // It rides down to whatever row is last, and the trashes stay aligned.
-        add.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(add);
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
         var rows = w.GetVisualDescendants().OfType<Button>()
             .Where(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Remove this "))
@@ -653,7 +651,7 @@ public class CardViewTests
     static Button Named(MainWindow w, string name) => w.GetVisualDescendants()
         .OfType<Button>().First(b => b.Name == name);
 
-    static void Click(Button b) => b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+    static void Click(Button b) => Ui.Click(b);
 
     // The two toggles describe a mapping, not a view, so Rows View gets them
     // too. They still have nothing to say about a preferences sheet.

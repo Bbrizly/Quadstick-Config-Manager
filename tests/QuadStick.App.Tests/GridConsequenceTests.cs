@@ -57,7 +57,7 @@ public class GridConsequenceTests
     {
         var b = w.GetVisualDescendants().OfType<Button>()
             .First(x => (x.Content as string)?.Contains("dvanced") == true);
-        b.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(b);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
     }
@@ -176,9 +176,8 @@ public class GridConsequenceTests
             "Profile Name,,Left joy\r\ngame.csv\r\nPlayStation Outputs,Function,usb\r\n" +
             "left_trigger,normal,lip,none\r\n", deviceView: false, out var f);
 
-        w.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "Remove input 1 from row 4")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Remove input 1 from row 4"));
         Dispatcher.UIThread.RunJobs();
 
         Assert.True(WindowSays(w, "Nothing presses \"left_trigger\" now"));
@@ -195,14 +194,12 @@ public class GridConsequenceTests
         var w = OpenEditor(OneMapping, deviceView: true, out var f);
 
         // The inputs and their remove controls live inside the expanded card.
-        w.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Mapping 1:"))
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Mapping 1:")));
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 
-        w.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Remove this input from mapping"))
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Remove this input from mapping")));
         Dispatcher.UIThread.RunJobs();
 
         Assert.True(WindowSays(w, "Nothing presses \"left_trigger\" now"));
@@ -230,9 +227,8 @@ public class GridConsequenceTests
         Advanced(review);
         GoTo(review, 4, 3); // D4, the second of two adjacent inputs
 
-        review.GetVisualDescendants().OfType<Button>()
-            .First(b => (b.Content as string) == "Move it earlier")
-            .RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(review.GetVisualDescendants().OfType<Button>()
+            .First(b => (b.Content as string) == "Move it earlier"));
         Dispatcher.UIThread.RunJobs();
         review.UpdateLayout();
 
@@ -254,9 +250,8 @@ public class GridConsequenceTests
         Advanced(review);
         GoTo(review, 4, 3); // D4, with C4 free beside it
 
-        review.GetVisualDescendants().OfType<Button>()
-            .First(b => (b.Content as string) == "Move it earlier")
-            .RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(review.GetVisualDescendants().OfType<Button>()
+            .First(b => (b.Content as string) == "Move it earlier"));
         Dispatcher.UIThread.RunJobs();
         review.UpdateLayout();
 

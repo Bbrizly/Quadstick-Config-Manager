@@ -73,7 +73,7 @@ public sealed class PickerGroupingTests : IDisposable
     {
         var b = root.GetVisualDescendants().OfType<Button>()
             .First(x => (AutomationProperties.GetName(x) ?? "").StartsWith(startsWith));
-        b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(b);
         Dispatcher.UIThread.RunJobs();
         root.UpdateLayout();
     }

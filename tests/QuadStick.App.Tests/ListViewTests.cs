@@ -267,9 +267,8 @@ public class ListViewTests
             .Where(n => n.StartsWith("Setting name for row ")).Distinct().Count();
         Assert.Equal(1, Rows());
 
-        w.GetVisualDescendants().OfType<Button>()
-            .First(b => AutomationProperties.GetName(b) == "Add a new binding row to this mode")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => AutomationProperties.GetName(b) == "Add a new binding row to this mode"));
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
@@ -305,7 +304,7 @@ public class ListViewTests
         var addInput = w.GetVisualDescendants().OfType<Button>()
             .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Add another input to row "));
         int row = int.Parse(AutomationProperties.GetName(addInput)!.Split(' ')[^1]);
-        addInput.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(addInput);
 
         // The new cell is a picker; search for the value and tap it.
         var newCell = w.GetVisualDescendants().OfType<Button>()
@@ -316,15 +315,14 @@ public class ListViewTests
         panel.GetVisualDescendants().OfType<TextBox>()
             .First(t => (AutomationProperties.GetName(t) ?? "") == "Search this list").Text = "mp_left_puff";
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
-        panel.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "Left \u00b7 puff")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(panel.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Left \u00b7 puff"));
         Dispatcher.UIThread.RunJobs(); // the rebuild is deferred out of the event
         w.UpdateLayout();
 
         Assert.True(Exists($"Remove input 2 from row {row}")); // no view switch needed
 
-        Find($"Remove input 2 from row {row}").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Find($"Remove input 2 from row {row}"));
         Assert.False(Exists($"Remove input 2 from row {row}")); // really removed from the file
 
         file.Dirty = false; // else Close opens the save dialog and waits forever
@@ -468,8 +466,8 @@ public class ListViewTests
         Assert.True(bar.IsVisible);
         Assert.Equal("2 selected", count.Text);
 
-        w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "SelectionDeleteButton")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => b.Name == "SelectionDeleteButton"));
         w.UpdateLayout();
         Assert.Equal(new[] { "circle" },
             file.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
@@ -513,7 +511,7 @@ public class ListViewTests
         var move = w.GetVisualDescendants().OfType<Button>().First(x => x.Name == "SelectionMoveButton");
 
         Assert.False(bulk.IsVisible);
-        select.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(select);
         Assert.True(bulk.IsVisible);
         Assert.False(move.IsEnabled); // commands wait for the user to choose a row
 
@@ -800,7 +798,7 @@ public class ListViewTests
 
         var add = w.GetVisualDescendants().OfType<Button>()
             .First(b => AutomationProperties.GetName(b) == "Add another input to row 4");
-        add.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(add);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         var three = At(Box("Input 3 for row 4"));
@@ -846,7 +844,7 @@ public class ListViewTests
             .FirstOrDefault(b => (AutomationProperties.GetName(b) ?? "").StartsWith(prefix));
         void Tap(Control panel, string prefix)
         {
-            Find(panel, prefix)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Ui.Click(Find(panel, prefix)!);
             Dispatcher.UIThread.RunJobs();
             w.UpdateLayout();
         }
@@ -976,7 +974,7 @@ public class ListViewTests
         Assert.True(At(del).X > At(add).X);
         Assert.Equal(At(add).Y, At(del).Y);
 
-        del.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(del);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         Assert.DoesNotContain(w.GetVisualDescendants().OfType<Button>(),
@@ -1093,9 +1091,8 @@ public class ListViewTests
         panel.GetVisualDescendants().OfType<TextBox>()
             .First(t => (AutomationProperties.GetName(t) ?? "") == "Search this list").Text = "volume";
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
-        panel.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "volume")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(panel.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "volume"));
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 
         Assert.Equal("volume", file.GetCell(4, 0));

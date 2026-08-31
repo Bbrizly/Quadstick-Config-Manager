@@ -51,7 +51,7 @@ public class UnusedInputsTests
     // its accessible name even though the button shows the shorter part label.
     static string[] Listed(MainWindow w)
     {
-        Toggle(w).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Toggle(w));
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         return w.GetVisualDescendants().OfType<Button>()
@@ -142,7 +142,7 @@ public class UnusedInputsTests
 
         var free = w.GetVisualDescendants().OfType<Button>()
             .First(b => AutomationProperties.GetName(b) == "Map mp_center_sip to a new mapping on the Center mouthpiece hole");
-        free.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(free);
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 
         var sheet = w.CurrentSheetForPreview!;
@@ -160,12 +160,12 @@ public class UnusedInputsTests
     public void An_unused_input_starts_a_mapping_without_changing_view()
     {
         var w = Open(Header + "x,normal,lip\n", out var file);
-        Toggle(w).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Toggle(w));
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 
         var north = w.GetVisualDescendants().OfType<Button>()
             .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Map usb_1_up to a new mapping on "));
-        north.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(north);
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 
         Assert.True(w.GetVisualDescendants().OfType<Control>().First(c => c.Name == "GridContainer").IsVisible);

@@ -126,9 +126,11 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // Buttons here start real background work, so a tap is not finished when
     // RaiseEvent returns. Busy is whatever the tap started.
-    static async Task TapAsync(DeviceFilesWindow w, string automationName)
+    // evenIfDisabled: only DEV-05, which taps a dead button to prove it is dead.
+    static async Task TapAsync(DeviceFilesWindow w, string automationName, bool evenIfDisabled = false)
     {
-        Button(w, automationName).RaiseEvent(new RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+        var b = Button(w, automationName);
+        if (evenIfDisabled) Ui.ClickEvenIfDisabled(b); else Ui.Click(b);
         Dispatcher.UIThread.RunJobs();
         await w.Busy;
         Dispatcher.UIThread.RunJobs();
@@ -310,7 +312,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
             var button = Button(win, Delete(name, root));
             Assert.False(button.IsEnabled);
 
-            await TapAsync(win, Delete(name, root));
+            await TapAsync(win, Delete(name, root), evenIfDisabled: true);
 
             Assert.Empty(ask.Prompts); // it never even got as far as asking
             Assert.True(File.Exists(Path.Combine(root, name)));
@@ -488,8 +490,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
         // The click looks for the library file, finds nothing and asks nothing.
         // The file lands before the write, the way a second drive with the same
         // name or another program can put it there.
-        Button(win, Copy("Racing.csv", root))
-            .RaiseEvent(new RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+        Ui.Click(Button(win, Copy("Racing.csv", root)));
         File.WriteAllText(dest, "landed while the copy was running");
         await win.Busy;
         Dispatcher.UIThread.RunJobs();

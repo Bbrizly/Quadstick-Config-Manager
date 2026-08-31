@@ -351,7 +351,7 @@ public class OutputVisualTests
             Dispatcher.UIThread.RunJobs();
             var item = ((Control)((Flyout)output.Flyout).Content!).GetVisualDescendants().OfType<Button>()
                 .First(b => AutomationProperties.GetName(b) == "circle");
-            item.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Ui.Click(item);
             Dispatcher.UIThread.RunJobs();
 
             Assert.Equal("circle", file.Document.Sheets[0].Bindings[0].Output);
