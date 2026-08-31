@@ -36,6 +36,11 @@ public class LiveRowTests
         var s = Settings.Load();
         s.TutorialSeen = true;
         s.RememberWindow = false;
+        s.DeviceCards = true;
+        // Pinned, not inherited. The side panel only builds mapping cards when
+        // this is on, and it is a real user setting in a settings file every
+        // test in this assembly shares, so a neighbour leaving it off made this
+        // test count nothing and fail on CI while passing alone.
         Settings.Save(s);
         var w = new MainWindow { FindDeviceRoots = Array.Empty<string> };
         w.Show();

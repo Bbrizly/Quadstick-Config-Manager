@@ -24,6 +24,8 @@ public sealed class LiveCalloutTests
         var s = Settings.Load();
         s.TutorialSeen = true;
         s.RememberWindow = false;
+        s.DeviceCards = true; // shared settings file: pin what the view needs
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         Settings.Save(s);
         var w = new MainWindow();
         w.Show();

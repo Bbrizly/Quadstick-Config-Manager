@@ -3426,6 +3426,15 @@ public partial class MainWindow : Window
                 Grid.SetColumn(pip, 1);
                 panel.Children.Add(pip);
                 _liveCallouts.Add((litRows, tint, pip, summary.FriendlyGestureName));
+                // Born lit if the device is already sending it. The diagram is
+                // rebuilt on a zone change and on layout passes, and a fresh
+                // callout that ignored the report in hand would go dark under a
+                // gesture somebody is still holding.
+                if (litRows.Overlaps(_liveRows))
+                {
+                    pip.IsVisible = true;
+                    BindBrush(tint, Border.BackgroundProperty, "LiveTint");
+                }
             }
             Grid.SetRow(gesture, r);
             Grid.SetRow(action, r);
