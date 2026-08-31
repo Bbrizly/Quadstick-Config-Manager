@@ -138,9 +138,23 @@
     radial-gradient(85% 65% at 2% 6%, rgba(161,62,91,.14), transparent 56%),
     radial-gradient(70% 55% at 46% 96%, rgba(138,106,30,.10), transparent 60%),
     linear-gradient(to bottom, rgba(244,241,234,.35) 0%, rgba(244,241,234,.4) 40%, rgba(244,241,234,.62) 100%)}
-  .hero{position:relative;z-index:1;padding-top:clamp(48px,7.5vw,96px);padding-bottom:clamp(40px,6vw,70px)}
-  .hero h1{font-size:clamp(40px,6.2vw,72px);max-width:15ch;margin:22px 0 0}
-  .hero .lede{font-size:clamp(18px,2.2vw,22px);color:var(--ink-soft);max-width:50ch;margin:24px 0 32px;line-height:1.5}
+  .hero{position:relative;z-index:1;padding-top:clamp(48px,7.5vw,96px);padding-bottom:clamp(40px,6vw,70px);
+    display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(24px,4vw,56px);align-items:center}
+  .hero h1{font-size:clamp(40px,5vw,64px);max-width:17ch;margin:22px 0 0}
+  .hero .lede{font-size:clamp(18px,2vw,21px);color:var(--ink-soft);max-width:46ch;margin:24px 0 32px;line-height:1.5}
+
+  /* the stick itself, cut out of the product photo and set on the paper */
+  .hero-art{position:relative;justify-self:center}
+  .hero-art::before{content:"";position:absolute;left:6%;top:4%;width:88%;aspect-ratio:1;border-radius:50%;
+    border:1px solid rgba(40,33,20,.07);
+    background:radial-gradient(closest-side, rgba(255,255,255,.75), rgba(255,255,255,0) 78%)}
+  .hero-art img{position:relative;width:100%;height:auto;display:block;
+    filter:drop-shadow(0 30px 50px rgba(40,33,20,.22))}
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr}
+    .hero-art{order:-1;max-width:520px}
+    .hero h1{max-width:none}
+  }
 
   /* ---------- hero product frame: outer tray, inner screen ---------- */
   .app-frame{margin-top:clamp(44px,6vw,76px);padding:10px;border-radius:30px;
@@ -327,11 +341,10 @@
 
 <!-- ===== HERO ===== -->
 <div class="hero-shell">
-<div class="hero-bg" aria-hidden="true">
-  <!-- the app's own device view, blurred back into the paper. swap the src for a photo of the stick when there is one to use -->
-  <img src="screenshot-device-view.png" alt="" loading="eager" decoding="async">
-</div>
+<!-- tint only. the stick is the picture now, so nothing is blurred behind the type -->
+<div class="hero-bg" aria-hidden="true"></div>
 <div class="hero wrap">
+<div class="hero-copy">
   <span class="eyebrow reveal"><span class="dot"></span>Free &amp; open source · Windows, macOS &amp; Linux</span>
   <h1 class="display reveal">Set up your QuadStick without the spreadsheet.</h1>
   <p class="lede reveal">Map inputs on a picture of the stick, catch every bad cell, and install straight to the device.</p>
@@ -359,6 +372,11 @@
     </a>
     <span class="plat">I work on the feedback voiced here!<br>Discord organized by <b>Fred</b></span>
   </div>
+</div>
+
+<div class="hero-art reveal">
+  <img src="quadstick.png" alt="A QuadStick: the mouthpiece with its sip and puff tubes on a gooseneck arm." width="1200" height="934" loading="eager" decoding="async">
+</div>
 
   <!-- product frame: turned off until the screen recording exists. put demo.mp4 in the screen and it is back on
   <div class="app-frame reveal">
@@ -374,7 +392,7 @@
   </div>
   -->
 
-  <!-- SIGNATURE: the decoder -->
+  <!-- the decoder, off for now. the CSS and the script below are still here, uncomment both to bring it back
   <div class="decoder reveal" role="region" aria-label="Example: a QuadStick binding translated into plain English">
     <div class="decoder-head">
       <span class="lbl">The Decoder</span>
@@ -395,6 +413,7 @@
     </div>
     <div class="decoder-dots" id="dots" role="group" aria-label="Choose an example binding"></div>
   </div>
+  -->
 </div>
 </div>
 
@@ -602,7 +621,7 @@
     io.observe(el);
   });
 
-  // ---- the Decoder: real bindings from the app, cycling ----
+  /* the Decoder, off with its markup above. uncomment both together.
   const bindings = [
     {in:'sip',  fn:'normal', out:'increment_mode', say:'A sip on the tube switches you to the next mode.'},
     {in:'lip',  fn:'normal', out:'x',              say:'A tap on the lip switch presses the X button.'},
@@ -641,6 +660,7 @@
 
   show(0);
   if(!reduce) timer = setInterval(next, 3600);
+  */
 </script>
 </body>
 </html>
