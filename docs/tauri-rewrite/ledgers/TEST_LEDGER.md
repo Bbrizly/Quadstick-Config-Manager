@@ -17,7 +17,7 @@ Evidence paths are target placeholders until implemented.
 | T-029 | live-input back pressure and release | `qcm-core/tests/live_input.rs` slow consumer, unplug, stale, stop | unplug with a button held on a stick | IMPLEMENTED |
 | T-011 | IPC revision/security | `src-tauri/tests/profile_commands.rs` direct command negatives | — | IMPLEMENTED |
 | T-012 | capability least privilege | static/forbidden-call | release audit | PLANNED |
-| T-013 | frontend editor | RTL/mock E2E | AT | PLANNED |
+| T-013 | frontend editor | `src/features/editor/EditorWorkspace.test.tsx` mock E2E + axe + keyboard | AT | IMPLEMENTED |
 | T-014 | visualizer semantic equality | component/axe | NVDA/VoiceOver | PLANNED |
 | T-015 | import/XLSX limits | malicious fixtures | review AT | PLANNED |
 | T-016 | community privacy/offline | HTTP spy/cache | offline | PLANNED |
@@ -25,7 +25,7 @@ Evidence paths are target placeholders until implemented.
 | T-018 | Drive backup/conflict | fake/HTTP mock | real account | PLANNED |
 | T-019 | telemetry privacy | network spy/allowlist | policy review | PLANNED |
 | T-020 | crash rescue | forced panic | packaged restart | PLANNED |
-| T-021 | i18n | key/pseudo/RTL | locales | PLANNED |
+| T-021 | i18n | generated key/placeholder/pseudo/RTL/error-code suite | locales | IMPLEMENTED |
 | T-022 | updater signature/state | mock/bad signature | packaged rollback | PLANNED |
 | T-023 | agent/qsf | old/new corpus eval | human sample | PLANNED |
 | T-024 | performance | benchmarks | target vs baseline | PLANNED |

@@ -33,6 +33,8 @@ export interface QcmClient {
   updateSettings(expectedRevision: number, patch: SettingsPatch): Promise<AppSettings>;
   newProfile(name: string): Promise<EditorSnapshot>;
   chooseAndOpenProfile(): Promise<EditorSnapshot | null>;
+  /** Re-read canonical Rust state after a revision conflict or save. */
+  getProfileSnapshot(sessionId: string): Promise<EditorSnapshot>;
   applyEditorOps(
     sessionId: string,
     expectedRevision: number,

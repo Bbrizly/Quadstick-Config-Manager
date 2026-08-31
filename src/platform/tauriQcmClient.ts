@@ -82,6 +82,10 @@ export class TauriQcmClient implements QcmClient {
     return call<EditorSnapshot | null>("choose_and_open_profile");
   }
 
+  getProfileSnapshot(sessionId: string): Promise<EditorSnapshot> {
+    return call<EditorSnapshot>("get_profile_snapshot", { sessionId });
+  }
+
   applyEditorOps(
     sessionId: string,
     expectedRevision: number,
@@ -192,6 +196,7 @@ export const TAURI_COMMANDS = [
   "update_settings",
   "new_profile",
   "choose_and_open_profile",
+  "get_profile_snapshot",
   "apply_editor_ops",
   "undo_editor",
   "save_profile",

@@ -57,7 +57,7 @@ Work top-to-bottom. A checked box means its implementation acceptance criteria a
 - [x] TASK-034 Implement low-rate invalidation + live/progress Channels.
 - [x] TASK-035 Lock capabilities/CSP and add negative permission tests.
 - [x] TASK-036 Build accessible app shell/design tokens/settings foundation.
-- [ ] TASK-037 Migrate all localization catalogs + pseudo-loc/RTL pipeline.
+- [x] TASK-037 Migrate all localization catalogs + pseudo-loc/RTL pipeline.
 
 **Gate 5:** browser/mock and native shell use the typed QcmClient boundary with no generic native capability. TASK-037 closes the remaining frontend-foundation localization row.
 

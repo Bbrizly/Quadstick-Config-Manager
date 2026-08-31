@@ -77,6 +77,9 @@ export type EditorOp =
   | { readonly op: "delete_row"; readonly row: number }
   | { readonly op: "move_row"; readonly from: number; readonly to: number }
   | { readonly op: "add_mode"; readonly name: string }
+  | { readonly op: "duplicate_mode"; readonly sheet: number; readonly name: string }
+  | { readonly op: "delete_mode"; readonly sheet: number }
+  | { readonly op: "move_mode"; readonly sheet: number; readonly delta: -1 | 1 }
   | { readonly op: "rename_mode"; readonly sheet: number; readonly name: string }
   | { readonly op: "set_mode_channel"; readonly sheet: number; readonly channel: string }
   | { readonly op: "normalize" };

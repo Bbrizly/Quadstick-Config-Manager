@@ -42,6 +42,17 @@ pub enum EditorOp {
     AddMode {
         name: String,
     },
+    DuplicateMode {
+        sheet: usize,
+        name: String,
+    },
+    DeleteMode {
+        sheet: usize,
+    },
+    MoveMode {
+        sheet: usize,
+        delta: isize,
+    },
     RenameMode {
         sheet: usize,
         name: String,
@@ -63,6 +74,9 @@ impl EditorOp {
             Self::DeleteRow { .. } => "delete_row",
             Self::MoveRow { .. } => "move_row",
             Self::AddMode { .. } => "add_mode",
+            Self::DuplicateMode { .. } => "duplicate_mode",
+            Self::DeleteMode { .. } => "delete_mode",
+            Self::MoveMode { .. } => "move_mode",
             Self::RenameMode { .. } => "rename_mode",
             Self::SetModeChannel { .. } => "set_mode_channel",
             Self::Normalize => "normalize",
@@ -81,6 +95,9 @@ impl ProfileFile {
             EditorOp::DeleteRow { row } => self.delete_row(*row),
             EditorOp::MoveRow { from, to } => self.move_row(*from, *to),
             EditorOp::AddMode { name } => self.add_mode_sheet(name).is_some(),
+            EditorOp::DuplicateMode { sheet, name } => self.duplicate_mode(*sheet, name).is_some(),
+            EditorOp::DeleteMode { sheet } => self.delete_mode(*sheet),
+            EditorOp::MoveMode { sheet, delta } => self.move_mode(*sheet, *delta),
             EditorOp::RenameMode { sheet, name } => self.rename_mode(*sheet, name),
             EditorOp::SetModeChannel { sheet, channel } => self.set_mode_channel(*sheet, channel),
             EditorOp::Normalize => self.normalize_for_device_csv(),

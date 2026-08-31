@@ -18,13 +18,13 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `Device.cs` filename rules | safe target names | qcm-config/core | SPLIT | unit parity | 2/3 | PORTED |
 | `Device.cs` install | safe transaction | qcm-core/devices/install.rs | REWRITE | fault at every stage; hardware pending | 3 | PORTED |
 | `Device.cs` library/delete | device files, order, LED table, prefs read | qcm-core/devices/library.rs | REWRITE | DeviceFileManagementTests ported; hardware pending | 3 | PORTED |
-| `MainWindow.axaml` | shell/layout | React AppShell/Editor | REWRITE | component/E2E/AT | 5/6 | CONTRACTED |
+| `MainWindow.axaml` | shell/layout | React AppShell/Editor | REWRITE | component/E2E/AT | 5/6 | IMPLEMENTING |
 | `MainWindow.axaml.cs` | orchestration/editor/UI | qcm-core + React features | SPLIT | behavior matrix | 3–7 | CONTRACTED |
 | `MainWindow.axaml.cs::{SaveAsync,ConfirmLeaveAsync,_savePath}` | open/save/save-as/close-dirty policy | qcm-core/profiles + local store port | SPLIT | session tests | 3 | PORTED |
-| `RowControls.cs` | row editing controls | React editor | REWRITE | component | 6 | ASSESSED |
+| `RowControls.cs` | row editing controls | React editor | REWRITE | component | 6 | IMPLEMENTING |
 | `OutputCatalog.cs` | display output labels | qcm-config/UI catalog | SPLIT | label tests | 2/6 | ASSESSED |
 | `CustomNames.cs` | custom naming | qcm-config/UI | SPLIT | parity | 2/6 | ASSESSED |
-| `ModesWindow.cs` | modes UX | React ModesPanel | REWRITE | E2E/AT | 6 | CONTRACTED |
+| `ModesWindow.cs` | modes UX | React ModesPanel | REWRITE | E2E/AT | 6 | IMPLEMENTING |
 | `InstallFlow.cs` | install UX | core plan + React dialog | SPLIT | E2E/fault/AT | 3/6 | CONTRACTED |
 | `DeviceFilesWindow.cs` | library UX | React DeviceLibrary | REWRITE | E2E/AT | 6 | CONTRACTED |
 | `DeviceSettingsPage.cs` | prefs page | React device settings | REWRITE | E2E/AT | 6 | CONTRACTED |
@@ -44,8 +44,8 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `TokenStore.cs` | secure token | native secure store | REWRITE | OS integration | 6 | CONTRACTED |
 | `SettingsView.cs` | settings UI | React SettingsPage | REWRITE | component/AT | 5/6 | CONTRACTED |
 | `Theme.cs::{AppSettings,DriveLink,Settings,SettingsJsonContext}` | atomic persisted settings + migration schema | qcm-core/native settings | REWRITE/COMPAT-READ | migration/consent/link tests | 5/9 | CONTRACTED |
-| `Localization.cs`, `Plural.cs` | locale runtime | frontend i18n | REWRITE | pseudo/RTL | 5 | ASSESSED |
-| `Strings*.resx` | translations | generated frontend catalogs | CONVERT | key/placeholder | 5 | CONTRACTED |
+| `Localization.cs`, `Plural.cs` | locale runtime | frontend i18n | REWRITE | pseudo/RTL | 5 | PORTED |
+| `Strings*.resx` | translations | generated frontend catalogs | CONVERT | key/placeholder | 5 | PORTED |
 | `Theme.cs`, `Style.cs`, `Palette.cs`, `Icons.axaml` | design system | CSS/components/assets | REWRITE | visual/contrast | 5 | ASSESSED |
 | `TutorialTour.cs` | onboarding | React tutorial | REWRITE | E2E/AT | 6 | ASSESSED |
 | `CrashGuard.cs`, `CrashReport.cs` | rescue/report | core/native + React | SPLIT/REWRITE | crash/privacy | 6 | CONTRACTED |

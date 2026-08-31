@@ -4,6 +4,7 @@ import { AppShell, type ShellDestination } from "../components/primitives/AppShe
 import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
 import { ToastRegion } from "../components/primitives/ToastRegion";
+import { EditorWorkspace } from "../features/editor/EditorWorkspace";
 import {
   I18nProvider,
   LOCALE_NAMES,
@@ -12,6 +13,8 @@ import {
   type LocalePreference,
   type MessageKey,
 } from "../i18n";
+import { localizedErrorMessage } from "../i18n/errors";
+import { MockQcmClient, asQcmError, type EditorSnapshot, type QcmClient } from "../platform";
 import { applyThemePreference, type ThemePreference } from "./theme";
 
 const DESTINATION_COPY: Record<ShellDestination, { title: MessageKey; detail: MessageKey }> = {
@@ -23,15 +26,74 @@ const DESTINATION_COPY: Record<ShellDestination, { title: MessageKey; detail: Me
   },
 };
 
-function LocalizedApp() {
+const DEFAULT_CLIENT = new MockQcmClient();
+
+interface AppProps {
+  readonly client?: QcmClient;
+}
+
+function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const { t, preference, setPreference } = useI18n();
   const [activeDestination, setActiveDestination] = useState<ShellDestination>("home");
   const [themePreference, setThemePreference] = useState<ThemePreference>("system");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [editor, setEditor] = useState<EditorSnapshot | null>(null);
+  const [message, setMessage] = useState("");
 
   useEffect(() => applyThemePreference(themePreference), [themePreference]);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const copy = DESTINATION_COPY[activeDestination];
+
+  const openProfile = async (): Promise<void> => {
+    try {
+      const opened = await client.chooseAndOpenProfile();
+      if (opened !== null) {
+        setEditor(opened);
+        setActiveDestination("home");
+        setMessage("");
+      }
+    } catch (reason) {
+      setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
+    }
+  };
+
+  const newProfile = async (): Promise<void> => {
+    try {
+      const opened = await client.newProfile("untitled.csv");
+      setEditor(opened);
+      setActiveDestination("home");
+      setMessage("");
+    } catch (reason) {
+      setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
+    }
+  };
+
+  let content;
+  if (activeDestination === "home" && editor !== null) {
+    content = <EditorWorkspace client={client} snapshot={editor} onSnapshot={setEditor} />;
+  } else if (activeDestination === "home") {
+    content = (
+      <section className="shell-placeholder home-start" aria-labelledby="page-title">
+        <h1 id="page-title">{t(copy.title)}</h1>
+        <p data-testid="boot-state">{t(copy.detail)}</p>
+        <div className="home-start-actions">
+          <button className="primary-action" type="button" onClick={() => void newProfile()}>
+            {t("Shell_NewProfile")}
+          </button>
+          <button type="button" onClick={() => void openProfile()}>
+            {t("Shell_OpenAProfileFile")}
+          </button>
+        </div>
+      </section>
+    );
+  } else {
+    content = (
+      <section className="shell-placeholder" aria-labelledby="page-title">
+        <h1 id="page-title">{t(copy.title)}</h1>
+        <p data-testid="boot-state">{t(copy.detail)}</p>
+      </section>
+    );
+  }
 
   return (
     <>
@@ -42,12 +104,9 @@ function LocalizedApp() {
         onThemePreferenceChange={setThemePreference}
         onOpenSettings={() => setSettingsOpen(true)}
       >
-        <section className="shell-placeholder" aria-labelledby="page-title">
-          <h1 id="page-title">{t(copy.title)}</h1>
-          <p data-testid="boot-state">{t(copy.detail)}</p>
-        </section>
+        {content}
       </AppShell>
-      <LiveRegion>{t("Community_PickedNameIsSelected", [t(copy.title)])}</LiveRegion>
+      <LiveRegion>{message}</LiveRegion>
       <ToastRegion messages={[]} />
       <Dialog
         open={settingsOpen}
@@ -83,10 +142,10 @@ function LocalizedApp() {
   );
 }
 
-export function App() {
+export function App({ client = DEFAULT_CLIENT }: AppProps = {}) {
   return (
     <I18nProvider>
-      <LocalizedApp />
+      <LocalizedApp client={client} />
     </I18nProvider>
   );
 }

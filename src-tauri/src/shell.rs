@@ -8,7 +8,7 @@
 use crate::adapters::picker::ProfilePicker;
 use crate::ipc::{
     AppSnapshotDto, ApplyEditorOpsRequest, CapabilitiesDto, CloseOutcomeDto, CloseProfileRequest,
-    NewProfileRequest, SessionRevisionRequest, UpdateSettingsRequest, parse, session_id,
+    NewProfileRequest, SessionRequest, SessionRevisionRequest, UpdateSettingsRequest, parse, session_id,
 };
 use qcm_config::ProfileFile;
 use qcm_core::error::QcmError;
@@ -79,6 +79,13 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             return Ok(None);
         };
         self.sessions().open_local(target).map(Some)
+    }
+
+    pub fn get_profile_snapshot(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {
+        let request: SessionRequest = parse(raw, "get_profile_snapshot request")?;
+        let session = session_id(&request.session_id)?;
+        let sessions = self.sessions();
+        Ok(EditorSnapshot::of(sessions.session(session)?))
     }
 
     pub fn apply_editor_ops(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {

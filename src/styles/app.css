@@ -1,4 +1,5 @@
 @import "./tokens.css";
+@import "./editor.css";
 
 * {
   box-sizing: border-box;
@@ -208,6 +209,17 @@ button:hover {
 .shell-placeholder p {
   margin: 0;
   color: var(--qcm-text-secondary);
+}
+
+.home-start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--qcm-space-sm);
+  margin-top: var(--qcm-space-lg);
+}
+
+.home-start-actions button {
+  padding-inline: var(--qcm-space-lg);
 }
 
 .visually-hidden {

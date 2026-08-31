@@ -25,6 +25,7 @@ pub fn registered_commands() -> &'static [&'static str] {
         "update_settings",
         "new_profile",
         "choose_and_open_profile",
+        "get_profile_snapshot",
         "apply_editor_ops",
         "undo_editor",
         "save_profile",
@@ -86,6 +87,7 @@ pub fn run() {
             commands::update_settings,
             commands::new_profile,
             commands::choose_and_open_profile,
+            commands::get_profile_snapshot,
             commands::apply_editor_ops,
             commands::undo_editor,
             commands::save_profile,
@@ -125,7 +127,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_contains_no_global_event_api() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 24);
+        assert_eq!(commands.len(), 25);
         for expected in [
             "list_devices",
             "refresh_devices",

@@ -127,14 +127,23 @@ fn op_text(op: &EditorOp) -> Vec<&str> {
     match op {
         EditorOp::SetCell { value, .. } => vec![value.as_str()],
         EditorOp::SetOutput { token, action, .. } => vec![token.as_str(), action.as_str()],
-        EditorOp::AddMode { name } => vec![name.as_str()],
+        EditorOp::AddMode { name } | EditorOp::DuplicateMode { name, .. } => vec![name.as_str()],
         EditorOp::RenameMode { name, .. } => vec![name.as_str()],
         EditorOp::SetModeChannel { channel, .. } => vec![channel.as_str()],
         EditorOp::AddRow { .. }
         | EditorOp::DeleteRow { .. }
         | EditorOp::MoveRow { .. }
+        | EditorOp::DeleteMode { .. }
+        | EditorOp::MoveMode { .. }
         | EditorOp::Normalize => Vec::new(),
     }
+}
+
+/// Read-only refresh of one open canonical session.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SessionRequest {
+    pub session_id: String,
 }
 
 /// What undo, save and save-as all need: which profile, and the revision the

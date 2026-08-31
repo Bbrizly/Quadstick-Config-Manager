@@ -361,6 +361,12 @@ export class MockQcmClient implements QcmClient {
     );
   }
 
+  getProfileSnapshot(sessionId: string): Promise<EditorSnapshot> {
+    const session = this.#sessions.get(sessionId);
+    if (session === undefined) return Promise.reject(this.#unknownSession());
+    return Promise.resolve(snapshot(session));
+  }
+
   applyEditorOps(
     sessionId: string,
     expectedRevision: number,
@@ -912,6 +918,15 @@ function snapshot(session: MockSession): EditorSnapshot {
   };
 }
 
+function modeRanges(grid: readonly (readonly string[])[]): readonly { readonly mode: Mode; readonly start: number; readonly end: number }[] {
+  const modes = modesOf(grid);
+  return modes.map((mode, index) => ({
+    mode,
+    start: mode.startRow - 1,
+    end: (modes[index + 1]?.startRow ?? grid.length + 1) - 1,
+  }));
+}
+
 function apply(grid: string[][], op: EditorOp): string[][] | null {
   const next = clone(grid);
   switch (op.op) {
@@ -927,7 +942,16 @@ function apply(grid: string[][], op: EditorOp): string[][] | null {
     case "set_output": {
       const row = next[op.row - 1];
       if (row === undefined) return null;
+      while (row.length <= 11) row.push("");
       row[0] = op.token;
+      row[11] = op.action ?? "";
+      return next;
+    }
+    case "add_row": {
+      const mode = modesOf(next).find((candidate) => candidate.index === op.sheet);
+      if (mode === undefined) return null;
+      const insertAt = mode.startRow + 2 + mode.bindingCount;
+      next.splice(insertAt, 0, ["", "normal", ""]);
       return next;
     }
     case "delete_row": {
@@ -935,16 +959,93 @@ function apply(grid: string[][], op: EditorOp): string[][] | null {
       next.splice(op.row - 1, 1);
       return next;
     }
-    case "rename_mode": {
-      const mode = modesOf(next)[op.sheet];
-      if (mode === undefined) return null;
-      const keyword = next[mode.startRow - 1];
-      if (keyword === undefined) return null;
-      keyword[2] = op.name;
+    case "move_row": {
+      if (op.from === op.to || op.from === 0 || op.to === 0 || op.from > next.length || op.to > next.length) return null;
+      const moved = next.splice(op.from - 1, 1)[0];
+      if (moved === undefined) return null;
+      next.splice(op.to - 1, 0, moved);
       return next;
     }
-    default:
-      return null;
+    case "add_mode": {
+      const first = modesOf(next)[0];
+      next.push(
+        ["Profile Name", "", op.name],
+        [],
+        ["PlayStation Outputs", "Function", first?.channel ?? ""],
+      );
+      return next;
+    }
+    case "duplicate_mode": {
+      const range = modeRanges(next)[op.sheet];
+      if (range === undefined || op.name.trim() === "") return null;
+      const copied = next.slice(range.start, range.end).map((row) => [...row]);
+      const header = copied[0];
+      if (header === undefined) return null;
+      while (header.length <= 2) header.push("");
+      header[2] = op.name.trim();
+      const nameRow = copied[1];
+      if (nameRow !== undefined && nameRow.length > 0) nameRow[0] = "";
+      next.push(...copied);
+      return next;
+    }
+    case "delete_mode": {
+      const ranges = modeRanges(next);
+      const range = ranges[op.sheet];
+      if (range === undefined || ranges.length <= 1) return null;
+      const fileName = op.sheet === 0 ? next[range.start + 1]?.[0] ?? "" : "";
+      next.splice(range.start, range.end - range.start);
+      if (op.sheet === 0) {
+        const first = modesOf(next)[0];
+        if (first === undefined) return null;
+        const slotIndex = first.startRow;
+        const slot = next[slotIndex] ?? [];
+        if (next[slotIndex] === undefined) next[slotIndex] = slot;
+        while (slot.length === 0) slot.push("");
+        slot[0] = fileName;
+      }
+      return next;
+    }
+    case "move_mode": {
+      const ranges = modeRanges(next);
+      const current = ranges[op.sheet];
+      const other = ranges[op.sheet + op.delta];
+      if (current === undefined || other === undefined) return null;
+      const lo = current.start < other.start ? current : other;
+      const hi = current.start < other.start ? other : current;
+      const loBlock = next.slice(lo.start, lo.end).map((row) => [...row]);
+      const midBlock = next.slice(lo.end, hi.start).map((row) => [...row]);
+      const hiBlock = next.slice(hi.start, hi.end).map((row) => [...row]);
+      if (lo.mode.index === 0) {
+        const fileName = loBlock[1]?.[0] ?? "";
+        if (loBlock[1] !== undefined && loBlock[1].length > 0) loBlock[1][0] = "";
+        const incoming = hiBlock[1] ?? [];
+        if (hiBlock[1] === undefined) hiBlock[1] = incoming;
+        while (incoming.length === 0) incoming.push("");
+        incoming[0] = fileName;
+      }
+      next.splice(lo.start, hi.end - lo.start, ...hiBlock, ...midBlock, ...loBlock);
+      return next;
+    }
+    case "rename_mode": {
+      const mode = modesOf(next)[op.sheet];
+      if (mode === undefined || op.name.trim() === "") return null;
+      const keyword = next[mode.startRow - 1];
+      if (keyword === undefined) return null;
+      while (keyword.length <= 2) keyword.push("");
+      keyword[2] = op.name.trim();
+      return next;
+    }
+    case "set_mode_channel": {
+      const mode = modesOf(next)[op.sheet];
+      if (mode === undefined) return null;
+      const header = next[mode.startRow + 1];
+      if (header === undefined) return null;
+      while (header.length <= 2) header.push("");
+      header[2] = op.channel;
+      return next;
+    }
+    case "normalize":
+      return next;
   }
 }
 

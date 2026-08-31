@@ -81,6 +81,14 @@ pub fn choose_and_open_profile(
 }
 
 #[tauri::command]
+pub fn get_profile_snapshot(
+    state: State<'_, ShellState>,
+    request: Value,
+) -> Result<EditorSnapshot, Failure> {
+    redact(state.get_profile_snapshot(request))
+}
+
+#[tauri::command]
 pub fn apply_editor_ops(
     state: State<'_, ShellState>,
     request: Value,

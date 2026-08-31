@@ -35,7 +35,8 @@ Tasks are tracked on independent axes so hardware or credential debt is not conf
 | TASK-034 bounded channels + invalidation | **DONE** | **PASS** | live-device close/reconnect later | typed Channels + invalidation |
 | TASK-035 capabilities + CSP | **DONE** | **PASS** | N/A | exact-head run `33338800870` |
 | TASK-036 accessible app shell/design tokens | **DONE** | **PASS** | final manual AT later | exact-head run `33338801740` |
-| TASK-037 localization migration | **IN PROGRESS** | candidate includes deterministic catalog/RTL/pseudo/error tests; exact-head gate pending | final manual locale/AT hardening later | generated from shipping RESX keyspace |
+| TASK-037 localization migration | **DONE** | **PASS** — exact-head run `33347003405` | final manual locale/AT hardening later | deterministic shipping RESX → React catalogs, pseudo, RTL, error localization |
+| TASK-038 editor parity UI | **IMPLEMENTING** | feature-branch tests/gate pending | final AT pass later | snapshot-driven modes/bindings/issues/raw-grid UI |
 
 The TASK-035/TASK-036 integration was also exercised by draft PR #5's synthetic merge run `33339138829`, which passed Gate 0, Rust parity, frontend checks and fuzz smoke against then-current `main`.
 
@@ -67,4 +68,4 @@ These are not blanket blockers for implementing later product slices.
 
 ## Next implementation boundary
 
-Finish and promote TASK-037 after its exact-head gate, then build TASK-038 editor parity UI on the proven integration head.
+Finish TASK-038 editor parity UI and promote only after its exact-head gate. TASK-040A local file workflow follows.
