@@ -134,7 +134,7 @@
     radial-gradient(70% 55% at 46% 100%, rgba(138,106,30,.09), transparent 62%)}
   /* the stick sits behind the type. drop-shadow follows the cutout, so there is no box edge to cut.
      it and the veil live inside the wrap, so on phones the stick can flow between the lede and the badges */
-  .hero-stick{position:absolute;z-index:-2;right:calc(50% - 50vw);top:50%;transform:translateY(-50%);
+  .hero-stick{position:absolute;z-index:-2;right:calc(50% - 50vw + clamp(24px,7vw,130px));top:50%;transform:translateY(-50%);
     width:min(40%,600px);max-width:none;max-height:54svh;object-fit:contain;object-position:right center;
     pointer-events:none;user-select:none;
     filter:drop-shadow(0 14px 18px rgba(40,33,20,.14)) drop-shadow(0 46px 56px rgba(40,33,20,.18))}
@@ -152,7 +152,7 @@
   /* the middle band: less room for the stick so the three badges stay one row */
   @media(max-width:1100px){
     .hero-copy{max-width:min(72%,840px)}
-    .hero-stick{width:min(32%,400px)}
+    .hero-stick{width:min(32%,400px);right:calc(50% - 50vw + 24px)}
   }
 
   /* the nudge to keep reading */
@@ -175,7 +175,7 @@
     .hero h1 br{display:none}
     /* the app is the product, not the hardware, so the stick is a small accent here */
     .hero-stick{position:static;transform:none;width:auto;height:auto;
-      max-width:min(44vw,190px);max-height:none;margin:20px 0 24px}
+      max-width:min(44vw,190px);max-height:none;margin:20px auto 24px}
     .hero-veil{display:none}
   }
 
