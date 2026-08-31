@@ -68,7 +68,6 @@ const string SamplePrefs =
     + "volume,40,,\n"
     + "brightness,75,,\n";
 
-
 // --lang <tag> draws it in a shipped language. The store shots need one set
 // per language, and Arabic is the one that has to be looked at rather than
 // asserted: the window mirrors and the device photo must not follow it.
@@ -144,6 +143,116 @@ AppBuilder.Configure<App>()
     .UseSkia()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
     .SetupWithoutStarting();
+
+// The set that goes with a release announcement, all at 1920x1080 so they sit
+// in a row without one of them being half the size of its neighbours. Light
+// theme: these get posted somewhere with a dark background, and a dark
+// screenshot on a dark page loses its own edges.
+if (args.Contains("--post"))
+{
+    Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Language = lang });
+
+    const int W = 1920, H = 1080;
+
+    string PostPrefs(string file, int emulation) => string.Join("\n", new[]
+    {
+        "Profile Name,,Gameplay", file, "Outputs,Function,usb",
+        "kb_space,normal,lip", "", "Preferences", "",
+        "Preference,Value,Units,Description",
+        $"enable_DS3_emulation,{emulation}",
+        "sip_puff_threshold,60", "titan_two,1", "enable_usb_a_host,1",
+    });
+    const string PostFuncs = """
+        Profile Name,,Gameplay
+        mygame.csv
+        Outputs,Function,usb
+        kb_space,tap 500 100,lip
+        kb_left_shift,delay_on 500 1,mp_triple_puff
+        mouse_left_button,greater_than 60,mp_left_sip
+        """;
+
+    CaptureSized("post-01-home", W, H, _ => { });
+
+    CaptureSized("post-02-device-settings", W, H, w =>
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff"));
+
+    CaptureSized("post-03-joystick-live", W, H, w =>
+    {
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Joystick");
+        w.ShowLiveInputForPreview(new LiveState(0.42, -0.30, PressedForShot(), "QuadStick",
+            new HashSet<string>(), true));
+    });
+
+    CaptureSized("post-04-back-panel", W, H, w =>
+    {
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SelectZoneForPreview("jacks");
+    });
+
+    CaptureSized("post-05-rear-joystick", W, H, w =>
+    {
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SelectZoneForPreview("other");
+    });
+
+    CaptureSized("post-06-device-view", W, H, w =>
+    {
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SelectZoneForPreview("mp_left");
+    });
+
+    // A row lit while the device is sending it, driven by the same seam the
+    // row-lighting tests use. No stick in the room, the real UI state.
+    CaptureSized("post-07-row-lighting", W, H, w =>
+    {
+        // Light rows this profile actually has. A hard-coded output token lights
+        // nothing the moment the hero profile changes, and a shot of the feature
+        // with the feature not visible is worse than no shot.
+        var f = ProfileFile.Load(File.ReadAllText(hero));
+        var lit = new HashSet<string>(StringComparer.Ordinal);
+        for (int row = 0; row < 60 && lit.Count < 3; row++)
+        {
+            var output = f.GetCell(row, 0).Trim();
+            if (output.Length == 0 || f.GetCell(row, 2).Trim().Length == 0) continue;
+            if (!Vocab.AllOutputs.Contains(output, StringComparer.Ordinal)) continue;
+            lit.Add(output);
+        }
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(false);
+        w.ShowLiveInputForPreview(new LiveState(0, -0.6, Array.Empty<int>(), "QuadStick", lit, true));
+    });
+
+    CaptureSized("post-08-import-review", W, H, w =>
+    {
+        var f = ProfileFile.Load(File.ReadAllText(hero));
+        f.SetCell(4, 0, "mouse_speed");
+        f.SetCell(4, 2, "fast");
+        f.SetCell(5, 2, "left_sip");
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(false);
+        w.ShowProblemsForPreview();
+    });
+
+    CaptureSized("post-09-emulation-blocked", W, H, w =>
+    {
+        var f = ProfileFile.Load(PostPrefs("default.csv", 5));
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(false);
+        w.SelectSheetForPreview(f.Document.Sheets.ToList()
+            .FindIndex(x => x.Type == SheetType.Preferences));
+        w.ShowProblemsForPreview();
+    });
+
+    CaptureSized("post-10-function-numbers", W, H, w =>
+    {
+        w.LoadProfile(ProfileFile.Load(PostFuncs));
+        w.SelectZoneForPreview("lip");
+    });
+
+    Console.WriteLine("post set written");
+    return;
+}
 
 // --models draws the device view once per QuadStick, which is the only way to
 // see that each model got its own photo and that its callouts sit where the
