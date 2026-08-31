@@ -666,13 +666,14 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 24);
+    assert_eq!(registered.len(), 25);
     for name in [
         "get_app_snapshot",
         "get_settings",
         "update_settings",
         "new_profile",
         "choose_and_open_profile",
+        "get_profile_snapshot",
         "apply_editor_ops",
         "undo_editor",
         "save_profile",
