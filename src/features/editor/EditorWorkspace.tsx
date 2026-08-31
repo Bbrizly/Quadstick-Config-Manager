@@ -211,11 +211,6 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   const rows = useMemo(() => bindingRows(snapshot, selectedMode), [snapshot, selectedMode]);
   const activeRow = selectedRow === null ? null : rows.find((row) => row.row === selectedRow) ?? null;
 
-  useEffect(() => {
-    if (selectedMode === null && profileModes[0] !== undefined) setSelectedSheet(profileModes[0].index);
-    if (selectedRow !== null && !rows.some((row) => row.row === selectedRow)) setSelectedRow(null);
-  }, [profileModes, rows, selectedMode, selectedRow]);
-
   const showFailure = useCallback(
     (reason: unknown): void => {
       const error = asQcmError(reason);
@@ -382,7 +377,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                 onClick={() => {
                   const name = `Mode ${String(profileModes.length + 1)}`;
                   void apply([{ op: "add_mode", name }], (next) => {
-                    const added = next.modes.filter((mode) => mode.kind === "mode").at(-1);
+                    const added = next.modes.findLast((mode) => mode.kind === "mode");
                     if (added !== undefined) setSelectedSheet(added.index);
                   });
                 }}
@@ -424,7 +419,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                     <div className="mode-row-actions">
                       <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, -1) === null} aria-label={t("Review_MoveItEarlier")} onClick={() => moveMode(mode, -1)}>↑</button>
                       <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, 1) === null} aria-label={t("Review_MoveItLater")} onClick={() => moveMode(mode, 1)}>↓</button>
-                      <button type="button" disabled={busy} aria-label={t("Modes_MakeACopyOfName", [mode.name])} onClick={() => void apply([{ op: "duplicate_mode", sheet: mode.index, name: `${mode.name} copy` }], (next) => { const copy = next.modes.filter((candidate) => candidate.kind === "mode").at(-1); if (copy !== undefined) setSelectedSheet(copy.index); })}>＋</button>
+                      <button type="button" disabled={busy} aria-label={t("Modes_MakeACopyOfName", [mode.name])} onClick={() => void apply([{ op: "duplicate_mode", sheet: mode.index, name: `${mode.name} copy` }], (next) => { const copy = next.modes.findLast((candidate) => candidate.kind === "mode"); if (copy !== undefined) setSelectedSheet(copy.index); })}>＋</button>
                       <button type="button" disabled={busy || profileModes.length <= 1} aria-label={armedDelete === mode.index ? t("Modes_ReallyDeleteName", [mode.name]) : t("Shell_Delete")} onClick={() => deleteMode(mode)}>×</button>
                     </div>
                   </li>
@@ -512,7 +507,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
         )}
       </section>
       <LiveRegion>{message}</LiveRegion>
-      {message !== "" ? <p className="editor-message" role="status">{message}</p> : null}
+      {message !== "" ? <output className="editor-message">{message}</output> : null}
     </section>
   );
 }

@@ -277,6 +277,12 @@
   <data name="Count_Mode_other" xml:space="preserve">
     <value>[{0} módéš xxx]</value>
   </data>
+  <data name="Count_Part_one" xml:space="preserve">
+    <value>[{0} párt xxx]</value>
+  </data>
+  <data name="Count_Part_other" xml:space="preserve">
+    <value>[{0} pártš xxx]</value>
+  </data>
   <data name="Count_RowDeleted_one" xml:space="preserve">
     <value>[{0} rów délétéd. Çtrl+Ž bríñgš ít báçk. xxxxxxxxxxxxxxx]</value>
   </data>
@@ -1175,6 +1181,15 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_Left" xml:space="preserve">
     <value>[Léft x]</value>
   </data>
+  <data name="Main_FunctionBehavior" xml:space="preserve">
+    <value>[Fúñçtíóñ (béhávíór) xxxxxxx]</value>
+  </data>
+  <data name="Main_InputPressesOutput" xml:space="preserve">
+    <value>[{0} préššéš {1} xxxxxx]</value>
+  </data>
+  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
+    <value>[Íñpútš (šípš, púffš, jóýštíçk) xxxxxxxxxxxx]</value>
+  </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>[Léft búmpér xxxx]</value>
   </data>
@@ -1207,6 +1222,12 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   </data>
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>[Máppíñg {0}: préšš {1} whéñ ýóú {2}, óñé áftér thé óthér{3}. Préšš Éñtér tó édít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
+    <value>[Máppíñg {0}: {1} tó {2}{3}. Préšš Éñtér tó édít. xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
+    <value>[Çlíçk tó édít thíš máppíñg ór ádd á ñóté. xxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>[Máppíñgš réád áš šímplé šéñtéñçé çárdš. Šwítçh tó thé détáíléd édítór. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -1316,8 +1337,20 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_NotNowKeepTheReport" xml:space="preserve">
     <value>[Ñót ñów, kéép thé répórt áñd ášk ágáíñ látér xxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
+    <value>[Thíš prófílé mápš {0} ýóúr {1} dóéš ñót hávé. Théý áré íñ thé líšt óñ thé léft, áñd çáñ štíll bé édítéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Main_NotOnModel" xml:space="preserve">
     <value>[Ñót óñ módél xxxx]</value>
+  </data>
+  <data name="Main_NotOnYourModelName" xml:space="preserve">
+    <value>[Ñót óñ ýóúr {0} xxxxxx]</value>
+  </data>
+  <data name="Main_NotOnYourModelNameParts" xml:space="preserve">
+    <value>[{0}. {1}, {2}. Ópéñš thé líšt. xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
+    <value>[Théšé rówš áré képt íñ thé fílé áñd çáñ štíll bé édítéd. Píçk á párt tó ópéñ ítš máppíñgš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_NotOnYourModel" xml:space="preserve">
     <value>[Ñót óñ ýóúr módél xxxxxx]</value>
@@ -1327,6 +1360,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   </data>
   <data name="Main_Note" xml:space="preserve">
     <value>[ñóté x]</value>
+  </data>
+  <data name="Main_NoteSummary" xml:space="preserve">
+    <value>[{0}: {1} xxx]</value>
   </data>
   <data name="Main_NoteForRowBRow" xml:space="preserve">
     <value>[Ñóté fór rów {0}. Šávéd íñ thé fílé, ígñóréd bý thé QúádŠtíçk xxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -1564,6 +1600,18 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
   <data name="Main_RowNotSelected" xml:space="preserve">
     <value>[{0}. Špáçé šéléçtš, drág réórdérš xxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_RowSendingNow" xml:space="preserve">
+    <value>[{0}. Thé QúádŠtíçk íš šéñdíñg thíš ñów xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_SendingNow" xml:space="preserve">
+    <value>[Thé QúádŠtíçk íš šéñdíñg thíš ñów xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_WhatALitRowMeans" xml:space="preserve">
+    <value>[Á rów líghtš whílé thé QúádŠtíçk íš šéñdíñg thát rów'š óútpút. Thé dévíçé ñévér šáýš whíçh fílé ór módé ít íš rúññíñg, šó á rów çáñ líght fróm á dífféréñt prófílé tháñ thé óñé ópéñ héré. Móúšé, kéýbóárd áñd íñfráréd óútpútš léávé óñ áñóthér çóññéçtíóñ áñd ñévér líght. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
+    <value>[Thé ápp háš ñót bééñ táúght tó réád thíš émúlátíóñ módé'š répórt, šó ñó rów wíll líght whílé thé QúádŠtíçk íš íñ ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Main_RowSelected" xml:space="preserve">
     <value>[{0}, šéléçtéd. Špáçé šéléçtš, drág réórdérš xxxxxxxxxxxxxxxxx]</value>
   </data>
@@ -1668,6 +1716,54 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
   </data>
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
     <value>[Šíp ór púff óñ thé šídé túbé. Á lóñg hárd šíp héré ñórmállý šwítçhéš prófíléš, bút ýóú çáñ máp ít tóó. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_SoftPuff" xml:space="preserve">
+    <value>[Šóft Púff xxx]</value>
+  </data>
+  <data name="Main_Puff" xml:space="preserve">
+    <value>[Púff x]</value>
+  </data>
+  <data name="Main_Sip" xml:space="preserve">
+    <value>[Šíp x]</value>
+  </data>
+  <data name="Main_SoftSip" xml:space="preserve">
+    <value>[Šóft Šíp xxx]</value>
+  </data>
+  <data name="Main_Lip" xml:space="preserve">
+    <value>[Líp x]</value>
+  </data>
+  <data name="Main_SoftLip" xml:space="preserve">
+    <value>[Šóft Líp xxx]</value>
+  </data>
+  <data name="Main_Push" xml:space="preserve">
+    <value>[Púšh x]</value>
+  </data>
+  <data name="Main_Movement" xml:space="preserve">
+    <value>[Móvéméñt xxx]</value>
+  </data>
+  <data name="Main_LeftStick" xml:space="preserve">
+    <value>[Léft Štíçk xxxx]</value>
+  </data>
+  <data name="Main_RightStick" xml:space="preserve">
+    <value>[Ríght Štíçk xxxx]</value>
+  </data>
+  <data name="Main_Mouse" xml:space="preserve">
+    <value>[Móúšé xx]</value>
+  </data>
+  <data name="Main_ExtraActions" xml:space="preserve">
+    <value>[+ {0} éxtrá áçtíóñš xxxxxxx]</value>
+  </data>
+  <data name="Main_ViewDetails" xml:space="preserve">
+    <value>[Víéw détáílš → xxxxx]</value>
+  </data>
+  <data name="Main_Sequence" xml:space="preserve">
+    <value>[šéqúéñçé xxx]</value>
+  </data>
+  <data name="Count_Action_one" xml:space="preserve">
+    <value>[{0} áçtíóñ xxxx]</value>
+  </data>
+  <data name="Count_Action_other" xml:space="preserve">
+    <value>[{0} áçtíóñš xxxx]</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>[Štárt á ñéw máppíñg óñ {0} xxxxxxxxxx]</value>
@@ -1881,7 +1977,7 @@ Whát íš šéñt góéš tó PóštHóg, óñ šérvérš íñ thé Úñítéd
     <value>[Wórdš: Líšt ñáméš xxxxxx]</value>
   </data>
   <data name="Main_WordsPlainEnglish" xml:space="preserve">
-    <value>[Wórdš: Pláíñ Éñglíšh xxxxxxxx]</value>
+    <value>[Pláíñ Éñglíšh xxxxx]</value>
   </data>
   <data name="Main_WordsXboxStyle" xml:space="preserve">
     <value>[Wórdš: Xbóx štýlé xxxxxx]</value>
@@ -2128,6 +2224,12 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>[TV rémóté xxx]</value>
+  </data>
+  <data name="Prefs_OffZero" xml:space="preserve">
+    <value>[Óff (0) xx]</value>
+  </data>
+  <data name="Prefs_OnOne" xml:space="preserve">
+    <value>[Óñ (1) xx]</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>[Ábóút {0}: {1} xxxxx]</value>
@@ -2570,6 +2672,21 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Settings_Checking" xml:space="preserve">
     <value>[Çhéçkíñg... xxxx]</value>
   </data>
+  <data name="Settings_CardSentenceStyle" xml:space="preserve">
+    <value>[Máppíñg çárd wórdíñg xxxxxxxx]</value>
+  </data>
+  <data name="Settings_CardSentenceStyleCaption" xml:space="preserve">
+    <value>[Çhóóšé whéthér çárdš štárt wíth thé óútpút ór thé íñpút. Thíš çháñgéš óñlý hów çárdš réád, ñót whát thé QúádŠtíçk dóéš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
+    <value>[Máppíñg çárd wórdíñg: çhóóšé óútpút-fíršt ór íñpút-fíršt šéñtéñçéš xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
+    <value>[Préšš X whéñ ýóú šíp xxxxxxxx]</value>
+  </data>
+  <data name="Settings_CardSentenceStyleInputFirst" xml:space="preserve">
+    <value>[Šíp tó X xxx]</value>
+  </data>
   <data name="Settings_Close" xml:space="preserve">
     <value>[Çlóšé xx]</value>
   </data>
@@ -2849,6 +2966,9 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Shell_CommunityProfiles" xml:space="preserve">
     <value>[Çómmúñítý prófíléš xxxxxxx]</value>
   </data>
+  <data name="Shell_Configuration" xml:space="preserve">
+    <value>[Çóñfígúrátíóñ xxxxx]</value>
+  </data>
   <data name="Shell_CreateANewProfile" xml:space="preserve">
     <value>[Çréáté á ñéw prófílé xxxxxxxx]</value>
   </data>
@@ -3038,6 +3158,9 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
     <value>[Šéléçt whíçh módé tó édít xxxxxxxxxx]</value>
   </data>
+  <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
+    <value>[Šéléçt rówš tó móvé, délété, ór çléár xxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Shell_SetUpAGame" xml:space="preserve">
     <value>[Šét úp á gámé xxxxx]</value>
   </data>
@@ -3184,5 +3307,101 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>[Ýóú áré óñ {0}, whíçh íš thé látéšt. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Count_RowCopied_one" xml:space="preserve">
+    <value>[{0} rów çópíéd tó {1}. Çtrl+Ž úñdóéš ít. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Count_RowCopied_other" xml:space="preserve">
+    <value>[{0} rówš çópíéd tó {1}. Çtrl+Ž úñdóéš ít. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_CopyToMode" xml:space="preserve">
+    <value>[Çópý tó módé xxxx]</value>
+  </data>
+  <data name="Main_Move" xml:space="preserve">
+    <value>[Móvé x]</value>
+  </data>
+  <data name="Main_DuplicateMark" xml:space="preserve">
+    <value>[×{0} x]</value>
+  </data>
+  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
+    <value>[Úšéd {0} tíméš íñ thíš módé xxxxxxxxxx]</value>
+  </data>
+  <data name="Count_Profile_one" xml:space="preserve">
+    <value>[{0} prófílé xxxx]</value>
+  </data>
+  <data name="Count_Profile_other" xml:space="preserve">
+    <value>[{0} prófíléš xxxx]</value>
+  </data>
+  <data name="Count_File_one" xml:space="preserve">
+    <value>[{0} fílé xxx]</value>
+  </data>
+  <data name="Count_File_other" xml:space="preserve">
+    <value>[{0} fíléš xxx]</value>
+  </data>
+  <data name="Names_UsedOnCount" xml:space="preserve">
+    <value>[óñ {0} xx]</value>
+  </data>
+  <data name="Names_RenamedOldToNew" xml:space="preserve">
+    <value>[Réñáméd {0} tó {1}. xxxxxxx]</value>
+  </data>
+  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
+    <value>[{0} óñ {1}. xxxx]</value>
+  </data>
+  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
+    <value>[Délété {0} fróm {1}? xxxxxxxx]</value>
+  </data>
+  <data name="Drive_RestoreImported" xml:space="preserve">
+    <value>[{0} ímpórtéd xxxx]</value>
+  </data>
+  <data name="Drive_RestoreSkipped" xml:space="preserve">
+    <value>[{0} škíppéd:  xxxxx]</value>
+  </data>
+  <data name="Drive_RestoreFailed" xml:space="preserve">
+    <value>[{0} fáíléd:  xxxx]</value>
+  </data>
+  <data name="Review_RowNumber" xml:space="preserve">
+    <value>[rów {0} xx]</value>
+  </data>
+  <data name="Review_EmptiedCell" xml:space="preserve">
+    <value>[Émptíéd {0}. xxxx]</value>
+  </data>
+  <data name="Review_MovedFromTo" xml:space="preserve">
+    <value>[Móvéd “{0}” fróm {1} tó {2}. xxxxxxxxxxx]</value>
+  </data>
+  <data name="Review_SetCellTo" xml:space="preserve">
+    <value>[Šét {0} tó “{1}”. xxxxxx]</value>
+  </data>
+  <data name="Review_ModeNumberTitle" xml:space="preserve">
+    <value>[Módé {0}: {1} xxxxx]</value>
+  </data>
+  <data name="Main_InFolder" xml:space="preserve">
+    <value>[ · íñ {0} xxx]</value>
+  </data>
+  <data name="Main_PlusMore" xml:space="preserve">
+    <value>[ +{0} móré xxxx]</value>
+  </data>
+  <data name="Main_MappingNumber" xml:space="preserve">
+    <value>[Máppíñg {0} xxxx]</value>
+  </data>
+  <data name="Main_RowNumber" xml:space="preserve">
+    <value>[Rów {0} xx]</value>
+  </data>
+  <data name="Main_PickWord" xml:space="preserve">
+    <value>[píçk {0} xxx]</value>
+  </data>
+  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
+    <value>[Módé {0} xxx]</value>
+  </data>
+  <data name="Modes_MoveNameUp" xml:space="preserve">
+    <value>[Móvé {0} úp xxxx]</value>
+  </data>
+  <data name="Modes_MoveNameDown" xml:space="preserve">
+    <value>[Móvé {0} dówñ xxxxx]</value>
+  </data>
+  <data name="Modes_DeleteName" xml:space="preserve">
+    <value>[Délété {0} xxxx]</value>
+  </data>
+  <data name="Settings_InstallIdIs" xml:space="preserve">
+    <value>[Íñštáll ÍD: {0} xxxxxx]</value>
   </data>
 </root>

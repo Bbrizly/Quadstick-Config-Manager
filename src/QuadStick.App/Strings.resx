@@ -277,6 +277,12 @@
   <data name="Count_Mode_other" xml:space="preserve">
     <value>{0} modes</value>
   </data>
+  <data name="Count_Part_one" xml:space="preserve">
+    <value>{0} part</value>
+  </data>
+  <data name="Count_Part_other" xml:space="preserve">
+    <value>{0} parts</value>
+  </data>
   <data name="Count_RowDeleted_one" xml:space="preserve">
     <value>{0} row deleted. Ctrl+Z brings it back.</value>
   </data>
@@ -1175,6 +1181,15 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_Left" xml:space="preserve">
     <value>Left</value>
   </data>
+  <data name="Main_FunctionBehavior" xml:space="preserve">
+    <value>Function (behavior)</value>
+  </data>
+  <data name="Main_InputPressesOutput" xml:space="preserve">
+    <value>{0} presses {1}</value>
+  </data>
+  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
+    <value>Inputs (sips, puffs, joystick)</value>
+  </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>Left bumper</value>
   </data>
@@ -1207,6 +1222,12 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>Mapping {0}: press {1} when you {2}, one after the other{3}. Press Enter to edit.</value>
+  </data>
+  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
+    <value>Mapping {0}: {1} to {2}{3}. Press Enter to edit.</value>
+  </data>
+  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
+    <value>Click to edit this mapping or add a note.</value>
   </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>Mappings read as simple sentence cards. Switch to the detailed editor.</value>
@@ -1316,8 +1337,20 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_NotNowKeepTheReport" xml:space="preserve">
     <value>Not now, keep the report and ask again later</value>
   </data>
+  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
+    <value>This profile maps {0} your {1} does not have. They are in the list on the left, and can still be edited.</value>
+  </data>
   <data name="Main_NotOnModel" xml:space="preserve">
     <value>Not on model</value>
+  </data>
+  <data name="Main_NotOnYourModelName" xml:space="preserve">
+    <value>Not on your {0}</value>
+  </data>
+  <data name="Main_NotOnYourModelNameParts" xml:space="preserve">
+    <value>{0}. {1}, {2}. Opens the list.</value>
+  </data>
+  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
+    <value>These rows are kept in the file and can still be edited. Pick a part to open its mappings.</value>
   </data>
   <data name="Main_NotOnYourModel" xml:space="preserve">
     <value>Not on your model</value>
@@ -1327,6 +1360,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_Note" xml:space="preserve">
     <value>note</value>
+  </data>
+  <data name="Main_NoteSummary" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
   <data name="Main_NoteForRowBRow" xml:space="preserve">
     <value>Note for row {0}. Saved in the file, ignored by the QuadStick</value>
@@ -1564,6 +1600,18 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   <data name="Main_RowNotSelected" xml:space="preserve">
     <value>{0}. Space selects, drag reorders</value>
   </data>
+  <data name="Main_RowSendingNow" xml:space="preserve">
+    <value>{0}. The QuadStick is sending this now</value>
+  </data>
+  <data name="Main_SendingNow" xml:space="preserve">
+    <value>The QuadStick is sending this now</value>
+  </data>
+  <data name="Main_WhatALitRowMeans" xml:space="preserve">
+    <value>A row lights while the QuadStick is sending that row's output. The device never says which file or mode it is running, so a row can light from a different profile than the one open here. Mouse, keyboard and infrared outputs leave on another connection and never light.</value>
+  </data>
+  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
+    <value>The app has not been taught to read this emulation mode's report, so no row will light while the QuadStick is in it.</value>
+  </data>
   <data name="Main_RowSelected" xml:space="preserve">
     <value>{0}, selected. Space selects, drag reorders</value>
   </data>
@@ -1668,6 +1716,54 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   </data>
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
     <value>Sip or puff on the side tube. A long hard sip here normally switches profiles, but you can map it too.</value>
+  </data>
+  <data name="Main_SoftPuff" xml:space="preserve">
+    <value>Soft Puff</value>
+  </data>
+  <data name="Main_Puff" xml:space="preserve">
+    <value>Puff</value>
+  </data>
+  <data name="Main_Sip" xml:space="preserve">
+    <value>Sip</value>
+  </data>
+  <data name="Main_SoftSip" xml:space="preserve">
+    <value>Soft Sip</value>
+  </data>
+  <data name="Main_Lip" xml:space="preserve">
+    <value>Lip</value>
+  </data>
+  <data name="Main_SoftLip" xml:space="preserve">
+    <value>Soft Lip</value>
+  </data>
+  <data name="Main_Push" xml:space="preserve">
+    <value>Push</value>
+  </data>
+  <data name="Main_Movement" xml:space="preserve">
+    <value>Movement</value>
+  </data>
+  <data name="Main_LeftStick" xml:space="preserve">
+    <value>Left Stick</value>
+  </data>
+  <data name="Main_RightStick" xml:space="preserve">
+    <value>Right Stick</value>
+  </data>
+  <data name="Main_Mouse" xml:space="preserve">
+    <value>Mouse</value>
+  </data>
+  <data name="Main_ExtraActions" xml:space="preserve">
+    <value>+ {0} extra actions</value>
+  </data>
+  <data name="Main_ViewDetails" xml:space="preserve">
+    <value>View details →</value>
+  </data>
+  <data name="Main_Sequence" xml:space="preserve">
+    <value>sequence</value>
+  </data>
+  <data name="Count_Action_one" xml:space="preserve">
+    <value>{0} action</value>
+  </data>
+  <data name="Count_Action_other" xml:space="preserve">
+    <value>{0} actions</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>Start a new mapping on {0}</value>
@@ -1881,7 +1977,7 @@ You can change this any time in Settings, under Advanced.</value>
     <value>Words: List names</value>
   </data>
   <data name="Main_WordsPlainEnglish" xml:space="preserve">
-    <value>Words: Plain English</value>
+    <value>Plain English</value>
   </data>
   <data name="Main_WordsXboxStyle" xml:space="preserve">
     <value>Words: Xbox style</value>
@@ -2128,6 +2224,12 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>TV remote</value>
+  </data>
+  <data name="Prefs_OffZero" xml:space="preserve">
+    <value>Off (0)</value>
+  </data>
+  <data name="Prefs_OnOne" xml:space="preserve">
+    <value>On (1)</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>About {0}: {1}</value>
@@ -2569,6 +2671,21 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Settings_Checking" xml:space="preserve">
     <value>Checking...</value>
+  </data>
+  <data name="Settings_CardSentenceStyle" xml:space="preserve">
+    <value>Mapping card wording</value>
+  </data>
+  <data name="Settings_CardSentenceStyleCaption" xml:space="preserve">
+    <value>Choose whether cards start with the output or the input. This changes only how cards read, not what the QuadStick does.</value>
+  </data>
+  <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
+    <value>Mapping card wording: choose output-first or input-first sentences</value>
+  </data>
+  <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
+    <value>Press X when you sip</value>
+  </data>
+  <data name="Settings_CardSentenceStyleInputFirst" xml:space="preserve">
+    <value>Sip to X</value>
   </data>
   <data name="Settings_Close" xml:space="preserve">
     <value>Close</value>
@@ -3041,6 +3158,9 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
     <value>Select which mode to edit</value>
   </data>
+  <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
+    <value>Select rows to move, delete, or clear</value>
+  </data>
   <data name="Shell_SetUpAGame" xml:space="preserve">
     <value>Set up a game</value>
   </data>
@@ -3187,5 +3307,101 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>You are on {0}, which is the latest.</value>
+  </data>
+  <data name="Count_RowCopied_one" xml:space="preserve">
+    <value>{0} row copied to {1}. Ctrl+Z undoes it.</value>
+  </data>
+  <data name="Count_RowCopied_other" xml:space="preserve">
+    <value>{0} rows copied to {1}. Ctrl+Z undoes it.</value>
+  </data>
+  <data name="Main_CopyToMode" xml:space="preserve">
+    <value>Copy to mode</value>
+  </data>
+  <data name="Main_Move" xml:space="preserve">
+    <value>Move</value>
+  </data>
+  <data name="Main_DuplicateMark" xml:space="preserve">
+    <value>×{0}</value>
+  </data>
+  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
+    <value>Used {0} times in this mode</value>
+  </data>
+  <data name="Count_Profile_one" xml:space="preserve">
+    <value>{0} profile</value>
+  </data>
+  <data name="Count_Profile_other" xml:space="preserve">
+    <value>{0} profiles</value>
+  </data>
+  <data name="Count_File_one" xml:space="preserve">
+    <value>{0} file</value>
+  </data>
+  <data name="Count_File_other" xml:space="preserve">
+    <value>{0} files</value>
+  </data>
+  <data name="Names_UsedOnCount" xml:space="preserve">
+    <value>on {0}</value>
+  </data>
+  <data name="Names_RenamedOldToNew" xml:space="preserve">
+    <value>Renamed {0} to {1}.</value>
+  </data>
+  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
+    <value>{0} on {1}.</value>
+  </data>
+  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
+    <value>Delete {0} from {1}?</value>
+  </data>
+  <data name="Drive_RestoreImported" xml:space="preserve">
+    <value>{0} imported</value>
+  </data>
+  <data name="Drive_RestoreSkipped" xml:space="preserve">
+    <value>{0} skipped: </value>
+  </data>
+  <data name="Drive_RestoreFailed" xml:space="preserve">
+    <value>{0} failed: </value>
+  </data>
+  <data name="Review_RowNumber" xml:space="preserve">
+    <value>row {0}</value>
+  </data>
+  <data name="Review_EmptiedCell" xml:space="preserve">
+    <value>Emptied {0}.</value>
+  </data>
+  <data name="Review_MovedFromTo" xml:space="preserve">
+    <value>Moved “{0}” from {1} to {2}.</value>
+  </data>
+  <data name="Review_SetCellTo" xml:space="preserve">
+    <value>Set {0} to “{1}”.</value>
+  </data>
+  <data name="Review_ModeNumberTitle" xml:space="preserve">
+    <value>Mode {0}: {1}</value>
+  </data>
+  <data name="Main_InFolder" xml:space="preserve">
+    <value> · in {0}</value>
+  </data>
+  <data name="Main_PlusMore" xml:space="preserve">
+    <value> +{0} more</value>
+  </data>
+  <data name="Main_MappingNumber" xml:space="preserve">
+    <value>Mapping {0}</value>
+  </data>
+  <data name="Main_RowNumber" xml:space="preserve">
+    <value>Row {0}</value>
+  </data>
+  <data name="Main_PickWord" xml:space="preserve">
+    <value>pick {0}</value>
+  </data>
+  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
+    <value>Mode {0}</value>
+  </data>
+  <data name="Modes_MoveNameUp" xml:space="preserve">
+    <value>Move {0} up</value>
+  </data>
+  <data name="Modes_MoveNameDown" xml:space="preserve">
+    <value>Move {0} down</value>
+  </data>
+  <data name="Modes_DeleteName" xml:space="preserve">
+    <value>Delete {0}</value>
+  </data>
+  <data name="Settings_InstallIdIs" xml:space="preserve">
+    <value>Install ID: {0}</value>
   </data>
 </root>
