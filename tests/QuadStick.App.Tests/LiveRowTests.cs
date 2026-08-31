@@ -129,7 +129,10 @@ public class LiveRowTests
         w.UpdateLayout();
         w.ShowLiveInputForPreview(Sending("square"));
         w.UpdateLayout();
-        Assert.Equal(1, Lit(w));
+        // Two: the mapping card in the side panel and the row for the same
+        // gesture in the callout on the diagram. Both stand for the binding
+        // being sent, and device view shows both at once.
+        Assert.Equal(2, Lit(w));
     }
 
     // A row number belongs to a sheet, so row 4 of one profile is a different

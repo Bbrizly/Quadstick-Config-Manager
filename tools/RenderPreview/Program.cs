@@ -196,10 +196,23 @@ if (args.Contains("--post"))
         w.SelectZoneForPreview("other");
     });
 
+    // Device view with the stick being used: the callout rows whose action is
+    // going out light on the diagram, next to the part that sends them.
     CaptureSized("post-06-device-view", W, H, w =>
     {
-        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
-        w.SelectZoneForPreview("mp_left");
+        var f = ProfileFile.Load(File.ReadAllText(hero));
+        var lit = new HashSet<string>(StringComparer.Ordinal);
+        for (int row = 0; row < 60 && lit.Count < 3; row++)
+        {
+            var output = f.GetCell(row, 0).Trim();
+            if (output.Length == 0 || f.GetCell(row, 2).Trim().Length == 0) continue;
+            if (!Vocab.AllOutputs.Contains(output, StringComparer.Ordinal)) continue;
+            lit.Add(output);
+        }
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(true);
+        w.SelectZoneForPreview("side");
+        w.ShowLiveInputForPreview(new LiveState(0, -0.6, Array.Empty<int>(), "QuadStick", lit, true));
     });
 
     // A row lit while the device is sending it, driven by the same seam the

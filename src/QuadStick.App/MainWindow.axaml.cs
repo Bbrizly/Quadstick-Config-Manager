@@ -2992,6 +2992,7 @@ public partial class MainWindow : Window
         ZoneList.Children.Clear();
         _stageBox = null;
         _zoneButtons.Clear();
+        _liveCallouts.Clear();
         _cellBorders.Clear(); // stale entries from other zones/profiles would get issue-highlighted
         var byZone = BindingsByZone();
 
@@ -3397,6 +3398,35 @@ public partial class MainWindow : Window
             gesture.Margin = new Thickness(0, 5, 4, 5);
             action.Margin = new Thickness(4, 5, 0, 5);
             int r = panel.RowDefinitions.Count - 1;
+            // The tint goes in first so it sits behind the words. A gesture with
+            // nothing mapped to it gets none: there is no row for the device to
+            // be sending, so it must never light.
+            var litRows = new HashSet<int>(summary.Actions.Select(a => a.Binding.Row));
+            if (litRows.Count > 0)
+            {
+                var tint = new Border { IsHitTestVisible = false };
+                Grid.SetRow(tint, r);
+                Grid.SetColumnSpan(tint, 3);
+                panel.Children.Add(tint);
+                // In the gutter, on the rule, where there is room for it without
+                // taking a pixel off the action column. A shape, not a colour:
+                // nothing here may be signalled by colour alone.
+                var pip = new Border
+                {
+                    Width = 6, Height = 6,
+                    CornerRadius = new Avalonia.CornerRadius(3),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    IsVisible = false,
+                    IsHitTestVisible = false,
+                };
+                BindBrush(pip, Border.BackgroundProperty, "Accent");
+                AutomationProperties.SetName(pip, Strings.Main_SendingNow);
+                Grid.SetRow(pip, r);
+                Grid.SetColumn(pip, 1);
+                panel.Children.Add(pip);
+                _liveCallouts.Add((litRows, tint, pip, summary.FriendlyGestureName));
+            }
             Grid.SetRow(gesture, r);
             Grid.SetRow(action, r);
             Grid.SetColumn(action, 2);
@@ -4516,6 +4546,11 @@ public partial class MainWindow : Window
 
     public void SelectSheetForPreview(int index) => SelectSheet(index);
 
+    /// <summary>Test seam: how many callout rows on the device diagram are
+    /// lit right now. Counts the dot, not the tint, because the dot is the
+    /// half that has to be there when colour is not.</summary>
+    internal int LitCalloutCountForPreview() => _liveCallouts.Count(c => c.Pip.IsVisible);
+
     public ModeSheet? CurrentSheetForPreview => CurrentSheet;
 
     public void ShowProblemsForPreview()
@@ -5305,6 +5340,12 @@ public partial class MainWindow : Window
     readonly HashSet<int> _liveRows = new();
     readonly Dictionary<int, Control> _livePips = new();
 
+    // The callout rows on the device diagram, each with the editor rows it
+    // stands for. A gesture with nothing mapped to it has no rows and so can
+    // never light. Rebuilt with the diagram, which is why it is a list and not
+    // keyed by row: one editor row can appear in two callouts.
+    readonly List<(HashSet<int> Rows, Border Tint, Control Pip, string Said)> _liveCallouts = new();
+
     // The row lights because the device is sending that row's OUTPUT, which is
     // the only half the app can know. The device never says which input
     // produced it, nor which file or mode it is running, so lighting the input
@@ -5330,6 +5371,26 @@ public partial class MainWindow : Window
         _liveRows.Clear();
         foreach (var row in now) _liveRows.Add(row);
         foreach (var row in changed) PaintRow(row);
+        PaintLiveCallouts();
+    }
+
+    /// <summary>The same light on the device diagram: the callout row whose
+    /// action the QuadStick is sending this instant. Device view is where most
+    /// people work, so a light only the list view had was half a feature. There
+    /// are at most a few dozen callout rows on screen, so all of them are
+    /// checked rather than only the ones that changed.</summary>
+    void PaintLiveCallouts()
+    {
+        foreach (var (rows, tint, pip, said) in _liveCallouts)
+        {
+            bool live = rows.Overlaps(_liveRows);
+            pip.IsVisible = live;
+            if (live) BindBrush(tint, Border.BackgroundProperty, "LiveTint");
+            else tint.ClearValue(Border.BackgroundProperty);
+            AutomationProperties.SetName(tint, live
+                ? string.Format(CultureInfo.CurrentCulture, Strings.Main_RowSendingNow, said)
+                : said);
+        }
     }
 
     /// <summary>The dot at a row's left edge while the device is sending that
