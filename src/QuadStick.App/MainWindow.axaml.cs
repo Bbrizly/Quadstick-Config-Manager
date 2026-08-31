@@ -754,6 +754,13 @@ public partial class MainWindow : Window
             if (_settings.WinX is { } winX && _settings.WinY is { } winY)
                 Position = new PixelPoint((int)winX, (int)winY);
         }
+        // Open filling the screen. A window that starts small on a big monitor
+        // wastes the room the editor wants, and dragging a corner is the one
+        // gesture a mouth stick is worst at. RememberWindow off is the plain
+        // default window the screenshot tool and the tests are measured
+        // against, so it is left alone.
+        if (_settings.RememberWindow && _settings.WinMax)
+            WindowState = WindowState.Maximized;
         RootHost.PropertyChanged += (_, e) => { if (e.Property == Visual.BoundsProperty) UpdateScaleSize(); };
         RootPanel.PropertyChanged += (_, e) =>
         {
@@ -809,10 +816,17 @@ public partial class MainWindow : Window
         Closing += (_, _) =>
         {
             if (!_settings.RememberWindow) return;
-            _settings.WinW = Width;
-            _settings.WinH = Height;
-            _settings.WinX = Position.X;
-            _settings.WinY = Position.Y;
+            _settings.WinMax = WindowState == WindowState.Maximized;
+            // Only a normal window has a size worth keeping. Storing maximized
+            // bounds would make them the size to restore to, and the window
+            // could never be made small again.
+            if (WindowState == WindowState.Normal)
+            {
+                _settings.WinW = Width;
+                _settings.WinH = Height;
+                _settings.WinX = Position.X;
+                _settings.WinY = Position.Y;
+            }
             Settings.Save(_settings);
         };
         FileNameBox.LostFocus += (_, _) => CommitFileName();

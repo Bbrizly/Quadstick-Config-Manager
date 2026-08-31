@@ -33,6 +33,10 @@ public sealed class AppSettings
     // walk two levels to reach it.
     public string PickerGrouping = "Detailed"; // Detailed | Wide | Flat
     public double? WinW, WinH, WinX, WinY;     // null = use window defaults
+    // Fill the screen on the first run and keep filling it until somebody
+    // un-maximizes. WinW and WinH are only written while the window is
+    // normal, so the size to come back to is the size it last had.
+    public bool WinMax = true;
     // On by default, but inert until a token is stored, so it never touches
     // the network until the user signs in.
     public bool DriveBackup = true;
