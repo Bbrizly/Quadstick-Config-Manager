@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
-import { localizedErrorMessage } from "../../i18n/errors";
 import { useI18n } from "../../i18n";
+import { localizedErrorMessage } from "../../i18n/errors";
 import {
   ERROR_CODES,
   asQcmError,
@@ -12,6 +12,7 @@ import {
   type Mode,
   type QcmClient,
 } from "../../platform";
+import { QuadStickVisualizer } from "../visualizer/QuadStickVisualizer";
 
 interface EditorWorkspaceProps {
   readonly client: QcmClient;
@@ -71,12 +72,6 @@ function columnName(index: number): string {
   return name;
 }
 
-function displayAssignment(cells: readonly string[]): string {
-  const actionName = cells[11]?.trim() ?? "";
-  const output = cells[0]?.trim() ?? "";
-  return actionName !== "" ? actionName : output;
-}
-
 function BindingInspector({
   row,
   cells,
@@ -128,9 +123,7 @@ function BindingInspector({
                 aria-label={t("Main_InputI1ForRow", [index + 1, row])}
                 disabled={disabled}
                 value={draft[column] ?? ""}
-                onChange={(event) =>
-                  setDraft((current) => current.with(column, event.currentTarget.value))
-                }
+                onChange={(event) => setDraft((current) => current.with(column, event.currentTarget.value))}
                 onBlur={() => commit(column)}
               />
             </label>
@@ -210,6 +203,11 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   ) ?? profileModes[0] ?? null;
   const rows = useMemo(() => bindingRows(snapshot, selectedMode), [snapshot, selectedMode]);
   const activeRow = selectedRow === null ? null : rows.find((row) => row.row === selectedRow) ?? null;
+
+  useEffect(() => {
+    if (selectedMode !== null && selectedMode.index !== selectedSheet) setSelectedSheet(selectedMode.index);
+    if (selectedRow !== null && !rows.some((row) => row.row === selectedRow)) setSelectedRow(null);
+  }, [rows, selectedMode, selectedRow, selectedSheet]);
 
   const showFailure = useCallback(
     (reason: unknown): void => {
@@ -301,7 +299,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   }, [busy, client, onSnapshot, refreshAfterConflict, snapshot, t]);
 
   useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent): void => {
+    const onKeyDown = (event: globalThis.KeyboardEvent): void => {
       if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
       const key = event.key.toLowerCase();
       if (key === "z") {
@@ -442,32 +440,14 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                 </button>
               ) : null}
             </div>
-            {rows.length === 0 ? (
-              <p className="empty-copy">{t("Main_NoBindingsYetClickAdd")}</p>
-            ) : (
-              <ol className="binding-list">
-                {rows.map((binding) => {
-                  const assignment = displayAssignment(binding.cells);
-                  const inputs = binding.cells.slice(2, 10).filter((value) => value.trim() !== "");
-                  return (
-                    <li key={binding.row}>
-                      <button
-                        type="button"
-                        className="binding-row"
-                        data-binding-row={binding.row}
-                        data-testid={`binding-row-${String(binding.row)}`}
-                        aria-pressed={selectedRow === binding.row}
-                        onClick={() => setSelectedRow(binding.row)}
-                      >
-                        <span className="binding-output">{assignment || t("Main_AnOutput")}</span>
-                        <span className="binding-function">{binding.cells[1] ?? ""}</span>
-                        <span className="binding-inputs">{inputs.join(" · ") || t("Main_NoInput")}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ol>
-            )}
+            <QuadStickVisualizer
+              client={client}
+              rows={rows}
+              selectedRow={selectedRow}
+              modeName={selectedMode?.name ?? ""}
+              modeNumber={selectedMode?.number ?? null}
+              onSelectRow={setSelectedRow}
+            />
             {activeRow !== null ? (
               <div className="row-actions">
                 <button type="button" disabled={busy || rows[0]?.row === activeRow.row} aria-label={t("Review_MoveItEarlier")} onClick={() => void apply([{ op: "move_row", from: activeRow.row, to: activeRow.row - 1 }], () => setSelectedRow(activeRow.row - 1))}>↑</button>
