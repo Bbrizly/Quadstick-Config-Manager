@@ -23,8 +23,8 @@ const catalogs = [en, ar, de, es, fr, hi, itCatalog, ja, ko, nl, pl, pt, zhHans,
 
 describe("TASK-037 localization migration", () => {
   it("gives every runtime catalog exactly the generated keyset", () => {
-    const expected = Object.keys(en).sort();
-    for (const catalog of catalogs) expect(Object.keys(catalog).sort()).toEqual(expected);
+    const expected = Object.keys(en).toSorted();
+    for (const catalog of catalogs) expect(Object.keys(catalog).toSorted()).toEqual(expected);
     expect(baselineKeys.length).toBeGreaterThan(500);
     expect(rewriteKeys).toContain("Rewrite_SkipToMainContent");
   });
