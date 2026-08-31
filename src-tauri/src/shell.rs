@@ -8,7 +8,8 @@
 use crate::adapters::picker::ProfilePicker;
 use crate::ipc::{
     AppSnapshotDto, ApplyEditorOpsRequest, CapabilitiesDto, CloseOutcomeDto, CloseProfileRequest,
-    NewProfileRequest, SessionRequest, SessionRevisionRequest, UpdateSettingsRequest, parse, session_id,
+    NewProfileRequest, SessionRequest, SessionRevisionRequest, UpdateSettingsRequest, parse,
+    session_id,
 };
 use qcm_config::ProfileFile;
 use qcm_core::error::QcmError;
