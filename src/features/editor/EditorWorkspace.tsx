@@ -264,10 +264,15 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   );
 
   const undo = useCallback(async (): Promise<void> => {
-    if (busy || !snapshot.canUndo) return;
+    if (busy) return;
     setBusy(true);
     try {
-      const next = await client.undoEditor(snapshot.sessionId, snapshot.revision);
+      const current = await client.getProfileSnapshot(snapshot.sessionId);
+      if (!current.canUndo) {
+        onSnapshot(current);
+        return;
+      }
+      const next = await client.undoEditor(current.sessionId, current.revision);
       onSnapshot(next);
       setMessage("");
     } catch (reason) {
@@ -275,7 +280,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
     } finally {
       setBusy(false);
     }
-  }, [busy, client, onSnapshot, refreshAfterConflict, snapshot]);
+  }, [busy, client, onSnapshot, refreshAfterConflict, snapshot.sessionId]);
 
   const save = useCallback(async (): Promise<void> => {
     if (busy) return;
