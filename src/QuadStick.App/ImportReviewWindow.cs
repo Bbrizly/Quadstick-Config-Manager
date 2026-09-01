@@ -282,6 +282,12 @@ public class ImportReviewWindow : Window
         _body.Children.Add(Section(Strings.Review_WhatCameIn, new[] { ModeTable() }));
 
         _advancedHost.IsVisible = _advanced;
+        // The advanced grid is wider than the window and has to scroll
+        // sideways. The prose does not: a scroller that can grow sideways
+        // measures its content against infinite width, so every line that was
+        // asked to wrap stayed on one line and ran off the right edge instead.
+        _scroll.HorizontalScrollBarVisibility =
+            _advanced ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
         if (_advanced && _advancedHost.Children.Count == 0) AdvancedView();
         if (_advanced) { RefreshInspector(); RefreshUndoLine(); }
     }

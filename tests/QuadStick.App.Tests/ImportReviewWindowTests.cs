@@ -824,4 +824,20 @@ public class ImportReviewWindowTests
         Done(owner, review);
     }
 
+    // A ScrollViewer that may grow sideways measures its content against
+    // infinite width, so every message that asked to wrap stayed on one line
+    // and ran off the right edge of the window.
+    [AvaloniaFact]
+    public void A_long_message_wraps_instead_of_running_off_the_edge()
+    {
+        var (owner, _, review) = Open(TemplateRowsCsv);
+
+        var scroll = review.GetVisualDescendants().OfType<ScrollViewer>()
+            .First(v => v.GetVisualDescendants().OfType<TextBlock>()
+                .Any(t => (t.Text ?? "").Contains("no output name")));
+        Assert.True(scroll.Extent.Width <= scroll.Viewport.Width + 1,
+            $"the prose view scrolls sideways: {scroll.Extent.Width} wide in a {scroll.Viewport.Width} window");
+
+        Done(owner, review);
+    }
 }
