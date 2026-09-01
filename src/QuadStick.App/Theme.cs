@@ -32,6 +32,11 @@ public sealed class AppSettings
     // the drill-down; someone who knows the token they want should not have to
     // walk two levels to reach it.
     public string PickerGrouping = "Detailed"; // Detailed | Wide | Flat
+    // Which controller names the output picker lists. All shows both
+    // spellings of the thirteen shared buttons, PlayStation or Xbox shows one.
+    // The file is untouched either way: left_1 and left_bumper are one output
+    // to the device.
+    public string PickerVocabulary = "All"; // All | PlayStation | Xbox
     public double? WinW, WinH, WinX, WinY;     // null = use window defaults
     // Fill the screen on the first run and keep filling it until somebody
     // un-maximizes. WinW and WinH are only written while the window is

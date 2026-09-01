@@ -1274,6 +1274,15 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Name for this template</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Names</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>{0} names</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Which controller names this list offers. The QuadStick reads both spellings as the same output, so hiding one hides no button.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>New name for this template</value>
   </data>
@@ -1605,6 +1614,15 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>The QuadStick is sending this now</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>A row lights while the QuadStick is sending that row's output. The device never says which file or mode it is running, so a row can light from a different profile than the one open here. Mouse, keyboard and infrared outputs leave on another connection and never light.</value>

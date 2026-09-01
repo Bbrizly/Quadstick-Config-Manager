@@ -630,10 +630,6 @@ public partial class MainWindow : Window
     { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
 
     static readonly List<string> OutputSuggestions = WithModeOverrides(Vocab.AllOutputs);
-    static readonly List<string> OutputSuggestionsPs = WithModeOverrides(
-        Vocab.OutputsPs3.Concat(Vocab.LegacyOutputs).ToHashSet(StringComparer.Ordinal));
-    static readonly List<string> OutputSuggestionsXbox = WithModeOverrides(
-        Vocab.OutputsXbox.Concat(Vocab.LegacyOutputs).ToHashSet(StringComparer.Ordinal));
     static readonly List<string> FunctionSuggestions = Vocab.FunctionArity.Keys.OrderBy(x => x).ToList();
     // A stick is a shape, not a word list. Alphabetical opened the joystick
     // with any_direction and then scattered the compass (E, E_inner, N, NE,
@@ -660,21 +656,17 @@ public partial class MainWindow : Window
         Vocab.AllInputs.OrderBy(GroupRank).ThenBy(JoystickRank).ThenBy(x => x, StringComparer.Ordinal).ToList();
     static readonly List<string> NoSuggestions = new();
 
-    // A3 of each sheet names the output convention ("PlayStation Outputs" /
-    // "XBox Outputs"). Suggest the matching set; union when the label is generic.
-    static List<string> OutputSuggestionsFor(ModeSheet s)
-    {
-        var label = s.HeaderLabel;
-        if (label.Contains("xbox", StringComparison.OrdinalIgnoreCase)) return OutputSuggestionsXbox;
-        if (label.Contains("playstation", StringComparison.OrdinalIgnoreCase)) return OutputSuggestionsPs;
-        return OutputSuggestions;
-    }
-
     // The output picker for the open profile: its own names under "Custom"
-    // first, then that sheet's tokens. Rebuilt per call because editing the
+    // first, then every output token. Rebuilt per call because editing the
     // names table changes the list.
-    OutputCatalog.ProfileOutputs OutputsFor(ModeSheet s) =>
-        OutputCatalog.ForProfile(CustomNameRows(), OutputSuggestionsFor(s));
+    //
+    // This used to read A3 ("PlayStation Outputs" / "XBox Outputs") and offer
+    // only that half of the vocabulary. A3 is a label nobody maintains, and a
+    // file whose rows say right_2 under an XBox header could not be given
+    // right_2 again: the picker hid it and the search called it no match. The
+    // list is whole now, and which spellings show is the reader's choice.
+    OutputCatalog.ProfileOutputs Outputs() =>
+        OutputCatalog.ForProfile(CustomNameRows(), OutputSuggestions);
 
     // What a row's output field shows and commits. A named row reads by its
     // name; picking one writes the token and the name together.
@@ -1584,6 +1576,19 @@ public partial class MainWindow : Window
         // The pickers are built per row, so the open editor has to be rebuilt
         // before the setting is anything the user can see.
         RefreshEditor();
+    }
+
+    /// <summary>Which controller names the output picker offers. All lists
+    /// both spellings of the thirteen shared buttons, PlayStation or Xbox
+    /// lists one. Nothing with a single name is ever hidden, and the token
+    /// written to the file is the one picked.</summary>
+    public static readonly string[] PickerVocabularies = { "All", "PlayStation", "Xbox" };
+
+    public void SetPickerVocabulary(string choice)
+    {
+        if (!PickerVocabularies.Contains(choice) || _settings.PickerVocabulary == choice) return;
+        _settings.PickerVocabulary = choice;
+        Settings.Save(_settings);
     }
 
     /// <summary>Which order the compact mapping cards use for their plain
@@ -4294,7 +4299,7 @@ public partial class MainWindow : Window
                     var prefDef = Definition(b.Output);
                     var prefValue = _file!.GetCell(b.Row, 2);
                     bool prefTyped = prefDef is not null && CanRepresent(prefDef, prefValue, 2);
-                    body.Children.Add(Labeled(Strings.Main_SettingLabel, OutputPicker(b, OutputsFor(CurrentSheet!),
+                    body.Children.Add(Labeled(Strings.Main_SettingLabel, OutputPicker(b, Outputs(),
                         Strings.Main_SettingChangedByThisRow, OutputTint)));
                     body.Children.Add(Labeled(Strings.Main_SetItTo, PrefsValueCell(b, prefTyped ? prefDef : null, 2)));
                     if (prefDef is not null
@@ -4400,7 +4405,7 @@ public partial class MainWindow : Window
 
                 // ---- "Press" (game button) and "As" (how it presses) ----
                 body.Children.Add(Labeled(Strings.Main_PressVerb, WithDuplicateMark(
-                    OutputPicker(b, OutputsFor(CurrentSheet!),
+                    OutputPicker(b, Outputs(),
                         string.Format(CultureInfo.CurrentCulture, Strings.Main_GameButtonPressedByShortInput, ShortInput(zone, b)), OutputTint),
                     _dupes.Output(b.Output))));
                 body.Children.Add(Labeled(Strings.Main_AsLabel, FunctionCombo(b, zone)));
@@ -5987,11 +5992,12 @@ public partial class MainWindow : Window
         // Inputs stack DOWN (below), so every other cell centers vertically
         // against the taller stack instead of stretching or hugging the top.
         Control Mid(Control c) { c.VerticalAlignment = VerticalAlignment.Center; return c; }
-        var outputs = OutputsFor(CurrentSheet!);
+        var outputs = Outputs();
         p.Children.Add(At(Mid(WithDuplicateMark(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, string.Format(CultureInfo.CurrentCulture, Strings.Main_OutputForRowBRow, b.Row), OutputTint, outputs.Catalog, Strings.Main_AnOutput,
             picked => CommitOutputFromList(b, outputs, picked),
             _labelStyle == 0 ? null
-                : token => OutputVisuals.Render(VisualFor(token), TokenLabel(token), compact: true)),
+                : token => OutputVisuals.Render(VisualFor(token), TokenLabel(token), compact: true),
+            vocabularyFilter: true),
             _dupes.Output(b.Output))), 1));
         // List View is the raw grid, so the function's numbers explain
         // themselves through the cell's name rather than a panel: same
@@ -6989,7 +6995,8 @@ public partial class MainWindow : Window
             {
                 var label = outputs.TokenFor.ContainsKey(token) ? token : TokenLabel(token);
                 return OutputVisuals.Render(VisualFor(token, _ => label));
-            });
+            },
+            vocabularyFilter: true);
     }
 
     // An input field in Device View that is not tied to the part on screen:
@@ -7047,7 +7054,7 @@ public partial class MainWindow : Window
     Control ListPickerCell(int row, int col, string value, IReadOnlyList<string> options,
                            string accessibleName, string tintKey, TokenCatalog? catalog, string pickWord,
                            Action<string>? setValue = null, Func<string, Control>? visualFor = null,
-                           Func<string, string>? labelFor = null)
+                           Func<string, string>? labelFor = null, bool vocabularyFilter = false)
     {
         var wrapper = new Border
         {
@@ -7114,7 +7121,7 @@ public partial class MainWindow : Window
                     });
                 });
             }
-        }, visualFor);
+        }, visualFor, vocabularyFilter);
     }
 
     // The drill-down picker every big token list shares. The field is a
@@ -7127,11 +7134,25 @@ public partial class MainWindow : Window
     Control PickerCell(Border wrapper, string current, IReadOnlyList<string> options,
                        Func<string, string> labelFor, string accessibleName, string tintKey,
                        TokenCatalog? catalog, string pickWord, Action<string> commitCell,
-                       Func<string, Control>? visualFor = null)
+                       Func<string, Control>? visualFor = null, bool vocabularyFilter = false)
     {
         var cur = (current ?? "").Trim();
-        var all = new List<string>(options);
-        if (cur.Length > 0 && !all.Contains(cur)) all.Insert(0, cur);
+        var all = new List<string>();
+
+        // The list the levels and the search read. Rebuilt when the reader
+        // changes vocabulary, in place, so the closures already holding it see
+        // the new list.
+        void ApplyVocabulary()
+        {
+            all.Clear();
+            all.AddRange(vocabularyFilter
+                ? OutputCatalog.InVocabulary(options, _settings.PickerVocabulary)
+                : options);
+            // The value this row already holds is never filtered out from
+            // under it, whatever vocabulary it is spelled in.
+            if (cur.Length > 0 && !all.Contains(cur)) all.Insert(0, cur);
+        }
+        ApplyVocabulary();
 
         var fly = new Flyout { Placement = PlacementMode.BottomEdgeAlignedLeft };
         var openLabel = new TextBlock { TextWrapping = TextWrapping.NoWrap, TextTrimming = TextTrimming.CharacterEllipsis };
@@ -7345,16 +7366,62 @@ public partial class MainWindow : Window
         // the swap and the close fight over focus and the box dies unused.
         typeOwn.Click += (_, _) => { fly.Hide(); Dispatcher.UIThread.Post(ShowTyping); };
 
+        // Bottom left: which spellings the list offers. A3 used to decide this
+        // and never asked; the reader decides it now, and the choice sticks.
+        Control VocabularyRow()
+        {
+            var row = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Left };
+            var caption = new TextBlock
+            {
+                Text = Strings.Main_NamesShown, FontSize = Size("SmallSize"), Classes = { "muted" },
+                Margin = new Avalonia.Thickness(0, 0, 8, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            ToolTip.SetTip(caption, Strings.Main_NamesShownTip);
+            row.Children.Add(caption);
+            foreach (var v in PickerVocabularies)
+            {
+                var word = v switch
+                {
+                    "PlayStation" => Strings.Main_VocabularyPlaystation,
+                    "Xbox" => Strings.Main_VocabularyXbox,
+                    _ => Strings.Main_VocabularyAll,
+                };
+                var pick = v;
+                var choice = new RadioButton
+                {
+                    Content = new TextBlock { Text = word, FontSize = Size("SmallSize") },
+                    IsChecked = _settings.PickerVocabulary == v,
+                    Margin = new Avalonia.Thickness(0, 0, 8, 0),
+                };
+                AutomationProperties.SetName(choice,
+                    string.Format(CultureInfo.CurrentCulture, Strings.Main_NamesShownChoice, word));
+                ToolTip.SetTip(choice, Strings.Main_NamesShownTip);
+                choice.IsCheckedChanged += (_, _) =>
+                {
+                    if (choice.IsChecked != true) return;
+                    SetPickerVocabulary(pick);
+                    ApplyVocabulary();
+                    var q = (search.Text ?? "").Trim();
+                    if (q.Length == 0) ShowLevel(null, null); else ShowMatches(q);
+                };
+                row.Children.Add(choice);
+            }
+            return row;
+        }
+
         var panel = new StackPanel { Spacing = 6, MinWidth = 300 };
         panel.Children.Add(search);
         panel.Children.Add(scroll);
         panel.Children.Add(typeOwn);
+        if (vocabularyFilter) panel.Children.Add(VocabularyRow());
         fly.Content = panel;
 
         // Every open starts fresh at the top level with an empty search; the
         // menu builds on open, not for every mapping card on screen.
         fly.Opened += (_, _) =>
         {
+            ApplyVocabulary(); // another picker may have changed it since this one was built
             if ((search.Text ?? "").Length > 0) search.Text = ""; // rebuilds via TextChanged
             else ShowLevel(null, null);
             Dispatcher.UIThread.Post(() => search.Focus(), DispatcherPriority.Loaded);
