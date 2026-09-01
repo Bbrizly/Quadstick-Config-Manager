@@ -1584,6 +1584,12 @@ public partial class MainWindow : Window
     /// written to the file is the one picked.</summary>
     public static readonly string[] PickerVocabularies = { "All", "PlayStation", "Xbox" };
 
+    // Built, tested, and out of the layout for now: the row sat at the bottom
+    // of a 544px flyout and was easy to miss. One word here puts it back. The
+    // list itself is whole either way, and that was the bug: A3 deciding which
+    // half of the vocabulary a file was allowed to use.
+    internal static readonly bool VocabularyFilterUi = false;
+
     public void SetPickerVocabulary(string choice)
     {
         if (!PickerVocabularies.Contains(choice) || _settings.PickerVocabulary == choice) return;
@@ -7414,7 +7420,7 @@ public partial class MainWindow : Window
         panel.Children.Add(search);
         panel.Children.Add(scroll);
         panel.Children.Add(typeOwn);
-        if (vocabularyFilter) panel.Children.Add(VocabularyRow());
+        if (vocabularyFilter && VocabularyFilterUi) panel.Children.Add(VocabularyRow());
         fly.Content = panel;
 
         // Every open starts fresh at the top level with an empty search; the

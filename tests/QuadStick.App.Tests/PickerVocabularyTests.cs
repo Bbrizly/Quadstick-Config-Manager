@@ -75,20 +75,6 @@ public sealed class PickerVocabularyTests : IDisposable
         .Select(b => AutomationProperties.GetName(b) ?? "")
         .ToArray();
 
-    // A radio does not toggle from a raised ClickEvent the way a Button does,
-    // so this sets the value a click or an arrow key would set, after checking
-    // the control is one a person could actually reach.
-    static void Choose(Control root, string name)
-    {
-        var choice = root.GetVisualDescendants().OfType<RadioButton>()
-            .First(r => (AutomationProperties.GetName(r) ?? "") == name);
-        Assert.True(choice.IsEffectivelyVisible, $"{name} is not on screen");
-        Assert.True(choice.IsEffectivelyEnabled, $"{name} is disabled");
-        choice.IsChecked = true;
-        Dispatcher.UIThread.RunJobs();
-        root.UpdateLayout();
-    }
-
     [AvaloniaFact]
     public void XboxHeaderStillOffersPlaystationOutputs()
     {
@@ -130,23 +116,22 @@ public sealed class PickerVocabularyTests : IDisposable
         Assert.Contains("right_2", Options(OpenPicker(w)));
     }
 
+    // The row is out of the layout for now (MainWindow.VocabularyFilterUi).
+    // Everything under it still works, so this pins the off state rather than
+    // letting the tests below quietly stop covering anything.
     [AvaloniaFact]
-    public void SwitchingVocabularyRebuildsTheOpenList()
+    public void TheChoiceIsNotInTheLayoutYet()
     {
+        Assert.False(MainWindow.VocabularyFilterUi);
         var w = Open("All");
-        var picker = OpenPicker(w);
-        Assert.Contains("left_1", Options(picker));
-        Choose(picker, "Xbox names");
-        Assert.DoesNotContain("left_1", Options(picker));
-        Choose(picker, "All names");
-        Assert.Contains("left_1", Options(picker));
+        Assert.Empty(OpenPicker(w).GetVisualDescendants().OfType<RadioButton>());
     }
 
     [AvaloniaFact]
     public void TheChoiceIsRemembered()
     {
         var w = Open("All");
-        Choose(OpenPicker(w), "PlayStation names");
+        w.SetPickerVocabulary("PlayStation");
         Assert.Equal("PlayStation", Settings.Load().PickerVocabulary);
     }
 
