@@ -2430,7 +2430,7 @@ public partial class MainWindow : Window
         var input = b.Inputs.Count > 0 ? b.Inputs[0] : "";
         if (input.Length == 0) return Strings.Main_NoInput;
         var extra = b.Inputs.Count > 1 ? $" +{b.Inputs.Count - 1}" : "";
-        return StripInput(input, z.Id) + extra;
+        return CardInput(input, z.Id) + extra;
     }
 
     // The friendly short form of one input token, scoped to the part it lives
@@ -2825,6 +2825,12 @@ public partial class MainWindow : Window
             : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "R+C "
             : token.StartsWith("mp_right_mode_", StringComparison.Ordinal) ? "R+S " : "L+R ")
           + StripInput(token, zoneId);
+
+    // Sentence text: the short form, plus the pairing when the row fires on a
+    // combo. Every pairing strips to the same word, so a card that said only
+    // "sip" told a combo owner nothing about which two holes to use.
+    internal static string CardInput(string token, string zoneId) =>
+        zoneId == "combo" ? ComboPair(token) + " " + StripInput(token, zoneId) : StripInput(token, zoneId);
 
     // Where a jack sorts: its socket's place on the case, then the lone
     // channel before the splitter's second one. Anything that is not a jack
@@ -3910,7 +3916,7 @@ public partial class MainWindow : Window
         // screen reader user hears before deciding whether to open the row.
         bool setting = IsModePreferenceOverride(b);
         var inputs = b.Inputs.Count > 0
-            ? b.Inputs.Select(i => _labelStyle == 0 ? i : StripInput(i, zone.Id)).ToList()
+            ? b.Inputs.Select(i => _labelStyle == 0 ? i : CardInput(i, zone.Id)).ToList()
             : new List<string> { setting ? Strings.Main_NoValue : Strings.Main_NoInput };
         // The words the pills sit between. The spoken sentence was fixed to say
         // "set X to 50" and the visible one was left saying "Press mouse_speed

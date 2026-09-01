@@ -87,6 +87,19 @@ public class ComboZoneTests
         Assert.Equal("all 3 sip", MainWindow.ChipLabel("mp_triple_sip", "combo"));
     }
 
+    // The sentence card said "when you sip" on every combo row, so five
+    // different pairings read as the same mapping. Reported by the QuadStick's
+    // maker: the line has to name the holes.
+    [Fact]
+    public void The_card_sentence_names_the_pairing()
+    {
+        Assert.Equal("Left + Center sip", MainWindow.CardInput("mp_left_center_sip", "combo"));
+        Assert.Equal("All three soft puff", MainWindow.CardInput("mp_triple_puff_soft", "combo"));
+        Assert.Equal("Right + Side tube sip", MainWindow.CardInput("mp_right_mode_sip", "combo"));
+        // A hole on its own is already named by the card it sits on.
+        Assert.Equal("sip", MainWindow.CardInput("mp_right_sip", "mp_right"));
+    }
+
     [Fact]
     public void Every_combo_input_gets_its_own_chip()
     {

@@ -23,7 +23,7 @@ public class CardViewTests
         "x,normal,lip,,,,,,,,fire button\n" +
         "circle,turbo,lip\n");
 
-    static MainWindow OpenOnLip(ProfileFile file, bool cards = true)
+    static MainWindow OpenOnLip(ProfileFile file, bool cards = true, string zone = "lip")
     {
         var s = Settings.Load();
         s.TutorialSeen = true;
@@ -40,7 +40,7 @@ public class CardViewTests
         var w = new MainWindow();
         w.Show();
         w.LoadProfile(file);
-        w.SelectZoneForPreview("lip");
+        w.SelectZoneForPreview(zone);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         return w;
@@ -774,5 +774,23 @@ public class CardViewTests
 
         file.Dirty = false;
         w.Close();
+    }
+
+    // Every hole-combo token strips to the same word, so the card used to say
+    // "when you sip" whether the row wanted Left + Center or all three. The
+    // pill and the spoken sentence both read off the same list.
+    [AvaloniaFact]
+    public void A_combo_card_says_which_holes_it_needs()
+    {
+        var w = OpenOnLip(ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,mp_left_center_sip\n"), zone: "combo");
+
+        Assert.StartsWith("Mapping 1: press X when you Left + Center sip",
+            AutomationProperties.GetName(Card(w, 1)!));
+        Assert.Contains(w.GetVisualDescendants().OfType<TextBlock>(),
+            t => t.Text == "Left + Center sip");
     }
 }
