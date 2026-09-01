@@ -2384,6 +2384,12 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>Go back to the simple view</value>
   </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} and 1 more cell</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} and {1} more cells</value>
+  </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   this tab is notes, not bindings. QMP and the Sheets add-on write this tab for you to read, and your QuadStick never loads it. Nothing was lost by leaving it out.</value>
   </data>

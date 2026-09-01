@@ -274,7 +274,7 @@ public class ImportReviewWindow : Window
             _body.Children.Add(Section(
                 Count(warnings.Count, Strings.Review_CellTheQuadStickWillTreat,
                                       Strings.Review_CellsTheQuadStickWillTreat),
-                warnings.Select(WarningRow)));
+                WarningRows(warnings)));
 
         foreach (var key in _settled.Keys.ToList())
             _body.Children.Add(SettledRow(key));
@@ -367,6 +367,29 @@ public class ImportReviewWindow : Window
             Strings.Review_AddingItChangesCellA1,
             add, leave);
     }
+
+    // A community workbook ships blank template rows by the dozen, and each one
+    // is the same sentence about the same missing output. Fifty-two identical
+    // lines in one Fortnite sheet pushed the warning that mattered (the console
+    // that blocks drive access) off the bottom of the list. Same message, same
+    // fix, one line, and the heading above still counts every cell.
+    //
+    // An unknown input is answered cell by cell, so those are never folded:
+    // each one has its own buttons and its own word in the file.
+    IEnumerable<Control> WarningRows(List<Issue> warnings) =>
+        warnings
+            .GroupBy(i => i.Kind == IssueKind.UnknownInput
+                ? IssueKey(i)
+                : $"{i.Message}\u0000{i.Fix}")
+            .Select(g => g.Count() == 1
+                ? WarningRow(g.First())
+                : Line($"{RepeatedCells(g.ToList())}   {g.First().Message}", g.First().Fix));
+
+    // Names the first cell and counts the rest, so the line still says where
+    // to look without listing fifty-two cell references.
+    static string RepeatedCells(List<Issue> g) =>
+        string.Format(CultureInfo.CurrentCulture,
+            Plural.Wording(g.Count - 1, "Review_AndMoreCells"), g[0].Cell, g.Count - 1);
 
     Control WarningRow(Issue issue)
     {

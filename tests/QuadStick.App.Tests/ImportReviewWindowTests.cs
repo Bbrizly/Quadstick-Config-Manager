@@ -796,4 +796,32 @@ public class ImportReviewWindowTests
         Assert.True(Says(review, "name cell was empty"));
         Done(owner, review);
     }
+
+    // The Beloader Fortnite sheet in the official catalog carries 52 blank
+    // template rows across its three modes. Each one was its own warning line,
+    // so the one warning a user has to act on scrolled off the bottom.
+    const string TemplateRowsCsv =
+        "Profile Name,,Left Analog\r\nfortnite ps4.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+        "dpad_N,normal,right_sip\r\n" +
+        ",normal,\r\n,normal,\r\n,normal,\r\n,normal,\r\n,normal,\r\n";
+
+    [AvaloniaFact]
+    public void One_warning_repeated_reads_as_one_line()
+    {
+        var (owner, file, review) = Open(TemplateRowsCsv);
+
+        var repeated = file.Issues
+            .Count(i => i.Severity == Severity.Warning && i.Message.Contains("no output name"));
+        Assert.Equal(5, repeated);
+
+        // One line for the five, naming the first cell and counting the rest.
+        var lines = AllText(review).Where(t => t.Contains("no output name")).ToList();
+        Assert.Single(lines);
+        Assert.Contains("A5 and 4 more cells", lines[0]);
+        // The heading above still counts every cell, so nothing is hidden.
+        Assert.True(Says(review, "5 cells"));
+
+        Done(owner, review);
+    }
+
 }
