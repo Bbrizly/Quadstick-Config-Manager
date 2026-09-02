@@ -487,7 +487,8 @@
                  Configuration and the view keys off the bottom every time. -->
             <ScrollViewer x:Name="ModeListScroll" Grid.Row="1" MinHeight="112" MaxHeight="300" Margin="0,0,0,8"
                           HorizontalScrollBarVisibility="Disabled"
-                          VerticalScrollBarVisibility="Auto" AllowAutoHide="True">
+                          VerticalScrollBarVisibility="Auto" AllowAutoHide="True"
+                          VerticalContentAlignment="Top">
               <StackPanel x:Name="ModeList" Spacing="4"/>
             </ScrollViewer>
 
