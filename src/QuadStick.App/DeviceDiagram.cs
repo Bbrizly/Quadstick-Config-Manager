@@ -83,15 +83,15 @@ sealed record DeviceDiagram(
     // Every number below was measured off the asset named beside it, as a
     // fraction of that file. Replacing a photo means measuring them again;
     // DeviceHotspotTests pins each file's pixel size so a swap fails loudly
-    // instead of quietly pointing at the wrong hole.
+    // instead of quietly pointing at the wrong part.
     static readonly PixelSize Catalog2048 = new(2048, 2048);
 
     // The whole file, for a photo already framed on the device.
     static readonly Rect Whole = new(0, 0, 1, 1);
 
-    // The FPS photo is framed on the device already, so it is shown whole, and
-    // its hotspots are the ones measured on it before this layer existed: the
-    // same points, written as fractions instead of stage coordinates.
+    // The FPS photo is framed on the device already, so it is shown whole.
+    // The points are the centers of the three mouthpiece bores, the side-tube
+    // bore, the joystick cap, and the lip sensor visible in this photo.
     static readonly DeviceDiagram FpsDiagram = new(
         QsModel.FPS,
         "avares://QuadStickConfigManager/Assets/QuadStickFPS.png",
@@ -100,38 +100,49 @@ sealed record DeviceDiagram(
         PhotoX: 175, PhotoY: 132, PhotoW: 560,
         Hotspots: new[]
         {
+            new Hotspot("mp_left", 0, false, 0.3841, 0.5440),
+            new Hotspot("mp_center", 230, false, 0.4824, 0.5440),
+            new Hotspot("mp_right", 460, false, 0.5801, 0.5440),
+            new Hotspot("side", 690, false, 0.7266, 0.5450),   // the bore of the side tube, not its body
+            new Hotspot("joystick", 245, true, 0.3600, 0.5700), // lower-left edge of the left mouthpiece hole
+            new Hotspot("lip", 475, true, 0.4883, 0.6770),     // the rectangular lip sensor below it
+        },
+        Lights: new ModeLightRow(0.3275, 0.0862, 0.1064),
+        Zones: FullZones);
+
+    // The Original and FPS have the same inputs (FW 2373 has no occurrence of
+    // either model name, and input_keywords.h is one flat table with no model
+    // dimension), but they are distinct physical products and must show their
+    // own photos. Keep the FPS geometry for the shared layout while binding
+    // the Original to the photo that was previously in the FPS asset slot.
+    static readonly DeviceDiagram OriginalDiagram = FpsDiagram with
+    {
+        Model = QsModel.Original,
+        Asset = "avares://QuadStickConfigManager/Assets/QuadStickOriginal.png",
+        Hotspots = new[]
+        {
             new Hotspot("mp_left", 0, false, 0.3136, 0.4778),
             new Hotspot("mp_center", 230, false, 0.4386, 0.4778),
             new Hotspot("mp_right", 460, false, 0.5614, 0.4778),
-            new Hotspot("side", 690, false, 0.7432, 0.4710),   // the bore of the side tube, not its body
-            new Hotspot("joystick", 245, true, 0.3114, 0.5768), // the left arch of the gimbal, clear of the lip disc
+            new Hotspot("side", 690, false, 0.7432, 0.4710),
+            new Hotspot("joystick", 245, true, 0.3114, 0.5768),
             new Hotspot("lip", 475, true, 0.4295, 0.6894),
         },
-        // The domes' paired specular glints give the centre of each, and a line
-        // fitted through the five gives the spacing. None is lit in the photo;
-        // the app draws its own.
-        Lights: new ModeLightRow(0.2407, 0.1000, 0.1729),
-        Zones: FullZones);
-
-    // The Original is the FPS's picture and the FPS's callouts, on purpose.
-    // The two take the same inputs (FW 2373 has no occurrence of either model
-    // name, and input_keywords.h is one flat table with no model dimension),
-    // and they carry the same parts in the same places. The difference is
-    // joystick precision, which is not something a diagram can show. Giving
-    // the Original a second photo of the same layout bought nothing and cost
-    // a worse photo.
-    static readonly DeviceDiagram OriginalDiagram = FpsDiagram with { Model = QsModel.Original };
+        Lights = new ModeLightRow(0.2407, 0.1000, 0.1729)
+    };
 
     // Two parts, so two callouts, side by side in the top band. Nothing is
-    // pinned below, so the whole lower half of the stage goes to the photo:
-    // a Singleton drawn at the width a six-callout model needs is a postage
-    // stamp with two labels floating around it.
+    // pinned below, so the whole lower half of the stage goes to the photo.
+    // Keep the rendered photo height aligned with FPS. The Singleton asset's
+    // crop is taller, so matching FPS's width would make this stage too tall
+    // and force an unnecessary scrollbar. The narrower width below preserves
+    // the asset's aspect ratio while keeping both model views equally high.
     static readonly DeviceDiagram SingletonDiagram = new(
         QsModel.Singleton,
         "avares://QuadStickConfigManager/Assets/QuadStickSingleton.png",
         Catalog2048,
         Source: new Rect(0.2124, 0.1738, 0.5747, 0.6523),
-        PhotoX: 185, PhotoY: 132, PhotoW: 540,
+        PhotoX: 290.54, PhotoY: 132, PhotoW: 328.92,
         Hotspots: new[]
         {
             // The left arch of the gimbal, not its centre: the mouthpiece tube

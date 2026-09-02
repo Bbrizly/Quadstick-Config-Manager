@@ -132,9 +132,8 @@ public class DeviceHotspotTests
           + "changed, measure its hotspots and mode lights off the new one again.");
     }
 
-    // The FPS and the Original take the same inputs and carry the same parts in
-    // the same places, so they share one picture on purpose. The Singleton does
-    // not, and showing it either of theirs is the bug this layer exists to stop.
+    // The FPS and Original take the same inputs, but each photo has its own
+    // measured points. The Singleton does not share either photo.
     [Fact]
     public void The_singleton_never_borrows_another_models_picture()
     {
@@ -142,20 +141,33 @@ public class DeviceHotspotTests
         var original = DeviceDiagram.For(QsModel.Original);
         var singleton = DeviceDiagram.For(QsModel.Singleton);
 
-        Assert.Equal(fps.Asset, original.Asset);
-        Assert.Equal(fps.Hotspots, original.Hotspots);
+        Assert.NotEqual(fps.Asset, original.Asset);
+        Assert.EndsWith("QuadStickFPS.png", fps.Asset, StringComparison.Ordinal);
+        Assert.EndsWith("QuadStickOriginal.png", original.Asset, StringComparison.Ordinal);
+        Assert.NotEqual(fps.Hotspots, original.Hotspots);
         Assert.NotEqual(fps.Asset, singleton.Asset);
         Assert.EndsWith("QuadStickSingleton.png", singleton.Asset, StringComparison.Ordinal);
     }
 
-    // The two that share a picture have to agree on every number on it, or one
-    // of them is pointing at holes measured for the other.
+    // Each model's photo has its own measurements. A mismatch here means a
+    // photo was changed without recalibrating its pointers.
     [Fact]
-    public void The_shared_picture_is_shared_whole()
+    public void Each_model_has_distinct_hotspot_measurements()
     {
         var fps = DeviceDiagram.For(QsModel.FPS);
         var original = DeviceDiagram.For(QsModel.Original);
-        Assert.Equal(fps, original with { Model = QsModel.FPS });
+        Assert.NotEqual(fps.Hotspots, original.Hotspots);
+        Assert.NotEqual(fps.Lights, original.Lights);
+    }
+
+    [Fact]
+    public void Singleton_photo_matches_fps_height_without_growing_the_stage()
+    {
+        var fps = DeviceDiagram.For(QsModel.FPS);
+        var singleton = DeviceDiagram.For(QsModel.Singleton);
+
+        Assert.Equal(fps.PhotoH, singleton.PhotoH, 1);
+        Assert.Equal(fps.PhotoX + fps.PhotoW / 2, singleton.PhotoX + singleton.PhotoW / 2, 1);
     }
 
     [AvaloniaFact]

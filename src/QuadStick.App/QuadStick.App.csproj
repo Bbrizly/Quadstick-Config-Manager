@@ -38,6 +38,7 @@
     <AvaloniaResource Include="Assets/QuadStick.png" />
     <AvaloniaResource Include="Assets/QuadStickBack.png" />
     <AvaloniaResource Include="Assets/QuadStickFPS.png" />
+    <AvaloniaResource Include="Assets/QuadStickOriginal.png" />
     <AvaloniaResource Include="Assets/QuadStickSingleton.png" />
     <AvaloniaResource Include="Assets/OutputVisuals/**/*.png" />
   </ItemGroup>
