@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
@@ -837,6 +838,38 @@ public class ImportReviewWindowTests
                 .Any(t => (t.Text ?? "").Contains("no output name")));
         Assert.True(scroll.Extent.Width <= scroll.Viewport.Width + 1,
             $"the prose view scrolls sideways: {scroll.Extent.Width} wide in a {scroll.Viewport.Width} window");
+
+        Done(owner, review);
+    }
+
+    // Two of a kind takes the singular wording. A hand-written plural pair is
+    // exactly what ships reading "and 1 more cells" in one language.
+    [AvaloniaFact]
+    public void Two_of_the_same_warning_count_in_the_singular()
+    {
+        var (owner, _, review) = Open(
+            "Profile Name,,Left Analog\r\nfortnite ps4.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+            "dpad_N,normal,right_sip\r\n,normal,\r\n,normal,\r\n");
+
+        Assert.True(Says(review, "A5 and 1 more cell"));
+        Assert.False(Says(review, "1 more cells"));
+
+        Done(owner, review);
+    }
+
+    // The Advanced grid is wider than the window on purpose. Turning sideways
+    // scrolling off for the prose must not take it away from the grid.
+    [AvaloniaFact]
+    public void The_advanced_grid_can_still_scroll_sideways()
+    {
+        var (owner, _, review) = Open(TemplateRowsCsv);
+        var scroll = review.GetVisualDescendants().OfType<ScrollViewer>()
+            .First(v => v.GetVisualDescendants().OfType<TextBlock>()
+                .Any(t => (t.Text ?? "").Contains("no output name")));
+        Assert.Equal(ScrollBarVisibility.Disabled, scroll.HorizontalScrollBarVisibility);
+
+        Press(review, "Advanced");
+        Assert.Equal(ScrollBarVisibility.Auto, scroll.HorizontalScrollBarVisibility);
 
         Done(owner, review);
     }
