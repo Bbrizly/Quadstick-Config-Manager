@@ -648,7 +648,7 @@ public sealed class DeviceFilesWindowTests : IDisposable
         await TapAsync(win, "Look for QuadStick drives again and reload the file list");
 
         Assert.Empty(win.Roots);
-        Assert.True(Says(win, "No QuadStick drive is plugged in right now"));
+        Assert.True(Says(win, "No QuadStick drive is plugged in"));
         Assert.True(Button(win, "Look for QuadStick drives again and reload the file list").IsEnabled);
 
         win.Close();
