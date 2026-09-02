@@ -48,13 +48,13 @@ struct DriveView: View {
             Button("Use this phone's copy") { model.drive.conflict?.decide(.replaceWithMine); model.drive.conflict = nil }
             Button("Use the online copy", role: .destructive) { model.drive.conflict?.decide(.keepOnline); model.drive.conflict = nil }
         } message: {
-            Text("\(model.drive.conflict?.profileName ?? "This profile")'s sheet changed since this phone last wrote it. Using this phone's copy replaces the online one, and Google keeps the old version in the sheet's history. Using the online copy replaces what is on this phone.")
+            Text("\(model.drive.conflict?.profileName ?? "This profile")'s sheet changed since this phone last wrote it. Using this phone's copy replaces the online one; Google keeps the old version in the sheet history. Using the online copy replaces the phone's copy.")
         }
         .alert("That sheet is gone", isPresented: $recreateOffer) {
             Button("Make a new sheet") { Task { await run { await drive.recreate(model.profile) } } }
             Button("Leave it", role: .cancel) {}
         } message: {
-            Text("The Google Sheet for this profile could not be found. It may have been deleted or moved to the trash. Your profile on this phone is untouched.")
+            Text("The Google Sheet for this profile is missing. It may have been deleted or moved to the trash. Your phone's copy is untouched.")
         }
     }
 
@@ -109,7 +109,7 @@ struct DriveView: View {
 
     private var notConfiguredCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("This build has no Google client set up, so Drive is switched off. Everything else in the app works: profiles are saved on this phone, and Install still puts them on the QuadStick.")
+            Text("Google Drive is off in this build. Profiles still save on this phone, and Install still puts them on the QuadStick.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -120,7 +120,7 @@ struct DriveView: View {
 
     private var signInCard: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Sign in with Google to keep a copy of your profiles in Google Sheets and to share them with a link.")
+            Text("Sign in with Google to back up profiles to Sheets and share them by link.")
             Label("This app only ever sees the sheets it made for you. It cannot read the rest of your Drive.",
                   systemImage: "lock.shield")
                 .font(.footnote)

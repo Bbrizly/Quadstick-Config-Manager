@@ -20,7 +20,7 @@ struct ProfilesView: View {
                 }
                 .onDelete(perform: model.profiles.count > 1 ? delete : nil)
             } footer: {
-                Text("A profile is the complete setup for one game or activity. The QuadStick loads one profile at a time.")
+                Text("A profile is the setup for one game or activity. The QuadStick loads one profile at a time.")
             }
         }
         .navigationTitle("Profiles")
@@ -146,7 +146,7 @@ private struct SheetsImportView: View {
         NavigationStack {
             Form {
                 Section {
-                    Text("Paste a link to a QuadStick profile sheet. The sheet must be shared so anyone with the link can view it.")
+                    Text("Paste a QuadStick profile-sheet link. Anyone with the link must be able to view it.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
 
@@ -177,7 +177,7 @@ private struct SheetsImportView: View {
                             .font(.footnote)
                     }
                 } footer: {
-                    Text("A Google Sheets link gives one tab, which is one mode. Import a .csv file to get every mode.")
+                    Text("A Google Sheets link imports one tab, which becomes one mode. Import a .csv file to get every mode.")
                 }
             }
             .navigationTitle("Import from Google Sheets")

@@ -34,7 +34,7 @@ struct InstallView: View {
                 .padding()
                 .themedCard()
 
-                Text("On: saves as default.csv, which the QuadStick loads every time it starts, and it switches over a few seconds after you save. Off: saves under its own name, and you pick it on the QuadStick later.")
+                Text("On: saves as default.csv, which loads when the QuadStick starts. It switches over a few seconds after saving. Off: saves under its own name for you to choose later.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
@@ -56,7 +56,7 @@ struct InstallView: View {
                         .themedCard()
                 }
 
-                Text("Works with iPhones and iPads with a USB-C port. On older Lightning devices, use a computer instead.")
+                Text("Works with iPhones and iPads with USB-C. Use a computer with older Lightning devices.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

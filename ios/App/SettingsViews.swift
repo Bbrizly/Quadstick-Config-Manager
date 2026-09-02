@@ -16,17 +16,17 @@ struct QuadStickSettingsView: View {
                 settingRow("Sip and puff activation strength",
                            "How hard a sip or puff has to be before the QuadStick reacts.")
                 settingRow("Dead zone",
-                           "How much joystick movement near the centre is ignored. Useful when an older joystick drifts.")
+                           "How much joystick movement near the centre is ignored. Helps with joystick drift.")
                 settingRow("Consoles and connections",
                            "Boot in PS4 mode, the Titan Two PS4 flag, and USB host mode for an external joystick.")
             } header: {
                 Text("Settings on your QuadStick")
             } footer: {
-                Text("These belong to the QuadStick itself, not to one profile, so they stay the same whichever profile you load. Installing from here changes only the profile.")
+                Text("These belong to the QuadStick, not a profile, so they stay the same across profiles. Installing from here changes only the profile.")
             }
 
             Section {
-                Label("Change them with the desktop QuadStick Config Manager, or from the QuadStick's own menus.",
+                Label("Change them in the desktop QuadStick Config Manager or the QuadStick's own menus.",
                       systemImage: "desktopcomputer")
                     .font(.footnote)
             }
@@ -66,7 +66,7 @@ struct ProfileSettingsView: View {
             } header: {
                 Text("Controller")
             } footer: {
-                Text("What kind of controller the QuadStick pretends to be while this profile is loaded.")
+                    Text("Which controller the QuadStick emulates while this profile is loaded.")
             }
 
             Section {
