@@ -100,6 +100,19 @@ public class ComboZoneTests
         Assert.Equal("sip", MainWindow.CardInput("mp_right_sip", "mp_right"));
     }
 
+    // A card takes its zone from its FIRST input, then labels every input with
+    // it. So the pairing has to come off the token being named, not off the
+    // card: a combo row that goes on to want the lip switch was reading
+    // "Combo lip", and a lip row that starts with the lip and then wants a
+    // combo said only "sip".
+    [Fact]
+    public void An_input_is_named_by_its_own_part_not_the_cards()
+    {
+        Assert.Equal("lip", MainWindow.CardInput("lip", "combo"));
+        Assert.Equal("Left + Center sip", MainWindow.CardInput("mp_left_center_sip", "lip"));
+        Assert.Equal("Left + Center sip", MainWindow.CardInput("mp_left_center_sip", "mp_left"));
+    }
+
     [Fact]
     public void Every_combo_input_gets_its_own_chip()
     {

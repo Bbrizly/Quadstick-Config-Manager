@@ -2837,11 +2837,19 @@ public partial class MainWindow : Window
             : token.StartsWith("mp_right_mode_", StringComparison.Ordinal) ? "R+S " : "L+R ")
           + StripInput(token, zoneId);
 
-    // Sentence text: the short form, plus the pairing when the row fires on a
+    // Sentence text: the short form, plus the pairing when the token is a hole
     // combo. Every pairing strips to the same word, so a card that said only
     // "sip" told a combo owner nothing about which two holes to use.
+    //
+    // Keyed on the token's own part, not on the card's: a card takes its zone
+    // from its first input and then labels the rest with it, so asking the card
+    // called the lip switch on a combo row "Combo lip". The pieces are already
+    // translated, so the space between them is joined rather than interpolated,
+    // which would read to the English scan as a sentence to move into the resx.
     internal static string CardInput(string token, string zoneId) =>
-        zoneId == "combo" ? ComboPair(token) + " " + StripInput(token, zoneId) : StripInput(token, zoneId);
+        ZoneOf(token) == "combo"
+            ? ComboPair(token) + " " + StripInput(token, "combo")
+            : StripInput(token, zoneId);
 
     // Where a jack sorts: its socket's place on the case, then the lone
     // channel before the splitter's second one. Anything that is not a jack

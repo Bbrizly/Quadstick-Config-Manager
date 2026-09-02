@@ -793,4 +793,21 @@ public class CardViewTests
         Assert.Contains(w.GetVisualDescendants().OfType<TextBlock>(),
             t => t.Text == "Left + Center sip");
     }
+
+    // Inputs after the first can come from any part, and the card names them
+    // all with its own zone. The lip switch is not half of a hole combo.
+    [AvaloniaFact]
+    public void A_second_input_from_elsewhere_keeps_its_own_name()
+    {
+        var w = OpenOnLip(ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,mp_left_center_sip,lip\n"), zone: "combo");
+
+        var said = AutomationProperties.GetName(Card(w, 1)!);
+        Assert.Contains("Left + Center sip", said);
+        Assert.Contains("lip", said);
+        Assert.DoesNotContain("Combo lip", said);
+    }
 }
