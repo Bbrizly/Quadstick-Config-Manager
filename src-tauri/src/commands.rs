@@ -12,6 +12,7 @@ use crate::device_ipc::{
 use crate::device_rename_ipc::RenameDeviceProfileReceiptDto;
 use crate::device_shell::{DeviceOperationError, DeviceShellState};
 use crate::ipc::{AppSnapshotDto, CloseOutcomeDto, parse};
+use crate::preference_ipc::{PreferenceCatalogDto, preference_catalog};
 use crate::shell::ShellState;
 use crate::streaming::{
     DeviceInvalidationDto, DeviceInvalidationHub, LiveRuntime, LiveSnapshotDto, SubscriptionDto,
@@ -173,6 +174,11 @@ pub fn export_profile_xlsx(
 ) -> Result<Option<WorkbookExportReceiptDto>, Failure> {
     let (profile, suggested) = redact(profiles.profile_for_export(request))?;
     redact(workbook.export_profile(&profile, &suggested))
+}
+
+#[tauri::command]
+pub fn get_preference_catalog() -> PreferenceCatalogDto {
+    preference_catalog()
 }
 
 #[tauri::command]
