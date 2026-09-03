@@ -134,10 +134,70 @@ public class DiagramFollowsPickTests
     public void The_back_of_the_case_is_drawn_once()
     {
         var w = Open("jacks");
-        Assert.Equal(1, Names(w).Count(n => n == "Top jack. One switch: in 8"));
+        Assert.Equal(1, Names(w).Count(n => n.StartsWith("Top jack. One switch: in 8", StringComparison.Ordinal)));
         Assert.Contains(Names(w), n => n.StartsWith("Top jack. Plug one switch", StringComparison.Ordinal));
         w.Close();
     }
+
+    // The sentence that says which number a plug lands on belongs under the
+    // picture of the socket it names. In the side panel it sat below the
+    // mappings, where it had to be scrolled to and read as a note about the
+    // mapping above it.
+    [AvaloniaFact]
+    public void The_socket_guide_sits_under_the_picture()
+    {
+        var w = Open("jacks");
+        var stage = w.GetVisualDescendants().OfType<Control>()
+            .First(c => c.Name == "DeviceCanvas");
+        Assert.Contains(stage.GetVisualDescendants().OfType<TextBlock>(),
+            t => t.Text == "Back of the QuadStick");
+        // And not in the panel beside it, or the same guide is on screen twice.
+        var panel = w.GetVisualDescendants().OfType<Control>()
+            .First(c => c.Name == "ZoneDetailPanel");
+        Assert.DoesNotContain(panel.GetVisualDescendants().OfType<TextBlock>(),
+            t => t.Text == "Back of the QuadStick");
+        w.Close();
+    }
+
+    // "1 mapping" named neither what to do with the two holes nor what it
+    // presses. A pairing reads like a hole does now: four gestures, and the
+    // button each one sends.
+    [AvaloniaFact]
+    public void A_pairing_says_which_button_each_gesture_presses()
+    {
+        var w = Open("combo");
+        Assert.Contains(Names(w),
+            n => n == "Hole pairing: Left + Center. 1 mapping Soft Puff: \u2014, Puff: \u2014, Sip: X, Soft Sip: \u2014");
+        w.Close();
+    }
+
+    // Picking a pairing rings the holes it needs. The pairings all sit on top
+    // of one another on the photo, so the name is not enough: which two holes
+    // "Left + Center" means has to be readable off the device.
+    [AvaloniaFact]
+    public void Picking_a_pairing_rings_the_holes_it_uses()
+    {
+        // Two holes, two rings, and the pairing with a mapping is the one the
+        // view lands on, so the rings are there before anything is clicked.
+        var w = Open("combo");
+        Assert.Equal(2, Rings(w));
+        w.PickInputForPreview("mp_left_center_sip");
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        Assert.Equal(2, Rings(w));
+
+        // All three is three holes, not the two a midpoint was averaged from.
+        w.PickInputForPreview("mp_triple_sip");
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        Assert.Equal(3, Rings(w));
+        w.Close();
+    }
+
+    // The rings are 30px circles over the holes; the plain hotspot markers are
+    // 14px and the mode lights are filled.
+    static int Rings(MainWindow w) => w.GetVisualDescendants()
+        .OfType<Avalonia.Controls.Shapes.Ellipse>().Count(e => e.Width == 30);
 
     // The way back. Without it the front of the device would be unreachable
     // once the picture had followed a pick somewhere else.

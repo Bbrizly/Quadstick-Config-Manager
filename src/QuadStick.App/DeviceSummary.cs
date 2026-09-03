@@ -74,15 +74,20 @@ internal static class DeviceSummary
         ("down", "mouse_down"),
     };
 
+    /// <param name="inputPrefix">Narrows the rows to one hole pairing. Every
+    /// pairing lives in the same combo zone and strips to the same four gesture
+    /// names, so the prefix is the only thing that tells one from another.</param>
     public static IReadOnlyList<GestureSummary> Mouthpiece(
-        ModeSheet? sheet, string zone, Func<string, string> friendlyOutput)
+        ModeSheet? sheet, string zone, Func<string, string> friendlyOutput,
+        string inputPrefix = "")
     {
+        bool Uses(Binding b, string gesture) => b.Inputs.Any(
+            i => i.StartsWith(inputPrefix, StringComparison.Ordinal)
+                 && GestureToken(i, zone) == gesture);
         var bindings = PhysicalBindings(sheet, zone);
         return (zone == "lip" ? LipGestures : Gestures).Select(g =>
         {
-            var matches = bindings
-                .Where(b => b.Inputs.Any(i => GestureToken(i, zone) == g.Token))
-                .ToList();
+            var matches = bindings.Where(b => Uses(b, g.Token)).ToList();
             var actions = matches.Select(b => Action(b, friendlyOutput)).ToArray();
             var sequences = matches.Where(b => b.Inputs.Count > 1).ToArray();
             var functions = matches.Select(b => b.Function.Trim())
@@ -91,6 +96,11 @@ internal static class DeviceSummary
                 actions.Any(a => a.IsSupport) || sequences.Length > 0 || functions > 1);
         }).ToArray();
     }
+
+    // The gestures in the order the diagram draws them, so the panel beside
+    // the picture can list a part's mappings the same way round.
+    public static IReadOnlyList<string> GestureOrder(string zone) =>
+        (zone == "lip" ? LipGestures : Gestures).Select(g => g.Token).ToArray();
 
     public static IReadOnlyList<GestureActionSummary> ActionsForZone(
         ModeSheet? sheet, string zone, Func<string, string> friendlyOutput) =>

@@ -82,7 +82,12 @@ public class LocalizationTests
         // the mangled 8.3 file name instead. So the name a new or copied mode
         // gets is English in every language. ModesWindow.spoken is the half a
         // screen reader reads.
-        ["MainWindow.axaml.cs"] = new[] { "$\"Mode {n}\"" },
+        // A middle dot between two buttons, and "+2" for the ones a socket had
+        // no room to draw. Punctuation and a number, not words.
+        ["MainWindow.axaml.cs"] = new[]
+        {
+            "$\"Mode {n}\"", "\"\\u00b7\"", "$\"+{bindings.Count - max}\"",
+        },
         ["ModesWindow.cs"] = new[] { "$\"Mode {ordinal}\"" },
         // A Google Sheets tab title, which is the backup's own bytes and not
         // this app's interface. "Preferences" and "Infrared" beside it are

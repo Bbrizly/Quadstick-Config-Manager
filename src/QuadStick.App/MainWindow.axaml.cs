@@ -2679,14 +2679,33 @@ public partial class MainWindow : Window
     // socket's opening. The three jacks run down the left edge of the case and
     // the two USB ports down the right, so the labels sit outside the photo on
     // the side their socket is on.
+    // LabelY is the top of the pill, and a pill grows downward when the socket
+    // already has something mapped to it, so the rows are spaced for the taller
+    // one rather than for the bare name.
     static readonly (string Name, string Detail, bool Left, double LabelY, double PointX, double PointY)[] BackSockets =
     {
-        (SwitchJacks.PortLabel(SwitchJacks.TopPort), Strings.Main_OneSwitchIn8, true, 60, 0.1114, 0.2963),
+        (SwitchJacks.PortLabel(SwitchJacks.TopPort), Strings.Main_OneSwitchIn8, true, 44, 0.1114, 0.2963),
         (SwitchJacks.PortLabel(SwitchJacks.LipPort), Strings.Main_OneSwitchIn5, true, 122, 0.1114, 0.5000),
-        (SwitchJacks.PortLabel(SwitchJacks.BottomPort), Strings.Main_OneSwitchIn1, true, 184, 0.1114, 0.7147),
-        (Strings.Main_USBBPort, Strings.Main_ToTheComputer, false, 70, 0.9005, 0.3354),
-        (Strings.Main_USBAPort, Strings.Main_JoystickOrIn34, false, 150, 0.9107, 0.6254),
+        (SwitchJacks.PortLabel(SwitchJacks.BottomPort), Strings.Main_OneSwitchIn1, true, 200, 0.1114, 0.7147),
+        (Strings.Main_USBBPort, Strings.Main_ToTheComputer, false, 58, 0.9005, 0.3354),
+        (Strings.Main_USBAPort, Strings.Main_JoystickOrIn34, false, 158, 0.9107, 0.6254),
     };
+
+    // Every input name that arrives through one socket on the back: both halves
+    // of a jack's splitter, or everything a device in the rear USB-A port sends.
+    // BackSocketInput above is the one channel a click on the socket seeds; this
+    // is what to look up to say whether anything is already plugged in.
+    static IEnumerable<string> BackSocketChannels(string portName)
+    {
+        foreach (var (port, channels) in SwitchJacks.Ports)
+            if (SwitchJacks.PortLabel(port) == portName) return channels;
+        // Asked for by name rather than by zone: "other" is also where ZoneOf
+        // drops every token it does not recognise.
+        return portName == Strings.Main_USBAPort
+            ? Vocab.AllInputs.Concat(SwitchJacks.RearJoystick)
+                .Where(i => i.StartsWith("usb_", StringComparison.Ordinal))
+            : Array.Empty<string>();
+    }
 
     // Loaded once, the way the front photo is: this runs on every zone change.
     static Avalonia.Media.Imaging.Bitmap? _backPhoto;
@@ -2747,6 +2766,11 @@ public partial class MainWindow : Window
                     },
                 },
             };
+            // What is already plugged in here, drawn as the buttons it presses.
+            // A picture of the back of the case that says nothing about the
+            // switches already mapped to it is a picture of nobody's device.
+            var mapped = MappedChips(BackSocketChannels(name));
+            if (mapped is not null) caption.Children.Add(mapped);
 
             Control pill;
             // On the main stage the labels are how a socket is picked, the way
@@ -2756,7 +2780,7 @@ public partial class MainWindow : Window
             {
                 var btn = new ToggleButton
                 {
-                    Classes = { "zone" }, Width = BackPillW, Height = BackPillH,
+                    Classes = { "zone" }, Width = BackPillW, MinHeight = BackPillH,
                     Padding = new Avalonia.Thickness(8, 5),
                     HorizontalContentAlignment = HorizontalAlignment.Stretch,
                     Content = caption,
@@ -2775,7 +2799,7 @@ public partial class MainWindow : Window
             {
                 var border = new Border
                 {
-                    Width = BackPillW, Height = BackPillH,
+                    Width = BackPillW, MinHeight = BackPillH,
                     CornerRadius = new Avalonia.CornerRadius(5),
                     Padding = new Avalonia.Thickness(8, 5),
                     BorderThickness = new Avalonia.Thickness(1),
@@ -2787,7 +2811,9 @@ public partial class MainWindow : Window
             }
             // The two lines are one fact, so a screen reader reads them as one
             // sentence instead of announcing a fragment and then a number.
-            AutomationProperties.SetName(pill, string.Format(CultureInfo.CurrentCulture, Strings.Main_NameDetail, name, detail));
+            var spoken = string.Format(CultureInfo.CurrentCulture, Strings.Main_NameDetail, name, detail);
+            if (mapped is not null) spoken += ". " + AutomationProperties.GetName(mapped);
+            AutomationProperties.SetName(pill, spoken);
             Canvas.SetLeft(pill, lx);
             Canvas.SetTop(pill, labelY);
             stage.Children.Add(pill);
@@ -2954,6 +2980,14 @@ public partial class MainWindow : Window
             .Where(i => !used.Contains(i) && zones.Contains(ZoneOf(i)))
             .OrderBy(GroupRank).ThenBy(x => x, StringComparer.Ordinal);
     }
+
+    // The pairing half of a combo token, and the only thing that tells the five
+    // apart: every one of them strips to the same four gesture names.
+    static readonly string[] ComboPrefixes =
+        { "mp_left_center_", "mp_right_center_", "mp_left_right_", "mp_right_mode_", "mp_triple_" };
+
+    internal static string ComboPrefix(string token) =>
+        Array.Find(ComboPrefixes, p => token.StartsWith(p, StringComparison.Ordinal)) ?? "";
 
     // Which parts a combo token needs at once, in the words the zone cards use.
     // "Side tube" because mp_right_mode_* is the right hole plus the side tube,
@@ -3225,6 +3259,11 @@ public partial class MainWindow : Window
             _stageBox = (Viewbox)BackPanelPicture(clickable: true);
             FitDeviceStage();
             DeviceCanvas.Children.Add(_stageBox);
+            // Under the picture, not beside it. The sentence that says which
+            // number a plug lands on belongs to the socket it names, and in the
+            // side panel it sat under the mappings where it had to be scrolled
+            // to and read as something about the mapping above it.
+            DeviceCanvas.Children.Add(BackPanelGuide(withPicture: false));
             FillZoneList(byZone, visible, d);
             return;
         }
@@ -3232,6 +3271,17 @@ public partial class MainWindow : Window
         // Hole pairings share the same photo as the single holes, labelled by
         // the pair each one uses rather than by the holes on their own.
         bool combos = _selectedZone == "combo" && d.HasZone("combo");
+        // Land on a pairing instead of on five unpicked ones. The rings over
+        // the holes are what says which two holes a pairing means, and nothing
+        // draws them until one is picked. The first pairing with mappings
+        // leads, because that is the one there is something to read about.
+        if (combos && (_pickedInput is null || ZoneOf(_pickedInput) != "combo"))
+        {
+            byZone.TryGetValue("combo", out var comboRows);
+            _pickedInput = ComboPlaces.FirstOrDefault(c => comboRows?.Any(
+                    b => b.Inputs.Any(i => ComboPrefix(i) == ComboPrefix(c.Input))) == true).Input
+                ?? ComboPlaces[0].Input;
+        }
         var stage = new Canvas
         {
             Name = "DeviceStage", Width = StageW, Height = DeviceStageHeight,
@@ -3282,6 +3332,17 @@ public partial class MainWindow : Window
                 z = visible.FirstOrDefault(v => v.Id == spot.Zone);
                 if (z is null) continue;
             }
+            // The holes this pairing needs, ringed and joined, while it is the
+            // one being looked at. The other four pairings' leaders fade back:
+            // five lines into three holes is a scribble, and the pairing being
+            // read has to be the one the eye follows.
+            double ink = 1;
+            if (combos && _pickedInput is { } picked)
+            {
+                if (ComboPair(picked) == ComboPair(spot.Zone))
+                    foreach (var mark in ComboHighlight(d, spot.Zone, photoY)) stage.Children.Add(mark);
+                else ink = 0.3;
+            }
             var at = d.OnPhoto(spot.PointX, spot.PointY);
             double pointX = d.PhotoX + at.X, pointY = photoY + at.Y;
             double calloutHeight = spot.Bottom ? SmallPillH : PillH;
@@ -3292,8 +3353,11 @@ public partial class MainWindow : Window
             double calloutBottom = photoY - TopCalloutGap;
             // The leader line leaves the edge of the label facing the part.
             double ax = spot.LabelX + PillW / 2, ay = spot.Bottom ? DeviceBottomLabelY : calloutBottom;
-            foreach (var line in Leader(ax, ay, pointX, pointY)) stage.Children.Add(line);
-            stage.Children.Add(Marker(pointX, pointY));
+            foreach (var line in Leader(ax, ay, pointX, pointY))
+            { line.Opacity = ink; stage.Children.Add(line); }
+            var marker = Marker(pointX, pointY);
+            marker.Opacity = ink;
+            stage.Children.Add(marker);
 
             var label = combos
                 ? ComboCallout(spot.Zone, byZone, calloutHeight)
@@ -3354,23 +3418,77 @@ public partial class MainWindow : Window
     // "All three" both average out to the middle hole, and two markers on one
     // point with two lines into it is unreadable, so one sits above the row and
     // the other below it.
-    static readonly (string Input, string From, string To, double LabelX, bool Bottom, double Rise)[] ComboPlaces =
+    // Parts, not two endpoints: "All three" is three holes, and a pairing has
+    // to be able to light every hole it needs rather than only the two the
+    // midpoint was averaged from.
+    static readonly (string Input, string[] Parts, double LabelX, bool Bottom, double Rise)[] ComboPlaces =
     {
-        ("mp_left_center_sip",  "mp_left",   "mp_center", 0,   false,  0),
-        ("mp_left_right_sip",   "mp_left",   "mp_right",  230, false, -0.060),
-        ("mp_right_center_sip", "mp_center", "mp_right",  460, false,  0),
-        ("mp_right_mode_sip",   "mp_right",  "side",      690, false,  0),
-        ("mp_triple_sip",       "mp_center", "mp_center", 245, true,   0.055),
+        ("mp_left_center_sip",  new[] { "mp_left", "mp_center" },              0,   false,  0),
+        ("mp_left_right_sip",   new[] { "mp_left", "mp_right" },               230, false, -0.060),
+        ("mp_right_center_sip", new[] { "mp_center", "mp_right" },             460, false,  0),
+        ("mp_right_mode_sip",   new[] { "mp_right", "side" },                  690, false,  0),
+        ("mp_triple_sip",       new[] { "mp_left", "mp_center", "mp_right" },  245, true,   0.055),
     };
+
+    // Where each part of one pairing sits on the photo, in stage coordinates.
+    // Empty when the model has not got one of them, which is how a Singleton
+    // ends up with no pairings rather than with a marker over nothing.
+    static List<Point> ComboPoints(DeviceDiagram d, string input)
+    {
+        var place = ComboPlaces.FirstOrDefault(c => c.Input == input);
+        var at = d.Hotspots.ToDictionary(h => h.Zone, h => (h.PointX, h.PointY), StringComparer.Ordinal);
+        var points = new List<Point>();
+        foreach (var part in place.Parts ?? Array.Empty<string>())
+        {
+            if (!at.TryGetValue(part, out var p)) return new List<Point>();
+            points.Add(new Point(p.PointX, p.PointY));
+        }
+        return points;
+    }
 
     static IEnumerable<Hotspot> ComboHotspots(DeviceDiagram d)
     {
-        var at = d.Hotspots.ToDictionary(h => h.Zone, h => (h.PointX, h.PointY), StringComparer.Ordinal);
-        foreach (var (input, from, to, labelX, bottom, rise) in ComboPlaces)
+        foreach (var (input, _, labelX, bottom, rise) in ComboPlaces)
         {
-            if (!at.TryGetValue(from, out var a) || !at.TryGetValue(to, out var b)) continue;
+            var points = ComboPoints(d, input);
+            if (points.Count == 0) continue;
             yield return new Hotspot(input, labelX, bottom,
-                (a.PointX + b.PointX) / 2, (a.PointY + b.PointY) / 2 + rise);
+                points.Average(p => p.X), points.Average(p => p.Y) + rise);
+        }
+    }
+
+    // The holes a pairing uses, ringed on the photo and joined to each other,
+    // so "Left + Center" is read off the device instead of off its name. Only
+    // the pairing being looked at is drawn: five pairings' worth of rings over
+    // three holes is a scribble, and the picture is the explanation.
+    IEnumerable<Control> ComboHighlight(DeviceDiagram d, string input, double photoY)
+    {
+        var points = ComboPoints(d, input)
+            .Select(p => d.OnPhoto(p.X, p.Y))
+            .Select(p => new Point(d.PhotoX + p.X, photoY + p.Y))
+            .ToList();
+        for (int i = 1; i < points.Count; i++)
+        {
+            var link = new Avalonia.Controls.Shapes.Line
+            {
+                StartPoint = points[i - 1], EndPoint = points[i],
+                StrokeThickness = 4, Opacity = 0.7, IsHitTestVisible = false,
+            };
+            BindBrush(link, Avalonia.Controls.Shapes.Shape.StrokeProperty, "Accent");
+            yield return link;
+        }
+        foreach (var at in points)
+        {
+            // A ring, not a filled dot: the hole has to stay visible through
+            // the thing that says to use it.
+            var ring = new Avalonia.Controls.Shapes.Ellipse
+            {
+                Width = 30, Height = 30, StrokeThickness = 4, IsHitTestVisible = false,
+            };
+            BindBrush(ring, Avalonia.Controls.Shapes.Shape.StrokeProperty, "Accent");
+            Canvas.SetLeft(ring, at.X - 15);
+            Canvas.SetTop(ring, at.Y - 15);
+            yield return ring;
         }
     }
 
@@ -3391,15 +3509,12 @@ public partial class MainWindow : Window
             TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
         });
-        var countLabel = new TextBlock
-        {
-            Text = count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping"),
-            FontSize = Size("SmallSize"), TextAlignment = TextAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-        };
-        if (count == 0) countLabel.Classes.Add("muted");
-        else BindBrush(countLabel, TextBlock.ForegroundProperty, "AccentText");
-        content.Children.Add(countLabel);
+        // The same four gestures a single hole shows, and the same buttons
+        // drawn beside them. "1 mapping" named neither what to do with the two
+        // holes nor what it presses, which on the parts hardest to describe was
+        // the least the picture could say.
+        var gestures = DeviceSummary.Mouthpiece(CurrentSheet, "combo", TokenLabel, ComboPrefix(input));
+        content.Children.Add(GestureTable(gestures));
 
         var btn = new ToggleButton
         {
@@ -3407,9 +3522,14 @@ public partial class MainWindow : Window
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
             Content = content, IsChecked = selected,
         };
+        // The count still leads: it is the one thing that says whether this
+        // pairing does anything at all. The gestures follow it, so a reader
+        // hears the pairing, then how much it carries, then what it presses.
+        var spoken = string.Join(", ", gestures
+            .Select(g => $"{g.FriendlyGestureName}: {SummaryActionText(g)}"));
         AutomationProperties.SetName(btn, string.Format(CultureInfo.CurrentCulture,
             Strings.Main_HolePairingPairCount, pair,
-            count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping")));
+            count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping")) + " " + spoken);
         btn.Click += (_, _) =>
         {
             _selectedZone = "combo";
@@ -3698,9 +3818,60 @@ public partial class MainWindow : Window
         return row;
     }
 
-    Control MouthpieceSummary(string zone)
+    // The buttons a set of inputs already presses, drawn small. Null when
+    // nothing is mapped to any of them, so a caller can leave the line out
+    // rather than print an empty row or the word "none".
+    Control? MappedChips(IEnumerable<string> inputs, int max = 3)
     {
-        var rows = DeviceSummary.Mouthpiece(CurrentSheet, zone, TokenLabel);
+        var tokens = inputs.ToHashSet(StringComparer.Ordinal);
+        var bindings = (CurrentSheet?.Bindings ?? new List<Binding>())
+            .Where(b => !Vocab.IsPreferenceOverride(b.Output, b.Function)
+                        && b.Inputs.Any(tokens.Contains))
+            .ToList();
+        if (bindings.Count == 0) return null;
+
+        var row = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 0) };
+        foreach (var b in bindings.Take(max))
+        {
+            if (row.Children.Count > 0)
+                row.Children.Add(new TextBlock
+                {
+                    Text = "\u00b7", FontSize = Size("SmallSize"),
+                    Margin = new Thickness(4, 0), Classes = { "muted" },
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+            var visual = VisualFor(b.Output);
+            row.Children.Add(visual.IsSelfDescribing && !visual.RequiresTextLabel
+                                 && b.ActionName.Length == 0
+                ? OutputVisuals.Render(visual, includeLabel: false, compact: true)
+                : new TextBlock
+                {
+                    Text = OutputDisplayLabel(b, TokenLabel, _labelStyle),
+                    FontSize = Size("SmallSize"), TextWrapping = TextWrapping.WrapWithOverflow,
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+        }
+        if (bindings.Count > max)
+            row.Children.Add(new TextBlock
+            {
+                Text = $"+{bindings.Count - max}", FontSize = Size("SmallSize"),
+                Classes = { "muted" }, Margin = new Thickness(4, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center,
+            });
+        AutomationProperties.SetName(row, string.Join(", ",
+            bindings.Select(b => OutputDisplayLabel(b, TokenLabel, _labelStyle))));
+        return row;
+    }
+
+    Control MouthpieceSummary(string zone) =>
+        GestureTable(DeviceSummary.Mouthpiece(CurrentSheet, zone, TokenLabel));
+
+    // The table a callout carries: one row per gesture the part answers to, the
+    // action drawn as the button it presses. Shared by the single holes and by
+    // the hole pairings, which have the same four gestures and used to get a
+    // mapping count instead of the buttons they press.
+    Control GestureTable(IReadOnlyList<GestureSummary> rows)
+    {
         // One grid for the whole card, not one per row: an Auto first column
         // sizes to the widest gesture name here and hands every pixel it does
         // not need to the action, which is the column that runs out of room.
@@ -4556,8 +4727,8 @@ public partial class MainWindow : Window
         // hardware says which jack is digital_in_8.
         // The stage already draws the panel for these two, unless the reader
         // has swapped the diagram for the parts list.
-        if (zone.Id is "jacks" or "other")
-            ZoneDetailPanel.Children.Add(BackPanelGuide(withPicture: _railView || !_deviceView));
+        if (zone.Id is "jacks" or "other" && (_railView || !_deviceView))
+            ZoneDetailPanel.Children.Add(BackPanelGuide(withPicture: true));
 
         if (bindings is { Count: > 0 })
         {
@@ -4905,6 +5076,12 @@ public partial class MainWindow : Window
     { _selectedZone = zoneId; BuildDeviceView(); BuildZoneDetail(); }
 
     internal string? SelectedZoneForPreview => _selectedZone;
+
+    /// <summary>Pick one input inside the selected part, the way clicking a
+    /// hole pairing on the picture does. The rings over the holes a pairing
+    /// uses hang off this, so a shot and a test both need a way to set it.</summary>
+    public void PickInputForPreview(string input)
+    { _pickedInput = input; _selectedZone = ZoneOf(input); BuildDeviceView(); BuildZoneDetail(); }
 
     public void SetModelForPreview(int index)
     { ModelPicker.SelectedIndex = index; }
