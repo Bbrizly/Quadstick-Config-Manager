@@ -39,10 +39,14 @@ describe("TASK-040A local profile lifecycle", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Manage files on your QuadStick" }));
     let dialog = await screen.findByRole("dialog", { name: "Profile" });
-    expect(within(dialog).getByText("This profile has unsaved changes. Save them before leaving?")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText("This profile has unsaved changes. Save them before leaving?"),
+    ).toBeInTheDocument();
 
     fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Profile" })).not.toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Profile" })).not.toBeInTheDocument(),
+    );
     expect(screen.getByRole("heading", { level: 1, name: "Racing.csv" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Manage files on your QuadStick" }));
@@ -62,7 +66,7 @@ describe("TASK-040A local profile lifecycle", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     const dialog = await screen.findByRole("dialog", { name: "Profile" });
-    fireEvent.click(within(dialog).getByRole("button", { name: "Save  (Ctrl+S)" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "Save (Ctrl+S)" }));
 
     await screen.findByRole("heading", { level: 1, name: "QuadStick Config Manager" });
     expect(client.dialogsOpened).toBe(1);
