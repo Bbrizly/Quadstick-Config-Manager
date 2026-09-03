@@ -322,21 +322,16 @@ public partial class MainWindow
     bool DecidesTheBootMode =>
         _file is { } f && (f.Document.IsDefaultConfig || f.Document.IsDevicePreferences);
 
-    // Same rule as the device settings page: a mode that would take the drive
-    // away is not offered in the file the device boots into. A game profile
-    // still offers all eight, because the device boots back into default.csv
-    // and the files come back. A value already in the cell is never dropped.
-    IReadOnlyList<string> OfferedChoices(PreferenceDefinition def, string value) =>
-        def.Name != "enable_DS3_emulation" || !DecidesTheBootMode
-            ? def.Options
-            : def.Options
-                .Where(o => Validator.EmulationKeepsTheDrive(o)
-                         || string.Equals(o, value, StringComparison.Ordinal))
-                .ToList();
-
+    // Same rule as the device settings page: all eight emulation modes are
+    // offered wherever they are legal to type, and the four that take the drive
+    // away say so in the label. A file the device boots into still refuses to
+    // save one, which is the half of the rule that actually protects anybody.
     Control ChoiceValueControl(int row, int col, PreferenceDefinition def, string value, string name)
     {
-        var items = OfferedChoices(def, value).Select(o => new ChoiceOption(o, def.LabelForOption(o))).ToList();
+        var items = def.Options
+            .Select(o => new ChoiceOption(o, def.LabelForOption(o),
+                def.Name == "enable_DS3_emulation" ? Validator.EmulationDriveWarning(o) : null))
+            .ToList();
         var combo = new ComboBox
         {
             ItemsSource = items,
@@ -354,9 +349,13 @@ public partial class MainWindow
     // ToString is what the ComboBox shows and what a screen reader reads, so
     // the token is spelled out beside the words rather than hidden behind them:
     // the number is what the file will hold and what QuadStick support asks for.
-    sealed record ChoiceOption(string Token, string Label)
+    sealed record ChoiceOption(string Token, string Label, string? Warning = null)
     {
-        public override string ToString() => Label == Token ? Token : $"{Label} ({Token})";
+        public override string ToString()
+        {
+            var head = Label == Token ? Token : $"{Label} ({Token})";
+            return Warning is null ? head : $"{head}, {Warning}";
+        }
     }
 
     // A whole number. Bounds come from the official manager's own sliders, so
@@ -465,8 +464,9 @@ public partial class MainWindow
         if (def.Unit.Length > 0) parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Prefs_MeasuredInDefUnit, def.Unit));
         if (def.Default is { Length: > 0 } suggested)
             parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Prefs_ThisIsUsuallySetTo, suggested));
-        // A short list with no reason for being short reads as a bug.
-        if (OfferedChoices(def, _file?.GetCell(b.Row, col) ?? "").Count < def.Options.Count)
+        // Every mode is offered, so on the file the device boots into the row
+        // is where somebody reads what picking a drive-hiding one costs.
+        if (def.Name == "enable_DS3_emulation" && DecidesTheBootMode)
             parts.Add(Strings.DevicePage_ModesThatHideTheDrive);
         if (parts.Count > 0)
         {

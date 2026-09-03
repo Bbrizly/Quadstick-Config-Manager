@@ -715,18 +715,34 @@ public class DeviceSettingsPageTests
         w.Close();
     }
 
-    // The device boots into prefs.csv, so an emulation that hides its drive is
-    // not on offer, and the row says why rather than looking like an old build.
+    // Drew asked for every mode to stay on the list, because people run the
+    // drive-hiding ones on purpose and a missing row reads as a broken build.
+    // So all eight are here, and the four that cost the drive say so.
     [AvaloniaFact]
-    public void TheEmulationModesThatHideTheDriveAreNotOffered()
+    public void EveryEmulationModeIsOfferedAndTheCostlyOnesSaySo()
     {
         var w = Open(Header + "enable_DS3_emulation,0\n", "USB and compatibility");
         var combo = Body(w).OfType<ComboBox>()
             .First(c => (AutomationProperties.GetName(c) ?? "").StartsWith("USB emulation mode", StringComparison.Ordinal));
         var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
-        Assert.Equal(4, shown.Count);
-        Assert.DoesNotContain(shown, t => t.EndsWith("(5)", StringComparison.Ordinal));
-        Assert.Contains(Said(w), t => t.Contains("not offered here"));
+
+        Assert.Equal(8, shown.Count);
+        foreach (var mode in new[] { "(1)", "(5)", "(6)", "(7)" })
+            Assert.Contains(shown, t => t.Contains(mode, StringComparison.Ordinal)
+                                     && t.Contains("hides the QuadStick drive", StringComparison.Ordinal));
+        foreach (var mode in new[] { "(0)", "(2)", "(3)", "(4)" })
+            Assert.Contains(shown, t => t.EndsWith(mode, StringComparison.Ordinal));
+
+        w.Close();
+    }
+
+    // The list no longer refuses anything, so the row is the only place that
+    // can say what saving one of those here would do.
+    [AvaloniaFact]
+    public void TheRowSaysWhatADriveHidingModeCostsOnThisFile()
+    {
+        var w = Open(Header + "enable_DS3_emulation,0\n", "USB and compatibility");
+        Assert.Contains(Said(w), t => t.Contains("will not write one of the drive-hiding modes"));
         w.Close();
     }
 
@@ -740,7 +756,7 @@ public class DeviceSettingsPageTests
         var combo = Body(w).OfType<ComboBox>()
             .First(c => (AutomationProperties.GetName(c) ?? "").StartsWith("USB emulation mode", StringComparison.Ordinal));
         var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
-        Assert.Contains(shown, t => t.EndsWith("(6)", StringComparison.Ordinal));
+        Assert.Contains(shown, t => t.Contains("(6)", StringComparison.Ordinal));
         w.Close();
     }
 }

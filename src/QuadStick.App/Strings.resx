@@ -374,7 +374,7 @@
     <value>Looking for your QuadStick...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>Modes that hide the QuadStick drive are not offered here, because the device boots into this file. Set one in a game profile instead.</value>
+    <value>The device boots into this file, so the app will not write one of the drive-hiding modes to your QuadStick. Set it in a game profile instead.</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>More options</value>
@@ -2025,7 +2025,7 @@ You can change this any time in Settings, under Advanced.</value>
     <value>Which controller this file makes the QuadStick pretend to be. You can change or remove it later.</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Which controller this file makes the QuadStick pretend to be. The device boots into this file, so only the modes that keep its drive reachable are offered.</value>
+    <value>Which controller this file makes the QuadStick pretend to be. The device boots into this file, so a mode marked as hiding the QuadStick drive will not be written to the device.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Words are shown as raw list-view names. Switch to plain English.</value>

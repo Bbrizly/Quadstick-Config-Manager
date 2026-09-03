@@ -665,9 +665,10 @@ public partial class MainWindow
         if (def.AlsoCalled.Length > 0)
             facts.Add(string.Format(CultureInfo.CurrentCulture,
                 Strings.Prefs_QMPCallsItDefAlsoCalled, def.AlsoCalled));
-        // A short list with no reason for being short reads as a bug or an
-        // older device. Say which modes are missing and where they do belong.
-        if (OfferedOptions(def, value).Count < def.Options.Count)
+        // These are the device's own settings, so this file is what it boots
+        // into. Every mode is on offer and four of them cost the drive, so the
+        // row has to say what happens if one of those is saved here.
+        if (def.Name == "enable_DS3_emulation")
             facts.Add(Strings.DevicePage_ModesThatHideTheDrive);
         if (facts.Count > 0)
             stack.Children.Add(Caption(string.Join(" ", facts), "muted"));
@@ -857,25 +858,20 @@ public partial class MainWindow
         return box;
     }
 
-    // The device boots into this file, so an emulation with no mass-storage
-    // interface would take the drive away and the only way back is the physical
-    // force-erase. Saving one has always been refused; leaving it out of the
-    // list is the earlier half of the same rule. A value the file already holds
-    // is never dropped, because hiding it would misreport what the device runs.
-    static IReadOnlyList<string> OfferedOptions(PreferenceDefinition def, string value) =>
-        def.Name != "enable_DS3_emulation"
-            ? def.Options
-            : def.Options
-                .Where(o => Validator.EmulationKeepsTheDrive(o)
-                         || string.Equals(o, value, StringComparison.Ordinal))
-                .ToList();
-
     // A fixed set of device keywords. The item holds the exact token, so the
     // plain-language label never reaches the file.
+    //
+    // Every emulation mode is listed, including the four that take the drive
+    // away. Drew asked for that: people do run those on purpose, and a mode
+    // missing from the list reads as a broken build rather than a refusal. The
+    // label says which ones cost the drive, and saving one into the file the
+    // device boots into is still refused.
     Control DeviceChoice(ModeSheet sheet, PreferenceDefinition def, int row, string value, string name)
     {
-        var items = OfferedOptions(def, value)
-            .Select(o => new DeviceChoiceOption(o, def.LabelForOption(o))).ToList();
+        var items = def.Options
+            .Select(o => new DeviceChoiceOption(o, def.LabelForOption(o),
+                def.Name == "enable_DS3_emulation" ? Validator.EmulationDriveWarning(o) : null))
+            .ToList();
         var combo = new ComboBox
         {
             ItemsSource = items,
@@ -895,9 +891,13 @@ public partial class MainWindow
     // ToString is what the ComboBox shows and what a screen reader reads, so
     // the token is spelled out beside the words: the number is what the file
     // will hold and what QuadStick support asks for.
-    sealed record DeviceChoiceOption(string Token, string Label)
+    sealed record DeviceChoiceOption(string Token, string Label, string? Warning = null)
     {
-        public override string ToString() => Label == Token ? Token : $"{Label} ({Token})";
+        public override string ToString()
+        {
+            var head = Label == Token ? Token : $"{Label} ({Token})";
+            return Warning is null ? head : $"{head}, {Warning}";
+        }
     }
 
     Control DeviceRawBox(ModeSheet sheet, PreferenceDefinition def, int row, string value, string name)

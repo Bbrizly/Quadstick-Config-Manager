@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Two equal thresholds make the device divide by zero every time it reads the tube.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>hides the QuadStick drive</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB emulation mode {0} ({1}) does not give a computer access to the QuadStick's drive, and this file is one the device boots with. Installing it would leave no way to edit any profile back, and recovery is a physical force-erase.</value>
   </data>

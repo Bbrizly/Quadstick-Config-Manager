@@ -2385,11 +2385,12 @@ public partial class MainWindow : Window
     }
 
 
-    // The emulation dropdown Drew asked to have appear with the sheet. Only
-    // the modes this file may legally hold are offered: on a file the device
-    // boots into, one that hides the drive is unrecoverable without the
-    // physical force-erase. Skipping writes no row at all, which is not the
-    // same as writing a blank one.
+    // The emulation dropdown Drew asked to have appear with the sheet. All
+    // eight modes are offered and the four that take the drive away say so on
+    // their own button, because a mode missing from a list reads as a bug and
+    // people do pick those on purpose. Skipping writes no row at all, which is
+    // not the same as writing a blank one: the device reads a blank cell with
+    // atoi and gets mode 0.
     async Task<string?> PickEmulationModeAsync()
     {
         if (!PreferenceCatalog.TryGet("enable_DS3_emulation", out var def)) return null;
@@ -2405,21 +2406,30 @@ public partial class MainWindow : Window
         };
         foreach (var token in def.Options)
         {
-            if (boots && !Validator.EmulationKeepsTheDrive(token)) continue;
+            var head = string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeLabelToken,
+                def.LabelForOption(token), token);
+            var warning = Validator.EmulationDriveWarning(token);
+            var label = warning is null
+                ? head
+                : string.Format(CultureInfo.CurrentCulture, Strings.Main_LabelNote, head, warning);
             var btn = new Button
             {
                 Content = new TextBlock
                 {
-                    Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeLabelToken,
-                        def.LabelForOption(token), token),
+                    Text = label,
                     FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
                 },
                 MinWidth = 360,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
                 Tag = token,
             };
-            AutomationProperties.SetName(btn, string.Format(CultureInfo.CurrentCulture,
-                Strings.Main_SetTheEmulationModeTo, def.LabelForOption(token), token));
+            AutomationProperties.SetName(btn, warning is null
+                ? string.Format(CultureInfo.CurrentCulture,
+                    Strings.Main_SetTheEmulationModeTo, def.LabelForOption(token), token)
+                : string.Format(CultureInfo.CurrentCulture, Strings.Main_LabelNote,
+                    string.Format(CultureInfo.CurrentCulture,
+                        Strings.Main_SetTheEmulationModeTo, def.LabelForOption(token), token),
+                    warning));
             btn.Click += (_, _) => { picked = (string)btn.Tag!; dialog.Close(); };
             choices.Children.Add(btn);
         }

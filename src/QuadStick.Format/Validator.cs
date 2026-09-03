@@ -535,6 +535,12 @@ public static class Validator
                       System.Globalization.CultureInfo.InvariantCulture, out var mode)
         || !EmulationModesWithNoDrive.ContainsKey(mode);
 
+    /// <summary>What to say beside an emulation mode that would take the drive
+    /// away, or null when it keeps it. Every mode is offered, so the list is
+    /// where a person has to be able to read the cost of picking one.</summary>
+    public static string? EmulationDriveWarning(string value) =>
+        EmulationKeepsTheDrive(value) ? null : Strings.Issue_HidesTheDrive;
+
     // Losing the drive is survivable in a game profile: the device boots back
     // into default.csv and the files come back. In default.csv or prefs.csv it
     // is not, because those are what it boots into, and the only way back is

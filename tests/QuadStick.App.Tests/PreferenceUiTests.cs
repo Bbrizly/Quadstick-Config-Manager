@@ -106,22 +106,23 @@ public class PreferenceUiTests
     }
 
     // prefs.csv is what the device boots into, so a mode with no mass-storage
-    // interface would take its drive away and the only way back is the physical
-    // force-erase. Those four are not in the list at all, and the row says so
-    // rather than leaving a short list looking like a bug.
+    // interface takes its drive away and the only way back is the physical
+    // force-erase. All eight are still on the list, because people pick those
+    // on purpose, and the four that cost the drive carry the reason on them.
     [AvaloniaFact]
-    public void A_file_the_device_boots_into_offers_no_mode_that_hides_the_drive()
+    public void A_file_the_device_boots_into_marks_the_modes_that_hide_the_drive()
     {
         var w = ShowPrefs("enable_DS3_emulation,0\n", out var file);
 
         var shown = Cell<ComboBox>(w, 4).ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
-        Assert.Equal(4, shown.Count);
-        foreach (var hidden in new[] { "(1)", "(5)", "(6)", "(7)" })
-            Assert.DoesNotContain(shown, t => t.EndsWith(hidden, StringComparison.Ordinal));
+        Assert.Equal(8, shown.Count);
+        foreach (var costly in new[] { "(1)", "(5)", "(6)", "(7)" })
+            Assert.Contains(shown, t => t.Contains(costly, StringComparison.Ordinal)
+                                     && t.Contains("hides the QuadStick drive", StringComparison.Ordinal));
         foreach (var safe in new[] { "(0)", "(2)", "(3)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(safe, StringComparison.Ordinal));
 
-        Assert.Contains(Said(w), t => t.Contains("not offered here"));
+        Assert.Contains(Said(w), t => t.Contains("will not write one of the drive-hiding modes"));
 
         file.Dirty = false;
         w.Close();
