@@ -373,6 +373,9 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>Looking for your QuadStick...</value>
   </data>
+  <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
+    <value>Modes that hide the QuadStick drive are not offered here, because the device boots into this file. Set one in a game profile instead.</value>
+  </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>More options</value>
   </data>

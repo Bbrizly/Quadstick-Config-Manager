@@ -665,6 +665,10 @@ public partial class MainWindow
         if (def.AlsoCalled.Length > 0)
             facts.Add(string.Format(CultureInfo.CurrentCulture,
                 Strings.Prefs_QMPCallsItDefAlsoCalled, def.AlsoCalled));
+        // A short list with no reason for being short reads as a bug or an
+        // older device. Say which modes are missing and where they do belong.
+        if (OfferedOptions(def, value).Count < def.Options.Count)
+            facts.Add(Strings.DevicePage_ModesThatHideTheDrive);
         if (facts.Count > 0)
             stack.Children.Add(Caption(string.Join(" ", facts), "muted"));
 
@@ -853,11 +857,25 @@ public partial class MainWindow
         return box;
     }
 
+    // The device boots into this file, so an emulation with no mass-storage
+    // interface would take the drive away and the only way back is the physical
+    // force-erase. Saving one has always been refused; leaving it out of the
+    // list is the earlier half of the same rule. A value the file already holds
+    // is never dropped, because hiding it would misreport what the device runs.
+    static IReadOnlyList<string> OfferedOptions(PreferenceDefinition def, string value) =>
+        def.Name != "enable_DS3_emulation"
+            ? def.Options
+            : def.Options
+                .Where(o => Validator.EmulationKeepsTheDrive(o)
+                         || string.Equals(o, value, StringComparison.Ordinal))
+                .ToList();
+
     // A fixed set of device keywords. The item holds the exact token, so the
     // plain-language label never reaches the file.
     Control DeviceChoice(ModeSheet sheet, PreferenceDefinition def, int row, string value, string name)
     {
-        var items = def.Options.Select(o => new DeviceChoiceOption(o, def.LabelForOption(o))).ToList();
+        var items = OfferedOptions(def, value)
+            .Select(o => new DeviceChoiceOption(o, def.LabelForOption(o))).ToList();
         var combo = new ComboBox
         {
             ItemsSource = items,

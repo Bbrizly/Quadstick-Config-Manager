@@ -317,9 +317,26 @@ public partial class MainWindow
     // row shows. "Nintendo Switch Pro Controller" is the thing somebody is
     // choosing; 5 is only how the device spells it. The token stays in the item
     // and is what gets committed, so the label never reaches the file.
+    // True while this file is one the device boots into, where an emulation
+    // with no drive is unrecoverable without the physical force-erase.
+    bool DecidesTheBootMode =>
+        _file is { } f && (f.Document.IsDefaultConfig || f.Document.IsDevicePreferences);
+
+    // Same rule as the device settings page: a mode that would take the drive
+    // away is not offered in the file the device boots into. A game profile
+    // still offers all eight, because the device boots back into default.csv
+    // and the files come back. A value already in the cell is never dropped.
+    IReadOnlyList<string> OfferedChoices(PreferenceDefinition def, string value) =>
+        def.Name != "enable_DS3_emulation" || !DecidesTheBootMode
+            ? def.Options
+            : def.Options
+                .Where(o => Validator.EmulationKeepsTheDrive(o)
+                         || string.Equals(o, value, StringComparison.Ordinal))
+                .ToList();
+
     Control ChoiceValueControl(int row, int col, PreferenceDefinition def, string value, string name)
     {
-        var items = def.Options.Select(o => new ChoiceOption(o, def.LabelForOption(o))).ToList();
+        var items = OfferedChoices(def, value).Select(o => new ChoiceOption(o, def.LabelForOption(o))).ToList();
         var combo = new ComboBox
         {
             ItemsSource = items,
@@ -448,6 +465,9 @@ public partial class MainWindow
         if (def.Unit.Length > 0) parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Prefs_MeasuredInDefUnit, def.Unit));
         if (def.Default is { Length: > 0 } suggested)
             parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Prefs_ThisIsUsuallySetTo, suggested));
+        // A short list with no reason for being short reads as a bug.
+        if (OfferedChoices(def, _file?.GetCell(b.Row, col) ?? "").Count < def.Options.Count)
+            parts.Add(Strings.DevicePage_ModesThatHideTheDrive);
         if (parts.Count > 0)
         {
             var about = string.Join(" ", parts);

@@ -714,4 +714,33 @@ public class DeviceSettingsPageTests
         Assert.True(Has<NumericUpDown>(w, "Up deflection multiplier"));
         w.Close();
     }
+
+    // The device boots into prefs.csv, so an emulation that hides its drive is
+    // not on offer, and the row says why rather than looking like an old build.
+    [AvaloniaFact]
+    public void TheEmulationModesThatHideTheDriveAreNotOffered()
+    {
+        var w = Open(Header + "enable_DS3_emulation,0\n", "USB and compatibility");
+        var combo = Body(w).OfType<ComboBox>()
+            .First(c => (AutomationProperties.GetName(c) ?? "").StartsWith("USB emulation mode", StringComparison.Ordinal));
+        var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
+        Assert.Equal(4, shown.Count);
+        Assert.DoesNotContain(shown, t => t.EndsWith("(5)", StringComparison.Ordinal));
+        Assert.Contains(Said(w), t => t.Contains("not offered here"));
+        w.Close();
+    }
+
+    // Never out of sight, never rewritten: a device already running a mode that
+    // hides its drive still shows that mode, because the picker's job is to
+    // report what the device is on, not to tidy it.
+    [AvaloniaFact]
+    public void AModeTheFileAlreadyHoldsIsNeverDroppedFromTheList()
+    {
+        var w = Open(Header + "enable_DS3_emulation,6\n", "USB and compatibility");
+        var combo = Body(w).OfType<ComboBox>()
+            .First(c => (AutomationProperties.GetName(c) ?? "").StartsWith("USB emulation mode", StringComparison.Ordinal));
+        var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
+        Assert.Contains(shown, t => t.EndsWith("(6)", StringComparison.Ordinal));
+        w.Close();
+    }
 }
