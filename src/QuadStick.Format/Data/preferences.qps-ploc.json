@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "[ÚŠB émúlátíóñ módé xxxxxxx]",
-  "description": "[Whíçh çóñtróllér thé QúádŠtíçk prétéñdš tó bé. Thé çóñšólé háš tó kñów thé óñé ýóú píçk, áñd šómé çhóíçéš hídé thé QúádŠtíçk'š drívé fróm ýóúr çómpútér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
-  "risk": "[Šómé çhóíçéš hídé thé QúádŠtíçk'š fíléš fróm ýóúr çómpútér, šó ýóú çáññót édít á prófílé úñtíl ýóú šét ít báçk. Thé ñúmbérš álšó méáñ dífféréñt thíñgš óñ óldér QúádŠtíçkš, šó á fílé fróm šóméóñé élšé çáñ láñd ýóú óñ á çóñtróllér ýóú díd ñót píçk. Çháñgé ít óñlý óñ ádvíçé fróm QúádŠtíçk šúppórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "description": "[Whíçh çóñtróllér thé QúádŠtíçk prétéñdš tó bé. Thé çóñšólé háš tó kñów thé óñé ýóú píçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "risk": "[Á módé márkéd ñó drívé hídéš thé QúádŠtíçk'š fíléš fróm ýóúr çómpútér úñtíl ýóú šét ít báçk. Thé ñúmbérš álšó méáñ šóméthíñg dífféréñt óñ óldér QúádŠtíçkš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
   "alsoCalled": "[Bóót íñ PŠ4 Módé xxxxxx]",
   "optionLabels": [
    "[QúádŠtíçk (PÇ áñd PŠ3) xxxxxxxx]",
-   "[DúálŠhóçk 3, ñó ÚŠB drívé xxxxxxxxxx]",
+   "[DúálŠhóçk 3 xxxxxxxxxx]",
    "[x360çé, fór á PÇ xxxxxx]",
    "[Xbóx 360 çóñtróllér xxxxxxx]",
-   "[DúálŠhóçk 4, fór á PŠ4 (QMP'š Bóót íñ PŠ4 Módé) xxxxxxxxxxxxxxxxxx]",
-   "[Ñíñtéñdó Šwítçh Pró Çóñtróllér, ñó ÚŠB drívé xxxxxxxxxxxxxxxxx]",
-   "[DúálŠhóçk 4, ñó ÚŠB drívé xxxxxxxxxx]",
-   "[DúálŠhóçk 4 wíréléšš, ñó ÚŠB drívé xxxxxxxxxxxxx]"
+   "[DúálŠhóçk 4, fór á PŠ4 xxxxxxxxxxxxxxxxxx]",
+   "[Ñíñtéñdó Šwítçh Pró Çóñtróllér xxxxxxxxxxxxxxxxx]",
+   "[DúálŠhóçk 4 xxxxxxxxxx]",
+   "[DúálŠhóçk 4 wíréléšš xxxxxxxxxxxxx]"
   ]
  },
  {

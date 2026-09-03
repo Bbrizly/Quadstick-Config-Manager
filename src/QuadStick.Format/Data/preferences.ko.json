@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "USB 에뮬레이션 모드",
-  "description": "QuadStick이 자신을 어떤 USB 장치로 위장할지 결정합니다. 펌웨어 2373에서는: 0 QuadStick native, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 PS4용 DualShock 4, 5 Nintendo Switch Pro Controller, 6 USB 드라이브 없는 DualShock 4, 7 DS4 무선 직결입니다. 펌웨어 1476에서는 값 5가 PC 전용이며 조이스틱 기능이 없음을 뜻했으므로, 5를 담은 파일은 장치가 업데이트되면 완전히 다르게 동작합니다. 모드 1, 5, 6, 7은 USB 드라이브를 전혀 제공하지 않으므로, 이들 중 하나가 실행되는 동안 컴퓨터는 QuadStick의 파일을 볼 수 없습니다. QMP의 Boot in PS4 Mode는 값 4이며, 펌웨어 2373의 Joystick.c:625는 자체 주석에서 이 값을 \"boot in PS4 mode\"라고 부릅니다.",
-  "risk": "이름은 DS3라고 되어 있지만, 장치는 이를 켜짐/꺼짐 스위치가 아니라 0부터 7까지 번호가 매겨진 USB 에뮬레이션 모드로 읽습니다. 값 5의 의미는 펌웨어 1476과 2373 사이에 달라졌으며, 실행 중인 펌웨어가 모르는 숫자를 넣으면 아무도 의도하지 않은 에뮬레이션 상태에 장치가 놓이게 됩니다. QCM은 입력한 값을 그대로 유지하고 어떤 값도 거부하지 않습니다. 한 펌웨어에서는 잘못된 값이 다른 펌웨어에서는 맞는 값일 수 있기 때문입니다. QuadStick 지원팀의 안내가 있을 때만 변경하세요.",
+  "description": "QuadStick이 어떤 컨트롤러처럼 동작할지 정합니다. 선택한 것을 콘솔이 알아야 합니다.",
+  "risk": "드라이브 없음으로 표시된 모드는 되돌릴 때까지 컴퓨터에서 QuadStick 파일을 숨깁니다. 예전 QuadStick에서는 숫자의 뜻도 다릅니다.",
   "alsoCalled": "PS4 모드로 부팅",
   "optionLabels": [
    "QuadStick (PC 및 PS3)",
-   "DualShock 3, USB 드라이브 없음",
+   "DualShock 3",
    "x360ce, PC용",
    "Xbox 360 컨트롤러",
-   "DualShock 4, PS4용 (QMP의 Boot in PS4 Mode)",
-   "Nintendo Switch Pro Controller, USB 드라이브 없음",
-   "DualShock 4, USB 드라이브 없음",
-   "DualShock 4 무선, USB 드라이브 없음"
+   "DualShock 4, PS4용",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 무선"
   ]
  },
  {

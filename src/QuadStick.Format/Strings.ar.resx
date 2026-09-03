@@ -456,7 +456,7 @@
     <value>يؤدي تساوي الحدين إلى قسمة الجهاز على صفر في كل مرة يقرأ فيها الأنبوب.</value>
   </data>
   <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>يخفي قرص QuadStick</value>
+    <value>بدون قرص</value>
   </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>وضع محاكاة USB {0} ({1}) لا يتيح للكمبيوتر الوصول إلى محرك أقراص QuadStick، وهذا الملف من الملفات التي يُقلع بها الجهاز. تثبيته لن يترك أي طريقة لتعديل أي ملف شخصي لاحقًا، والاستعادة تتطلب مسحًا إجباريًا ماديًا.</value>

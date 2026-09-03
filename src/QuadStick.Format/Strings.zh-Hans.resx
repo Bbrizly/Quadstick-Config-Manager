@@ -456,7 +456,7 @@
     <value>两个相等的阈值会导致设备每次读取吸管时都发生除以零的错误。</value>
   </data>
   <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>会隐藏 QuadStick 驱动器</value>
+    <value>无驱动器</value>
   </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB 仿真模式 {0}（{1}）不会让计算机访问 QuadStick 的驱动器，而这个文件是设备启动时使用的文件。安装它之后将无法再回头编辑任何配置，恢复需要进行物理强制擦除。</value>

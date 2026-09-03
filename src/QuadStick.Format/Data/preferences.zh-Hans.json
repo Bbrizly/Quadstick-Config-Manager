@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "USB 仿真模式",
-  "description": "QuadStick 伪装成哪种 USB 设备。在 2373 固件上：0 为 QuadStick 原生，1 为 DualShock 3，2 为 x360ce，3 为 Xbox 360，4 为供 PS4 使用的 DualShock 4，5 为 Nintendo Switch Pro Controller，6 为不带 USB 驱动器的 DualShock 4，7 为纯粹的 DS4 无线模式。在 1476 固件上，值 5 表示仅限 PC、没有摇杆功能，因此设备更新后，携带值 5 的文件行为会完全不同。模式 1、5、6 和 7 完全不提供 USB 驱动器，因此运行其中任何一个时，电脑都看不到 QuadStick 的文件。QMP 的 Boot in PS4 Mode 对应值 4：2373 固件的 Joystick.c 第 625 行在自己的注释中把这个值称为 \"boot in PS4 mode\"。",
-  "risk": "名称虽然写着 DS3，但设备把它读作一个有八个编号值的 USB 仿真模式，而不是一个开关。5 这个值在 1476 和 2373 固件之间含义发生了变化，运行中的固件如果不认识某个数字，就会让设备停留在一个谁都没有要求过的仿真状态上。QCM 会保留你输入的任何值，不做任何拒绝，因为对一个固件来说错误的值，对另一个固件可能是正确的。仅在 QuadStick 支持人员的建议下更改此项。",
+  "description": "QuadStick 模拟成哪种手柄。你选的那种，主机必须认得。",
+  "risk": "标着无驱动器的模式会让电脑看不到 QuadStick 的文件，直到你改回来。这些数字在老款 QuadStick 上的含义也不一样。",
   "alsoCalled": "以 PS4 模式启动",
   "optionLabels": [
    "QuadStick（PC 和 PS3）",
-   "DualShock 3，无 USB 驱动器",
+   "DualShock 3",
    "x360ce，用于 PC",
    "Xbox 360 控制器",
-   "DualShock 4，用于 PS4（QMP 的 Boot in PS4 Mode）",
-   "Nintendo Switch Pro Controller，无 USB 驱动器",
-   "DualShock 4，无 USB 驱动器",
-   "DualShock 4 无线模式，无 USB 驱动器"
+   "DualShock 4，用于 PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 无线模式"
   ]
  },
  {

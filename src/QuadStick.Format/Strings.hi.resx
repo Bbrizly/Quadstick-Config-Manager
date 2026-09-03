@@ -456,7 +456,7 @@
     <value>दो बराबर थ्रेशोल्ड डिवाइस को हर बार ट्यूब पढ़ने पर शून्य से भाग करने पर मजबूर करते हैं।</value>
   </data>
   <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>QuadStick ड्राइव को छिपाता है</value>
+    <value>ड्राइव नहीं</value>
   </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB एम्युलेशन मोड {0} ({1}) कंप्यूटर को QuadStick की ड्राइव तक पहुंच नहीं देता, और यह फ़ाइल वह है जिसके साथ डिवाइस बूट होता है। इसे इंस्टॉल करने पर किसी भी प्रोफ़ाइल को वापस संपादित करने का कोई रास्ता नहीं बचेगा, और रिकवरी भौतिक फ़ोर्स-इरेज़ है।</value>

@@ -2021,12 +2021,6 @@ Whát íš šéñt góéš tó PóštHóg, óñ šérvérš íñ thé Úñítéd
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>[Whéñ ýóú xxx]</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>[Whíçh çóñtróllér thíš fílé mákéš thé QúádŠtíçk prétéñd tó bé. Ýóú çáñ çháñgé ór rémóvé ít látér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>[Whíçh çóñtróllér thíš fílé mákéš thé QúádŠtíçk prétéñd tó bé. Thé dévíçé bóótš íñtó thíš fílé, šó á módé márkéd áš hídíñg thé QúádŠtíçk drívé wíll ñót bé wríttéñ tó thé dévíçé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>[Wórdš áré šhówñ áš ráw líšt-víéw ñáméš. Šwítçh tó pláíñ Éñglíšh. xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
@@ -3487,5 +3481,14 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>[Íñštáll ÍD: {0} xxxxxx]</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>[Ádd xx]</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>[Šómé módéš hídé thé QúádŠtíçk drívé fróm yóúr çómpútér. xxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>[Thé dévíçé bóótš íñtó thíš fílé, šó á módé wíth ñó drívé wíll ñót bé wríttéñ tó ít. xxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
 </root>

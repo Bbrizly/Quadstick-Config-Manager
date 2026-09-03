@@ -2003,12 +2003,6 @@
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>عندما</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>وحدة التحكم التي يتظاهر بها QuadStick عند استخدام هذا الملف. يمكنك تغييرها أو إزالتها لاحقًا.</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>وحدة التحكم التي يتظاهر بها QuadStick عند استخدام هذا الملف. يبدأ الجهاز التشغيل بهذا الملف، لذلك لن يُكتب إلى الجهاز أي وضع معلّم بأنه يخفي قرص QuadStick.</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>تُعرض الكلمات كأسماء القائمة الخام. بدّل إلى الإنجليزية البسيطة.</value>
   </data>
@@ -3463,5 +3457,14 @@
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>معرّف التثبيت: {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>إضافة</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>بعض الأوضاع تخفي قرص QuadStick عن حاسوبك.</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>يبدأ الجهاز التشغيل بهذا الملف، لذلك لن يُكتب فيه وضع بدون قرص.</value>
   </data>
 </root>

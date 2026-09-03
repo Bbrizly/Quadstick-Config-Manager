@@ -2003,12 +2003,6 @@ Você pode alterar isso a qualquer momento em Configurações, em Avançado.</va
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>Quando você</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>O comando que este ficheiro faz o QuadStick imitar. Pode alterá-lo ou removê-lo mais tarde.</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>O comando que este ficheiro faz o QuadStick imitar. O dispositivo arranca a partir deste ficheiro, por isso um modo assinalado por esconder a unidade QuadStick não será escrito no dispositivo.</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>As palavras são mostradas como nomes brutos da visualização em lista. Mude para inglês simples.</value>
   </data>
@@ -3463,5 +3457,14 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>ID de instalação: {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>Adicionar</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>Alguns modos escondem a unidade do QuadStick do seu computador.</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>O dispositivo arranca a partir deste ficheiro, por isso um modo sem unidade não será escrito nele.</value>
   </data>
 </root>

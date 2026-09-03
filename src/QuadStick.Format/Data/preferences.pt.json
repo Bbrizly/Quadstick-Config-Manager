@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "Modo de emulação USB",
-  "description": "Qual dispositivo USB o QuadStick finge ser. No firmware 2373: 0 QuadStick nativo, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 para um PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 sem unidade USB, 7 DS4 wireless direto. O valor 5 significava apenas PC, sem joystick no firmware 1476, então um arquivo carregando 5 se comporta de forma completamente diferente depois que o dispositivo é atualizado. Os modos 1, 5, 6 e 7 não oferecem nenhuma unidade USB, então um computador não consegue ver os arquivos do QuadStick enquanto um deles está em execução. O Boot in PS4 Mode do QMP é o valor 4: o firmware 2373, em Joystick.c:625, chama esse valor de \"boot in PS4 mode\" em seu próprio comentário.",
-  "risk": "O nome diz DS3, mas o dispositivo o lê como um modo de emulação USB com oito valores numerados, não um interruptor de ligado ou desligado. O que 5 significa mudou entre o firmware 1476 e o 2373, e um número que o firmware em execução não conhece deixa o dispositivo em uma emulação que ninguém pediu. O QCM mantém o que for digitado e não recusa nada, porque um valor errado para um firmware é certo para outro. Altere isso apenas seguindo orientação do suporte do QuadStick.",
+  "description": "Qual comando o QuadStick imita. A consola tem de conhecer o que escolher.",
+  "risk": "Um modo marcado sem unidade esconde os ficheiros do QuadStick do seu computador até o repor. Em QuadSticks mais antigos os números significam também outra coisa.",
   "alsoCalled": "arrancar em modo PS4",
   "optionLabels": [
    "QuadStick (PC e PS3)",
-   "DualShock 3, sem unidade USB",
+   "DualShock 3",
    "x360ce, para um PC",
    "Controle Xbox 360",
-   "DualShock 4, para um PS4 (Boot in PS4 Mode do QMP)",
-   "Nintendo Switch Pro Controller, sem unidade USB",
-   "DualShock 4, sem unidade USB",
-   "DualShock 4 wireless, sem unidade USB"
+   "DualShock 4, para um PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 wireless"
   ]
  },
  {

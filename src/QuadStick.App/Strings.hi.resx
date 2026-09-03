@@ -2003,12 +2003,6 @@
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>जब आप</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>यह फ़ाइल QuadStick को कौन-सा कंट्रोलर बनाकर दिखाती है। आप इसे बाद में बदल या हटा सकते हैं।</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>यह फ़ाइल QuadStick को कौन-सा कंट्रोलर बनाकर दिखाती है। डिवाइस इसी फ़ाइल से बूट होता है, इसलिए QuadStick ड्राइव को छिपाने वाला बताया गया मोड डिवाइस पर नहीं लिखा जाएगा।</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>शब्द रॉ लिस्ट-व्यू नामों के रूप में दिखाए जा रहे हैं। सामान्य अंग्रेज़ी पर स्विच करें।</value>
   </data>
@@ -3463,5 +3457,14 @@
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>इंस्टॉल आईडी: {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>जोड़ें</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>कुछ मोड आपके कंप्यूटर से QuadStick ड्राइव छिपा देते हैं।</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>डिवाइस इसी फ़ाइल से बूट होता है, इसलिए ड्राइव रहित मोड इसमें नहीं लिखा जाएगा।</value>
   </data>
 </root>

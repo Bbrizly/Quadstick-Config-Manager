@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "Modalità di emulazione USB",
-  "description": "Quale dispositivo USB il QuadStick finge di essere. Sul firmware 2373: 0 QuadStick nativo, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 per una PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 senza unità USB, 7 DS4 wireless diretta. Il valore 5 significava solo PC, nessun joystick sul firmware 1476, quindi un file che porta 5 si comporta in modo completamente diverso una volta aggiornato il dispositivo. Le modalità 1, 5, 6 e 7 non offrono affatto un'unità USB, quindi un computer non può vedere i file del QuadStick mentre una di esse è in esecuzione. Il Boot in PS4 Mode di QMP è il valore 4: Joystick.c:625 del firmware 2373 chiama quel valore \"boot in PS4 mode\" nel proprio commento.",
-  "risk": "Il nome dice DS3, ma il dispositivo lo legge come una modalità di emulazione USB con otto valori numerati, non un interruttore on/off. Il significato di 5 è cambiato tra il firmware 1476 e il 2373, e un numero che il firmware in esecuzione non conosce lascia il dispositivo su un'emulazione che nessuno ha richiesto. QCM mantiene qualunque cosa venga digitata e non rifiuta nulla, perché un valore sbagliato per un firmware è giusto per un altro. Lo cambi solo su indicazione del supporto QuadStick.",
+  "description": "Il controller che il QuadStick simula. La console deve conoscere quello che sceglie.",
+  "risk": "Una modalità contrassegnata senza unità nasconde i file del QuadStick al computer finché non la riporta indietro. Sui QuadStick più vecchi i numeri significano anche altro.",
   "alsoCalled": "avviare in modo PS4",
   "optionLabels": [
    "QuadStick (PC e PS3)",
-   "DualShock 3, senza unità USB",
+   "DualShock 3",
    "x360ce, per un PC",
    "Controller Xbox 360",
-   "DualShock 4, per una PS4 (Boot in PS4 Mode di QMP)",
-   "Nintendo Switch Pro Controller, senza unità USB",
-   "DualShock 4, senza unità USB",
-   "DualShock 4 wireless, senza unità USB"
+   "DualShock 4, per una PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 wireless"
   ]
  },
  {

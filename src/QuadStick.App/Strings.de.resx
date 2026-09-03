@@ -2003,12 +2003,6 @@ Sie können dies jederzeit in den Einstellungen unter Erweitert ändern.</value>
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>Wenn Sie</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>Welchen Controller der QuadStick durch diese Datei nachahmt. Sie können das später ändern oder entfernen.</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Welchen Controller der QuadStick durch diese Datei nachahmt. Das Gerät startet von dieser Datei, daher wird ein Modus, der laut Kennzeichnung das QuadStick-Laufwerk ausblendet, nicht auf das Gerät geschrieben.</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Wörter werden als rohe Listenansicht-Namen angezeigt. Wechseln Sie zu Klartext.</value>
   </data>
@@ -3463,5 +3457,14 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>Installations-ID: {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>Hinzufügen</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>Manche Modi verbergen das QuadStick-Laufwerk vor Ihrem Computer.</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>Das Gerät startet von dieser Datei, daher wird kein Modus ohne Laufwerk hineingeschrieben.</value>
   </data>
 </root>

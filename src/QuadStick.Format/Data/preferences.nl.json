@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "USB-emulatiemodus",
-  "description": "Voor welk USB-apparaat de QuadStick zich uitgeeft. Op firmware 2373: 0 QuadStick native, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 voor een PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 zonder USB-station, 7 rechtstreeks DS4 draadloos. Waarde 5 betekende op firmware 1476 alleen pc, geen joystick, dus een bestand met 5 gedraagt zich compleet anders zodra het apparaat is bijgewerkt. Modi 1, 5, 6 en 7 bieden helemaal geen USB-station, dus een computer kan de bestanden van de QuadStick niet zien terwijl een van deze actief is. QMP's Boot in PS4 Mode is waarde 4: firmware 2373 Joystick.c:625 noemt die waarde in zijn eigen opmerking \"boot in PS4 mode\".",
-  "risk": "De naam zegt DS3, maar het apparaat leest dit als een USB-emulatiemodus met acht genummerde waarden, geen aan/uit-schakelaar. Wat 5 betekent, is veranderd tussen firmware 1476 en 2373, en een getal dat de actieve firmware niet kent, laat het apparaat op een emulatie staan die niemand heeft gevraagd. QCM behoudt wat er ook wordt ingetypt en weigert niets, omdat een waarde die verkeerd is voor de ene firmware juist is voor de andere. Wijzig dit alleen op advies van QuadStick support.",
+  "description": "Welke controller de QuadStick nabootst. De console moet degene die u kiest kennen.",
+  "risk": "Een modus met de melding geen schijf verbergt de bestanden van de QuadStick voor uw computer totdat u hem terugzet. Op oudere QuadSticks betekenen de nummers ook iets anders.",
   "alsoCalled": "opstarten in PS4-modus",
   "optionLabels": [
    "QuadStick (pc en PS3)",
-   "DualShock 3, geen USB-station",
+   "DualShock 3",
    "x360ce, voor een pc",
    "Xbox 360-controller",
-   "DualShock 4, voor een PS4 (QMP's Boot in PS4 Mode)",
-   "Nintendo Switch Pro Controller, geen USB-station",
-   "DualShock 4, geen USB-station",
-   "DualShock 4 draadloos, geen USB-station"
+   "DualShock 4, voor een PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 draadloos"
   ]
  },
  {

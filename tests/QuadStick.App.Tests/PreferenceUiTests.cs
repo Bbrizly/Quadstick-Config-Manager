@@ -118,7 +118,7 @@ public class PreferenceUiTests
         Assert.Equal(8, shown.Count);
         foreach (var costly in new[] { "(1)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.Contains(costly, StringComparison.Ordinal)
-                                     && t.Contains("hides the QuadStick drive", StringComparison.Ordinal));
+                                     && t.EndsWith(", no drive", StringComparison.Ordinal));
         foreach (var safe in new[] { "(0)", "(2)", "(3)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(safe, StringComparison.Ordinal));
 
@@ -502,5 +502,30 @@ public class PreferenceUiTests
 
         file.Dirty = false;
         w.Close();
+    }
+
+    // Drew called the old picker ugly, and it was: nine stacked wrap-text
+    // buttons. It is one dropdown now. The drive note lives under the list
+    // once, not repeated on four items, and Add stays off until a pick, so
+    // there is no default mode nobody chose.
+    [AvaloniaFact]
+    public void TheEmulationPickerIsOneDropdownWithNoDefaultPick()
+    {
+        Assert.True(PreferenceCatalog.TryGet("enable_DS3_emulation", out var def));
+        var (body, combo, add, _) = MainWindow.BuildEmulationPicker(def!, boots: false);
+
+        Assert.Single(body.GetVisualDescendants().OfType<ComboBox>().DefaultIfEmpty(combo));
+        var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
+        Assert.Equal(8, shown.Count);
+        Assert.Null(combo.SelectedItem);
+        Assert.False(add.IsEnabled);
+
+        foreach (var mode in new[] { "(1)", "(5)", "(6)", "(7)" })
+            Assert.Contains(shown, t => t.EndsWith(mode + ", no drive", StringComparison.Ordinal));
+        foreach (var mode in new[] { "(0)", "(2)", "(3)", "(4)" })
+            Assert.Contains(shown, t => t.EndsWith(mode, StringComparison.Ordinal));
+
+        combo.SelectedIndex = 0;
+        Assert.True(add.IsEnabled);
     }
 }

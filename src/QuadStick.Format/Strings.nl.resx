@@ -456,7 +456,7 @@
     <value>Twee gelijke drempels laten het apparaat delen door nul, telkens wanneer het de buis uitleest.</value>
   </data>
   <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>verbergt de QuadStick-schijf</value>
+    <value>geen schijf</value>
   </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB-emulatiemodus {0} ({1}) geeft een computer geen toegang tot het station van de QuadStick, en dit bestand is er een waarmee het apparaat opstart. Het installeren ervan laat geen manier meer over om een profiel terug te bewerken, en herstel is een fysieke force-erase.</value>

@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "Tryb emulacji USB",
-  "description": "Za jakie urządzenie USB podaje się QuadStick. W oprogramowaniu układowym 2373: 0 QuadStick natywny, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 dla PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 bez dysku USB, 7 zwykły DS4 bezprzewodowy. Wartość 5 oznaczała tylko PC, bez joysticka, w oprogramowaniu układowym 1476, więc plik niosący 5 zachowuje się zupełnie inaczej po aktualizacji urządzenia. Tryby 1, 5, 6 i 7 w ogóle nie udostępniają dysku USB, więc komputer nie widzi plików QuadSticka, gdy jeden z nich działa. Boot in PS4 Mode w QMP to wartość 4: Joystick.c:625 w oprogramowaniu układowym 2373 nazywa tę wartość \"boot in PS4 mode\" we własnym komentarzu.",
-  "risk": "Nazwa mówi DS3, ale urządzenie odczytuje to jako tryb emulacji USB z ośmioma numerowanymi wartościami, a nie przełącznik włącz/wyłącz. To, co oznacza 5, zmieniło się między oprogramowaniem układowym 1476 a 2373, a liczba, której działające oprogramowanie układowe nie zna, pozostawia urządzenie na emulacji, o którą nikt nie prosił. QCM zachowuje to, co zostało wpisane, i niczego nie odrzuca, ponieważ wartość błędna dla jednego oprogramowania układowego jest właściwa dla innego. Zmieniaj tylko za radą wsparcia technicznego QuadStick.",
+  "description": "Jaki kontroler udaje QuadStick. Konsola musi znać ten, który wybierzesz.",
+  "risk": "Tryb oznaczony bez dysku ukrywa pliki QuadSticka przed komputerem, dopóki go nie zmienisz z powrotem. Na starszych QuadStickach numery znaczą też co innego.",
   "alsoCalled": "uruchamiaj w trybie PS4",
   "optionLabels": [
    "QuadStick (PC i PS3)",
-   "DualShock 3, bez dysku USB",
+   "DualShock 3",
    "x360ce, dla PC",
    "Kontroler Xbox 360",
-   "DualShock 4, dla PS4 (Boot in PS4 Mode w QMP)",
-   "Nintendo Switch Pro Controller, bez dysku USB",
-   "DualShock 4, bez dysku USB",
-   "DualShock 4 bezprzewodowy, bez dysku USB"
+   "DualShock 4, dla PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 bezprzewodowy"
   ]
  },
  {

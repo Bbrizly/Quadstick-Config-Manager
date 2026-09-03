@@ -2003,12 +2003,6 @@ U kunt dit op elk moment wijzigen in Instellingen, onder Geavanceerd.</value>
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>Wanneer u</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>Welke controller de QuadStick door dit bestand nabootst. U kunt dit later wijzigen of weghalen.</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Welke controller de QuadStick door dit bestand nabootst. Het apparaat start vanaf dit bestand op, dus een modus die volgens de markering de QuadStick-schijf verbergt wordt niet naar het apparaat geschreven.</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Woorden worden getoond als ruwe lijstweergavenamen. Schakel over naar gewoon Engels.</value>
   </data>
@@ -3463,5 +3457,14 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>Installatie-ID: {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>Toevoegen</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>Sommige modi verbergen de QuadStick-schijf voor uw computer.</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>Het apparaat start op vanaf dit bestand, dus een modus zonder schijf wordt er niet in geschreven.</value>
   </data>
 </root>

@@ -2003,12 +2003,6 @@ Può modificare questa impostazione in qualsiasi momento in Impostazioni, in Ava
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>Quando lei</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>Il controller che questo file fa simulare al QuadStick. Potrà cambiarlo o rimuoverlo in seguito.</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Il controller che questo file fa simulare al QuadStick. Il dispositivo si avvia da questo file, quindi una modalità segnalata perché nasconde l'unità QuadStick non verrà scritta sul dispositivo.</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Le parole sono mostrate come nomi elenco grezzi. Passa a italiano semplice.</value>
   </data>
@@ -3463,5 +3457,14 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>ID di installazione: {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>Aggiungi</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>Alcune modalità nascondono l’unità QuadStick al computer.</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>Il dispositivo si avvia da questo file, quindi una modalità senza unità non vi verrà scritta.</value>
   </data>
 </root>

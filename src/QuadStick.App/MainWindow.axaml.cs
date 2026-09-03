@@ -2385,76 +2385,86 @@ public partial class MainWindow : Window
     }
 
 
-    // The emulation dropdown Drew asked to have appear with the sheet. All
-    // eight modes are offered and the four that take the drive away say so on
-    // their own button, because a mode missing from a list reads as a bug and
-    // people do pick those on purpose. Skipping writes no row at all, which is
-    // not the same as writing a blank one: the device reads a blank cell with
-    // atoi and gets mode 0.
+    // The emulation dropdown Drew asked to have appear with the sheet. One
+    // list, not a wall of buttons: all eight modes, and the four that take the
+    // drive away carry "no drive" on the item. Skipping writes no row at all,
+    // which is not the same as writing a blank one: the device reads a blank
+    // cell with atoi and gets mode 0.
+    internal static (StackPanel Body, ComboBox Combo, Button Add, Button Skip)
+        BuildEmulationPicker(PreferenceDefinition def, bool boots)
+    {
+        var items = def.Options
+            .Select(o => new EmulationOption(o, def.LabelForOption(o), Validator.EmulationDriveWarning(o)))
+            .ToList();
+        var combo = new ComboBox
+        {
+            ItemsSource = items,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            FontSize = Size("BodySize"),
+        };
+        AutomationProperties.SetName(combo, Strings.Main_SetTheEmulationMode);
+
+        var add = new Button
+        { Content = Strings.Main_Add, MinWidth = 96, IsDefault = true, IsEnabled = false };
+        var skip = new Button
+        { Content = Strings.Main_DoNotSetOne, MinWidth = 96, IsCancel = true };
+        AutomationProperties.SetName(skip, Strings.Main_DoNotSetOneTheDevice);
+        combo.SelectionChanged += (_, _) => add.IsEnabled = combo.SelectedItem is EmulationOption;
+
+        var body = new StackPanel
+        {
+            Margin = new Avalonia.Thickness(24), Spacing = 12, MaxWidth = 420,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = Strings.Main_SetTheEmulationMode, FontWeight = FontWeight.Bold,
+                    FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap,
+                },
+                combo,
+                new TextBlock
+                {
+                    Text = boots ? Strings.Main_BootFilesRefuseADriveHiding : Strings.Main_SomeModesHideTheDrive,
+                    TextWrapping = TextWrapping.Wrap, FontSize = Size("SmallSize"), Classes = { "muted" },
+                },
+                new StackPanel
+                {
+                    Orientation = Orientation.Horizontal, Spacing = 8,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Children = { skip, add },
+                },
+            },
+        };
+        return (body, combo, add, skip);
+    }
+
+    internal sealed record EmulationOption(string Token, string Label, string? Warning)
+    {
+        public override string ToString() =>
+            Warning is null ? $"{Label} ({Token})" : $"{Label} ({Token}), {Warning}";
+    }
+
     async Task<string?> PickEmulationModeAsync()
     {
         if (!PreferenceCatalog.TryGet("enable_DS3_emulation", out var def)) return null;
         bool boots = _file is { } f && (f.Document.IsDefaultConfig || f.Document.IsDevicePreferences);
 
-        string? picked = null;
-        var choices = new StackPanel { Spacing = 8 };
+        var (body, combo, add, skip) = BuildEmulationPicker(def, boots);
         var dialog = new Window
         {
             Title = Strings.Main_SetTheEmulationMode,
             SizeToContent = SizeToContent.WidthAndHeight,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
         };
-        foreach (var token in def.Options)
-        {
-            var head = string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeLabelToken,
-                def.LabelForOption(token), token);
-            var warning = Validator.EmulationDriveWarning(token);
-            var label = warning is null
-                ? head
-                : string.Format(CultureInfo.CurrentCulture, Strings.Main_LabelNote, head, warning);
-            var btn = new Button
-            {
-                Content = new TextBlock
-                {
-                    Text = label,
-                    FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
-                },
-                MinWidth = 360,
-                HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                Tag = token,
-            };
-            AutomationProperties.SetName(btn, warning is null
-                ? string.Format(CultureInfo.CurrentCulture,
-                    Strings.Main_SetTheEmulationModeTo, def.LabelForOption(token), token)
-                : string.Format(CultureInfo.CurrentCulture, Strings.Main_LabelNote,
-                    string.Format(CultureInfo.CurrentCulture,
-                        Strings.Main_SetTheEmulationModeTo, def.LabelForOption(token), token),
-                    warning));
-            btn.Click += (_, _) => { picked = (string)btn.Tag!; dialog.Close(); };
-            choices.Children.Add(btn);
-        }
-        var skip = new Button
-        {
-            Content = Strings.Main_DoNotSetOne, MinWidth = 140, IsDefault = true, IsCancel = true,
-        };
-        AutomationProperties.SetName(skip, Strings.Main_DoNotSetOneTheDevice);
+        string? picked = null;
+        add.Click += (_, _) => { picked = (combo.SelectedItem as EmulationOption)?.Token; dialog.Close(); };
         skip.Click += (_, _) => dialog.Close();
 
-        var body = new StackPanel
-        {
-            Margin = new Avalonia.Thickness(24), Spacing = 16, MaxWidth = 520,
-            Children =
-            {
-                new TextBlock { Text = Strings.Main_SetTheEmulationMode, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
-                new TextBlock { Text = boots ? Strings.Main_WhichControllerThisFileMakes2 : Strings.Main_WhichControllerThisFileMakes, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
-                choices,
-                skip,
-            },
-        };
         dialog.Content = ZoomWrap(body, _uiScale);
         await ShowDialogInShellAsync(dialog);
         return picked;
     }
+
     public async Task AddPreferencesSheetToFile()
     {
         if (_file is null) return;

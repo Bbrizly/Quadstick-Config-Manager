@@ -270,7 +270,7 @@ public class PreferenceCatalogTests
         foreach (var meaning in new[]
                  {
                      "QuadStick", "DualShock 3", "x360ce", "Xbox 360",
-                     "Nintendo Switch Pro Controller", "no USB drive", "wireless",
+                     "Nintendo Switch Pro Controller", "wireless",
                  })
             Assert.Contains(meaning, listed, StringComparison.Ordinal);
         // A number means something else on an older QuadStick, and that is a
@@ -285,11 +285,11 @@ public class PreferenceCatalogTests
     {
         Assert.True(PreferenceCatalog.TryGet("enable_DS3_emulation", out var p));
         Assert.Equal(p.Options.Count, p.OptionLabels.Count);
-        Assert.Equal("Nintendo Switch Pro Controller, no USB drive", p.LabelForOption("5"));
-        // Mode 4 also carries the name QMP puts on it, because that is the
-        // phrase somebody arrives with. Joystick.c:625 calls the same value
-        // "boot in PS4 mode" in the firmware's own comment.
-        Assert.Equal("DualShock 4, for a PS4 (QMP's Boot in PS4 Mode)", p.LabelForOption("4"));
+        Assert.Equal("Nintendo Switch Pro Controller", p.LabelForOption("5"));
+        // QMP's own phrase for mode 4 is not in the label, which has to stay
+        // short enough to read in a dropdown. It is in alsoCalled, so somebody
+        // arriving with QMP's words still finds the setting.
+        Assert.Equal("DualShock 4, for a PS4", p.LabelForOption("4"));
         // A value the catalog has no word for reads back as itself.
         Assert.Equal("8", p.LabelForOption("8"));
     }

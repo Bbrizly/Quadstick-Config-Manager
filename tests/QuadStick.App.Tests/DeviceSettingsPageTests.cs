@@ -729,7 +729,7 @@ public class DeviceSettingsPageTests
         Assert.Equal(8, shown.Count);
         foreach (var mode in new[] { "(1)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.Contains(mode, StringComparison.Ordinal)
-                                     && t.Contains("hides the QuadStick drive", StringComparison.Ordinal));
+                                     && t.Contains("no drive", StringComparison.Ordinal));
         foreach (var mode in new[] { "(0)", "(2)", "(3)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(mode, StringComparison.Ordinal));
 

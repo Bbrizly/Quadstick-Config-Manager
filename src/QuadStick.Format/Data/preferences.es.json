@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "Modo de emulación USB",
-  "description": "Qué dispositivo USB finge ser el QuadStick. En el firmware 2373: 0 QuadStick nativo, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 para una PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 sin unidad USB, 7 DS4 inalámbrico directo. El valor 5 significaba solo PC, sin joystick en el firmware 1476, así que un archivo que lleva un 5 se comporta de forma completamente distinta una vez actualizado el dispositivo. Los modos 1, 5, 6 y 7 no ofrecen unidad USB, así que un equipo no puede ver los archivos del QuadStick mientras uno de ellos está en uso. El Boot in PS4 Mode de QMP es el valor 4: el firmware 2373, en Joystick.c:625, llama a ese valor \"boot in PS4 mode\" en su propio comentario.",
-  "risk": "El nombre dice DS3, pero el dispositivo lo lee como un modo de emulación USB con ocho valores numerados, no como un interruptor de encendido y apagado. Lo que significa el 5 cambió entre los firmwares 1476 y 2373, y un número que el firmware en uso no conoce deja el dispositivo en una emulación que nadie pidió. QCM guarda lo que se escriba y no rechaza nada, porque un valor equivocado para un firmware es correcto para otro. Cámbielo solo por indicación del soporte de QuadStick.",
+  "description": "Qué mando imita el QuadStick. La consola tiene que conocer el que elija.",
+  "risk": "Un modo marcado sin unidad oculta los archivos del QuadStick a su ordenador hasta que lo cambie de nuevo. Los números también significan otra cosa en QuadSticks más antiguos.",
   "alsoCalled": "arrancar en modo PS4",
   "optionLabels": [
    "QuadStick (PC y PS3)",
-   "DualShock 3, sin unidad USB",
+   "DualShock 3",
    "x360ce, para PC",
    "Mando de Xbox 360",
-   "DualShock 4, para una PS4 (el Boot in PS4 Mode de QMP)",
-   "Nintendo Switch Pro Controller, sin unidad USB",
-   "DualShock 4, sin unidad USB",
-   "DualShock 4 inalámbrico, sin unidad USB"
+   "DualShock 4, para una PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 inalámbrico"
   ]
  },
  {

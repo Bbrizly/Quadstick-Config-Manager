@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "USB-Emulationsmodus",
-  "description": "Als welches USB-Gerät sich der QuadStick ausgibt. Auf Firmware 2373: 0 QuadStick nativ, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 für eine PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 ohne USB-Laufwerk, 7 reines DS4 kabellos. Wert 5 bedeutete auf Firmware 1476 nur PC, kein Joystick, daher verhält sich eine Datei mit dem Wert 5 nach einem Geräte-Update völlig anders. Die Modi 1, 5, 6 und 7 bieten überhaupt kein USB-Laufwerk an, daher sieht ein Computer die Dateien des QuadStick nicht, solange einer davon läuft. QMPs Boot in PS4 Mode ist Wert 4: Firmware 2373 Joystick.c:625 nennt diesen Wert in einem eigenen Kommentar \"boot in PS4 mode\".",
-  "risk": "Der Name sagt DS3, aber das Gerät liest ihn als USB-Emulationsmodus mit acht nummerierten Werten, nicht als Ein/Aus-Schalter. Was 5 bedeutet, hat sich zwischen Firmware 1476 und 2373 geändert, und eine Zahl, die die laufende Firmware nicht kennt, lässt das Gerät auf einer Emulation stehen, die niemand wollte. QCM behält, was eingegeben wird, und lehnt nichts ab, weil ein Wert, der für eine Firmware falsch ist, für eine andere richtig ist. Ändern Sie das nur auf Anraten des QuadStick-Supports.",
+  "description": "Welchen Controller der QuadStick nachahmt. Die Konsole muss den gewählten kennen.",
+  "risk": "Ein Modus mit dem Hinweis kein Laufwerk verbirgt die Dateien des QuadStick vor Ihrem Computer, bis Sie ihn zurückstellen. Auf älteren QuadSticks bedeuten die Zahlen außerdem etwas anderes.",
   "alsoCalled": "im PS4-Modus starten",
   "optionLabels": [
    "QuadStick (PC und PS3)",
-   "DualShock 3, kein USB-Laufwerk",
+   "DualShock 3",
    "x360ce, für einen PC",
    "Xbox 360-Controller",
-   "DualShock 4, für eine PS4 (QMPs Boot in PS4 Mode)",
-   "Nintendo Switch Pro Controller, kein USB-Laufwerk",
-   "DualShock 4, kein USB-Laufwerk",
-   "DualShock 4 kabellos, kein USB-Laufwerk"
+   "DualShock 4, für eine PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 kabellos"
   ]
  },
  {

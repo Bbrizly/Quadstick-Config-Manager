@@ -2001,12 +2001,6 @@
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>〜すると</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>このファイルで QuadStick がどのコントローラーとして振る舞うかを決めます。後から変更したり削除したりできます。</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>このファイルで QuadStick がどのコントローラーとして振る舞うかを決めます。デバイスはこのファイルで起動するため、QuadStick のドライブを隠すと示されたモードはデバイスに書き込まれません。</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>単語はリスト表示の生の名前で表示されています。プレーン英語に切り替えます。</value>
   </data>
@@ -3461,5 +3455,14 @@
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>インストール ID: {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>追加</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>一部のモードでは QuadStick のドライブがパソコンから見えなくなります。</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>デバイスはこのファイルで起動するため、ドライブのないモードは書き込まれません。</value>
   </data>
 </root>

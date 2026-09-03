@@ -2003,12 +2003,6 @@ To ustawienie można zmienić w dowolnym momencie w Ustawieniach, w sekcji Zaawa
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>Kiedy</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>Kontroler, który QuadStick udaje przy użyciu tego pliku. Można go później zmienić lub usunąć.</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Kontroler, który QuadStick udaje przy użyciu tego pliku. Urządzenie uruchamia się z tego pliku, więc tryb oznaczony jako ukrywający dysk QuadStick nie zostanie zapisany na urządzeniu.</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Słowa są pokazane jako surowe nazwy z widoku listy. Przełącz na zwykły angielski.</value>
   </data>
@@ -3463,5 +3457,14 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>Identyfikator instalacji: {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>Dodaj</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>Niektóre tryby ukrywają dysk QuadSticka przed komputerem.</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>Urządzenie uruchamia się z tego pliku, więc tryb bez dysku nie zostanie w nim zapisany.</value>
   </data>
 </root>

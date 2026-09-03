@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "USBエミュレーションモード",
-  "description": "QuadStickがどのUSBデバイスを装うかです。ファームウェア2373では: 0 QuadStickネイティブ、1 DualShock 3、2 x360ce、3 Xbox 360、4 PS4用DualShock 4、5 Nintendo Switch Pro Controller、6 USBドライブなしのDualShock 4、7 通常のDS4ワイヤレス。値5はファームウェア1476ではPC専用でジョイスティックなしを意味していたため、5を持つファイルはデバイスを更新すると全く異なる動作になります。モード1、5、6、7はUSBドライブを一切提供しないため、これらが動作している間はコンピューターからQuadStickのファイルを見ることができません。QMPのBoot in PS4 Modeは値4です。ファームウェア2373のJoystick.c:625では、この値を独自のコメントで\"boot in PS4 mode\"と呼んでいます。",
-  "risk": "名前はDS3となっていますが、デバイスはこれをオン/オフのスイッチではなく、8個の番号付きの値を持つUSBエミュレーションモードとして読み取ります。5が意味する内容はファームウェア1476と2373の間で変わっており、実行中のファームウェアが認識しない番号を指定すると、誰も意図していないエミュレーションのままデバイスが動作し続けます。QCMは入力された値をそのまま保持し、拒否することはありません。あるファームウェアでは誤りの値でも、別のファームウェアでは正しい値だからです。QuadStickサポートの指示があった場合のみ変更してください。",
+  "description": "QuadStick がどのコントローラーとして振る舞うかです。選んだものを本体が認識できる必要があります。",
+  "risk": "ドライブなしと付いたモードは、戻すまで QuadStick のファイルをパソコンから隠します。番号の意味は古い QuadStick では違います。",
   "alsoCalled": "PS4 モードで起動",
   "optionLabels": [
    "QuadStick(PCおよびPS3)",
-   "DualShock 3、USBドライブなし",
+   "DualShock 3",
    "x360ce、PC向け",
    "Xbox 360コントローラー",
-   "DualShock 4、PS4向け(QMPのBoot in PS4 Mode)",
-   "Nintendo Switch Pro Controller、USBドライブなし",
-   "DualShock 4、USBドライブなし",
-   "DualShock 4ワイヤレス、USBドライブなし"
+   "DualShock 4、PS4向け",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4ワイヤレス"
   ]
  },
  {

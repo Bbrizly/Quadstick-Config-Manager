@@ -2021,12 +2021,6 @@ You can change this any time in Settings, under Advanced.</value>
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>When you</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>Which controller this file makes the QuadStick pretend to be. You can change or remove it later.</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Which controller this file makes the QuadStick pretend to be. The device boots into this file, so a mode marked as hiding the QuadStick drive will not be written to the device.</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Words are shown as raw list-view names. Switch to plain English.</value>
   </data>
@@ -3487,5 +3481,14 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>Install ID: {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>Some modes hide the QuadStick drive from your computer.</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>The device boots into this file, so a mode with no drive will not be written to it.</value>
   </data>
 </root>

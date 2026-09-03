@@ -526,6 +526,15 @@ if (args.Contains("--drew2"))
         w.SelectZoneForPreview("lip");
     });
 
+    // The picker Drew called ugly. One dropdown, one note, two buttons.
+    {
+        PreferenceCatalog.TryGet("enable_DS3_emulation", out var emu);
+        var (body, combo, _, _) = MainWindow.BuildEmulationPicker(emu!, boots: false);
+        combo.SelectedIndex = 4;
+        CaptureWindow("9-emulation-picker",
+            new Window { SizeToContent = SizeToContent.WidthAndHeight, Content = body });
+    }
+
     Console.WriteLine($"Drew's September set written to {outDir}");
     return;
 }

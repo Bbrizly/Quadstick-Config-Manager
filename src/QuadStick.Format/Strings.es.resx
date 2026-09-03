@@ -456,7 +456,7 @@
     <value>Dos umbrales iguales hacen que el dispositivo divida por cero cada vez que lee el tubo.</value>
   </data>
   <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>oculta la unidad del QuadStick</value>
+    <value>sin unidad</value>
   </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>El modo de emulación USB {0} ({1}) no da al equipo acceso a la unidad del QuadStick, y este archivo es uno de los que el dispositivo usa al arrancar. Instalarlo no dejaría forma de volver a editar ningún perfil, y la recuperación es un borrado forzado físico.</value>

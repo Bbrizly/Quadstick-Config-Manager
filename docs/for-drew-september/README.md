@@ -41,17 +41,18 @@ QuadStick, which is what the firmware sends this number to.
 
 ## Emulation modes
 
-`4-usb.png`
+`4-usb.png`, `9-emulation-picker.png`
 
-All eight modes are on the list, and the four with no flash drive access say
-so on the option itself: *DualShock 4 wireless (7), hides the QuadStick drive*.
-On a file the device boots into, the row adds what that costs, and the app
-still refuses to write one of those to the device.
+All eight modes are on the list, and the four with no flash drive access are
+marked on the option itself: *DualShock 4 wireless (7), no drive*. On a file
+the device boots into, the row adds what that costs, and the app still refuses
+to write one of those to the device.
 
-Adding a preferences sheet asks which controller the file should make the
-QuadStick into. It writes nothing unless you pick one, and "Do not set one" is
-the real version of a blank row: an empty value in that cell is not "unset",
-the device reads it with atoi and gets mode 0.
+The picker you get when you add a preferences sheet is one dropdown, not a
+column of buttons. **Add** stays off until you pick something, so no mode is
+set by default. "Do not set one" is the real version of a blank row: an empty
+value in that cell is not "unset", the device reads it with atoi and gets mode
+0, so nothing is written unless you choose.
 
 ## The picture follows what you click
 

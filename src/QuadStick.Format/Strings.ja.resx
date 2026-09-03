@@ -456,7 +456,7 @@
     <value>2つのしきい値が等しいと、デバイスはチューブを読み取るたびにゼロ除算を起こします。</value>
   </data>
   <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>QuadStickのドライブを隠します</value>
+    <value>ドライブなし</value>
   </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USBエミュレーションモード{0}({1})では、コンピューターはQuadStickのドライブにアクセスできません。このファイルはデバイスが起動時に使うファイルです。これをインストールすると、後からプロファイルを編集する手段がなくなり、復旧には物理的な強制消去が必要になります。</value>

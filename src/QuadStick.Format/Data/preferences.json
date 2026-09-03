@@ -593,18 +593,18 @@
     ],
     "optionLabels": [
       "QuadStick (PC and PS3)",
-      "DualShock 3, no USB drive",
+      "DualShock 3",
       "x360ce, for a PC",
       "Xbox 360 controller",
-      "DualShock 4, for a PS4 (QMP's Boot in PS4 Mode)",
-      "Nintendo Switch Pro Controller, no USB drive",
-      "DualShock 4, no USB drive",
-      "DualShock 4 wireless, no USB drive"
+      "DualShock 4, for a PS4",
+      "Nintendo Switch Pro Controller",
+      "DualShock 4",
+      "DualShock 4 wireless"
     ],
     "firmwareMayAddMore": true,
-    "description": "Which controller the QuadStick pretends to be. The console has to know the one you pick, and some choices hide the QuadStick's drive from your computer.",
+    "description": "Which controller the QuadStick pretends to be. The console has to know the one you pick.",
     "modeOverride": true,
-    "risk": "Some choices hide the QuadStick's files from your computer, so you cannot edit a profile until you set it back. The numbers also mean different things on older QuadSticks, so a file from someone else can land you on a controller you did not pick. Change it only on advice from QuadStick support.",
+    "risk": "A mode marked no drive hides the QuadStick's files from your computer until you set it back. The numbers also mean something different on older QuadSticks.",
     "alsoCalled": "Boot in PS4 Mode",
     "source": "firmware 2373 preference_keywords.h maps it to USB_EMULATION_MODE; Descriptors.c:1292 switches on all eight values, DescriptorsDS4.c:803 and :807 tell 6 (no USB drive) from 7 (straight DS4 wireless), and Joystick.c and DataFlow.c switch on the same numbers. Which modes carry a USB drive is read off the configuration descriptors: PS3_t (mode 0), X360CE_t (2), X360_t (3) and CM_t (4 on a computer) each declare an MS_Interface, while DS3_t (1), NS_t (5), Mode6_t (6) and PS4_t (7) do not. Firmware 1476 Descriptors.c:1523 had 5 as PC only, no joystick. Preferences.h:138 defaults to 0. QMP-4 QuadStick.py checkbox_ps4_boot_mode treats it as a checkbox."
   },

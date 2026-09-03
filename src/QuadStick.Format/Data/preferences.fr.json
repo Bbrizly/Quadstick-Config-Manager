@@ -262,18 +262,18 @@
  {
   "name": "enable_DS3_emulation",
   "label": "Mode d'émulation USB",
-  "description": "Quel appareil USB le QuadStick se fait passer pour. Sur le firmware 2373 : 0 QuadStick natif, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 pour une PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 sans lecteur USB, 7 DS4 sans fil pur. La valeur 5 signifiait PC uniquement, pas de joystick, sur le firmware 1476, donc un fichier portant 5 se comporte complètement différemment une fois l'appareil mis à jour. Les modes 1, 5, 6 et 7 n'offrent aucun lecteur USB, donc un ordinateur ne peut pas voir les fichiers du QuadStick tant que l'un d'eux est actif. Le Boot in PS4 Mode de QMP correspond à la valeur 4 : le firmware 2373, dans Joystick.c:625, appelle cette valeur \"boot in PS4 mode\" dans son propre commentaire.",
-  "risk": "Le nom dit DS3, mais l'appareil le lit comme un mode d'émulation USB à huit valeurs numérotées, pas comme un interrupteur marche/arrêt. Ce que 5 signifie a changé entre le firmware 1476 et le 2373, et un nombre que le firmware en cours d'exécution ne connaît pas laisse l'appareil sur une émulation que personne n'a demandée. QCM conserve ce qui est saisi et ne refuse rien, car une valeur incorrecte pour un firmware est correcte pour un autre. Ne le modifiez que sur les conseils du support QuadStick.",
+  "description": "La manette que le QuadStick imite. La console doit connaître celle que vous choisissez.",
+  "risk": "Un mode marqué sans lecteur masque les fichiers du QuadStick à votre ordinateur jusqu'à ce que vous le remettiez. Les numéros veulent aussi dire autre chose sur les QuadStick plus anciens.",
   "alsoCalled": "démarrer en mode PS4",
   "optionLabels": [
    "QuadStick (PC et PS3)",
-   "DualShock 3, sans lecteur USB",
+   "DualShock 3",
    "x360ce, pour un PC",
    "Manette Xbox 360",
-   "DualShock 4, pour une PS4 (Boot in PS4 Mode de QMP)",
-   "Nintendo Switch Pro Controller, sans lecteur USB",
-   "DualShock 4, sans lecteur USB",
-   "DualShock 4 sans fil, sans lecteur USB"
+   "DualShock 4, pour une PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 sans fil"
   ]
  },
  {

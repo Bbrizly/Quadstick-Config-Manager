@@ -2003,12 +2003,6 @@ Vous pouvez changer cela à tout moment dans Réglages, sous Avancé.</value>
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>Quand vous</value>
   </data>
-  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
-    <value>La manette que ce fichier fait imiter au QuadStick. Vous pouvez la changer ou la retirer plus tard.</value>
-  </data>
-  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>La manette que ce fichier fait imiter au QuadStick. L'appareil démarre sur ce fichier, donc un mode signalé comme masquant le lecteur QuadStick ne sera pas écrit sur l'appareil.</value>
-  </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Les mots sont affichés avec les noms bruts de la vue liste. Passer en langage clair.</value>
   </data>
@@ -3463,5 +3457,14 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
   </data>
   <data name="Settings_InstallIdIs" xml:space="preserve">
     <value>ID d'installation : {0}</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>Ajouter</value>
+  </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>Certains modes masquent le lecteur QuadStick à votre ordinateur.</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>L’appareil démarre sur ce fichier, donc un mode sans lecteur n’y sera pas écrit.</value>
   </data>
 </root>
