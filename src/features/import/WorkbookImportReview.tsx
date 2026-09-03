@@ -180,20 +180,22 @@ export function WorkbookImportReviewDialog({
 type Translate = (key: MessageKey, values?: readonly unknown[]) => string;
 
 function limitationText(limitation: WorkbookLimitation, t: Translate): string {
+  const partial = t("Review_OnlyPartOfTheSpreadsheet");
   switch (limitation.kind) {
     case "sheet_count":
-      return t("Sheet_ThisSpreadsheetHasMoreThan", [limitation.max, limitation.max]);
+      return `${partial} · ${t("Count_ModeSheet_other", [limitation.max])}`;
     case "sheet_rows":
-      return t("Sheet_TabPastTheRowCap", [limitation.tab, limitation.max]);
+      return `${limitation.tab} · ${partial} · ${t("Main_RowNumber", [limitation.max])}`;
     case "workbook_rows": {
-      const cause = t("Sheet_WorkbookPastTheRowCap", [limitation.max]);
-      const missed =
-        limitation.remaining_tabs === null
-          ? t("Sheet_EveryTabFromThereOn")
-          : limitation.remaining_tabs === 1
-            ? t("Sheet_OneMoreTabWas")
-            : t("Sheet_LeftMoreTabsWere", [limitation.remaining_tabs]);
-      return t("Sheet_CauseMissedNotReadAt", [cause, missed]);
+      const rowCap = t("Main_RowNumber", [limitation.max]);
+      if (limitation.remaining_tabs === null || limitation.remaining_tabs === 0) {
+        return `${partial} · ${rowCap}`;
+      }
+      const missingTabs =
+        limitation.remaining_tabs === 1
+          ? t("Review_TabDidNotComeIn")
+          : t("Review_TabsDidNotComeIn");
+      return `${partial} · ${rowCap} · ${String(limitation.remaining_tabs)} ${missingTabs}`;
     }
   }
 }
