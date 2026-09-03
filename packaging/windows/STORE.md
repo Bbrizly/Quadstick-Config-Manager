@@ -15,21 +15,51 @@ machine; the build runs on a cloud Windows runner in GitHub Actions.
    - **Publisher (CN=...)** > the manifest `Publisher`
    Commit that change. These are the only hand-filled values.
 
-## Build the package
+## Ship an update
 
-Actions tab > **Windows Store package** > Run workflow > enter the version
-(e.g. `1.0.0`). When it finishes, download the `msix` artifact.
+    scripts/store-windows.sh 1.8.0            # upload, leave it in draft
+    scripts/store-windows.sh 1.8.0 --submit   # upload and send for certification
+
+One command from the Mac. It runs the packaging workflow on a cloud Windows
+runner, pulls the `.msix` back into `dist/`, then uploads and submits from here
+with the Microsoft Store Developer CLI. Partner Center is never opened. A
+second run with the same version reuses the file already in `dist/`, so a
+failed submission is a retry and not another ten minute build.
 
 The Store signs the package during certification, so no code-signing
 certificate is needed on our side.
 
-## Submit
+### One time, on this machine
 
-Partner Center > your app > **Packages** > upload the `.msix`. Fill the listing
-(reuse the Mac copy from `scripts/appstore/APPSTORE.md`): description, the same
-1440x900 screenshots in `appstore-assets/screenshots/`, category Utilities,
-price Free, privacy policy URL
-https://bbrizly.github.io/Quadstick-Config-Manager/privacy.html . Submit.
+    brew install gh microsoft/msstore-cli/msstore-cli
+    msstore reconfigure
+
+`reconfigure` asks for four Partner Center values and saves them, so this is
+once and not once per release. Account settings > **Tenants** is where you
+associate an Entra ID tenant and create the app registration:
+
+| It asks for | Where it is |
+|---|---|
+| Tenant ID | The associated Entra tenant |
+| Seller ID | Account settings > Account details |
+| Client ID | The app registration |
+| Client Secret | The app registration |
+
+The credentials stay on this machine. They are deliberately not repo secrets:
+nothing in CI should be able to push a package into certification on its own.
+
+### By hand, if the CLI is having a day
+
+Actions tab > **Windows Store package** > Run workflow > enter the version,
+download the `msix` artifact, then Partner Center > your app > **Packages** >
+upload it > Submit.
+
+## The listing
+
+Filled in by hand, once. Reuse the Mac copy from `scripts/appstore/APPSTORE.md`:
+description, the same 1440x900 screenshots in `appstore-assets/screenshots/`,
+category Utilities, price Free, privacy policy URL
+https://bbrizly.github.io/Quadstick-Config-Manager/privacy.html .
 
 ## Listing images
 
