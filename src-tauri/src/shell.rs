@@ -1,9 +1,4 @@
 //! What the profile/settings commands actually do.
-//!
-//! Every command is a thin wrapper around a method here, so the whole command
-//! surface can be driven by a test with a fake library, a fake picker and a fake
-//! settings file. Device I/O lives in `device_shell`; the only bridge is a
-//! cloned working profile in or a device working copy out.
 
 use crate::adapters::picker::ProfilePicker;
 use crate::ipc::{
@@ -19,6 +14,13 @@ use qcm_core::profiles::{EditorSnapshot, ProfileSessions, SaveReceiptDto};
 use qcm_core::settings::{AppSettingsDto, Settings, SettingsStore};
 use serde_json::Value;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+
+pub struct DriveProfileSnapshot {
+    pub persistent_key: String,
+    pub display_name: String,
+    pub revision: u64,
+    pub file: ProfileFile,
+}
 
 pub struct Shell<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> {
     sessions: Mutex<ProfileSessions<Arc<L>>>,
@@ -38,7 +40,6 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
     fn sessions(&self) -> MutexGuard<'_, ProfileSessions<Arc<L>>> {
         self.sessions.lock().unwrap_or_else(PoisonError::into_inner)
     }
-
     fn settings(&self) -> MutexGuard<'_, Settings<S>> {
         self.settings.lock().unwrap_or_else(PoisonError::into_inner)
     }
@@ -51,141 +52,115 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
                 profile_editing: true,
                 device_install: true,
                 live_input: true,
-                community_catalog: false,
-                google_backup: false,
+                community_catalog: true,
+                google_backup: cfg!(any(target_os = "macos", target_os = "windows")),
                 agent: false,
             },
             settings: self.settings().snapshot(),
         }
     }
 
-    pub fn get_settings(&self) -> AppSettingsDto {
-        self.settings().snapshot()
-    }
-
+    pub fn get_settings(&self) -> AppSettingsDto { self.settings().snapshot() }
     pub fn update_settings(&self, raw: Value) -> Result<AppSettingsDto, QcmError> {
         let request: UpdateSettingsRequest = parse(raw, "update_settings request")?;
         let patch = request.patch.validate()?;
         self.settings().update(request.expected_revision, &patch)
     }
-
     pub fn new_profile(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {
         let request: NewProfileRequest = parse(raw, "new_profile request")?;
         request.check()?;
         Ok(self.sessions().open_new(&request.name))
     }
-
     pub fn choose_and_open_profile(&self) -> Result<Option<EditorSnapshot>, QcmError> {
-        let Some(target) = self.picker.pick_open()? else {
-            return Ok(None);
-        };
+        let Some(target) = self.picker.pick_open()? else { return Ok(None); };
         self.sessions().open_local(target).map(Some)
     }
-
     pub fn get_profile_snapshot(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {
         let request: SessionRequest = parse(raw, "get_profile_snapshot request")?;
         let session = session_id(&request.session_id)?;
         let sessions = self.sessions();
         Ok(EditorSnapshot::of(sessions.session(session)?))
     }
-
     pub fn apply_editor_ops(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {
         let request: ApplyEditorOpsRequest = parse(raw, "apply_editor_ops request")?;
         request.check()?;
         let session = session_id(&request.session_id)?;
-        self.sessions()
-            .apply_ops(session, request.expected_revision, &request.ops)
+        self.sessions().apply_ops(session, request.expected_revision, &request.ops)
     }
-
     pub fn undo_editor(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "undo_editor request")?;
         let session = session_id(&request.session_id)?;
         self.sessions().undo(session, request.expected_revision)
     }
-
     pub fn save_profile(&self, raw: Value) -> Result<SaveReceiptDto, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "save_profile request")?;
         let session = session_id(&request.session_id)?;
-        self.sessions()
-            .save(session, request.expected_revision)
-            .map(|receipt| SaveReceiptDto::from(&receipt))
+        self.sessions().save(session, request.expected_revision).map(|receipt| SaveReceiptDto::from(&receipt))
     }
-
     pub fn save_profile_as(&self, raw: Value) -> Result<Option<SaveReceiptDto>, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "save_profile_as request")?;
         let session = session_id(&request.session_id)?;
-
         let suggested = {
             let sessions = self.sessions();
             let open = sessions.session(session)?;
             if open.revision() != request.expected_revision {
-                return Err(ProfileError::RevisionConflict {
-                    expected: request.expected_revision,
-                    actual: open.revision(),
-                }
-                .into());
+                return Err(ProfileError::RevisionConflict { expected: request.expected_revision, actual: open.revision() }.into());
             }
-            open.save_target_name().map_or_else(
-                || open.file().document.title().to_owned(),
-                ToString::to_string,
-            )
+            open.save_target_name().map_or_else(|| open.file().document.title().to_owned(), ToString::to_string)
         };
-
-        let Some(target) = self.picker.pick_save_as(&suggested)? else {
-            return Ok(None);
-        };
-        self.sessions()
-            .save_as(session, request.expected_revision, target)
-            .map(|receipt| Some(SaveReceiptDto::from(&receipt)))
+        let Some(target) = self.picker.pick_save_as(&suggested)? else { return Ok(None); };
+        self.sessions().save_as(session, request.expected_revision, target).map(|receipt| Some(SaveReceiptDto::from(&receipt)))
     }
-
     pub fn close_profile(&self, raw: Value) -> Result<CloseOutcomeDto, QcmError> {
         let request: CloseProfileRequest = parse(raw, "close_profile request")?;
         let session = session_id(&request.session_id)?;
         let close = request.close_request()?;
-        self.sessions()
-            .close(session, close)
-            .map(|outcome| CloseOutcomeDto::from(&outcome))
+        self.sessions().close(session, close).map(|outcome| CloseOutcomeDto::from(&outcome))
     }
-
     pub fn profile_for_install(&self, session_raw: &str) -> Result<ProfileFile, QcmError> {
         let session = session_id(session_raw)?;
         Ok(self.sessions().session(session)?.file().clone())
     }
 
-    /// Snapshot one exact profile revision for a native export. This is separate
-    /// from install because exporting stale editor state must fail rather than
-    /// silently writing an older spreadsheet.
     pub fn profile_for_export(&self, raw: Value) -> Result<(ProfileFile, String), QcmError> {
         let request: SessionRevisionRequest = parse(raw, "export_profile_xlsx request")?;
         let session = session_id(&request.session_id)?;
         let sessions = self.sessions();
         let open = sessions.session(session)?;
         if open.revision() != request.expected_revision {
-            return Err(ProfileError::RevisionConflict {
-                expected: request.expected_revision,
-                actual: open.revision(),
-            }
-            .into());
+            return Err(ProfileError::RevisionConflict { expected: request.expected_revision, actual: open.revision() }.into());
         }
-        let suggested = open
-            .save_target_name()
-            .map(ToString::to_string)
+        let suggested = open.save_target_name().map(ToString::to_string)
             .or_else(|| open.file().document.csv_file_name().map(ToOwned::to_owned))
-            .filter(|name| !name.trim().is_empty())
-            .unwrap_or_else(|| "Profile.csv".to_owned());
+            .filter(|name| !name.trim().is_empty()).unwrap_or_else(|| "Profile.csv".to_owned());
         Ok((open.file().clone(), suggested))
     }
 
-    /// A workbook import is a read-only-origin working copy. It intentionally
-    /// has no save target; accepting the review therefore makes the first Save
-    /// become Save As. One typed filename edit marks the accepted copy dirty so
-    /// closing it cannot discard the import without the normal unsaved gate.
-    pub fn open_workbook_copy(
-        &self,
-        name: &str,
-        csv_text: &str,
-    ) -> Result<EditorSnapshot, QcmError> {
+    /// Exact canonical profile + persistent native-only local identity for Drive.
+    /// A profile without a save target must Save As before it can have a stable
+    /// backup relationship.
+    pub fn profile_for_drive(&self, raw: Value) -> Result<DriveProfileSnapshot, QcmError> {
+        let request: SessionRevisionRequest = parse(raw, "Drive profile request")?;
+        let session = session_id(&request.session_id)?;
+        let sessions = self.sessions();
+        let open = sessions.session(session)?;
+        if open.revision() != request.expected_revision {
+            return Err(ProfileError::RevisionConflict { expected: request.expected_revision, actual: open.revision() }.into());
+        }
+        let target = open.save_target_ref().ok_or(QcmError::Profile(ProfileError::NeedsSaveTarget))?;
+        if sessions.store().is_on_quadstick(target)? {
+            return Err(ProfileError::SaveTargetOnDevice.into());
+        }
+        let persistent_key = sessions.store().persistent_key(target)?;
+        Ok(DriveProfileSnapshot {
+            persistent_key,
+            display_name: target.display_name().to_string(),
+            revision: open.revision(),
+            file: open.file().clone(),
+        })
+    }
+
+    pub fn open_workbook_copy(&self, name: &str, csv_text: &str) -> Result<EditorSnapshot, QcmError> {
         let source_id = format!("workbook:{name}");
         let mut sessions = self.sessions();
         let opened = sessions.open_community(&source_id, csv_text);
@@ -195,41 +170,18 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             let row = open.file().document.file_name_cell_row();
             (row, open.file().get_cell(row, 0).to_owned())
         };
-        let desired = if name.trim().is_empty() {
-            existing
-        } else {
-            name.to_owned()
-        };
-        sessions.apply_ops(
-            session,
-            opened.revision,
-            &[EditorOp::SetCell {
-                row,
-                col: 0,
-                value: desired,
-            }],
-        )
+        let desired = if name.trim().is_empty() { existing } else { name.to_owned() };
+        sessions.apply_ops(session, opened.revision, &[EditorOp::SetCell { row, col: 0, value: desired }])
     }
 
-    pub fn open_device_copy(
-        &self,
-        device: StorageDeviceId,
-        generation: DeviceGeneration,
-        name: DeviceFileName,
-        csv_text: &str,
-    ) -> EditorSnapshot {
-        self.sessions()
-            .open_device_copy(device, generation, name, csv_text)
+    pub fn open_device_copy(&self, device: StorageDeviceId, generation: DeviceGeneration, name: DeviceFileName, csv_text: &str) -> EditorSnapshot {
+        self.sessions().open_device_copy(device, generation, name, csv_text)
     }
 }
 
 pub type ShellState = Shell<
-    crate::adapters::library::FileSystemProfileLibrary<
-        crate::adapters::storage::volumes::PlatformVolumes,
-    >,
-    crate::adapters::picker::NativeProfilePicker<
-        crate::adapters::storage::volumes::PlatformVolumes,
-    >,
+    crate::adapters::library::FileSystemProfileLibrary<crate::adapters::storage::volumes::PlatformVolumes>,
+    crate::adapters::picker::NativeProfilePicker<crate::adapters::storage::volumes::PlatformVolumes>,
     crate::adapters::settings::SettingsFile,
 >;
 
@@ -239,7 +191,6 @@ pub fn native_shell() -> ShellState {
     use crate::adapters::picker::NativeProfilePicker;
     use crate::adapters::settings::SettingsFile;
     use crate::adapters::storage::volumes::PlatformVolumes;
-
     let library = Arc::new(FileSystemProfileLibrary::new(PlatformVolumes));
     let picker = NativeProfilePicker::new(Arc::clone(&library));
     Shell::new(library, picker, SettingsFile::default_location())
