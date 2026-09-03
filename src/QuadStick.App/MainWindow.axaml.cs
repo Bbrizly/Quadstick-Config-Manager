@@ -3677,7 +3677,7 @@ public partial class MainWindow : Window
     // Four of these sit side by side, so the stage is as wide as they are.
     // SmallPillH is the bottom band's reserve as well as the callout's floor,
     // so it has to be as tall as a ruled three-row callout actually draws.
-    const double PillW = 220, PillH = 116, SmallPillH = 124;
+    const double PillW = 220, PillH = 116, SmallPillH = 150;
 
     // Room kept above the photo for the top callouts, over what the diagram
     // itself asks for. A callout is as tall as the words in it, and a card
@@ -4408,16 +4408,30 @@ public partial class MainWindow : Window
         Control Pill(string text, string tint, OutputVisual? visual = null, bool showText = true,
                      int duplicateCount = 0)
         {
-            var pillContent = new StackPanel
+            var hasVisual = visual is { IsSelfDescribing: true };
+            var duplicate = DuplicateChip(duplicateCount);
+            // The count is part of the pill, but it must have a measured
+            // column of its own. A horizontal StackPanel lets a wrapped label
+            // consume the same space as the chip, which makes the chip paint
+            // over the end of labels such as "Left + Center sip" on narrow
+            // cards.
+            var pillContent = new Grid
             {
-                Orientation = Orientation.Horizontal,
-                Spacing = visual is { IsSelfDescribing: true } ? 5 : 0,
+                ColumnDefinitions = hasVisual
+                    ? duplicate is not null ? new ColumnDefinitions("Auto,*,Auto") : new ColumnDefinitions("Auto,*")
+                    : duplicate is not null ? new ColumnDefinitions("*,Auto") : new ColumnDefinitions("Auto"),
                 VerticalAlignment = VerticalAlignment.Center,
             };
-            if (visual is { IsSelfDescribing: true })
-                pillContent.Children.Add(OutputVisuals.Render(visual, includeLabel: false, compact: true));
+            if (hasVisual)
+            {
+                var artwork = OutputVisuals.Render(visual!, includeLabel: false, compact: true);
+                artwork.Margin = new Avalonia.Thickness(0, 0, 5, 0);
+                Grid.SetColumn(artwork, 0);
+                pillContent.Children.Add(artwork);
+            }
             if (showText)
-                pillContent.Children.Add(new TextBlock
+            {
+                var label = new TextBlock
                 {
                     Text = text, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold,
                     // Wrap, not trim: trimming does not make a control ask for
@@ -4426,12 +4440,17 @@ public partial class MainWindow : Window
                     // Wrapping makes the card taller, which the panel scrolls.
                     TextWrapping = TextWrapping.Wrap,
                     VerticalAlignment = VerticalAlignment.Center,
-                });
-            // Keep the count inside the sentence pill. Wrapping the pill in a
-            // second grid put its text to the left of the count and broke the
-            // centred columns that make narrow cards readable.
-            if (DuplicateChip(duplicateCount) is { } duplicate)
+                };
+                Grid.SetColumn(label, hasVisual ? 1 : 0);
+                if (duplicate is not null && !hasVisual)
+                    Grid.SetColumn(label, 0);
+                pillContent.Children.Add(label);
+            }
+            if (duplicate is not null)
+            {
+                Grid.SetColumn(duplicate, hasVisual ? 2 : 1);
                 pillContent.Children.Add(duplicate);
+            }
             var bd = new Border
             {
                 CornerRadius = new Avalonia.CornerRadius(4),
