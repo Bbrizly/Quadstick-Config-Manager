@@ -16,6 +16,12 @@ interface DeviceLibraryPageProps {
   readonly onOpenProfile: (snapshot: EditorSnapshot) => void;
 }
 
+function csvName(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.toLowerCase().endsWith(".csv")) return trimmed;
+  return `${trimmed}.csv`;
+}
+
 export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPageProps) {
   const { t } = useI18n();
   const [presence, setPresence] = useState<DevicePresenceSnapshot | null>(null);
@@ -23,6 +29,8 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
   const [library, setLibrary] = useState<DeviceLibrarySnapshot | null>(null);
   const [deletePlan, setDeletePlan] = useState<DeletePlan | null>(null);
   const [deleteDeviceId, setDeleteDeviceId] = useState<string | null>(null);
+  const [renameFrom, setRenameFrom] = useState<string | null>(null);
+  const [renameTo, setRenameTo] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -30,8 +38,7 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
     () => presence?.devices.find((device) => device.deviceId === selectedId) ?? null,
     [presence, selectedId],
   );
-  const selectedLibrary =
-    library !== null && library.deviceId === selectedId ? library : null;
+  const selectedLibrary = library !== null && library.deviceId === selectedId ? library : null;
 
   const showFailure = useCallback((reason: unknown): void => {
     setMessage(asQcmError(reason).payload.message);
@@ -190,6 +197,41 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
     }
   };
 
+  const startRename = (name: string): void => {
+    setRenameFrom(name);
+    setRenameTo(name.replace(/\.csv$/iu, ""));
+  };
+
+  const commitRename = async (): Promise<void> => {
+    const rename = client.renameDeviceProfile;
+    if (
+      rename === undefined ||
+      renameFrom === null ||
+      selected === null ||
+      selectedLibrary === null ||
+      busy
+    ) {
+      return;
+    }
+    setBusy(true);
+    try {
+      const receipt = await rename.call(
+        client,
+        selected.deviceId,
+        selectedLibrary.generation,
+        renameFrom,
+        csvName(renameTo),
+      );
+      setRenameFrom(null);
+      setMessage(t("Names_RenamedOldToNew", [receipt.from, receipt.to]));
+      setLibrary(await client.getDeviceLibrary(selected.deviceId));
+    } catch (reason) {
+      showFailure(reason);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const devices = presence?.devices ?? [];
 
   return (
@@ -285,6 +327,15 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
                           >
                             {t("Shell_Open")}
                           </button>
+                          {client.renameDeviceProfile === undefined ? null : (
+                            <button
+                              type="button"
+                              disabled={busy || file.protected}
+                              onClick={() => startRename(file.name)}
+                            >
+                              {t("Main_Rename")}
+                            </button>
+                          )}
                           <button
                             type="button"
                             disabled={busy || file.protected}
@@ -323,14 +374,45 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
       )}
 
       <Dialog
+        open={renameFrom !== null}
+        title={t("Main_Rename")}
+        onClose={() => {
+          if (!busy) setRenameFrom(null);
+        }}
+        actions={
+          <>
+            <button type="button" disabled={busy} onClick={() => setRenameFrom(null)}>
+              {t("Device_Cancel")}
+            </button>
+            <button
+              className="primary-action"
+              type="button"
+              disabled={busy || renameTo.trim() === ""}
+              onClick={() => void commitRename()}
+            >
+              {t("Main_Rename")}
+            </button>
+          </>
+        }
+      >
+        <label>
+          <span>{t("Shell_ProfileNameEditToRename")}</span>
+          <input
+            data-autofocus
+            value={renameTo}
+            disabled={busy}
+            onChange={(event) => setRenameTo(event.currentTarget.value)}
+          />
+        </label>
+        <p>{t("Device_PushingTheProfileSwitchSteps")}</p>
+      </Dialog>
+
+      <Dialog
         open={deletePlan !== null}
         title={
           deletePlan === null
             ? t("Main_Delete")
-            : t("Device_DeleteFileFromGroup", [
-                deletePlan.name,
-                selected?.displayName ?? "",
-              ])
+            : t("Device_DeleteFileFromGroup", [deletePlan.name, selected?.displayName ?? ""])
         }
         onClose={() => {
           if (!busy) {
