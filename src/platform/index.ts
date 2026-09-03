@@ -43,6 +43,13 @@ export type {
   Subscription,
   ThemeChoice,
 } from "./contracts";
+export type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
+export type {
+  PreferenceCatalog,
+  PreferenceDefinition,
+  PreferenceEditorKind,
+  PreferenceOption,
+} from "./preferenceContracts";
 export type {
   WorkbookExportReceipt,
   WorkbookImportReview,
