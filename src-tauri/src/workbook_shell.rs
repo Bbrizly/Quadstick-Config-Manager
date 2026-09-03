@@ -50,8 +50,8 @@ impl WorkbookPicker for NativeWorkbookPicker {
             return Ok(None);
         };
 
-        let metadata = fs::metadata(&path)
-            .map_err(|error| workbook_io("read workbook metadata", error))?;
+        let metadata =
+            fs::metadata(&path).map_err(|error| workbook_io("read workbook metadata", error))?;
         if metadata.len() > XLSX_MAX_WORKBOOK_BYTES as u64 {
             return Err(QcmError::Config(ConfigError::TooLarge {
                 limit_bytes: XLSX_MAX_WORKBOOK_BYTES as u64,
@@ -95,10 +95,12 @@ impl WorkbookPicker for NativeWorkbookPicker {
             return Ok(None);
         };
         fs::write(&path, bytes).map_err(|error| workbook_io("write workbook", error))?;
-        Ok(Some(path.file_name().and_then(|name| name.to_str()).map_or_else(
-            || ProfileDisplayName::new(&suggested),
-            ProfileDisplayName::new,
-        )))
+        Ok(Some(
+            path.file_name().and_then(|name| name.to_str()).map_or_else(
+                || ProfileDisplayName::new(&suggested),
+                ProfileDisplayName::new,
+            ),
+        ))
     }
 }
 
@@ -363,10 +365,7 @@ fn xlsx_name(profile: &str) -> String {
         .or_else(|| profile.strip_suffix(".CSV"))
         .unwrap_or(profile)
         .trim();
-    format!(
-        "{}.xlsx",
-        if stem.is_empty() { "Profile" } else { stem }
-    )
+    format!("{}.xlsx", if stem.is_empty() { "Profile" } else { stem })
 }
 
 #[derive(Debug, Deserialize)]
