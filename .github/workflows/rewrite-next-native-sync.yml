@@ -1,0 +1,100 @@
+name: Rewrite next native sync
+
+on:
+  push:
+    branches:
+      - rewrite/task41-device-ui
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: rewrite/task41-device-ui
+      - name: Patch remote workbook ingestion
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('src-tauri/src/workbook_shell.rs')
+          text = path.read_text()
+          old = '''        let import = import_xlsx(&picked.bytes).map_err(import_error)?;
+          let mut table = self.pending();
+          if table.items.len() >= MAX_PENDING_IMPORTS {
+              if let Some(oldest) = table.items.keys().next().copied() {
+                  table.items.remove(&oldest);
+              }
+          }
+          table.next = table.next.saturating_add(1);
+          let id = table.next;
+          table.items.insert(
+              id,
+              PendingWorkbook {
+                  name: picked.display_name,
+                  import,
+              },
+          );
+          Ok(table.items.get(&id).map(|pending| review(id, pending)))
+          }
+
+          pub fn repair_tab'''
+          new = '''        self.import_bytes(picked.display_name.as_str(), picked.bytes).map(Some)
+          }
+
+          /// Register workbook bytes obtained by another native service (Community/Drive).
+          /// The WebView still receives only the same bounded review DTO and opaque id.
+          pub fn import_bytes(
+              &self,
+              display_name: &str,
+              bytes: Vec<u8>,
+          ) -> Result<WorkbookImportReviewDto, QcmError> {
+              if bytes.len() > XLSX_MAX_WORKBOOK_BYTES {
+                  return Err(QcmError::Config(ConfigError::TooLarge {
+                      limit_bytes: XLSX_MAX_WORKBOOK_BYTES as u64,
+                  }));
+              }
+              let import = import_xlsx(&bytes).map_err(import_error)?;
+              let mut table = self.pending();
+              if table.items.len() >= MAX_PENDING_IMPORTS {
+                  if let Some(oldest) = table.items.keys().next().copied() {
+                      table.items.remove(&oldest);
+                  }
+              }
+              table.next = table.next.saturating_add(1);
+              let id = table.next;
+              table.items.insert(
+                  id,
+                  PendingWorkbook {
+                      name: ProfileDisplayName::new(display_name),
+                      import,
+                  },
+              );
+              table.items.get(&id).map(|pending| review(id, pending)).ok_or_else(unknown_import)
+          }
+
+          pub fn repair_tab'''
+          if old not in text:
+              raise SystemExit('workbook shell anchor not found')
+          path.write_text(text.replace(old, new, 1))
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt
+      - name: Refresh dependency lock and format
+        run: |
+          cargo +1.98.0 update
+          cargo +1.98.0 fmt --all
+      - name: Commit rewrite-only generated changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "rewrite/task41-device-ui"
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Cargo.lock src-tauri/src/workbook_shell.rs -- '*.rs'
+          git diff --cached --check
+          git commit -m "chore(rewrite): sync native dependencies and workbook ingestion"
+          git push origin HEAD:rewrite/task41-device-ui
