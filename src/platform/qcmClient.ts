@@ -26,6 +26,7 @@ import type {
   SettingsPatch,
   Subscription,
 } from "./contracts";
+import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
 
 export interface QcmClient {
@@ -83,6 +84,13 @@ export interface QcmClient {
     name: string,
   ): Promise<DeletePlan>;
   commitDeleteDeviceProfile(planId: string, confirmationId: string): Promise<DeleteReceipt>;
+  /** Rename changes the filename-derived device cycle order. */
+  renameDeviceProfile?(
+    deviceId: string,
+    expectedGeneration: number,
+    from: string,
+    to: string,
+  ): Promise<RenameDeviceProfileReceipt>;
 
   /** Device reads become working copies. Save still cannot write to the stick. */
   openDeviceProfile(
