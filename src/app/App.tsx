@@ -4,6 +4,7 @@ import { AppShell, type ShellDestination } from "../components/primitives/AppShe
 import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
 import { ToastRegion } from "../components/primitives/ToastRegion";
+import { CommunityProfilesPage } from "../features/community/CommunityProfilesPage";
 import { DeviceLibraryPage } from "../features/device/DeviceLibraryPage";
 import { DevicePreferencesPage } from "../features/device/DevicePreferencesPage";
 import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
@@ -331,6 +332,16 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     );
   } else if (activeDestination === "device") {
     content = <DeviceLibraryPage client={client} onOpenProfile={showEditor} />;
+  } else if (activeDestination === "community") {
+    content = (
+      <CommunityProfilesPage
+        client={client}
+        onReview={(review) => {
+          setWorkbookReview(review);
+          setMessage("");
+        }}
+      />
+    );
   } else {
     content = (
       <section className="shell-placeholder" aria-labelledby="page-title">
