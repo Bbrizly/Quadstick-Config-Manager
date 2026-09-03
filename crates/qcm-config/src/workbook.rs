@@ -10,15 +10,15 @@
 use crate::csv::{Grid, write};
 use crate::model::SheetType;
 use crate::vocab::{function_arity, is_file_header, is_sheet_keyword, keyword_to_type};
+use quick_xml::XmlVersion;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::reader::Reader;
-use quick_xml::XmlVersion;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::io::{Cursor, Read};
-use zip::result::ZipError;
 use zip::ZipArchive;
+use zip::result::ZipError;
 
 pub const MAX_WORKBOOK_BYTES: usize = 32 * 1024 * 1024;
 pub const MAX_PART_BYTES: u64 = 32 * 1024 * 1024;
@@ -65,8 +65,13 @@ pub struct TabRename {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum WorkbookLimitation {
-    SheetCount { max: usize },
-    SheetRows { tab: String, max: usize },
+    SheetCount {
+        max: usize,
+    },
+    SheetRows {
+        tab: String,
+        max: usize,
+    },
     WorkbookRows {
         max: usize,
         /// `None` means the sheet-count cap fired too, so the true count beyond
@@ -96,10 +101,16 @@ impl fmt::Display for WorkbookError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::FileTooLarge { limit, actual } => {
-                write!(formatter, "workbook is too large ({actual} bytes; limit {limit})")
+                write!(
+                    formatter,
+                    "workbook is too large ({actual} bytes; limit {limit})"
+                )
             }
             Self::PartTooLarge { limit, actual } => {
-                write!(formatter, "workbook part is too large ({actual} bytes; limit {limit})")
+                write!(
+                    formatter,
+                    "workbook part is too large ({actual} bytes; limit {limit})"
+                )
             }
             Self::InvalidArchive | Self::InvalidXml | Self::MissingWorkbookParts => {
                 formatter.write_str("not a readable spreadsheet")
@@ -136,9 +147,8 @@ pub fn import_xlsx(content: &[u8]) -> Result<WorkbookImport, WorkbookError> {
     let shared = shared_strings(&mut archive)?;
     let (mut parts, sheet_cap_hit) = sheet_parts(&mut archive)?;
 
-    let mut limitation = sheet_cap_hit.then_some(WorkbookLimitation::SheetCount {
-        max: MAX_SHEETS,
-    });
+    let mut limitation =
+        sheet_cap_hit.then_some(WorkbookLimitation::SheetCount { max: MAX_SHEETS });
     if parts.len() > MAX_SHEETS {
         parts.truncate(MAX_SHEETS);
     }
@@ -294,9 +304,8 @@ fn name_modes_from_tabs(rows: &mut Grid, modes: &[ModeCandidate]) -> Vec<TabRena
     let mut renamed = Vec::new();
 
     for (index, mode) in modes.iter().enumerate() {
-        let worth_replacing = mode.c1.is_empty()
-            || generic_mode_name(&mode.c1)
-            || shared.contains(&fold(&mode.c1));
+        let worth_replacing =
+            mode.c1.is_empty() || generic_mode_name(&mode.c1) || shared.contains(&fold(&mode.c1));
         if !worth_replacing
             || mode.tab.is_empty()
             || generic_tab_name(&mode.tab)
@@ -357,8 +366,8 @@ fn shared_strings<R: Read + std::io::Seek>(
 fn sheet_parts<R: Read + std::io::Seek>(
     archive: &mut ZipArchive<R>,
 ) -> Result<(Vec<(String, String)>, bool), WorkbookError> {
-    let workbook = read_part(archive, "xl/workbook.xml")?
-        .ok_or(WorkbookError::MissingWorkbookParts)?;
+    let workbook =
+        read_part(archive, "xl/workbook.xml")?.ok_or(WorkbookError::MissingWorkbookParts)?;
     let relationships = read_part(archive, "xl/_rels/workbook.xml.rels")?
         .ok_or(WorkbookError::MissingWorkbookParts)?;
     let targets = parse_relationships(&relationships)?;
@@ -406,10 +415,9 @@ fn parse_relationships(xml: &str) -> Result<BTreeMap<String, String>, WorkbookEr
             Event::Start(element) | Event::Empty(element)
                 if local_name(element.name().as_ref()) == "Relationship" =>
             {
-                if let (Some(id), Some(target)) = (
-                    attr_local(&element, "Id")?,
-                    attr_local(&element, "Target")?,
-                ) {
+                if let (Some(id), Some(target)) =
+                    (attr_local(&element, "Id")?, attr_local(&element, "Target")?)
+                {
                     targets.insert(id, target);
                 }
             }
@@ -672,7 +680,9 @@ fn finish_row(
 
     let number = match row.explicit_number {
         Some(number) => number,
-        None => last_number.checked_add(1).ok_or(WorkbookError::InvalidXml)?,
+        None => last_number
+            .checked_add(1)
+            .ok_or(WorkbookError::InvalidXml)?,
     };
     *last_number = number;
     let Ok(number_usize) = usize::try_from(number) else {
@@ -807,17 +817,14 @@ fn decode_utf16(bytes: &[u8], little_endian: bool) -> Result<String, WorkbookErr
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        import_xlsx, repaired_as_mode, SkippedTabKind, WorkbookError, MAX_PART_BYTES,
-    };
+    use super::{MAX_PART_BYTES, SkippedTabKind, WorkbookError, import_xlsx, repaired_as_mode};
     use crate::{ProfileFile, Severity, SheetType};
     use std::io::{Cursor, Write};
     use zip::write::SimpleFileOptions;
     use zip::{CompressionMethod, ZipWriter};
 
     const MAIN_NS: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-    const REL_NS: &str =
-        "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+    const REL_NS: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
     const PKG_REL_NS: &str = "http://schemas.openxmlformats.org/package/2006/relationships";
 
     #[test]
@@ -962,11 +969,7 @@ mod tests {
             " ".repeat(MAX_PART_BYTES as usize + 1)
         );
         let workbook_xml = workbook_xml(&[("Huge", "rId1")]);
-        let bytes = workbook_with_xml(
-            &workbook_xml,
-            &relationships(1),
-            &[("sheet1.xml", &huge)],
-        );
+        let bytes = workbook_with_xml(&workbook_xml, &relationships(1), &[("sheet1.xml", &huge)]);
         assert!(matches!(
             import_xlsx(&bytes),
             Err(WorkbookError::PartTooLarge { .. })
@@ -989,11 +992,7 @@ mod tests {
             "<c r=\"C1\" t=\"inlineStr\"><is><t>Solo</t></is></c></row>",
             "<row r=\"2\"><c r=\"A2\" t=\"inlineStr\"><is><t>solo.csv</t></is></c></row>"
         );
-        let bytes = workbook_with_xml(
-            &workbook_xml,
-            &relationships(1),
-            &[("sheet1.xml", rows)],
-        );
+        let bytes = workbook_with_xml(&workbook_xml, &relationships(1), &[("sheet1.xml", rows)]);
         let imported = import_xlsx(&bytes).expect("duplicate refs are bounded");
         assert_eq!(ProfileFile::load(&imported.csv).document.sheets.len(), 1);
         assert!(imported.csv.len() < 5_000);
@@ -1005,10 +1004,7 @@ mod tests {
             .enumerate()
             .map(|(index, (name, _))| (*name, format!("rId{}", index + 1)))
             .collect();
-        let refs_view: Vec<_> = refs
-            .iter()
-            .map(|(name, id)| (*name, id.as_str()))
-            .collect();
+        let refs_view: Vec<_> = refs.iter().map(|(name, id)| (*name, id.as_str())).collect();
         let workbook_xml = workbook_xml(&refs_view);
         let rels = relationships(sheets.len());
         let parts: Vec<_> = sheets
@@ -1050,11 +1046,7 @@ mod tests {
         format!("<Relationships xmlns=\"{PKG_REL_NS}\">{body}</Relationships>")
     }
 
-    fn workbook_with_xml(
-        workbook_xml: &str,
-        rels: &str,
-        sheets: &[(&str, &str)],
-    ) -> Vec<u8> {
+    fn workbook_with_xml(workbook_xml: &str, rels: &str, sheets: &[(&str, &str)]) -> Vec<u8> {
         let cursor = Cursor::new(Vec::new());
         let mut archive = ZipWriter::new(cursor);
         let options = SimpleFileOptions::default().compression_method(CompressionMethod::Deflated);
