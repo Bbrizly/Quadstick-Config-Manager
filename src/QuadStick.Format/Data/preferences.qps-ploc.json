@@ -1,14 +1,14 @@
 [
  {
+  "name": "joystick_deflection_maximum",
+  "label": "[Jóýštíçk šéñšítívítý xxxxxxxx]",
+  "description": "[Hów fár thé štíçk háš tó móvé fór á fúll šígñál, álšó çálléd fúll défléçtíóñ. Lówér íš móré šéñšítívé, béçáúšé á šmállér púšh dóéš thé šámé thíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "alsoCalled": "[ráñgé óf mótíóñ xxxxxx]"
+ },
+ {
   "name": "joystick_deflection_minimum",
   "label": "[Jóýštíçk çéñtér déád žóñé xxxxxxxxxx]",
   "description": "[Hów fár thé štíçk háš tó móvé béfóré ít çóúñtš. Lárgér íš léšš šéñšítívé ñéár thé çéñtré, whíçh štópš á réštíñg štíçk dríftíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
- },
- {
-  "name": "joystick_deflection_maximum",
-  "label": "[Jóýštíçk fúll défléçtíóñ xxxxxxxxx]",
-  "description": "[Hów fár thé štíçk háš tó móvé fór á fúll šígñál. Lárgér íš léšš šéñšítívé, béçáúšé ýóú púšh fúrthér fór thé šámé réšúlt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
-  "alsoCalled": "[ráñgé óf mótíóñ xxxxxx]"
  },
  {
   "name": "deflection_multiplier_up",
@@ -80,16 +80,10 @@
  },
  {
   "name": "sip_puff_threshold",
-  "label": "[Hárd šíp/púff thréšhóld xxxxxxxxx]",
+  "label": "[Ñórmál šíp/púff thréšhóld xxxxxxxxxx]",
   "unit": "[pérçéñt xx]",
-  "description": "[Préššúré whéré á šíp ór púff çóúñtš áš hárd. Ráíšé ít íf šóft šípš kéép fíríñg thé hárd šígñál. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "description": "[Préššúré whéré á ñórmál šíp ór púff çóúñtš. QMP çállš thíš thé hárd thréšhóld, bút ít íš whát thé órdíñárý šíp áñd púff çóñtrólš úšé. Ráíšé ít íf šóft šípš kéép fíríñg thé ñórmál óñé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
   "alsoCalled": "[šíp áñd púff hígh thréšhóld xxxxxxxxxx]"
- },
- {
-  "name": "sip_puff_maximum",
-  "label": "[Šíp/púff máxímúm préššúré xxxxxxxxxx]",
-  "unit": "[pérçéñt xx]",
-  "description": "[Préššúré thát gívéš á fúll šígñál. Lówér ít íf ýóú çáññót réáçh fúll štréñgth. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
   "name": "sip_puff_delay_soft",
@@ -102,7 +96,13 @@
   "name": "sip_puff_delay_hard",
   "label": "[Hárd šíp/púff déláý xxxxxxx]",
   "unit": "[míllíšéçóñdš xxxx]",
-  "description": "[Hów lóñg á hárd šíp ór púff íš héld béfóré ít çóúñtš áš á lóñg óñé. Thé çlóçk štártš át thé hárd thréšhóld, áñd 0 fíréš át óñçé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+  "description": "[Hów lóñg á šíp ór púff íš héld béfóré ít çóúñtš áš á lóñg óñé. Óñ thé šídé túbé thát íš hów lóñg ýóú šíp tó šwítçh gámé fíléš. Thé çlóçk štártš át thé ñórmál thréšhóld, áñd 0 fíréš át óñçé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "[Šíp/púff máxímúm préššúré xxxxxxxxxx]",
+  "unit": "[pérçéñt xx]",
+  "description": "[Préššúré thát gívéš á fúll šígñál. Lówér ít íf ýóú çáññót réáçh fúll štréñgth. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
   "name": "sip_threshold_soft",
@@ -195,7 +195,13 @@
  {
   "name": "bluetooth_authentication_mode",
   "label": "[Blúétóóth áúthéñtíçátíóñ módé xxxxxxxxxxx]",
-  "description": "[Hów múçh páíríñg thé QúádŠtíçk áškš fór. Šéñt tó thé rádíó áš ítš ŠÁ šéttíñg, šó ít óñlý máttérš whílé Blúétóóth íš óñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+  "description": "[Hów múçh páíríñg thé QúádŠtíçk áškš fór. Šéñt tó thé rádíó áš ítš ŠÁ šéttíñg, šó ít óñlý máttérš whílé Blúétóóth íš óñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "optionLabels": [
+   "[Ópéñ, ñó páíríñg çhéçk áñd ñóthíñg éñçrýptéd xxxxxxxxxxxxxxxxx]",
+   "[Çóñfírm thé páíríñg óñ thé óthér dévíçé xxxxxxxxxxxxxxx]",
+   "[Júšt wórkš, ñóthíñg tó týpé xxxxxxxxxx]",
+   "[PÍÑ çódé, týpéd óñ thé óthér dévíçé xxxxxxxxxxxxxx]"
+  ]
  },
  {
   "name": "bluetooth_connection_mode",
@@ -248,12 +254,6 @@
   "description": "[Létš thé šídé túbé píçk whíçh prófílé fílé íš lóádéd. xxxxxxxxxxxxxxxxxxxxx]"
  },
  {
-  "name": "enable_usb_a_device",
-  "label": "[ÚŠB-Á dévíçé módé xxxxxx]",
-  "description": "[Whíçh ÚŠB šóçkét thé QúádŠtíçk áppéárš óñ. Žéró íš ítš ówñ pórt; ábóvé žéró íš thé ÚŠB-Á šóçkét, áñd thát álšó túrñš óff ÚŠB-Á hóšt módé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
-  "risk": "[Píçkš whíçh ÚŠB pórt thé QúádŠtíçk áppéárš óñ, áñd ít béátš ÚŠB-Á hóšt módé. Á wróñg válúé çáñ léávé thé QúádŠtíçk úñšééñ bý ýóúr çóñšólé ór çómpútér. Çháñgé ít óñlý óñ ádvíçé fróm QúádŠtíçk šúppórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
- },
- {
   "name": "enable_usb_a_host",
   "label": "[ÚŠB-Á hóšt módé xxxxxx]",
   "description": "[Ñéwér QúádŠtíçkš óñlý. Létš á çóñtróllér plúggéd íñtó thé ÚŠB-Á pórt fééd thé ÚŠB 1 áñd ÚŠB 2 íñpútš, úñléšš ÚŠB-Á dévíçé módé íš óñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
@@ -275,6 +275,18 @@
    "[DúálŠhóçk 4, ñó ÚŠB drívé xxxxxxxxxx]",
    "[DúálŠhóçk 4 wíréléšš, ñó ÚŠB drívé xxxxxxxxxxxxx]"
   ]
+ },
+ {
+  "name": "titan_two",
+  "label": "[Títáñ Twó ádáptér xxxxxx]",
+  "description": "[Ñéwér QúádŠtíçkš óñlý. Téllš thé QúádŠtíçk ít réáçhéš á PŠ4 thróúgh á Títáñ Twó. Túrñ ít óñ óñlý íf ýóú úšé óñé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "alsoCalled": "[Títáñ 2 PŠ4 flág xxxxxx]"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "[ÚŠB-Á dévíçé módé xxxxxx]",
+  "description": "[Whíçh ÚŠB šóçkét thé QúádŠtíçk áppéárš óñ. Žéró íš ítš ówñ pórt; ábóvé žéró íš thé ÚŠB-Á šóçkét, áñd thát álšó túrñš óff ÚŠB-Á hóšt módé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "risk": "[Píçkš whíçh ÚŠB pórt thé QúádŠtíçk áppéárš óñ, áñd ít béátš ÚŠB-Á hóšt módé. Á wróñg válúé çáñ léávé thé QúádŠtíçk úñšééñ bý ýóúr çóñšólé ór çómpútér. Çháñgé ít óñlý óñ ádvíçé fróm QúádŠtíçk šúppórt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
  },
  {
   "name": "enable_usb_comm",
@@ -332,12 +344,6 @@
   "label": "[ÚŠB 2 déád žóñé xxxxxx]",
   "unit": "[ráw áxíš çóúñtš xxxxxx]",
   "description": "[Ñéwér QúádŠtíçkš óñlý, áñd ýóúr QúádŠtíçk ígñóréš ít áñýwáý: bóth štíçkš óñ thé ÚŠB-Á pórt úšé thé ÚŠB 1 déád žóñé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
- },
- {
-  "name": "titan_two",
-  "label": "[Títáñ Twó ádáptér xxxxxx]",
-  "description": "[Ñéwér QúádŠtíçkš óñlý. Téllš thé QúádŠtíçk ít réáçhéš á PŠ4 thróúgh á Títáñ Twó. Túrñ ít óñ óñlý íf ýóú úšé óñé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
-  "alsoCalled": "[Títáñ 2 PŠ4 flág xxxxxx]"
  },
  {
   "name": "watchdog_disable",

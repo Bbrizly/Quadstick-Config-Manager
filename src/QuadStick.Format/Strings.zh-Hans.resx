@@ -491,9 +491,6 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>使用 {0} 或更大的值。</value>
   </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>请使用 {0} 到 {1}。{2}</value>
-  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>这里使用模式 0、2、3 或 4，另一个模式改到游戏配置中设置。</value>
   </data>
@@ -685,5 +682,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>该电子表格超过了 {0} 行，远大于任何配置文件，因此我们在读到一半时就停止了。</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>请使用 {0} 到 {1}。{2}</value>
   </data>
 </root>

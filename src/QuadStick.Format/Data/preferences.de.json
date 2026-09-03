@@ -1,14 +1,14 @@
 [
  {
+  "name": "joystick_deflection_maximum",
+  "label": "Joystick-Empfindlichkeit",
+  "description": "Wie weit der Stick bewegt werden muss, damit das Signal voll ist, auch Vollausschlag genannt. Niedriger ist empfindlicher, weil ein kleinerer Druck dasselbe bewirkt.",
+  "alsoCalled": "Bewegungsumfang"
+ },
+ {
   "name": "joystick_deflection_minimum",
   "label": "Joystick-Totzone (Mitte)",
   "description": "Totzone in der Mitte des Analogsticks, als Prozent des vollen Wegs. Setzen Sie sie hoch genug, um eine wandernde Maus oder einen wandernden Joystick zu stoppen. Größere Zahlen machen den Stick um die Mitte herum unempfindlicher. Das ist etwas anderes als die D-Pad-Ringe. Auf Firmware 2373 bedeutet ein Wert von 0 nicht mehr keine Totzone: Das Gerät setzt stattdessen 129 Rohwerte ein, und zwar bei jedem Scan neu, sodass dieser Wert über den beim Laden der Datei ermittelten Wert gewinnt."
- },
- {
-  "name": "joystick_deflection_maximum",
-  "label": "Joystick-Vollausschlag",
-  "description": "Wie weit der Stick bewegt werden muss, um ein volles Signal zu geben. QMP nennt das den Bewegungsbereich des Joysticks, und es ist das Nächste, was das Gerät an einer Empfindlichkeitsregelung hat: Größere Zahlen bedeuten mehr Weg für dieselbe Ausgabe, sodass sich der Joystick unempfindlicher anfühlt. QMP verwendet den größten seiner vier Richtungsregler.",
-  "alsoCalled": "Bewegungsumfang"
  },
  {
   "name": "deflection_multiplier_up",
@@ -80,16 +80,10 @@
  },
  {
   "name": "sip_puff_threshold",
-  "label": "Harter Sip/Puff-Schwellenwert",
+  "label": "Normale Saug-/Pustschwelle",
   "unit": "Prozent",
-  "description": "Druck, bei dem die Ausgabe ausgelöst wird. QMP zeigt dies als den oberen Sip-und-Puff-Schwellenwert; sip_puff_threshold_soft ist der untere.",
+  "description": "Druck, ab dem ein normales Saugen oder Pusten zählt. QMP nennt das die harte Schwelle, aber es ist die Schwelle, die die gewöhnlichen Saug- und Pustfunktionen verwenden. Erhöhen Sie sie, wenn schwaches Saugen die normale Stufe immer wieder auslöst.",
   "alsoCalled": "oberer Schwellwert für Saugen und Pusten"
- },
- {
-  "name": "sip_puff_maximum",
-  "label": "Sip/Puff-Maximaldruck",
-  "unit": "Prozent",
-  "description": "Maximaldruck, der auf ein volles Signal skaliert wird."
  },
  {
   "name": "sip_puff_delay_soft",
@@ -102,7 +96,13 @@
   "name": "sip_puff_delay_hard",
   "label": "Harte Sip/Puff-Verzögerung",
   "unit": "Millisekunden",
-  "description": "Wie lange ein harter Sip oder Puff gehalten wird, bevor er als langes Signal zählt. Die Uhr startet, sobald der harte Schwellenwert überschritten wird, nicht wenn sich der Druck erstmals ändert. 0 bedeutet nicht unbestimmt, sondern dass das lange Signal sofort auslöst."
+  "description": "Wie lange ein Saugen oder Pusten gehalten wird, bevor es als langes zählt. Am seitlichen Schlauch ist das die Zeit, die Sie saugen, um Spieldateien zu wechseln. Die Zeit läuft ab der normalen Schwelle, und 0 löst sofort aus."
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "Sip/Puff-Maximaldruck",
+  "unit": "Prozent",
+  "description": "Maximaldruck, der auf ein volles Signal skaliert wird."
  },
  {
   "name": "sip_threshold_soft",
@@ -195,7 +195,13 @@
  {
   "name": "bluetooth_authentication_mode",
   "label": "Bluetooth-Authentifizierungsmodus",
-  "description": "Wie viel Kopplung der QuadStick verlangt. Wird als SA-Einstellung an das Funkmodul gesendet und zählt daher nur, solange Bluetooth an ist."
+  "description": "Wie viel Kopplung der QuadStick verlangt. Wird als SA-Einstellung an das Funkmodul gesendet und zählt daher nur, solange Bluetooth an ist.",
+  "optionLabels": [
+   "Offen, keine Prüfung der Kopplung und nichts verschlüsselt",
+   "Die Kopplung auf dem anderen Gerät bestätigen",
+   "Funktioniert einfach, nichts zu tippen",
+   "PIN-Code, auf dem anderen Gerät eingetippt"
+  ]
  },
  {
   "name": "bluetooth_connection_mode",
@@ -248,12 +254,6 @@
   "description": "Wählt eine Datei mithilfe des Seitenschlauchs aus."
  },
  {
-  "name": "enable_usb_a_device",
-  "label": "USB-A-Gerätemodus",
-  "risk": "Das legt fest, über welchen USB-Port sich der QuadStick meldet. Das Gerät baut USB ab und neu auf, wenn sich das ändert, daher kann ein falscher Wert dazu führen, dass eine Konsole oder ein Computer ihn nicht sieht. Es hat außerdem Vorrang vor enable_usb_a_host: Solange dies gesetzt ist, wird der USB-A-Host-Stack abgeschaltet, egal was die Host-Einstellung sagt. Ändern Sie das nur auf Anraten des QuadStick-Supports.",
-  "description": "An welcher USB-Buchse der QuadStick erscheint. Null ist sein eigener Anschluss; über null ist die USB-A-Buchse, und das schaltet auch den USB-A-Host-Modus aus."
- },
- {
   "name": "enable_usb_a_host",
   "label": "USB-A-Hostmodus",
   "description": "Seit Firmware 2373. Wenn dies ein- und USB-A-Gerätemodus ausgeschaltet ist, betreibt das Gerät einen USB-Host am USB-A-Port, sodass ein dort eingesteckter Controller die usb_1-Eingabekanäle speist. Schalten Sie es aus, oder schalten Sie USB-A-Gerätemodus ein, und der Host wird abgebaut. USB-A-Gerätemodus gewinnt. QMP zeigt dies als USB-A Host Mode.",
@@ -264,6 +264,7 @@
   "label": "USB-Emulationsmodus",
   "description": "Als welches USB-Gerät sich der QuadStick ausgibt. Auf Firmware 2373: 0 QuadStick nativ, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 für eine PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 ohne USB-Laufwerk, 7 reines DS4 kabellos. Wert 5 bedeutete auf Firmware 1476 nur PC, kein Joystick, daher verhält sich eine Datei mit dem Wert 5 nach einem Geräte-Update völlig anders. Die Modi 1, 5, 6 und 7 bieten überhaupt kein USB-Laufwerk an, daher sieht ein Computer die Dateien des QuadStick nicht, solange einer davon läuft. QMPs Boot in PS4 Mode ist Wert 4: Firmware 2373 Joystick.c:625 nennt diesen Wert in einem eigenen Kommentar \"boot in PS4 mode\".",
   "risk": "Der Name sagt DS3, aber das Gerät liest ihn als USB-Emulationsmodus mit acht nummerierten Werten, nicht als Ein/Aus-Schalter. Was 5 bedeutet, hat sich zwischen Firmware 1476 und 2373 geändert, und eine Zahl, die die laufende Firmware nicht kennt, lässt das Gerät auf einer Emulation stehen, die niemand wollte. QCM behält, was eingegeben wird, und lehnt nichts ab, weil ein Wert, der für eine Firmware falsch ist, für eine andere richtig ist. Ändern Sie das nur auf Anraten des QuadStick-Supports.",
+  "alsoCalled": "im PS4-Modus starten",
   "optionLabels": [
    "QuadStick (PC und PS3)",
    "DualShock 3, kein USB-Laufwerk",
@@ -273,8 +274,19 @@
    "Nintendo Switch Pro Controller, kein USB-Laufwerk",
    "DualShock 4, kein USB-Laufwerk",
    "DualShock 4 kabellos, kein USB-Laufwerk"
-  ],
-  "alsoCalled": "im PS4-Modus starten"
+  ]
+ },
+ {
+  "name": "titan_two",
+  "label": "Titan-Two-Adapter",
+  "description": "Seit Firmware 2373. Teilt dem Gerät mit, dass es eine PS4 über einen Titan Two erreicht statt direkt an die Konsole angeschlossen zu sein. Es überspringt dann den DS4-Authentifizierungs-Handshake und stoppt den periodischen erzwungenen USB-Neuverbindungsaufbau. QMP zeigt dies als das Titan 2 PS4 Flag.",
+  "alsoCalled": "PS4-Flag des Titan 2"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "USB-A-Gerätemodus",
+  "description": "An welcher USB-Buchse der QuadStick erscheint. Null ist sein eigener Anschluss; über null ist die USB-A-Buchse, und das schaltet auch den USB-A-Host-Modus aus.",
+  "risk": "Das legt fest, über welchen USB-Port sich der QuadStick meldet. Das Gerät baut USB ab und neu auf, wenn sich das ändert, daher kann ein falscher Wert dazu führen, dass eine Konsole oder ein Computer ihn nicht sieht. Es hat außerdem Vorrang vor enable_usb_a_host: Solange dies gesetzt ist, wird der USB-A-Host-Stack abgeschaltet, egal was die Host-Einstellung sagt. Ändern Sie das nur auf Anraten des QuadStick-Supports."
  },
  {
   "name": "enable_usb_comm",
@@ -334,16 +346,10 @@
   "description": "Seit Firmware 2373, aber das Gerät ignoriert es. Der Name ist gültig und Dateien führen ihn, doch nichts in der Firmware liest den Wert: Jede USB-Host-Achse verwendet die USB-1-Totzone. Ihn in einer Mode-Zeile zu setzen bewirkt ebenfalls nichts."
  },
  {
-  "name": "titan_two",
-  "label": "Titan-Two-Adapter",
-  "description": "Seit Firmware 2373. Teilt dem Gerät mit, dass es eine PS4 über einen Titan Two erreicht statt direkt an die Konsole angeschlossen zu sein. Es überspringt dann den DS4-Authentifizierungs-Handshake und stoppt den periodischen erzwungenen USB-Neuverbindungsaufbau. QMP zeigt dies als das Titan 2 PS4 Flag.",
-  "alsoCalled": "PS4-Flag des Titan 2"
- },
- {
   "name": "watchdog_disable",
   "label": "Watchdog deaktivieren",
-  "risk": "Das Gerät betreibt einen zweiminütigen Hardware-Watchdog, der es neu startet, wenn es nicht mehr reagiert. Weder Firmware 1476 noch 2373 liest diese Einstellung, daher bewirkt sie bei beiden nichts, und was eine spätere Firmware damit tun könnte, ist unbekannt.",
-  "description": "Sollte verhindern, dass der QuadStick sich selbst neu startet, wenn er hängt. Ihr QuadStick ignoriert es."
+  "description": "Sollte verhindern, dass der QuadStick sich selbst neu startet, wenn er hängt. Ihr QuadStick ignoriert es.",
+  "risk": "Das Gerät betreibt einen zweiminütigen Hardware-Watchdog, der es neu startet, wenn es nicht mehr reagiert. Weder Firmware 1476 noch 2373 liest diese Einstellung, daher bewirkt sie bei beiden nichts, und was eine spätere Firmware damit tun könnte, ist unbekannt."
  },
  {
   "name": "debug",

@@ -247,12 +247,6 @@
   <data name="Community_TheSavedCopyOfThe" xml:space="preserve">
     <value>La copia salvata dell'elenco della community non contiene profili.</value>
   </data>
-  <data name="Count_Action_one" xml:space="preserve">
-    <value>{0} azione</value>
-  </data>
-  <data name="Count_Action_other" xml:space="preserve">
-    <value>{0} azioni</value>
-  </data>
   <data name="Count_Binding_one" xml:space="preserve">
     <value>{0} associazione</value>
   </data>
@@ -264,12 +258,6 @@
   </data>
   <data name="Count_Error_other" xml:space="preserve">
     <value>{0} errori</value>
-  </data>
-  <data name="Count_File_one" xml:space="preserve">
-    <value>{0} file</value>
-  </data>
-  <data name="Count_File_other" xml:space="preserve">
-    <value>{0} file</value>
   </data>
   <data name="Count_Mapping_one" xml:space="preserve">
     <value>{0} mappatura</value>
@@ -294,18 +282,6 @@
   </data>
   <data name="Count_Part_other" xml:space="preserve">
     <value>{0} parti</value>
-  </data>
-  <data name="Count_Profile_one" xml:space="preserve">
-    <value>{0} profilo</value>
-  </data>
-  <data name="Count_Profile_other" xml:space="preserve">
-    <value>{0} profili</value>
-  </data>
-  <data name="Count_RowCopied_one" xml:space="preserve">
-    <value>{0} riga copiata in {1}. Ctrl+Z annulla.</value>
-  </data>
-  <data name="Count_RowCopied_other" xml:space="preserve">
-    <value>{0} righe copiate in {1}. Ctrl+Z annulla.</value>
   </data>
   <data name="Count_RowDeleted_one" xml:space="preserve">
     <value>{0} riga eliminata. Ctrl+Z la ripristina.</value>
@@ -346,6 +322,12 @@
   <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
     <value>Da {0} a {1}.</value>
   </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} impostazione cambiata</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} impostazioni cambiate</value>
+  </data>
   <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
     <value>{0} impostazione cambiata. Non sarà sul suo QuadStick finché non preme Salva.</value>
   </data>
@@ -357,12 +339,6 @@
   </data>
   <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
     <value>{0} impostazioni cambiate. Colleghi il suo QuadStick per salvarle.</value>
-  </data>
-  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
-    <value>{0} impostazione cambiata</value>
-  </data>
-  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
-    <value>{0} impostazioni cambiate</value>
   </data>
   <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
     <value>Non è stato possibile leggere le impostazioni del suo QuadStick: {0}</value>
@@ -396,6 +372,15 @@
   </data>
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>Ricerca del suo QuadStick...</value>
+  </data>
+  <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
+    <value>Le modalità che nascondono l'unità QuadStick non sono disponibili qui, perché il dispositivo si avvia da questo file. Ne imposti una in un profilo di gioco.</value>
+  </data>
+  <data name="DevicePage_MoreOptions" xml:space="preserve">
+    <value>Altre opzioni</value>
+  </data>
+  <data name="DevicePage_MoreOptionsCount" xml:space="preserve">
+    <value>Altre opzioni, {0}</value>
   </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}, da {1} a {2}</value>
@@ -541,9 +526,6 @@
   <data name="Device_CouldNotReadThisDrive" xml:space="preserve">
     <value>Impossibile leggere questa unità: {0}</value>
   </data>
-  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
-    <value>Eliminare {0} da {1}?</value>
-  </data>
   <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
     <value>Elimina {0} dal QuadStick in {1}</value>
   </data>
@@ -597,9 +579,6 @@
   </data>
   <data name="Device_FilesTotalAcrossGroupsCount" xml:space="preserve">
     <value>{0} su {1} unità QuadStick. Ogni unità è elencata separatamente qui sotto.</value>
-  </data>
-  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
-    <value>{0} su {1}.</value>
   </data>
   <data name="Device_LinkedToAGoogleSheet" xml:space="preserve">
     <value>, collegato a un Google Sheet</value>
@@ -721,15 +700,6 @@
   <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
     <value>I Suoi backup di Google Drive</value>
   </data>
-  <data name="Drive_RestoreFailed" xml:space="preserve">
-    <value>{0} non riuscito: </value>
-  </data>
-  <data name="Drive_RestoreImported" xml:space="preserve">
-    <value>{0} importati</value>
-  </data>
-  <data name="Drive_RestoreSkipped" xml:space="preserve">
-    <value>{0} saltati: </value>
-  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>Un default.csv errato può disabilitare l'accesso all'unità flash, e il ripristino richiede una cancellazione forzata fisica. Verrà prima eseguito un backup. Continuare?</value>
   </data>
@@ -813,14 +783,17 @@
 
 La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso mostra una sola voce. È normale.</value>
   </data>
+  <data name="Main_APlusB" xml:space="preserve">
+    <value>{0} + {1}</value>
+  </data>
   <data name="Main_AProfileTabStartsWith" xml:space="preserve">
     <value>Una scheda di profilo inizia con "Profile Name", "Preferences" o "Infrared" nella cella A1.</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>Una pressione rapida invia un output; tenendo premuto più a lungo se ne invia uno diverso.</value>
+    <value>Si attiva solo con un'attivazione e un rilascio rapidi. Tenere troppo a lungo non fa nulla, così un'aspirazione breve e una lunga possono fare cose diverse.</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
-    <value>Un'attivazione breve lo tocca; una prolungata lo blocca attivo.</value>
+    <value>Un'attivazione breve funziona come una pressione normale. Tenendo l'ingresso abbastanza a lungo l'uscita si blocca attiva, e una successiva attivazione breve la rilascia.</value>
   </data>
   <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
     <value>Esiste già un modello denominato {0}.</value>
@@ -971,9 +944,6 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_CopyShareLink" xml:space="preserve">
     <value>Copia link di condivisione</value>
   </data>
-  <data name="Main_CopyToMode" xml:space="preserve">
-    <value>Copia nel modo</value>
-  </data>
   <data name="Main_CopyYourBackedUpProfiles" xml:space="preserve">
     <value>Copiare ora su questo computer i Suoi profili di cui è stato eseguito il backup da Google Drive?</value>
   </data>
@@ -1094,6 +1064,12 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
     <value>Il dispositivo mostra {0}</value>
   </data>
+  <data name="Main_DoNotSetOne" xml:space="preserve">
+    <value>Non impostarne una</value>
+  </data>
+  <data name="Main_DoNotSetOneTheDevice" xml:space="preserve">
+    <value>Non impostarne una. Il dispositivo mantiene la modalità su cui si trova già.</value>
+  </data>
   <data name="Main_DonTSave" xml:space="preserve">
     <value>Non salvare</value>
   </data>
@@ -1103,14 +1079,8 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_DownloadingTheSpreadsheet" xml:space="preserve">
     <value>Download del foglio di calcolo in corso...</value>
   </data>
-  <data name="Main_DuplicateMark" xml:space="preserve">
-    <value>×{0}</value>
-  </data>
   <data name="Main_EditDevicePreferences" xml:space="preserve">
     <value>Modificare le preferenze del dispositivo?</value>
-  </data>
-  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
-    <value>Fare clic per modificare questa assegnazione o aggiungere una nota.</value>
   </data>
   <data name="Main_Edited" xml:space="preserve">
     <value>Modificato</value>
@@ -1121,9 +1091,6 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_EveryInputOnYourQuadStick" xml:space="preserve">
     <value>Ogni input del Suo QuadStick è usato in questa modalità.</value>
   </data>
-  <data name="Main_ExtraActions" xml:space="preserve">
-    <value>+ {0} azioni in più</value>
-  </data>
   <data name="Main_ExtraInputForMappingN" xml:space="preserve">
     <value>Input aggiuntivo per l'associazione {0}</value>
   </data>
@@ -1131,16 +1098,13 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
     <value>FPS: boccaglio a 3 fori, tubo laterale, sensore labiale, jack posteriori. Joystick più preciso dell'Original.</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
-    <value>Si attiva quando il Suo input supera una soglia impostata.</value>
+    <value>Attiva l'uscita quando l'ingresso supera una certa intensità. Utile per azioni diverse a seconda di quanto viene spostato il joystick.</value>
   </data>
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Si attiva finché il Suo input resta sotto una soglia impostata.</value>
+    <value>Attiva l'uscita finché l'ingresso resta sotto una certa intensità. Il contrario di greater_than.</value>
   </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>Ha trovato un problema?</value>
-  </data>
-  <data name="Main_FunctionBehavior" xml:space="preserve">
-    <value>Funzione (comportamento)</value>
   </data>
   <data name="Main_FunctionForRowBRow" xml:space="preserve">
     <value>Funzione per la riga {0}. {1}</value>
@@ -1161,7 +1125,7 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
     <value>Google ha restituito una pagina web invece del profilo. Il foglio probabilmente non è condiviso pubblicamente (File &gt; Condividi &gt; Chiunque abbia il link).</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
-    <value>Rimane premuto finché l'input è attivo.</value>
+    <value>Tenere premuto per attivare. L'uscita resta attiva solo finché l'ingresso è attivo.</value>
   </data>
   <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
     <value>Aiuta a migliorare QuadStick Config Manager</value>
@@ -1174,6 +1138,9 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   </data>
   <data name="Main_HoleCombos" xml:space="preserve">
     <value>Combinazioni di fori</value>
+  </data>
+  <data name="Main_HolePairingPairCount" xml:space="preserve">
+    <value>Accoppiamento di fori: {0}. {1}</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>Come {0} lo preme. {1}</value>
@@ -1190,9 +1157,6 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
     <value>Importato {0} dal foglio di calcolo.</value>
   </data>
-  <data name="Main_InFolder" xml:space="preserve">
-    <value> · in {0}</value>
-  </data>
   <data name="Main_InputI1ForRow" xml:space="preserve">
     <value>Input {0} per la riga {1}</value>
   </data>
@@ -1201,12 +1165,6 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   </data>
   <data name="Main_InputNextCol1ForRow" xml:space="preserve">
     <value>Input {0} per la riga {1}</value>
-  </data>
-  <data name="Main_InputPressesOutput" xml:space="preserve">
-    <value>{0} preme {1}</value>
-  </data>
-  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
-    <value>Ingressi (aspirazioni, soffi, joystick)</value>
   </data>
   <data name="Main_InstallToTheQuadStickNamed" xml:space="preserve">
     <value>Installa sul QuadStick chiamato {0}, in {1}</value>
@@ -1239,10 +1197,22 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
     <value>Conserva una copia da cui può avviare nuovi profili in qualsiasi momento, in Usa modello nella schermata iniziale. Modificare o installare un profilo non cambia mai il suo modello.</value>
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
-    <value>Continua a premere per un istante dopo il rilascio.</value>
+    <value>Mantiene l'uscita attiva per un breve periodo dopo che si smette di attivare l'ingresso.</value>
+  </data>
+  <data name="Main_LabelNote" xml:space="preserve">
+    <value>{0}. {1}</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
     <value>Sinistra</value>
+  </data>
+  <data name="Main_FunctionBehavior" xml:space="preserve">
+    <value>Funzione (comportamento)</value>
+  </data>
+  <data name="Main_InputPressesOutput" xml:space="preserve">
+    <value>{0} preme {1}</value>
+  </data>
+  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
+    <value>Ingressi (aspirazioni, soffi, joystick)</value>
   </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>Paraurti sinistro</value>
@@ -1250,23 +1220,23 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
     <value>Foro sinistro del boccaglio</value>
   </data>
-  <data name="Main_LeftStick" xml:space="preserve">
-    <value>Stick sinistro</value>
-  </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
     <value>Pressione della levetta sinistra</value>
   </data>
   <data name="Main_LeftTrigger" xml:space="preserve">
     <value>Grilletto sinistro</value>
   </data>
-  <data name="Main_Lip" xml:space="preserve">
-    <value>Labbro</value>
-  </data>
   <data name="Main_LipSwitch" xml:space="preserve">
     <value>Interruttore labiale</value>
   </data>
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>Caricata la versione online di questo profilo. La copia locale precedente si trova nella cartella di salvataggio.</value>
+  </data>
+  <data name="Main_MainControls" xml:space="preserve">
+    <value>Comandi principali</value>
+  </data>
+  <data name="Main_MainControlsCount" xml:space="preserve">
+    <value>Comandi principali. I fori, il tubo laterale, l'interruttore a labbro e il joystick. {0}</value>
   </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>Gestione dei file sul Suo QuadStick</value>
@@ -1277,17 +1247,17 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_MapTokenToANew" xml:space="preserve">
     <value>Associa {0} a una nuova associazione su {1}</value>
   </data>
-  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
-    <value>Assegnazione {0}: {1} a {2}{3}. Premere Invio per modificare.</value>
-  </data>
-  <data name="Main_MappingNumber" xml:space="preserve">
-    <value>Assegnazione {0}</value>
-  </data>
   <data name="Main_MappingRowSpoken" xml:space="preserve">
     <value>Associazione {0}: prema {1} quando {2}{3}. Prema Invio per modificare.</value>
   </data>
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>Associazione {0}: prema {1} quando {2}, uno dopo l'altro{3}. Prema Invio per modificare.</value>
+  </data>
+  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
+    <value>Assegnazione {0}: {1} a {2}{3}. Premere Invio per modificare.</value>
+  </data>
+  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
+    <value>Fare clic per modificare questa assegnazione o aggiungere una nota.</value>
   </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>Le associazioni si leggono come schede a frase semplice. Passa all'editor dettagliato.</value>
@@ -1298,6 +1268,9 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_MenuButton" xml:space="preserve">
     <value>Pulsante Menu</value>
   </data>
+  <data name="Main_ModeLabelToken" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>Modalità: {0}</value>
   </data>
@@ -1306,12 +1279,6 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   </data>
   <data name="Main_ModeSettings" xml:space="preserve">
     <value>Impostazioni della modalità</value>
-  </data>
-  <data name="Main_Mouse" xml:space="preserve">
-    <value>Mouse</value>
-  </data>
-  <data name="Main_Move" xml:space="preserve">
-    <value>Sposta</value>
   </data>
   <data name="Main_MoveRowBRowWord" xml:space="preserve">
     <value>Sposta riga {0} {1}</value>
@@ -1324,9 +1291,6 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   </data>
   <data name="Main_MovedTheTextFromI" xml:space="preserve">
     <value>Spostato il testo da {0} nella colonna delle note.</value>
-  </data>
-  <data name="Main_Movement" xml:space="preserve">
-    <value>Movimento</value>
   </data>
   <data name="Main_MovingTheWholeMouthpieceWith" xml:space="preserve">
     <value>Muovere l'intero boccaglio con la bocca funziona come un joystick. Su, giù, sinistra, destra e le 8 direzioni della bussola possono ciascuna premere qualcosa.</value>
@@ -1406,11 +1370,17 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_NotNowKeepTheReport" xml:space="preserve">
     <value>Non ora, conserva il rapporto e chiedi di nuovo più tardi</value>
   </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>Impostare la modalità di emulazione</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>Impostare la modalità di emulazione su {0}, scritta come {1}</value>
+  </data>
+  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
+    <value>Questo profilo assegna {0} che il suo {1} non ha. Sono nell'elenco a sinistra e possono ancora essere modificate.</value>
+  </data>
   <data name="Main_NotOnModel" xml:space="preserve">
     <value>Non presente sul modello</value>
-  </data>
-  <data name="Main_NotOnYourModel" xml:space="preserve">
-    <value>Non presente sul Suo modello</value>
   </data>
   <data name="Main_NotOnYourModelName" xml:space="preserve">
     <value>Non presente sul suo {0}</value>
@@ -1418,11 +1388,20 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_NotOnYourModelNameParts" xml:space="preserve">
     <value>{0}. {1}, {2}. Apre l'elenco.</value>
   </data>
+  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
+    <value>Queste righe restano nel file e possono ancora essere modificate. Scegliere una parte per aprire le sue assegnazioni.</value>
+  </data>
+  <data name="Main_NotOnYourModel" xml:space="preserve">
+    <value>Non presente sul Suo modello</value>
+  </data>
   <data name="Main_NotUsedYetOnThis" xml:space="preserve">
     <value>Non ancora usato su questa parte ({0})</value>
   </data>
   <data name="Main_Note" xml:space="preserve">
     <value>nota</value>
+  </data>
+  <data name="Main_NoteSummary" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
   <data name="Main_NoteForRowBRow" xml:space="preserve">
     <value>Nota per la riga {0}. Salvata nel file, ignorata dal QuadStick</value>
@@ -1435,9 +1414,6 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   </data>
   <data name="Main_NoteLabel" xml:space="preserve">
     <value>Nota</value>
-  </data>
-  <data name="Main_NoteSummary" xml:space="preserve">
-    <value>{0}: {1}</value>
   </data>
   <data name="Main_NothingMappedHereYet" xml:space="preserve">
     <value>Ancora nulla associato qui.</value>
@@ -1469,13 +1445,13 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
     <value>Numeri per {0}, opzionali, numeri interi separati da spazi.</value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>Un'attivazione lo blocca acceso, la successiva lo rilascia.</value>
+    <value>Un'attivazione per accendere, un'altra per spegnere. L'uscita resta attiva anche dopo il rilascio dell'ingresso.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
     <value>Un file .csv che indica al QuadStick quale sip, puff, pressione labiale o movimento del joystick preme quale pulsante di gioco. Un profilo ha uno o più fogli di modalità: disposizioni di controllo complete tra cui passare durante il gioco (disposizione a piedi, disposizione di guida, menu). Faccia un sip o un puff sul tubo laterale, oppure associ increment_mode / decrement_mode, per cambiare modalità in gioco.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
-    <value>Una breve pressione ogni volta che si attiva.</value>
+    <value>Una pressione breve a ogni attivazione dell'ingresso, per quanto a lungo la si tenga.</value>
   </data>
   <data name="Main_OneSwitchIn1" xml:space="preserve">
     <value>Un interruttore: in 1</value>
@@ -1525,17 +1501,11 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
   <data name="Main_PathGetFileNamePathIsRemoved" xml:space="preserve">
     <value>{0} viene rimosso definitivamente da questo computer. Una copia sul Suo QuadStick o in Google Sheets non viene toccata.</value>
   </data>
-  <data name="Main_PickWord" xml:space="preserve">
-    <value>scegliere {0}</value>
-  </data>
   <data name="Main_Picks0NameNoProfileTabRead" xml:space="preserve">
     <value>{0}: {1}</value>
   </data>
   <data name="Main_PlugInTheQuadStickIt" xml:space="preserve">
     <value>Colleghi il QuadStick; apparirà come un'unità USB. Installa esegue il backup del vecchio file in QuadStickBackups, scrive una copia temporanea, la verifica, poi la sostituisce. Gli errori bloccano l'installazione. Sovrascrivere default.csv chiede sempre conferma prima.</value>
-  </data>
-  <data name="Main_PlusMore" xml:space="preserve">
-    <value> +{0} altri</value>
   </data>
   <data name="Main_PortExplain" xml:space="preserve">
     <value>{0}. {1}</value>
@@ -1562,19 +1532,13 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
     <value>Premi</value>
   </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
-    <value>Preme in un ciclo ripetuto di attivazione e disattivazione.</value>
+    <value>La durata dell'uscita segue la forza con cui si aspira, si soffia o si spinge il joystick.</value>
   </data>
   <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
     <value>Problema copiato negli appunti.</value>
   </data>
   <data name="Main_ProfilesYouAlreadyMadeFrom" xml:space="preserve">
     <value>I profili già creati da questo modello non vengono modificati. Questa azione non può essere annullata.</value>
-  </data>
-  <data name="Main_Puff" xml:space="preserve">
-    <value>Soffio</value>
-  </data>
-  <data name="Main_Push" xml:space="preserve">
-    <value>Spingere</value>
   </data>
   <data name="Main_PuttingThisProfileInGoogle" xml:space="preserve">
     <value>Caricamento di questo profilo in Google Sheets...</value>
@@ -1601,7 +1565,7 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
     <value>Guida rapida</value>
   </data>
   <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
-    <value>Colpi a raffica finché l'input resta premuto.</value>
+    <value>Preme ripetutamente l'uscita finché si tiene attivo l'ingresso.</value>
   </data>
   <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
     <value>Leggi l'informativa sulla privacy</value>
@@ -1663,9 +1627,6 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
   <data name="Main_RightSideTube" xml:space="preserve">
     <value>Destra + tubo laterale</value>
   </data>
-  <data name="Main_RightStick" xml:space="preserve">
-    <value>Stick destro</value>
-  </data>
   <data name="Main_RightStickClick" xml:space="preserve">
     <value>Pressione della levetta destra</value>
   </data>
@@ -1678,14 +1639,20 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
   <data name="Main_RowNotSelected" xml:space="preserve">
     <value>{0}. Spazio seleziona, trascina per riordinare</value>
   </data>
-  <data name="Main_RowNumber" xml:space="preserve">
-    <value>Riga {0}</value>
+  <data name="Main_RowSendingNow" xml:space="preserve">
+    <value>{0}. Il QuadStick sta inviando questo ora</value>
+  </data>
+  <data name="Main_SendingNow" xml:space="preserve">
+    <value>Il QuadStick sta inviando questo ora</value>
+  </data>
+  <data name="Main_WhatALitRowMeans" xml:space="preserve">
+    <value>Una riga si accende mentre il QuadStick invia l'uscita di quella riga. Il dispositivo non dice mai quale file o quale modo sta eseguendo, quindi una riga può accendersi per un profilo diverso da quello aperto qui. Le uscite mouse, tastiera e infrarossi partono da un'altra connessione e non si accendono mai.</value>
+  </data>
+  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
+    <value>All'applicazione non è stato insegnato a leggere il rapporto di questo modo di emulazione, quindi nessuna riga si accenderà finché il QuadStick sarà in questo modo.</value>
   </data>
   <data name="Main_RowSelected" xml:space="preserve">
     <value>{0}, selezionata. Spazio seleziona, trascina per riordinare</value>
-  </data>
-  <data name="Main_RowSendingNow" xml:space="preserve">
-    <value>{0}. Il QuadStick sta inviando questo ora</value>
   </data>
   <data name="Main_RowsThatPressAGame" xml:space="preserve">
     <value>Righe che premono un pulsante di gioco ma non hanno ancora nulla che le attivi. Assegni a ciascuna un input, oppure la elimini.</value>
@@ -1741,12 +1708,6 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
   <data name="Main_SendThisCrashReport" xml:space="preserve">
     <value>Invia questo rapporto sull'arresto anomalo</value>
   </data>
-  <data name="Main_SendingNow" xml:space="preserve">
-    <value>Il QuadStick sta inviando questo ora</value>
-  </data>
-  <data name="Main_Sequence" xml:space="preserve">
-    <value>sequenza</value>
-  </data>
   <data name="Main_SetItTo" xml:space="preserve">
     <value>Impostalo su</value>
   </data>
@@ -1783,9 +1744,6 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
   <data name="Main_SingletonASingleSipPuff" xml:space="preserve">
     <value>Singleton: un unico tubo sip/puff sul joystick. Usa schemi di sip e puff più il movimento del joystick.</value>
   </data>
-  <data name="Main_Sip" xml:space="preserve">
-    <value>Aspirazione</value>
-  </data>
   <data name="Main_SipOrPuffOnThe" xml:space="preserve">
     <value>Fai un sip o un puff nel foro sinistro del boccaglio. Un sip o un puff leggero può fare qualcosa di diverso (le varianti soft).</value>
   </data>
@@ -1798,14 +1756,53 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
     <value>Fai un sip o un puff sul tubo laterale. Un sip lungo e forte qui normalmente cambia profilo, ma puoi associarlo anche tu.</value>
   </data>
-  <data name="Main_SoftLip" xml:space="preserve">
-    <value>Labbro leggero</value>
-  </data>
   <data name="Main_SoftPuff" xml:space="preserve">
     <value>Soffio leggero</value>
   </data>
+  <data name="Main_Puff" xml:space="preserve">
+    <value>Soffio</value>
+  </data>
+  <data name="Main_Sip" xml:space="preserve">
+    <value>Aspirazione</value>
+  </data>
   <data name="Main_SoftSip" xml:space="preserve">
     <value>Aspirazione leggera</value>
+  </data>
+  <data name="Main_Lip" xml:space="preserve">
+    <value>Labbro</value>
+  </data>
+  <data name="Main_SoftLip" xml:space="preserve">
+    <value>Labbro leggero</value>
+  </data>
+  <data name="Main_Push" xml:space="preserve">
+    <value>Spingere</value>
+  </data>
+  <data name="Main_Movement" xml:space="preserve">
+    <value>Movimento</value>
+  </data>
+  <data name="Main_LeftStick" xml:space="preserve">
+    <value>Stick sinistro</value>
+  </data>
+  <data name="Main_RightStick" xml:space="preserve">
+    <value>Stick destro</value>
+  </data>
+  <data name="Main_Mouse" xml:space="preserve">
+    <value>Mouse</value>
+  </data>
+  <data name="Main_ExtraActions" xml:space="preserve">
+    <value>+ {0} azioni in più</value>
+  </data>
+  <data name="Main_ViewDetails" xml:space="preserve">
+    <value>Vedi dettagli →</value>
+  </data>
+  <data name="Main_Sequence" xml:space="preserve">
+    <value>sequenza</value>
+  </data>
+  <data name="Count_Action_one" xml:space="preserve">
+    <value>{0} azione</value>
+  </data>
+  <data name="Count_Action_other" xml:space="preserve">
+    <value>{0} azioni</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>Avvia una nuova associazione su {0}</value>
@@ -1820,10 +1817,10 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
     <value>Avviato dal modello {0}. Lo salvi per conservarlo come profilo a sé stante.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
-    <value>Riduce un output analogico di un livello e lo lascia lì, come un grilletto o un asse della levetta.</value>
+    <value>Abbassa di un passo un'uscita analogica a ogni attivazione dell'ingresso, e la lascia lì.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
-    <value>Aumenta un output analogico di un livello e lo lascia lì, come un grilletto o un asse della levetta.</value>
+    <value>Alza di un passo un'uscita analogica a ogni attivazione dell'ingresso, e la lascia lì.</value>
   </data>
   <data name="Main_StopAsking" xml:space="preserve">
     <value>Smetti di chiedere</value>
@@ -1884,9 +1881,6 @@ Inviarlo lo converte nel formato proprio del sistema di segnalazione degli arres
   <data name="Main_ThenJoin" xml:space="preserve">
     <value>, poi</value>
   </data>
-  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
-    <value>Queste righe restano nel file e possono ancora essere modificate. Scegliere una parte per aprire le sue assegnazioni.</value>
-  </data>
   <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
     <value>Queste schede sono state saltate:</value>
   </data>
@@ -1901,9 +1895,6 @@ Ciò che viene inviato va a PostHog, su server negli Stati Uniti.
 
 Può modificare questa impostazione in qualsiasi momento in Impostazioni, in Avanzate.</value>
   </data>
-  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
-    <value>All'applicazione non è stato insegnato a leggere il rapporto di questo modo di emulazione, quindi nessuna riga si accenderà finché il QuadStick sarà in questo modo.</value>
-  </data>
   <data name="Main_ThisLinkIsAPublished" xml:space="preserve">
     <value>Questo è un link pubblicato, e un link pubblicato fornisce sempre e solo una singola scheda. Le altre schede di modalità nel foglio di calcolo non ci sono state inviate affatto, quindi non possiamo dire cosa contengano. Per importare l'intero profilo, condivida il foglio con "Chiunque abbia il link" in Google Sheets e lo importi di nuovo.</value>
   </data>
@@ -1915,9 +1906,6 @@ Può modificare questa impostazione in qualsiasi momento in Impostazioni, in Ava
   </data>
   <data name="Main_ThisProfileLivesOnThe" xml:space="preserve">
     <value>Questo profilo si trova sul QuadStick. Usi Installa per riscriverlo in modo sicuro; Salva con nome mette una copia nella Sua libreria.</value>
-  </data>
-  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
-    <value>Questo profilo assegna {0} che il suo {1} non ha. Sono nell'elenco a sinistra e possono ancora essere modificate.</value>
   </data>
   <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
     <value>Questa riga imposta un'impostazione del QuadStick invece di premere un pulsante. Si applica mentre questa modalità è in esecuzione.</value>
@@ -1950,7 +1938,7 @@ Può modificare questa impostazione in qualsiasi momento in Impostazioni, in Ava
     <value>{0}, non usato in questa modalità</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>Disattiva un output che toggle o delayed_latch avevano lasciato acceso.</value>
+    <value>Forza la disattivazione di un'uscita. Utile per rilasciare un pulsante attivato o bloccato da un'altra riga.</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>Due o più fori usati contemporaneamente, tutti e tre insieme, oppure il foro destro con il tubo laterale. Utile per azioni che non vuole mai attivare per errore.</value>
@@ -1991,9 +1979,6 @@ Può modificare questa impostazione in qualsiasi momento in Impostazioni, in Ava
   <data name="Main_UseTemplate" xml:space="preserve">
     <value>Usa modello</value>
   </data>
-  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
-    <value>Usato {0} volte in questo modo</value>
-  </data>
   <data name="Main_UsingDeviceView" xml:space="preserve">
     <value>Vista dispositivo in uso</value>
   </data>
@@ -2003,14 +1988,8 @@ Può modificare questa impostazione in qualsiasi momento in Impostazioni, in Ava
   <data name="Main_ViewButton" xml:space="preserve">
     <value>Pulsante Visualizza</value>
   </data>
-  <data name="Main_ViewDetails" xml:space="preserve">
-    <value>Vedi dettagli →</value>
-  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
-    <value>Aspetta un momento dopo l'attivazione, poi preme.</value>
-  </data>
-  <data name="Main_WhatALitRowMeans" xml:space="preserve">
-    <value>Una riga si accende mentre il QuadStick invia l'uscita di quella riga. Il dispositivo non dice mai quale file o quale modo sta eseguendo, quindi una riga può accendersi per un profilo diverso da quello aperto qui. Le uscite mouse, tastiera e infrarossi partono da un'altra connessione e non si accendono mai.</value>
+    <value>Richiede di tenere l'ingresso attivo per un tempo stabilito prima che l'uscita si attivi. Così si distingue un tocco rapido da una pressione lunga.</value>
   </data>
   <data name="Main_WhatIsAMode" xml:space="preserve">
     <value>Cos'è una modalità?</value>
@@ -2023,6 +2002,12 @@ Può modificare questa impostazione in qualsiasi momento in Impostazioni, in Ava
   </data>
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>Quando lei</value>
+  </data>
+  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
+    <value>Il controller che questo file fa simulare al QuadStick. Potrà cambiarlo o rimuoverlo in seguito.</value>
+  </data>
+  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
+    <value>Il controller che questo file fa simulare al QuadStick. Il dispositivo si avvia da questo file, quindi sono disponibili solo le modalità che mantengono raggiungibile la sua unità.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Le parole sono mostrate come nomi elenco grezzi. Passa a italiano semplice.</value>
@@ -2108,6 +2093,9 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Modes_CloseModes" xml:space="preserve">
     <value>Chiudi modalità</value>
   </data>
+  <data name="Modes_Connection" xml:space="preserve">
+    <value>Connessione</value>
+  </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>Connessione cancellata. Il dispositivo torna al cavo USB.</value>
   </data>
@@ -2117,14 +2105,14 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Modes_ConnectionSetToPickedItem2" xml:space="preserve">
     <value>Connessione impostata su {0}.</value>
   </data>
-  <data name="Modes_DeleteName" xml:space="preserve">
-    <value>Eliminare {0}</value>
-  </data>
   <data name="Modes_Done" xml:space="preserve">
     <value>Fatto</value>
   </data>
   <data name="Modes_MakeACopyOfName" xml:space="preserve">
     <value>Crea una copia di {0}</value>
+  </data>
+  <data name="Modes_Mode" xml:space="preserve">
+    <value>Modalità</value>
   </data>
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Modalità aggiunta.</value>
@@ -2143,12 +2131,6 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Modes_Modes" xml:space="preserve">
     <value>Modalità</value>
-  </data>
-  <data name="Modes_MoveNameDown" xml:space="preserve">
-    <value>Spostare {0} giù</value>
-  </data>
-  <data name="Modes_MoveNameUp" xml:space="preserve">
-    <value>Spostare {0} su</value>
   </data>
   <data name="Modes_NameOfModeOrdinal" xml:space="preserve">
     <value>Nome della modalità {0}</value>
@@ -2185,9 +2167,6 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Modes_USBCable" xml:space="preserve">
     <value>Cavo USB</value>
-  </data>
-  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
-    <value>Modo {0}</value>
   </data>
   <data name="Names_ANameHasToBe" xml:space="preserve">
     <value>Un nome deve avere da 1 a {0} caratteri.</value>
@@ -2243,14 +2222,8 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Names_Removed" xml:space="preserve">
     <value>Rimosso {0}.</value>
   </data>
-  <data name="Names_RenamedOldToNew" xml:space="preserve">
-    <value>{0} rinominato in {1}.</value>
-  </data>
   <data name="Names_ThisProfileAlreadyHasA" xml:space="preserve">
     <value>Questo profilo ha già un nome chiamato "{0}".</value>
-  </data>
-  <data name="Names_UsedOnCount" xml:space="preserve">
-    <value>su {0}</value>
   </data>
   <data name="Names_YourNameForHumanizeToken" xml:space="preserve">
     <value>Il Suo nome per {0}</value>
@@ -2291,17 +2264,32 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Outputs_NumberPad2" xml:space="preserve">
     <value>Tastierino numerico</value>
   </data>
+  <data name="Outputs_OtherButtons" xml:space="preserve">
+    <value>Altri pulsanti</value>
+  </data>
   <data name="Outputs_OtherKeys" xml:space="preserve">
     <value>Altri tasti</value>
   </data>
   <data name="Outputs_OtherKeys2" xml:space="preserve">
     <value>Altri tasti</value>
   </data>
+  <data name="Outputs_PlayStationButtons" xml:space="preserve">
+    <value>Pulsanti PlayStation</value>
+  </data>
   <data name="Outputs_TVRemote" xml:space="preserve">
     <value>Telecomando TV</value>
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>Telecomando TV</value>
+  </data>
+  <data name="Outputs_XboxButtons" xml:space="preserve">
+    <value>Pulsanti Xbox</value>
+  </data>
+  <data name="Prefs_OffZero" xml:space="preserve">
+    <value>Disattivato (0)</value>
+  </data>
+  <data name="Prefs_OnOne" xml:space="preserve">
+    <value>Attivato (1)</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>Informazioni su {0}: {1}</value>
@@ -2353,12 +2341,6 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Prefs_NotesForRowSaved" xml:space="preserve">
     <value>Note per la riga {0}. Salvate nel file, ignorate dal QuadStick</value>
-  </data>
-  <data name="Prefs_OffZero" xml:space="preserve">
-    <value>Disattivato (0)</value>
-  </data>
-  <data name="Prefs_OnOne" xml:space="preserve">
-    <value>Attivato (1)</value>
   </data>
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}. {1}</value>
@@ -2438,9 +2420,6 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Review_Done" xml:space="preserve">
     <value>Fatto</value>
   </data>
-  <data name="Review_EmptiedCell" xml:space="preserve">
-    <value>{0} svuotato.</value>
-  </data>
   <data name="Review_EmptyCellWhere" xml:space="preserve">
     <value>Cella vuota {0}</value>
   </data>
@@ -2501,9 +2480,6 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Review_ModeIsNamedAfterIts" xml:space="preserve">
     <value>la modalità prende il nome dalla sua scheda del foglio</value>
   </data>
-  <data name="Review_ModeNumberTitle" xml:space="preserve">
-    <value>Modo {0}: {1}</value>
-  </data>
   <data name="Review_ModeRModeNumberIsCalled" xml:space="preserve">
     <value>La modalità {0} si chiama "{1}", come la sua scheda del foglio. La cella del nome di quella modalità era vuota.</value>
   </data>
@@ -2539,9 +2515,6 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Review_MoveWordIntoTheNotes" xml:space="preserve">
     <value>Sposta "{0}" nella colonna note, dove il QuadStick non guarda mai</value>
-  </data>
-  <data name="Review_MovedFromTo" xml:space="preserve">
-    <value>«{0}» spostato da {1} a {2}.</value>
   </data>
   <data name="Review_MovedValueFromWhereInto" xml:space="preserve">
     <value>Spostato "{0}" da {1} nella colonna note.</value>
@@ -2585,14 +2558,8 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Review_PartOfTheRowThat" xml:space="preserve">
     <value>parte della riga che apre una modalità</value>
   </data>
-  <data name="Review_RowNumber" xml:space="preserve">
-    <value>riga {0}</value>
-  </data>
   <data name="Review_SaveCell" xml:space="preserve">
     <value>Salva cella</value>
-  </data>
-  <data name="Review_SetCellTo" xml:space="preserve">
-    <value>{0} impostato su «{1}».</value>
   </data>
   <data name="Review_ShowTheSpreadsheetWithThe" xml:space="preserve">
     <value>Mostra il foglio di calcolo con la lettura dell'app segnata su di esso</value>
@@ -2759,26 +2726,26 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Settings_CancelConnect" xml:space="preserve">
     <value>Annulla la connessione a Google</value>
   </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>Controlla aggiornamenti</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>Controllo in corso...</value>
+  </data>
   <data name="Settings_CardSentenceStyle" xml:space="preserve">
     <value>Formulazione delle schede di assegnazione</value>
   </data>
   <data name="Settings_CardSentenceStyleCaption" xml:space="preserve">
     <value>Scegliere se le schede iniziano con l'uscita o con l'ingresso. Cambia solo come si leggono le schede, non ciò che fa il QuadStick.</value>
   </data>
-  <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
-    <value>Premere X quando aspira</value>
-  </data>
   <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
     <value>Formulazione delle schede di assegnazione: frasi con l'uscita prima o l'ingresso prima</value>
   </data>
+  <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
+    <value>Premere X quando aspira</value>
+  </data>
   <data name="Settings_CardSentenceStyleInputFirst" xml:space="preserve">
     <value>Aspirare per X</value>
-  </data>
-  <data name="Settings_CheckUpdates" xml:space="preserve">
-    <value>Controlla aggiornamenti</value>
-  </data>
-  <data name="Settings_Checking" xml:space="preserve">
-    <value>Controllo in corso...</value>
   </data>
   <data name="Settings_Close" xml:space="preserve">
     <value>Chiudi</value>
@@ -2836,9 +2803,6 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Settings_ImportDriveHelp" xml:space="preserve">
     <value>Importa i Suoi profili da Google Drive</value>
-  </data>
-  <data name="Settings_InstallIdIs" xml:space="preserve">
-    <value>ID di installazione: {0}</value>
   </data>
   <data name="Settings_Language" xml:space="preserve">
     <value>Lingua</value>
@@ -3251,11 +3215,11 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
     <value>Visualizza le righe come vengono salvate nel foglio  (Ctrl+D)</value>
   </data>
-  <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
-    <value>Selezionare le righe da spostare, eliminare o svuotare</value>
-  </data>
   <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
     <value>Seleziona la modalità da modificare</value>
+  </data>
+  <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
+    <value>Selezionare le righe da spostare, eliminare o svuotare</value>
   </data>
   <data name="Shell_SetUpAGame" xml:space="preserve">
     <value>Configura un gioco</value>
@@ -3403,5 +3367,101 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>Si trova sulla versione {0}, l'ultima disponibile.</value>
+  </data>
+  <data name="Count_RowCopied_one" xml:space="preserve">
+    <value>{0} riga copiata in {1}. Ctrl+Z annulla.</value>
+  </data>
+  <data name="Count_RowCopied_other" xml:space="preserve">
+    <value>{0} righe copiate in {1}. Ctrl+Z annulla.</value>
+  </data>
+  <data name="Main_CopyToMode" xml:space="preserve">
+    <value>Copia nel modo</value>
+  </data>
+  <data name="Main_Move" xml:space="preserve">
+    <value>Sposta</value>
+  </data>
+  <data name="Main_DuplicateMark" xml:space="preserve">
+    <value>×{0}</value>
+  </data>
+  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
+    <value>Usato {0} volte in questo modo</value>
+  </data>
+  <data name="Count_Profile_one" xml:space="preserve">
+    <value>{0} profilo</value>
+  </data>
+  <data name="Count_Profile_other" xml:space="preserve">
+    <value>{0} profili</value>
+  </data>
+  <data name="Count_File_one" xml:space="preserve">
+    <value>{0} file</value>
+  </data>
+  <data name="Count_File_other" xml:space="preserve">
+    <value>{0} file</value>
+  </data>
+  <data name="Names_UsedOnCount" xml:space="preserve">
+    <value>su {0}</value>
+  </data>
+  <data name="Names_RenamedOldToNew" xml:space="preserve">
+    <value>{0} rinominato in {1}.</value>
+  </data>
+  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
+    <value>{0} su {1}.</value>
+  </data>
+  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
+    <value>Eliminare {0} da {1}?</value>
+  </data>
+  <data name="Drive_RestoreImported" xml:space="preserve">
+    <value>{0} importati</value>
+  </data>
+  <data name="Drive_RestoreSkipped" xml:space="preserve">
+    <value>{0} saltati: </value>
+  </data>
+  <data name="Drive_RestoreFailed" xml:space="preserve">
+    <value>{0} non riuscito: </value>
+  </data>
+  <data name="Review_RowNumber" xml:space="preserve">
+    <value>riga {0}</value>
+  </data>
+  <data name="Review_EmptiedCell" xml:space="preserve">
+    <value>{0} svuotato.</value>
+  </data>
+  <data name="Review_MovedFromTo" xml:space="preserve">
+    <value>«{0}» spostato da {1} a {2}.</value>
+  </data>
+  <data name="Review_SetCellTo" xml:space="preserve">
+    <value>{0} impostato su «{1}».</value>
+  </data>
+  <data name="Review_ModeNumberTitle" xml:space="preserve">
+    <value>Modo {0}: {1}</value>
+  </data>
+  <data name="Main_InFolder" xml:space="preserve">
+    <value> · in {0}</value>
+  </data>
+  <data name="Main_PlusMore" xml:space="preserve">
+    <value> +{0} altri</value>
+  </data>
+  <data name="Main_MappingNumber" xml:space="preserve">
+    <value>Assegnazione {0}</value>
+  </data>
+  <data name="Main_RowNumber" xml:space="preserve">
+    <value>Riga {0}</value>
+  </data>
+  <data name="Main_PickWord" xml:space="preserve">
+    <value>scegliere {0}</value>
+  </data>
+  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
+    <value>Modo {0}</value>
+  </data>
+  <data name="Modes_MoveNameUp" xml:space="preserve">
+    <value>Spostare {0} su</value>
+  </data>
+  <data name="Modes_MoveNameDown" xml:space="preserve">
+    <value>Spostare {0} giù</value>
+  </data>
+  <data name="Modes_DeleteName" xml:space="preserve">
+    <value>Eliminare {0}</value>
+  </data>
+  <data name="Settings_InstallIdIs" xml:space="preserve">
+    <value>ID di installazione: {0}</value>
   </data>
 </root>

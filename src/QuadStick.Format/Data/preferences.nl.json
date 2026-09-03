@@ -1,14 +1,14 @@
 [
  {
+  "name": "joystick_deflection_maximum",
+  "label": "Joystickgevoeligheid",
+  "description": "Hoe ver de stick moet bewegen voor een vol signaal, ook wel volledige uitslag genoemd. Lager is gevoeliger, omdat een kleinere duw hetzelfde doet.",
+  "alsoCalled": "bewegingsbereik"
+ },
+ {
   "name": "joystick_deflection_minimum",
   "label": "Dode zone in het midden van de joystick",
   "description": "Dode zone in het midden voor de analoge stick, als percentage van de volledige uitslag. Zet dit hoog genoeg om een zwevende muis of joystick te stoppen. Grotere getallen maken de stick minder gevoelig rond het midden. Dit staat los van de D-Pad-ringen. Op firmware 2373 betekent een waarde van 0 niet langer geen dode zone: het apparaat vervangt dit door 129 ruwe tellingen, en het doet dit opnieuw bij elke scan, waardoor dit voorrang krijgt op de waarde die is berekend toen het bestand werd geladen."
- },
- {
-  "name": "joystick_deflection_maximum",
-  "label": "Volledige uitslag van de joystick",
-  "description": "Hoe ver de stick moet bewegen voor een volledig signaal. QMP noemt dit het bewegingsbereik van de joystick en het is het dichtste wat het apparaat heeft bij een gevoeligheidsregeling: grotere getallen betekenen meer uitslag voor dezelfde uitvoer, waardoor de joystick minder gevoelig aanvoelt. QMP neemt de grootste van zijn vier richtingsschuiven.",
-  "alsoCalled": "bewegingsbereik"
  },
  {
   "name": "deflection_multiplier_up",
@@ -80,16 +80,10 @@
  },
  {
   "name": "sip_puff_threshold",
-  "label": "Harde sip/puff-drempel",
+  "label": "Normale zuig-/blaasdrempel",
   "unit": "procent",
-  "description": "Druk waarbij de uitvoer wordt geactiveerd. QMP toont dit als de hoge sip and puff-drempel; sip_puff_threshold_soft is de lage.",
+  "description": "Druk waarbij een gewone zuig of blaas meetelt. QMP noemt dit de harde drempel, maar het is de drempel die de gewone zuig- en blaasbediening gebruikt. Verhoog hem als zachte zuigjes de gewone drempel blijven activeren.",
   "alsoCalled": "hoge drempel voor zuigen en blazen"
- },
- {
-  "name": "sip_puff_maximum",
-  "label": "Maximale sip/puff-druk",
-  "unit": "procent",
-  "description": "Maximale druk die wordt geschaald naar een volledig signaal."
  },
  {
   "name": "sip_puff_delay_soft",
@@ -102,7 +96,13 @@
   "name": "sip_puff_delay_hard",
   "label": "Vertraging harde sip/puff",
   "unit": "milliseconden",
-  "description": "Hoe lang een harde sip of puff wordt vastgehouden voordat deze als lang signaal telt. De klok start zodra de harde drempel wordt overschreden, niet zodra de druk voor het eerst verandert. 0 betekent niet niet-ingesteld, het betekent dat het lange signaal meteen wordt geactiveerd."
+  "description": "Hoe lang een zuig of blaas wordt vastgehouden voordat die als lang telt. Op de zijslang is dat hoe lang u zuigt om van spelbestand te wisselen. De klok start bij de normale drempel, en 0 gaat meteen af."
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "Maximale sip/puff-druk",
+  "unit": "procent",
+  "description": "Maximale druk die wordt geschaald naar een volledig signaal."
  },
  {
   "name": "sip_threshold_soft",
@@ -195,7 +195,13 @@
  {
   "name": "bluetooth_authentication_mode",
   "label": "Bluetooth-verificatiemodus",
-  "description": "Hoeveel koppeling de QuadStick vraagt. Wordt als SA-instelling naar de radio gestuurd, dus het telt alleen zolang Bluetooth aan staat."
+  "description": "Hoeveel koppeling de QuadStick vraagt. Wordt als SA-instelling naar de radio gestuurd, dus het telt alleen zolang Bluetooth aan staat.",
+  "optionLabels": [
+   "Open, geen controle van de koppeling en niets versleuteld",
+   "Bevestig de koppeling op het andere apparaat",
+   "Werkt gewoon, niets te typen",
+   "PIN-code, getypt op het andere apparaat"
+  ]
  },
  {
   "name": "bluetooth_connection_mode",
@@ -248,12 +254,6 @@
   "description": "Selecteer een bestand met behulp van de zijbuis."
  },
  {
-  "name": "enable_usb_a_device",
-  "label": "USB-A-apparaatmodus",
-  "risk": "Dit bepaalt op welke USB-poort de QuadStick zich presenteert. Het apparaat breekt USB af en maakt opnieuw verbinding wanneer dit wijzigt, dus een verkeerde waarde kan ervoor zorgen dat een console of computer het apparaat niet meer ziet. Dit wint ook van enable_usb_a_host: zolang dit ingesteld is, wordt de USB-A-hoststack afgesloten, wat de hostinstelling ook zegt. Wijzig dit alleen op advies van QuadStick support.",
-  "description": "Op welke USB-aansluiting de QuadStick verschijnt. Nul is zijn eigen poort; boven nul is de USB-A-aansluiting, en dat schakelt ook de USB-A-hostmodus uit."
- },
- {
   "name": "enable_usb_a_host",
   "label": "USB-A-hostmodus",
   "description": "Sinds firmware 2373. Met dit ingeschakeld en USB-A-apparaatmodus uitgeschakeld, draait het apparaat een USB-host op de USB-A-poort, zodat een daar aangesloten controller de usb_1-invoerkanalen voedt. Schakel dit uit, of schakel USB-A-apparaatmodus in, en de host wordt afgebroken. USB-A-apparaatmodus wint. QMP toont dit als USB-A Host Mode.",
@@ -264,6 +264,7 @@
   "label": "USB-emulatiemodus",
   "description": "Voor welk USB-apparaat de QuadStick zich uitgeeft. Op firmware 2373: 0 QuadStick native, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 voor een PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 zonder USB-station, 7 rechtstreeks DS4 draadloos. Waarde 5 betekende op firmware 1476 alleen pc, geen joystick, dus een bestand met 5 gedraagt zich compleet anders zodra het apparaat is bijgewerkt. Modi 1, 5, 6 en 7 bieden helemaal geen USB-station, dus een computer kan de bestanden van de QuadStick niet zien terwijl een van deze actief is. QMP's Boot in PS4 Mode is waarde 4: firmware 2373 Joystick.c:625 noemt die waarde in zijn eigen opmerking \"boot in PS4 mode\".",
   "risk": "De naam zegt DS3, maar het apparaat leest dit als een USB-emulatiemodus met acht genummerde waarden, geen aan/uit-schakelaar. Wat 5 betekent, is veranderd tussen firmware 1476 en 2373, en een getal dat de actieve firmware niet kent, laat het apparaat op een emulatie staan die niemand heeft gevraagd. QCM behoudt wat er ook wordt ingetypt en weigert niets, omdat een waarde die verkeerd is voor de ene firmware juist is voor de andere. Wijzig dit alleen op advies van QuadStick support.",
+  "alsoCalled": "opstarten in PS4-modus",
   "optionLabels": [
    "QuadStick (pc en PS3)",
    "DualShock 3, geen USB-station",
@@ -273,8 +274,19 @@
    "Nintendo Switch Pro Controller, geen USB-station",
    "DualShock 4, geen USB-station",
    "DualShock 4 draadloos, geen USB-station"
-  ],
-  "alsoCalled": "opstarten in PS4-modus"
+  ]
+ },
+ {
+  "name": "titan_two",
+  "label": "Titan Two-adapter",
+  "description": "Sinds firmware 2373. Vertelt het apparaat dat het een PS4 bereikt via een Titan Two in plaats van rechtstreeks op de console aangesloten te zijn. Het slaat dan de DS4-verificatiehandshake over en stopt de periodieke geforceerde USB-herverbinding. QMP toont dit als de Titan 2 PS4-vlag.",
+  "alsoCalled": "PS4-vlag van de Titan 2"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "USB-A-apparaatmodus",
+  "description": "Op welke USB-aansluiting de QuadStick verschijnt. Nul is zijn eigen poort; boven nul is de USB-A-aansluiting, en dat schakelt ook de USB-A-hostmodus uit.",
+  "risk": "Dit bepaalt op welke USB-poort de QuadStick zich presenteert. Het apparaat breekt USB af en maakt opnieuw verbinding wanneer dit wijzigt, dus een verkeerde waarde kan ervoor zorgen dat een console of computer het apparaat niet meer ziet. Dit wint ook van enable_usb_a_host: zolang dit ingesteld is, wordt de USB-A-hoststack afgesloten, wat de hostinstelling ook zegt. Wijzig dit alleen op advies van QuadStick support."
  },
  {
   "name": "enable_usb_comm",
@@ -334,16 +346,10 @@
   "description": "Sinds firmware 2373, maar het apparaat negeert dit. De naam is geldig en bestanden bevatten hem, maar niets in de firmware leest de waarde: elke USB-host-as gebruikt de USB 1-dode zone. Deze instellen in een modusrij doet ook niets."
  },
  {
-  "name": "titan_two",
-  "label": "Titan Two-adapter",
-  "description": "Sinds firmware 2373. Vertelt het apparaat dat het een PS4 bereikt via een Titan Two in plaats van rechtstreeks op de console aangesloten te zijn. Het slaat dan de DS4-verificatiehandshake over en stopt de periodieke geforceerde USB-herverbinding. QMP toont dit als de Titan 2 PS4-vlag.",
-  "alsoCalled": "PS4-vlag van de Titan 2"
- },
- {
   "name": "watchdog_disable",
   "label": "Schakel de watchdog uit",
-  "risk": "Het apparaat draait een hardware-watchdog van twee minuten die het herstart als het niet meer reageert. Niets in firmware 1476 of 2373 leest deze instelling, dus op beide doet ze niets, en wat een latere firmware ermee zou doen is onbekend.",
-  "description": "Moest voorkomen dat de QuadStick zichzelf herstart als hij vastloopt. Uw QuadStick negeert dit."
+  "description": "Moest voorkomen dat de QuadStick zichzelf herstart als hij vastloopt. Uw QuadStick negeert dit.",
+  "risk": "Het apparaat draait een hardware-watchdog van twee minuten die het herstart als het niet meer reageert. Niets in firmware 1476 of 2373 leest deze instelling, dus op beide doet ze niets, en wat een latere firmware ermee zou doen is onbekend."
  },
  {
   "name": "debug",

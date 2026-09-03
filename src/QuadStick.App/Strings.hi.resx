@@ -247,12 +247,6 @@
   <data name="Community_TheSavedCopyOfThe" xml:space="preserve">
     <value>सामुदायिक सूची की सेव की गई कॉपी में कोई प्रोफ़ाइल नहीं है।</value>
   </data>
-  <data name="Count_Action_one" xml:space="preserve">
-    <value>{0} क्रिया</value>
-  </data>
-  <data name="Count_Action_other" xml:space="preserve">
-    <value>{0} क्रियाएँ</value>
-  </data>
   <data name="Count_Binding_one" xml:space="preserve">
     <value>{0} बाइंडिंग</value>
   </data>
@@ -264,12 +258,6 @@
   </data>
   <data name="Count_Error_other" xml:space="preserve">
     <value>{0} त्रुटियां</value>
-  </data>
-  <data name="Count_File_one" xml:space="preserve">
-    <value>{0} फ़ाइल</value>
-  </data>
-  <data name="Count_File_other" xml:space="preserve">
-    <value>{0} फ़ाइलें</value>
   </data>
   <data name="Count_Mapping_one" xml:space="preserve">
     <value>{0} मैपिंग</value>
@@ -294,18 +282,6 @@
   </data>
   <data name="Count_Part_other" xml:space="preserve">
     <value>{0} भाग</value>
-  </data>
-  <data name="Count_Profile_one" xml:space="preserve">
-    <value>{0} प्रोफ़ाइल</value>
-  </data>
-  <data name="Count_Profile_other" xml:space="preserve">
-    <value>{0} प्रोफ़ाइलें</value>
-  </data>
-  <data name="Count_RowCopied_one" xml:space="preserve">
-    <value>{0} पंक्ति {1} में कॉपी की गई। Ctrl+Z से वापस हो जाएगी।</value>
-  </data>
-  <data name="Count_RowCopied_other" xml:space="preserve">
-    <value>{0} पंक्तियाँ {1} में कॉपी की गईं। Ctrl+Z से वापस हो जाएँगी।</value>
   </data>
   <data name="Count_RowDeleted_one" xml:space="preserve">
     <value>{0} पंक्ति हटाई गई। Ctrl+Z इसे वापस लाता है।</value>
@@ -346,6 +322,12 @@
   <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
     <value>{0} से {1} तक।</value>
   </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} सेटिंग बदली गई</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} सेटिंग्स बदली गईं</value>
+  </data>
   <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
     <value>{0} सेटिंग बदली गई। सहेजें दबाने तक यह आपके QuadStick पर नहीं जाएगी।</value>
   </data>
@@ -357,12 +339,6 @@
   </data>
   <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
     <value>{0} सेटिंग्स बदली गईं। इन्हें सहेजने के लिए अपना QuadStick लगाएं।</value>
-  </data>
-  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
-    <value>{0} सेटिंग बदली गई</value>
-  </data>
-  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
-    <value>{0} सेटिंग्स बदली गईं</value>
   </data>
   <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
     <value>आपके QuadStick की सेटिंग्स पढ़ी नहीं जा सकीं: {0}</value>
@@ -396,6 +372,15 @@
   </data>
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>आपका QuadStick खोजा जा रहा है...</value>
+  </data>
+  <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
+    <value>QuadStick ड्राइव को छिपाने वाले मोड यहाँ नहीं दिए जाते, क्योंकि डिवाइस इसी फ़ाइल से बूट होता है। इसके बजाय किसी गेम प्रोफ़ाइल में सेट करें।</value>
+  </data>
+  <data name="DevicePage_MoreOptions" xml:space="preserve">
+    <value>और विकल्प</value>
+  </data>
+  <data name="DevicePage_MoreOptionsCount" xml:space="preserve">
+    <value>और विकल्प, {0}</value>
   </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}, {1} से {2}</value>
@@ -541,9 +526,6 @@
   <data name="Device_CouldNotReadThisDrive" xml:space="preserve">
     <value>यह ड्राइव नहीं पढ़ी जा सकी: {0}</value>
   </data>
-  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
-    <value>{1} से {0} हटाएँ?</value>
-  </data>
   <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
     <value>{1} पर QuadStick से {0} हटाएं</value>
   </data>
@@ -597,9 +579,6 @@
   </data>
   <data name="Device_FilesTotalAcrossGroupsCount" xml:space="preserve">
     <value>{1} QuadStick ड्राइव में {0}। हर ड्राइव नीचे अलग से सूचीबद्ध है।</value>
-  </data>
-  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
-    <value>{1} पर {0}।</value>
   </data>
   <data name="Device_LinkedToAGoogleSheet" xml:space="preserve">
     <value>, एक Google Sheet से जुड़ी हुई</value>
@@ -721,15 +700,6 @@
   <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
     <value>आपके Google Drive बैकअप</value>
   </data>
-  <data name="Drive_RestoreFailed" xml:space="preserve">
-    <value>{0} विफल: </value>
-  </data>
-  <data name="Drive_RestoreImported" xml:space="preserve">
-    <value>{0} आयात की गईं</value>
-  </data>
-  <data name="Drive_RestoreSkipped" xml:space="preserve">
-    <value>{0} छोड़ी गईं: </value>
-  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>गलत default.csv फ्लैश-ड्राइव एक्सेस को बंद कर सकती है, और उसे ठीक करने के लिए भौतिक फ़ोर्स-इरेज़ की ज़रूरत होती है। पहले एक बैकअप बनाया जाएगा। आगे बढ़ें?</value>
   </data>
@@ -813,14 +783,17 @@
 
 अधिकतर प्रोफ़ाइलों में सिर्फ़ एक मोड होता है, इसलिए यह सूची अक्सर एक ही प्रविष्टि दिखाती है। यह सामान्य है।</value>
   </data>
+  <data name="Main_APlusB" xml:space="preserve">
+    <value>{0} + {1}</value>
+  </data>
   <data name="Main_AProfileTabStartsWith" xml:space="preserve">
     <value>प्रोफ़ाइल टैब सेल A1 में "Profile Name", "Preferences" या "Infrared" से शुरू होता है।</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>जल्दी दबाने पर एक आउटपुट भेजा जाता है; देर तक दबाए रखने पर अलग आउटपुट भेजा जाता है।</value>
+    <value>तभी चालू होता है जब आप जल्दी से दबाकर छोड़ दें। ज़्यादा देर पकड़ने पर कुछ नहीं होता, इसलिए छोटा सिप और लंबा सिप अलग-अलग काम कर सकते हैं।</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
-    <value>छोटा सक्रियण इसे टैप करता है; लंबा सक्रियण इसे लैच करके चालू रखता है।</value>
+    <value>छोटा इनपुट सामान्य दबाव की तरह काम करता है। इनपुट को काफ़ी देर पकड़े रखें तो आउटपुट चालू पर लॉक हो जाता है, और उसके बाद छोटा इनपुट उसे छोड़ देता है।</value>
   </data>
   <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
     <value>{0} नाम का टेम्पलेट पहले से मौजूद है।</value>
@@ -971,9 +944,6 @@
   <data name="Main_CopyShareLink" xml:space="preserve">
     <value>साझा करने का लिंक कॉपी करें</value>
   </data>
-  <data name="Main_CopyToMode" xml:space="preserve">
-    <value>मोड में कॉपी करें</value>
-  </data>
   <data name="Main_CopyYourBackedUpProfiles" xml:space="preserve">
     <value>अपनी बैकअप की गई प्रोफ़ाइलें अभी Google Drive से इस कंप्यूटर पर कॉपी करें?</value>
   </data>
@@ -1094,6 +1064,12 @@
   <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
     <value>डिवाइस {0} दिखाता है</value>
   </data>
+  <data name="Main_DoNotSetOne" xml:space="preserve">
+    <value>कोई सेट न करें</value>
+  </data>
+  <data name="Main_DoNotSetOneTheDevice" xml:space="preserve">
+    <value>कोई सेट न करें। डिवाइस जिस मोड पर है, उसी पर रहता है।</value>
+  </data>
   <data name="Main_DonTSave" xml:space="preserve">
     <value>सेव न करें</value>
   </data>
@@ -1103,14 +1079,8 @@
   <data name="Main_DownloadingTheSpreadsheet" xml:space="preserve">
     <value>स्प्रेडशीट डाउनलोड हो रही है...</value>
   </data>
-  <data name="Main_DuplicateMark" xml:space="preserve">
-    <value>×{0}</value>
-  </data>
   <data name="Main_EditDevicePreferences" xml:space="preserve">
     <value>डिवाइस प्रेफरेंस संपादित करें?</value>
-  </data>
-  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
-    <value>इस मैपिंग को संपादित करने या टिप्पणी जोड़ने के लिए क्लिक करें।</value>
   </data>
   <data name="Main_Edited" xml:space="preserve">
     <value>संपादित</value>
@@ -1121,9 +1091,6 @@
   <data name="Main_EveryInputOnYourQuadStick" xml:space="preserve">
     <value>आपके QuadStick का हर इनपुट इस मोड में उपयोग हो रहा है।</value>
   </data>
-  <data name="Main_ExtraActions" xml:space="preserve">
-    <value>+ {0} और क्रियाएँ</value>
-  </data>
   <data name="Main_ExtraInputForMappingN" xml:space="preserve">
     <value>मैपिंग {0} के लिए अतिरिक्त इनपुट</value>
   </data>
@@ -1131,16 +1098,13 @@
     <value>FPS: 3-होल माउथपीस, साइड ट्यूब, लिप सेंसर, रियर जैक्स। Original से ज़्यादा सटीक जॉयस्टिक।</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
-    <value>जब आपका इनपुट तय की गई ताकत को पार करता है, तब एक बार फायर होता है।</value>
+    <value>इनपुट एक तय ताकत पार करते ही आउटपुट चालू करता है। जॉयस्टिक कितनी दूर तक हिला, उसके हिसाब से अलग-अलग काम कराने में उपयोगी।</value>
   </data>
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
-    <value>जब तक आपका इनपुट तय की गई ताकत से कम रहता है, तब तक फायर होता रहता है।</value>
+    <value>जब तक इनपुट एक तय ताकत से कम रहता है, आउटपुट चालू रखता है। यह greater_than का उल्टा है।</value>
   </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>कोई समस्या मिली?</value>
-  </data>
-  <data name="Main_FunctionBehavior" xml:space="preserve">
-    <value>फ़ंक्शन (व्यवहार)</value>
   </data>
   <data name="Main_FunctionForRowBRow" xml:space="preserve">
     <value>पंक्ति {0} के लिए फ़ंक्शन। {1}</value>
@@ -1161,7 +1125,7 @@
     <value>Google ने प्रोफ़ाइल की जगह एक वेब पेज लौटाया। शीट शायद सार्वजनिक रूप से शेयर नहीं की गई है (File &gt; Share &gt; Anyone with the link)।</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
-    <value>जब तक आपका इनपुट सक्रिय है, तब तक दबा रहता है।</value>
+    <value>चालू करने के लिए दबाए रखें। आउटपुट तभी तक चालू रहता है जब तक आपका इनपुट चालू है।</value>
   </data>
   <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
     <value>QuadStick Config Manager को बेहतर बनाने में मदद करें</value>
@@ -1174,6 +1138,9 @@
   </data>
   <data name="Main_HoleCombos" xml:space="preserve">
     <value>होल कॉम्बो</value>
+  </data>
+  <data name="Main_HolePairingPairCount" xml:space="preserve">
+    <value>छेद जोड़ी: {0}। {1}</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>{0} इसे कैसे दबाता है। {1}</value>
@@ -1190,9 +1157,6 @@
   <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
     <value>स्प्रेडशीट से {0} इम्पोर्ट किया गया।</value>
   </data>
-  <data name="Main_InFolder" xml:space="preserve">
-    <value> · {0} में</value>
-  </data>
   <data name="Main_InputI1ForRow" xml:space="preserve">
     <value>पंक्ति {1} के लिए इनपुट {0}</value>
   </data>
@@ -1201,12 +1165,6 @@
   </data>
   <data name="Main_InputNextCol1ForRow" xml:space="preserve">
     <value>पंक्ति {1} के लिए इनपुट {0}</value>
-  </data>
-  <data name="Main_InputPressesOutput" xml:space="preserve">
-    <value>{0} से {1} दबता है</value>
-  </data>
-  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
-    <value>इनपुट (खींचना, फूँकना, जॉयस्टिक)</value>
   </data>
   <data name="Main_InstallToTheQuadStickNamed" xml:space="preserve">
     <value>{0} नाम के QuadStick पर, {1} पर इंस्टॉल करें</value>
@@ -1239,10 +1197,22 @@
     <value>एक कॉपी रखता है जिससे आप कभी भी नई प्रोफ़ाइलें शुरू कर सकते हैं, होम स्क्रीन पर Use template के तहत। किसी प्रोफ़ाइल को संपादित करने या इंस्टॉल करने से उसका टेम्पलेट कभी नहीं बदलता।</value>
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
-    <value>छोड़ने के बाद भी कुछ पल के लिए दबाता रहता है।</value>
+    <value>इनपुट बंद करने के बाद भी आउटपुट थोड़ी देर चालू रहता है।</value>
+  </data>
+  <data name="Main_LabelNote" xml:space="preserve">
+    <value>{0}. {1}</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
     <value>बायां</value>
+  </data>
+  <data name="Main_FunctionBehavior" xml:space="preserve">
+    <value>फ़ंक्शन (व्यवहार)</value>
+  </data>
+  <data name="Main_InputPressesOutput" xml:space="preserve">
+    <value>{0} से {1} दबता है</value>
+  </data>
+  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
+    <value>इनपुट (खींचना, फूँकना, जॉयस्टिक)</value>
   </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>बायां बंपर</value>
@@ -1250,23 +1220,23 @@
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
     <value>बायां माउथपीस छेद</value>
   </data>
-  <data name="Main_LeftStick" xml:space="preserve">
-    <value>बायाँ स्टिक</value>
-  </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
     <value>बायां स्टिक क्लिक</value>
   </data>
   <data name="Main_LeftTrigger" xml:space="preserve">
     <value>बायां ट्रिगर</value>
   </data>
-  <data name="Main_Lip" xml:space="preserve">
-    <value>होंठ</value>
-  </data>
   <data name="Main_LipSwitch" xml:space="preserve">
     <value>लिप स्विच</value>
   </data>
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>इस प्रोफ़ाइल का ऑनलाइन वर्शन लोड किया गया। आपकी पिछली लोकल कॉपी rescue फोल्डर में है।</value>
+  </data>
+  <data name="Main_MainControls" xml:space="preserve">
+    <value>मुख्य नियंत्रण</value>
+  </data>
+  <data name="Main_MainControlsCount" xml:space="preserve">
+    <value>मुख्य नियंत्रण। छेद, साइड ट्यूब, लिप स्विच और जॉयस्टिक। {0}</value>
   </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>अपने QuadStick पर फ़ाइलें प्रबंधित करना</value>
@@ -1277,17 +1247,17 @@
   <data name="Main_MapTokenToANew" xml:space="preserve">
     <value>{1} पर एक नई मैपिंग में {0} को मैप करें</value>
   </data>
-  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
-    <value>मैपिंग {0}: {1} से {2}{3}। संपादित करने के लिए Enter दबाएँ।</value>
-  </data>
-  <data name="Main_MappingNumber" xml:space="preserve">
-    <value>मैपिंग {0}</value>
-  </data>
   <data name="Main_MappingRowSpoken" xml:space="preserve">
     <value>मैपिंग {0}: जब आप {2}{3} करें, तब {1} दबाएं। संपादित करने के लिए Enter दबाएं।</value>
   </data>
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>मैपिंग {0}: जब आप {2} करें, एक के बाद एक{3}, तब {1} दबाएं। संपादित करने के लिए Enter दबाएं।</value>
+  </data>
+  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
+    <value>मैपिंग {0}: {1} से {2}{3}। संपादित करने के लिए Enter दबाएँ।</value>
+  </data>
+  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
+    <value>इस मैपिंग को संपादित करने या टिप्पणी जोड़ने के लिए क्लिक करें।</value>
   </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>मैपिंग्स सरल वाक्य कार्ड के रूप में दिखती हैं। विस्तृत संपादक पर स्विच करें।</value>
@@ -1298,6 +1268,9 @@
   <data name="Main_MenuButton" xml:space="preserve">
     <value>मेन्यू बटन</value>
   </data>
+  <data name="Main_ModeLabelToken" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>मोड: {0}</value>
   </data>
@@ -1306,12 +1279,6 @@
   </data>
   <data name="Main_ModeSettings" xml:space="preserve">
     <value>मोड सेटिंग्स</value>
-  </data>
-  <data name="Main_Mouse" xml:space="preserve">
-    <value>माउस</value>
-  </data>
-  <data name="Main_Move" xml:space="preserve">
-    <value>हिलाएँ</value>
   </data>
   <data name="Main_MoveRowBRowWord" xml:space="preserve">
     <value>पंक्ति {0} को {1} ले जाएं</value>
@@ -1324,9 +1291,6 @@
   </data>
   <data name="Main_MovedTheTextFromI" xml:space="preserve">
     <value>{0} से टेक्स्ट नोट्स कॉलम में ले जाया गया।</value>
-  </data>
-  <data name="Main_Movement" xml:space="preserve">
-    <value>गति</value>
   </data>
   <data name="Main_MovingTheWholeMouthpieceWith" xml:space="preserve">
     <value>अपने मुंह से पूरे माउथपीस को हिलाना जॉयस्टिक की तरह काम करता है। ऊपर, नीचे, बाएं, दाएं, और सभी 8 दिशाओं में से हर एक कुछ दबा सकती है।</value>
@@ -1406,11 +1370,17 @@
   <data name="Main_NotNowKeepTheReport" xml:space="preserve">
     <value>अभी नहीं, रिपोर्ट रखें और बाद में फिर पूछें</value>
   </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>एमुलेशन मोड सेट करें</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>एमुलेशन मोड {0} पर सेट करें, जो {1} के रूप में लिखा जाता है</value>
+  </data>
+  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
+    <value>यह प्रोफ़ाइल {0} को मैप करती है जो आपके {1} में नहीं हैं। वे बाईं ओर की सूची में हैं और इन्हें अब भी संपादित किया जा सकता है।</value>
+  </data>
   <data name="Main_NotOnModel" xml:space="preserve">
     <value>मॉडल पर नहीं</value>
-  </data>
-  <data name="Main_NotOnYourModel" xml:space="preserve">
-    <value>आपके मॉडल पर नहीं</value>
   </data>
   <data name="Main_NotOnYourModelName" xml:space="preserve">
     <value>आपके {0} पर नहीं है</value>
@@ -1418,11 +1388,20 @@
   <data name="Main_NotOnYourModelNameParts" xml:space="preserve">
     <value>{0}। {1}, {2}। सूची खोलता है।</value>
   </data>
+  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
+    <value>ये पंक्तियाँ फ़ाइल में बनी रहती हैं और इन्हें अब भी संपादित किया जा सकता है। किसी भाग को चुनें ताकि उसकी मैपिंग खुले।</value>
+  </data>
+  <data name="Main_NotOnYourModel" xml:space="preserve">
+    <value>आपके मॉडल पर नहीं</value>
+  </data>
   <data name="Main_NotUsedYetOnThis" xml:space="preserve">
     <value>इस पार्ट पर अभी उपयोग नहीं हुआ ({0})</value>
   </data>
   <data name="Main_Note" xml:space="preserve">
     <value>नोट</value>
+  </data>
+  <data name="Main_NoteSummary" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
   <data name="Main_NoteForRowBRow" xml:space="preserve">
     <value>पंक्ति {0} के लिए नोट। फ़ाइल में सेव होता है, QuadStick इसे अनदेखा करता है</value>
@@ -1435,9 +1414,6 @@
   </data>
   <data name="Main_NoteLabel" xml:space="preserve">
     <value>नोट</value>
-  </data>
-  <data name="Main_NoteSummary" xml:space="preserve">
-    <value>{0}: {1}</value>
   </data>
   <data name="Main_NothingMappedHereYet" xml:space="preserve">
     <value>यहां अभी कुछ भी मैप नहीं किया गया है।</value>
@@ -1469,13 +1445,13 @@
     <value>{0} के लिए नंबर, वैकल्पिक, स्पेस से अलग किए गए पूर्ण अंक।</value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>एक बार सक्रिय करने पर यह ऑन होकर लॉक हो जाता है, अगली बार करने पर यह छूट जाता है।</value>
+    <value>एक बार दबाने पर चालू, दोबारा दबाने पर बंद। इनपुट छोड़ने के बाद भी आउटपुट चालू रहता है।</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
     <value>एक CSV फ़ाइल जो QuadStick को बताती है कि कौन सा sip, puff, लिप प्रेस, या जॉयस्टिक मूव कौन सा गेम बटन दबाता है। एक प्रोफ़ाइल में एक या ज़्यादा मोड शीट होती हैं: पूरे कंट्रोल लेआउट जिनके बीच आप खेलते समय स्विच करते हैं (वॉकिंग लेआउट, ड्राइविंग लेआउट, मेन्यू)। गेम में मोड बदलने के लिए साइड ट्यूब पर Sip या puff करें, या increment_mode / decrement_mode बाइंड करें।</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
-    <value>हर बार सक्रिय करने पर एक छोटा प्रेस।</value>
+    <value>हर बार इनपुट चालू करने पर एक छोटा दबाव, चाहे आप उसे कितनी भी देर पकड़े रखें।</value>
   </data>
   <data name="Main_OneSwitchIn1" xml:space="preserve">
     <value>एक स्विच: 1 में</value>
@@ -1525,17 +1501,11 @@
   <data name="Main_PathGetFileNamePathIsRemoved" xml:space="preserve">
     <value>{0} इस कंप्यूटर से हमेशा के लिए हटा दिया गया है। आपके QuadStick या Google Sheets में मौजूद कॉपी को छुआ नहीं गया है।</value>
   </data>
-  <data name="Main_PickWord" xml:space="preserve">
-    <value>{0} चुनें</value>
-  </data>
   <data name="Main_Picks0NameNoProfileTabRead" xml:space="preserve">
     <value>{0}: {1}</value>
   </data>
   <data name="Main_PlugInTheQuadStickIt" xml:space="preserve">
     <value>QuadStick को प्लग इन करें; यह USB ड्राइव की तरह दिखता है। Install पुरानी फ़ाइल को QuadStickBackups में बैकअप करता है, एक टेम्प कॉपी लिखता है, उसे जांचता है, फिर उसे बदल देता है। त्रुटियां इंस्टॉल को रोक देती हैं। default.csv को ओवरराइट करने से पहले हमेशा पूछा जाता है।</value>
-  </data>
-  <data name="Main_PlusMore" xml:space="preserve">
-    <value> +{0} और</value>
   </data>
   <data name="Main_PortExplain" xml:space="preserve">
     <value>{0}। {1}</value>
@@ -1562,19 +1532,13 @@
     <value>दबाएं</value>
   </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
-    <value>बार-बार ऑन और ऑफ होते हुए दबाता रहता है।</value>
+    <value>आउटपुट कितनी देर चालू रहता है, यह इस पर निर्भर करता है कि आप कितने ज़ोर से सिप या पफ़ करते हैं या स्टिक को धकेलते हैं।</value>
   </data>
   <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
     <value>समस्या क्लिपबोर्ड में कॉपी कर दी गई।</value>
   </data>
   <data name="Main_ProfilesYouAlreadyMadeFrom" xml:space="preserve">
     <value>इस टेम्पलेट से पहले बनाई गई प्रोफ़ाइलें प्रभावित नहीं होंगी। इसे पूर्ववत नहीं किया जा सकता।</value>
-  </data>
-  <data name="Main_Puff" xml:space="preserve">
-    <value>फूँकना</value>
-  </data>
-  <data name="Main_Push" xml:space="preserve">
-    <value>दबाना</value>
   </data>
   <data name="Main_PuttingThisProfileInGoogle" xml:space="preserve">
     <value>इस प्रोफ़ाइल को Google Sheets में डाला जा रहा है...</value>
@@ -1601,7 +1565,7 @@
     <value>क्विक गाइड</value>
   </data>
   <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
-    <value>जब तक आपका इनपुट दबा रहता है, तब तक तेज़ी से बार-बार टैप करता है।</value>
+    <value>जब तक आप इनपुट पकड़े रखते हैं, आउटपुट बार-बार दबता रहता है।</value>
   </data>
   <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
     <value>प्राइवेसी पॉलिसी पढ़ें</value>
@@ -1663,9 +1627,6 @@
   <data name="Main_RightSideTube" xml:space="preserve">
     <value>दायां + साइड ट्यूब</value>
   </data>
-  <data name="Main_RightStick" xml:space="preserve">
-    <value>दायाँ स्टिक</value>
-  </data>
   <data name="Main_RightStickClick" xml:space="preserve">
     <value>दायां स्टिक क्लिक</value>
   </data>
@@ -1678,14 +1639,20 @@
   <data name="Main_RowNotSelected" xml:space="preserve">
     <value>{0}। Space चुनता है, खींचने पर क्रम बदलता है</value>
   </data>
-  <data name="Main_RowNumber" xml:space="preserve">
-    <value>पंक्ति {0}</value>
+  <data name="Main_RowSendingNow" xml:space="preserve">
+    <value>{0}। QuadStick अभी यह भेज रहा है</value>
+  </data>
+  <data name="Main_SendingNow" xml:space="preserve">
+    <value>QuadStick अभी यह भेज रहा है</value>
+  </data>
+  <data name="Main_WhatALitRowMeans" xml:space="preserve">
+    <value>जब QuadStick किसी पंक्ति का आउटपुट भेज रहा होता है तब वह पंक्ति जलती है। डिवाइस कभी नहीं बताता कि वह कौन सी फ़ाइल या कौन सा मोड चला रहा है, इसलिए यहाँ खुली प्रोफ़ाइल से अलग किसी प्रोफ़ाइल के कारण भी कोई पंक्ति जल सकती है। माउस, कीबोर्ड और इन्फ़्रारेड आउटपुट दूसरे कनेक्शन से जाते हैं और कभी नहीं जलते।</value>
+  </data>
+  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
+    <value>ऐप को इस एमुलेशन मोड की रिपोर्ट पढ़ना नहीं सिखाया गया है, इसलिए QuadStick के इस मोड में रहते हुए कोई पंक्ति नहीं जलेगी।</value>
   </data>
   <data name="Main_RowSelected" xml:space="preserve">
     <value>{0}, चयनित। Space चुनता है, खींचने पर क्रम बदलता है</value>
-  </data>
-  <data name="Main_RowSendingNow" xml:space="preserve">
-    <value>{0}। QuadStick अभी यह भेज रहा है</value>
   </data>
   <data name="Main_RowsThatPressAGame" xml:space="preserve">
     <value>ऐसी पंक्तियां जो गेम बटन दबाती हैं लेकिन अभी उन्हें कुछ भी ट्रिगर नहीं करता। हर एक को कोई इनपुट दें, या उसे हटा दें।</value>
@@ -1741,12 +1708,6 @@
   <data name="Main_SendThisCrashReport" xml:space="preserve">
     <value>यह क्रैश रिपोर्ट भेजें</value>
   </data>
-  <data name="Main_SendingNow" xml:space="preserve">
-    <value>QuadStick अभी यह भेज रहा है</value>
-  </data>
-  <data name="Main_Sequence" xml:space="preserve">
-    <value>अनुक्रम</value>
-  </data>
   <data name="Main_SetItTo" xml:space="preserve">
     <value>इसे इस पर सेट करें</value>
   </data>
@@ -1783,9 +1744,6 @@
   <data name="Main_SingletonASingleSipPuff" xml:space="preserve">
     <value>Singleton: जॉयस्टिक पर एक ही sip/puff ट्यूब। sip और puff पैटर्न के साथ-साथ जॉयस्टिक की गति का उपयोग करता है।</value>
   </data>
-  <data name="Main_Sip" xml:space="preserve">
-    <value>खींचना</value>
-  </data>
   <data name="Main_SipOrPuffOnThe" xml:space="preserve">
     <value>बाएं माउथपीस छेद पर Sip या puff करें। हल्के sip या puff से कुछ अलग हो सकता है (सॉफ्ट वैरिएंट)।</value>
   </data>
@@ -1798,14 +1756,53 @@
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
     <value>साइड ट्यूब पर Sip या puff करें। यहां एक लंबा तेज़ sip आमतौर पर प्रोफ़ाइल बदल देता है, लेकिन आप इसे भी मैप कर सकते हैं।</value>
   </data>
-  <data name="Main_SoftLip" xml:space="preserve">
-    <value>हल्का होंठ</value>
-  </data>
   <data name="Main_SoftPuff" xml:space="preserve">
     <value>हल्की फूँक</value>
   </data>
+  <data name="Main_Puff" xml:space="preserve">
+    <value>फूँकना</value>
+  </data>
+  <data name="Main_Sip" xml:space="preserve">
+    <value>खींचना</value>
+  </data>
   <data name="Main_SoftSip" xml:space="preserve">
     <value>हल्का खिंचाव</value>
+  </data>
+  <data name="Main_Lip" xml:space="preserve">
+    <value>होंठ</value>
+  </data>
+  <data name="Main_SoftLip" xml:space="preserve">
+    <value>हल्का होंठ</value>
+  </data>
+  <data name="Main_Push" xml:space="preserve">
+    <value>दबाना</value>
+  </data>
+  <data name="Main_Movement" xml:space="preserve">
+    <value>गति</value>
+  </data>
+  <data name="Main_LeftStick" xml:space="preserve">
+    <value>बायाँ स्टिक</value>
+  </data>
+  <data name="Main_RightStick" xml:space="preserve">
+    <value>दायाँ स्टिक</value>
+  </data>
+  <data name="Main_Mouse" xml:space="preserve">
+    <value>माउस</value>
+  </data>
+  <data name="Main_ExtraActions" xml:space="preserve">
+    <value>+ {0} और क्रियाएँ</value>
+  </data>
+  <data name="Main_ViewDetails" xml:space="preserve">
+    <value>विवरण देखें →</value>
+  </data>
+  <data name="Main_Sequence" xml:space="preserve">
+    <value>अनुक्रम</value>
+  </data>
+  <data name="Count_Action_one" xml:space="preserve">
+    <value>{0} क्रिया</value>
+  </data>
+  <data name="Count_Action_other" xml:space="preserve">
+    <value>{0} क्रियाएँ</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>{0} पर एक नई मैपिंग शुरू करें</value>
@@ -1820,10 +1817,10 @@
     <value>टेम्पलेट {0} से शुरू किया गया। इसे अपनी खुद की प्रोफ़ाइल के रूप में रखने के लिए सेव करें।</value>
   </data>
   <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
-    <value>एक एनालॉग आउटपुट को एक पायदान नीचे करता है और उसे वहीं छोड़ देता है, जैसे कोई ट्रिगर या स्टिक एक्सिस।</value>
+    <value>हर बार इनपुट चालू करने पर एनालॉग आउटपुट एक कदम घटाता है और उसे वहीं रखता है।</value>
   </data>
   <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
-    <value>एक एनालॉग आउटपुट को एक पायदान ऊपर करता है और उसे वहीं छोड़ देता है, जैसे कोई ट्रिगर या स्टिक एक्सिस।</value>
+    <value>हर बार इनपुट चालू करने पर एनालॉग आउटपुट एक कदम बढ़ाता है और उसे वहीं रखता है।</value>
   </data>
   <data name="Main_StopAsking" xml:space="preserve">
     <value>पूछना बंद करें</value>
@@ -1884,9 +1881,6 @@
   <data name="Main_ThenJoin" xml:space="preserve">
     <value>, फिर</value>
   </data>
-  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
-    <value>ये पंक्तियाँ फ़ाइल में बनी रहती हैं और इन्हें अब भी संपादित किया जा सकता है। किसी भाग को चुनें ताकि उसकी मैपिंग खुले।</value>
-  </data>
   <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
     <value>ये टैब छोड़ दिए गए:</value>
   </data>
@@ -1901,9 +1895,6 @@
 
 आप इसे कभी भी Settings में, Advanced के तहत बदल सकते हैं।</value>
   </data>
-  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
-    <value>ऐप को इस एमुलेशन मोड की रिपोर्ट पढ़ना नहीं सिखाया गया है, इसलिए QuadStick के इस मोड में रहते हुए कोई पंक्ति नहीं जलेगी।</value>
-  </data>
   <data name="Main_ThisLinkIsAPublished" xml:space="preserve">
     <value>यह लिंक एक पब्लिश किया हुआ लिंक है, और पब्लिश किया हुआ लिंक हमेशा सिर्फ़ एक ही टैब देता है। स्प्रेडशीट के बाकी मोड टैब हमें बिल्कुल नहीं भेजे गए, इसलिए हम यह नहीं बता सकते कि उनमें क्या है। पूरी प्रोफ़ाइल लाने के लिए, Google Sheets में शीट को "Anyone with the link" के साथ शेयर करें और उसे फिर से इम्पोर्ट करें।</value>
   </data>
@@ -1915,9 +1906,6 @@
   </data>
   <data name="Main_ThisProfileLivesOnThe" xml:space="preserve">
     <value>यह प्रोफ़ाइल QuadStick पर मौजूद है। इसे सुरक्षित रूप से वापस लिखने के लिए Install का उपयोग करें; Save As आपकी लाइब्रेरी में एक कॉपी रखता है।</value>
-  </data>
-  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
-    <value>यह प्रोफ़ाइल {0} को मैप करती है जो आपके {1} में नहीं हैं। वे बाईं ओर की सूची में हैं और इन्हें अब भी संपादित किया जा सकता है।</value>
   </data>
   <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
     <value>यह पंक्ति बटन दबाने के बजाय एक QuadStick सेटिंग सेट करती है। यह तब लागू होती है जब यह मोड चल रहा हो।</value>
@@ -1950,7 +1938,7 @@
     <value>{0}, इस मोड में उपयोग नहीं हुआ</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>उस आउटपुट को बंद करता है जिसे toggle या delayed_latch ने ऑन छोड़ दिया था।</value>
+    <value>किसी आउटपुट को ज़बरदस्ती बंद करता है। किसी दूसरी पंक्ति ने जिस बटन को टॉगल या लैच किया हो, उसे छोड़ने में उपयोगी।</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>एक साथ दो या ज़्यादा छेद का उपयोग, तीनों एक साथ, या दायां छेद साइड ट्यूब के साथ। उन क्रियाओं के लिए अच्छा जिन्हें आप कभी गलती से ट्रिगर नहीं करना चाहते।</value>
@@ -1991,9 +1979,6 @@
   <data name="Main_UseTemplate" xml:space="preserve">
     <value>टेम्पलेट का उपयोग करें</value>
   </data>
-  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
-    <value>इस मोड में {0} बार उपयोग हुआ</value>
-  </data>
   <data name="Main_UsingDeviceView" xml:space="preserve">
     <value>डिवाइस दृश्य का उपयोग कर रहे हैं</value>
   </data>
@@ -2003,14 +1988,8 @@
   <data name="Main_ViewButton" xml:space="preserve">
     <value>दृश्य बटन</value>
   </data>
-  <data name="Main_ViewDetails" xml:space="preserve">
-    <value>विवरण देखें →</value>
-  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
-    <value>आपके सक्रिय करने के बाद एक क्षण रुकता है, फिर दबाता है।</value>
-  </data>
-  <data name="Main_WhatALitRowMeans" xml:space="preserve">
-    <value>जब QuadStick किसी पंक्ति का आउटपुट भेज रहा होता है तब वह पंक्ति जलती है। डिवाइस कभी नहीं बताता कि वह कौन सी फ़ाइल या कौन सा मोड चला रहा है, इसलिए यहाँ खुली प्रोफ़ाइल से अलग किसी प्रोफ़ाइल के कारण भी कोई पंक्ति जल सकती है। माउस, कीबोर्ड और इन्फ़्रारेड आउटपुट दूसरे कनेक्शन से जाते हैं और कभी नहीं जलते।</value>
+    <value>आउटपुट चालू होने से पहले आपको इनपुट एक तय समय तक पकड़े रखना पड़ता है। इससे छोटा टैप और लंबी पकड़ अलग हो जाते हैं।</value>
   </data>
   <data name="Main_WhatIsAMode" xml:space="preserve">
     <value>मोड क्या है?</value>
@@ -2023,6 +2002,12 @@
   </data>
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>जब आप</value>
+  </data>
+  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
+    <value>यह फ़ाइल QuadStick को कौन-सा कंट्रोलर बनाकर दिखाती है। आप इसे बाद में बदल या हटा सकते हैं।</value>
+  </data>
+  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
+    <value>यह फ़ाइल QuadStick को कौन-सा कंट्रोलर बनाकर दिखाती है। डिवाइस इसी फ़ाइल से बूट होता है, इसलिए सिर्फ़ वही मोड दिए जाते हैं जिनमें उसकी ड्राइव पहुँच में रहती है।</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>शब्द रॉ लिस्ट-व्यू नामों के रूप में दिखाए जा रहे हैं। सामान्य अंग्रेज़ी पर स्विच करें।</value>
@@ -2108,6 +2093,9 @@
   <data name="Modes_CloseModes" xml:space="preserve">
     <value>मोड बंद करें</value>
   </data>
+  <data name="Modes_Connection" xml:space="preserve">
+    <value>कनेक्शन</value>
+  </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>कनेक्शन साफ़ किया गया। डिवाइस USB केबल पर वापस चला जाता है।</value>
   </data>
@@ -2117,14 +2105,14 @@
   <data name="Modes_ConnectionSetToPickedItem2" xml:space="preserve">
     <value>कनेक्शन {0} पर सेट किया गया।</value>
   </data>
-  <data name="Modes_DeleteName" xml:space="preserve">
-    <value>{0} हटाएँ</value>
-  </data>
   <data name="Modes_Done" xml:space="preserve">
     <value>हो गया</value>
   </data>
   <data name="Modes_MakeACopyOfName" xml:space="preserve">
     <value>{0} की एक प्रति बनाएँ</value>
+  </data>
+  <data name="Modes_Mode" xml:space="preserve">
+    <value>मोड</value>
   </data>
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>मोड जोड़ा गया।</value>
@@ -2143,12 +2131,6 @@
   </data>
   <data name="Modes_Modes" xml:space="preserve">
     <value>मोड</value>
-  </data>
-  <data name="Modes_MoveNameDown" xml:space="preserve">
-    <value>{0} को नीचे ले जाएँ</value>
-  </data>
-  <data name="Modes_MoveNameUp" xml:space="preserve">
-    <value>{0} को ऊपर ले जाएँ</value>
   </data>
   <data name="Modes_NameOfModeOrdinal" xml:space="preserve">
     <value>मोड {0} का नाम</value>
@@ -2185,9 +2167,6 @@
   </data>
   <data name="Modes_USBCable" xml:space="preserve">
     <value>USB केबल</value>
-  </data>
-  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
-    <value>मोड {0}</value>
   </data>
   <data name="Names_ANameHasToBe" xml:space="preserve">
     <value>नाम 1 से {0} अक्षरों का होना चाहिए।</value>
@@ -2243,14 +2222,8 @@
   <data name="Names_Removed" xml:space="preserve">
     <value>{0} हटाया गया।</value>
   </data>
-  <data name="Names_RenamedOldToNew" xml:space="preserve">
-    <value>{0} का नाम बदलकर {1} किया गया।</value>
-  </data>
   <data name="Names_ThisProfileAlreadyHasA" xml:space="preserve">
     <value>इस प्रोफ़ाइल में पहले से ही "{0}" नाम मौजूद है।</value>
-  </data>
-  <data name="Names_UsedOnCount" xml:space="preserve">
-    <value>{0} पर</value>
   </data>
   <data name="Names_YourNameForHumanizeToken" xml:space="preserve">
     <value>{0} के लिए आपका नाम</value>
@@ -2291,17 +2264,32 @@
   <data name="Outputs_NumberPad2" xml:space="preserve">
     <value>नंबर पैड</value>
   </data>
+  <data name="Outputs_OtherButtons" xml:space="preserve">
+    <value>अन्य बटन</value>
+  </data>
   <data name="Outputs_OtherKeys" xml:space="preserve">
     <value>अन्य कीज़</value>
   </data>
   <data name="Outputs_OtherKeys2" xml:space="preserve">
     <value>अन्य कीज़</value>
   </data>
+  <data name="Outputs_PlayStationButtons" xml:space="preserve">
+    <value>PlayStation बटन</value>
+  </data>
   <data name="Outputs_TVRemote" xml:space="preserve">
     <value>TV रिमोट</value>
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>TV रिमोट</value>
+  </data>
+  <data name="Outputs_XboxButtons" xml:space="preserve">
+    <value>Xbox बटन</value>
+  </data>
+  <data name="Prefs_OffZero" xml:space="preserve">
+    <value>बंद (0)</value>
+  </data>
+  <data name="Prefs_OnOne" xml:space="preserve">
+    <value>चालू (1)</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>{0} के बारे में: {1}</value>
@@ -2353,12 +2341,6 @@
   </data>
   <data name="Prefs_NotesForRowSaved" xml:space="preserve">
     <value>पंक्ति {0} के लिए नोट्स। फ़ाइल में सहेजा गया, QuadStick द्वारा अनदेखा किया गया</value>
-  </data>
-  <data name="Prefs_OffZero" xml:space="preserve">
-    <value>बंद (0)</value>
-  </data>
-  <data name="Prefs_OnOne" xml:space="preserve">
-    <value>चालू (1)</value>
   </data>
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}। {1}</value>
@@ -2438,9 +2420,6 @@
   <data name="Review_Done" xml:space="preserve">
     <value>हो गया</value>
   </data>
-  <data name="Review_EmptiedCell" xml:space="preserve">
-    <value>{0} खाली किया गया।</value>
-  </data>
   <data name="Review_EmptyCellWhere" xml:space="preserve">
     <value>खाली सेल {0}</value>
   </data>
@@ -2501,9 +2480,6 @@
   <data name="Review_ModeIsNamedAfterIts" xml:space="preserve">
     <value>मोड का नाम उसके शीट टैब के नाम पर रखा गया है</value>
   </data>
-  <data name="Review_ModeNumberTitle" xml:space="preserve">
-    <value>मोड {0}: {1}</value>
-  </data>
   <data name="Review_ModeRModeNumberIsCalled" xml:space="preserve">
     <value>मोड {0} को उसके शीट टैब के अनुसार "{1}" कहा जाता है। उस मोड का नाम सेल खाली था।</value>
   </data>
@@ -2539,9 +2515,6 @@
   </data>
   <data name="Review_MoveWordIntoTheNotes" xml:space="preserve">
     <value>"{0}" को नोट्स कॉलम में ले जाएँ, जहाँ QuadStick कभी नहीं देखता</value>
-  </data>
-  <data name="Review_MovedFromTo" xml:space="preserve">
-    <value>«{0}» को {1} से {2} में ले जाया गया।</value>
   </data>
   <data name="Review_MovedValueFromWhereInto" xml:space="preserve">
     <value>"{0}" को {1} से नोट कॉलम में ले जाया गया।</value>
@@ -2585,14 +2558,8 @@
   <data name="Review_PartOfTheRowThat" xml:space="preserve">
     <value>पंक्ति का वह हिस्सा जो एक मोड खोलता है</value>
   </data>
-  <data name="Review_RowNumber" xml:space="preserve">
-    <value>पंक्ति {0}</value>
-  </data>
   <data name="Review_SaveCell" xml:space="preserve">
     <value>सेल सहेजें</value>
-  </data>
-  <data name="Review_SetCellTo" xml:space="preserve">
-    <value>{0} को «{1}» पर सेट किया गया।</value>
   </data>
   <data name="Review_ShowTheSpreadsheetWithThe" xml:space="preserve">
     <value>ऐप की रीडिंग के निशान के साथ स्प्रेडशीट दिखाएँ</value>
@@ -2759,26 +2726,26 @@
   <data name="Settings_CancelConnect" xml:space="preserve">
     <value>Google से जुड़ना रद्द करें</value>
   </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>अपडेट जाँचें</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>जाँच हो रही है...</value>
+  </data>
   <data name="Settings_CardSentenceStyle" xml:space="preserve">
     <value>मैपिंग कार्ड की शब्दावली</value>
   </data>
   <data name="Settings_CardSentenceStyleCaption" xml:space="preserve">
     <value>चुनें कि कार्ड आउटपुट से शुरू हों या इनपुट से। इससे सिर्फ़ कार्ड पढ़ने का तरीका बदलता है, QuadStick का काम नहीं।</value>
   </data>
-  <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
-    <value>खींचने पर X दबाएँ</value>
-  </data>
   <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
     <value>मैपिंग कार्ड की शब्दावली: आउटपुट पहले या इनपुट पहले वाले वाक्य चुनें</value>
   </data>
+  <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
+    <value>खींचने पर X दबाएँ</value>
+  </data>
   <data name="Settings_CardSentenceStyleInputFirst" xml:space="preserve">
     <value>X के लिए खींचें</value>
-  </data>
-  <data name="Settings_CheckUpdates" xml:space="preserve">
-    <value>अपडेट जाँचें</value>
-  </data>
-  <data name="Settings_Checking" xml:space="preserve">
-    <value>जाँच हो रही है...</value>
   </data>
   <data name="Settings_Close" xml:space="preserve">
     <value>बंद करें</value>
@@ -2836,9 +2803,6 @@
   </data>
   <data name="Settings_ImportDriveHelp" xml:space="preserve">
     <value>अपनी प्रोफ़ाइलें Google Drive से इंपोर्ट करें</value>
-  </data>
-  <data name="Settings_InstallIdIs" xml:space="preserve">
-    <value>इंस्टॉल आईडी: {0}</value>
   </data>
   <data name="Settings_Language" xml:space="preserve">
     <value>भाषा</value>
@@ -3251,11 +3215,11 @@
   <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
     <value>पंक्तियों को उसी तरह देखें जैसे शीट उन्हें सहेजती है  (Ctrl+D)</value>
   </data>
-  <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
-    <value>ले जाने, हटाने या खाली करने के लिए पंक्तियाँ चुनें</value>
-  </data>
   <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
     <value>संपादित करने के लिए मोड चुनें</value>
+  </data>
+  <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
+    <value>ले जाने, हटाने या खाली करने के लिए पंक्तियाँ चुनें</value>
   </data>
   <data name="Shell_SetUpAGame" xml:space="preserve">
     <value>एक गेम सेट अप करें</value>
@@ -3403,5 +3367,101 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>आप {0} पर हैं, जो सबसे नया है।</value>
+  </data>
+  <data name="Count_RowCopied_one" xml:space="preserve">
+    <value>{0} पंक्ति {1} में कॉपी की गई। Ctrl+Z से वापस हो जाएगी।</value>
+  </data>
+  <data name="Count_RowCopied_other" xml:space="preserve">
+    <value>{0} पंक्तियाँ {1} में कॉपी की गईं। Ctrl+Z से वापस हो जाएँगी।</value>
+  </data>
+  <data name="Main_CopyToMode" xml:space="preserve">
+    <value>मोड में कॉपी करें</value>
+  </data>
+  <data name="Main_Move" xml:space="preserve">
+    <value>हिलाएँ</value>
+  </data>
+  <data name="Main_DuplicateMark" xml:space="preserve">
+    <value>×{0}</value>
+  </data>
+  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
+    <value>इस मोड में {0} बार उपयोग हुआ</value>
+  </data>
+  <data name="Count_Profile_one" xml:space="preserve">
+    <value>{0} प्रोफ़ाइल</value>
+  </data>
+  <data name="Count_Profile_other" xml:space="preserve">
+    <value>{0} प्रोफ़ाइलें</value>
+  </data>
+  <data name="Count_File_one" xml:space="preserve">
+    <value>{0} फ़ाइल</value>
+  </data>
+  <data name="Count_File_other" xml:space="preserve">
+    <value>{0} फ़ाइलें</value>
+  </data>
+  <data name="Names_UsedOnCount" xml:space="preserve">
+    <value>{0} पर</value>
+  </data>
+  <data name="Names_RenamedOldToNew" xml:space="preserve">
+    <value>{0} का नाम बदलकर {1} किया गया।</value>
+  </data>
+  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
+    <value>{1} पर {0}।</value>
+  </data>
+  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
+    <value>{1} से {0} हटाएँ?</value>
+  </data>
+  <data name="Drive_RestoreImported" xml:space="preserve">
+    <value>{0} आयात की गईं</value>
+  </data>
+  <data name="Drive_RestoreSkipped" xml:space="preserve">
+    <value>{0} छोड़ी गईं: </value>
+  </data>
+  <data name="Drive_RestoreFailed" xml:space="preserve">
+    <value>{0} विफल: </value>
+  </data>
+  <data name="Review_RowNumber" xml:space="preserve">
+    <value>पंक्ति {0}</value>
+  </data>
+  <data name="Review_EmptiedCell" xml:space="preserve">
+    <value>{0} खाली किया गया।</value>
+  </data>
+  <data name="Review_MovedFromTo" xml:space="preserve">
+    <value>«{0}» को {1} से {2} में ले जाया गया।</value>
+  </data>
+  <data name="Review_SetCellTo" xml:space="preserve">
+    <value>{0} को «{1}» पर सेट किया गया।</value>
+  </data>
+  <data name="Review_ModeNumberTitle" xml:space="preserve">
+    <value>मोड {0}: {1}</value>
+  </data>
+  <data name="Main_InFolder" xml:space="preserve">
+    <value> · {0} में</value>
+  </data>
+  <data name="Main_PlusMore" xml:space="preserve">
+    <value> +{0} और</value>
+  </data>
+  <data name="Main_MappingNumber" xml:space="preserve">
+    <value>मैपिंग {0}</value>
+  </data>
+  <data name="Main_RowNumber" xml:space="preserve">
+    <value>पंक्ति {0}</value>
+  </data>
+  <data name="Main_PickWord" xml:space="preserve">
+    <value>{0} चुनें</value>
+  </data>
+  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
+    <value>मोड {0}</value>
+  </data>
+  <data name="Modes_MoveNameUp" xml:space="preserve">
+    <value>{0} को ऊपर ले जाएँ</value>
+  </data>
+  <data name="Modes_MoveNameDown" xml:space="preserve">
+    <value>{0} को नीचे ले जाएँ</value>
+  </data>
+  <data name="Modes_DeleteName" xml:space="preserve">
+    <value>{0} हटाएँ</value>
+  </data>
+  <data name="Settings_InstallIdIs" xml:space="preserve">
+    <value>इंस्टॉल आईडी: {0}</value>
   </data>
 </root>

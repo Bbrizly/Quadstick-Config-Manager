@@ -491,9 +491,6 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Verwenden Sie {0} oder mehr.</value>
   </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Verwenden Sie {0} bis {1}. {2}</value>
-  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Verwenden Sie hier Modus 0, 2, 3 oder 4, und setzen Sie den anderen Modus stattdessen in einem Spielprofil.</value>
   </data>
@@ -685,5 +682,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Diese Tabelle ist größer als {0} Zeilen, weit größer als jedes Profil, daher haben wir das Lesen auf halbem Weg gestoppt.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Verwenden Sie {0} bis {1}. {2}</value>
   </data>
 </root>

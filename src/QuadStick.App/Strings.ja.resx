@@ -247,12 +247,6 @@
   <data name="Community_TheSavedCopyOfThe" xml:space="preserve">
     <value>保存されたコミュニティリストのコピーにプロファイルはありません。</value>
   </data>
-  <data name="Count_Action_one" xml:space="preserve">
-    <value>{0} 個のアクション</value>
-  </data>
-  <data name="Count_Action_other" xml:space="preserve">
-    <value>{0} 個のアクション</value>
-  </data>
   <data name="Count_Binding_one" xml:space="preserve">
     <value>{0} 個のバインディング</value>
   </data>
@@ -264,12 +258,6 @@
   </data>
   <data name="Count_Error_other" xml:space="preserve">
     <value>{0} 件のエラー</value>
-  </data>
-  <data name="Count_File_one" xml:space="preserve">
-    <value>{0} 個のファイル</value>
-  </data>
-  <data name="Count_File_other" xml:space="preserve">
-    <value>{0} 個のファイル</value>
   </data>
   <data name="Count_Mapping_one" xml:space="preserve">
     <value>{0} 個のマッピング</value>
@@ -294,18 +282,6 @@
   </data>
   <data name="Count_Part_other" xml:space="preserve">
     <value>{0} 個の部品</value>
-  </data>
-  <data name="Count_Profile_one" xml:space="preserve">
-    <value>{0} 個のプロファイル</value>
-  </data>
-  <data name="Count_Profile_other" xml:space="preserve">
-    <value>{0} 個のプロファイル</value>
-  </data>
-  <data name="Count_RowCopied_one" xml:space="preserve">
-    <value>{0} 行を {1} にコピーしました。Ctrl+Z で元に戻せます。</value>
-  </data>
-  <data name="Count_RowCopied_other" xml:space="preserve">
-    <value>{0} 行を {1} にコピーしました。Ctrl+Z で元に戻せます。</value>
   </data>
   <data name="Count_RowDeleted_one" xml:space="preserve">
     <value>{0} 行を削除しました。Ctrl+Z で元に戻せます。</value>
@@ -346,6 +322,12 @@
   <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
     <value>{0} から {1} まで。</value>
   </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>{0} 件の設定を変更</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>{0} 件の設定を変更</value>
+  </data>
   <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
     <value>{0} 件の設定を変更しました。保存を押すまで QuadStick には書き込まれません。</value>
   </data>
@@ -357,12 +339,6 @@
   </data>
   <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
     <value>{0} 件の設定を変更しました。保存するには QuadStick を接続してください。</value>
-  </data>
-  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
-    <value>{0} 件の設定を変更</value>
-  </data>
-  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
-    <value>{0} 件の設定を変更</value>
   </data>
   <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
     <value>QuadStick の設定を読み取れませんでした: {0}</value>
@@ -396,6 +372,15 @@
   </data>
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>QuadStick を探しています...</value>
+  </data>
+  <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
+    <value>QuadStick のドライブを隠すモードはここでは選べません。デバイスはこのファイルで起動するためです。代わりにゲームプロファイルで設定してください。</value>
+  </data>
+  <data name="DevicePage_MoreOptions" xml:space="preserve">
+    <value>その他のオプション</value>
+  </data>
+  <data name="DevicePage_MoreOptionsCount" xml:space="preserve">
+    <value>その他のオプション、{0}</value>
   </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}、{1}〜{2}</value>
@@ -541,9 +526,6 @@
   <data name="Device_CouldNotReadThisDrive" xml:space="preserve">
     <value>このドライブを読み込めませんでした: {0}</value>
   </data>
-  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
-    <value>{1} から {0} を削除しますか?</value>
-  </data>
   <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
     <value>{1} の QuadStick から {0} を削除</value>
   </data>
@@ -597,9 +579,6 @@
   </data>
   <data name="Device_FilesTotalAcrossGroupsCount" xml:space="preserve">
     <value>{1} 個の QuadStick ドライブにわたって {0}。各ドライブは以下に個別に表示されています。</value>
-  </data>
-  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
-    <value>{1} に {0}。</value>
   </data>
   <data name="Device_LinkedToAGoogleSheet" xml:space="preserve">
     <value>、Google スプレッドシートにリンク済み</value>
@@ -721,15 +700,6 @@
   <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
     <value>Google ドライブのバックアップ</value>
   </data>
-  <data name="Drive_RestoreFailed" xml:space="preserve">
-    <value>{0} 失敗: </value>
-  </data>
-  <data name="Drive_RestoreImported" xml:space="preserve">
-    <value>{0} 取り込み済み</value>
-  </data>
-  <data name="Drive_RestoreSkipped" xml:space="preserve">
-    <value>{0} スキップ: </value>
-  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>誤った default.csv を入れるとフラッシュドライブへのアクセスが無効になることがあり、復旧には物理的な強制消去が必要です。まずバックアップを作成します。続行しますか?</value>
   </data>
@@ -813,14 +783,17 @@
 
 ほとんどのプロファイルはモードが 1 つだけなので、このリストには 1 件しか表示されないことがよくあります。それは正常です。</value>
   </data>
+  <data name="Main_APlusB" xml:space="preserve">
+    <value>{0} + {1}</value>
+  </data>
   <data name="Main_AProfileTabStartsWith" xml:space="preserve">
     <value>プロファイルタブはセル A1 に "Profile Name"、"Preferences"、"Infrared" のいずれかで始まります。</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>すばやく押すと 1 つの出力が送られ、長押しすると別の出力が送られます。</value>
+    <value>素早く押して離したときだけ動作します。長く続けても何も起きないので、短く吸う場合と長く吸う場合で別の動作にできます。</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
-    <value>短い操作でタップ動作になり、長い操作でオンのまま固定されます。</value>
+    <value>短く入力すると通常の押下として動作します。入力を十分長く続けると出力はオンのまま固定され、その後の短い入力で解除されます。</value>
   </data>
   <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
     <value>{0} という名前のテンプレートはすでに存在します。</value>
@@ -971,9 +944,6 @@
   <data name="Main_CopyShareLink" xml:space="preserve">
     <value>共有リンクをコピー</value>
   </data>
-  <data name="Main_CopyToMode" xml:space="preserve">
-    <value>モードにコピー</value>
-  </data>
   <data name="Main_CopyYourBackedUpProfiles" xml:space="preserve">
     <value>Google ドライブにバックアップされたプロファイルを今このコンピュータにコピーしますか?</value>
   </data>
@@ -1094,6 +1064,12 @@
   <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
     <value>デバイスは{0}を表示します</value>
   </data>
+  <data name="Main_DoNotSetOne" xml:space="preserve">
+    <value>設定しない</value>
+  </data>
+  <data name="Main_DoNotSetOneTheDevice" xml:space="preserve">
+    <value>設定しません。デバイスは今のモードのままになります。</value>
+  </data>
   <data name="Main_DonTSave" xml:space="preserve">
     <value>保存しない</value>
   </data>
@@ -1103,14 +1079,8 @@
   <data name="Main_DownloadingTheSpreadsheet" xml:space="preserve">
     <value>スプレッドシートをダウンロード中...</value>
   </data>
-  <data name="Main_DuplicateMark" xml:space="preserve">
-    <value>×{0}</value>
-  </data>
   <data name="Main_EditDevicePreferences" xml:space="preserve">
     <value>デバイス設定を編集しますか?</value>
-  </data>
-  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
-    <value>クリックしてこのマッピングを編集するか、メモを追加します。</value>
   </data>
   <data name="Main_Edited" xml:space="preserve">
     <value>編集済み</value>
@@ -1121,9 +1091,6 @@
   <data name="Main_EveryInputOnYourQuadStick" xml:space="preserve">
     <value>QuadStickのすべての入力がこのモードで使用されています。</value>
   </data>
-  <data name="Main_ExtraActions" xml:space="preserve">
-    <value>+ その他 {0} 件のアクション</value>
-  </data>
   <data name="Main_ExtraInputForMappingN" xml:space="preserve">
     <value>マッピング{0}の追加入力</value>
   </data>
@@ -1131,16 +1098,13 @@
     <value>FPS: 3穴マウスピース、サイドチューブ、リップセンサー、背面ジャック。Originalより高精度なジョイスティック。</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
-    <value>入力が設定した強さを超えると発火します。</value>
+    <value>入力が一定の強さを超えると出力をオンにします。ジョイスティックを倒す量で動作を変えたいときに便利です。</value>
   </data>
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
-    <value>入力が設定した強さを下回っている間、発火し続けます。</value>
+    <value>入力が一定の強さより弱い間、出力をオンにします。greater_than の逆です。</value>
   </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>問題を見つけましたか?</value>
-  </data>
-  <data name="Main_FunctionBehavior" xml:space="preserve">
-    <value>機能(動作)</value>
   </data>
   <data name="Main_FunctionForRowBRow" xml:space="preserve">
     <value>行{0}の機能。{1}</value>
@@ -1161,7 +1125,7 @@
     <value>Googleがプロファイルの代わりにWebページを返しました。おそらくシートが公開共有されていません(File &gt; Share &gt; Anyone with the link)。</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
-    <value>入力がアクティブな間、押され続けます。</value>
+    <value>押している間だけ有効になります。入力している間だけ出力がオンになります。</value>
   </data>
   <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
     <value>QuadStick Config Managerの改善に協力</value>
@@ -1174,6 +1138,9 @@
   </data>
   <data name="Main_HoleCombos" xml:space="preserve">
     <value>穴の組み合わせ</value>
+  </data>
+  <data name="Main_HolePairingPairCount" xml:space="preserve">
+    <value>ホールペアリング: {0}。{1}</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>{0}がどのように押すか。{1}</value>
@@ -1190,9 +1157,6 @@
   <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
     <value>スプレッドシートから{0}をインポートしました。</value>
   </data>
-  <data name="Main_InFolder" xml:space="preserve">
-    <value> · {0} 内</value>
-  </data>
   <data name="Main_InputI1ForRow" xml:space="preserve">
     <value>行{1}の入力{0}</value>
   </data>
@@ -1201,12 +1165,6 @@
   </data>
   <data name="Main_InputNextCol1ForRow" xml:space="preserve">
     <value>行{1}の入力{0}</value>
-  </data>
-  <data name="Main_InputPressesOutput" xml:space="preserve">
-    <value>{0} で {1} を押します</value>
-  </data>
-  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
-    <value>入力(吸う、吹く、ジョイスティック)</value>
   </data>
   <data name="Main_InstallToTheQuadStickNamed" xml:space="preserve">
     <value>{1}にある、{0}という名前のQuadStickにインストール</value>
@@ -1239,10 +1197,22 @@
     <value>いつでも新しいプロファイルの作成元にできるコピーを保持します。ホーム画面の「テンプレートを使用」から。プロファイルの編集やインストールでテンプレートが変わることはありません。</value>
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
-    <value>離した後もしばらく押され続けます。</value>
+    <value>入力をやめたあとも、短い時間だけ出力をオンのままにします。</value>
+  </data>
+  <data name="Main_LabelNote" xml:space="preserve">
+    <value>{0}. {1}</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
     <value>左</value>
+  </data>
+  <data name="Main_FunctionBehavior" xml:space="preserve">
+    <value>機能(動作)</value>
+  </data>
+  <data name="Main_InputPressesOutput" xml:space="preserve">
+    <value>{0} で {1} を押します</value>
+  </data>
+  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
+    <value>入力(吸う、吹く、ジョイスティック)</value>
   </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>左バンパー</value>
@@ -1250,23 +1220,23 @@
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
     <value>左マウスピース穴</value>
   </data>
-  <data name="Main_LeftStick" xml:space="preserve">
-    <value>左スティック</value>
-  </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
     <value>左スティッククリック</value>
   </data>
   <data name="Main_LeftTrigger" xml:space="preserve">
     <value>左トリガー</value>
   </data>
-  <data name="Main_Lip" xml:space="preserve">
-    <value>リップ</value>
-  </data>
   <data name="Main_LipSwitch" xml:space="preserve">
     <value>リップスイッチ</value>
   </data>
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>このプロファイルのオンライン版を読み込みました。以前のローカルコピーはrescueフォルダーにあります。</value>
+  </data>
+  <data name="Main_MainControls" xml:space="preserve">
+    <value>主な操作</value>
+  </data>
+  <data name="Main_MainControlsCount" xml:space="preserve">
+    <value>主な操作。ホール、サイドチューブ、リップスイッチ、ジョイスティック。{0}</value>
   </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>QuadStick上のファイルを管理</value>
@@ -1277,17 +1247,17 @@
   <data name="Main_MapTokenToANew" xml:space="preserve">
     <value>{0}を{1}の新しいマッピングにマップ</value>
   </data>
-  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
-    <value>マッピング {0}: {1} から {2}{3}。Enter を押すと編集します。</value>
-  </data>
-  <data name="Main_MappingNumber" xml:space="preserve">
-    <value>マッピング {0}</value>
-  </data>
   <data name="Main_MappingRowSpoken" xml:space="preserve">
     <value>マッピング{0}: {2}{3}すると{1}を押します。編集するにはEnterを押してください。</value>
   </data>
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>マッピング{0}: {2}を順番に行うと{1}を押します{3}。編集するにはEnterを押してください。</value>
+  </data>
+  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
+    <value>マッピング {0}: {1} から {2}{3}。Enter を押すと編集します。</value>
+  </data>
+  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
+    <value>クリックしてこのマッピングを編集するか、メモを追加します。</value>
   </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>マッピングはシンプルな文カードとして表示されています。詳細エディターに切り替え。</value>
@@ -1298,6 +1268,9 @@
   <data name="Main_MenuButton" xml:space="preserve">
     <value>メニューボタン</value>
   </data>
+  <data name="Main_ModeLabelToken" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>モード: {0}</value>
   </data>
@@ -1306,12 +1279,6 @@
   </data>
   <data name="Main_ModeSettings" xml:space="preserve">
     <value>モード設定</value>
-  </data>
-  <data name="Main_Mouse" xml:space="preserve">
-    <value>マウス</value>
-  </data>
-  <data name="Main_Move" xml:space="preserve">
-    <value>移動</value>
   </data>
   <data name="Main_MoveRowBRowWord" xml:space="preserve">
     <value>行{0}を{1}へ移動</value>
@@ -1324,9 +1291,6 @@
   </data>
   <data name="Main_MovedTheTextFromI" xml:space="preserve">
     <value>{0}のテキストをメモ列に移動しました。</value>
-  </data>
-  <data name="Main_Movement" xml:space="preserve">
-    <value>動き</value>
   </data>
   <data name="Main_MovingTheWholeMouthpieceWith" xml:space="preserve">
     <value>口全体でマウスピースを動かすとジョイスティックのように動作します。上、下、左、右、および8方位のそれぞれに何かを割り当てて押せます。</value>
@@ -1406,11 +1370,17 @@
   <data name="Main_NotNowKeepTheReport" xml:space="preserve">
     <value>今はしない、レポートを保持して後で再度確認</value>
   </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>エミュレーションモードを設定</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>エミュレーションモードを {0} に設定し、{1} と記述します</value>
+  </data>
+  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
+    <value>このプロファイルは、お使いの {1} にない {0} を割り当てています。左のリストにあり、引き続き編集できます。</value>
+  </data>
   <data name="Main_NotOnModel" xml:space="preserve">
     <value>このモデルにはありません</value>
-  </data>
-  <data name="Main_NotOnYourModel" xml:space="preserve">
-    <value>お使いのモデルにはありません</value>
   </data>
   <data name="Main_NotOnYourModelName" xml:space="preserve">
     <value>お使いの {0} にはありません</value>
@@ -1418,11 +1388,20 @@
   <data name="Main_NotOnYourModelNameParts" xml:space="preserve">
     <value>{0}。{1}、{2}。リストを開きます。</value>
   </data>
+  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
+    <value>これらの行はファイルに残り、引き続き編集できます。部品を選ぶと、そのマッピングが開きます。</value>
+  </data>
+  <data name="Main_NotOnYourModel" xml:space="preserve">
+    <value>お使いのモデルにはありません</value>
+  </data>
   <data name="Main_NotUsedYetOnThis" xml:space="preserve">
     <value>この部分ではまだ使用されていません ({0})</value>
   </data>
   <data name="Main_Note" xml:space="preserve">
     <value>メモ</value>
+  </data>
+  <data name="Main_NoteSummary" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
   <data name="Main_NoteForRowBRow" xml:space="preserve">
     <value>行{0}のメモ。ファイルに保存されますが、QuadStickは無視します</value>
@@ -1435,9 +1414,6 @@
   </data>
   <data name="Main_NoteLabel" xml:space="preserve">
     <value>メモ</value>
-  </data>
-  <data name="Main_NoteSummary" xml:space="preserve">
-    <value>{0}: {1}</value>
   </data>
   <data name="Main_NothingMappedHereYet" xml:space="preserve">
     <value>ここにはまだ何もマップされていません。</value>
@@ -1469,13 +1445,13 @@
     <value>{0}の数値、任意、スペース区切りの整数。</value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>1回の作動でオンのままロックし、次でオフになります。</value>
+    <value>1 回でオン、もう 1 回でオフになります。入力をやめても出力はオンのままです。</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
     <value>1つのCSVファイルが、どのSip、Puff、リップ押し、ジョイスティック操作がどのゲームボタンを押すかをQuadStickに伝えます。プロファイルには1つ以上のモードシートがあります。プレイ中に切り替える、完全な操作レイアウト(歩行用レイアウト、運転用レイアウト、メニューなど)です。サイドチューブをSipまたはPuffするか、increment_mode / decrement_modeを割り当てることで、ゲーム内でモードを切り替えられます。</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
-    <value>作動するたびに1回の短い押下。</value>
+    <value>入力するたびに短く 1 回押します。どれだけ長く入力しても同じです。</value>
   </data>
   <data name="Main_OneSwitchIn1" xml:space="preserve">
     <value>スイッチ1つ: 1穴</value>
@@ -1525,17 +1501,11 @@
   <data name="Main_PathGetFileNamePathIsRemoved" xml:space="preserve">
     <value>{0}はこのコンピューターから完全に削除されます。QuadStickやGoogle Sheets上のコピーには影響しません。</value>
   </data>
-  <data name="Main_PickWord" xml:space="preserve">
-    <value>{0} を選ぶ</value>
-  </data>
   <data name="Main_Picks0NameNoProfileTabRead" xml:space="preserve">
     <value>{0}: {1}</value>
   </data>
   <data name="Main_PlugInTheQuadStickIt" xml:space="preserve">
     <value>QuadStickを接続してください。USBドライブのように表示されます。インストールは古いファイルをQuadStickBackupsにバックアップし、一時コピーを書き込んで検証してから入れ替えます。エラーがあるとインストールはブロックされます。default.csvを上書きする際は必ず確認を求めます。</value>
-  </data>
-  <data name="Main_PlusMore" xml:space="preserve">
-    <value> 他 +{0} 件</value>
   </data>
   <data name="Main_PortExplain" xml:space="preserve">
     <value>{0}。{1}</value>
@@ -1562,19 +1532,13 @@
     <value>押す</value>
   </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
-    <value>オンとオフを繰り返すサイクルで押します。</value>
+    <value>出力がオンになる長さは、吸う・吹く強さやスティックを倒す強さによって変わります。</value>
   </data>
   <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
     <value>問題をクリップボードにコピーしました。</value>
   </data>
   <data name="Main_ProfilesYouAlreadyMadeFrom" xml:space="preserve">
     <value>このテンプレートから既に作成したプロファイルには影響しません。この操作は元に戻せません。</value>
-  </data>
-  <data name="Main_Puff" xml:space="preserve">
-    <value>吹く</value>
-  </data>
-  <data name="Main_Push" xml:space="preserve">
-    <value>押す</value>
   </data>
   <data name="Main_PuttingThisProfileInGoogle" xml:space="preserve">
     <value>このプロファイルをGoogle Sheetsに配置中...</value>
@@ -1601,7 +1565,7 @@
     <value>クイックガイド</value>
   </data>
   <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
-    <value>入力を押し続けている間、連射します。</value>
+    <value>入力している間、出力を繰り返し押します。</value>
   </data>
   <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
     <value>プライバシーポリシーを読む</value>
@@ -1663,9 +1627,6 @@
   <data name="Main_RightSideTube" xml:space="preserve">
     <value>右 + サイドチューブ</value>
   </data>
-  <data name="Main_RightStick" xml:space="preserve">
-    <value>右スティック</value>
-  </data>
   <data name="Main_RightStickClick" xml:space="preserve">
     <value>右スティッククリック</value>
   </data>
@@ -1678,14 +1639,20 @@
   <data name="Main_RowNotSelected" xml:space="preserve">
     <value>{0}。スペースで選択、ドラッグで並べ替え</value>
   </data>
-  <data name="Main_RowNumber" xml:space="preserve">
-    <value>行 {0}</value>
+  <data name="Main_RowSendingNow" xml:space="preserve">
+    <value>{0}。QuadStick は今これを送信しています</value>
+  </data>
+  <data name="Main_SendingNow" xml:space="preserve">
+    <value>QuadStick は今これを送信しています</value>
+  </data>
+  <data name="Main_WhatALitRowMeans" xml:space="preserve">
+    <value>QuadStick がその行の出力を送信している間、行が点灯します。デバイスはどのファイルやモードを実行しているかを一切伝えないため、ここで開いているものとは別のプロファイルによって行が点灯することがあります。マウス、キーボード、赤外線の出力は別の接続から出るため、点灯することはありません。</value>
+  </data>
+  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
+    <value>このエミュレーションモードのレポートを読む方法をアプリはまだ知りません。そのため QuadStick がこのモードの間、行は点灯しません。</value>
   </data>
   <data name="Main_RowSelected" xml:space="preserve">
     <value>{0}、選択済み。スペースで選択、ドラッグで並べ替え</value>
-  </data>
-  <data name="Main_RowSendingNow" xml:space="preserve">
-    <value>{0}。QuadStick は今これを送信しています</value>
   </data>
   <data name="Main_RowsThatPressAGame" xml:space="preserve">
     <value>ゲームボタンを押す行なのに、まだ何もトリガーがありません。それぞれに入力を設定するか、削除してください。</value>
@@ -1741,12 +1708,6 @@
   <data name="Main_SendThisCrashReport" xml:space="preserve">
     <value>このクラッシュレポートを送信</value>
   </data>
-  <data name="Main_SendingNow" xml:space="preserve">
-    <value>QuadStick は今これを送信しています</value>
-  </data>
-  <data name="Main_Sequence" xml:space="preserve">
-    <value>シーケンス</value>
-  </data>
   <data name="Main_SetItTo" xml:space="preserve">
     <value>次の値に設定</value>
   </data>
@@ -1783,9 +1744,6 @@
   <data name="Main_SingletonASingleSipPuff" xml:space="preserve">
     <value>Singleton: ジョイスティック上の単一のsip/puffチューブ。sipとpuffのパターンとジョイスティックの動きを使用します。</value>
   </data>
-  <data name="Main_Sip" xml:space="preserve">
-    <value>吸う</value>
-  </data>
   <data name="Main_SipOrPuffOnThe" xml:space="preserve">
     <value>左マウスピース穴でSipまたはPuff。軽いSipやPuffは別の動作にできます(ソフトバリアント)。</value>
   </data>
@@ -1798,14 +1756,53 @@
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
     <value>サイドチューブでSipまたはPuff。ここで長く強くSipすると通常はプロファイルが切り替わりますが、マップすることもできます。</value>
   </data>
-  <data name="Main_SoftLip" xml:space="preserve">
-    <value>弱いリップ</value>
-  </data>
   <data name="Main_SoftPuff" xml:space="preserve">
     <value>弱く吹く</value>
   </data>
+  <data name="Main_Puff" xml:space="preserve">
+    <value>吹く</value>
+  </data>
+  <data name="Main_Sip" xml:space="preserve">
+    <value>吸う</value>
+  </data>
   <data name="Main_SoftSip" xml:space="preserve">
     <value>弱く吸う</value>
+  </data>
+  <data name="Main_Lip" xml:space="preserve">
+    <value>リップ</value>
+  </data>
+  <data name="Main_SoftLip" xml:space="preserve">
+    <value>弱いリップ</value>
+  </data>
+  <data name="Main_Push" xml:space="preserve">
+    <value>押す</value>
+  </data>
+  <data name="Main_Movement" xml:space="preserve">
+    <value>動き</value>
+  </data>
+  <data name="Main_LeftStick" xml:space="preserve">
+    <value>左スティック</value>
+  </data>
+  <data name="Main_RightStick" xml:space="preserve">
+    <value>右スティック</value>
+  </data>
+  <data name="Main_Mouse" xml:space="preserve">
+    <value>マウス</value>
+  </data>
+  <data name="Main_ExtraActions" xml:space="preserve">
+    <value>+ その他 {0} 件のアクション</value>
+  </data>
+  <data name="Main_ViewDetails" xml:space="preserve">
+    <value>詳細を見る →</value>
+  </data>
+  <data name="Main_Sequence" xml:space="preserve">
+    <value>シーケンス</value>
+  </data>
+  <data name="Count_Action_one" xml:space="preserve">
+    <value>{0} 個のアクション</value>
+  </data>
+  <data name="Count_Action_other" xml:space="preserve">
+    <value>{0} 個のアクション</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>{0}で新しいマッピングを開始</value>
@@ -1820,10 +1817,10 @@
     <value>テンプレート{0}から開始しました。独自のプロファイルとして保持するには保存してください。</value>
   </data>
   <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
-    <value>アナログ出力を1段階下げてそのままにします。トリガーやスティック軸のように。</value>
+    <value>入力するたびにアナログ出力を 1 段階下げ、そのまま保ちます。</value>
   </data>
   <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
-    <value>アナログ出力を1段階上げてそのままにします。トリガーやスティック軸のように。</value>
+    <value>入力するたびにアナログ出力を 1 段階上げ、そのまま保ちます。</value>
   </data>
   <data name="Main_StopAsking" xml:space="preserve">
     <value>確認しない</value>
@@ -1884,9 +1881,6 @@
   <data name="Main_ThenJoin" xml:space="preserve">
     <value>、次に</value>
   </data>
-  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
-    <value>これらの行はファイルに残り、引き続き編集できます。部品を選ぶと、そのマッピングが開きます。</value>
-  </data>
   <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
     <value>見送られたタブ:</value>
   </data>
@@ -1899,9 +1893,6 @@
 
 送信先はPostHogで、米国内のサーバーです。</value>
   </data>
-  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
-    <value>このエミュレーションモードのレポートを読む方法をアプリはまだ知りません。そのため QuadStick がこのモードの間、行は点灯しません。</value>
-  </data>
   <data name="Main_ThisLinkIsAPublished" xml:space="preserve">
     <value>このリンクは公開リンクで、公開リンクは常に1つのタブしか渡しません。スプレッドシート内の他のモードタブは一切送られていないため、中身については分かりません。プロファイル全体を取り込むには、Google Sheetsで「リンクを知っている全員」共有に設定してから、もう一度インポートしてください。</value>
   </data>
@@ -1913,9 +1904,6 @@
   </data>
   <data name="Main_ThisProfileLivesOnThe" xml:space="preserve">
     <value>このプロファイルはQuadStick上にあります。安全に書き戻すにはインストールを使用してください。名前を付けて保存を使うとライブラリにコピーが作成されます。</value>
-  </data>
-  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
-    <value>このプロファイルは、お使いの {1} にない {0} を割り当てています。左のリストにあり、引き続き編集できます。</value>
   </data>
   <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
     <value>この行はボタンを押す代わりにQuadStickの設定を変更します。このモードの実行中に適用されます。</value>
@@ -1948,7 +1936,7 @@
     <value>{0}、このモードでは使用されていません</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>toggleまたはdelayed_latchでオンのままになっている出力をオフにします。</value>
+    <value>出力を強制的にオフにします。別の行でトグルまたはラッチしたボタンを解除するのに便利です。</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>2つ以上の穴を同時に使用、3つすべてを同時に使用、または右穴とサイドチューブの組み合わせ。誤って作動させたくない操作に向いています。</value>
@@ -1989,9 +1977,6 @@
   <data name="Main_UseTemplate" xml:space="preserve">
     <value>テンプレートを使用</value>
   </data>
-  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
-    <value>このモードで {0} 回使用</value>
-  </data>
   <data name="Main_UsingDeviceView" xml:space="preserve">
     <value>デバイスビューを使用中</value>
   </data>
@@ -2001,14 +1986,8 @@
   <data name="Main_ViewButton" xml:space="preserve">
     <value>表示ボタン</value>
   </data>
-  <data name="Main_ViewDetails" xml:space="preserve">
-    <value>詳細を見る →</value>
-  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
-    <value>入力してから少し待ってから押します。</value>
-  </data>
-  <data name="Main_WhatALitRowMeans" xml:space="preserve">
-    <value>QuadStick がその行の出力を送信している間、行が点灯します。デバイスはどのファイルやモードを実行しているかを一切伝えないため、ここで開いているものとは別のプロファイルによって行が点灯することがあります。マウス、キーボード、赤外線の出力は別の接続から出るため、点灯することはありません。</value>
+    <value>出力がオンになるまで、決まった時間だけ入力を続ける必要があります。短い入力と長い入力を区別できます。</value>
   </data>
   <data name="Main_WhatIsAMode" xml:space="preserve">
     <value>モードとは？</value>
@@ -2021,6 +2000,12 @@
   </data>
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>〜すると</value>
+  </data>
+  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
+    <value>このファイルで QuadStick がどのコントローラーとして振る舞うかを決めます。後から変更したり削除したりできます。</value>
+  </data>
+  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
+    <value>このファイルで QuadStick がどのコントローラーとして振る舞うかを決めます。デバイスはこのファイルで起動するため、ドライブに接続できるモードだけを選べます。</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>単語はリスト表示の生の名前で表示されています。プレーン英語に切り替えます。</value>
@@ -2106,6 +2091,9 @@
   <data name="Modes_CloseModes" xml:space="preserve">
     <value>モードを閉じる</value>
   </data>
+  <data name="Modes_Connection" xml:space="preserve">
+    <value>接続</value>
+  </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>接続をクリアしました。デバイスは USB ケーブルに戻ります。</value>
   </data>
@@ -2115,14 +2103,14 @@
   <data name="Modes_ConnectionSetToPickedItem2" xml:space="preserve">
     <value>接続を {0} に設定しました。</value>
   </data>
-  <data name="Modes_DeleteName" xml:space="preserve">
-    <value>{0} を削除</value>
-  </data>
   <data name="Modes_Done" xml:space="preserve">
     <value>完了</value>
   </data>
   <data name="Modes_MakeACopyOfName" xml:space="preserve">
     <value>{0} のコピーを作成</value>
+  </data>
+  <data name="Modes_Mode" xml:space="preserve">
+    <value>モード</value>
   </data>
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>モードを追加しました。</value>
@@ -2141,12 +2129,6 @@
   </data>
   <data name="Modes_Modes" xml:space="preserve">
     <value>モード</value>
-  </data>
-  <data name="Modes_MoveNameDown" xml:space="preserve">
-    <value>{0} を下へ</value>
-  </data>
-  <data name="Modes_MoveNameUp" xml:space="preserve">
-    <value>{0} を上へ</value>
   </data>
   <data name="Modes_NameOfModeOrdinal" xml:space="preserve">
     <value>モード {0} の名前</value>
@@ -2183,9 +2165,6 @@
   </data>
   <data name="Modes_USBCable" xml:space="preserve">
     <value>USB ケーブル</value>
-  </data>
-  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
-    <value>モード {0}</value>
   </data>
   <data name="Names_ANameHasToBe" xml:space="preserve">
     <value>名前は 1〜{0} 文字にしてください。</value>
@@ -2241,14 +2220,8 @@
   <data name="Names_Removed" xml:space="preserve">
     <value>{0} を削除しました。</value>
   </data>
-  <data name="Names_RenamedOldToNew" xml:space="preserve">
-    <value>{0} を {1} に変更しました。</value>
-  </data>
   <data name="Names_ThisProfileAlreadyHasA" xml:space="preserve">
     <value>このプロファイルにはすでに「{0}」という名前があります。</value>
-  </data>
-  <data name="Names_UsedOnCount" xml:space="preserve">
-    <value>{0} 上</value>
   </data>
   <data name="Names_YourNameForHumanizeToken" xml:space="preserve">
     <value>{0} の名前</value>
@@ -2289,17 +2262,32 @@
   <data name="Outputs_NumberPad2" xml:space="preserve">
     <value>テンキー</value>
   </data>
+  <data name="Outputs_OtherButtons" xml:space="preserve">
+    <value>その他のボタン</value>
+  </data>
   <data name="Outputs_OtherKeys" xml:space="preserve">
     <value>その他のキー</value>
   </data>
   <data name="Outputs_OtherKeys2" xml:space="preserve">
     <value>その他のキー</value>
   </data>
+  <data name="Outputs_PlayStationButtons" xml:space="preserve">
+    <value>PlayStation ボタン</value>
+  </data>
   <data name="Outputs_TVRemote" xml:space="preserve">
     <value>テレビリモコン</value>
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>テレビリモコン</value>
+  </data>
+  <data name="Outputs_XboxButtons" xml:space="preserve">
+    <value>Xbox ボタン</value>
+  </data>
+  <data name="Prefs_OffZero" xml:space="preserve">
+    <value>オフ (0)</value>
+  </data>
+  <data name="Prefs_OnOne" xml:space="preserve">
+    <value>オン (1)</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>{0} について：{1}</value>
@@ -2351,12 +2339,6 @@
   </data>
   <data name="Prefs_NotesForRowSaved" xml:space="preserve">
     <value>行 {0} のメモ。ファイルには保存されますが、QuadStick では無視されます</value>
-  </data>
-  <data name="Prefs_OffZero" xml:space="preserve">
-    <value>オフ (0)</value>
-  </data>
-  <data name="Prefs_OnOne" xml:space="preserve">
-    <value>オン (1)</value>
   </data>
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}。{1}</value>
@@ -2436,9 +2418,6 @@
   <data name="Review_Done" xml:space="preserve">
     <value>完了</value>
   </data>
-  <data name="Review_EmptiedCell" xml:space="preserve">
-    <value>{0} を空にしました。</value>
-  </data>
   <data name="Review_EmptyCellWhere" xml:space="preserve">
     <value>空のセル {0}</value>
   </data>
@@ -2499,9 +2478,6 @@
   <data name="Review_ModeIsNamedAfterIts" xml:space="preserve">
     <value>モードはシートタブの名前に由来します</value>
   </data>
-  <data name="Review_ModeNumberTitle" xml:space="preserve">
-    <value>モード {0}: {1}</value>
-  </data>
   <data name="Review_ModeRModeNumberIsCalled" xml:space="preserve">
     <value>モード {0} は、シートタブに由来して「{1}」という名前になっています。このモードの名前セルは空でした。</value>
   </data>
@@ -2537,9 +2513,6 @@
   </data>
   <data name="Review_MoveWordIntoTheNotes" xml:space="preserve">
     <value>「{0}」を、QuadStick が参照しないメモ列に移動する</value>
-  </data>
-  <data name="Review_MovedFromTo" xml:space="preserve">
-    <value>「{0}」を {1} から {2} へ移動しました。</value>
   </data>
   <data name="Review_MovedValueFromWhereInto" xml:space="preserve">
     <value>「{0}」を {1} からメモ列に移動しました。</value>
@@ -2583,14 +2556,8 @@
   <data name="Review_PartOfTheRowThat" xml:space="preserve">
     <value>モードを開く行の一部</value>
   </data>
-  <data name="Review_RowNumber" xml:space="preserve">
-    <value>行 {0}</value>
-  </data>
   <data name="Review_SaveCell" xml:space="preserve">
     <value>セルを保存</value>
-  </data>
-  <data name="Review_SetCellTo" xml:space="preserve">
-    <value>{0} を「{1}」に設定しました。</value>
   </data>
   <data name="Review_ShowTheSpreadsheetWithThe" xml:space="preserve">
     <value>アプリの読み取り結果を示したスプレッドシートを表示する</value>
@@ -2757,26 +2724,26 @@
   <data name="Settings_CancelConnect" xml:space="preserve">
     <value>Google への接続をキャンセル</value>
   </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>更新を確認</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>確認中…</value>
+  </data>
   <data name="Settings_CardSentenceStyle" xml:space="preserve">
     <value>マッピングカードの言い回し</value>
   </data>
   <data name="Settings_CardSentenceStyleCaption" xml:space="preserve">
     <value>カードを出力から始めるか入力から始めるかを選びます。変わるのはカードの読み方だけで、QuadStick の動作は変わりません。</value>
   </data>
-  <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
-    <value>吸ったら X を押す</value>
-  </data>
   <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
     <value>マッピングカードの言い回し: 出力が先か入力が先かを選びます</value>
   </data>
+  <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
+    <value>吸ったら X を押す</value>
+  </data>
   <data name="Settings_CardSentenceStyleInputFirst" xml:space="preserve">
     <value>吸って X</value>
-  </data>
-  <data name="Settings_CheckUpdates" xml:space="preserve">
-    <value>更新を確認</value>
-  </data>
-  <data name="Settings_Checking" xml:space="preserve">
-    <value>確認中…</value>
   </data>
   <data name="Settings_Close" xml:space="preserve">
     <value>閉じる</value>
@@ -2834,9 +2801,6 @@
   </data>
   <data name="Settings_ImportDriveHelp" xml:space="preserve">
     <value>Google ドライブからプロファイルをインポートする</value>
-  </data>
-  <data name="Settings_InstallIdIs" xml:space="preserve">
-    <value>インストール ID: {0}</value>
   </data>
   <data name="Settings_Language" xml:space="preserve">
     <value>言語</value>
@@ -3249,11 +3213,11 @@
   <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
     <value>シートに保存されている通りに行を見る (Ctrl+D)</value>
   </data>
-  <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
-    <value>移動、削除、または消去する行を選択します</value>
-  </data>
   <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
     <value>編集するモードを選択</value>
+  </data>
+  <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
+    <value>移動、削除、または消去する行を選択します</value>
   </data>
   <data name="Shell_SetUpAGame" xml:space="preserve">
     <value>ゲームを設定</value>
@@ -3401,5 +3365,101 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>現在のバージョンは{0}で、これが最新です。</value>
+  </data>
+  <data name="Count_RowCopied_one" xml:space="preserve">
+    <value>{0} 行を {1} にコピーしました。Ctrl+Z で元に戻せます。</value>
+  </data>
+  <data name="Count_RowCopied_other" xml:space="preserve">
+    <value>{0} 行を {1} にコピーしました。Ctrl+Z で元に戻せます。</value>
+  </data>
+  <data name="Main_CopyToMode" xml:space="preserve">
+    <value>モードにコピー</value>
+  </data>
+  <data name="Main_Move" xml:space="preserve">
+    <value>移動</value>
+  </data>
+  <data name="Main_DuplicateMark" xml:space="preserve">
+    <value>×{0}</value>
+  </data>
+  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
+    <value>このモードで {0} 回使用</value>
+  </data>
+  <data name="Count_Profile_one" xml:space="preserve">
+    <value>{0} 個のプロファイル</value>
+  </data>
+  <data name="Count_Profile_other" xml:space="preserve">
+    <value>{0} 個のプロファイル</value>
+  </data>
+  <data name="Count_File_one" xml:space="preserve">
+    <value>{0} 個のファイル</value>
+  </data>
+  <data name="Count_File_other" xml:space="preserve">
+    <value>{0} 個のファイル</value>
+  </data>
+  <data name="Names_UsedOnCount" xml:space="preserve">
+    <value>{0} 上</value>
+  </data>
+  <data name="Names_RenamedOldToNew" xml:space="preserve">
+    <value>{0} を {1} に変更しました。</value>
+  </data>
+  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
+    <value>{1} に {0}。</value>
+  </data>
+  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
+    <value>{1} から {0} を削除しますか?</value>
+  </data>
+  <data name="Drive_RestoreImported" xml:space="preserve">
+    <value>{0} 取り込み済み</value>
+  </data>
+  <data name="Drive_RestoreSkipped" xml:space="preserve">
+    <value>{0} スキップ: </value>
+  </data>
+  <data name="Drive_RestoreFailed" xml:space="preserve">
+    <value>{0} 失敗: </value>
+  </data>
+  <data name="Review_RowNumber" xml:space="preserve">
+    <value>行 {0}</value>
+  </data>
+  <data name="Review_EmptiedCell" xml:space="preserve">
+    <value>{0} を空にしました。</value>
+  </data>
+  <data name="Review_MovedFromTo" xml:space="preserve">
+    <value>「{0}」を {1} から {2} へ移動しました。</value>
+  </data>
+  <data name="Review_SetCellTo" xml:space="preserve">
+    <value>{0} を「{1}」に設定しました。</value>
+  </data>
+  <data name="Review_ModeNumberTitle" xml:space="preserve">
+    <value>モード {0}: {1}</value>
+  </data>
+  <data name="Main_InFolder" xml:space="preserve">
+    <value> · {0} 内</value>
+  </data>
+  <data name="Main_PlusMore" xml:space="preserve">
+    <value> 他 +{0} 件</value>
+  </data>
+  <data name="Main_MappingNumber" xml:space="preserve">
+    <value>マッピング {0}</value>
+  </data>
+  <data name="Main_RowNumber" xml:space="preserve">
+    <value>行 {0}</value>
+  </data>
+  <data name="Main_PickWord" xml:space="preserve">
+    <value>{0} を選ぶ</value>
+  </data>
+  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
+    <value>モード {0}</value>
+  </data>
+  <data name="Modes_MoveNameUp" xml:space="preserve">
+    <value>{0} を上へ</value>
+  </data>
+  <data name="Modes_MoveNameDown" xml:space="preserve">
+    <value>{0} を下へ</value>
+  </data>
+  <data name="Modes_DeleteName" xml:space="preserve">
+    <value>{0} を削除</value>
+  </data>
+  <data name="Settings_InstallIdIs" xml:space="preserve">
+    <value>インストール ID: {0}</value>
   </data>
 </root>

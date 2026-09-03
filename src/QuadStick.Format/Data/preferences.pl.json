@@ -1,14 +1,14 @@
 [
  {
+  "name": "joystick_deflection_maximum",
+  "label": "Czułość joysticka",
+  "description": "Jak daleko trzeba wychylić joystick, aby uzyskać pełny sygnał, nazywane też pełnym wychyleniem. Niższa wartość oznacza większą czułość, bo mniejsze wychylenie daje ten sam efekt.",
+  "alsoCalled": "zakres ruchu"
+ },
+ {
   "name": "joystick_deflection_minimum",
   "label": "Martwa strefa środka joysticka",
   "description": "Martwa strefa środka drążka analogowego, jako procent pełnego wychylenia. Ustaw ją na tyle wysoko, aby zatrzymać błądzącą mysz lub joystick. Większe liczby zmniejszają czułość drążka wokół środka. To coś innego niż pierścienie D-Pad. W oprogramowaniu układowym 2373 wartość 0 nie oznacza już braku martwej strefy: urządzenie wstawia w to miejsce 129 surowych jednostek i robi to przy każdym skanowaniu, więc ta wartość wygrywa z tą wyliczoną przy wczytywaniu pliku."
- },
- {
-  "name": "joystick_deflection_maximum",
-  "label": "Pełne wychylenie joysticka",
-  "description": "Jak daleko drążek musi się przesunąć, aby uzyskać pełny sygnał. QMP nazywa to zakresem ruchu joysticka i jest to najbliższa rzecz, jaką urządzenie ma do regulacji czułości: większe liczby oznaczają więcej ruchu dla tego samego wyjścia, więc joystick wydaje się mniej czuły. QMP przyjmuje największą z czterech suwaków kierunków.",
-  "alsoCalled": "zakres ruchu"
  },
  {
   "name": "deflection_multiplier_up",
@@ -80,16 +80,10 @@
  },
  {
   "name": "sip_puff_threshold",
-  "label": "Twardy próg sip/puff",
+  "label": "Zwykły próg zassania/dmuchnięcia",
   "unit": "procent",
-  "description": "Ciśnienie, przy którym wyzwalane jest wyjście. QMP pokazuje to jako górny próg sip i puff; sip_puff_threshold_soft to ten dolny.",
+  "description": "Ciśnienie, przy którym zwykłe zassanie lub dmuchnięcie jest rozpoznawane. QMP nazywa to twardym progiem, ale korzystają z niego zwykłe funkcje zassania i dmuchnięcia. Należy go podnieść, jeśli lekkie zassania wciąż uruchamiają zwykłe.",
   "alsoCalled": "wysoki próg wdechu i wydechu"
- },
- {
-  "name": "sip_puff_maximum",
-  "label": "Maksymalne ciśnienie sip/puff",
-  "unit": "procent",
-  "description": "Maksymalne ciśnienie skalowane do pełnego sygnału."
  },
  {
   "name": "sip_puff_delay_soft",
@@ -102,7 +96,13 @@
   "name": "sip_puff_delay_hard",
   "label": "Opóźnienie twardego sip/puff",
   "unit": "milisekundy",
-  "description": "Jak długo twardy sip lub puff jest przytrzymywany, zanim zostanie policzony jako sygnał długi. Zegar startuje po przekroczeniu twardego progu, a nie w chwili, gdy ciśnienie zaczyna się zmieniać. 0 nie oznacza braku ustawienia, oznacza, że sygnał długi wyzwala się natychmiast."
+  "description": "Jak długo trzeba trzymać zassanie lub dmuchnięcie, aby liczyło się jako długie. Na bocznej rurce to czas zassania potrzebny do zmiany pliku gry. Odliczanie zaczyna się od zwykłego progu, a 0 uruchamia od razu."
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "Maksymalne ciśnienie sip/puff",
+  "unit": "procent",
+  "description": "Maksymalne ciśnienie skalowane do pełnego sygnału."
  },
  {
   "name": "sip_threshold_soft",
@@ -195,7 +195,13 @@
  {
   "name": "bluetooth_authentication_mode",
   "label": "Tryb uwierzytelniania Bluetooth",
-  "description": "Ile parowania wymaga QuadStick. Wysyłane do radia jako ustawienie SA, więc liczy się tylko wtedy, gdy Bluetooth jest włączony."
+  "description": "Ile parowania wymaga QuadStick. Wysyłane do radia jako ustawienie SA, więc liczy się tylko wtedy, gdy Bluetooth jest włączony.",
+  "optionLabels": [
+   "Otwarte, bez sprawdzania parowania i bez szyfrowania",
+   "Potwierdzenie parowania na drugim urządzeniu",
+   "Działa od razu, nic nie trzeba wpisywać",
+   "Kod PIN, wpisywany na drugim urządzeniu"
+  ]
  },
  {
   "name": "bluetooth_connection_mode",
@@ -248,12 +254,6 @@
   "description": "Wybiera plik za pomocą bocznej rurki."
  },
  {
-  "name": "enable_usb_a_device",
-  "label": "Tryb urządzenia USB-A",
-  "risk": "To wybiera, na którym porcie USB QuadStick się prezentuje. Urządzenie zrywa i nawiązuje USB ponownie przy każdej zmianie, więc błędna wartość może sprawić, że konsola lub komputer go nie zobaczą. Ustawienie to również bije enable_usb_a_host: dopóki jest włączone, stos hosta USB-A jest wyłączony niezależnie od ustawienia hosta. Zmieniaj tylko za radą wsparcia technicznego QuadStick.",
-  "description": "Na którym gnieździe USB pojawia się QuadStick. Zero to jego własny port; powyżej zera to gniazdo USB-A, co wyłącza też tryb hosta USB-A."
- },
- {
   "name": "enable_usb_a_host",
   "label": "Tryb hosta USB-A",
   "description": "Od oprogramowania układowego 2373. Gdy to jest włączone, a tryb urządzenia USB-A wyłączony, urządzenie uruchamia hosta USB na porcie USB-A, więc kontroler podłączony tam zasila kanały wejścia usb_1. Wyłączenie tego albo włączenie trybu urządzenia USB-A powoduje zamknięcie hosta. Tryb urządzenia USB-A ma pierwszeństwo. QMP pokazuje to jako USB-A Host Mode.",
@@ -264,6 +264,7 @@
   "label": "Tryb emulacji USB",
   "description": "Za jakie urządzenie USB podaje się QuadStick. W oprogramowaniu układowym 2373: 0 QuadStick natywny, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 dla PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 bez dysku USB, 7 zwykły DS4 bezprzewodowy. Wartość 5 oznaczała tylko PC, bez joysticka, w oprogramowaniu układowym 1476, więc plik niosący 5 zachowuje się zupełnie inaczej po aktualizacji urządzenia. Tryby 1, 5, 6 i 7 w ogóle nie udostępniają dysku USB, więc komputer nie widzi plików QuadSticka, gdy jeden z nich działa. Boot in PS4 Mode w QMP to wartość 4: Joystick.c:625 w oprogramowaniu układowym 2373 nazywa tę wartość \"boot in PS4 mode\" we własnym komentarzu.",
   "risk": "Nazwa mówi DS3, ale urządzenie odczytuje to jako tryb emulacji USB z ośmioma numerowanymi wartościami, a nie przełącznik włącz/wyłącz. To, co oznacza 5, zmieniło się między oprogramowaniem układowym 1476 a 2373, a liczba, której działające oprogramowanie układowe nie zna, pozostawia urządzenie na emulacji, o którą nikt nie prosił. QCM zachowuje to, co zostało wpisane, i niczego nie odrzuca, ponieważ wartość błędna dla jednego oprogramowania układowego jest właściwa dla innego. Zmieniaj tylko za radą wsparcia technicznego QuadStick.",
+  "alsoCalled": "uruchamiaj w trybie PS4",
   "optionLabels": [
    "QuadStick (PC i PS3)",
    "DualShock 3, bez dysku USB",
@@ -273,8 +274,19 @@
    "Nintendo Switch Pro Controller, bez dysku USB",
    "DualShock 4, bez dysku USB",
    "DualShock 4 bezprzewodowy, bez dysku USB"
-  ],
-  "alsoCalled": "uruchamiaj w trybie PS4"
+  ]
+ },
+ {
+  "name": "titan_two",
+  "label": "Adapter Titan Two",
+  "description": "Od oprogramowania układowego 2373. Informuje urządzenie, że łączy się z PS4 przez Titan Two, a nie bezpośrednio z konsolą. Wtedy pomija uzgadnianie uwierzytelniania DS4 i zatrzymuje okresowe wymuszone ponowne łączenie USB. QMP pokazuje to jako flagę Titan 2 PS4.",
+  "alsoCalled": "flaga PS4 Titana 2"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "Tryb urządzenia USB-A",
+  "description": "Na którym gnieździe USB pojawia się QuadStick. Zero to jego własny port; powyżej zera to gniazdo USB-A, co wyłącza też tryb hosta USB-A.",
+  "risk": "To wybiera, na którym porcie USB QuadStick się prezentuje. Urządzenie zrywa i nawiązuje USB ponownie przy każdej zmianie, więc błędna wartość może sprawić, że konsola lub komputer go nie zobaczą. Ustawienie to również bije enable_usb_a_host: dopóki jest włączone, stos hosta USB-A jest wyłączony niezależnie od ustawienia hosta. Zmieniaj tylko za radą wsparcia technicznego QuadStick."
  },
  {
   "name": "enable_usb_comm",
@@ -334,16 +346,10 @@
   "description": "Od oprogramowania układowego 2373, ale urządzenie to ignoruje. Nazwa jest poprawna i pliki ją niosą, ale nic w oprogramowaniu układowym nie odczytuje tej wartości: każda oś hosta USB używa martwej strefy USB 1. Ustawienie jej w wierszu trybu też nic nie robi."
  },
  {
-  "name": "titan_two",
-  "label": "Adapter Titan Two",
-  "description": "Od oprogramowania układowego 2373. Informuje urządzenie, że łączy się z PS4 przez Titan Two, a nie bezpośrednio z konsolą. Wtedy pomija uzgadnianie uwierzytelniania DS4 i zatrzymuje okresowe wymuszone ponowne łączenie USB. QMP pokazuje to jako flagę Titan 2 PS4.",
-  "alsoCalled": "flaga PS4 Titana 2"
- },
- {
   "name": "watchdog_disable",
   "label": "Wyłącz watchdoga",
-  "risk": "Urządzenie uruchamia sprzętowego watchdoga na dwie minuty, który je restartuje, jeśli przestanie odpowiadać. Nic w oprogramowaniu układowym 1476 ani 2373 nie odczytuje tego ustawienia, więc w żadnym z nich nic ono nie robi, a co zrobi z nim późniejsze oprogramowanie układowe, nie wiadomo.",
-  "description": "Miało powstrzymać QuadStick przed samoczynnym restartem po zawieszeniu. Twój QuadStick to ignoruje."
+  "description": "Miało powstrzymać QuadStick przed samoczynnym restartem po zawieszeniu. Twój QuadStick to ignoruje.",
+  "risk": "Urządzenie uruchamia sprzętowego watchdoga na dwie minuty, który je restartuje, jeśli przestanie odpowiadać. Nic w oprogramowaniu układowym 1476 ani 2373 nie odczytuje tego ustawienia, więc w żadnym z nich nic ono nie robi, a co zrobi z nim późniejsze oprogramowanie układowe, nie wiadomo."
  },
  {
   "name": "debug",

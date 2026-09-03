@@ -491,9 +491,6 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Usi {0} o più.</value>
   </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Usare da {0} a {1}. {2}</value>
-  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Usi qui la modalità 0, 2, 3 o 4, e imposti l'altra modalità in un profilo di gioco invece.</value>
   </data>
@@ -685,5 +682,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Questo foglio di calcolo è più grande di {0} righe, molto più grande di qualsiasi profilo, quindi abbiamo interrotto la lettura a metà.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Usare da {0} a {1}. {2}</value>
   </data>
 </root>

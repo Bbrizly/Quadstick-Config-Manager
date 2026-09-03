@@ -491,9 +491,6 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Use {0} ou mais.</value>
   </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Use {0} a {1}. {2}</value>
-  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Use o modo 0, 2, 3 ou 4 aqui, e defina o outro modo em um perfil de jogo em vez disso.</value>
   </data>
@@ -685,5 +682,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Esta planilha é maior que {0} linhas, muito maior que qualquer perfil, então paramos de ler no meio do caminho.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Use {0} a {1}. {2}</value>
   </data>
 </root>

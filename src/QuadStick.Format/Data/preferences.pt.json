@@ -1,14 +1,14 @@
 [
  {
+  "name": "joystick_deflection_maximum",
+  "label": "Sensibilidade do joystick",
+  "description": "Quanto o joystick tem de se mover para dar o sinal máximo, também chamado deflexão total. Um valor mais baixo é mais sensível, porque um empurrão menor faz o mesmo.",
+  "alsoCalled": "amplitude de movimento"
+ },
+ {
   "name": "joystick_deflection_minimum",
   "label": "Zona morta central do joystick",
   "description": "Zona morta central do analógico, como uma porcentagem do curso total. Defina-a alta o suficiente para impedir que o mouse ou joystick fiquem à deriva. Números maiores tornam o analógico menos sensível perto do centro. Isso é algo separado dos anéis do D-Pad. No firmware 2373, um valor de 0 não significa mais ausência de zona morta: o dispositivo substitui por 129 contagens brutas, e refaz isso a cada varredura, então esse valor prevalece sobre o que foi calculado quando o arquivo foi carregado."
- },
- {
-  "name": "joystick_deflection_maximum",
-  "label": "Deflexão total do joystick",
-  "description": "Até onde o analógico precisa se mover para um sinal completo. O QMP chama isso de faixa de movimento do joystick, e é a coisa mais próxima que o dispositivo tem de um controle de sensibilidade: números maiores significam mais curso para a mesma saída, então o joystick parece menos sensível. O QMP usa o maior dos seus quatro controles deslizantes de direção.",
-  "alsoCalled": "amplitude de movimento"
  },
  {
   "name": "deflection_multiplier_up",
@@ -80,16 +80,10 @@
  },
  {
   "name": "sip_puff_threshold",
-  "label": "Limite forte de sip/puff",
+  "label": "Limiar normal de aspiração/sopro",
   "unit": "porcento",
-  "description": "Pressão na qual acionar a saída. O QMP mostra isso como o limite alto de sip and puff; sip_puff_threshold_soft é o baixo.",
+  "description": "Pressão a partir da qual uma aspiração ou sopro normal conta. O QMP chama-lhe limiar forte, mas é o que os controlos normais de aspiração e sopro usam. Aumente-o se as aspirações suaves continuarem a disparar o normal.",
   "alsoCalled": "limiar alto de sucção e sopro"
- },
- {
-  "name": "sip_puff_maximum",
-  "label": "Pressão máxima de sip/puff",
-  "unit": "porcento",
-  "description": "Pressão máxima a ser escalada para um sinal completo."
  },
  {
   "name": "sip_puff_delay_soft",
@@ -102,7 +96,13 @@
   "name": "sip_puff_delay_hard",
   "label": "Atraso forte de sip/puff",
   "unit": "milissegundos",
-  "description": "Por quanto tempo um sip ou puff forte é mantido antes de contar como um sinal longo. A contagem começa quando o limite forte é ultrapassado, não quando a pressão começa a se mover. 0 não significa não definido, significa que o sinal longo dispara imediatamente."
+  "description": "Durante quanto tempo uma aspiração ou sopro é mantido antes de contar como longo. No tubo lateral é o tempo que aspira para trocar de ficheiro de jogo. A contagem começa no limiar normal, e 0 dispara de imediato."
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "Pressão máxima de sip/puff",
+  "unit": "porcento",
+  "description": "Pressão máxima a ser escalada para um sinal completo."
  },
  {
   "name": "sip_threshold_soft",
@@ -195,7 +195,13 @@
  {
   "name": "bluetooth_authentication_mode",
   "label": "Modo de autenticação Bluetooth",
-  "description": "Quanto emparelhamento o QuadStick pede. Enviado ao rádio como a definição SA, por isso só conta enquanto o Bluetooth estiver ligado."
+  "description": "Quanto emparelhamento o QuadStick pede. Enviado ao rádio como a definição SA, por isso só conta enquanto o Bluetooth estiver ligado.",
+  "optionLabels": [
+   "Aberto, sem verificação de emparelhamento e sem encriptação",
+   "Confirmar o emparelhamento no outro dispositivo",
+   "Funciona logo, nada para escrever",
+   "Código PIN, escrito no outro dispositivo"
+  ]
  },
  {
   "name": "bluetooth_connection_mode",
@@ -248,12 +254,6 @@
   "description": "Seleciona um arquivo usando o tubo lateral."
  },
  {
-  "name": "enable_usb_a_device",
-  "label": "Modo de dispositivo USB-A",
-  "risk": "Isso escolhe em qual porta USB o QuadStick se apresenta. O dispositivo derruba o USB e reconecta quando isso muda, então um valor errado pode deixá-lo invisível para um console ou computador. Também prevalece sobre enable_usb_a_host: enquanto isso estiver definido, a pilha host USB-A é desligada, não importa o que a configuração de host diga. Altere isso apenas seguindo orientação do suporte do QuadStick.",
-  "description": "Em que tomada USB o QuadStick aparece. Zero é a sua própria porta; acima de zero é a tomada USB-A, e isso também desliga o modo host USB-A."
- },
- {
   "name": "enable_usb_a_host",
   "label": "Modo host USB-A",
   "description": "Desde o firmware 2373. Com isso ativado e o modo de dispositivo USB-A desativado, o dispositivo executa um host USB na porta USB-A, então um controle conectado ali alimenta os canais de entrada usb_1. Desative isso, ou ative o modo de dispositivo USB-A, e o host é derrubado. O modo de dispositivo USB-A prevalece. O QMP mostra isso como USB-A Host Mode.",
@@ -264,6 +264,7 @@
   "label": "Modo de emulação USB",
   "description": "Qual dispositivo USB o QuadStick finge ser. No firmware 2373: 0 QuadStick nativo, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 para um PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 sem unidade USB, 7 DS4 wireless direto. O valor 5 significava apenas PC, sem joystick no firmware 1476, então um arquivo carregando 5 se comporta de forma completamente diferente depois que o dispositivo é atualizado. Os modos 1, 5, 6 e 7 não oferecem nenhuma unidade USB, então um computador não consegue ver os arquivos do QuadStick enquanto um deles está em execução. O Boot in PS4 Mode do QMP é o valor 4: o firmware 2373, em Joystick.c:625, chama esse valor de \"boot in PS4 mode\" em seu próprio comentário.",
   "risk": "O nome diz DS3, mas o dispositivo o lê como um modo de emulação USB com oito valores numerados, não um interruptor de ligado ou desligado. O que 5 significa mudou entre o firmware 1476 e o 2373, e um número que o firmware em execução não conhece deixa o dispositivo em uma emulação que ninguém pediu. O QCM mantém o que for digitado e não recusa nada, porque um valor errado para um firmware é certo para outro. Altere isso apenas seguindo orientação do suporte do QuadStick.",
+  "alsoCalled": "arrancar em modo PS4",
   "optionLabels": [
    "QuadStick (PC e PS3)",
    "DualShock 3, sem unidade USB",
@@ -273,8 +274,19 @@
    "Nintendo Switch Pro Controller, sem unidade USB",
    "DualShock 4, sem unidade USB",
    "DualShock 4 wireless, sem unidade USB"
-  ],
-  "alsoCalled": "arrancar em modo PS4"
+  ]
+ },
+ {
+  "name": "titan_two",
+  "label": "Adaptador Titan Two",
+  "description": "Desde o firmware 2373. Informa ao dispositivo que ele está alcançando um PS4 através de um Titan Two, em vez de conectado diretamente no console. Ele então pula o handshake de autenticação DS4 e interrompe a reconexão USB forçada periódica. O QMP mostra isso como o sinalizador Titan 2 PS4.",
+  "alsoCalled": "indicador PS4 do Titan 2"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "Modo de dispositivo USB-A",
+  "description": "Em que tomada USB o QuadStick aparece. Zero é a sua própria porta; acima de zero é a tomada USB-A, e isso também desliga o modo host USB-A.",
+  "risk": "Isso escolhe em qual porta USB o QuadStick se apresenta. O dispositivo derruba o USB e reconecta quando isso muda, então um valor errado pode deixá-lo invisível para um console ou computador. Também prevalece sobre enable_usb_a_host: enquanto isso estiver definido, a pilha host USB-A é desligada, não importa o que a configuração de host diga. Altere isso apenas seguindo orientação do suporte do QuadStick."
  },
  {
   "name": "enable_usb_comm",
@@ -334,16 +346,10 @@
   "description": "Desde o firmware 2373, mas o dispositivo o ignora. O nome é válido e os arquivos o carregam, mas nada no firmware lê o valor: todo eixo de host USB usa a zona morta do USB 1. Defini-lo em uma linha de modo também não faz nada."
  },
  {
-  "name": "titan_two",
-  "label": "Adaptador Titan Two",
-  "description": "Desde o firmware 2373. Informa ao dispositivo que ele está alcançando um PS4 através de um Titan Two, em vez de conectado diretamente no console. Ele então pula o handshake de autenticação DS4 e interrompe a reconexão USB forçada periódica. O QMP mostra isso como o sinalizador Titan 2 PS4.",
-  "alsoCalled": "indicador PS4 do Titan 2"
- },
- {
   "name": "watchdog_disable",
   "label": "Desativar o watchdog",
-  "risk": "O dispositivo executa um watchdog de hardware de dois minutos que o reinicia se ele parar de responder. Nada no firmware 1476 ou 2373 lê esta configuração, então em nenhum dos dois ela faz algo, e o que um firmware posterior poderia fazer com ela é desconhecido.",
-  "description": "Devia impedir o QuadStick de reiniciar sozinho quando bloqueia. O seu QuadStick ignora-o."
+  "description": "Devia impedir o QuadStick de reiniciar sozinho quando bloqueia. O seu QuadStick ignora-o.",
+  "risk": "O dispositivo executa um watchdog de hardware de dois minutos que o reinicia se ele parar de responder. Nada no firmware 1476 ou 2373 lê esta configuração, então em nenhum dos dois ela faz algo, e o que um firmware posterior poderia fazer com ela é desconhecido."
  },
  {
   "name": "debug",

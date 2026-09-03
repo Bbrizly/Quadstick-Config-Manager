@@ -491,9 +491,6 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Use {0} o más.</value>
   </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Use {0} a {1}. {2}</value>
-  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Use aquí el modo 0, 2, 3 o 4, y ponga el otro modo en un perfil de juego.</value>
   </data>
@@ -685,5 +682,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Esta hoja de cálculo tiene más de {0} filas, mucho más que cualquier perfil, así que dejamos de leer a medio camino.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Use {0} a {1}. {2}</value>
   </data>
 </root>

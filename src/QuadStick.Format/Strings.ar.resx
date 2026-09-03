@@ -491,9 +491,6 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>استخدم {0} أو أكثر.</value>
   </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>استخدم {0} إلى {1}. {2}</value>
-  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>استخدم النمط 0 أو 2 أو 3 أو 4 هنا، واضبط النمط الآخر في ملف شخصي للعبة بدلًا من ذلك.</value>
   </data>
@@ -685,5 +682,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>يحتوي جدول البيانات هذا على أكثر من {0} صف، وهو أكبر بكثير من أي ملف شخصي، لذا توقفنا عن القراءة في منتصف الطريق.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>استخدم {0} إلى {1}. {2}</value>
   </data>
 </root>

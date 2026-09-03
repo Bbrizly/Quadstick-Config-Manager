@@ -158,6 +158,13 @@ def import_(lang):
             if prefix + key in said:
                 node.find('value').text = said[prefix + key]
                 kept += 1
+            # A key held out of the catalog is not a key nobody translated. It
+            # is one no translator should retype: a date pattern like
+            # yyyy年M月d日 is already right and is not words to translate. Every
+            # import used to delete these, so every language silently fell back
+            # to the English pattern.
+            elif prefix + key in NOT_WORDS:
+                kept += 1
             else:
                 root.remove(node)
         ET.indent(tree, '  ')

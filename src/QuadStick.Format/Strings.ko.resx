@@ -491,9 +491,6 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>{0} 이상을 사용하세요.</value>
   </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>{0}에서 {1}까지 사용하세요. {2}</value>
-  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>여기서는 모드 0, 2, 3 또는 4를 사용하고, 다른 모드는 게임 프로필에서 설정하세요.</value>
   </data>
@@ -685,5 +682,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>이 스프레드시트는 {0}행보다 커서, 어떤 프로필보다 훨씬 크므로 도중에 읽기를 멈추었습니다.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>{0}에서 {1}까지 사용하세요. {2}</value>
   </data>
 </root>

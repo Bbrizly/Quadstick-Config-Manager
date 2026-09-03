@@ -491,9 +491,6 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Użyj {0} lub więcej.</value>
   </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Użyj od {0} do {1}. {2}</value>
-  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Użyj tu trybu 0, 2, 3 lub 4, a drugi tryb ustaw zamiast tego w profilu gry.</value>
   </data>
@@ -685,5 +682,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Ten arkusz kalkulacyjny jest większy niż {0} wierszy, znacznie większy niż jakikolwiek profil, więc przestaliśmy odczytywać w połowie.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Użyj od {0} do {1}. {2}</value>
   </data>
 </root>

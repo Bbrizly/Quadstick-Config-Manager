@@ -1,14 +1,14 @@
 [
  {
+  "name": "joystick_deflection_maximum",
+  "label": "摇杆灵敏度",
+  "description": "摇杆要推多远才输出满信号，也叫满偏。数值越低越灵敏，因为推一点点就有同样的效果。",
+  "alsoCalled": "活动范围"
+ },
+ {
   "name": "joystick_deflection_minimum",
   "label": "摇杆中心死区",
   "description": "模拟摇杆的中心死区，以满行程的百分比表示。把它设得足够高，可以防止鼠标或摇杆漂移。数值越大，摇杆在中心附近就越不灵敏。这与 D-Pad 环是两回事。在 2373 固件上，0 不再表示没有死区：设备会改用 129 个原始计数值，并且每次扫描都会重新执行这一替换，因此它会覆盖文件加载时算出的值。"
- },
- {
-  "name": "joystick_deflection_maximum",
-  "label": "摇杆满行程偏转",
-  "description": "摇杆需要移动多远才能产生满信号。QMP 把这个称为摇杆的运动范围，它是设备上最接近灵敏度控制的设置：数值越大，达到同样输出所需的行程就越长，摇杆手感就越不灵敏。QMP 取其四个方向滑块中的最大值。",
-  "alsoCalled": "活动范围"
  },
  {
   "name": "deflection_multiplier_up",
@@ -80,16 +80,10 @@
  },
  {
   "name": "sip_puff_threshold",
-  "label": "重度 sip/puff 阈值",
+  "label": "普通吸/吹阈值",
   "unit": "百分比",
-  "description": "触发输出的压力值。QMP 把它显示为 sip and puff high threshold（高阈值）；sip_puff_threshold_soft 是低阈值。",
+  "description": "判定为普通吸或吹的压力。QMP 把它叫作硬阈值，但普通的吸和吹控制用的就是它。如果轻轻一吸就触发普通动作，请调高。",
   "alsoCalled": "吸吹高阈值"
- },
- {
-  "name": "sip_puff_maximum",
-  "label": "Sip/puff 最大压力",
-  "unit": "百分比",
-  "description": "缩放为满信号所对应的最大压力。"
  },
  {
   "name": "sip_puff_delay_soft",
@@ -102,7 +96,13 @@
   "name": "sip_puff_delay_hard",
   "label": "重度 sip/puff 延迟",
   "unit": "毫秒",
-  "description": "重度 sip 或 puff 需要保持多久才会被算作长信号。计时从超过重度阈值那一刻开始，而不是压力刚开始变化时。0 并不表示未设置，而是表示长信号会立即触发。"
+  "description": "吸或吹要保持多久才算长的一次。在侧管上，这就是切换游戏文件要吸多久。计时从普通阈值开始，设为 0 会立刻触发。"
+ },
+ {
+  "name": "sip_puff_maximum",
+  "label": "Sip/puff 最大压力",
+  "unit": "百分比",
+  "description": "缩放为满信号所对应的最大压力。"
  },
  {
   "name": "sip_threshold_soft",
@@ -195,7 +195,13 @@
  {
   "name": "bluetooth_authentication_mode",
   "label": "Bluetooth 身份验证模式",
-  "description": "QuadStick 要求的配对强度。作为 SA 设置发送给无线模块,因此只在蓝牙开启时才起作用。"
+  "description": "QuadStick 要求的配对强度。作为 SA 设置发送给无线模块,因此只在蓝牙开启时才起作用。",
+  "optionLabels": [
+   "开放，不检查配对，也不加密",
+   "在另一台设备上确认配对",
+   "Just Works，无需输入",
+   "PIN 码，在另一台设备上输入"
+  ]
  },
  {
   "name": "bluetooth_connection_mode",
@@ -248,12 +254,6 @@
   "description": "使用侧管来选择文件。"
  },
  {
-  "name": "enable_usb_a_device",
-  "label": "USB-A 设备模式",
-  "risk": "这决定了 QuadStick 在哪个 USB 端口上呈现自己。该设置改变时，设备会断开 USB 并重新连接，因此错误的值会让主机或电脑无法识别它。它的优先级也高于 enable_usb_a_host：只要此项开启，无论主机设置写的是什么，USB-A 主机功能都会被关闭。仅在 QuadStick 支持人员的建议下更改此项。",
-  "description": "QuadStick 出现在哪个 USB 接口上。零是它自己的端口;大于零则是 USB-A 接口,这同时也会关闭 USB-A 主机模式。"
- },
- {
   "name": "enable_usb_a_host",
   "label": "USB-A 主机模式",
   "description": "自 2373 固件起可用。开启此项且 USB-A 设备模式关闭时，设备会在 USB-A 端口上运行一个 USB 主机，因此插在那里的控制器会把信号送入 usb_1 输入通道。关闭此项，或者开启 USB-A 设备模式，主机功能就会被关闭。USB-A 设备模式优先级更高。QMP 把它显示为 USB-A Host Mode。",
@@ -264,6 +264,7 @@
   "label": "USB 仿真模式",
   "description": "QuadStick 伪装成哪种 USB 设备。在 2373 固件上：0 为 QuadStick 原生，1 为 DualShock 3，2 为 x360ce，3 为 Xbox 360，4 为供 PS4 使用的 DualShock 4，5 为 Nintendo Switch Pro Controller，6 为不带 USB 驱动器的 DualShock 4，7 为纯粹的 DS4 无线模式。在 1476 固件上，值 5 表示仅限 PC、没有摇杆功能，因此设备更新后，携带值 5 的文件行为会完全不同。模式 1、5、6 和 7 完全不提供 USB 驱动器，因此运行其中任何一个时，电脑都看不到 QuadStick 的文件。QMP 的 Boot in PS4 Mode 对应值 4：2373 固件的 Joystick.c 第 625 行在自己的注释中把这个值称为 \"boot in PS4 mode\"。",
   "risk": "名称虽然写着 DS3，但设备把它读作一个有八个编号值的 USB 仿真模式，而不是一个开关。5 这个值在 1476 和 2373 固件之间含义发生了变化，运行中的固件如果不认识某个数字，就会让设备停留在一个谁都没有要求过的仿真状态上。QCM 会保留你输入的任何值，不做任何拒绝，因为对一个固件来说错误的值，对另一个固件可能是正确的。仅在 QuadStick 支持人员的建议下更改此项。",
+  "alsoCalled": "以 PS4 模式启动",
   "optionLabels": [
    "QuadStick（PC 和 PS3）",
    "DualShock 3，无 USB 驱动器",
@@ -273,8 +274,19 @@
    "Nintendo Switch Pro Controller，无 USB 驱动器",
    "DualShock 4，无 USB 驱动器",
    "DualShock 4 无线模式，无 USB 驱动器"
-  ],
-  "alsoCalled": "以 PS4 模式启动"
+  ]
+ },
+ {
+  "name": "titan_two",
+  "label": "Titan Two 适配器",
+  "description": "自 2373 固件起可用。告诉设备它是通过 Titan Two 连接到 PS4，而不是直接插入主机。这样设备会跳过 DS4 身份验证握手，并停止周期性的强制 USB 重新连接。QMP 把它显示为 Titan 2 PS4 flag。",
+  "alsoCalled": "Titan 2 的 PS4 标志"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "USB-A 设备模式",
+  "description": "QuadStick 出现在哪个 USB 接口上。零是它自己的端口;大于零则是 USB-A 接口,这同时也会关闭 USB-A 主机模式。",
+  "risk": "这决定了 QuadStick 在哪个 USB 端口上呈现自己。该设置改变时，设备会断开 USB 并重新连接，因此错误的值会让主机或电脑无法识别它。它的优先级也高于 enable_usb_a_host：只要此项开启，无论主机设置写的是什么，USB-A 主机功能都会被关闭。仅在 QuadStick 支持人员的建议下更改此项。"
  },
  {
   "name": "enable_usb_comm",
@@ -334,16 +346,10 @@
   "description": "自 2373 固件起该名称合法，文件中也带有它，但设备会忽略此项。固件中没有任何代码读取这个值：所有 USB 主机轴都使用 USB 1 死区。在模式行中设置它同样不起任何作用。"
  },
  {
-  "name": "titan_two",
-  "label": "Titan Two 适配器",
-  "description": "自 2373 固件起可用。告诉设备它是通过 Titan Two 连接到 PS4，而不是直接插入主机。这样设备会跳过 DS4 身份验证握手，并停止周期性的强制 USB 重新连接。QMP 把它显示为 Titan 2 PS4 flag。",
-  "alsoCalled": "Titan 2 的 PS4 标志"
- },
- {
   "name": "watchdog_disable",
   "label": "禁用看门狗",
-  "risk": "设备运行着一个两分钟的硬件看门狗，如果它停止响应就会重启设备。1476 和 2373 固件中都没有代码读取此设置，因此在这两个版本上它都不起任何作用，未来的固件会如何处理它则未知。",
-  "description": "本意是让 QuadStick 死机时不要自行重启。您的 QuadStick 会忽略它。"
+  "description": "本意是让 QuadStick 死机时不要自行重启。您的 QuadStick 会忽略它。",
+  "risk": "设备运行着一个两分钟的硬件看门狗，如果它停止响应就会重启设备。1476 和 2373 固件中都没有代码读取此设置，因此在这两个版本上它都不起任何作用，未来的固件会如何处理它则未知。"
  },
  {
   "name": "debug",
