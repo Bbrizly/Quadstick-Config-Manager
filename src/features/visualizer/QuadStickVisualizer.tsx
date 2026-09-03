@@ -273,9 +273,9 @@ export function QuadStickVisualizer({
         </div>
       ) : null}
 
-      <p className="practice-status" role="status" aria-live="polite">
+      <output className="practice-status" aria-live="polite">
         {practice ? liveText(live, t) : t("Main_WhatALitRowMeans")}
-      </p>
+      </output>
 
       <div className="semantic-parts" aria-label={t("Main_Parts")}>
         {ZONES.map((zone) => {
