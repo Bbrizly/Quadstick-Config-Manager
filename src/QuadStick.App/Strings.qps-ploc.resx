@@ -3483,12 +3483,12 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
     <value>[Íñštáll ÍD: {0} xxxxxx]</value>
   </data>
   <data name="Main_Add" xml:space="preserve">
-    <value>[Ádd xx]</value>
+    <value>[Ádd x]</value>
   </data>
   <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
-    <value>[Šómé módéš hídé thé QúádŠtíçk drívé fróm yóúr çómpútér. xxxxxxxxxxxxxxxxxx]</value>
+    <value>[Šómé módéš hídé thé QúádŠtíçk drívé fróm ýóúr çómpútér. xxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
-    <value>[Thé dévíçé bóótš íñtó thíš fílé, šó á módé wíth ñó drívé wíll ñót bé wríttéñ tó ít. xxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thé dévíçé bóótš íñtó thíš fílé, šó á módé wíth ñó drívé wíll ñót bé wríttéñ tó ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
 </root>
