@@ -43,16 +43,15 @@ QuadStick, which is what the firmware sends this number to.
 
 `4-usb.png`
 
-The device settings screen offers only the four that keep the drive reachable.
-The other four are not in the list, and the row says why and where they do
-belong. If your device is already on one of the others, that one stays in the
-list, because the app's job is to report what the device is running, not to
-tidy it.
+All eight modes are on the list, and the four with no flash drive access say
+so on the option itself: *DualShock 4 wireless (7), hides the QuadStick drive*.
+On a file the device boots into, the row adds what that costs, and the app
+still refuses to write one of those to the device.
 
-Adding a preferences sheet to a game profile now asks which controller the file
-should make the QuadStick into, with the same block on the boot file. It writes
-nothing unless you pick one: an empty value in that cell is not "unset", the
-device reads it as mode 0.
+Adding a preferences sheet asks which controller the file should make the
+QuadStick into. It writes nothing unless you pick one, and "Do not set one" is
+the real version of a blank row: an empty value in that cell is not "unset",
+the device reads it with atoi and gets mode 0.
 
 ## The picture follows what you click
 
