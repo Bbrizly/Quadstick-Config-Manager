@@ -8,37 +8,37 @@
  {
   "name": "joystick_deflection_minimum",
   "label": "Zona muerta central del joystick",
-  "description": "Zona muerta central del stick analógico, como porcentaje del recorrido completo. Póngala lo bastante alta para frenar un ratón o joystick que se mueve solo. Números más grandes hacen el stick menos sensible cerca del centro. Es algo distinto de los anillos del D-Pad. En el firmware 2373 un valor de 0 ya no significa sin zona muerta: el dispositivo pone 129 cuentas en bruto en su lugar, y lo rehace en cada barrido, así que gana sobre el valor calculado al cargar el archivo."
+  "description": "Cuánto tiene que moverse el stick antes de contar. Cuanto mayor, menos sensible cerca del centro, lo que evita que un stick en reposo derive."
  },
  {
   "name": "deflection_multiplier_up",
   "label": "Multiplicador de deflexión hacia arriba",
   "unit": "por ciento",
-  "description": "Escala la dirección hacia arriba para que llegue a la señal completa en el mismo punto que las demás direcciones. QMP lo calcula como el deslizador de dirección más grande dividido por el de arriba, así que un multiplicador mayor significa que arriba llega a la señal completa con menos recorrido y se siente más sensible."
+  "description": "Pone arriba al nivel de las demás direcciones. Cuanto mayor, más sensible hacia arriba."
  },
  {
   "name": "deflection_multiplier_down",
   "label": "Multiplicador de deflexión hacia abajo",
   "unit": "por ciento",
-  "description": "Escala la dirección hacia abajo para que llegue a la señal completa en el mismo punto que las demás direcciones. QMP lo calcula como el deslizador de dirección más grande dividido por el de abajo, así que un multiplicador mayor significa que abajo llega a la señal completa con menos recorrido y se siente más sensible."
+  "description": "Pone abajo al nivel de las demás direcciones. Cuanto mayor, más sensible hacia abajo."
  },
  {
   "name": "deflection_multiplier_left",
   "label": "Multiplicador de deflexión hacia la izquierda",
   "unit": "por ciento",
-  "description": "Escala la dirección izquierda para que llegue a la señal completa en el mismo punto que las demás direcciones. QMP lo calcula como el deslizador de dirección más grande dividido por el de la izquierda, así que un multiplicador mayor significa que la izquierda llega a la señal completa con menos recorrido y se siente más sensible."
+  "description": "Pone la izquierda al nivel de las demás direcciones. Cuanto mayor, más sensible hacia la izquierda."
  },
  {
   "name": "deflection_multiplier_right",
   "label": "Multiplicador de deflexión hacia la derecha",
   "unit": "por ciento",
-  "description": "Escala la dirección derecha para que llegue a la señal completa en el mismo punto que las demás direcciones. QMP lo calcula como el deslizador de dirección más grande dividido por el de la derecha, así que un multiplicador mayor significa que la derecha llega a la señal completa con menos recorrido y se siente más sensible."
+  "description": "Pone la derecha al nivel de las demás direcciones. Cuanto mayor, más sensible hacia la derecha."
  },
  {
   "name": "joystick_D_Pad_inner",
   "label": "Anillo interior del D-Pad",
   "unit": "por ciento",
-  "description": "Porcentaje de la deflexión completa, medido desde el centro, donde empieza el anillo interior del D-Pad. Solo se dispara tras un breve retardo, así que puede atravesarlo de camino hacia fuera sin activarlo. La mitad de este valor es donde una dirección deja de estar mantenida."
+  "description": "Dónde empieza el anillo interior de la cruceta, contando desde el centro. Espera un momento antes, así puede atravesarlo."
  },
  {
   "name": "joystick_D_Pad_outer",
@@ -54,22 +54,22 @@
  {
   "name": "anti_dead_zone",
   "label": "Anti zona muerta",
-  "description": "Añade un empuje fijo a cada lectura del stick, en la dirección a la que apunta el stick, para superar una zona muerta que el juego añade por su cuenta. Cero lo desactiva."
+  "description": "Añade un empuje fijo a cada lectura del stick, en la dirección a la que apunta, para superar una zona muerta que el juego añade por su cuenta. Cero lo desactiva."
  },
  {
   "name": "joystick_warning",
   "label": "Deflexión de aviso del joystick",
-  "description": "Deflexión a partir de la cual el firmware 1476 avisaba al usuario de que movía el stick demasiado. El firmware 2373 sigue aceptando el nombre pero lo ignora: la comprobación está comentada."
+  "description": "Su QuadStick ignora esto. Los más antiguos avisaban aquí si empujaba el stick demasiado lejos."
  },
  {
   "name": "joystick_alarm",
   "label": "Deflexión de alarma del joystick",
-  "description": "Deflexión a partir de la cual el firmware 1476 hacía sonar un tono de alarma. El firmware 2373 sigue aceptando el nombre pero lo ignora: la comprobación está comentada."
+  "description": "Su QuadStick ignora esto. Los más antiguos hacían sonar una alarma aquí si empujaba el stick demasiado lejos."
  },
  {
   "name": "enable_auto_zero",
   "label": "Puesta a cero automática de los sensores",
-  "description": "El firmware 2373 lo ignora. Fuerza el ajuste de vuelta a 0 después de cada carga de configuración y los dos sitios que lo habrían leído están comentados, así que activarlo no cambia nada, ni en una fila de modo ni en el dispositivo."
+  "description": "Su QuadStick ignora esto y lo devuelve a apagado."
  },
  {
   "name": "sip_puff_threshold_soft",
@@ -89,14 +89,14 @@
   "name": "sip_puff_delay_soft",
   "label": "Retardo suave de sip/puff",
   "unit": "milisegundos",
-  "description": "Las señales suaves de sip y puff se detectan tras este breve retardo. QMP lo muestra como el Low Threshold Delay.",
+  "description": "Cuánto espera un sorbo o soplo suave antes de contar. Más tiempo ignora una respiración que no pretendía.",
   "alsoCalled": "retardo del umbral bajo"
  },
  {
   "name": "sip_puff_delay_hard",
   "label": "Retardo fuerte de sip/puff",
   "unit": "milisegundos",
-  "description": "Cuánto tiempo se mantiene un sorbo o un soplo antes de contar como largo. En el tubo lateral es el tiempo que sorbe para cambiar de archivo de juego. El tiempo empieza en el umbral normal, y 0 dispara de inmediato."
+  "description": "Cuánto mantiene un sorbo o soplo antes de que cuente como largo. En el tubo lateral es lo que tiene que sorber para cambiar de archivo de juego. La cuenta empieza en el umbral normal, y 0 dispara al instante."
  },
  {
   "name": "sip_puff_maximum",
@@ -108,37 +108,39 @@
   "name": "sip_threshold_soft",
   "label": "Umbral suave de sip",
   "unit": "por ciento",
-  "description": "Nivel de vacío que inicia un sip suave, desde el firmware 2373. En 0 el umbral suave de sip/puff sigue aplicándose a los sips; cualquier otro valor lo sustituye solo para los sips."
+  "description": "Umbral suave solo para sorbos. Déjelo en 0 para usar el umbral suave compartido."
  },
  {
   "name": "sip_threshold",
-  "label": "Umbral fuerte de sip",
+  "label": "Umbral normal de sorbo",
   "unit": "por ciento",
-  "description": "Nivel de vacío que dispara un sip fuerte, desde el firmware 2373. En 0 el umbral fuerte de sip/puff sigue aplicándose a los sips; cualquier otro valor lo sustituye solo para los sips."
+  "description": "Umbral normal solo para sorbos. Déjelo en 0 para usar el umbral normal compartido.",
+  "alsoCalled": "umbral fuerte de sorbo"
  },
  {
   "name": "sip_maximum",
   "label": "Vacío máximo de sip",
   "unit": "por ciento",
-  "description": "Vacío que se escala a la señal completa en un sip, desde el firmware 2373. En 0 el máximo de sip/puff sigue aplicándose a los sips; cualquier otro valor lo sustituye solo para los sips."
+  "description": "Punto de señal completa solo para sorbos. Déjelo en 0 para usar el máximo compartido."
  },
  {
   "name": "puff_threshold_soft",
   "label": "Umbral suave de puff",
   "unit": "por ciento",
-  "description": "Presión que inicia un puff suave, desde el firmware 2373. En 0 el umbral suave de sip/puff sigue aplicándose a los puffs; cualquier otro valor lo sustituye solo para los puffs."
+  "description": "Umbral suave solo para soplos. Déjelo en 0 para usar el umbral suave compartido."
  },
  {
   "name": "puff_threshold",
-  "label": "Umbral fuerte de puff",
+  "label": "Umbral normal de soplo",
   "unit": "por ciento",
-  "description": "Presión que dispara un puff fuerte, desde el firmware 2373. En 0 el umbral fuerte de sip/puff sigue aplicándose a los puffs; cualquier otro valor lo sustituye solo para los puffs."
+  "description": "Umbral normal solo para soplos. Déjelo en 0 para usar el umbral normal compartido.",
+  "alsoCalled": "umbral fuerte de soplo"
  },
  {
   "name": "puff_maximum",
   "label": "Presión máxima de puff",
   "unit": "por ciento",
-  "description": "Presión que se escala a la señal completa en un puff, desde el firmware 2373. En 0 el máximo de sip/puff sigue aplicándose a los puffs; cualquier otro valor lo sustituye solo para los puffs."
+  "description": "Punto de señal completa solo para soplos. Déjelo en 0 para usar el máximo compartido."
  },
  {
   "name": "enable_left_side_tube",
@@ -185,12 +187,12 @@
  {
   "name": "enable_rumble",
   "label": "Vibración",
-  "description": "Solo en modo Dual Shock 3, reproduce la vibración del juego como un tono en el propio altavoz del QuadStick."
+  "description": "Solo en modo DualShock 3, reproduce la vibración del juego como un tono en el altavoz del propio QuadStick."
  },
  {
   "name": "bluetooth_device_mode",
   "label": "Modo de dispositivo Bluetooth",
-  "description": "Lo que el QuadStick finge ser por Bluetooth."
+  "description": "Qué finge ser el QuadStick por Bluetooth."
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -221,27 +223,27 @@
  {
   "name": "bluetooth_throttle",
   "label": "Limitador Bluetooth",
-  "description": "El dispositivo salta una transmisión Bluetooth cuando no ha pasado suficiente tiempo desde la anterior."
+  "description": "Intervalo mínimo que el QuadStick deja entre envíos Bluetooth."
  },
  {
   "name": "digital_out_1",
   "label": "Salida digital 1",
-  "description": "El dispositivo reconoce este nombre como salida antes de llegar a la tabla de preferencias, así que es solo un ajuste del dispositivo, nunca una anulación desde un modo."
+  "description": "Enciende o apaga la salida 1. Un modo no puede cambiarla."
  },
  {
   "name": "digital_out_2",
   "label": "Salida digital 2",
-  "description": "El dispositivo reconoce este nombre como salida antes de llegar a la tabla de preferencias, así que es solo un ajuste del dispositivo, nunca una anulación desde un modo."
+  "description": "Enciende o apaga la salida 2. Un modo no puede cambiarla."
  },
  {
   "name": "digital_out_3",
   "label": "Salida digital 3",
-  "description": "El dispositivo reconoce este nombre como salida antes de llegar a la tabla de preferencias, así que es solo un ajuste del dispositivo, nunca una anulación desde un modo."
+  "description": "Enciende o apaga la salida 3. Un modo no puede cambiarla."
  },
  {
   "name": "digital_out_4",
   "label": "Salida digital 4",
-  "description": "El dispositivo reconoce este nombre como salida antes de llegar a la tabla de preferencias, así que es solo un ajuste del dispositivo, nunca una anulación desde un modo."
+  "description": "Enciende o apaga la salida 4. Un modo no puede cambiarla."
  },
  {
   "name": "enable_swap_inputs",
@@ -251,12 +253,12 @@
  {
   "name": "enable_select_files",
   "label": "Seleccionar archivos con el tubo lateral",
-  "description": "Selecciona un archivo usando el tubo lateral."
+  "description": "Permite que el tubo lateral elija qué archivo de perfil carga el QuadStick."
  },
  {
   "name": "enable_usb_a_host",
   "label": "Modo host USB-A",
-  "description": "Desde el firmware 2373. Con esto activado y el modo dispositivo USB-A apagado, el dispositivo ejecuta un host USB en el puerto USB-A, así que un mando conectado ahí alimenta los canales de entrada usb_1. Apáguelo, o encienda el modo dispositivo USB-A, y el host se desmonta. El modo dispositivo USB-A gana. QMP lo muestra como USB-A Host Mode.",
+  "description": "Solo en QuadSticks nuevos. Permite que un mando conectado al puerto USB-A alimente las entradas USB 1 y USB 2, salvo que el modo dispositivo USB-A esté activado.",
   "alsoCalled": "modo host USB-A"
  },
  {
@@ -279,14 +281,14 @@
  {
   "name": "titan_two",
   "label": "Adaptador Titan Two",
-  "description": "Desde el firmware 2373. Le dice al dispositivo que llega a una PS4 a través de un Titan Two en vez de estar conectado directamente a la consola. Entonces salta el intercambio de autenticación DS4 y detiene la reconexión USB forzada periódica. QMP lo muestra como la bandera Titan 2 PS4.",
+  "description": "Solo en QuadSticks nuevos. Le dice al QuadStick que llega a una PS4 a través de un Titan Two. Actívelo solo si usa uno.",
   "alsoCalled": "indicador PS4 del Titan 2"
  },
  {
   "name": "enable_usb_a_device",
   "label": "Modo dispositivo USB-A",
   "description": "En qué toma USB aparece el QuadStick. Cero es su propio puerto; por encima de cero es la toma USB-A, y eso también desactiva el modo host USB-A.",
-  "risk": "Esto elige en qué puerto USB se presenta el QuadStick. El dispositivo desmonta el USB y se reconecta cuando cambia, así que un valor equivocado puede dejarlo sin ser visto por una consola o un equipo. También vence a enable_usb_a_host: mientras esto está activado, la pila de host USB-A queda apagada diga lo que diga el ajuste de host. Cámbielo solo por indicación del soporte de QuadStick."
+  "risk": "Un valor equivocado puede dejar el QuadStick invisible para su consola u ordenador. Cámbielo solo por indicación del soporte de QuadStick."
  },
  {
   "name": "enable_usb_comm",
@@ -337,23 +339,23 @@
   "name": "usb_1_dead_zone",
   "label": "Zona muerta de USB 1",
   "unit": "cuentas de eje en bruto",
-  "description": "Desde el firmware 2373. Zona muerta central para un mando conectado al puerto host USB-A, contada en pasos en bruto del byte de eje centrado de ese mando, no en porcentaje. Por debajo del valor el eje se lee como 0; por encima, el valor se resta para que el recorrido empiece desde cero, y el resultado se limita a más o menos 100. En 0 el eje pasa sin tocar. Un byte de eje centrado solo llega a unos 127 en cada sentido, así que 128 o más mata el eje."
+  "description": "Solo en QuadSticks nuevos. Zona muerta para un mando en el puerto USB-A, contada en pasos de eje en bruto y no en porcentaje. 128 o más anula el eje."
  },
  {
   "name": "usb_2_dead_zone",
   "label": "Zona muerta de USB 2",
   "unit": "cuentas de eje en bruto",
-  "description": "Desde el firmware 2373, pero el dispositivo lo ignora. El nombre es válido y hay archivos que lo llevan, pero nada en el firmware lee el valor: todos los ejes del host USB usan la zona muerta de USB 1. Ponerlo en una fila de modo tampoco hace nada."
+  "description": "Solo en QuadSticks nuevos, y el suyo lo ignora de todos modos: los dos sticks del puerto USB-A usan la zona muerta de USB 1."
  },
  {
   "name": "watchdog_disable",
   "label": "Desactivar el watchdog",
   "description": "Pretendía evitar que el QuadStick se reiniciara solo cuando se bloquea. Su QuadStick lo ignora.",
-  "risk": "El dispositivo ejecuta un watchdog de hardware de dos minutos que lo reinicia si deja de responder. Nada en los firmwares 1476 ni 2373 lee este ajuste, así que en ambos no hace nada, y lo que un firmware posterior pueda hacer con él es desconocido."
+  "risk": "El watchdog reinicia su QuadStick si deja de responder."
  },
  {
   "name": "debug",
   "label": "Nivel de salida de depuración",
-  "description": "El dispositivo enciende su consola cuando esto está por encima de cero."
+  "description": "Cualquier valor por encima de cero activa la salida de consola del QuadStick."
  }
 ]

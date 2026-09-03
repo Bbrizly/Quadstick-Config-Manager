@@ -8,37 +8,37 @@
  {
   "name": "joystick_deflection_minimum",
   "label": "摇杆中心死区",
-  "description": "模拟摇杆的中心死区，以满行程的百分比表示。把它设得足够高，可以防止鼠标或摇杆漂移。数值越大，摇杆在中心附近就越不灵敏。这与 D-Pad 环是两回事。在 2373 固件上，0 不再表示没有死区：设备会改用 129 个原始计数值，并且每次扫描都会重新执行这一替换，因此它会覆盖文件加载时算出的值。"
+  "description": "摇杆要移动多远才算数。数值越大，中间附近越不灵敏，放着不动的摇杆就不会漂移。"
  },
  {
   "name": "deflection_multiplier_up",
   "label": "向上偏转倍率",
   "unit": "百分比",
-  "description": "缩放向上方向，使其在与其他方向相同的位置达到满信号。QMP 用最大方向滑块除以向上方向的滑块来算出这个值，因此倍率越大，向上方向达到满信号所需的行程就越短，手感也就越灵敏。"
+  "description": "把上方向拉到和其他方向一致。数值越大，向上越灵敏。"
  },
  {
   "name": "deflection_multiplier_down",
   "label": "向下偏转倍率",
   "unit": "百分比",
-  "description": "缩放向下方向，使其在与其他方向相同的位置达到满信号。QMP 用最大方向滑块除以向下方向的滑块来算出这个值，因此倍率越大，向下方向达到满信号所需的行程就越短，手感也就越灵敏。"
+  "description": "把下方向拉到和其他方向一致。数值越大，向下越灵敏。"
  },
  {
   "name": "deflection_multiplier_left",
   "label": "向左偏转倍率",
   "unit": "百分比",
-  "description": "缩放向左方向，使其在与其他方向相同的位置达到满信号。QMP 用最大方向滑块除以向左方向的滑块来算出这个值，因此倍率越大，向左方向达到满信号所需的行程就越短，手感也就越灵敏。"
+  "description": "把左方向拉到和其他方向一致。数值越大，向左越灵敏。"
  },
  {
   "name": "deflection_multiplier_right",
   "label": "向右偏转倍率",
   "unit": "百分比",
-  "description": "缩放向右方向，使其在与其他方向相同的位置达到满信号。QMP 用最大方向滑块除以向右方向的滑块来算出这个值，因此倍率越大，向右方向达到满信号所需的行程就越短，手感也就越灵敏。"
+  "description": "把右方向拉到和其他方向一致。数值越大，向右越灵敏。"
  },
  {
   "name": "joystick_D_Pad_inner",
   "label": "内侧 D-Pad 环",
   "unit": "百分比",
-  "description": "内侧 D-Pad 环起点占满偏转的百分比，从中心开始测量。它只有在短暂延迟之后才会触发，因此摇杆经过它向外移动时不会误触。该值的一半是方向停止保持的位置。"
+  "description": "方向键内圈从中心算起从哪里开始。它会先等一下，所以你可以直接穿过去。"
  },
  {
   "name": "joystick_D_Pad_outer",
@@ -54,22 +54,22 @@
  {
   "name": "anti_dead_zone",
   "label": "反死区",
-  "description": "沿摇杆指向的方向,为每次摇杆读数加上一个固定的推力,以越过游戏自己设置的死区。零表示关闭。"
+  "description": "给每次摇杆读数加上一个固定推力，方向就是摇杆指的方向，用来越过游戏自己设的死区。0 表示关闭。"
  },
  {
   "name": "joystick_warning",
   "label": "摇杆警告偏转",
-  "description": "超过此偏转值时，1476 固件会警告用户摇杆移动过远。2373 固件仍然接受这个名称，但会忽略它：相应的检查已被注释掉。"
+  "description": "你的 QuadStick 会忽略这一项。旧款在这里会提醒你摇杆推得太远。"
  },
  {
   "name": "joystick_alarm",
   "label": "摇杆警报偏转",
-  "description": "超过此偏转值时，1476 固件会发出警报音。2373 固件仍然接受这个名称，但会忽略它：相应的检查已被注释掉。"
+  "description": "你的 QuadStick 会忽略这一项。旧款在这里会发出警报，提示摇杆推得太远。"
  },
  {
   "name": "enable_auto_zero",
   "label": "传感器自动归零",
-  "description": "2373 固件会忽略此项。它在每次加载配置后都会把该设置强制重置为 0，而原本会读取它的两处代码也都已被注释掉，因此无论在模式行中还是在设备上，打开它都不会改变任何东西。"
+  "description": "你的 QuadStick 会忽略这一项，并把它改回关闭。"
  },
  {
   "name": "sip_puff_threshold_soft",
@@ -89,14 +89,14 @@
   "name": "sip_puff_delay_soft",
   "label": "轻度 sip/puff 延迟",
   "unit": "毫秒",
-  "description": "轻度 sip 和 puff 信号会在这个短暂延迟之后被识别。QMP 把它显示为 Low Threshold Delay。",
+  "description": "轻吸或轻吹要等多久才算数。时间越长，越能忽略你无意的一次呼吸。",
   "alsoCalled": "低阈值延迟"
  },
  {
   "name": "sip_puff_delay_hard",
   "label": "重度 sip/puff 延迟",
   "unit": "毫秒",
-  "description": "吸或吹要保持多久才算长的一次。在侧管上，这就是切换游戏文件要吸多久。计时从普通阈值开始，设为 0 会立刻触发。"
+  "description": "吸或吹要按住多久才算长按。在侧管上，这就是切换游戏文件需要吸的时长。计时从普通阈值开始，0 表示立即触发。"
  },
  {
   "name": "sip_puff_maximum",
@@ -108,37 +108,39 @@
   "name": "sip_threshold_soft",
   "label": "轻度 sip 阈值",
   "unit": "百分比",
-  "description": "自 2373 固件起，开始识别轻度 sip 的真空水平。为 0 时，轻度 sip/puff 阈值仍适用于 sip；设为其他值则只针对 sip 替换该阈值。"
+  "description": "只作用于吸的轻阈值。保持 0 就使用共用的轻阈值。"
  },
  {
   "name": "sip_threshold",
-  "label": "重度 sip 阈值",
+  "label": "普通吸阈值",
   "unit": "百分比",
-  "description": "自 2373 固件起，触发重度 sip 的真空水平。为 0 时，重度 sip/puff 阈值仍适用于 sip；设为其他值则只针对 sip 替换该阈值。"
+  "description": "只作用于吸的普通阈值。保持 0 就使用共用的普通阈值。",
+  "alsoCalled": "强吸阈值"
  },
  {
   "name": "sip_maximum",
   "label": "Sip 最大真空",
   "unit": "百分比",
-  "description": "自 2373 固件起，sip 缩放为满信号所对应的真空值。为 0 时，sip/puff 最大值仍适用于 sip；设为其他值则只针对 sip 替换该值。"
+  "description": "只作用于吸的满信号点。保持 0 就使用共用的最大值。"
  },
  {
   "name": "puff_threshold_soft",
   "label": "轻度 puff 阈值",
   "unit": "百分比",
-  "description": "自 2373 固件起，开始识别轻度 puff 的压力值。为 0 时，轻度 sip/puff 阈值仍适用于 puff；设为其他值则只针对 puff 替换该阈值。"
+  "description": "只作用于吹的轻阈值。保持 0 就使用共用的轻阈值。"
  },
  {
   "name": "puff_threshold",
-  "label": "重度 puff 阈值",
+  "label": "普通吹阈值",
   "unit": "百分比",
-  "description": "自 2373 固件起，触发重度 puff 的压力值。为 0 时，重度 sip/puff 阈值仍适用于 puff；设为其他值则只针对 puff 替换该阈值。"
+  "description": "只作用于吹的普通阈值。保持 0 就使用共用的普通阈值。",
+  "alsoCalled": "强吹阈值"
  },
  {
   "name": "puff_maximum",
   "label": "Puff 最大压力",
   "unit": "百分比",
-  "description": "自 2373 固件起，puff 缩放为满信号所对应的压力值。为 0 时，sip/puff 最大值仍适用于 puff；设为其他值则只针对 puff 替换该值。"
+  "description": "只作用于吹的满信号点。保持 0 就使用共用的最大值。"
  },
  {
   "name": "enable_left_side_tube",
@@ -185,12 +187,12 @@
  {
   "name": "enable_rumble",
   "label": "震动",
-  "description": "仅在 Dual Shock 3 模式下,把游戏的震动作为提示音在 QuadStick 自带的扬声器上播放。"
+  "description": "仅在 DualShock 3 模式下，把游戏的震动当作提示音在 QuadStick 自带的扬声器上播放。"
  },
  {
   "name": "bluetooth_device_mode",
   "label": "Bluetooth 设备模式",
-  "description": "QuadStick 在 Bluetooth 上伪装成的设备类型。"
+  "description": "QuadStick 通过蓝牙把自己伪装成什么。"
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -221,27 +223,27 @@
  {
   "name": "bluetooth_throttle",
   "label": "Bluetooth 节流",
-  "description": "如果距离上一次发送的时间不够长，设备会跳过这次 Bluetooth 传输。"
+  "description": "QuadStick 两次蓝牙发送之间留出的最小间隔。"
  },
  {
   "name": "digital_out_1",
   "label": "数字输出 1",
-  "description": "设备在到达偏好设置表之前就会把这个名称匹配为一个输出，因此它只是一项设备设置，永远不会作为模式覆盖使用。"
+  "description": "打开或关闭输出插孔 1。模式无法更改它。"
  },
  {
   "name": "digital_out_2",
   "label": "数字输出 2",
-  "description": "设备在到达偏好设置表之前就会把这个名称匹配为一个输出，因此它只是一项设备设置，永远不会作为模式覆盖使用。"
+  "description": "打开或关闭输出插孔 2。模式无法更改它。"
  },
  {
   "name": "digital_out_3",
   "label": "数字输出 3",
-  "description": "设备在到达偏好设置表之前就会把这个名称匹配为一个输出，因此它只是一项设备设置，永远不会作为模式覆盖使用。"
+  "description": "打开或关闭输出插孔 3。模式无法更改它。"
  },
  {
   "name": "digital_out_4",
   "label": "数字输出 4",
-  "description": "设备在到达偏好设置表之前就会把这个名称匹配为一个输出，因此它只是一项设备设置，永远不会作为模式覆盖使用。"
+  "description": "打开或关闭输出插孔 4。模式无法更改它。"
  },
  {
   "name": "enable_swap_inputs",
@@ -251,12 +253,12 @@
  {
   "name": "enable_select_files",
   "label": "用侧管选择文件",
-  "description": "使用侧管来选择文件。"
+  "description": "让侧管选择 QuadStick 加载哪个配置文件。"
  },
  {
   "name": "enable_usb_a_host",
   "label": "USB-A 主机模式",
-  "description": "自 2373 固件起可用。开启此项且 USB-A 设备模式关闭时，设备会在 USB-A 端口上运行一个 USB 主机，因此插在那里的控制器会把信号送入 usb_1 输入通道。关闭此项，或者开启 USB-A 设备模式，主机功能就会被关闭。USB-A 设备模式优先级更高。QMP 把它显示为 USB-A Host Mode。",
+  "description": "仅限较新的 QuadStick。让插在 USB-A 口的手柄驱动 USB 1 和 USB 2 输入，除非 USB-A 设备模式已打开。",
   "alsoCalled": "USB-A 主机模式"
  },
  {
@@ -279,14 +281,14 @@
  {
   "name": "titan_two",
   "label": "Titan Two 适配器",
-  "description": "自 2373 固件起可用。告诉设备它是通过 Titan Two 连接到 PS4，而不是直接插入主机。这样设备会跳过 DS4 身份验证握手，并停止周期性的强制 USB 重新连接。QMP 把它显示为 Titan 2 PS4 flag。",
+  "description": "仅限较新的 QuadStick。告诉 QuadStick 它是通过 Titan Two 接到 PS4 的。只有你真的在用时才打开。",
   "alsoCalled": "Titan 2 的 PS4 标志"
  },
  {
   "name": "enable_usb_a_device",
   "label": "USB-A 设备模式",
   "description": "QuadStick 出现在哪个 USB 接口上。零是它自己的端口;大于零则是 USB-A 接口,这同时也会关闭 USB-A 主机模式。",
-  "risk": "这决定了 QuadStick 在哪个 USB 端口上呈现自己。该设置改变时，设备会断开 USB 并重新连接，因此错误的值会让主机或电脑无法识别它。它的优先级也高于 enable_usb_a_host：只要此项开启，无论主机设置写的是什么，USB-A 主机功能都会被关闭。仅在 QuadStick 支持人员的建议下更改此项。"
+  "risk": "数值填错可能会让主机或电脑看不到 QuadStick。仅在 QuadStick 支持人员的建议下更改。"
  },
  {
   "name": "enable_usb_comm",
@@ -337,23 +339,23 @@
   "name": "usb_1_dead_zone",
   "label": "USB 1 死区",
   "unit": "原始轴计数",
-  "description": "自 2373 固件起可用。插在 USB-A 主机端口上的控制器的中心死区，以该控制器居中轴字节的原始步进计数，而不是百分比来表示。低于该值时，轴读数为 0；高于该值时，会减去该值，使行程从零开始，结果被限制在正负 100 之间。为 0 时，轴数据会原样通过。居中的轴字节无论哪个方向都只能到大约 127，因此 128 或更大的值会让该轴失效。"
+  "description": "仅限较新的 QuadStick。USB-A 口上手柄的死区，按原始轴步数计算，不是百分比。128 或以上会让该轴失效。"
  },
  {
   "name": "usb_2_dead_zone",
   "label": "USB 2 死区",
   "unit": "原始轴计数",
-  "description": "自 2373 固件起该名称合法，文件中也带有它，但设备会忽略此项。固件中没有任何代码读取这个值：所有 USB 主机轴都使用 USB 1 死区。在模式行中设置它同样不起任何作用。"
+  "description": "仅限较新的 QuadStick，而且你的机器无论如何都会忽略它：USB-A 口上的两个摇杆都用 USB 1 的死区。"
  },
  {
   "name": "watchdog_disable",
   "label": "禁用看门狗",
   "description": "本意是让 QuadStick 死机时不要自行重启。您的 QuadStick 会忽略它。",
-  "risk": "设备运行着一个两分钟的硬件看门狗，如果它停止响应就会重启设备。1476 和 2373 固件中都没有代码读取此设置，因此在这两个版本上它都不起任何作用，未来的固件会如何处理它则未知。"
+  "risk": "如果 QuadStick 停止响应，看门狗会让它重启。"
  },
  {
   "name": "debug",
   "label": "调试输出级别",
-  "description": "当此值大于零时，设备会开启其控制台。"
+  "description": "任何大于零的值都会打开 QuadStick 的控制台输出。"
  }
 ]
