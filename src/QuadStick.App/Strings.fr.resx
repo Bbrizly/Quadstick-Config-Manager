@@ -374,7 +374,7 @@
     <value>Recherche de votre QuadStick...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>Les modes qui masquent le lecteur QuadStick ne sont pas proposés ici, car l'appareil démarre sur ce fichier. Réglez-en un dans un profil de jeu à la place.</value>
+    <value>L'appareil démarre sur ce fichier, donc l'application n'écrira pas sur votre QuadStick l'un des modes qui masquent le lecteur. Réglez-le plutôt dans un profil de jeu.</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>Plus d'options</value>
@@ -2007,7 +2007,7 @@ Vous pouvez changer cela à tout moment dans Réglages, sous Avancé.</value>
     <value>La manette que ce fichier fait imiter au QuadStick. Vous pouvez la changer ou la retirer plus tard.</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>La manette que ce fichier fait imiter au QuadStick. L'appareil démarre sur ce fichier, donc seuls les modes qui gardent son lecteur accessible sont proposés.</value>
+    <value>La manette que ce fichier fait imiter au QuadStick. L'appareil démarre sur ce fichier, donc un mode signalé comme masquant le lecteur QuadStick ne sera pas écrit sur l'appareil.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Les mots sont affichés avec les noms bruts de la vue liste. Passer en langage clair.</value>

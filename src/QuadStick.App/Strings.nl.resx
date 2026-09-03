@@ -374,7 +374,7 @@
     <value>Uw QuadStick wordt gezocht...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>Modi die de QuadStick-schijf verbergen worden hier niet aangeboden, omdat het apparaat vanaf dit bestand opstart. Stel er in plaats daarvan een in bij een spelprofiel.</value>
+    <value>Het apparaat start vanaf dit bestand op, dus de app schrijft geen van de modi die de schijf verbergen naar uw QuadStick. Stel er in plaats daarvan een in bij een spelprofiel.</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>Meer opties</value>
@@ -2007,7 +2007,7 @@ U kunt dit op elk moment wijzigen in Instellingen, onder Geavanceerd.</value>
     <value>Welke controller de QuadStick door dit bestand nabootst. U kunt dit later wijzigen of weghalen.</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Welke controller de QuadStick door dit bestand nabootst. Het apparaat start vanaf dit bestand op, dus alleen de modi die de schijf bereikbaar houden worden aangeboden.</value>
+    <value>Welke controller de QuadStick door dit bestand nabootst. Het apparaat start vanaf dit bestand op, dus een modus die volgens de markering de QuadStick-schijf verbergt wordt niet naar het apparaat geschreven.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Woorden worden getoond als ruwe lijstweergavenamen. Schakel over naar gewoon Engels.</value>

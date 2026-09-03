@@ -374,7 +374,7 @@
     <value>Ihr QuadStick wird gesucht...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>Modi, die das QuadStick-Laufwerk ausblenden, werden hier nicht angeboten, weil das Gerät von dieser Datei startet. Stellen Sie einen davon stattdessen in einem Spielprofil ein.</value>
+    <value>Das Gerät startet von dieser Datei, daher schreibt die App keinen der Modi, die das Laufwerk ausblenden, auf Ihren QuadStick. Stellen Sie ihn stattdessen in einem Spielprofil ein.</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>Weitere Optionen</value>
@@ -2007,7 +2007,7 @@ Sie können dies jederzeit in den Einstellungen unter Erweitert ändern.</value>
     <value>Welchen Controller der QuadStick durch diese Datei nachahmt. Sie können das später ändern oder entfernen.</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Welchen Controller der QuadStick durch diese Datei nachahmt. Das Gerät startet von dieser Datei, daher werden nur Modi angeboten, bei denen sein Laufwerk erreichbar bleibt.</value>
+    <value>Welchen Controller der QuadStick durch diese Datei nachahmt. Das Gerät startet von dieser Datei, daher wird ein Modus, der laut Kennzeichnung das QuadStick-Laufwerk ausblendet, nicht auf das Gerät geschrieben.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Wörter werden als rohe Listenansicht-Namen angezeigt. Wechseln Sie zu Klartext.</value>

@@ -374,7 +374,7 @@
     <value>Ricerca del suo QuadStick...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>Le modalità che nascondono l'unità QuadStick non sono disponibili qui, perché il dispositivo si avvia da questo file. Ne imposti una in un profilo di gioco.</value>
+    <value>Il dispositivo si avvia da questo file, quindi l'app non scriverà sul suo QuadStick nessuna delle modalità che nascondono l'unità. La imposti in un profilo di gioco.</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>Altre opzioni</value>
@@ -2007,7 +2007,7 @@ Può modificare questa impostazione in qualsiasi momento in Impostazioni, in Ava
     <value>Il controller che questo file fa simulare al QuadStick. Potrà cambiarlo o rimuoverlo in seguito.</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Il controller che questo file fa simulare al QuadStick. Il dispositivo si avvia da questo file, quindi sono disponibili solo le modalità che mantengono raggiungibile la sua unità.</value>
+    <value>Il controller che questo file fa simulare al QuadStick. Il dispositivo si avvia da questo file, quindi una modalità segnalata perché nasconde l'unità QuadStick non verrà scritta sul dispositivo.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Le parole sono mostrate come nomi elenco grezzi. Passa a italiano semplice.</value>

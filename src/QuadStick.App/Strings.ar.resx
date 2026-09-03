@@ -374,7 +374,7 @@
     <value>جارٍ البحث عن QuadStick...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>الأوضاع التي تخفي قرص QuadStick غير متاحة هنا، لأن الجهاز يبدأ التشغيل بهذا الملف. اضبط الوضع في ملف لعبة بدلاً من ذلك.</value>
+    <value>يبدأ الجهاز التشغيل بهذا الملف، لذلك لن يُكتب أي وضع من أوضاع إخفاء القرص إلى QuadStick الخاص بك. اضبطه في ملف لعبة بدلاً من ذلك.</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>مزيد من الخيارات</value>
@@ -2007,7 +2007,7 @@
     <value>وحدة التحكم التي يتظاهر بها QuadStick عند استخدام هذا الملف. يمكنك تغييرها أو إزالتها لاحقًا.</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>وحدة التحكم التي يتظاهر بها QuadStick عند استخدام هذا الملف. يبدأ الجهاز التشغيل بهذا الملف، لذلك تتاح فقط الأوضاع التي يبقى قرصه متاحًا معها.</value>
+    <value>وحدة التحكم التي يتظاهر بها QuadStick عند استخدام هذا الملف. يبدأ الجهاز التشغيل بهذا الملف، لذلك لن يُكتب إلى الجهاز أي وضع معلّم بأنه يخفي قرص QuadStick.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>تُعرض الكلمات كأسماء القائمة الخام. بدّل إلى الإنجليزية البسيطة.</value>

@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>두 임계값이 같으면 장치가 튜브를 읽을 때마다 0으로 나누게 됩니다.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>QuadStick 드라이브를 숨김</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB emulation mode {0} ({1})은(는) 컴퓨터가 QuadStick의 드라이브에 접근하지 못하게 하며, 이 파일은 장치가 부팅할 때 사용하는 파일입니다. 이를 설치하면 어떤 프로필도 다시 편집할 방법이 없어지며, 복구하려면 물리적인 강제 삭제가 필요합니다.</value>
   </data>

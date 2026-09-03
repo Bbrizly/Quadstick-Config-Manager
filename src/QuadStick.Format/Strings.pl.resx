@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Dwa równe progi powodują, że urządzenie dzieli przez zero za każdym razem, gdy odczytuje rurkę.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>ukrywa dysk QuadSticka</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>Tryb emulacji USB {0} ({1}) nie daje komputerowi dostępu do dysku QuadSticka, a to plik, z którym urządzenie się uruchamia. Zainstalowanie go nie pozostawiłoby żadnego sposobu, aby ponownie edytować jakikolwiek profil, a przywrócenie wymaga fizycznego wymuszonego kasowania.</value>
   </data>

@@ -374,7 +374,7 @@
     <value>正在查找你的 QuadStick...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>这里不提供会隐藏 QuadStick 驱动器的模式，因为设备是从这个文件启动的。请改在游戏配置文件里设置。</value>
+    <value>设备从这个文件启动，所以隐藏驱动器的模式不会被写入你的 QuadStick。请改在游戏配置文件里设置。</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>更多选项</value>
@@ -2007,7 +2007,7 @@
     <value>这个文件让 QuadStick 模拟成哪种手柄。以后可以更改或删除。</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>这个文件让 QuadStick 模拟成哪种手柄。设备是从这个文件启动的，所以只提供能让驱动器保持可访问的模式。</value>
+    <value>这个文件让 QuadStick 模拟成哪种手柄。设备从这个文件启动，所以标记为会隐藏 QuadStick 驱动器的模式不会被写入设备。</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>文字以原始列表视图名称显示。切换为通俗英语。</value>

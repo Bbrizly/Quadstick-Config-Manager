@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Deux seuils égaux font que l'appareil divise par zéro à chaque lecture du tube.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>masque le lecteur QuadStick</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>Le mode d'émulation USB {0} ({1}) ne donne pas à un ordinateur l'accès au lecteur du QuadStick, et ce fichier est un fichier avec lequel l'appareil démarre. L'installer ne laisserait plus aucun moyen de modifier un profil ensuite, et la récupération nécessite un effacement forcé physique.</value>
   </data>

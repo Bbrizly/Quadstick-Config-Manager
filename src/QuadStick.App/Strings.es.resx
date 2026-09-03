@@ -374,7 +374,7 @@
     <value>Buscando su QuadStick...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>Los modos que ocultan la unidad del QuadStick no se ofrecen aquí, porque el dispositivo arranca con este archivo. Configure uno en un perfil de juego en su lugar.</value>
+    <value>El dispositivo arranca con este archivo, así que la aplicación no escribirá en su QuadStick ninguno de los modos que ocultan la unidad. Configúrelo en un perfil de juego en su lugar.</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>Más opciones</value>
@@ -2007,7 +2007,7 @@ Puede cambiar esto en cualquier momento en Ajustes, en Avanzado.</value>
     <value>Qué mando imita el QuadStick con este archivo. Puede cambiarlo o quitarlo más tarde.</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>Qué mando imita el QuadStick con este archivo. El dispositivo arranca con este archivo, así que solo se ofrecen los modos que mantienen su unidad accesible.</value>
+    <value>Qué mando imita el QuadStick con este archivo. El dispositivo arranca con este archivo, así que un modo señalado por ocultar la unidad del QuadStick no se escribirá en el dispositivo.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Las palabras se muestran como nombres crudos de la vista de lista. Cambiar a lenguaje sencillo.</value>

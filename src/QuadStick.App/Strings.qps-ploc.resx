@@ -374,7 +374,7 @@
     <value>[Lóókíñg fór ýóúr QúádŠtíçk... xxxxxxxxxxx]</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>[Módéš thát hídé thé QúádŠtíçk drívé áré ñót ófféréd héré, béçáúšé thé dévíçé bóótš íñtó thíš fílé. Šét óñé íñ á gámé prófílé íñštéád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thé dévíçé bóótš íñtó thíš fílé, šó thé ápp wíll ñót wríté óñé óf thé drívé-hídíñg módéš tó ýóúr QúádŠtíçk. Šét ít íñ á gámé prófílé íñštéád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>[Móré óptíóñš xxxx]</value>
@@ -2025,7 +2025,7 @@ Whát íš šéñt góéš tó PóštHóg, óñ šérvérš íñ thé Úñítéd
     <value>[Whíçh çóñtróllér thíš fílé mákéš thé QúádŠtíçk prétéñd tó bé. Ýóú çáñ çháñgé ór rémóvé ít látér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>[Whíçh çóñtróllér thíš fílé mákéš thé QúádŠtíçk prétéñd tó bé. Thé dévíçé bóótš íñtó thíš fílé, šó óñlý thé módéš thát kéép ítš drívé réáçháblé áré ófféréd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Whíçh çóñtróllér thíš fílé mákéš thé QúádŠtíçk prétéñd tó bé. Thé dévíçé bóótš íñtó thíš fílé, šó á módé márkéd áš hídíñg thé QúádŠtíçk drívé wíll ñót bé wríttéñ tó thé dévíçé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>[Wórdš áré šhówñ áš ráw líšt-víéw ñáméš. Šwítçh tó pláíñ Éñglíšh. xxxxxxxxxxxxxxxxxxxxxxxxx]</value>

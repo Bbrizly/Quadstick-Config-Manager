@@ -374,7 +374,7 @@
     <value>आपका QuadStick खोजा जा रहा है...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>QuadStick ड्राइव को छिपाने वाले मोड यहाँ नहीं दिए जाते, क्योंकि डिवाइस इसी फ़ाइल से बूट होता है। इसके बजाय किसी गेम प्रोफ़ाइल में सेट करें।</value>
+    <value>डिवाइस इसी फ़ाइल से बूट होता है, इसलिए ड्राइव छिपाने वाला कोई भी मोड आपके QuadStick पर नहीं लिखा जाएगा। इसके बजाय किसी गेम प्रोफ़ाइल में सेट करें।</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>और विकल्प</value>
@@ -2007,7 +2007,7 @@
     <value>यह फ़ाइल QuadStick को कौन-सा कंट्रोलर बनाकर दिखाती है। आप इसे बाद में बदल या हटा सकते हैं।</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>यह फ़ाइल QuadStick को कौन-सा कंट्रोलर बनाकर दिखाती है। डिवाइस इसी फ़ाइल से बूट होता है, इसलिए सिर्फ़ वही मोड दिए जाते हैं जिनमें उसकी ड्राइव पहुँच में रहती है।</value>
+    <value>यह फ़ाइल QuadStick को कौन-सा कंट्रोलर बनाकर दिखाती है। डिवाइस इसी फ़ाइल से बूट होता है, इसलिए QuadStick ड्राइव को छिपाने वाला बताया गया मोड डिवाइस पर नहीं लिखा जाएगा।</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>शब्द रॉ लिस्ट-व्यू नामों के रूप में दिखाए जा रहे हैं। सामान्य अंग्रेज़ी पर स्विच करें।</value>

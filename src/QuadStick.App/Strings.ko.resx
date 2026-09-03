@@ -374,7 +374,7 @@
     <value>QuadStick을 찾는 중...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>QuadStick 드라이브를 숨기는 모드는 여기에서 제공하지 않습니다. 장치가 이 파일로 부팅하기 때문입니다. 대신 게임 프로필에서 설정하십시오.</value>
+    <value>장치가 이 파일로 부팅하므로 드라이브를 숨기는 모드는 QuadStick에 기록되지 않습니다. 대신 게임 프로필에서 설정하십시오.</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>추가 옵션</value>
@@ -2007,7 +2007,7 @@
     <value>이 파일이 QuadStick을 어떤 컨트롤러처럼 동작하게 할지 정합니다. 나중에 바꾸거나 지울 수 있습니다.</value>
   </data>
   <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
-    <value>이 파일이 QuadStick을 어떤 컨트롤러처럼 동작하게 할지 정합니다. 장치가 이 파일로 부팅하므로 드라이브에 접근할 수 있는 모드만 제공합니다.</value>
+    <value>이 파일이 QuadStick을 어떤 컨트롤러처럼 동작하게 할지 정합니다. 장치가 이 파일로 부팅하므로 QuadStick 드라이브를 숨김으로 표시된 모드는 장치에 기록되지 않습니다.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>단어가 목록 보기의 원래 이름으로 표시됩니다. 쉬운 영어로 전환하세요.</value>

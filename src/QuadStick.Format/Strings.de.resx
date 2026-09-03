@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Zwei gleiche Schwellenwerte lassen das Gerät bei jedem Lesen des Schlauchs durch null teilen.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>blendet das QuadStick-Laufwerk aus</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB-Emulationsmodus {0} ({1}) gibt einem Computer keinen Zugriff auf das Laufwerk des QuadStick, und diese Datei ist eine, mit der das Gerät startet. Wird sie installiert, gibt es keine Möglichkeit mehr, ein Profil zurückzubearbeiten, und die Wiederherstellung erfordert ein physisches Force-Erase.</value>
   </data>
