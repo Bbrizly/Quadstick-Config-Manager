@@ -11,8 +11,6 @@ publish = false
 [lints]
 workspace = true
 
-# cdylib/staticlib are what the mobile targets link against. Desktop only needs
-# the lib, but dropping them now would mean re-testing the whole build later.
 [lib]
 name = "qcm_tauri_lib"
 crate-type = ["lib", "cdylib", "staticlib"]
@@ -21,25 +19,24 @@ crate-type = ["lib", "cdylib", "staticlib"]
 tauri-build = { version = "=2.6.3", features = [] }
 
 [dependencies]
-# Descriptor access and blocking HID reads. The macOS shared-device option keeps
-# the visualizer from needlessly fighting a game for the same controller; the
-# Windows native backend avoids a bundled C backend there. Linux keeps hidraw,
-# which is the backend that exposes descriptor/interface semantics we need.
+base64 = "=0.23.1"
+getrandom = "=0.4.3"
 hidapi = { version = "=2.6.6", features = ["macos-shared-device", "windows-native"] }
+# Tokens stay in the platform credential store on the two desktop platforms
+# where the shipping Google feature is enabled. Linux remains intentionally
+# unconfigured until a persistent store is part of the product contract.
+keyring = { version = "=3.6.3", default-features = false, features = ["apple-native", "windows-native"] }
+open = "=5.4.3"
 qcm-config = { path = "../crates/qcm-config" }
 qcm-core = { path = "../crates/qcm-core" }
-# The native file picker. Not a Tauri plugin: it is reached only from inside a
-# command, so the window keeps its empty permission list and cannot open a
-# dialog of its own.
+# All HTTP is native. Blocking is deliberate: commands run native work and the
+# domain crates stay runtime-free; response bodies are explicitly bounded.
+reqwest = { version = "=0.13.4", default-features = false, features = ["blocking", "rustls", "form"] }
 rfd = "=0.17.2"
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
-# No broad/external Tauri plugins. Filesystem, shell, HTTP and HID stay behind
-# native commands. The shell does register an internal no-command plugin hook
-# solely to reject remote WebView navigation.
+sha2 = "=0.11.0"
 tauri = { version = "=2.11.5", features = [] }
 
-# The adapter tests drive the storage adapter with a real profile, the way the
-# install flow will.
 [dev-dependencies]
 qcm-testkit = { path = "../crates/qcm-testkit" }
