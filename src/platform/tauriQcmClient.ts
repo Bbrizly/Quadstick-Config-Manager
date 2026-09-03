@@ -28,6 +28,7 @@ import type {
   SettingsPatch,
   Subscription,
 } from "./contracts";
+import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import { asQcmError, type QcmClient } from "./qcmClient";
 import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
 
@@ -183,6 +184,20 @@ export class TauriQcmClient implements QcmClient {
     return call<DeleteReceipt>("commit_delete_device_profile", { planId, confirmationId });
   }
 
+  renameDeviceProfile(
+    deviceId: string,
+    expectedGeneration: number,
+    from: string,
+    to: string,
+  ): Promise<RenameDeviceProfileReceipt> {
+    return call<RenameDeviceProfileReceipt>("rename_device_profile", {
+      deviceId,
+      expectedGeneration,
+      from,
+      to,
+    });
+  }
+
   openDeviceProfile(
     deviceId: string,
     expectedGeneration: number,
@@ -239,6 +254,7 @@ export const TAURI_COMMANDS = [
   "commit_install",
   "prepare_delete_device_profile",
   "commit_delete_device_profile",
+  "rename_device_profile",
   "open_device_profile",
   "open_device_preferences",
   "start_live_input",
