@@ -52,7 +52,7 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
     return () => {
       active = false;
     };
-  }, [client, open, profile.sessionId]);
+  }, [client, open]);
 
   const chooseDevice = async (): Promise<void> => {
     if (busy) return;
