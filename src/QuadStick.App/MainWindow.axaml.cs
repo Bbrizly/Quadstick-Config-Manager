@@ -3329,7 +3329,7 @@ public partial class MainWindow : Window
         for (int i = 0; d.Lights is { } row && lights is not null && i < lights.Length; i++)
             if (lights[i] != ModeLight.Off)
             {
-                var at = d.OnPhoto(row.X + i * row.Gap, row.Y);
+                var at = d.OnPhoto(row.XAt(i), row.Y);
                 foreach (var dot in Led(lights[i], d.PhotoX + at.X, photoY + at.Y))
                     stage.Children.Add(dot);
             }
