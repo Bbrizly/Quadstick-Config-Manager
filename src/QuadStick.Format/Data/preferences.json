@@ -425,7 +425,13 @@
       "4"
     ],
     "modeOverride": true,
-    "source": "QMP-4 QuadStick.py choice_BT_auth_mode offers 0, 1, 2 and 4, and its qsflash.py writes '4'. Firmware 2373 Preferences.h:113 defaults to 2, where firmware 1476 Preferences.h:94 defaulted to 4, so the device's own default changed. It is sent to the radio as the SA command in Bluetooth.c:267."
+    "source": "QMP-4 QuadStick.py choice_BT_auth_mode offers 0, 1, 2 and 4, and its qsflash.py writes '4'. Firmware 2373 Preferences.h:113 defaults to 2, where firmware 1476 Preferences.h:94 defaulted to 4, so the device's own default changed. It is sent to the radio as the SA command in Bluetooth.c:267. The four meanings are Table 2-3 of the Roving Networks Bluetooth Data Module Command Reference (RN-BT-DATA-UG v1.0r), which covers the RN-42: 0 open with no encryption, 1 SSP keyboard I/O, 2 SSP just works, 4 legacy pin code. 3 is not documented, which is why it is not offered. The radio's own default is 1.",
+    "optionLabels": [
+      "Open, no pairing check and nothing encrypted",
+      "Confirm the pairing on the other device",
+      "Just works, nothing to type",
+      "PIN code, typed on the other device"
+    ]
   },
   {
     "name": "bluetooth_connection_mode",
