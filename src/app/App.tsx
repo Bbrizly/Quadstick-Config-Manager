@@ -50,6 +50,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [editor, setEditor] = useState<EditorSnapshot | null>(null);
   const [workbookReview, setWorkbookReview] = useState<WorkbookImportReview | null>(null);
   const [workbookBusy, setWorkbookBusy] = useState(false);
+  const [workbookExportBusy, setWorkbookExportBusy] = useState(false);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [pendingDestination, setPendingDestination] = useState<ShellDestination | null>(null);
   const [closing, setClosing] = useState(false);
@@ -59,9 +60,12 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const copy = DESTINATION_COPY[activeDestination];
 
-  const showFailure = useCallback((reason: unknown): void => {
-    setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
-  }, [t]);
+  const showFailure = useCallback(
+    (reason: unknown): void => {
+      setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
+    },
+    [t],
+  );
 
   const showEditor = useCallback((snapshot: EditorSnapshot): void => {
     setEditor(snapshot);
@@ -153,23 +157,42 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     }
   };
 
-  const requestEditorClose = useCallback(async (destination: ShellDestination): Promise<void> => {
-    if (editor === null || closing) return;
-    setClosing(true);
+  const exportWorkbook = async (): Promise<void> => {
+    const exportXlsx = client.exportProfileXlsx;
+    if (editor === null || exportXlsx === undefined || workbookExportBusy) return;
+    setWorkbookExportBusy(true);
     try {
-      const outcome = await client.closeProfile(editor.sessionId, "if_clean");
-      if (outcome.kind === "keptOpenUnsavedChanges") {
-        setPendingDestination(destination);
-        setClosePromptOpen(true);
-      } else {
-        finishEditorClose(destination);
+      const receipt = await exportXlsx.call(client, editor.sessionId, editor.revision);
+      if (receipt !== null) {
+        setMessage(t("Main_SavedToSavePath", [receipt.name]));
       }
     } catch (reason) {
       showFailure(reason);
     } finally {
-      setClosing(false);
+      setWorkbookExportBusy(false);
     }
-  }, [client, closing, editor, finishEditorClose, showFailure]);
+  };
+
+  const requestEditorClose = useCallback(
+    async (destination: ShellDestination): Promise<void> => {
+      if (editor === null || closing) return;
+      setClosing(true);
+      try {
+        const outcome = await client.closeProfile(editor.sessionId, "if_clean");
+        if (outcome.kind === "keptOpenUnsavedChanges") {
+          setPendingDestination(destination);
+          setClosePromptOpen(true);
+        } else {
+          finishEditorClose(destination);
+        }
+      } catch (reason) {
+        showFailure(reason);
+      } finally {
+        setClosing(false);
+      }
+    },
+    [client, closing, editor, finishEditorClose, showFailure],
+  );
 
   const saveAndClose = useCallback(async (): Promise<void> => {
     if (editor === null || closing) return;
@@ -212,19 +235,31 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     setPendingDestination(null);
   }, [closing]);
 
-  const navigate = useCallback((destination: ShellDestination): void => {
-    if (editor !== null && destination !== "home") {
-      void requestEditorClose(destination);
-      return;
-    }
-    setActiveDestination(destination);
-  }, [editor, requestEditorClose]);
+  const navigate = useCallback(
+    (destination: ShellDestination): void => {
+      if (editor !== null && destination !== "home") {
+        void requestEditorClose(destination);
+        return;
+      }
+      setActiveDestination(destination);
+    },
+    [editor, requestEditorClose],
+  );
 
   let content;
   if (activeDestination === "home" && editor !== null) {
     content = (
       <section className="editor-route" aria-label={t("Shell_Profile")}>
         <div className="editor-route-actions">
+          {client.exportProfileXlsx === undefined ? null : (
+            <button
+              type="button"
+              disabled={closing || workbookExportBusy}
+              onClick={() => void exportWorkbook()}
+            >
+              {t("Main_Save")} .xlsx
+            </button>
+          )}
           <button type="button" disabled={closing} onClick={() => setInstallOpen(true)}>
             {t("Shell_InstallToQuadStick")}
           </button>
@@ -314,7 +349,9 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
             >
               <option value="system">{t("Settings_LanguageSystem")}</option>
               {LOCALE_TAGS.map((tag) => (
-                <option key={tag} value={tag}>{LOCALE_NAMES[tag]}</option>
+                <option key={tag} value={tag}>
+                  {LOCALE_NAMES[tag]}
+                </option>
               ))}
               {import.meta.env.DEV ? (
                 <option value="qps-ploc">{t("Rewrite_PseudoLocaleName")}</option>
