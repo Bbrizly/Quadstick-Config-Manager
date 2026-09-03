@@ -1,8 +1,10 @@
 //! The desktop shell.
 //!
 //! This crate owns the window, native adapters and the narrow command surface.
-//! Paths, drive letters, HID paths and OS handles stop at adapters; the WebView
-//! sees typed snapshots, opaque ids and caller-scoped channels only.
+//! Paths, drive letters, HID paths, OAuth tokens and OS handles stop at adapters;
+//! the WebView sees typed snapshots, opaque ids and caller-scoped channels only.
+
+use std::sync::Arc;
 
 pub mod adapters;
 pub mod commands;
@@ -11,6 +13,8 @@ pub mod community_commands;
 pub mod device_ipc;
 pub mod device_rename_ipc;
 pub mod device_shell;
+pub mod google_auth;
+pub mod google_commands;
 pub mod ipc;
 pub mod preference_ipc;
 pub mod shell;
@@ -45,6 +49,9 @@ pub fn registered_commands() -> &'static [&'static str] {
         "load_community_catalog",
         "import_community_profile",
         "open_community_sheet",
+        "get_google_auth_status",
+        "connect_google",
+        "disconnect_google",
         "list_devices",
         "refresh_devices",
         "choose_device_folder",
@@ -84,6 +91,9 @@ fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
 }
 
 pub fn run() {
+    let google = Arc::new(
+        google_auth::GoogleAuthService::native().expect("failed to build native Google auth client"),
+    );
     tauri::Builder::default()
         .plugin(navigation_guard())
         .manage(shell::native_shell())
@@ -93,6 +103,7 @@ pub fn run() {
             community::CommunityService::native()
                 .expect("failed to build the native Community HTTP client"),
         )
+        .manage(google)
         .manage(streaming::LiveRuntime::new())
         .manage(streaming::DeviceInvalidationHub::default())
         .invoke_handler(tauri::generate_handler![
@@ -116,6 +127,9 @@ pub fn run() {
             community_commands::load_community_catalog,
             community_commands::import_community_profile,
             community_commands::open_community_sheet,
+            google_commands::get_google_auth_status,
+            google_commands::connect_google,
+            google_commands::disconnect_google,
             commands::list_devices,
             commands::refresh_devices,
             commands::choose_device_folder,
@@ -151,7 +165,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_contains_no_global_event_api() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 35);
+        assert_eq!(commands.len(), 38);
         for expected in [
             "choose_and_import_workbook",
             "repair_workbook_tab",
@@ -162,6 +176,9 @@ mod tests {
             "load_community_catalog",
             "import_community_profile",
             "open_community_sheet",
+            "get_google_auth_status",
+            "connect_google",
+            "disconnect_google",
             "list_devices",
             "refresh_devices",
             "choose_device_folder",
@@ -180,7 +197,14 @@ mod tests {
         ] {
             assert!(commands.contains(&expected), "{expected}");
         }
-        for absent in ["emit_live_frame", "listen_live_frame", "reorder_device_profiles"] {
+        for absent in [
+            "emit_live_frame",
+            "listen_live_frame",
+            "reorder_device_profiles",
+            "get_google_access_token",
+            "get_google_refresh_token",
+            "open_arbitrary_url",
+        ] {
             assert!(!commands.contains(&absent), "{absent}");
         }
         assert!(commands.iter().all(|command| !command.starts_with("plugin:")));
