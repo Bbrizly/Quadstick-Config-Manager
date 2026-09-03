@@ -332,12 +332,11 @@ public class ModeEditTests
     }
 
     // Drew asked for the emulation dropdown to appear with the sheet. The row
-    // is only written for a mode somebody picked: Configuration.c:684 assigns
-    // the parsed value with no presence check and atoi("") is 0, so seeding it
-    // blank is not "unset", it is mode 0, and the device would come up as a
-    // controller nobody chose.
+    // is always there, filled in when a mode was picked and blank when it was
+    // not. Blank is what Drew asked for. Configuration.c:684 reads that blank
+    // cell as mode 0, so the guard against writing one lives in InstallFlow.
     [Fact]
-    public void A_new_preferences_sheet_carries_only_the_emulation_mode_that_was_picked()
+    public void A_new_preferences_sheet_carries_the_emulation_row_picked_or_blank()
     {
         var f = ProfileFile.Load("Profile Name\ngame.csv\nOutput or Function,Function,Input\nx,normal,lip\n");
         Assert.Equal(1, f.AddPreferencesSheet("4"));
@@ -349,6 +348,9 @@ public class ModeEditTests
 
         var bare = ProfileFile.Load("Profile Name\ngame.csv\nOutput or Function,Function,Input\nx,normal,lip\n");
         Assert.Equal(1, bare.AddPreferencesSheet());
-        Assert.Empty(bare.Document.Sheets[1].Bindings);
+        var blank = Assert.Single(bare.Document.Sheets[1].Bindings);
+        Assert.Equal("enable_DS3_emulation", blank.Output);
+        Assert.Equal("", bare.GetCell(blank.Row, 1));
+        Assert.Contains("enable_DS3_emulation,", bare.ToCsvText());
     }
 }

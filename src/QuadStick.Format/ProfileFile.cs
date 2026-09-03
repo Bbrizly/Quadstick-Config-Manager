@@ -458,14 +458,16 @@ public sealed class ProfileFile
     static readonly string[] PrefsKeywordCells = { "Preferences" };
     static readonly string[] PrefsHeaderCells = { "Preference", "Value", "Units", "Description" };
 
-    /// <summary>Appends the sheet, and the USB emulation mode row with it when
-    /// a mode is given. Changing emulation is what most people open a
-    /// preferences sheet to do, so the row is offered at that moment.</summary>
-    /// <remarks>A row is only written for a mode the caller actually chose.
-    /// Never seed it blank: Configuration.c:684 assigns the parsed value with
-    /// no presence check and atoi("") is 0, so a blank cell is not "unset", it
-    /// is mode 0, and the device would come up as a controller nobody picked.
-    /// One Snapshot covers both, so it is a single undo.</remarks>
+    /// <summary>Appends the sheet with the USB emulation mode row on it, filled
+    /// in when a mode is given and left blank when it is not. Changing emulation
+    /// is what most people open a preferences sheet to do, so the row is there
+    /// to find.</summary>
+    /// <remarks>Drew asked for the blank row by name (2026-09-02) and it is his
+    /// call. Know what it costs: Configuration.c:684 assigns the parsed value
+    /// with no presence check and atoi("") is 0, so the device reads the blank
+    /// cell as mode 0 and boots as a QuadStick. Writing one to the device is
+    /// still refused in InstallFlow, which is where the guard lives.
+    /// One Snapshot covers the whole sheet, so it is a single undo.</remarks>
     public int AddPreferencesSheet(string? emulationMode = null)
     {
         if (Document.Sheets.Any(s => s.Type == SheetType.Preferences)) return -1;
@@ -474,8 +476,7 @@ public sealed class ProfileFile
         Grid.Add((string[])PrefsKeywordCells.Clone());
         Grid.Add(Array.Empty<string>());
         Grid.Add((string[])PrefsHeaderCells.Clone());
-        if (emulationMode is { Length: > 0 })
-            Grid.Add(new[] { "enable_DS3_emulation", emulationMode });
+        Grid.Add(new[] { "enable_DS3_emulation", emulationMode ?? "" });
         Reparse();
         return Document.Sheets.Count - 1;
     }
