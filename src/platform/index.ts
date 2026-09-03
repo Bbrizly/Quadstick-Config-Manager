@@ -1,10 +1,4 @@
-/**
- * The platform boundary.
- *
- * Everything the UI knows about the native side comes from here. Import from
- * `../platform`, never from `@tauri-apps/*`.
- */
-
+/** Everything the UI knows about native code. */
 export type { CommunityCatalog, CommunityClient, CommunityProfile } from "./communityContracts";
 export type {
   AppSettings, AppSnapshot, Capabilities, CloseDisposition, CloseOutcome, ConfirmationKind,
@@ -15,6 +9,9 @@ export type {
   RecoveryAction, SaveReceipt, SettingsPatch, Subscription, ThemeChoice,
 } from "./contracts";
 export type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
+export type {
+  DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,
+} from "./driveContracts";
 export type { GoogleAuthStatus } from "./googleContracts";
 export type {
   PreferenceCatalog, PreferenceDefinition, PreferenceEditorKind, PreferenceOption,
