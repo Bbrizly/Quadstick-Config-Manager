@@ -194,6 +194,81 @@ public class DiagramFollowsPickTests
         w.Close();
     }
 
+    // Left hole: sip, then soft puff, then puff, in that order in the file.
+    const string OutOfOrder =
+        "Profile Name,,Solo\n" +
+        "game.csv\n" +
+        "Outputs,Function,usb\n" +
+        "x,normal,mp_left_sip\n" +
+        "circle,normal,mp_left_puff_soft\n" +
+        "square,normal,mp_left_puff\n";
+
+    static MainWindow OpenCards(string csv, string zone)
+    {
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        s.DeviceCards = false; // the full card, which is what carries a trash
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        w.LoadProfile(ProfileFile.Load(csv));
+        w.SetDeviceViewForPreview(true);
+        w.SelectZoneForPreview(zone);
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+        return w;
+    }
+
+    // The callout reads soft puff, puff, sip, soft sip down the picture, and
+    // the panel beside it listed the same three mappings in whatever order
+    // their rows happen to sit in the file. Two orders for one part is two
+    // things to hold in your head while looking at both at once.
+    [AvaloniaFact]
+    public void The_panel_lists_a_part_in_the_order_the_picture_reads()
+    {
+        var w = OpenCards(OutOfOrder, "mp_left");
+        var order = w.GetVisualDescendants().OfType<Button>()
+            .Select(b => AutomationProperties.GetName(b) ?? "")
+            .Where(n => n.StartsWith("Remove the ", StringComparison.Ordinal))
+            .ToList();
+        Assert.Equal(
+            new[] { "Remove the soft puff mapping", "Remove the puff mapping", "Remove the sip mapping" },
+            order);
+        w.Close();
+    }
+
+    // Nothing in the file moves: the order above is how they are shown.
+    [AvaloniaFact]
+    public void Showing_a_part_in_order_does_not_reorder_the_file()
+    {
+        var w = OpenCards(OutOfOrder, "mp_left");
+        Assert.Equal(
+            new[] { "mp_left_sip", "mp_left_puff_soft", "mp_left_puff" },
+            w.CurrentSheetForPreview!.Bindings.Select(b => b.Inputs[0]).ToArray());
+        w.Close();
+    }
+
+    // The plus was under every mapping and under the list of what is free, so
+    // on a part with a few rows the one control that adds a mapping was off
+    // the bottom of the panel.
+    [AvaloniaFact]
+    public void The_plus_is_above_the_mappings()
+    {
+        var w = OpenCards(OutOfOrder, "mp_left");
+        var panel = (StackPanel)w.GetVisualDescendants().OfType<Control>()
+            .First(c => c.Name == "ZoneDetailPanel");
+        int add = panel.Children.ToList().FindIndex(c =>
+            (AutomationProperties.GetName(c) ?? "").StartsWith("Add a new mapping", StringComparison.Ordinal));
+        int firstCard = panel.Children.ToList().FindIndex(c =>
+            c.GetVisualDescendants().OfType<Button>().Any(b =>
+                (AutomationProperties.GetName(b) ?? "").StartsWith("Remove the ", StringComparison.Ordinal)));
+        Assert.True(add >= 0 && firstCard > add,
+            $"the plus is at {add} and the first mapping at {firstCard}");
+        w.Close();
+    }
+
     // The rings are 30px circles over the holes; the plain hotspot markers are
     // 14px and the mode lights are filled.
     static int Rings(MainWindow w) => w.GetVisualDescendants()

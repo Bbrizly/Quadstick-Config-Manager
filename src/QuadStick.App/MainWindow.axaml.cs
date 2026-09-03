@@ -4676,6 +4676,7 @@ public partial class MainWindow : Window
 
         var byZone = BindingsByZone();
         byZone.TryGetValue(zone.Id, out var bindings);
+        bindings = SortedLikeTheDiagram(bindings, zone.Id);
 
         int mappingCount = bindings?.Count ?? 0;
         var zoneTitle = new TextBlock
@@ -4730,8 +4731,15 @@ public partial class MainWindow : Window
         if (zone.Id is "jacks" or "other" && (_railView || !_deviceView))
             ZoneDetailPanel.Children.Add(BackPanelGuide(withPicture: true));
 
+        // The plus, directly under the heading. At the foot of the panel it was
+        // below every mapping and below the list of what is free, so on a part
+        // with a few rows the one control that adds a mapping was off screen
+        // and nothing above it said it existed.
+        if (zone.Id != "unset") ZoneDetailPanel.Children.Add(AddMappingButton(zone));
+
         if (bindings is { Count: > 0 })
         {
+            int firstMapping = ZoneDetailPanel.Children.Count;
             var zoneInputs = Vocab.AllInputs.Where(i => ZoneOf(i) == zone.Id).OrderBy(GroupRank).ThenBy(x => x).ToList();
             bool cards = _settings.DeviceCards;
             int n = 0;
@@ -4775,9 +4783,9 @@ public partial class MainWindow : Window
                     if (card is not null) GhostRowAway(card, ZoneOverlay); // snapshot while still attached
                     _file!.DeleteRow(b.Row);
                     BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
-                    // The heading stays above the cards; its explanation is in
-                    // the help popup rather than taking a permanent second row.
-                    int firstMapping = zone.Id is "jacks" or "other" ? 2 : 1;
+                    // Counted off the panel as it was built rather than guessed
+                    // from the zone: what sits above the cards has changed twice
+                    // now, and a stale count animates the wrong row shut.
                     AnimateGapClose(ZoneDetailPanel, firstMapping + deletedIndex, gap);
                     FocusZoneDetailSibling(zone.Id, deletedIndex);
                 };
@@ -4973,28 +4981,55 @@ public partial class MainWindow : Window
                     ZoneDetailPanel.Children.Add(free);
                 }
             }
-            // A plus, not a sentence. This is the one thing you press on a part
-            // you are looking at, and the words competed with the list of what
-            // is free above it. The sentence stays on the name a screen reader
-            // reads and in the tooltip, so nothing is lost by dropping it.
-            var add = new Button
-            {
-                Content = Glyph("IconAdd", "OnAccent"),
-                Classes = { "primary", "command" },
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = new Avalonia.Thickness(0, 4, 0, 0),
-            };
-            var addName = string.Format(CultureInfo.CurrentCulture, Strings.Main_AddANewMappingFor, zone.Title);
-            AutomationProperties.SetName(add, addName);
-            ToolTip.SetTip(add, addName);
-            // The part clicked on the picture, when it belongs to this zone:
-            // clicking "Left + Center" and then + should add that pairing, not
-            // whichever combo happens to be first in the table.
-            var seed = _pickedInput is { } picked && ZoneOf(picked) == zone.Id ? picked : zone.DefaultInput;
-            add.Click += (_, _) => AddMappingWithInput(seed);
-            ZoneDetailPanel.Children.Add(add);
         }
         RepaintSelection(); // the bars follow whatever rebuilt here
+    }
+
+    // A plus, not a sentence. This is the one thing you press on a part you are
+    // looking at, and the words competed with the list of what is free below
+    // it. The sentence stays on the name a screen reader reads and in the
+    // tooltip, so nothing is lost by dropping it.
+    Control AddMappingButton(Zone zone)
+    {
+        var add = new Button
+        {
+            Content = Glyph("IconAdd", "OnAccent"),
+            Classes = { "primary", "command" },
+            HorizontalAlignment = HorizontalAlignment.Left,
+        };
+        var addName = string.Format(CultureInfo.CurrentCulture, Strings.Main_AddANewMappingFor, zone.Title);
+        AutomationProperties.SetName(add, addName);
+        ToolTip.SetTip(add, addName);
+        // The part clicked on the picture, when it belongs to this zone:
+        // clicking "Left + Center" and then + should add that pairing, not
+        // whichever combo happens to be first in the table.
+        var seed = _pickedInput is { } picked && ZoneOf(picked) == zone.Id ? picked : zone.DefaultInput;
+        add.Click += (_, _) => AddMappingWithInput(seed);
+        return add;
+    }
+
+    // Same order as the picture: a part's gestures read soft puff, puff, sip,
+    // soft sip on the diagram, and the panel beside it listed them in whatever
+    // order their rows happen to sit in the file. Nothing in the file moves;
+    // this is the order they are shown in.
+    //
+    // A row on something that is not one of the part's gestures keeps its place
+    // behind the ones that are. OrderBy is stable, so two rows on one gesture
+    // stay in the order the file has them.
+    List<Binding>? SortedLikeTheDiagram(List<Binding>? bindings, string zoneId)
+    {
+        if (bindings is null || bindings.Count < 2) return bindings;
+        var order = DeviceSummary.GestureOrder(zoneId).ToList();
+        int Rank(Binding b)
+        {
+            var input = b.Inputs.FirstOrDefault(i => ZoneOf(i) == zoneId) ?? "";
+            // Hole pairings share one zone, so they group by pairing first and
+            // then read down the same four gestures each single hole does.
+            int pair = zoneId == "combo" ? Array.IndexOf(ComboPrefixes, ComboPrefix(input)) : 0;
+            int gesture = order.IndexOf(StripInput(input, zoneId));
+            return (pair < 0 ? ComboPrefixes.Length : pair) * 16 + (gesture < 0 ? 15 : gesture);
+        }
+        return bindings.OrderBy(Rank).ToList();
     }
 
     // Column A is the output, C is the input. A chosen input needs an output
