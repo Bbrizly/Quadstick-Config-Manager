@@ -108,18 +108,15 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
 
         // The committed target must still read as the exact source bytes before
         // the source is removed. If not, remove the new target and keep source.
-        match self.storage.read_file(
-            handle.device,
-            handle.generation,
-            to.as_device_name(),
-        ) {
+        match self
+            .storage
+            .read_file(handle.device, handle.generation, to.as_device_name())
+        {
             Ok(read_back) if read_back == bytes => {}
             Ok(_) | Err(_) => {
-                let _ = self.storage.delete_file(
-                    handle.device,
-                    handle.generation,
-                    to.as_device_name(),
-                );
+                let _ =
+                    self.storage
+                        .delete_file(handle.device, handle.generation, to.as_device_name());
                 return Err(StorageError::VerifyFailed.into());
             }
         }
@@ -128,11 +125,9 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone> Devices<S, B, C> {
             .storage
             .delete_file(handle.device, handle.generation, from)
         {
-            let _ = self.storage.delete_file(
-                handle.device,
-                handle.generation,
-                to.as_device_name(),
-            );
+            let _ = self
+                .storage
+                .delete_file(handle.device, handle.generation, to.as_device_name());
             return Err(error.into());
         }
 

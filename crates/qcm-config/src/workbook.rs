@@ -365,8 +365,8 @@ fn shared_strings<R: Read + std::io::Seek>(
 fn sheet_parts<R: Read + std::io::Seek>(
     archive: &mut ZipArchive<R>,
 ) -> Result<(Vec<(String, String)>, bool), WorkbookError> {
-    let workbook = read_part(archive, "xl/workbook.xml")?
-        .ok_or(WorkbookError::MissingWorkbookParts)?;
+    let workbook =
+        read_part(archive, "xl/workbook.xml")?.ok_or(WorkbookError::MissingWorkbookParts)?;
     let rels = read_part(archive, "xl/_rels/workbook.xml.rels")?
         .ok_or(WorkbookError::MissingWorkbookParts)?;
     let relationships = relationship_targets(&rels)?;
@@ -811,7 +811,10 @@ mod tests {
 
     #[test]
     fn rejected_non_zip_is_not_treated_as_a_csv() {
-        assert_eq!(import_xlsx(b"not a workbook"), Err(WorkbookError::InvalidArchive));
+        assert_eq!(
+            import_xlsx(b"not a workbook"),
+            Err(WorkbookError::InvalidArchive)
+        );
     }
 
     #[test]

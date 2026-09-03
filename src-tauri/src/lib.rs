@@ -167,7 +167,11 @@ mod tests {
         ] {
             assert!(commands.contains(&expected), "{expected}");
         }
-        for absent in ["emit_live_frame", "listen_live_frame", "reorder_device_profiles"] {
+        for absent in [
+            "emit_live_frame",
+            "listen_live_frame",
+            "reorder_device_profiles",
+        ] {
             assert!(!commands.contains(&absent), "{absent}");
         }
         assert!(
