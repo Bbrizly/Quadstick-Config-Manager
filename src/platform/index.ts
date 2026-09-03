@@ -5,6 +5,7 @@
  * `../platform`, never from `@tauri-apps/*`.
  */
 
+export type { CommunityCatalog, CommunityClient, CommunityProfile } from "./communityContracts";
 export type {
   AppSettings,
   AppSnapshot,
