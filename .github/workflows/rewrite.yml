@@ -1,35 +1,121 @@
-name: Rewrite format workbook
+name: Rewrite parity
 
 on:
   push:
     branches:
-      - "rewrite/task40-workbook-io"
+      - "rewrite/**"
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
+env:
+  QSCM_TELEMETRY: "0"
+
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: rewrite-format-${{ github.ref }}
+  group: rewrite-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  format-workbook:
+  gate0:
+    name: Gate 0 / legacy + oracle
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
-      - name: Install pinned Rust formatter
-        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt
-      - name: Format Rust workspace
-        run: cargo +1.98.0 fmt --all
-      - name: Commit formatting on rewrite branch only
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Verify catalog source fingerprints
         shell: bash
         run: |
-          if git diff --quiet -- crates/qcm-config/src/workbook.rs; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add crates/qcm-config/src/workbook.rs
-          git commit -m "style(rewrite): format workbook importer"
-          git push origin HEAD:rewrite/task40-workbook-io
+          test "$(git hash-object src/QuadStick.Format/Data/validation.json)" = "dd793c1cd768f703dd3b6255c990f2e1c8ed2332"
+          test "$(git hash-object src/QuadStick.Format/Data/preferences.json)" = "71914f9691d890d4ab8a6f32fc76d7e8005c8f68"
+          test "$(git hash-object src/QuadStick.Format/Templates/default-template.csv)" = "21f23998d00de044a9bd1bc0899809c3f95a49b8"
+          test "$(git hash-object tests/QuadStick.Format.Tests/corpus/firmware-2373.json)" = "7f90d32e6efa819c8eacbfa0eab9184bfccb509b"
+      - name: Verify generated frontend localization catalogs
+        shell: bash
+        run: |
+          python3 tools/i18n/generate_frontend_catalogs.py
+          git diff --exit-code -- src/i18n/catalogs
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+      - name: Legacy tests stay green
+        run: dotnet test QuadStick.sln --nologo -c Release
+      - name: Install parity schema dependency
+        run: python3 -m pip install --disable-pip-version-check jsonschema==4.26.0
+      - name: Generate and validate all C# parity oracles
+        run: python3 scripts/parity.py --generate-only
+      - uses: actions/upload-artifact@v6
+        with:
+          name: qcm-legacy-oracle-${{ github.sha }}
+          path: fixtures/oracle/*
+          if-no-files-found: error
+          retention-days: 14
+
+  rust-core:
+    name: Rust core / one-command parity
+    needs: gate0
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v7
+        with:
+          name: qcm-legacy-oracle-${{ github.sha }}
+          path: fixtures/oracle
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt --component clippy
+      - name: Install Tauri Linux prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev libxdo-dev \
+            libayatana-appindicator3-dev libssl-dev libudev-dev
+      - name: Run strict Rust parity suite
+        run: python3 scripts/parity.py --rust-only
+
+  shell-frontend:
+    name: Tauri shell / frontend checks
+    needs: gate0
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+      - name: Enable the pinned pnpm
+        run: corepack enable
+      - name: Install with the committed lockfile
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Frontend tests
+        run: pnpm test
+
+  fuzz-smoke:
+    name: Fuzz smoke / parse + normalize + apply
+    needs: rust-core
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install pinned nightly
+        run: rustup toolchain install nightly-2026-08-20 --profile minimal
+      - name: Install pinned cargo-fuzz
+        run: cargo +nightly-2026-08-20 install cargo-fuzz --version 0.13.2 --locked
+      - name: Build fuzz targets
+        run: cargo +nightly-2026-08-20 fuzz build
+      - name: Parse fuzz smoke
+        run: cargo +nightly-2026-08-20 fuzz run parse fuzz/corpus/parse -- -runs=256 -max_len=65536 -timeout=2 -max_total_time=15
+      - name: Normalize fuzz smoke
+        run: cargo +nightly-2026-08-20 fuzz run normalize fuzz/corpus/normalize -- -runs=256 -max_len=65536 -timeout=2 -max_total_time=15
+      - name: Editor-op fuzz smoke
+        run: cargo +nightly-2026-08-20 fuzz run apply_ops fuzz/corpus/apply_ops -- -runs=256 -max_len=65536 -timeout=2 -max_total_time=15
