@@ -8,6 +8,7 @@
 
 import { Channel, invoke } from "@tauri-apps/api/core";
 
+import type { CommunityCatalog } from "./communityContracts";
 import type {
   AppSettings,
   AppSnapshot,
@@ -122,6 +123,12 @@ export class TauriQcmClient implements QcmClient {
   getPreferenceCatalog(): Promise<PreferenceCatalog> {
     return call<PreferenceCatalog>("get_preference_catalog");
   }
+  loadCommunityCatalog(refresh: boolean): Promise<CommunityCatalog> {
+    return call<CommunityCatalog>("load_community_catalog", { refresh });
+  }
+  importCommunityProfile(sheetId: string, csvName: string): Promise<WorkbookImportReview> {
+    return call<WorkbookImportReview>("import_community_profile", { sheetId, csvName });
+  }
   listDevices(): Promise<DevicePresenceSnapshot> {
     return call<DevicePresenceSnapshot>("list_devices");
   }
@@ -219,6 +226,8 @@ export const TAURI_COMMANDS = [
   "cancel_workbook_import",
   "export_profile_xlsx",
   "get_preference_catalog",
+  "load_community_catalog",
+  "import_community_profile",
   "list_devices",
   "refresh_devices",
   "choose_device_folder",
