@@ -15,6 +15,7 @@ use qcm_core::settings::{AppSettingsDto, Settings, SettingsStore};
 use serde_json::Value;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
+#[derive(Debug, Clone)]
 pub struct DriveProfileSnapshot {
     pub persistent_key: String,
     pub display_name: String,
