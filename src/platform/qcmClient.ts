@@ -5,6 +5,7 @@
  * profile work: opaque ids in, DTOs out, no path-shaped escape hatch.
  */
 
+import type { CommunityCatalog } from "./communityContracts";
 import type {
   AppSettings,
   AppSnapshot,
@@ -58,6 +59,11 @@ export interface QcmClient {
 
   /** Native-owned audited metadata for prefs.csv controls. Browser fakes may omit it. */
   getPreferenceCatalog?(): Promise<PreferenceCatalog>;
+
+  /** Community network/cache/workbook bytes stay native; the UI gets bounded rows/review only. */
+  loadCommunityCatalog?(refresh: boolean): Promise<CommunityCatalog>;
+  importCommunityProfile?(sheetId: string, csvName: string): Promise<WorkbookImportReview>;
+  openCommunitySheet?(sheetId: string): Promise<void>;
 
   listDevices(): Promise<DevicePresenceSnapshot>;
   refreshDevices(): Promise<DevicePresenceSnapshot>;
