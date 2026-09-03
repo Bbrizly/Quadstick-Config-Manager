@@ -373,6 +373,12 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>Looking for your QuadStick...</value>
   </data>
+  <data name="DevicePage_MoreOptions" xml:space="preserve">
+    <value>More options</value>
+  </data>
+  <data name="DevicePage_MoreOptionsCount" xml:space="preserve">
+    <value>More options, {0}</value>
+  </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}, {1} to {2}</value>
   </data>

@@ -390,25 +390,44 @@ public class DeviceSettingsPageTests
     {
         var w = Open(Prefs, "Sound and lights");
         Assert.True(Has<Slider>(w, "Speaker volume, 0 to 100"));
-        Assert.False(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
+        Assert.False(Has<Slider>(w, "Normal sip/puff threshold, 10 to 100"));
 
         w.ShowDeviceCategoryForPreview("Sip and puff");
         w.UpdateLayout();
-        Assert.True(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
+        Assert.True(Has<Slider>(w, "Normal sip/puff threshold, 10 to 100"));
         Assert.False(Has<Slider>(w, "Speaker volume, 0 to 100"));
         w.Close();
     }
 
     // Sip and puff is one group, so the thresholds somebody tunes while sipping
-    // are all on the screen together, not spread over two tabs as in QMP.
+    // are all on the screen together, not spread over two tabs as in QMP. The
+    // four a clinician sets every session are the ones the group opens on.
     [AvaloniaFact]
     public void TheSipAndPuffThresholdsAreInOneGroup()
     {
         var w = Open(Prefs, "Sip and puff");
-        Assert.True(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
         Assert.True(Has<Slider>(w, "Soft sip/puff threshold, 5 to 100"));
+        Assert.True(Has<Slider>(w, "Normal sip/puff threshold, 10 to 100"));
+        Assert.True(Has<Slider>(w, "Soft sip/puff delay, 100 to 3000"));
+        Assert.True(Has<Slider>(w, "Hard sip/puff delay, 1000 to 3000"));
+
+        // And the eight nobody asked for are one keypress away, not gone.
+        Assert.False(Has<Slider>(w, "Sip/puff maximum pressure, 10 to 100"));
+        OpenMoreOptions(w);
         Assert.True(Has<Slider>(w, "Sip/puff maximum pressure, 10 to 100"));
         w.Close();
+    }
+
+    // Opens the group's "more options". Folded settings are not in the visual
+    // tree until it does, which is the point of folding them.
+    static void OpenMoreOptions(MainWindow w)
+    {
+        var more = w.GetVisualDescendants().OfType<Expander>().FirstOrDefault();
+        Assert.NotNull(more);
+        more!.IsExpanded = true;
+        w.UpdateLayout();
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
     }
 
     // ---- the picture ----
@@ -503,10 +522,11 @@ public class DeviceSettingsPageTests
 
         w.ShowDeviceCategoryForPreview("Sip and puff");
         w.UpdateLayout();
-        Assert.True(Has<Slider>(w, "Hard sip/puff threshold, 10 to 100"));
+        Assert.True(Has<Slider>(w, "Normal sip/puff threshold, 10 to 100"));
 
         w.ShowDeviceCategoryForPreview("Joystick");
         w.UpdateLayout();
+        OpenMoreOptions(w);
         Assert.True(Has<NumericUpDown>(w, "Up deflection multiplier"));
         w.Close();
     }
@@ -650,6 +670,48 @@ public class DeviceSettingsPageTests
         var want = Assert.IsAssignableFrom<Avalonia.Media.ISolidColorBrush>(found);
         Assert.Equal(want.Color,
             Assert.IsAssignableFrom<Avalonia.Media.ISolidColorBrush>(fill).Color);
+        w.Close();
+    }
+
+    // Drew Redepenning asked for less on screen: a group opens on the settings
+    // he changes every session and folds the rest. The joystick was thirteen
+    // settings deep, with sensitivity in second place behind the dead zone.
+    [AvaloniaFact]
+    public void AGroupOpensOnItsShortListAndFoldsTheRest()
+    {
+        var w = Open(Header, "Joystick"); // nothing set, so nothing forces the fold open
+        Assert.True(Has<Slider>(w, "Joystick sensitivity, 10 to 50"));
+        Assert.True(Has<Slider>(w, "Joystick center dead zone, 0 to 20"));
+        Assert.False(Has<Slider>(w, "Inner D-Pad ring, 10 to 100"));
+
+        Assert.Contains(Said(w), t => t == "More options");
+        OpenMoreOptions(w);
+        Assert.True(Has<Slider>(w, "Inner D-Pad ring, 10 to 100"));
+        w.Close();
+    }
+
+    // Sensitivity is the one people reach for, so it is the first row, not the
+    // second. It used to sit under the dead zone because that is the order the
+    // firmware happens to list them in.
+    [AvaloniaFact]
+    public void SensitivityIsTheFirstJoystickSetting()
+    {
+        var w = Open(Header, "Joystick");
+        var names = Body(w).OfType<Slider>()
+            .Select(c => AutomationProperties.GetName(c) ?? "").ToList();
+        Assert.StartsWith("Joystick sensitivity", names[0], StringComparison.Ordinal);
+        Assert.StartsWith("Joystick center dead zone", names[1], StringComparison.Ordinal);
+        w.Close();
+    }
+
+    // Folding is for a reader who has never opened the page. A value the file
+    // already carries is never put out of sight, because the app hiding a
+    // setting somebody has set is the app saying nothing about it.
+    [AvaloniaFact]
+    public void AFoldedSettingTheFileAlreadyCarriesOpensTheFold()
+    {
+        var w = Open(Prefs, "Joystick"); // Prefs sets deflection_multiplier_up
+        Assert.True(Has<NumericUpDown>(w, "Up deflection multiplier"));
         w.Close();
     }
 }

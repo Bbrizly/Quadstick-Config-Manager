@@ -33,7 +33,11 @@ public sealed record PreferenceDefinition(
     string Source,
     IReadOnlyList<string> OptionLabels,
     bool FirmwareMayAddMore,
-    string AlsoCalled)
+    string AlsoCalled,
+    // Kept out of the short list a category opens on, and reachable behind its
+    // "more options". Somebody changing a joystick wants two settings, not
+    // thirteen, and the eleven they do not want were burying the two they do.
+    bool Advanced)
 {
     /// <summary>The plain-language name for one option, or the option itself
     /// when the catalog has no better word for it. Only ever shown: the token
@@ -92,7 +96,7 @@ public static class PreferenceCatalog
     {
         "name", "label", "category", "editor", "default", "minimum", "maximum",
         "unit", "description", "options", "optionLabels", "modeOverride", "risk", "source",
-        "firmwareMayAddMore", "alsoCalled",
+        "firmwareMayAddMore", "alsoCalled", "advanced",
     };
 
     static PreferenceCatalog()
@@ -329,6 +333,7 @@ public static class PreferenceCatalog
         // and it belongs beside the setting rather than inside the sentence
         // saying what the setting does.
         var alsoCalled = OptionalText(e, "alsoCalled", name);
+        var advanced = OptionalBool(e, "advanced", name);
 
         if (editor != PreferenceEditor.Integer && (min.HasValue || max.HasValue))
             throw new InvalidOperationException($"Preference '{name}' is not an integer, so it cannot carry bounds.");
@@ -369,7 +374,7 @@ public static class PreferenceCatalog
 
         return new PreferenceDefinition(
             name, label, category, editor, def, min, max, unit, description,
-            options, modeOverride, risk, source, optionLabels, mayAddMore, alsoCalled);
+            options, modeOverride, risk, source, optionLabels, mayAddMore, alsoCalled, advanced);
     }
 
     static string Required(JsonElement e, string field, string? name = null)

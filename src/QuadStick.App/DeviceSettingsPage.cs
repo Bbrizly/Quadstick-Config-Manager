@@ -510,6 +510,10 @@ public partial class MainWindow
 
     // Only the open group is built. Nine groups of controls all alive at once
     // is what made the first version of this page a mile of scroll.
+    //
+    // A group opens on the few settings people actually come here to change and
+    // folds the rest behind "more options". Thirteen joystick settings buried
+    // the two a clinician reaches for every session.
     void FillDeviceList()
     {
         if (_deviceList is null) return;
@@ -518,22 +522,73 @@ public partial class MainWindow
         if (sheet is null) return;
 
         var group = PreferenceCatalog.All.Where(d => d.Category == _deviceCategory).ToList();
-        for (int i = 0; i < group.Count; i++)
+        var shown = group.Where(d => !d.Advanced).ToList();
+        var folded = group.Where(d => d.Advanced).ToList();
+
+        Rows(sheet, shown, _deviceList, lastInCard: folded.Count == 0);
+        if (folded.Count > 0) _deviceList.Children.Add(MoreOptions(sheet, folded));
+
+        UpdateDeviceBand();
+    }
+
+    void Rows(ModeSheet sheet, List<PreferenceDefinition> defs, Panel into, bool lastInCard)
+    {
+        for (int i = 0; i < defs.Count; i++)
         {
             // A hairline between rows and none after the last, so the card's
             // own edge is the bottom of the list. Settings used to be told
             // apart by a gap, which at this row height read as one long block.
-            var row = DeviceSettingRow(sheet, group[i]);
+            var row = DeviceSettingRow(sheet, defs[i]);
             row.Padding = new Thickness(16, 12);
-            if (i < group.Count - 1)
+            if (i < defs.Count - 1 || !lastInCard)
             {
                 row.BorderThickness = new Thickness(0, 0, 0, 1);
                 BindBrush(row, Border.BorderBrushProperty, "SurfaceBorder");
             }
-            _deviceList.Children.Add(row);
+            into.Children.Add(row);
         }
+    }
 
-        UpdateDeviceBand();
+    // The folded half of a group. It opens by itself when the file already
+    // carries one of these, because hiding a value somebody has set is the app
+    // saying nothing about it.
+    Control MoreOptions(ModeSheet sheet, List<PreferenceDefinition> folded)
+    {
+        var inner = new StackPanel();
+        Rows(sheet, folded, inner, lastInCard: true);
+
+        var count = Plural.Of(folded.Count, "DevicePage_Setting");
+        var header = new StackPanel
+        {
+            Orientation = Avalonia.Layout.Orientation.Horizontal,
+            Spacing = 8,
+            Children =
+            {
+                new TextBlock
+                {
+                    Text = Strings.DevicePage_MoreOptions,
+                    FontWeight = FontWeight.Bold, FontSize = Size("BodySize"),
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+                new TextBlock
+                {
+                    Text = count, FontSize = Size("SmallSize"), Classes = { "muted" },
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+            },
+        };
+
+        var more = new Expander
+        {
+            Header = header,
+            Content = inner,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            IsExpanded = folded.Any(d => DeviceRowFor(sheet, d.Name) > 0),
+        };
+        AutomationProperties.SetName(more, string.Format(CultureInfo.CurrentCulture,
+            Strings.DevicePage_MoreOptionsCount, count));
+        return more;
     }
 
     // Which grid row holds this setting, or -1 when the file does not carry it.
