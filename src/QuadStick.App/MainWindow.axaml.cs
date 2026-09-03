@@ -2255,18 +2255,36 @@ public partial class MainWindow : Window
                     sheet.ModeName.Length > 0 ? sheet.ModeName : Strings.Main_UnnamedMode),
         }).ToList();
         labels.Add(CustomNamesLabel);
-        for (int i = 0; i < labels.Count; i++) ModeList.Children.Add(ModeRow(i, labels[i]));
+        // A mode that does not talk over the cable says so here. Nothing on the
+        // profile page used to mention a mode's connection at all, so a
+        // Bluetooth mode looked exactly like a USB one and the setting read as
+        // missing rather than as somewhere else.
+        var notes = _file.Document.Sheets
+            .Select(sheet => sheet.Type == SheetType.ProfileName
+                ? ModesWindow.ConnectionNote(sheet.Channel) : null)
+            .Append(null)
+            .ToList();
+        for (int i = 0; i < labels.Count; i++) ModeList.Children.Add(ModeRow(i, labels[i], notes[i]));
     }
 
     // The same selectable row a part gets, for the same reason: one list of
     // things where one of them is open. See RailRow.
-    Control ModeRow(int index, string label)
+    Control ModeRow(int index, string label, string? note = null)
     {
+        var content = new StackPanel { Spacing = 1 };
+        content.Children.Add(new TextBlock
+        { Text = label, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") });
+        if (note is not null)
+            content.Children.Add(new TextBlock
+            {
+                Text = note, TextWrapping = TextWrapping.Wrap,
+                FontSize = Size("SmallSize"), Classes = { "muted" },
+            });
+
         var row = new ToggleButton
         {
             Classes = { "zone", "modeRow" },
-            Content = new TextBlock
-            { Text = label, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+            Content = content,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Left,
             // Navigation rows are deliberately denser than editor controls:
@@ -2274,7 +2292,8 @@ public partial class MainWindow : Window
             Padding = new Avalonia.Thickness(8, 6),
             IsChecked = index == _sheetIndex,
         };
-        AutomationProperties.SetName(row, label);
+        AutomationProperties.SetName(row, note is null ? label
+            : string.Format(CultureInfo.CurrentCulture, Strings.Main_LabelNote, label, note));
         row.Click += (_, _) =>
         {
             SelectSheet(index);

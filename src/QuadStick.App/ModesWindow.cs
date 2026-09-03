@@ -95,6 +95,7 @@ public class ModesWindow : Window
                     FontSize = Size("BodySize"),
                     Classes = { "muted" },
                 },
+                ColumnHeadings(),
                 new ScrollViewer
                 {
                     Content = _rows,
@@ -185,6 +186,28 @@ public class ModesWindow : Window
     }
 
     int ModeCount() => Modes().Count(t => t.Sheet.Type == SheetType.ProfileName);
+
+    // The connection dropdown had no label of any kind. A clinician who knew
+    // the spreadsheet's purple cell existed looked for it on the profile page,
+    // did not find it here either, and reported it missing when it was sitting
+    // in the second column with nothing naming it.
+    Control ColumnHeadings()
+    {
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("28,*,Auto,Auto,Auto,Auto,Auto") };
+        TextBlock Head(string text, double width) => new()
+        {
+            Text = text, FontSize = Size("SmallSize"), FontWeight = FontWeight.Bold,
+            Width = double.IsNaN(width) ? double.NaN : width,
+            Margin = new Thickness(8, 0, 0, 0),
+        };
+        var name = Head(Strings.Modes_Mode, double.NaN);
+        var channel = Head(Strings.Modes_Connection, ChannelBoxWidth);
+        Grid.SetColumn(name, 1);
+        Grid.SetColumn(channel, 2);
+        grid.Children.Add(name);
+        grid.Children.Add(channel);
+        return grid;
+    }
 
     Control Row(ModeSheet sheet, int sheetIndex, int position, int total, int ordinal)
     {
@@ -293,6 +316,19 @@ public class ModesWindow : Window
         ("both", Strings.Modes_USBAndBluetooth),
         ("none", Strings.Modes_NeitherSendsNothing),
     };
+
+    /// <summary>The plain word for a mode's connection, or null when it is the
+    /// ordinary one. Blank and "usb" are the same thing to the device
+    /// (Configuration.c:528 falls back to USB), and a note on every mode row
+    /// saying USB would be a line of noise on the one screen with no room.
+    /// </summary>
+    internal static string? ConnectionNote(string channel)
+    {
+        if (channel is "" or "usb") return null;
+        foreach (var (token, label) in ChannelChoices)
+            if (token == channel) return label;
+        return string.Format(CultureInfo.CurrentCulture, Strings.Modes_SheetChannelNotAWord, channel);
+    }
 
     Control ChannelBox(ModeSheet sheet, int sheetIndex, int ordinal)
     {

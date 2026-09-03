@@ -1196,6 +1196,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
     <value>Keeps the output active for a short time after you stop activating the input.</value>
   </data>
+  <data name="Main_LabelNote" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
   <data name="Main_Left" xml:space="preserve">
     <value>Left</value>
   </data>
@@ -2105,6 +2108,9 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Modes_CloseModes" xml:space="preserve">
     <value>Close modes</value>
   </data>
+  <data name="Modes_Connection" xml:space="preserve">
+    <value>Connection</value>
+  </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>Connection cleared. The device falls back to the USB cable.</value>
   </data>
@@ -2119,6 +2125,9 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Modes_MakeACopyOfName" xml:space="preserve">
     <value>Make a copy of {0}</value>
+  </data>
+  <data name="Modes_Mode" xml:space="preserve">
+    <value>Mode</value>
   </data>
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Mode added.</value>

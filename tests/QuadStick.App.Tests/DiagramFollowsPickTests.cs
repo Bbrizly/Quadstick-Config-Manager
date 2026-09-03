@@ -156,4 +156,31 @@ public class DiagramFollowsPickTests
             w.Close();
         }
     }
+
+    // Drew reported the per-mode Bluetooth dropdown as missing. It had shipped
+    // a week earlier, in a column with no heading, in a dialog behind a pencil
+    // icon, and nothing on the profile page mentioned a mode's connection at
+    // all. A Bluetooth mode now says so where the modes are listed.
+    [AvaloniaFact]
+    public void A_mode_that_is_not_on_the_cable_says_so_in_the_modes_list()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        w.LoadProfile(ProfileFile.Load(
+            "Profile Name,,Cable\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n"
+            + "Profile Name,,Wireless\n\nOutputs,Function,bluetooth\ncircle,normal,lip\n"));
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        var names = Names(w);
+        Assert.Contains(names, n => n.StartsWith("2: Wireless. Bluetooth", StringComparison.Ordinal));
+        // The ordinary one stays one line: a note on every row saying USB would
+        // be noise on the screen with the least room to spare.
+        Assert.Contains(names, n => n == "1: Cable");
+        w.Close();
+    }
 }
