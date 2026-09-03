@@ -5,6 +5,7 @@ import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
 import { ToastRegion } from "../components/primitives/ToastRegion";
 import { DeviceLibraryPage } from "../features/device/DeviceLibraryPage";
+import { DevicePreferencesPage } from "../features/device/DevicePreferencesPage";
 import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
 import { EditorWorkspace } from "../features/editor/EditorWorkspace";
 import { WorkbookImportReviewDialog } from "../features/import/WorkbookImportReview";
@@ -41,6 +42,10 @@ interface AppProps {
   readonly client?: QcmClient;
 }
 
+function isDevicePreferences(snapshot: EditorSnapshot): boolean {
+  return snapshot.source.kind === "device" && snapshot.source.name.toLowerCase() === "prefs.csv";
+}
+
 function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const { t, preference, setPreference } = useI18n();
   const [activeDestination, setActiveDestination] = useState<ShellDestination>("home");
@@ -48,6 +53,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [installOpen, setInstallOpen] = useState(false);
   const [editor, setEditor] = useState<EditorSnapshot | null>(null);
+  const [devicePreferences, setDevicePreferences] = useState<EditorSnapshot | null>(null);
   const [workbookReview, setWorkbookReview] = useState<WorkbookImportReview | null>(null);
   const [workbookBusy, setWorkbookBusy] = useState(false);
   const [workbookExportBusy, setWorkbookExportBusy] = useState(false);
@@ -68,8 +74,15 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   );
 
   const showEditor = useCallback((snapshot: EditorSnapshot): void => {
-    setEditor(snapshot);
-    setActiveDestination("home");
+    if (isDevicePreferences(snapshot)) {
+      setEditor(null);
+      setDevicePreferences(snapshot);
+      setActiveDestination("device");
+    } else {
+      setDevicePreferences(null);
+      setEditor(snapshot);
+      setActiveDestination("home");
+    }
     setMessage("");
   }, []);
 
@@ -81,6 +94,23 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     setActiveDestination(destination);
     setMessage("");
   }, []);
+
+  const closeDevicePreferences = useCallback(async (): Promise<boolean> => {
+    if (devicePreferences === null) return true;
+    try {
+      const outcome = await client.closeProfile(devicePreferences.sessionId, "if_clean");
+      if (outcome.kind === "keptOpenUnsavedChanges") {
+        setMessage(t("Main_ThisProfileHasUnsavedChanges"));
+        return false;
+      }
+      setDevicePreferences(null);
+      setMessage("");
+      return true;
+    } catch (reason) {
+      showFailure(reason);
+      return false;
+    }
+  }, [client, devicePreferences, showFailure, t]);
 
   const openProfile = async (): Promise<void> => {
     try {
@@ -163,9 +193,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     setWorkbookExportBusy(true);
     try {
       const receipt = await exportXlsx.call(client, editor.sessionId, editor.revision);
-      if (receipt !== null) {
-        setMessage(t("Main_SavedToSavePath", [receipt.name]));
-      }
+      if (receipt !== null) setMessage(t("Main_SavedToSavePath", [receipt.name]));
     } catch (reason) {
       showFailure(reason);
     } finally {
@@ -237,13 +265,19 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
 
   const navigate = useCallback(
     (destination: ShellDestination): void => {
+      if (devicePreferences !== null && destination !== "device") {
+        void closeDevicePreferences().then((closed) => {
+          if (closed) setActiveDestination(destination);
+        });
+        return;
+      }
       if (editor !== null && destination !== "home") {
         void requestEditorClose(destination);
         return;
       }
       setActiveDestination(destination);
     },
-    [editor, requestEditorClose],
+    [closeDevicePreferences, devicePreferences, editor, requestEditorClose],
   );
 
   let content;
@@ -252,11 +286,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       <section className="editor-route" aria-label={t("Shell_Profile")}>
         <div className="editor-route-actions">
           {client.exportProfileXlsx === undefined ? null : (
-            <button
-              type="button"
-              disabled={closing || workbookExportBusy}
-              onClick={() => void exportWorkbook()}
-            >
+            <button type="button" disabled={closing || workbookExportBusy} onClick={() => void exportWorkbook()}>
               {t("Main_Save")} .xlsx
             </button>
           )}
@@ -290,6 +320,15 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         </div>
       </section>
     );
+  } else if (activeDestination === "device" && devicePreferences !== null) {
+    content = (
+      <DevicePreferencesPage
+        client={client}
+        snapshot={devicePreferences}
+        onSnapshot={setDevicePreferences}
+        onClose={() => void closeDevicePreferences()}
+      />
+    );
   } else if (activeDestination === "device") {
     content = <DeviceLibraryPage client={client} onOpenProfile={showEditor} />;
   } else {
@@ -315,12 +354,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       <LiveRegion>{message}</LiveRegion>
       <ToastRegion messages={[]} />
       {editor === null ? null : (
-        <InstallProfileDialog
-          client={client}
-          profile={editor}
-          open={installOpen}
-          onClose={() => setInstallOpen(false)}
-        />
+        <InstallProfileDialog client={client} profile={editor} open={installOpen} onClose={() => setInstallOpen(false)} />
       )}
       <WorkbookImportReviewDialog
         review={workbookReview}
@@ -349,13 +383,9 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
             >
               <option value="system">{t("Settings_LanguageSystem")}</option>
               {LOCALE_TAGS.map((tag) => (
-                <option key={tag} value={tag}>
-                  {LOCALE_NAMES[tag]}
-                </option>
+                <option key={tag} value={tag}>{LOCALE_NAMES[tag]}</option>
               ))}
-              {import.meta.env.DEV ? (
-                <option value="qps-ploc">{t("Rewrite_PseudoLocaleName")}</option>
-              ) : null}
+              {import.meta.env.DEV ? <option value="qps-ploc">{t("Rewrite_PseudoLocaleName")}</option> : null}
             </select>
           </label>
           <p>{t("Settings_AppearanceHelp")}</p>
@@ -367,19 +397,9 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         onClose={cancelClose}
         actions={
           <>
-            <button type="button" disabled={closing} onClick={cancelClose}>
-              {t("Device_Cancel")}
-            </button>
-            <button type="button" disabled={closing} onClick={() => void discardAndClose()}>
-              {t("Main_DonTSave")}
-            </button>
-            <button
-              className="primary-action"
-              type="button"
-              data-autofocus
-              disabled={closing}
-              onClick={() => void saveAndClose()}
-            >
+            <button type="button" disabled={closing} onClick={cancelClose}>{t("Device_Cancel")}</button>
+            <button type="button" disabled={closing} onClick={() => void discardAndClose()}>{t("Main_DonTSave")}</button>
+            <button className="primary-action" type="button" data-autofocus disabled={closing} onClick={() => void saveAndClose()}>
               {t("Shell_SaveCtrlS")}
             </button>
           </>
