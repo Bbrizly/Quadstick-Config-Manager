@@ -27,20 +27,20 @@ function matches(profile: CommunityProfile, query: string): boolean {
 export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPageProps) {
   const { t, plural } = useI18n();
   const listRef = useRef<HTMLSelectElement | null>(null);
+  const load = client.loadCommunityCatalog;
+  const importProfile = client.importCommunityProfile;
+  const openSheet = client.openCommunitySheet;
   const [catalog, setCatalog] = useState<CommunityCatalog | null>(null);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(load !== undefined);
   const [importing, setImporting] = useState(false);
+  const [opening, setOpening] = useState(false);
   const [status, setStatus] = useState("");
-
-  const load = client.loadCommunityCatalog;
-  const importProfile = client.importCommunityProfile;
 
   useEffect(() => {
     if (load === undefined) return;
     let disposed = false;
-    setLoading(true);
     void load
       .call(client, false)
       .then((next) => {
@@ -97,6 +97,22 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
       setStatus(localizedErrorMessage(asQcmError(reason).payload, t));
     } finally {
       setImporting(false);
+    }
+  };
+
+  const openSelected = async (): Promise<void> => {
+    if (selected === null || openSheet === undefined || opening) {
+      if (selected === null) setStatus(t("Community_PickAProfileFromThe2"));
+      return;
+    }
+    setOpening(true);
+    try {
+      await openSheet.call(client, selected.sheetId);
+      setStatus(t("Community_OpenedThePickedNameSheet", [selected.name]));
+    } catch (reason) {
+      setStatus(localizedErrorMessage(asQcmError(reason).payload, t));
+    } finally {
+      setOpening(false);
     }
   };
 
@@ -207,6 +223,16 @@ export function CommunityProfilesPage({ client, onReview }: CommunityProfilesPag
         >
           {t("Community_Import")}
         </button>
+        {openSheet === undefined ? null : (
+          <button
+            type="button"
+            disabled={selected === null || opening}
+            aria-label={t("Community_OpenTheSelectedProfileS")}
+            onClick={() => void openSelected()}
+          >
+            {t("Community_OpenInSheets")}
+          </button>
+        )}
         <button type="button" disabled={loading || importing} onClick={() => void refresh()}>
           {t("Community_Refresh")}
         </button>
