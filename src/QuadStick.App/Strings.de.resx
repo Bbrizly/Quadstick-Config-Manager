@@ -1307,6 +1307,15 @@ Die meisten Profile haben nur einen Modus, daher zeigt diese Liste oft einen ein
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Name für diese Vorlage</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Namen</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>Namen: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Welche Controller-Namen diese Liste anbietet. Der QuadStick liest beide Schreibweisen als denselben Ausgang, das Ausblenden einer Schreibweise blendet also keine Taste aus.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>Neuer Name für diese Vorlage</value>
   </data>
@@ -1644,6 +1653,15 @@ Wählen Sie links einen Teil des QuadStick aus, um zu sehen, was er in diesem Mo
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>Der QuadStick sendet das gerade</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>Eine Zeile leuchtet, während der QuadStick die Ausgabe dieser Zeile sendet. Das Gerät sagt nie, welche Datei oder welchen Modus es ausführt, daher kann eine Zeile durch ein anderes Profil als das hier geöffnete leuchten. Maus-, Tastatur- und Infrarot-Ausgaben gehen über eine andere Verbindung und leuchten nie.</value>
@@ -2419,6 +2437,12 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>Zurück zur einfachen Ansicht</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} und 1 weitere Zelle</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} und {1} weitere Zellen</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   dieses Tabellenblatt enthält Notizen, keine Bindungen. QMP und das Sheets-Add-on schreiben dieses Tabellenblatt zum Lesen für Sie, und Ihr QuadStick lädt es nie. Es ging nichts verloren, weil es weggelassen wurde.</value>

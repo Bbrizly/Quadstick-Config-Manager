@@ -1307,6 +1307,15 @@
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>इस टेम्पलेट के लिए नाम</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>नाम</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>नाम: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>यह सूची कौन से कंट्रोलर नाम देती है। QuadStick दोनों वर्तनियों को एक ही आउटपुट के रूप में पढ़ता है, इसलिए एक को छिपाने से कोई बटन नहीं छिपता।</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>इस टेम्पलेट के लिए नया नाम</value>
   </data>
@@ -1644,6 +1653,15 @@
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>QuadStick अभी यह भेज रहा है</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>सभी</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>जब QuadStick किसी पंक्ति का आउटपुट भेज रहा होता है तब वह पंक्ति जलती है। डिवाइस कभी नहीं बताता कि वह कौन सी फ़ाइल या कौन सा मोड चला रहा है, इसलिए यहाँ खुली प्रोफ़ाइल से अलग किसी प्रोफ़ाइल के कारण भी कोई पंक्ति जल सकती है। माउस, कीबोर्ड और इन्फ़्रारेड आउटपुट दूसरे कनेक्शन से जाते हैं और कभी नहीं जलते।</value>
@@ -2419,6 +2437,12 @@
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>सरल दृश्य पर वापस जाएँ</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} और 1 अन्य सेल</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} और {1} अन्य सेल</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   यह टैब नोट्स है, बाइंडिंग नहीं। QMP और Sheets ऐड-ऑन आपके पढ़ने के लिए यह टैब लिखते हैं, और आपका QuadStick इसे कभी लोड नहीं करता। इसे बाहर छोड़ने से कुछ नहीं खोया।</value>

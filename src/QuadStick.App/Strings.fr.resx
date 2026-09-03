@@ -1307,6 +1307,15 @@ La plupart des profils n'ont qu'un seul mode, donc cette liste montre souvent un
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Nom de ce modèle</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Noms</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>Noms : {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Quels noms de manette cette liste propose. Le QuadStick lit les deux graphies comme la même sortie, en masquer une ne masque donc aucun bouton.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>Nouveau nom de ce modèle</value>
   </data>
@@ -1644,6 +1653,15 @@ Choisissez une partie du QuadStick à gauche pour voir ce qu'elle fait dans ce m
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>Le QuadStick envoie ceci maintenant</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>Tous</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>Une ligne s'allume pendant que le QuadStick envoie la sortie de cette ligne. L'appareil ne dit jamais quel fichier ou quel mode il exécute, donc une ligne peut s'allumer à cause d'un autre profil que celui ouvert ici. Les sorties souris, clavier et infrarouge partent par une autre connexion et ne s'allument jamais.</value>
@@ -2419,6 +2437,12 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>Revenir à la vue simple</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} et 1 autre cellule</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} et {1} autres cellules</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   cet onglet est des notes, pas des affectations. QMP et le module Sheets écrivent cet onglet pour que vous le lisiez, et votre QuadStick ne le charge jamais. Rien n'a été perdu en le laissant de côté.</value>

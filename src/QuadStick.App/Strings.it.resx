@@ -1307,6 +1307,15 @@ La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso 
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Nome per questo modello</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Nomi</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>Nomi: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Quali nomi di controller offre questo elenco. Il QuadStick legge entrambe le grafie come la stessa uscita, quindi nasconderne una non nasconde alcun pulsante.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>Nuovo nome per questo modello</value>
   </data>
@@ -1644,6 +1653,15 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>Il QuadStick sta inviando questo ora</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>Tutti</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>Una riga si accende mentre il QuadStick invia l'uscita di quella riga. Il dispositivo non dice mai quale file o quale modo sta eseguendo, quindi una riga può accendersi per un profilo diverso da quello aperto qui. Le uscite mouse, tastiera e infrarossi partono da un'altra connessione e non si accendono mai.</value>
@@ -2419,6 +2437,12 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>Torna alla vista semplice</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} e 1 altra cella</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} e altre {1} celle</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   questa scheda è note, non associazioni. QMP e il componente aggiuntivo Sheets scrivono questa scheda perché Lei la legga, e il Suo QuadStick non la carica mai. Non è stato perso nulla lasciandola fuori.</value>

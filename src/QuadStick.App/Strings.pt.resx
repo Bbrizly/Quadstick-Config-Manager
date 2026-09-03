@@ -1307,6 +1307,15 @@ A maioria dos perfis tem apenas um modo, então esta lista costuma mostrar um ú
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Nome para este modelo</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Nomes</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>Nomes: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Quais nomes de controle esta lista oferece. O QuadStick lê as duas grafias como a mesma saída, portanto ocultar uma não oculta nenhum botão.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>Novo nome para este modelo</value>
   </data>
@@ -1644,6 +1653,15 @@ Escolha uma peça do QuadStick à esquerda para ver o que ela faz neste modo, al
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>O QuadStick está a enviar isto agora</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>Uma linha acende enquanto o QuadStick envia a saída dessa linha. O dispositivo nunca diz que ficheiro ou que modo está a executar, por isso uma linha pode acender por causa de um perfil diferente do que está aberto aqui. As saídas de rato, teclado e infravermelhos saem por outra ligação e nunca acendem.</value>
@@ -2419,6 +2437,12 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>Voltar para a visualização simples</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} e mais 1 célula</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} e mais {1} células</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   esta aba é de notas, não de vínculos. O QMP e o suplemento do Sheets escrevem esta aba para você ler, e o seu QuadStick nunca a carrega. Nada foi perdido ao deixá-la de fora.</value>

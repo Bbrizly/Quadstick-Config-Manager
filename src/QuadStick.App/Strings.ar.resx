@@ -1307,6 +1307,15 @@
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>اسم لهذا القالب</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>الأسماء</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>الأسماء: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>أسماء وحدة التحكم التي تعرضها هذه القائمة. يقرأ QuadStick كلتا التسميتين كالمخرج نفسه، لذا إخفاء إحداهما لا يخفي أي زر.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>اسم جديد لهذا القالب</value>
   </data>
@@ -1644,6 +1653,15 @@
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>جهاز QuadStick يرسل هذا الآن</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>يضيء الصف بينما يرسل QuadStick مخرجات ذلك الصف. لا يذكر الجهاز أبدًا أي ملف أو وضع يشغّله، لذلك قد يضيء صف بسبب ملف تعريف غير المفتوح هنا. مخرجات الفأرة ولوحة المفاتيح والأشعة تحت الحمراء تخرج عبر اتصال آخر ولا تضيء أبدًا.</value>
@@ -2419,6 +2437,12 @@
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>عد إلى العرض البسيط</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} وخلية أخرى</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} و{1} خلايا أخرى</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   علامة التبويب هذه ملاحظات، وليست ارتباطات. يكتب QMP وإضافة Sheets هذه العلامة لتقرأها، ولا يحمّلها QuadStick أبدًا. لم يُفقد شيء بتركها خارجًا.</value>

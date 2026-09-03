@@ -1307,6 +1307,15 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Nazwa dla tego szablonu</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Nazwy</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>Nazwy: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Jakie nazwy kontrolera oferuje ta lista. QuadStick czyta obie pisownie jako to samo wyjście, więc ukrycie jednej nie ukrywa żadnego przycisku.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>Nowa nazwa dla tego szablonu</value>
   </data>
@@ -1644,6 +1653,15 @@ Wybierz część QuadSticka po lewej, aby zobaczyć, co robi w tym trybie, zmien
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>QuadStick wysyła to teraz</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>Wszystkie</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>Wiersz świeci, gdy QuadStick wysyła wyjście tego wiersza. Urządzenie nigdy nie mówi, który plik ani który tryb uruchamia, więc wiersz może zaświecić się z powodu innego profilu niż ten otwarty tutaj. Wyjścia myszy, klawiatury i podczerwieni wychodzą innym połączeniem i nigdy nie świecą.</value>
@@ -2419,6 +2437,12 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>Wróć do widoku prostego</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} i jeszcze 1 komórka</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} i jeszcze {1} komórek</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   ta zakładka to notatki, nie przypisania. QMP i dodatek Sheets zapisują tę zakładkę do przeczytania, a Twój QuadStick nigdy jej nie wczytuje. Nic nie zostało utracone przez jej pominięcie.</value>

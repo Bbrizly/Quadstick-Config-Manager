@@ -1307,6 +1307,15 @@
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>이 템플릿의 이름</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>이름</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>이름: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>이 목록에 표시할 컨트롤러 이름입니다. QuadStick은 두 표기를 같은 출력으로 읽으므로 하나를 숨겨도 버튼이 사라지지 않습니다.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>이 템플릿의 새 이름</value>
   </data>
@@ -1644,6 +1653,15 @@
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>QuadStick이 지금 이것을 보내고 있습니다</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>전체</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>QuadStick이 해당 행의 출력을 보내는 동안 행이 켜집니다. 기기는 어떤 파일이나 모드를 실행 중인지 절대 알려주지 않으므로, 여기서 열어 둔 것과 다른 프로필 때문에 행이 켜질 수 있습니다. 마우스, 키보드, 적외선 출력은 다른 연결로 나가며 절대 켜지지 않습니다.</value>
@@ -2419,6 +2437,12 @@
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>간단 보기로 돌아가기</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} 외 1개 셀</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} 외 {1}개 셀</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   이 탭은 바인딩이 아니라 메모입니다. QMP와 Sheets 부가기능이 읽어보라고 이 탭을 써 두는 것이며, QuadStick은 이 탭을 절대 불러오지 않습니다. 빼도 잃는 것은 없습니다.</value>

@@ -1307,6 +1307,15 @@
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>此模板的名称</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>名称：{0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>此列表提供哪种控制器名称。QuadStick 将两种写法读作同一个输出，因此隐藏其中一种不会隐藏任何按键。</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>此模板的新名称</value>
   </data>
@@ -1644,6 +1653,15 @@
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>QuadStick 正在发送这个</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>当 QuadStick 发送某一行的输出时,该行会亮起。设备从不说明它正在运行哪个文件或哪个模式,因此亮起的行可能来自与此处打开的配置不同的另一个配置。鼠标、键盘和红外输出通过另一条连接发出,永远不会亮起。</value>
@@ -2419,6 +2437,12 @@
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>返回简单视图</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} 及另外 1 个单元格</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} 及另外 {1} 个单元格</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   此标签页是备注，不是绑定。QMP 和 Sheets 插件写入此标签页供您阅读，您的 QuadStick 从不加载它。省略它不会丢失任何内容。</value>

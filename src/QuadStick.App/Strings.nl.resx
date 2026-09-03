@@ -1307,6 +1307,15 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Naam voor deze sjabloon</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Namen</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>Namen: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Welke controllernamen deze lijst aanbiedt. De QuadStick leest beide schrijfwijzen als dezelfde uitgang, dus één verbergen verbergt geen knop.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>Nieuwe naam voor deze sjabloon</value>
   </data>
@@ -1644,6 +1653,15 @@ Kies links een onderdeel van de QuadStick om te zien wat het in deze modus doet,
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>De QuadStick verstuurt dit nu</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>Een rij licht op terwijl de QuadStick de uitvoer van die rij verstuurt. Het apparaat zegt nooit welk bestand of welke modus het draait, dus een rij kan oplichten door een ander profiel dan het hier geopende. Muis-, toetsenbord- en infrarooduitvoer gaat via een andere verbinding en licht nooit op.</value>
@@ -2419,6 +2437,12 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>Terug naar de eenvoudige weergave</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} en 1 andere cel</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} en {1} andere cellen</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   dit tabblad bevat notities, geen bindingen. QMP en de Sheets-invoegtoepassing schrijven dit tabblad zodat u het kunt lezen, en uw QuadStick laadt het nooit. Er is niets verloren gegaan door het weg te laten.</value>

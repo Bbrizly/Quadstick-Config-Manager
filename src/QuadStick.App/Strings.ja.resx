@@ -1307,6 +1307,15 @@
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>このテンプレートの名前</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>名前</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>名前: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>この一覧に出すコントローラー名です。QuadStick はどちらの表記も同じ出力として読むため、片方を隠してもボタンは隠れません。</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>このテンプレートの新しい名前</value>
   </data>
@@ -1644,6 +1653,15 @@
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>QuadStick は今これを送信しています</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>すべて</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>QuadStick がその行の出力を送信している間、行が点灯します。デバイスはどのファイルやモードを実行しているかを一切伝えないため、ここで開いているものとは別のプロファイルによって行が点灯することがあります。マウス、キーボード、赤外線の出力は別の接続から出るため、点灯することはありません。</value>
@@ -2417,6 +2435,12 @@
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>シンプルビューに戻る</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} ほか 1 個のセル</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} ほか {1} 個のセル</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}　このタブはメモであり、バインディングではありません。QMP と Sheets アドオンがこのタブを読み物として書き込みますが、QuadStick が読み込むことはありません。除外しても失われるものはありません。</value>
