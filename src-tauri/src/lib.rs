@@ -7,6 +7,7 @@
 pub mod adapters;
 pub mod commands;
 pub mod device_ipc;
+pub mod device_rename_ipc;
 pub mod device_shell;
 pub mod ipc;
 pub mod shell;
@@ -45,6 +46,7 @@ pub fn registered_commands() -> &'static [&'static str] {
         "commit_install",
         "prepare_delete_device_profile",
         "commit_delete_device_profile",
+        "rename_device_profile",
         "open_device_profile",
         "open_device_preferences",
         "start_live_input",
@@ -113,6 +115,7 @@ pub fn run() {
             commands::commit_install,
             commands::prepare_delete_device_profile,
             commands::commit_delete_device_profile,
+            commands::rename_device_profile,
             commands::open_device_profile,
             commands::open_device_preferences,
             commands::start_live_input,
@@ -139,7 +142,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_contains_no_global_event_api() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 30);
+        assert_eq!(commands.len(), 31);
         for expected in [
             "choose_and_import_workbook",
             "repair_workbook_tab",
@@ -154,6 +157,7 @@ mod tests {
             "commit_install",
             "prepare_delete_device_profile",
             "commit_delete_device_profile",
+            "rename_device_profile",
             "open_device_profile",
             "open_device_preferences",
             "start_live_input",
@@ -163,12 +167,7 @@ mod tests {
         ] {
             assert!(commands.contains(&expected), "{expected}");
         }
-        for absent in [
-            "emit_live_frame",
-            "listen_live_frame",
-            "rename_device_profile",
-            "reorder_device_profiles",
-        ] {
+        for absent in ["emit_live_frame", "listen_live_frame", "reorder_device_profiles"] {
             assert!(!commands.contains(&absent), "{absent}");
         }
         assert!(
