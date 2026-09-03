@@ -36,7 +36,6 @@ export interface QcmClient {
   updateSettings(expectedRevision: number, patch: SettingsPatch): Promise<AppSettings>;
   newProfile(name: string): Promise<EditorSnapshot>;
   chooseAndOpenProfile(): Promise<EditorSnapshot | null>;
-  /** Re-read canonical Rust state after a revision conflict or save. */
   getProfileSnapshot(sessionId: string): Promise<EditorSnapshot>;
   applyEditorOps(
     sessionId: string,
@@ -48,10 +47,6 @@ export interface QcmClient {
   saveProfileAs(sessionId: string, expectedRevision: number): Promise<SaveReceipt | null>;
   closeProfile(sessionId: string, disposition: CloseDisposition): Promise<CloseOutcome>;
 
-  /**
-   * Native-only XLSX lifecycle. Optional on pure browser fakes so they never
-   * grow a second spreadsheet parser or accept raw workbook bytes.
-   */
   chooseAndImportWorkbook?(): Promise<WorkbookImportReview | null>;
   repairWorkbookTab?(importId: string, tabIndex: number): Promise<WorkbookImportReview>;
   acceptWorkbookImport?(importId: string): Promise<EditorSnapshot>;
@@ -61,20 +56,14 @@ export interface QcmClient {
     expectedRevision: number,
   ): Promise<WorkbookExportReceipt | null>;
 
-  /** Native-owned audited metadata for prefs.csv controls. */
-  getPreferenceCatalog(): Promise<PreferenceCatalog>;
+  /** Native-owned audited metadata for prefs.csv controls. Browser fakes may omit it. */
+  getPreferenceCatalog?(): Promise<PreferenceCatalog>;
 
-  /** Display-only discovery. Every write revalidates natively. */
   listDevices(): Promise<DevicePresenceSnapshot>;
   refreshDevices(): Promise<DevicePresenceSnapshot>;
-  /** Native folder dialog. null means cancel; no selected path crosses here. */
   chooseDeviceFolder(): Promise<DevicePresenceSnapshot | null>;
   getDeviceLibrary(deviceId: string): Promise<DeviceLibrarySnapshot>;
 
-  /**
-   * Prepare from the canonical open session. The returned plan id names native
-   * state; it is not authority and carries no bytes.
-   */
   prepareInstall(sessionId: string, deviceId: string): Promise<InstallPlan>;
   commitInstall(
     planId: string,
@@ -88,7 +77,6 @@ export interface QcmClient {
     name: string,
   ): Promise<DeletePlan>;
   commitDeleteDeviceProfile(planId: string, confirmationId: string): Promise<DeleteReceipt>;
-  /** Rename changes the filename-derived device cycle order. */
   renameDeviceProfile?(
     deviceId: string,
     expectedGeneration: number,
@@ -96,7 +84,6 @@ export interface QcmClient {
     to: string,
   ): Promise<RenameDeviceProfileReceipt>;
 
-  /** Device reads become working copies. Save still cannot write to the stick. */
   openDeviceProfile(
     deviceId: string,
     expectedGeneration: number,
@@ -104,10 +91,7 @@ export interface QcmClient {
   ): Promise<EditorSnapshot>;
   openDevicePreferences(deviceId: string, expectedGeneration: number): Promise<EditorSnapshot>;
 
-  /** Capacity-one native live stream. Dispose is required and idempotent. */
   startLiveInput(onFrame: (frame: LiveSnapshot) => void): Promise<Subscription>;
-
-  /** Invalidation only: callers re-query state instead of trusting event payloads. */
   subscribeDevicesChanged(onChanged: (event: DeviceInvalidation) => void): Promise<Subscription>;
 }
 
@@ -134,12 +118,8 @@ export function isQcmCommandError(value: unknown): value is QcmCommandError {
 }
 
 export function asQcmError(reason: unknown): QcmCommandError {
-  if (isQcmCommandError(reason)) {
-    return reason;
-  }
-  if (isErrorPayload(reason)) {
-    return new QcmCommandError(reason);
-  }
+  if (isQcmCommandError(reason)) return reason;
+  if (isErrorPayload(reason)) return new QcmCommandError(reason);
   return new QcmCommandError({
     code: "QCM_INTERNAL",
     message: "Something went wrong inside the app.",
@@ -152,9 +132,7 @@ export function asQcmError(reason: unknown): QcmCommandError {
 }
 
 function isErrorPayload(value: unknown): value is QcmErrorPayload {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
+  if (typeof value !== "object" || value === null) return false;
   const candidate = value as Partial<QcmErrorPayload>;
   return typeof candidate.code === "string" && typeof candidate.message === "string";
 }
