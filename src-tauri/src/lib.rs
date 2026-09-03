@@ -44,6 +44,7 @@ pub fn registered_commands() -> &'static [&'static str] {
         "get_preference_catalog",
         "load_community_catalog",
         "import_community_profile",
+        "open_community_sheet",
         "list_devices",
         "refresh_devices",
         "choose_device_folder",
@@ -114,6 +115,7 @@ pub fn run() {
             commands::get_preference_catalog,
             community_commands::load_community_catalog,
             community_commands::import_community_profile,
+            community_commands::open_community_sheet,
             commands::list_devices,
             commands::refresh_devices,
             commands::choose_device_folder,
@@ -149,7 +151,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_contains_no_global_event_api() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 34);
+        assert_eq!(commands.len(), 35);
         for expected in [
             "choose_and_import_workbook",
             "repair_workbook_tab",
@@ -159,6 +161,7 @@ mod tests {
             "get_preference_catalog",
             "load_community_catalog",
             "import_community_profile",
+            "open_community_sheet",
             "list_devices",
             "refresh_devices",
             "choose_device_folder",
