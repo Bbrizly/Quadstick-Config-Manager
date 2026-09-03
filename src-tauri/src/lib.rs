@@ -10,6 +10,7 @@ pub mod device_ipc;
 pub mod device_rename_ipc;
 pub mod device_shell;
 pub mod ipc;
+pub mod preference_ipc;
 pub mod shell;
 pub mod streaming;
 pub mod workbook_shell;
@@ -38,6 +39,7 @@ pub fn registered_commands() -> &'static [&'static str] {
         "accept_workbook_import",
         "cancel_workbook_import",
         "export_profile_xlsx",
+        "get_preference_catalog",
         "list_devices",
         "refresh_devices",
         "choose_device_folder",
@@ -56,9 +58,6 @@ pub fn registered_commands() -> &'static [&'static str] {
     ]
 }
 
-/// The WebView is an untrusted presentation surface. It may load the app's own
-/// custom-protocol origin and, in a development build only, the pinned Vite
-/// server. Everything else is refused before a navigation commits.
 fn navigation_allowed_for(url: &tauri::webview::Url, development: bool) -> bool {
     let packaged = matches!(
         (url.scheme(), url.host_str(), url.port()),
@@ -67,7 +66,6 @@ fn navigation_allowed_for(url: &tauri::webview::Url, development: bool) -> bool 
     if packaged {
         return true;
     }
-
     development
         && url.scheme() == "http"
         && url.host_str() == Some("localhost")
@@ -82,8 +80,6 @@ fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
 
 pub fn run() {
     tauri::Builder::default()
-        // Internal lifecycle guard only. This plugin exposes no commands and no
-        // capability permission; it exists solely to reject remote navigation.
         .plugin(navigation_guard())
         .manage(shell::native_shell())
         .manage(workbook_shell::native_workbook_shell())
@@ -107,6 +103,7 @@ pub fn run() {
             commands::accept_workbook_import,
             commands::cancel_workbook_import,
             commands::export_profile_xlsx,
+            commands::get_preference_catalog,
             commands::list_devices,
             commands::refresh_devices,
             commands::choose_device_folder,
@@ -142,13 +139,14 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_contains_no_global_event_api() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 31);
+        assert_eq!(commands.len(), 32);
         for expected in [
             "choose_and_import_workbook",
             "repair_workbook_tab",
             "accept_workbook_import",
             "cancel_workbook_import",
             "export_profile_xlsx",
+            "get_preference_catalog",
             "list_devices",
             "refresh_devices",
             "choose_device_folder",
@@ -167,18 +165,10 @@ mod tests {
         ] {
             assert!(commands.contains(&expected), "{expected}");
         }
-        for absent in [
-            "emit_live_frame",
-            "listen_live_frame",
-            "reorder_device_profiles",
-        ] {
+        for absent in ["emit_live_frame", "listen_live_frame", "reorder_device_profiles"] {
             assert!(!commands.contains(&absent), "{absent}");
         }
-        assert!(
-            commands
-                .iter()
-                .all(|command| !command.starts_with("plugin:"))
-        );
+        assert!(commands.iter().all(|command| !command.starts_with("plugin:")));
     }
 
     #[test]
@@ -191,7 +181,6 @@ mod tests {
             let url = Url::parse(allowed).expect("valid app URL");
             assert!(super::navigation_allowed_for(&url, false), "{allowed}");
         }
-
         for forbidden in [
             "https://example.com/",
             "http://example.com/",
@@ -204,9 +193,6 @@ mod tests {
             let url = Url::parse(forbidden).expect("valid forbidden URL");
             assert!(!super::navigation_allowed_for(&url, false), "{forbidden}");
         }
-
-        // The url crate drops a port equal to the scheme default, so :80 here
-        // is the allowed origin spelled out, not a second one to reject.
         let spelled_out = "http://tauri.localhost:80/index.html";
         let url = Url::parse(spelled_out).expect("valid URL");
         assert_eq!(url.port(), None);
@@ -217,7 +203,6 @@ mod tests {
     fn development_navigation_allows_only_the_pinned_vite_origin() {
         let vite = Url::parse("http://localhost:1420/").expect("valid Vite URL");
         assert!(super::navigation_allowed_for(&vite, true));
-
         for forbidden in [
             "http://localhost:1421/",
             "https://localhost:1420/",
