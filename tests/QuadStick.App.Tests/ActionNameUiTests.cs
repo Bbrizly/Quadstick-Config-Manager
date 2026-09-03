@@ -64,9 +64,8 @@ public class ActionNameUiTests
 
     static void Tap(MainWindow w, Control panel, string namePrefix)
     {
-        panel.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith(namePrefix))
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(panel.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith(namePrefix)));
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
     }
@@ -292,9 +291,8 @@ public class ActionNameUiTests
         var w = OpenTable(file);
         int namedRow = file.Document.Sheets[0].Bindings[0].Row;
 
-        w.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "Remove the name Shoot")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Remove the name Shoot"));
         Dispatcher.UIThread.RunJobs();
 
         Assert.Equal("mouse_left", file.GetCell(namedRow, 0));

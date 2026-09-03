@@ -38,6 +38,8 @@ public enum QuadStickCatalog {
                             .init(id: "side-tube-normal-puff", name: "Normal Puff", fullName: "Side Tube Normal Puff"),
                             .init(id: "side-tube-soft-sip", name: "Soft Sip", fullName: "Side Tube Soft Sip"),
                             .init(id: "side-tube-soft-puff", name: "Soft Puff", fullName: "Side Tube Soft Puff"),
+                            .init(id: "side-tube-long-sip", name: "Long Sip", fullName: "Side Tube Long Sip"),
+                            .init(id: "side-tube-long-puff", name: "Long Puff", fullName: "Side Tube Long Puff"),
                         ]),
             DeviceInput(id: "joystick", name: "Mouth Joystick", face: .front, actions: [
                 .init(id: "joystick-up", name: "Push Up", fullName: "Mouth Joystick Up"),
@@ -47,6 +49,7 @@ public enum QuadStickCatalog {
             ]),
             DeviceInput(id: "lip-switch", name: "Lip Switch", face: .front, actions: [
                 .init(id: "lip-press", name: "Press", fullName: "Lip Switch Press"),
+                .init(id: "lip-soft-press", name: "Soft Press", fullName: "Lip Switch Soft Press"),
             ]),
             jack("jack-top", "Top Switch Jack", inputs: (7, 8)),
             jack("jack-middle", "Middle Jack", inputs: (5, 6),

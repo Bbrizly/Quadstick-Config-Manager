@@ -68,7 +68,8 @@ public partial class MainWindow
 
     Control BuildDeviceBand()
     {
-        _bandPhoto = new Canvas { Width = PhotoW, Height = PhotoH };
+        var diagram = Diagram;
+        _bandPhoto = new Canvas { Width = diagram.PhotoW, Height = diagram.PhotoH };
         _bandPad = new Canvas { Width = PadSize, Height = PadSize };
 
         var photo = new Viewbox
@@ -155,7 +156,10 @@ public partial class MainWindow
     void UpdateDeviceBand()
     {
         if (_bandPhoto is null || _bandPad is null) return;
-        var parts = CategoryParts.GetValueOrDefault(_deviceCategory, Array.Empty<string>());
+        // A part the model does not have gets no ring: pointing at a lip switch
+        // on a Singleton photo would be pointing at nothing.
+        var parts = CategoryParts.GetValueOrDefault(_deviceCategory, Array.Empty<string>())
+            .Where(p => p == "leds" || ModelHasZone(p)).ToArray();
         bool joystick = parts.Contains("joystick");
         DrawBandPhoto(parts);
         DrawBandPad();
@@ -172,32 +176,50 @@ public partial class MainWindow
     void DrawBandPhoto(IReadOnlyList<string> parts)
     {
         var canvas = _bandPhoto!;
+        var diagram = Diagram;
         canvas.Children.Clear();
-        canvas.Children.Add(new Image
+
+        // Same crop the editor's diagram uses: the photo is laid out full size
+        // inside a window clipped to the part worth showing, so a ring drawn at
+        // a measured fraction lands on the same part in both pictures.
+        var frame = new Canvas
         {
-            Source = DevicePhoto(), Width = PhotoW, Height = PhotoH,
-            Stretch = Stretch.Uniform, IsHitTestVisible = false,
-        });
+            Width = diagram.PhotoW, Height = diagram.PhotoH,
+            ClipToBounds = true, IsHitTestVisible = false,
+        };
+        var photo = new Image
+        {
+            Source = DevicePhoto(_model),
+            Width = diagram.FullSize.Width, Height = diagram.FullSize.Height,
+            Stretch = Stretch.Fill, IsHitTestVisible = false,
+        };
+        Canvas.SetLeft(photo, diagram.FullOffset.X);
+        Canvas.SetTop(photo, diagram.FullOffset.Y);
+        frame.Children.Add(photo);
+        canvas.Children.Add(frame);
 
         // The case lights, drawn at the brightness the settings file asks for,
         // because "LED brightness" is a number until you see it.
-        if (parts.Contains("leds"))
+        if (parts.Contains("leds") && diagram.Lights is { } lightRow)
         {
             double bright = DeviceNumber("brightness", 75) / 100.0;
             for (int i = 0; i < 5; i++)
-                foreach (var dot in Led(ModeLight.Blue,
-                    (LedX + i * LedGap) * PhotoW, LedY * PhotoH))
+            {
+                var led = diagram.OnPhoto(lightRow.X + i * lightRow.Gap, lightRow.Y);
+                foreach (var dot in Led(ModeLight.Blue, led.X, led.Y))
                 {
                     dot.Opacity *= Math.Clamp(bright, 0.08, 1);
                     canvas.Children.Add(dot);
                 }
+            }
         }
 
         foreach (var id in parts)
         {
-            var spot = Array.Find(Hotspots, h => h.Id == id);
-            if (spot.Id is null) continue;
-            double x = spot.PointX - PhotoX, y = spot.PointY - PhotoY;
+            var spot = Array.Find(diagram.Hotspots, h => h.Zone == id);
+            if (spot.Zone is null) continue;
+            var at = diagram.OnPhoto(spot.PointX, spot.PointY);
+            double x = at.X, y = at.Y;
 
             // Two rings: a wide dark one under a thin bright one, so the mark
             // survives both the black case and the pale mouthpiece.
@@ -230,9 +252,10 @@ public partial class MainWindow
     void DrawLiveStick(Canvas canvas)
     {
         if (_live is not { } l) return;
-        var spot = Array.Find(Hotspots, h => h.Id == "joystick");
-        if (spot.Id is null) return;
-        double cx = spot.PointX - PhotoX, cy = spot.PointY - PhotoY, reach = 20;
+        var spot = Array.Find(Diagram.Hotspots, h => h.Zone == "joystick");
+        if (spot.Zone is null) return;
+        var at = Diagram.OnPhoto(spot.PointX, spot.PointY);
+        double cx = at.X, cy = at.Y, reach = 20;
 
         // The rest position, so a dot sitting still still says where centre is.
         var home = new Ellipse
@@ -318,6 +341,9 @@ public partial class MainWindow
     // written back, so an unreadable value falls back instead of failing.
     double DeviceNumber(string name, double fallback)
     {
+        if (_devicePreview.TryGetValue(name, out var preview)
+            && double.TryParse(preview, NumberStyles.Integer, CultureInfo.InvariantCulture, out var previewValue))
+            return previewValue;
         var sheet = DevicePrefsSheet;
         if (sheet is null || _devicePrefs is null) return fallback;
         foreach (var b in sheet.Bindings)

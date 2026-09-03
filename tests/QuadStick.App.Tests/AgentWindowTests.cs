@@ -94,7 +94,7 @@ public sealed class AgentWindowTests
 
     static void Press(Window window, string content)
     {
-        Find(window, content).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Find(window, content));
         Dispatcher.UIThread.RunJobs();
         window.UpdateLayout();
     }
@@ -482,7 +482,7 @@ public sealed class AgentWindowTests
         Assert.Equal(2, writes.Count);
         Assert.False(writes[0].IsEnabled);
         Assert.True(writes[1].IsEnabled);
-        writes[1].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(writes[1]);
         Dispatcher.UIThread.RunJobs();
         Assert.Equal("""{"id":"c2","write":true,"skip":[]}""", run.Replies.Last());
     }

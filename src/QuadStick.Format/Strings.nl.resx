@@ -491,6 +491,9 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Gebruik {0} of meer.</value>
   </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Gebruik {0} tot {1}. {2}</value>
+  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Gebruik hier modus 0, 2, 3 of 4, en stel de andere modus in plaats daarvan in een gameprofiel in.</value>
   </data>

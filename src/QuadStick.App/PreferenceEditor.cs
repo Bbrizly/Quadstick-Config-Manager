@@ -303,7 +303,7 @@ public partial class MainWindow
     {
         var box = new CheckBox { IsChecked = value == "1", VerticalAlignment = VerticalAlignment.Center };
         void Paint() => box.Content = new TextBlock
-        { Text = box.IsChecked == true ? "On (1)" : "Off (0)", FontSize = Size("BodySize") };
+        { Text = box.IsChecked == true ? Strings.Prefs_OnOne : Strings.Prefs_OffZero, FontSize = Size("BodySize") };
         Paint();
         AutomationProperties.SetName(box, name);
         box.IsCheckedChanged += (_, _) => { Paint(); CommitPreferenceValue(row, col, box.IsChecked == true ? "1" : "0"); };

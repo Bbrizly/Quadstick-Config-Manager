@@ -21,7 +21,7 @@ struct InputDetailView: View {
             } header: {
                 Text("In \(model.mode.name) mode")
             } footer: {
-                Text("Tap an action to choose what it does. Options sets how it behaves and what you call it.")
+                Text("Tap an action to choose its output, behavior, and name.")
             }
         }
         .navigationTitle(input.name)
@@ -115,7 +115,7 @@ struct ActionEditorView: View {
                 Text("What it does")
             } footer: {
                 if assignment.output != nil {
-                    Text("Your name shows next to the button, for example \u{201C}Jump (A)\u{201D}.")
+                    Text("Your name appears next to the button, such as \u{201C}Jump (A)\u{201D}.")
                 }
             }
 

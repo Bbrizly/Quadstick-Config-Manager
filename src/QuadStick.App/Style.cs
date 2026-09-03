@@ -22,6 +22,7 @@ public static class Style
         ["SubheadSize"]   = 17,
         ["BodySize"]      = 15,
         ["SmallSize"]     = 14,
+        ["SidebarToggleTextSize"] = 12,
 
         // Space. Steps, not free numbers, so panels line up with each other.
         ["SpaceXs"]       = 4,
@@ -50,10 +51,10 @@ public static class Style
         ["ShellNavIcon"]   = 32,
         ["ShellSettingsButton"] = 64,
         ["ShellSettingsIcon"]   = 40,
-        // The panel down the left of the editor. Wide enough for "Whole
-        // combos" and its mapping count on one row and for the three view keys
-        // side by side; every pixel past that comes off the device diagram.
-        ["SidebarWidth"]  = 240,
+        // The panel down the left of the editor. Give its labels, mode list and
+        // three view keys a little air; the device canvas still owns the larger
+        // share of the workspace, while the mapping detail stays compact.
+        ["SidebarWidth"]  = 304,
         ["CardHeight"]    = 112,
 
         // The editor's own commands. A command button is a square plate, not a

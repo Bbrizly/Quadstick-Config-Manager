@@ -491,6 +491,9 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>使用 {0} 或更大的值。</value>
   </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>请使用 {0} 到 {1}。{2}</value>
+  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>这里使用模式 0、2、3 或 4，另一个模式改到游戏配置中设置。</value>
   </data>

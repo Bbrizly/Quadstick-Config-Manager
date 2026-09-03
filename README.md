@@ -37,8 +37,10 @@ This is a plain editor that catches those mistakes before anything reaches the d
 - **Function numbers explained.** Pick a behavior like `repeat` or `greater_than` and the box for its numbers says what each one changes, the range the device accepts, and what it does when you leave the number out. All of it read off the firmware, so `greater_than 250` is called out as a strength no input reaches.
 - **The back panel, in a picture.** A photo of the back with every socket named. One switch in the top jack arrives as `digital_in_8`, one in the bottom as `digital_in_1`, and the middle jack is the lip switch. The second number in a jack is only used with a splitter. A joystick in the rear USB-A port is `usb_1_up`, `down`, `left`, `right`.
 - **USB or Bluetooth, per mode.** Each mode says which connection its presses travel over. A mode on Bluetooth alone sends no mouse or keyboard over a cable on 2025 firmware, and the app says so.
-- **Device settings, with real controls.** `prefs.csv` holds the QuadStick's own settings, not a game profile. Settings the app recognizes get a number box, checkbox, or dropdown instead of a plain cell; anything it does not recognize keeps a plain text box and is left exactly as it was. Installing `prefs.csv` back to the device always asks first, because it changes every profile at once.
+- **Device settings, with real controls.** The stick's own settings live in `prefs.csv`, not in a game profile, and they get their own screen. A setting with a range gets a slider and the exact number beside it, a flag gets a box, a list gets a dropdown, and every one says in a line what it does and what the device falls back to when your file leaves it out. Anything the app does not recognize keeps a plain text box and is left exactly as it was. Nothing reaches the stick until you press Save, and saving asks first, because it changes every profile at once.
+- **Watches the stick while you use it.** Plug a QuadStick in and the app says so on its own. While the stick sends an output, the row bound to it lights up, in the list and on the device diagram. Sip on the mouthpiece and the sip row lights for as long as the sip lasts. It is how you check a binding does what you meant without opening a game.
 - **Manage files on a mounted QuadStick.** See every profile on the device, grouped by drive, and copy one to your library, open its linked Sheet, or delete it. Delete backs the file up first. `default.csv` and `prefs.csv` are protected and can't be deleted from the app.
+- **Thirteen languages.** English, Arabic, German, Spanish, French, Hindi, Italian, Japanese, Korean, Dutch, Polish, Portuguese and Simplified Chinese. Input, output and function names stay in English in every one, because those are the bytes the device reads.
 - **Built for access.** Big buttons, keyboard shortcuts, and screen reader labels throughout. Light and dark themes, following your system or set by hand.
 
 ![The list view with one error and two warnings, each written out in plain English, dark theme](docs/screenshot-errors-dark.png)
@@ -71,11 +73,19 @@ xattr -dr com.apple.quarantine "/Applications/Quadstick Config Manager.app"
 
 The home screen lets you start a new profile, open a file, pick your library (`Documents/QuadStick Profiles`), or paste a Sheets link.
 
-![The home screen listing a profile library, each profile showing its modes and how many bindings it has](docs/screenshot-home.png)
+![The home screen: the profiles already on the plugged-in QuadStick above your own library, each one showing its modes and how many bindings it has](docs/screenshot-home.png)
 
 The editor has a device view (a picture of the stick) and a list view (rows and columns). Fix anything red in the Problems panel before you install. Click a problem to copy it for a bug report.
 
+While the stick sends an output, the row bound to it lights up for as long as it lasts, so a binding can be checked without opening a game.
+
+![The list view with three rows lit while the QuadStick is sending them](docs/screenshot-live.png)
+
 Save goes to your library or wherever you choose. Install needs the QuadStick plugged in; old files land in `~/QuadStickBackups`.
+
+The Device screen reads `prefs.csv` off the stick and gives every setting a real control, with a live reading of the joystick and the mouthpiece beside it while you tune.
+
+![The device settings screen, sip and puff group, each setting on a slider with its number and a line saying what it does](docs/screenshot-device-settings.png)
 
 Manage files and the device settings controls need a **mounted** QuadStick: the drive has to show up like a USB stick in Finder or File Explorer. This app only ever reads and writes files there, nothing else. If the drive is hidden, for example in PS4 boot mode or with controller emulation on, this app cannot see it at all; turn that off in QMP or your prefs and replug. There is no other way in from here. Deleting a file from Manage files backs it up to `~/QuadStickBackups` first, the same folder Install uses. `default.csv` and `prefs.csv` are protected and can't be deleted from the app.
 

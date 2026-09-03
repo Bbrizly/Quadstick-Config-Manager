@@ -10,7 +10,8 @@ import Foundation
 ///
 /// To connect a build:
 ///   1. Google Cloud console, same project as the desktop app, Credentials,
-///      create an OAuth client of type iOS with this app's bundle id.
+///      create an OAuth client of type iOS with this app's bundle id
+///      (`dev.bassamkamal.sipstudio`).
 ///   2. Put the client id in Info.plist under `GIDClientID`.
 ///   3. Register the reversed id as a URL scheme in `CFBundleURLTypes`.
 /// Until then `isConfigured` is false and the app says Drive is not set up

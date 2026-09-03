@@ -17,7 +17,7 @@ public class ToolbarLayoutTests
 {
     static readonly string[] EditorButtons =
     {
-        "ShareButton", "SaveButton", "UndoButton", "SaveTemplateButton",
+        "ShareButton", "SaveButton", "UnusedButton", "UndoButton", "SaveTemplateButton",
         "InstallButton", "HelpButton", "ModeHelpButton",
         "ModesButton", "DeviceViewButton", "RailViewButton",
         "ListViewButton", "AddRowButton",
@@ -91,6 +91,21 @@ public class ToolbarLayoutTests
     }
 
     [AvaloniaFact]
+    public void Add_row_is_a_prominent_labeled_creation_command()
+    {
+        var w = Open(100);
+        try
+        {
+            var add = w.GetVisualDescendants().OfType<Button>().First(x => x.Name == "AddRowButton");
+            Assert.Contains("primary", add.Classes);
+            Assert.True(add.Bounds.Width > add.Bounds.Height);
+            Assert.Contains(add.GetVisualDescendants().OfType<TextBlock>(), x => x.Text == "Add row");
+            Assert.Single(add.GetVisualDescendants().OfType<PathIcon>());
+        }
+        finally { Close(w); }
+    }
+
+    [AvaloniaFact]
     public void No_toolbar_button_runs_off_the_side_at_200_percent()
     {
         var w = Open(200);
@@ -106,7 +121,7 @@ public class ToolbarLayoutTests
         var w = Open(100);
         try
         {
-            Assert.Equal(1000, w.MinWidth);
+            Assert.Equal(760 + Style.Numbers["SidebarWidth"], w.MinWidth);
             Assert.Equal(560, w.MinHeight);
 
             w.ApplyInterfaceScale(200);
@@ -116,7 +131,7 @@ public class ToolbarLayoutTests
             Assert.Equal(Math.Min(1120, ScreenHeight(w)), w.MinHeight);
 
             w.ApplyInterfaceScale(100);
-            Assert.Equal(1000, w.MinWidth);
+            Assert.Equal(760 + Style.Numbers["SidebarWidth"], w.MinWidth);
         }
         finally { Close(w); }
     }

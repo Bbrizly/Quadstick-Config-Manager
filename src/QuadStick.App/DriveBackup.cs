@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text;
 using QuadStick.Format;
@@ -165,11 +166,13 @@ public sealed class DriveBackup
         }
     }
 
-    // First backup: create the sheet named after the file, push the grid, then
-    // read back and record our own write's modifiedTime.
+    // First backup: create the sheet named after the profile, push the grid,
+    // then read back and record our own write's modifiedTime. The file name is
+    // the device-facing identifier; the profile title is what the user sees
+    // in Drive.
     async Task<PushResult> CreateAndRecordAsync(string profilePath, string csvText, CancellationToken ct)
     {
-        var title = Path.GetFileNameWithoutExtension(profilePath);
+        var title = BackupTitle(profilePath, csvText);
         var id = await _client.CreateSpreadsheetAsync(title, ct);
         // Record the sheet the moment it exists, dirty until the push lands, so
         // a failure past here retries to THIS sheet, not a second one.
@@ -181,6 +184,23 @@ public sealed class DriveBackup
         link.BackupDirty = false;
         SaveState();
         return new PushResult(PushResultKind.Pushed);
+    }
+
+    static string BackupTitle(string profilePath, string csvText)
+    {
+        var fallback = Path.GetFileNameWithoutExtension(profilePath);
+        try
+        {
+            var title = ProfileFile.Load(csvText).Document.Title.Trim();
+            return title.Length > 0 ? title : fallback;
+        }
+        catch
+        {
+            // PushTabsAsync is still the source of truth for whether the CSV
+            // can be backed up. If parsing a malformed file fails here first,
+            // preserve the old safe filename fallback.
+            return fallback;
+        }
     }
 
     // Push to an existing sheet, then re-read modifiedTime so the next conflict
@@ -543,11 +563,11 @@ public sealed class RestoreSummary
         Skipped = skipped;
         Failed = failed;
 
-        var parts = new List<string> { $"{imported.Count} imported" };
+        var parts = new List<string> { string.Format(CultureInfo.CurrentCulture, Strings.Drive_RestoreImported, imported.Count) };
         if (skipped.Count > 0)
-            parts.Add($"{skipped.Count} skipped: " + string.Join(", ", skipped.Select(s => $"{s.Name} {s.Reason}")));
+            parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Drive_RestoreSkipped, skipped.Count) + string.Join(", ", skipped.Select(s => $"{s.Name} {s.Reason}")));
         if (failed.Count > 0)
-            parts.Add($"{failed.Count} failed: " + string.Join(", ", failed.Select(f => $"{f.Name} {f.Reason}")));
+            parts.Add(string.Format(CultureInfo.CurrentCulture, Strings.Drive_RestoreFailed, failed.Count) + string.Join(", ", failed.Select(f => $"{f.Name} {f.Reason}")));
         Message = string.Join(", ", parts);
     }
 }

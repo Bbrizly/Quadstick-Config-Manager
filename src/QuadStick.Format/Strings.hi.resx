@@ -491,6 +491,9 @@
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>{0} या उससे अधिक उपयोग करें।</value>
   </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>{0} से {1} तक उपयोग करें। {2}</value>
+  </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>यहां मोड 0, 2, 3 या 4 उपयोग करें, और दूसरा मोड इसके बजाय किसी गेम प्रोफ़ाइल में सेट करें।</value>
   </data>

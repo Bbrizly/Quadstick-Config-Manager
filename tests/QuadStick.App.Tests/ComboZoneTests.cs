@@ -35,6 +35,12 @@ public class ComboZoneTests
     public void One_hole_on_its_own_stays_on_that_hole(string input) =>
         Assert.Equal("mp_right", MainWindow.ZoneOf(input));
 
+    [Theory]
+    [InlineData("lip")]
+    [InlineData("lip_soft")]
+    public void Lip_inputs_stay_in_the_lip_zone(string input) =>
+        Assert.Equal("lip", MainWindow.ZoneOf(input));
+
     // The prefix list breaks on its first match, so "mp_right_" matching first
     // left the word "mode" in the label.
     [Theory]
@@ -79,6 +85,32 @@ public class ComboZoneTests
         Assert.Equal("R+C sip", MainWindow.ChipLabel("mp_right_center_sip", "combo"));
         Assert.Equal("L+C sip", MainWindow.ChipLabel("mp_left_center_sip", "combo"));
         Assert.Equal("all 3 sip", MainWindow.ChipLabel("mp_triple_sip", "combo"));
+    }
+
+    // The sentence card said "when you sip" on every combo row, so five
+    // different pairings read as the same mapping. Reported by the QuadStick's
+    // maker: the line has to name the holes.
+    [Fact]
+    public void The_card_sentence_names_the_pairing()
+    {
+        Assert.Equal("Left + Center sip", MainWindow.CardInput("mp_left_center_sip", "combo"));
+        Assert.Equal("All three soft puff", MainWindow.CardInput("mp_triple_puff_soft", "combo"));
+        Assert.Equal("Right + Side tube sip", MainWindow.CardInput("mp_right_mode_sip", "combo"));
+        // A hole on its own is already named by the card it sits on.
+        Assert.Equal("sip", MainWindow.CardInput("mp_right_sip", "mp_right"));
+    }
+
+    // A card takes its zone from its FIRST input, then labels every input with
+    // it. So the pairing has to come off the token being named, not off the
+    // card: a combo row that goes on to want the lip switch was reading
+    // "Combo lip", and a lip row that starts with the lip and then wants a
+    // combo said only "sip".
+    [Fact]
+    public void An_input_is_named_by_its_own_part_not_the_cards()
+    {
+        Assert.Equal("lip", MainWindow.CardInput("lip", "combo"));
+        Assert.Equal("Left + Center sip", MainWindow.CardInput("mp_left_center_sip", "lip"));
+        Assert.Equal("Left + Center sip", MainWindow.CardInput("mp_left_center_sip", "mp_left"));
     }
 
     [Fact]

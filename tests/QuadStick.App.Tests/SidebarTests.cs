@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using QuadStick.App;
 using QuadStick.Format;
@@ -85,13 +86,13 @@ public class SidebarTests
     public void Pressing_a_row_opens_that_sheet()
     {
         var w = Open();
-        Rows(w)[2].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Rows(w)[2]);
         w.UpdateLayout();
 
         var rows = Rows(w);
         Assert.True(rows[2].IsChecked, "the list still points at the mode that was open before");
         Assert.False(rows[0].IsChecked);
-        Assert.Contains("Aiming", ((TextBlock)Named(w, "DeviceHeaderMode")).Text ?? "");
+        Assert.Null(w.GetVisualDescendants().OfType<Control>().FirstOrDefault(c => c.Name == "DeviceHeaderMode"));
 
         w.Close();
     }
@@ -102,7 +103,7 @@ public class SidebarTests
     public void Pressing_the_open_mode_again_leaves_it_open()
     {
         var w = Open();
-        Rows(w)[0].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Rows(w)[0]);
         w.UpdateLayout();
 
         Assert.True(Rows(w)[0].IsChecked);
@@ -113,16 +114,84 @@ public class SidebarTests
     public void The_plus_adds_a_mode_and_opens_it()
     {
         var w = Open();
-        Named(w, "AddModeButton").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Named(w, "AddModeButton"));
         w.UpdateLayout();
 
+        // Driving is open, so the new mode goes under Driving and Aiming
+        // shifts to 3. The name only has to be one nobody else has; the number
+        // beside it comes from where it sits, which is the only thing the
+        // device reads.
         var rows = Rows(w);
         Assert.Equal(5, rows.Length);
-        Assert.Equal("3: Mode 3", TextOf(rows[3]));
-        Assert.True(rows[3].IsChecked, "the new mode was added and left unopened");
+        Assert.Equal("2: Mode 3", TextOf(rows[1]));
+        Assert.True(rows[1].IsChecked, "the new mode was added and left unopened");
+        Assert.Equal("3: Aiming", TextOf(rows[3]));
 
         w.OpenFile!.Dirty = false;
         w.Close();
+    }
+
+    [AvaloniaFact]
+    public void Modes_have_a_compact_independent_scroller_and_header_controls()
+    {
+        var w = Open();
+        var listScroll = (ScrollViewer)Named(w, "ModeListScroll");
+        var help = Named(w, "ModeHelpButton");
+        var edit = Named(w, "ModesButton");
+        var add = Named(w, "AddModeButton");
+
+        // Modes get every bit of height left above Configuration, and keep a
+        // useful three-row minimum rather than making Configuration scroll too.
+        Assert.Equal(112, listScroll.MinHeight);
+        Assert.True(listScroll.AllowAutoHide);
+        // Two scrollers, and only two: this list, and the one around the whole
+        // sidebar that catches a window too short to lay the panel out at all.
+        // A third would mean some section had started scrolling on its own.
+        var sidebar = Named(w, "EditorSidebar");
+        var scrollers = sidebar.GetVisualDescendants().OfType<ScrollViewer>().ToList();
+        Assert.Equal(2, scrollers.Count);
+        Assert.Same(listScroll, scrollers.Last());
+        Assert.Contains("modeRow", Rows(w)[0].Classes);
+
+        // The word "Modes" is the explanatory target on the left; the edit
+        // command then sits immediately before the add command on the right.
+        var helpLeft = help.TranslatePoint(new Point(0, 0), w)!.Value.X;
+        var editLeft = edit.TranslatePoint(new Point(0, 0), w)!.Value.X;
+        var addLeft = add.TranslatePoint(new Point(0, 0), w)!.Value.X;
+        Assert.True(helpLeft < editLeft && editLeft < addLeft);
+
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void Selecting_a_mode_scrolls_that_mode_into_view()
+    {
+        var w = Open();
+        try
+        {
+            // Build a list taller than the available Modes viewport.
+            for (int i = 0; i < 12; i++)
+            {
+                Ui.Click(Named(w, "AddModeButton"));
+                Dispatcher.UIThread.RunJobs();
+            }
+            w.UpdateLayout();
+
+            var scroll = (ScrollViewer)Named(w, "ModeListScroll");
+            scroll.Offset = new Vector(0, 0);
+            var lastMode = Rows(w)[^2]; // the final row is Custom Names
+            Ui.Click(lastMode);
+            Dispatcher.UIThread.RunJobs();
+            w.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.True(scroll.Offset.Y > 0, "the selected mode was left below the visible list");
+        }
+        finally
+        {
+            w.OpenFile!.Dirty = false;
+            w.Close();
+        }
     }
 
     // Everything the brief asked to move is in the panel, and nothing that
@@ -141,6 +210,25 @@ public class SidebarTests
             "ZoneList",
         })
             Assert.Contains(sidebar, Named(w, name).GetVisualAncestors());
+
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void The_view_choices_follow_the_plain_english_and_detailed_editor_controls()
+    {
+        var w = Open();
+        double Top(string name) => Named(w, name).TranslatePoint(new Point(0, 0), w)!.Value.Y;
+
+        var wordsBottom = Math.Max(
+            Top("LabelStyleButton") + Named(w, "LabelStyleButton").Bounds.Height,
+            Top("CardViewButton") + Named(w, "CardViewButton").Bounds.Height);
+        Assert.True(wordsBottom <= Top("DeviceViewButton") + 1,
+            "Device should appear below the Plain English and Detailed editor controls");
+        Assert.True(wordsBottom <= Top("RailViewButton") + 1,
+            "Parts should appear below the Plain English and Detailed editor controls");
+        Assert.True(wordsBottom <= Top("ListViewButton") + 1,
+            "Rows should appear below the Plain English and Detailed editor controls");
 
         w.Close();
     }

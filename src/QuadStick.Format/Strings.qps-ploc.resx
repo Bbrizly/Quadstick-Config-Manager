@@ -683,4 +683,7 @@
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>[Thíš špréádšhéét íš lárgér tháñ {0} rówš, fár lárgér tháñ áñý prófílé, šó wé štóppéd réádíñg párt wáý thróúgh. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>[Úšé {0} tó {1}. {2} xxxxxxx]</value>
+  </data>
 </root>

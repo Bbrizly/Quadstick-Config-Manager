@@ -7,7 +7,8 @@
  {
   "name": "joystick_deflection_maximum",
   "label": "摇杆满行程偏转",
-  "description": "摇杆需要移动多远才能产生满信号。QMP 把这个称为摇杆的运动范围，它是设备上最接近灵敏度控制的设置：数值越大，达到同样输出所需的行程就越长，摇杆手感就越不灵敏。QMP 取其四个方向滑块中的最大值。"
+  "description": "摇杆需要移动多远才能产生满信号。QMP 把这个称为摇杆的运动范围，它是设备上最接近灵敏度控制的设置：数值越大，达到同样输出所需的行程就越长，摇杆手感就越不灵敏。QMP 取其四个方向滑块中的最大值。",
+  "alsoCalled": "活动范围"
  },
  {
   "name": "deflection_multiplier_up",
@@ -52,7 +53,8 @@
  },
  {
   "name": "anti_dead_zone",
-  "label": "反死区"
+  "label": "反死区",
+  "description": "沿摇杆指向的方向,为每次摇杆读数加上一个固定的推力,以越过游戏自己设置的死区。零表示关闭。"
  },
  {
   "name": "joystick_warning",
@@ -73,13 +75,15 @@
   "name": "sip_puff_threshold_soft",
   "label": "轻度 sip/puff 阈值",
   "unit": "百分比",
-  "description": "开始识别轻度 sip 或 puff 的压力或真空水平。"
+  "description": "开始识别轻度 sip 或 puff 的压力或真空水平。",
+  "alsoCalled": "吸吹低阈值"
  },
  {
   "name": "sip_puff_threshold",
   "label": "重度 sip/puff 阈值",
   "unit": "百分比",
-  "description": "触发输出的压力值。QMP 把它显示为 sip and puff high threshold（高阈值）；sip_puff_threshold_soft 是低阈值。"
+  "description": "触发输出的压力值。QMP 把它显示为 sip and puff high threshold（高阈值）；sip_puff_threshold_soft 是低阈值。",
+  "alsoCalled": "吸吹高阈值"
  },
  {
   "name": "sip_puff_maximum",
@@ -91,7 +95,8 @@
   "name": "sip_puff_delay_soft",
   "label": "轻度 sip/puff 延迟",
   "unit": "毫秒",
-  "description": "轻度 sip 和 puff 信号会在这个短暂延迟之后被识别。QMP 把它显示为 Low Threshold Delay。"
+  "description": "轻度 sip 和 puff 信号会在这个短暂延迟之后被识别。QMP 把它显示为 Low Threshold Delay。",
+  "alsoCalled": "低阈值延迟"
  },
  {
   "name": "sip_puff_delay_hard",
@@ -179,7 +184,8 @@
  },
  {
   "name": "enable_rumble",
-  "label": "震动"
+  "label": "震动",
+  "description": "仅在 Dual Shock 3 模式下,把游戏的震动作为提示音在 QuadStick 自带的扬声器上播放。"
  },
  {
   "name": "bluetooth_device_mode",
@@ -188,19 +194,23 @@
  },
  {
   "name": "bluetooth_authentication_mode",
-  "label": "Bluetooth 身份验证模式"
+  "label": "Bluetooth 身份验证模式",
+  "description": "QuadStick 要求的配对强度。作为 SA 设置发送给无线模块,因此只在蓝牙开启时才起作用。"
  },
  {
   "name": "bluetooth_connection_mode",
-  "label": "Bluetooth 连接模式"
+  "label": "Bluetooth 连接模式",
+  "description": "QuadStick 是等待别人连接,还是自己主动连接。作为 SM 设置发送给无线模块。"
  },
  {
   "name": "bluetooth_remote_address",
-  "label": "Bluetooth 远程地址"
+  "label": "Bluetooth 远程地址",
+  "description": "QuadStick 主动连接的蓝牙地址。除非 QuadStick 支持人员给了您一个,否则请留空。最多十六个字符。"
  },
  {
   "name": "bluetooth_remote_adapter",
-  "label": "Bluetooth 远程适配器"
+  "label": "Bluetooth 远程适配器",
+  "description": "让 QuadStick 成为其他设备的蓝牙适配器。在此项开启且蓝牙设备模式为 ssp 期间,它不再读取自己的吹嘴和摇杆。"
  },
  {
   "name": "bluetooth_throttle",
@@ -240,12 +250,14 @@
  {
   "name": "enable_usb_a_device",
   "label": "USB-A 设备模式",
-  "risk": "这决定了 QuadStick 在哪个 USB 端口上呈现自己。该设置改变时，设备会断开 USB 并重新连接，因此错误的值会让主机或电脑无法识别它。它的优先级也高于 enable_usb_a_host：只要此项开启，无论主机设置写的是什么，USB-A 主机功能都会被关闭。仅在 QuadStick 支持人员的建议下更改此项。"
+  "risk": "这决定了 QuadStick 在哪个 USB 端口上呈现自己。该设置改变时，设备会断开 USB 并重新连接，因此错误的值会让主机或电脑无法识别它。它的优先级也高于 enable_usb_a_host：只要此项开启，无论主机设置写的是什么，USB-A 主机功能都会被关闭。仅在 QuadStick 支持人员的建议下更改此项。",
+  "description": "QuadStick 出现在哪个 USB 接口上。零是它自己的端口;大于零则是 USB-A 接口,这同时也会关闭 USB-A 主机模式。"
  },
  {
   "name": "enable_usb_a_host",
   "label": "USB-A 主机模式",
-  "description": "自 2373 固件起可用。开启此项且 USB-A 设备模式关闭时，设备会在 USB-A 端口上运行一个 USB 主机，因此插在那里的控制器会把信号送入 usb_1 输入通道。关闭此项，或者开启 USB-A 设备模式，主机功能就会被关闭。USB-A 设备模式优先级更高。QMP 把它显示为 USB-A Host Mode。"
+  "description": "自 2373 固件起可用。开启此项且 USB-A 设备模式关闭时，设备会在 USB-A 端口上运行一个 USB 主机，因此插在那里的控制器会把信号送入 usb_1 输入通道。关闭此项，或者开启 USB-A 设备模式，主机功能就会被关闭。USB-A 设备模式优先级更高。QMP 把它显示为 USB-A Host Mode。",
+  "alsoCalled": "USB-A 主机模式"
  },
  {
   "name": "enable_DS3_emulation",
@@ -261,7 +273,8 @@
    "Nintendo Switch Pro Controller，无 USB 驱动器",
    "DualShock 4，无 USB 驱动器",
    "DualShock 4 无线模式，无 USB 驱动器"
-  ]
+  ],
+  "alsoCalled": "以 PS4 模式启动"
  },
  {
   "name": "enable_usb_comm",
@@ -270,35 +283,43 @@
  },
  {
   "name": "usb_1_multiplier_up",
-  "label": "USB 1 向上倍率"
+  "label": "USB 1 向上倍率",
+  "description": "增强插在 USB-A 端口上的手柄左摇杆的向上方向。"
  },
  {
   "name": "usb_1_multiplier_down",
-  "label": "USB 1 向下倍率"
+  "label": "USB 1 向下倍率",
+  "description": "增强插在 USB-A 端口上的手柄左摇杆的向下方向。"
  },
  {
   "name": "usb_1_multiplier_left",
-  "label": "USB 1 向左倍率"
+  "label": "USB 1 向左倍率",
+  "description": "增强插在 USB-A 端口上的手柄左摇杆的向左方向。"
  },
  {
   "name": "usb_1_multiplier_right",
-  "label": "USB 1 向右倍率"
+  "label": "USB 1 向右倍率",
+  "description": "增强插在 USB-A 端口上的手柄左摇杆的向右方向。"
  },
  {
   "name": "usb_2_multiplier_up",
-  "label": "USB 2 向上倍率"
+  "label": "USB 2 向上倍率",
+  "description": "增强插在 USB-A 端口上的手柄右摇杆的向上方向。"
  },
  {
   "name": "usb_2_multiplier_down",
-  "label": "USB 2 向下倍率"
+  "label": "USB 2 向下倍率",
+  "description": "增强插在 USB-A 端口上的手柄右摇杆的向下方向。"
  },
  {
   "name": "usb_2_multiplier_left",
-  "label": "USB 2 向左倍率"
+  "label": "USB 2 向左倍率",
+  "description": "增强插在 USB-A 端口上的手柄右摇杆的向左方向。"
  },
  {
   "name": "usb_2_multiplier_right",
-  "label": "USB 2 向右倍率"
+  "label": "USB 2 向右倍率",
+  "description": "增强插在 USB-A 端口上的手柄右摇杆的向右方向。"
  },
  {
   "name": "usb_1_dead_zone",
@@ -315,12 +336,14 @@
  {
   "name": "titan_two",
   "label": "Titan Two 适配器",
-  "description": "自 2373 固件起可用。告诉设备它是通过 Titan Two 连接到 PS4，而不是直接插入主机。这样设备会跳过 DS4 身份验证握手，并停止周期性的强制 USB 重新连接。QMP 把它显示为 Titan 2 PS4 flag。"
+  "description": "自 2373 固件起可用。告诉设备它是通过 Titan Two 连接到 PS4，而不是直接插入主机。这样设备会跳过 DS4 身份验证握手，并停止周期性的强制 USB 重新连接。QMP 把它显示为 Titan 2 PS4 flag。",
+  "alsoCalled": "Titan 2 的 PS4 标志"
  },
  {
   "name": "watchdog_disable",
   "label": "禁用看门狗",
-  "risk": "设备运行着一个两分钟的硬件看门狗，如果它停止响应就会重启设备。1476 和 2373 固件中都没有代码读取此设置，因此在这两个版本上它都不起任何作用，未来的固件会如何处理它则未知。"
+  "risk": "设备运行着一个两分钟的硬件看门狗，如果它停止响应就会重启设备。1476 和 2373 固件中都没有代码读取此设置，因此在这两个版本上它都不起任何作用，未来的固件会如何处理它则未知。",
+  "description": "本意是让 QuadStick 死机时不要自行重启。您的 QuadStick 会忽略它。"
  },
  {
   "name": "debug",

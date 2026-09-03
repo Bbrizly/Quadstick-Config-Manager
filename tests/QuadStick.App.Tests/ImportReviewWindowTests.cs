@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
@@ -91,7 +92,7 @@ public class ImportReviewWindowTests
     {
         var b = Find(w, content) ?? throw new InvalidOperationException(
             $"No \"{content}\" button. Buttons: {string.Join(", ", w.GetVisualDescendants().OfType<Button>().Select(x => x.Content))}");
-        b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(b);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
     }
@@ -794,6 +795,82 @@ public class ImportReviewWindowTests
         var (owner, _, review) = Open(CleanCsv, renamed: new[] { new TabRename(1, "Menu", "") });
 
         Assert.True(Says(review, "name cell was empty"));
+        Done(owner, review);
+    }
+
+    // The Beloader Fortnite sheet in the official catalog carries 52 blank
+    // template rows across its three modes. Each one was its own warning line,
+    // so the one warning a user has to act on scrolled off the bottom.
+    const string TemplateRowsCsv =
+        "Profile Name,,Left Analog\r\nfortnite ps4.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+        "dpad_N,normal,right_sip\r\n" +
+        ",normal,\r\n,normal,\r\n,normal,\r\n,normal,\r\n,normal,\r\n";
+
+    [AvaloniaFact]
+    public void One_warning_repeated_reads_as_one_line()
+    {
+        var (owner, file, review) = Open(TemplateRowsCsv);
+
+        var repeated = file.Issues
+            .Count(i => i.Severity == Severity.Warning && i.Message.Contains("no output name"));
+        Assert.Equal(5, repeated);
+
+        // One line for the five, naming the first cell and counting the rest.
+        var lines = AllText(review).Where(t => t.Contains("no output name")).ToList();
+        Assert.Single(lines);
+        Assert.Contains("A5 and 4 more cells", lines[0]);
+        // The heading above still counts every cell, so nothing is hidden.
+        Assert.True(Says(review, "5 cells"));
+
+        Done(owner, review);
+    }
+
+    // A ScrollViewer that may grow sideways measures its content against
+    // infinite width, so every message that asked to wrap stayed on one line
+    // and ran off the right edge of the window.
+    [AvaloniaFact]
+    public void A_long_message_wraps_instead_of_running_off_the_edge()
+    {
+        var (owner, _, review) = Open(TemplateRowsCsv);
+
+        var scroll = review.GetVisualDescendants().OfType<ScrollViewer>()
+            .First(v => v.GetVisualDescendants().OfType<TextBlock>()
+                .Any(t => (t.Text ?? "").Contains("no output name")));
+        Assert.True(scroll.Extent.Width <= scroll.Viewport.Width + 1,
+            $"the prose view scrolls sideways: {scroll.Extent.Width} wide in a {scroll.Viewport.Width} window");
+
+        Done(owner, review);
+    }
+
+    // Two of a kind takes the singular wording. A hand-written plural pair is
+    // exactly what ships reading "and 1 more cells" in one language.
+    [AvaloniaFact]
+    public void Two_of_the_same_warning_count_in_the_singular()
+    {
+        var (owner, _, review) = Open(
+            "Profile Name,,Left Analog\r\nfortnite ps4.csv\r\nPlayStation Outputs,Function,usb\r\n" +
+            "dpad_N,normal,right_sip\r\n,normal,\r\n,normal,\r\n");
+
+        Assert.True(Says(review, "A5 and 1 more cell"));
+        Assert.False(Says(review, "1 more cells"));
+
+        Done(owner, review);
+    }
+
+    // The Advanced grid is wider than the window on purpose. Turning sideways
+    // scrolling off for the prose must not take it away from the grid.
+    [AvaloniaFact]
+    public void The_advanced_grid_can_still_scroll_sideways()
+    {
+        var (owner, _, review) = Open(TemplateRowsCsv);
+        var scroll = review.GetVisualDescendants().OfType<ScrollViewer>()
+            .First(v => v.GetVisualDescendants().OfType<TextBlock>()
+                .Any(t => (t.Text ?? "").Contains("no output name")));
+        Assert.Equal(ScrollBarVisibility.Disabled, scroll.HorizontalScrollBarVisibility);
+
+        Press(review, "Advanced");
+        Assert.Equal(ScrollBarVisibility.Auto, scroll.HorizontalScrollBarVisibility);
+
         Done(owner, review);
     }
 }

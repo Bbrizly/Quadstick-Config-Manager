@@ -16,9 +16,18 @@ using QuadStick.Format;
 // one, the walkthrough is drawn from it at every step, because a guide that
 // looks fine with three rows can be unusable with fifty.
 
-var outDir = args.Length > 0 ? args[0] : "/tmp/qscm-renders";
-var corpus = args.Length > 1 ? args[1] : "tests/QuadStick.Format.Tests/corpus";
-var mapEvent = args.Length > 2 && File.Exists(args[2]) ? File.ReadAllText(args[2]) : null;
+// Flags are not positions: "RenderPreview out --pseudo" used to read --pseudo
+// as the corpus folder and die halfway through the run looking for a profile
+// inside it. --lang's value is skipped for the same reason.
+var positional = new List<string>();
+for (int i = 0; i < args.Length; i++)
+{
+    if (!args[i].StartsWith("--", StringComparison.Ordinal)) { positional.Add(args[i]); continue; }
+    if (args[i] == "--lang") i++;
+}
+var outDir = positional.Count > 0 ? positional[0] : "/tmp/qscm-renders";
+var corpus = positional.Count > 1 ? positional[1] : "tests/QuadStick.Format.Tests/corpus";
+var mapEvent = positional.Count > 2 && File.Exists(positional[2]) ? File.ReadAllText(positional[2]) : null;
 Directory.CreateDirectory(outDir);
 
 // Screenshots are the app as it ships, not as this machine has it. Reading the
@@ -26,24 +35,20 @@ Directory.CreateDirectory(outDir);
 // last chose into the docs: every device-view shot went out saying "Not on
 // model" because a Singleton was picked here months ago.
 var langAt = Array.IndexOf(args, "--lang");
-var lang = langAt >= 0 && langAt + 1 < args.Length ? args[langAt + 1] : Localization.FollowSystem;
+// --pseudo is a language like any other here. It used to Apply its own tag a
+// few lines below and then have Localization.Apply(lang) put the machine's
+// language straight back, so every "pseudo" shot came out in English and the
+// check this exists for has been passing on nothing.
+var lang = args.Contains("--pseudo") ? "qps-ploc"
+    : langAt >= 0 && langAt + 1 < args.Length ? args[langAt + 1] : Localization.FollowSystem;
 
 var cfgDir = Directory.CreateTempSubdirectory("qscm-cfg-").FullName;
 Settings.PathOverride = Path.Combine(cfgDir, "settings.json");
 Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Language = lang });
-
-// --pseudo draws the whole app in the pseudo language: every label that is
-// still plain English is one the move to Strings.resx missed, and every label
-// that runs out of its control is a layout that assumed English.
-// Relocalize as well as Apply: the preference catalog is translated as data
-// rather than as resources, and without this the pseudo pass drew all sixty
-// one setting labels in plain English, which is the half of this screen the
-// check exists to look at.
-if (args.Contains("--pseudo"))
-{
-    Localization.Apply("qps-ploc");
-    Localization.Relocalize();
-}
+// Same reason, for the other folder this machine has of its own: a draft left
+// behind by a crash months ago put a red "unsaved work was recovered" banner
+// across the middle of the Home screenshot that shipped in the README.
+CrashGuard.RescueDirOverride = Path.Combine(cfgDir, "rescue");
 
 // A prefs.csv shaped like the one a QuadStick ships with: a handful of the
 // settings written down, the rest left to the device's own defaults.
@@ -67,11 +72,15 @@ const string SamplePrefs =
     + "volume,40,,\n"
     + "brightness,75,,\n";
 
-
 // --lang <tag> draws it in a shipped language. The store shots need one set
 // per language, and Arabic is the one that has to be looked at rather than
 // asserted: the window mirrors and the device photo must not follow it.
+// Relocalize as well as Apply: the preference catalog is translated as data
+// rather than as resources, and without this the pseudo pass drew all sixty
+// one setting labels in plain English, which is the half of that screen the
+// check exists to look at.
 Localization.Apply(lang);
+Localization.Relocalize();
 
 // A library that looks like somebody's. Real community workbooks, under the
 // names their games have, so every card carries real modes and real counts:
@@ -138,6 +147,308 @@ AppBuilder.Configure<App>()
     .UseSkia()
     .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false })
     .SetupWithoutStarting();
+
+// The set the README and the site use, named the way they are named there, so
+// refreshing them is a render and a copy rather than a guess about which of
+// forty renders was which one. Both themes, because both pages swap on the
+// reader's. Wider than the old 1180: the panel beside the device view lost its
+// mapping count off the right edge at that width.
+if (args.Contains("--docs"))
+{
+    const int W = 1440, H = 900;
+    // Home is taller than the rest on purpose. With a QuadStick plugged in it
+    // carries the device's own files above the library, and a shot that cuts
+    // the library in half is missing the thing it is there to show.
+    const int HomeH = 1280;
+
+    // Light rows this profile really has. A hard-coded output token lights
+    // nothing the moment the hero profile changes, and a shot of the feature
+    // with the feature not visible is worse than no shot.
+    HashSet<string> LitRows(ProfileFile f)
+    {
+        var lit = new HashSet<string>(StringComparer.Ordinal);
+        for (int row = 0; row < 60 && lit.Count < 3; row++)
+        {
+            var output = f.GetCell(row, 0).Trim();
+            if (output.Length == 0 || f.GetCell(row, 2).Trim().Length == 0) continue;
+            if (!Vocab.AllOutputs.Contains(output, StringComparer.Ordinal)) continue;
+            lit.Add(output);
+        }
+        return lit;
+    }
+
+    foreach (var (suffix, variant) in new[] { ("", ThemeVariant.Light), ("-dark", ThemeVariant.Dark) })
+    {
+        Application.Current!.RequestedThemeVariant = variant;
+        // Fresh settings per theme: opening a profile below files it under
+        // recents, and the second pass would otherwise show a Home the first
+        // one did not.
+        Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Language = lang });
+
+        CaptureSized($"screenshot-home{suffix}", W, HomeH, _ => { });
+
+        CaptureSized($"screenshot-device-view{suffix}", W, H, w =>
+        {
+            w.OpenPathForPreview(hero);
+            w.SelectZoneForPreview("joystick");
+        });
+
+        // A different profile from the hero on purpose, one whose first screen
+        // is bound rather than a column of "pick an input", since that is what
+        // the row view is for.
+        CaptureSized($"screenshot-editor{suffix}", W, H, w =>
+        {
+            var dense = Path.Combine(lib, "Apex Legends.csv");
+            w.OpenPathForPreview(File.Exists(dense) ? dense : hero);
+            w.SetDeviceViewForPreview(false);
+        });
+
+        // One of each, because the two are not treated the same: a word where
+        // a device setting's number goes is an error and blocks the install,
+        // an input name the device does not know is a warning and does not.
+        CaptureSized($"screenshot-errors{suffix}", W, H, w =>
+        {
+            var f = ProfileFile.Load(File.ReadAllText(hero));
+            f.SetCell(4, 0, "mouse_speed");
+            f.SetCell(4, 2, "fast");
+            f.SetCell(5, 2, "left_sip");
+            w.LoadProfile(f);
+            w.SetDeviceViewForPreview(false);
+            w.ShowProblemsForPreview();
+        });
+
+        CaptureSized($"screenshot-device-settings{suffix}", W, H, w =>
+            w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff"));
+
+        // A row lit while the device is sending it, driven by the same seam the
+        // row-lighting tests use. No stick in the room, the real UI state.
+        CaptureSized($"screenshot-live{suffix}", W, H, w =>
+        {
+            var f = ProfileFile.Load(File.ReadAllText(hero));
+            w.LoadProfile(f);
+            w.SetDeviceViewForPreview(false);
+            w.ShowLiveInputForPreview(new LiveState(
+                0, -0.6, Array.Empty<int>(), "QuadStick", LitRows(f), true));
+        });
+    }
+
+    Console.WriteLine("docs set written");
+    return;
+}
+
+// The set that goes with a release announcement, all at 1920x1080 so they sit
+// in a row without one of them being half the size of its neighbours. Light
+// theme: these get posted somewhere with a dark background, and a dark
+// screenshot on a dark page loses its own edges.
+if (args.Contains("--post"))
+{
+    Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, Language = lang });
+
+    const int W = 1920, H = 1080;
+
+    string PostPrefs(string file, int emulation) => string.Join("\n", new[]
+    {
+        "Profile Name,,Gameplay", file, "Outputs,Function,usb",
+        "kb_space,normal,lip", "", "Preferences", "",
+        "Preference,Value,Units,Description",
+        $"enable_DS3_emulation,{emulation}",
+        "sip_puff_threshold,60", "titan_two,1", "enable_usb_a_host,1",
+    });
+    const string PostFuncs = """
+        Profile Name,,Gameplay
+        mygame.csv
+        Outputs,Function,usb
+        kb_space,tap 500 100,lip
+        kb_left_shift,delay_on 500 1,mp_triple_puff
+        mouse_left_button,greater_than 60,mp_left_sip
+        """;
+
+    CaptureSized("post-01-home", W, H, _ => { });
+
+    CaptureSized("post-02-device-settings", W, H, w =>
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff"));
+
+    CaptureSized("post-03-joystick-live", W, H, w =>
+    {
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Joystick");
+        w.ShowLiveInputForPreview(new LiveState(0.42, -0.30, PressedForShot(), "QuadStick",
+            new HashSet<string>(), true));
+    });
+
+    CaptureSized("post-04-back-panel", W, H, w =>
+    {
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SelectZoneForPreview("jacks");
+    });
+
+    CaptureSized("post-05-rear-joystick", W, H, w =>
+    {
+        w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+        w.SelectZoneForPreview("other");
+    });
+
+    // Device view with the stick being used: the callout rows whose action is
+    // going out light on the diagram, next to the part that sends them.
+    CaptureSized("post-06-device-view", W, H, w =>
+    {
+        var f = ProfileFile.Load(File.ReadAllText(hero));
+        var lit = new HashSet<string>(StringComparer.Ordinal);
+        for (int row = 0; row < 60 && lit.Count < 3; row++)
+        {
+            var output = f.GetCell(row, 0).Trim();
+            if (output.Length == 0 || f.GetCell(row, 2).Trim().Length == 0) continue;
+            if (!Vocab.AllOutputs.Contains(output, StringComparer.Ordinal)) continue;
+            lit.Add(output);
+        }
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(true);
+        w.SelectZoneForPreview("side");
+        w.ShowLiveInputForPreview(new LiveState(0, -0.6, Array.Empty<int>(), "QuadStick", lit, true));
+    });
+
+    // A row lit while the device is sending it, driven by the same seam the
+    // row-lighting tests use. No stick in the room, the real UI state.
+    CaptureSized("post-07-row-lighting", W, H, w =>
+    {
+        // Light rows this profile actually has. A hard-coded output token lights
+        // nothing the moment the hero profile changes, and a shot of the feature
+        // with the feature not visible is worse than no shot.
+        var f = ProfileFile.Load(File.ReadAllText(hero));
+        var lit = new HashSet<string>(StringComparer.Ordinal);
+        for (int row = 0; row < 60 && lit.Count < 3; row++)
+        {
+            var output = f.GetCell(row, 0).Trim();
+            if (output.Length == 0 || f.GetCell(row, 2).Trim().Length == 0) continue;
+            if (!Vocab.AllOutputs.Contains(output, StringComparer.Ordinal)) continue;
+            lit.Add(output);
+        }
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(false);
+        w.ShowLiveInputForPreview(new LiveState(0, -0.6, Array.Empty<int>(), "QuadStick", lit, true));
+    });
+
+    CaptureSized("post-08-import-review", W, H, w =>
+    {
+        var f = ProfileFile.Load(File.ReadAllText(hero));
+        f.SetCell(4, 0, "mouse_speed");
+        f.SetCell(4, 2, "fast");
+        f.SetCell(5, 2, "left_sip");
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(false);
+        w.ShowProblemsForPreview();
+    });
+
+    CaptureSized("post-09-emulation-blocked", W, H, w =>
+    {
+        var f = ProfileFile.Load(PostPrefs("default.csv", 5));
+        w.LoadProfile(f);
+        w.SetDeviceViewForPreview(false);
+        w.SelectSheetForPreview(f.Document.Sheets.ToList()
+            .FindIndex(x => x.Type == SheetType.Preferences));
+        w.ShowProblemsForPreview();
+    });
+
+    CaptureSized("post-10-function-numbers", W, H, w =>
+    {
+        w.LoadProfile(ProfileFile.Load(PostFuncs));
+        w.SelectZoneForPreview("lip");
+    });
+
+    Console.WriteLine("post set written");
+    return;
+}
+
+// --models draws the device view once per QuadStick, which is the only way to
+// see that each model got its own photo and that its callouts sit where the
+// device actually has parts. A wrong hotspot reads as fine in a test and is
+// obvious here.
+if (args.Contains("--visuals"))
+{
+    foreach (var style in new[] { ControllerPromptStyle.Playstation, ControllerPromptStyle.Xbox })
+    {
+        var sheet = new WrapPanel { Width = 900 };
+        foreach (var token in new[]
+        {
+            "dpad_N","dpad_NE","dpad_E","dpad_SE","dpad_S","dpad_SW","dpad_W","dpad_NW",
+            "x","circle","square","triangle",
+            "left_stick","right_stick","left_3","right_3",
+            "left_1","right_1","left_2","right_2",
+            "left_bumper","right_bumper","left_trigger","right_trigger",
+            "left_joy_up","left_joy_left","right_joy_left","right_joy_down",
+            "kb_a","kb_space","decrement_mode",
+        })
+        {
+            var cell = new StackPanel { Width = 110, Margin = new Thickness(6) };
+            cell.Children.Add(OutputVisuals.Render(OutputVisuals.For(token, null, style),
+                includeLabel: false));
+            cell.Children.Add(new TextBlock { Text = token, FontSize = 11 });
+            sheet.Children.Add(cell);
+        }
+        var win = new Window { Width = 940, Height = 620, Content = sheet };
+        CaptureWindow($"visuals-{style}", win);
+    }
+    Console.WriteLine("visuals written");
+    return;
+}
+
+// --live draws the editor with the QuadStick sending something, which is the
+// only way to see the lit row against the row beside it. A headless test can
+// count the dots but cannot say whether the dot lands on the row number or
+// whether the tint survives the theme.
+if (args.Contains("--live"))
+{
+    const string Profile =
+        "Profile Name,,Solo\n" + "game.csv\n" + "Outputs,Function,usb\n" +
+        "square,normal,lip\n" + "circle,normal,right_sip\n" +
+        "square,normal,hard_puff\n" + "triangle,tap 200,mp_center_puff\n" +
+        "left_joy_up,normal,js_up\n" + "kb_a,normal,soft_sip\n";
+    var sending = new LiveState(0, -0.6, Array.Empty<int>(), "QuadStick",
+        new HashSet<string> { "square", "left_joy_up" }, true);
+
+    foreach (var theme in new[] { ThemeVariant.Light, ThemeVariant.Dark })
+    {
+        Application.Current!.RequestedThemeVariant = theme;
+        Capture($"live-list-{theme}", w =>
+        {
+            w.Width = 1400; w.Height = 800;
+            w.LoadProfile(ProfileFile.Load(Profile));
+            w.SetDeviceViewForPreview(false);
+            w.UpdateLayout();
+            w.ShowLiveInputForPreview(sending);
+            w.UpdateLayout();
+        });
+        Capture($"live-device-{theme}", w =>
+        {
+            w.Width = 1400; w.Height = 800;
+            w.LoadProfile(ProfileFile.Load(Profile));
+            w.SetDeviceViewForPreview(true);
+            w.SelectZoneForPreview("lip");
+            w.UpdateLayout();
+            w.ShowLiveInputForPreview(sending);
+            w.UpdateLayout();
+        });
+    }
+    Console.WriteLine("live written");
+    return;
+}
+
+if (args.Contains("--models"))
+{
+    for (int i = 0; i < 3; i++)
+    {
+        int model = i;
+        Capture($"model-{model}", w =>
+        {
+            w.Width = 1500;
+            w.Height = 1000;
+            w.LoadProfile(ProfileFile.NewFromTemplate("mygame.csv"));
+            w.SetModelForPreview(model);
+            w.SetDeviceViewForPreview(true);
+            w.UpdateLayout();
+        });
+    }
+}
 
 // The set for Drew: one shot per thing he asked for, named after his own
 // numbering, so a reply to his email can point at a picture instead of
@@ -345,7 +656,8 @@ if (args.Contains("--pseudo"))
     Capture($"{suffix}-1i-device", w =>
     {
         w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Joystick");
-        w.ShowLiveInputForPreview(new LiveState(0.42, -0.30, PressedForShot(), "QuadStick"));
+        w.ShowLiveInputForPreview(new LiveState(0.42, -0.30, PressedForShot(), "QuadStick",
+            new HashSet<string>(), true));
     });
 
     // The group somebody opens to tune a mouthpiece, and the same page with

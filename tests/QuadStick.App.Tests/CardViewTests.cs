@@ -23,11 +23,16 @@ public class CardViewTests
         "x,normal,lip,,,,,,,,fire button\n" +
         "circle,turbo,lip\n");
 
-    static MainWindow OpenOnLip(ProfileFile file, bool cards = true)
+    static MainWindow OpenOnLip(ProfileFile file, bool cards = true, string zone = "lip")
     {
         var s = Settings.Load();
         s.TutorialSeen = true;
         s.DeviceCards = cards;
+        // Rows View has its own card setting, and the settings file is shared
+        // across tests: without this a test that turned rows into cards leaves
+        // the next one looking at sentences.
+        s.RowCards = false;
+        s.CardSentenceStyle = "PressWhen";
         // A remembered window size resizes the window after layout, so a
         // point computed before the resize would land on the wrong control.
         s.RememberWindow = false;
@@ -35,7 +40,7 @@ public class CardViewTests
         var w = new MainWindow();
         w.Show();
         w.LoadProfile(file);
-        w.SelectZoneForPreview("lip");
+        w.SelectZoneForPreview(zone);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         return w;
@@ -56,7 +61,7 @@ public class CardViewTests
             AutomationProperties.GetName(Card(w, 1)!));
         Assert.NotNull(Card(w, 2));
 
-        Card(w, 2)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Card(w, 2)!);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         Assert.NotNull(Card(w, 1));  // still a card
@@ -65,18 +70,103 @@ public class CardViewTests
             b => (AutomationProperties.GetName(b) ?? "").StartsWith("Close the editor for mapping 2"));
 
         // Accordion: opening the first closes the second.
-        Card(w, 1)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Card(w, 1)!);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
         Assert.Null(Card(w, 1));
         Assert.NotNull(Card(w, 2));
 
         // Done goes back to the sentence.
-        w.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Close the editor for mapping 1"))
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Close the editor for mapping 1")));
         w.UpdateLayout();
         Assert.NotNull(Card(w, 1));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void Simple_cards_include_their_controller_button_visual()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file);
+
+        var circle = Card(w, 2)!.GetVisualDescendants().OfType<Viewbox>()
+            .SingleOrDefault(icon => AutomationProperties.GetName(icon) == "Circle");
+        Assert.NotNull(circle);
+        Assert.Equal(30, circle.Width);
+        Assert.Equal(30, circle.Height);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void Input_first_sentence_style_reads_input_to_output_without_extra_reorder_controls()
+    {
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n" +
+            "circle,turbo,lip\n" +
+            "square,normal,lip\n");
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.DeviceCards = true;
+        s.CardSentenceStyle = "InputToOutput";
+        s.RememberWindow = false;
+        Settings.Save(s);
+
+        var w = new MainWindow();
+        w.Show();
+        w.LoadProfile(file);
+        w.SelectZoneForPreview("lip");
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        Assert.StartsWith("Mapping 1: lip to X, as normal.", AutomationProperties.GetName(Card(w, 1)!));
+        Assert.DoesNotContain(w.GetVisualDescendants().OfType<Button>(),
+            b => (AutomationProperties.GetName(b) ?? "").StartsWith("Move mapping"));
+        Assert.Equal("InputToOutput", Settings.Load().CardSentenceStyle);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public void Input_first_narrow_card_keeps_to_on_the_input_output_line()
+    {
+        var file = TwoLipMappings();
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.DeviceCards = true;
+        s.CardSentenceStyle = "InputToOutput";
+        s.RememberWindow = false;
+        Settings.Save(s);
+
+        var w = new MainWindow();
+        w.Show();
+        w.LoadProfile(file);
+        w.SelectZoneForPreview("lip");
+        w.Width = 760;
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        Control Element(string text) => (Control?)w.GetVisualDescendants().OfType<Border>()
+            .FirstOrDefault(border => AutomationProperties.GetName(border) == text)
+            ?? w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text == text);
+        double Y(string text)
+        {
+            var element = Element(text);
+            return element.TranslatePoint(new Point(0, 0), w)!.Value.Y + element.Bounds.Height / 2;
+        }
+        Assert.Equal(Y("lip"), Y("X"), 1);
+        Assert.Equal(Y("X"), Y("to"), 1);
+        Assert.True(Y("as") > Y("X"));
+        Assert.DoesNotContain(w.GetVisualDescendants().OfType<Button>(),
+            b => (AutomationProperties.GetName(b) ?? "").StartsWith("Move mapping"));
 
         file.Dirty = false;
         w.Close();
@@ -92,13 +182,13 @@ public class CardViewTests
         Assert.NotNull(Card(w, 1));
 
         var toggle = w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "CardViewButton");
-        toggle.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(toggle);
         w.UpdateLayout();
         Assert.Null(Card(w, 1)); // both mappings show the detailed editor now
         Assert.Null(Card(w, 2));
         Assert.False(Settings.Load().DeviceCards); // remembered for next launch
 
-        toggle.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(toggle);
         w.UpdateLayout();
         Assert.NotNull(Card(w, 1));
         Assert.True(Settings.Load().DeviceCards);
@@ -136,11 +226,11 @@ public class CardViewTests
         Click(1);
         Click(2, RawInputModifiers.Shift);
         Assert.Equal("2 selected",
-            w.GetVisualDescendants().OfType<TextBlock>().First(x => x.Name == "DeviceSelectionCount").Text);
+            w.GetVisualDescendants().OfType<TextBlock>().First(x => x.Name == "SelectionCount").Text);
 
         // And deleting takes only the lip rows, never the joystick rows.
-        w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "DeviceSelectionDeleteButton")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => b.Name == "SelectionDeleteButton"));
         Assert.Equal(new[] { "square", "triangle" },
             file.Document.Sheets[0].Bindings.Select(b => b.Output).ToArray());
 
@@ -156,7 +246,7 @@ public class CardViewTests
         var file = TwoLipMappings();
         var w = OpenOnLip(file);
 
-        Card(w, 1)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Card(w, 1)!);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
@@ -171,8 +261,8 @@ public class CardViewTests
         w.Close();
     }
 
-    // The three-line handle selects like a list-view row number, and the bar
-    // above the cards deletes the whole selection in one undo step.
+    // The three-line handle selects like a list-view row number, and the top
+    // command strip deletes the whole selection in one undo step.
     [AvaloniaFact]
     public void Card_handles_select_and_the_device_bar_deletes()
     {
@@ -188,17 +278,17 @@ public class CardViewTests
             w.MouseDown(pt, MouseButton.Left, mods);
             w.MouseUp(pt, MouseButton.Left, mods);
         }
-        var bar = w.GetVisualDescendants().OfType<Border>().First(x => x.Name == "DeviceSelectionBar");
+        var bar = w.GetVisualDescendants().OfType<StackPanel>().First(x => x.Name == "SelectionCommandBar");
         Assert.False(bar.IsVisible);
 
         Click(1);
         Click(2, RawInputModifiers.Control);
         Assert.True(bar.IsVisible);
         Assert.Equal("2 selected",
-            w.GetVisualDescendants().OfType<TextBlock>().First(x => x.Name == "DeviceSelectionCount").Text);
+            w.GetVisualDescendants().OfType<TextBlock>().First(x => x.Name == "SelectionCount").Text);
 
-        w.GetVisualDescendants().OfType<Button>().First(b => b.Name == "DeviceSelectionDeleteButton")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => b.Name == "SelectionDeleteButton"));
         w.UpdateLayout();
         Assert.Empty(file.Document.Sheets[0].Bindings);
         Assert.False(bar.IsVisible);
@@ -235,7 +325,7 @@ public class CardViewTests
             .FirstOrDefault(b => (AutomationProperties.GetName(b) ?? "").StartsWith(prefix));
         void Tap(Control panel, string prefix)
         {
-            Find(panel, prefix)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Ui.Click(Find(panel, prefix)!);
             Dispatcher.UIThread.RunJobs();
             w.UpdateLayout();
         }
@@ -295,9 +385,8 @@ public class CardViewTests
         press.Flyout!.ShowAt(press);
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
         var panel = (Control)((Flyout)press.Flyout!).Content!;
-        panel.GetVisualDescendants().OfType<Button>()
-            .First(b => (AutomationProperties.GetName(b) ?? "") == "Type a custom value")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(panel.GetVisualDescendants().OfType<Button>()
+            .First(b => (AutomationProperties.GetName(b) ?? "") == "Type a custom value"));
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
 
         // The box is alive, in the field's place, and focused for typing.
@@ -328,7 +417,7 @@ public class CardViewTests
         Assert.True(handle.Bounds.Width >= 40, $"handle width {handle.Bounds.Width}");
         Assert.True(handle.Bounds.Height >= 40, $"handle height {handle.Bounds.Height}");
 
-        Card(w, 1)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(Card(w, 1)!);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
@@ -349,21 +438,34 @@ public class CardViewTests
     {
         var file = TwoLipMappings();
         var w = OpenOnLip(file);
+        // The compact mapping rail is intentional at the normal window size.
+        // Use a genuinely wide workspace here because this test is specifically
+        // about the wide sentence layout's shared columns.
+        w.Width = 2200;
+        Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
         // The pills are centered in their columns, so it is their middles that
         // have to agree, not their left edges.
-        TextBlock Text(int n, string text) => w.GetVisualDescendants().OfType<TextBlock>()
+        Border Pill(int n, string text) => w.GetVisualDescendants().OfType<Border>()
+            .First(border => AutomationProperties.GetName(border) == text
+                && border.GetVisualAncestors().Contains(Card(w, n)!));
+        TextBlock Word(int n, string text) => w.GetVisualDescendants().OfType<TextBlock>()
             .First(t => t.Text == text && t.GetVisualAncestors().Contains(Card(w, n)!));
-        double Left(int n, string text) => Text(n, text).TranslatePoint(new Point(0, 0), w)!.Value.X;
-        double X(int n, string text) => Left(n, text) + Text(n, text).Bounds.Width / 2;
+        double Left(int n, string text) => Word(n, text).TranslatePoint(new Point(0, 0), w)!.Value.X;
+        double Center(int n, string text)
+        {
+            var pill = Pill(n, text);
+            var point = pill.TranslatePoint(new Point(0, 0), w)!.Value;
+            return point.X + pill.Bounds.Width / 2;
+        }
 
         Assert.Equal("Press", w.GetVisualDescendants().OfType<TextBlock>()
             .First(t => t.GetVisualAncestors().Contains(Card(w, 1)!)).Text);
-        Assert.Equal(X(1, "X"), X(2, "Circle"), 1);           // outputs aligned
-        Assert.Equal(X(1, "lip"), X(2, "lip"), 1);            // inputs aligned
+        Assert.True(Math.Abs(Center(1, "X") - Center(2, "Circle")) <= 2, "outputs aligned");
+        Assert.True(Math.Abs(Center(1, "lip") - Center(2, "lip")) <= 2, "inputs aligned");
         // The function reads as "as <what>", so that pair keeps a left edge.
-        Assert.Equal(Left(1, "as"), Left(2, "as"), 1);
+        Assert.True(Math.Abs(Left(1, "as") - Left(2, "as")) <= 2, "functions aligned");
 
         file.Dirty = false;
         w.Close();
@@ -380,16 +482,19 @@ public class CardViewTests
             "Outputs,Function,usb\n" +
             "x,normal,lip,mp_center_puff\n");
         var w = OpenOnLip(file);
-        // Room for the one-line sentence; narrow stacks instead. 1180 plus the
-        // width the side panel takes off the editor.
-        w.Width = 1420;
+        // Room for the one-line sentence; narrow stacks instead. The sidebar
+        // and compact mapping rail mean this needs a genuinely wide window.
+        w.Width = 2200;
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 
         double MiddleY(string text)
         {
-            var t = w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text == text);
-            return t.TranslatePoint(new Point(0, 0), w)!.Value.Y + t.Bounds.Height / 2;
+            var pill = w.GetVisualDescendants().OfType<Border>()
+                .FirstOrDefault(border => AutomationProperties.GetName(border) == text);
+            var control = (Control?)pill ?? w.GetVisualDescendants().OfType<TextBlock>()
+                .First(t => t.Text == text);
+            return control.TranslatePoint(new Point(0, 0), w)!.Value.Y + control.Bounds.Height / 2;
         }
         // The two input pills straddle the sentence: one above the middle, one
         // below, with the output and the function on the middle itself.
@@ -418,17 +523,28 @@ public class CardViewTests
 
         Point At(string text)
         {
-            var t = w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text == text);
-            var p = t.TranslatePoint(new Point(0, 0), w)!.Value;
-            return new Point(p.X + t.Bounds.Width / 2, p.Y + t.Bounds.Height / 2);
+            var pill = w.GetVisualDescendants().OfType<Border>()
+                .FirstOrDefault(border => AutomationProperties.GetName(border) == text);
+            var control = (Control?)pill ?? w.GetVisualDescendants().OfType<TextBlock>()
+                .First(t => t.Text == text);
+            var p = control.TranslatePoint(new Point(0, 0), w)!.Value;
+            return new Point(p.X + control.Bounds.Width / 2, p.Y + control.Bounds.Height / 2);
         }
 
         Assert.True(At("X").Y < At("lip").Y, "the input goes under the output");
         Assert.True(At("lip").Y < At("normal").Y, "and the function under that");
-        // One centered column of pills. A pill and its text can round a pixel
-        // apart, so this is "same column", not "same coordinate".
-        Assert.True(Math.Abs(At("X").X - At("lip").X) <= 2, "input under output");
-        Assert.True(Math.Abs(At("X").X - At("normal").X) <= 2, "function under both");
+        // One centered column of pills. Outputs now include their controller
+        // visual, so compare the pill bounds rather than their text, which is
+        // intentionally offset to make room for the icon.
+        double PillCenterX(string text)
+        {
+            var pill = w.GetVisualDescendants().OfType<Border>()
+                .First(border => AutomationProperties.GetName(border) == text);
+            var p = pill.TranslatePoint(new Point(0, 0), w)!.Value;
+            return p.X + pill.Bounds.Width / 2;
+        }
+        Assert.True(Math.Abs(PillCenterX("X") - PillCenterX("lip")) <= 2, "input under output");
+        Assert.True(Math.Abs(PillCenterX("X") - PillCenterX("normal")) <= 2, "function under both");
         double LeftOf(string text)
         {
             var t = w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Text == text);
@@ -464,7 +580,7 @@ public class CardViewTests
         Assert.True(add.Bounds.X < trash.Bounds.X, "the plus goes left of the trash");
 
         // It rides down to whatever row is last, and the trashes stay aligned.
-        add.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(add);
         Dispatcher.UIThread.RunJobs(); w.UpdateLayout();
         var rows = w.GetVisualDescendants().OfType<Button>()
             .Where(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Remove this "))
@@ -502,5 +618,196 @@ public class CardViewTests
 
         file.Dirty = false;
         w.Close();
+    }
+
+    // The first input uses the compact device-local dropdown. Choosing its
+    // escape hatch must leave the replacement box alive long enough to type.
+    [AvaloniaFact]
+    public void First_input_type_your_own_stays_open_for_typing()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file, cards: false);
+
+        var combo = w.GetVisualDescendants().OfType<ComboBox>()
+            .First(c => (AutomationProperties.GetName(c) ?? "").StartsWith("Input 1 for this"));
+        combo.SelectedItem = Strings.Main_TypeYourOwn;
+        Dispatcher.UIThread.RunJobs();
+        w.UpdateLayout();
+
+        var box = w.GetVisualDescendants().OfType<AutoCompleteBox>()
+            .FirstOrDefault(b => (AutomationProperties.GetName(b) ?? "").EndsWith("Type a custom value."));
+        Assert.NotNull(box);
+        Assert.True(box!.IsKeyboardFocusWithin, "the first input's custom box should hold focus");
+
+        box.Text = "future_input";
+        w.KeyPressQwerty(PhysicalKey.Enter, RawInputModifiers.None);
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("future_input", file.GetCell(4, 2));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    static Button Named(MainWindow w, string name) => w.GetVisualDescendants()
+        .OfType<Button>().First(b => b.Name == name);
+
+    static void Click(Button b) => Ui.Click(b);
+
+    // The two toggles describe a mapping, not a view, so Rows View gets them
+    // too. They still have nothing to say about a preferences sheet.
+    [AvaloniaFact]
+    public void Rows_view_keeps_the_words_and_card_toggles()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        Assert.True(Named(w, "LabelStyleButton").IsVisible);
+        Assert.True(Named(w, "CardViewButton").IsVisible);
+        // Rows View opens as the sheet it is, so its offer is the other one.
+        Assert.Equal(Strings.Main_SimpleCards, Named(w, "CardViewButton").Content);
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // List names is the file's own spelling: the raw token, no button art.
+    [AvaloniaFact]
+    public void List_names_show_the_raw_token_and_no_art_in_rows()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file, cards: false);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+
+        bool Shows(string t) => w.GetVisualDescendants().OfType<TextBlock>().Any(x => x.Text == t);
+        // A face button draws itself and drops the word beside it.
+        Assert.False(Shows("circle"));
+
+        var words = Named(w, "LabelStyleButton");
+        for (int i = 0; i < 3 && (string?)words.Content != Strings.Main_WordsListNames; i++)
+        { Click(words); w.UpdateLayout(); }
+        Assert.Equal(Strings.Main_WordsListNames, words.Content);
+        Assert.True(Shows("circle"), "list names spells the token out");
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // Device View is the other half of the same rule: list names is the file's
+    // own spelling there too, with no button art beside it.
+    [AvaloniaFact]
+    public void List_names_drop_the_art_in_device_view_too()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file);
+
+        var art = Card(w, 2)!.GetVisualDescendants().OfType<Viewbox>()
+            .Any(icon => AutomationProperties.GetName(icon) == "Circle");
+        Assert.True(art, "plain English draws the button");
+
+        var words = Named(w, "LabelStyleButton");
+        for (int i = 0; i < 3 && (string?)words.Content != Strings.Main_WordsListNames; i++)
+        { Click(words); w.UpdateLayout(); }
+        Assert.Equal(Strings.Main_WordsListNames, words.Content);
+
+        var card = Card(w, 2)!;
+        Assert.Empty(card.GetVisualDescendants().OfType<Viewbox>()
+            .Where(icon => AutomationProperties.GetName(icon) == "Circle"));
+        Assert.Contains(card.GetVisualDescendants().OfType<TextBlock>(),
+            t => t.Text == "circle");
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // An output the device has no button for gets words and nothing else. It
+    // used to carry a neutral box that read as a control the QuadStick has.
+    [AvaloniaFact]
+    public void An_output_with_no_button_behind_it_is_words_alone()
+    {
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "decrement_mode,normal,lip\n");
+        var w = OpenOnLip(file);
+
+        var card = Card(w, 1)!;
+        Assert.Contains(card.GetVisualDescendants().OfType<TextBlock>(),
+            t => t.Text == "Decrement mode");
+        Assert.Empty(card.GetVisualDescendants().OfType<Viewbox>()
+            .Where(icon => AutomationProperties.GetName(icon) == "Decrement mode"));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // Simple cards in Rows View: one sentence per row, and the row being
+    // edited opens into the full editor with a way back.
+    [AvaloniaFact]
+    public void Rows_view_cards_open_one_row_and_close_again()
+    {
+        var file = TwoLipMappings();
+        var w = OpenOnLip(file, cards: false);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+        Assert.Null(Card(w, 1)); // detailed editor, the way Rows View starts
+
+        Click(Named(w, "CardViewButton"));
+        w.UpdateLayout();
+        Assert.NotNull(Card(w, 1));
+        Assert.NotNull(Card(w, 2));
+        Assert.True(Settings.Load().RowCards);        // remembered for next launch
+        Assert.False(Settings.Load().DeviceCards);    // Device View keeps its own
+
+        Click(Card(w, 2)!);
+        w.UpdateLayout();
+        Assert.NotNull(Card(w, 1));
+        Assert.Null(Card(w, 2)); // open in the row editor
+
+        Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => AutomationProperties.GetName(b) == Strings.Main_Done));
+        w.UpdateLayout();
+        Assert.NotNull(Card(w, 2));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // Every hole-combo token strips to the same word, so the card used to say
+    // "when you sip" whether the row wanted Left + Center or all three. The
+    // pill and the spoken sentence both read off the same list.
+    [AvaloniaFact]
+    public void A_combo_card_says_which_holes_it_needs()
+    {
+        var w = OpenOnLip(ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,mp_left_center_sip\n"), zone: "combo");
+
+        Assert.StartsWith("Mapping 1: press X when you Left + Center sip",
+            AutomationProperties.GetName(Card(w, 1)!));
+        Assert.Contains(w.GetVisualDescendants().OfType<TextBlock>(),
+            t => t.Text == "Left + Center sip");
+    }
+
+    // Inputs after the first can come from any part, and the card names them
+    // all with its own zone. The lip switch is not half of a hole combo.
+    [AvaloniaFact]
+    public void A_second_input_from_elsewhere_keeps_its_own_name()
+    {
+        var w = OpenOnLip(ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,mp_left_center_sip,lip\n"), zone: "combo");
+
+        var said = AutomationProperties.GetName(Card(w, 1)!);
+        Assert.Contains("Left + Center sip", said);
+        Assert.Contains("lip", said);
+        Assert.DoesNotContain("Combo lip", said);
     }
 }

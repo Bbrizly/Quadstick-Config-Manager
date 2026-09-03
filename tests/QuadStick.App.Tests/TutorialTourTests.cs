@@ -34,8 +34,27 @@ public class TutorialTourTests
 
     static void Click(Button b)
     {
-        b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        // RaiseEvent fires on a disabled button, a real pointer does not.
+        Assert.True(b.IsEffectivelyEnabled, $"{AutomationProperties.GetName(b)} is disabled");
+        Ui.Click(b);
         Dispatcher.UIThread.RunJobs();
+    }
+
+    // The tour disables the zoom host so Tab cannot walk into the live app
+    // behind the dim. The overlay used to live inside that host, so the tour's
+    // own Back / Skip / Next went dead and the tour froze on step one.
+    [AvaloniaFact]
+    public void TheTourButtonsStayEnabledWhileItRuns()
+    {
+        var w = Open();
+        w.StartTutorial();
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(TourButton(w, "Next step").IsEffectivelyEnabled);
+        Assert.True(TourButton(w, "Skip the tutorial").IsEffectivelyEnabled);
+
+        Click(TourButton(w, "Skip the tutorial"));
+        w.Close();
     }
 
     // Step 4 opens a profile and switches to the editor. Back from it put the

@@ -145,7 +145,7 @@ public class ShellChromeTests
 
         foreach (var name in NavButtons)
         {
-            w.FindControl<Button>(name)!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            Ui.Click(w.FindControl<Button>(name)!);
             Dispatcher.UIThread.RunJobs();
             var opened = w.OwnedWindows.ToList();
             Assert.True(opened.Count == 1 && opened[0].Title == "Save your changes?",
@@ -168,7 +168,7 @@ public class ShellChromeTests
     {
         var w = Open();
         LoadClean(w);
-        w.FindControl<Button>("HelpButton")!.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.FindControl<Button>("HelpButton")!);
         Dispatcher.UIThread.RunJobs();
         Assert.Contains(w.OwnedWindows, o => o.Title == "Quick guide");
         foreach (var o in w.OwnedWindows.ToList()) o.Close();
@@ -210,8 +210,8 @@ public class ShellChromeTests
         w.UpdateLayout();
 
         var b = w.FindControl<Button>(button)!;
-        b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-        b.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(b);
+        Ui.Click(b);
         Dispatcher.UIThread.RunJobs();
 
         Assert.Equal(1, w.OwnedWindows.Count(o => o.Title == "Save your changes?"));

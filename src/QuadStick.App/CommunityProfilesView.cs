@@ -303,7 +303,7 @@ public class CommunityProfilesView : UserControl
         return text;
     }
 
-    static string Profiles(int count) => count == 1 ? "1 profile" : $"{count} profiles";
+    static string Profiles(int count) => Plural.Of(count, "Count_Profile");
 
     void ApplyFilter(bool keepStatus = false)
     {

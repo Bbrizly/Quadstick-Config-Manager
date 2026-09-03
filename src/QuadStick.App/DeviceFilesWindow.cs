@@ -313,14 +313,14 @@ public class DeviceFilesWindow : Window
 
         var total = _groups.Sum(g => g.Files.Count);
         _summary.Text = _groups.Count == 1
-            ? $"{Files(total)} on {Where(_groups[0])}."
+            ? string.Format(CultureInfo.CurrentCulture, Strings.Device_FilesTotalOnGroup, Files(total), Where(_groups[0]))
             : string.Format(CultureInfo.CurrentCulture, Strings.Device_FilesTotalAcrossGroupsCount, Files(total), _groups.Count);
 
         foreach (var group in _groups)
             _groupsPanel.Children.Add(BuildGroup(group));
     }
 
-    static string Files(int count) => count == 1 ? "1 file" : $"{count} files";
+    static string Files(int count) => Plural.Of(count, "Count_File");
 
     Control BuildGroup(DeviceGroup group)
     {
@@ -672,7 +672,7 @@ public class DeviceFilesWindow : Window
         }
 
         if (!await Confirm(
-                $"Delete {file.Name} from {group.Label}?",
+                string.Format(CultureInfo.CurrentCulture, Strings.Device_DeleteFileFromGroup, file.Name, group.Label),
                 string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameWillBeDeleted, file.Name, group.Root, BackupDir)))
         {
             _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_FileNameOnWhereGroup4, file.Name, Where(group));
@@ -710,7 +710,10 @@ public class DeviceFilesWindow : Window
     async Task<bool> ConfirmDialogAsync(string title, string message)
     {
         var yes = new Button { Content = Strings.Device_YesContinue, MinWidth = 140 };
-        AutomationProperties.SetName(yes, title + " Yes, continue.");
+        // The spoken name is the dialog's own title and the button's own word,
+        // both already translated. It used to end in a hardcoded English
+        // "Yes, continue." whatever language the app was in.
+        AutomationProperties.SetName(yes, title + " " + Strings.Device_YesContinue);
         var no = new Button { Content = Strings.Device_Cancel, MinWidth = 140, IsDefault = true, IsCancel = true };
         AutomationProperties.SetName(no, Strings.Device_CancelChangeNothing);
         var dialog = new Window

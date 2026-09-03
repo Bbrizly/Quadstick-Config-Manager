@@ -12,7 +12,7 @@ struct ModesView: View {
             Section {
                 EmptyView()
             } footer: {
-                Text("A profile is the complete setup for a game or activity. A mode is a different control layout inside that setup. The QuadStick tells modes apart by their number, so two modes may share a name.")
+                Text("A profile is the setup for a game or activity. Each mode is a control layout inside it. The QuadStick identifies modes by number, so two modes may share a name.")
             }
 
             Section {
@@ -55,7 +55,7 @@ struct ModesView: View {
         .alert("A profile needs at least one mode.", isPresented: $lastModeAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("The QuadStick has nothing to load without one. Add another mode first, then delete this one.")
+            Text("The QuadStick needs one mode to load. Add another mode before deleting this one.")
         }
     }
 

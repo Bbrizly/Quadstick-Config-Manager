@@ -7,7 +7,7 @@
 // To connect a build:
 //   1. Google Cloud console, the SAME project as the desktop app.
 //      Credentials, Create credentials, OAuth client ID, type iOS,
-//      bundle id ca.adptiv.SipStudio.
+//      bundle id dev.bassamkamal.sipstudio.
 //   2. Copy ios/Google.local.xcconfig.example to ios/Google.local.xcconfig
 //      and paste the id into it. That file is gitignored.
 //

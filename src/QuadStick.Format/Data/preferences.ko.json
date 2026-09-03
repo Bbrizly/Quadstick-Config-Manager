@@ -7,7 +7,8 @@
  {
   "name": "joystick_deflection_maximum",
   "label": "조이스틱 최대 편향",
-  "description": "스틱이 최대 신호를 내기까지 움직여야 하는 거리입니다. QMP는 이를 조이스틱의 동작 범위라고 부르며, 이는 장치가 가진 감도 조절에 가장 가까운 값입니다. 값이 클수록 같은 출력을 내는 데 더 많은 이동이 필요해 조이스틱이 덜 민감하게 느껴집니다. QMP는 네 방향 슬라이더 중 가장 큰 값을 사용합니다."
+  "description": "스틱이 최대 신호를 내기까지 움직여야 하는 거리입니다. QMP는 이를 조이스틱의 동작 범위라고 부르며, 이는 장치가 가진 감도 조절에 가장 가까운 값입니다. 값이 클수록 같은 출력을 내는 데 더 많은 이동이 필요해 조이스틱이 덜 민감하게 느껴집니다. QMP는 네 방향 슬라이더 중 가장 큰 값을 사용합니다.",
+  "alsoCalled": "가동 범위"
  },
  {
   "name": "deflection_multiplier_up",
@@ -52,7 +53,8 @@
  },
  {
   "name": "anti_dead_zone",
-  "label": "안티 데드존"
+  "label": "안티 데드존",
+  "description": "스틱이 가리키는 방향으로 모든 스틱 값에 일정한 밀기를 더해, 게임이 자체적으로 두는 데드존을 넘게 합니다. 0이면 끕니다."
  },
  {
   "name": "joystick_warning",
@@ -73,13 +75,15 @@
   "name": "sip_puff_threshold_soft",
   "label": "약한 sip/puff 임계값",
   "unit": "퍼센트",
-  "description": "약한 sip 또는 puff가 시작되는 압력 또는 진공 수준입니다."
+  "description": "약한 sip 또는 puff가 시작되는 압력 또는 진공 수준입니다.",
+  "alsoCalled": "빨기·불기 낮은 임계값"
  },
  {
   "name": "sip_puff_threshold",
   "label": "강한 sip/puff 임계값",
   "unit": "퍼센트",
-  "description": "출력을 작동시키는 압력입니다. QMP는 이를 sip and puff high threshold로 표시하며, sip_puff_threshold_soft가 낮은 쪽 값입니다."
+  "description": "출력을 작동시키는 압력입니다. QMP는 이를 sip and puff high threshold로 표시하며, sip_puff_threshold_soft가 낮은 쪽 값입니다.",
+  "alsoCalled": "빨기·불기 높은 임계값"
  },
  {
   "name": "sip_puff_maximum",
@@ -91,7 +95,8 @@
   "name": "sip_puff_delay_soft",
   "label": "약한 sip/puff 지연",
   "unit": "밀리초",
-  "description": "약한 sip 및 puff 신호는 이 짧은 지연 후에 감지됩니다. QMP는 이를 Low Threshold Delay로 표시합니다."
+  "description": "약한 sip 및 puff 신호는 이 짧은 지연 후에 감지됩니다. QMP는 이를 Low Threshold Delay로 표시합니다.",
+  "alsoCalled": "낮은 임계값 지연"
  },
  {
   "name": "sip_puff_delay_hard",
@@ -179,7 +184,8 @@
  },
  {
   "name": "enable_rumble",
-  "label": "진동"
+  "label": "진동",
+  "description": "Dual Shock 3 모드에서만, 게임의 진동을 QuadStick 자체 스피커에서 소리로 재생합니다."
  },
  {
   "name": "bluetooth_device_mode",
@@ -188,19 +194,23 @@
  },
  {
   "name": "bluetooth_authentication_mode",
-  "label": "Bluetooth 인증 모드"
+  "label": "Bluetooth 인증 모드",
+  "description": "QuadStick이 요구하는 페어링 수준입니다. 무선 모듈에 SA 설정으로 전달되므로 Bluetooth가 켜져 있을 때만 의미가 있습니다."
  },
  {
   "name": "bluetooth_connection_mode",
-  "label": "Bluetooth 연결 모드"
+  "label": "Bluetooth 연결 모드",
+  "description": "QuadStick이 연결을 기다릴지, 스스로 연결할지입니다. 무선 모듈에 SM 설정으로 전달됩니다."
  },
  {
   "name": "bluetooth_remote_address",
-  "label": "Bluetooth 원격 주소"
+  "label": "Bluetooth 원격 주소",
+  "description": "QuadStick이 연결하는 Bluetooth 주소입니다. QuadStick 지원팀이 알려주지 않았다면 비워 두세요. 최대 16자입니다."
  },
  {
   "name": "bluetooth_remote_adapter",
-  "label": "Bluetooth 원격 어댑터"
+  "label": "Bluetooth 원격 어댑터",
+  "description": "QuadStick을 다른 기기를 위한 Bluetooth 어댑터로 만듭니다. 이 설정이 켜져 있고 Bluetooth 장치 모드가 ssp인 동안에는 자체 마우스피스와 스틱을 읽지 않습니다."
  },
  {
   "name": "bluetooth_throttle",
@@ -240,12 +250,14 @@
  {
   "name": "enable_usb_a_device",
   "label": "USB-A 장치 모드",
-  "risk": "이 설정은 QuadStick이 자신을 어느 USB 포트에 나타낼지 결정합니다. 값이 바뀌면 장치는 USB 연결을 끊었다가 다시 연결하므로, 잘못된 값을 넣으면 콘솔이나 컴퓨터가 장치를 인식하지 못할 수 있습니다. 또한 이는 enable_usb_a_host보다 우선합니다. 이 값이 설정되어 있는 동안에는 호스트 설정과 관계없이 USB-A 호스트 스택이 종료됩니다. QuadStick 지원팀의 안내가 있을 때만 변경하세요."
+  "risk": "이 설정은 QuadStick이 자신을 어느 USB 포트에 나타낼지 결정합니다. 값이 바뀌면 장치는 USB 연결을 끊었다가 다시 연결하므로, 잘못된 값을 넣으면 콘솔이나 컴퓨터가 장치를 인식하지 못할 수 있습니다. 또한 이는 enable_usb_a_host보다 우선합니다. 이 값이 설정되어 있는 동안에는 호스트 설정과 관계없이 USB-A 호스트 스택이 종료됩니다. QuadStick 지원팀의 안내가 있을 때만 변경하세요.",
+  "description": "QuadStick이 어느 USB 단자에 나타날지입니다. 0은 자체 포트이고, 0보다 크면 USB-A 단자이며 그 경우 USB-A 호스트 모드도 꺼집니다."
  },
  {
   "name": "enable_usb_a_host",
   "label": "USB-A 호스트 모드",
-  "description": "펌웨어 2373부터 지원됩니다. 이 설정을 켜고 USB-A 장치 모드를 끄면, 장치는 USB-A 포트에서 USB 호스트로 작동하여 그곳에 꽂은 컨트롤러가 usb_1 입력 채널에 값을 전달합니다. 이 설정을 끄거나 USB-A 장치 모드를 켜면 호스트 기능이 종료됩니다. USB-A 장치 모드가 우선합니다. QMP는 이를 USB-A Host Mode로 표시합니다."
+  "description": "펌웨어 2373부터 지원됩니다. 이 설정을 켜고 USB-A 장치 모드를 끄면, 장치는 USB-A 포트에서 USB 호스트로 작동하여 그곳에 꽂은 컨트롤러가 usb_1 입력 채널에 값을 전달합니다. 이 설정을 끄거나 USB-A 장치 모드를 켜면 호스트 기능이 종료됩니다. USB-A 장치 모드가 우선합니다. QMP는 이를 USB-A Host Mode로 표시합니다.",
+  "alsoCalled": "USB-A 호스트 모드"
  },
  {
   "name": "enable_DS3_emulation",
@@ -261,7 +273,8 @@
    "Nintendo Switch Pro Controller, USB 드라이브 없음",
    "DualShock 4, USB 드라이브 없음",
    "DualShock 4 무선, USB 드라이브 없음"
-  ]
+  ],
+  "alsoCalled": "PS4 모드로 부팅"
  },
  {
   "name": "enable_usb_comm",
@@ -270,35 +283,43 @@
  },
  {
   "name": "usb_1_multiplier_up",
-  "label": "USB 1 위쪽 배율"
+  "label": "USB 1 위쪽 배율",
+  "description": "USB-A 포트에 연결한 컨트롤러의 왼쪽 스틱 위 방향을 키웁니다."
  },
  {
   "name": "usb_1_multiplier_down",
-  "label": "USB 1 아래쪽 배율"
+  "label": "USB 1 아래쪽 배율",
+  "description": "USB-A 포트에 연결한 컨트롤러의 왼쪽 스틱 아래 방향을 키웁니다."
  },
  {
   "name": "usb_1_multiplier_left",
-  "label": "USB 1 왼쪽 배율"
+  "label": "USB 1 왼쪽 배율",
+  "description": "USB-A 포트에 연결한 컨트롤러의 왼쪽 스틱 왼쪽 방향을 키웁니다."
  },
  {
   "name": "usb_1_multiplier_right",
-  "label": "USB 1 오른쪽 배율"
+  "label": "USB 1 오른쪽 배율",
+  "description": "USB-A 포트에 연결한 컨트롤러의 왼쪽 스틱 오른쪽 방향을 키웁니다."
  },
  {
   "name": "usb_2_multiplier_up",
-  "label": "USB 2 위쪽 배율"
+  "label": "USB 2 위쪽 배율",
+  "description": "USB-A 포트에 연결한 컨트롤러의 오른쪽 스틱 위 방향을 키웁니다."
  },
  {
   "name": "usb_2_multiplier_down",
-  "label": "USB 2 아래쪽 배율"
+  "label": "USB 2 아래쪽 배율",
+  "description": "USB-A 포트에 연결한 컨트롤러의 오른쪽 스틱 아래 방향을 키웁니다."
  },
  {
   "name": "usb_2_multiplier_left",
-  "label": "USB 2 왼쪽 배율"
+  "label": "USB 2 왼쪽 배율",
+  "description": "USB-A 포트에 연결한 컨트롤러의 오른쪽 스틱 왼쪽 방향을 키웁니다."
  },
  {
   "name": "usb_2_multiplier_right",
-  "label": "USB 2 오른쪽 배율"
+  "label": "USB 2 오른쪽 배율",
+  "description": "USB-A 포트에 연결한 컨트롤러의 오른쪽 스틱 오른쪽 방향을 키웁니다."
  },
  {
   "name": "usb_1_dead_zone",
@@ -315,12 +336,14 @@
  {
   "name": "titan_two",
   "label": "Titan Two 어댑터",
-  "description": "펌웨어 2373부터 지원됩니다. 장치가 콘솔에 직접 연결된 것이 아니라 Titan Two를 통해 PS4에 연결되어 있음을 알립니다. 그러면 DS4 인증 핸드셰이크를 건너뛰고 주기적인 강제 USB 재연결을 멈춥니다. QMP는 이를 Titan 2 PS4 flag로 표시합니다."
+  "description": "펌웨어 2373부터 지원됩니다. 장치가 콘솔에 직접 연결된 것이 아니라 Titan Two를 통해 PS4에 연결되어 있음을 알립니다. 그러면 DS4 인증 핸드셰이크를 건너뛰고 주기적인 강제 USB 재연결을 멈춥니다. QMP는 이를 Titan 2 PS4 flag로 표시합니다.",
+  "alsoCalled": "Titan 2의 PS4 플래그"
  },
  {
   "name": "watchdog_disable",
   "label": "워치독 비활성화",
-  "risk": "장치는 응답이 멈추면 재시작시키는 2분짜리 하드웨어 워치독을 실행합니다. 펌웨어 1476이나 2373 어느 것도 이 설정을 읽지 않으므로 둘 중 어느 쪽에서도 아무 효과가 없으며, 이후 펌웨어가 이를 어떻게 다룰지는 알 수 없습니다."
+  "risk": "장치는 응답이 멈추면 재시작시키는 2분짜리 하드웨어 워치독을 실행합니다. 펌웨어 1476이나 2373 어느 것도 이 설정을 읽지 않으므로 둘 중 어느 쪽에서도 아무 효과가 없으며, 이후 펌웨어가 이를 어떻게 다룰지는 알 수 없습니다.",
+  "description": "QuadStick이 멈췄을 때 스스로 재시작하지 않도록 하려던 설정입니다. 사용 중인 QuadStick은 이를 무시합니다."
  },
  {
   "name": "debug",

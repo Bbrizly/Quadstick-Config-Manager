@@ -81,7 +81,7 @@ public class AnimationTests
 
         var del = w.GetVisualDescendants().OfType<Button>()
             .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Delete row "));
-        del.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(del);
         Dispatcher.UIThread.RunJobs();
 
         int rowsAfter = rowsPanel.Children.Count - 1;

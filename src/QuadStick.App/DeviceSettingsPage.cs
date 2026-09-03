@@ -5,6 +5,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Templates;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
@@ -56,6 +58,9 @@ public partial class MainWindow
     // to answer that made a slider drag stutter.
     readonly Dictionary<string, string> _deviceAsRead = new(StringComparer.Ordinal);
     readonly HashSet<string> _deviceChanged = new(StringComparer.Ordinal);
+    // A pointer-held slider can paint its effect on the device diagram without
+    // changing prefs.csv or the save state until it is released.
+    readonly Dictionary<string, string> _devicePreview = new(StringComparer.Ordinal);
     TextBlock? _deviceStatus;
 
     string _deviceCategory = PreferenceCatalog.Categories[0];
@@ -69,7 +74,6 @@ public partial class MainWindow
     {
         _file = null; // no profile is open on a page; a stale dirty file re-asks "leave?" on the next action
         ShowPage(DevicePage, ShellDeviceButton);
-        WatchDevicePage();
         StartLiveInput();
         await LoadDeviceSettingsAsync();
     }
@@ -116,6 +120,8 @@ public partial class MainWindow
     {
         _live = state;
         UpdateDeviceBand();
+        RefreshDeviceHeaderStatus();
+        UpdateLiveRows();
     }
 
     /// <summary>Test seam: Undo without the confirmation dialog, which a
@@ -124,6 +130,7 @@ public partial class MainWindow
     {
         _devicePrefs = ProfileFile.Load(_devicePrefsAsRead);
         _deviceChanged.Clear();
+        _devicePreview.Clear();
         BuildDevicePage(_deviceStatus?.Text ?? "", _devicePrefs);
     }
 
@@ -134,27 +141,59 @@ public partial class MainWindow
 
     // ---- live reading ----
 
-    bool _deviceWatched;
-
-    // Reading the stick costs a thread parked on a USB read, so it runs while
-    // this page is the page and stops the moment it is not.
-    void WatchDevicePage()
+    /// <summary>Start reading the stick, for as long as the window is open.
+    /// Idempotent, so the device page can ask for it without knowing whether
+    /// the app already did.</summary>
+    /// <remarks>The app starts this in App.OnFrameworkInitializationCompleted,
+    /// which the headless tests and the render tool never reach. Neither has a
+    /// QuadStick to read, and neither wants a thread parked on a USB
+    /// enumeration for the length of the run.</remarks>
+    internal void StartLiveInput()
     {
-        if (_deviceWatched) return;
-        _deviceWatched = true;
-        DevicePage.PropertyChanged += (_, e) =>
+        if (_liveInput is not null) return;
+        _liveInput = new LiveInput(state =>
         {
-            if (e.Property == Visual.IsVisibleProperty && !DevicePage.IsVisible) StopLiveInput();
-        };
+            bool was = _live is not null;
+            _live = state;
+            // The band is the device page's picture. Redrawing it for a stick
+            // that moves while some other page is showing costs a layout pass
+            // nobody can see.
+            if (DevicePage.IsVisible) UpdateDeviceBand();
+            // The rows are the editor's picture, and they light on the same
+            // reports. Cheap to ask on every one: it compares the rows it would
+            // light against the rows already lit and repaints only the
+            // difference, so holding a button repaints nothing.
+            UpdateLiveRows();
+            // Only the found and lost edges move the chip. Every other report
+            // is the stick moving, and re-scanning the mounted drives for each
+            // of those would walk /Volumes several times a second.
+            if (was != (state is not null)) RefreshDeviceHeaderStatus();
+        });
+        Closed += (_, _) => StopLiveInput();
     }
 
-    void StartLiveInput()
+    /// <summary>Whether a QuadStick is plugged in, said in the sidebar of the
+    /// profile editor. Two separate pieces of evidence, because a QuadStick
+    /// answers as a gamepad in every emulation mode but only mounts its drive
+    /// in some: asking the drive alone calls a stick in Xbox mode missing.
+    /// </summary>
+    void RefreshDeviceHeaderStatus()
     {
-        _liveInput ??= new LiveInput(state =>
-        {
-            _live = state;
-            UpdateDeviceBand();
-        });
+        var connected = _live is not null || FindDeviceRoots().Count > 0;
+        var chip = StatusChip(connected ? StatusKind.Ready : StatusKind.Info,
+            connected ? Strings.Main_QuadStickConnected : Strings.Main_NoQuadStickDetected,
+            plainDot: !connected);
+        // What a lit row does and does not prove, said on the control that
+        // claims the stick is here. A screen that stays still while somebody
+        // sips has to explain itself rather than look broken, and there are two
+        // ways to get there: a mode whose report the app cannot read, and a
+        // mode it cannot open at all. Mode 3 is the second. It publishes XInput
+        // rather than HID, so the drive is the only evidence it is here, and
+        // promising that rows will light would be a promise this cannot keep.
+        ToolTip.SetTip(chip, !connected ? null
+            : _live is { OutputsUnderstood: true } ? Strings.Main_WhatALitRowMeans
+            : Strings.Main_ThisEmulationModeIsNot);
+        DeviceHeaderStatus.Content = chip;
     }
 
     void StopLiveInput()
@@ -246,6 +285,7 @@ public partial class MainWindow
     {
         _devicePrefsAsRead = csv;
         _deviceAsRead.Clear();
+        _devicePreview.Clear();
         if (csv.Length == 0) return;
         var file = ProfileFile.Load(csv);
         var sheet = file.Document.Sheets.FirstOrDefault(s => s.Type == SheetType.Preferences);
@@ -654,6 +694,32 @@ public partial class MainWindow
         };
         AutomationProperties.SetName(box, name);
 
+        // The thumb, its number, and the device preview must follow a pointer
+        // drag immediately, but updating the saved model and save bar for every
+        // pixel steals time from the drag itself. Hold that update until
+        // release; keyboard, accessibility, and typed-number changes commit
+        // immediately.
+        bool pointerHeld = false;
+        string? pending = null;
+        void CommitPending()
+        {
+            if (!pointerHeld) return;
+            pointerHeld = false;
+            _devicePreview.Remove(def.Name);
+            if (pending is { } final) CommitDeviceValue(sheet, def, ref row, final);
+            pending = null;
+        }
+
+        // The Slider's thumb handles these events itself, so listen for the
+        // bubbled handled event as well. That also covers release after the
+        // pointer has left the control while its thumb holds capture.
+        slider.AddHandler(InputElement.PointerPressedEvent, (_, _) => pointerHeld = true,
+            RoutingStrategies.Bubble, handledEventsToo: true);
+        slider.AddHandler(InputElement.PointerReleasedEvent, (_, _) => CommitPending(),
+            RoutingStrategies.Bubble, handledEventsToo: true);
+        slider.AddHandler(InputElement.PointerCaptureLostEvent, (_, _) => CommitPending(),
+            RoutingStrategies.Bubble, handledEventsToo: true);
+
         // Each control writes the cell and mirrors the other. The guards stop
         // the pair echoing: without them a drag re-enters through the spinner.
         bool echo = false;
@@ -662,7 +728,13 @@ public partial class MainWindow
             if (e.Property != RangeBase.ValueProperty || echo) return;
             int v = (int)Math.Round(slider.Value);
             echo = true; box.Value = v; echo = false;
-            CommitDeviceValue(sheet, def, ref row, v.ToString(CultureInfo.InvariantCulture));
+            string exact = v.ToString(CultureInfo.InvariantCulture);
+            if (pointerHeld)
+            {
+                pending = exact;
+                PreviewDeviceValue(def.Name, exact);
+            }
+            else CommitDeviceValue(sheet, def, ref row, exact);
         };
         box.ValueChanged += (_, e) =>
         {
@@ -818,6 +890,16 @@ public partial class MainWindow
         RefreshDeviceSaveBar();
     }
 
+    // The device diagram has only three setting-driven previews. Keeping this
+    // narrow means a long slider drag does not redraw it when there is nothing
+    // visual to show, while the dead-zone rings and LEDs stay live.
+    void PreviewDeviceValue(string name, string exact)
+    {
+        _devicePreview[name] = exact;
+        if (name is "brightness" or "joystick_deflection_minimum" or "joystick_deflection_maximum")
+            UpdateDeviceBand();
+    }
+
     // it was not in the file at all, so writing it is a change
     bool SameAsRead(string name, string exact) =>
         _deviceAsRead.TryGetValue(name, out var was)
@@ -850,6 +932,7 @@ public partial class MainWindow
                 Strings.DevicePage_TheSettingsYouChangedHere)) return;
             _devicePrefs = ProfileFile.Load(_devicePrefsAsRead);
             _deviceChanged.Clear();
+            _devicePreview.Clear();
             BuildDevicePage(_deviceStatus?.Text ?? "", _devicePrefs);
         };
 

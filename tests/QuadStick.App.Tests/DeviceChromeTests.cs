@@ -59,14 +59,13 @@ public class DeviceChromeTests
         w.Close();
     }
 
-    // Off for this release. The implementation stays (UnusedInputsTests still
-    // drives it); only the permanent toolbar slot is gone. Flip this when the
-    // button comes back, the same way AgentOffTests pins the agent.
+    // Unused inputs are now a direct picker, so it remains available in Device
+    // View as well as Rows View; choosing one does not navigate away.
     [AvaloniaFact]
-    public void The_unused_list_has_no_toolbar_slot()
+    public void The_unused_picker_has_a_toolbar_slot_in_every_mode_view()
     {
-        var w = Open(deviceView: false);
-        Assert.False(Named(w, "UnusedButton").IsVisible);
+        var w = Open(deviceView: true);
+        Assert.True(Named(w, "UnusedButton").IsVisible);
         w.Close();
     }
 
@@ -100,6 +99,34 @@ public class DeviceChromeTests
         var stage = Stage(w);
         Assert.True(stage.Bounds.Height >= 240,
             $"the diagram shrank to {stage.Bounds.Height:0}px tall, which is under what its labels need");
+        w.Close();
+    }
+
+    // The sidebar is a real working area, not a gutter: mode names, view keys
+    // and the parts list need room to breathe. The mapping detail is secondary
+    // and should not consume the same width as the device itself.
+    [AvaloniaFact]
+    public void The_editor_gives_the_sidebar_room_and_keeps_mapping_compact()
+    {
+        var w = Open(deviceView: true);
+        var workspace = Named(w, "EditorWorkspace");
+        var sidebar = Named(w, "EditorSidebar");
+        var deviceContainer = Named(w, "DeviceContainer");
+        var stage = (ScrollViewer)Named(w, "DeviceStageScroll");
+        var mapping = Named(w, "MappingPanel");
+
+        Assert.True(sidebar.Bounds.Width >= 300,
+            $"the sidebar is still cramped at {sidebar.Bounds.Width:0}px");
+        Assert.True(mapping.Bounds.Width < stage.Bounds.Width,
+            $"the mapping panel is wider than the device canvas: {mapping.Bounds.Width:0} vs {stage.Bounds.Width:0}");
+        Assert.True(mapping.Bounds.Width <= workspace.Bounds.Width * 0.35 + 1,
+            $"the mapping panel takes too much of the workspace: {mapping.Bounds.Width:0} of {workspace.Bounds.Width:0}");
+
+        var stageBox = Named(w, "DeviceCanvas").GetVisualDescendants().OfType<Viewbox>().First();
+        var stageTop = stageBox.TranslatePoint(new Point(0, 0), deviceContainer)!.Value.Y;
+        Assert.True(stageTop >= 24,
+            $"the device stage is too close to the top edge: {stageTop:0}px");
+
         w.Close();
     }
 
@@ -147,25 +174,24 @@ public class DeviceChromeTests
         w.Close();
     }
 
-    // Which QuadStick, whether one is plugged in, and which mode is on screen
-    // read as one thing in the side panel. As a band above the picture they
-    // were five loose controls that between them cost the diagram its top.
+    // Which QuadStick and whether one is plugged in read as one thing in the
+    // side panel. The selected mode/light summary is intentionally omitted.
     [AvaloniaFact]
     public void The_device_context_sits_in_the_side_panel()
     {
         var w = Open(deviceView: true);
         var sidebar = Named(w, "EditorSidebar");
 
-        foreach (var name in new[] { "ModelPicker", "DeviceHeaderStatus", "DeviceHeaderMode" })
+        foreach (var name in new[] { "ModelPicker", "DeviceHeaderStatus" })
         {
             var c = Named(w, name);
             Assert.True(c.GetVisualAncestors().Contains(sidebar), $"{name} is outside the side panel");
         }
 
-        // Read in order down the panel: type, then connection, then mode.
+        // Read in order down the panel: type, then connection.
         double At(string name) => Named(w, name).TranslatePoint(new Point(0, 0), w)!.Value.Y;
         Assert.True(At("ModelPicker") <= At("DeviceHeaderStatus"));
-        Assert.True(At("DeviceHeaderStatus") <= At("DeviceHeaderMode"));
+        Assert.Null(w.GetVisualDescendants().OfType<Control>().FirstOrDefault(c => c.Name == "DeviceHeaderMode"));
 
         w.Close();
     }

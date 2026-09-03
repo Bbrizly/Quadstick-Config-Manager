@@ -21,11 +21,27 @@ public sealed class AppSettings
     public bool RememberWindow = true;
     public bool TutorialSeen = false;
     public bool DeviceCards = true;            // device view mappings as sentence cards
+    // The same choice for Rows view, kept apart because the two views start
+    // from opposite ends: Device View opens as sentences, Rows opens as the
+    // sheet it is.
+    public bool RowCards = false;
+    // How simple mapping cards read: the original output-first sentence, or
+    // the input-first form ("Sip to X as normal.").
+    public string CardSentenceStyle = "PressWhen"; // PressWhen | InputToOutput
     // How deep the output and input pickers file their choices. Detailed is
     // the drill-down; someone who knows the token they want should not have to
     // walk two levels to reach it.
     public string PickerGrouping = "Detailed"; // Detailed | Wide | Flat
+    // Which controller names the output picker lists. All shows both
+    // spellings of the thirteen shared buttons, PlayStation or Xbox shows one.
+    // The file is untouched either way: left_1 and left_bumper are one output
+    // to the device.
+    public string PickerVocabulary = "All"; // All | PlayStation | Xbox
     public double? WinW, WinH, WinX, WinY;     // null = use window defaults
+    // Fill the screen on the first run and keep filling it until somebody
+    // un-maximizes. WinW and WinH are only written while the window is
+    // normal, so the size to come back to is the size it last had.
+    public bool WinMax = true;
     // On by default, but inert until a token is stored, so it never touches
     // the network until the user signs in.
     public bool DriveBackup = true;

@@ -197,6 +197,14 @@ public class ModesWindow : Window
         var name = isPrefs ? Strings.Modes_ThePreferencesSheet
             : sheet.ModeName.Length > 0 ? sheet.ModeName : $"Mode {ordinal}";
 
+        // What a screen reader says, which is not what a copy of this mode is
+        // named. Duplicate writes name into the file, and the device renders a
+        // name as CP437 and falls back to the mangled 8.3 name when it cannot,
+        // so the default above stays English while this one translates.
+        var spoken = isPrefs ? Strings.Modes_ThePreferencesSheet
+            : sheet.ModeName.Length > 0 ? sheet.ModeName
+            : string.Format(CultureInfo.CurrentCulture, Strings.Modes_UnnamedModeNumber, ordinal);
+
         // The preferences sheet has no name to type: the device finds it by the
         // keyword "Preferences" alone. A label sits where the name box would.
         Control label = isPrefs
@@ -212,9 +220,9 @@ public class ModesWindow : Window
         // The same move, copy and delete controls the editor's rows use. They
         // used to be typed characters here and drawn icons there, which made
         // one job look like two. See RowControls.
-        var up = Wire(RowControls.Move(true, $"Move {name} up"), position > 0, () => Move(sheetIndex, -1));
-        var down = Wire(RowControls.Move(false, $"Move {name} down"), position < total - 1, () => Move(sheetIndex, 1));
-        var copy = Wire(RowControls.Icon("IconFiles", string.Format(CultureInfo.CurrentCulture, Strings.Modes_MakeACopyOfName, name)), !isPrefs, () => Duplicate(sheetIndex, name));
+        var up = Wire(RowControls.Move(true, string.Format(CultureInfo.CurrentCulture, Strings.Modes_MoveNameUp, spoken)), position > 0, () => Move(sheetIndex, -1));
+        var down = Wire(RowControls.Move(false, string.Format(CultureInfo.CurrentCulture, Strings.Modes_MoveNameDown, spoken)), position < total - 1, () => Move(sheetIndex, 1));
+        var copy = Wire(RowControls.Icon("IconFiles", string.Format(CultureInfo.CurrentCulture, Strings.Modes_MakeACopyOfName, spoken)), !isPrefs, () => Duplicate(sheetIndex, name));
         // Only one preferences sheet is ever read, so a copy of it would be dead
         // weight in the file. The button stays in place, greyed: hidden, it took
         // its column with it and every button on that row slid left out of line
@@ -225,8 +233,8 @@ public class ModesWindow : Window
         // The preferences sheet is never the last mode, so it always can.
         bool canDelete = isPrefs || ModeCount() > 1;
         var delete = armed
-            ? TextButton(Strings.Modes_ReallyDelete, string.Format(CultureInfo.CurrentCulture, Strings.Modes_ReallyDeleteName, name), canDelete, () => Delete(sheetIndex))
-            : Wire(RowControls.Delete($"Delete {name}"), canDelete, () => { _armedDelete = sheetIndex; Build(keepArmed: true); });
+            ? TextButton(Strings.Modes_ReallyDelete, string.Format(CultureInfo.CurrentCulture, Strings.Modes_ReallyDeleteName, spoken), canDelete, () => Delete(sheetIndex))
+            : Wire(RowControls.Delete(string.Format(CultureInfo.CurrentCulture, Strings.Modes_DeleteName, spoken)), canDelete, () => { _armedDelete = sheetIndex; Build(keepArmed: true); });
         delete.Classes.Add("danger");
 
         // A Grid, not a StackPanel. Every fixed width added up to more than the

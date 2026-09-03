@@ -134,10 +134,10 @@
     <value>The Google Sheet could not be read as a profile, so nothing here was changed.</value>
   </data>
   <data name="Backup_TheGoogleSheetForThis" xml:space="preserve">
-    <value>The Google Sheet for this profile could not be found. It may have been deleted or moved to trash. Choose Yes to create a new sheet and back up to it. Choose Cancel to turn backup off for this profile.</value>
+    <value>The Google Sheet for this profile is missing. Choose Yes to create a new sheet and back it up. Choose Cancel to turn off backup for this profile.</value>
   </data>
   <data name="Backup_ThisProfileSGoogleSheet" xml:space="preserve">
-    <value>This profile's Google Sheet was edited online since your last backup. Choose Yes to replace it with your copy (the online edits stay in Drive revision history). Choose Cancel to keep the online version and load it into the editor instead.</value>
+    <value>This profile's Google Sheet changed online. Choose Yes to replace it with your copy; Google keeps the online edits in revision history. Choose Cancel to keep the online copy and load it here.</value>
   </data>
   <data name="Community_CheckYourInternetConnectionAnd" xml:space="preserve">
     <value>Check your internet connection and press Refresh. Everything else in the app works without this list.</value>
@@ -170,7 +170,7 @@
     <value>Download the community list again</value>
   </data>
   <data name="Community_GameProfilesOtherQuadStickPlayers" xml:space="preserve">
-    <value>Game profiles other QuadStick players have shared as Google Sheets. Opening this page downloads the list from quadstick.com, and Refresh downloads it again. Import opens the profile in the editor. Nothing here writes to your QuadStick.</value>
+    <value>Shared Google Sheets for game profiles. Opening this page downloads the list from quadstick.com. Refresh downloads it again. Import opens a profile here. Nothing is written to your QuadStick.</value>
   </data>
   <data name="Community_Import" xml:space="preserve">
     <value>Import</value>
@@ -434,7 +434,7 @@
     <value>These settings have a problem, so nothing was written: </value>
   </data>
   <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
-    <value>These settings live in prefs.csv on the QuadStick itself, so they apply to every profile on it, not just to one game.</value>
+    <value>These settings live in prefs.csv on the QuadStick itself, so they apply to every profile on the device.</value>
   </data>
   <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
     <value>This group changes nothing you can point at on the device.</value>
@@ -530,7 +530,7 @@
     <value>{0}. {1}</value>
   </data>
   <data name="Device_EverythingHereReadsAndWrites" xml:space="preserve">
-    <value>Everything here reads and writes files on the QuadStick's drive, nothing else. Files are grouped by the drive they are on, and every action names the drive it will touch. Deleting keeps a copy in your backup folder first. default.csv and prefs.csv cannot be deleted, because the device needs them.</value>
+    <value>Manage files on the QuadStick drive. Each action names the drive it affects. Deleted files are copied to your backup folder first. default.csv and prefs.csv stay because the device needs them.</value>
   </data>
   <data name="Device_FileNameOnGroupLabel" xml:space="preserve">
     <value>{0} on {1} at {2}, {3}{4}</value>
@@ -554,7 +554,7 @@
     <value>{0} was not copied. Your library file is unchanged.</value>
   </data>
   <data name="Device_FileNameWillBeDeleted" xml:space="preserve">
-    <value>{0} will be deleted from the QuadStick at {1}. A copy is saved in {2} first, so you can put it back with Install. Nothing else on this or any other drive is touched.</value>
+    <value>{0} will be deleted from the QuadStick at {1}. A backup is saved in {2} first, so Install can restore it. Other drives are untouched.</value>
   </data>
   <data name="Device_FileSelectionOrderAndLights" xml:space="preserve">
     <value>File selection order and lights</value>
@@ -590,7 +590,7 @@
     <value>, no linked Google Sheet in its header</value>
   </data>
   <data name="Device_NoQuadStickDriveIsPlugged" xml:space="preserve">
-    <value>No QuadStick drive is plugged in right now. A QuadStick drive is one with default.csv on it. On USB emulation mode 6 the drive does not appear at all.</value>
+    <value>No QuadStick drive is plugged in. It must contain default.csv. In USB emulation mode 6, it does not appear.</value>
   </data>
   <data name="Device_NumberFileNameNoLightPattern" xml:space="preserve">
     <value>{0}. {1}: no light pattern is documented for this position</value>
@@ -617,7 +617,7 @@
     <value>, protected, it cannot be deleted</value>
   </data>
   <data name="Device_PushingTheProfileSwitchSteps" xml:space="preserve">
-    <value>Pushing the profile switch steps through the files in this order, and the five lights show which one is loaded. prefs.csv is settings, not a profile, so it is never in the list. The colours are written out below as well as shown.</value>
+    <value>The profile switch moves through files in this order; five lights show the loaded file. prefs.csv holds settings, not a profile, so it stays out. Colours appear below and on the device.</value>
   </data>
   <data name="Device_QuadStickDriveGroupLabelAt" xml:space="preserve">
     <value>QuadStick drive {0}, at {1}</value>
@@ -647,7 +647,7 @@
     <value>Yes, continue</value>
   </data>
   <data name="Device_YourLibraryAlreadyHasFile" xml:space="preserve">
-    <value>Your library already has {0}. Copying {1} from {2} will overwrite {3}. The copy on the QuadStick is not changed either way.</value>
+    <value>Your library already has {0}. Copying {1} from {2} would overwrite {3}. The QuadStick copy stays unchanged.</value>
   </data>
   <data name="DrivePick_AlreadyInYourProfiles" xml:space="preserve">
     <value>  (already in your profiles)</value>
@@ -686,13 +686,13 @@
     <value>Nothing selected to import.</value>
   </data>
   <data name="DrivePick_PickTheProfilesToCopy" xml:space="preserve">
-    <value>Pick the profiles to copy onto this computer. Only the sheets this app backed up are listed. Ones already in your profiles are greyed out.</value>
+    <value>Choose profiles to copy to this computer. Only sheets backed up by this app are listed. Existing profiles are dimmed.</value>
   </data>
   <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
     <value>Your Google Drive backups</value>
   </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
-    <value>A wrong default.csv can disable flash-drive access, and recovery needs a physical force-erase. A backup will be made first. Continue?</value>
+    <value>A wrong default.csv can disable flash-drive access. Recovery requires a physical force-erase. The app backs it up first. Continue?</value>
   </data>
   <data name="Install_BackingUpAndInstalling" xml:space="preserve">
     <value>Backing up and installing…</value>
@@ -749,7 +749,7 @@
     <value>Overwrite default.csv?</value>
   </data>
   <data name="Install_PrefsCsvHoldsTheDevice" xml:space="preserve">
-    <value>prefs.csv holds the device's own settings, so this changes how the QuadStick behaves in every profile on {0}, not just one game. The prefs.csv already on the drive is backed up first. Continue?</value>
+    <value>prefs.csv holds the device's own settings, so this changes how the QuadStick behaves in every profile on {0}. The prefs.csv already on the drive is backed up first. Continue?</value>
   </data>
   <data name="Install_TargetDriveRoot" xml:space="preserve">
     <value>Target drive: {0}</value>
@@ -895,7 +895,7 @@ Most profiles have just one mode, so this list often shows a single entry. That 
     <value>Choose which drive to install to:</value>
   </data>
   <data name="Main_ClickAnyPartOfThe" xml:space="preserve">
-    <value>Click any part of the QuadStick to see and change what it does in this mode. The number on each part is how many game buttons it presses. Parts your model does not have are dimmed.
+    <value>Click a QuadStick part to see or change it in this mode. The number shows how many game buttons it presses. Parts this model lacks are dimmed.
 
 </value>
   </data>
@@ -1274,11 +1274,20 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Name for this template</value>
   </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Names</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>{0} names</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Which controller names this list offers. The QuadStick reads both spellings as the same output, so hiding one hides no button.</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>New name for this template</value>
   </data>
   <data name="Main_NewProfileGivesYouThe" xml:space="preserve">
-    <value>New profile gives you the factory default layout, the same one shipped on every QuadStick. The community also shares hundreds of game profiles as Google Sheets: paste any share link on the home screen to import it. Profiles that keep each mode on its own tab come in whole, every tab as a mode. Open also takes a downloaded .xlsx workbook. Then adjust, rename, save.</value>
+    <value>A new profile starts with the factory layout shipped on every QuadStick. Import a shared Google Sheets link from the home screen, or open a downloaded .xlsx workbook. Each sheet tab becomes a mode. Adjust, rename, and save.</value>
   </data>
   <data name="Main_NoBindingsYetClickAdd" xml:space="preserve">
     <value>No bindings yet. Click "Add row" to connect an input to an output.</value>
@@ -1409,7 +1418,7 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
     <value>One activation latches it on, the next releases it.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>One CSV file that tells the QuadStick which sip, puff, lip press, or joystick move presses which game button. A profile has one or more mode sheets: full control layouts you switch between while playing (walking layout, driving layout, menus). Sip or puff the side tube, or bind increment_mode / decrement_mode, to switch modes in-game.</value>
+    <value>A CSV file that maps sips, puffs, lip presses, and joystick moves to game buttons. A profile has one or more mode sheets, such as walking, driving, or menus. Sip or puff the side tube, or bind increment_mode / decrement_mode, to switch modes in-game.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>One short press each time you activate.</value>
@@ -1478,7 +1487,7 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
     <value>prefs.csv holds the QuadStick's own settings, not a game profile. A wrong value here changes how the whole device behaves. Only continue if you know which setting you are changing.</value>
   </data>
   <data name="Main_PrefsCsvIsTheQuadStick" xml:space="preserve">
-    <value>prefs.csv is the QuadStick's own settings file, not a game profile: it changes how the whole device behaves, not just one game. A setting the app recognizes gets a real control, a number box, a checkbox, or a dropdown, so you cannot type a value the device would reject. A setting it does not recognize, or a value already in the file an exact control could not show without changing it, keeps a plain text box and is left exactly as it was. Installing prefs.csv back to the device always asks first, and backs up the file already there.</value>
+    <value>prefs.csv is the QuadStick's own settings file. It changes how the whole device behaves across every game profile. A setting the app recognizes gets a real control, a number box, a checkbox, or a dropdown, so you cannot type a value the device would reject. A setting it does not recognize, or a value already in the file an exact control could not show without changing it, keeps a plain text box and is left exactly as it was. Installing prefs.csv back to the device always asks first, and backs up the file already there.</value>
   </data>
   <data name="Main_PressAgainToOpenGoogle" xml:space="preserve">
     <value>Press again to open Google sign-in.</value>
@@ -1605,6 +1614,15 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
     <value>The QuadStick is sending this now</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>A row lights while the QuadStick is sending that row's output. The device never says which file or mode it is running, so a row can light from a different profile than the one open here. Mouse, keyboard and infrared outputs leave on another connection and never light.</value>
@@ -1816,7 +1834,7 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
 Sending converts this into the crash reporter's own format. It also adds your anonymous install ID, the reporting library's version, your .NET and operating system versions, and whether your processor is Intel or ARM.</value>
   </data>
   <data name="Main_TheCommunityProfilesCardOn" xml:space="preserve">
-    <value>The Community profiles card on the home screen searches the shared list of game profiles. Opening that window, and pressing Refresh in it, downloads the list from quadstick.com. Nothing about you is sent, and the last list is kept on this computer so the window still opens with no internet. Import opens the profile in the editor, the same as pasting its link. It never writes to your QuadStick: that still takes the Install button, and errors still block it.</value>
+    <value>The Community profiles card searches the shared game-profile list. Opening it or pressing Refresh downloads the list from quadstick.com. The app sends nothing about you and keeps the last list on this computer. Import opens a profile in the editor. Install is required to write it to your QuadStick, and errors block the install.</value>
   </data>
   <data name="Main_TheDeviceSFallbackFile" xml:space="preserve">
     <value> · the device's fallback file</value>
@@ -1825,7 +1843,7 @@ Sending converts this into the crash reporter's own format. It also adds your an
     <value>. The device skips those rows, so this still installs.</value>
   </data>
   <data name="Main_TheManageFilesCardUnder" xml:space="preserve">
-    <value>The Manage files card, under On your QuadStick, works on a mounted QuadStick: its drive has to show up like a USB stick in Finder or File Explorer. From there you can copy a file to your library, open the Google Sheet it is linked to, or delete it; deleting backs it up to QuadStickBackups first. default.csv and prefs.csv are protected and cannot be deleted from this app. If the drive does not show up at all, this app has no other way to reach it; see QuadStick not showing up below.</value>
+    <value>Manage files works when the QuadStick drive appears in Finder or File Explorer. Copy files to your library, open linked Google Sheets, or delete files; deleted files go to QuadStickBackups first. default.csv and prefs.csv are protected. If the drive does not appear, see QuadStick not showing up below.</value>
   </data>
   <data name="Main_TheNameBoxAtThe" xml:space="preserve">
     <value>The name box at the top of the editor is the profile's on-device name. Use no spaces; the .csv file extension is added for you. The profile named default is special: it is the device's fallback file and should stay unchanged.</value>
@@ -2365,6 +2383,12 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>Go back to the simple view</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} and 1 more cell</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} and {1} more cells</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   this tab is notes, not bindings. QMP and the Sheets add-on write this tab for you to read, and your QuadStick never loads it. Nothing was lost by leaving it out.</value>

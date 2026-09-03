@@ -62,6 +62,37 @@ public static class OutputCatalog
         "left_bumper", "right_bumper", "left_trigger", "right_trigger",
     };
 
+    // The firmware's alias block: thirteen outputs that answer to two names
+    // each (output_keywords.h, the rows under "// aliases"). left_bumper is
+    // LEFT_1, A is X_, guide is PS3_. Both spellings reach the same channel,
+    // so hiding one hides no output. A token with a single name, a custom name
+    // included, is never filtered.
+    public static readonly (string Ps, string Xbox)[] VocabularyPairs =
+    {
+        ("left_1", "left_bumper"), ("left_2", "left_trigger"), ("left_3", "left_stick"),
+        ("right_1", "right_bumper"), ("right_2", "right_trigger"), ("right_3", "right_stick"),
+        ("x", "A"), ("square", "X"), ("triangle", "Y"), ("circle", "B"),
+        ("ps3", "guide"), ("select", "back"), ("touch", "capture"),
+    };
+
+    static readonly HashSet<string> PsSpellings =
+        new(VocabularyPairs.Select(p => p.Ps), StringComparer.Ordinal);
+    static readonly HashSet<string> XboxSpellings =
+        new(VocabularyPairs.Select(p => p.Xbox), StringComparer.Ordinal);
+
+    /// <summary>The list with the other vocabulary's spellings dropped.
+    /// Anything but "PlayStation" or "Xbox" keeps every token.</summary>
+    public static IReadOnlyList<string> InVocabulary(IReadOnlyList<string> tokens, string vocabulary)
+    {
+        var drop = vocabulary switch
+        {
+            "PlayStation" => XboxSpellings,
+            "Xbox" => PsSpellings,
+            _ => null,
+        };
+        return drop is null ? tokens : tokens.Where(t => !drop.Contains(t)).ToList();
+    }
+
     static readonly HashSet<string> KbEveryday = new(StringComparer.Ordinal)
     {
         "kb_space", "kb_enter", "kb_return", "kb_tab", "kb_escape", "kb_backspace",

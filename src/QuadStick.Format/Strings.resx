@@ -683,4 +683,7 @@
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>This spreadsheet is larger than {0} rows, far larger than any profile, so we stopped reading part way through.</value>
   </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Use {0} to {1}. {2}</value>
+  </data>
 </root>

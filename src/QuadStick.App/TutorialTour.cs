@@ -10,8 +10,10 @@ using Avalonia.Threading;
 namespace QuadStick.App;
 
 // A narrated first-run tour. It is a full-window overlay appended as the last
-// child of RootPanel (a sibling AFTER ZoomHost) so it is never scaled by the
-// interface-zoom transform and always covers the whole window. The tour drives
+// child of RootHost (a sibling AFTER ZoomHost) so it is never scaled by the
+// interface-zoom transform, always covers the whole window, and stays alive
+// when the tour disables ZoomHost. RootPanel is inside ZoomHost, so hosting it
+// there disabled the tour's own buttons and froze the tour on step one. The tour drives
 // the app itself, so the overlay swallows every click behind it; the user only
 // presses the callout's Back / Skip / Next buttons.
 //
@@ -195,7 +197,7 @@ public partial class MainWindow
         AutomationProperties.SetLiveSetting(_tourCallout, AutomationLiveSetting.Polite);
 
         _tourOverlay = new Grid { IsVisible = false, Children = { blocker, _tourCanvas, _tourCallout } };
-        RootPanel.Children.Add(_tourOverlay); // last child: sits above (and outside) the scaled content
+        RootHost.Children.Add(_tourOverlay); // last child: sits above (and outside) the scaled content
 
         // Motion is the reduce-motion toggle's one observable effect: a gentle
         // fade per step when motion is allowed, nothing when it is reduced.

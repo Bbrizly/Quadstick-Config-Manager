@@ -313,9 +313,8 @@ public class PreferenceUiTests
     {
         var w = ShowPrefs("volume,40\n", out var file);
 
-        w.GetVisualDescendants().OfType<Button>()
-            .First(b => AutomationProperties.GetName(b) == "Type an exact value for Speaker volume")
-            .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(w.GetVisualDescendants().OfType<Button>()
+            .First(b => AutomationProperties.GetName(b) == "Type an exact value for Speaker volume"));
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
 

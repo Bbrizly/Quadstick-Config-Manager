@@ -139,6 +139,27 @@ public class SettingsPageTests
     }
 
     [AvaloniaFact]
+    public void Mapping_card_wording_can_be_changed_in_settings()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.CardSentenceStyle = "PressWhen";
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        OpenSettings(w);
+
+        var wording = w.GetVisualDescendants().OfType<ComboBox>()
+            .First(c => AutomationProperties.GetName(c)
+                == "Mapping card wording: choose output-first or input-first sentences");
+        wording.SelectedIndex = 1;
+
+        Assert.Equal("InputToOutput", w.CurrentSettings.CardSentenceStyle);
+        Assert.Equal("InputToOutput", Settings.Load().CardSentenceStyle);
+        w.Close();
+    }
+
+    [AvaloniaFact]
     public void Connected_line_tracks_the_drive_connection_state()
     {
         var s = Settings.Load();
@@ -172,7 +193,7 @@ public class SettingsPageTests
 
         var back = w.GetVisualDescendants().OfType<Button>()
             .First(b => AutomationProperties.GetName(b) == "Go back from Settings");
-        back.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Ui.Click(back);
 
         Assert.True(w.FindControl<DockPanel>("EditorView")!.IsVisible);
         Assert.False(w.FindControl<DockPanel>("SettingsPage")!.IsVisible);
