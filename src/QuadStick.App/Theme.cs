@@ -25,6 +25,10 @@ public sealed class AppSettings
     // from opposite ends: Device View opens as sentences, Rows opens as the
     // sheet it is.
     public bool RowCards = false;
+    // Compact cards: input, "to", output on one line, with the behaviour on a
+    // quiet second line. A separate switch from the sentence style, because it
+    // changes the shape of the card and not the words in it.
+    public bool CompactCards = false;
     // How simple mapping cards read: the original output-first sentence, or
     // the input-first form ("Sip to X as normal.").
     public string CardSentenceStyle = "PressWhen"; // PressWhen | InputToOutput

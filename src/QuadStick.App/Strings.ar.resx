@@ -247,6 +247,12 @@
   <data name="Community_TheSavedCopyOfThe" xml:space="preserve">
     <value>النسخة المحفوظة من قائمة المجتمع لا تحتوي على أي ملفات شخصية.</value>
   </data>
+  <data name="Count_Action_one" xml:space="preserve">
+    <value>إجراء واحد ({0})</value>
+  </data>
+  <data name="Count_Action_other" xml:space="preserve">
+    <value>{0} إجراءات</value>
+  </data>
   <data name="Count_Binding_one" xml:space="preserve">
     <value>{0} ارتباط</value>
   </data>
@@ -258,6 +264,12 @@
   </data>
   <data name="Count_Error_other" xml:space="preserve">
     <value>{0} أخطاء</value>
+  </data>
+  <data name="Count_File_one" xml:space="preserve">
+    <value>ملف واحد ({0})</value>
+  </data>
+  <data name="Count_File_other" xml:space="preserve">
+    <value>{0} ملفات</value>
   </data>
   <data name="Count_Mapping_one" xml:space="preserve">
     <value>{0} تعيين</value>
@@ -282,6 +294,18 @@
   </data>
   <data name="Count_Part_other" xml:space="preserve">
     <value>{0} أجزاء</value>
+  </data>
+  <data name="Count_Profile_one" xml:space="preserve">
+    <value>ملف تعريف واحد ({0})</value>
+  </data>
+  <data name="Count_Profile_other" xml:space="preserve">
+    <value>{0} ملفات تعريف</value>
+  </data>
+  <data name="Count_RowCopied_one" xml:space="preserve">
+    <value>تم نسخ {0} صف إلى {1}. Ctrl+Z يتراجع عن ذلك.</value>
+  </data>
+  <data name="Count_RowCopied_other" xml:space="preserve">
+    <value>تم نسخ {0} صفوف إلى {1}. Ctrl+Z يتراجع عن ذلك.</value>
   </data>
   <data name="Count_RowDeleted_one" xml:space="preserve">
     <value>تم حذف {0} صف. Ctrl+Z يعيده.</value>
@@ -322,12 +346,6 @@
   <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
     <value>من {0} إلى {1}.</value>
   </data>
-  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
-    <value>تم تغيير {0} إعداد</value>
-  </data>
-  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
-    <value>تم تغيير {0} إعدادات</value>
-  </data>
   <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
     <value>تم تغيير {0} إعداد. لن يصل إلى QuadStick حتى تضغط حفظ.</value>
   </data>
@@ -339,6 +357,12 @@
   </data>
   <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
     <value>تم تغيير {0} إعدادات. وصّل QuadStick لحفظها.</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>تم تغيير {0} إعداد</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>تم تغيير {0} إعدادات</value>
   </data>
   <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
     <value>تعذّرت قراءة الإعدادات على QuadStick: {0}</value>
@@ -526,6 +550,9 @@
   <data name="Device_CouldNotReadThisDrive" xml:space="preserve">
     <value>تعذّرت قراءة محرك الأقراص هذا: {0}</value>
   </data>
+  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
+    <value>حذف {0} من {1}؟</value>
+  </data>
   <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
     <value>حذف {0} من QuadStick في {1}</value>
   </data>
@@ -579,6 +606,9 @@
   </data>
   <data name="Device_FilesTotalAcrossGroupsCount" xml:space="preserve">
     <value>{0} عبر {1} من محركات أقراص QuadStick. يُدرَج كل محرك أقراص بشكل منفصل أدناه.</value>
+  </data>
+  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
+    <value>{0} على {1}.</value>
   </data>
   <data name="Device_LinkedToAGoogleSheet" xml:space="preserve">
     <value>، مرتبط بجدول Google</value>
@@ -700,6 +730,15 @@
   <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
     <value>نسخك الاحتياطية على Google Drive</value>
   </data>
+  <data name="Drive_RestoreFailed" xml:space="preserve">
+    <value>{0} فشل: </value>
+  </data>
+  <data name="Drive_RestoreImported" xml:space="preserve">
+    <value>{0} تم استيرادها</value>
+  </data>
+  <data name="Drive_RestoreSkipped" xml:space="preserve">
+    <value>{0} تم تخطيها: </value>
+  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>default.csv خاطئ قد يُعطّل الوصول إلى محرك الأقراص المحمول، والاستعادة تتطلب مسحًا إجباريًا ماديًا. سيتم إجراء نسخة احتياطية أولًا. متابعة؟</value>
   </data>
@@ -807,6 +846,9 @@
   <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
     <value>مفاتيح تكيفية متصلة بمنافذ 3.5 مم في الجزء الخلفي من QuadStick.</value>
   </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>إضافة</value>
+  </data>
   <data name="Main_AddANewBindingRow" xml:space="preserve">
     <value>إضافة صف ارتباط جديد إلى هذا الوضع</value>
   </data>
@@ -888,6 +930,9 @@
   <data name="Main_BackupPending" xml:space="preserve">
     <value> · النسخ الاحتياطي معلّق</value>
   </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>يبدأ الجهاز التشغيل بهذا الملف، لذلك لن يُكتب فيه وضع بدون قرص.</value>
+  </data>
   <data name="Main_Cancel" xml:space="preserve">
     <value>إلغاء</value>
   </data>
@@ -943,6 +988,9 @@
   </data>
   <data name="Main_CopyShareLink" xml:space="preserve">
     <value>نسخ رابط المشاركة</value>
+  </data>
+  <data name="Main_CopyToMode" xml:space="preserve">
+    <value>نسخ إلى الوضع</value>
   </data>
   <data name="Main_CopyYourBackedUpProfiles" xml:space="preserve">
     <value>نسخ ملفاتك الشخصية المحفوظة احتياطيًا من Google Drive إلى هذا الحاسوب الآن؟</value>
@@ -1079,8 +1127,14 @@
   <data name="Main_DownloadingTheSpreadsheet" xml:space="preserve">
     <value>جارٍ تنزيل الجدول...</value>
   </data>
+  <data name="Main_DuplicateMark" xml:space="preserve">
+    <value>×{0}</value>
+  </data>
   <data name="Main_EditDevicePreferences" xml:space="preserve">
     <value>تعديل تفضيلات الجهاز؟</value>
+  </data>
+  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
+    <value>انقر لتعديل هذا التعيين أو إضافة ملاحظة.</value>
   </data>
   <data name="Main_Edited" xml:space="preserve">
     <value>تم التعديل</value>
@@ -1090,6 +1144,9 @@
   </data>
   <data name="Main_EveryInputOnYourQuadStick" xml:space="preserve">
     <value>كل إدخال على جهاز QuadStick الخاص بك مستخدم في هذا الوضع.</value>
+  </data>
+  <data name="Main_ExtraActions" xml:space="preserve">
+    <value>+ {0} إجراءات إضافية</value>
   </data>
   <data name="Main_ExtraInputForMappingN" xml:space="preserve">
     <value>إدخال إضافي للربط {0}</value>
@@ -1103,8 +1160,14 @@
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
     <value>يفعّل المخرج طالما بقيت قوة المدخل دون حد معين. عكس greater_than.</value>
   </data>
+  <data name="Main_FitEachMappingOnOne" xml:space="preserve">
+    <value>احتواء كل رابط في سطر واحد</value>
+  </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>هل وجدت مشكلة؟</value>
+  </data>
+  <data name="Main_FunctionBehavior" xml:space="preserve">
+    <value>الوظيفة (السلوك)</value>
   </data>
   <data name="Main_FunctionForRowBRow" xml:space="preserve">
     <value>الوظيفة للصف {0}. {1}</value>
@@ -1157,6 +1220,9 @@
   <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
     <value>تم استيراد {0} من الجدول.</value>
   </data>
+  <data name="Main_InFolder" xml:space="preserve">
+    <value> · في {0}</value>
+  </data>
   <data name="Main_InputI1ForRow" xml:space="preserve">
     <value>الإدخال {0} للصف {1}</value>
   </data>
@@ -1165,6 +1231,12 @@
   </data>
   <data name="Main_InputNextCol1ForRow" xml:space="preserve">
     <value>الإدخال {0} للصف {1}</value>
+  </data>
+  <data name="Main_InputPressesOutput" xml:space="preserve">
+    <value>{0} يضغط {1}</value>
+  </data>
+  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
+    <value>المدخلات (الشفط، النفخ، عصا التحكم)</value>
   </data>
   <data name="Main_InstallToTheQuadStickNamed" xml:space="preserve">
     <value>التثبيت على جهاز QuadStick المسمى {0}، في {1}</value>
@@ -1205,26 +1277,23 @@
   <data name="Main_Left" xml:space="preserve">
     <value>يسار</value>
   </data>
-  <data name="Main_FunctionBehavior" xml:space="preserve">
-    <value>الوظيفة (السلوك)</value>
-  </data>
-  <data name="Main_InputPressesOutput" xml:space="preserve">
-    <value>{0} يضغط {1}</value>
-  </data>
-  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
-    <value>المدخلات (الشفط، النفخ، عصا التحكم)</value>
-  </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>المصد الأيسر</value>
   </data>
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
     <value>فتحة الفم اليسرى</value>
   </data>
+  <data name="Main_LeftStick" xml:space="preserve">
+    <value>العصا اليسرى</value>
+  </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
     <value>ضغطة العصا اليسرى</value>
   </data>
   <data name="Main_LeftTrigger" xml:space="preserve">
     <value>الزناد الأيسر</value>
+  </data>
+  <data name="Main_Lip" xml:space="preserve">
+    <value>الشفة</value>
   </data>
   <data name="Main_LipSwitch" xml:space="preserve">
     <value>مفتاح الشفة</value>
@@ -1247,17 +1316,23 @@
   <data name="Main_MapTokenToANew" xml:space="preserve">
     <value>ربط {0} بربط جديد على {1}</value>
   </data>
+  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
+    <value>التعيين {0}: {1} إلى {2}{3}. اضغط Enter للتعديل.</value>
+  </data>
+  <data name="Main_MappingNumber" xml:space="preserve">
+    <value>التعيين {0}</value>
+  </data>
   <data name="Main_MappingRowSpoken" xml:space="preserve">
     <value>الربط {0}: اضغط {1} عندما {2}{3}. اضغط Enter للتعديل.</value>
   </data>
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>الربط {0}: اضغط {1} عندما {2}، الواحد تلو الآخر{3}. اضغط Enter للتعديل.</value>
   </data>
-  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
-    <value>التعيين {0}: {1} إلى {2}{3}. اضغط Enter للتعديل.</value>
+  <data name="Main_MappingsAreOnOneLine" xml:space="preserve">
+    <value>تُعرض الروابط في سطر واحد. التبديل إلى الجملة الكاملة.</value>
   </data>
-  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
-    <value>انقر لتعديل هذا التعيين أو إضافة ملاحظة.</value>
+  <data name="Main_MappingsReadAsAFull" xml:space="preserve">
+    <value>تُعرض الروابط كجملة كاملة. التبديل إلى سطر واحد لكل رابط.</value>
   </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>تُعرض الروابط كبطاقات جمل بسيطة. التبديل إلى المحرر التفصيلي.</value>
@@ -1280,6 +1355,12 @@
   <data name="Main_ModeSettings" xml:space="preserve">
     <value>إعدادات الوضع</value>
   </data>
+  <data name="Main_Mouse" xml:space="preserve">
+    <value>الفأرة</value>
+  </data>
+  <data name="Main_Move" xml:space="preserve">
+    <value>تحريك</value>
+  </data>
   <data name="Main_MoveRowBRowWord" xml:space="preserve">
     <value>نقل الصف {0} {1}</value>
   </data>
@@ -1291,6 +1372,9 @@
   </data>
   <data name="Main_MovedTheTextFromI" xml:space="preserve">
     <value>تم نقل النص من {0} إلى عمود الملاحظات.</value>
+  </data>
+  <data name="Main_Movement" xml:space="preserve">
+    <value>الحركة</value>
   </data>
   <data name="Main_MovingTheWholeMouthpieceWith" xml:space="preserve">
     <value>تحريك قطعة الفم بالكامل بفمك يعمل مثل عصا التحكم. الأعلى، والأسفل، واليسار، واليمين، والاتجاهات الثمانية للبوصلة يمكن أن يضغط كل منها شيئًا.</value>
@@ -1379,17 +1463,11 @@
   <data name="Main_NotNowKeepTheReport" xml:space="preserve">
     <value>ليس الآن، احتفظ بالتقرير واسأل مرة أخرى لاحقًا</value>
   </data>
-  <data name="Main_SetTheEmulationMode" xml:space="preserve">
-    <value>ضبط وضع المحاكاة</value>
-  </data>
-  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
-    <value>ضبط وضع المحاكاة على {0}، ويُكتب {1}</value>
-  </data>
-  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
-    <value>يعيّن ملف التعريف هذا {0} لا يملكها {1} لديك. توجد في القائمة على اليسار ويمكن تعديلها.</value>
-  </data>
   <data name="Main_NotOnModel" xml:space="preserve">
     <value>غير متوفر على هذا الطراز</value>
+  </data>
+  <data name="Main_NotOnYourModel" xml:space="preserve">
+    <value>غير متوفر على طرازك</value>
   </data>
   <data name="Main_NotOnYourModelName" xml:space="preserve">
     <value>غير موجود في {0} لديك</value>
@@ -1397,20 +1475,11 @@
   <data name="Main_NotOnYourModelNameParts" xml:space="preserve">
     <value>{0}. {1}، {2}. يفتح القائمة.</value>
   </data>
-  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
-    <value>تبقى هذه الصفوف في الملف ويمكن تعديلها. اختر جزءًا لفتح تعييناته.</value>
-  </data>
-  <data name="Main_NotOnYourModel" xml:space="preserve">
-    <value>غير متوفر على طرازك</value>
-  </data>
   <data name="Main_NotUsedYetOnThis" xml:space="preserve">
     <value>لم يُستخدم بعد على هذا الجزء ({0})</value>
   </data>
   <data name="Main_Note" xml:space="preserve">
     <value>ملاحظة</value>
-  </data>
-  <data name="Main_NoteSummary" xml:space="preserve">
-    <value>{0}: {1}</value>
   </data>
   <data name="Main_NoteForRowBRow" xml:space="preserve">
     <value>ملاحظة للصف {0}. تُحفظ في الملف، ويتجاهلها جهاز QuadStick</value>
@@ -1423,6 +1492,9 @@
   </data>
   <data name="Main_NoteLabel" xml:space="preserve">
     <value>ملاحظة</value>
+  </data>
+  <data name="Main_NoteSummary" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
   <data name="Main_NothingMappedHereYet" xml:space="preserve">
     <value>لا يوجد شيء مرتبط هنا بعد.</value>
@@ -1510,11 +1582,17 @@
   <data name="Main_PathGetFileNamePathIsRemoved" xml:space="preserve">
     <value>تتم إزالة {0} من هذا الكمبيوتر نهائيًا. لا تتأثر أي نسخة على جهاز QuadStick أو في Google Sheets.</value>
   </data>
+  <data name="Main_PickWord" xml:space="preserve">
+    <value>اختر {0}</value>
+  </data>
   <data name="Main_Picks0NameNoProfileTabRead" xml:space="preserve">
     <value>{0}: {1}</value>
   </data>
   <data name="Main_PlugInTheQuadStickIt" xml:space="preserve">
     <value>وصّل جهاز QuadStick؛ سيظهر مثل محرك أقراص USB. يقوم التثبيت بنسخ الملف القديم احتياطيًا إلى QuadStickBackups، ويكتب نسخة مؤقتة، ويتحقق منها، ثم يستبدلها. الأخطاء تمنع التثبيت. الكتابة فوق default.csv تطلب التأكيد دائمًا أولًا.</value>
+  </data>
+  <data name="Main_PlusMore" xml:space="preserve">
+    <value> +{0} أخرى</value>
   </data>
   <data name="Main_PortExplain" xml:space="preserve">
     <value>{0}. {1}</value>
@@ -1548,6 +1626,12 @@
   </data>
   <data name="Main_ProfilesYouAlreadyMadeFrom" xml:space="preserve">
     <value>الملفات الشخصية التي أنشأتها بالفعل من هذا القالب لن تتأثر. لا يمكن التراجع عن هذا.</value>
+  </data>
+  <data name="Main_Puff" xml:space="preserve">
+    <value>النفخ</value>
+  </data>
+  <data name="Main_Push" xml:space="preserve">
+    <value>الدفع</value>
   </data>
   <data name="Main_PuttingThisProfileInGoogle" xml:space="preserve">
     <value>جارٍ وضع هذا الملف الشخصي في Google Sheets...</value>
@@ -1636,6 +1720,9 @@
   <data name="Main_RightSideTube" xml:space="preserve">
     <value>يمين + الأنبوب الجانبي</value>
   </data>
+  <data name="Main_RightStick" xml:space="preserve">
+    <value>العصا اليمنى</value>
+  </data>
   <data name="Main_RightStickClick" xml:space="preserve">
     <value>ضغطة العصا اليمنى</value>
   </data>
@@ -1648,29 +1735,14 @@
   <data name="Main_RowNotSelected" xml:space="preserve">
     <value>{0}. المسافة تحدد، والسحب يعيد الترتيب</value>
   </data>
-  <data name="Main_RowSendingNow" xml:space="preserve">
-    <value>{0}. جهاز QuadStick يرسل هذا الآن</value>
-  </data>
-  <data name="Main_SendingNow" xml:space="preserve">
-    <value>جهاز QuadStick يرسل هذا الآن</value>
-  </data>
-  <data name="Main_VocabularyAll" xml:space="preserve">
-    <value>الكل</value>
-  </data>
-  <data name="Main_VocabularyPlaystation" xml:space="preserve">
-    <value>PlayStation</value>
-  </data>
-  <data name="Main_VocabularyXbox" xml:space="preserve">
-    <value>Xbox</value>
-  </data>
-  <data name="Main_WhatALitRowMeans" xml:space="preserve">
-    <value>يضيء الصف بينما يرسل QuadStick مخرجات ذلك الصف. لا يذكر الجهاز أبدًا أي ملف أو وضع يشغّله، لذلك قد يضيء صف بسبب ملف تعريف غير المفتوح هنا. مخرجات الفأرة ولوحة المفاتيح والأشعة تحت الحمراء تخرج عبر اتصال آخر ولا تضيء أبدًا.</value>
-  </data>
-  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
-    <value>لم يتعلم التطبيق قراءة تقرير وضع المحاكاة هذا، لذلك لن يضيء أي صف ما دام QuadStick في هذا الوضع.</value>
+  <data name="Main_RowNumber" xml:space="preserve">
+    <value>الصف {0}</value>
   </data>
   <data name="Main_RowSelected" xml:space="preserve">
     <value>{0}، محدد. المسافة تحدد، والسحب يعيد الترتيب</value>
+  </data>
+  <data name="Main_RowSendingNow" xml:space="preserve">
+    <value>{0}. جهاز QuadStick يرسل هذا الآن</value>
   </data>
   <data name="Main_RowsThatPressAGame" xml:space="preserve">
     <value>الصفوف التي تضغط زر لعبة لكن لا يوجد ما يُفعّلها بعد. أعطِ كل واحد منها إدخالًا، أو احذفه.</value>
@@ -1726,8 +1798,20 @@
   <data name="Main_SendThisCrashReport" xml:space="preserve">
     <value>إرسال تقرير العطل هذا</value>
   </data>
+  <data name="Main_SendingNow" xml:space="preserve">
+    <value>جهاز QuadStick يرسل هذا الآن</value>
+  </data>
+  <data name="Main_Sequence" xml:space="preserve">
+    <value>تسلسل</value>
+  </data>
   <data name="Main_SetItTo" xml:space="preserve">
     <value>تعيينه إلى</value>
+  </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>ضبط وضع المحاكاة</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>ضبط وضع المحاكاة على {0}، ويُكتب {1}</value>
   </data>
   <data name="Main_SetVerb" xml:space="preserve">
     <value>تعيين</value>
@@ -1762,6 +1846,9 @@
   <data name="Main_SingletonASingleSipPuff" xml:space="preserve">
     <value>Singleton: أنبوب sip/puff واحد على عصا التحكم. يستخدم أنماط sip وpuff بالإضافة إلى حركة عصا التحكم.</value>
   </data>
+  <data name="Main_Sip" xml:space="preserve">
+    <value>الشفط</value>
+  </data>
   <data name="Main_SipOrPuffOnThe" xml:space="preserve">
     <value>Sip أو puff على فتحة الفم اليسرى. يمكن أن يُحدث sip أو puff لطيف شيئًا مختلفًا (الأنواع الخفيفة).</value>
   </data>
@@ -1774,53 +1861,17 @@
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
     <value>Sip أو puff على الأنبوب الجانبي. عادةً ما يؤدي sip طويل وقوي هنا إلى تبديل الملفات الشخصية، لكن يمكنك ربطه أيضًا.</value>
   </data>
+  <data name="Main_SoftLip" xml:space="preserve">
+    <value>شفة خفيفة</value>
+  </data>
   <data name="Main_SoftPuff" xml:space="preserve">
     <value>نفخ خفيف</value>
-  </data>
-  <data name="Main_Puff" xml:space="preserve">
-    <value>النفخ</value>
-  </data>
-  <data name="Main_Sip" xml:space="preserve">
-    <value>الشفط</value>
   </data>
   <data name="Main_SoftSip" xml:space="preserve">
     <value>شفط خفيف</value>
   </data>
-  <data name="Main_Lip" xml:space="preserve">
-    <value>الشفة</value>
-  </data>
-  <data name="Main_SoftLip" xml:space="preserve">
-    <value>شفة خفيفة</value>
-  </data>
-  <data name="Main_Push" xml:space="preserve">
-    <value>الدفع</value>
-  </data>
-  <data name="Main_Movement" xml:space="preserve">
-    <value>الحركة</value>
-  </data>
-  <data name="Main_LeftStick" xml:space="preserve">
-    <value>العصا اليسرى</value>
-  </data>
-  <data name="Main_RightStick" xml:space="preserve">
-    <value>العصا اليمنى</value>
-  </data>
-  <data name="Main_Mouse" xml:space="preserve">
-    <value>الفأرة</value>
-  </data>
-  <data name="Main_ExtraActions" xml:space="preserve">
-    <value>+ {0} إجراءات إضافية</value>
-  </data>
-  <data name="Main_ViewDetails" xml:space="preserve">
-    <value>عرض التفاصيل ←</value>
-  </data>
-  <data name="Main_Sequence" xml:space="preserve">
-    <value>تسلسل</value>
-  </data>
-  <data name="Count_Action_one" xml:space="preserve">
-    <value>إجراء واحد ({0})</value>
-  </data>
-  <data name="Count_Action_other" xml:space="preserve">
-    <value>{0} إجراءات</value>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>بعض الأوضاع تخفي قرص QuadStick عن حاسوبك.</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>بدء ربط جديد على {0}</value>
@@ -1899,6 +1950,9 @@
   <data name="Main_ThenJoin" xml:space="preserve">
     <value>، ثم</value>
   </data>
+  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
+    <value>تبقى هذه الصفوف في الملف ويمكن تعديلها. اختر جزءًا لفتح تعييناته.</value>
+  </data>
   <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
     <value>تم تجاوز هذه التبويبات:</value>
   </data>
@@ -1913,6 +1967,9 @@
 
 يمكنك تغيير هذا في أي وقت من الإعدادات، ضمن متقدم.</value>
   </data>
+  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
+    <value>لم يتعلم التطبيق قراءة تقرير وضع المحاكاة هذا، لذلك لن يضيء أي صف ما دام QuadStick في هذا الوضع.</value>
+  </data>
   <data name="Main_ThisLinkIsAPublished" xml:space="preserve">
     <value>هذا الرابط منشور، والرابط المنشور لا يمنح سوى تبويب واحد فقط. لم تُرسل إلينا أي تبويبات أوضاع أخرى في الجدول على الإطلاق، لذا لا يمكننا معرفة ما بداخلها. لإحضار الملف الشخصي بالكامل، شارك الجدول مع "Anyone with the link" في Google Sheets وأعد استيراده.</value>
   </data>
@@ -1924,6 +1981,9 @@
   </data>
   <data name="Main_ThisProfileLivesOnThe" xml:space="preserve">
     <value>هذا الملف الشخصي موجود على جهاز QuadStick. استخدم التثبيت لكتابته مرة أخرى بأمان؛ يضع "حفظ باسم" نسخة في مكتبتك.</value>
+  </data>
+  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
+    <value>يعيّن ملف التعريف هذا {0} لا يملكها {1} لديك. توجد في القائمة على اليسار ويمكن تعديلها.</value>
   </data>
   <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
     <value>يضبط هذا الصف إعداد QuadStick بدلاً من الضغط على زر. يُطبَّق أثناء تشغيل هذا الوضع.</value>
@@ -1997,6 +2057,9 @@
   <data name="Main_UseTemplate" xml:space="preserve">
     <value>استخدم القالب</value>
   </data>
+  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
+    <value>مستخدم {0} مرات في هذا الوضع</value>
+  </data>
   <data name="Main_UsingDeviceView" xml:space="preserve">
     <value>استخدام عرض الجهاز</value>
   </data>
@@ -2006,8 +2069,23 @@
   <data name="Main_ViewButton" xml:space="preserve">
     <value>زر العرض</value>
   </data>
+  <data name="Main_ViewDetails" xml:space="preserve">
+    <value>عرض التفاصيل ←</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
+  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
     <value>يلزمك إبقاء المدخل مفعّلاً مدة محددة قبل أن يعمل المخرج. هذا يميز اللمسة السريعة عن الضغط الطويل.</value>
+  </data>
+  <data name="Main_WhatALitRowMeans" xml:space="preserve">
+    <value>يضيء الصف بينما يرسل QuadStick مخرجات ذلك الصف. لا يذكر الجهاز أبدًا أي ملف أو وضع يشغّله، لذلك قد يضيء صف بسبب ملف تعريف غير المفتوح هنا. مخرجات الفأرة ولوحة المفاتيح والأشعة تحت الحمراء تخرج عبر اتصال آخر ولا تضيء أبدًا.</value>
   </data>
   <data name="Main_WhatIsAMode" xml:space="preserve">
     <value>ما هو الوضع؟</value>
@@ -2117,6 +2195,9 @@
   <data name="Modes_ConnectionSetToPickedItem2" xml:space="preserve">
     <value>تم ضبط الاتصال على {0}.</value>
   </data>
+  <data name="Modes_DeleteName" xml:space="preserve">
+    <value>حذف {0}</value>
+  </data>
   <data name="Modes_Done" xml:space="preserve">
     <value>تم</value>
   </data>
@@ -2143,6 +2224,12 @@
   </data>
   <data name="Modes_Modes" xml:space="preserve">
     <value>الأوضاع</value>
+  </data>
+  <data name="Modes_MoveNameDown" xml:space="preserve">
+    <value>تحريك {0} لأسفل</value>
+  </data>
+  <data name="Modes_MoveNameUp" xml:space="preserve">
+    <value>تحريك {0} لأعلى</value>
   </data>
   <data name="Modes_NameOfModeOrdinal" xml:space="preserve">
     <value>اسم الوضع {0}</value>
@@ -2179,6 +2266,9 @@
   </data>
   <data name="Modes_USBCable" xml:space="preserve">
     <value>كابل USB</value>
+  </data>
+  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
+    <value>الوضع {0}</value>
   </data>
   <data name="Names_ANameHasToBe" xml:space="preserve">
     <value>يجب أن يكون الاسم من 1 إلى {0} حرفًا.</value>
@@ -2234,8 +2324,14 @@
   <data name="Names_Removed" xml:space="preserve">
     <value>تمت إزالة {0}.</value>
   </data>
+  <data name="Names_RenamedOldToNew" xml:space="preserve">
+    <value>تمت إعادة تسمية {0} إلى {1}.</value>
+  </data>
   <data name="Names_ThisProfileAlreadyHasA" xml:space="preserve">
     <value>هذا الملف الشخصي يحتوي بالفعل على اسم يسمى "{0}".</value>
+  </data>
+  <data name="Names_UsedOnCount" xml:space="preserve">
+    <value>على {0}</value>
   </data>
   <data name="Names_YourNameForHumanizeToken" xml:space="preserve">
     <value>اسمك لـ {0}</value>
@@ -2297,12 +2393,6 @@
   <data name="Outputs_XboxButtons" xml:space="preserve">
     <value>أزرار Xbox</value>
   </data>
-  <data name="Prefs_OffZero" xml:space="preserve">
-    <value>إيقاف (0)</value>
-  </data>
-  <data name="Prefs_OnOne" xml:space="preserve">
-    <value>تشغيل (1)</value>
-  </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>عن {0}: {1}</value>
   </data>
@@ -2354,6 +2444,12 @@
   <data name="Prefs_NotesForRowSaved" xml:space="preserve">
     <value>ملاحظات الصف {0}. محفوظة في الملف، ويتجاهلها QuadStick</value>
   </data>
+  <data name="Prefs_OffZero" xml:space="preserve">
+    <value>إيقاف (0)</value>
+  </data>
+  <data name="Prefs_OnOne" xml:space="preserve">
+    <value>تشغيل (1)</value>
+  </data>
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}. {1}</value>
   </data>
@@ -2402,6 +2498,12 @@
   <data name="Review_AddingItChangesCellA1" xml:space="preserve">
     <value>إضافتها تغيّر الخلية A1. كل شيء آخر في علامة التبويب يُستورد كما كتبته.</value>
   </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} وخلية أخرى</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} و{1} خلايا أخرى</value>
+  </data>
   <data name="Review_AndYourPreferences" xml:space="preserve">
     <value>، وتفضيلاتك</value>
   </data>
@@ -2432,17 +2534,14 @@
   <data name="Review_Done" xml:space="preserve">
     <value>تم</value>
   </data>
+  <data name="Review_EmptiedCell" xml:space="preserve">
+    <value>تم إفراغ {0}.</value>
+  </data>
   <data name="Review_EmptyCellWhere" xml:space="preserve">
     <value>خلية فارغة {0}</value>
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>عد إلى العرض البسيط</value>
-  </data>
-  <data name="Review_AndMoreCells_one" xml:space="preserve">
-    <value>{0} وخلية أخرى</value>
-  </data>
-  <data name="Review_AndMoreCells_other" xml:space="preserve">
-    <value>{0} و{1} خلايا أخرى</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   علامة التبويب هذه ملاحظات، وليست ارتباطات. يكتب QMP وإضافة Sheets هذه العلامة لتقرأها، ولا يحمّلها QuadStick أبدًا. لم يُفقد شيء بتركها خارجًا.</value>
@@ -2498,6 +2597,9 @@
   <data name="Review_ModeIsNamedAfterIts" xml:space="preserve">
     <value>الوضع يُسمى وفق علامة تبويب ورقته</value>
   </data>
+  <data name="Review_ModeNumberTitle" xml:space="preserve">
+    <value>الوضع {0}: {1}</value>
+  </data>
   <data name="Review_ModeRModeNumberIsCalled" xml:space="preserve">
     <value>الوضع {0} يُسمى "{1}"، وفق علامة تبويب ورقته. كانت خلية اسم ذلك الوضع فارغة.</value>
   </data>
@@ -2533,6 +2635,9 @@
   </data>
   <data name="Review_MoveWordIntoTheNotes" xml:space="preserve">
     <value>انقل "{0}" إلى عمود الملاحظات، حيث لا ينظر QuadStick أبدًا</value>
+  </data>
+  <data name="Review_MovedFromTo" xml:space="preserve">
+    <value>تم نقل «{0}» من {1} إلى {2}.</value>
   </data>
   <data name="Review_MovedValueFromWhereInto" xml:space="preserve">
     <value>نُقلت "{0}" من {1} إلى عمود الملاحظة.</value>
@@ -2576,8 +2681,14 @@
   <data name="Review_PartOfTheRowThat" xml:space="preserve">
     <value>جزء من الصف الذي يفتح وضعًا</value>
   </data>
+  <data name="Review_RowNumber" xml:space="preserve">
+    <value>الصف {0}</value>
+  </data>
   <data name="Review_SaveCell" xml:space="preserve">
     <value>احفظ الخلية</value>
+  </data>
+  <data name="Review_SetCellTo" xml:space="preserve">
+    <value>تم ضبط {0} على «{1}».</value>
   </data>
   <data name="Review_ShowTheSpreadsheetWithThe" xml:space="preserve">
     <value>اعرض جدول البيانات مع تمييز قراءة التطبيق عليه</value>
@@ -2744,26 +2855,26 @@
   <data name="Settings_CancelConnect" xml:space="preserve">
     <value>ألغِ الاتصال بـ Google</value>
   </data>
-  <data name="Settings_CheckUpdates" xml:space="preserve">
-    <value>تحقق من التحديثات</value>
-  </data>
-  <data name="Settings_Checking" xml:space="preserve">
-    <value>جارٍ التحقق...</value>
-  </data>
   <data name="Settings_CardSentenceStyle" xml:space="preserve">
     <value>صياغة بطاقات التعيين</value>
   </data>
   <data name="Settings_CardSentenceStyleCaption" xml:space="preserve">
     <value>اختر ما إذا كانت البطاقات تبدأ بالمخرجات أم بالمدخلات. هذا يغيّر طريقة قراءة البطاقات فقط، لا ما يفعله QuadStick.</value>
   </data>
-  <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
-    <value>صياغة بطاقات التعيين: جمل تبدأ بالمخرجات أو بالمدخلات</value>
-  </data>
   <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
     <value>اضغط X عند الشفط</value>
   </data>
+  <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
+    <value>صياغة بطاقات التعيين: جمل تبدأ بالمخرجات أو بالمدخلات</value>
+  </data>
   <data name="Settings_CardSentenceStyleInputFirst" xml:space="preserve">
     <value>اشفط لتنفيذ X</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>تحقق من التحديثات</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>جارٍ التحقق...</value>
   </data>
   <data name="Settings_Close" xml:space="preserve">
     <value>إغلاق</value>
@@ -2821,6 +2932,9 @@
   </data>
   <data name="Settings_ImportDriveHelp" xml:space="preserve">
     <value>استورد ملفاتك الشخصية من Google Drive</value>
+  </data>
+  <data name="Settings_InstallIdIs" xml:space="preserve">
+    <value>معرّف التثبيت: {0}</value>
   </data>
   <data name="Settings_Language" xml:space="preserve">
     <value>اللغة</value>
@@ -3233,11 +3347,11 @@
   <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
     <value>عرض الصفوف بالطريقة التي يخزنها بها الجدول  (Ctrl+D)</value>
   </data>
-  <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
-    <value>اختر الوضع المراد تعديله</value>
-  </data>
   <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
     <value>حدد الصفوف المراد نقلها أو حذفها أو إفراغها</value>
+  </data>
+  <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
+    <value>اختر الوضع المراد تعديله</value>
   </data>
   <data name="Shell_SetUpAGame" xml:space="preserve">
     <value>إعداد لعبة</value>
@@ -3385,110 +3499,5 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>أنت تستخدم {0}، وهو الأحدث.</value>
-  </data>
-  <data name="Count_RowCopied_one" xml:space="preserve">
-    <value>تم نسخ {0} صف إلى {1}. Ctrl+Z يتراجع عن ذلك.</value>
-  </data>
-  <data name="Count_RowCopied_other" xml:space="preserve">
-    <value>تم نسخ {0} صفوف إلى {1}. Ctrl+Z يتراجع عن ذلك.</value>
-  </data>
-  <data name="Main_CopyToMode" xml:space="preserve">
-    <value>نسخ إلى الوضع</value>
-  </data>
-  <data name="Main_Move" xml:space="preserve">
-    <value>تحريك</value>
-  </data>
-  <data name="Main_DuplicateMark" xml:space="preserve">
-    <value>×{0}</value>
-  </data>
-  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
-    <value>مستخدم {0} مرات في هذا الوضع</value>
-  </data>
-  <data name="Count_Profile_one" xml:space="preserve">
-    <value>ملف تعريف واحد ({0})</value>
-  </data>
-  <data name="Count_Profile_other" xml:space="preserve">
-    <value>{0} ملفات تعريف</value>
-  </data>
-  <data name="Count_File_one" xml:space="preserve">
-    <value>ملف واحد ({0})</value>
-  </data>
-  <data name="Count_File_other" xml:space="preserve">
-    <value>{0} ملفات</value>
-  </data>
-  <data name="Names_UsedOnCount" xml:space="preserve">
-    <value>على {0}</value>
-  </data>
-  <data name="Names_RenamedOldToNew" xml:space="preserve">
-    <value>تمت إعادة تسمية {0} إلى {1}.</value>
-  </data>
-  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
-    <value>{0} على {1}.</value>
-  </data>
-  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
-    <value>حذف {0} من {1}؟</value>
-  </data>
-  <data name="Drive_RestoreImported" xml:space="preserve">
-    <value>{0} تم استيرادها</value>
-  </data>
-  <data name="Drive_RestoreSkipped" xml:space="preserve">
-    <value>{0} تم تخطيها: </value>
-  </data>
-  <data name="Drive_RestoreFailed" xml:space="preserve">
-    <value>{0} فشل: </value>
-  </data>
-  <data name="Review_RowNumber" xml:space="preserve">
-    <value>الصف {0}</value>
-  </data>
-  <data name="Review_EmptiedCell" xml:space="preserve">
-    <value>تم إفراغ {0}.</value>
-  </data>
-  <data name="Review_MovedFromTo" xml:space="preserve">
-    <value>تم نقل «{0}» من {1} إلى {2}.</value>
-  </data>
-  <data name="Review_SetCellTo" xml:space="preserve">
-    <value>تم ضبط {0} على «{1}».</value>
-  </data>
-  <data name="Review_ModeNumberTitle" xml:space="preserve">
-    <value>الوضع {0}: {1}</value>
-  </data>
-  <data name="Main_InFolder" xml:space="preserve">
-    <value> · في {0}</value>
-  </data>
-  <data name="Main_PlusMore" xml:space="preserve">
-    <value> +{0} أخرى</value>
-  </data>
-  <data name="Main_MappingNumber" xml:space="preserve">
-    <value>التعيين {0}</value>
-  </data>
-  <data name="Main_RowNumber" xml:space="preserve">
-    <value>الصف {0}</value>
-  </data>
-  <data name="Main_PickWord" xml:space="preserve">
-    <value>اختر {0}</value>
-  </data>
-  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
-    <value>الوضع {0}</value>
-  </data>
-  <data name="Modes_MoveNameUp" xml:space="preserve">
-    <value>تحريك {0} لأعلى</value>
-  </data>
-  <data name="Modes_MoveNameDown" xml:space="preserve">
-    <value>تحريك {0} لأسفل</value>
-  </data>
-  <data name="Modes_DeleteName" xml:space="preserve">
-    <value>حذف {0}</value>
-  </data>
-  <data name="Settings_InstallIdIs" xml:space="preserve">
-    <value>معرّف التثبيت: {0}</value>
-  </data>
-  <data name="Main_Add" xml:space="preserve">
-    <value>إضافة</value>
-  </data>
-  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
-    <value>بعض الأوضاع تخفي قرص QuadStick عن حاسوبك.</value>
-  </data>
-  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
-    <value>يبدأ الجهاز التشغيل بهذا الملف، لذلك لن يُكتب فيه وضع بدون قرص.</value>
   </data>
 </root>

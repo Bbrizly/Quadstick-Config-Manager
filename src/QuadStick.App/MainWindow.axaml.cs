@@ -906,6 +906,20 @@ public partial class MainWindow : Window
         ListViewButton.Click += (_, _) => SetDeviceView(false);
         LabelStyleButton.Click += (_, _) => ToggleLabelStyle();
         UpdateLabelStyleButton();
+        // One shape for both views, unlike the card setting beside it: a
+        // person who wants the short form wants it wherever the mappings are.
+        FormatToggleButton.Click += (_, _) =>
+        {
+            // Flip the setting, not read IsChecked: the key is a ToggleButton
+            // so a real click has already flipped it, but keyboard and test
+            // clicks arrive as the routed event alone. UpdateFormatToggleButton
+            // puts the check back in step with the setting either way.
+            _settings.CompactCards = !_settings.CompactCards;
+            Settings.Save(_settings);
+            UpdateFormatToggleButton();
+            if (_deviceView) BuildZoneDetail(); else RebuildRows();
+        };
+        UpdateFormatToggleButton();
         _model = Enum.TryParse<QsModel>(_settings.Model, out var savedModel) ? savedModel : QsModel.FPS;
         ModelPicker.ItemsSource = ModelNames;
         ModelPicker.SelectedIndex = (int)_model;
@@ -1785,6 +1799,17 @@ public partial class MainWindow : Window
             1 => Strings.Main_WordsAreShownInPlain,
             _ => Strings.Main_WordsAreShownAsXbox,
         });
+    }
+
+    void UpdateFormatToggleButton()
+    {
+        FormatToggleButton.IsChecked = _settings.CompactCards;
+        // A glyph cannot say which way it is set, so the name and the tip both
+        // say the state and what a click does next.
+        AutomationProperties.SetName(FormatToggleButton, _settings.CompactCards
+            ? Strings.Main_MappingsAreOnOneLine
+            : Strings.Main_MappingsReadAsAFull);
+        ToolTip.SetTip(FormatToggleButton, Strings.Main_FitEachMappingOnOne);
     }
 
     // Test seam, same shape as the one in DeviceFilesWindow. A test cannot mount
@@ -3143,11 +3168,12 @@ public partial class MainWindow : Window
         // The words toggle and the card style follow the mappings into Rows
         // view: the same Words switch, the same sentences. Neither has anything
         // to say on a preferences sheet or on the names table.
-        LabelStyleButton.IsVisible = CardViewButton.IsVisible =
+        LabelStyleButton.IsVisible = CardViewButton.IsVisible = FormatToggleButton.IsVisible =
             CurrentSheet?.Type == SheetType.ProfileName && !OnCustomNames;
         // Each view carries its own card setting, so the word on the button
         // changes when the view does.
         UpdateCardViewButton();
+        UpdateFormatToggleButton();
         // Device View adds a mapping from the part you are looking at, which
         // says where the row landed. In the band it made a row appear somewhere
         // off screen, so the band belongs to Rows view only.
@@ -4451,7 +4477,17 @@ public partial class MainWindow : Window
         string verb = setting ? Strings.Main_SetVerb : Strings.Main_PressVerb;
         string joiner = setting ? Strings.Main_ToJoiner : Strings.Main_WhenYou;
         string func = _labelStyle == 0 ? b.Function : b.Function.Replace('_', ' ');
-        bool inputFirst = !setting && _settings.CardSentenceStyle == "InputToOutput";
+        // A setting row is already "set X to 50", which is one line and has no
+        // behavior to demote, so there is nothing for the compact form to do.
+        bool compact = !setting && _settings.CompactCards;
+        // Compact is an input-to-output sentence whichever way the words are
+        // set, so it turns that style on rather than fighting it.
+        bool inputFirst = compact || (!setting && _settings.CardSentenceStyle == "InputToOutput");
+        // The single line is the wide form only. A pill cannot wrap, so under
+        // NarrowCardWidth there is no arrangement of one line that does not
+        // draw a name over its neighbour or off the end of the card; the
+        // narrow two-row layout below is already the answer to that width.
+        bool oneLine = compact && !_narrowCards;
 
         // Every card uses the same column widths, so the outputs line up under
         // each other and so do the inputs: reading a list of cards is then
@@ -4459,7 +4495,16 @@ public partial class MainWindow : Window
         // shares are fixed (not Auto) precisely so one long name in one card
         // cannot shift the card below it. In a narrow panel the sentence takes
         // two lines instead of squeezing every name down to an ellipsis.
-        var line = _narrowCards
+        var line = oneLine
+            // Input, "to", output and nothing else: the two nouns you scan for
+            // get the whole line, and the behavior drops to a second one.
+            // Dropping the two "as" columns is what buys the room.
+            ? new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*,Auto,*"),
+                VerticalAlignment = VerticalAlignment.Center,
+            }
+            : _narrowCards
             ? inputFirst
                 ? new Grid
                 {
@@ -4523,7 +4568,30 @@ public partial class MainWindow : Window
         Control OutputPill() => Pill(output, OutputTint, outputVisual, showOutputText,
             _dupes.Output(b.Output));
 
-        if (_narrowCards && inputFirst)
+        Control? compactBehavior = null;
+        if (oneLine)
+        {
+            Cell(inputPills, 0);
+            Cell(Word(Strings.Main_ToJoiner), 1);
+            Cell(OutputPill(), 2);
+            if (func.Length > 0)
+            {
+                // Outside the grid, not a fourth column: inside it the "as"
+                // phrase would have to take a share of the line the compact
+                // form exists to give back to the two names.
+                var asLine = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 0,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Children = { Word(Strings.Main_AsJoiner) },
+                };
+                asLine.Children.Add(Pill(func, FunctionTint));
+                compactBehavior = asLine;
+            }
+        }
+        else if (_narrowCards && inputFirst)
         {
             inputPills.HorizontalAlignment = HorizontalAlignment.Left;
             Cell(inputPills, 0, row: 0);
@@ -4597,6 +4665,7 @@ public partial class MainWindow : Window
         }
 
         var body = new StackPanel { Spacing = 4, Children = { RuleGrid(line) } };
+        if (compactBehavior is not null) body.Children.Add(compactBehavior);
         var note = _file!.GetCell(b.Row, NoteColumn);
         if (note.Length > 0)
             body.Children.Add(new TextBlock

@@ -247,6 +247,12 @@
   <data name="Community_TheSavedCopyOfThe" xml:space="preserve">
     <value>保存的社区列表副本中没有任何配置文件。</value>
   </data>
+  <data name="Count_Action_one" xml:space="preserve">
+    <value>{0} 个动作</value>
+  </data>
+  <data name="Count_Action_other" xml:space="preserve">
+    <value>{0} 个动作</value>
+  </data>
   <data name="Count_Binding_one" xml:space="preserve">
     <value>{0} 个绑定</value>
   </data>
@@ -258,6 +264,12 @@
   </data>
   <data name="Count_Error_other" xml:space="preserve">
     <value>{0} 个错误</value>
+  </data>
+  <data name="Count_File_one" xml:space="preserve">
+    <value>{0} 个文件</value>
+  </data>
+  <data name="Count_File_other" xml:space="preserve">
+    <value>{0} 个文件</value>
   </data>
   <data name="Count_Mapping_one" xml:space="preserve">
     <value>{0} 个映射</value>
@@ -282,6 +294,18 @@
   </data>
   <data name="Count_Part_other" xml:space="preserve">
     <value>{0} 个部件</value>
+  </data>
+  <data name="Count_Profile_one" xml:space="preserve">
+    <value>{0} 个配置</value>
+  </data>
+  <data name="Count_Profile_other" xml:space="preserve">
+    <value>{0} 个配置</value>
+  </data>
+  <data name="Count_RowCopied_one" xml:space="preserve">
+    <value>已将 {0} 行复制到 {1}。Ctrl+Z 可撤销。</value>
+  </data>
+  <data name="Count_RowCopied_other" xml:space="preserve">
+    <value>已将 {0} 行复制到 {1}。Ctrl+Z 可撤销。</value>
   </data>
   <data name="Count_RowDeleted_one" xml:space="preserve">
     <value>已删除 {0} 行。按 Ctrl+Z 可恢复。</value>
@@ -322,12 +346,6 @@
   <data name="DevicePage_AnythingFromLoToHi" xml:space="preserve">
     <value>从 {0} 到 {1}。</value>
   </data>
-  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
-    <value>已更改 {0} 项设置</value>
-  </data>
-  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
-    <value>已更改 {0} 项设置</value>
-  </data>
   <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
     <value>已更改 {0} 项设置。按下保存前不会写入你的 QuadStick。</value>
   </data>
@@ -339,6 +357,12 @@
   </data>
   <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
     <value>已更改 {0} 项设置。连接你的 QuadStick 才能保存。</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
+    <value>已更改 {0} 项设置</value>
+  </data>
+  <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
+    <value>已更改 {0} 项设置</value>
   </data>
   <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
     <value>无法读取你的 QuadStick 上的设置：{0}</value>
@@ -526,6 +550,9 @@
   <data name="Device_CouldNotReadThisDrive" xml:space="preserve">
     <value>无法读取此驱动器：{0}</value>
   </data>
+  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
+    <value>要从 {1} 删除 {0} 吗?</value>
+  </data>
   <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
     <value>从 {1} 处的 QuadStick 删除 {0}</value>
   </data>
@@ -579,6 +606,9 @@
   </data>
   <data name="Device_FilesTotalAcrossGroupsCount" xml:space="preserve">
     <value>{0}，分布在 {1} 个 QuadStick 驱动器上。每个驱动器都单独列在下方。</value>
+  </data>
+  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
+    <value>{1} 上有 {0}。</value>
   </data>
   <data name="Device_LinkedToAGoogleSheet" xml:space="preserve">
     <value>，已关联到 Google 表格</value>
@@ -700,6 +730,15 @@
   <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
     <value>您的 Google Drive 备份</value>
   </data>
+  <data name="Drive_RestoreFailed" xml:space="preserve">
+    <value>{0} 失败: </value>
+  </data>
+  <data name="Drive_RestoreImported" xml:space="preserve">
+    <value>{0} 已导入</value>
+  </data>
+  <data name="Drive_RestoreSkipped" xml:space="preserve">
+    <value>{0} 已跳过: </value>
+  </data>
   <data name="Install_AWrongDefaultCsvCan" xml:space="preserve">
     <value>错误的 default.csv 可能导致闪存驱动器访问失效，恢复需要进行物理强制擦除。系统将先创建备份。是否继续？</value>
   </data>
@@ -807,6 +846,9 @@
   <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
     <value>插入 QuadStick 背面 3.5 毫米插孔的适配开关。</value>
   </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>添加</value>
+  </data>
   <data name="Main_AddANewBindingRow" xml:space="preserve">
     <value>为此模式添加新的绑定行</value>
   </data>
@@ -888,6 +930,9 @@
   <data name="Main_BackupPending" xml:space="preserve">
     <value> · 备份待处理</value>
   </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>设备从这个文件启动，所以不会把无驱动器的模式写进去。</value>
+  </data>
   <data name="Main_Cancel" xml:space="preserve">
     <value>取消</value>
   </data>
@@ -943,6 +988,9 @@
   </data>
   <data name="Main_CopyShareLink" xml:space="preserve">
     <value>复制共享链接</value>
+  </data>
+  <data name="Main_CopyToMode" xml:space="preserve">
+    <value>复制到模式</value>
   </data>
   <data name="Main_CopyYourBackedUpProfiles" xml:space="preserve">
     <value>是否现在将您已备份的配置文件从 Google Drive 复制到此计算机？</value>
@@ -1079,8 +1127,14 @@
   <data name="Main_DownloadingTheSpreadsheet" xml:space="preserve">
     <value>正在下载电子表格...</value>
   </data>
+  <data name="Main_DuplicateMark" xml:space="preserve">
+    <value>×{0}</value>
+  </data>
   <data name="Main_EditDevicePreferences" xml:space="preserve">
     <value>编辑设备偏好设置？</value>
+  </data>
+  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
+    <value>点击以编辑此映射或添加备注。</value>
   </data>
   <data name="Main_Edited" xml:space="preserve">
     <value>已编辑 </value>
@@ -1090,6 +1144,9 @@
   </data>
   <data name="Main_EveryInputOnYourQuadStick" xml:space="preserve">
     <value>您的 QuadStick 上的每个输入在此模式下都已被使用。</value>
+  </data>
+  <data name="Main_ExtraActions" xml:space="preserve">
+    <value>+ 另外 {0} 个动作</value>
   </data>
   <data name="Main_ExtraInputForMappingN" xml:space="preserve">
     <value>映射 {0} 的额外输入</value>
@@ -1103,8 +1160,14 @@
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
     <value>输入低于一定强度时打开输出。与 greater_than 相反。</value>
   </data>
+  <data name="Main_FitEachMappingOnOne" xml:space="preserve">
+    <value>将每条映射放在一行内</value>
+  </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>发现问题了？</value>
+  </data>
+  <data name="Main_FunctionBehavior" xml:space="preserve">
+    <value>功能(行为)</value>
   </data>
   <data name="Main_FunctionForRowBRow" xml:space="preserve">
     <value>第 {0} 行的功能。{1}</value>
@@ -1157,6 +1220,9 @@
   <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
     <value>已从电子表格导入 {0}。</value>
   </data>
+  <data name="Main_InFolder" xml:space="preserve">
+    <value> · 位于 {0}</value>
+  </data>
   <data name="Main_InputI1ForRow" xml:space="preserve">
     <value>第 {1} 行的输入 {0}</value>
   </data>
@@ -1165,6 +1231,12 @@
   </data>
   <data name="Main_InputNextCol1ForRow" xml:space="preserve">
     <value>第 {1} 行的输入 {0}</value>
+  </data>
+  <data name="Main_InputPressesOutput" xml:space="preserve">
+    <value>{0} 按下 {1}</value>
+  </data>
+  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
+    <value>输入(吸、吹、摇杆)</value>
   </data>
   <data name="Main_InstallToTheQuadStickNamed" xml:space="preserve">
     <value>安装到名为 {0} 的 QuadStick，位于 {1}</value>
@@ -1205,26 +1277,23 @@
   <data name="Main_Left" xml:space="preserve">
     <value>左</value>
   </data>
-  <data name="Main_FunctionBehavior" xml:space="preserve">
-    <value>功能(行为)</value>
-  </data>
-  <data name="Main_InputPressesOutput" xml:space="preserve">
-    <value>{0} 按下 {1}</value>
-  </data>
-  <data name="Main_InputsSipsPuffsJoystick" xml:space="preserve">
-    <value>输入(吸、吹、摇杆)</value>
-  </data>
   <data name="Main_LeftBumper" xml:space="preserve">
     <value>左肩键</value>
   </data>
   <data name="Main_LeftMouthpieceHole" xml:space="preserve">
     <value>左吸嘴孔</value>
   </data>
+  <data name="Main_LeftStick" xml:space="preserve">
+    <value>左摇杆</value>
+  </data>
   <data name="Main_LeftStickClick" xml:space="preserve">
     <value>左摇杆按键</value>
   </data>
   <data name="Main_LeftTrigger" xml:space="preserve">
     <value>左扳机键</value>
+  </data>
+  <data name="Main_Lip" xml:space="preserve">
+    <value>唇</value>
   </data>
   <data name="Main_LipSwitch" xml:space="preserve">
     <value>唇动开关</value>
@@ -1247,17 +1316,23 @@
   <data name="Main_MapTokenToANew" xml:space="preserve">
     <value>将 {0} 映射到 {1} 上的新映射</value>
   </data>
+  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
+    <value>映射 {0}: {1} 到 {2}{3}。按 Enter 编辑。</value>
+  </data>
+  <data name="Main_MappingNumber" xml:space="preserve">
+    <value>映射 {0}</value>
+  </data>
   <data name="Main_MappingRowSpoken" xml:space="preserve">
     <value>映射 {0}：当您 {2}{3} 时按下 {1}。按 Enter 键进行编辑。</value>
   </data>
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>映射 {0}：当您先后 {2}{3} 时按下 {1}。按 Enter 键进行编辑。</value>
   </data>
-  <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
-    <value>映射 {0}: {1} 到 {2}{3}。按 Enter 编辑。</value>
+  <data name="Main_MappingsAreOnOneLine" xml:space="preserve">
+    <value>映射以单行形式呈现。切换到完整语句。</value>
   </data>
-  <data name="Main_EditMappingOrAddNote" xml:space="preserve">
-    <value>点击以编辑此映射或添加备注。</value>
+  <data name="Main_MappingsReadAsAFull" xml:space="preserve">
+    <value>映射以完整语句的形式呈现。切换到每条一行。</value>
   </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>映射以简单语句卡片的形式呈现。切换到详细编辑器。</value>
@@ -1280,6 +1355,12 @@
   <data name="Main_ModeSettings" xml:space="preserve">
     <value>模式设置</value>
   </data>
+  <data name="Main_Mouse" xml:space="preserve">
+    <value>鼠标</value>
+  </data>
+  <data name="Main_Move" xml:space="preserve">
+    <value>移动</value>
+  </data>
   <data name="Main_MoveRowBRowWord" xml:space="preserve">
     <value>将第 {0} 行移动 {1}</value>
   </data>
@@ -1291,6 +1372,9 @@
   </data>
   <data name="Main_MovedTheTextFromI" xml:space="preserve">
     <value>已将 {0} 中的文本移动到备注列。</value>
+  </data>
+  <data name="Main_Movement" xml:space="preserve">
+    <value>移动方式</value>
   </data>
   <data name="Main_MovingTheWholeMouthpieceWith" xml:space="preserve">
     <value>用嘴移动整个口控杆的效果就像摇杆一样。上、下、左、右以及 8 个方位都可以各自按下不同的功能。</value>
@@ -1379,17 +1463,11 @@
   <data name="Main_NotNowKeepTheReport" xml:space="preserve">
     <value>暂时不要，保留该报告，稍后再询问</value>
   </data>
-  <data name="Main_SetTheEmulationMode" xml:space="preserve">
-    <value>设置模拟模式</value>
-  </data>
-  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
-    <value>把模拟模式设为 {0}，写作 {1}</value>
-  </data>
-  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
-    <value>此配置映射了您的 {1} 没有的 {0}。它们在左侧列表中,仍然可以编辑。</value>
-  </data>
   <data name="Main_NotOnModel" xml:space="preserve">
     <value>此型号不支持</value>
+  </data>
+  <data name="Main_NotOnYourModel" xml:space="preserve">
+    <value>您的型号不支持</value>
   </data>
   <data name="Main_NotOnYourModelName" xml:space="preserve">
     <value>您的 {0} 上没有</value>
@@ -1397,20 +1475,11 @@
   <data name="Main_NotOnYourModelNameParts" xml:space="preserve">
     <value>{0}。{1}、{2}。打开列表。</value>
   </data>
-  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
-    <value>这些行保留在文件中,仍然可以编辑。选择一个部件即可打开它的映射。</value>
-  </data>
-  <data name="Main_NotOnYourModel" xml:space="preserve">
-    <value>您的型号不支持</value>
-  </data>
   <data name="Main_NotUsedYetOnThis" xml:space="preserve">
     <value>此部件尚未使用（{0}）</value>
   </data>
   <data name="Main_Note" xml:space="preserve">
     <value>备注</value>
-  </data>
-  <data name="Main_NoteSummary" xml:space="preserve">
-    <value>{0}: {1}</value>
   </data>
   <data name="Main_NoteForRowBRow" xml:space="preserve">
     <value>第 {0} 行的备注。保存在文件中，QuadStick 会忽略它</value>
@@ -1423,6 +1492,9 @@
   </data>
   <data name="Main_NoteLabel" xml:space="preserve">
     <value>备注</value>
+  </data>
+  <data name="Main_NoteSummary" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
   <data name="Main_NothingMappedHereYet" xml:space="preserve">
     <value>此处尚未映射任何内容。</value>
@@ -1510,11 +1582,17 @@
   <data name="Main_PathGetFileNamePathIsRemoved" xml:space="preserve">
     <value>{0} 将从此电脑上永久删除。QuadStick 或 Google Sheets 上的副本不受影响。</value>
   </data>
+  <data name="Main_PickWord" xml:space="preserve">
+    <value>选择 {0}</value>
+  </data>
   <data name="Main_Picks0NameNoProfileTabRead" xml:space="preserve">
     <value>{0}：{1}</value>
   </data>
   <data name="Main_PlugInTheQuadStickIt" xml:space="preserve">
     <value>插入 QuadStick，它会像 USB 驱动器一样显示。安装会将旧文件备份到 QuadStickBackups，写入一份临时副本，检查后再替换进去。错误会阻止安装。覆盖 default.csv 时总会先询问。</value>
+  </data>
+  <data name="Main_PlusMore" xml:space="preserve">
+    <value> 另有 +{0} 个</value>
   </data>
   <data name="Main_PortExplain" xml:space="preserve">
     <value>{0}。{1}</value>
@@ -1548,6 +1626,12 @@
   </data>
   <data name="Main_ProfilesYouAlreadyMadeFrom" xml:space="preserve">
     <value>您已用此模板创建的配置文件不受影响。此操作无法撤销。</value>
+  </data>
+  <data name="Main_Puff" xml:space="preserve">
+    <value>吹</value>
+  </data>
+  <data name="Main_Push" xml:space="preserve">
+    <value>推</value>
   </data>
   <data name="Main_PuttingThisProfileInGoogle" xml:space="preserve">
     <value>正在将此配置文件放入 Google Sheets...</value>
@@ -1636,6 +1720,9 @@
   <data name="Main_RightSideTube" xml:space="preserve">
     <value>右 + 侧管</value>
   </data>
+  <data name="Main_RightStick" xml:space="preserve">
+    <value>右摇杆</value>
+  </data>
   <data name="Main_RightStickClick" xml:space="preserve">
     <value>右摇杆按键</value>
   </data>
@@ -1648,29 +1735,14 @@
   <data name="Main_RowNotSelected" xml:space="preserve">
     <value>{0}。空格键选择，拖动可重新排序</value>
   </data>
-  <data name="Main_RowSendingNow" xml:space="preserve">
-    <value>{0}。QuadStick 正在发送这个</value>
-  </data>
-  <data name="Main_SendingNow" xml:space="preserve">
-    <value>QuadStick 正在发送这个</value>
-  </data>
-  <data name="Main_VocabularyAll" xml:space="preserve">
-    <value>全部</value>
-  </data>
-  <data name="Main_VocabularyPlaystation" xml:space="preserve">
-    <value>PlayStation</value>
-  </data>
-  <data name="Main_VocabularyXbox" xml:space="preserve">
-    <value>Xbox</value>
-  </data>
-  <data name="Main_WhatALitRowMeans" xml:space="preserve">
-    <value>当 QuadStick 发送某一行的输出时,该行会亮起。设备从不说明它正在运行哪个文件或哪个模式,因此亮起的行可能来自与此处打开的配置不同的另一个配置。鼠标、键盘和红外输出通过另一条连接发出,永远不会亮起。</value>
-  </data>
-  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
-    <value>本应用尚未学会读取此仿真模式的报告,因此 QuadStick 处于该模式时不会有任何行亮起。</value>
+  <data name="Main_RowNumber" xml:space="preserve">
+    <value>第 {0} 行</value>
   </data>
   <data name="Main_RowSelected" xml:space="preserve">
     <value>{0}，已选中。空格键选择，拖动可重新排序</value>
+  </data>
+  <data name="Main_RowSendingNow" xml:space="preserve">
+    <value>{0}。QuadStick 正在发送这个</value>
   </data>
   <data name="Main_RowsThatPressAGame" xml:space="preserve">
     <value>按下游戏按钮但尚无任何触发条件的行。请为每一行指定一个输入，或将其删除。</value>
@@ -1726,8 +1798,20 @@
   <data name="Main_SendThisCrashReport" xml:space="preserve">
     <value>发送此崩溃报告</value>
   </data>
+  <data name="Main_SendingNow" xml:space="preserve">
+    <value>QuadStick 正在发送这个</value>
+  </data>
+  <data name="Main_Sequence" xml:space="preserve">
+    <value>序列</value>
+  </data>
   <data name="Main_SetItTo" xml:space="preserve">
     <value>将其设置为</value>
+  </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>设置模拟模式</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>把模拟模式设为 {0}，写作 {1}</value>
   </data>
   <data name="Main_SetVerb" xml:space="preserve">
     <value>设置</value>
@@ -1762,6 +1846,9 @@
   <data name="Main_SingletonASingleSipPuff" xml:space="preserve">
     <value>Singleton：摇杆上的单个 sip/puff 管。使用 sip 和 puff 模式加上摇杆动作。</value>
   </data>
+  <data name="Main_Sip" xml:space="preserve">
+    <value>吸</value>
+  </data>
   <data name="Main_SipOrPuffOnThe" xml:space="preserve">
     <value>在左吸嘴孔上进行 sip 或 puff。轻柔的 sip 或 puff 可以触发不同效果（soft 变体）。</value>
   </data>
@@ -1774,53 +1861,17 @@
   <data name="Main_SipOrPuffOnThe4" xml:space="preserve">
     <value>在侧管上进行 sip 或 puff。这里长而用力的 sip 通常用于切换配置文件，但您也可以映射它。</value>
   </data>
+  <data name="Main_SoftLip" xml:space="preserve">
+    <value>轻唇</value>
+  </data>
   <data name="Main_SoftPuff" xml:space="preserve">
     <value>轻吹</value>
-  </data>
-  <data name="Main_Puff" xml:space="preserve">
-    <value>吹</value>
-  </data>
-  <data name="Main_Sip" xml:space="preserve">
-    <value>吸</value>
   </data>
   <data name="Main_SoftSip" xml:space="preserve">
     <value>轻吸</value>
   </data>
-  <data name="Main_Lip" xml:space="preserve">
-    <value>唇</value>
-  </data>
-  <data name="Main_SoftLip" xml:space="preserve">
-    <value>轻唇</value>
-  </data>
-  <data name="Main_Push" xml:space="preserve">
-    <value>推</value>
-  </data>
-  <data name="Main_Movement" xml:space="preserve">
-    <value>移动方式</value>
-  </data>
-  <data name="Main_LeftStick" xml:space="preserve">
-    <value>左摇杆</value>
-  </data>
-  <data name="Main_RightStick" xml:space="preserve">
-    <value>右摇杆</value>
-  </data>
-  <data name="Main_Mouse" xml:space="preserve">
-    <value>鼠标</value>
-  </data>
-  <data name="Main_ExtraActions" xml:space="preserve">
-    <value>+ 另外 {0} 个动作</value>
-  </data>
-  <data name="Main_ViewDetails" xml:space="preserve">
-    <value>查看详情 →</value>
-  </data>
-  <data name="Main_Sequence" xml:space="preserve">
-    <value>序列</value>
-  </data>
-  <data name="Count_Action_one" xml:space="preserve">
-    <value>{0} 个动作</value>
-  </data>
-  <data name="Count_Action_other" xml:space="preserve">
-    <value>{0} 个动作</value>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>某些模式会让电脑看不到 QuadStick 驱动器。</value>
   </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>在 {0} 上开始一个新映射</value>
@@ -1899,6 +1950,9 @@
   <data name="Main_ThenJoin" xml:space="preserve">
     <value>，然后 </value>
   </data>
+  <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
+    <value>这些行保留在文件中,仍然可以编辑。选择一个部件即可打开它的映射。</value>
+  </data>
   <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
     <value>以下标签页已被跳过： </value>
   </data>
@@ -1913,6 +1967,9 @@
 
 您可以随时在“设置”的“高级”中更改此设置。</value>
   </data>
+  <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
+    <value>本应用尚未学会读取此仿真模式的报告,因此 QuadStick 处于该模式时不会有任何行亮起。</value>
+  </data>
   <data name="Main_ThisLinkIsAPublished" xml:space="preserve">
     <value>此链接是一个已发布的链接，而已发布的链接只会提供单个标签页。电子表格中的其他模式标签页根本没有发送给我们，因此我们无法得知其中的内容。要导入整个配置文件，请在 Google Sheets 中将表格共享给“知道链接的任何人”，然后重新导入。</value>
   </data>
@@ -1924,6 +1981,9 @@
   </data>
   <data name="Main_ThisProfileLivesOnThe" xml:space="preserve">
     <value>此配置文件存放在 QuadStick 上。请使用安装以安全地写回；另存为会在您的配置库中留一份副本。</value>
+  </data>
+  <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
+    <value>此配置映射了您的 {1} 没有的 {0}。它们在左侧列表中,仍然可以编辑。</value>
   </data>
   <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
     <value>此行设置的是 QuadStick 的一项设置，而不是按下按钮。它在此模式运行期间生效。</value>
@@ -1997,6 +2057,9 @@
   <data name="Main_UseTemplate" xml:space="preserve">
     <value>使用模板</value>
   </data>
+  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
+    <value>在此模式中使用了 {0} 次</value>
+  </data>
   <data name="Main_UsingDeviceView" xml:space="preserve">
     <value>正在使用设备视图</value>
   </data>
@@ -2006,8 +2069,23 @@
   <data name="Main_ViewButton" xml:space="preserve">
     <value>查看按钮</value>
   </data>
+  <data name="Main_ViewDetails" xml:space="preserve">
+    <value>查看详情 →</value>
+  </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
+  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
     <value>要先保持输入一段设定的时间，输出才会打开。这样可以分清快速轻触和长按。</value>
+  </data>
+  <data name="Main_WhatALitRowMeans" xml:space="preserve">
+    <value>当 QuadStick 发送某一行的输出时,该行会亮起。设备从不说明它正在运行哪个文件或哪个模式,因此亮起的行可能来自与此处打开的配置不同的另一个配置。鼠标、键盘和红外输出通过另一条连接发出,永远不会亮起。</value>
   </data>
   <data name="Main_WhatIsAMode" xml:space="preserve">
     <value>什么是模式？</value>
@@ -2117,6 +2195,9 @@
   <data name="Modes_ConnectionSetToPickedItem2" xml:space="preserve">
     <value>连接已设为 {0}。</value>
   </data>
+  <data name="Modes_DeleteName" xml:space="preserve">
+    <value>删除 {0}</value>
+  </data>
   <data name="Modes_Done" xml:space="preserve">
     <value>完成</value>
   </data>
@@ -2143,6 +2224,12 @@
   </data>
   <data name="Modes_Modes" xml:space="preserve">
     <value>模式</value>
+  </data>
+  <data name="Modes_MoveNameDown" xml:space="preserve">
+    <value>将 {0} 下移</value>
+  </data>
+  <data name="Modes_MoveNameUp" xml:space="preserve">
+    <value>将 {0} 上移</value>
   </data>
   <data name="Modes_NameOfModeOrdinal" xml:space="preserve">
     <value>模式 {0} 的名称</value>
@@ -2179,6 +2266,9 @@
   </data>
   <data name="Modes_USBCable" xml:space="preserve">
     <value>USB 数据线</value>
+  </data>
+  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
+    <value>模式 {0}</value>
   </data>
   <data name="Names_ANameHasToBe" xml:space="preserve">
     <value>名称长度必须为 1 到 {0} 个字符。</value>
@@ -2234,8 +2324,14 @@
   <data name="Names_Removed" xml:space="preserve">
     <value>已移除 {0}。</value>
   </data>
+  <data name="Names_RenamedOldToNew" xml:space="preserve">
+    <value>已将 {0} 重命名为 {1}。</value>
+  </data>
   <data name="Names_ThisProfileAlreadyHasA" xml:space="preserve">
     <value>此配置文件中已存在名为“{0}”的名称。</value>
+  </data>
+  <data name="Names_UsedOnCount" xml:space="preserve">
+    <value>在 {0} 上</value>
   </data>
   <data name="Names_YourNameForHumanizeToken" xml:space="preserve">
     <value>您为 {0} 起的名字</value>
@@ -2297,12 +2393,6 @@
   <data name="Outputs_XboxButtons" xml:space="preserve">
     <value>Xbox 按键</value>
   </data>
-  <data name="Prefs_OffZero" xml:space="preserve">
-    <value>关 (0)</value>
-  </data>
-  <data name="Prefs_OnOne" xml:space="preserve">
-    <value>开 (1)</value>
-  </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>关于 {0}：{1}</value>
   </data>
@@ -2354,6 +2444,12 @@
   <data name="Prefs_NotesForRowSaved" xml:space="preserve">
     <value>行 {0} 的备注。保存在文件中，QuadStick 会忽略它</value>
   </data>
+  <data name="Prefs_OffZero" xml:space="preserve">
+    <value>关 (0)</value>
+  </data>
+  <data name="Prefs_OnOne" xml:space="preserve">
+    <value>开 (1)</value>
+  </data>
   <data name="Prefs_PhraseExplain" xml:space="preserve">
     <value>{0}。{1}</value>
   </data>
@@ -2402,6 +2498,12 @@
   <data name="Review_AddingItChangesCellA1" xml:space="preserve">
     <value>添加它会更改 A1 单元格。标签页中的其他内容将按您所写的原样导入。</value>
   </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} 及另外 1 个单元格</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} 及另外 {1} 个单元格</value>
+  </data>
   <data name="Review_AndYourPreferences" xml:space="preserve">
     <value>，以及您的 Preferences</value>
   </data>
@@ -2432,17 +2534,14 @@
   <data name="Review_Done" xml:space="preserve">
     <value>完成</value>
   </data>
+  <data name="Review_EmptiedCell" xml:space="preserve">
+    <value>已清空 {0}。</value>
+  </data>
   <data name="Review_EmptyCellWhere" xml:space="preserve">
     <value>空单元格 {0}</value>
   </data>
   <data name="Review_GoBackToTheSimple" xml:space="preserve">
     <value>返回简单视图</value>
-  </data>
-  <data name="Review_AndMoreCells_one" xml:space="preserve">
-    <value>{0} 及另外 1 个单元格</value>
-  </data>
-  <data name="Review_AndMoreCells_other" xml:space="preserve">
-    <value>{0} 及另外 {1} 个单元格</value>
   </data>
   <data name="Review_HelperTabs_one" xml:space="preserve">
     <value>{0}   此标签页是备注，不是绑定。QMP 和 Sheets 插件写入此标签页供您阅读，您的 QuadStick 从不加载它。省略它不会丢失任何内容。</value>
@@ -2498,6 +2597,9 @@
   <data name="Review_ModeIsNamedAfterIts" xml:space="preserve">
     <value>模式以其表格标签页命名</value>
   </data>
+  <data name="Review_ModeNumberTitle" xml:space="preserve">
+    <value>模式 {0}: {1}</value>
+  </data>
   <data name="Review_ModeRModeNumberIsCalled" xml:space="preserve">
     <value>模式 {0} 被称为“{1}”，取自其表格标签页。该模式的名称单元格为空。</value>
   </data>
@@ -2533,6 +2635,9 @@
   </data>
   <data name="Review_MoveWordIntoTheNotes" xml:space="preserve">
     <value>将“{0}”移入备注列，QuadStick 从不查看该列</value>
+  </data>
+  <data name="Review_MovedFromTo" xml:space="preserve">
+    <value>已将“{0}”从 {1} 移动到 {2}。</value>
   </data>
   <data name="Review_MovedValueFromWhereInto" xml:space="preserve">
     <value>已将“{0}”从 {1} 移到备注列。</value>
@@ -2576,8 +2681,14 @@
   <data name="Review_PartOfTheRowThat" xml:space="preserve">
     <value>该行中用于打开模式的部分</value>
   </data>
+  <data name="Review_RowNumber" xml:space="preserve">
+    <value>第 {0} 行</value>
+  </data>
   <data name="Review_SaveCell" xml:space="preserve">
     <value>保存单元格</value>
+  </data>
+  <data name="Review_SetCellTo" xml:space="preserve">
+    <value>已将 {0} 设为“{1}”。</value>
   </data>
   <data name="Review_ShowTheSpreadsheetWithThe" xml:space="preserve">
     <value>显示电子表格，并标出应用的读取结果</value>
@@ -2744,26 +2855,26 @@
   <data name="Settings_CancelConnect" xml:space="preserve">
     <value>取消连接 Google</value>
   </data>
-  <data name="Settings_CheckUpdates" xml:space="preserve">
-    <value>检查更新</value>
-  </data>
-  <data name="Settings_Checking" xml:space="preserve">
-    <value>正在检查…</value>
-  </data>
   <data name="Settings_CardSentenceStyle" xml:space="preserve">
     <value>映射卡片的措辞</value>
   </data>
   <data name="Settings_CardSentenceStyleCaption" xml:space="preserve">
     <value>选择卡片以输出开头还是以输入开头。这只改变卡片的读法,不改变 QuadStick 的行为。</value>
   </data>
-  <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
-    <value>映射卡片的措辞: 选择输出在前还是输入在前的句子</value>
-  </data>
   <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
     <value>吸的时候按 X</value>
   </data>
+  <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
+    <value>映射卡片的措辞: 选择输出在前还是输入在前的句子</value>
+  </data>
   <data name="Settings_CardSentenceStyleInputFirst" xml:space="preserve">
     <value>吸以触发 X</value>
+  </data>
+  <data name="Settings_CheckUpdates" xml:space="preserve">
+    <value>检查更新</value>
+  </data>
+  <data name="Settings_Checking" xml:space="preserve">
+    <value>正在检查…</value>
   </data>
   <data name="Settings_Close" xml:space="preserve">
     <value>关闭</value>
@@ -2821,6 +2932,9 @@
   </data>
   <data name="Settings_ImportDriveHelp" xml:space="preserve">
     <value>从 Google Drive 导入您的配置文件</value>
+  </data>
+  <data name="Settings_InstallIdIs" xml:space="preserve">
+    <value>安装 ID: {0}</value>
   </data>
   <data name="Settings_Language" xml:space="preserve">
     <value>语言</value>
@@ -3233,11 +3347,11 @@
   <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
     <value>按表格存储的方式查看行  (Ctrl+D)</value>
   </data>
-  <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
-    <value>选择要编辑的模式</value>
-  </data>
   <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
     <value>选择要移动、删除或清空的行</value>
+  </data>
+  <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
+    <value>选择要编辑的模式</value>
   </data>
   <data name="Shell_SetUpAGame" xml:space="preserve">
     <value>设置游戏</value>
@@ -3385,110 +3499,5 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>您当前使用的是 {0}，这是最新版本。</value>
-  </data>
-  <data name="Count_RowCopied_one" xml:space="preserve">
-    <value>已将 {0} 行复制到 {1}。Ctrl+Z 可撤销。</value>
-  </data>
-  <data name="Count_RowCopied_other" xml:space="preserve">
-    <value>已将 {0} 行复制到 {1}。Ctrl+Z 可撤销。</value>
-  </data>
-  <data name="Main_CopyToMode" xml:space="preserve">
-    <value>复制到模式</value>
-  </data>
-  <data name="Main_Move" xml:space="preserve">
-    <value>移动</value>
-  </data>
-  <data name="Main_DuplicateMark" xml:space="preserve">
-    <value>×{0}</value>
-  </data>
-  <data name="Main_UsedNTimesInThisMode" xml:space="preserve">
-    <value>在此模式中使用了 {0} 次</value>
-  </data>
-  <data name="Count_Profile_one" xml:space="preserve">
-    <value>{0} 个配置</value>
-  </data>
-  <data name="Count_Profile_other" xml:space="preserve">
-    <value>{0} 个配置</value>
-  </data>
-  <data name="Count_File_one" xml:space="preserve">
-    <value>{0} 个文件</value>
-  </data>
-  <data name="Count_File_other" xml:space="preserve">
-    <value>{0} 个文件</value>
-  </data>
-  <data name="Names_UsedOnCount" xml:space="preserve">
-    <value>在 {0} 上</value>
-  </data>
-  <data name="Names_RenamedOldToNew" xml:space="preserve">
-    <value>已将 {0} 重命名为 {1}。</value>
-  </data>
-  <data name="Device_FilesTotalOnGroup" xml:space="preserve">
-    <value>{1} 上有 {0}。</value>
-  </data>
-  <data name="Device_DeleteFileFromGroup" xml:space="preserve">
-    <value>要从 {1} 删除 {0} 吗?</value>
-  </data>
-  <data name="Drive_RestoreImported" xml:space="preserve">
-    <value>{0} 已导入</value>
-  </data>
-  <data name="Drive_RestoreSkipped" xml:space="preserve">
-    <value>{0} 已跳过: </value>
-  </data>
-  <data name="Drive_RestoreFailed" xml:space="preserve">
-    <value>{0} 失败: </value>
-  </data>
-  <data name="Review_RowNumber" xml:space="preserve">
-    <value>第 {0} 行</value>
-  </data>
-  <data name="Review_EmptiedCell" xml:space="preserve">
-    <value>已清空 {0}。</value>
-  </data>
-  <data name="Review_MovedFromTo" xml:space="preserve">
-    <value>已将“{0}”从 {1} 移动到 {2}。</value>
-  </data>
-  <data name="Review_SetCellTo" xml:space="preserve">
-    <value>已将 {0} 设为“{1}”。</value>
-  </data>
-  <data name="Review_ModeNumberTitle" xml:space="preserve">
-    <value>模式 {0}: {1}</value>
-  </data>
-  <data name="Main_InFolder" xml:space="preserve">
-    <value> · 位于 {0}</value>
-  </data>
-  <data name="Main_PlusMore" xml:space="preserve">
-    <value> 另有 +{0} 个</value>
-  </data>
-  <data name="Main_MappingNumber" xml:space="preserve">
-    <value>映射 {0}</value>
-  </data>
-  <data name="Main_RowNumber" xml:space="preserve">
-    <value>第 {0} 行</value>
-  </data>
-  <data name="Main_PickWord" xml:space="preserve">
-    <value>选择 {0}</value>
-  </data>
-  <data name="Modes_UnnamedModeNumber" xml:space="preserve">
-    <value>模式 {0}</value>
-  </data>
-  <data name="Modes_MoveNameUp" xml:space="preserve">
-    <value>将 {0} 上移</value>
-  </data>
-  <data name="Modes_MoveNameDown" xml:space="preserve">
-    <value>将 {0} 下移</value>
-  </data>
-  <data name="Modes_DeleteName" xml:space="preserve">
-    <value>删除 {0}</value>
-  </data>
-  <data name="Settings_InstallIdIs" xml:space="preserve">
-    <value>安装 ID: {0}</value>
-  </data>
-  <data name="Main_Add" xml:space="preserve">
-    <value>添加</value>
-  </data>
-  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
-    <value>某些模式会让电脑看不到 QuadStick 驱动器。</value>
-  </data>
-  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
-    <value>设备从这个文件启动，所以不会把无驱动器的模式写进去。</value>
   </data>
 </root>

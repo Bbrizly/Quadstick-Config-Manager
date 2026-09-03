@@ -33,4 +33,5 @@
   <StreamGeometry x:Key="IconViewRail">M4 5.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0 5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0 5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM9 6h12v2H9V6zm0 5h12v2H9v-2zm0 5h12v2H9v-2z</StreamGeometry>
   <StreamGeometry x:Key="IconViewSheet">M4 3h16a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1zm1 4v3h4V7H5zm6 0v3h3V7h-3zm5 0v3h3V7h-3zM5 12v3h4v-3H5zm6 0v3h3v-3h-3zm5 0v3h3v-3h-3zM5 17v2h4v-2H5zm6 0v2h3v-2h-3zm5 0v2h3v-2h-3z</StreamGeometry>
   <StreamGeometry x:Key="IconSparkles">M12 1l1.5 4.5L18 7l-4.5 1.5L12 13l-1.5-4.5L6 7l4.5-1.5L12 1zM5 12l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3zm13-1 1.2 3.8L23 16l-3.8 1.2L18 21l-1.2-3.8L13 16l3.8-1.2L18 11z</StreamGeometry>
+  <StreamGeometry x:Key="IconFormat">M5 4v3h5.5v12h3V7H19V4H5z</StreamGeometry>
 </ResourceDictionary>

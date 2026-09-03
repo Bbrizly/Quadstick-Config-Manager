@@ -398,12 +398,22 @@
             <!-- Plain English and Detailed editor change how the current part
                  reads. Keep them immediately before the view choices, which
                  change where that part is shown. -->
-            <Grid ColumnDefinitions="*,*">
+            <Grid ColumnDefinitions="*,*,Auto">
               <Button x:Name="LabelStyleButton" Classes="quiet sidebarToggle"
                       Grid.Column="0" HorizontalAlignment="Stretch"
                       AutomationProperties.Name="{x:Static app:Strings.Shell_SwitchTheWordsUsedIn}"/>
               <Button x:Name="CardViewButton" Classes="quiet sidebarToggle"
                       Grid.Column="1" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
+              <!-- Shape, not words: this one squeezes the same sentence onto
+                   one line, so it stays a glyph and lets the two labelled keys
+                   keep the width their words need in every language. Its name
+                   and tip are set in UpdateFormatToggleButton, which has to say
+                   which way the switch is now. -->
+              <ToggleButton x:Name="FormatToggleButton" Classes="quiet sidebarToggle"
+                            Grid.Column="2" Width="48" Margin="3,0,0,0"
+                            HorizontalAlignment="Right">
+                <PathIcon Width="18" Height="18" Data="{DynamicResource IconFormat}"/>
+              </ToggleButton>
             </Grid>
             <!-- These three are one mutually-exclusive choice, so they sit in a
                  shared track like a rocker switch bank rather than as loose,
