@@ -375,14 +375,6 @@
                 Width="{DynamicResource SidebarWidth}"
                 Background="{DynamicResource SurfaceSubtleBrush}"
                 BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,1,0">
-        <!-- The panel needs about 430px to lay itself out. Below that the
-             DockPanel used to hand its fill child a negative height and the
-             modes list, Configuration and the view keys drew on top of each
-             other, which is what the app looked like at its own minimum window
-             size. One scroller here means the parts that do not fit are still
-             reachable instead of stacked. -->
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                      VerticalScrollBarVisibility="Auto" AllowAutoHide="True">
         <DockPanel Margin="16,16">
 
           <!-- Pinned to the bottom, and separated: these change how the editor
@@ -492,10 +484,7 @@
             <!-- The list expands into every bit of height Configuration does
                  not need. Its minimum keeps three choices useful when the
                  window is short; more choices scroll in this one place. -->
-            <!-- Capped: inside the sidebar scroller this list is measured
-                 against infinite height, and twenty modes would otherwise push
-                 Configuration and the view keys off the bottom every time. -->
-            <ScrollViewer x:Name="ModeListScroll" Grid.Row="1" MinHeight="112" MaxHeight="300" Margin="0,0,0,8"
+            <ScrollViewer x:Name="ModeListScroll" Grid.Row="1" MinHeight="112" Margin="0,0,0,8"
                           HorizontalScrollBarVisibility="Disabled"
                           VerticalScrollBarVisibility="Auto" AllowAutoHide="True"
                           VerticalContentAlignment="Top">
@@ -519,7 +508,6 @@
             </StackPanel>
           </Grid>
         </DockPanel>
-        </ScrollViewer>
         </Border>
 
         <!-- The active editor occupies the other column in the same workspace

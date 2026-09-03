@@ -144,13 +144,13 @@ public class SidebarTests
         // useful three-row minimum rather than making Configuration scroll too.
         Assert.Equal(112, listScroll.MinHeight);
         Assert.True(listScroll.AllowAutoHide);
-        // Two scrollers, and only two: this list, and the one around the whole
-        // sidebar that catches a window too short to lay the panel out at all.
-        // A third would mean some section had started scrolling on its own.
+        // The modes list is the only scroller in the sidebar. The sidebar
+        // itself stays pinned to the workspace so Configuration and the view
+        // keys remain visible while a long mode list is browsed.
         var sidebar = Named(w, "EditorSidebar");
         var scrollers = sidebar.GetVisualDescendants().OfType<ScrollViewer>().ToList();
-        Assert.Equal(2, scrollers.Count);
-        Assert.Same(listScroll, scrollers.Last());
+        Assert.Single(scrollers);
+        Assert.Same(listScroll, scrollers[0]);
         Assert.Contains("modeRow", Rows(w)[0].Classes);
 
         // The word "Modes" is the explanatory target on the left; the edit
