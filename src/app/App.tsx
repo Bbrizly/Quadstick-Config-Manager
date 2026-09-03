@@ -38,11 +38,26 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [themePreference, setThemePreference] = useState<ThemePreference>("system");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [editor, setEditor] = useState<EditorSnapshot | null>(null);
+  const [closePromptOpen, setClosePromptOpen] = useState(false);
+  const [pendingDestination, setPendingDestination] = useState<ShellDestination | null>(null);
+  const [closing, setClosing] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => applyThemePreference(themePreference), [themePreference]);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const copy = DESTINATION_COPY[activeDestination];
+
+  const showFailure = useCallback((reason: unknown): void => {
+    setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
+  }, [t]);
+
+  const finishEditorClose = useCallback((destination: ShellDestination): void => {
+    setEditor(null);
+    setClosePromptOpen(false);
+    setPendingDestination(null);
+    setActiveDestination(destination);
+    setMessage("");
+  }, []);
 
   const openProfile = async (): Promise<void> => {
     try {
@@ -53,7 +68,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         setMessage("");
       }
     } catch (reason) {
-      setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
+      showFailure(reason);
     }
   };
 
@@ -64,13 +79,89 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       setActiveDestination("home");
       setMessage("");
     } catch (reason) {
-      setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
+      showFailure(reason);
     }
   };
 
+  const requestEditorClose = useCallback(async (destination: ShellDestination): Promise<void> => {
+    if (editor === null || closing) return;
+    setClosing(true);
+    try {
+      const outcome = await client.closeProfile(editor.sessionId, "if_clean");
+      if (outcome.kind === "keptOpenUnsavedChanges") {
+        setPendingDestination(destination);
+        setClosePromptOpen(true);
+      } else {
+        finishEditorClose(destination);
+      }
+    } catch (reason) {
+      showFailure(reason);
+    } finally {
+      setClosing(false);
+    }
+  }, [client, closing, editor, finishEditorClose, showFailure]);
+
+  const saveAndClose = useCallback(async (): Promise<void> => {
+    if (editor === null || closing) return;
+    setClosing(true);
+    try {
+      if (editor.saveTarget === null) {
+        const receipt = await client.saveProfileAs(editor.sessionId, editor.revision);
+        if (receipt === null) return;
+        const outcome = await client.closeProfile(editor.sessionId, "if_clean");
+        if (outcome.kind === "keptOpenUnsavedChanges") {
+          throw new Error("profile remained dirty after save as");
+        }
+      } else {
+        await client.closeProfile(editor.sessionId, "save");
+      }
+      finishEditorClose(pendingDestination ?? "home");
+    } catch (reason) {
+      showFailure(reason);
+    } finally {
+      setClosing(false);
+    }
+  }, [client, closing, editor, finishEditorClose, pendingDestination, showFailure]);
+
+  const discardAndClose = useCallback(async (): Promise<void> => {
+    if (editor === null || closing) return;
+    setClosing(true);
+    try {
+      await client.closeProfile(editor.sessionId, "discard");
+      finishEditorClose(pendingDestination ?? "home");
+    } catch (reason) {
+      showFailure(reason);
+    } finally {
+      setClosing(false);
+    }
+  }, [client, closing, editor, finishEditorClose, pendingDestination, showFailure]);
+
+  const cancelClose = useCallback((): void => {
+    if (closing) return;
+    setClosePromptOpen(false);
+    setPendingDestination(null);
+  }, [closing]);
+
+  const navigate = useCallback((destination: ShellDestination): void => {
+    if (editor !== null && destination !== "home") {
+      void requestEditorClose(destination);
+      return;
+    }
+    setActiveDestination(destination);
+  }, [editor, requestEditorClose]);
+
   let content;
   if (activeDestination === "home" && editor !== null) {
-    content = <EditorWorkspace client={client} snapshot={editor} onSnapshot={setEditor} />;
+    content = (
+      <section className="editor-route" aria-label={t("Shell_Profile")}>
+        <div className="editor-route-actions">
+          <button type="button" disabled={closing} onClick={() => void requestEditorClose("home")}>
+            {t("Community_Close")}
+          </button>
+        </div>
+        <EditorWorkspace client={client} snapshot={editor} onSnapshot={setEditor} />
+      </section>
+    );
   } else if (activeDestination === "home") {
     content = (
       <section className="shell-placeholder home-start" aria-labelledby="page-title">
@@ -99,7 +190,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     <>
       <AppShell
         activeDestination={activeDestination}
-        onNavigate={setActiveDestination}
+        onNavigate={navigate}
         themePreference={themePreference}
         onThemePreferenceChange={setThemePreference}
         onOpenSettings={() => setSettingsOpen(true)}
@@ -137,6 +228,32 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           </label>
           <p>{t("Settings_AppearanceHelp")}</p>
         </div>
+      </Dialog>
+      <Dialog
+        open={closePromptOpen}
+        title={t("Shell_Profile")}
+        onClose={cancelClose}
+        actions={
+          <>
+            <button type="button" disabled={closing} onClick={cancelClose}>
+              {t("Device_Cancel")}
+            </button>
+            <button type="button" disabled={closing} onClick={() => void discardAndClose()}>
+              {t("Main_DonTSave")}
+            </button>
+            <button
+              className="primary-action"
+              type="button"
+              data-autofocus
+              disabled={closing}
+              onClick={() => void saveAndClose()}
+            >
+              {t("Shell_SaveCtrlS")}
+            </button>
+          </>
+        }
+      >
+        <p>{t("Main_ThisProfileHasUnsavedChanges")}</p>
       </Dialog>
     </>
   );
