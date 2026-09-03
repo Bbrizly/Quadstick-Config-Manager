@@ -1,9 +1,7 @@
 //! Typed device-preference metadata exposed to the WebView.
 //!
 //! The catalog remains native-owned and comes from the same audited
-//! `preferences.json` the Rust validator uses. The window receives only display
-//! metadata and proven constraints; it never gets a path or a second catalog to
-//! drift from firmware semantics.
+//! `preferences.json` the Rust validator uses.
 
 use qcm_config::{PreferenceDefinition, PreferenceEditor, load_preferences};
 use serde::Serialize;
@@ -33,6 +31,7 @@ pub struct PreferenceDefinitionDto {
     pub source: String,
     pub firmware_may_add_more: bool,
     pub also_called: String,
+    pub advanced: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -76,6 +75,7 @@ impl From<PreferenceDefinition> for PreferenceDefinitionDto {
             source: definition.source,
             firmware_may_add_more: definition.firmware_may_add_more,
             also_called: definition.also_called,
+            advanced: definition.advanced,
         }
     }
 }
@@ -110,16 +110,10 @@ mod tests {
                 && definition.minimum.is_some()
                 && definition.maximum.is_some()
         }));
-        assert!(catalog
-            .definitions
-            .iter()
-            .any(|definition| definition.editor == "toggle"));
+        assert!(catalog.definitions.iter().any(|definition| definition.editor == "toggle"));
         assert!(catalog.definitions.iter().any(|definition| {
             definition.editor == "choice" && !definition.options.is_empty()
         }));
-        assert!(catalog
-            .definitions
-            .iter()
-            .any(|definition| definition.editor == "text"));
+        assert!(catalog.definitions.iter().any(|definition| definition.editor == "text"));
     }
 }
