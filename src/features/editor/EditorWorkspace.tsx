@@ -202,12 +202,9 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
     (mode) => mode.index === selectedSheet && mode.kind === "mode",
   ) ?? profileModes[0] ?? null;
   const rows = useMemo(() => bindingRows(snapshot, selectedMode), [snapshot, selectedMode]);
-  const activeRow = selectedRow === null ? null : rows.find((row) => row.row === selectedRow) ?? null;
-
-  useEffect(() => {
-    if (selectedMode !== null && selectedMode.index !== selectedSheet) setSelectedSheet(selectedMode.index);
-    if (selectedRow !== null && !rows.some((row) => row.row === selectedRow)) setSelectedRow(null);
-  }, [rows, selectedMode, selectedRow, selectedSheet]);
+  const selectionBelongsToCurrentSheet = selectedMode?.index === selectedSheet;
+  const visibleSelectedRow = selectionBelongsToCurrentSheet ? selectedRow : null;
+  const activeRow = visibleSelectedRow === null ? null : rows.find((row) => row.row === visibleSelectedRow) ?? null;
 
   const showFailure = useCallback(
     (reason: unknown): void => {
@@ -328,7 +325,10 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   const moveMode = (mode: Mode, delta: -1 | 1): void => {
     const target = adjacentMovableSheet(snapshot, mode.index, delta);
     if (target === null) return;
-    void apply([{ op: "move_mode", sheet: mode.index, delta }], () => setSelectedSheet(target));
+    void apply([{ op: "move_mode", sheet: mode.index, delta }], () => {
+      setSelectedSheet(target);
+      setSelectedRow(null);
+    });
   };
 
   const deleteMode = (mode: Mode): void => {
@@ -341,6 +341,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
       const remaining = next.modes.filter((candidate) => candidate.kind === "mode");
       const fallback = remaining.find((candidate) => candidate.index >= mode.index) ?? remaining.at(-1);
       if (fallback !== undefined) setSelectedSheet(fallback.index);
+      setSelectedRow(null);
     });
   };
 
@@ -382,6 +383,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                   void apply([{ op: "add_mode", name }], (next) => {
                     const added = next.modes.findLast((mode) => mode.kind === "mode");
                     if (added !== undefined) setSelectedSheet(added.index);
+                    setSelectedRow(null);
                   });
                 }}
               >
@@ -422,7 +424,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                     <div className="mode-row-actions">
                       <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, -1) === null} aria-label={t("Review_MoveItEarlier")} onClick={() => moveMode(mode, -1)}>↑</button>
                       <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, 1) === null} aria-label={t("Review_MoveItLater")} onClick={() => moveMode(mode, 1)}>↓</button>
-                      <button type="button" disabled={busy} aria-label={t("Modes_MakeACopyOfName", [mode.name])} onClick={() => void apply([{ op: "duplicate_mode", sheet: mode.index, name: `${mode.name} copy` }], (next) => { const copy = next.modes.findLast((candidate) => candidate.kind === "mode"); if (copy !== undefined) setSelectedSheet(copy.index); })}>＋</button>
+                      <button type="button" disabled={busy} aria-label={t("Modes_MakeACopyOfName", [mode.name])} onClick={() => void apply([{ op: "duplicate_mode", sheet: mode.index, name: `${mode.name} copy` }], (next) => { const copy = next.modes.findLast((candidate) => candidate.kind === "mode"); if (copy !== undefined) setSelectedSheet(copy.index); setSelectedRow(null); })}>＋</button>
                       <button type="button" disabled={busy || profileModes.length <= 1} aria-label={armedDelete === mode.index ? t("Modes_ReallyDeleteName", [mode.name]) : t("Shell_Delete")} onClick={() => deleteMode(mode)}>×</button>
                     </div>
                   </li>
@@ -443,7 +445,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
             <QuadStickVisualizer
               client={client}
               rows={rows}
-              selectedRow={selectedRow}
+              selectedRow={visibleSelectedRow}
               modeName={selectedMode?.name ?? ""}
               modeNumber={selectedMode?.number ?? null}
               onSelectRow={setSelectedRow}
