@@ -947,6 +947,12 @@ void CaptureWindow(string name, Window win, bool shown = false)
 {
     if (!shown) { win.Show(); }
     Dispatcher.UIThread.RunJobs();
+    // A control's own transition runs on the wall clock, so let it finish
+    // before the frame is taken. One immediate tick caught the settings
+    // page's fold chevron halfway through its turn, and every settings shot
+    // went out with the arrow bent at 45 degrees.
+    System.Threading.Thread.Sleep(400);
+    Dispatcher.UIThread.RunJobs();
     AvaloniaHeadlessPlatform.ForceRenderTimerTick();
     using var frame = win.CaptureRenderedFrame()
         ?? throw new InvalidOperationException("No frame captured");
