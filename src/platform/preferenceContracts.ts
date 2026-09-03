@@ -21,6 +21,7 @@ export interface PreferenceDefinition {
   readonly source: string;
   readonly firmwareMayAddMore: boolean;
   readonly alsoCalled: string;
+  readonly advanced: boolean;
 }
 
 export interface PreferenceCatalog {
