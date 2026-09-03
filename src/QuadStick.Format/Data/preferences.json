@@ -428,9 +428,18 @@
       "joystick",
       "ssp"
     ],
+    "optionLabels": [
+      "Bluetooth off",
+      "Keyboard",
+      "Game controller",
+      "Mouse",
+      "Keyboard and mouse",
+      "Joystick",
+      "Serial port, not a controller"
+    ],
     "description": "What the QuadStick pretends to be over Bluetooth.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h bluetooth_device_mode_keywords, the same seven tokens as firmware 1476; QMP-4 QuadStick.py choice_BT_device_mode has them too; qsflash.py defaults 'none'"
+    "source": "firmware 2373 preference_keywords.h bluetooth_device_mode_keywords, the same seven tokens as firmware 1476; QMP-4 QuadStick.py choice_BT_device_mode has them too; qsflash.py defaults 'none'. Bluetooth.c:315-333 turns each one into the radio's SH HID flag: keyboard 0200, game_pad 0210, mouse 0220, combo 0230, joystick 0240, and Table 2-6 of RN-BT-DATA-UG v1.0r reads bits 7..4 as keyboard, game pad, mouse, COMBO, joystick. Combo is keyboard and mouse because Bluetooth.c:489 breaks out of the keyboard case only for BT_KEYBOARD and otherwise falls through into BT_MOUSE. none is Bluetooth off: BT_Init returns at Bluetooth.c:217 without starting the radio. ssp leaves HID for the serial port profile at Bluetooth.c:291"
   },
   {
     "name": "bluetooth_authentication_mode",
@@ -470,8 +479,17 @@
       "any",
       "pair"
     ],
+    "optionLabels": [
+      "Wait to be connected to",
+      "Connect out when told",
+      "Connect out when data arrives",
+      "Connect out on its own, and keep reconnecting",
+      "Connect out on a switch",
+      "Connect to the first device found",
+      "Connect to the address you stored"
+    ],
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h bluetooth_connection_mode_keywords, the same seven tokens as firmware 1476; qsflash.py defaults 'pair'"
+    "source": "firmware 2373 preference_keywords.h bluetooth_connection_mode_keywords, the same seven tokens as firmware 1476; qsflash.py defaults 'pair'. Bluetooth.c:271 sends it straight to the radio as SM, and Table 2-8 of RN-BT-DATA-UG v1.0r names all seven: 0 slave, 1 master, 2 trigger, 3 auto-connect master, 4 auto-connect DTR, 5 auto-connect any, 6 pairing. The radio's own default is 4; the QuadStick ships 6"
   },
   {
     "name": "bluetooth_remote_address",

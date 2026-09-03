@@ -192,7 +192,16 @@
  {
   "name": "bluetooth_device_mode",
   "label": "Bluetooth 장치 모드",
-  "description": "블루투스로 QuadStick이 무엇처럼 동작할지 정합니다."
+  "description": "블루투스로 QuadStick이 무엇처럼 동작할지 정합니다.",
+  "optionLabels": [
+   "블루투스 끔",
+   "키보드",
+   "게임 컨트롤러",
+   "마우스",
+   "키보드와 마우스",
+   "조이스틱",
+   "시리얼 포트, 컨트롤러가 아님"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -208,7 +217,16 @@
  {
   "name": "bluetooth_connection_mode",
   "label": "Bluetooth 연결 모드",
-  "description": "QuadStick이 연결을 기다릴지, 스스로 연결할지입니다. 무선 모듈에 SM 설정으로 전달됩니다."
+  "description": "QuadStick이 연결을 기다릴지, 스스로 연결할지입니다. 무선 모듈에 SM 설정으로 전달됩니다.",
+  "optionLabels": [
+   "연결해 오기를 기다림",
+   "지시하면 연결",
+   "데이터가 오면 연결",
+   "스스로 연결하고 끊기면 다시 연결",
+   "스위치로 연결",
+   "가장 먼저 찾은 기기에 연결",
+   "저장한 주소로 연결"
+  ]
  },
  {
   "name": "bluetooth_remote_address",

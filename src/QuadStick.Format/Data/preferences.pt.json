@@ -192,7 +192,16 @@
  {
   "name": "bluetooth_device_mode",
   "label": "Modo de dispositivo Bluetooth",
-  "description": "O que o QuadStick finge ser por Bluetooth."
+  "description": "O que o QuadStick finge ser por Bluetooth.",
+  "optionLabels": [
+   "Bluetooth desligado",
+   "Teclado",
+   "Comando de jogo",
+   "Rato",
+   "Teclado e rato",
+   "Joystick",
+   "Porta série, não um comando"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -208,7 +217,16 @@
  {
   "name": "bluetooth_connection_mode",
   "label": "Modo de conexão Bluetooth",
-  "description": "Se o QuadStick espera que o liguem ou se liga ele próprio. Enviado ao rádio como a definição SM."
+  "description": "Se o QuadStick espera que o liguem ou se liga ele próprio. Enviado ao rádio como a definição SM.",
+  "optionLabels": [
+   "Esperar que se liguem",
+   "Ligar quando lhe for dito",
+   "Ligar quando chegarem dados",
+   "Ligar sozinho, e voltar a ligar",
+   "Ligar com um interruptor",
+   "Ligar ao primeiro dispositivo encontrado",
+   "Ligar ao endereço guardado"
+  ]
  },
  {
   "name": "bluetooth_remote_address",

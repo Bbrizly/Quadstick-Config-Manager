@@ -192,7 +192,16 @@
  {
   "name": "bluetooth_device_mode",
   "label": "Bluetooth-Gerätemodus",
-  "description": "Als was sich der QuadStick über Bluetooth ausgibt."
+  "description": "Als was sich der QuadStick über Bluetooth ausgibt.",
+  "optionLabels": [
+   "Bluetooth aus",
+   "Tastatur",
+   "Gamepad",
+   "Maus",
+   "Tastatur und Maus",
+   "Joystick",
+   "Serieller Port, kein Controller"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -208,7 +217,16 @@
  {
   "name": "bluetooth_connection_mode",
   "label": "Bluetooth-Verbindungsmodus",
-  "description": "Ob der QuadStick auf eine Verbindung wartet oder sich selbst verbindet. Wird als SM-Einstellung an das Funkmodul gesendet."
+  "description": "Ob der QuadStick auf eine Verbindung wartet oder sich selbst verbindet. Wird als SM-Einstellung an das Funkmodul gesendet.",
+  "optionLabels": [
+   "Auf eine Verbindung warten",
+   "Auf Befehl verbinden",
+   "Verbinden, sobald Daten kommen",
+   "Von selbst verbinden und immer wieder neu verbinden",
+   "Über einen Schalter verbinden",
+   "Mit dem ersten gefundenen Gerät verbinden",
+   "Mit der gespeicherten Adresse verbinden"
+  ]
  },
  {
   "name": "bluetooth_remote_address",

@@ -192,7 +192,16 @@
  {
   "name": "bluetooth_device_mode",
   "label": "Bluetoothデバイスモード",
-  "description": "Bluetooth 経由で QuadStick が何として振る舞うかです。"
+  "description": "Bluetooth 経由で QuadStick が何として振る舞うかです。",
+  "optionLabels": [
+   "Bluetooth オフ",
+   "キーボード",
+   "ゲームコントローラー",
+   "マウス",
+   "キーボードとマウス",
+   "ジョイスティック",
+   "シリアルポート、コントローラーではない"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -208,7 +217,16 @@
  {
   "name": "bluetooth_connection_mode",
   "label": "Bluetooth接続モード",
-  "description": "QuadStick が接続されるのを待つか、自分から接続しに行くかです。無線モジュールに SM 設定として送られます。"
+  "description": "QuadStick が接続されるのを待つか、自分から接続しに行くかです。無線モジュールに SM 設定として送られます。",
+  "optionLabels": [
+   "接続されるのを待つ",
+   "指示されたら接続する",
+   "データが来たら接続する",
+   "自分から接続し、切れても接続し直す",
+   "スイッチで接続する",
+   "最初に見つかった機器に接続する",
+   "保存したアドレスに接続する"
+  ]
  },
  {
   "name": "bluetooth_remote_address",

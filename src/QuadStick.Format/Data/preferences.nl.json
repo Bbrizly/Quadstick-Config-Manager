@@ -192,7 +192,16 @@
  {
   "name": "bluetooth_device_mode",
   "label": "Bluetooth-apparaatmodus",
-  "description": "Waarvoor de QuadStick zich uitgeeft via Bluetooth."
+  "description": "Waarvoor de QuadStick zich uitgeeft via Bluetooth.",
+  "optionLabels": [
+   "Bluetooth uit",
+   "Toetsenbord",
+   "Gamecontroller",
+   "Muis",
+   "Toetsenbord en muis",
+   "Joystick",
+   "Seriële poort, geen controller"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -208,7 +217,16 @@
  {
   "name": "bluetooth_connection_mode",
   "label": "Bluetooth-verbindingsmodus",
-  "description": "Of de QuadStick wacht tot er verbinding wordt gemaakt of zelf verbinding maakt. Wordt als SM-instelling naar de radio gestuurd."
+  "description": "Of de QuadStick wacht tot er verbinding wordt gemaakt of zelf verbinding maakt. Wordt als SM-instelling naar de radio gestuurd.",
+  "optionLabels": [
+   "Wachten tot er verbinding wordt gemaakt",
+   "Verbinden op commando",
+   "Verbinden zodra er gegevens komen",
+   "Uit zichzelf verbinden en steeds opnieuw verbinden",
+   "Verbinden via een schakelaar",
+   "Verbinden met het eerst gevonden apparaat",
+   "Verbinden met het opgeslagen adres"
+  ]
  },
  {
   "name": "bluetooth_remote_address",

@@ -192,7 +192,16 @@
  {
   "name": "bluetooth_device_mode",
   "label": "Bluetooth 设备模式",
-  "description": "QuadStick 通过蓝牙把自己伪装成什么。"
+  "description": "QuadStick 通过蓝牙把自己伪装成什么。",
+  "optionLabels": [
+   "蓝牙关闭",
+   "键盘",
+   "游戏手柄",
+   "鼠标",
+   "键盘和鼠标",
+   "操纵杆",
+   "串口，不是手柄"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -208,7 +217,16 @@
  {
   "name": "bluetooth_connection_mode",
   "label": "Bluetooth 连接模式",
-  "description": "QuadStick 是等待别人连接,还是自己主动连接。作为 SM 设置发送给无线模块。"
+  "description": "QuadStick 是等待别人连接,还是自己主动连接。作为 SM 设置发送给无线模块。",
+  "optionLabels": [
+   "等待别人来连接",
+   "收到指令时连出去",
+   "有数据时连出去",
+   "自己连出去，断了就重连",
+   "用开关连出去",
+   "连接找到的第一个设备",
+   "连接已保存的地址"
+  ]
  },
  {
   "name": "bluetooth_remote_address",

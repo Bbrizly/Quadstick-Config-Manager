@@ -570,4 +570,20 @@ public class PreferenceCatalogTests
         Assert.Contains("side tube", def.Description);
         Assert.Contains("game file", def.Description);
     }
+
+    // bluetooth_device_mode and bluetooth_connection_mode shipped with options
+    // and no labels, so their dropdowns read "game_pad", "ssp", "dtr": the
+    // firmware's own keywords, in front of somebody who has never seen the
+    // firmware. Every list a person picks from says what the choice does.
+    [Fact]
+    public void Every_choice_names_its_options_in_words()
+    {
+        var bare = PreferenceCatalog.All
+            .Where(p => p.Options.Count > 0 && p.OptionLabels.Count != p.Options.Count)
+            .Select(p => $"{p.Name} has {p.Options.Count} options and "
+                       + $"{p.OptionLabels.Count} labels")
+            .ToList();
+        Assert.True(bare.Count == 0,
+            "A dropdown would show the raw file token:\n  " + string.Join("\n  ", bare));
+    }
 }

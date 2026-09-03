@@ -192,7 +192,16 @@
  {
   "name": "bluetooth_device_mode",
   "label": "Tryb urządzenia Bluetooth",
-  "description": "Za co QuadStick podaje się przez Bluetooth."
+  "description": "Za co QuadStick podaje się przez Bluetooth.",
+  "optionLabels": [
+   "Bluetooth wyłączony",
+   "Klawiatura",
+   "Gamepad",
+   "Mysz",
+   "Klawiatura i mysz",
+   "Joystick",
+   "Port szeregowy, nie kontroler"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -208,7 +217,16 @@
  {
   "name": "bluetooth_connection_mode",
   "label": "Tryb połączenia Bluetooth",
-  "description": "Czy QuadStick czeka na połączenie, czy sam się łączy. Wysyłane do radia jako ustawienie SM."
+  "description": "Czy QuadStick czeka na połączenie, czy sam się łączy. Wysyłane do radia jako ustawienie SM.",
+  "optionLabels": [
+   "Czekaj na połączenie przychodzące",
+   "Łącz się na polecenie",
+   "Łącz się, gdy pojawią się dane",
+   "Łącz się samodzielnie i łącz ponownie",
+   "Łącz się przełącznikiem",
+   "Łącz się z pierwszym znalezionym urządzeniem",
+   "Łącz się z zapisanym adresem"
+  ]
  },
  {
   "name": "bluetooth_remote_address",

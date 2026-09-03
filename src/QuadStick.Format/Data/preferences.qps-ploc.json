@@ -192,7 +192,16 @@
  {
   "name": "bluetooth_device_mode",
   "label": "[Blúétóóth dévíçé módé xxxxxxxx]",
-  "description": "[Whát thé QúádŠtíçk prétéñdš tó bé óvér Blúétóóth. xxxxxxxxxxxxxxxxxxx]"
+  "description": "[Whát thé QúádŠtíçk prétéñdš tó bé óvér Blúétóóth. xxxxxxxxxxxxxxxxxxx]",
+  "optionLabels": [
+   "[Blúétóóth óff xxxxx]",
+   "[Kéýbóárd xxx]",
+   "[Gámé çóñtróllér xxxxxx]",
+   "[Móúšé xx]",
+   "[Kéýbóárd áñd móúšé xxxxxxx]",
+   "[Jóýštíçk xxx]",
+   "[Šéríál pórt, ñót á çóñtróllér xxxxxxxxxxx]"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
@@ -208,7 +217,16 @@
  {
   "name": "bluetooth_connection_mode",
   "label": "[Blúétóóth çóññéçtíóñ módé xxxxxxxxxx]",
-  "description": "[Whéthér thé QúádŠtíçk wáítš tó bé çóññéçtéd tó ór çóññéçtš óút ítšélf. Šéñt tó thé rádíó áš ítš ŠM šéttíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]"
+  "description": "[Whéthér thé QúádŠtíçk wáítš tó bé çóññéçtéd tó ór çóññéçtš óút ítšélf. Šéñt tó thé rádíó áš ítš ŠM šéttíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "optionLabels": [
+   "[Wáít tó bé çóññéçtéd tó xxxxxxxxx]",
+   "[Çóññéçt óút whéñ tóld xxxxxxxx]",
+   "[Çóññéçt óút whéñ dátá árrívéš xxxxxxxxxxx]",
+   "[Çóññéçt óút óñ ítš ówñ, áñd kéép réçóññéçtíñg xxxxxxxxxxxxxxxxxx]",
+   "[Çóññéçt óút óñ á šwítçh xxxxxxxxx]",
+   "[Çóññéçt tó thé fíršt dévíçé fóúñd xxxxxxxxxxxxx]",
+   "[Çóññéçt tó thé áddréšš ýóú štóréd xxxxxxxxxxxxx]"
+  ]
  },
  {
   "name": "bluetooth_remote_address",
