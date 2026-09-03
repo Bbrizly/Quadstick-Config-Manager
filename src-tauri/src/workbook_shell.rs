@@ -166,7 +166,24 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
         let Some(picked) = self.picker.pick_import()? else {
             return Ok(None);
         };
-        let import = import_xlsx(&picked.bytes).map_err(import_error)?;
+        self.import_bytes(picked.display_name.as_str(), picked.bytes)
+            .map(Some)
+    }
+
+    /// Register workbook bytes obtained by another native service such as
+    /// Community or Drive. The WebView still receives the exact same bounded
+    /// review DTO and opaque one-shot import id as a locally picked workbook.
+    pub fn import_bytes(
+        &self,
+        display_name: &str,
+        bytes: Vec<u8>,
+    ) -> Result<WorkbookImportReviewDto, QcmError> {
+        if bytes.len() > XLSX_MAX_WORKBOOK_BYTES {
+            return Err(QcmError::Config(ConfigError::TooLarge {
+                limit_bytes: XLSX_MAX_WORKBOOK_BYTES as u64,
+            }));
+        }
+        let import = import_xlsx(&bytes).map_err(import_error)?;
         let mut table = self.pending();
         if table.items.len() >= MAX_PENDING_IMPORTS {
             if let Some(oldest) = table.items.keys().next().copied() {
@@ -178,11 +195,15 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
         table.items.insert(
             id,
             PendingWorkbook {
-                name: picked.display_name,
+                name: ProfileDisplayName::new(display_name),
                 import,
             },
         );
-        Ok(table.items.get(&id).map(|pending| review(id, pending)))
+        table
+            .items
+            .get(&id)
+            .map(|pending| review(id, pending))
+            .ok_or_else(unknown_import)
     }
 
     pub fn repair_tab(&self, raw: Value) -> Result<WorkbookImportReviewDto, QcmError> {
