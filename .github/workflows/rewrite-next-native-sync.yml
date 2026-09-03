@@ -22,27 +22,14 @@ jobs:
           from pathlib import Path
           path = Path('src-tauri/src/workbook_shell.rs')
           text = path.read_text()
-          old = '''        let import = import_xlsx(&picked.bytes).map_err(import_error)?;
-          let mut table = self.pending();
-          if table.items.len() >= MAX_PENDING_IMPORTS {
-              if let Some(oldest) = table.items.keys().next().copied() {
-                  table.items.remove(&oldest);
-              }
-          }
-          table.next = table.next.saturating_add(1);
-          let id = table.next;
-          table.items.insert(
-              id,
-              PendingWorkbook {
-                  name: picked.display_name,
-                  import,
-              },
-          );
-          Ok(table.items.get(&id).map(|pending| review(id, pending)))
-          }
-
-          pub fn repair_tab'''
-          new = '''        self.import_bytes(picked.display_name.as_str(), picked.bytes).map(Some)
+          start = text.index('    pub fn choose_import(&self)')
+          end = text.index('    pub fn repair_tab(&self', start)
+          replacement = '''    pub fn choose_import(&self) -> Result<Option<WorkbookImportReviewDto>, QcmError> {
+              let Some(picked) = self.picker.pick_import()? else {
+                  return Ok(None);
+              };
+              self.import_bytes(picked.display_name.as_str(), picked.bytes)
+                  .map(Some)
           }
 
           /// Register workbook bytes obtained by another native service (Community/Drive).
@@ -73,13 +60,14 @@ jobs:
                       import,
                   },
               );
-              table.items.get(&id).map(|pending| review(id, pending)).ok_or_else(unknown_import)
+              table.items
+                  .get(&id)
+                  .map(|pending| review(id, pending))
+                  .ok_or_else(unknown_import)
           }
 
-          pub fn repair_tab'''
-          if old not in text:
-              raise SystemExit('workbook shell anchor not found')
-          path.write_text(text.replace(old, new, 1))
+'''
+          path.write_text(text[:start] + replacement + text[end:])
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.98.0 --profile minimal --component rustfmt
       - name: Refresh dependency lock and format
