@@ -2762,28 +2762,32 @@ public partial class MainWindow : Window
 
     Control PortRow(string glyph, string port, string explain)
     {
-        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,Auto,*") };
+        var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
         var mark = new TextBlock
         {
             Text = glyph, FontSize = Size("BodySize"),
             Margin = new Avalonia.Thickness(0, 0, 8, 0),
             VerticalAlignment = VerticalAlignment.Top,
         };
-        var name = new TextBlock
+        // The name above its sentence rather than beside it. A fixed 96 pixel
+        // name column left the sentence about four characters wide once the
+        // panel gave the picture back to the main stage, so every explanation
+        // wrapped into a tall thin ribbon.
+        var text = new StackPanel { Spacing = 1 };
+        text.Children.Add(new TextBlock
         {
             Text = port, FontSize = Size("SmallSize"), FontWeight = FontWeight.SemiBold,
-            Width = 96, VerticalAlignment = VerticalAlignment.Top,
-        };
+            TextWrapping = TextWrapping.Wrap,
+        });
         var body = new TextBlock
         {
             Text = explain, FontSize = Size("SmallSize"),
             Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
         };
-        Grid.SetColumn(name, 1);
-        Grid.SetColumn(body, 2);
+        text.Children.Add(body);
+        Grid.SetColumn(text, 1);
         grid.Children.Add(mark);
-        grid.Children.Add(name);
-        grid.Children.Add(body);
+        grid.Children.Add(text);
         // The glyph is decoration; a screen reader reads the port and its
         // sentence as one line instead of announcing a shape.
         AutomationProperties.SetName(grid, string.Format(CultureInfo.CurrentCulture, Strings.Main_PortExplain, port, explain));
