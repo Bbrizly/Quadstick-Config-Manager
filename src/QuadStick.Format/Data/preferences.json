@@ -13,13 +13,13 @@
   },
   {
     "name": "joystick_deflection_maximum",
-    "label": "Joystick full deflection",
+    "label": "Joystick sensitivity",
     "category": "Joystick",
     "editor": "integer",
     "default": "25",
     "minimum": 10,
     "maximum": 50,
-    "description": "How far the stick has to move for a full signal. Larger is less sensitive, because you push further for the same result.",
+    "description": "How far the stick has to move for a full signal, also called full deflection. Lower is more sensitive, because a smaller push does the same thing.",
     "modeOverride": true,
     "alsoCalled": "range of motion",
     "source": "QMP-4 QuadStick.py slider_UP/DOWN/LEFT/RIGHT (10..50) and calculate_joystick_preferences; qsflash.py defaults '25'"
@@ -160,14 +160,14 @@
   },
   {
     "name": "sip_puff_threshold",
-    "label": "Hard sip/puff threshold",
+    "label": "Normal sip/puff threshold",
     "category": "Sip and puff",
     "editor": "integer",
     "default": "40",
     "minimum": 10,
     "maximum": 100,
     "unit": "percent",
-    "description": "Pressure where a sip or puff counts as hard. Raise it if soft sips keep firing the hard signal.",
+    "description": "Pressure where a normal sip or puff counts. QMP calls this the hard threshold, but it is what the ordinary sip and puff controls use. Raise it if soft sips keep firing the normal one.",
     "modeOverride": true,
     "alsoCalled": "sip and puff high threshold",
     "source": "QMP-4 QuadStick.py slider_SP_high (10..100) and its tooltip; qsflash.py defaults '40'"
@@ -208,9 +208,9 @@
     "minimum": 1000,
     "maximum": 3000,
     "unit": "milliseconds",
-    "description": "How long a hard sip or puff is held before it counts as a long one. The clock starts at the hard threshold, and 0 fires at once.",
+    "description": "How long a sip or puff is held before it counts as a long one. On the side tube that is how long you sip to switch game files. The clock starts at the normal threshold, and 0 fires at once.",
     "modeOverride": true,
-    "source": "firmware 2373 preference_keywords.h SIP_PUFF_DELAY_HARD, so a mode row can set it. Preferences.h:96 defaults to 2000 ms, and DataFlow.c:349-352 counts from the moment state 2 is reached. The 1000..3000 bounds are QMP-4 QuadStick.py spin_ctrl_SP_high_delay; qsflash.py writes '2400'. Firmware 1476 had no such keyword."
+    "source": "firmware 2373 preference_keywords.h SIP_PUFF_DELAY_HARD, so a mode row can set it. Preferences.h:96 defaults to 2000 ms, and DataFlow.c:349-352 counts from the moment state 2 is reached. The 1000..3000 bounds are QMP-4 QuadStick.py spin_ctrl_SP_high_delay; qsflash.py writes '2400'. Firmware 1476 had no such keyword. DataFlow.c:1313 is the file switching path: right_sip_long needs enable_select_files and the side tube held to state 3, which is this delay."
   },
   {
     "name": "sip_threshold_soft",
