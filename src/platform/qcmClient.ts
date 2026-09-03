@@ -27,6 +27,7 @@ import type {
   Subscription,
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
+import type { PreferenceCatalog } from "./preferenceContracts";
 import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
 
 export interface QcmClient {
@@ -59,6 +60,9 @@ export interface QcmClient {
     sessionId: string,
     expectedRevision: number,
   ): Promise<WorkbookExportReceipt | null>;
+
+  /** Native-owned audited metadata for prefs.csv controls. */
+  getPreferenceCatalog(): Promise<PreferenceCatalog>;
 
   /** Display-only discovery. Every write revalidates natively. */
   listDevices(): Promise<DevicePresenceSnapshot>;
