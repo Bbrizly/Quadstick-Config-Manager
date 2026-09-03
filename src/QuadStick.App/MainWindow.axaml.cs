@@ -7316,6 +7316,9 @@ public partial class MainWindow : Window
             var items = TokensIn(cat, grouping == "Wide" ? null : sub ?? "");
             // Alphabetical puts f1, f10, f11 ... f2; sort by number.
             if (sub == Strings.Main_FunctionKeys) items = items.OrderBy(t => int.Parse(t.AsSpan(4))).ToList();
+            // And it puts A above circle in a controller group, which is not
+            // an order anybody looks for a button in.
+            items = OutputCatalog.InReadingOrder(items, sub).ToList();
             foreach (var t in items) body.Children.Add(Item(t));
         }
 

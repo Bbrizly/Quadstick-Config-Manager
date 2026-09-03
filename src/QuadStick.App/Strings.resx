@@ -2240,17 +2240,26 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Outputs_NumberPad2" xml:space="preserve">
     <value>Number pad</value>
   </data>
+  <data name="Outputs_OtherButtons" xml:space="preserve">
+    <value>Other buttons</value>
+  </data>
   <data name="Outputs_OtherKeys" xml:space="preserve">
     <value>Other keys</value>
   </data>
   <data name="Outputs_OtherKeys2" xml:space="preserve">
     <value>Other keys</value>
   </data>
+  <data name="Outputs_PlayStationButtons" xml:space="preserve">
+    <value>PlayStation buttons</value>
+  </data>
   <data name="Outputs_TVRemote" xml:space="preserve">
     <value>TV remote</value>
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>TV remote</value>
+  </data>
+  <data name="Outputs_XboxButtons" xml:space="preserve">
+    <value>Xbox buttons</value>
   </data>
   <data name="Prefs_OffZero" xml:space="preserve">
     <value>Off (0)</value>

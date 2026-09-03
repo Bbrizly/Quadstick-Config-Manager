@@ -343,7 +343,7 @@ public class CardViewTests
 
         // Drill in: Controller replaces the list with its subcategories.
         Tap(panel, "Controller,");
-        Assert.NotNull(Find(panel, "Buttons,"));
+        Assert.NotNull(Find(panel, "PlayStation buttons,"));
         Assert.NotNull(Find(panel, "Back"));
         Assert.Null(Find(panel, "Keyboard,"));
 
@@ -353,7 +353,7 @@ public class CardViewTests
 
         // All the way down to an actual output.
         Tap(panel, "Controller,");
-        Tap(panel, "Buttons,");
+        Tap(panel, "PlayStation buttons,");
         Tap(panel, "Triangle");
         Assert.Equal("triangle", file.Document.Sheets[0].Bindings[0].Output);
 

@@ -126,7 +126,7 @@ public class ActionNameUiTests
 
         var panel = OpenPicker(w, $"Output for row {namedRow}.");
         Tap(w, panel, "Controller,");
-        Tap(w, panel, "Buttons,");
+        Tap(w, panel, "PlayStation buttons,");
         Tap(w, panel, "triangle");
 
         Assert.Equal("triangle", file.GetCell(namedRow, 0));
@@ -275,7 +275,7 @@ public class ActionNameUiTests
 
         var panel = OpenPicker(w, "Output that Shoot stands for");
         Tap(w, panel, "Controller,");
-        Tap(w, panel, "Buttons,");
+        Tap(w, panel, "PlayStation buttons,");
         Tap(w, panel, "Triangle");
 
         Assert.Equal("triangle", file.GetCell(namedRow, 0));
