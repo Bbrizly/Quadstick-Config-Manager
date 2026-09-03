@@ -4520,18 +4520,22 @@ public partial class MainWindow : Window
                 });
                 foreach (var token in freeHere)
                 {
-                    var line = new DockPanel();
-                    var raw = new TextBlock
-                    {
-                        Text = token, Classes = { "muted" }, FontSize = Size("SmallSize"),
-                        VerticalAlignment = VerticalAlignment.Center, Margin = new Avalonia.Thickness(8, 0, 0, 0),
-                    };
-                    DockPanel.SetDock(raw, Dock.Right);
-                    line.Children.Add(raw);
+                    // Side by side while both fit, and the token drops to its
+                    // own line when they do not. Docking the token right gave
+                    // it the width it wanted first, so a long one like
+                    // mp_left_center_puff_soft left the plain-English name a
+                    // column too narrow to hold a word and it wrapped a letter
+                    // at a time.
+                    var line = new WrapPanel { Orientation = Orientation.Horizontal };
                     line.Children.Add(new TextBlock
                     {
                         Text = ChipLabel(token, zone.Id), FontSize = Size("BodySize"),
-                        VerticalAlignment = VerticalAlignment.Center, TextWrapping = TextWrapping.Wrap,
+                        VerticalAlignment = VerticalAlignment.Center,
+                    });
+                    line.Children.Add(new TextBlock
+                    {
+                        Text = token, Classes = { "muted" }, FontSize = Size("SmallSize"),
+                        VerticalAlignment = VerticalAlignment.Center, Margin = new Avalonia.Thickness(8, 0, 0, 0),
                     });
                     var free = new Button
                     {
