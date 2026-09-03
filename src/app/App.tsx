@@ -4,6 +4,8 @@ import { AppShell, type ShellDestination } from "../components/primitives/AppShe
 import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
 import { ToastRegion } from "../components/primitives/ToastRegion";
+import { DeviceLibraryPage } from "../features/device/DeviceLibraryPage";
+import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
 import { EditorWorkspace } from "../features/editor/EditorWorkspace";
 import { WorkbookImportReviewDialog } from "../features/import/WorkbookImportReview";
 import {
@@ -44,6 +46,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [activeDestination, setActiveDestination] = useState<ShellDestination>("home");
   const [themePreference, setThemePreference] = useState<ThemePreference>("system");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [installOpen, setInstallOpen] = useState(false);
   const [editor, setEditor] = useState<EditorSnapshot | null>(null);
   const [workbookReview, setWorkbookReview] = useState<WorkbookImportReview | null>(null);
   const [workbookBusy, setWorkbookBusy] = useState(false);
@@ -60,8 +63,15 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
   }, [t]);
 
+  const showEditor = useCallback((snapshot: EditorSnapshot): void => {
+    setEditor(snapshot);
+    setActiveDestination("home");
+    setMessage("");
+  }, []);
+
   const finishEditorClose = useCallback((destination: ShellDestination): void => {
     setEditor(null);
+    setInstallOpen(false);
     setClosePromptOpen(false);
     setPendingDestination(null);
     setActiveDestination(destination);
@@ -71,11 +81,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const openProfile = async (): Promise<void> => {
     try {
       const opened = await client.chooseAndOpenProfile();
-      if (opened !== null) {
-        setEditor(opened);
-        setActiveDestination("home");
-        setMessage("");
-      }
+      if (opened !== null) showEditor(opened);
     } catch (reason) {
       showFailure(reason);
     }
@@ -83,10 +89,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
 
   const newProfile = async (): Promise<void> => {
     try {
-      const opened = await client.newProfile("untitled.csv");
-      setEditor(opened);
-      setActiveDestination("home");
-      setMessage("");
+      showEditor(await client.newProfile("untitled.csv"));
     } catch (reason) {
       showFailure(reason);
     }
@@ -129,9 +132,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     try {
       const opened = await accept.call(client, workbookReview.importId);
       setWorkbookReview(null);
-      setEditor(opened);
-      setActiveDestination("home");
-      setMessage("");
+      showEditor(opened);
     } catch (reason) {
       showFailure(reason);
     } finally {
@@ -224,6 +225,9 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     content = (
       <section className="editor-route" aria-label={t("Shell_Profile")}>
         <div className="editor-route-actions">
+          <button type="button" disabled={closing} onClick={() => setInstallOpen(true)}>
+            {t("Shell_InstallToQuadStick")}
+          </button>
           <button type="button" disabled={closing} onClick={() => void requestEditorClose("home")}>
             {t("Community_Close")}
           </button>
@@ -251,6 +255,8 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         </div>
       </section>
     );
+  } else if (activeDestination === "device") {
+    content = <DeviceLibraryPage client={client} onOpenProfile={showEditor} />;
   } else {
     content = (
       <section className="shell-placeholder" aria-labelledby="page-title">
@@ -273,6 +279,14 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       </AppShell>
       <LiveRegion>{message}</LiveRegion>
       <ToastRegion messages={[]} />
+      {editor === null ? null : (
+        <InstallProfileDialog
+          client={client}
+          profile={editor}
+          open={installOpen}
+          onClose={() => setInstallOpen(false)}
+        />
+      )}
       <WorkbookImportReviewDialog
         review={workbookReview}
         busy={workbookBusy}
