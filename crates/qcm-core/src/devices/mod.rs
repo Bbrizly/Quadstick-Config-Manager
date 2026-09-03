@@ -18,6 +18,7 @@
 pub mod discovery;
 pub mod install;
 pub mod library;
+pub mod rename;
 
 use crate::clock::Clock;
 use crate::confirmation::ConfirmationLedger;
@@ -32,6 +33,7 @@ pub use library::{
     DeletePlan, DeleteReceipt, DeviceFileText, GuideEntry, LedColour, led_pattern, selection_guide,
     selection_order,
 };
+pub use rename::RenameReceipt;
 
 /// The device side of the app.
 #[derive(Debug)]
