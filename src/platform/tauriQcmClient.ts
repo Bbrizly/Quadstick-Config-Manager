@@ -129,6 +129,9 @@ export class TauriQcmClient implements QcmClient {
   importCommunityProfile(sheetId: string, csvName: string): Promise<WorkbookImportReview> {
     return call<WorkbookImportReview>("import_community_profile", { sheetId, csvName });
   }
+  openCommunitySheet(sheetId: string): Promise<void> {
+    return call<void>("open_community_sheet", { sheetId });
+  }
   listDevices(): Promise<DevicePresenceSnapshot> {
     return call<DevicePresenceSnapshot>("list_devices");
   }
@@ -228,6 +231,7 @@ export const TAURI_COMMANDS = [
   "get_preference_catalog",
   "load_community_catalog",
   "import_community_profile",
+  "open_community_sheet",
   "list_devices",
   "refresh_devices",
   "choose_device_folder",
