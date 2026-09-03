@@ -783,6 +783,9 @@
 
 Most profiles have just one mode, so this list often shows a single entry. That is normal.</value>
   </data>
+  <data name="Main_APlusB" xml:space="preserve">
+    <value>{0} + {1}</value>
+  </data>
   <data name="Main_AProfileTabStartsWith" xml:space="preserve">
     <value>A profile tab starts with "Profile Name", "Preferences" or "Infrared" in cell A1.</value>
   </data>
@@ -1137,7 +1140,7 @@ Most profiles have just one mode, so this list often shows a single entry. That 
     <value>Hole combos</value>
   </data>
   <data name="Main_HolePairingPairCount" xml:space="preserve">
-    <value>{0} hole pairing. {1}</value>
+    <value>Hole pairing: {0}. {1}</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>How {0} presses it. {1}</value>

@@ -2948,12 +2948,20 @@ public partial class MainWindow : Window
     // Which parts a combo token needs at once, in the words the zone cards use.
     // "Side tube" because mp_right_mode_* is the right hole plus the side tube,
     // which the firmware names the mode tube.
+    // Built out of the hole names rather than written out, so a pairing is
+    // named in the language the holes themselves are named in. Three of these
+    // were English literals, which was invisible while they only labelled a
+    // chip and is not now that they label the device.
     internal static string ComboPair(string token) =>
         token.StartsWith("mp_triple_", StringComparison.Ordinal) ? Strings.Main_AllThree
-        : token.StartsWith("mp_left_center_", StringComparison.Ordinal) ? "Left + Center"
-        : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? "Right + Center"
+        : token.StartsWith("mp_left_center_", StringComparison.Ordinal) ? Pair(Strings.Main_Left, Strings.Main_Center)
+        : token.StartsWith("mp_right_center_", StringComparison.Ordinal) ? Pair(Strings.Main_Right, Strings.Main_Center)
         : token.StartsWith("mp_right_mode_", StringComparison.Ordinal) ? Strings.Main_RightSideTube
-        : token.StartsWith("mp_left_right_", StringComparison.Ordinal) ? "Left + Right" : "Combo";
+        : token.StartsWith("mp_left_right_", StringComparison.Ordinal) ? Pair(Strings.Main_Left, Strings.Main_Right)
+        : Strings.Main_Combos;
+
+    static string Pair(string a, string b) =>
+        string.Format(CultureInfo.CurrentCulture, Strings.Main_APlusB, a, b);
 
     // Chip text: the short form, since the zone heading above it already says
     // which part it is on. Combos are the exception. Every pairing strips to

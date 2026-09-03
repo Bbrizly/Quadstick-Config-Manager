@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -28,6 +29,10 @@ public class DiagramFollowsPickTests
 
     static MainWindow Open(string? zone = null)
     {
+        // These assertions read English out of the window, and another test
+        // class leaving the UI culture elsewhere would otherwise fail them.
+        // ComboPair is built from the hole names now, so it follows the culture.
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
         var s = Settings.Load();
         s.TutorialSeen = true;
         s.RememberWindow = false;
@@ -67,7 +72,7 @@ public class DiagramFollowsPickTests
         var names = Names(w);
 
         foreach (var pair in new[] { "Left + Center", "Right + Center", "Left + Right", "All three" })
-            Assert.Contains(names, n => n.StartsWith(pair + " hole pairing", StringComparison.Ordinal));
+            Assert.Contains(names, n => n.StartsWith("Hole pairing: " + pair + ".", StringComparison.Ordinal));
 
         // The single holes are not on the picture while the pairings are, or
         // the same photo would carry two sets of callouts over each other.
@@ -80,8 +85,8 @@ public class DiagramFollowsPickTests
     public void A_pairing_says_how_many_mappings_it_has()
     {
         var w = Open("combo");
-        Assert.Contains(Names(w), n => n.StartsWith("Left + Center hole pairing. 1 mapping", StringComparison.Ordinal));
-        Assert.Contains(Names(w), n => n.StartsWith("All three hole pairing. Not mapped", StringComparison.Ordinal));
+        Assert.Contains(Names(w), n => n.StartsWith("Hole pairing: Left + Center. 1 mapping", StringComparison.Ordinal));
+        Assert.Contains(Names(w), n => n.StartsWith("Hole pairing: All three. Not mapped", StringComparison.Ordinal));
         w.Close();
     }
 
@@ -98,7 +103,7 @@ public class DiagramFollowsPickTests
             .ToList();
         Assert.NotEmpty(pairs);
         foreach (var pair in pairs)
-            Assert.Contains(Names(w), n => n.StartsWith(pair + " hole pairing", StringComparison.Ordinal));
+            Assert.Contains(Names(w), n => n.StartsWith("Hole pairing: " + pair + ".", StringComparison.Ordinal));
         w.Close();
     }
 
@@ -164,6 +169,7 @@ public class DiagramFollowsPickTests
     [AvaloniaFact]
     public void A_mode_that_is_not_on_the_cable_says_so_in_the_modes_list()
     {
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
         var s = Settings.Load();
         s.TutorialSeen = true;
         s.RememberWindow = false;
