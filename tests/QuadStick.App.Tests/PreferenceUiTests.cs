@@ -73,7 +73,9 @@ public class PreferenceUiTests
         var w = ShowPrefs("bluetooth_device_mode,none\n", out var file);
 
         var combo = Cell<ComboBox>(w, 4);
-        Assert.Equal("none", combo.SelectedItem?.ToString());
+        // The row shows the mode in words with the device's own token beside
+        // it. What the file gets is the token on its own.
+        Assert.Equal("Bluetooth off (none)", combo.SelectedItem?.ToString());
 
         combo.SelectedIndex = 2; // none, keyboard, game_pad
         Dispatcher.UIThread.RunJobs();
