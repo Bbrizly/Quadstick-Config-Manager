@@ -10,6 +10,7 @@ pub mod preferences;
 pub mod profile;
 pub mod validation;
 pub mod vocab;
+pub mod workbook;
 
 pub use catalog::canonical_catalog;
 pub use csv::{Grid, parse as parse_csv, write as write_csv};
@@ -24,6 +25,13 @@ pub use validation::{
     is_too_long_for_device, validate,
 };
 pub use vocab::{ValidationCatalog, load_validation};
+pub use workbook::{
+    MAX_COLUMN as XLSX_MAX_COLUMN, MAX_PART_BYTES as XLSX_MAX_PART_BYTES,
+    MAX_ROWS as XLSX_MAX_ROWS, MAX_SHEETS as XLSX_MAX_SHEETS,
+    MAX_WORKBOOK_BYTES as XLSX_MAX_WORKBOOK_BYTES, MAX_WORKBOOK_ROWS as XLSX_MAX_WORKBOOK_ROWS,
+    SkippedTab, SkippedTabKind, TabRename, WorkbookError, WorkbookImport, WorkbookLimitation,
+    import_xlsx, looks_like_xlsx, repaired_as_mode,
+};
 
 /// Parse and validate in the same order as legacy `ProfileFile.Load`:
 /// parser issues first, validator issues second.
