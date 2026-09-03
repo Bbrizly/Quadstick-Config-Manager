@@ -3489,16 +3489,27 @@ public partial class MainWindow : Window
         }
         foreach (var at in points)
         {
-            // A ring, not a filled dot: the hole has to stay visible through
-            // the thing that says to use it.
-            var ring = new Avalonia.Controls.Shapes.Ellipse
+            // Layer the marker so it survives both the dark case and the
+            // pale mouthpiece. The outside halo separates it from the photo,
+            // while the bright focus ring gives the selected pairing a clear
+            // visual priority over the other callouts.
+            foreach (var (size, thickness, brush, opacity) in new[]
+                {
+                    (46.0, 10.0, "Surface", 0.95),
+                    (38.0,  7.0, "Focus",   1.0),
+                    (28.0,  4.0, "Accent", 1.0),
+                })
             {
-                Width = 30, Height = 30, StrokeThickness = 4, IsHitTestVisible = false,
-            };
-            BindBrush(ring, Avalonia.Controls.Shapes.Shape.StrokeProperty, "Accent");
-            Canvas.SetLeft(ring, at.X - 15);
-            Canvas.SetTop(ring, at.Y - 15);
-            yield return ring;
+                var ring = new Avalonia.Controls.Shapes.Ellipse
+                {
+                    Width = size, Height = size, StrokeThickness = thickness,
+                    Opacity = opacity, IsHitTestVisible = false,
+                };
+                BindBrush(ring, Avalonia.Controls.Shapes.Shape.StrokeProperty, brush);
+                Canvas.SetLeft(ring, at.X - size / 2);
+                Canvas.SetTop(ring, at.Y - size / 2);
+                yield return ring;
+            }
         }
     }
 

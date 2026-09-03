@@ -271,10 +271,12 @@ public class DiagramFollowsPickTests
         w.Close();
     }
 
-    // The rings are 30px circles over the holes; the plain hotspot markers are
+    // Each hole's marker is three circles: a 46px halo that lifts it off the
+    // photo, a 38px focus ring, then the 28px accent ring. Count the accent
+    // ring, so this stays one number per hole. The plain hotspot markers are
     // 14px and the mode lights are filled.
     static int Rings(MainWindow w) => w.GetVisualDescendants()
-        .OfType<Avalonia.Controls.Shapes.Ellipse>().Count(e => e.Width == 30);
+        .OfType<Avalonia.Controls.Shapes.Ellipse>().Count(e => e.Width == 28);
 
     // The way back. Without it the front of the device would be unreachable
     // once the picture had followed a pick somewhere else.
