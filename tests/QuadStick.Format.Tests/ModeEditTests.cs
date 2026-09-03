@@ -330,4 +330,25 @@ public class ModeEditTests
         Assert.Equal("right_sip", moved.Inputs[0]);
         Assert.Equal("scope note", f.GetCell(moved.Row, 10));
     }
+
+    // Drew asked for the emulation dropdown to appear with the sheet. The row
+    // is only written for a mode somebody picked: Configuration.c:684 assigns
+    // the parsed value with no presence check and atoi("") is 0, so seeding it
+    // blank is not "unset", it is mode 0, and the device would come up as a
+    // controller nobody chose.
+    [Fact]
+    public void A_new_preferences_sheet_carries_only_the_emulation_mode_that_was_picked()
+    {
+        var f = ProfileFile.Load("Profile Name\ngame.csv\nOutput or Function,Function,Input\nx,normal,lip\n");
+        Assert.Equal(1, f.AddPreferencesSheet("4"));
+        var sheet = f.Document.Sheets[1];
+        Assert.Equal(SheetType.Preferences, sheet.Type);
+        var row = Assert.Single(sheet.Bindings);
+        Assert.Equal("enable_DS3_emulation", row.Output);
+        Assert.Equal("4", f.GetCell(row.Row, 1));
+
+        var bare = ProfileFile.Load("Profile Name\ngame.csv\nOutput or Function,Function,Input\nx,normal,lip\n");
+        Assert.Equal(1, bare.AddPreferencesSheet());
+        Assert.Empty(bare.Document.Sheets[1].Bindings);
+    }
 }

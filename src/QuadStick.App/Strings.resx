@@ -1061,6 +1061,12 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
     <value>Device shows {0}</value>
   </data>
+  <data name="Main_DoNotSetOne" xml:space="preserve">
+    <value>Do not set one</value>
+  </data>
+  <data name="Main_DoNotSetOneTheDevice" xml:space="preserve">
+    <value>Do not set one. The device keeps whatever mode it is already on.</value>
+  </data>
   <data name="Main_DonTSave" xml:space="preserve">
     <value>Don't save</value>
   </data>
@@ -1247,6 +1253,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_MenuButton" xml:space="preserve">
     <value>Menu button</value>
   </data>
+  <data name="Main_ModeLabelToken" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>Mode: {0}</value>
   </data>
@@ -1354,6 +1363,12 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_NotNowKeepTheReport" xml:space="preserve">
     <value>Not now, keep the report and ask again later</value>
+  </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>Set the emulation mode</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>Set the emulation mode to {0}, written as {1}</value>
   </data>
   <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
     <value>This profile maps {0} your {1} does not have. They are in the list on the left, and can still be edited.</value>
@@ -1990,6 +2005,12 @@ You can change this any time in Settings, under Advanced.</value>
   </data>
   <data name="Main_WhenYou2" xml:space="preserve">
     <value>When you</value>
+  </data>
+  <data name="Main_WhichControllerThisFileMakes" xml:space="preserve">
+    <value>Which controller this file makes the QuadStick pretend to be. You can change or remove it later.</value>
+  </data>
+  <data name="Main_WhichControllerThisFileMakes2" xml:space="preserve">
+    <value>Which controller this file makes the QuadStick pretend to be. The device boots into this file, so only the modes that keep its drive reachable are offered.</value>
   </data>
   <data name="Main_WordsAreShownAsRaw" xml:space="preserve">
     <value>Words are shown as raw list-view names. Switch to plain English.</value>

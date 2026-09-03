@@ -2360,10 +2360,76 @@ public partial class MainWindow : Window
         await new ModesWindow(this).ShowDialog(this);
     }
 
-    public void AddPreferencesSheetToFile()
+
+    // The emulation dropdown Drew asked to have appear with the sheet. Only
+    // the modes this file may legally hold are offered: on a file the device
+    // boots into, one that hides the drive is unrecoverable without the
+    // physical force-erase. Skipping writes no row at all, which is not the
+    // same as writing a blank one.
+    async Task<string?> PickEmulationModeAsync()
+    {
+        if (!PreferenceCatalog.TryGet("enable_DS3_emulation", out var def)) return null;
+        bool boots = _file is { } f && (f.Document.IsDefaultConfig || f.Document.IsDevicePreferences);
+
+        string? picked = null;
+        var choices = new StackPanel { Spacing = 8 };
+        var dialog = new Window
+        {
+            Title = Strings.Main_SetTheEmulationMode,
+            SizeToContent = SizeToContent.WidthAndHeight,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+        };
+        foreach (var token in def.Options)
+        {
+            if (boots && !Validator.EmulationKeepsTheDrive(token)) continue;
+            var btn = new Button
+            {
+                Content = new TextBlock
+                {
+                    Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_ModeLabelToken,
+                        def.LabelForOption(token), token),
+                    FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+                },
+                MinWidth = 360,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                Tag = token,
+            };
+            AutomationProperties.SetName(btn, string.Format(CultureInfo.CurrentCulture,
+                Strings.Main_SetTheEmulationModeTo, def.LabelForOption(token), token));
+            btn.Click += (_, _) => { picked = (string)btn.Tag!; dialog.Close(); };
+            choices.Children.Add(btn);
+        }
+        var skip = new Button
+        {
+            Content = Strings.Main_DoNotSetOne, MinWidth = 140, IsDefault = true, IsCancel = true,
+        };
+        AutomationProperties.SetName(skip, Strings.Main_DoNotSetOneTheDevice);
+        skip.Click += (_, _) => dialog.Close();
+
+        var body = new StackPanel
+        {
+            Margin = new Avalonia.Thickness(24), Spacing = 16, MaxWidth = 520,
+            Children =
+            {
+                new TextBlock { Text = Strings.Main_SetTheEmulationMode, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
+                new TextBlock { Text = boots ? Strings.Main_WhichControllerThisFileMakes2 : Strings.Main_WhichControllerThisFileMakes, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
+                choices,
+                skip,
+            },
+        };
+        dialog.Content = ZoomWrap(body, _uiScale);
+        await ShowDialogInShellAsync(dialog);
+        return picked;
+    }
+    public async Task AddPreferencesSheetToFile()
     {
         if (_file is null) return;
-        int idx = _file.AddPreferencesSheet();
+        // Offered, never assumed. A preferences sheet is mostly opened to put a
+        // console's emulation mode in a game profile, so the choice is put in
+        // front of the reader here instead of leaving them to find the name.
+        var mode = await PickEmulationModeAsync();
+        if (_file is null) return; // the file can close while the dialog is up
+        int idx = _file.AddPreferencesSheet(mode);
         if (idx < 0) return;
         ModesChanged(idx, Strings.Main_PreferencesSheetAdded);
     }

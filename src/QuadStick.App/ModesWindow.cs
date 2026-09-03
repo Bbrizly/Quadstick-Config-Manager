@@ -68,7 +68,7 @@ public class ModesWindow : Window
         };
         AutomationProperties.SetName(add, Strings.Modes_AddAMode);
         add.Click += (_, _) => AddMode();
-        _prefs.Click += (_, _) => { _owner.AddPreferencesSheetToFile(); Build(); };
+        _prefs.Click += async (_, _) => { await _owner.AddPreferencesSheetToFile(); Build(); };
 
         var close = new Button
         {
