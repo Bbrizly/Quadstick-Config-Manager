@@ -36,11 +36,14 @@ public class DiagramFollowsPickTests
         var s = Settings.Load();
         s.TutorialSeen = true;
         s.RememberWindow = false;
-        s.DeviceCards = false;
         Settings.Save(s);
         var w = new MainWindow();
         w.Show();
         w.LoadProfile(ProfileFile.Load(Csv));
+        // Explicit, not inherited: the view is a saved setting, and another
+        // test class leaving it on Rows would take the diagram off the screen
+        // these tests are about.
+        w.SetDeviceViewForPreview(true);
         if (zone is not null) w.SelectZoneForPreview(zone);
         Dispatcher.UIThread.RunJobs();
         w.UpdateLayout();
@@ -72,7 +75,8 @@ public class DiagramFollowsPickTests
         var names = Names(w);
 
         foreach (var pair in new[] { "Left + Center", "Right + Center", "Left + Right", "All three" })
-            Assert.Contains(names, n => n.StartsWith("Hole pairing: " + pair + ".", StringComparison.Ordinal));
+            Assert.True(names.Any(n => n.StartsWith("Hole pairing: " + pair + ".", StringComparison.Ordinal)),
+                pair + " MISSING. zone=" + (w.SelectedZoneForPreview ?? "null") + " names=" + string.Join(" | ", names));
 
         // The single holes are not on the picture while the pairings are, or
         // the same photo would carry two sets of callouts over each other.
@@ -176,6 +180,7 @@ public class DiagramFollowsPickTests
         Settings.Save(s);
         var w = new MainWindow();
         w.Show();
+        w.SetDeviceViewForPreview(true);
         w.LoadProfile(ProfileFile.Load(
             "Profile Name,,Cable\ngame.csv\nOutputs,Function,usb\nx,normal,lip\n"
             + "Profile Name,,Wireless\n\nOutputs,Function,bluetooth\ncircle,normal,lip\n"));

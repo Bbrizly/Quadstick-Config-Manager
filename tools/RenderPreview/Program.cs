@@ -464,31 +464,31 @@ if (args.Contains("--drew2"))
     // show the fold opening itself rather than only the tidy case.
     const string Touched = SamplePrefs + "deflection_multiplier_up,140,,\n";
 
-    Capture("s1-joystick", w =>
+    Capture("1-joystick", w =>
     {
         w.Height = 900;
         w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Joystick");
     });
 
-    Capture("s1b-joystick-open", w =>
+    Capture("1b-joystick-open", w =>
     {
         w.Height = 1250;
         w.ShowDeviceSettingsForPreview(Touched, category: "Joystick");
     });
 
-    Capture("s2-sip-and-puff", w =>
+    Capture("2-sip-and-puff", w =>
     {
         w.Height = 900;
         w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff");
     });
 
-    Capture("s3-bluetooth", w =>
+    Capture("3-bluetooth", w =>
     {
         w.Height = 900;
         w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Bluetooth");
     });
 
-    Capture("s4-usb", w =>
+    Capture("4-usb", w =>
     {
         w.Height = 900;
         w.ShowDeviceSettingsForPreview(
@@ -498,33 +498,36 @@ if (args.Contains("--drew2"))
     const string Combos = "Profile Name,,Gameplay\nmygame.csv\nOutputs,Function,usb\n"
         + "x,normal,mp_left_center_sip\nkb_space,normal,lip\ncircle,normal,digital_in_8\n";
 
-    Capture("s5-hole-combos", w =>
+    Capture("5-hole-combos", w =>
     {
         w.Height = 1000;
         w.LoadProfile(ProfileFile.Load(Combos));
         w.SelectZoneForPreview("combo");
     });
 
-    Capture("s6-switch-jacks", w =>
+    Capture("6-switch-jacks", w =>
     {
         w.Height = 1000;
         w.LoadProfile(ProfileFile.Load(Combos));
         w.SelectZoneForPreview("jacks");
     });
 
-    Capture("s7-main-controls", w =>
+    Capture("7-main-controls", w =>
     {
         w.Height = 1000;
         w.LoadProfile(ProfileFile.Load(Combos));
         w.SelectZoneForPreview("side");
     });
 
-    Capture("s8-functions", w =>
+    Capture("8-functions", w =>
     {
         w.Height = 1000;
         w.LoadProfile(ProfileFile.Load(Combos));
         w.SelectZoneForPreview("lip");
     });
+
+    Console.WriteLine($"Drew's September set written to {outDir}");
+    return;
 }
 
 if (args.Contains("--drew"))
