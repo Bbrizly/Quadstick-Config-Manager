@@ -9,6 +9,7 @@ use crate::device_ipc::{
     DeletePlanDto, DeleteReceiptDto, DeviceLibrarySnapshotDto, DevicePresenceSnapshotDto,
     InstallPlanDto, InstallReceiptDto, PrepareInstallRequest,
 };
+use crate::device_rename_ipc::RenameDeviceProfileReceiptDto;
 use crate::device_shell::{DeviceOperationError, DeviceShellState};
 use crate::ipc::{AppSnapshotDto, CloseOutcomeDto, parse};
 use crate::shell::ShellState;
@@ -253,6 +254,17 @@ pub fn commit_delete_device_profile(
     request: Value,
 ) -> Result<DeleteReceiptDto, Failure> {
     let receipt = redact_operation(state.commit_delete(request))?;
+    invalidation.notify();
+    Ok(receipt)
+}
+
+#[tauri::command]
+pub fn rename_device_profile(
+    state: State<'_, DeviceShellState>,
+    invalidation: State<'_, DeviceInvalidationHub>,
+    request: Value,
+) -> Result<RenameDeviceProfileReceiptDto, Failure> {
+    let receipt = redact(state.rename_profile(request))?;
     invalidation.notify();
     Ok(receipt)
 }
