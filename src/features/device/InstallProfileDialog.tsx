@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
 import { useI18n } from "../../i18n";
-import { asQcmError, type DevicePresenceSnapshot, type EditorSnapshot, type InstallPlan, type InstallReceipt, type QcmClient } from "../../platform";
+import {
+  asQcmError,
+  type DevicePresenceSnapshot,
+  type EditorSnapshot,
+  type InstallPlan,
+  type InstallReceipt,
+  type QcmClient,
+} from "../../platform";
 
 interface InstallProfileDialogProps {
   readonly client: QcmClient;
@@ -21,32 +28,31 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
-  const loadDevices = useCallback(async (): Promise<void> => {
-    setBusy(true);
-    try {
-      const next = await client.refreshDevices();
-      setPresence(next);
-      setDeviceId((current) =>
-        current !== "" && next.devices.some((device) => device.deviceId === current)
-          ? current
-          : next.devices[0]?.deviceId ?? "",
-      );
-      setMessage("");
-    } catch (reason) {
-      setMessage(asQcmError(reason).payload.message);
-    } finally {
-      setBusy(false);
-    }
-  }, [client]);
-
   useEffect(() => {
-    if (!open) return;
-    setPlan(null);
-    setReceipt(null);
-    setStages([]);
-    setMessage("");
-    void loadDevices();
-  }, [loadDevices, open]);
+    if (!open) return undefined;
+    let active = true;
+    void client
+      .refreshDevices()
+      .then((next) => {
+        if (!active) return;
+        setPresence(next);
+        setDeviceId((current) =>
+          current !== "" && next.devices.some((device) => device.deviceId === current)
+            ? current
+            : next.devices[0]?.deviceId ?? "",
+        );
+        setPlan(null);
+        setReceipt(null);
+        setStages([]);
+        setMessage("");
+      })
+      .catch((reason: unknown) => {
+        if (active) setMessage(asQcmError(reason).payload.message);
+      });
+    return () => {
+      active = false;
+    };
+  }, [client, open, profile.sessionId]);
 
   const chooseDevice = async (): Promise<void> => {
     if (busy) return;
@@ -56,25 +62,44 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
       if (next !== null) {
         setPresence(next);
         setDeviceId(next.devices[0]?.deviceId ?? "");
+        setPlan(null);
       }
     } catch (reason) {
       setMessage(asQcmError(reason).payload.message);
     } finally {
       setBusy(false);
     }
+  };
+
+  const installPlan = async (chosen: InstallPlan): Promise<void> => {
+    const installed = await client.commitInstall(
+      chosen.planId,
+      chosen.confirmation?.confirmationId,
+      (progress) => setStages((previous) => [...previous, progress.stage]),
+    );
+    setReceipt(installed);
+    setPlan(null);
+    setMessage(
+      t("Install_InstalledPathGetFileNameResultInstalledPath", [
+        installed.target,
+        presence?.devices.find((device) => device.deviceId === installed.deviceId)?.displayName ??
+          installed.deviceId,
+      ]),
+    );
   };
 
   const prepare = async (): Promise<void> => {
     if (busy || deviceId === "" || profile.errorCount > 0) return;
     setBusy(true);
     try {
-      const next = await client.prepareInstall(profile.sessionId, deviceId);
-      setPlan(next);
       setReceipt(null);
       setStages([]);
       setMessage("");
+      const next = await client.prepareInstall(profile.sessionId, deviceId);
       if (next.confirmation === null) {
-        await commit(next);
+        await installPlan(next);
+      } else {
+        setPlan(next);
       }
     } catch (reason) {
       setMessage(asQcmError(reason).payload.message);
@@ -83,21 +108,11 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
     }
   };
 
-  const commit = async (chosen: InstallPlan = plan as InstallPlan): Promise<void> => {
-    if (chosen === null || busy) return;
+  const confirmInstall = async (): Promise<void> => {
+    if (plan === null || busy) return;
     setBusy(true);
     try {
-      const installed = await client.commitInstall(
-        chosen.planId,
-        chosen.confirmation?.confirmationId,
-        (progress) => setStages((previous) => [...previous, progress.stage]),
-      );
-      setReceipt(installed);
-      setPlan(null);
-      setMessage(t("Install_InstalledPathGetFileNameResultInstalledPath", [
-        installed.target,
-        presence?.devices.find((device) => device.deviceId === installed.deviceId)?.displayName ?? installed.deviceId,
-      ]));
+      await installPlan(plan);
     } catch (reason) {
       setMessage(asQcmError(reason).payload.message);
     } finally {
@@ -118,7 +133,9 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
       actions={
         receipt === null ? (
           <>
-            <button type="button" disabled={busy} onClick={onClose}>{t("Device_Cancel")}</button>
+            <button type="button" disabled={busy} onClick={onClose}>
+              {t("Device_Cancel")}
+            </button>
             {confirmation === null ? (
               <button
                 className="primary-action"
@@ -135,7 +152,7 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
                 type="button"
                 data-autofocus
                 disabled={busy}
-                onClick={() => void commit()}
+                onClick={() => void confirmInstall()}
               >
                 {t("Main_YesContinue")}
               </button>
@@ -163,12 +180,20 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
         ) : (
           <label className="device-picker-label">
             <span>{t("Install_InstallingTo")}</span>
-            <select value={deviceId} disabled={busy || confirmation !== null} onChange={(event) => {
-              setDeviceId(event.currentTarget.value);
-              setPlan(null);
-            }}>
+            <select
+              value={deviceId}
+              disabled={busy || confirmation !== null}
+              onChange={(event) => {
+                setDeviceId(event.currentTarget.value);
+                setPlan(null);
+                setReceipt(null);
+                setStages([]);
+              }}
+            >
               {devices.map((device) => (
-                <option key={device.deviceId} value={device.deviceId}>{device.displayName}</option>
+                <option key={device.deviceId} value={device.deviceId}>
+                  {device.displayName}
+                </option>
               ))}
             </select>
           </label>
@@ -190,17 +215,21 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
           </section>
         )}
 
-        {busy && stages.length === 0 ? <p role="status">{t("Install_BackingUpAndInstalling")}</p> : null}
+        {busy && stages.length === 0 ? (
+          <output className="feature-status">{t("Install_BackingUpAndInstalling")}</output>
+        ) : null}
         {stages.length > 0 ? (
           <ol className="install-stage-list" aria-live="polite">
-            {stages.map((stage, index) => <li key={`${index}-${stage}`}>{stage}</li>)}
+            {stages.map((stage) => (
+              <li key={stage}>{stage}</li>
+            ))}
           </ol>
         ) : null}
 
         {receipt?.backup === null || receipt?.backup === undefined ? null : (
           <p>{t("Install_BackupPath", [receipt.backup])}</p>
         )}
-        {message === "" ? null : <p role="status">{message}</p>}
+        {message === "" ? null : <output className="feature-status">{message}</output>}
       </div>
     </Dialog>
   );

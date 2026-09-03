@@ -50,7 +50,8 @@ impl WorkbookPicker for NativeWorkbookPicker {
             return Ok(None);
         };
 
-        let metadata = fs::metadata(&path).map_err(|error| workbook_io("read workbook metadata", error))?;
+        let metadata = fs::metadata(&path)
+            .map_err(|error| workbook_io("read workbook metadata", error))?;
         if metadata.len() > XLSX_MAX_WORKBOOK_BYTES as u64 {
             return Err(QcmError::Config(ConfigError::TooLarge {
                 limit_bytes: XLSX_MAX_WORKBOOK_BYTES as u64,
@@ -69,11 +70,14 @@ impl WorkbookPicker for NativeWorkbookPicker {
             }));
         }
 
-        let display_name = path
-            .file_name()
-            .and_then(|name| name.to_str())
-            .map_or_else(|| ProfileDisplayName::new("Workbook.xlsx"), ProfileDisplayName::new);
-        Ok(Some(PickedWorkbook { display_name, bytes }))
+        let display_name = path.file_name().and_then(|name| name.to_str()).map_or_else(
+            || ProfileDisplayName::new("Workbook.xlsx"),
+            ProfileDisplayName::new,
+        );
+        Ok(Some(PickedWorkbook {
+            display_name,
+            bytes,
+        }))
     }
 
     fn save_export(
@@ -91,11 +95,10 @@ impl WorkbookPicker for NativeWorkbookPicker {
             return Ok(None);
         };
         fs::write(&path, bytes).map_err(|error| workbook_io("write workbook", error))?;
-        Ok(Some(
-            path.file_name()
-                .and_then(|name| name.to_str())
-                .map_or_else(|| ProfileDisplayName::new(&suggested), ProfileDisplayName::new),
-        ))
+        Ok(Some(path.file_name().and_then(|name| name.to_str()).map_or_else(
+            || ProfileDisplayName::new(&suggested),
+            ProfileDisplayName::new,
+        )))
     }
 }
 
@@ -210,7 +213,11 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
     pub fn accept_import(&self, raw: Value) -> Result<AcceptedWorkbook, QcmError> {
         let request: ImportRequest = crate::ipc::parse(raw, "accept_workbook_import request")?;
         let id = import_id(&request.import_id)?;
-        let pending = self.pending().items.remove(&id).ok_or_else(unknown_import)?;
+        let pending = self
+            .pending()
+            .items
+            .remove(&id)
+            .ok_or_else(unknown_import)?;
         Ok(AcceptedWorkbook {
             name: csv_name(pending.name.as_str()),
             csv: pending.import.csv,
@@ -229,10 +236,12 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
         profile: &ProfileFile,
         suggested: &str,
     ) -> Result<Option<WorkbookExportReceiptDto>, QcmError> {
-        let bytes = export_xlsx(profile).map_err(|error| QcmError::Internal(InternalError {
-            what: "export workbook",
-            detail: OsDetail::new(error.to_string()),
-        }))?;
+        let bytes = export_xlsx(profile).map_err(|error| {
+            QcmError::Internal(InternalError {
+                what: "export workbook",
+                detail: OsDetail::new(error.to_string()),
+            })
+        })?;
         let Some(name) = self.picker.save_export(suggested, &bytes)? else {
             return Ok(None);
         };
@@ -338,7 +347,14 @@ fn csv_name(workbook: &str) -> String {
         .or_else(|| workbook.strip_suffix(".XLSX"))
         .unwrap_or(workbook)
         .trim();
-    format!("{}.csv", if stem.is_empty() { "Imported profile" } else { stem })
+    format!(
+        "{}.csv",
+        if stem.is_empty() {
+            "Imported profile"
+        } else {
+            stem
+        }
+    )
 }
 
 fn xlsx_name(profile: &str) -> String {
@@ -347,7 +363,10 @@ fn xlsx_name(profile: &str) -> String {
         .or_else(|| profile.strip_suffix(".CSV"))
         .unwrap_or(profile)
         .trim();
-    format!("{}.xlsx", if stem.is_empty() { "Profile" } else { stem })
+    format!(
+        "{}.xlsx",
+        if stem.is_empty() { "Profile" } else { stem }
+    )
 }
 
 #[derive(Debug, Deserialize)]

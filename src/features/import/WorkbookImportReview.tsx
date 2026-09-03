@@ -10,6 +10,21 @@ interface WorkbookImportReviewProps {
   readonly onCancel: () => void;
 }
 
+interface KeyedValue<T> {
+  readonly key: string;
+  readonly value: T;
+}
+
+function stableKeys<T>(values: readonly T[], describe: (value: T) => string): KeyedValue<T>[] {
+  const counts = new Map<string, number>();
+  return values.map((value) => {
+    const base = describe(value);
+    const occurrence = (counts.get(base) ?? 0) + 1;
+    counts.set(base, occurrence);
+    return { key: `${base}#${String(occurrence)}`, value };
+  });
+}
+
 export function WorkbookImportReviewDialog({
   review,
   busy,
@@ -77,15 +92,17 @@ export function WorkbookImportReviewDialog({
                 <li key={`${tab.index}-${tab.name}`}>
                   <strong>{tab.name}</strong>
                   {tab.preview.length > 0 ? (
-                    <div className="workbook-preview" role="table" aria-label={tab.name}>
-                      {tab.preview.map((row, rowIndex) => (
-                        <div role="row" key={rowIndex}>
-                          {row.map((cell, columnIndex) => (
-                            <span role="cell" key={columnIndex}>{cell}</span>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
+                    <table className="workbook-preview" aria-label={tab.name}>
+                      <tbody>
+                        {stableKeys(tab.preview, (row) => JSON.stringify(row)).map((keyedRow) => (
+                          <tr key={keyedRow.key}>
+                            {stableKeys(keyedRow.value, (cell) => cell).map((keyedCell) => (
+                              <td key={keyedCell.key}>{keyedCell.value}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   ) : null}
                   {tab.repairable ? (
                     <button

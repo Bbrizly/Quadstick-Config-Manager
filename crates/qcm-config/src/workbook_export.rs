@@ -54,7 +54,12 @@ pub fn export_xlsx(profile: &ProfileFile) -> Result<Vec<u8>, WorkbookExportError
     let mut zip = ZipWriter::new(cursor);
     let options = SimpleFileOptions::default().compression_method(CompressionMethod::Deflated);
 
-    write_part(&mut zip, options, "[Content_Types].xml", &content_types(sheets.len()))?;
+    write_part(
+        &mut zip,
+        options,
+        "[Content_Types].xml",
+        &content_types(sheets.len()),
+    )?;
     write_part(&mut zip, options, "_rels/.rels", root_relationships())?;
     write_part(&mut zip, options, "xl/workbook.xml", &workbook_xml(&names))?;
     write_part(

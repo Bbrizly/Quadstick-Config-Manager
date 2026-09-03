@@ -23,8 +23,8 @@ use qcm_core::profiles::{EditorSnapshot, SaveReceiptDto};
 use qcm_core::settings::AppSettingsDto;
 use serde::Serialize;
 use serde_json::Value;
-use tauri::ipc::Channel;
 use tauri::State;
+use tauri::ipc::Channel;
 
 type Failure = Box<QcmErrorDto>;
 

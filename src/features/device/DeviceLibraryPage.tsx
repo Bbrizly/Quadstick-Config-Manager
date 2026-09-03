@@ -2,7 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
 import { useI18n } from "../../i18n";
-import { asQcmError, type DeletePlan, type DeviceLibrarySnapshot, type DevicePresenceSnapshot, type EditorSnapshot, type QcmClient } from "../../platform";
+import {
+  asQcmError,
+  type DeletePlan,
+  type DeviceLibrarySnapshot,
+  type DevicePresenceSnapshot,
+  type EditorSnapshot,
+  type QcmClient,
+} from "../../platform";
 
 interface DeviceLibraryPageProps {
   readonly client: QcmClient;
@@ -10,7 +17,7 @@ interface DeviceLibraryPageProps {
 }
 
 export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPageProps) {
-  const { plural, t } = useI18n();
+  const { t } = useI18n();
   const [presence, setPresence] = useState<DevicePresenceSnapshot | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [library, setLibrary] = useState<DeviceLibrarySnapshot | null>(null);
@@ -23,6 +30,8 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
     () => presence?.devices.find((device) => device.deviceId === selectedId) ?? null,
     [presence, selectedId],
   );
+  const selectedLibrary =
+    library !== null && library.deviceId === selectedId ? library : null;
 
   const showFailure = useCallback((reason: unknown): void => {
     setMessage(asQcmError(reason).payload.message);
@@ -51,18 +60,34 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
   }, [applyPresence, client, showFailure]);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    let active = true;
+    void client
+      .refreshDevices()
+      .then((next) => {
+        if (!active) return;
+        applyPresence(next);
+        setMessage("");
+      })
+      .catch((reason: unknown) => {
+        if (active) showFailure(reason);
+      });
+    return () => {
+      active = false;
+    };
+  }, [applyPresence, client, showFailure]);
 
   useEffect(() => {
     let active = true;
     let subscription: { dispose(): void } | null = null;
-    void client.subscribeDevicesChanged(() => {
-      if (active) void refresh();
-    }).then((value) => {
-      if (active) subscription = value;
-      else value.dispose();
-    }).catch(showFailure);
+    void client
+      .subscribeDevicesChanged(() => {
+        if (active) void refresh();
+      })
+      .then((value) => {
+        if (active) subscription = value;
+        else value.dispose();
+      })
+      .catch(showFailure);
     return () => {
       active = false;
       subscription?.dispose();
@@ -70,17 +95,17 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
   }, [client, refresh, showFailure]);
 
   useEffect(() => {
-    if (selectedId === null) {
-      setLibrary(null);
-      return;
-    }
+    if (selectedId === null) return undefined;
+    const requestedId = selectedId;
     let active = true;
-    setLibrary(null);
-    void client.getDeviceLibrary(selectedId).then((next) => {
-      if (active) setLibrary(next);
-    }).catch((reason) => {
-      if (active) showFailure(reason);
-    });
+    void client
+      .getDeviceLibrary(requestedId)
+      .then((next) => {
+        if (active) setLibrary(next);
+      })
+      .catch((reason: unknown) => {
+        if (active) showFailure(reason);
+      });
     return () => {
       active = false;
     };
@@ -101,10 +126,12 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
   };
 
   const openProfile = async (name: string): Promise<void> => {
-    if (selected === null || library === null || busy) return;
+    if (selected === null || selectedLibrary === null || busy) return;
     setBusy(true);
     try {
-      onOpenProfile(await client.openDeviceProfile(selected.deviceId, library.generation, name));
+      onOpenProfile(
+        await client.openDeviceProfile(selected.deviceId, selectedLibrary.generation, name),
+      );
     } catch (reason) {
       showFailure(reason);
     } finally {
@@ -113,10 +140,12 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
   };
 
   const openPreferences = async (): Promise<void> => {
-    if (selected === null || library === null || busy) return;
+    if (selected === null || selectedLibrary === null || busy) return;
     setBusy(true);
     try {
-      onOpenProfile(await client.openDevicePreferences(selected.deviceId, library.generation));
+      onOpenProfile(
+        await client.openDevicePreferences(selected.deviceId, selectedLibrary.generation),
+      );
     } catch (reason) {
       showFailure(reason);
     } finally {
@@ -125,15 +154,15 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
   };
 
   const prepareDelete = async (name: string): Promise<void> => {
-    if (selected === null || library === null || busy) return;
+    if (selected === null || selectedLibrary === null || busy) return;
     setBusy(true);
     try {
-      const plan = await client.prepareDeleteDeviceProfile(
+      const prepared = await client.prepareDeleteDeviceProfile(
         selected.deviceId,
-        library.generation,
+        selectedLibrary.generation,
         name,
       );
-      setDeletePlan(plan);
+      setDeletePlan(prepared);
       setDeleteDeviceId(selected.deviceId);
     } catch (reason) {
       showFailure(reason);
@@ -180,10 +209,10 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
         </div>
       </header>
 
-      {message === "" ? null : <p role="status" className="feature-status">{message}</p>}
+      {message === "" ? null : <output className="feature-status">{message}</output>}
 
       {presence === null ? (
-        <p role="status">{t("Device_LookingForYourQuadStick")}</p>
+        <output className="feature-status">{t("Device_LookingForYourQuadStick")}</output>
       ) : devices.length === 0 ? (
         <div className="empty-state">
           <p>{t("Device_NoQuadStickDriveIsPlugged")}</p>
@@ -199,7 +228,9 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
                 onChange={(event) => setSelectedId(event.currentTarget.value)}
               >
                 {devices.map((device) => (
-                  <option key={device.deviceId} value={device.deviceId}>{device.displayName}</option>
+                  <option key={device.deviceId} value={device.deviceId}>
+                    {device.displayName}
+                  </option>
                 ))}
               </select>
             </label>
@@ -210,34 +241,46 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
               <div className="device-card-heading">
                 <div>
                   <h2 id="selected-device-name">{selected.displayName}</h2>
-                  <p>{selected.writable ? t("Main_NoProblemsReadyToSave") : t("DevicePage_PlugInYourQuadStickTo")}</p>
+                  <p>
+                    {selected.writable
+                      ? t("Main_NoProblemsReadyToSave")
+                      : t("DevicePage_PlugInYourQuadStickTo")}
+                  </p>
                 </div>
-                <button type="button" disabled={busy || library === null} onClick={() => void openPreferences()}>
+                <button
+                  type="button"
+                  disabled={busy || selectedLibrary === null}
+                  onClick={() => void openPreferences()}
+                >
                   {t("Main_DeviceSettings")}
                 </button>
               </div>
 
-              {library === null ? (
-                <p role="status">{t("Device_LookingForYourQuadStick")}</p>
-              ) : library.files.length === 0 ? (
+              {selectedLibrary === null ? (
+                <output className="feature-status">{t("Device_LookingForYourQuadStick")}</output>
+              ) : selectedLibrary.files.length === 0 ? (
                 <p>{t("Device_ThisDriveHasNoCsv")}</p>
               ) : (
                 <>
                   <ul className="device-file-list">
-                    {library.files.map((file) => (
+                    {selectedLibrary.files.map((file) => (
                       <li key={file.name} className="device-file-row">
                         <div className="device-file-copy">
-                          <strong>{t("Device_EntryNumberEntryFileName", [file.fileNumber, file.name])}</strong>
-                          <span>
-                            {plural("Count_File", 1, [1])}
-                            {file.protected ? t("Device_ProtectedItCannotBeDeleted") : ""}
-                          </span>
+                          <strong>
+                            {t("Device_EntryNumberEntryFileName", [file.fileNumber, file.name])}
+                          </strong>
+                          {file.protected ? (
+                            <span>{t("Device_ProtectedItCannotBeDeleted")}</span>
+                          ) : null}
                         </div>
                         <div className="device-file-actions">
                           <button
                             type="button"
                             disabled={busy}
-                            aria-label={t("Device_OpenFileNameFromGroup", [file.name, selected.displayName])}
+                            aria-label={t("Device_OpenFileNameFromGroup", [
+                              file.name,
+                              selected.displayName,
+                            ])}
                             onClick={() => void openProfile(file.name)}
                           >
                             {t("Shell_Open")}
@@ -245,7 +288,10 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
                           <button
                             type="button"
                             disabled={busy || file.protected}
-                            aria-label={t("Device_DeleteFileNameFromThe", [file.name, selected.displayName])}
+                            aria-label={t("Device_DeleteFileNameFromThe", [
+                              file.name,
+                              selected.displayName,
+                            ])}
                             onClick={() => void prepareDelete(file.name)}
                           >
                             {t("Main_Delete")}
@@ -259,7 +305,7 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
                     <h3 id="device-guide-title">{t("Device_FileSelectionOrderAndLights")}</h3>
                     <p>{t("Device_PushingTheProfileSwitchSteps")}</p>
                     <ol>
-                      {library.files.map((file) => (
+                      {selectedLibrary.files.map((file) => (
                         <li key={`guide-${file.name}`}>
                           <strong>{file.name}</strong>
                           {file.lights.length === 0
@@ -278,7 +324,14 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
 
       <Dialog
         open={deletePlan !== null}
-        title={deletePlan === null ? t("Main_Delete") : t("Device_DeleteFileFromGroup", [deletePlan.name, selected?.displayName ?? ""])}
+        title={
+          deletePlan === null
+            ? t("Main_Delete")
+            : t("Device_DeleteFileFromGroup", [
+                deletePlan.name,
+                selected?.displayName ?? "",
+              ])
+        }
         onClose={() => {
           if (!busy) {
             setDeletePlan(null);
@@ -287,13 +340,23 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
         }}
         actions={
           <>
-            <button type="button" disabled={busy} onClick={() => {
-              setDeletePlan(null);
-              setDeleteDeviceId(null);
-            }}>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setDeletePlan(null);
+                setDeleteDeviceId(null);
+              }}
+            >
               {t("Device_Cancel")}
             </button>
-            <button className="primary-action" type="button" data-autofocus disabled={busy} onClick={() => void commitDelete()}>
+            <button
+              className="primary-action"
+              type="button"
+              data-autofocus
+              disabled={busy}
+              onClick={() => void commitDelete()}
+            >
               {t("Main_Delete")}
             </button>
           </>
