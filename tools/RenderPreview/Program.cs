@@ -453,6 +453,80 @@ if (args.Contains("--models"))
 // The set for Drew: one shot per thing he asked for, named after his own
 // numbering, so a reply to his email can point at a picture instead of
 // describing a screen. Light theme only, since these go in an email.
+// The September round of Drew Redepenning's review: less on each settings
+// group, plainer words, and a picture that follows what is picked on the left.
+if (args.Contains("--drew2"))
+{
+    Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, DeviceCards = false, Language = lang });
+
+    // A device that has had a few advanced settings touched, so one shot can
+    // show the fold opening itself rather than only the tidy case.
+    const string Touched = SamplePrefs + "deflection_multiplier_up,140,,\n";
+
+    Capture("s1-joystick", w =>
+    {
+        w.Height = 900;
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Joystick");
+    });
+
+    Capture("s1b-joystick-open", w =>
+    {
+        w.Height = 1250;
+        w.ShowDeviceSettingsForPreview(Touched, category: "Joystick");
+    });
+
+    Capture("s2-sip-and-puff", w =>
+    {
+        w.Height = 900;
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff");
+    });
+
+    Capture("s3-bluetooth", w =>
+    {
+        w.Height = 900;
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Bluetooth");
+    });
+
+    Capture("s4-usb", w =>
+    {
+        w.Height = 900;
+        w.ShowDeviceSettingsForPreview(
+            SamplePrefs + "enable_DS3_emulation,0,,\n", category: "USB and compatibility");
+    });
+
+    const string Combos = "Profile Name,,Gameplay\nmygame.csv\nOutputs,Function,usb\n"
+        + "x,normal,mp_left_center_sip\nkb_space,normal,lip\ncircle,normal,digital_in_8\n";
+
+    Capture("s5-hole-combos", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combos));
+        w.SelectZoneForPreview("combo");
+    });
+
+    Capture("s6-switch-jacks", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combos));
+        w.SelectZoneForPreview("jacks");
+    });
+
+    Capture("s7-main-controls", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combos));
+        w.SelectZoneForPreview("side");
+    });
+
+    Capture("s8-functions", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combos));
+        w.SelectZoneForPreview("lip");
+    });
+}
+
 if (args.Contains("--drew"))
 {
     Application.Current!.RequestedThemeVariant = ThemeVariant.Light;

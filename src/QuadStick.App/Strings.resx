@@ -1136,6 +1136,9 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_HoleCombos" xml:space="preserve">
     <value>Hole combos</value>
   </data>
+  <data name="Main_HolePairingPairCount" xml:space="preserve">
+    <value>{0} hole pairing. {1}</value>
+  </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>How {0} presses it. {1}</value>
   </data>
@@ -1222,6 +1225,12 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   </data>
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>Loaded the online version of this profile. Your previous local copy is in the rescue folder.</value>
+  </data>
+  <data name="Main_MainControls" xml:space="preserve">
+    <value>Main controls</value>
+  </data>
+  <data name="Main_MainControlsCount" xml:space="preserve">
+    <value>Main controls. The holes, the side tube, the lip switch and the joystick. {0}</value>
   </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>Managing files on your QuadStick</value>

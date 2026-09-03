@@ -127,7 +127,9 @@ public class BackPanelTests
     public void The_photo_names_every_socket_on_it()
     {
         var w = OnZone("jacks", WithJack);
-        var spoken = w.GetVisualDescendants().OfType<Border>()
+        // The sockets are buttons on the main stage now, not labels, so this
+        // reads names off any control rather than off a Border.
+        var spoken = w.GetVisualDescendants().OfType<Control>()
             .Select(b => AutomationProperties.GetName(b) ?? "")
             .ToList();
         foreach (var expected in new[]

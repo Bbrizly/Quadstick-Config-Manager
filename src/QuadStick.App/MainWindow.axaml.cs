@@ -67,6 +67,11 @@ public partial class MainWindow : Window
     bool _deviceView = true;    // true = the split editor (diagram OR rail); false = the raw List View
     bool _railView;             // when in the split editor, show the parts as a list instead of the diagram
     string? _selectedZone;
+
+    // The exact socket or hole pairing clicked on the picture, so the panel's
+    // add button offers that one instead of the zone's generic first input.
+    // Cleared whenever the selection moves to another part.
+    string? _pickedInput;
     // Device View shows friendly words ("soft sip") by default; the Words
     // button cycles plain English -> Xbox-style button names -> the raw token
     // the List View and the CSV use ("mp_left_sip_soft"), so the views speak
@@ -2665,7 +2670,18 @@ public partial class MainWindow : Window
     // and the number a plug lands on written beside it. The case's own green
     // silkscreen says "In 7-8", which is the pair, never which of the two a
     // single switch with no splitter actually gets.
-    Control BackPanelPicture()
+    // The channel a socket's label picks. A lone switch in a jack lands on the
+    // first of its pair, which is the whole reason this panel is drawn: nothing
+    // on the case says which of "In 7-8" a single plug becomes.
+    static string? BackSocketInput(string portName)
+    {
+        foreach (var (port, channels) in SwitchJacks.Ports)
+            if (port != SwitchJacks.UsbDataPort && SwitchJacks.PortLabel(port) == portName)
+                return channels[0];
+        return portName == Strings.Main_USBAPort ? SwitchJacks.RearJoystick[0] : null;
+    }
+
+    Control BackPanelPicture(bool clickable = false)
     {
         var stage = new Canvas { Width = BackStageW, Height = BackStageH, FlowDirection = Avalonia.Media.FlowDirection.LeftToRight };
         var photo = new Image
@@ -2685,32 +2701,61 @@ public partial class MainWindow : Window
             foreach (var line in Leader(ax, labelY + BackPillH / 2, px, py)) stage.Children.Add(line);
             stage.Children.Add(Marker(px, py));
 
-            var pill = new Border
+            var caption = new StackPanel
             {
-                Width = BackPillW, Height = BackPillH,
-                CornerRadius = new Avalonia.CornerRadius(5),
-                Padding = new Avalonia.Thickness(8, 5),
-                BorderThickness = new Avalonia.Thickness(1),
-                Child = new StackPanel
+                Spacing = 1,
+                Children =
                 {
-                    Spacing = 1,
-                    Children =
+                    new TextBlock
                     {
-                        new TextBlock
-                        {
-                            Text = name, FontSize = Size("SmallSize"),
-                            FontWeight = FontWeight.SemiBold,
-                        },
-                        new TextBlock
-                        {
-                            Text = detail, FontSize = Size("SmallSize"),
-                            Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
-                        },
+                        Text = name, FontSize = Size("SmallSize"),
+                        FontWeight = FontWeight.SemiBold,
+                    },
+                    new TextBlock
+                    {
+                        Text = detail, FontSize = Size("SmallSize"),
+                        Classes = { "muted" }, TextWrapping = TextWrapping.Wrap,
                     },
                 },
             };
-            BindBrush(pill, Border.BackgroundProperty, "Surface");
-            BindBrush(pill, Border.BorderBrushProperty, "Divider");
+
+            Control pill;
+            // On the main stage the labels are how a socket is picked, the way
+            // the callouts on the front are. In the side panel it stays a
+            // labelled illustration, because the picking happens on the stage.
+            if (clickable && BackSocketInput(name) is { } socket)
+            {
+                var btn = new ToggleButton
+                {
+                    Classes = { "zone" }, Width = BackPillW, Height = BackPillH,
+                    Padding = new Avalonia.Thickness(8, 5),
+                    HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                    Content = caption,
+                    IsChecked = _pickedInput == socket,
+                };
+                btn.Click += (_, _) =>
+                {
+                    _pickedInput = socket;
+                    _selectedZone = ZoneOf(socket);
+                    _selectedRows.Clear(); _selAnchor = -1;
+                    BuildDeviceView(); BuildZoneDetail();
+                };
+                pill = btn;
+            }
+            else
+            {
+                var border = new Border
+                {
+                    Width = BackPillW, Height = BackPillH,
+                    CornerRadius = new Avalonia.CornerRadius(5),
+                    Padding = new Avalonia.Thickness(8, 5),
+                    BorderThickness = new Avalonia.Thickness(1),
+                    Child = caption,
+                };
+                BindBrush(border, Border.BackgroundProperty, "Surface");
+                BindBrush(border, Border.BorderBrushProperty, "Divider");
+                pill = border;
+            }
             // The two lines are one fact, so a screen reader reads them as one
             // sentence instead of announcing a fragment and then a number.
             AutomationProperties.SetName(pill, string.Format(CultureInfo.CurrentCulture, Strings.Main_NameDetail, name, detail));
@@ -2729,7 +2774,7 @@ public partial class MainWindow : Window
         };
     }
 
-    Control BackPanelGuide()
+    Control BackPanelGuide(bool withPicture)
     {
         var rows = new StackPanel { Spacing = 6 };
         foreach (var (port, channels) in SwitchJacks.Ports)
@@ -2754,7 +2799,9 @@ public partial class MainWindow : Window
             Padding = new Avalonia.Thickness(10, 8),
             Margin = new Avalonia.Thickness(0, 6, 0, 2),
             MaxWidth = 860,
-            Child = new StackPanel { Spacing = 6, Children = { title, BackPanelPicture(), rows } },
+            Child = withPicture
+                ? new StackPanel { Spacing = 6, Children = { title, BackPanelPicture(), rows } }
+                : new StackPanel { Spacing = 6, Children = { title, rows } },
         };
         BindBrush(box, Border.BackgroundProperty, "SurfaceSubtle");
         return box;
@@ -3125,11 +3172,29 @@ public partial class MainWindow : Window
             DeviceCanvas.Children.Add(warning);
         }
 
-        // ---- Main diagram: the photo of the device with each part pinned
-        // where it physically sits, so a part is found by looking at the thing
-        // in your mouth instead of matching a name to a box. ----
+        // ---- The picture follows the part picked on the left. Drew
+        // Redepenning asked for this: a switch jack and a hole combo were
+        // reached from a list while the photo above them showed neither, so
+        // the one view that exists to say "it is this bit of your device" said
+        // nothing about the two parts hardest to name. ----
         var photoY = DevicePhotoY;
         var d = Diagram;
+
+        // The sockets are on the back of the case, so that is the picture.
+        if (_selectedZone is "jacks" or "other")
+        {
+            // Through the same fitter the front photo uses, so it grows into a
+            // wide window, shrinks into a narrow one, and follows a resize.
+            _stageBox = (Viewbox)BackPanelPicture(clickable: true);
+            FitDeviceStage();
+            DeviceCanvas.Children.Add(_stageBox);
+            FillZoneList(byZone, visible, d);
+            return;
+        }
+
+        // Hole pairings share the same photo as the single holes, labelled by
+        // the pair each one uses rather than by the holes on their own.
+        bool combos = _selectedZone == "combo" && d.HasZone("combo");
         var stage = new Canvas
         {
             Name = "DeviceStage", Width = StageW, Height = DeviceStageHeight,
@@ -3172,10 +3237,14 @@ public partial class MainWindow : Window
                     stage.Children.Add(dot);
             }
 
-        foreach (var spot in d.Hotspots)
+        foreach (var spot in combos ? ComboHotspots(d) : d.Hotspots)
         {
-            var z = visible.FirstOrDefault(v => v.Id == spot.Zone);
-            if (z is null) continue;
+            Zone? z = null;
+            if (!combos)
+            {
+                z = visible.FirstOrDefault(v => v.Id == spot.Zone);
+                if (z is null) continue;
+            }
             var at = d.OnPhoto(spot.PointX, spot.PointY);
             double pointX = d.PhotoX + at.X, pointY = photoY + at.Y;
             double calloutHeight = spot.Bottom ? SmallPillH : PillH;
@@ -3189,7 +3258,9 @@ public partial class MainWindow : Window
             foreach (var line in Leader(ax, ay, pointX, pointY)) stage.Children.Add(line);
             stage.Children.Add(Marker(pointX, pointY));
 
-            var label = ZoneButton(z, byZone, PillW, minHeight: calloutHeight, shortName: true);
+            var label = combos
+                ? ComboCallout(spot.Zone, byZone, calloutHeight)
+                : ZoneButton(z!, byZone, PillW, minHeight: calloutHeight, shortName: true);
             label.Width = PillW;
             Canvas.SetLeft(label, spot.LabelX);
             if (spot.Bottom) Canvas.SetTop(label, DeviceBottomLabelY);
@@ -3218,6 +3289,15 @@ public partial class MainWindow : Window
         // does not have are collected behind one card rather than given a row
         // each: on a Singleton that was five extra rows shoving the modes list
         // and the view keys off the panel, for parts that device has not got.
+        FillZoneList(byZone, visible, d);
+    }
+
+    void FillZoneList(Dictionary<string, List<Binding>> byZone, List<Zone> visible, DeviceDiagram d)
+    {
+        // The way back to the front of the device, and the row that names what
+        // the front photo is showing while it is showing it.
+        ZoneList.Children.Add(MainControlsRow(byZone, visible, d));
+
         var pinned = d.Hotspots.Select(h => h.Zone).ToHashSet(StringComparer.Ordinal);
         var railed = visible.Where(z => z.Id is not "unset" && !pinned.Contains(z.Id)).ToList();
         foreach (var z in railed.Where(z => ModelHasZone(z.Id))
@@ -3225,6 +3305,133 @@ public partial class MainWindow : Window
             ZoneList.Children.Add(RailRow(z, byZone, compact: true));
         var offModel = railed.Where(z => !ModelHasZone(z.Id)).ToList();
         if (offModel.Count > 0) ZoneList.Children.Add(OffModelCard(offModel, byZone));
+    }
+
+    // The five hole pairings, each pinned to the midpoint of the two parts it
+    // uses. Derived from the same measured points as the single holes, so a new
+    // photo moves them along with everything else and nothing is measured
+    // twice. LabelX and Bottom put them in the same callout bands the single
+    // holes use, so the two views line up.
+    // Left to right by where each pairing lands on the photo, so no two leader
+    // lines cross. Rise lifts a marker off the row of holes: "Left + Right" and
+    // "All three" both average out to the middle hole, and two markers on one
+    // point with two lines into it is unreadable, so one sits above the row and
+    // the other below it.
+    static readonly (string Input, string From, string To, double LabelX, bool Bottom, double Rise)[] ComboPlaces =
+    {
+        ("mp_left_center_sip",  "mp_left",   "mp_center", 0,   false,  0),
+        ("mp_left_right_sip",   "mp_left",   "mp_right",  230, false, -0.060),
+        ("mp_right_center_sip", "mp_center", "mp_right",  460, false,  0),
+        ("mp_right_mode_sip",   "mp_right",  "side",      690, false,  0),
+        ("mp_triple_sip",       "mp_center", "mp_center", 245, true,   0.055),
+    };
+
+    static IEnumerable<Hotspot> ComboHotspots(DeviceDiagram d)
+    {
+        var at = d.Hotspots.ToDictionary(h => h.Zone, h => (h.PointX, h.PointY), StringComparer.Ordinal);
+        foreach (var (input, from, to, labelX, bottom, rise) in ComboPlaces)
+        {
+            if (!at.TryGetValue(from, out var a) || !at.TryGetValue(to, out var b)) continue;
+            yield return new Hotspot(input, labelX, bottom,
+                (a.PointX + b.PointX) / 2, (a.PointY + b.PointY) / 2 + rise);
+        }
+    }
+
+    // One hole pairing on the picture. The sidebar row could only open the
+    // whole combo group and leave the reader to work out which token was which
+    // pairing; this names the pairing and picks it.
+    Control ComboCallout(string input, Dictionary<string, List<Binding>> byZone, double minHeight)
+    {
+        var pair = ComboPair(input);
+        byZone.TryGetValue("combo", out var bindings);
+        int count = bindings?.Count(b => b.Inputs.Any(i => ComboPair(i) == pair)) ?? 0;
+        bool selected = _selectedZone == "combo" && _pickedInput is { } p && ComboPair(p) == pair;
+
+        var content = new StackPanel { Spacing = 3 };
+        content.Children.Add(new TextBlock
+        {
+            Text = pair, FontWeight = FontWeight.Bold, FontSize = Size("BodySize"),
+            TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        });
+        var countLabel = new TextBlock
+        {
+            Text = count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping"),
+            FontSize = Size("SmallSize"), TextAlignment = TextAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
+        if (count == 0) countLabel.Classes.Add("muted");
+        else BindBrush(countLabel, TextBlock.ForegroundProperty, "AccentText");
+        content.Children.Add(countLabel);
+
+        var btn = new ToggleButton
+        {
+            Classes = { "zone" }, MinHeight = minHeight,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            Content = content, IsChecked = selected,
+        };
+        AutomationProperties.SetName(btn, string.Format(CultureInfo.CurrentCulture,
+            Strings.Main_HolePairingPairCount, pair,
+            count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping")));
+        btn.Click += (_, _) =>
+        {
+            _selectedZone = "combo";
+            _pickedInput = input;
+            _selectedRows.Clear(); _selAnchor = -1;
+            BuildDeviceView(); BuildZoneDetail();
+        };
+        return btn;
+    }
+
+    // The front of the device: the single holes, the side tube, the lip switch
+    // and the joystick. A row of its own because the picture now follows the
+    // pick, so there has to be a way back to the picture the app opens on.
+    Control MainControlsRow(Dictionary<string, List<Binding>> byZone, List<Zone> visible, DeviceDiagram d)
+    {
+        var front = d.Hotspots.Select(h => h.Zone).ToHashSet(StringComparer.Ordinal);
+        int count = byZone.Where(kv => front.Contains(kv.Key)).Sum(kv => kv.Value.Count);
+        bool selected = _selectedZone is null || front.Contains(_selectedZone);
+
+        var name = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+        name.Children.Add(new TextBlock
+        {
+            Text = Strings.Main_MainControls, FontWeight = FontWeight.Bold,
+            FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+        });
+
+        var cnt = new TextBlock
+        {
+            Text = count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping"),
+            FontSize = Size("SmallSize"), VerticalAlignment = VerticalAlignment.Center,
+        };
+        if (count == 0) cnt.Classes.Add("muted");
+        else BindBrush(cnt, TextBlock.ForegroundProperty, "AccentText");
+
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        row.Children.Add(name);
+        Grid.SetColumn(cnt, 1);
+        row.Children.Add(cnt);
+
+        var btn = new ToggleButton
+        {
+            Classes = { "zone" }, HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            Padding = new Avalonia.Thickness(10, 8),
+            Content = row, IsChecked = selected,
+        };
+        AutomationProperties.SetName(btn, string.Format(CultureInfo.CurrentCulture,
+            Strings.Main_MainControlsCount,
+            count == 0 ? Strings.Main_NotMapped : Plural.Of(count, "Count_Mapping")));
+        btn.Click += (_, _) =>
+        {
+            // Back to the front photo with nothing picked, so the panel asks
+            // which part rather than guessing one.
+            _selectedZone = null;
+            _pickedInput = null;
+            _selectedRows.Clear(); _selAnchor = -1;
+            BuildDeviceView(); BuildZoneDetail();
+        };
+        return btn;
     }
 
     // The scaled photo, kept so a resize can refit it without a full rebuild.
@@ -3855,6 +4062,7 @@ public partial class MainWindow : Window
     {
         btn.Click += (_, _) =>
         {
+            if (_selectedZone != zoneId) _pickedInput = null;
             _selectedZone = zoneId;
             _selectedRows.Clear(); _selAnchor = -1; // cards of another part leave the screen
             BuildDeviceView(); BuildZoneDetail();
@@ -4309,7 +4517,10 @@ public partial class MainWindow : Window
         // The two zones that live on the back of the case get the panel drawn
         // out, because the numbering is the whole problem: nothing on the
         // hardware says which jack is digital_in_8.
-        if (zone.Id is "jacks" or "other") ZoneDetailPanel.Children.Add(BackPanelGuide());
+        // The stage already draws the panel for these two, unless the reader
+        // has swapped the diagram for the parts list.
+        if (zone.Id is "jacks" or "other")
+            ZoneDetailPanel.Children.Add(BackPanelGuide(withPicture: _railView || !_deviceView));
 
         if (bindings is { Count: > 0 })
         {
@@ -4568,7 +4779,11 @@ public partial class MainWindow : Window
             var addName = string.Format(CultureInfo.CurrentCulture, Strings.Main_AddANewMappingFor, zone.Title);
             AutomationProperties.SetName(add, addName);
             ToolTip.SetTip(add, addName);
-            add.Click += (_, _) => AddMappingWithInput(zone.DefaultInput);
+            // The part clicked on the picture, when it belongs to this zone:
+            // clicking "Left + Center" and then + should add that pairing, not
+            // whichever combo happens to be first in the table.
+            var seed = _pickedInput is { } picked && ZoneOf(picked) == zone.Id ? picked : zone.DefaultInput;
+            add.Click += (_, _) => AddMappingWithInput(seed);
             ZoneDetailPanel.Children.Add(add);
         }
         RepaintSelection(); // the bars follow whatever rebuilt here
