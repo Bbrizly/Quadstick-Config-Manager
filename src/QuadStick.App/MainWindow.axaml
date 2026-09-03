@@ -338,11 +338,15 @@
       </Border>
 
       <!-- Problems: collapsed to a single bar by default so it never eats the
-           editor; the full list expands above the bar on demand. The status
-           host shares this unobtrusive bottom area, keeping feedback visible
-           without adding another toolbar row above the device. -->
-      <StackPanel x:Name="ProblemsDock" DockPanel.Dock="Bottom" Margin="16,0,16,14">
+           editor; the full list expands above the bar on demand. This dock is
+           a sibling of the whole workspace, so expanded problems use the full
+           editor width rather than being trapped inside the sidebar or sheet.
+           The status host shares this unobtrusive bottom area, keeping
+           feedback visible without adding another toolbar row above the device. -->
+      <StackPanel x:Name="ProblemsDock" DockPanel.Dock="Bottom" Margin="16,0,16,14"
+                  HorizontalAlignment="Stretch">
         <Border x:Name="ProblemsListBorder" IsVisible="False" Height="150" Margin="0,0,0,8"
+                HorizontalAlignment="Stretch"
                 BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1" CornerRadius="6"
                 Background="{DynamicResource SurfaceBrush}">
           <ListBox x:Name="IssuesList" FontSize="{DynamicResource SmallSize}" Background="Transparent"
