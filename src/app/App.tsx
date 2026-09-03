@@ -5,6 +5,7 @@ import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
 import { ToastRegion } from "../components/primitives/ToastRegion";
 import { EditorWorkspace } from "../features/editor/EditorWorkspace";
+import { WorkbookImportReviewDialog } from "../features/import/WorkbookImportReview";
 import {
   I18nProvider,
   LOCALE_NAMES,
@@ -14,7 +15,13 @@ import {
   type MessageKey,
 } from "../i18n";
 import { localizedErrorMessage } from "../i18n/errors";
-import { MockQcmClient, asQcmError, type EditorSnapshot, type QcmClient } from "../platform";
+import {
+  MockQcmClient,
+  asQcmError,
+  type EditorSnapshot,
+  type QcmClient,
+  type WorkbookImportReview,
+} from "../platform";
 import { applyThemePreference, type ThemePreference } from "./theme";
 
 const DESTINATION_COPY: Record<ShellDestination, { title: MessageKey; detail: MessageKey }> = {
@@ -38,6 +45,8 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [themePreference, setThemePreference] = useState<ThemePreference>("system");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [editor, setEditor] = useState<EditorSnapshot | null>(null);
+  const [workbookReview, setWorkbookReview] = useState<WorkbookImportReview | null>(null);
+  const [workbookBusy, setWorkbookBusy] = useState(false);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   const [pendingDestination, setPendingDestination] = useState<ShellDestination | null>(null);
   const [closing, setClosing] = useState(false);
@@ -78,6 +87,66 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       setEditor(opened);
       setActiveDestination("home");
       setMessage("");
+    } catch (reason) {
+      showFailure(reason);
+    }
+  };
+
+  const importWorkbook = async (): Promise<void> => {
+    const choose = client.chooseAndImportWorkbook;
+    if (choose === undefined || workbookBusy) return;
+    setWorkbookBusy(true);
+    try {
+      const review = await choose.call(client);
+      if (review !== null) {
+        setWorkbookReview(review);
+        setMessage("");
+      }
+    } catch (reason) {
+      showFailure(reason);
+    } finally {
+      setWorkbookBusy(false);
+    }
+  };
+
+  const repairWorkbookTab = async (tabIndex: number): Promise<void> => {
+    const repair = client.repairWorkbookTab;
+    if (repair === undefined || workbookReview === null || workbookBusy) return;
+    setWorkbookBusy(true);
+    try {
+      setWorkbookReview(await repair.call(client, workbookReview.importId, tabIndex));
+    } catch (reason) {
+      showFailure(reason);
+    } finally {
+      setWorkbookBusy(false);
+    }
+  };
+
+  const acceptWorkbook = async (): Promise<void> => {
+    const accept = client.acceptWorkbookImport;
+    if (accept === undefined || workbookReview === null || workbookBusy) return;
+    setWorkbookBusy(true);
+    try {
+      const opened = await accept.call(client, workbookReview.importId);
+      setWorkbookReview(null);
+      setEditor(opened);
+      setActiveDestination("home");
+      setMessage("");
+    } catch (reason) {
+      showFailure(reason);
+    } finally {
+      setWorkbookBusy(false);
+    }
+  };
+
+  const cancelWorkbook = async (): Promise<void> => {
+    if (workbookReview === null || workbookBusy) return;
+    const importId = workbookReview.importId;
+    setWorkbookReview(null);
+    const cancel = client.cancelWorkbookImport;
+    if (cancel === undefined) return;
+    try {
+      await cancel.call(client, importId);
     } catch (reason) {
       showFailure(reason);
     }
@@ -174,6 +243,11 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           <button type="button" onClick={() => void openProfile()}>
             {t("Shell_OpenAProfileFile")}
           </button>
+          {client.chooseAndImportWorkbook !== undefined ? (
+            <button type="button" disabled={workbookBusy} onClick={() => void importWorkbook()}>
+              {t("Community_Import")}
+            </button>
+          ) : null}
         </div>
       </section>
     );
@@ -199,6 +273,13 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       </AppShell>
       <LiveRegion>{message}</LiveRegion>
       <ToastRegion messages={[]} />
+      <WorkbookImportReviewDialog
+        review={workbookReview}
+        busy={workbookBusy}
+        onRepair={(tabIndex) => void repairWorkbookTab(tabIndex)}
+        onAccept={() => void acceptWorkbook()}
+        onCancel={() => void cancelWorkbook()}
+      />
       <Dialog
         open={settingsOpen}
         title={t("Shell_Settings")}

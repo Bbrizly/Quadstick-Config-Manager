@@ -29,6 +29,7 @@ import type {
   Subscription,
 } from "./contracts";
 import { asQcmError, type QcmClient } from "./qcmClient";
+import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
 
 interface NativeSubscription {
   readonly subscriptionId: string;
@@ -54,8 +55,6 @@ function disposal(command: string, subscriptionId: string): Subscription {
         return;
       }
       disposed = true;
-      // React effect cleanup cannot await. Native removal is idempotent; a
-      // teardown transport failure is deliberately not promoted into UI state.
       void invoke(command, { subscriptionId }).catch(() => undefined);
     },
   };
@@ -108,6 +107,32 @@ export class TauriQcmClient implements QcmClient {
 
   closeProfile(sessionId: string, disposition: CloseDisposition): Promise<CloseOutcome> {
     return call<CloseOutcome>("close_profile", { sessionId, disposition });
+  }
+
+  chooseAndImportWorkbook(): Promise<WorkbookImportReview | null> {
+    return call<WorkbookImportReview | null>("choose_and_import_workbook");
+  }
+
+  repairWorkbookTab(importId: string, tabIndex: number): Promise<WorkbookImportReview> {
+    return call<WorkbookImportReview>("repair_workbook_tab", { importId, tabIndex });
+  }
+
+  acceptWorkbookImport(importId: string): Promise<EditorSnapshot> {
+    return call<EditorSnapshot>("accept_workbook_import", { importId });
+  }
+
+  cancelWorkbookImport(importId: string): Promise<void> {
+    return call<void>("cancel_workbook_import", { importId });
+  }
+
+  exportProfileXlsx(
+    sessionId: string,
+    expectedRevision: number,
+  ): Promise<WorkbookExportReceipt | null> {
+    return call<WorkbookExportReceipt | null>("export_profile_xlsx", {
+      sessionId,
+      expectedRevision,
+    });
   }
 
   listDevices(): Promise<DevicePresenceSnapshot> {
@@ -189,7 +214,6 @@ export class TauriQcmClient implements QcmClient {
   }
 }
 
-/** Every command name this client calls, for the API ledger to be checked against. */
 export const TAURI_COMMANDS = [
   "get_app_snapshot",
   "get_settings",
@@ -202,6 +226,11 @@ export const TAURI_COMMANDS = [
   "save_profile",
   "save_profile_as",
   "close_profile",
+  "choose_and_import_workbook",
+  "repair_workbook_tab",
+  "accept_workbook_import",
+  "cancel_workbook_import",
+  "export_profile_xlsx",
   "list_devices",
   "refresh_devices",
   "choose_device_folder",

@@ -11,6 +11,7 @@ pub mod device_shell;
 pub mod ipc;
 pub mod shell;
 pub mod streaming;
+pub mod workbook_shell;
 
 #[must_use]
 pub fn core_policy() -> &'static str {
@@ -31,6 +32,11 @@ pub fn registered_commands() -> &'static [&'static str] {
         "save_profile",
         "save_profile_as",
         "close_profile",
+        "choose_and_import_workbook",
+        "repair_workbook_tab",
+        "accept_workbook_import",
+        "cancel_workbook_import",
+        "export_profile_xlsx",
         "list_devices",
         "refresh_devices",
         "choose_device_folder",
@@ -78,6 +84,7 @@ pub fn run() {
         // capability permission; it exists solely to reject remote navigation.
         .plugin(navigation_guard())
         .manage(shell::native_shell())
+        .manage(workbook_shell::native_workbook_shell())
         .manage(device_shell::native_device_shell())
         .manage(streaming::LiveRuntime::new())
         .manage(streaming::DeviceInvalidationHub::default())
@@ -93,6 +100,11 @@ pub fn run() {
             commands::save_profile,
             commands::save_profile_as,
             commands::close_profile,
+            commands::choose_and_import_workbook,
+            commands::repair_workbook_tab,
+            commands::accept_workbook_import,
+            commands::cancel_workbook_import,
+            commands::export_profile_xlsx,
             commands::list_devices,
             commands::refresh_devices,
             commands::choose_device_folder,
@@ -127,8 +139,13 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_contains_no_global_event_api() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 25);
+        assert_eq!(commands.len(), 30);
         for expected in [
+            "choose_and_import_workbook",
+            "repair_workbook_tab",
+            "accept_workbook_import",
+            "cancel_workbook_import",
+            "export_profile_xlsx",
             "list_devices",
             "refresh_devices",
             "choose_device_folder",

@@ -43,6 +43,14 @@ export type {
   Subscription,
   ThemeChoice,
 } from "./contracts";
+export type {
+  WorkbookExportReceipt,
+  WorkbookImportReview,
+  WorkbookLimitation,
+  WorkbookMode,
+  WorkbookSkippedTab,
+  WorkbookTabRename,
+} from "./workbookContracts";
 export { ERROR_CODES, INTERFACE_SCALES } from "./contracts";
 export { MockQcmClient } from "./mockQcmClient";
 export { asQcmError, isQcmCommandError, QcmCommandError, type QcmClient } from "./qcmClient";

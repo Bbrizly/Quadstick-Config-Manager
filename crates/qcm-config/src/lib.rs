@@ -11,6 +11,7 @@ pub mod profile;
 pub mod validation;
 pub mod vocab;
 pub mod workbook;
+pub mod workbook_export;
 
 pub use catalog::canonical_catalog;
 pub use csv::{Grid, parse as parse_csv, write as write_csv};
@@ -32,6 +33,7 @@ pub use workbook::{
     SkippedTab, SkippedTabKind, TabRename, WorkbookError, WorkbookImport, WorkbookLimitation,
     import_xlsx, looks_like_xlsx, repaired_as_mode,
 };
+pub use workbook_export::{WorkbookExportError, export_xlsx};
 
 /// Parse and validate in the same order as legacy `ProfileFile.Load`:
 /// parser issues first, validator issues second.

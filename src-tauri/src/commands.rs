@@ -15,13 +15,16 @@ use crate::shell::ShellState;
 use crate::streaming::{
     DeviceInvalidationDto, DeviceInvalidationHub, LiveRuntime, LiveSnapshotDto, SubscriptionDto,
 };
+use crate::workbook_shell::{
+    WorkbookExportReceiptDto, WorkbookImportReviewDto, WorkbookShellState,
+};
 use qcm_core::error::{QcmErrorDto, StorageStage};
 use qcm_core::profiles::{EditorSnapshot, SaveReceiptDto};
 use qcm_core::settings::AppSettingsDto;
 use serde::Serialize;
 use serde_json::Value;
-use tauri::State;
 use tauri::ipc::Channel;
+use tauri::State;
 
 type Failure = Box<QcmErrorDto>;
 
@@ -126,6 +129,49 @@ pub fn close_profile(
     request: Value,
 ) -> Result<CloseOutcomeDto, Failure> {
     redact(state.close_profile(request))
+}
+
+#[tauri::command]
+pub fn choose_and_import_workbook(
+    state: State<'_, WorkbookShellState>,
+) -> Result<Option<WorkbookImportReviewDto>, Failure> {
+    redact(state.choose_import())
+}
+
+#[tauri::command]
+pub fn repair_workbook_tab(
+    state: State<'_, WorkbookShellState>,
+    request: Value,
+) -> Result<WorkbookImportReviewDto, Failure> {
+    redact(state.repair_tab(request))
+}
+
+#[tauri::command]
+pub fn accept_workbook_import(
+    workbook: State<'_, WorkbookShellState>,
+    profiles: State<'_, ShellState>,
+    request: Value,
+) -> Result<EditorSnapshot, Failure> {
+    let accepted = redact(workbook.accept_import(request))?;
+    redact(profiles.open_workbook_copy(&accepted.name, &accepted.csv))
+}
+
+#[tauri::command]
+pub fn cancel_workbook_import(
+    state: State<'_, WorkbookShellState>,
+    request: Value,
+) -> Result<(), Failure> {
+    redact(state.cancel_import(request))
+}
+
+#[tauri::command]
+pub fn export_profile_xlsx(
+    profiles: State<'_, ShellState>,
+    workbook: State<'_, WorkbookShellState>,
+    request: Value,
+) -> Result<Option<WorkbookExportReceiptDto>, Failure> {
+    let (profile, suggested) = redact(profiles.profile_for_export(request))?;
+    redact(workbook.export_profile(&profile, &suggested))
 }
 
 #[tauri::command]

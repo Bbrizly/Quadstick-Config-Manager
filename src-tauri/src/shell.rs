@@ -11,8 +11,8 @@ use crate::ipc::{
     NewProfileRequest, SessionRequest, SessionRevisionRequest, UpdateSettingsRequest, parse,
     session_id,
 };
-use qcm_config::ProfileFile;
-use qcm_core::error::QcmError;
+use qcm_config::{EditorOp, ProfileFile};
+use qcm_core::error::{ProfileError, QcmError};
 use qcm_core::ports::local::LocalProfileStore;
 use qcm_core::ports::storage::{DeviceFileName, DeviceGeneration, StorageDeviceId};
 use qcm_core::profiles::{EditorSnapshot, ProfileSessions, SaveReceiptDto};
@@ -119,7 +119,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             let sessions = self.sessions();
             let open = sessions.session(session)?;
             if open.revision() != request.expected_revision {
-                return Err(qcm_core::error::ProfileError::RevisionConflict {
+                return Err(ProfileError::RevisionConflict {
                     expected: request.expected_revision,
                     actual: open.revision(),
                 }
@@ -151,6 +151,64 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
     pub fn profile_for_install(&self, session_raw: &str) -> Result<ProfileFile, QcmError> {
         let session = session_id(session_raw)?;
         Ok(self.sessions().session(session)?.file().clone())
+    }
+
+    /// Snapshot one exact profile revision for a native export. This is separate
+    /// from install because exporting stale editor state must fail rather than
+    /// silently writing an older spreadsheet.
+    pub fn profile_for_export(&self, raw: Value) -> Result<(ProfileFile, String), QcmError> {
+        let request: SessionRevisionRequest = parse(raw, "export_profile_xlsx request")?;
+        let session = session_id(&request.session_id)?;
+        let sessions = self.sessions();
+        let open = sessions.session(session)?;
+        if open.revision() != request.expected_revision {
+            return Err(ProfileError::RevisionConflict {
+                expected: request.expected_revision,
+                actual: open.revision(),
+            }
+            .into());
+        }
+        let suggested = open
+            .save_target_name()
+            .map(ToString::to_string)
+            .or_else(|| open.file().document.csv_file_name().map(ToOwned::to_owned))
+            .filter(|name| !name.trim().is_empty())
+            .unwrap_or_else(|| "Profile.csv".to_owned());
+        Ok((open.file().clone(), suggested))
+    }
+
+    /// A workbook import is a read-only-origin working copy. It intentionally
+    /// has no save target; accepting the review therefore makes the first Save
+    /// become Save As. One typed filename edit marks the accepted copy dirty so
+    /// closing it cannot discard the import without the normal unsaved gate.
+    pub fn open_workbook_copy(
+        &self,
+        name: &str,
+        csv_text: &str,
+    ) -> Result<EditorSnapshot, QcmError> {
+        let source_id = format!("workbook:{name}");
+        let mut sessions = self.sessions();
+        let opened = sessions.open_community(&source_id, csv_text);
+        let session = session_id(&opened.session_id)?;
+        let (row, existing) = {
+            let open = sessions.session(session)?;
+            let row = open.file().document.file_name_cell_row();
+            (row, open.file().get_cell(row, 0).to_owned())
+        };
+        let desired = if name.trim().is_empty() {
+            existing
+        } else {
+            name.to_owned()
+        };
+        sessions.apply_ops(
+            session,
+            opened.revision,
+            &[EditorOp::SetCell {
+                row,
+                col: 0,
+                value: desired,
+            }],
+        )
     }
 
     pub fn open_device_copy(
