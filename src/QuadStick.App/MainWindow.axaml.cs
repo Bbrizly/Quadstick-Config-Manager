@@ -4730,6 +4730,10 @@ public partial class MainWindow : Window
             VerticalAlignment = VerticalAlignment.Center,
             Children = { help, count },
         };
+        // Keep the add action with the question mark and mapping count: these
+        // are the controls that describe and act on the selected part. It is
+        // easier to discover here than separated below the mapping list.
+        if (zone.Id != "unset") meta.Children.Add(AddMappingButton(zone));
         // The panel's scroll bar floats over the content rather than taking room
         // off it, so a heading drawn to the full width put the count under the
         // bar and the part read as half a glyph. Only the heading is inset: the
@@ -4751,12 +4755,6 @@ public partial class MainWindow : Window
         // has swapped the diagram for the parts list.
         if (zone.Id is "jacks" or "other" && (_railView || !_deviceView))
             ZoneDetailPanel.Children.Add(BackPanelGuide(withPicture: true));
-
-        // The plus, directly under the heading. At the foot of the panel it was
-        // below every mapping and below the list of what is free, so on a part
-        // with a few rows the one control that adds a mapping was off screen
-        // and nothing above it said it existed.
-        if (zone.Id != "unset") ZoneDetailPanel.Children.Add(AddMappingButton(zone));
 
         if (bindings is { Count: > 0 })
         {
@@ -5015,7 +5013,10 @@ public partial class MainWindow : Window
         var add = new Button
         {
             Content = Glyph("IconAdd", "OnAccent"),
-            Classes = { "primary", "command" },
+            // The add action now lives beside the 40px help icon and count;
+            // keep it compact so it belongs to that heading cluster instead
+            // of reading like a standalone toolbar command.
+            Classes = { "primary", "icon" },
             HorizontalAlignment = HorizontalAlignment.Left,
         };
         var addName = string.Format(CultureInfo.CurrentCulture, Strings.Main_AddANewMappingFor, zone.Title);

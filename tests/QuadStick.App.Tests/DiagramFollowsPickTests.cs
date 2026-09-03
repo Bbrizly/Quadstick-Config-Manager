@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -254,20 +255,26 @@ public class DiagramFollowsPickTests
 
     // The plus was under every mapping and under the list of what is free, so
     // on a part with a few rows the one control that adds a mapping was off
-    // the bottom of the panel.
+    // the bottom of the panel. It now sits in the part heading, beside the
+    // question mark and the count, which is above every mapping wherever the
+    // panel is scrolled.
     [AvaloniaFact]
-    public void The_plus_is_above_the_mappings()
+    public void The_plus_is_in_the_part_heading_above_the_mappings()
     {
         var w = OpenCards(OutOfOrder, "mp_left");
         var panel = (StackPanel)w.GetVisualDescendants().OfType<Control>()
             .First(c => c.Name == "ZoneDetailPanel");
-        int add = panel.Children.ToList().FindIndex(c =>
-            (AutomationProperties.GetName(c) ?? "").StartsWith("Add a new mapping", StringComparison.Ordinal));
-        int firstCard = panel.Children.ToList().FindIndex(c =>
+        var heading = Assert.IsType<Grid>(panel.Children[0]);
+        var add = heading.GetVisualDescendants().OfType<Button>().Single(b =>
+            (AutomationProperties.GetName(b) ?? "").StartsWith("Add a new mapping", StringComparison.Ordinal));
+        var firstCard = panel.Children.First(c =>
             c.GetVisualDescendants().OfType<Button>().Any(b =>
                 (AutomationProperties.GetName(b) ?? "").StartsWith("Remove the ", StringComparison.Ordinal)));
-        Assert.True(add >= 0 && firstCard > add,
-            $"the plus is at {add} and the first mapping at {firstCard}");
+
+        var addAt = add.TranslatePoint(new Point(0, 0), panel)!.Value;
+        var cardAt = firstCard.TranslatePoint(new Point(0, 0), panel)!.Value;
+        Assert.True(addAt.Y < cardAt.Y,
+            $"the plus is at {addAt.Y} and the first mapping at {cardAt.Y}");
         w.Close();
     }
 
