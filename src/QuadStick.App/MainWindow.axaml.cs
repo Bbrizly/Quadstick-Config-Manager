@@ -6642,7 +6642,9 @@ public partial class MainWindow : Window
         p.Children.Add(At(Mid(WithDuplicateMark(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, string.Format(CultureInfo.CurrentCulture, Strings.Main_OutputForRowBRow, b.Row), OutputTint, outputs.Catalog, Strings.Main_AnOutput,
             picked => CommitOutputFromList(b, outputs, picked),
             _labelStyle == 0 ? null
-                : token => OutputVisuals.Render(VisualFor(token), TokenLabel(token), compact: true),
+                // Picker rows have enough room for the full wrapped keycap;
+                // compact keycaps are reserved for the dense mapping cards.
+                : token => OutputVisuals.Render(VisualFor(token), TokenLabel(token), compact: false),
             vocabularyFilter: true),
             _dupes.Output(b.Output))), 1));
         // List View is the raw grid, so the function's numbers explain
@@ -7640,7 +7642,9 @@ public partial class MainWindow : Window
             token =>
             {
                 var label = outputs.TokenFor.ContainsKey(token) ? token : TokenLabel(token);
-                return OutputVisuals.Render(VisualFor(token, _ => label));
+                // The dropdown item needs to show the complete keypad label;
+                // use the full wrapped keycap presentation here.
+                return OutputVisuals.Render(VisualFor(token, _ => label), compact: false);
             },
             vocabularyFilter: true);
     }
@@ -7858,7 +7862,15 @@ public partial class MainWindow : Window
         var search = new TextBox { Watermark = Strings.Main_Search };
         AutomationProperties.SetName(search, Strings.Main_SearchThisList);
         var body = new StackPanel { Spacing = 2 };
-        var scroll = new ScrollViewer { Content = body, MaxHeight = 400 };
+        var scroll = new ScrollViewer
+        {
+            Content = body,
+            Height = 400,
+            MaxHeight = 400,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            ClipToBounds = true,
+        };
 
         List<string> TokensIn(string cat, string? sub) => all
             .Where(t => t != "none" && catalog!.Classify(t) is var c && c.Cat == cat
