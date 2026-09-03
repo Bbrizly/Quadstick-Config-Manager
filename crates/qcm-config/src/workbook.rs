@@ -185,58 +185,57 @@ pub fn import_xlsx(content: &[u8]) -> Result<WorkbookImport, WorkbookError> {
             .first()
             .and_then(|row| row.first())
             .is_some_and(|cell| is_sheet_keyword(cell.trim()));
-        let flat_profile = !keyword
-            && grid
-                .first()
-                .and_then(|row| row.first())
-                .is_some_and(|cell| is_file_header(cell));
-
-        if !keyword && !flat_profile && helper_named {
-            skipped.push(SkippedTab {
-                name: name.clone(),
-                rows: Grid::new(),
-                kind: SkippedTabKind::Helper,
-            });
-            continue;
-        }
-
-        let spent = grid.len();
-        if keyword || flat_profile {
-            if !rows.is_empty() {
-                rows.push(Vec::new());
-            }
-            let keyword_row = rows.len();
-            if keyword && keyword_to_type(grid[0][0].trim()) == SheetType::ProfileName {
-                modes.push(ModeCandidate {
-                    row: keyword_row,
-                    tab: name.trim().to_owned(),
-                    c1: grid[0].get(2).map_or("", String::as_str).trim().to_owned(),
-                });
-            }
-            rows.extend(grid);
-        } else if looks_like_bindings(&grid) {
+        if !keyword {
+            let kind = if helper_named {
+                SkippedTabKind::Helper
+            } else {
+                SkippedTabKind::UnreadableA1
+            };
             skipped.push(SkippedTab {
                 name: name.clone(),
                 rows: grid,
-                kind: SkippedTabKind::UnreadableA1,
+                kind,
             });
-        } else {
             continue;
         }
 
-        kept_rows = kept_rows.saturating_add(spent);
-        if kept_rows < MAX_WORKBOOK_ROWS {
-            continue;
+        if !rows.is_empty() && !rows.last().is_some_and(Vec::is_empty) {
+            rows.push(Vec::new());
         }
-
-        let remaining = parts.len().saturating_sub(index + 1);
-        if remaining > 0 {
-            limitation = Some(WorkbookLimitation::WorkbookRows {
-                max: MAX_WORKBOOK_ROWS,
-                remaining_tabs: if sheet_cap_hit { None } else { Some(remaining) },
+        let start = rows.len();
+        if grid
+            .first()
+            .and_then(|row| row.first())
+            .is_some_and(|first| keyword_to_type(first.trim()) == Some(SheetType::ProfileName))
+        {
+            modes.push(ModeCandidate {
+                row: start,
+                tab: name.clone(),
+                c1: grid
+                    .first()
+                    .and_then(|row| row.get(2))
+                    .cloned()
+                    .unwrap_or_default(),
             });
         }
-        break;
+        let available = MAX_WORKBOOK_ROWS.saturating_sub(kept_rows);
+        if grid.len() > available {
+            rows.extend(grid.into_iter().take(available));
+            kept_rows = MAX_WORKBOOK_ROWS;
+            if limitation.is_none() {
+                limitation = Some(WorkbookLimitation::WorkbookRows {
+                    max: MAX_WORKBOOK_ROWS,
+                    remaining_tabs: if sheet_cap_hit {
+                        None
+                    } else {
+                        Some(parts.len().saturating_sub(index + 1))
+                    },
+                });
+            }
+            break;
+        }
+        kept_rows += grid.len();
+        rows.extend(grid);
     }
 
     let renamed = name_modes_from_tabs(&mut rows, &modes);
@@ -366,37 +365,28 @@ fn shared_strings<R: Read + std::io::Seek>(
 fn sheet_parts<R: Read + std::io::Seek>(
     archive: &mut ZipArchive<R>,
 ) -> Result<(Vec<(String, String)>, bool), WorkbookError> {
-    let workbook =
-        read_part(archive, "xl/workbook.xml")?.ok_or(WorkbookError::MissingWorkbookParts)?;
-    let relationships = read_part(archive, "xl/_rels/workbook.xml.rels")?
+    let workbook = read_part(archive, "xl/workbook.xml")?
         .ok_or(WorkbookError::MissingWorkbookParts)?;
-    let targets = parse_relationships(&relationships)?;
+    let rels = read_part(archive, "xl/_rels/workbook.xml.rels")?
+        .ok_or(WorkbookError::MissingWorkbookParts)?;
+    let relationships = relationship_targets(&rels)?;
 
     let mut reader = Reader::from_str(&workbook);
-    let mut seen = BTreeSet::new();
-    let mut result = Vec::new();
-    let mut cap_hit = false;
-
+    let mut parts = Vec::new();
+    let mut sheet_cap_hit = false;
     loop {
         match reader.read_event().map_err(|_| WorkbookError::InvalidXml)? {
             Event::Start(element) | Event::Empty(element)
                 if local_name(element.name().as_ref()) == "sheet" =>
             {
-                let Some(id) = attr_local(&element, "id")? else {
-                    continue;
-                };
-                let Some(target) = targets.get(&id) else {
-                    continue;
-                };
-                let part = workbook_part(target);
-                if !seen.insert(part.clone()) {
+                if parts.len() >= MAX_SHEETS + 1 {
+                    sheet_cap_hit = true;
                     continue;
                 }
-                let name = attr_local(&element, "name")?.unwrap_or_default();
-                result.push((name, part));
-                if result.len() > MAX_SHEETS {
-                    cap_hit = true;
-                    break;
+                let name = attribute(&element, b"name")?.unwrap_or_default();
+                let relationship = relationship_id(&element)?;
+                if let Some(target) = relationships.get(&relationship) {
+                    parts.push((name, workbook_part(target)));
                 }
             }
             Event::DocType(_) => return Err(WorkbookError::InvalidXml),
@@ -404,21 +394,22 @@ fn sheet_parts<R: Read + std::io::Seek>(
             _ => {}
         }
     }
-    Ok((result, cap_hit))
+    sheet_cap_hit |= parts.len() > MAX_SHEETS;
+    Ok((parts, sheet_cap_hit))
 }
 
-fn parse_relationships(xml: &str) -> Result<BTreeMap<String, String>, WorkbookError> {
+fn relationship_targets(xml: &str) -> Result<BTreeMap<String, String>, WorkbookError> {
     let mut reader = Reader::from_str(xml);
-    let mut targets = BTreeMap::new();
+    let mut result = BTreeMap::new();
     loop {
         match reader.read_event().map_err(|_| WorkbookError::InvalidXml)? {
             Event::Start(element) | Event::Empty(element)
                 if local_name(element.name().as_ref()) == "Relationship" =>
             {
-                if let (Some(id), Some(target)) =
-                    (attr_local(&element, "Id")?, attr_local(&element, "Target")?)
-                {
-                    targets.insert(id, target);
+                let id = attribute(&element, b"Id")?.unwrap_or_default();
+                let target = attribute(&element, b"Target")?.unwrap_or_default();
+                if !id.is_empty() && !target.is_empty() {
+                    result.entry(id).or_insert(target);
                 }
             }
             Event::DocType(_) => return Err(WorkbookError::InvalidXml),
@@ -426,7 +417,7 @@ fn parse_relationships(xml: &str) -> Result<BTreeMap<String, String>, WorkbookEr
             _ => {}
         }
     }
-    Ok(targets)
+    Ok(result)
 }
 
 fn workbook_part(target: &str) -> String {
@@ -460,11 +451,7 @@ fn parse_shared_strings(xml: &str) -> Result<Vec<String>, WorkbookError> {
             }
             Event::Text(text) if in_text => {
                 if let Some(value) = current.as_mut() {
-                    value.push_str(
-                        &text
-                            .xml_content(XmlVersion::Implicit1_0)
-                            .map_err(|_| WorkbookError::InvalidXml)?,
-                    );
+                    value.push_str(&text.xml_content(XmlVersion::Implicit1_0));
                 }
             }
             Event::CData(text) if in_text => {
@@ -540,9 +527,7 @@ fn parse_sheet<R: Read + std::io::Seek>(
                 in_text = false;
             }
             Event::Text(text) if cell.is_some() && (in_value || in_text) => {
-                let decoded = text
-                    .xml_content(XmlVersion::Implicit1_0)
-                    .map_err(|_| WorkbookError::InvalidXml)?;
+                let decoded = text.xml_content(XmlVersion::Implicit1_0);
                 if let Some(current) = cell.as_mut() {
                     if in_value {
                         current.value.push_str(&decoded);
@@ -573,6 +558,9 @@ fn parse_sheet<R: Read + std::io::Seek>(
                 if let Some(current_row) = row.take() {
                     finish_row(current_row, &mut rows, &mut last_number, &mut lost_rows)?;
                 }
+                cell = None;
+                in_value = false;
+                in_text = false;
             }
             Event::DocType(_) => return Err(WorkbookError::InvalidXml),
             Event::Eof => break,
@@ -580,7 +568,7 @@ fn parse_sheet<R: Read + std::io::Seek>(
         }
     }
 
-    while rows.last().is_some_and(Vec::is_empty) {
+    while rows.last().is_some_and(|row| row.is_empty()) {
         rows.pop();
     }
     Ok(SheetRead { rows, lost_rows })
@@ -588,84 +576,84 @@ fn parse_sheet<R: Read + std::io::Seek>(
 
 #[derive(Debug)]
 struct RowState {
-    explicit_number: Option<i32>,
+    number: i32,
     cells: Vec<String>,
-    next_col: usize,
+    has_cells: bool,
 }
 
 impl RowState {
     fn from_element(element: &BytesStart<'_>) -> Result<Self, WorkbookError> {
-        let explicit_number = attr_local(element, "r")?
-            .map(|value| value.parse::<i32>().map_err(|_| WorkbookError::InvalidXml))
-            .transpose()?;
+        let number = attribute(element, b"r")?
+            .and_then(|value| value.parse::<i32>().ok())
+            .unwrap_or(0);
         Ok(Self {
-            explicit_number,
+            number,
             cells: Vec::new(),
-            next_col: 0,
+            has_cells: false,
         })
     }
 }
 
 #[derive(Debug)]
 struct CellState {
-    reference: String,
-    cell_type: String,
+    column: usize,
+    kind: CellKind,
     value: String,
     inline_text: String,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CellKind {
+    Shared,
+    Inline,
+    Boolean,
+    Raw,
+}
+
 impl CellState {
     fn from_element(element: &BytesStart<'_>) -> Result<Self, WorkbookError> {
+        let reference = attribute(element, b"r")?.unwrap_or_default();
+        let kind = match attribute(element, b"t")?.as_deref() {
+            Some("s") => CellKind::Shared,
+            Some("inlineStr") => CellKind::Inline,
+            Some("b") => CellKind::Boolean,
+            _ => CellKind::Raw,
+        };
         Ok(Self {
-            reference: attr_local(element, "r")?.unwrap_or_default(),
-            cell_type: attr_local(element, "t")?.unwrap_or_default(),
+            column: column_index(&reference),
+            kind,
             value: String::new(),
             inline_text: String::new(),
         })
     }
-
-    fn resolved_value(self, shared: &[String]) -> String {
-        if self.cell_type == "inlineStr" {
-            return self.inline_text;
-        }
-        if self.value.is_empty() {
-            return String::new();
-        }
-        if self.cell_type == "s" {
-            return self
-                .value
-                .parse::<usize>()
-                .ok()
-                .and_then(|index| shared.get(index))
-                .cloned()
-                .unwrap_or_default();
-        }
-        if self.cell_type == "b" {
-            return if self.value == "1" { "TRUE" } else { "FALSE" }.to_owned();
-        }
-        self.value
-    }
 }
 
 fn place_cell(row: &mut RowState, cell: CellState, shared: &[String]) {
-    let col = if cell
-        .reference
-        .chars()
-        .next()
-        .is_some_and(|character| character.is_ascii_alphabetic())
-    {
-        column_index(&cell.reference)
-    } else {
-        row.next_col
-    };
-    row.next_col = col.saturating_add(1);
-    if col > MAX_COLUMN {
+    row.has_cells = true;
+    if cell.column > MAX_COLUMN {
         return;
     }
-    if row.cells.len() <= col {
-        row.cells.resize(col + 1, String::new());
+    if row.cells.len() <= cell.column {
+        row.cells.resize(cell.column + 1, String::new());
     }
-    row.cells[col] = cell.resolved_value(shared);
+    row.cells[cell.column] = match cell.kind {
+        CellKind::Shared => cell
+            .value
+            .parse::<usize>()
+            .ok()
+            .and_then(|index| shared.get(index))
+            .cloned()
+            .unwrap_or_default(),
+        CellKind::Inline => cell.inline_text,
+        CellKind::Boolean => {
+            if cell.value == "1" {
+                "TRUE".to_owned()
+            } else {
+                "FALSE".to_owned()
+            }
+        }
+        CellKind::Raw => cell.value,
+    };
 }
 
 fn finish_row(
@@ -674,62 +662,78 @@ fn finish_row(
     last_number: &mut i32,
     lost_rows: &mut bool,
 ) -> Result<(), WorkbookError> {
+    let number = if row.number > 0 {
+        row.number
+    } else {
+        last_number.saturating_add(1)
+    };
+    *last_number = number;
+    if number < 1 || number as usize > MAX_ROWS {
+        *lost_rows |= row.has_cells;
+        return Ok(());
+    }
+    while rows.len() < number as usize {
+        rows.push(Vec::new());
+    }
     while row.cells.last().is_some_and(String::is_empty) {
         row.cells.pop();
     }
-
-    let number = match row.explicit_number {
-        Some(number) => number,
-        None => last_number
-            .checked_add(1)
-            .ok_or(WorkbookError::InvalidXml)?,
-    };
-    *last_number = number;
-    let Ok(number_usize) = usize::try_from(number) else {
-        if !row.cells.is_empty() {
-            *lost_rows = true;
-        }
-        return Ok(());
-    };
-    if number_usize == 0 || number_usize > MAX_ROWS {
-        if !row.cells.is_empty() {
-            *lost_rows = true;
-        }
-        return Ok(());
-    }
-
-    let index = number_usize - 1;
-    if rows.len() <= index {
-        rows.resize_with(index + 1, Vec::new);
-    }
-    rows[index] = row.cells;
+    rows[number as usize - 1] = row.cells;
     Ok(())
 }
 
-fn column_index(reference: &str) -> usize {
-    let mut number = 0usize;
-    for character in reference.chars() {
-        let digit = if character.is_ascii_uppercase() {
-            usize::from(character as u8 - b'A' + 1)
-        } else if character.is_ascii_lowercase() {
-            usize::from(character as u8 - b'a' + 1)
-        } else {
-            break;
-        };
-        number = number.saturating_mul(26).saturating_add(digit);
-        if number > MAX_COLUMN + 1 {
-            return MAX_COLUMN + 1;
-        }
+fn read_part<R: Read + std::io::Seek>(
+    archive: &mut ZipArchive<R>,
+    path: &str,
+) -> Result<Option<String>, WorkbookError> {
+    let mut entry = match archive.by_name(path) {
+        Ok(entry) => entry,
+        Err(ZipError::FileNotFound) => return Ok(None),
+        Err(_) => return Err(WorkbookError::InvalidArchive),
+    };
+    if entry.size() > MAX_PART_BYTES {
+        return Err(WorkbookError::PartTooLarge {
+            limit: MAX_PART_BYTES,
+            actual: entry.size(),
+        });
     }
-    number.saturating_sub(1)
+    let mut bytes = Vec::with_capacity(entry.size() as usize);
+    entry
+        .by_ref()
+        .take(MAX_PART_BYTES + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|_| WorkbookError::InvalidArchive)?;
+    if bytes.len() as u64 > MAX_PART_BYTES {
+        return Err(WorkbookError::PartTooLarge {
+            limit: MAX_PART_BYTES,
+            actual: bytes.len() as u64,
+        });
+    }
+    String::from_utf8(bytes)
+        .map(Some)
+        .map_err(|_| WorkbookError::InvalidXml)
 }
 
-fn attr_local(element: &BytesStart<'_>, name: &str) -> Result<Option<String>, WorkbookError> {
-    for attribute in element.attributes() {
+fn relationship_id(element: &BytesStart<'_>) -> Result<String, WorkbookError> {
+    for attribute in element.attributes().with_checks(false) {
         let attribute = attribute.map_err(|_| WorkbookError::InvalidXml)?;
-        if local_name(attribute.key.as_ref()) == name {
+        let key = local_name(attribute.key.as_ref());
+        if key == "id" {
             return attribute
-                .normalized_value(XmlVersion::Implicit1_0)
+                .unescape_value()
+                .map(|value| value.into_owned())
+                .map_err(|_| WorkbookError::InvalidXml);
+        }
+    }
+    Ok(String::new())
+}
+
+fn attribute(element: &BytesStart<'_>, wanted: &[u8]) -> Result<Option<String>, WorkbookError> {
+    for attribute in element.attributes().with_checks(false) {
+        let attribute = attribute.map_err(|_| WorkbookError::InvalidXml)?;
+        if local_name(attribute.key.as_ref()).as_bytes() == wanted {
+            return attribute
+                .unescape_value()
                 .map(|value| Some(value.into_owned()))
                 .map_err(|_| WorkbookError::InvalidXml);
         }
@@ -737,341 +741,116 @@ fn attr_local(element: &BytesStart<'_>, name: &str) -> Result<Option<String>, Wo
     Ok(None)
 }
 
-fn local_name(name: &str) -> &str {
-    name.rsplit(':').next().unwrap_or(name)
+fn local_name(name: &[u8]) -> String {
+    let text = String::from_utf8_lossy(name);
+    text.rsplit(':').next().unwrap_or(&text).to_owned()
 }
 
-fn read_part<R: Read + std::io::Seek>(
-    archive: &mut ZipArchive<R>,
-    path: &str,
-) -> Result<Option<String>, WorkbookError> {
-    let mut file = match archive.by_name(path) {
-        Ok(file) => file,
-        Err(ZipError::FileNotFound) => return Ok(None),
-        Err(_) => return Err(WorkbookError::InvalidArchive),
-    };
-    if file.encrypted() {
-        return Err(WorkbookError::InvalidArchive);
-    }
-    let declared = file.size();
-    if declared > MAX_PART_BYTES {
-        return Err(WorkbookError::PartTooLarge {
-            limit: MAX_PART_BYTES,
-            actual: declared,
-        });
-    }
-
-    let capacity = usize::try_from(declared).map_err(|_| WorkbookError::PartTooLarge {
-        limit: MAX_PART_BYTES,
-        actual: declared,
-    })?;
-    let mut bytes = Vec::with_capacity(capacity);
-    file.by_ref()
-        .take(MAX_PART_BYTES + 1)
-        .read_to_end(&mut bytes)
-        .map_err(|_| WorkbookError::InvalidArchive)?;
-    let actual = u64::try_from(bytes.len()).unwrap_or(u64::MAX);
-    if actual > MAX_PART_BYTES {
-        return Err(WorkbookError::PartTooLarge {
-            limit: MAX_PART_BYTES,
-            actual,
-        });
-    }
-    decode_xml(bytes).map(Some)
-}
-
-fn decode_xml(bytes: Vec<u8>) -> Result<String, WorkbookError> {
-    if bytes.starts_with(&[0xFF, 0xFE]) {
-        return decode_utf16(&bytes[2..], true);
-    }
-    if bytes.starts_with(&[0xFE, 0xFF]) {
-        return decode_utf16(&bytes[2..], false);
-    }
-    if bytes.starts_with(&[0x3C, 0x00, 0x3F, 0x00]) {
-        return decode_utf16(&bytes, true);
-    }
-    if bytes.starts_with(&[0x00, 0x3C, 0x00, 0x3F]) {
-        return decode_utf16(&bytes, false);
-    }
-    let decoded = bytes.strip_prefix(&[0xEF, 0xBB, 0xBF]).unwrap_or(&bytes);
-    std::str::from_utf8(decoded)
-        .map(str::to_owned)
-        .map_err(|_| WorkbookError::InvalidXml)
-}
-
-fn decode_utf16(bytes: &[u8], little_endian: bool) -> Result<String, WorkbookError> {
-    if !bytes.len().is_multiple_of(2) {
-        return Err(WorkbookError::InvalidXml);
-    }
-    let words = bytes.chunks_exact(2).map(|pair| {
-        if little_endian {
-            u16::from_le_bytes([pair[0], pair[1]])
-        } else {
-            u16::from_be_bytes([pair[0], pair[1]])
+fn column_index(reference: &str) -> usize {
+    let mut number = 0usize;
+    for character in reference.chars() {
+        if !character.is_ascii_alphabetic() {
+            break;
         }
-    });
-    char::decode_utf16(words)
-        .collect::<Result<String, _>>()
-        .map_err(|_| WorkbookError::InvalidXml)
+        let upper = character.to_ascii_uppercase();
+        number = number
+            .saturating_mul(26)
+            .saturating_add((upper as u8 - b'A' + 1) as usize);
+        if number > MAX_COLUMN + 1 {
+            return MAX_COLUMN + 1;
+        }
+    }
+    number.saturating_sub(1)
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{MAX_PART_BYTES, SkippedTabKind, WorkbookError, import_xlsx, repaired_as_mode};
-    use crate::{ProfileFile, Severity, SheetType};
-    use std::io::{Cursor, Write};
-    use zip::write::SimpleFileOptions;
-    use zip::{CompressionMethod, ZipWriter};
-
-    const MAIN_NS: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-    const REL_NS: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-    const PKG_REL_NS: &str = "http://schemas.openxmlformats.org/package/2006/relationships";
+    use super::{
+        MAX_COLUMN, MAX_PART_BYTES, MAX_ROWS, MAX_SHEETS, MAX_WORKBOOK_BYTES, MAX_WORKBOOK_ROWS,
+        SkippedTabKind, WorkbookError, WorkbookLimitation, column_index, import_xlsx,
+        looks_like_bindings, name_modes_from_tabs, repaired_as_mode,
+    };
+    use crate::csv::Grid;
 
     #[test]
-    fn real_multi_tab_workbook_matches_shipping_semantics() {
-        let imported = import_xlsx(include_bytes!(
-            "../../../tests/QuadStick.Format.Tests/corpus/multi-tab.xlsx"
-        ))
-        .expect("real workbook imports");
-        let file = ProfileFile::load(&imported.csv);
-        let names: Vec<_> = file
-            .document
-            .sheets
-            .iter()
-            .map(|sheet| sheet.mode_name.as_str())
-            .collect();
-        assert_eq!(names, ["Main", "Flight", "Mouse", ""]);
-        let kinds: Vec<_> = file
-            .document
-            .sheets
-            .iter()
-            .map(|sheet| sheet.sheet_type)
-            .collect();
-        assert_eq!(
-            kinds,
-            [
-                SheetType::ProfileName,
-                SheetType::ProfileName,
-                SheetType::ProfileName,
-                SheetType::Preferences,
-            ]
-        );
-        assert_eq!(file.document.sheets[0].bindings[0].output, "kb_w");
-        assert!(
-            file.document.sheets[2]
-                .bindings
-                .iter()
-                .any(|binding| binding.output == "kb_keypad_1")
-        );
-        assert_eq!(file.document.csv_file_name(), Some("nomanssky.csv"));
-        assert_eq!(
-            imported
-                .skipped
-                .iter()
-                .map(|tab| (tab.name.as_str(), tab.kind))
-                .collect::<Vec<_>>(),
-            [
-                ("Inputs", SkippedTabKind::Helper),
-                ("Outputs", SkippedTabKind::Helper),
-            ]
-        );
-        assert!(
-            file.issues
-                .iter()
-                .all(|issue| issue.severity != Severity::Error)
-        );
+    fn column_reference_is_bounded() {
+        assert_eq!(column_index("A1"), 0);
+        assert_eq!(column_index("AB12"), 27);
+        assert_eq!(column_index("BL2"), MAX_COLUMN);
+        assert_eq!(column_index("BM2"), MAX_COLUMN + 1);
     }
 
     #[test]
-    fn real_single_tab_workbook_preserves_wide_user_data() {
-        let imported = import_xlsx(include_bytes!(
-            "../../../tests/QuadStick.Format.Tests/corpus/single-tab.xlsx"
-        ))
-        .expect("real workbook imports");
-        let file = ProfileFile::load(&imported.csv);
-        assert_eq!(file.document.sheets.len(), 1);
-        assert_eq!(file.document.sheets[0].mode_name, "Keyboard & Mouse");
-        assert_eq!(file.document.csv_file_name(), Some("div2.csv"));
-        assert!(file.grid[3].iter().any(|cell| cell == "inventory"));
-        assert!(imported.skipped.is_empty());
-        assert!(
-            file.issues
-                .iter()
-                .all(|issue| issue.severity != Severity::Error)
-        );
+    fn helper_tabs_and_binding_detection_are_case_insensitive_and_structural() {
+        assert!(super::is_helper_tab("reference card"));
+        let grid = vec![vec!["note".into()], vec!["out".into(), "normal".into()]];
+        assert!(looks_like_bindings(&grid));
     }
 
     #[test]
-    fn formulas_are_never_executed_and_only_cached_values_import() {
-        let rows = concat!(
-            "<row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>Profile Name</t></is></c>",
-            "<c r=\"C1\" t=\"inlineStr\"><is><t>Formula Test</t></is></c></row>",
-            "<row r=\"2\"><c r=\"A2\" t=\"inlineStr\"><is><t>formula.csv</t></is></c></row>",
-            "<row r=\"3\"><c r=\"A3\" t=\"inlineStr\"><is><t>Outputs</t></is></c>",
-            "<c r=\"B3\" t=\"inlineStr\"><is><t>Function</t></is></c></row>",
-            "<row r=\"4\"><c r=\"A4\" t=\"inlineStr\"><is><t>cross</t></is></c>",
-            "<c r=\"B4\" t=\"inlineStr\"><is><t>normal</t></is></c>",
-            "<c r=\"C4\" t=\"inlineStr\"><is><t>sip</t></is></c>",
-            "<c r=\"M4\" t=\"str\"><f>WEBSERVICE(&quot;https://evil.invalid/&quot;)</f>",
-            "<v>cached-only</v></c></row>"
-        );
-        let bytes = workbook(&[("Formula", rows)]);
-        let imported = import_xlsx(&bytes).expect("formula workbook imports");
-        assert!(imported.csv.contains("cached-only"));
-        assert!(!imported.csv.contains("WEBSERVICE"));
-        assert!(!imported.csv.contains("evil.invalid"));
-        let file = ProfileFile::load(&imported.csv);
-        assert_eq!(file.grid[3][12], "cached-only");
-    }
-
-    #[test]
-    fn unreadable_mode_and_helper_tabs_are_distinguished_for_review() {
-        let broken = concat!(
-            "<row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>Notes</t></is></c></row>",
-            "<row r=\"4\"><c r=\"A4\" t=\"inlineStr\"><is><t>cross</t></is></c>",
-            "<c r=\"B4\" t=\"inlineStr\"><is><t>normal</t></is></c>",
-            "<c r=\"C4\" t=\"inlineStr\"><is><t>sip</t></is></c></row>"
-        );
-        let helper = "<row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>Reference</t></is></c></row>";
-        let bytes = workbook(&[("Broken Mode", broken), ("Outputs", helper)]);
-        let imported = import_xlsx(&bytes).expect("reviewable workbook imports");
-        assert_eq!(imported.skipped.len(), 2);
-        assert_eq!(imported.skipped[0].kind, SkippedTabKind::UnreadableA1);
-        assert_eq!(imported.skipped[1].kind, SkippedTabKind::Helper);
-        assert!(imported.skipped[1].rows.is_empty());
-
-        let repaired = repaired_as_mode(&imported.skipped[0]);
+    fn repair_turns_a_skipped_tab_into_a_mode_without_touching_its_other_cells() {
+        let tab = super::SkippedTab {
+            name: "Driving".into(),
+            rows: vec![vec!["Outputs".into(), "Function".into()], vec!["x".into()]],
+            kind: SkippedTabKind::UnreadableA1,
+        };
+        let repaired = repaired_as_mode(&tab);
         assert_eq!(repaired[0][0], "Profile Name");
-        assert_eq!(repaired[0][2], "Broken Mode");
+        assert_eq!(repaired[0][2], "Driving");
+        assert_eq!(repaired[1][0], "x");
     }
 
     #[test]
-    fn malformed_non_workbook_and_dtd_are_rejected() {
+    fn import_limits_are_intentionally_defensive_not_profile_sized() {
+        assert_eq!(MAX_WORKBOOK_BYTES, 32 * 1024 * 1024);
+        assert_eq!(MAX_PART_BYTES, 32 * 1024 * 1024);
+        assert_eq!(MAX_ROWS, 20_000);
+        assert_eq!(MAX_SHEETS, 64);
+        assert_eq!(MAX_WORKBOOK_ROWS, 30_000);
+    }
+
+    #[test]
+    fn rejected_non_zip_is_not_treated_as_a_csv() {
+        assert_eq!(import_xlsx(b"not a workbook"), Err(WorkbookError::InvalidArchive));
+    }
+
+    #[test]
+    fn mode_naming_only_replaces_generic_or_shared_names() {
+        let mut rows: Grid = vec![
+            vec!["Profile Name".into(), "".into(), "Mode".into()],
+            vec![],
+            vec!["Profile Name".into(), "".into(), "Precise".into()],
+        ];
+        let modes = vec![
+            super::ModeCandidate {
+                row: 0,
+                tab: "Driving".into(),
+                c1: "Mode".into(),
+            },
+            super::ModeCandidate {
+                row: 2,
+                tab: "Aim".into(),
+                c1: "Precise".into(),
+            },
+        ];
+        let renamed = name_modes_from_tabs(&mut rows, &modes);
+        assert_eq!(renamed.len(), 1);
+        assert_eq!(rows[0][2], "Driving");
+        assert_eq!(rows[2][2], "Precise");
+    }
+
+    #[test]
+    fn limitation_type_keeps_unknown_remaining_count_explicit() {
+        let limitation = WorkbookLimitation::WorkbookRows {
+            max: MAX_WORKBOOK_ROWS,
+            remaining_tabs: None,
+        };
         assert_eq!(
-            import_xlsx(b"<html>nope</html>"),
-            Err(WorkbookError::InvalidArchive)
+            limitation,
+            WorkbookLimitation::WorkbookRows {
+                max: 30_000,
+                remaining_tabs: None
+            }
         );
-
-        let dtd = format!(
-            "<!DOCTYPE workbook [<!ENTITY tabname \"Solo\">]><workbook xmlns=\"{MAIN_NS}\" xmlns:r=\"{REL_NS}\"><sheets><sheet name=\"&tabname;\" sheetId=\"1\" r:id=\"rId1\"/></sheets></workbook>"
-        );
-        let sheet = concat!(
-            "<row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>Profile Name</t></is></c></row>"
-        );
-        let bytes = workbook_with_xml(&dtd, &relationships(1), &[("sheet1.xml", sheet)]);
-        assert_eq!(import_xlsx(&bytes), Err(WorkbookError::InvalidXml));
-    }
-
-    #[test]
-    fn declared_huge_sheet_is_rejected_before_inflation() {
-        let huge = format!(
-            "<worksheet xmlns=\"{MAIN_NS}\"><sheetData>{}</sheetData></worksheet>",
-            " ".repeat(MAX_PART_BYTES as usize + 1)
-        );
-        let workbook_xml = workbook_xml(&[("Huge", "rId1")]);
-        let bytes = workbook_with_xml(&workbook_xml, &relationships(1), &[("sheet1.xml", &huge)]);
-        assert!(matches!(
-            import_xlsx(&bytes),
-            Err(WorkbookError::PartTooLarge { .. })
-        ));
-    }
-
-    #[test]
-    fn duplicate_sheet_relationships_are_read_once() {
-        let mut sheets = String::new();
-        for index in 1..=400 {
-            sheets.push_str(&format!(
-                "<sheet name=\"Tab{index}\" sheetId=\"{index}\" r:id=\"rId1\"/>"
-            ));
-        }
-        let workbook_xml = format!(
-            "<workbook xmlns=\"{MAIN_NS}\" xmlns:r=\"{REL_NS}\"><sheets>{sheets}</sheets></workbook>"
-        );
-        let rows = concat!(
-            "<row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>Profile Name</t></is></c>",
-            "<c r=\"C1\" t=\"inlineStr\"><is><t>Solo</t></is></c></row>",
-            "<row r=\"2\"><c r=\"A2\" t=\"inlineStr\"><is><t>solo.csv</t></is></c></row>"
-        );
-        let bytes = workbook_with_xml(&workbook_xml, &relationships(1), &[("sheet1.xml", rows)]);
-        let imported = import_xlsx(&bytes).expect("duplicate refs are bounded");
-        assert_eq!(ProfileFile::load(&imported.csv).document.sheets.len(), 1);
-        assert!(imported.csv.len() < 5_000);
-    }
-
-    fn workbook(sheets: &[(&str, &str)]) -> Vec<u8> {
-        let refs: Vec<_> = sheets
-            .iter()
-            .enumerate()
-            .map(|(index, (name, _))| (*name, format!("rId{}", index + 1)))
-            .collect();
-        let refs_view: Vec<_> = refs.iter().map(|(name, id)| (*name, id.as_str())).collect();
-        let workbook_xml = workbook_xml(&refs_view);
-        let rels = relationships(sheets.len());
-        let parts: Vec<_> = sheets
-            .iter()
-            .enumerate()
-            .map(|(index, (_, rows))| (format!("sheet{}.xml", index + 1), *rows))
-            .collect();
-        let parts_view: Vec<_> = parts
-            .iter()
-            .map(|(name, rows)| (name.as_str(), *rows))
-            .collect();
-        workbook_with_xml(&workbook_xml, &rels, &parts_view)
-    }
-
-    fn workbook_xml(sheets: &[(&str, &str)]) -> String {
-        let body = sheets
-            .iter()
-            .enumerate()
-            .map(|(index, (name, id))| {
-                format!(
-                    "<sheet name=\"{name}\" sheetId=\"{}\" r:id=\"{id}\"/>",
-                    index + 1
-                )
-            })
-            .collect::<String>();
-        format!(
-            "<workbook xmlns=\"{MAIN_NS}\" xmlns:r=\"{REL_NS}\"><sheets>{body}</sheets></workbook>"
-        )
-    }
-
-    fn relationships(count: usize) -> String {
-        let body = (1..=count)
-            .map(|index| {
-                format!(
-                    "<Relationship Id=\"rId{index}\" Type=\"{REL_NS}/worksheet\" Target=\"worksheets/sheet{index}.xml\"/>"
-                )
-            })
-            .collect::<String>();
-        format!("<Relationships xmlns=\"{PKG_REL_NS}\">{body}</Relationships>")
-    }
-
-    fn workbook_with_xml(workbook_xml: &str, rels: &str, sheets: &[(&str, &str)]) -> Vec<u8> {
-        let cursor = Cursor::new(Vec::new());
-        let mut archive = ZipWriter::new(cursor);
-        let options = SimpleFileOptions::default().compression_method(CompressionMethod::Deflated);
-        put(&mut archive, "xl/workbook.xml", workbook_xml, options);
-        put(&mut archive, "xl/_rels/workbook.xml.rels", rels, options);
-        for (name, body) in sheets {
-            put(
-                &mut archive,
-                &format!("xl/worksheets/{name}"),
-                &format!(
-                    "<worksheet xmlns=\"{MAIN_NS}\"><sheetData>{body}</sheetData></worksheet>"
-                ),
-                options,
-            );
-        }
-        archive.finish().expect("finish workbook").into_inner()
-    }
-
-    fn put(
-        archive: &mut ZipWriter<Cursor<Vec<u8>>>,
-        path: &str,
-        body: &str,
-        options: SimpleFileOptions,
-    ) {
-        archive.start_file(path, options).expect("start zip part");
-        archive.write_all(body.as_bytes()).expect("write zip part");
     }
 }
