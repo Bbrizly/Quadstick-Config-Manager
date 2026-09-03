@@ -5013,10 +5013,13 @@ public partial class MainWindow : Window
         var add = new Button
         {
             Content = Glyph("IconAdd", "OnAccent"),
-            // The add action now lives beside the 40px help icon and count;
-            // keep it compact so it belongs to that heading cluster instead
-            // of reading like a standalone toolbar command.
+            // A round chip in the heading cluster rather than the square
+            // command plate it was, but not shrunk to the help icon's 40:
+            // this is the one control that creates a mapping, and 48 is the
+            // floor Style.cs sets for a mouth stick and a head mouse.
             Classes = { "primary", "icon" },
+            Width = Style.Numbers["ControlHeight"],
+            Height = Style.Numbers["ControlHeight"],
             HorizontalAlignment = HorizontalAlignment.Left,
         };
         var addName = string.Format(CultureInfo.CurrentCulture, Strings.Main_AddANewMappingFor, zone.Title);

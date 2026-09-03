@@ -278,6 +278,23 @@ public class DiagramFollowsPickTests
         w.Close();
     }
 
+    // Moving the plus into the heading put it beside two 40px icon buttons,
+    // and it took their size on the way in. Style.cs calls 48 the floor for a
+    // mouth stick and a head mouse, and this is the one control on the panel
+    // that creates a mapping.
+    [AvaloniaFact]
+    public void The_plus_keeps_a_hittable_target()
+    {
+        var w = OpenCards(OutOfOrder, "mp_left");
+        var add = w.GetVisualDescendants().OfType<Button>().First(b =>
+            (AutomationProperties.GetName(b) ?? "").StartsWith("Add a new mapping", StringComparison.Ordinal));
+        var floor = Style.Numbers["ControlHeight"];
+
+        Assert.True(add.Bounds.Height >= floor && add.Bounds.Width >= floor,
+            $"the plus is {add.Bounds.Width:0}x{add.Bounds.Height:0}, under the {floor:0} click-target floor");
+        w.Close();
+    }
+
     // Each hole's marker is three circles: a 46px halo that lifts it off the
     // photo, a 38px focus ring, then the 28px accent ring. Count the accent
     // ring, so this stays one number per hole. The plain hotspot markers are
