@@ -18,7 +18,7 @@ pub const CATEGORY_ORDER: [&str; 9] = [
     "Advanced",
 ];
 
-const KNOWN_FIELDS: [&str; 16] = [
+const KNOWN_FIELDS: [&str; 17] = [
     "name",
     "label",
     "category",
@@ -35,6 +35,7 @@ const KNOWN_FIELDS: [&str; 16] = [
     "source",
     "firmwareMayAddMore",
     "alsoCalled",
+    "advanced",
 ];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -74,6 +75,7 @@ pub struct PreferenceDefinition {
     pub option_labels: Vec<String>,
     pub firmware_may_add_more: bool,
     pub also_called: String,
+    pub advanced: bool,
 }
 
 pub fn load_preferences() -> Result<Vec<PreferenceDefinition>, String> {
@@ -139,6 +141,7 @@ fn read_one(object: &Map<String, Value>) -> Result<PreferenceDefinition, String>
     let mode_override = optional_bool(object, "modeOverride", &name)?;
     let firmware_may_add_more = optional_bool(object, "firmwareMayAddMore", &name)?;
     let also_called = optional_text(object, "alsoCalled", &name)?;
+    let advanced = optional_bool(object, "advanced", &name)?;
 
     if editor != PreferenceEditor::Integer && (minimum.is_some() || maximum.is_some()) {
         return Err(format!(
@@ -214,6 +217,7 @@ fn read_one(object: &Map<String, Value>) -> Result<PreferenceDefinition, String>
         option_labels,
         firmware_may_add_more,
         also_called,
+        advanced,
     })
 }
 
