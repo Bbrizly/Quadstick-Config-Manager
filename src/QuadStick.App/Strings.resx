@@ -787,10 +787,10 @@ Most profiles have just one mode, so this list often shows a single entry. That 
     <value>A profile tab starts with "Profile Name", "Preferences" or "Infrared" in cell A1.</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>A quick press sends one output; holding longer sends a different one.</value>
+    <value>Activates only when you quickly press and release. Holding too long does nothing, so a quick sip and a long sip can do different things.</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
-    <value>A short activation taps it; a long one latches it on.</value>
+    <value>A brief activation works like a normal press. Hold the input long enough and the output locks on, and a brief activation then releases it.</value>
   </data>
   <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
     <value>A template named {0} already exists.</value>
@@ -1089,10 +1089,10 @@ Most profiles have just one mode, so this list often shows a single entry. That 
     <value>FPS: 3-hole mouthpiece, side tube, lip sensor, rear jacks. More precise joystick than the Original.</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
-    <value>Fires once your input passes a set strength.</value>
+    <value>Activates the output once the input passes a certain strength. Useful for different actions depending on how far the joystick is moved.</value>
   </data>
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Fires while your input stays under a set strength.</value>
+    <value>Activates the output while the input is below a certain strength. The opposite of greater_than.</value>
   </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>Found a problem?</value>
@@ -1116,7 +1116,7 @@ Most profiles have just one mode, so this list often shows a single entry. That 
     <value>Google returned a web page instead of the profile. The sheet is probably not shared publicly (File &gt; Share &gt; Anyone with the link).</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
-    <value>Held down for as long as your input is active.</value>
+    <value>Hold to activate. The output stays on only while your input is active.</value>
   </data>
   <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
     <value>Help improve QuadStick Config Manager</value>
@@ -1185,7 +1185,7 @@ Most profiles have just one mode, so this list often shows a single entry. That 
     <value>Keeps a copy you can start new profiles from any time, under Use template on the home screen. Editing or installing a profile never changes its template.</value>
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
-    <value>Keeps pressing for a moment after you release.</value>
+    <value>Keeps the output active for a short time after you stop activating the input.</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
     <value>Left</value>
@@ -1424,13 +1424,13 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
     <value>Numbers for {0}, optional, whole numbers separated by spaces. </value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>One activation latches it on, the next releases it.</value>
+    <value>Press once to turn on, press again to turn off. The output stays on after you release the input.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
     <value>A CSV file that maps sips, puffs, lip presses, and joystick moves to game buttons. A profile has one or more mode sheets, such as walking, driving, or menus. Sip or puff the side tube, or bind increment_mode / decrement_mode, to switch modes in-game.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
-    <value>One short press each time you activate.</value>
+    <value>A quick press each time you activate the input, however long you hold it.</value>
   </data>
   <data name="Main_OneSwitchIn1" xml:space="preserve">
     <value>One switch: in 1</value>
@@ -1511,7 +1511,7 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
     <value>Press</value>
   </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
-    <value>Presses in a repeating on and off cycle.</value>
+    <value>How long the output stays on follows how hard you sip, puff or push the stick.</value>
   </data>
   <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
     <value>Problem copied to the clipboard.</value>
@@ -1544,7 +1544,7 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
     <value>Quick guide</value>
   </data>
   <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
-    <value>Rapid-fire taps while your input is held.</value>
+    <value>Repeatedly presses the output while you hold the input.</value>
   </data>
   <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
     <value>Read the privacy policy</value>
@@ -1805,10 +1805,10 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
     <value>Started from template {0}. Save to keep this as its own profile.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
-    <value>Steps an analog output down a notch and leaves it there, like a trigger or a stick axis.</value>
+    <value>Lowers an analog output a step each time you activate the input, and leaves it there.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
-    <value>Steps an analog output up a notch and leaves it there, like a trigger or a stick axis.</value>
+    <value>Raises an analog output a step each time you activate the input, and leaves it there.</value>
   </data>
   <data name="Main_StopAsking" xml:space="preserve">
     <value>Stop asking</value>
@@ -1926,7 +1926,7 @@ You can change this any time in Settings, under Advanced.</value>
     <value>{0}, not used in this mode</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>Turns off an output that toggle or delayed_latch left on.</value>
+    <value>Forces an output off. Useful for releasing a button another row toggled or latched on.</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>Two or more holes used at the same time, all three together, or the right hole with the side tube. Good for actions you never want to trigger by accident.</value>
@@ -1977,7 +1977,7 @@ You can change this any time in Settings, under Advanced.</value>
     <value>View button</value>
   </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
-    <value>Waits a moment after you activate, then presses.</value>
+    <value>Makes you hold the input a set time before the output activates. This tells a quick tap from a longer hold.</value>
   </data>
   <data name="Main_WhatIsAMode" xml:space="preserve">
     <value>What is a mode?</value>
