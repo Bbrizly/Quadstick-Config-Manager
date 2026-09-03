@@ -30,6 +30,7 @@ public class ReadingDirectionTests
     static MainWindow Opened()
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         Settings.Save(s);
         var w = new MainWindow();

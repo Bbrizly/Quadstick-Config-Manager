@@ -1,6 +1,8 @@
 using System.Linq;
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using QuadStick.App;
@@ -100,6 +102,44 @@ public class DeviceChromeTests
         Assert.True(stage.Bounds.Height >= 240,
             $"the diagram shrank to {stage.Bounds.Height:0}px tall, which is under what its labels need");
         w.Close();
+    }
+
+    [AvaloniaFact]
+    public void A_mapped_soft_sip_does_not_clip_the_bottom_all_three_callout()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        s.InterfaceScalePercent = 100;
+        s.Model = "FPS";
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "mouse_speed,normal,fast\n" + // keeps the bottom Problems status visible
+            "x,normal,mp_triple_sip_soft\n");
+        file.Dirty = false;
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(true);
+        w.SelectZoneForPreview("combo");
+        w.UpdateLayout();
+
+        try
+        {
+            var stage = Stage(w);
+            var canvas = stage.GetVisualDescendants().OfType<Canvas>().Single(c => c.Name == "DeviceStage");
+            var card = stage.GetVisualDescendants().OfType<ToggleButton>().Single(b =>
+                (AutomationProperties.GetName(b) ?? "").StartsWith("Hole pairing: All three.", StringComparison.Ordinal));
+            Assert.True(card.Bounds.Bottom <= canvas.Bounds.Height - 8,
+                $"the All three callout is clipped at {card.Bounds.Bottom:0} of the {canvas.Bounds.Height:0}px stage");
+        }
+        finally
+        {
+            w.Close();
+        }
     }
 
     // The sidebar is a real working area, not a gutter: mode names, view keys

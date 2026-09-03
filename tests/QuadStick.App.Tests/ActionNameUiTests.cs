@@ -28,6 +28,7 @@ public class ActionNameUiTests
     static MainWindow OpenOnLip(ProfileFile file, bool cards = false)
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.DeviceCards = cards;
         s.RememberWindow = false;
@@ -126,7 +127,7 @@ public class ActionNameUiTests
 
         var panel = OpenPicker(w, $"Output for row {namedRow}.");
         Tap(w, panel, "Controller,");
-        Tap(w, panel, "Buttons,");
+        Tap(w, panel, "PlayStation buttons,");
         Tap(w, panel, "triangle");
 
         Assert.Equal("triangle", file.GetCell(namedRow, 0));
@@ -275,7 +276,7 @@ public class ActionNameUiTests
 
         var panel = OpenPicker(w, "Output that Shoot stands for");
         Tap(w, panel, "Controller,");
-        Tap(w, panel, "Buttons,");
+        Tap(w, panel, "PlayStation buttons,");
         Tap(w, panel, "Triangle");
 
         Assert.Equal("triangle", file.GetCell(namedRow, 0));

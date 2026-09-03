@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Twee gelijke drempels laten het apparaat delen door nul, telkens wanneer het de buis uitleest.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>geen schijf</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB-emulatiemodus {0} ({1}) geeft een computer geen toegang tot het station van de QuadStick, en dit bestand is er een waarmee het apparaat opstart. Het installeren ervan laat geen manier meer over om een profiel terug te bewerken, en herstel is een fysieke force-erase.</value>
   </data>
@@ -490,9 +493,6 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Gebruik {0} of meer.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Gebruik {0} tot {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Gebruik hier modus 0, 2, 3 of 4, en stel de andere modus in plaats daarvan in een gameprofiel in.</value>
@@ -685,5 +685,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Deze spreadsheet is groter dan {0} rijen, veel groter dan enig profiel, dus we zijn halverwege gestopt met lezen.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Gebruik {0} tot {1}. {2}</value>
   </data>
 </root>

@@ -16,7 +16,15 @@ public enum QsModel { FPS, Original, Singleton }
 readonly record struct Hotspot(string Zone, double LabelX, bool Bottom, double PointX, double PointY);
 
 // The five mode lights across the top of the case, as fractions of the image.
-readonly record struct ModeLightRow(double X, double Gap, double Y);
+// Most photos are regular enough for X + Gap, but the Singleton's camera
+// angle makes the visible centers vary by several pixels, so it can provide
+// measured positions of its own.
+readonly record struct ModeLightRow(double X, double Gap, double Y, double[]? Points = null)
+{
+    public double XAt(int index) => Points is { Length: > 0 }
+        ? Points[index]
+        : X + index * Gap;
+}
 
 // Everything the device view needs to draw one model: its picture, the part of
 // that picture worth showing, where each part sits on it, and which parts the
@@ -151,7 +159,14 @@ sealed record DeviceDiagram(
             new Hotspot("joystick", 70, false, 0.375, 0.500),
             new Hotspot("mp_center", 690, false, 0.480, 0.715),  // the mouthpiece on the end of the tube
         },
-        Lights: new ModeLightRow(0.332, 0.0586, 0.239),
+        // Measured lens centers in the 2048px source: (690, 498),
+        // (815, 498), (935, 498), (1048, 498), (1159, 498). They are not
+        // evenly spaced in this photograph, so one start/gap pair leaves the
+        // outer lights visibly off-center.
+        Lights: new ModeLightRow(
+            690.0 / 2048, 0, 498.0 / 2048,
+            new[] { 690.0 / 2048, 815.0 / 2048, 935.0 / 2048,
+                    1048.0 / 2048, 1159.0 / 2048 }),
         Zones: SingletonZones);
 
     internal static readonly DeviceDiagram[] All = { FpsDiagram, OriginalDiagram, SingletonDiagram };

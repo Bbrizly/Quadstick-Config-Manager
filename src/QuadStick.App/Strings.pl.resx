@@ -397,6 +397,15 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>Szukanie QuadSticka...</value>
   </data>
+  <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
+    <value>Urządzenie uruchamia się z tego pliku, więc żaden z trybów ukrywających dysk nie zostanie zapisany na twoim QuadSticku. Ustaw go zamiast tego w profilu gry.</value>
+  </data>
+  <data name="DevicePage_MoreOptions" xml:space="preserve">
+    <value>Więcej opcji</value>
+  </data>
+  <data name="DevicePage_MoreOptionsCount" xml:space="preserve">
+    <value>Więcej opcji, {0}</value>
+  </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}, od {1} do {2}</value>
   </data>
@@ -813,14 +822,17 @@
 
 Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedynczy wpis. To normalne.</value>
   </data>
+  <data name="Main_APlusB" xml:space="preserve">
+    <value>{0} + {1}</value>
+  </data>
   <data name="Main_AProfileTabStartsWith" xml:space="preserve">
     <value>Karta profilu zaczyna się od „Profile Name”, „Preferences” lub „Infrared” w komórce A1.</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>Krótkie naciśnięcie wysyła jedno wyjście; dłuższe przytrzymanie wysyła inne.</value>
+    <value>Włącza się tylko przy szybkim naciśnięciu i zwolnieniu. Zbyt długie przytrzymanie nic nie robi, więc krótkie i długie zassanie mogą robić różne rzeczy.</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
-    <value>Krótka aktywacja stuka nim; długa blokuje go w stanie włączonym.</value>
+    <value>Krótka aktywacja działa jak zwykłe naciśnięcie. Dłuższe przytrzymanie wejścia blokuje wyjście we włączonym stanie, a kolejna krótka aktywacja je zwalnia.</value>
   </data>
   <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
     <value>Szablon o nazwie {0} już istnieje.</value>
@@ -833,6 +845,9 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   </data>
   <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
     <value>Przełączniki adaptacyjne podłączone do gniazd 3,5 mm z tyłu QuadSticka.</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>Dodaj</value>
   </data>
   <data name="Main_AddANewBindingRow" xml:space="preserve">
     <value>Dodaj nowy wiersz powiązania do tego trybu</value>
@@ -914,6 +929,9 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   </data>
   <data name="Main_BackupPending" xml:space="preserve">
     <value> · kopia zapasowa oczekuje</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>Urządzenie uruchamia się z tego pliku, więc tryb bez dysku nie zostanie w nim zapisany.</value>
   </data>
   <data name="Main_Cancel" xml:space="preserve">
     <value>Anuluj</value>
@@ -1094,6 +1112,12 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
     <value>Urządzenie pokazuje {0}</value>
   </data>
+  <data name="Main_DoNotSetOne" xml:space="preserve">
+    <value>Nie ustawiać żadnego</value>
+  </data>
+  <data name="Main_DoNotSetOneTheDevice" xml:space="preserve">
+    <value>Nie ustawiać żadnego. Urządzenie zachowa tryb, w którym już jest.</value>
+  </data>
   <data name="Main_DonTSave" xml:space="preserve">
     <value>Nie zapisuj</value>
   </data>
@@ -1131,10 +1155,13 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
     <value>FPS: ustnik z 3 otworami, rurka boczna, czujnik warg, gniazda z tyłu. Bardziej precyzyjny joystick niż w wersji Original.</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
-    <value>Aktywuje się, gdy wejście przekroczy ustaloną siłę.</value>
+    <value>Włącza wyjście, gdy wejście przekroczy określoną siłę. Przydatne do różnych akcji zależnie od tego, jak daleko wychylony jest joystick.</value>
   </data>
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Aktywuje się, dopóki wejście pozostaje poniżej ustalonej siły.</value>
+    <value>Włącza wyjście, dopóki wejście pozostaje poniżej określonej siły. Odwrotność greater_than.</value>
+  </data>
+  <data name="Main_FitEachMappingOnOne" xml:space="preserve">
+    <value>Zmieść każde mapowanie w jednym wierszu</value>
   </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>Znaleziono problem?</value>
@@ -1161,7 +1188,7 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
     <value>Google zwróciło stronę internetową zamiast profilu. Arkusz prawdopodobnie nie jest udostępniony publicznie (Plik &gt; Udostępnij &gt; Każda osoba mająca link).</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
-    <value>Naciśnięty tak długo, jak długo wejście jest aktywne.</value>
+    <value>Przytrzymanie włącza. Wyjście jest włączone tylko wtedy, gdy wejście jest aktywne.</value>
   </data>
   <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
     <value>Pomóż ulepszyć QuadStick Config Manager</value>
@@ -1174,6 +1201,9 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   </data>
   <data name="Main_HoleCombos" xml:space="preserve">
     <value>Kombinacje otworów</value>
+  </data>
+  <data name="Main_HolePairingPairCount" xml:space="preserve">
+    <value>Parowanie otworów: {0}. {1}</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>Jak {0} to naciska. {1}</value>
@@ -1239,7 +1269,10 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
     <value>Zachowuje kopię, od której można w każdej chwili zacząć nowe profile, dostępną w sekcji Użyj szablonu na ekranie głównym. Edytowanie lub instalowanie profilu nigdy nie zmienia jego szablonu.</value>
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
-    <value>Naciska jeszcze chwilę po zwolnieniu.</value>
+    <value>Utrzymuje wyjście włączone jeszcze przez chwilę po zakończeniu aktywacji wejścia.</value>
+  </data>
+  <data name="Main_LabelNote" xml:space="preserve">
+    <value>{0}. {1}</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
     <value>Lewo</value>
@@ -1268,6 +1301,12 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>Wczytano wersję online tego profilu. Poprzednia kopia lokalna znajduje się w folderze ratunkowym.</value>
   </data>
+  <data name="Main_MainControls" xml:space="preserve">
+    <value>Główne sterowanie</value>
+  </data>
+  <data name="Main_MainControlsCount" xml:space="preserve">
+    <value>Główne sterowanie. Otwory, boczna rurka, przełącznik wargowy i joystick. {0}</value>
+  </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>Zarządzanie plikami na QuadSticku</value>
   </data>
@@ -1289,6 +1328,12 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>Mapowanie {0}: naciśnij {1}, gdy {2}, jedno po drugim{3}. Naciśnij Enter, aby edytować.</value>
   </data>
+  <data name="Main_MappingsAreOnOneLine" xml:space="preserve">
+    <value>Mapowania mieszczą się w jednym wierszu. Przełącz na pełne zdanie.</value>
+  </data>
+  <data name="Main_MappingsReadAsAFull" xml:space="preserve">
+    <value>Mapowania czytane jako pełne zdanie. Przełącz na jeden wiersz każde.</value>
+  </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>Mapowania czytane jako proste karty zdaniowe. Przełącz na edytor szczegółowy.</value>
   </data>
@@ -1297,6 +1342,9 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
     <value>Przycisk menu</value>
+  </data>
+  <data name="Main_ModeLabelToken" xml:space="preserve">
+    <value>{0} ({1})</value>
   </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>Tryb: {0}</value>
@@ -1342,6 +1390,15 @@ Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedy
   </data>
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Nazwa dla tego szablonu</value>
+  </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Nazwy</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>Nazwy: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Jakie nazwy kontrolera oferuje ta lista. QuadStick czyta obie pisownie jako to samo wyjście, więc ukrycie jednej nie ukrywa żadnego przycisku.</value>
   </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>Nowa nazwa dla tego szablonu</value>
@@ -1469,13 +1526,13 @@ Wybierz część QuadSticka po lewej, aby zobaczyć, co robi w tym trybie, zmien
     <value>Liczby dla {0}, opcjonalnie, liczby całkowite oddzielone spacjami.</value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>Jedna aktywacja włącza to na stałe, kolejna wyłącza.</value>
+    <value>Jedno naciśnięcie włącza, kolejne wyłącza. Wyjście pozostaje włączone po zwolnieniu wejścia.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
     <value>Jeden plik CSV, który mówi QuadStickowi, które Sip, Puff, naciśnięcie wargą lub ruch joysticka naciska który przycisk gry. Profil ma jeden lub więcej arkuszy trybów: pełne układy sterowania, między którymi przełącza się podczas gry (układ do chodzenia, układ do jazdy, menu). Sip lub Puff na rurce bocznej, lub przypisanie increment_mode / decrement_mode, przełącza tryby w grze.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
-    <value>Jedno krótkie naciśnięcie przy każdej aktywacji.</value>
+    <value>Krótkie naciśnięcie przy każdej aktywacji wejścia, niezależnie od tego, jak długo jest przytrzymane.</value>
   </data>
   <data name="Main_OneSwitchIn1" xml:space="preserve">
     <value>Jeden przełącznik: w 1</value>
@@ -1562,7 +1619,7 @@ Wybierz część QuadSticka po lewej, aby zobaczyć, co robi w tym trybie, zmien
     <value>Naciśnij</value>
   </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
-    <value>Naciska w powtarzającym się cyklu włącz-wyłącz.</value>
+    <value>Czas włączenia wyjścia zależy od siły zassania, dmuchnięcia lub wychylenia joysticka.</value>
   </data>
   <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
     <value>Problem skopiowany do schowka.</value>
@@ -1601,7 +1658,7 @@ Wybierz część QuadSticka po lewej, aby zobaczyć, co robi w tym trybie, zmien
     <value>Krótki przewodnik</value>
   </data>
   <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
-    <value>Szybkie serie naciśnięć, dopóki wejście jest przytrzymywane.</value>
+    <value>Wielokrotnie naciska wyjście, gdy wejście jest przytrzymane.</value>
   </data>
   <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
     <value>Przeczytaj politykę prywatności</value>
@@ -1750,6 +1807,12 @@ Wybierz część QuadSticka po lewej, aby zobaczyć, co robi w tym trybie, zmien
   <data name="Main_SetItTo" xml:space="preserve">
     <value>Ustaw na</value>
   </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>Ustawienie trybu emulacji</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>Ustawienie trybu emulacji na {0}, zapisywane jako {1}</value>
+  </data>
   <data name="Main_SetVerb" xml:space="preserve">
     <value>Ustaw</value>
   </data>
@@ -1807,6 +1870,9 @@ Wybierz część QuadSticka po lewej, aby zobaczyć, co robi w tym trybie, zmien
   <data name="Main_SoftSip" xml:space="preserve">
     <value>Lekki wdech</value>
   </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>Niektóre tryby ukrywają dysk QuadSticka przed komputerem.</value>
+  </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>Rozpocznij nowe mapowanie na {0}</value>
   </data>
@@ -1820,10 +1886,10 @@ Wybierz część QuadSticka po lewej, aby zobaczyć, co robi w tym trybie, zmien
     <value>Rozpoczęto od szablonu {0}. Zapisz, aby zachować to jako osobny profil.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
-    <value>Zmniejsza wyjście analogowe o jeden stopień i pozostawia je tam, jak spust lub oś drążka.</value>
+    <value>Obniża wyjście analogowe o jeden krok przy każdej aktywacji wejścia i pozostawia je na tym poziomie.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
-    <value>Zwiększa wyjście analogowe o jeden stopień i pozostawia je tam, jak spust lub oś drążka.</value>
+    <value>Podnosi wyjście analogowe o jeden krok przy każdej aktywacji wejścia i pozostawia je na tym poziomie.</value>
   </data>
   <data name="Main_StopAsking" xml:space="preserve">
     <value>Przestań pytać</value>
@@ -1950,7 +2016,7 @@ To ustawienie można zmienić w dowolnym momencie w Ustawieniach, w sekcji Zaawa
     <value>{0}, nieużywane w tym trybie</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>Wyłącza wyjście pozostawione włączonym przez toggle lub delayed_latch.</value>
+    <value>Wymusza wyłączenie wyjścia. Przydatne do zwolnienia przycisku włączonego lub zablokowanego przez inny wiersz.</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>Dwa lub więcej otworów użytych jednocześnie, wszystkie trzy razem, lub prawy otwór z rurką boczną. Dobre do akcji, których nigdy nie powinno się wywołać przypadkowo.</value>
@@ -2006,8 +2072,17 @@ To ustawienie można zmienić w dowolnym momencie w Ustawieniach, w sekcji Zaawa
   <data name="Main_ViewDetails" xml:space="preserve">
     <value>Zobacz szczegóły →</value>
   </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>Wszystkie</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
+  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
-    <value>Czeka chwilę po aktywacji, a potem naciska.</value>
+    <value>Wymaga przytrzymania wejścia przez ustalony czas, zanim wyjście się włączy. Pozwala to odróżnić krótkie dotknięcie od dłuższego przytrzymania.</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>Wiersz świeci, gdy QuadStick wysyła wyjście tego wiersza. Urządzenie nigdy nie mówi, który plik ani który tryb uruchamia, więc wiersz może zaświecić się z powodu innego profilu niż ten otwarty tutaj. Wyjścia myszy, klawiatury i podczerwieni wychodzą innym połączeniem i nigdy nie świecą.</value>
@@ -2108,6 +2183,9 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   <data name="Modes_CloseModes" xml:space="preserve">
     <value>Zamknij tryby</value>
   </data>
+  <data name="Modes_Connection" xml:space="preserve">
+    <value>Połączenie</value>
+  </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>Połączenie wyczyszczone. Urządzenie wraca do kabla USB.</value>
   </data>
@@ -2125,6 +2203,9 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   </data>
   <data name="Modes_MakeACopyOfName" xml:space="preserve">
     <value>Zrób kopię {0}</value>
+  </data>
+  <data name="Modes_Mode" xml:space="preserve">
+    <value>Tryb</value>
   </data>
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Dodano tryb.</value>
@@ -2291,17 +2372,26 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   <data name="Outputs_NumberPad2" xml:space="preserve">
     <value>Klawiatura numeryczna</value>
   </data>
+  <data name="Outputs_OtherButtons" xml:space="preserve">
+    <value>Inne przyciski</value>
+  </data>
   <data name="Outputs_OtherKeys" xml:space="preserve">
     <value>Inne klawisze</value>
   </data>
   <data name="Outputs_OtherKeys2" xml:space="preserve">
     <value>Inne klawisze</value>
   </data>
+  <data name="Outputs_PlayStationButtons" xml:space="preserve">
+    <value>Przyciski PlayStation</value>
+  </data>
   <data name="Outputs_TVRemote" xml:space="preserve">
     <value>Pilot do TV</value>
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>Pilot do TV</value>
+  </data>
+  <data name="Outputs_XboxButtons" xml:space="preserve">
+    <value>Przyciski Xbox</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>O {0}: {1}</value>
@@ -2407,6 +2497,12 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   </data>
   <data name="Review_AddingItChangesCellA1" xml:space="preserve">
     <value>Dodanie jej zmienia komórkę A1. Wszystko inne w zakładce zostaje wczytane tak, jak zostało zapisane.</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} i jeszcze 1 komórka</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} i jeszcze {1} komórek</value>
   </data>
   <data name="Review_AndYourPreferences" xml:space="preserve">
     <value>, i Twoje preferencje</value>

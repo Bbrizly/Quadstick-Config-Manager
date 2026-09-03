@@ -1,3 +1,4 @@
+using System.Linq;
 using QuadStick.Format;
 using Xunit;
 
@@ -269,7 +270,7 @@ public class PreferenceCatalogTests
         foreach (var meaning in new[]
                  {
                      "QuadStick", "DualShock 3", "x360ce", "Xbox 360",
-                     "Nintendo Switch Pro Controller", "no USB drive", "wireless",
+                     "Nintendo Switch Pro Controller", "wireless",
                  })
             Assert.Contains(meaning, listed, StringComparison.Ordinal);
         // A number means something else on an older QuadStick, and that is a
@@ -284,11 +285,11 @@ public class PreferenceCatalogTests
     {
         Assert.True(PreferenceCatalog.TryGet("enable_DS3_emulation", out var p));
         Assert.Equal(p.Options.Count, p.OptionLabels.Count);
-        Assert.Equal("Nintendo Switch Pro Controller, no USB drive", p.LabelForOption("5"));
-        // Mode 4 also carries the name QMP puts on it, because that is the
-        // phrase somebody arrives with. Joystick.c:625 calls the same value
-        // "boot in PS4 mode" in the firmware's own comment.
-        Assert.Equal("DualShock 4, for a PS4 (QMP's Boot in PS4 Mode)", p.LabelForOption("4"));
+        Assert.Equal("Nintendo Switch Pro Controller", p.LabelForOption("5"));
+        // QMP's own phrase for mode 4 is not in the label, which has to stay
+        // short enough to read in a dropdown. It is in alsoCalled, so somebody
+        // arriving with QMP's words still finds the setting.
+        Assert.Equal("DualShock 4, for a PS4", p.LabelForOption("4"));
         // A value the catalog has no word for reads back as itself.
         Assert.Equal("8", p.LabelForOption("8"));
     }
@@ -502,5 +503,87 @@ public class PreferenceCatalogTests
     public void Invalid_options_throw(string body)
     {
         Assert.Throws<InvalidOperationException>(() => PreferenceCatalog.Parse(Entry(body)));
+    }
+
+    // Drew Redepenning, who sets QuadSticks up for patients, asked for four
+    // groups that open on the settings he actually changes. Thirteen joystick
+    // settings buried the two, and the names of two of them described the
+    // firmware rather than the control.
+    [Theory]
+    [InlineData("Joystick", "joystick_deflection_maximum", "joystick_deflection_minimum")]
+    [InlineData("Sip and puff", "sip_puff_threshold_soft", "sip_puff_threshold",
+                "sip_puff_delay_soft", "sip_puff_delay_hard")]
+    [InlineData("Bluetooth", "bluetooth_device_mode", "bluetooth_authentication_mode",
+                "bluetooth_connection_mode")]
+    [InlineData("USB and compatibility", "enable_usb_a_host", "enable_DS3_emulation", "titan_two")]
+    public void A_group_opens_on_the_settings_people_actually_change(string category, params string[] expected)
+    {
+        var open = PreferenceCatalog.All
+            .Where(d => d.Category == category && !d.Advanced)
+            .Select(d => d.Name)
+            .ToArray();
+        // Order matters: it is the order they appear down the group.
+        Assert.Equal(expected, open);
+    }
+
+    // Every other category is one short list already, so nothing in it folds.
+    [Fact]
+    public void Only_the_four_crowded_groups_fold_anything()
+    {
+        var folded = PreferenceCatalog.All.Where(d => d.Advanced).Select(d => d.Category).Distinct();
+        Assert.Equal(
+            new[] { "Joystick", "Sip and puff", "Bluetooth", "USB and compatibility" }.OrderBy(x => x),
+            folded.OrderBy(x => x));
+    }
+
+    // "Joystick full deflection" and "Hard sip/puff threshold" are the
+    // firmware's words. The second one is actively misleading: it is the
+    // threshold the ordinary sip and puff inputs use, not a special hard one.
+    [Theory]
+    [InlineData("joystick_deflection_maximum", "Joystick sensitivity")]
+    [InlineData("sip_puff_threshold", "Normal sip/puff threshold")]
+    public void The_two_confusing_names_read_the_way_people_say_them(string name, string label)
+    {
+        Assert.True(PreferenceCatalog.TryGet(name, out var def));
+        Assert.Equal(label, def.Label);
+    }
+
+    // Four bare numbers in a dropdown told nobody anything. The meanings are
+    // Table 2-3 of the RN-42's command reference, which is what Bluetooth.c:267
+    // sends them to as its SA setting.
+    [Fact]
+    public void Every_bluetooth_pairing_number_says_what_it_does()
+    {
+        Assert.True(PreferenceCatalog.TryGet("bluetooth_authentication_mode", out var def));
+        Assert.Equal(new[] { "0", "1", "2", "4" }, def.Options);
+        Assert.Equal(def.Options.Count, def.OptionLabels.Count);
+        foreach (var o in def.Options)
+            Assert.NotEqual(o, def.LabelForOption(o));
+    }
+
+    // The side tube's long sip is how somebody reaches their other game files,
+    // and that is the sentence a clinician needs beside this delay.
+    [Fact]
+    public void The_hard_delay_says_it_is_how_you_switch_game_files()
+    {
+        Assert.True(PreferenceCatalog.TryGet("sip_puff_delay_hard", out var def));
+        Assert.Contains("side tube", def.Description);
+        Assert.Contains("game file", def.Description);
+    }
+
+    // bluetooth_device_mode and bluetooth_connection_mode shipped with options
+    // and no labels, so their dropdowns read "game_pad", "ssp", "dtr": the
+    // firmware's own keywords, in front of somebody who has never seen the
+    // firmware. Every list a person picks from says what the choice does.
+    [Fact]
+    public void Every_choice_names_its_options_in_words()
+    {
+        var bare = PreferenceCatalog.All
+            .Where(p => p.Options.Count > 0 && p.OptionLabels.Count != p.Options.Count)
+            .Select(p => $"{p.Name} has {p.Options.Count} options and "
+                       + $"{p.OptionLabels.Count} labels")
+            .ToList();
+        Assert.True(bare.Count == 0,
+            "A dropdown would show the raw file token:\n  " + string.Join("\n  ", bare));
     }
 }

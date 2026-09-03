@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>두 임계값이 같으면 장치가 튜브를 읽을 때마다 0으로 나누게 됩니다.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>드라이브 없음</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB emulation mode {0} ({1})은(는) 컴퓨터가 QuadStick의 드라이브에 접근하지 못하게 하며, 이 파일은 장치가 부팅할 때 사용하는 파일입니다. 이를 설치하면 어떤 프로필도 다시 편집할 방법이 없어지며, 복구하려면 물리적인 강제 삭제가 필요합니다.</value>
   </data>
@@ -490,9 +493,6 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>{0} 이상을 사용하세요.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>{0}에서 {1}까지 사용하세요. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>여기서는 모드 0, 2, 3 또는 4를 사용하고, 다른 모드는 게임 프로필에서 설정하세요.</value>
@@ -685,5 +685,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>이 스프레드시트는 {0}행보다 커서, 어떤 프로필보다 훨씬 크므로 도중에 읽기를 멈추었습니다.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>{0}에서 {1}까지 사용하세요. {2}</value>
   </data>
 </root>

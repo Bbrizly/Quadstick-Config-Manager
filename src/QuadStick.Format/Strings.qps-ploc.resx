@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>[Twó éqúál thréšhóldš máké thé dévíçé dívídé bý žéró évérý tímé ít réádš thé túbé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>[ñó drívé xxx]</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>[ÚŠB émúlátíóñ módé {0} ({1}) dóéš ñót gívé á çómpútér áççéšš tó thé QúádŠtíçk'š drívé, áñd thíš fílé íš óñé thé dévíçé bóótš wíth. Íñštállíñg ít wóúld léávé ñó wáý tó édít áñý prófílé báçk, áñd réçóvérý íš á phýšíçál fórçé-érášé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>

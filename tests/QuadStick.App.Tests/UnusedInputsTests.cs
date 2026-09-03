@@ -188,7 +188,7 @@ public class UnusedInputsTests
         var heading = Assert.IsType<Grid>(detail.Children[0]);
         var title = Assert.Single(heading.Children.OfType<TextBlock>());
         var count = heading.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == "3");
-        var help = heading.GetVisualDescendants().OfType<Button>().Single(b => (string?)b.Content == "?");
+        var help = heading.GetVisualDescendants().OfType<Button>().Single(b => b.Content as string == "?");
 
         Assert.True(count.FontSize < title.FontSize);
         Assert.Equal("Right mouthpiece hole", AutomationProperties.GetName(help));

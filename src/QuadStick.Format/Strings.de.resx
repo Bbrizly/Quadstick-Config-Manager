@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Zwei gleiche Schwellenwerte lassen das Gerät bei jedem Lesen des Schlauchs durch null teilen.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>kein Laufwerk</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB-Emulationsmodus {0} ({1}) gibt einem Computer keinen Zugriff auf das Laufwerk des QuadStick, und diese Datei ist eine, mit der das Gerät startet. Wird sie installiert, gibt es keine Möglichkeit mehr, ein Profil zurückzubearbeiten, und die Wiederherstellung erfordert ein physisches Force-Erase.</value>
   </data>
@@ -490,9 +493,6 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Verwenden Sie {0} oder mehr.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Verwenden Sie {0} bis {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Verwenden Sie hier Modus 0, 2, 3 oder 4, und setzen Sie den anderen Modus stattdessen in einem Spielprofil.</value>
@@ -685,5 +685,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Diese Tabelle ist größer als {0} Zeilen, weit größer als jedes Profil, daher haben wir das Lesen auf halbem Weg gestoppt.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Verwenden Sie {0} bis {1}. {2}</value>
   </data>
 </root>

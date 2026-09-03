@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>يؤدي تساوي الحدين إلى قسمة الجهاز على صفر في كل مرة يقرأ فيها الأنبوب.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>بدون قرص</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>وضع محاكاة USB {0} ({1}) لا يتيح للكمبيوتر الوصول إلى محرك أقراص QuadStick، وهذا الملف من الملفات التي يُقلع بها الجهاز. تثبيته لن يترك أي طريقة لتعديل أي ملف شخصي لاحقًا، والاستعادة تتطلب مسحًا إجباريًا ماديًا.</value>
   </data>
@@ -490,9 +493,6 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>استخدم {0} أو أكثر.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>استخدم {0} إلى {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>استخدم النمط 0 أو 2 أو 3 أو 4 هنا، واضبط النمط الآخر في ملف شخصي للعبة بدلًا من ذلك.</value>
@@ -685,5 +685,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>يحتوي جدول البيانات هذا على أكثر من {0} صف، وهو أكبر بكثير من أي ملف شخصي، لذا توقفنا عن القراءة في منتصف الطريق.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>استخدم {0} إلى {1}. {2}</value>
   </data>
 </root>

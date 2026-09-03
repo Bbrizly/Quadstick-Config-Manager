@@ -33,7 +33,11 @@ public static class OutputCatalog
     static IReadOnlyDictionary<string, string[]> BuildSubOrder() =>
         new Dictionary<string, string[]>
         {
-            ["Controller"] = new[] { "Buttons", "D-pad", "Thumbsticks" },
+            ["Controller"] = new[]
+            {
+                Strings.Outputs_PlayStationButtons, Strings.Outputs_XboxButtons,
+                Strings.Outputs_OtherButtons, "D-pad", "Thumbsticks",
+            },
             ["Keyboard"] = new[]
             {
                 "Letters", "Numbers", "Space, Enter, arrows", Strings.Outputs_FunctionKeys,
@@ -74,6 +78,33 @@ public static class OutputCatalog
         ("x", "A"), ("square", "X"), ("triangle", "Y"), ("circle", "B"),
         ("ps3", "guide"), ("select", "back"), ("touch", "capture"),
     };
+
+    // A controller read the way it is held: face buttons, shoulders, sticks,
+    // then the small ones. Alphabetical order is what jumbled the list, and it
+    // is not an order anybody looks for a button in.
+    static readonly string[] PsReadingOrder =
+    {
+        "x", "circle", "square", "triangle", "left_1", "right_1", "left_2", "right_2",
+        "left_3", "right_3", "select", "ps3", "touch",
+    };
+
+    static readonly string[] XboxReadingOrder =
+    {
+        "A", "B", "X", "Y", "left_bumper", "right_bumper", "left_trigger", "right_trigger",
+        "left_stick", "right_stick", "back", "guide", "capture",
+    };
+
+    /// <summary>One group's tokens in the order somebody reads a controller,
+    /// for the two groups that have such an order. Everything else is left
+    /// exactly as it came.</summary>
+    public static IReadOnlyList<string> InReadingOrder(IReadOnlyList<string> tokens, string? sub)
+    {
+        var order = sub == Strings.Outputs_PlayStationButtons ? PsReadingOrder
+                  : sub == Strings.Outputs_XboxButtons ? XboxReadingOrder
+                  : null;
+        if (order is null) return tokens;
+        return tokens.OrderBy(t => Array.IndexOf(order, t) is var i && i < 0 ? int.MaxValue : i).ToList();
+    }
 
     static readonly HashSet<string> PsSpellings =
         new(VocabularyPairs.Select(p => p.Ps), StringComparer.Ordinal);
@@ -118,11 +149,16 @@ public static class OutputCatalog
         _ when t.StartsWith("mouse_", StringComparison.Ordinal) => ("Mouse", ""),
         _ when t.StartsWith("ir_", StringComparison.Ordinal) => (Strings.Outputs_TVRemote2, ""),
         _ when t.StartsWith("xac_", StringComparison.Ordinal) => ("Xbox Adaptive Controller", ""),
+        // The two vocabularies get a group each. One "Buttons" list sorted
+        // alphabetically put A and B above circle and stood left_1 next to
+        // left_bumper, so the same button appeared twice, six rows apart.
+        _ when PsSpellings.Contains(t) => ("Controller", Strings.Outputs_PlayStationButtons),
+        _ when XboxSpellings.Contains(t) => ("Controller", Strings.Outputs_XboxButtons),
         _ when t.StartsWith("dpad_", StringComparison.Ordinal) => ("Controller", "D-pad"),
         _ when t.StartsWith("left_joy_", StringComparison.Ordinal)
             || t.StartsWith("right_joy_", StringComparison.Ordinal)
             || t is "left_stick" or "right_stick" => ("Controller", "Thumbsticks"),
-        _ when ControllerButtons.Contains(t) => ("Controller", "Buttons"),
+        _ when ControllerButtons.Contains(t) => ("Controller", Strings.Outputs_OtherButtons),
         _ when t is "increment_mode" or "decrement_mode" or "load_file" => (Strings.Outputs_ModeSwitching2, ""),
         _ => (Strings.Outputs_DeviceSettings2, ""),
     };

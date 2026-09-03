@@ -1,44 +1,44 @@
 [
  {
-  "name": "joystick_deflection_minimum",
-  "label": "Zona morta centrale del Joystick",
-  "description": "Zona morta centrale per lo stick analogico, come percentuale della corsa completa. La imposti abbastanza alta da fermare un mouse o un joystick che vaga. Numeri più grandi rendono lo stick meno sensibile intorno al centro. Questa è una cosa separata dagli anelli D-Pad. Sul firmware 2373 un valore di 0 non significa più nessuna zona morta: il dispositivo sostituisce invece 129 conteggi grezzi, e lo rifà a ogni scansione, quindi prevale sul valore calcolato al caricamento del file."
+  "name": "joystick_deflection_maximum",
+  "label": "Sensibilità del joystick",
+  "description": "Quanto deve muoversi il joystick per dare il segnale massimo, detta anche deflessione completa. Un valore più basso è più sensibile, perché basta una spinta minore per ottenere lo stesso risultato.",
+  "alsoCalled": "ampiezza di movimento"
  },
  {
-  "name": "joystick_deflection_maximum",
-  "label": "Deflessione massima del Joystick",
-  "description": "Quanto deve muoversi lo stick per ottenere un segnale pieno. QMP chiama questa l'ampiezza di movimento del joystick, ed è la cosa più vicina a un controllo di sensibilità che il dispositivo abbia: numeri più grandi significano più corsa per lo stesso output, quindi il joystick risulta meno sensibile. QMP prende il più grande dei suoi quattro cursori di direzione.",
-  "alsoCalled": "ampiezza di movimento"
+  "name": "joystick_deflection_minimum",
+  "label": "Zona morta centrale del Joystick",
+  "description": "Quanto deve muoversi la levetta prima che conti. Più è alto, meno è sensibile vicino al centro, così una levetta a riposo non deriva."
  },
  {
   "name": "deflection_multiplier_up",
   "label": "Moltiplicatore deflessione alto",
   "unit": "percento",
-  "description": "Scala la direzione verso l'alto in modo che raggiunga un segnale pieno nello stesso punto delle altre direzioni. QMP lo calcola come il cursore di direzione più grande diviso per quello verso l'alto, quindi un moltiplicatore più grande significa che l'alto raggiunge un segnale pieno con meno corsa e risulta più sensibile."
+  "description": "Porta l'alto al livello delle altre direzioni. Più è alto, più è sensibile verso l'alto."
  },
  {
   "name": "deflection_multiplier_down",
   "label": "Moltiplicatore deflessione basso",
   "unit": "percento",
-  "description": "Scala la direzione verso il basso in modo che raggiunga un segnale pieno nello stesso punto delle altre direzioni. QMP lo calcola come il cursore di direzione più grande diviso per quello verso il basso, quindi un moltiplicatore più grande significa che il basso raggiunge un segnale pieno con meno corsa e risulta più sensibile."
+  "description": "Porta il basso al livello delle altre direzioni. Più è alto, più è sensibile verso il basso."
  },
  {
   "name": "deflection_multiplier_left",
   "label": "Moltiplicatore deflessione sinistra",
   "unit": "percento",
-  "description": "Scala la direzione verso sinistra in modo che raggiunga un segnale pieno nello stesso punto delle altre direzioni. QMP lo calcola come il cursore di direzione più grande diviso per quello verso sinistra, quindi un moltiplicatore più grande significa che sinistra raggiunge un segnale pieno con meno corsa e risulta più sensibile."
+  "description": "Porta la sinistra al livello delle altre direzioni. Più è alto, più è sensibile verso sinistra."
  },
  {
   "name": "deflection_multiplier_right",
   "label": "Moltiplicatore deflessione destra",
   "unit": "percento",
-  "description": "Scala la direzione verso destra in modo che raggiunga un segnale pieno nello stesso punto delle altre direzioni. QMP lo calcola come il cursore di direzione più grande diviso per quello verso destra, quindi un moltiplicatore più grande significa che destra raggiunge un segnale pieno con meno corsa e risulta più sensibile."
+  "description": "Porta la destra al livello delle altre direzioni. Più è alto, più è sensibile verso destra."
  },
  {
   "name": "joystick_D_Pad_inner",
   "label": "Anello D-Pad interno",
   "unit": "percento",
-  "description": "Percentuale della deflessione massima, misurata dal centro, dove inizia l'anello D-Pad interno. Si attiva solo dopo un breve ritardo, così può attraversarlo in uscita senza attivarlo. La metà di questo valore è il punto in cui una direzione smette di essere considerata premuta."
+  "description": "Dove inizia l'anello interno del D-Pad, a partire dal centro. Aspetta un attimo, così può attraversarlo."
  },
  {
   "name": "joystick_D_Pad_outer",
@@ -54,22 +54,22 @@
  {
   "name": "anti_dead_zone",
   "label": "Anti-zona morta",
-  "description": "Aggiunge una spinta fissa a ogni lettura dello stick, nella direzione in cui lo stick punta, per superare una zona morta che il gioco aggiunge per conto suo. Zero disattiva."
+  "description": "Aggiunge una spinta fissa a ogni lettura della levetta, nella direzione in cui punta, per superare una zona morta che il gioco aggiunge per conto suo. Zero lo disattiva."
  },
  {
   "name": "joystick_warning",
   "label": "Deflessione di avviso del Joystick",
-  "description": "Deflessione oltre la quale il firmware 1476 avvisava l'utente di aver mosso lo stick troppo lontano. Il firmware 2373 accetta ancora il nome ma lo ignora: il controllo è commentato."
+  "description": "Il suo QuadStick ignora questa impostazione. I modelli più vecchi avvisavano qui se spingeva troppo la levetta."
  },
  {
   "name": "joystick_alarm",
   "label": "Deflessione di allarme del Joystick",
-  "description": "Deflessione oltre la quale il firmware 1476 emetteva un tono di allarme. Il firmware 2373 accetta ancora il nome ma lo ignora: il controllo è commentato."
+  "description": "Il suo QuadStick ignora questa impostazione. I modelli più vecchi suonavano un allarme qui se spingeva troppo la levetta."
  },
  {
   "name": "enable_auto_zero",
   "label": "Azzera automaticamente i sensori",
-  "description": "Il firmware 2373 lo ignora. Riporta l'impostazione a 0 dopo ogni caricamento della configurazione e entrambi i punti che l'avrebbero letta sono commentati, quindi attivarlo non cambia nulla, né in una riga di modalità né sul dispositivo."
+  "description": "Il suo QuadStick ignora questa impostazione e la riporta su spento."
  },
  {
   "name": "sip_puff_threshold_soft",
@@ -80,10 +80,23 @@
  },
  {
   "name": "sip_puff_threshold",
-  "label": "Soglia sip/puff forte",
+  "label": "Soglia normale aspirazione/soffio",
   "unit": "percento",
-  "description": "Pressione alla quale attivare l'output. QMP la mostra come la soglia alta di sip and puff; sip_puff_threshold_soft è quella bassa.",
+  "description": "Pressione alla quale un'aspirazione o un soffio normale viene riconosciuto. QMP la chiama soglia forte, ma è quella usata dai normali comandi di aspirazione e soffio. Aumentarla se le aspirazioni leggere attivano di continuo quella normale.",
   "alsoCalled": "soglia alta di aspirazione e soffio"
+ },
+ {
+  "name": "sip_puff_delay_soft",
+  "label": "Ritardo sip/puff leggero",
+  "unit": "millisecondi",
+  "description": "Quanto aspetta un sip o puff leggero prima di contare. Più a lungo ignora un respiro non voluto.",
+  "alsoCalled": "ritardo della soglia bassa"
+ },
+ {
+  "name": "sip_puff_delay_hard",
+  "label": "Ritardo sip/puff forte",
+  "unit": "millisecondi",
+  "description": "Quanto tiene un sip o un puff prima che conti come lungo. Sul tubo laterale è il tempo di aspirazione per cambiare file di gioco. Il conteggio parte dalla soglia normale, e 0 scatta subito."
  },
  {
   "name": "sip_puff_maximum",
@@ -92,53 +105,42 @@
   "description": "Pressione massima che si traduce in un segnale pieno."
  },
  {
-  "name": "sip_puff_delay_soft",
-  "label": "Ritardo sip/puff leggero",
-  "unit": "millisecondi",
-  "description": "I segnali di sip and puff leggeri vengono rilevati dopo questo breve ritardo. QMP lo mostra come Low Threshold Delay.",
-  "alsoCalled": "ritardo della soglia bassa"
- },
- {
-  "name": "sip_puff_delay_hard",
-  "label": "Ritardo sip/puff forte",
-  "unit": "millisecondi",
-  "description": "Per quanto tempo un sip o puff forte viene mantenuto prima di contare come segnale lungo. Il conteggio inizia quando viene superata la soglia forte, non quando la pressione inizia a muoversi. 0 non significa non impostato, significa che il segnale lungo si attiva immediatamente."
- },
- {
   "name": "sip_threshold_soft",
   "label": "Soglia sip leggera",
   "unit": "percento",
-  "description": "Livello di depressione che avvia un sip leggero, a partire dal firmware 2373. A 0 la soglia sip/puff leggera si applica ancora ai sip; qualsiasi altro valore la sostituisce solo per i sip."
+  "description": "Soglia leggera solo per i sip. Lasci 0 per usare la soglia leggera condivisa."
  },
  {
   "name": "sip_threshold",
-  "label": "Soglia sip forte",
+  "label": "Soglia normale del sip",
   "unit": "percento",
-  "description": "Livello di depressione che attiva un sip forte, a partire dal firmware 2373. A 0 la soglia sip/puff forte si applica ancora ai sip; qualsiasi altro valore la sostituisce solo per i sip."
+  "description": "Soglia normale solo per i sip. Lasci 0 per usare la soglia normale condivisa.",
+  "alsoCalled": "soglia forte del sip"
  },
  {
   "name": "sip_maximum",
   "label": "Depressione massima sip",
   "unit": "percento",
-  "description": "Depressione che si traduce in un segnale pieno su un sip, a partire dal firmware 2373. A 0 il massimo sip/puff si applica ancora ai sip; qualsiasi altro valore lo sostituisce solo per i sip."
+  "description": "Punto di segnale pieno solo per i sip. Lasci 0 per usare il massimo condiviso."
  },
  {
   "name": "puff_threshold_soft",
   "label": "Soglia puff leggera",
   "unit": "percento",
-  "description": "Pressione che avvia un puff leggero, a partire dal firmware 2373. A 0 la soglia sip/puff leggera si applica ancora ai puff; qualsiasi altro valore la sostituisce solo per i puff."
+  "description": "Soglia leggera solo per i puff. Lasci 0 per usare la soglia leggera condivisa."
  },
  {
   "name": "puff_threshold",
-  "label": "Soglia puff forte",
+  "label": "Soglia normale del puff",
   "unit": "percento",
-  "description": "Pressione che attiva un puff forte, a partire dal firmware 2373. A 0 la soglia sip/puff forte si applica ancora ai puff; qualsiasi altro valore la sostituisce solo per i puff."
+  "description": "Soglia normale solo per i puff. Lasci 0 per usare la soglia normale condivisa.",
+  "alsoCalled": "soglia forte del puff"
  },
  {
   "name": "puff_maximum",
   "label": "Pressione massima puff",
   "unit": "percento",
-  "description": "Pressione che si traduce in un segnale pieno su un puff, a partire dal firmware 2373. A 0 il massimo sip/puff si applica ancora ai puff; qualsiasi altro valore lo sostituisce solo per i puff."
+  "description": "Punto di segnale pieno solo per i puff. Lasci 0 per usare il massimo condiviso."
  },
  {
   "name": "enable_left_side_tube",
@@ -185,22 +187,46 @@
  {
   "name": "enable_rumble",
   "label": "Vibrazione",
-  "description": "Solo in modo Dual Shock 3, riproduce la vibrazione del gioco come un tono sull'altoparlante del QuadStick."
+  "description": "Solo in modalità DualShock 3, riproduce la vibrazione del gioco come un tono sull'altoparlante del QuadStick."
  },
  {
   "name": "bluetooth_device_mode",
   "label": "Modalità dispositivo Bluetooth",
-  "description": "Cosa il QuadStick finge di essere via Bluetooth."
+  "description": "Che cosa il QuadStick finge di essere via Bluetooth.",
+  "optionLabels": [
+   "Bluetooth spento",
+   "Tastiera",
+   "Gamepad",
+   "Mouse",
+   "Tastiera e mouse",
+   "Joystick",
+   "Porta seriale, non un controller"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
   "label": "Modalità di autenticazione Bluetooth",
-  "description": "Quanto accoppiamento chiede il QuadStick. Inviato alla radio come impostazione SA, quindi conta solo mentre il Bluetooth è attivo."
+  "description": "Quanto accoppiamento chiede il QuadStick. Inviato alla radio come impostazione SA, quindi conta solo mentre il Bluetooth è attivo.",
+  "optionLabels": [
+   "Aperto, nessun controllo di associazione e niente crittografia",
+   "Confermare l'associazione sull'altro dispositivo",
+   "Funziona e basta, niente da digitare",
+   "Codice PIN, digitato sull'altro dispositivo"
+  ]
  },
  {
   "name": "bluetooth_connection_mode",
   "label": "Modalità di connessione Bluetooth",
-  "description": "Se il QuadStick aspetta di essere connesso o si connette da solo. Inviato alla radio come impostazione SM."
+  "description": "Se il QuadStick aspetta di essere connesso o si connette da solo. Inviato alla radio come impostazione SM.",
+  "optionLabels": [
+   "Attendere una connessione in entrata",
+   "Connettersi su comando",
+   "Connettersi all'arrivo dei dati",
+   "Connettersi da sé, e riconnettersi",
+   "Connettersi con un interruttore",
+   "Connettersi al primo dispositivo trovato",
+   "Connettersi all'indirizzo salvato"
+  ]
  },
  {
   "name": "bluetooth_remote_address",
@@ -215,27 +241,27 @@
  {
   "name": "bluetooth_throttle",
   "label": "Limitazione Bluetooth",
-  "description": "Il dispositivo salta una trasmissione Bluetooth quando non è passato abbastanza tempo dall'ultima."
+  "description": "Intervallo minimo che il QuadStick lascia tra due invii Bluetooth."
  },
  {
   "name": "digital_out_1",
   "label": "Uscita digitale 1",
-  "description": "Il dispositivo riconosce questo nome come output prima che raggiunga la tabella delle preferenze, quindi è solo un'impostazione del dispositivo, mai una sovrascrittura di modalità."
+  "description": "Accende o spegne la presa di uscita 1. Una modalità non può cambiarla."
  },
  {
   "name": "digital_out_2",
   "label": "Uscita digitale 2",
-  "description": "Il dispositivo riconosce questo nome come output prima che raggiunga la tabella delle preferenze, quindi è solo un'impostazione del dispositivo, mai una sovrascrittura di modalità."
+  "description": "Accende o spegne la presa di uscita 2. Una modalità non può cambiarla."
  },
  {
   "name": "digital_out_3",
   "label": "Uscita digitale 3",
-  "description": "Il dispositivo riconosce questo nome come output prima che raggiunga la tabella delle preferenze, quindi è solo un'impostazione del dispositivo, mai una sovrascrittura di modalità."
+  "description": "Accende o spegne la presa di uscita 3. Una modalità non può cambiarla."
  },
  {
   "name": "digital_out_4",
   "label": "Uscita digitale 4",
-  "description": "Il dispositivo riconosce questo nome come output prima che raggiunga la tabella delle preferenze, quindi è solo un'impostazione del dispositivo, mai una sovrascrittura di modalità."
+  "description": "Accende o spegne la presa di uscita 4. Una modalità non può cambiarla."
  },
  {
   "name": "enable_swap_inputs",
@@ -245,36 +271,42 @@
  {
   "name": "enable_select_files",
   "label": "Seleziona i file con il tubo laterale",
-  "description": "Seleziona un file usando il tubo laterale."
- },
- {
-  "name": "enable_usb_a_device",
-  "label": "Modalità dispositivo USB-A",
-  "risk": "Questo sceglie su quale porta USB il QuadStick si presenta. Il dispositivo interrompe la connessione USB e si riconnette quando cambia, quindi un valore sbagliato può lasciarlo invisibile a una console o a un computer. Prevale anche su enable_usb_a_host: mentre questo è impostato, lo stack host USB-A viene disattivato qualunque cosa dica l'impostazione host. Lo cambi solo su indicazione del supporto QuadStick.",
-  "description": "Su quale presa USB appare il QuadStick. Zero è la sua porta; sopra zero è la presa USB-A, e questo disattiva anche il modo host USB-A."
+  "description": "Permette al tubo laterale di scegliere quale file di profilo carica il QuadStick."
  },
  {
   "name": "enable_usb_a_host",
   "label": "Modalità host USB-A",
-  "description": "A partire dal firmware 2373. Con questo attivo e la modalità dispositivo USB-A disattiva, il dispositivo esegue un host USB sulla porta USB-A, quindi un controller collegato lì alimenta i canali di input usb_1. Lo disattivi, oppure attivi la modalità dispositivo USB-A, e l'host viene disattivato. La modalità dispositivo USB-A prevale. QMP la mostra come USB-A Host Mode.",
+  "description": "Solo QuadStick recenti. Permette a un controller collegato alla porta USB-A di alimentare gli ingressi USB 1 e USB 2, a meno che la modalità dispositivo USB-A sia attiva.",
   "alsoCalled": "modo host USB-A"
  },
  {
   "name": "enable_DS3_emulation",
   "label": "Modalità di emulazione USB",
-  "description": "Quale dispositivo USB il QuadStick finge di essere. Sul firmware 2373: 0 QuadStick nativo, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 per una PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 senza unità USB, 7 DS4 wireless diretta. Il valore 5 significava solo PC, nessun joystick sul firmware 1476, quindi un file che porta 5 si comporta in modo completamente diverso una volta aggiornato il dispositivo. Le modalità 1, 5, 6 e 7 non offrono affatto un'unità USB, quindi un computer non può vedere i file del QuadStick mentre una di esse è in esecuzione. Il Boot in PS4 Mode di QMP è il valore 4: Joystick.c:625 del firmware 2373 chiama quel valore \"boot in PS4 mode\" nel proprio commento.",
-  "risk": "Il nome dice DS3, ma il dispositivo lo legge come una modalità di emulazione USB con otto valori numerati, non un interruttore on/off. Il significato di 5 è cambiato tra il firmware 1476 e il 2373, e un numero che il firmware in esecuzione non conosce lascia il dispositivo su un'emulazione che nessuno ha richiesto. QCM mantiene qualunque cosa venga digitata e non rifiuta nulla, perché un valore sbagliato per un firmware è giusto per un altro. Lo cambi solo su indicazione del supporto QuadStick.",
+  "description": "Il controller che il QuadStick simula. La console deve conoscere quello che sceglie.",
+  "risk": "Una modalità contrassegnata senza unità nasconde i file del QuadStick al computer finché non la riporta indietro. Sui QuadStick più vecchi i numeri significano anche altro.",
+  "alsoCalled": "avviare in modo PS4",
   "optionLabels": [
    "QuadStick (PC e PS3)",
-   "DualShock 3, senza unità USB",
+   "DualShock 3",
    "x360ce, per un PC",
    "Controller Xbox 360",
-   "DualShock 4, per una PS4 (Boot in PS4 Mode di QMP)",
-   "Nintendo Switch Pro Controller, senza unità USB",
-   "DualShock 4, senza unità USB",
-   "DualShock 4 wireless, senza unità USB"
-  ],
-  "alsoCalled": "avviare in modo PS4"
+   "DualShock 4, per una PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 wireless"
+  ]
+ },
+ {
+  "name": "titan_two",
+  "label": "Adattatore Titan Two",
+  "description": "Solo QuadStick recenti. Dice al QuadStick che raggiunge una PS4 tramite un Titan Two. Lo attivi solo se ne usa uno.",
+  "alsoCalled": "flag PS4 del Titan 2"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "Modalità dispositivo USB-A",
+  "description": "Su quale presa USB appare il QuadStick. Zero è la sua porta; sopra zero è la presa USB-A, e questo disattiva anche il modo host USB-A.",
+  "risk": "Un valore sbagliato può rendere il QuadStick invisibile alla sua console o al suo computer. Lo cambi solo su indicazione del supporto QuadStick."
  },
  {
   "name": "enable_usb_comm",
@@ -325,29 +357,23 @@
   "name": "usb_1_dead_zone",
   "label": "Zona morta USB 1",
   "unit": "conteggi grezzi dell'asse",
-  "description": "A partire dal firmware 2373. Zona morta centrale per un controller collegato alla porta host USB-A, contata in passi grezzi del byte dell'asse centrato di quel controller, non in percentuale. Sotto il valore l'asse legge 0; sopra il valore viene sottratto in modo che la corsa parta da zero, e il risultato è limitato a più o meno 100. A 0 l'asse passa inalterato. Un byte dell'asse centrato raggiunge solo circa 127 in entrambe le direzioni, quindi 128 o più uccide l'asse."
+  "description": "Solo QuadStick recenti. Zona morta per un controller sulla porta USB-A, contata in passi d'asse grezzi anziché in percentuale. 128 o più annulla l'asse."
  },
  {
   "name": "usb_2_dead_zone",
   "label": "Zona morta USB 2",
   "unit": "conteggi grezzi dell'asse",
-  "description": "A partire dal firmware 2373, ma il dispositivo lo ignora. Il nome è valido e i file lo trasportano, ma nulla nel firmware legge il valore: ogni asse host USB usa la zona morta USB 1. Impostarlo in una riga di modalità non fa nulla neppure."
- },
- {
-  "name": "titan_two",
-  "label": "Adattatore Titan Two",
-  "description": "A partire dal firmware 2373. Dice al dispositivo che sta raggiungendo una PS4 attraverso un Titan Two anziché essere collegato direttamente alla console. Salta quindi l'handshake di autenticazione DS4 e interrompe la riconnessione USB forzata periodica. QMP lo mostra come Titan 2 PS4 flag.",
-  "alsoCalled": "flag PS4 del Titan 2"
+  "description": "Solo QuadStick recenti, e il suo la ignora comunque: entrambe le levette sulla porta USB-A usano la zona morta di USB 1."
  },
  {
   "name": "watchdog_disable",
   "label": "Disabilita il watchdog",
-  "risk": "Il dispositivo esegue un watchdog hardware di due minuti che lo riavvia se smette di rispondere. Nulla nel firmware 1476 o 2373 legge questa impostazione, quindi su entrambi non fa nulla, e cosa potrebbe farne un firmware successivo è sconosciuto.",
-  "description": "Doveva impedire al QuadStick di riavviarsi da solo quando si blocca. Il suo QuadStick lo ignora."
+  "description": "Doveva impedire al QuadStick di riavviarsi da solo quando si blocca. Il suo QuadStick lo ignora.",
+  "risk": "Il watchdog riavvia il suo QuadStick se smette di rispondere."
  },
  {
   "name": "debug",
   "label": "Livello di output di debug",
-  "description": "Il dispositivo attiva la sua console quando questo è superiore a zero."
+  "description": "Qualsiasi valore sopra lo zero attiva l'uscita console del QuadStick."
  }
 ]

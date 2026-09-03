@@ -1,44 +1,44 @@
 [
  {
-  "name": "joystick_deflection_minimum",
-  "label": "Dode zone in het midden van de joystick",
-  "description": "Dode zone in het midden voor de analoge stick, als percentage van de volledige uitslag. Zet dit hoog genoeg om een zwevende muis of joystick te stoppen. Grotere getallen maken de stick minder gevoelig rond het midden. Dit staat los van de D-Pad-ringen. Op firmware 2373 betekent een waarde van 0 niet langer geen dode zone: het apparaat vervangt dit door 129 ruwe tellingen, en het doet dit opnieuw bij elke scan, waardoor dit voorrang krijgt op de waarde die is berekend toen het bestand werd geladen."
+  "name": "joystick_deflection_maximum",
+  "label": "Joystickgevoeligheid",
+  "description": "Hoe ver de stick moet bewegen voor een vol signaal, ook wel volledige uitslag genoemd. Lager is gevoeliger, omdat een kleinere duw hetzelfde doet.",
+  "alsoCalled": "bewegingsbereik"
  },
  {
-  "name": "joystick_deflection_maximum",
-  "label": "Volledige uitslag van de joystick",
-  "description": "Hoe ver de stick moet bewegen voor een volledig signaal. QMP noemt dit het bewegingsbereik van de joystick en het is het dichtste wat het apparaat heeft bij een gevoeligheidsregeling: grotere getallen betekenen meer uitslag voor dezelfde uitvoer, waardoor de joystick minder gevoelig aanvoelt. QMP neemt de grootste van zijn vier richtingsschuiven.",
-  "alsoCalled": "bewegingsbereik"
+  "name": "joystick_deflection_minimum",
+  "label": "Dode zone in het midden van de joystick",
+  "description": "Hoe ver de stick moet bewegen voordat het meetelt. Groter is minder gevoelig bij het midden, waardoor een rustende stick niet wegdrijft."
  },
  {
   "name": "deflection_multiplier_up",
   "label": "Vermenigvuldigingsfactor uitslag omhoog",
   "unit": "procent",
-  "description": "Schaalt de richting omhoog zodat deze op hetzelfde punt een volledig signaal bereikt als de andere richtingen. QMP berekent dit als de grootste richtingsschuif gedeeld door die voor omhoog, dus een grotere vermenigvuldigingsfactor betekent dat omhoog bij minder uitslag een volledig signaal bereikt en gevoeliger aanvoelt."
+  "description": "Brengt omhoog op gelijke hoogte met de andere richtingen. Groter is gevoeliger naar boven."
  },
  {
   "name": "deflection_multiplier_down",
   "label": "Vermenigvuldigingsfactor uitslag omlaag",
   "unit": "procent",
-  "description": "Schaalt de richting omlaag zodat deze op hetzelfde punt een volledig signaal bereikt als de andere richtingen. QMP berekent dit als de grootste richtingsschuif gedeeld door die voor omlaag, dus een grotere vermenigvuldigingsfactor betekent dat omlaag bij minder uitslag een volledig signaal bereikt en gevoeliger aanvoelt."
+  "description": "Brengt omlaag op gelijke hoogte met de andere richtingen. Groter is gevoeliger naar beneden."
  },
  {
   "name": "deflection_multiplier_left",
   "label": "Vermenigvuldigingsfactor uitslag links",
   "unit": "procent",
-  "description": "Schaalt de richting links zodat deze op hetzelfde punt een volledig signaal bereikt als de andere richtingen. QMP berekent dit als de grootste richtingsschuif gedeeld door die voor links, dus een grotere vermenigvuldigingsfactor betekent dat links bij minder uitslag een volledig signaal bereikt en gevoeliger aanvoelt."
+  "description": "Brengt links op gelijke hoogte met de andere richtingen. Groter is gevoeliger naar links."
  },
  {
   "name": "deflection_multiplier_right",
   "label": "Vermenigvuldigingsfactor uitslag rechts",
   "unit": "procent",
-  "description": "Schaalt de richting rechts zodat deze op hetzelfde punt een volledig signaal bereikt als de andere richtingen. QMP berekent dit als de grootste richtingsschuif gedeeld door die voor rechts, dus een grotere vermenigvuldigingsfactor betekent dat rechts bij minder uitslag een volledig signaal bereikt en gevoeliger aanvoelt."
+  "description": "Brengt rechts op gelijke hoogte met de andere richtingen. Groter is gevoeliger naar rechts."
  },
  {
   "name": "joystick_D_Pad_inner",
   "label": "Binnenste D-Pad-ring",
   "unit": "procent",
-  "description": "Percentage van de volledige uitslag, gemeten vanaf het midden, waar de binnenste D-Pad-ring begint. Deze activeert pas na een korte vertraging, zodat u er onderweg naar buiten doorheen kunt bewegen zonder hem te activeren. De helft van deze waarde is waar een richting stopt met vastgehouden worden."
+  "description": "Waar de binnenste ring van het D-pad begint, vanaf het midden. Hij wacht eerst even, zodat u erdoorheen kunt."
  },
  {
   "name": "joystick_D_Pad_outer",
@@ -54,22 +54,22 @@
  {
   "name": "anti_dead_zone",
   "label": "Anti-dode-zone",
-  "description": "Voegt aan elke stickmeting een vaste duw toe, in de richting waarin de stick wijst, om voorbij een dode zone te komen die het spel zelf toevoegt. Nul is uit."
+  "description": "Geeft elke stickwaarde een vaste duw in de richting waarin de stick wijst, om langs een dode zone te komen die het spel zelf toevoegt. Nul is uit."
  },
  {
   "name": "joystick_warning",
   "label": "Waarschuwingsuitslag joystick",
-  "description": "Uitslag waarboven firmware 1476 de gebruiker waarschuwde dat de stick te ver werd bewogen. Firmware 2373 accepteert de naam nog steeds, maar negeert hem: de controle is uitgecommentarieerd."
+  "description": "Uw QuadStick negeert dit. Oudere waarschuwden hier als u de stick te ver duwde."
  },
  {
   "name": "joystick_alarm",
   "label": "Alarmuitslag joystick",
-  "description": "Uitslag waarboven firmware 1476 een alarmtoon liet klinken. Firmware 2373 accepteert de naam nog steeds, maar negeert hem: de controle is uitgecommentarieerd."
+  "description": "Uw QuadStick negeert dit. Oudere lieten hier een alarm klinken als u de stick te ver duwde."
  },
  {
   "name": "enable_auto_zero",
   "label": "Sensoren automatisch nulstellen",
-  "description": "Firmware 2373 negeert dit. Ze zet de instelling na elke configuratielaadbeurt terug op 0, en beide plekken die de instelling zouden hebben gelezen zijn uitgecommentarieerd, dus het inschakelen ervan verandert niets, noch in een modusrij, noch op het apparaat."
+  "description": "Uw QuadStick negeert dit en zet het terug op uit."
  },
  {
   "name": "sip_puff_threshold_soft",
@@ -80,10 +80,23 @@
  },
  {
   "name": "sip_puff_threshold",
-  "label": "Harde sip/puff-drempel",
+  "label": "Normale zuig-/blaasdrempel",
   "unit": "procent",
-  "description": "Druk waarbij de uitvoer wordt geactiveerd. QMP toont dit als de hoge sip and puff-drempel; sip_puff_threshold_soft is de lage.",
+  "description": "Druk waarbij een gewone zuig of blaas meetelt. QMP noemt dit de harde drempel, maar het is de drempel die de gewone zuig- en blaasbediening gebruikt. Verhoog hem als zachte zuigjes de gewone drempel blijven activeren.",
   "alsoCalled": "hoge drempel voor zuigen en blazen"
+ },
+ {
+  "name": "sip_puff_delay_soft",
+  "label": "Vertraging zachte sip/puff",
+  "unit": "milliseconden",
+  "description": "Hoe lang een zachte sip of puf wacht voordat hij meetelt. Langer negeert een ademhaling die u niet bedoelde.",
+  "alsoCalled": "vertraging van de lage drempel"
+ },
+ {
+  "name": "sip_puff_delay_hard",
+  "label": "Vertraging harde sip/puff",
+  "unit": "milliseconden",
+  "description": "Hoe lang u een sip of puf vasthoudt voordat hij als lang telt. Op de zijslang is dat hoe lang u zuigt om van spelbestand te wisselen. De klok start bij de normale drempel, en 0 vuurt meteen."
  },
  {
   "name": "sip_puff_maximum",
@@ -92,53 +105,42 @@
   "description": "Maximale druk die wordt geschaald naar een volledig signaal."
  },
  {
-  "name": "sip_puff_delay_soft",
-  "label": "Vertraging zachte sip/puff",
-  "unit": "milliseconden",
-  "description": "Zachte sip- en puff-signalen worden na deze korte vertraging waargenomen. QMP toont dit als de Low Threshold Delay.",
-  "alsoCalled": "vertraging van de lage drempel"
- },
- {
-  "name": "sip_puff_delay_hard",
-  "label": "Vertraging harde sip/puff",
-  "unit": "milliseconden",
-  "description": "Hoe lang een harde sip of puff wordt vastgehouden voordat deze als lang signaal telt. De klok start zodra de harde drempel wordt overschreden, niet zodra de druk voor het eerst verandert. 0 betekent niet niet-ingesteld, het betekent dat het lange signaal meteen wordt geactiveerd."
- },
- {
   "name": "sip_threshold_soft",
   "label": "Zachte sip-drempel",
   "unit": "procent",
-  "description": "Vacuümniveau waarop een zachte sip begint, sinds firmware 2373. Bij 0 geldt de zachte sip/puff-drempel nog steeds voor sips; elke andere waarde vervangt deze uitsluitend voor sips."
+  "description": "Zachte drempel alleen voor sips. Laat 0 staan om de gedeelde zachte drempel te gebruiken."
  },
  {
   "name": "sip_threshold",
-  "label": "Harde sip-drempel",
+  "label": "Normale sipdrempel",
   "unit": "procent",
-  "description": "Vacuümniveau dat een harde sip activeert, sinds firmware 2373. Bij 0 geldt de harde sip/puff-drempel nog steeds voor sips; elke andere waarde vervangt deze uitsluitend voor sips."
+  "description": "Normale drempel alleen voor sips. Laat 0 staan om de gedeelde normale drempel te gebruiken.",
+  "alsoCalled": "harde sipdrempel"
  },
  {
   "name": "sip_maximum",
   "label": "Maximaal vacuüm bij sip",
   "unit": "procent",
-  "description": "Vacuüm dat bij een sip schaalt naar een volledig signaal, sinds firmware 2373. Bij 0 geldt het sip/puff-maximum nog steeds voor sips; elke andere waarde vervangt deze uitsluitend voor sips."
+  "description": "Punt voor het volledige signaal alleen voor sips. Laat 0 staan om het gedeelde maximum te gebruiken."
  },
  {
   "name": "puff_threshold_soft",
   "label": "Zachte puff-drempel",
   "unit": "procent",
-  "description": "Druk waarop een zachte puff begint, sinds firmware 2373. Bij 0 geldt de zachte sip/puff-drempel nog steeds voor puffs; elke andere waarde vervangt deze uitsluitend voor puffs."
+  "description": "Zachte drempel alleen voor puffen. Laat 0 staan om de gedeelde zachte drempel te gebruiken."
  },
  {
   "name": "puff_threshold",
-  "label": "Harde puff-drempel",
+  "label": "Normale pufdrempel",
   "unit": "procent",
-  "description": "Druk die een harde puff activeert, sinds firmware 2373. Bij 0 geldt de harde sip/puff-drempel nog steeds voor puffs; elke andere waarde vervangt deze uitsluitend voor puffs."
+  "description": "Normale drempel alleen voor puffen. Laat 0 staan om de gedeelde normale drempel te gebruiken.",
+  "alsoCalled": "harde pufdrempel"
  },
  {
   "name": "puff_maximum",
   "label": "Maximale puff-druk",
   "unit": "procent",
-  "description": "Druk die bij een puff schaalt naar een volledig signaal, sinds firmware 2373. Bij 0 geldt het sip/puff-maximum nog steeds voor puffs; elke andere waarde vervangt deze uitsluitend voor puffs."
+  "description": "Punt voor het volledige signaal alleen voor puffen. Laat 0 staan om het gedeelde maximum te gebruiken."
  },
  {
   "name": "enable_left_side_tube",
@@ -185,22 +187,46 @@
  {
   "name": "enable_rumble",
   "label": "Trilfunctie",
-  "description": "Alleen in Dual Shock 3-modus: speelt de trilling van het spel als een toon op de eigen luidspreker van de QuadStick."
+  "description": "Alleen in DualShock 3-modus, speelt het rommelen van het spel als toon op de eigen luidspreker van de QuadStick."
  },
  {
   "name": "bluetooth_device_mode",
   "label": "Bluetooth-apparaatmodus",
-  "description": "Waarvoor de QuadStick zich uitgeeft via Bluetooth."
+  "description": "Waarvoor de QuadStick zich uitgeeft via Bluetooth.",
+  "optionLabels": [
+   "Bluetooth uit",
+   "Toetsenbord",
+   "Gamecontroller",
+   "Muis",
+   "Toetsenbord en muis",
+   "Joystick",
+   "Seriële poort, geen controller"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
   "label": "Bluetooth-verificatiemodus",
-  "description": "Hoeveel koppeling de QuadStick vraagt. Wordt als SA-instelling naar de radio gestuurd, dus het telt alleen zolang Bluetooth aan staat."
+  "description": "Hoeveel koppeling de QuadStick vraagt. Wordt als SA-instelling naar de radio gestuurd, dus het telt alleen zolang Bluetooth aan staat.",
+  "optionLabels": [
+   "Open, geen controle van de koppeling en niets versleuteld",
+   "Bevestig de koppeling op het andere apparaat",
+   "Werkt gewoon, niets te typen",
+   "PIN-code, getypt op het andere apparaat"
+  ]
  },
  {
   "name": "bluetooth_connection_mode",
   "label": "Bluetooth-verbindingsmodus",
-  "description": "Of de QuadStick wacht tot er verbinding wordt gemaakt of zelf verbinding maakt. Wordt als SM-instelling naar de radio gestuurd."
+  "description": "Of de QuadStick wacht tot er verbinding wordt gemaakt of zelf verbinding maakt. Wordt als SM-instelling naar de radio gestuurd.",
+  "optionLabels": [
+   "Wachten tot er verbinding wordt gemaakt",
+   "Verbinden op commando",
+   "Verbinden zodra er gegevens komen",
+   "Uit zichzelf verbinden en steeds opnieuw verbinden",
+   "Verbinden via een schakelaar",
+   "Verbinden met het eerst gevonden apparaat",
+   "Verbinden met het opgeslagen adres"
+  ]
  },
  {
   "name": "bluetooth_remote_address",
@@ -215,27 +241,27 @@
  {
   "name": "bluetooth_throttle",
   "label": "Bluetooth-throttling",
-  "description": "Het apparaat slaat een Bluetooth-verzending over wanneer er niet genoeg tijd is verstreken sinds de vorige."
+  "description": "Kleinste tussenpauze die de QuadStick laat tussen Bluetooth-zendingen."
  },
  {
   "name": "digital_out_1",
   "label": "Digitale uitgang 1",
-  "description": "Het apparaat herkent deze naam als uitvoer voordat deze de voorkeurentabel bereikt, dus dit is uitsluitend een apparaatinstelling, nooit een modus-override."
+  "description": "Zet uitgang 1 aan of uit. Een modus kan hem niet wijzigen."
  },
  {
   "name": "digital_out_2",
   "label": "Digitale uitgang 2",
-  "description": "Het apparaat herkent deze naam als uitvoer voordat deze de voorkeurentabel bereikt, dus dit is uitsluitend een apparaatinstelling, nooit een modus-override."
+  "description": "Zet uitgang 2 aan of uit. Een modus kan hem niet wijzigen."
  },
  {
   "name": "digital_out_3",
   "label": "Digitale uitgang 3",
-  "description": "Het apparaat herkent deze naam als uitvoer voordat deze de voorkeurentabel bereikt, dus dit is uitsluitend een apparaatinstelling, nooit een modus-override."
+  "description": "Zet uitgang 3 aan of uit. Een modus kan hem niet wijzigen."
  },
  {
   "name": "digital_out_4",
   "label": "Digitale uitgang 4",
-  "description": "Het apparaat herkent deze naam als uitvoer voordat deze de voorkeurentabel bereikt, dus dit is uitsluitend een apparaatinstelling, nooit een modus-override."
+  "description": "Zet uitgang 4 aan of uit. Een modus kan hem niet wijzigen."
  },
  {
   "name": "enable_swap_inputs",
@@ -245,36 +271,42 @@
  {
   "name": "enable_select_files",
   "label": "Selecteer bestanden met de zijbuis",
-  "description": "Selecteer een bestand met behulp van de zijbuis."
- },
- {
-  "name": "enable_usb_a_device",
-  "label": "USB-A-apparaatmodus",
-  "risk": "Dit bepaalt op welke USB-poort de QuadStick zich presenteert. Het apparaat breekt USB af en maakt opnieuw verbinding wanneer dit wijzigt, dus een verkeerde waarde kan ervoor zorgen dat een console of computer het apparaat niet meer ziet. Dit wint ook van enable_usb_a_host: zolang dit ingesteld is, wordt de USB-A-hoststack afgesloten, wat de hostinstelling ook zegt. Wijzig dit alleen op advies van QuadStick support.",
-  "description": "Op welke USB-aansluiting de QuadStick verschijnt. Nul is zijn eigen poort; boven nul is de USB-A-aansluiting, en dat schakelt ook de USB-A-hostmodus uit."
+  "description": "Laat de zijslang kiezen welk profielbestand de QuadStick laadt."
  },
  {
   "name": "enable_usb_a_host",
   "label": "USB-A-hostmodus",
-  "description": "Sinds firmware 2373. Met dit ingeschakeld en USB-A-apparaatmodus uitgeschakeld, draait het apparaat een USB-host op de USB-A-poort, zodat een daar aangesloten controller de usb_1-invoerkanalen voedt. Schakel dit uit, of schakel USB-A-apparaatmodus in, en de host wordt afgebroken. USB-A-apparaatmodus wint. QMP toont dit als USB-A Host Mode.",
+  "description": "Alleen nieuwere QuadSticks. Laat een controller in de USB-A-poort de ingangen USB 1 en USB 2 voeden, tenzij de USB-A-apparaatmodus aan staat.",
   "alsoCalled": "USB-A-hostmodus"
  },
  {
   "name": "enable_DS3_emulation",
   "label": "USB-emulatiemodus",
-  "description": "Voor welk USB-apparaat de QuadStick zich uitgeeft. Op firmware 2373: 0 QuadStick native, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 voor een PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 zonder USB-station, 7 rechtstreeks DS4 draadloos. Waarde 5 betekende op firmware 1476 alleen pc, geen joystick, dus een bestand met 5 gedraagt zich compleet anders zodra het apparaat is bijgewerkt. Modi 1, 5, 6 en 7 bieden helemaal geen USB-station, dus een computer kan de bestanden van de QuadStick niet zien terwijl een van deze actief is. QMP's Boot in PS4 Mode is waarde 4: firmware 2373 Joystick.c:625 noemt die waarde in zijn eigen opmerking \"boot in PS4 mode\".",
-  "risk": "De naam zegt DS3, maar het apparaat leest dit als een USB-emulatiemodus met acht genummerde waarden, geen aan/uit-schakelaar. Wat 5 betekent, is veranderd tussen firmware 1476 en 2373, en een getal dat de actieve firmware niet kent, laat het apparaat op een emulatie staan die niemand heeft gevraagd. QCM behoudt wat er ook wordt ingetypt en weigert niets, omdat een waarde die verkeerd is voor de ene firmware juist is voor de andere. Wijzig dit alleen op advies van QuadStick support.",
+  "description": "Welke controller de QuadStick nabootst. De console moet degene die u kiest kennen.",
+  "risk": "Een modus met de melding geen schijf verbergt de bestanden van de QuadStick voor uw computer totdat u hem terugzet. Op oudere QuadSticks betekenen de nummers ook iets anders.",
+  "alsoCalled": "opstarten in PS4-modus",
   "optionLabels": [
    "QuadStick (pc en PS3)",
-   "DualShock 3, geen USB-station",
+   "DualShock 3",
    "x360ce, voor een pc",
    "Xbox 360-controller",
-   "DualShock 4, voor een PS4 (QMP's Boot in PS4 Mode)",
-   "Nintendo Switch Pro Controller, geen USB-station",
-   "DualShock 4, geen USB-station",
-   "DualShock 4 draadloos, geen USB-station"
-  ],
-  "alsoCalled": "opstarten in PS4-modus"
+   "DualShock 4, voor een PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 draadloos"
+  ]
+ },
+ {
+  "name": "titan_two",
+  "label": "Titan Two-adapter",
+  "description": "Alleen nieuwere QuadSticks. Vertelt de QuadStick dat hij een PS4 bereikt via een Titan Two. Zet dit alleen aan als u er een gebruikt.",
+  "alsoCalled": "PS4-vlag van de Titan 2"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "USB-A-apparaatmodus",
+  "description": "Op welke USB-aansluiting de QuadStick verschijnt. Nul is zijn eigen poort; boven nul is de USB-A-aansluiting, en dat schakelt ook de USB-A-hostmodus uit.",
+  "risk": "Een verkeerde waarde kan de QuadStick onzichtbaar maken voor uw console of computer. Wijzig dit alleen op advies van QuadStick support."
  },
  {
   "name": "enable_usb_comm",
@@ -325,29 +357,23 @@
   "name": "usb_1_dead_zone",
   "label": "USB 1-dode zone",
   "unit": "ruwe astellingen",
-  "description": "Sinds firmware 2373. Dode zone in het midden voor een controller die is aangesloten op de USB-A-hostpoort, geteld in ruwe stappen van de gecentreerde as-byte van die controller, niet in procenten. Onder de waarde leest de as 0; erboven wordt de waarde eraf getrokken zodat de uitslag vanaf nul begint, en het resultaat wordt begrensd tot plus of min 100. Bij 0 gaat de as ongewijzigd door. Een gecentreerde as-byte bereikt in beide richtingen maar ongeveer 127, dus 128 of meer maakt de as onbruikbaar."
+  "description": "Alleen nieuwere QuadSticks. Dode zone voor een controller op de USB-A-poort, geteld in ruwe asstappen in plaats van procenten. 128 of meer schakelt de as uit."
  },
  {
   "name": "usb_2_dead_zone",
   "label": "USB 2-dode zone",
   "unit": "ruwe astellingen",
-  "description": "Sinds firmware 2373, maar het apparaat negeert dit. De naam is geldig en bestanden bevatten hem, maar niets in de firmware leest de waarde: elke USB-host-as gebruikt de USB 1-dode zone. Deze instellen in een modusrij doet ook niets."
- },
- {
-  "name": "titan_two",
-  "label": "Titan Two-adapter",
-  "description": "Sinds firmware 2373. Vertelt het apparaat dat het een PS4 bereikt via een Titan Two in plaats van rechtstreeks op de console aangesloten te zijn. Het slaat dan de DS4-verificatiehandshake over en stopt de periodieke geforceerde USB-herverbinding. QMP toont dit als de Titan 2 PS4-vlag.",
-  "alsoCalled": "PS4-vlag van de Titan 2"
+  "description": "Alleen nieuwere QuadSticks, en de uwe negeert het toch: beide sticks op de USB-A-poort gebruiken de dode zone van USB 1."
  },
  {
   "name": "watchdog_disable",
   "label": "Schakel de watchdog uit",
-  "risk": "Het apparaat draait een hardware-watchdog van twee minuten die het herstart als het niet meer reageert. Niets in firmware 1476 of 2373 leest deze instelling, dus op beide doet ze niets, en wat een latere firmware ermee zou doen is onbekend.",
-  "description": "Moest voorkomen dat de QuadStick zichzelf herstart als hij vastloopt. Uw QuadStick negeert dit."
+  "description": "Moest voorkomen dat de QuadStick zichzelf herstart als hij vastloopt. Uw QuadStick negeert dit.",
+  "risk": "De watchdog start uw QuadStick opnieuw op als hij niet meer antwoordt."
  },
  {
   "name": "debug",
   "label": "Debug-uitvoerniveau",
-  "description": "Het apparaat schakelt zijn console in wanneer dit boven nul ligt."
+  "description": "Elke waarde boven nul zet de console-uitvoer van de QuadStick aan."
  }
 ]

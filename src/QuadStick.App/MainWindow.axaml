@@ -338,11 +338,15 @@
       </Border>
 
       <!-- Problems: collapsed to a single bar by default so it never eats the
-           editor; the full list expands above the bar on demand. The status
-           host shares this unobtrusive bottom area, keeping feedback visible
-           without adding another toolbar row above the device. -->
-      <StackPanel x:Name="ProblemsDock" DockPanel.Dock="Bottom" Margin="16,0,16,14">
+           editor; the full list expands above the bar on demand. This dock is
+           a sibling of the whole workspace, so expanded problems use the full
+           editor width rather than being trapped inside the sidebar or sheet.
+           The status host shares this unobtrusive bottom area, keeping
+           feedback visible without adding another toolbar row above the device. -->
+      <StackPanel x:Name="ProblemsDock" DockPanel.Dock="Bottom" Margin="16,0,16,14"
+                  HorizontalAlignment="Stretch">
         <Border x:Name="ProblemsListBorder" IsVisible="False" Height="150" Margin="0,0,0,8"
+                HorizontalAlignment="Stretch"
                 BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="1" CornerRadius="6"
                 Background="{DynamicResource SurfaceBrush}">
           <ListBox x:Name="IssuesList" FontSize="{DynamicResource SmallSize}" Background="Transparent"
@@ -375,14 +379,6 @@
                 Width="{DynamicResource SidebarWidth}"
                 Background="{DynamicResource SurfaceSubtleBrush}"
                 BorderBrush="{DynamicResource SurfaceBorderBrush}" BorderThickness="0,0,1,0">
-        <!-- The panel needs about 430px to lay itself out. Below that the
-             DockPanel used to hand its fill child a negative height and the
-             modes list, Configuration and the view keys drew on top of each
-             other, which is what the app looked like at its own minimum window
-             size. One scroller here means the parts that do not fit are still
-             reachable instead of stacked. -->
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                      VerticalScrollBarVisibility="Auto" AllowAutoHide="True">
         <DockPanel Margin="16,16">
 
           <!-- Pinned to the bottom, and separated: these change how the editor
@@ -398,12 +394,22 @@
             <!-- Plain English and Detailed editor change how the current part
                  reads. Keep them immediately before the view choices, which
                  change where that part is shown. -->
-            <Grid ColumnDefinitions="*,*">
+            <Grid ColumnDefinitions="*,*,Auto">
               <Button x:Name="LabelStyleButton" Classes="quiet sidebarToggle"
                       Grid.Column="0" HorizontalAlignment="Stretch"
                       AutomationProperties.Name="{x:Static app:Strings.Shell_SwitchTheWordsUsedIn}"/>
               <Button x:Name="CardViewButton" Classes="quiet sidebarToggle"
                       Grid.Column="1" Margin="3,0,0,0" HorizontalAlignment="Stretch"/>
+              <!-- Shape, not words: this one squeezes the same sentence onto
+                   one line, so it stays a glyph and lets the two labelled keys
+                   keep the width their words need in every language. Its name
+                   and tip are set in UpdateFormatToggleButton, which has to say
+                   which way the switch is now. -->
+              <ToggleButton x:Name="FormatToggleButton" Classes="quiet sidebarToggle"
+                            Grid.Column="2" Width="48" Margin="3,0,0,0"
+                            HorizontalAlignment="Right">
+                <PathIcon Width="18" Height="18" Data="{DynamicResource IconFormat}"/>
+              </ToggleButton>
             </Grid>
             <!-- These three are one mutually-exclusive choice, so they sit in a
                  shared track like a rocker switch bank rather than as loose,
@@ -482,10 +488,7 @@
             <!-- The list expands into every bit of height Configuration does
                  not need. Its minimum keeps three choices useful when the
                  window is short; more choices scroll in this one place. -->
-            <!-- Capped: inside the sidebar scroller this list is measured
-                 against infinite height, and twenty modes would otherwise push
-                 Configuration and the view keys off the bottom every time. -->
-            <ScrollViewer x:Name="ModeListScroll" Grid.Row="1" MinHeight="112" MaxHeight="300" Margin="0,0,0,8"
+            <ScrollViewer x:Name="ModeListScroll" Grid.Row="1" MinHeight="112" Margin="0,0,0,8"
                           HorizontalScrollBarVisibility="Disabled"
                           VerticalScrollBarVisibility="Auto" AllowAutoHide="True"
                           VerticalContentAlignment="Top">
@@ -509,7 +512,6 @@
             </StackPanel>
           </Grid>
         </DockPanel>
-        </ScrollViewer>
         </Border>
 
         <!-- The active editor occupies the other column in the same workspace

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using QuadStick.Format;
 using Xunit;
 
@@ -287,6 +291,47 @@ public class DeviceAgreementTests
         Assert.True(broken.Count == 0,
             $"{broken.Count} silent disagreements across the catalog:\n  "
             + string.Join("\n  ", broken.Take(30)));
+    }
+
+    // The 131 workbooks in agent/corpus/silas are one real user's whole
+    // library, checked in, so unlike the downloaded catalog above this runs
+    // everywhere including CI. Thirty six thousand bindings written by
+    // somebody who is not us: if a parse change starts dropping rows, or
+    // starts reading one the device would not, it shows here rather than on
+    // his QuadStick.
+    [Fact]
+    public void Every_workbook_in_the_shipped_corpus_agrees_with_the_device()
+    {
+        var dir = Path.Combine(RepoRoot, "agent", "corpus", "silas");
+        var files = Directory.GetFiles(dir, "*.xlsx").OrderBy(p => p).ToList();
+        Assert.True(files.Count > 100, $"{dir} holds {files.Count} workbooks, expected the whole library.");
+
+        var broken = new List<string>();
+        foreach (var path in files)
+        {
+            string csv;
+            using (var stream = File.OpenRead(path)) csv = Xlsx.ToCsv(stream);
+            var f = ProfileFile.Load(csv);
+            foreach (var d in Differences(f)
+                .Where(d => !d.Explained && !f.Issues.Any(i => RowOf(i.Cell) == d.Row)))
+                broken.Add($"{Path.GetFileName(path)} row {d.Row}: {d.What}");
+        }
+
+        Assert.True(broken.Count == 0,
+            $"{broken.Count} silent disagreements across the corpus:\n  "
+            + string.Join("\n  ", broken.Take(30)));
+    }
+
+    static string RepoRoot
+    {
+        get
+        {
+            var dir = new DirectoryInfo(AppContext.BaseDirectory);
+            while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "QuadStick.sln")))
+                dir = dir.Parent;
+            Assert.NotNull(dir);
+            return dir!.FullName;
+        }
     }
 
     // The whole of the disagreement we are knowingly living with, and on 2373

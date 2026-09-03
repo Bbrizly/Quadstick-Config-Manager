@@ -1,44 +1,44 @@
 [
  {
-  "name": "joystick_deflection_minimum",
-  "label": "Martwa strefa środka joysticka",
-  "description": "Martwa strefa środka drążka analogowego, jako procent pełnego wychylenia. Ustaw ją na tyle wysoko, aby zatrzymać błądzącą mysz lub joystick. Większe liczby zmniejszają czułość drążka wokół środka. To coś innego niż pierścienie D-Pad. W oprogramowaniu układowym 2373 wartość 0 nie oznacza już braku martwej strefy: urządzenie wstawia w to miejsce 129 surowych jednostek i robi to przy każdym skanowaniu, więc ta wartość wygrywa z tą wyliczoną przy wczytywaniu pliku."
+  "name": "joystick_deflection_maximum",
+  "label": "Czułość joysticka",
+  "description": "Jak daleko trzeba wychylić joystick, aby uzyskać pełny sygnał, nazywane też pełnym wychyleniem. Niższa wartość oznacza większą czułość, bo mniejsze wychylenie daje ten sam efekt.",
+  "alsoCalled": "zakres ruchu"
  },
  {
-  "name": "joystick_deflection_maximum",
-  "label": "Pełne wychylenie joysticka",
-  "description": "Jak daleko drążek musi się przesunąć, aby uzyskać pełny sygnał. QMP nazywa to zakresem ruchu joysticka i jest to najbliższa rzecz, jaką urządzenie ma do regulacji czułości: większe liczby oznaczają więcej ruchu dla tego samego wyjścia, więc joystick wydaje się mniej czuły. QMP przyjmuje największą z czterech suwaków kierunków.",
-  "alsoCalled": "zakres ruchu"
+  "name": "joystick_deflection_minimum",
+  "label": "Martwa strefa środka joysticka",
+  "description": "Jak daleko drążek musi się przesunąć, zanim się to liczy. Większa wartość to mniejsza czułość przy środku, dzięki czemu spoczywający drążek nie dryfuje."
  },
  {
   "name": "deflection_multiplier_up",
   "label": "Mnożnik wychylenia w górę",
   "unit": "procent",
-  "description": "Skaluje kierunek w górę tak, aby osiągał pełny sygnał w tym samym punkcie co pozostałe kierunki. QMP wylicza go jako największy suwak kierunku podzielony przez suwak kierunku w górę, więc większy mnożnik oznacza, że kierunek w górę osiąga pełny sygnał przy mniejszym ruchu i wydaje się bardziej czuły."
+  "description": "Wyrównuje górę do pozostałych kierunków. Większa wartość to większa czułość w górę."
  },
  {
   "name": "deflection_multiplier_down",
   "label": "Mnożnik wychylenia w dół",
   "unit": "procent",
-  "description": "Skaluje kierunek w dół tak, aby osiągał pełny sygnał w tym samym punkcie co pozostałe kierunki. QMP wylicza go jako największy suwak kierunku podzielony przez suwak kierunku w dół, więc większy mnożnik oznacza, że kierunek w dół osiąga pełny sygnał przy mniejszym ruchu i wydaje się bardziej czuły."
+  "description": "Wyrównuje dół do pozostałych kierunków. Większa wartość to większa czułość w dół."
  },
  {
   "name": "deflection_multiplier_left",
   "label": "Mnożnik wychylenia w lewo",
   "unit": "procent",
-  "description": "Skaluje kierunek w lewo tak, aby osiągał pełny sygnał w tym samym punkcie co pozostałe kierunki. QMP wylicza go jako największy suwak kierunku podzielony przez suwak kierunku w lewo, więc większy mnożnik oznacza, że kierunek w lewo osiąga pełny sygnał przy mniejszym ruchu i wydaje się bardziej czuły."
+  "description": "Wyrównuje lewo do pozostałych kierunków. Większa wartość to większa czułość w lewo."
  },
  {
   "name": "deflection_multiplier_right",
   "label": "Mnożnik wychylenia w prawo",
   "unit": "procent",
-  "description": "Skaluje kierunek w prawo tak, aby osiągał pełny sygnał w tym samym punkcie co pozostałe kierunki. QMP wylicza go jako największy suwak kierunku podzielony przez suwak kierunku w prawo, więc większy mnożnik oznacza, że kierunek w prawo osiąga pełny sygnał przy mniejszym ruchu i wydaje się bardziej czuły."
+  "description": "Wyrównuje prawo do pozostałych kierunków. Większa wartość to większa czułość w prawo."
  },
  {
   "name": "joystick_D_Pad_inner",
   "label": "Wewnętrzny pierścień D-Pad",
   "unit": "procent",
-  "description": "Procent pełnego wychylenia, mierzony od środka, w którym zaczyna się wewnętrzny pierścień D-Pad. Uruchamia się dopiero po krótkim opóźnieniu, więc można przez niego przejść w drodze na zewnątrz, nie wyzwalając go. Połowa tej wartości to punkt, w którym kierunek przestaje być przytrzymany."
+  "description": "Gdzie zaczyna się wewnętrzny pierścień krzyżaka, licząc od środka. Najpierw chwilę czeka, więc można przez niego przejechać."
  },
  {
   "name": "joystick_D_Pad_outer",
@@ -54,22 +54,22 @@
  {
   "name": "anti_dead_zone",
   "label": "Anty-martwa strefa",
-  "description": "Dodaje stałe pchnięcie do każdego odczytu drążka, w kierunku, w którym drążek wskazuje, aby pokonać martwą strefę dodawaną przez samą grę. Zero wyłącza."
+  "description": "Dodaje stałe pchnięcie do każdego odczytu drążka, w kierunku, w którym drążek jest wychylony, żeby pokonać martwą strefę dodaną przez samą grę. Zero wyłącza."
  },
  {
   "name": "joystick_warning",
   "label": "Wychylenie ostrzegawcze joysticka",
-  "description": "Wychylenie, powyżej którego oprogramowanie układowe 1476 ostrzegało użytkownika przed zbyt dużym ruchem drążka. Oprogramowanie układowe 2373 wciąż akceptuje tę nazwę, ale ją ignoruje: sprawdzenie jest zakomentowane."
+  "description": "Twój QuadStick to ignoruje. Starsze ostrzegały tutaj przy zbyt mocnym wychyleniu drążka."
  },
  {
   "name": "joystick_alarm",
   "label": "Wychylenie alarmowe joysticka",
-  "description": "Wychylenie, powyżej którego oprogramowanie układowe 1476 uruchamiało dźwięk alarmu. Oprogramowanie układowe 2373 wciąż akceptuje tę nazwę, ale ją ignoruje: sprawdzenie jest zakomentowane."
+  "description": "Twój QuadStick to ignoruje. Starsze włączały tutaj alarm przy zbyt mocnym wychyleniu drążka."
  },
  {
   "name": "enable_auto_zero",
   "label": "Automatyczne zerowanie czujników",
-  "description": "Oprogramowanie układowe 2373 ignoruje to ustawienie. Wymusza jego powrót do 0 po każdym wczytaniu konfiguracji, a oba miejsca, które miały je odczytywać, są zakomentowane, więc włączenie go niczego nie zmienia, ani w wierszu trybu, ani na urządzeniu."
+  "description": "Twój QuadStick to ignoruje i przestawia z powrotem na wyłączone."
  },
  {
   "name": "sip_puff_threshold_soft",
@@ -80,10 +80,23 @@
  },
  {
   "name": "sip_puff_threshold",
-  "label": "Twardy próg sip/puff",
+  "label": "Zwykły próg zassania/dmuchnięcia",
   "unit": "procent",
-  "description": "Ciśnienie, przy którym wyzwalane jest wyjście. QMP pokazuje to jako górny próg sip i puff; sip_puff_threshold_soft to ten dolny.",
+  "description": "Ciśnienie, przy którym zwykłe zassanie lub dmuchnięcie jest rozpoznawane. QMP nazywa to twardym progiem, ale korzystają z niego zwykłe funkcje zassania i dmuchnięcia. Należy go podnieść, jeśli lekkie zassania wciąż uruchamiają zwykłe.",
   "alsoCalled": "wysoki próg wdechu i wydechu"
+ },
+ {
+  "name": "sip_puff_delay_soft",
+  "label": "Opóźnienie miękkiego sip/puff",
+  "unit": "milisekundy",
+  "description": "Jak długo lekki sip lub puff czeka, zanim się zaliczy. Dłużej pomija oddech, którego nie planowałeś.",
+  "alsoCalled": "opóźnienie niskiego progu"
+ },
+ {
+  "name": "sip_puff_delay_hard",
+  "label": "Opóźnienie twardego sip/puff",
+  "unit": "milisekundy",
+  "description": "Jak długo trzymasz sip lub puff, zanim zaliczy się jako długi. Na bocznej rurce to czas zasysania potrzebny do zmiany pliku gry. Odliczanie startuje od progu normalnego, a 0 uruchamia od razu."
  },
  {
   "name": "sip_puff_maximum",
@@ -92,53 +105,42 @@
   "description": "Maksymalne ciśnienie skalowane do pełnego sygnału."
  },
  {
-  "name": "sip_puff_delay_soft",
-  "label": "Opóźnienie miękkiego sip/puff",
-  "unit": "milisekundy",
-  "description": "Miękkie sygnały sip i puff są wykrywane po tym krótkim opóźnieniu. QMP pokazuje to jako Low Threshold Delay.",
-  "alsoCalled": "opóźnienie niskiego progu"
- },
- {
-  "name": "sip_puff_delay_hard",
-  "label": "Opóźnienie twardego sip/puff",
-  "unit": "milisekundy",
-  "description": "Jak długo twardy sip lub puff jest przytrzymywany, zanim zostanie policzony jako sygnał długi. Zegar startuje po przekroczeniu twardego progu, a nie w chwili, gdy ciśnienie zaczyna się zmieniać. 0 nie oznacza braku ustawienia, oznacza, że sygnał długi wyzwala się natychmiast."
- },
- {
   "name": "sip_threshold_soft",
   "label": "Miękki próg sip",
   "unit": "procent",
-  "description": "Poziom podciśnienia, przy którym zaczyna się miękki sip, od oprogramowania układowego 2373. Przy 0 nadal obowiązuje miękki próg sip/puff; każda inna wartość zastępuje go tylko dla sip."
+  "description": "Próg lekki tylko dla sipów. Zostaw 0, żeby użyć wspólnego progu lekkiego."
  },
  {
   "name": "sip_threshold",
-  "label": "Twardy próg sip",
+  "label": "Normalny próg sip",
   "unit": "procent",
-  "description": "Poziom podciśnienia, który wyzwala twardy sip, od oprogramowania układowego 2373. Przy 0 nadal obowiązuje twardy próg sip/puff; każda inna wartość zastępuje go tylko dla sip."
+  "description": "Próg normalny tylko dla sipów. Zostaw 0, żeby użyć wspólnego progu normalnego.",
+  "alsoCalled": "mocny próg sip"
  },
  {
   "name": "sip_maximum",
   "label": "Maksymalne podciśnienie sip",
   "unit": "procent",
-  "description": "Podciśnienie, które skaluje się do pełnego sygnału przy sip, od oprogramowania układowego 2373. Przy 0 nadal obowiązuje maksymalne ciśnienie sip/puff; każda inna wartość zastępuje je tylko dla sip."
+  "description": "Punkt pełnego sygnału tylko dla sipów. Zostaw 0, żeby użyć wspólnego maksimum."
  },
  {
   "name": "puff_threshold_soft",
   "label": "Miękki próg puff",
   "unit": "procent",
-  "description": "Ciśnienie, przy którym zaczyna się miękki puff, od oprogramowania układowego 2373. Przy 0 nadal obowiązuje miękki próg sip/puff; każda inna wartość zastępuje go tylko dla puff."
+  "description": "Próg lekki tylko dla puffów. Zostaw 0, żeby użyć wspólnego progu lekkiego."
  },
  {
   "name": "puff_threshold",
-  "label": "Twardy próg puff",
+  "label": "Normalny próg puff",
   "unit": "procent",
-  "description": "Ciśnienie, które wyzwala twardy puff, od oprogramowania układowego 2373. Przy 0 nadal obowiązuje twardy próg sip/puff; każda inna wartość zastępuje go tylko dla puff."
+  "description": "Próg normalny tylko dla puffów. Zostaw 0, żeby użyć wspólnego progu normalnego.",
+  "alsoCalled": "mocny próg puff"
  },
  {
   "name": "puff_maximum",
   "label": "Maksymalne ciśnienie puff",
   "unit": "procent",
-  "description": "Ciśnienie, które skaluje się do pełnego sygnału przy puff, od oprogramowania układowego 2373. Przy 0 nadal obowiązuje maksymalne ciśnienie sip/puff; każda inna wartość zastępuje je tylko dla puff."
+  "description": "Punkt pełnego sygnału tylko dla puffów. Zostaw 0, żeby użyć wspólnego maksimum."
  },
  {
   "name": "enable_left_side_tube",
@@ -185,22 +187,46 @@
  {
   "name": "enable_rumble",
   "label": "Wibracje",
-  "description": "Tylko w trybie Dual Shock 3 odtwarza wibracje gry jako dźwięk we własnym głośniku QuadSticka."
+  "description": "Tylko w trybie DualShock 3, odtwarza wibracje z gry jako dźwięk na własnym głośniku QuadSticka."
  },
  {
   "name": "bluetooth_device_mode",
   "label": "Tryb urządzenia Bluetooth",
-  "description": "Za co podaje się QuadStick przez Bluetooth."
+  "description": "Za co QuadStick podaje się przez Bluetooth.",
+  "optionLabels": [
+   "Bluetooth wyłączony",
+   "Klawiatura",
+   "Gamepad",
+   "Mysz",
+   "Klawiatura i mysz",
+   "Joystick",
+   "Port szeregowy, nie kontroler"
+  ]
  },
  {
   "name": "bluetooth_authentication_mode",
   "label": "Tryb uwierzytelniania Bluetooth",
-  "description": "Ile parowania wymaga QuadStick. Wysyłane do radia jako ustawienie SA, więc liczy się tylko wtedy, gdy Bluetooth jest włączony."
+  "description": "Ile parowania wymaga QuadStick. Wysyłane do radia jako ustawienie SA, więc liczy się tylko wtedy, gdy Bluetooth jest włączony.",
+  "optionLabels": [
+   "Otwarte, bez sprawdzania parowania i bez szyfrowania",
+   "Potwierdzenie parowania na drugim urządzeniu",
+   "Działa od razu, nic nie trzeba wpisywać",
+   "Kod PIN, wpisywany na drugim urządzeniu"
+  ]
  },
  {
   "name": "bluetooth_connection_mode",
   "label": "Tryb połączenia Bluetooth",
-  "description": "Czy QuadStick czeka na połączenie, czy sam się łączy. Wysyłane do radia jako ustawienie SM."
+  "description": "Czy QuadStick czeka na połączenie, czy sam się łączy. Wysyłane do radia jako ustawienie SM.",
+  "optionLabels": [
+   "Czekaj na połączenie przychodzące",
+   "Łącz się na polecenie",
+   "Łącz się, gdy pojawią się dane",
+   "Łącz się samodzielnie i łącz ponownie",
+   "Łącz się przełącznikiem",
+   "Łącz się z pierwszym znalezionym urządzeniem",
+   "Łącz się z zapisanym adresem"
+  ]
  },
  {
   "name": "bluetooth_remote_address",
@@ -215,27 +241,27 @@
  {
   "name": "bluetooth_throttle",
   "label": "Ograniczenie przepustowości Bluetooth",
-  "description": "Urządzenie pomija transmisję Bluetooth, gdy od poprzedniej nie minęło jeszcze wystarczająco dużo czasu."
+  "description": "Najmniejsza przerwa, jaką QuadStick zostawia między wysyłkami Bluetooth."
  },
  {
   "name": "digital_out_1",
   "label": "Wyjście cyfrowe 1",
-  "description": "Urządzenie dopasowuje tę nazwę jako wyjście, zanim dotrze do tabeli preferencji, więc jest to wyłącznie ustawienie urządzenia, nigdy nadpisanie w trybie."
+  "description": "Włącza lub wyłącza gniazdo wyjściowe 1. Tryb nie może tego zmienić."
  },
  {
   "name": "digital_out_2",
   "label": "Wyjście cyfrowe 2",
-  "description": "Urządzenie dopasowuje tę nazwę jako wyjście, zanim dotrze do tabeli preferencji, więc jest to wyłącznie ustawienie urządzenia, nigdy nadpisanie w trybie."
+  "description": "Włącza lub wyłącza gniazdo wyjściowe 2. Tryb nie może tego zmienić."
  },
  {
   "name": "digital_out_3",
   "label": "Wyjście cyfrowe 3",
-  "description": "Urządzenie dopasowuje tę nazwę jako wyjście, zanim dotrze do tabeli preferencji, więc jest to wyłącznie ustawienie urządzenia, nigdy nadpisanie w trybie."
+  "description": "Włącza lub wyłącza gniazdo wyjściowe 3. Tryb nie może tego zmienić."
  },
  {
   "name": "digital_out_4",
   "label": "Wyjście cyfrowe 4",
-  "description": "Urządzenie dopasowuje tę nazwę jako wyjście, zanim dotrze do tabeli preferencji, więc jest to wyłącznie ustawienie urządzenia, nigdy nadpisanie w trybie."
+  "description": "Włącza lub wyłącza gniazdo wyjściowe 4. Tryb nie może tego zmienić."
  },
  {
   "name": "enable_swap_inputs",
@@ -245,36 +271,42 @@
  {
   "name": "enable_select_files",
   "label": "Wybieraj pliki boczną rurką",
-  "description": "Wybiera plik za pomocą bocznej rurki."
- },
- {
-  "name": "enable_usb_a_device",
-  "label": "Tryb urządzenia USB-A",
-  "risk": "To wybiera, na którym porcie USB QuadStick się prezentuje. Urządzenie zrywa i nawiązuje USB ponownie przy każdej zmianie, więc błędna wartość może sprawić, że konsola lub komputer go nie zobaczą. Ustawienie to również bije enable_usb_a_host: dopóki jest włączone, stos hosta USB-A jest wyłączony niezależnie od ustawienia hosta. Zmieniaj tylko za radą wsparcia technicznego QuadStick.",
-  "description": "Na którym gnieździe USB pojawia się QuadStick. Zero to jego własny port; powyżej zera to gniazdo USB-A, co wyłącza też tryb hosta USB-A."
+  "description": "Pozwala boczną rurką wybrać, który plik profilu ładuje QuadStick."
  },
  {
   "name": "enable_usb_a_host",
   "label": "Tryb hosta USB-A",
-  "description": "Od oprogramowania układowego 2373. Gdy to jest włączone, a tryb urządzenia USB-A wyłączony, urządzenie uruchamia hosta USB na porcie USB-A, więc kontroler podłączony tam zasila kanały wejścia usb_1. Wyłączenie tego albo włączenie trybu urządzenia USB-A powoduje zamknięcie hosta. Tryb urządzenia USB-A ma pierwszeństwo. QMP pokazuje to jako USB-A Host Mode.",
+  "description": "Tylko nowsze QuadSticki. Pozwala kontrolerowi podłączonemu do portu USB-A zasilać wejścia USB 1 i USB 2, chyba że tryb urządzenia USB-A jest włączony.",
   "alsoCalled": "tryb hosta USB-A"
  },
  {
   "name": "enable_DS3_emulation",
   "label": "Tryb emulacji USB",
-  "description": "Za jakie urządzenie USB podaje się QuadStick. W oprogramowaniu układowym 2373: 0 QuadStick natywny, 1 DualShock 3, 2 x360ce, 3 Xbox 360, 4 DualShock 4 dla PS4, 5 Nintendo Switch Pro Controller, 6 DualShock 4 bez dysku USB, 7 zwykły DS4 bezprzewodowy. Wartość 5 oznaczała tylko PC, bez joysticka, w oprogramowaniu układowym 1476, więc plik niosący 5 zachowuje się zupełnie inaczej po aktualizacji urządzenia. Tryby 1, 5, 6 i 7 w ogóle nie udostępniają dysku USB, więc komputer nie widzi plików QuadSticka, gdy jeden z nich działa. Boot in PS4 Mode w QMP to wartość 4: Joystick.c:625 w oprogramowaniu układowym 2373 nazywa tę wartość \"boot in PS4 mode\" we własnym komentarzu.",
-  "risk": "Nazwa mówi DS3, ale urządzenie odczytuje to jako tryb emulacji USB z ośmioma numerowanymi wartościami, a nie przełącznik włącz/wyłącz. To, co oznacza 5, zmieniło się między oprogramowaniem układowym 1476 a 2373, a liczba, której działające oprogramowanie układowe nie zna, pozostawia urządzenie na emulacji, o którą nikt nie prosił. QCM zachowuje to, co zostało wpisane, i niczego nie odrzuca, ponieważ wartość błędna dla jednego oprogramowania układowego jest właściwa dla innego. Zmieniaj tylko za radą wsparcia technicznego QuadStick.",
+  "description": "Jaki kontroler udaje QuadStick. Konsola musi znać ten, który wybierzesz.",
+  "risk": "Tryb oznaczony bez dysku ukrywa pliki QuadSticka przed komputerem, dopóki go nie zmienisz z powrotem. Na starszych QuadStickach numery znaczą też co innego.",
+  "alsoCalled": "uruchamiaj w trybie PS4",
   "optionLabels": [
    "QuadStick (PC i PS3)",
-   "DualShock 3, bez dysku USB",
+   "DualShock 3",
    "x360ce, dla PC",
    "Kontroler Xbox 360",
-   "DualShock 4, dla PS4 (Boot in PS4 Mode w QMP)",
-   "Nintendo Switch Pro Controller, bez dysku USB",
-   "DualShock 4, bez dysku USB",
-   "DualShock 4 bezprzewodowy, bez dysku USB"
-  ],
-  "alsoCalled": "uruchamiaj w trybie PS4"
+   "DualShock 4, dla PS4",
+   "Nintendo Switch Pro Controller",
+   "DualShock 4",
+   "DualShock 4 bezprzewodowy"
+  ]
+ },
+ {
+  "name": "titan_two",
+  "label": "Adapter Titan Two",
+  "description": "Tylko nowsze QuadSticki. Mówi QuadStickowi, że dociera do PS4 przez Titan Two. Włącz to tylko, jeśli go używasz.",
+  "alsoCalled": "flaga PS4 Titana 2"
+ },
+ {
+  "name": "enable_usb_a_device",
+  "label": "Tryb urządzenia USB-A",
+  "description": "Na którym gnieździe USB pojawia się QuadStick. Zero to jego własny port; powyżej zera to gniazdo USB-A, co wyłącza też tryb hosta USB-A.",
+  "risk": "Zła wartość może sprawić, że konsola lub komputer nie zobaczą QuadSticka. Zmieniaj to tylko za radą wsparcia technicznego QuadStick."
  },
  {
   "name": "enable_usb_comm",
@@ -325,29 +357,23 @@
   "name": "usb_1_dead_zone",
   "label": "Martwa strefa USB 1",
   "unit": "surowe jednostki osi",
-  "description": "Od oprogramowania układowego 2373. Martwa strefa środka dla kontrolera podłączonego do portu hosta USB-A, liczona w surowych krokach bajtu wyśrodkowanej osi tego kontrolera, nie w procentach. Poniżej tej wartości oś odczytuje 0; powyżej niej wartość jest odejmowana, więc ruch zaczyna się od zera, a wynik jest ograniczany do plus minus 100. Przy 0 oś przechodzi nietknięta. Wyśrodkowany bajt osi sięga w każdą stronę tylko około 127, więc 128 lub więcej zabija oś."
+  "description": "Tylko nowsze QuadSticki. Martwa strefa dla kontrolera na porcie USB-A, liczona w surowych krokach osi, a nie w procentach. 128 lub więcej wyłącza oś."
  },
  {
   "name": "usb_2_dead_zone",
   "label": "Martwa strefa USB 2",
   "unit": "surowe jednostki osi",
-  "description": "Od oprogramowania układowego 2373, ale urządzenie to ignoruje. Nazwa jest poprawna i pliki ją niosą, ale nic w oprogramowaniu układowym nie odczytuje tej wartości: każda oś hosta USB używa martwej strefy USB 1. Ustawienie jej w wierszu trybu też nic nie robi."
- },
- {
-  "name": "titan_two",
-  "label": "Adapter Titan Two",
-  "description": "Od oprogramowania układowego 2373. Informuje urządzenie, że łączy się z PS4 przez Titan Two, a nie bezpośrednio z konsolą. Wtedy pomija uzgadnianie uwierzytelniania DS4 i zatrzymuje okresowe wymuszone ponowne łączenie USB. QMP pokazuje to jako flagę Titan 2 PS4.",
-  "alsoCalled": "flaga PS4 Titana 2"
+  "description": "Tylko nowsze QuadSticki, a twój i tak to ignoruje: oba drążki na porcie USB-A używają martwej strefy USB 1."
  },
  {
   "name": "watchdog_disable",
   "label": "Wyłącz watchdoga",
-  "risk": "Urządzenie uruchamia sprzętowego watchdoga na dwie minuty, który je restartuje, jeśli przestanie odpowiadać. Nic w oprogramowaniu układowym 1476 ani 2373 nie odczytuje tego ustawienia, więc w żadnym z nich nic ono nie robi, a co zrobi z nim późniejsze oprogramowanie układowe, nie wiadomo.",
-  "description": "Miało powstrzymać QuadStick przed samoczynnym restartem po zawieszeniu. Twój QuadStick to ignoruje."
+  "description": "Miało powstrzymać QuadStick przed samoczynnym restartem po zawieszeniu. Twój QuadStick to ignoruje.",
+  "risk": "Watchdog restartuje twojego QuadSticka, jeśli przestanie odpowiadać."
  },
  {
   "name": "debug",
   "label": "Poziom logowania debugowania",
-  "description": "Urządzenie włącza swoją konsolę, gdy ta wartość jest powyżej zera."
+  "description": "Każda wartość powyżej zera włącza wyjście konsolowe QuadSticka."
  }
 ]

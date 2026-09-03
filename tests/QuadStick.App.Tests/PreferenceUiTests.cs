@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -18,6 +21,9 @@ namespace QuadStick.App.Tests;
 // with hardware that no longer answers. Every test here is about that.
 public class PreferenceUiTests
 {
+    static string[] Said(MainWindow w) =>
+        w.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text ?? "").ToArray();
+
     static MainWindow ShowPrefs(string rows, out ProfileFile file)
     {
         var s = Settings.Load();
@@ -67,7 +73,9 @@ public class PreferenceUiTests
         var w = ShowPrefs("bluetooth_device_mode,none\n", out var file);
 
         var combo = Cell<ComboBox>(w, 4);
-        Assert.Equal("none", combo.SelectedItem?.ToString());
+        // The row shows the mode in words with the device's own token beside
+        // it. What the file gets is the token on its own.
+        Assert.Equal("Bluetooth off (none)", combo.SelectedItem?.ToString());
 
         combo.SelectedIndex = 2; // none, keyboard, game_pad
         Dispatcher.UIThread.RunJobs();
@@ -86,13 +94,63 @@ public class PreferenceUiTests
         var w = ShowPrefs("enable_DS3_emulation,0\n", out var file);
 
         var combo = Cell<ComboBox>(w, 4);
-        var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()).ToList();
+        var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
         Assert.Equal("QuadStick (PC and PS3) (0)", shown[0]);
-        Assert.Contains("Nintendo Switch Pro Controller", shown[5]);
+        int xbox360 = shown.FindIndex(t => t.Contains("Xbox 360 controller"));
+        Assert.True(xbox360 >= 0);
 
-        combo.SelectedIndex = 5;
+        combo.SelectedIndex = xbox360;
         Dispatcher.UIThread.RunJobs();
-        Assert.Equal("5", file.GetCell(4, 1));
+        Assert.Equal("3", file.GetCell(4, 1));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // prefs.csv is what the device boots into, so a mode with no mass-storage
+    // interface takes its drive away and the only way back is the physical
+    // force-erase. All eight are still on the list, because people pick those
+    // on purpose, and the four that cost the drive carry the reason on them.
+    [AvaloniaFact]
+    public void A_file_the_device_boots_into_marks_the_modes_that_hide_the_drive()
+    {
+        var w = ShowPrefs("enable_DS3_emulation,0\n", out var file);
+
+        var shown = Cell<ComboBox>(w, 4).ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
+        Assert.Equal(8, shown.Count);
+        foreach (var costly in new[] { "(1)", "(5)", "(6)", "(7)" })
+            Assert.Contains(shown, t => t.Contains(costly, StringComparison.Ordinal)
+                                     && t.EndsWith(", no drive", StringComparison.Ordinal));
+        foreach (var safe in new[] { "(0)", "(2)", "(3)", "(4)" })
+            Assert.Contains(shown, t => t.EndsWith(safe, StringComparison.Ordinal));
+
+        Assert.Contains(Said(w), t => t.Contains("will not write one of the drive-hiding modes"));
+
+        file.Dirty = false;
+        w.Close();
+    }
+
+    // A game profile is survivable: the device boots back into default.csv and
+    // the files come back, so all eight stay on offer there.
+    [AvaloniaFact]
+    public void A_game_profile_still_offers_every_emulation_mode()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.Load(
+            "Profile Name\ngame.csv\nOutput or Function,Function,Input\n"
+            + "Preferences\n\nPreference,Value,Units,Description\nenable_DS3_emulation,0\n");
+        w.LoadProfile(file);
+        w.SetDeviceViewForPreview(false);
+        w.UpdateLayout();
+        w.SelectSheetForPreview(1);
+        w.UpdateLayout();
+
+        Assert.Equal(8, Cell<ComboBox>(w, 7).ItemsSource!.Cast<object>().Count());
 
         file.Dirty = false;
         w.Close();
@@ -446,5 +504,30 @@ public class PreferenceUiTests
 
         file.Dirty = false;
         w.Close();
+    }
+
+    // Drew called the old picker ugly, and it was: nine stacked wrap-text
+    // buttons. It is one dropdown now. The drive note lives under the list
+    // once, not repeated on four items, and Add stays off until a pick, so
+    // there is no default mode nobody chose.
+    [AvaloniaFact]
+    public void TheEmulationPickerIsOneDropdownWithNoDefaultPick()
+    {
+        Assert.True(PreferenceCatalog.TryGet("enable_DS3_emulation", out var def));
+        var (body, combo, add, _) = MainWindow.BuildEmulationPicker(def!, boots: false);
+
+        Assert.Single(body.GetVisualDescendants().OfType<ComboBox>().DefaultIfEmpty(combo));
+        var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
+        Assert.Equal(8, shown.Count);
+        Assert.Null(combo.SelectedItem);
+        Assert.False(add.IsEnabled);
+
+        foreach (var mode in new[] { "(1)", "(5)", "(6)", "(7)" })
+            Assert.Contains(shown, t => t.EndsWith(mode + ", no drive", StringComparison.Ordinal));
+        foreach (var mode in new[] { "(0)", "(2)", "(3)", "(4)" })
+            Assert.Contains(shown, t => t.EndsWith(mode, StringComparison.Ordinal));
+
+        combo.SelectedIndex = 0;
+        Assert.True(add.IsEnabled);
     }
 }

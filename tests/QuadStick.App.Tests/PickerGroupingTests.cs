@@ -86,7 +86,7 @@ public sealed class PickerGroupingTests : IDisposable
         var picker = OpenPicker(w);
 
         Press(picker, "Controller,");
-        Assert.Contains(Buttons(picker), b => b.StartsWith("Buttons,") && b.Contains("Opens this category"));
+        Assert.Contains(Buttons(picker), b => b.StartsWith("PlayStation buttons,") && b.Contains("Opens this category"));
 
         w.Close();
     }

@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>2つのしきい値が等しいと、デバイスはチューブを読み取るたびにゼロ除算を起こします。</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>ドライブなし</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USBエミュレーションモード{0}({1})では、コンピューターはQuadStickのドライブにアクセスできません。このファイルはデバイスが起動時に使うファイルです。これをインストールすると、後からプロファイルを編集する手段がなくなり、復旧には物理的な強制消去が必要になります。</value>
   </data>
@@ -490,9 +493,6 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>{0}以上を使ってください。</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>{0} から {1} を使ってください。{2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>ここではモード0、2、3、4のいずれかを使い、それ以外のモードはゲームプロファイル側で設定してください。</value>
@@ -685,5 +685,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>このスプレッドシートは{0}行を超えており、どのプロファイルよりもはるかに大きいため、途中で読み取りを止めました。</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>{0} から {1} を使ってください。{2}</value>
   </data>
 </root>

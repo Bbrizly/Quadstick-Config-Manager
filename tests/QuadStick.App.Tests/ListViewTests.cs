@@ -853,7 +853,7 @@ public class ListViewTests
         var panel = OpenFly(Cell("Output for row 4"));
         Assert.NotNull(Find(panel, "Controller,"));
         Tap(panel, "Controller,");
-        Tap(panel, "Buttons,");
+        Tap(panel, "PlayStation buttons,");
         Tap(panel, "circle");
         Assert.Equal("circle", file.Document.Sheets[0].Bindings[0].Output);
 

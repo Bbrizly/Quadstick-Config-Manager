@@ -453,6 +453,92 @@ if (args.Contains("--models"))
 // The set for Drew: one shot per thing he asked for, named after his own
 // numbering, so a reply to his email can point at a picture instead of
 // describing a screen. Light theme only, since these go in an email.
+// The September round of Drew Redepenning's review: less on each settings
+// group, plainer words, and a picture that follows what is picked on the left.
+if (args.Contains("--drew2"))
+{
+    Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, DeviceCards = false, Language = lang });
+
+    // A device that has had a few advanced settings touched, so one shot can
+    // show the fold opening itself rather than only the tidy case.
+    const string Touched = SamplePrefs + "deflection_multiplier_up,140,,\n";
+
+    Capture("1-joystick", w =>
+    {
+        w.Height = 900;
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Joystick");
+    });
+
+    Capture("1b-joystick-open", w =>
+    {
+        w.Height = 1250;
+        w.ShowDeviceSettingsForPreview(Touched, category: "Joystick");
+    });
+
+    Capture("2-sip-and-puff", w =>
+    {
+        w.Height = 900;
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff");
+    });
+
+    Capture("3-bluetooth", w =>
+    {
+        w.Height = 900;
+        w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Bluetooth");
+    });
+
+    Capture("4-usb", w =>
+    {
+        w.Height = 900;
+        w.ShowDeviceSettingsForPreview(
+            SamplePrefs + "enable_DS3_emulation,0,,\n", category: "USB and compatibility");
+    });
+
+    const string Combos = "Profile Name,,Gameplay\nmygame.csv\nOutputs,Function,usb\n"
+        + "x,normal,mp_left_center_sip\nkb_space,normal,lip\ncircle,normal,digital_in_8\n";
+
+    Capture("5-hole-combos", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combos));
+        w.SelectZoneForPreview("combo");
+    });
+
+    Capture("6-switch-jacks", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combos));
+        w.SelectZoneForPreview("jacks");
+    });
+
+    Capture("7-main-controls", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combos));
+        w.SelectZoneForPreview("side");
+    });
+
+    Capture("8-functions", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combos));
+        w.SelectZoneForPreview("lip");
+    });
+
+    // The picker Drew called ugly. One dropdown, one note, two buttons.
+    {
+        PreferenceCatalog.TryGet("enable_DS3_emulation", out var emu);
+        var (body, combo, _, _) = MainWindow.BuildEmulationPicker(emu!, boots: false);
+        combo.SelectedIndex = 4;
+        CaptureWindow("9-emulation-picker",
+            new Window { SizeToContent = SizeToContent.WidthAndHeight, Content = body });
+    }
+
+    Console.WriteLine($"Drew's September set written to {outDir}");
+    return;
+}
+
 if (args.Contains("--drew"))
 {
     Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
@@ -860,6 +946,12 @@ void CaptureSized(string name, int width, int height, Action<MainWindow> setup)
 void CaptureWindow(string name, Window win, bool shown = false)
 {
     if (!shown) { win.Show(); }
+    Dispatcher.UIThread.RunJobs();
+    // A control's own transition runs on the wall clock, so let it finish
+    // before the frame is taken. One immediate tick caught the settings
+    // page's fold chevron halfway through its turn, and every settings shot
+    // went out with the arrow bent at 45 degrees.
+    System.Threading.Thread.Sleep(400);
     Dispatcher.UIThread.RunJobs();
     AvaloniaHeadlessPlatform.ForceRenderTimerTick();
     using var frame = win.CaptureRenderedFrame()

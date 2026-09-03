@@ -397,6 +397,15 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>جارٍ البحث عن QuadStick...</value>
   </data>
+  <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
+    <value>يبدأ الجهاز التشغيل بهذا الملف، لذلك لن يُكتب أي وضع من أوضاع إخفاء القرص إلى QuadStick الخاص بك. اضبطه في ملف لعبة بدلاً من ذلك.</value>
+  </data>
+  <data name="DevicePage_MoreOptions" xml:space="preserve">
+    <value>مزيد من الخيارات</value>
+  </data>
+  <data name="DevicePage_MoreOptionsCount" xml:space="preserve">
+    <value>مزيد من الخيارات، {0}</value>
+  </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}، {1} إلى {2}</value>
   </data>
@@ -813,14 +822,17 @@
 
 معظم الملفات الشخصية تحتوي على وضع واحد فقط، لذلك غالبًا ما تعرض هذه القائمة إدخالًا واحدًا. هذا طبيعي.</value>
   </data>
+  <data name="Main_APlusB" xml:space="preserve">
+    <value>{0} + {1}</value>
+  </data>
   <data name="Main_AProfileTabStartsWith" xml:space="preserve">
     <value>تبدأ علامة تبويب الملف الشخصي بـ "Profile Name" أو "Preferences" أو "Infrared" في الخلية A1.</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>الضغطة السريعة ترسل مخرجًا واحدًا؛ الضغط المطوّل يرسل مخرجًا مختلفًا.</value>
+    <value>يعمل فقط عند الضغط والترك بسرعة. الاستمرار مدة طويلة لا يفعل شيئًا، لذا يمكن أن يؤدي الشفط القصير والشفط الطويل أشياء مختلفة.</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
-    <value>التفعيل القصير ينقر عليه؛ التفعيل الطويل يثبّته مفعّلًا.</value>
+    <value>التفعيل القصير يعمل مثل الضغطة العادية. وإذا أبقيت المدخل مفعّلاً مدة كافية يثبت المخرج في وضع التشغيل، ثم يحرره تفعيل قصير.</value>
   </data>
   <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
     <value>يوجد بالفعل قالب باسم {0}.</value>
@@ -833,6 +845,9 @@
   </data>
   <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
     <value>مفاتيح تكيفية متصلة بمنافذ 3.5 مم في الجزء الخلفي من QuadStick.</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>إضافة</value>
   </data>
   <data name="Main_AddANewBindingRow" xml:space="preserve">
     <value>إضافة صف ارتباط جديد إلى هذا الوضع</value>
@@ -914,6 +929,9 @@
   </data>
   <data name="Main_BackupPending" xml:space="preserve">
     <value> · النسخ الاحتياطي معلّق</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>يبدأ الجهاز التشغيل بهذا الملف، لذلك لن يُكتب فيه وضع بدون قرص.</value>
   </data>
   <data name="Main_Cancel" xml:space="preserve">
     <value>إلغاء</value>
@@ -1094,6 +1112,12 @@
   <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
     <value>يعرض الجهاز {0}</value>
   </data>
+  <data name="Main_DoNotSetOne" xml:space="preserve">
+    <value>لا تضبط أي وضع</value>
+  </data>
+  <data name="Main_DoNotSetOneTheDevice" xml:space="preserve">
+    <value>لا تضبط أي وضع. يبقى الجهاز على الوضع الذي هو عليه بالفعل.</value>
+  </data>
   <data name="Main_DonTSave" xml:space="preserve">
     <value>عدم الحفظ</value>
   </data>
@@ -1131,10 +1155,13 @@
     <value>FPS: قطعة فم بثلاث فتحات، أنبوب جانبي، مستشعر شفة، منافذ خلفية. عصا تحكم أدق من طراز Original.</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
-    <value>يُطلق بمجرد أن يتجاوز إدخالك قوة محددة.</value>
+    <value>يفعّل المخرج عندما تتجاوز قوة المدخل حدًا معينًا. مفيد لتنفيذ إجراءات مختلفة حسب مقدار تحريك عصا التحكم.</value>
   </data>
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
-    <value>يُطلق طالما ظل إدخالك دون قوة محددة.</value>
+    <value>يفعّل المخرج طالما بقيت قوة المدخل دون حد معين. عكس greater_than.</value>
+  </data>
+  <data name="Main_FitEachMappingOnOne" xml:space="preserve">
+    <value>احتواء كل رابط في سطر واحد</value>
   </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>هل وجدت مشكلة؟</value>
@@ -1161,7 +1188,7 @@
     <value>أعادت Google صفحة ويب بدلاً من الملف الشخصي. على الأرجح أن الجدول غير مشارَك للعامة (File &gt; Share &gt; Anyone with the link).</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
-    <value>يظل مضغوطًا طالما أن إدخالك نشط.</value>
+    <value>استمر في التفعيل لتشغيله. يبقى المخرج مفعّلاً فقط أثناء نشاط المدخل.</value>
   </data>
   <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
     <value>ساعد في تحسين QuadStick Config Manager</value>
@@ -1174,6 +1201,9 @@
   </data>
   <data name="Main_HoleCombos" xml:space="preserve">
     <value>تركيبات الفتحات</value>
+  </data>
+  <data name="Main_HolePairingPairCount" xml:space="preserve">
+    <value>إقران الفتحات: {0}. {1}</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>كيف يضغطه {0}. {1}</value>
@@ -1239,7 +1269,10 @@
     <value>يحتفظ بنسخة يمكنك بدء ملفات شخصية جديدة منها في أي وقت، ضمن "استخدام قالب" في الشاشة الرئيسية. تعديل ملف شخصي أو تثبيته لا يغيّر قالبه أبدًا.</value>
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
-    <value>يستمر بالضغط للحظة بعد أن تُفلت.</value>
+    <value>يبقي المخرج مفعّلاً لفترة قصيرة بعد توقفك عن تفعيل المدخل.</value>
+  </data>
+  <data name="Main_LabelNote" xml:space="preserve">
+    <value>{0}. {1}</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
     <value>يسار</value>
@@ -1268,6 +1301,12 @@
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>تم تحميل النسخة الإلكترونية من هذا الملف الشخصي. نسختك المحلية السابقة موجودة في مجلد الإنقاذ.</value>
   </data>
+  <data name="Main_MainControls" xml:space="preserve">
+    <value>عناصر التحكم الرئيسية</value>
+  </data>
+  <data name="Main_MainControlsCount" xml:space="preserve">
+    <value>عناصر التحكم الرئيسية. الفتحات والأنبوب الجانبي ومفتاح الشفة وعصا التحكم. {0}</value>
+  </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>إدارة الملفات على جهاز QuadStick الخاص بك</value>
   </data>
@@ -1289,6 +1328,12 @@
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>الربط {0}: اضغط {1} عندما {2}، الواحد تلو الآخر{3}. اضغط Enter للتعديل.</value>
   </data>
+  <data name="Main_MappingsAreOnOneLine" xml:space="preserve">
+    <value>تُعرض الروابط في سطر واحد. التبديل إلى الجملة الكاملة.</value>
+  </data>
+  <data name="Main_MappingsReadAsAFull" xml:space="preserve">
+    <value>تُعرض الروابط كجملة كاملة. التبديل إلى سطر واحد لكل رابط.</value>
+  </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>تُعرض الروابط كبطاقات جمل بسيطة. التبديل إلى المحرر التفصيلي.</value>
   </data>
@@ -1297,6 +1342,9 @@
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
     <value>زر القائمة</value>
+  </data>
+  <data name="Main_ModeLabelToken" xml:space="preserve">
+    <value>{0} ({1})</value>
   </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>الوضع: {0}</value>
@@ -1342,6 +1390,15 @@
   </data>
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>اسم لهذا القالب</value>
+  </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>الأسماء</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>الأسماء: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>أسماء وحدة التحكم التي تعرضها هذه القائمة. يقرأ QuadStick كلتا التسميتين كالمخرج نفسه، لذا إخفاء إحداهما لا يخفي أي زر.</value>
   </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>اسم جديد لهذا القالب</value>
@@ -1469,13 +1526,13 @@
     <value>أرقام لـ{0}، اختيارية، أعداد صحيحة مفصولة بمسافات.</value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>تفعيل واحد يُبقيه مُشغّلًا، والتفعيل التالي يُحرره.</value>
+    <value>اضغط مرة للتشغيل ومرة أخرى للإيقاف. يبقى المخرج مفعّلاً بعد ترك المدخل.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
     <value>ملف CSV واحد يخبر جهاز QuadStick أي sip أو puff أو ضغطة شفة أو حركة عصا تحكم تضغط أي زر لعبة. يحتوي الملف الشخصي على ورقة وضع واحدة أو أكثر: تخطيطات تحكم كاملة تتنقل بينها أثناء اللعب (تخطيط المشي، تخطيط القيادة، القوائم). قم بعمل sip أو puff في الأنبوب الجانبي، أو اربط increment_mode / decrement_mode، للتبديل بين الأوضاع أثناء اللعب.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
-    <value>ضغطة قصيرة واحدة في كل مرة تُفعّل فيها.</value>
+    <value>ضغطة سريعة في كل مرة تفعّل فيها المدخل، مهما طالت مدة استمرارك.</value>
   </data>
   <data name="Main_OneSwitchIn1" xml:space="preserve">
     <value>مفتاح واحد: في 1</value>
@@ -1562,7 +1619,7 @@
     <value>ضغط</value>
   </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
-    <value>يضغط في دورة متكررة من التشغيل والإيقاف.</value>
+    <value>مدة بقاء المخرج مفعّلاً تتبع قوة الشفط أو النفخ أو دفع عصا التحكم.</value>
   </data>
   <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
     <value>تم نسخ المشكلة إلى الحافظة.</value>
@@ -1601,7 +1658,7 @@
     <value>دليل سريع</value>
   </data>
   <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
-    <value>نقرات سريعة ومتتالية طالما ظل إدخالك مضغوطًا.</value>
+    <value>يضغط المخرج بشكل متكرر طوال استمرارك في تفعيل المدخل.</value>
   </data>
   <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
     <value>قراءة سياسة الخصوصية</value>
@@ -1750,6 +1807,12 @@
   <data name="Main_SetItTo" xml:space="preserve">
     <value>تعيينه إلى</value>
   </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>ضبط وضع المحاكاة</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>ضبط وضع المحاكاة على {0}، ويُكتب {1}</value>
+  </data>
   <data name="Main_SetVerb" xml:space="preserve">
     <value>تعيين</value>
   </data>
@@ -1807,6 +1870,9 @@
   <data name="Main_SoftSip" xml:space="preserve">
     <value>شفط خفيف</value>
   </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>بعض الأوضاع تخفي قرص QuadStick عن حاسوبك.</value>
+  </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>بدء ربط جديد على {0}</value>
   </data>
@@ -1820,10 +1886,10 @@
     <value>تم البدء من القالب {0}. احفظ للاحتفاظ بهذا كملف شخصي مستقل.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
-    <value>يخفض إخراجًا تناظريًا درجة واحدة ويتركه هناك، مثل زناد أو محور عصا.</value>
+    <value>يخفض مخرجًا تناظريًا درجة واحدة في كل مرة تفعّل فيها المدخل، ويتركه عند تلك الدرجة.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
-    <value>يرفع إخراجًا تناظريًا درجة واحدة ويتركه هناك، مثل زناد أو محور عصا.</value>
+    <value>يرفع مخرجًا تناظريًا درجة واحدة في كل مرة تفعّل فيها المدخل، ويتركه عند تلك الدرجة.</value>
   </data>
   <data name="Main_StopAsking" xml:space="preserve">
     <value>التوقف عن السؤال</value>
@@ -1950,7 +2016,7 @@
     <value>{0}، غير مستخدم في هذا الوضع</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>يوقف إخراجًا تركه toggle أو delayed_latch مُشغّلًا.</value>
+    <value>يفرض إيقاف المخرج. مفيد لتحرير زر شغّله أو ثبّته صف آخر.</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>استخدام فتحتين أو أكثر في الوقت نفسه، أو الفتحات الثلاث معًا، أو الفتحة اليمنى مع الأنبوب الجانبي. مناسب للإجراءات التي لا تريد تفعيلها عن طريق الخطأ أبدًا.</value>
@@ -2006,8 +2072,17 @@
   <data name="Main_ViewDetails" xml:space="preserve">
     <value>عرض التفاصيل ←</value>
   </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
+  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
-    <value>ينتظر لحظة بعد التفعيل، ثم يضغط.</value>
+    <value>يلزمك إبقاء المدخل مفعّلاً مدة محددة قبل أن يعمل المخرج. هذا يميز اللمسة السريعة عن الضغط الطويل.</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>يضيء الصف بينما يرسل QuadStick مخرجات ذلك الصف. لا يذكر الجهاز أبدًا أي ملف أو وضع يشغّله، لذلك قد يضيء صف بسبب ملف تعريف غير المفتوح هنا. مخرجات الفأرة ولوحة المفاتيح والأشعة تحت الحمراء تخرج عبر اتصال آخر ولا تضيء أبدًا.</value>
@@ -2108,6 +2183,9 @@
   <data name="Modes_CloseModes" xml:space="preserve">
     <value>أغلق الأوضاع</value>
   </data>
+  <data name="Modes_Connection" xml:space="preserve">
+    <value>الاتصال</value>
+  </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>تم مسح الاتصال. يعود الجهاز إلى كابل USB.</value>
   </data>
@@ -2125,6 +2203,9 @@
   </data>
   <data name="Modes_MakeACopyOfName" xml:space="preserve">
     <value>أنشئ نسخة من {0}</value>
+  </data>
+  <data name="Modes_Mode" xml:space="preserve">
+    <value>الوضع</value>
   </data>
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>تمت إضافة الوضع.</value>
@@ -2291,17 +2372,26 @@
   <data name="Outputs_NumberPad2" xml:space="preserve">
     <value>لوحة الأرقام</value>
   </data>
+  <data name="Outputs_OtherButtons" xml:space="preserve">
+    <value>أزرار أخرى</value>
+  </data>
   <data name="Outputs_OtherKeys" xml:space="preserve">
     <value>مفاتيح أخرى</value>
   </data>
   <data name="Outputs_OtherKeys2" xml:space="preserve">
     <value>مفاتيح أخرى</value>
   </data>
+  <data name="Outputs_PlayStationButtons" xml:space="preserve">
+    <value>أزرار PlayStation</value>
+  </data>
   <data name="Outputs_TVRemote" xml:space="preserve">
     <value>جهاز تحكم عن بعد للتلفاز</value>
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>جهاز تحكم عن بعد للتلفاز</value>
+  </data>
+  <data name="Outputs_XboxButtons" xml:space="preserve">
+    <value>أزرار Xbox</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>عن {0}: {1}</value>
@@ -2407,6 +2497,12 @@
   </data>
   <data name="Review_AddingItChangesCellA1" xml:space="preserve">
     <value>إضافتها تغيّر الخلية A1. كل شيء آخر في علامة التبويب يُستورد كما كتبته.</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} وخلية أخرى</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} و{1} خلايا أخرى</value>
   </data>
   <data name="Review_AndYourPreferences" xml:space="preserve">
     <value>، وتفضيلاتك</value>

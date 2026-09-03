@@ -111,7 +111,7 @@ public partial class MainWindow
         p.Children.Add(At(PickerCell(wrapper, token, OutputSuggestions, Humanize,
             string.Format(CultureInfo.CurrentCulture, Strings.Names_OutputThatNameStandsFor, name), OutputTint, OutputCatalog.Catalog, Strings.Names_AnOutput,
             picked => RetargetCustomName(name, picked),
-            picked => OutputVisuals.Render(OutputVisuals.For(picked, Humanize)),
+            picked => OutputVisuals.Render(OutputVisuals.For(picked, Humanize), compact: true),
             vocabularyFilter: true), 1));
 
         var box = new TextBox

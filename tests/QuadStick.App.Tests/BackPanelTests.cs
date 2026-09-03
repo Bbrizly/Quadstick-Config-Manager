@@ -1,3 +1,4 @@
+using System;
 using System.Buffers.Binary;
 using Avalonia.Automation;
 using Avalonia.Controls;
@@ -19,6 +20,7 @@ public class BackPanelTests
     static MainWindow OnZone(string zone, string csv)
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.RememberWindow = false;
         s.DeviceCards = false;
@@ -127,7 +129,11 @@ public class BackPanelTests
     public void The_photo_names_every_socket_on_it()
     {
         var w = OnZone("jacks", WithJack);
-        var spoken = w.GetVisualDescendants().OfType<Border>()
+        // The sockets are buttons on the main stage now, not labels, so this
+        // reads names off any control rather than off a Border. A socket that
+        // already has something mapped says so after its name, so these are
+        // the start of the name rather than the whole of it.
+        var spoken = w.GetVisualDescendants().OfType<Control>()
             .Select(b => AutomationProperties.GetName(b) ?? "")
             .ToList();
         foreach (var expected in new[]
@@ -138,7 +144,24 @@ public class BackPanelTests
                      "USB-B port. To the computer",
                      "USB-A port. Joystick, or in 3-4",
                  })
-            Assert.Contains(expected, spoken, StringComparer.Ordinal);
+            Assert.Contains(spoken, n => n.StartsWith(expected, StringComparison.Ordinal));
+        w.Close();
+    }
+
+    // A picture of the back of the case that says nothing about the switches
+    // already mapped to it is a picture of nobody's device. The socket carries
+    // what it presses, the way a hole on the front does.
+    [AvaloniaFact]
+    public void A_socket_that_is_mapped_says_what_it_presses()
+    {
+        var w = OnZone("jacks", WithJack);
+        var spoken = w.GetVisualDescendants().OfType<Control>()
+            .Select(b => AutomationProperties.GetName(b) ?? "")
+            .ToList();
+        Assert.Contains(spoken, n => n.StartsWith("Top jack. One switch: in 8. ", StringComparison.Ordinal));
+        // And a socket with nothing in it stays the bare name: no empty row,
+        // and no word for "nothing", which would read as something mapped.
+        Assert.Contains(spoken, n => n == "Bottom jack. One switch: in 1");
         w.Close();
     }
 
@@ -170,6 +193,7 @@ public class BackPanelTests
     public void The_usb_card_is_on_the_device_before_anything_maps_to_it()
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.RememberWindow = false;
         Settings.Save(s);

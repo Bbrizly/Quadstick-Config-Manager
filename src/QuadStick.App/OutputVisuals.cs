@@ -622,8 +622,13 @@ public static class OutputVisuals
         // Keycaps are a generated visual, so their minimum optical weight
         // matches the authentic controller prompts. The label stays inside
         // the keycap; it is not repeated beside it.
-        var height = compact ? 30 : 48;
-        var width = text.Length > 4 ? (compact ? 58 : 86) : (compact ? 38 : 54);
+        // A fallback keycap must be a real label, not a tiny icon with an
+        // ellipsis. This matters for tokens such as "Keyboard" and
+        // "Page Down", whose artwork may be unavailable. Keep the compact
+        // version narrow enough for mapping cards; genuinely long names wrap
+        // inside the keycap instead of overflowing the output cell.
+        var height = compact ? 42 : 56;
+        var width = compact ? 58 : 86;
         var plate = new Grid { Width = width, Height = height };
         var back = new Border
         {
@@ -637,14 +642,15 @@ public static class OutputVisuals
         {
             Margin = new Thickness(0, 0, 0, compact ? 3 : 4),
             CornerRadius = new CornerRadius(compact ? 6 : 9),
-            Padding = new Thickness(compact ? 5 : 8, 0), Child = new TextBlock
+            Padding = new Thickness(compact ? 8 : 12, 4), Child = new TextBlock
             {
                 Text = text,
                 FontSize = compact ? 12 : 18,
                 FontWeight = FontWeight.SemiBold,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                TextTrimming = TextTrimming.CharacterEllipsis,
+                TextAlignment = TextAlignment.Center,
+                TextWrapping = TextWrapping.Wrap,
             },
         };
         Bind(front, Border.BackgroundProperty, "SurfaceSubtle");

@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>两个相等的阈值会导致设备每次读取吸管时都发生除以零的错误。</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>无驱动器</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB 仿真模式 {0}（{1}）不会让计算机访问 QuadStick 的驱动器，而这个文件是设备启动时使用的文件。安装它之后将无法再回头编辑任何配置，恢复需要进行物理强制擦除。</value>
   </data>
@@ -490,9 +493,6 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>使用 {0} 或更大的值。</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>请使用 {0} 到 {1}。{2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>这里使用模式 0、2、3 或 4，另一个模式改到游戏配置中设置。</value>
@@ -685,5 +685,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>该电子表格超过了 {0} 行，远大于任何配置文件，因此我们在读到一半时就停止了。</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>请使用 {0} 到 {1}。{2}</value>
   </data>
 </root>

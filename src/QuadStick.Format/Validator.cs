@@ -527,6 +527,20 @@ public static class Validator
         [7] = "DualShock 4 wireless",
     };
 
+    /// <summary>Whether a USB emulation mode leaves the QuadStick's drive
+    /// reachable from a computer. A value that is not a number is nobody's
+    /// business here, so it counts as safe and the writer's own rules judge it.</summary>
+    public static bool EmulationKeepsTheDrive(string value) =>
+        !int.TryParse(value.Trim(), System.Globalization.NumberStyles.Integer,
+                      System.Globalization.CultureInfo.InvariantCulture, out var mode)
+        || !EmulationModesWithNoDrive.ContainsKey(mode);
+
+    /// <summary>What to say beside an emulation mode that would take the drive
+    /// away, or null when it keeps it. Every mode is offered, so the list is
+    /// where a person has to be able to read the cost of picking one.</summary>
+    public static string? EmulationDriveWarning(string value) =>
+        EmulationKeepsTheDrive(value) ? null : Strings.Issue_HidesTheDrive;
+
     // Losing the drive is survivable in a game profile: the device boots back
     // into default.csv and the files come back. In default.csv or prefs.csv it
     // is not, because those are what it boots into, and the only way back is

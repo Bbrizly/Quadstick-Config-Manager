@@ -397,6 +397,15 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>正在查找你的 QuadStick...</value>
   </data>
+  <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
+    <value>设备从这个文件启动，所以隐藏驱动器的模式不会被写入你的 QuadStick。请改在游戏配置文件里设置。</value>
+  </data>
+  <data name="DevicePage_MoreOptions" xml:space="preserve">
+    <value>更多选项</value>
+  </data>
+  <data name="DevicePage_MoreOptionsCount" xml:space="preserve">
+    <value>更多选项，{0}</value>
+  </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}，{1} 到 {2}</value>
   </data>
@@ -813,14 +822,17 @@
 
 大多数配置文件只有一个模式，因此此列表通常只显示一个条目。这是正常现象。</value>
   </data>
+  <data name="Main_APlusB" xml:space="preserve">
+    <value>{0} + {1}</value>
+  </data>
   <data name="Main_AProfileTabStartsWith" xml:space="preserve">
     <value>配置文件工作表以单元格 A1 中的 "Profile Name"、"Preferences" 或 "Infrared" 开头。</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>快速按下会发送一种输出，长按会发送另一种输出。</value>
+    <value>只有快速按下再松开时才触发。按太久不会有反应，所以短吸和长吸可以做不同的事。</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
-    <value>短暂激活是轻触，长时间激活会将其锁定开启。</value>
+    <value>短暂触发相当于普通按一下。输入保持得足够久，输出会锁定在打开状态，之后再短暂触发就会松开。</value>
   </data>
   <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
     <value>名为 {0} 的模板已存在。</value>
@@ -833,6 +845,9 @@
   </data>
   <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
     <value>插入 QuadStick 背面 3.5 毫米插孔的适配开关。</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>添加</value>
   </data>
   <data name="Main_AddANewBindingRow" xml:space="preserve">
     <value>为此模式添加新的绑定行</value>
@@ -914,6 +929,9 @@
   </data>
   <data name="Main_BackupPending" xml:space="preserve">
     <value> · 备份待处理</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>设备从这个文件启动，所以不会把无驱动器的模式写进去。</value>
   </data>
   <data name="Main_Cancel" xml:space="preserve">
     <value>取消</value>
@@ -1094,6 +1112,12 @@
   <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
     <value>设备显示 {0}</value>
   </data>
+  <data name="Main_DoNotSetOne" xml:space="preserve">
+    <value>不设置</value>
+  </data>
+  <data name="Main_DoNotSetOneTheDevice" xml:space="preserve">
+    <value>不设置。设备保持它当前所处的模式。</value>
+  </data>
   <data name="Main_DonTSave" xml:space="preserve">
     <value>不保存</value>
   </data>
@@ -1131,10 +1155,13 @@
     <value>FPS：三孔口控杆、侧管、唇部传感器、后置插孔。摇杆比 Original 更精准。</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
-    <value>当您的输入超过设定强度时触发一次。</value>
+    <value>输入超过一定强度后打开输出。适合根据摇杆推动的幅度做不同的动作。</value>
   </data>
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
-    <value>当您的输入保持在设定强度以下时持续触发。</value>
+    <value>输入低于一定强度时打开输出。与 greater_than 相反。</value>
+  </data>
+  <data name="Main_FitEachMappingOnOne" xml:space="preserve">
+    <value>将每条映射放在一行内</value>
   </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>发现问题了？</value>
@@ -1161,7 +1188,7 @@
     <value>Google 返回的是一个网页，而不是配置文件。该表格可能未公开共享（文件 &gt; 共享 &gt; 知道链接的任何人）。</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
-    <value>在您的输入保持激活期间持续按住。</value>
+    <value>按住才生效。只有在输入保持时输出才打开。</value>
   </data>
   <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
     <value>帮助改进 QuadStick Config Manager</value>
@@ -1174,6 +1201,9 @@
   </data>
   <data name="Main_HoleCombos" xml:space="preserve">
     <value>孔位组合</value>
+  </data>
+  <data name="Main_HolePairingPairCount" xml:space="preserve">
+    <value>双孔组合：{0}。{1}</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>{0} 如何按下它。{1}</value>
@@ -1239,7 +1269,10 @@
     <value>保留一份副本，您可以随时在主屏幕的“使用模板”下以此创建新配置。编辑或安装配置文件永远不会更改其模板。</value>
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
-    <value>释放后仍会继续按住片刻。</value>
+    <value>停止输入后，输出还会保持打开一小段时间。</value>
+  </data>
+  <data name="Main_LabelNote" xml:space="preserve">
+    <value>{0}. {1}</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
     <value>左</value>
@@ -1268,6 +1301,12 @@
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>已加载此配置文件的在线版本。您之前的本地副本保存在救援文件夹中。</value>
   </data>
+  <data name="Main_MainControls" xml:space="preserve">
+    <value>主要控制</value>
+  </data>
+  <data name="Main_MainControlsCount" xml:space="preserve">
+    <value>主要控制。吸管孔、侧管、唇部开关和摇杆。{0}</value>
+  </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>管理您 QuadStick 上的文件</value>
   </data>
@@ -1289,6 +1328,12 @@
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>映射 {0}：当您先后 {2}{3} 时按下 {1}。按 Enter 键进行编辑。</value>
   </data>
+  <data name="Main_MappingsAreOnOneLine" xml:space="preserve">
+    <value>映射以单行形式呈现。切换到完整语句。</value>
+  </data>
+  <data name="Main_MappingsReadAsAFull" xml:space="preserve">
+    <value>映射以完整语句的形式呈现。切换到每条一行。</value>
+  </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>映射以简单语句卡片的形式呈现。切换到详细编辑器。</value>
   </data>
@@ -1297,6 +1342,9 @@
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
     <value>菜单按钮</value>
+  </data>
+  <data name="Main_ModeLabelToken" xml:space="preserve">
+    <value>{0} ({1})</value>
   </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>模式：{0}</value>
@@ -1342,6 +1390,15 @@
   </data>
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>此模板的名称</value>
+  </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>名称：{0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>此列表提供哪种控制器名称。QuadStick 将两种写法读作同一个输出，因此隐藏其中一种不会隐藏任何按键。</value>
   </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>此模板的新名称</value>
@@ -1469,13 +1526,13 @@
     <value>{0} 的数字，可选，用空格分隔的整数。 </value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>第一次激活将其锁定为开启，第二次将其释放。</value>
+    <value>按一次打开，再按一次关闭。松开输入后输出仍然保持打开。</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
     <value>一个 CSV 文件，用来告诉 QuadStick 哪个 sip、puff、唇部按压或摇杆动作按下哪个游戏按钮。一个配置文件包含一个或多个模式表：您在游戏中切换的完整控制布局（行走布局、驾驶布局、菜单）。对侧管进行 sip 或 puff，或绑定 increment_mode / decrement_mode，即可在游戏中切换模式。</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
-    <value>每次激活时短按一次。</value>
+    <value>每次触发输入都短按一次，不管你按住多久。</value>
   </data>
   <data name="Main_OneSwitchIn1" xml:space="preserve">
     <value>单个开关：位于 1 号插孔</value>
@@ -1562,7 +1619,7 @@
     <value>按下</value>
   </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
-    <value>以开关交替的方式重复按下。</value>
+    <value>输出保持打开的时间取决于你吸、吹或推动摇杆的力度。</value>
   </data>
   <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
     <value>问题已复制到剪贴板。</value>
@@ -1601,7 +1658,7 @@
     <value>快速指南</value>
   </data>
   <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
-    <value>输入保持时连续快速点按。</value>
+    <value>在你保持输入期间反复按下输出。</value>
   </data>
   <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
     <value>阅读隐私政策</value>
@@ -1750,6 +1807,12 @@
   <data name="Main_SetItTo" xml:space="preserve">
     <value>将其设置为</value>
   </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>设置模拟模式</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>把模拟模式设为 {0}，写作 {1}</value>
+  </data>
   <data name="Main_SetVerb" xml:space="preserve">
     <value>设置</value>
   </data>
@@ -1807,6 +1870,9 @@
   <data name="Main_SoftSip" xml:space="preserve">
     <value>轻吸</value>
   </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>某些模式会让电脑看不到 QuadStick 驱动器。</value>
+  </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>在 {0} 上开始一个新映射</value>
   </data>
@@ -1820,10 +1886,10 @@
     <value>已从模板 {0} 开始。保存以将其保留为独立的配置文件。</value>
   </data>
   <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
-    <value>将模拟输出下调一档并保持在那里，例如扳机或摇杆轴。</value>
+    <value>每次触发输入，把模拟量输出降低一档，并保持在那里。</value>
   </data>
   <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
-    <value>将模拟输出上调一档并保持在那里，例如扳机或摇杆轴。</value>
+    <value>每次触发输入，把模拟量输出提高一档，并保持在那里。</value>
   </data>
   <data name="Main_StopAsking" xml:space="preserve">
     <value>不再询问</value>
@@ -1950,7 +2016,7 @@
     <value>{0}，此模式未使用</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>关闭由 toggle 或 delayed_latch 保持开启的输出。</value>
+    <value>强制关闭一个输出。适合用来松开被别的行切换或锁定的按键。</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>同时使用两个或以上的孔，三个一起使用，或右孔配合侧管使用。适合那些您绝不希望意外触发的操作。</value>
@@ -2006,8 +2072,17 @@
   <data name="Main_ViewDetails" xml:space="preserve">
     <value>查看详情 →</value>
   </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
+  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
-    <value>在您激活后等待片刻，然后按下。</value>
+    <value>要先保持输入一段设定的时间，输出才会打开。这样可以分清快速轻触和长按。</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>当 QuadStick 发送某一行的输出时,该行会亮起。设备从不说明它正在运行哪个文件或哪个模式,因此亮起的行可能来自与此处打开的配置不同的另一个配置。鼠标、键盘和红外输出通过另一条连接发出,永远不会亮起。</value>
@@ -2108,6 +2183,9 @@
   <data name="Modes_CloseModes" xml:space="preserve">
     <value>关闭模式</value>
   </data>
+  <data name="Modes_Connection" xml:space="preserve">
+    <value>连接</value>
+  </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>连接已清除。设备将回退到 USB 数据线。</value>
   </data>
@@ -2125,6 +2203,9 @@
   </data>
   <data name="Modes_MakeACopyOfName" xml:space="preserve">
     <value>复制 {0}</value>
+  </data>
+  <data name="Modes_Mode" xml:space="preserve">
+    <value>模式</value>
   </data>
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>模式已添加。</value>
@@ -2291,17 +2372,26 @@
   <data name="Outputs_NumberPad2" xml:space="preserve">
     <value>数字键盘</value>
   </data>
+  <data name="Outputs_OtherButtons" xml:space="preserve">
+    <value>其他按键</value>
+  </data>
   <data name="Outputs_OtherKeys" xml:space="preserve">
     <value>其他按键</value>
   </data>
   <data name="Outputs_OtherKeys2" xml:space="preserve">
     <value>其他按键</value>
   </data>
+  <data name="Outputs_PlayStationButtons" xml:space="preserve">
+    <value>PlayStation 按键</value>
+  </data>
   <data name="Outputs_TVRemote" xml:space="preserve">
     <value>电视遥控器</value>
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>电视遥控器</value>
+  </data>
+  <data name="Outputs_XboxButtons" xml:space="preserve">
+    <value>Xbox 按键</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>关于 {0}：{1}</value>
@@ -2407,6 +2497,12 @@
   </data>
   <data name="Review_AddingItChangesCellA1" xml:space="preserve">
     <value>添加它会更改 A1 单元格。标签页中的其他内容将按您所写的原样导入。</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} 及另外 1 个单元格</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} 及另外 {1} 个单元格</value>
   </data>
   <data name="Review_AndYourPreferences" xml:space="preserve">
     <value>，以及您的 Preferences</value>

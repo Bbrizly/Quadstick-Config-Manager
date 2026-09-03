@@ -253,12 +253,45 @@
     <!-- The two view preferences share the bottom row of the sidebar. Keep
          their hit areas comfortable while letting the shorter labels sit
          beside one another without looking cramped. -->
-    <Style Selector="Button.sidebarToggle">
+    <!-- :is(Button), not Button: the compact-cards key is a ToggleButton and a
+         plain type selector does not match a derived type, so it would come
+         out a different height from the two beside it. -->
+    <Style Selector=":is(Button).sidebarToggle">
       <Setter Property="MinWidth" Value="0"/>
+      <!-- The floor, not 32. These three sit in one Grid row, so the tallest
+           sets the row and the other two stretch to it: raising the icon key
+           to a real target raises all three. -->
+      <Setter Property="MinHeight" Value="{DynamicResource ControlHeight}"/>
       <Setter Property="Padding" Value="6,4"/>
       <Setter Property="FontSize" Value="{DynamicResource SidebarToggleTextSize}"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <!-- The compact-cards key takes 45px off the row, and "Detailed editor" is
+         two long words in most languages. Wrap rather than clip: the label is
+         the only thing saying what the key does. -->
+    <Style Selector=":is(Button).sidebarToggle /template/ ContentPresenter">
+      <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+    <!-- Fluent paints a checked ToggleButton's content area with the accent
+         colour, which buries the glyph. Pin it back to the selection wash and
+         let the accent border be what says "on", the same as the zone keys. -->
+    <Style Selector="ToggleButton.quiet">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style Selector="ToggleButton.quiet PathIcon">
+      <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.sidebarToggle:checked">
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="ToggleButton.sidebarToggle:checked /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SelectionTintBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
     </Style>
     <Style Selector="Button.danger">
       <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}"/>

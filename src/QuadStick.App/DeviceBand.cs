@@ -205,7 +205,7 @@ public partial class MainWindow
             double bright = DeviceNumber("brightness", 75) / 100.0;
             for (int i = 0; i < 5; i++)
             {
-                var led = diagram.OnPhoto(lightRow.X + i * lightRow.Gap, lightRow.Y);
+                var led = diagram.OnPhoto(lightRow.XAt(i), lightRow.Y);
                 foreach (var dot in Led(ModeLight.Blue, led.X, led.Y))
                 {
                     dot.Opacity *= Math.Clamp(bright, 0.08, 1);

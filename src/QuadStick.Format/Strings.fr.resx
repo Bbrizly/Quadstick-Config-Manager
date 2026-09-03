@@ -455,6 +455,9 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Deux seuils égaux font que l'appareil divise par zéro à chaque lecture du tube.</value>
   </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>sans lecteur</value>
+  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>Le mode d'émulation USB {0} ({1}) ne donne pas à un ordinateur l'accès au lecteur du QuadStick, et ce fichier est un fichier avec lequel l'appareil démarre. L'installer ne laisserait plus aucun moyen de modifier un profil ensuite, et la récupération nécessite un effacement forcé physique.</value>
   </data>
@@ -490,9 +493,6 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Utilisez {0} ou plus.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Utilisez {0} à {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Utilisez ici le mode 0, 2, 3 ou 4, et réglez l'autre mode dans un profil de jeu à la place.</value>
@@ -685,5 +685,8 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Cette feuille de calcul dépasse {0} lignes, bien plus que n'importe quel profil, donc nous avons arrêté de la lire en cours de route.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Utilisez {0} à {1}. {2}</value>
   </data>
 </root>

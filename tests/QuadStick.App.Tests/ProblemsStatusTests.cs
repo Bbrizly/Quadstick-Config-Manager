@@ -66,4 +66,27 @@ public class ProblemsStatusTests
         Assert.Contains("Errors block installing", line);
         w.Close();
     }
+
+    [AvaloniaFact]
+    public void Expanded_problems_use_the_full_editor_width()
+    {
+        var w = Editor(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "mouse_speed,normal,fast\n");
+
+        var toggle = w.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "ProblemsToggle");
+        var problems = w.GetVisualDescendants().OfType<Border>().Single(b => b.Name == "ProblemsListBorder");
+        var workspace = w.GetVisualDescendants().OfType<Border>().Single(b => b.Name == "EditorWorkspace");
+
+        toggle.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        w.UpdateLayout();
+
+        Assert.True(problems.IsVisible);
+        Assert.Equal(workspace.Bounds.Width, problems.Bounds.Width, precision: 1);
+        Assert.DoesNotContain(w.GetVisualDescendants().OfType<Border>().Single(b => b.Name == "EditorSidebar"),
+            problems.GetVisualAncestors());
+        w.Close();
+    }
 }

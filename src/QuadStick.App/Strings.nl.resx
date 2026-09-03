@@ -397,6 +397,15 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>Uw QuadStick wordt gezocht...</value>
   </data>
+  <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
+    <value>Het apparaat start vanaf dit bestand op, dus de app schrijft geen van de modi die de schijf verbergen naar uw QuadStick. Stel er in plaats daarvan een in bij een spelprofiel.</value>
+  </data>
+  <data name="DevicePage_MoreOptions" xml:space="preserve">
+    <value>Meer opties</value>
+  </data>
+  <data name="DevicePage_MoreOptionsCount" xml:space="preserve">
+    <value>Meer opties, {0}</value>
+  </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}, {1} tot {2}</value>
   </data>
@@ -813,14 +822,17 @@
 
 De meeste profielen hebben maar één modus, dus deze lijst toont vaak één item. Dat is normaal.</value>
   </data>
+  <data name="Main_APlusB" xml:space="preserve">
+    <value>{0} + {1}</value>
+  </data>
   <data name="Main_AProfileTabStartsWith" xml:space="preserve">
     <value>Een profieltabblad begint met "Profile Name", "Preferences" of "Infrared" in cel A1.</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>Een korte druk stuurt één output; langer vasthouden stuurt een andere.</value>
+    <value>Activeert alleen als u snel indrukt en loslaat. Te lang vasthouden doet niets, dus kort zuigen en lang zuigen kunnen iets anders doen.</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
-    <value>Een korte activering tikt hem aan; een lange zet hem vast aan.</value>
+    <value>Een korte activering werkt als een gewone druk. Houdt u de invoer lang genoeg vast, dan klikt de uitgang vast, en een korte activering laat hem dan weer los.</value>
   </data>
   <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
     <value>Er bestaat al een sjabloon met de naam {0}.</value>
@@ -833,6 +845,9 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   </data>
   <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
     <value>Adaptieve schakelaars die zijn aangesloten op de 3,5 mm-aansluitingen aan de achterkant van de QuadStick.</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>Toevoegen</value>
   </data>
   <data name="Main_AddANewBindingRow" xml:space="preserve">
     <value>Een nieuwe bindingsrij toevoegen aan deze modus</value>
@@ -914,6 +929,9 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   </data>
   <data name="Main_BackupPending" xml:space="preserve">
     <value> · back-up in behandeling</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>Het apparaat start op vanaf dit bestand, dus een modus zonder schijf wordt er niet in geschreven.</value>
   </data>
   <data name="Main_Cancel" xml:space="preserve">
     <value>Annuleren</value>
@@ -1094,6 +1112,12 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
     <value>Apparaat toont {0}</value>
   </data>
+  <data name="Main_DoNotSetOne" xml:space="preserve">
+    <value>Geen instellen</value>
+  </data>
+  <data name="Main_DoNotSetOneTheDevice" xml:space="preserve">
+    <value>Geen instellen. Het apparaat houdt de modus waarin het al staat.</value>
+  </data>
   <data name="Main_DonTSave" xml:space="preserve">
     <value>Niet opslaan</value>
   </data>
@@ -1131,10 +1155,13 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
     <value>FPS: mondstuk met 3 gaten, zijbuis, lipsensor, aansluitingen achter. Preciezere joystick dan de Original.</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
-    <value>Activeert zodra uw input een ingestelde sterkte overschrijdt.</value>
+    <value>Activeert de uitgang zodra de invoer een bepaalde sterkte voorbijgaat. Handig voor verschillende acties afhankelijk van hoe ver de joystick wordt bewogen.</value>
   </data>
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Activeert zolang uw input onder een ingestelde sterkte blijft.</value>
+    <value>Activeert de uitgang zolang de invoer onder een bepaalde sterkte blijft. Het tegenovergestelde van greater_than.</value>
+  </data>
+  <data name="Main_FitEachMappingOnOne" xml:space="preserve">
+    <value>Elke toewijzing op één regel passen</value>
   </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>Een probleem gevonden?</value>
@@ -1161,7 +1188,7 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
     <value>Google gaf een webpagina terug in plaats van het profiel. Het blad is waarschijnlijk niet openbaar gedeeld (Bestand &gt; Delen &gt; Iedereen met de link).</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
-    <value>Blijft ingedrukt zolang uw input actief is.</value>
+    <value>Houd vast om te activeren. De uitgang blijft alleen aan zolang uw invoer actief is.</value>
   </data>
   <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
     <value>Help QuadStick Config Manager verbeteren</value>
@@ -1174,6 +1201,9 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   </data>
   <data name="Main_HoleCombos" xml:space="preserve">
     <value>Gatcombinaties</value>
+  </data>
+  <data name="Main_HolePairingPairCount" xml:space="preserve">
+    <value>Gaatjeskoppeling: {0}. {1}</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>Hoe {0} het indrukt. {1}</value>
@@ -1239,7 +1269,10 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
     <value>Bewaart een kopie waarmee u op elk moment nieuwe profielen kunt starten, onder Sjabloon gebruiken op het startscherm. Het bewerken of installeren van een profiel wijzigt de sjabloon nooit.</value>
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
-    <value>Blijft nog even ingedrukt nadat u loslaat.</value>
+    <value>Houdt de uitgang nog even actief nadat u stopt met het activeren van de invoer.</value>
+  </data>
+  <data name="Main_LabelNote" xml:space="preserve">
+    <value>{0}. {1}</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
     <value>Links</value>
@@ -1268,6 +1301,12 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>De online versie van dit profiel is geladen. Uw vorige lokale kopie staat in de reddingsmap.</value>
   </data>
+  <data name="Main_MainControls" xml:space="preserve">
+    <value>Hoofdbediening</value>
+  </data>
+  <data name="Main_MainControlsCount" xml:space="preserve">
+    <value>Hoofdbediening. De gaatjes, de zijslang, de lipschakelaar en de joystick. {0}</value>
+  </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>Bestanden beheren op uw QuadStick</value>
   </data>
@@ -1289,6 +1328,12 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>Toewijzing {0}: druk op {1} wanneer u {2}, na elkaar{3}. Druk op Enter om te bewerken.</value>
   </data>
+  <data name="Main_MappingsAreOnOneLine" xml:space="preserve">
+    <value>Toewijzingen staan op één regel. Schakel over naar de volledige zin.</value>
+  </data>
+  <data name="Main_MappingsReadAsAFull" xml:space="preserve">
+    <value>Toewijzingen worden getoond als een volledige zin. Schakel over naar één regel per stuk.</value>
+  </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>Toewijzingen worden getoond als eenvoudige zinskaarten. Schakel over naar de gedetailleerde editor.</value>
   </data>
@@ -1297,6 +1342,9 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
     <value>Menuknop</value>
+  </data>
+  <data name="Main_ModeLabelToken" xml:space="preserve">
+    <value>{0} ({1})</value>
   </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>Modus: {0}</value>
@@ -1342,6 +1390,15 @@ De meeste profielen hebben maar één modus, dus deze lijst toont vaak één ite
   </data>
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>Naam voor deze sjabloon</value>
+  </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>Namen</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>Namen: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>Welke controllernamen deze lijst aanbiedt. De QuadStick leest beide schrijfwijzen als dezelfde uitgang, dus één verbergen verbergt geen knop.</value>
   </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>Nieuwe naam voor deze sjabloon</value>
@@ -1469,13 +1526,13 @@ Kies links een onderdeel van de QuadStick om te zien wat het in deze modus doet,
     <value>Getallen voor {0}, optioneel, hele getallen gescheiden door spaties. </value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>Eén activering zet het aan, de volgende zet het weer uit.</value>
+    <value>Druk één keer om aan te zetten, nog een keer om uit te zetten. De uitgang blijft aan nadat u de invoer loslaat.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
     <value>Eén CSV-bestand dat de QuadStick vertelt welke sip, puff, lipdruk of joystickbeweging welke gameknop indrukt. Een profiel heeft een of meer modusbladen: volledige besturingsindelingen waartussen u tijdens het spelen wisselt (loopindeling, rijindeling, menu's). Sip of puf op de zijbuis, of koppel increment_mode / decrement_mode, om in-game van modus te wisselen.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
-    <value>Eén korte druk telkens wanneer u activeert.</value>
+    <value>Eén korte druk elke keer dat u de invoer activeert, hoe lang u ook vasthoudt.</value>
   </data>
   <data name="Main_OneSwitchIn1" xml:space="preserve">
     <value>Eén schakelaar: in 1</value>
@@ -1562,7 +1619,7 @@ Kies links een onderdeel van de QuadStick om te zien wat het in deze modus doet,
     <value>Drukken</value>
   </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
-    <value>Drukt in een herhalende aan-uitcyclus.</value>
+    <value>Hoe lang de uitgang aan blijft, volgt hoe hard u zuigt, blaast of de stick duwt.</value>
   </data>
   <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
     <value>Probleem gekopieerd naar het klembord.</value>
@@ -1601,7 +1658,7 @@ Kies links een onderdeel van de QuadStick om te zien wat het in deze modus doet,
     <value>Snelle handleiding</value>
   </data>
   <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
-    <value>Snelvuurtikken zolang uw input ingedrukt blijft.</value>
+    <value>Drukt de uitgang steeds opnieuw in zolang u de invoer vasthoudt.</value>
   </data>
   <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
     <value>Privacybeleid lezen</value>
@@ -1750,6 +1807,12 @@ Kies links een onderdeel van de QuadStick om te zien wat het in deze modus doet,
   <data name="Main_SetItTo" xml:space="preserve">
     <value>Stel het in op</value>
   </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>Emulatiemodus instellen</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>Emulatiemodus instellen op {0}, geschreven als {1}</value>
+  </data>
   <data name="Main_SetVerb" xml:space="preserve">
     <value>Instellen</value>
   </data>
@@ -1807,6 +1870,9 @@ Kies links een onderdeel van de QuadStick om te zien wat het in deze modus doet,
   <data name="Main_SoftSip" xml:space="preserve">
     <value>Zacht zuigen</value>
   </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>Sommige modi verbergen de QuadStick-schijf voor uw computer.</value>
+  </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>Start een nieuwe toewijzing op {0}</value>
   </data>
@@ -1820,10 +1886,10 @@ Kies links een onderdeel van de QuadStick om te zien wat het in deze modus doet,
     <value>Gestart vanaf sjabloon {0}. Sla op om dit als eigen profiel te bewaren.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
-    <value>Verlaagt een analoge output met een stap en laat hem daar staan, zoals een trigger of een stickas.</value>
+    <value>Zet een analoge uitgang een stap omlaag elke keer dat u de invoer activeert, en laat hem daar staan.</value>
   </data>
   <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
-    <value>Verhoogt een analoge output met een stap en laat hem daar staan, zoals een trigger of een stickas.</value>
+    <value>Zet een analoge uitgang een stap omhoog elke keer dat u de invoer activeert, en laat hem daar staan.</value>
   </data>
   <data name="Main_StopAsking" xml:space="preserve">
     <value>Niet meer vragen</value>
@@ -1950,7 +2016,7 @@ U kunt dit op elk moment wijzigen in Instellingen, onder Geavanceerd.</value>
     <value>{0}, niet gebruikt in deze modus</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>Schakelt een output uit die toggle of delayed_latch heeft aangelaten.</value>
+    <value>Zet een uitgang gedwongen uit. Handig om een knop los te laten die een andere regel aan of vast heeft gezet.</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>Twee of meer gaten tegelijk gebruikt, alle drie samen, of het rechter gat met de zijbuis. Handig voor acties die u nooit per ongeluk wilt activeren.</value>
@@ -2006,8 +2072,17 @@ U kunt dit op elk moment wijzigen in Instellingen, onder Geavanceerd.</value>
   <data name="Main_ViewDetails" xml:space="preserve">
     <value>Details bekijken →</value>
   </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
+  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
-    <value>Wacht een moment nadat u activeert, en drukt dan.</value>
+    <value>U moet de invoer een vaste tijd vasthouden voordat de uitgang activeert. Zo wordt een korte tik onderscheiden van een langere druk.</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>Een rij licht op terwijl de QuadStick de uitvoer van die rij verstuurt. Het apparaat zegt nooit welk bestand of welke modus het draait, dus een rij kan oplichten door een ander profiel dan het hier geopende. Muis-, toetsenbord- en infrarooduitvoer gaat via een andere verbinding en licht nooit op.</value>
@@ -2108,6 +2183,9 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   <data name="Modes_CloseModes" xml:space="preserve">
     <value>Modi sluiten</value>
   </data>
+  <data name="Modes_Connection" xml:space="preserve">
+    <value>Verbinding</value>
+  </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>Verbinding gewist. Het apparaat valt terug op de USB-kabel.</value>
   </data>
@@ -2125,6 +2203,9 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   </data>
   <data name="Modes_MakeACopyOfName" xml:space="preserve">
     <value>Maak een kopie van {0}</value>
+  </data>
+  <data name="Modes_Mode" xml:space="preserve">
+    <value>Modus</value>
   </data>
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>Modus toegevoegd.</value>
@@ -2291,17 +2372,26 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   <data name="Outputs_NumberPad2" xml:space="preserve">
     <value>Numeriek toetsenblok</value>
   </data>
+  <data name="Outputs_OtherButtons" xml:space="preserve">
+    <value>Andere knoppen</value>
+  </data>
   <data name="Outputs_OtherKeys" xml:space="preserve">
     <value>Overige toetsen</value>
   </data>
   <data name="Outputs_OtherKeys2" xml:space="preserve">
     <value>Overige toetsen</value>
   </data>
+  <data name="Outputs_PlayStationButtons" xml:space="preserve">
+    <value>PlayStation-knoppen</value>
+  </data>
   <data name="Outputs_TVRemote" xml:space="preserve">
     <value>Tv-afstandsbediening</value>
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>Tv-afstandsbediening</value>
+  </data>
+  <data name="Outputs_XboxButtons" xml:space="preserve">
+    <value>Xbox-knoppen</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>Over {0}: {1}</value>
@@ -2407,6 +2497,12 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   </data>
   <data name="Review_AddingItChangesCellA1" xml:space="preserve">
     <value>Het toevoegen ervan wijzigt cel A1. Al het andere in het tabblad komt binnen zoals u het schreef.</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} en 1 andere cel</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} en {1} andere cellen</value>
   </data>
   <data name="Review_AndYourPreferences" xml:space="preserve">
     <value>, en uw voorkeuren</value>

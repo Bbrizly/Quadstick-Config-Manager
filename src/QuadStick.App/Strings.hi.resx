@@ -397,6 +397,15 @@
   <data name="DevicePage_LookingForYourQuadStick" xml:space="preserve">
     <value>आपका QuadStick खोजा जा रहा है...</value>
   </data>
+  <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
+    <value>डिवाइस इसी फ़ाइल से बूट होता है, इसलिए ड्राइव छिपाने वाला कोई भी मोड आपके QuadStick पर नहीं लिखा जाएगा। इसके बजाय किसी गेम प्रोफ़ाइल में सेट करें।</value>
+  </data>
+  <data name="DevicePage_MoreOptions" xml:space="preserve">
+    <value>और विकल्प</value>
+  </data>
+  <data name="DevicePage_MoreOptionsCount" xml:space="preserve">
+    <value>और विकल्प, {0}</value>
+  </data>
   <data name="DevicePage_NameLoToHi" xml:space="preserve">
     <value>{0}, {1} से {2}</value>
   </data>
@@ -813,14 +822,17 @@
 
 अधिकतर प्रोफ़ाइलों में सिर्फ़ एक मोड होता है, इसलिए यह सूची अक्सर एक ही प्रविष्टि दिखाती है। यह सामान्य है।</value>
   </data>
+  <data name="Main_APlusB" xml:space="preserve">
+    <value>{0} + {1}</value>
+  </data>
   <data name="Main_AProfileTabStartsWith" xml:space="preserve">
     <value>प्रोफ़ाइल टैब सेल A1 में "Profile Name", "Preferences" या "Infrared" से शुरू होता है।</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>जल्दी दबाने पर एक आउटपुट भेजा जाता है; देर तक दबाए रखने पर अलग आउटपुट भेजा जाता है।</value>
+    <value>तभी चालू होता है जब आप जल्दी से दबाकर छोड़ दें। ज़्यादा देर पकड़ने पर कुछ नहीं होता, इसलिए छोटा सिप और लंबा सिप अलग-अलग काम कर सकते हैं।</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
-    <value>छोटा सक्रियण इसे टैप करता है; लंबा सक्रियण इसे लैच करके चालू रखता है।</value>
+    <value>छोटा इनपुट सामान्य दबाव की तरह काम करता है। इनपुट को काफ़ी देर पकड़े रखें तो आउटपुट चालू पर लॉक हो जाता है, और उसके बाद छोटा इनपुट उसे छोड़ देता है।</value>
   </data>
   <data name="Main_ATemplateNamedPathGetFileNameWithoutExtension" xml:space="preserve">
     <value>{0} नाम का टेम्पलेट पहले से मौजूद है।</value>
@@ -833,6 +845,9 @@
   </data>
   <data name="Main_AdaptiveSwitchesPluggedIntoThe" xml:space="preserve">
     <value>QuadStick के पीछे 3.5 mm जैक में लगे एडेप्टिव स्विच।</value>
+  </data>
+  <data name="Main_Add" xml:space="preserve">
+    <value>जोड़ें</value>
   </data>
   <data name="Main_AddANewBindingRow" xml:space="preserve">
     <value>इस मोड में एक नई बाइंडिंग पंक्ति जोड़ें</value>
@@ -914,6 +929,9 @@
   </data>
   <data name="Main_BackupPending" xml:space="preserve">
     <value> · बैकअप लंबित</value>
+  </data>
+  <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
+    <value>डिवाइस इसी फ़ाइल से बूट होता है, इसलिए ड्राइव रहित मोड इसमें नहीं लिखा जाएगा।</value>
   </data>
   <data name="Main_Cancel" xml:space="preserve">
     <value>रद्द करें</value>
@@ -1094,6 +1112,12 @@
   <data name="Main_DeviceShowsModeLightsDescribeLit" xml:space="preserve">
     <value>डिवाइस {0} दिखाता है</value>
   </data>
+  <data name="Main_DoNotSetOne" xml:space="preserve">
+    <value>कोई सेट न करें</value>
+  </data>
+  <data name="Main_DoNotSetOneTheDevice" xml:space="preserve">
+    <value>कोई सेट न करें। डिवाइस जिस मोड पर है, उसी पर रहता है।</value>
+  </data>
   <data name="Main_DonTSave" xml:space="preserve">
     <value>सेव न करें</value>
   </data>
@@ -1131,10 +1155,13 @@
     <value>FPS: 3-होल माउथपीस, साइड ट्यूब, लिप सेंसर, रियर जैक्स। Original से ज़्यादा सटीक जॉयस्टिक।</value>
   </data>
   <data name="Main_FiresOnceYourInputPasses" xml:space="preserve">
-    <value>जब आपका इनपुट तय की गई ताकत को पार करता है, तब एक बार फायर होता है।</value>
+    <value>इनपुट एक तय ताकत पार करते ही आउटपुट चालू करता है। जॉयस्टिक कितनी दूर तक हिला, उसके हिसाब से अलग-अलग काम कराने में उपयोगी।</value>
   </data>
   <data name="Main_FiresWhileYourInputStays" xml:space="preserve">
-    <value>जब तक आपका इनपुट तय की गई ताकत से कम रहता है, तब तक फायर होता रहता है।</value>
+    <value>जब तक इनपुट एक तय ताकत से कम रहता है, आउटपुट चालू रखता है। यह greater_than का उल्टा है।</value>
+  </data>
+  <data name="Main_FitEachMappingOnOne" xml:space="preserve">
+    <value>हर मैपिंग को एक पंक्ति में समेटें</value>
   </data>
   <data name="Main_FoundAProblem" xml:space="preserve">
     <value>कोई समस्या मिली?</value>
@@ -1161,7 +1188,7 @@
     <value>Google ने प्रोफ़ाइल की जगह एक वेब पेज लौटाया। शीट शायद सार्वजनिक रूप से शेयर नहीं की गई है (File &gt; Share &gt; Anyone with the link)।</value>
   </data>
   <data name="Main_HeldDownForAsLong" xml:space="preserve">
-    <value>जब तक आपका इनपुट सक्रिय है, तब तक दबा रहता है।</value>
+    <value>चालू करने के लिए दबाए रखें। आउटपुट तभी तक चालू रहता है जब तक आपका इनपुट चालू है।</value>
   </data>
   <data name="Main_HelpImproveQuadStickConfigManager" xml:space="preserve">
     <value>QuadStick Config Manager को बेहतर बनाने में मदद करें</value>
@@ -1174,6 +1201,9 @@
   </data>
   <data name="Main_HoleCombos" xml:space="preserve">
     <value>होल कॉम्बो</value>
+  </data>
+  <data name="Main_HolePairingPairCount" xml:space="preserve">
+    <value>छेद जोड़ी: {0}। {1}</value>
   </data>
   <data name="Main_HowShortInputZoneBPresses" xml:space="preserve">
     <value>{0} इसे कैसे दबाता है। {1}</value>
@@ -1239,7 +1269,10 @@
     <value>एक कॉपी रखता है जिससे आप कभी भी नई प्रोफ़ाइलें शुरू कर सकते हैं, होम स्क्रीन पर Use template के तहत। किसी प्रोफ़ाइल को संपादित करने या इंस्टॉल करने से उसका टेम्पलेट कभी नहीं बदलता।</value>
   </data>
   <data name="Main_KeepsPressingForAMoment" xml:space="preserve">
-    <value>छोड़ने के बाद भी कुछ पल के लिए दबाता रहता है।</value>
+    <value>इनपुट बंद करने के बाद भी आउटपुट थोड़ी देर चालू रहता है।</value>
+  </data>
+  <data name="Main_LabelNote" xml:space="preserve">
+    <value>{0}. {1}</value>
   </data>
   <data name="Main_Left" xml:space="preserve">
     <value>बायां</value>
@@ -1268,6 +1301,12 @@
   <data name="Main_LoadedTheOnlineVersionOf" xml:space="preserve">
     <value>इस प्रोफ़ाइल का ऑनलाइन वर्शन लोड किया गया। आपकी पिछली लोकल कॉपी rescue फोल्डर में है।</value>
   </data>
+  <data name="Main_MainControls" xml:space="preserve">
+    <value>मुख्य नियंत्रण</value>
+  </data>
+  <data name="Main_MainControlsCount" xml:space="preserve">
+    <value>मुख्य नियंत्रण। छेद, साइड ट्यूब, लिप स्विच और जॉयस्टिक। {0}</value>
+  </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>अपने QuadStick पर फ़ाइलें प्रबंधित करना</value>
   </data>
@@ -1289,6 +1328,12 @@
   <data name="Main_MappingRowSpokenInOrder" xml:space="preserve">
     <value>मैपिंग {0}: जब आप {2} करें, एक के बाद एक{3}, तब {1} दबाएं। संपादित करने के लिए Enter दबाएं।</value>
   </data>
+  <data name="Main_MappingsAreOnOneLine" xml:space="preserve">
+    <value>मैपिंग्स एक पंक्ति में दिखती हैं। पूरे वाक्य पर स्विच करें।</value>
+  </data>
+  <data name="Main_MappingsReadAsAFull" xml:space="preserve">
+    <value>मैपिंग्स पूरे वाक्य के रूप में दिखती हैं। हर एक को एक पंक्ति पर स्विच करें।</value>
+  </data>
   <data name="Main_MappingsReadAsSimpleSentence" xml:space="preserve">
     <value>मैपिंग्स सरल वाक्य कार्ड के रूप में दिखती हैं। विस्तृत संपादक पर स्विच करें।</value>
   </data>
@@ -1297,6 +1342,9 @@
   </data>
   <data name="Main_MenuButton" xml:space="preserve">
     <value>मेन्यू बटन</value>
+  </data>
+  <data name="Main_ModeLabelToken" xml:space="preserve">
+    <value>{0} ({1})</value>
   </data>
   <data name="Main_ModeNamed" xml:space="preserve">
     <value>मोड: {0}</value>
@@ -1342,6 +1390,15 @@
   </data>
   <data name="Main_NameForThisTemplate" xml:space="preserve">
     <value>इस टेम्पलेट के लिए नाम</value>
+  </data>
+  <data name="Main_NamesShown" xml:space="preserve">
+    <value>नाम</value>
+  </data>
+  <data name="Main_NamesShownChoice" xml:space="preserve">
+    <value>नाम: {0}</value>
+  </data>
+  <data name="Main_NamesShownTip" xml:space="preserve">
+    <value>यह सूची कौन से कंट्रोलर नाम देती है। QuadStick दोनों वर्तनियों को एक ही आउटपुट के रूप में पढ़ता है, इसलिए एक को छिपाने से कोई बटन नहीं छिपता।</value>
   </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>इस टेम्पलेट के लिए नया नाम</value>
@@ -1469,13 +1526,13 @@
     <value>{0} के लिए नंबर, वैकल्पिक, स्पेस से अलग किए गए पूर्ण अंक।</value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>एक बार सक्रिय करने पर यह ऑन होकर लॉक हो जाता है, अगली बार करने पर यह छूट जाता है।</value>
+    <value>एक बार दबाने पर चालू, दोबारा दबाने पर बंद। इनपुट छोड़ने के बाद भी आउटपुट चालू रहता है।</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
     <value>एक CSV फ़ाइल जो QuadStick को बताती है कि कौन सा sip, puff, लिप प्रेस, या जॉयस्टिक मूव कौन सा गेम बटन दबाता है। एक प्रोफ़ाइल में एक या ज़्यादा मोड शीट होती हैं: पूरे कंट्रोल लेआउट जिनके बीच आप खेलते समय स्विच करते हैं (वॉकिंग लेआउट, ड्राइविंग लेआउट, मेन्यू)। गेम में मोड बदलने के लिए साइड ट्यूब पर Sip या puff करें, या increment_mode / decrement_mode बाइंड करें।</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
-    <value>हर बार सक्रिय करने पर एक छोटा प्रेस।</value>
+    <value>हर बार इनपुट चालू करने पर एक छोटा दबाव, चाहे आप उसे कितनी भी देर पकड़े रखें।</value>
   </data>
   <data name="Main_OneSwitchIn1" xml:space="preserve">
     <value>एक स्विच: 1 में</value>
@@ -1562,7 +1619,7 @@
     <value>दबाएं</value>
   </data>
   <data name="Main_PressesInARepeatingOn" xml:space="preserve">
-    <value>बार-बार ऑन और ऑफ होते हुए दबाता रहता है।</value>
+    <value>आउटपुट कितनी देर चालू रहता है, यह इस पर निर्भर करता है कि आप कितने ज़ोर से सिप या पफ़ करते हैं या स्टिक को धकेलते हैं।</value>
   </data>
   <data name="Main_ProblemCopiedToTheClipboard" xml:space="preserve">
     <value>समस्या क्लिपबोर्ड में कॉपी कर दी गई।</value>
@@ -1601,7 +1658,7 @@
     <value>क्विक गाइड</value>
   </data>
   <data name="Main_RapidFireTapsWhileYour" xml:space="preserve">
-    <value>जब तक आपका इनपुट दबा रहता है, तब तक तेज़ी से बार-बार टैप करता है।</value>
+    <value>जब तक आप इनपुट पकड़े रखते हैं, आउटपुट बार-बार दबता रहता है।</value>
   </data>
   <data name="Main_ReadThePrivacyPolicy" xml:space="preserve">
     <value>प्राइवेसी पॉलिसी पढ़ें</value>
@@ -1750,6 +1807,12 @@
   <data name="Main_SetItTo" xml:space="preserve">
     <value>इसे इस पर सेट करें</value>
   </data>
+  <data name="Main_SetTheEmulationMode" xml:space="preserve">
+    <value>एमुलेशन मोड सेट करें</value>
+  </data>
+  <data name="Main_SetTheEmulationModeTo" xml:space="preserve">
+    <value>एमुलेशन मोड {0} पर सेट करें, जो {1} के रूप में लिखा जाता है</value>
+  </data>
   <data name="Main_SetVerb" xml:space="preserve">
     <value>सेट करें</value>
   </data>
@@ -1807,6 +1870,9 @@
   <data name="Main_SoftSip" xml:space="preserve">
     <value>हल्का खिंचाव</value>
   </data>
+  <data name="Main_SomeModesHideTheDrive" xml:space="preserve">
+    <value>कुछ मोड आपके कंप्यूटर से QuadStick ड्राइव छिपा देते हैं।</value>
+  </data>
   <data name="Main_StartANewMappingOn" xml:space="preserve">
     <value>{0} पर एक नई मैपिंग शुरू करें</value>
   </data>
@@ -1820,10 +1886,10 @@
     <value>टेम्पलेट {0} से शुरू किया गया। इसे अपनी खुद की प्रोफ़ाइल के रूप में रखने के लिए सेव करें।</value>
   </data>
   <data name="Main_StepsAnAnalogOutputDown" xml:space="preserve">
-    <value>एक एनालॉग आउटपुट को एक पायदान नीचे करता है और उसे वहीं छोड़ देता है, जैसे कोई ट्रिगर या स्टिक एक्सिस।</value>
+    <value>हर बार इनपुट चालू करने पर एनालॉग आउटपुट एक कदम घटाता है और उसे वहीं रखता है।</value>
   </data>
   <data name="Main_StepsAnAnalogOutputUp" xml:space="preserve">
-    <value>एक एनालॉग आउटपुट को एक पायदान ऊपर करता है और उसे वहीं छोड़ देता है, जैसे कोई ट्रिगर या स्टिक एक्सिस।</value>
+    <value>हर बार इनपुट चालू करने पर एनालॉग आउटपुट एक कदम बढ़ाता है और उसे वहीं रखता है।</value>
   </data>
   <data name="Main_StopAsking" xml:space="preserve">
     <value>पूछना बंद करें</value>
@@ -1950,7 +2016,7 @@
     <value>{0}, इस मोड में उपयोग नहीं हुआ</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>उस आउटपुट को बंद करता है जिसे toggle या delayed_latch ने ऑन छोड़ दिया था।</value>
+    <value>किसी आउटपुट को ज़बरदस्ती बंद करता है। किसी दूसरी पंक्ति ने जिस बटन को टॉगल या लैच किया हो, उसे छोड़ने में उपयोगी।</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>एक साथ दो या ज़्यादा छेद का उपयोग, तीनों एक साथ, या दायां छेद साइड ट्यूब के साथ। उन क्रियाओं के लिए अच्छा जिन्हें आप कभी गलती से ट्रिगर नहीं करना चाहते।</value>
@@ -2006,8 +2072,17 @@
   <data name="Main_ViewDetails" xml:space="preserve">
     <value>विवरण देखें →</value>
   </data>
+  <data name="Main_VocabularyAll" xml:space="preserve">
+    <value>सभी</value>
+  </data>
+  <data name="Main_VocabularyPlaystation" xml:space="preserve">
+    <value>PlayStation</value>
+  </data>
+  <data name="Main_VocabularyXbox" xml:space="preserve">
+    <value>Xbox</value>
+  </data>
   <data name="Main_WaitsAMomentAfterYou" xml:space="preserve">
-    <value>आपके सक्रिय करने के बाद एक क्षण रुकता है, फिर दबाता है।</value>
+    <value>आउटपुट चालू होने से पहले आपको इनपुट एक तय समय तक पकड़े रखना पड़ता है। इससे छोटा टैप और लंबी पकड़ अलग हो जाते हैं।</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
     <value>जब QuadStick किसी पंक्ति का आउटपुट भेज रहा होता है तब वह पंक्ति जलती है। डिवाइस कभी नहीं बताता कि वह कौन सी फ़ाइल या कौन सा मोड चला रहा है, इसलिए यहाँ खुली प्रोफ़ाइल से अलग किसी प्रोफ़ाइल के कारण भी कोई पंक्ति जल सकती है। माउस, कीबोर्ड और इन्फ़्रारेड आउटपुट दूसरे कनेक्शन से जाते हैं और कभी नहीं जलते।</value>
@@ -2108,6 +2183,9 @@
   <data name="Modes_CloseModes" xml:space="preserve">
     <value>मोड बंद करें</value>
   </data>
+  <data name="Modes_Connection" xml:space="preserve">
+    <value>कनेक्शन</value>
+  </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>कनेक्शन साफ़ किया गया। डिवाइस USB केबल पर वापस चला जाता है।</value>
   </data>
@@ -2125,6 +2203,9 @@
   </data>
   <data name="Modes_MakeACopyOfName" xml:space="preserve">
     <value>{0} की एक प्रति बनाएँ</value>
+  </data>
+  <data name="Modes_Mode" xml:space="preserve">
+    <value>मोड</value>
   </data>
   <data name="Modes_ModeAdded" xml:space="preserve">
     <value>मोड जोड़ा गया।</value>
@@ -2291,17 +2372,26 @@
   <data name="Outputs_NumberPad2" xml:space="preserve">
     <value>नंबर पैड</value>
   </data>
+  <data name="Outputs_OtherButtons" xml:space="preserve">
+    <value>अन्य बटन</value>
+  </data>
   <data name="Outputs_OtherKeys" xml:space="preserve">
     <value>अन्य कीज़</value>
   </data>
   <data name="Outputs_OtherKeys2" xml:space="preserve">
     <value>अन्य कीज़</value>
   </data>
+  <data name="Outputs_PlayStationButtons" xml:space="preserve">
+    <value>PlayStation बटन</value>
+  </data>
   <data name="Outputs_TVRemote" xml:space="preserve">
     <value>TV रिमोट</value>
   </data>
   <data name="Outputs_TVRemote2" xml:space="preserve">
     <value>TV रिमोट</value>
+  </data>
+  <data name="Outputs_XboxButtons" xml:space="preserve">
+    <value>Xbox बटन</value>
   </data>
   <data name="Prefs_AboutDefLabelAbout" xml:space="preserve">
     <value>{0} के बारे में: {1}</value>
@@ -2407,6 +2497,12 @@
   </data>
   <data name="Review_AddingItChangesCellA1" xml:space="preserve">
     <value>इसे जोड़ने से सेल A1 बदल जाता है। टैब में बाकी सब कुछ वैसे ही आता है जैसे आपने लिखा था।</value>
+  </data>
+  <data name="Review_AndMoreCells_one" xml:space="preserve">
+    <value>{0} और 1 अन्य सेल</value>
+  </data>
+  <data name="Review_AndMoreCells_other" xml:space="preserve">
+    <value>{0} और {1} अन्य सेल</value>
   </data>
   <data name="Review_AndYourPreferences" xml:space="preserve">
     <value>, और आपकी प्रेफ़रेंसेस</value>

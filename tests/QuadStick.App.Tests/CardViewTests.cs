@@ -26,6 +26,7 @@ public class CardViewTests
     static MainWindow OpenOnLip(ProfileFile file, bool cards = true, string zone = "lip")
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.DeviceCards = cards;
         // Rows View has its own card setting, and the settings file is shared
@@ -113,6 +114,7 @@ public class CardViewTests
             "circle,turbo,lip\n" +
             "square,normal,lip\n");
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.DeviceCards = true;
         s.CardSentenceStyle = "InputToOutput";
@@ -140,6 +142,7 @@ public class CardViewTests
     {
         var file = TwoLipMappings();
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.DeviceCards = true;
         s.CardSentenceStyle = "InputToOutput";
@@ -343,7 +346,7 @@ public class CardViewTests
 
         // Drill in: Controller replaces the list with its subcategories.
         Tap(panel, "Controller,");
-        Assert.NotNull(Find(panel, "Buttons,"));
+        Assert.NotNull(Find(panel, "PlayStation buttons,"));
         Assert.NotNull(Find(panel, "Back"));
         Assert.Null(Find(panel, "Keyboard,"));
 
@@ -353,7 +356,7 @@ public class CardViewTests
 
         // All the way down to an actual output.
         Tap(panel, "Controller,");
-        Tap(panel, "Buttons,");
+        Tap(panel, "PlayStation buttons,");
         Tap(panel, "Triangle");
         Assert.Equal("triangle", file.Document.Sheets[0].Bindings[0].Output);
 

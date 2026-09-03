@@ -330,4 +330,27 @@ public class ModeEditTests
         Assert.Equal("right_sip", moved.Inputs[0]);
         Assert.Equal("scope note", f.GetCell(moved.Row, 10));
     }
+
+    // Drew asked for the emulation dropdown to appear with the sheet. The row
+    // is always there, filled in when a mode was picked and blank when it was
+    // not. Blank is what Drew asked for. Configuration.c:684 reads that blank
+    // cell as mode 0, so the guard against writing one lives in InstallFlow.
+    [Fact]
+    public void A_new_preferences_sheet_carries_the_emulation_row_picked_or_blank()
+    {
+        var f = ProfileFile.Load("Profile Name\ngame.csv\nOutput or Function,Function,Input\nx,normal,lip\n");
+        Assert.Equal(1, f.AddPreferencesSheet("4"));
+        var sheet = f.Document.Sheets[1];
+        Assert.Equal(SheetType.Preferences, sheet.Type);
+        var row = Assert.Single(sheet.Bindings);
+        Assert.Equal("enable_DS3_emulation", row.Output);
+        Assert.Equal("4", f.GetCell(row.Row, 1));
+
+        var bare = ProfileFile.Load("Profile Name\ngame.csv\nOutput or Function,Function,Input\nx,normal,lip\n");
+        Assert.Equal(1, bare.AddPreferencesSheet());
+        var blank = Assert.Single(bare.Document.Sheets[1].Bindings);
+        Assert.Equal("enable_DS3_emulation", blank.Output);
+        Assert.Equal("", bare.GetCell(blank.Row, 1));
+        Assert.Contains("enable_DS3_emulation,", bare.ToCsvText());
+    }
 }

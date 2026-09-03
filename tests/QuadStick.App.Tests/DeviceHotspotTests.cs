@@ -160,6 +160,24 @@ public class DeviceHotspotTests
         Assert.NotEqual(fps.Lights, original.Lights);
     }
 
+    // The Singleton is photographed at an angle, so its five lenses are not
+    // evenly spaced in the file. A start and a gap put the outer two off the
+    // glass, so this row carries the five measured centers instead.
+    [Fact]
+    public void The_singletons_lights_come_from_measured_centers()
+    {
+        var row = DeviceDiagram.For(QsModel.Singleton).Lights!.Value;
+        var measured = new[] { 690.0, 815.0, 935.0, 1048.0, 1159.0 };
+
+        for (int i = 0; i < measured.Length; i++)
+            Assert.Equal(measured[i] / 2048, row.XAt(i), 6);
+
+        var gaps = Enumerable.Range(0, 4).Select(i => row.XAt(i + 1) - row.XAt(i)).ToArray();
+        Assert.All(gaps, g => Assert.True(g > 0, "the lights read left to right"));
+        Assert.True(gaps[0] - gaps[3] > 0.005,
+            "evenly spaced lights would mean the measurement was thrown away");
+    }
+
     [Fact]
     public void Singleton_photo_matches_fps_height_without_growing_the_stage()
     {
