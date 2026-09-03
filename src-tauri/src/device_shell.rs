@@ -14,6 +14,7 @@ use crate::device_ipc::{
     DeviceProfileEntryDto, DeviceRequest, DeviceSummaryDto, InstallPlanDto, InstallReceiptDto,
     OpenDeviceFile, confirmation_id, device_id, operation_id, optional_confirmation_id,
 };
+use crate::device_rename_ipc::{RenameDeviceProfileReceiptDto, RenameDeviceProfileRequest};
 use crate::ipc::parse;
 use qcm_config::ProfileFile;
 use qcm_core::clock::{Clock, Moment, SystemClock};
@@ -22,7 +23,7 @@ use qcm_core::error::{DeviceError, QcmError, RequestError, StorageError, Storage
 use qcm_core::operation::OperationId;
 use qcm_core::ports::storage::{
     BackupStore, DeviceFileName, DeviceGeneration, DeviceStorage, PREFERENCES_FILE_NAME,
-    StorageDeviceId,
+    SafeDeviceFileName, StorageDeviceId,
 };
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -232,6 +233,20 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker>
             .delete_profile(plan, confirmation)
             .map(|receipt| DeleteReceiptDto::from(&receipt))
             .map_err(|error| DeviceOperationError::for_operation(operation, error))
+    }
+
+    pub fn rename_profile(&self, raw: Value) -> Result<RenameDeviceProfileReceiptDto, QcmError> {
+        let request: RenameDeviceProfileRequest = parse(raw, "rename_device_profile request")?;
+        let device = device_id(&request.device_id)?;
+        let expected = DeviceGeneration::from_raw(request.expected_generation);
+        let from = DeviceFileName::new(&request.from)
+            .map_err(|reason| StorageError::NameRejected { reason })?;
+        let to = SafeDeviceFileName::new(&request.to)
+            .map_err(|reason| StorageError::NameRejected { reason })?;
+        let receipt = self
+            .devices()
+            .rename_profile(device, expected, &from, &to)?;
+        Ok(RenameDeviceProfileReceiptDto::from(&receipt))
     }
 
     pub fn open_device_profile(&self, raw: Value) -> Result<OpenDeviceFile, QcmError> {
