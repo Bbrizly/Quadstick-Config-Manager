@@ -26,6 +26,7 @@ import type {
   SettingsPatch,
   Subscription,
 } from "./contracts";
+import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
 
 export interface QcmClient {
   getAppSnapshot(): Promise<AppSnapshot>;
@@ -44,6 +45,19 @@ export interface QcmClient {
   saveProfile(sessionId: string, expectedRevision: number): Promise<SaveReceipt>;
   saveProfileAs(sessionId: string, expectedRevision: number): Promise<SaveReceipt | null>;
   closeProfile(sessionId: string, disposition: CloseDisposition): Promise<CloseOutcome>;
+
+  /**
+   * Native-only XLSX lifecycle. Optional on pure browser fakes so they never
+   * grow a second spreadsheet parser or accept raw workbook bytes.
+   */
+  chooseAndImportWorkbook?(): Promise<WorkbookImportReview | null>;
+  repairWorkbookTab?(importId: string, tabIndex: number): Promise<WorkbookImportReview>;
+  acceptWorkbookImport?(importId: string): Promise<EditorSnapshot>;
+  cancelWorkbookImport?(importId: string): Promise<void>;
+  exportProfileXlsx?(
+    sessionId: string,
+    expectedRevision: number,
+  ): Promise<WorkbookExportReceipt | null>;
 
   /** Display-only discovery. Every write revalidates natively. */
   listDevices(): Promise<DevicePresenceSnapshot>;
