@@ -34,6 +34,7 @@ public class LiveRowTests
     static MainWindow Open(bool deviceView = false)
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.RememberWindow = false;
         s.DeviceCards = true;

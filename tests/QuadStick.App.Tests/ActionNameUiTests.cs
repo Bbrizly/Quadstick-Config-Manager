@@ -28,6 +28,7 @@ public class ActionNameUiTests
     static MainWindow OpenOnLip(ProfileFile file, bool cards = false)
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.DeviceCards = cards;
         s.RememberWindow = false;

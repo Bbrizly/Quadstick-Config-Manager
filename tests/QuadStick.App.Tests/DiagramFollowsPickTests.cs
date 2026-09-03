@@ -34,6 +34,7 @@ public class DiagramFollowsPickTests
         // ComboPair is built from the hole names now, so it follows the culture.
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.RememberWindow = false;
         Settings.Save(s);
@@ -207,6 +208,7 @@ public class DiagramFollowsPickTests
     {
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.RememberWindow = false;
         s.DeviceCards = false; // the full card, which is what carries a trash
@@ -310,6 +312,7 @@ public class DiagramFollowsPickTests
     {
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.RememberWindow = false;
         Settings.Save(s);

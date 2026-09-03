@@ -17,6 +17,7 @@ public class FunctionHintTests
     static MainWindow Editor(string csv)
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.RememberWindow = false;
         // Cards off: a closed card is one sentence, and the boxes with the

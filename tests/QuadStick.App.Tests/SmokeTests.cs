@@ -39,6 +39,7 @@ public class SmokeTests
         // A fresh CI machine has no settings file, which would auto-start
         // the tutorial overlay and wall off the UI mid-test. Pre-mark it seen.
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         Settings.Save(s);
         var w = new MainWindow();

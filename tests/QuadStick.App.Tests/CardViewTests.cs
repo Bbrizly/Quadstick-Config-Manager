@@ -26,6 +26,7 @@ public class CardViewTests
     static MainWindow OpenOnLip(ProfileFile file, bool cards = true, string zone = "lip")
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.DeviceCards = cards;
         // Rows View has its own card setting, and the settings file is shared
@@ -113,6 +114,7 @@ public class CardViewTests
             "circle,turbo,lip\n" +
             "square,normal,lip\n");
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.DeviceCards = true;
         s.CardSentenceStyle = "InputToOutput";
@@ -140,6 +142,7 @@ public class CardViewTests
     {
         var file = TwoLipMappings();
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.DeviceCards = true;
         s.CardSentenceStyle = "InputToOutput";

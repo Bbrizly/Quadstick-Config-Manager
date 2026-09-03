@@ -20,6 +20,7 @@ public class BackPanelTests
     static MainWindow OnZone(string zone, string csv)
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.RememberWindow = false;
         s.DeviceCards = false;
@@ -192,6 +193,7 @@ public class BackPanelTests
     public void The_usb_card_is_on_the_device_before_anything_maps_to_it()
     {
         var s = Settings.Load();
+        s.Model = "FPS";   // the diagram's zones depend on it, and neighbours change it
         s.TutorialSeen = true;
         s.RememberWindow = false;
         Settings.Save(s);
