@@ -1,8 +1,9 @@
 /**
  * The one boundary the UI talks to the native side through.
  *
- * Components never import `@tauri-apps/*`. Device work follows the same rule as
- * profile work: opaque ids in, DTOs out, no path-shaped escape hatch.
+ * Components never import `@tauri-apps/*`. Native authority remains behind
+ * narrow commands: paths, device handles, workbook bytes and OAuth tokens never
+ * cross this interface.
  */
 
 import type { CommunityCatalog } from "./communityContracts";
@@ -28,6 +29,7 @@ import type {
   Subscription,
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
+import type { GoogleAuthStatus } from "./googleContracts";
 import type { PreferenceCatalog } from "./preferenceContracts";
 import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
 
@@ -57,13 +59,16 @@ export interface QcmClient {
     expectedRevision: number,
   ): Promise<WorkbookExportReceipt | null>;
 
-  /** Native-owned audited metadata for prefs.csv controls. Browser fakes may omit it. */
   getPreferenceCatalog?(): Promise<PreferenceCatalog>;
 
-  /** Community network/cache/workbook bytes stay native; the UI gets bounded rows/review only. */
   loadCommunityCatalog?(refresh: boolean): Promise<CommunityCatalog>;
   importCommunityProfile?(sheetId: string, csvName: string): Promise<WorkbookImportReview>;
   openCommunitySheet?(sheetId: string): Promise<void>;
+
+  /** Status only. Token values are deliberately impossible to request. */
+  getGoogleAuthStatus?(): Promise<GoogleAuthStatus>;
+  connectGoogle?(): Promise<GoogleAuthStatus>;
+  disconnectGoogle?(): Promise<GoogleAuthStatus>;
 
   listDevices(): Promise<DevicePresenceSnapshot>;
   refreshDevices(): Promise<DevicePresenceSnapshot>;
