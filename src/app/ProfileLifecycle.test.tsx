@@ -56,7 +56,7 @@ describe("TASK-040A local profile lifecycle", () => {
     client.willSaveAs("Saved.csv");
     render(<App client={client} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "New Profile" }));
+    fireEvent.click(screen.getByRole("button", { name: "New profile" }));
     await screen.findByRole("heading", { level: 1, name: "untitled.csv" });
     await dirtyCurrentProfile("Saved mode");
 
