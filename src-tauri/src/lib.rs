@@ -6,6 +6,8 @@
 
 pub mod adapters;
 pub mod commands;
+pub mod community;
+pub mod community_commands;
 pub mod device_ipc;
 pub mod device_rename_ipc;
 pub mod device_shell;
@@ -40,6 +42,8 @@ pub fn registered_commands() -> &'static [&'static str] {
         "cancel_workbook_import",
         "export_profile_xlsx",
         "get_preference_catalog",
+        "load_community_catalog",
+        "import_community_profile",
         "list_devices",
         "refresh_devices",
         "choose_device_folder",
@@ -84,6 +88,10 @@ pub fn run() {
         .manage(shell::native_shell())
         .manage(workbook_shell::native_workbook_shell())
         .manage(device_shell::native_device_shell())
+        .manage(
+            community::CommunityService::native()
+                .expect("failed to build the native Community HTTP client"),
+        )
         .manage(streaming::LiveRuntime::new())
         .manage(streaming::DeviceInvalidationHub::default())
         .invoke_handler(tauri::generate_handler![
@@ -104,6 +112,8 @@ pub fn run() {
             commands::cancel_workbook_import,
             commands::export_profile_xlsx,
             commands::get_preference_catalog,
+            community_commands::load_community_catalog,
+            community_commands::import_community_profile,
             commands::list_devices,
             commands::refresh_devices,
             commands::choose_device_folder,
@@ -139,7 +149,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_contains_no_global_event_api() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 32);
+        assert_eq!(commands.len(), 34);
         for expected in [
             "choose_and_import_workbook",
             "repair_workbook_tab",
@@ -147,6 +157,8 @@ mod tests {
             "cancel_workbook_import",
             "export_profile_xlsx",
             "get_preference_catalog",
+            "load_community_catalog",
+            "import_community_profile",
             "list_devices",
             "refresh_devices",
             "choose_device_folder",
