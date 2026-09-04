@@ -22,51 +22,95 @@ public enum QuadStickCatalog {
                     ])
     }
 
-    public static let capabilities = DeviceCapabilities(
-        model: "QuadStick FPS",
-        ledCount: 4,
-        inputs: [
-            tube("left-tube", "Left Tube"),
-            tube("center-tube", "Center Tube"),
-            tube("right-tube", "Right Tube"),
-            // The fourth sip/puff sensor: the short tube on the right side,
-            // usually used to switch modes (firmware right_sip/right_puff).
-            DeviceInput(id: "side-tube", name: "Side Tube", face: .front,
-                        detail: "The short tube on the right side, often used to switch modes",
-                        actions: [
-                            .init(id: "side-tube-normal-sip", name: "Normal Sip", fullName: "Side Tube Normal Sip"),
-                            .init(id: "side-tube-normal-puff", name: "Normal Puff", fullName: "Side Tube Normal Puff"),
-                            .init(id: "side-tube-soft-sip", name: "Soft Sip", fullName: "Side Tube Soft Sip"),
-                            .init(id: "side-tube-soft-puff", name: "Soft Puff", fullName: "Side Tube Soft Puff"),
-                            .init(id: "side-tube-long-sip", name: "Long Sip", fullName: "Side Tube Long Sip"),
-                            .init(id: "side-tube-long-puff", name: "Long Puff", fullName: "Side Tube Long Puff"),
-                        ]),
-            DeviceInput(id: "joystick", name: "Mouth Joystick", face: .front, actions: [
-                .init(id: "joystick-up", name: "Push Up", fullName: "Mouth Joystick Up"),
-                .init(id: "joystick-down", name: "Push Down", fullName: "Mouth Joystick Down"),
-                .init(id: "joystick-left", name: "Push Left", fullName: "Mouth Joystick Left"),
-                .init(id: "joystick-right", name: "Push Right", fullName: "Mouth Joystick Right"),
-            ]),
-            DeviceInput(id: "lip-switch", name: "Lip Switch", face: .front, actions: [
-                .init(id: "lip-press", name: "Press", fullName: "Lip Switch Press"),
-                .init(id: "lip-soft-press", name: "Soft Press", fullName: "Lip Switch Soft Press"),
-            ]),
-            jack("jack-top", "Top Switch Jack", inputs: (7, 8)),
-            jack("jack-middle", "Middle Jack", inputs: (5, 6),
-                 note: "Lip switch connection. Digital inputs 5 and 6"),
-            jack("jack-bottom", "Bottom Switch Jack", inputs: (1, 2)),
-            DeviceInput(id: "usb-host", name: "USB Host Port", face: .back,
-                        detail: "Plug in an external joystick",
-                        actions: [
-                            .init(id: "usb-up", name: "Joystick Up", fullName: "USB Joystick Up"),
-                            .init(id: "usb-down", name: "Joystick Down", fullName: "USB Joystick Down"),
-                            .init(id: "usb-left", name: "Joystick Left", fullName: "USB Joystick Left"),
-                            .init(id: "usb-right", name: "Joystick Right", fullName: "USB Joystick Right"),
-                        ] + (1...8).map {
-                            .init(id: "usb-button-\($0)", name: "Button \($0)", fullName: "USB Joystick Button \($0)")
-                        }),
-        ]
-    )
+    /// Every input any current model has. Built once so the per-model lists
+    /// below are filters of the same table and can never drift apart.
+    private static let allInputs: [DeviceInput] = [
+        tube("left-tube", "Left Tube"),
+        tube("center-tube", "Center Tube"),
+        tube("right-tube", "Right Tube"),
+        // The fourth sip/puff sensor: the short tube on the right side,
+        // usually used to switch modes (firmware right_sip/right_puff).
+        DeviceInput(id: "side-tube", name: "Side Tube", face: .front,
+                    detail: "The short tube on the right side, often used to switch modes",
+                    actions: [
+                        .init(id: "side-tube-normal-sip", name: "Normal Sip", fullName: "Side Tube Normal Sip"),
+                        .init(id: "side-tube-normal-puff", name: "Normal Puff", fullName: "Side Tube Normal Puff"),
+                        .init(id: "side-tube-soft-sip", name: "Soft Sip", fullName: "Side Tube Soft Sip"),
+                        .init(id: "side-tube-soft-puff", name: "Soft Puff", fullName: "Side Tube Soft Puff"),
+                        .init(id: "side-tube-long-sip", name: "Long Sip", fullName: "Side Tube Long Sip"),
+                        .init(id: "side-tube-long-puff", name: "Long Puff", fullName: "Side Tube Long Puff"),
+                    ]),
+        DeviceInput(id: "joystick", name: "Mouth Joystick", face: .front, actions: [
+            .init(id: "joystick-up", name: "Push Up", fullName: "Mouth Joystick Up"),
+            .init(id: "joystick-down", name: "Push Down", fullName: "Mouth Joystick Down"),
+            .init(id: "joystick-left", name: "Push Left", fullName: "Mouth Joystick Left"),
+            .init(id: "joystick-right", name: "Push Right", fullName: "Mouth Joystick Right"),
+        ]),
+        DeviceInput(id: "lip-switch", name: "Lip Switch", face: .front, actions: [
+            .init(id: "lip-press", name: "Press", fullName: "Lip Switch Press"),
+            .init(id: "lip-soft-press", name: "Soft Press", fullName: "Lip Switch Soft Press"),
+        ]),
+        jack("jack-top", "Top Switch Jack", inputs: (7, 8)),
+        jack("jack-middle", "Middle Jack", inputs: (5, 6),
+             note: "Lip switch connection. Digital inputs 5 and 6"),
+        jack("jack-bottom", "Bottom Switch Jack", inputs: (1, 2)),
+        DeviceInput(id: "usb-host", name: "USB Host Port", face: .back,
+                    detail: "Plug in an external joystick",
+                    actions: [
+                        .init(id: "usb-up", name: "Joystick Up", fullName: "USB Joystick Up"),
+                        .init(id: "usb-down", name: "Joystick Down", fullName: "USB Joystick Down"),
+                        .init(id: "usb-left", name: "Joystick Left", fullName: "USB Joystick Left"),
+                        .init(id: "usb-right", name: "Joystick Right", fullName: "USB Joystick Right"),
+                    ] + (1...8).map {
+                        .init(id: "usb-button-\($0)", name: "Button \($0)", fullName: "USB Joystick Button \($0)")
+                    }),
+    ]
+
+    // Mirrors SingletonZones in the desktop's DeviceDiagram.cs: one tube,
+    // the joystick, and the USB host port. No side tube, no jacks, no lip
+    // switch, because the hardware has none of them.
+    private static let singletonInputIDs: Set<String> = ["center-tube", "joystick", "usb-host"]
+
+    public static func capabilities(for model: QuadStickModel) -> DeviceCapabilities {
+        let inputs = model == .singleton
+            ? allInputs.filter { singletonInputIDs.contains($0.id) }
+            : allInputs
+        return DeviceCapabilities(model: model.displayName, ledCount: 4, inputs: inputs)
+    }
+
+    /// One action looked up across every model, not just the chosen one. The
+    /// screens that open a mapping take an action id, and a profile can map a
+    /// part this QuadStick does not have. Going through the filtered
+    /// capabilities there hands back nothing, and the row opens on a blank
+    /// page instead of the editor.
+    public static func action(_ id: String) -> InputActionDef? {
+        for input in allInputs {
+            if let action = input.actions.first(where: { $0.id == id }) { return action }
+        }
+        return nil
+    }
+
+    /// A profile is a file; somebody can hold a Singleton and open a profile
+    /// that maps the side tube, or pick an Original and still have jack
+    /// bindings saved. Nothing here is deleted or renamed, this only says
+    /// which of the profile's mapped inputs the chosen model does not have,
+    /// so the UI can list them instead of going quiet about them.
+    public static func inputsNotOn(_ model: QuadStickModel, mappedBy profile: Profile) -> [DeviceInput] {
+        let has = capabilities(for: model)
+        let full = capabilities(for: .fps) // fps and original both carry the full set
+        var missingIDs = Set<String>()
+        for mode in profile.modes {
+            for actionID in mode.assignments.keys {
+                guard let input = full.input(forAction: actionID), has.input(input.id) == nil else { continue }
+                missingIDs.insert(input.id)
+            }
+        }
+        return full.inputs.filter { missingIDs.contains($0.id) }
+    }
+
+    /// Kept for callers that have not picked a model yet; resolves to the
+    /// FPS, which has every input.
+    public static var capabilities: DeviceCapabilities { capabilities(for: .fps) }
 
     /// Every output the firmware accepts. The curated entries below carry the
     /// friendly names people expect ("Left Bumper", not "left_bumper"); every

@@ -1,6 +1,6 @@
 {
   "images" : [
-    { "filename" : "QuadStick.png", "idiom" : "universal", "scale" : "1x" },
+    { "filename" : "QuadStickSingleton.png", "idiom" : "universal", "scale" : "1x" },
     { "idiom" : "universal", "scale" : "2x" },
     { "idiom" : "universal", "scale" : "3x" }
   ],

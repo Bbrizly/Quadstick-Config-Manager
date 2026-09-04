@@ -243,64 +243,12 @@ extension KitTests {
 }
 
 // MARK: - Device photo regions
+//
+// Per-model photo geometry (three photos, three sets of hotspots) is pinned
+// in DeviceModelTests.swift, which replaced the single shared table these
+// tests used to check.
 
 extension KitTests {
-
-    func testEveryHotspotPointsAtARealInput() {
-        for spot in DevicePhoto.hotspots {
-            XCTAssertNotNil(QuadStickCatalog.capabilities.input(spot.inputID),
-                            "\(spot.inputID) is not in the catalog")
-        }
-    }
-
-    /// Every front input the person can actually reach has a region on the
-    /// photo. A part with no region is a part they cannot tap.
-    func testEveryFrontInputHasARegion() {
-        let covered = Set(DevicePhoto.hotspots.map(\.inputID))
-        let front = QuadStickCatalog.capabilities.inputs.filter { $0.face == .front }
-        XCTAssertEqual(Set(front.map(\.id)), covered)
-    }
-
-    /// The measurements are only right for the photo they were taken from.
-    func testRegionsSitOnThePhoto() {
-        for spot in DevicePhoto.hotspots {
-            XCTAssertTrue((0...1).contains(spot.x), "\(spot.inputID) x is off the photo")
-            XCTAssertTrue((0...1).contains(spot.y), "\(spot.inputID) y is off the photo")
-        }
-    }
-
-    /// Pinned against the desktop's measured table. If the photo is replaced,
-    /// these change in both apps together or the regions point at nothing.
-    func testRegionsMatchTheDesktopMeasurements() {
-        let byID = Dictionary(uniqueKeysWithValues: DevicePhoto.hotspots.map { ($0.inputID, $0) })
-        // Stage point (218, 224) inside the photo rect at (80, 84) size 440x293.
-        XCTAssertEqual(byID["left-tube"]!.x, (218 - 80) / 440.0, accuracy: 0.0001)
-        XCTAssertEqual(byID["left-tube"]!.y, (224 - 84) / 293.0, accuracy: 0.0001)
-        XCTAssertEqual(byID["side-tube"]!.x, (407 - 80) / 440.0, accuracy: 0.0001)
-        XCTAssertEqual(byID["lip-switch"]!.y, (286 - 84) / 293.0, accuracy: 0.0001)
-        // The joystick is the one deliberate difference; see DeviceHotspot.swift.
-        XCTAssertEqual(byID["joystick"]!.x, 0.306, accuracy: 0.0001)
-        XCTAssertEqual(byID["joystick"]!.y, 0.625, accuracy: 0.0001)
-        XCTAssertEqual(DevicePhoto.aspectRatio, 1.5, accuracy: 0.0001)
-    }
-
-    /// Two regions closer together than the ring is wide put one part's target
-    /// on top of another's, so a tap lands on the wrong part of the device.
-    /// DevicePhotoView draws rings at 0.09 of the photo width.
-    func testNoTwoRegionsOverlapAtTheDrawnRingSize() {
-        XCTAssertGreaterThan(DevicePhoto.minimumSeparation, 0.09,
-                             "rings at 0.09 of the width would overlap")
-    }
-
-    /// The three mouthpiece holes are level and evenly spaced on the real
-    /// device, so they have to be on the photo too.
-    func testTheThreeMouthpieceHolesAreLevelAndEvenlySpaced() {
-        let byID = Dictionary(uniqueKeysWithValues: DevicePhoto.hotspots.map { ($0.inputID, $0) })
-        let left = byID["left-tube"]!, centre = byID["center-tube"]!, right = byID["right-tube"]!
-        XCTAssertEqual(left.y, centre.y, accuracy: 0.0001)
-        XCTAssertEqual(centre.y, right.y, accuracy: 0.0001)
-        XCTAssertEqual(centre.x - left.x, right.x - centre.x, accuracy: 0.01)
-    }
 
     // MARK: - Names the device can show
 
@@ -355,24 +303,6 @@ extension KitTests {
         XCTAssertNil(note)
     }
 
-    /// Every ring on the photo is labelled, and the labels are short enough not
-    /// to run into each other: the three tube rings sit 0.125 of the photo width
-    /// apart and the full part names are wider than that gap.
-    func testEveryHotspotHasAShortLabelAndTheyAreUnique() {
-        let names = DevicePhoto.hotspots.map(\.shortName)
-        XCTAssertEqual(names.count, DevicePhoto.hotspots.count)
-        XCTAssertTrue(names.allSatisfy { !$0.isEmpty && $0.count <= 8 },
-                      "a photo label longer than 8 characters collides with its neighbour")
-        XCTAssertEqual(Set(names).count, names.count, "two rings labelled the same is unreadable")
-    }
-
-    /// Every ring opens a real input; a label pointing at nothing is worse than
-    /// no label.
-    func testEveryHotspotNamesAnInputInTheCatalog() {
-        for spot in DevicePhoto.hotspots {
-            XCTAssertNotNil(QuadStickCatalog.capabilities.input(spot.inputID), spot.inputID)
-        }
-    }
 }
 
 // MARK: - The Google Sheet a profile came from
