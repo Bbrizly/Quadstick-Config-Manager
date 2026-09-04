@@ -54,8 +54,12 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(for: DeviceInput.self) { InputDetailView(input: $0) }
+            // Looked up across every model, not just the chosen one. A profile
+            // can map a part this QuadStick does not have, those rows stay
+            // reachable, and resolving through the filtered capabilities would
+            // open them on nothing.
             .navigationDestination(for: String.self) { actionID in
-                if let action = model.capabilities.action(actionID) {
+                if let action = QuadStickCatalog.action(actionID) {
                     ActionEditorView(action: action)
                 }
             }
