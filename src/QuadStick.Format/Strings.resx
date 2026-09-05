@@ -102,7 +102,7 @@
     <value>10 a second</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1 latches the output on. Anything above 1 is how long the press lasts.</value>
+    <value>Set it to exactly 1 and the output latches on. Anything above 1 is how long the press lasts.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Counts as a tap</value>
@@ -126,7 +126,7 @@
     <value>Hold to latch</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Holds the first tap this long before the rapid-fire starts.</value>
+    <value>Holds the first tap this long before the rapid-fire starts. Shorter than the gap between taps and it changes nothing.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>holds while you hold</value>
@@ -144,7 +144,7 @@
     <value>How long each press lasts.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>How long the tap presses for. 1 latches the output on instead.</value>
+    <value>How long the tap presses for. Set it to exactly 1 and it toggles instead: one tap turns the output on, the next turns it off.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>How many presses one activation sends.</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>Fire it from something other than push, or from a combination push cannot hold on its own.</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>"{0}" reads 0 for {1}, and a second number follows it. Both numbers share one word, so the device only fills in {2} when 0 is the whole cell. Here it reads {1} as a plain 0.</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}" reads 0 for {1} as no value at all, so the device uses {2}.</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>no drive</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>"{0}" is a legacy input name: the firmware knows it but the current official list does not include it.</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>Set it to "normal" to make that explicit.</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>Set {0} between {1} and {2}, or take the second number out.</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>Shorten it to {0} characters or fewer, for example "game.csv".</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Two equal thresholds make the device divide by zero every time it reads the tube.</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>no drive</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB emulation mode {0} ({1}) does not give a computer access to the QuadStick's drive, and this file is one the device boots with. Installing it would leave no way to edit any profile back, and recovery is a physical force-erase.</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Use {0} or more.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Use {0} to {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Use mode 0, 2, 3 or 4 here, and set the other mode in a game profile instead.</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>This spreadsheet is larger than {0} rows, far larger than any profile, so we stopped reading part way through.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Use {0} to {1}. {2}</value>
   </data>
 </root>

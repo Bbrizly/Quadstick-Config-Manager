@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Globalization;
 
 namespace QuadStick.Format;
@@ -787,7 +788,7 @@ public static class Validator
                     string.Format(CultureInfo.CurrentCulture, Strings.Issue_ArgsIIsLargerThan, args[i], FunctionParameters.Ceiling),
                     string.Format(CultureInfo.CurrentCulture, Strings.Issue_UseAValueUpTo, FunctionParameters.Ceiling)));
             else
-                WarnIfOutOfRange(b, parts[0], args[i], i, n, issues);
+                WarnIfOutOfRange(b, parts[0], args[i], i, n, args, issues);
         }
     }
 
@@ -797,7 +798,7 @@ public static class Validator
     // a warning, never a rewrite. Nothing here fires for a function whose
     // parameters this app cannot vouch for.
     static void WarnIfOutOfRange(
-        Binding b, string function, string text, int index, long n, List<Issue> issues)
+        Binding b, string function, string text, int index, long n, string[] args, List<Issue> issues)
     {
         var spec = FunctionParameters.For(function);
         if (index >= spec.Count) return;
@@ -806,11 +807,30 @@ public static class Validator
 
         // 0 is how a file says "leave this one out", and the device substitutes
         // its own default for it. Saying that is worth more than calling it low.
+        //
+        // Except when a second number follows. Both numbers are packed into one
+        // word (Configuration.c:302), and every default test in the firmware is
+        // `if (!function_parameter)` or `function_parameter ? ... : default` on
+        // the whole word, not on the first 14 bits: DataFlow.c:1654 (repeat),
+        // :1689 (pulse), :1739 (delay_on), :1846 (greater_than), :1960 (tap).
+        // So a second number makes the word non-zero and the first number stays
+        // a literal 0. `repeat 0 500` is the worst of them: 1000 / 0, which this
+        // core returns as 0 rather than trapping (nothing sets DIV_0_TRP), so
+        // the row holds the output on instead of tapping ten times a second.
+        // Telling somebody their 0 means the default here would be false.
         if (n == 0)
         {
-            issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                string.Format(CultureInfo.CurrentCulture, Strings.Issue_FunctionReads0ForP, function, p.Label.ToLowerInvariant(), p.Default),
-                string.Format(CultureInfo.CurrentCulture, Strings.Issue_LeaveItOutToMean, p.Label.ToLowerInvariant(), p.Minimum, p.Maximum)));
+            bool packedWithAnother = index == 0 && args.Skip(1).Any(
+                a => long.TryParse(a, System.Globalization.NumberStyles.Integer,
+                                   System.Globalization.CultureInfo.InvariantCulture, out var later)
+                     && later != 0);
+            issues.Add(packedWithAnother
+                ? new Issue(Severity.Warning, $"B{b.Row}",
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_Function0ForPIsPacked, function, p.Label.ToLowerInvariant(), p.Default),
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_SetPBetweenMinAndMaxOrDrop, p.Label.ToLowerInvariant(), p.Minimum, p.Maximum))
+                : new Issue(Severity.Warning, $"B{b.Row}",
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_FunctionReads0ForP, function, p.Label.ToLowerInvariant(), p.Default),
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_LeaveItOutToMean, p.Label.ToLowerInvariant(), p.Minimum, p.Maximum)));
             return;
         }
 

@@ -102,7 +102,7 @@
     <value>10 pro Sekunde</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1 rastet den Ausgang ein. Alles über 1 gibt an, wie lange der Druck dauert.</value>
+    <value>Auf genau 1 gesetzt rastet der Ausgang ein. Alles über 1 gibt an, wie lange der Druck dauert.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Zählt als Tippen</value>
@@ -126,7 +126,7 @@
     <value>Halten zum Einrasten</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Hält den ersten Tipp so lange, bevor das Dauerfeuer beginnt.</value>
+    <value>Hält den ersten Tipp so lange, bevor das Dauerfeuer beginnt. Kürzer als der Abstand zwischen den Tipps ändert nichts.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>hält, solange Sie halten</value>
@@ -144,7 +144,7 @@
     <value>Wie lange jeder Druck dauert.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Wie lange der Tipp drückt. 1 rastet den Ausgang stattdessen ein.</value>
+    <value>Wie lange der Tipp drückt. Auf genau 1 gesetzt schaltet er stattdessen um: ein Tipp schaltet den Ausgang ein, der nächste aus.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>Wie viele Drücke eine Aktivierung sendet.</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>Lösen Sie es von etwas anderem als push aus, oder von einer Kombination, die push nicht allein halten kann.</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>„{0}“ liest 0 für {1}, und danach folgt eine zweite Zahl. Beide Zahlen teilen sich ein Wort, daher setzt das Gerät {2} nur ein, wenn 0 die ganze Zelle ist. Hier liest es {1} als glatte 0.</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}" liest 0 für {1} als überhaupt keinen Wert, daher verwendet das Gerät {2}.</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>kein Laufwerk</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>"{0}" ist ein veralteter Eingangsname: Die Firmware kennt ihn, aber die aktuelle offizielle Liste enthält ihn nicht.</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>Setzen Sie sie auf "normal", um das ausdrücklich zu machen.</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>Setzen Sie {0} zwischen {1} und {2}, oder entfernen Sie die zweite Zahl.</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>Kürzen Sie ihn auf {0} Zeichen oder weniger, zum Beispiel "game.csv".</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Zwei gleiche Schwellenwerte lassen das Gerät bei jedem Lesen des Schlauchs durch null teilen.</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>kein Laufwerk</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB-Emulationsmodus {0} ({1}) gibt einem Computer keinen Zugriff auf das Laufwerk des QuadStick, und diese Datei ist eine, mit der das Gerät startet. Wird sie installiert, gibt es keine Möglichkeit mehr, ein Profil zurückzubearbeiten, und die Wiederherstellung erfordert ein physisches Force-Erase.</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Verwenden Sie {0} oder mehr.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Verwenden Sie {0} bis {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Verwenden Sie hier Modus 0, 2, 3 oder 4, und setzen Sie den anderen Modus stattdessen in einem Spielprofil.</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Diese Tabelle ist größer als {0} Zeilen, weit größer als jedes Profil, daher haben wir das Lesen auf halbem Weg gestoppt.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Verwenden Sie {0} bis {1}. {2}</value>
   </data>
 </root>

@@ -83,6 +83,72 @@ public class FunctionParameterTests
         }
     }
 
+    // Drew reported the second-number wording on 2026-09-05 and he was right,
+    // though not about which function. `tap` and `delay_on` both give a second
+    // number of exactly 1 a special meaning and they are not the same meaning,
+    // which is the whole reason one sentence cannot serve both. delay_on
+    // (DataFlow.c:1741) skips the clear, so the output stays on: a latch.
+    // tap (DataFlow.c:1986-1999) flips the state, so the next tap releases it:
+    // a toggle. The app called both of them latches and sent people looking
+    // for a release that never came.
+    [Fact]
+    public void One_means_a_toggle_on_tap_and_a_latch_on_delay_on()
+    {
+        var tap = FunctionParameters.For("tap")[1].What;
+        var delayOn = FunctionParameters.For("delay_on")[1].What;
+
+        Assert.Contains("toggle", tap, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("latch", tap, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("the next turns it off", tap, StringComparison.Ordinal);
+
+        Assert.Contains("latches", delayOn, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("toggle", delayOn, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // "1" alone reads as either number in a two-number cell, which is what
+    // Drew said was confusing. Any special value a function gives a number has
+    // to say which number it is talking about.
+    [Fact]
+    public void A_special_value_says_which_number_it_means()
+    {
+        foreach (var name in new[] { "tap", "delay_on" })
+        {
+            var what = FunctionParameters.For(name)[1].What;
+            Assert.Contains("exactly 1", what, StringComparison.Ordinal);
+        }
+    }
+
+    // Both numbers are packed into one word (Configuration.c:302) and every
+    // firmware default tests the whole word, not the first number's 14 bits.
+    // So a second number keeps the word non-zero and the first number stays a
+    // literal 0: `repeat 0 500` is not ten taps a second, it is a rate of 0.
+    // The app used to promise the default here, which is the app telling
+    // somebody their device will do something it will not do.
+    [Theory]
+    [InlineData("repeat 0 500")]
+    [InlineData("greater_than 0 60")]
+    [InlineData("pulse 0 3")]
+    public void A_zero_beside_a_second_number_does_not_get_the_default(string function)
+    {
+        var issues = Check(function);
+        Assert.True(Says(issues, "share one word"),
+            "expected the packed-word reading: " + string.Join(" | ", issues.Select(i => i.Message)));
+        Assert.False(Says(issues, "so the device uses"),
+            "the app promised a default the device will not substitute");
+    }
+
+    // The plain case still reads the old way, because with nothing after it a
+    // zero really is how a file leaves a number out.
+    [Theory]
+    [InlineData("repeat 0")]
+    [InlineData("greater_than 0")]
+    public void A_zero_on_its_own_still_names_the_default(string function)
+    {
+        var issues = Check(function);
+        Assert.True(Says(issues, "as no value at all"),
+            "expected the leave-it-out reading: " + string.Join(" | ", issues.Select(i => i.Message)));
+    }
+
     // FunctionArity used to be a second hand-written table beside this one.
     // Two tables of the same fact drift, and the one that drifts teaches
     // somebody their device wrong.

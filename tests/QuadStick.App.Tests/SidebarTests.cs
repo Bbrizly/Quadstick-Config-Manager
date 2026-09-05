@@ -283,11 +283,14 @@ public class SidebarTests
     // LayoutTransform, so every point above 100 leaves the sidebar less room
     // to lay itself out, and with no scroller around the panel the rows and
     // Configuration were arranged over each other. Every supported scale, not
-    // just the one the rest of this suite runs at. Overlap only, not "is it on
-    // screen": the headless window is 1024x768 whatever the scale, while the
-    // app refuses a window under 560*scale, so at 150 and above this runs in a
-    // panel smaller than a real user can produce. Nothing may be drawn over
-    // anything even there.
+    // just the one the rest of this suite runs at.
+    //
+    // Overlap only, never "is it on screen". At 200% in this 1024x768 headless
+    // window the panel is 232px and Configuration needs to sit at 341, and that
+    // is a state a real user can reach too: ApplyScaledMinimums caps MinHeight
+    // at the screen height, so a short screen allows a window smaller than
+    // 560*scale. The sidebar scroller is what makes those parts reachable. Not
+    // fitting is allowed and scrolls; being drawn over is not.
     [AvaloniaTheory]
     [InlineData(100)]
     [InlineData(125)]

@@ -102,7 +102,7 @@
     <value>每秒 10 次</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1 会将输出锁定为开启。大于 1 的值表示按压持续的时长。</value>
+    <value>设为正好 1 时输出会锁定为开启。大于 1 的值表示按压持续的时长。</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>算作一次轻点</value>
@@ -126,7 +126,7 @@
     <value>按住以锁定</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>在连发开始前，第一次轻点会保持这么长时间。</value>
+    <value>在连发开始前，第一次轻点会保持这么长时间。短于两次轻点之间的间隔时不会有任何变化。</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>按住时保持</value>
@@ -144,7 +144,7 @@
     <value>每次按压持续的时长。</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>轻点按压持续的时长。1 则会将输出锁定为开启。</value>
+    <value>轻点按压持续的时长。设为正好 1 时改为切换：轻点一次打开输出，再轻点一次关闭。</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>一次激活发送多少次按压。</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>请使用 push 以外的方式触发，或使用一种 push 本身无法单独保持的组合。</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>“{0}”把 {1} 读成 0，后面还跟着第二个数字。两个数字共用一个字，所以只有当整格就是 0 时设备才会补上 {2}。这里它把 {1} 读成实打实的 0。</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>“{0}”将 {1} 的 0 值当作完全没有值处理，因此设备会使用 {2}。</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>无驱动器</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>“{0}”是一个旧版输入名称：固件能识别它，但当前官方列表中已不包含它。</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>把它设为 "normal" 以明确表示这一点。</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>把 {0} 设在 {1} 到 {2} 之间，或者去掉第二个数字。</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>把它缩短到 {0} 个字符以内，例如 "game.csv"。</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>两个相等的阈值会导致设备每次读取吸管时都发生除以零的错误。</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>无驱动器</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB 仿真模式 {0}（{1}）不会让计算机访问 QuadStick 的驱动器，而这个文件是设备启动时使用的文件。安装它之后将无法再回头编辑任何配置，恢复需要进行物理强制擦除。</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>使用 {0} 或更大的值。</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>请使用 {0} 到 {1}。{2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>这里使用模式 0、2、3 或 4，另一个模式改到游戏配置中设置。</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>该电子表格超过了 {0} 行，远大于任何配置文件，因此我们在读到一半时就停止了。</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>请使用 {0} 到 {1}。{2}</value>
   </data>
 </root>

@@ -62,6 +62,8 @@ public static class FunctionParameters
         // DataFlow.c:1654 `if (!function_parameter) function_parameter = 10;`
         // then `1000 / (function_parameter & 0x3FFF)`, so the number is a rate
         // in hertz. Past 1000 that integer division is 0 and the taps stop.
+        // :1666 only stretches the first cycle when the second number is
+        // longer than that period, so a shorter one is silently nothing.
         ["repeat"] = new[]
         {
             new FunctionParameter("Rate", Strings.Fn_TapsASecond, 1, 1000, Strings.Fn_10ASecond,
@@ -129,8 +131,9 @@ public static class FunctionParameters
         },
 
         // DataFlow.c:1739 defaults the wait to 1000 ms. The second number is
-        // read at :1741 and :1748: exactly 1 means latch it on instead, and
-        // anything above 1 is a press length in milliseconds.
+        // read at :1741 and :1748: exactly 1 skips the clear that would turn
+        // the output back off, so it stays on, and anything above 1 is a press
+        // length in milliseconds. This one really does latch, unlike tap.
         ["delay_on"] = new[]
         {
             new FunctionParameter("Wait", "milliseconds", 1, Ceiling, "1000 ms",
@@ -139,9 +142,12 @@ public static class FunctionParameters
                 Strings.Fn_1LatchesTheOutputOn),
         },
 
-        // DataFlow.c:1960 defaults the tap window to 500 ms; :1976 defaults the
-        // press to 100 ms, and :1957 reads a second number of exactly 1 as
-        // "latch instead of tapping".
+        // DataFlow.c:1960 defaults the tap window to 500 ms and :1976 defaults
+        // the press to 100 ms. A second number of exactly 1 takes the whole
+        // case down the branch the firmware calls "toggle mode" (:1957, :1986):
+        // :1999 flips the state, so the tap after it releases the output. The
+        // app said "latches" here until 2026-09-05, which is the half of it a
+        // user finds out about by getting stuck on.
         ["tap"] = new[]
         {
             new FunctionParameter(Strings.Fn_CountsAsATap, "milliseconds", 1, Ceiling, "500 ms",

@@ -102,7 +102,7 @@
     <value>1秒に10回</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1にすると出力がオンのまま固定されます。1より大きい値は押している長さになります。</value>
+    <value>ちょうど 1 にすると出力がオンのまま固定されます。1 より大きい値は押している長さになります。</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>タップとして扱われます</value>
@@ -126,7 +126,7 @@
     <value>保持で固定</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>連射が始まる前に、最初のタップをこの長さだけ保持します。</value>
+    <value>連射が始まる前に、最初のタップをこの長さだけ保持します。タップの間隔より短い場合は何も変わりません。</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>保持している間、保持されます</value>
@@ -144,7 +144,7 @@
     <value>1回の押下がどれだけ続くか。</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>タップが押される長さ。1にすると代わりに出力がオンのまま固定されます。</value>
+    <value>タップが押される長さ。ちょうど 1 にすると代わりに切り替えになります。1 回のタップで出力がオンになり、次のタップでオフになります。</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>1回の作動で何回押下を送るか。</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>pushではない何かから発動させるか、push単体では保持できない組み合わせから発動させてください。</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>「{0}」は {1} を 0 と読み、そのあとに 2 つ目の数字があります。2 つの数字は 1 つのワードを共有するため、デバイスが {2} を補うのはセル全体が 0 のときだけです。ここでは {1} をそのまま 0 として読みます。</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}"は{1}に対する0を値なしとして読み取るため、デバイスは{2}を使用します。</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>ドライブなし</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>"{0}"は旧式の入力名です。ファームウェアは認識しますが、現在の公式リストには含まれていません。</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>それを明示するために"normal"に設定してください。</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>{0} を {1} から {2} の間に設定するか、2 つ目の数字を削除してください。</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>{0}文字以下に短くしてください。例: "game.csv"。</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>2つのしきい値が等しいと、デバイスはチューブを読み取るたびにゼロ除算を起こします。</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>ドライブなし</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USBエミュレーションモード{0}({1})では、コンピューターはQuadStickのドライブにアクセスできません。このファイルはデバイスが起動時に使うファイルです。これをインストールすると、後からプロファイルを編集する手段がなくなり、復旧には物理的な強制消去が必要になります。</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>{0}以上を使ってください。</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>{0} から {1} を使ってください。{2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>ここではモード0、2、3、4のいずれかを使い、それ以外のモードはゲームプロファイル側で設定してください。</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>このスプレッドシートは{0}行を超えており、どのプロファイルよりもはるかに大きいため、途中で読み取りを止めました。</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>{0} から {1} を使ってください。{2}</value>
   </data>
 </root>

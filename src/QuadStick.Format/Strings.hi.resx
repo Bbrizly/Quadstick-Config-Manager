@@ -102,7 +102,7 @@
     <value>प्रति सेकंड 10</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1 आउटपुट को ऑन लैच करता है। 1 से ऊपर कुछ भी यह बताता है कि प्रेस कितनी देर चलता है।</value>
+    <value>इसे ठीक 1 पर सेट करें और आउटपुट ऑन लैच हो जाता है। 1 से ऊपर कुछ भी यह बताता है कि प्रेस कितनी देर चलता है।</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>टैप के रूप में गिना जाता है</value>
@@ -126,7 +126,7 @@
     <value>लैच करने के लिए होल्ड करें</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>रैपिड-फायर शुरू होने से पहले पहले टैप को इतनी देर तक होल्ड करता है।</value>
+    <value>रैपिड-फायर शुरू होने से पहले पहले टैप को इतनी देर तक होल्ड करता है। टैप के बीच के अंतराल से कम होने पर कुछ नहीं बदलता।</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>जब तक आप होल्ड करते हैं, तब तक होल्ड करता है</value>
@@ -144,7 +144,7 @@
     <value>हर प्रेस कितनी देर तक चलता है।</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>टैप कितनी देर तक दबाता है। इसके बजाय 1 आउटपुट को ऑन लैच कर देता है।</value>
+    <value>टैप कितनी देर तक दबाता है। इसे ठीक 1 पर सेट करें और यह इसके बजाय टॉगल करता है: एक टैप आउटपुट को चालू करता है, अगला उसे बंद कर देता है।</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>एक सक्रियण कितने प्रेस भेजता है।</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>इसे push के अलावा किसी और चीज़ से फायर करें, या किसी ऐसे संयोजन से जिसे push अकेले होल्ड नहीं कर सकता।</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>"{0}" {1} के लिए 0 पढ़ता है, और उसके बाद दूसरा नंबर आता है। दोनों नंबर एक ही वर्ड साझा करते हैं, इसलिए डिवाइस {2} तभी भरता है जब पूरी सेल में सिर्फ़ 0 हो। यहाँ वह {1} को सीधा 0 पढ़ता है।</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}" {1} के लिए 0 को कोई वैल्यू न होने के रूप में पढ़ता है, इसलिए डिवाइस {2} का इस्तेमाल करता है।</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>ड्राइव नहीं</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>"{0}" एक पुराना इनपुट नाम है: फ़र्मवेयर इसे जानता है लेकिन मौजूदा आधिकारिक सूची में यह शामिल नहीं है।</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>इसे स्पष्ट करने के लिए "normal" पर सेट करें।</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>{0} को {1} और {2} के बीच सेट करें, या दूसरा नंबर हटा दें।</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>इसे {0} अक्षरों या उससे कम तक छोटा करें, उदाहरण के लिए "game.csv"।</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>दो बराबर थ्रेशोल्ड डिवाइस को हर बार ट्यूब पढ़ने पर शून्य से भाग करने पर मजबूर करते हैं।</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>ड्राइव नहीं</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB एम्युलेशन मोड {0} ({1}) कंप्यूटर को QuadStick की ड्राइव तक पहुंच नहीं देता, और यह फ़ाइल वह है जिसके साथ डिवाइस बूट होता है। इसे इंस्टॉल करने पर किसी भी प्रोफ़ाइल को वापस संपादित करने का कोई रास्ता नहीं बचेगा, और रिकवरी भौतिक फ़ोर्स-इरेज़ है।</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>{0} या उससे अधिक उपयोग करें।</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>{0} से {1} तक उपयोग करें। {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>यहां मोड 0, 2, 3 या 4 उपयोग करें, और दूसरा मोड इसके बजाय किसी गेम प्रोफ़ाइल में सेट करें।</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>यह स्प्रेडशीट {0} पंक्तियों से बड़ी है, जो किसी भी प्रोफ़ाइल से कहीं बड़ी है, इसलिए हमने बीच में ही पढ़ना बंद कर दिया।</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>{0} से {1} तक उपयोग करें। {2}</value>
   </data>
 </root>
