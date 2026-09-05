@@ -1,0 +1,201 @@
+import { Dialog } from "../../components/primitives/Dialog";
+import { useI18n, type MessageKey } from "../../i18n";
+import type { WorkbookImportReview, WorkbookLimitation } from "../../platform/workbookContracts";
+
+interface WorkbookImportReviewProps {
+  readonly review: WorkbookImportReview | null;
+  readonly busy: boolean;
+  readonly onRepair: (tabIndex: number) => void;
+  readonly onAccept: () => void;
+  readonly onCancel: () => void;
+}
+
+interface KeyedValue<T> {
+  readonly key: string;
+  readonly value: T;
+}
+
+function stableKeys<T>(values: readonly T[], describe: (value: T) => string): KeyedValue<T>[] {
+  const counts = new Map<string, number>();
+  return values.map((value) => {
+    const base = describe(value);
+    const occurrence = (counts.get(base) ?? 0) + 1;
+    counts.set(base, occurrence);
+    return { key: `${base}#${String(occurrence)}`, value };
+  });
+}
+
+export function WorkbookImportReviewDialog({
+  review,
+  busy,
+  onRepair,
+  onAccept,
+  onCancel,
+}: WorkbookImportReviewProps) {
+  const { plural, t } = useI18n();
+  if (review === null) return null;
+
+  const lost = review.skipped.filter((tab) => tab.kind === "unreadable_a1");
+  const helpers = review.skipped.filter((tab) => tab.kind === "helper");
+  const clean = review.limitation === null && lost.length === 0 && review.errorCount === 0;
+
+  return (
+    <Dialog
+      open
+      title={t("Review_ImportReview")}
+      onClose={onCancel}
+      actions={
+        <>
+          <button type="button" disabled={busy} onClick={onCancel}>
+            {t("Device_Cancel")}
+          </button>
+          <button
+            className="primary-action"
+            type="button"
+            data-autofocus
+            disabled={busy}
+            onClick={onAccept}
+          >
+            {t("Community_Import")}
+          </button>
+        </>
+      }
+    >
+      <div className="workbook-review">
+        <h2>{clean ? t("Review_YourSheetCameInClean") : t("Review_WeReadYourSheet")}</h2>
+        <p>{review.name}</p>
+
+        {review.limitation !== null ? (
+          <section aria-labelledby="workbook-limit-heading">
+            <h3 id="workbook-limit-heading">{t("Review_OnlyPartOfTheSpreadsheet")}</h3>
+            <p>{limitationText(review.limitation, t)}</p>
+          </section>
+        ) : null}
+
+        {review.errorCount > 0 || review.warningCount > 0 ? (
+          <section aria-label={t("Shell_ListOfValidationProblemsSelect")}>
+            <p>
+              {plural("Count_Error", review.errorCount, [review.errorCount])}
+              {" · "}
+              {plural("Count_Warning", review.warningCount, [review.warningCount])}
+            </p>
+          </section>
+        ) : null}
+
+        {lost.length > 0 ? (
+          <section aria-labelledby="workbook-lost-heading">
+            <h3 id="workbook-lost-heading">
+              {lost.length === 1 ? t("Review_TabDidNotComeIn") : t("Review_TabsDidNotComeIn")}
+            </h3>
+            <ul className="workbook-review-list">
+              {lost.map((tab) => (
+                <li key={`${tab.index}-${tab.name}`}>
+                  <strong>{tab.name}</strong>
+                  {tab.preview.length > 0 ? (
+                    <table className="workbook-preview" aria-label={tab.name}>
+                      <tbody>
+                        {stableKeys(tab.preview, (row) => JSON.stringify(row)).map((keyedRow) => (
+                          <tr key={keyedRow.key}>
+                            {stableKeys(keyedRow.value, (cell) => cell).map((keyedCell) => (
+                              <td key={keyedCell.key}>{keyedCell.value}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : null}
+                  {tab.repairable ? (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      aria-label={t("Review_AddTheTabTabName", [tab.name])}
+                      onClick={() => onRepair(tab.index)}
+                    >
+                      {t("Review_AddItAsAWorking")}
+                    </button>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {helpers.length > 0 ? (
+          <section aria-labelledby="workbook-helper-heading">
+            <h3 id="workbook-helper-heading">
+              {helpers.length === 1
+                ? t("Review_TabIsNotProfileData")
+                : t("Review_TabsAreNotProfileData")}
+            </h3>
+            <p>
+              {plural(
+                "Review_HelperTabs",
+                helpers.length,
+                [helpers.map((tab) => `“${tab.name}”`).join(", ")],
+              )}
+            </p>
+          </section>
+        ) : null}
+
+        {review.renamed.length > 0 ? (
+          <section aria-labelledby="workbook-renamed-heading">
+            <h3 id="workbook-renamed-heading">
+              {review.renamed.length === 1
+                ? t("Review_ModeIsNamedAfterIts")
+                : t("Review_ModesAreNamedAfterTheir")}
+            </h3>
+            <ul>
+              {review.renamed.map((rename) => (
+                <li key={`${rename.mode_number}-${rename.tab_name}`}>
+                  {rename.cell_c1.length === 0
+                    ? t("Review_ModeRModeNumberIsCalled", [rename.mode_number, rename.tab_name])
+                    : t("Review_ModeRModeNumberIsCalled2", [
+                        rename.mode_number,
+                        rename.tab_name,
+                        rename.cell_c1,
+                      ])}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        <section aria-labelledby="workbook-came-in-heading">
+          <h3 id="workbook-came-in-heading">{t("Review_WhatCameIn")}</h3>
+          <ul>
+            {review.modes.map((mode) => (
+              <li key={`${mode.number}-${mode.kind}-${mode.name}`}>
+                <strong>{mode.name}</strong>
+                {" — "}
+                {plural("Count_Binding", mode.bindingCount, [mode.bindingCount])}
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </Dialog>
+  );
+}
+
+type Translate = (key: MessageKey, values?: readonly unknown[]) => string;
+
+function limitationText(limitation: WorkbookLimitation, t: Translate): string {
+  const partial = t("Review_OnlyPartOfTheSpreadsheet");
+  switch (limitation.kind) {
+    case "sheet_count":
+      return `${partial} · ${t("Count_ModeSheet_other", [limitation.max])}`;
+    case "sheet_rows":
+      return `${limitation.tab} · ${partial} · ${t("Main_RowNumber", [limitation.max])}`;
+    case "workbook_rows": {
+      const rowCap = t("Main_RowNumber", [limitation.max]);
+      if (limitation.remaining_tabs === null || limitation.remaining_tabs === 0) {
+        return `${partial} · ${rowCap}`;
+      }
+      const missingTabs =
+        limitation.remaining_tabs === 1
+          ? t("Review_TabDidNotComeIn")
+          : t("Review_TabsDidNotComeIn");
+      return `${partial} · ${rowCap} · ${String(limitation.remaining_tabs)} ${missingTabs}`;
+    }
+  }
+}

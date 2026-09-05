@@ -1,0 +1,35 @@
+[
+  {
+    "op": "set_cell",
+    "row": 4,
+    "col": 0,
+    "value": "triangle"
+  },
+  {
+    "op": "set_output",
+    "row": 4,
+    "token": "triangle",
+    "action": ""
+  },
+  {
+    "op": "set_output",
+    "row": 4,
+    "token": "circle",
+    "action": "Jump"
+  },
+  {
+    "op": "normalize"
+  },
+  {
+    "op": "undo"
+  },
+  {
+    "op": "undo"
+  },
+  {
+    "op": "undo"
+  },
+  {
+    "op": "undo"
+  }
+]

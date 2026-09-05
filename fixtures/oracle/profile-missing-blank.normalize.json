@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "normalize-canonical",
+  "source": {
+    "name": "profile-missing-blank.csv",
+    "sha256": "2352d7c1073f05d7c56e8866dee165da618a066cb4a77de43fd3e5550fda7879",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "QuadStick Configuration",
+        "Version 1.5",
+        "",
+        "two"
+      ],
+      [
+        "Profile Name",
+        "",
+        "One"
+      ],
+      [
+        "two.csv"
+      ],
+      [
+        "Outputs",
+        "Function",
+        "usb"
+      ],
+      [
+        "x",
+        "normal",
+        "lip"
+      ],
+      [],
+      [
+        "Profile Name",
+        "",
+        "Two"
+      ],
+      [
+        ""
+      ],
+      [
+        "Outputs",
+        "Function",
+        "bluetooth"
+      ],
+      [
+        "circle",
+        "normal",
+        "lip"
+      ]
+    ],
+    "document": {
+      "csvFileName": "two.csv",
+      "fileNameCellRow": 3,
+      "hasVersionHeader": true,
+      "headerVersion": "Version 1.5",
+      "headerSource": "",
+      "headerName": "two",
+      "title": "two",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "One",
+          "csvFileName": "two.csv",
+          "headerLabel": "Outputs",
+          "channel": "usb",
+          "startRow": 2,
+          "bindings": [
+            {
+              "row": 5,
+              "output": "x",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "type": "ProfileName",
+          "modeName": "Two",
+          "csvFileName": null,
+          "headerLabel": "Outputs",
+          "channel": "bluetooth",
+          "startRow": 7,
+          "bindings": [
+            {
+              "row": 10,
+              "output": "circle",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [],
+    "editor": {
+      "dirty": true,
+      "revision": 1,
+      "canUndo": true
+    },
+    "serialized": {
+      "sha256": "d248621a1f54428791dcded6fdd8295f51f6249e7d3d788da7f85e167a77e880",
+      "utf8Bytes": 176,
+      "text": "QuadStick Configuration,Version 1.5,,two\r\nProfile Name,,One\r\ntwo.csv\r\nOutputs,Function,usb\r\nx,normal,lip\r\n\r\nProfile Name,,Two\r\n\r\nOutputs,Function,bluetooth\r\ncircle,normal,lip\r\n"
+    }
+  }
+}

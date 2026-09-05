@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "normalize-canonical",
+  "source": {
+    "name": "profile-comma-blank.csv",
+    "sha256": "be0831d5aa6cb1c45ed3d0b2c6caedfa45339069ba0496505b8ffcdfbe3c8a93",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "QuadStick Configuration",
+        "Version 1.5",
+        "",
+        "comma"
+      ],
+      [
+        "Profile Name",
+        "",
+        "Comma row"
+      ],
+      [
+        "comma.csv"
+      ],
+      [
+        "Outputs",
+        "Function",
+        "usb"
+      ],
+      [
+        "x",
+        "normal",
+        "lip"
+      ],
+      [
+        "",
+        "",
+        ""
+      ],
+      [
+        "circle",
+        "normal",
+        "lip"
+      ]
+    ],
+    "document": {
+      "csvFileName": "comma.csv",
+      "fileNameCellRow": 3,
+      "hasVersionHeader": true,
+      "headerVersion": "Version 1.5",
+      "headerSource": "",
+      "headerName": "comma",
+      "title": "comma",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Comma row",
+          "csvFileName": "comma.csv",
+          "headerLabel": "Outputs",
+          "channel": "usb",
+          "startRow": 2,
+          "bindings": [
+            {
+              "row": 5,
+              "output": "x",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 7,
+              "output": "circle",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [],
+    "editor": {
+      "dirty": true,
+      "revision": 1,
+      "canUndo": true
+    },
+    "serialized": {
+      "sha256": "5ce6717edc8ecf670648380d6e85df4f6fcafe94a17bef5f99a834c62d433170",
+      "utf8Bytes": 139,
+      "text": "QuadStick Configuration,Version 1.5,,comma\r\nProfile Name,,Comma row\r\ncomma.csv\r\nOutputs,Function,usb\r\nx,normal,lip\r\n,,\r\ncircle,normal,lip\r\n"
+    }
+  }
+}

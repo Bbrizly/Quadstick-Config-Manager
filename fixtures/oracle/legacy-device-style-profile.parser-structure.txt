@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "fixtureId": "legacy-device-style-profile",
+  "document": {
+    "csvFileName": "mygame.csv",
+    "fileNameCellRow": 3,
+    "hasVersionHeader": true,
+    "headerVersion": "Version 1.5",
+    "headerSource": "142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds",
+    "headerName": "QuadStick",
+    "title": "QuadStick",
+    "isDefaultConfig": false,
+    "isDevicePreferences": false,
+    "sheets": [
+      {
+        "type": "ProfileName",
+        "modeName": "Left Joystick",
+        "csvFileName": "mygame.csv",
+        "headerLabel": "PlayStation Outputs",
+        "channel": "usb",
+        "startRow": 2,
+        "bindings": [
+          {
+            "row": 5,
+            "output": "x",
+            "function": "normal",
+            "inputs": [
+              "lip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 6,
+            "output": "circle",
+            "function": "toggle",
+            "inputs": [
+              "mp_center_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 7,
+            "output": "left_1",
+            "function": "normal",
+            "inputs": [
+              "mp_left_sip",
+              "right_puff"
+            ],
+            "inputCols": [
+              2,
+              3
+            ],
+            "actionName": ""
+          }
+        ]
+      },
+      {
+        "type": "ProfileName",
+        "modeName": "Mouse",
+        "csvFileName": null,
+        "headerLabel": "PlayStation Outputs",
+        "channel": "usb",
+        "startRow": 9,
+        "bindings": [
+          {
+            "row": 12,
+            "output": "mouse_left",
+            "function": "normal",
+            "inputs": [
+              "left"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 13,
+            "output": "mouse_right",
+            "function": "normal",
+            "inputs": [
+              "right"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 14,
+            "output": "mouse_left_button",
+            "function": "normal",
+            "inputs": [
+              "lip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          }
+        ]
+      },
+      {
+        "type": "Preferences",
+        "modeName": "",
+        "csvFileName": null,
+        "headerLabel": "Preference",
+        "channel": "Units",
+        "startRow": 16,
+        "bindings": [
+          {
+            "row": 19,
+            "output": "mouse_speed",
+            "function": "201",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 20,
+            "output": "volume",
+            "function": "40",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          }
+        ]
+      }
+    ]
+  }
+}

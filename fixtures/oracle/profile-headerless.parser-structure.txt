@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "fixtureId": "profile-headerless",
+  "document": {
+    "csvFileName": "config.csv",
+    "fileNameCellRow": 2,
+    "hasVersionHeader": false,
+    "headerVersion": "",
+    "headerSource": "",
+    "headerName": "",
+    "title": "Mode 1",
+    "isDefaultConfig": false,
+    "isDevicePreferences": false,
+    "sheets": [
+      {
+        "type": "ProfileName",
+        "modeName": "Mode 1",
+        "csvFileName": "config.csv",
+        "headerLabel": "PlayStation Outputs",
+        "channel": "usb",
+        "startRow": 1,
+        "bindings": [
+          {
+            "row": 4,
+            "output": "triangle",
+            "function": "normal",
+            "inputs": [
+              "lip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          }
+        ]
+      }
+    ]
+  }
+}
