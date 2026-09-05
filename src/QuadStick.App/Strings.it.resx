@@ -818,9 +818,11 @@
     <value>Un joystick collegato qui arriva come </value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>Una modalità è una disposizione completa dei Suoi input. Un profilo può contenerne diverse e si passa dall'una all'altra durante il gioco, per esempio una disposizione per camminare e una per guidare. Per cambiare modalità nel gioco, aspira o soffia nel tubo laterale, oppure assegna increment_mode / decrement_mode a un input.
+    <value>Una modalità è un layout completo dei tuoi ingressi. Un profilo può contenerne diverse e passi dall'una all'altra mentre giochi, per esempio un layout per camminare e uno per guidare. Per cambiare modalità nel gioco, assegna increment_mode o decrement_mode a un ingresso. Il profilo di fabbrica li mette su un sorso e un soffio del tubo laterale, ed è per questo che il tubo laterale cambia modalità finché non lo riassegni.
 
-La maggior parte dei profili ha una sola modalità, quindi questo elenco spesso mostra una sola voce. È normale.</value>
+Un sorso lungo e forte sullo stesso tubo è un'altra cosa: apre l'elenco dei file di gioco sul dispositivo, non le modalità di questo file.
+
+La maggior parte dei profili ha una sola modalità, quindi questo elenco mostra spesso una sola voce. È normale.</value>
   </data>
   <data name="Main_APlusB" xml:space="preserve">
     <value>{0} + {1}</value>
@@ -1529,7 +1531,7 @@ Scelga una parte del QuadStick a sinistra per vedere cosa fa in questa modalità
     <value>Un'attivazione per accendere, un'altra per spegnere. L'uscita resta attiva anche dopo il rilascio dell'ingresso.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>Un file .csv che indica al QuadStick quale sip, puff, pressione labiale o movimento del joystick preme quale pulsante di gioco. Un profilo ha uno o più fogli di modalità: disposizioni di controllo complete tra cui passare durante il gioco (disposizione a piedi, disposizione di guida, menu). Faccia un sip o un puff sul tubo laterale, oppure associ increment_mode / decrement_mode, per cambiare modalità in gioco.</value>
+    <value>Un file CSV che associa sorsi, soffi, pressioni del labbro e movimenti del joystick ai pulsanti di gioco. Un profilo ha uno o più fogli modalità, come camminare, guidare o menu. Assegna increment_mode o decrement_mode per cambiare modalità in gioco; il profilo di fabbrica li mette su un sorso e un soffio del tubo laterale.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>Una pressione breve a ogni attivazione dell'ingresso, per quanto a lungo la si tenga.</value>
@@ -2163,7 +2165,7 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
     <value>{0}, {1} non usato. Apre questa parte nella vista dispositivo.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>Una modalità è una disposizione completa dei Suoi input. Passi da una all'altra mentre gioca con il tubo laterale, oppure con increment_mode e decrement_mode.</value>
+    <value>Una modalità è un layout completo dei tuoi ingressi. Passa dall'una all'altra mentre giochi con increment_mode e decrement_mode. Il profilo di fabbrica li assegna a un sorso e a un soffio sul tubo laterale, ed è per questo che il tubo laterale cambia modalità finché non lo riassegni.</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Una modalità ha bisogno di un nome. Quello vecchio è ancora lì.</value>
@@ -3190,6 +3192,9 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>Ignora</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>Ognuno di questi è un intero file di gioco, non una modalità. Con Selezione file attiva, un sorso lungo e forte sul tubo laterale apre questo elenco sul dispositivo: scegline uno con il joystick, poi caricalo con l'interruttore a labbro, con un sorso o un soffio centrale, o con il pulsante. Le modalità sono i layout all'interno di un singolo file.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Modifica modalità</value>

@@ -818,9 +818,11 @@
     <value>여기에 연결된 조이스틱은 다음으로 인식됩니다:</value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>모드는 입력의 전체 레이아웃 하나를 뜻합니다. 프로필은 여러 모드를 담을 수 있으며, 걷기용 레이아웃과 운전용 레이아웃처럼 플레이 중에 전환할 수 있습니다. 게임에서 모드를 전환하려면 옆 튜브를 sip 또는 puff하거나, increment_mode / decrement_mode를 입력에 매핑하세요.
+    <value>모드는 입력 전체의 배치입니다. 한 프로필에 여러 개를 둘 수 있고, 걷기용과 운전용처럼 플레이 중에 전환합니다. 게임에서 모드를 바꾸려면 increment_mode 또는 decrement_mode를 입력에 지정하세요. 공장 프로필은 이 둘을 사이드 튜브의 흡입과 불기에 두었기 때문에, 다시 지정하기 전까지는 사이드 튜브로 모드가 바뀝니다.
 
-대부분의 프로필은 모드가 하나뿐이므로 이 목록에 항목이 하나만 표시되는 경우가 많습니다. 정상입니다.</value>
+같은 튜브를 길고 세게 흡입하는 것은 다른 동작입니다. 이 파일 안의 모드가 아니라 기기에 있는 게임 파일 목록이 열립니다.
+
+대부분의 프로필에는 모드가 하나뿐이라 이 목록에 항목이 하나만 보이는 경우가 많습니다. 정상입니다.</value>
   </data>
   <data name="Main_APlusB" xml:space="preserve">
     <value>{0} + {1}</value>
@@ -1529,7 +1531,7 @@
     <value>한 번 누르면 켜지고 다시 누르면 꺼집니다. 입력을 놓아도 출력은 켜진 상태로 남습니다.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>어떤 sip, puff, 립 누름, 또는 조이스틱 움직임이 어떤 게임 버튼을 누르는지 QuadStick에 알려주는 하나의 CSV 파일입니다. 프로필에는 하나 이상의 모드 시트가 있으며, 플레이 중 전환할 수 있는 전체 조작 레이아웃입니다(걷기 레이아웃, 운전 레이아웃, 메뉴 등). 사이드 튜브에서 sip 또는 puff를 하거나 increment_mode / decrement_mode를 바인딩하면 게임 중 모드를 전환할 수 있습니다.</value>
+    <value>흡입, 불기, 립 누름, 조이스틱 움직임을 게임 버튼에 연결하는 CSV 파일입니다. 프로필에는 걷기, 운전, 메뉴처럼 하나 이상의 모드 시트가 있습니다. 게임에서 모드를 전환하려면 increment_mode 또는 decrement_mode를 지정하세요. 공장 프로필은 이 둘을 사이드 튜브의 흡입과 불기에 두었습니다.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>입력할 때마다 짧게 한 번 누릅니다. 얼마나 오래 유지하든 같습니다.</value>
@@ -2163,7 +2165,7 @@
     <value>{0}, {1} 사용 안 함. 장치 보기에서 이 부분을 엽니다.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>모드는 입력의 전체 배치입니다. 플레이 중에 사이드 튜브로, 또는 increment_mode와 decrement_mode로 모드를 전환할 수 있습니다.</value>
+    <value>모드는 입력 전체의 배치입니다. 플레이 중에는 increment_mode와 decrement_mode로 전환합니다. 공장 프로필이 이 둘을 사이드 튜브의 흡입과 불기에 연결해 두었기 때문에, 다시 지정하기 전까지는 사이드 튜브로 모드가 바뀝니다.</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>모드에는 이름이 필요합니다. 기존 이름이 그대로 유지됩니다.</value>
@@ -3190,6 +3192,9 @@
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>닫기</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>여기 있는 것은 모드가 아니라 각각 하나의 게임 파일입니다. “파일 선택”이 켜져 있으면 사이드 튜브를 길고 세게 흡입할 때 기기에서 이 목록이 열립니다. 조이스틱으로 고른 다음 립 스위치, 가운데 흡입이나 불기, 또는 푸시 스위치로 불러옵니다. 모드는 한 파일 안에 있는 배치입니다.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>모드 편집</value>

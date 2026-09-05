@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
@@ -100,5 +101,30 @@ public sealed class HomeDeviceGroupingTests : IDisposable
             catch (IOException) { }
             catch (UnauthorizedAccessException) { }
         }
+    }
+
+    // Drew Redepenning, 2026-09-05: gamers read this list as the modes. The
+    // sentence has to sit above the cards, because after them it is an
+    // explanation for a mistake somebody has already made. It also has to name
+    // the long hard sip, not the ordinary side tube sip: that one only changes
+    // mode because the factory profile binds right_sip to increment_mode.
+    [AvaloniaFact]
+    public void The_file_list_says_it_is_files_and_not_modes()
+    {
+        var w = HomeWith(Drive("QUADSTICK", "racing.csv"));
+        var cards = Cards(w);
+        var line = w.GetVisualDescendants().OfType<TextBlock>()
+            .First(t => t.Text == Strings.Shell_EachOfTheseIsA);
+
+        Assert.Contains("game file", line.Text!, StringComparison.Ordinal);
+        Assert.Contains("not a mode", line.Text!, StringComparison.Ordinal);
+        Assert.Contains("long hard sip", line.Text!, StringComparison.Ordinal);
+        Assert.True(line.IsVisible);
+
+        var lineTop = line.TranslatePoint(new Avalonia.Point(0, 0), w)!.Value.Y;
+        var cardsTop = cards.TranslatePoint(new Avalonia.Point(0, 0), w)!.Value.Y;
+        Assert.True(lineTop < cardsTop, "the sentence is below the files it explains");
+
+        w.Close();
     }
 }

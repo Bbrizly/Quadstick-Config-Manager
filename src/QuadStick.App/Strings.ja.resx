@@ -818,9 +818,11 @@
     <value>ここに接続されたジョイスティックは次として届きます:</value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>モードとは、入力の完全な 1 つのレイアウトです。プロファイルには複数のモードを持たせることができ、プレイ中に切り替えられます。例えば歩行用レイアウトと運転用レイアウトのようにです。ゲーム内でモードを切り替えるには、サイドチューブを sip または puff するか、increment_mode / decrement_mode を入力に割り当ててください。
+    <value>モードは入力全体のレイアウトです。1 つのプロファイルに複数持たせて、歩行用と運転用のようにプレイ中に切り替えます。ゲーム中にモードを切り替えるには、increment_mode または decrement_mode を入力に割り当てます。工場出荷時のプロファイルはこれらをサイドチューブの吸いと吹きに置いているため、割り当てを変えるまではサイドチューブでモードが変わります。
 
-ほとんどのプロファイルはモードが 1 つだけなので、このリストには 1 件しか表示されないことがよくあります。それは正常です。</value>
+同じチューブを長く強く吸うのは別の動作です。デバイス上のゲームファイルの一覧が開くのであって、このファイルの中のモードではありません。
+
+ほとんどのプロファイルはモードが 1 つだけなので、この一覧は 1 件しか表示されないことがよくあります。それが普通です。</value>
   </data>
   <data name="Main_APlusB" xml:space="preserve">
     <value>{0} + {1}</value>
@@ -1529,7 +1531,7 @@
     <value>1 回でオン、もう 1 回でオフになります。入力をやめても出力はオンのままです。</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>1つのCSVファイルが、どのSip、Puff、リップ押し、ジョイスティック操作がどのゲームボタンを押すかをQuadStickに伝えます。プロファイルには1つ以上のモードシートがあります。プレイ中に切り替える、完全な操作レイアウト(歩行用レイアウト、運転用レイアウト、メニューなど)です。サイドチューブをSipまたはPuffするか、increment_mode / decrement_modeを割り当てることで、ゲーム内でモードを切り替えられます。</value>
+    <value>吸い、吹き、リップ操作、ジョイスティックの動きをゲームのボタンに割り当てる CSV ファイルです。プロファイルには歩行、運転、メニューなど 1 つ以上のモードシートがあります。ゲーム中にモードを切り替えるには increment_mode か decrement_mode を割り当てます。工場出荷時のプロファイルはこれらをサイドチューブの吸いと吹きに置いています。</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>入力するたびに短く 1 回押します。どれだけ長く入力しても同じです。</value>
@@ -2161,7 +2163,7 @@
     <value>{0}、{1} は未使用です。デバイスビューでこの部分を開きます。</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>モードは入力全体のレイアウトです。プレイ中はサイドチューブ、または increment_mode と decrement_mode で切り替えます。</value>
+    <value>モードは入力全体のレイアウトです。プレイ中は increment_mode と decrement_mode で切り替えます。工場出荷時のプロファイルはこれらをサイドチューブの吸いと吹きに割り当てているため、割り当てを変えるまではサイドチューブでモードが変わります。</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>モードには名前が必要です。元の名前はそのまま残っています。</value>
@@ -3188,6 +3190,9 @@
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>閉じる</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>ここに並ぶのはモードではなく、それぞれが 1 つのゲームファイルです。「ファイル選択」が有効なとき、サイドチューブを長く強く吸うとデバイス上でこの一覧が開きます。ジョイスティックで選び、リップスイッチ、中央の吸いまたは吹き、あるいはプッシュスイッチで読み込みます。モードは 1 つのファイルの中にあるレイアウトです。</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>モードを編集</value>

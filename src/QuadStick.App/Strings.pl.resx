@@ -818,9 +818,11 @@
     <value>Joystick podłączony tutaj pojawia się jako</value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>Tryb to jeden pełny układ Twoich wejść. Profil może zawierać kilka trybów, między którymi przełączasz się podczas gry, na przykład układ do chodzenia i układ do jazdy. Aby przełączyć tryb w grze, wykonaj Sip lub Puff w bocznej rurce, albo przypisz increment_mode / decrement_mode do wejścia.
+    <value>Tryb to pełny układ twoich wejść. Profil może zawierać kilka i przełączasz się między nimi podczas gry, na przykład układ do chodzenia i układ do jazdy. Aby zmieniać tryby w grze, przypisz increment_mode lub decrement_mode do wejścia. Profil fabryczny umieszcza je na wciągnięciu i dmuchnięciu w bocznej rurce, dlatego boczna rurka zmienia tryb, dopóki nie zmienisz przypisania.
 
-Większość profili ma tylko jeden tryb, więc ta lista często pokazuje pojedynczy wpis. To normalne.</value>
+Długie mocne wciągnięcie w tę samą rurkę to co innego: otwiera listę plików gier na urządzeniu, a nie tryby w tym pliku.
+
+Większość profili ma tylko jeden tryb, więc ta lista często pokazuje jedną pozycję. To normalne.</value>
   </data>
   <data name="Main_APlusB" xml:space="preserve">
     <value>{0} + {1}</value>
@@ -1529,7 +1531,7 @@ Wybierz część QuadSticka po lewej, aby zobaczyć, co robi w tym trybie, zmien
     <value>Jedno naciśnięcie włącza, kolejne wyłącza. Wyjście pozostaje włączone po zwolnieniu wejścia.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>Jeden plik CSV, który mówi QuadStickowi, które Sip, Puff, naciśnięcie wargą lub ruch joysticka naciska który przycisk gry. Profil ma jeden lub więcej arkuszy trybów: pełne układy sterowania, między którymi przełącza się podczas gry (układ do chodzenia, układ do jazdy, menu). Sip lub Puff na rurce bocznej, lub przypisanie increment_mode / decrement_mode, przełącza tryby w grze.</value>
+    <value>Plik CSV, który przypisuje wciągnięcia, dmuchnięcia, naciśnięcia wargą i ruchy joysticka do przycisków gry. Profil ma jeden lub więcej arkuszy trybu, na przykład chodzenie, jazdę albo menu. Przypisz increment_mode lub decrement_mode, aby zmieniać tryby w grze; profil fabryczny umieszcza je na wciągnięciu i dmuchnięciu w bocznej rurce.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>Krótkie naciśnięcie przy każdej aktywacji wejścia, niezależnie od tego, jak długo jest przytrzymane.</value>
@@ -2163,7 +2165,7 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
     <value>{0}, {1} nieużywane. Otwiera tę część w widoku urządzenia.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>Tryb to pełny układ Twoich wejść. Przełączaj się między nimi podczas gry za pomocą bocznej rurki albo za pomocą increment_mode i decrement_mode.</value>
+    <value>Tryb to pełny układ twoich wejść. Przełączaj się między nimi podczas gry za pomocą increment_mode i decrement_mode. Profil fabryczny przypisuje je do wciągnięcia i dmuchnięcia w bocznej rurce, dlatego boczna rurka zmienia tryb, dopóki nie zmienisz przypisania.</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Tryb musi mieć nazwę. Stara nazwa nadal tam jest.</value>
@@ -3190,6 +3192,9 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>Odrzuć</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>Każda z nich to cały plik gry, a nie tryb. Gdy Wybór plików jest włączony, długie mocne wciągnięcie w boczną rurkę otwiera tę listę na urządzeniu: wybierz joystickiem, a potem wczytaj przełącznikiem wargowym, środkowym wciągnięciem lub dmuchnięciem albo przyciskiem. Tryby to układy wewnątrz jednego pliku.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Edytuj tryby</value>

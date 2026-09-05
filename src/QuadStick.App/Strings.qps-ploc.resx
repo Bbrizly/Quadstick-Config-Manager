@@ -818,9 +818,11 @@
     <value>[Á jóýštíçk plúggéd íñ héré árrívéš áš  xxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>[Á módé íš óñé fúll láýóút óf ýóúr íñpútš. Á prófílé çáñ hóld šévérál áñd ýóú šwítçh bétwééñ thém whílé pláýíñg, fór éxámplé á wálkíñg láýóút áñd á drívíñg láýóút. Tó šwítçh módéš íñ thé gámé, šíp ór púff thé šídé túbé, ór máp íñçréméñt_módé / déçréméñt_módé tó áñ íñpút.
+    <value>[Á módé íš óñé fúll láýóút óf ýóúr íñpútš. Á prófílé çáñ hóld šévérál áñd ýóú šwítçh bétwééñ thém whílé pláýíñg, fór éxámplé á wálkíñg láýóút áñd á drívíñg láýóút. Tó šwítçh módéš íñ thé gámé, máp íñçréméñt_módé ór déçréméñt_módé tó áñ íñpút. Thé fáçtórý prófílé pútš thém óñ á šídé túbé šíp áñd púff, whíçh íš whý thé šídé túbé çháñgéš módé úñtíl ýóú rébíñd ít.
 
-Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šhówš á šíñglé éñtrý. Thát íš ñórmál. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+Á lóñg hárd šíp óñ thát šámé túbé íš á dífféréñt thíñg: ít ópéñš thé líšt óf gámé fíléš óñ thé dévíçé, ñót thé módéš íñ thíš óñé.
+
+Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šhówš á šíñglé éñtrý. Thát íš ñórmál. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_APlusB" xml:space="preserve">
     <value>[{0} + {1} xxx]</value>
@@ -1529,7 +1531,7 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
     <value>[Préšš óñçé tó túrñ óñ, préšš ágáíñ tó túrñ óff. Thé óútpút štáýš óñ áftér ýóú réléášé thé íñpút. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>[Á ÇŠV fílé thát mápš šípš, púffš, líp préššéš, áñd jóýštíçk móvéš tó gámé búttóñš. Á prófílé háš óñé ór móré módé šhéétš, šúçh áš wálkíñg, drívíñg, ór méñúš. Šíp ór púff thé šídé túbé, ór bíñd íñçréméñt_módé / déçréméñt_módé, tó šwítçh módéš íñ-gámé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Á ÇŠV fílé thát mápš šípš, púffš, líp préššéš, áñd jóýštíçk móvéš tó gámé búttóñš. Á prófílé háš óñé ór móré módé šhéétš, šúçh áš wálkíñg, drívíñg, ór méñúš. Bíñd íñçréméñt_módé ór déçréméñt_módé tó šwítçh módéš íñ-gámé; thé fáçtórý prófílé pútš thém óñ á šídé túbé šíp áñd púff. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>[Á qúíçk préšš éáçh tímé ýóú áçtíváté thé íñpút, hówévér lóñg ýóú hóld ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -2163,7 +2165,7 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
     <value>[{0}, {1} ñót úšéd. Ópéñš thíš párt íñ dévíçé víéw. xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>[Á módé íš á fúll láýóút óf ýóúr íñpútš. Šwítçh bétwééñ thém whílé pláýíñg wíth thé šídé túbé, ór wíth íñçréméñt_módé áñd déçréméñt_módé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Á módé íš á fúll láýóút óf ýóúr íñpútš. Šwítçh bétwééñ thém whílé pláýíñg wíth íñçréméñt_módé áñd déçréméñt_módé. Thé fáçtórý prófílé bíñdš thóšé tó á šídé túbé šíp áñd púff, whíçh íš whý thé šídé túbé çháñgéš módé úñtíl ýóú rébíñd ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>[Á módé ñéédš á ñámé. Thé óld óñé íš štíll théré. xxxxxxxxxxxxxxxxxxx]</value>
@@ -3190,6 +3192,9 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>[Díšmíšš xx]</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>[Éáçh óf théšé íš á whólé gámé fílé, ñót á módé. Wíth Šéléçt fíléš óñ, á lóñg hárd šíp óñ thé šídé túbé ópéñš thíš líšt óñ thé dévíçé: píçk óñé wíth thé jóýštíçk, théñ lóád ít wíth thé líp šwítçh, á çéñtré šíp ór púff, ór thé púšh šwítçh. Módéš áré thé láýóútš íñšídé á šíñglé fílé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>[Édít módéš xxxx]</value>

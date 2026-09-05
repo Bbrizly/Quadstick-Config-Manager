@@ -818,9 +818,11 @@
     <value>Um joystick conectado aqui chega como </value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>Um modo é um layout completo das suas entradas. Um perfil pode conter vários, e você alterna entre eles durante o jogo, por exemplo um layout de andar e um layout de dirigir. Para trocar de modo no jogo, dê um Sip ou Puff no tubo lateral, ou mapeie increment_mode / decrement_mode para uma entrada.
+    <value>Um modo é uma disposição completa das suas entradas. Um perfil pode ter vários e alterna entre eles enquanto joga, por exemplo uma disposição para andar e outra para conduzir. Para mudar de modo no jogo, atribua increment_mode ou decrement_mode a uma entrada. O perfil de fábrica coloca-os numa sucção e num sopro do tubo lateral, e é por isso que o tubo lateral muda de modo até que o reatribua.
 
-A maioria dos perfis tem apenas um modo, então esta lista costuma mostrar um único item. Isso é normal.</value>
+Uma sucção longa e forte nesse mesmo tubo é outra coisa: abre a lista de ficheiros de jogo no dispositivo, não os modos deste ficheiro.
+
+A maioria dos perfis tem apenas um modo, por isso esta lista mostra muitas vezes uma única entrada. É normal.</value>
   </data>
   <data name="Main_APlusB" xml:space="preserve">
     <value>{0} + {1}</value>
@@ -1529,7 +1531,7 @@ Escolha uma peça do QuadStick à esquerda para ver o que ela faz neste modo, al
     <value>Premir uma vez para ligar, premir outra vez para desligar. A saída fica ativa mesmo depois de soltar a entrada.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>Um arquivo CSV que informa ao QuadStick qual sip, puff, pressão de lábio ou movimento do joystick pressiona qual botão do jogo. Um perfil tem uma ou mais planilhas de modo: layouts de controle completos entre os quais você alterna durante o jogo (layout de caminhada, layout de direção, menus). Sip ou puff no tubo lateral, ou vincule increment_mode / decrement_mode, para trocar de modo durante o jogo.</value>
+    <value>Um ficheiro CSV que associa sucções, sopros, pressões do lábio e movimentos do joystick a botões de jogo. Um perfil tem uma ou mais folhas de modo, como andar, conduzir ou menus. Atribua increment_mode ou decrement_mode para mudar de modo durante o jogo; o perfil de fábrica coloca-os numa sucção e num sopro do tubo lateral.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>Uma pressão rápida sempre que ativa a entrada, por mais tempo que a mantenha.</value>
@@ -2163,7 +2165,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>{0}, {1} não usado. Abre esta parte na visualização do dispositivo.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>Um modo é um layout completo das suas entradas. Alterne entre eles enquanto joga com o tubo lateral, ou com increment_mode e decrement_mode.</value>
+    <value>Um modo é uma disposição completa das suas entradas. Alterne entre eles enquanto joga com increment_mode e decrement_mode. O perfil de fábrica associa-os a um sopro e a uma sucção no tubo lateral, e é por isso que o tubo lateral muda de modo até que o reatribua.</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Um modo precisa de um nome. O antigo ainda está lá.</value>
@@ -3190,6 +3192,9 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>Dispensar</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>Cada um destes é um ficheiro de jogo inteiro, não um modo. Com Selecionar ficheiros ativado, uma sucção longa e forte no tubo lateral abre esta lista no dispositivo: escolha um com o joystick e carregue-o com o interruptor de lábio, com uma sucção ou sopro central, ou com o botão de pressão. Os modos são as disposições dentro de um único ficheiro.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Editar modos</value>

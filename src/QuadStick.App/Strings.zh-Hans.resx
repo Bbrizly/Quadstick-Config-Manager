@@ -818,9 +818,11 @@
     <value>在此处插入的摇杆将显示为</value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>模式是您输入的一套完整布局。一个配置文件可以包含多个模式，您可以在游戏过程中切换，例如步行布局和驾驶布局。要在游戏中切换模式，请吸吮或吹气侧边管，或将 increment_mode / decrement_mode 映射到某个输入。
+    <value>模式是你全部输入的一整套布局。一个配置可以包含多个模式，你在游戏中切换，例如步行布局和驾驶布局。要在游戏里切换模式，把 increment_mode 或 decrement_mode 绑定到某个输入。出厂配置把它们放在侧管的吸和吹上，所以在你重新绑定之前，侧管会切换模式。
 
-大多数配置文件只有一个模式，因此此列表通常只显示一个条目。这是正常现象。</value>
+在同一根管上长而用力地吸是另一回事：它打开的是设备上的游戏文件列表，不是这个文件里的模式。
+
+大多数配置只有一个模式，所以这个列表常常只显示一条。这是正常的。</value>
   </data>
   <data name="Main_APlusB" xml:space="preserve">
     <value>{0} + {1}</value>
@@ -1529,7 +1531,7 @@
     <value>按一次打开，再按一次关闭。松开输入后输出仍然保持打开。</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>一个 CSV 文件，用来告诉 QuadStick 哪个 sip、puff、唇部按压或摇杆动作按下哪个游戏按钮。一个配置文件包含一个或多个模式表：您在游戏中切换的完整控制布局（行走布局、驾驶布局、菜单）。对侧管进行 sip 或 puff，或绑定 increment_mode / decrement_mode，即可在游戏中切换模式。</value>
+    <value>一个 CSV 文件，把吸、吹、唇键和摇杆动作映射到游戏按键。一个配置有一个或多个模式表，例如步行、驾驶或菜单。绑定 increment_mode 或 decrement_mode 即可在游戏中切换模式；出厂配置把它们放在侧管的吸和吹上。</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>每次触发输入都短按一次，不管你按住多久。</value>
@@ -2163,7 +2165,7 @@
     <value>{0}，{1} 未使用。在设备视图中打开此部分。</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>模式是您输入的完整布局。游戏时可用侧管切换，或使用 increment_mode 和 decrement_mode 切换。</value>
+    <value>模式是你全部输入的一整套布局。游戏中用 increment_mode 和 decrement_mode 在模式之间切换。出厂配置把它们绑定到侧管的吸和吹上，所以在你重新绑定之前，侧管会切换模式。</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>模式需要一个名称。旧名称仍然保留。</value>
@@ -3190,6 +3192,9 @@
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>关闭</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>这里的每一项都是一个完整的游戏文件，不是模式。开启“选择文件”后，在侧管上长而用力地吸就会在设备上打开这个列表：用摇杆选择，然后用唇键、中孔的吸或吹、或者按压开关载入。模式是单个文件内部的布局。</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>编辑模式</value>

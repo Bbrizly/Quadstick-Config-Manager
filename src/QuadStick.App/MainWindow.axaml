@@ -144,6 +144,14 @@
                   <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Width="18" Height="18" Data="{DynamicResource IconFiles}"/><TextBlock Text="{x:Static app:Strings.Shell_ManageFiles}"/></StackPanel>
                 </Button>
               </StackPanel>
+              <!-- Drew Redepenning, 2026-09-05: gamers read this list as the
+                   modes. It is the files, and the gesture that opens it is a
+                   long hard sip, not the ordinary side tube sip that the
+                   factory profile happens to bind to increment_mode. Says so
+                   before the list rather than after somebody is confused. -->
+              <TextBlock FontSize="{DynamicResource BodySize}" Classes="secondary"
+                         Text="{x:Static app:Strings.Shell_EachOfTheseIsA}"
+                         TextWrapping="Wrap"/>
               <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
                          Text="{x:Static app:Strings.Shell_PlugInYourQuadStickTo}"
                          TextWrapping="Wrap"/>

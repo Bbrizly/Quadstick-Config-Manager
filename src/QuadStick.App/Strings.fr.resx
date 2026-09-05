@@ -818,9 +818,11 @@
     <value>Un joystick branché ici arrive comme </value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>Un mode est une disposition complète de vos entrées. Un profil peut en contenir plusieurs et vous passez de l'un à l'autre en jouant, par exemple une disposition pour marcher et une pour conduire. Pour changer de mode dans le jeu, faites un Sip ou un Puff sur le tube latéral, ou affectez increment_mode / decrement_mode à une entrée.
+    <value>Un mode est une disposition complète de vos entrées. Un profil peut en contenir plusieurs et vous passez de l'un à l'autre en jouant, par exemple une disposition pour marcher et une pour conduire. Pour changer de mode dans le jeu, affectez increment_mode ou decrement_mode à une entrée. Le profil d'usine les place sur une aspiration et un souffle du tube latéral, c'est pourquoi le tube latéral change de mode tant que vous ne le réaffectez pas.
 
-La plupart des profils n'ont qu'un seul mode, donc cette liste montre souvent une seule entrée. C'est normal.</value>
+Une aspiration longue et forte sur ce même tube est autre chose : elle ouvre la liste des fichiers de jeu de l'appareil, pas les modes de ce fichier.
+
+La plupart des profils n'ont qu'un seul mode, cette liste n'affiche donc souvent qu'une entrée. C'est normal.</value>
   </data>
   <data name="Main_APlusB" xml:space="preserve">
     <value>{0} + {1}</value>
@@ -1529,7 +1531,7 @@ Choisissez une partie du QuadStick à gauche pour voir ce qu'elle fait dans ce m
     <value>Appuyez une fois pour activer, encore une fois pour désactiver. La sortie reste active après le relâchement de l'entrée.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>Un fichier CSV qui dit au QuadStick quelle aspiration, quel souffle, quel appui de lèvre ou quel mouvement du joystick presse quel bouton de jeu. Un profil a une ou plusieurs feuilles de mode : des dispositions complètes entre lesquelles vous basculez en jouant (disposition marche, disposition conduite, menus). Aspirez ou soufflez dans le tube latéral, ou assignez increment_mode / decrement_mode, pour changer de mode en jeu.</value>
+    <value>Un fichier CSV qui associe aspirations, souffles, appuis de la lèvre et mouvements du joystick aux boutons du jeu. Un profil contient une ou plusieurs feuilles de mode, par exemple marcher, conduire ou les menus. Affectez increment_mode ou decrement_mode pour changer de mode en jeu ; le profil d'usine les place sur une aspiration et un souffle du tube latéral.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>Une pression rapide à chaque activation de l'entrée, quelle que soit la durée du maintien.</value>
@@ -2163,7 +2165,7 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
     <value>{0}, {1} non utilisé. Ouvre cette partie dans la vue appareil.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>Un mode est une disposition complète de vos entrées. Passez de l'un à l'autre en jouant avec le tube latéral, ou avec increment_mode et decrement_mode.</value>
+    <value>Un mode est une disposition complète de vos entrées. Passez de l'un à l'autre en jouant avec increment_mode et decrement_mode. Le profil d'usine les associe à une aspiration et un souffle sur le tube latéral, c'est pourquoi le tube latéral change de mode tant que vous ne le réaffectez pas.</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Un mode a besoin d'un nom. L'ancien est toujours là.</value>
@@ -3190,6 +3192,9 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>Ignorer</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>Chacun de ces éléments est un fichier de jeu entier, pas un mode. Avec Sélection des fichiers activée, une aspiration longue et forte sur le tube latéral ouvre cette liste sur l'appareil : choisissez avec le joystick, puis chargez avec le contacteur labial, une aspiration ou un souffle central, ou le bouton-poussoir. Les modes sont les dispositions à l'intérieur d'un même fichier.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Modifier les modes</value>

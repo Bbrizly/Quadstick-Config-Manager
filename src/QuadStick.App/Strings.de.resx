@@ -818,7 +818,9 @@
     <value>Ein hier angeschlossener Joystick kommt an als</value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>Ein Modus ist eine vollständige Belegung Ihrer Eingänge. Ein Profil kann mehrere enthalten, und Sie wechseln beim Spielen zwischen ihnen, zum Beispiel eine Belegung zum Gehen und eine zum Fahren. Um im Spiel den Modus zu wechseln, saugen oder pusten Sie am seitlichen Röhrchen, oder belegen Sie einen Eingang mit increment_mode / decrement_mode.
+    <value>Ein Modus ist ein vollständiges Layout Ihrer Eingaben. Ein Profil kann mehrere enthalten und Sie wechseln im Spiel zwischen ihnen, zum Beispiel ein Lauf-Layout und ein Fahr-Layout. Um im Spiel den Modus zu wechseln, legen Sie increment_mode oder decrement_mode auf eine Eingabe. Das Werksprofil legt sie auf Saugen und Pusten am Seitenschlauch, weshalb der Seitenschlauch den Modus wechselt, bis Sie ihn neu belegen.
+
+Ein langes kräftiges Saugen an demselben Schlauch ist etwas anderes: Es öffnet die Liste der Spieldateien auf dem Gerät, nicht die Modi in dieser Datei.
 
 Die meisten Profile haben nur einen Modus, daher zeigt diese Liste oft einen einzigen Eintrag. Das ist normal.</value>
   </data>
@@ -1529,7 +1531,7 @@ Wählen Sie links einen Teil des QuadStick aus, um zu sehen, was er in diesem Mo
     <value>Einmal drücken zum Einschalten, noch einmal zum Ausschalten. Die Ausgabe bleibt an, nachdem Sie die Eingabe loslassen.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>Eine CSV-Datei, die dem QuadStick sagt, welches sip, puff, welcher Lippendruck oder welche Joystick-Bewegung welche Spieltaste drückt. Ein Profil hat ein oder mehrere Modus-Blätter: vollständige Steuerungslayouts, zwischen denen Sie beim Spielen wechseln (Lauf-Layout, Fahr-Layout, Menüs). Sip oder Puff am Seitenröhrchen, oder increment_mode / decrement_mode binden, um Modi im Spiel zu wechseln.</value>
+    <value>Eine CSV-Datei, die Saugen, Pusten, Lippendruck und Joystick-Bewegungen auf Spieltasten legt. Ein Profil hat ein oder mehrere Modus-Blätter, etwa Laufen, Fahren oder Menüs. Belegen Sie increment_mode oder decrement_mode, um im Spiel den Modus zu wechseln; das Werksprofil legt sie auf Saugen und Pusten am Seitenschlauch.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>Ein kurzer Druck bei jeder Aktivierung der Eingabe, egal wie lange Sie halten.</value>
@@ -2163,7 +2165,7 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
     <value>{0}, {1} nicht verwendet. Öffnet diesen Teil in der Geräteansicht.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>Ein Modus ist eine vollständige Belegung Ihrer Eingaben. Wechseln Sie beim Spielen mit dem Seitenrohr zwischen ihnen, oder mit increment_mode und decrement_mode.</value>
+    <value>Ein Modus ist ein vollständiges Layout Ihrer Eingaben. Wechseln Sie im Spiel mit increment_mode und decrement_mode zwischen ihnen. Das Werksprofil legt diese auf Saugen und Pusten am Seitenschlauch, weshalb der Seitenschlauch den Modus wechselt, bis Sie ihn neu belegen.</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Ein Modus braucht einen Namen. Der alte ist noch da.</value>
@@ -3190,6 +3192,9 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>Schließen</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>Jede davon ist eine ganze Spieldatei, kein Modus. Wenn „Dateien auswählen“ aktiv ist, öffnet ein langes kräftiges Saugen am Seitenschlauch diese Liste auf dem Gerät: mit dem Joystick auswählen, dann mit dem Lippenschalter, mit Saugen oder Pusten am mittleren Loch oder mit dem Druckschalter laden. Modi sind die Layouts innerhalb einer einzelnen Datei.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Modi bearbeiten</value>

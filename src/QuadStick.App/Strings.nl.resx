@@ -818,9 +818,11 @@
     <value>Een joystick die hier is aangesloten, komt binnen als</value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>Een modus is één volledige indeling van uw inputs. Een profiel kan er meerdere bevatten en u schakelt ertussen tijdens het spelen, bijvoorbeeld een loopindeling en een rijindeling. Om van modus te wisselen in het spel, zuigt of blaast u aan de zijbuis, of koppelt u increment_mode / decrement_mode aan een input.
+    <value>Een modus is één volledige indeling van je ingangen. Een profiel kan er meerdere bevatten en je wisselt er tijdens het spelen tussen, bijvoorbeeld een indeling voor lopen en een voor rijden. Koppel increment_mode of decrement_mode aan een ingang om in het spel van modus te wisselen. Het fabrieksprofiel zet ze op zuigen en blazen op de zijbuis, en daarom wisselt de zijbuis van modus totdat je hem opnieuw koppelt.
 
-De meeste profielen hebben maar één modus, dus deze lijst toont vaak één item. Dat is normaal.</value>
+Lang en hard zuigen op diezelfde buis is iets anders: het opent de lijst met spelbestanden op het apparaat, niet de modi in dit bestand.
+
+De meeste profielen hebben maar één modus, dus deze lijst toont vaak één regel. Dat is normaal.</value>
   </data>
   <data name="Main_APlusB" xml:space="preserve">
     <value>{0} + {1}</value>
@@ -1529,7 +1531,7 @@ Kies links een onderdeel van de QuadStick om te zien wat het in deze modus doet,
     <value>Druk één keer om aan te zetten, nog een keer om uit te zetten. De uitgang blijft aan nadat u de invoer loslaat.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>Eén CSV-bestand dat de QuadStick vertelt welke sip, puff, lipdruk of joystickbeweging welke gameknop indrukt. Een profiel heeft een of meer modusbladen: volledige besturingsindelingen waartussen u tijdens het spelen wisselt (loopindeling, rijindeling, menu's). Sip of puf op de zijbuis, of koppel increment_mode / decrement_mode, om in-game van modus te wisselen.</value>
+    <value>Een CSV-bestand dat zuigen, blazen, lipdrukken en joystickbewegingen aan spelknoppen koppelt. Een profiel heeft een of meer modusbladen, zoals lopen, rijden of menu's. Koppel increment_mode of decrement_mode om in het spel van modus te wisselen; het fabrieksprofiel zet ze op zuigen en blazen op de zijbuis.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>Eén korte druk elke keer dat u de invoer activeert, hoe lang u ook vasthoudt.</value>
@@ -2163,7 +2165,7 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
     <value>{0}, {1} niet gebruikt. Opent dit onderdeel in apparaatweergave.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>Een modus is een volledige indeling van uw inputs. Wissel ertussen tijdens het spelen met de zijbuis, of met increment_mode en decrement_mode.</value>
+    <value>Een modus is een volledige indeling van je ingangen. Wissel er tijdens het spelen tussen met increment_mode en decrement_mode. Het fabrieksprofiel koppelt die aan zuigen en blazen op de zijbuis, en daarom wisselt de zijbuis van modus totdat je hem opnieuw koppelt.</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Een modus heeft een naam nodig. De oude staat er nog.</value>
@@ -3190,6 +3192,9 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>Sluiten</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>Elk hiervan is een heel spelbestand, geen modus. Als Bestanden kiezen aan staat, opent lang en hard zuigen op de zijbuis deze lijst op het apparaat: kies er een met de joystick en laad hem dan met de lipschakelaar, met zuigen of blazen in het midden, of met de drukschakelaar. Modi zijn de indelingen binnen één bestand.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Modi bewerken</value>
