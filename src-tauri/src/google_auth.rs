@@ -67,7 +67,8 @@ struct PlatformTokenStore;
 impl PlatformTokenStore {
     #[cfg(any(target_os = "macos", target_os = "windows"))]
     fn entry() -> Result<keyring::Entry, QcmError> {
-        keyring::Entry::new(SERVICE, ACCOUNT).map_err(|error| auth_internal("open credential store", error))
+        keyring::Entry::new(SERVICE, ACCOUNT)
+            .map_err(|error| auth_internal("open credential store", error))
     }
 }
 
@@ -97,7 +98,9 @@ impl RefreshTokenStore for PlatformTokenStore {
         #[cfg(not(any(target_os = "macos", target_os = "windows")))]
         {
             let _ = token;
-            Err(auth_message("secure Google token storage is unavailable on this platform"))
+            Err(auth_message(
+                "secure Google token storage is unavailable on this platform",
+            ))
         }
     }
 
@@ -165,7 +168,8 @@ impl GoogleAuthService {
         if !self.store.supported() {
             return Err(auth_message("Google Drive is not enabled on this platform"));
         }
-        let client_id = client_id().ok_or_else(|| auth_message("Google Drive client is not configured"))?;
+        let client_id =
+            client_id().ok_or_else(|| auth_message("Google Drive client is not configured"))?;
         let verifier = create_verifier()?;
         let challenge = challenge(&verifier);
         let state = create_verifier()?;
@@ -180,7 +184,8 @@ impl GoogleAuthService {
             .port();
         let redirect = format!("http://127.0.0.1:{port}/");
         let url = authorization_url(client_id, &redirect, &state, &challenge)?;
-        open::that(url.as_str()).map_err(|error| auth_internal("open Google sign-in browser", error))?;
+        open::that(url.as_str())
+            .map_err(|error| auth_internal("open Google sign-in browser", error))?;
         let code = await_callback(&listener, &state, CALLBACK_TIMEOUT)?;
         let reply = self.exchange_code(&code, &verifier, &redirect)?;
         let Some(refresh) = reply.refresh_token.as_deref() else {
@@ -197,7 +202,8 @@ impl GoogleAuthService {
         {
             return Ok(cached.value.clone());
         }
-        let client_id = client_id().ok_or_else(|| auth_message("Google Drive client is not configured"))?;
+        let client_id =
+            client_id().ok_or_else(|| auth_message("Google Drive client is not configured"))?;
         let refresh = self
             .store
             .load()?
@@ -227,7 +233,9 @@ impl GoogleAuthService {
                 *self.access() = None;
                 return Err(auth_message("The Google connection was revoked or expired"));
             }
-            return Err(auth_message(&format!("Google token endpoint returned {status}")));
+            return Err(auth_message(&format!(
+                "Google token endpoint returned {status}"
+            )));
         }
         let reply = response
             .json::<TokenReply>()
@@ -237,8 +245,14 @@ impl GoogleAuthService {
         Ok(value)
     }
 
-    fn exchange_code(&self, code: &str, verifier: &str, redirect: &str) -> Result<TokenReply, QcmError> {
-        let client_id = client_id().ok_or_else(|| auth_message("Google Drive client is not configured"))?;
+    fn exchange_code(
+        &self,
+        code: &str,
+        verifier: &str,
+        redirect: &str,
+    ) -> Result<TokenReply, QcmError> {
+        let client_id =
+            client_id().ok_or_else(|| auth_message("Google Drive client is not configured"))?;
         let mut form = vec![
             ("client_id", client_id.to_owned()),
             ("code", code.to_owned()),
@@ -300,7 +314,8 @@ fn authorization_url(
     state: &str,
     challenge: &str,
 ) -> Result<Url, QcmError> {
-    let mut url = Url::parse(AUTH_ENDPOINT).map_err(|error| auth_internal("build Google authorization URL", error))?;
+    let mut url = Url::parse(AUTH_ENDPOINT)
+        .map_err(|error| auth_internal("build Google authorization URL", error))?;
     url.query_pairs_mut()
         .append_pair("client_id", client_id)
         .append_pair("redirect_uri", redirect)
@@ -314,7 +329,11 @@ fn authorization_url(
     Ok(url)
 }
 
-fn await_callback(listener: &TcpListener, expected_state: &str, timeout: Duration) -> Result<String, QcmError> {
+fn await_callback(
+    listener: &TcpListener,
+    expected_state: &str,
+    timeout: Duration,
+) -> Result<String, QcmError> {
     let deadline = Instant::now() + timeout;
     loop {
         match listener.accept() {
@@ -339,7 +358,8 @@ fn read_callback(stream: &mut TcpStream, expected_state: &str) -> Result<String,
         .read(&mut request)
         .map_err(|error| auth_internal("read Google sign-in callback", error))?;
     request.truncate(read);
-    let text = std::str::from_utf8(&request).map_err(|error| auth_internal("decode Google callback", error))?;
+    let text = std::str::from_utf8(&request)
+        .map_err(|error| auth_internal("decode Google callback", error))?;
     let target = text
         .lines()
         .next()
@@ -402,17 +422,31 @@ mod tests {
     #[test]
     fn pkce_s256_matches_rfc_7636_example() {
         let verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
-        assert_eq!(challenge(verifier), "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM");
+        assert_eq!(
+            challenge(verifier),
+            "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+        );
     }
 
     #[test]
     fn auth_url_has_pkce_state_and_drive_file_scope_only() {
         let url = authorization_url("client", "http://127.0.0.1:9999/", "state", "challenge")
             .expect("valid auth URL");
-        let values = url.query_pairs().collect::<std::collections::BTreeMap<_, _>>();
-        assert_eq!(values.get("scope").map(|v| v.as_ref()), Some(super::DRIVE_FILE_SCOPE));
+        let values = url
+            .query_pairs()
+            .collect::<std::collections::BTreeMap<_, _>>();
+        assert_eq!(
+            values.get("scope").map(|v| v.as_ref()),
+            Some(super::DRIVE_FILE_SCOPE)
+        );
         assert_eq!(values.get("state").map(|v| v.as_ref()), Some("state"));
-        assert_eq!(values.get("code_challenge_method").map(|v| v.as_ref()), Some("S256"));
-        assert_eq!(values.get("access_type").map(|v| v.as_ref()), Some("offline"));
+        assert_eq!(
+            values.get("code_challenge_method").map(|v| v.as_ref()),
+            Some("S256")
+        );
+        assert_eq!(
+            values.get("access_type").map(|v| v.as_ref()),
+            Some("offline")
+        );
     }
 }

@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           test "$(git hash-object src/QuadStick.Format/Data/validation.json)" = "dd793c1cd768f703dd3b6255c990f2e1c8ed2332"
-          test "$(git hash-object src/QuadStick.Format/Data/preferences.json)" = "71914f9691d890d4ab8a6f32fc76d7e8005c8f68"
+          test "$(git hash-object src/QuadStick.Format/Data/preferences.json)" = "3f3c911edf952034d17476ecb3e485ba63503f06"
           test "$(git hash-object src/QuadStick.Format/Templates/default-template.csv)" = "21f23998d00de044a9bd1bc0899809c3f95a49b8"
           test "$(git hash-object tests/QuadStick.Format.Tests/corpus/firmware-2373.json)" = "7f90d32e6efa819c8eacbfa0eab9184bfccb509b"
       - name: Verify generated frontend localization catalogs
@@ -117,5 +117,7 @@ jobs:
         run: cargo +nightly-2026-08-20 fuzz run parse fuzz/corpus/parse -- -runs=256 -max_len=65536 -timeout=2 -max_total_time=15
       - name: Normalize fuzz smoke
         run: cargo +nightly-2026-08-20 fuzz run normalize fuzz/corpus/normalize -- -runs=256 -max_len=65536 -timeout=2 -max_total_time=15
+      - name: Workbook fuzz smoke
+        run: cargo +nightly-2026-08-20 fuzz run import_xlsx fuzz/corpus/import_xlsx -- -runs=256 -max_len=262144 -timeout=2 -max_total_time=15
       - name: Editor-op fuzz smoke
         run: cargo +nightly-2026-08-20 fuzz run apply_ops fuzz/corpus/apply_ops -- -runs=256 -max_len=65536 -timeout=2 -max_total_time=15

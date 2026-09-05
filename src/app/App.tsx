@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AppShell, type ShellDestination } from "../components/primitives/AppShell";
 import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
-import { ToastRegion } from "../components/primitives/ToastRegion";
+import { GoogleDriveSettings, ProfileDriveActions } from "../features/cloud/GoogleDrivePanel";
 import { CommunityProfilesPage } from "../features/community/CommunityProfilesPage";
 import { DeviceLibraryPage } from "../features/device/DeviceLibraryPage";
 import { DevicePreferencesPage } from "../features/device/DevicePreferencesPage";
@@ -59,6 +59,10 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [workbookBusy, setWorkbookBusy] = useState(false);
   const [workbookExportBusy, setWorkbookExportBusy] = useState(false);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
+  // Which open session the close prompt is asking about. Device preferences
+  // are written back through the page's own confirmed device transaction, so
+  // their prompt cannot offer a one-press Save.
+  const [closePromptFor, setClosePromptFor] = useState<"editor" | "prefs">("editor");
   const [pendingDestination, setPendingDestination] = useState<ShellDestination | null>(null);
   const [closing, setClosing] = useState(false);
   const [message, setMessage] = useState("");
@@ -89,6 +93,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
 
   const finishEditorClose = useCallback((destination: ShellDestination): void => {
     setEditor(null);
+    setDevicePreferences(null);
     setInstallOpen(false);
     setClosePromptOpen(false);
     setPendingDestination(null);
@@ -96,22 +101,27 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     setMessage("");
   }, []);
 
-  const closeDevicePreferences = useCallback(async (): Promise<boolean> => {
-    if (devicePreferences === null) return true;
-    try {
-      const outcome = await client.closeProfile(devicePreferences.sessionId, "if_clean");
-      if (outcome.kind === "keptOpenUnsavedChanges") {
-        setMessage(t("Main_ThisProfileHasUnsavedChanges"));
-        return false;
+  const requestPreferencesClose = useCallback(
+    async (destination: ShellDestination): Promise<void> => {
+      if (devicePreferences === null || closing) return;
+      setClosing(true);
+      try {
+        const outcome = await client.closeProfile(devicePreferences.sessionId, "if_clean");
+        if (outcome.kind === "keptOpenUnsavedChanges") {
+          setClosePromptFor("prefs");
+          setPendingDestination(destination);
+          setClosePromptOpen(true);
+        } else {
+          finishEditorClose(destination);
+        }
+      } catch (reason) {
+        showFailure(reason);
+      } finally {
+        setClosing(false);
       }
-      setDevicePreferences(null);
-      setMessage("");
-      return true;
-    } catch (reason) {
-      showFailure(reason);
-      return false;
-    }
-  }, [client, devicePreferences, showFailure, t]);
+    },
+    [client, closing, devicePreferences, finishEditorClose, showFailure],
+  );
 
   const openProfile = async (): Promise<void> => {
     try {
@@ -209,6 +219,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       try {
         const outcome = await client.closeProfile(editor.sessionId, "if_clean");
         if (outcome.kind === "keptOpenUnsavedChanges") {
+          setClosePromptFor("editor");
           setPendingDestination(destination);
           setClosePromptOpen(true);
         } else {
@@ -246,17 +257,18 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   }, [client, closing, editor, finishEditorClose, pendingDestination, showFailure]);
 
   const discardAndClose = useCallback(async (): Promise<void> => {
-    if (editor === null || closing) return;
+    const session = closePromptFor === "prefs" ? devicePreferences : editor;
+    if (session === null || closing) return;
     setClosing(true);
     try {
-      await client.closeProfile(editor.sessionId, "discard");
-      finishEditorClose(pendingDestination ?? "home");
+      await client.closeProfile(session.sessionId, "discard");
+      finishEditorClose(pendingDestination ?? (closePromptFor === "prefs" ? "device" : "home"));
     } catch (reason) {
       showFailure(reason);
     } finally {
       setClosing(false);
     }
-  }, [client, closing, editor, finishEditorClose, pendingDestination, showFailure]);
+  }, [client, closePromptFor, closing, devicePreferences, editor, finishEditorClose, pendingDestination, showFailure]);
 
   const cancelClose = useCallback((): void => {
     if (closing) return;
@@ -267,9 +279,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const navigate = useCallback(
     (destination: ShellDestination): void => {
       if (devicePreferences !== null && destination !== "device") {
-        void closeDevicePreferences().then((closed) => {
-          if (closed) setActiveDestination(destination);
-        });
+        void requestPreferencesClose(destination);
         return;
       }
       if (editor !== null && destination !== "home") {
@@ -278,7 +288,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       }
       setActiveDestination(destination);
     },
-    [closeDevicePreferences, devicePreferences, editor, requestEditorClose],
+    [devicePreferences, editor, requestEditorClose, requestPreferencesClose],
   );
 
   let content;
@@ -288,7 +298,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         <div className="editor-route-actions">
           {client.exportProfileXlsx === undefined ? null : (
             <button type="button" disabled={closing || workbookExportBusy} onClick={() => void exportWorkbook()}>
-              {t("Main_Save")} .xlsx
+              {t("Rewrite_SaveXlsx")}
             </button>
           )}
           <button type="button" disabled={closing} onClick={() => setInstallOpen(true)}>
@@ -298,6 +308,15 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
             {t("Community_Close")}
           </button>
         </div>
+        <ProfileDriveActions
+          client={client}
+          snapshot={editor}
+          onSnapshot={setEditor}
+          onReview={(review) => {
+            setWorkbookReview(review);
+            setMessage("");
+          }}
+        />
         <EditorWorkspace client={client} snapshot={editor} onSnapshot={setEditor} />
       </section>
     );
@@ -327,7 +346,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         client={client}
         snapshot={devicePreferences}
         onSnapshot={setDevicePreferences}
-        onClose={() => void closeDevicePreferences()}
+        onClose={() => void requestPreferencesClose("device")}
       />
     );
   } else if (activeDestination === "device") {
@@ -363,7 +382,6 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         {content}
       </AppShell>
       <LiveRegion>{message}</LiveRegion>
-      <ToastRegion messages={[]} />
       {editor === null ? null : (
         <InstallProfileDialog client={client} profile={editor} open={installOpen} onClose={() => setInstallOpen(false)} />
       )}
@@ -401,6 +419,14 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           </label>
           <p>{t("Settings_AppearanceHelp")}</p>
         </div>
+        <GoogleDriveSettings
+          client={client}
+          onReview={(review) => {
+            setWorkbookReview(review);
+            setSettingsOpen(false);
+            setMessage("");
+          }}
+        />
       </Dialog>
       <Dialog
         open={closePromptOpen}
@@ -410,13 +436,16 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           <>
             <button type="button" disabled={closing} onClick={cancelClose}>{t("Device_Cancel")}</button>
             <button type="button" disabled={closing} onClick={() => void discardAndClose()}>{t("Main_DonTSave")}</button>
-            <button className="primary-action" type="button" data-autofocus disabled={closing} onClick={() => void saveAndClose()}>
-              {t("Shell_SaveCtrlS")}
-            </button>
+            {closePromptFor === "prefs" ? null : (
+              <button className="primary-action" type="button" data-autofocus disabled={closing} onClick={() => void saveAndClose()}>
+                {t("Shell_SaveCtrlS")}
+              </button>
+            )}
           </>
         }
       >
         <p>{t("Main_ThisProfileHasUnsavedChanges")}</p>
+        {closePromptFor === "prefs" ? <p>{t("Rewrite_SaveFromThePageFirst")}</p> : null}
       </Dialog>
     </>
   );

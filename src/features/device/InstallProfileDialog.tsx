@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
 import { useI18n } from "../../i18n";
+import { localizedErrorMessage } from "../../i18n/errors";
 import {
   asQcmError,
   type DevicePresenceSnapshot,
@@ -47,12 +48,12 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
         setMessage("");
       })
       .catch((reason: unknown) => {
-        if (active) setMessage(asQcmError(reason).payload.message);
+        if (active) setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
       });
     return () => {
       active = false;
     };
-  }, [client, open]);
+  }, [client, open, t]);
 
   const chooseDevice = async (): Promise<void> => {
     if (busy) return;
@@ -65,7 +66,7 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
         setPlan(null);
       }
     } catch (reason) {
-      setMessage(asQcmError(reason).payload.message);
+      setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
     } finally {
       setBusy(false);
     }
@@ -102,7 +103,7 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
         setPlan(next);
       }
     } catch (reason) {
-      setMessage(asQcmError(reason).payload.message);
+      setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
     } finally {
       setBusy(false);
     }
@@ -114,7 +115,7 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
     try {
       await installPlan(plan);
     } catch (reason) {
-      setMessage(asQcmError(reason).payload.message);
+      setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
     } finally {
       setBusy(false);
     }

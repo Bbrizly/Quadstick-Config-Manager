@@ -1,5 +1,6 @@
 use crate::drive::{
-    ConflictChoice, DriveBackupOutcomeDto, DriveFileDto, DriveResolution, DriveService, DriveShareDto,
+    ConflictChoice, DriveBackupOutcomeDto, DriveFileDto, DriveResolution, DriveService,
+    DriveShareDto,
 };
 use crate::ipc::{SessionRevisionRequest, parse};
 use crate::shell::ShellState;
@@ -68,14 +69,21 @@ pub async fn resolve_drive_conflict(
         "keep_online" => ConflictChoice::KeepOnline,
         "recreate" => ConflictChoice::Recreate,
         "disable" => ConflictChoice::Disable,
-        _ => return Err(Box::new(QcmErrorDto::from(&QcmError::Request(RequestError::OutOfRange { what: "Drive conflict choice" })))),
+        _ => {
+            return Err(Box::new(QcmErrorDto::from(&QcmError::Request(
+                RequestError::OutOfRange {
+                    what: "Drive conflict choice",
+                },
+            ))));
+        }
     };
     let service = Arc::clone(drive.inner());
     let resolution_id = request.resolution_id;
-    let resolution = tauri::async_runtime::spawn_blocking(move || service.resolve(&resolution_id, choice))
-        .await
-        .map_err(join_error)
-        .and_then(redact)?;
+    let resolution =
+        tauri::async_runtime::spawn_blocking(move || service.resolve(&resolution_id, choice))
+            .await
+            .map_err(join_error)
+            .and_then(redact)?;
     match resolution {
         DriveResolution::Finished(result) => Ok(DriveResolutionDto::Finished { result }),
         DriveResolution::KeepRemote { name, bytes } => {
@@ -104,10 +112,11 @@ pub async fn restore_drive_backup(
 ) -> Result<WorkbookImportReviewDto, Failure> {
     let request: CloudRefRequest = redact(parse(request, "restore_drive_backup request"))?;
     let service = Arc::clone(drive.inner());
-    let restored = tauri::async_runtime::spawn_blocking(move || service.restore_workbook(&request.cloud_ref))
-        .await
-        .map_err(join_error)
-        .and_then(redact)?;
+    let restored =
+        tauri::async_runtime::spawn_blocking(move || service.restore_workbook(&request.cloud_ref))
+            .await
+            .map_err(join_error)
+            .and_then(redact)?;
     redact(workbook.import_bytes(&restored.0, restored.1))
 }
 
@@ -117,10 +126,15 @@ pub async fn share_drive_profile(
     drive: State<'_, Arc<DriveService>>,
     request: Value,
 ) -> Result<DriveShareDto, Failure> {
-    let raw: SessionRevisionRequest = redact(parse(request.clone(), "share_drive_profile request"))?;
+    let raw: SessionRevisionRequest =
+        redact(parse(request.clone(), "share_drive_profile request"))?;
     let profile = redact(profiles.profile_for_drive(request))?;
     if profile.revision != raw.expected_revision {
-        return Err(Box::new(QcmErrorDto::from(&QcmError::Request(RequestError::OutOfRange { what: "Drive profile revision" }))));
+        return Err(Box::new(QcmErrorDto::from(&QcmError::Request(
+            RequestError::OutOfRange {
+                what: "Drive profile revision",
+            },
+        ))));
     }
     let key = profile.persistent_key;
     let service = Arc::clone(drive.inner());

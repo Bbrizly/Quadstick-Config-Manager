@@ -61,7 +61,9 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         }
     }
 
-    pub fn get_settings(&self) -> AppSettingsDto { self.settings().snapshot() }
+    pub fn get_settings(&self) -> AppSettingsDto {
+        self.settings().snapshot()
+    }
     pub fn update_settings(&self, raw: Value) -> Result<AppSettingsDto, QcmError> {
         let request: UpdateSettingsRequest = parse(raw, "update_settings request")?;
         let patch = request.patch.validate()?;
@@ -73,7 +75,9 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         Ok(self.sessions().open_new(&request.name))
     }
     pub fn choose_and_open_profile(&self) -> Result<Option<EditorSnapshot>, QcmError> {
-        let Some(target) = self.picker.pick_open()? else { return Ok(None); };
+        let Some(target) = self.picker.pick_open()? else {
+            return Ok(None);
+        };
         self.sessions().open_local(target).map(Some)
     }
     pub fn get_profile_snapshot(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {
@@ -86,7 +90,8 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         let request: ApplyEditorOpsRequest = parse(raw, "apply_editor_ops request")?;
         request.check()?;
         let session = session_id(&request.session_id)?;
-        self.sessions().apply_ops(session, request.expected_revision, &request.ops)
+        self.sessions()
+            .apply_ops(session, request.expected_revision, &request.ops)
     }
     pub fn undo_editor(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "undo_editor request")?;
@@ -96,7 +101,9 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
     pub fn save_profile(&self, raw: Value) -> Result<SaveReceiptDto, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "save_profile request")?;
         let session = session_id(&request.session_id)?;
-        self.sessions().save(session, request.expected_revision).map(|receipt| SaveReceiptDto::from(&receipt))
+        self.sessions()
+            .save(session, request.expected_revision)
+            .map(|receipt| SaveReceiptDto::from(&receipt))
     }
     pub fn save_profile_as(&self, raw: Value) -> Result<Option<SaveReceiptDto>, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "save_profile_as request")?;
@@ -105,18 +112,31 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             let sessions = self.sessions();
             let open = sessions.session(session)?;
             if open.revision() != request.expected_revision {
-                return Err(ProfileError::RevisionConflict { expected: request.expected_revision, actual: open.revision() }.into());
+                return Err(ProfileError::RevisionConflict {
+                    expected: request.expected_revision,
+                    actual: open.revision(),
+                }
+                .into());
             }
-            open.save_target_name().map_or_else(|| open.file().document.title().to_owned(), ToString::to_string)
+            open.save_target_name().map_or_else(
+                || open.file().document.title().to_owned(),
+                ToString::to_string,
+            )
         };
-        let Some(target) = self.picker.pick_save_as(&suggested)? else { return Ok(None); };
-        self.sessions().save_as(session, request.expected_revision, target).map(|receipt| Some(SaveReceiptDto::from(&receipt)))
+        let Some(target) = self.picker.pick_save_as(&suggested)? else {
+            return Ok(None);
+        };
+        self.sessions()
+            .save_as(session, request.expected_revision, target)
+            .map(|receipt| Some(SaveReceiptDto::from(&receipt)))
     }
     pub fn close_profile(&self, raw: Value) -> Result<CloseOutcomeDto, QcmError> {
         let request: CloseProfileRequest = parse(raw, "close_profile request")?;
         let session = session_id(&request.session_id)?;
         let close = request.close_request()?;
-        self.sessions().close(session, close).map(|outcome| CloseOutcomeDto::from(&outcome))
+        self.sessions()
+            .close(session, close)
+            .map(|outcome| CloseOutcomeDto::from(&outcome))
     }
     pub fn profile_for_install(&self, session_raw: &str) -> Result<ProfileFile, QcmError> {
         let session = session_id(session_raw)?;
@@ -129,11 +149,18 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         let sessions = self.sessions();
         let open = sessions.session(session)?;
         if open.revision() != request.expected_revision {
-            return Err(ProfileError::RevisionConflict { expected: request.expected_revision, actual: open.revision() }.into());
+            return Err(ProfileError::RevisionConflict {
+                expected: request.expected_revision,
+                actual: open.revision(),
+            }
+            .into());
         }
-        let suggested = open.save_target_name().map(ToString::to_string)
+        let suggested = open
+            .save_target_name()
+            .map(ToString::to_string)
             .or_else(|| open.file().document.csv_file_name().map(ToOwned::to_owned))
-            .filter(|name| !name.trim().is_empty()).unwrap_or_else(|| "Profile.csv".to_owned());
+            .filter(|name| !name.trim().is_empty())
+            .unwrap_or_else(|| "Profile.csv".to_owned());
         Ok((open.file().clone(), suggested))
     }
 
@@ -146,9 +173,15 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         let sessions = self.sessions();
         let open = sessions.session(session)?;
         if open.revision() != request.expected_revision {
-            return Err(ProfileError::RevisionConflict { expected: request.expected_revision, actual: open.revision() }.into());
+            return Err(ProfileError::RevisionConflict {
+                expected: request.expected_revision,
+                actual: open.revision(),
+            }
+            .into());
         }
-        let target = open.save_target_ref().ok_or(QcmError::Profile(ProfileError::NeedsSaveTarget))?;
+        let target = open
+            .save_target_ref()
+            .ok_or(QcmError::Profile(ProfileError::NeedsSaveTarget))?;
         if sessions.store().is_on_quadstick(target)? {
             return Err(ProfileError::SaveTargetOnDevice.into());
         }
@@ -161,7 +194,11 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         })
     }
 
-    pub fn open_workbook_copy(&self, name: &str, csv_text: &str) -> Result<EditorSnapshot, QcmError> {
+    pub fn open_workbook_copy(
+        &self,
+        name: &str,
+        csv_text: &str,
+    ) -> Result<EditorSnapshot, QcmError> {
         let source_id = format!("workbook:{name}");
         let mut sessions = self.sessions();
         let opened = sessions.open_community(&source_id, csv_text);
@@ -171,18 +208,41 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             let row = open.file().document.file_name_cell_row();
             (row, open.file().get_cell(row, 0).to_owned())
         };
-        let desired = if name.trim().is_empty() { existing } else { name.to_owned() };
-        sessions.apply_ops(session, opened.revision, &[EditorOp::SetCell { row, col: 0, value: desired }])
+        let desired = if name.trim().is_empty() {
+            existing
+        } else {
+            name.to_owned()
+        };
+        sessions.apply_ops(
+            session,
+            opened.revision,
+            &[EditorOp::SetCell {
+                row,
+                col: 0,
+                value: desired,
+            }],
+        )
     }
 
-    pub fn open_device_copy(&self, device: StorageDeviceId, generation: DeviceGeneration, name: DeviceFileName, csv_text: &str) -> EditorSnapshot {
-        self.sessions().open_device_copy(device, generation, name, csv_text)
+    pub fn open_device_copy(
+        &self,
+        device: StorageDeviceId,
+        generation: DeviceGeneration,
+        name: DeviceFileName,
+        csv_text: &str,
+    ) -> EditorSnapshot {
+        self.sessions()
+            .open_device_copy(device, generation, name, csv_text)
     }
 }
 
 pub type ShellState = Shell<
-    crate::adapters::library::FileSystemProfileLibrary<crate::adapters::storage::volumes::PlatformVolumes>,
-    crate::adapters::picker::NativeProfilePicker<crate::adapters::storage::volumes::PlatformVolumes>,
+    crate::adapters::library::FileSystemProfileLibrary<
+        crate::adapters::storage::volumes::PlatformVolumes,
+    >,
+    crate::adapters::picker::NativeProfilePicker<
+        crate::adapters::storage::volumes::PlatformVolumes,
+    >,
     crate::adapters::settings::SettingsFile,
 >;
 

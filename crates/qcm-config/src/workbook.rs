@@ -181,61 +181,78 @@ pub fn import_xlsx(content: &[u8]) -> Result<WorkbookImport, WorkbookError> {
         }
 
         let grid = sheet.rows;
-        let keyword = grid
-            .first()
-            .and_then(|row| row.first())
-            .is_some_and(|cell| is_sheet_keyword(cell.trim()));
-        if !keyword {
-            let kind = if helper_named {
-                SkippedTabKind::Helper
-            } else {
-                SkippedTabKind::UnreadableA1
-            };
+        let first_cell = grid.first().and_then(|row| row.first());
+        let keyword = first_cell.is_some_and(|cell| is_sheet_keyword(cell.trim()));
+        // Or the whole file written flat onto one tab: A1 is the version
+        // header and the keywords are further down. This app's own backup
+        // writes that shape, and the device reads it without complaint.
+        let flat = !keyword && first_cell.is_some_and(|cell| is_file_header(cell));
+
+        if !keyword && !flat && helper_named {
+            // Named, not passed over, and its cells are dropped: nothing is
+            // ever offered from a helper tab, so it costs no row budget.
             skipped.push(SkippedTab {
                 name: name.clone(),
-                rows: grid,
-                kind,
+                rows: Grid::new(),
+                kind: SkippedTabKind::Helper,
             });
             continue;
         }
 
-        if !rows.is_empty() && !rows.last().is_some_and(Vec::is_empty) {
-            rows.push(Vec::new());
-        }
-        let start = rows.len();
-        if grid
-            .first()
-            .and_then(|row| row.first())
-            .is_some_and(|first| keyword_to_type(first.trim()) == Some(SheetType::ProfileName))
-        {
-            modes.push(ModeCandidate {
-                row: start,
-                tab: name.clone(),
-                c1: grid
-                    .first()
-                    .and_then(|row| row.get(2))
-                    .cloned()
-                    .unwrap_or_default(),
-            });
-        }
-        let available = MAX_WORKBOOK_ROWS.saturating_sub(kept_rows);
-        if grid.len() > available {
-            rows.extend(grid.into_iter().take(available));
-            kept_rows = MAX_WORKBOOK_ROWS;
-            if limitation.is_none() {
-                limitation = Some(WorkbookLimitation::WorkbookRows {
-                    max: MAX_WORKBOOK_ROWS,
-                    remaining_tabs: if sheet_cap_hit {
-                        None
-                    } else {
-                        Some(parts.len().saturating_sub(index + 1))
-                    },
+        let spent = grid.len();
+        if keyword || flat {
+            // A blank line between tabs, because the device ends a mode at an
+            // empty line and only looks for the next keyword after one.
+            if !rows.is_empty() {
+                rows.push(Vec::new());
+            }
+            let start = rows.len();
+            if keyword
+                && first_cell
+                    .is_some_and(|first| keyword_to_type(first.trim()) == SheetType::ProfileName)
+            {
+                modes.push(ModeCandidate {
+                    row: start,
+                    tab: name.trim().to_owned(),
+                    c1: grid
+                        .first()
+                        .and_then(|row| row.get(2))
+                        .map(|cell| cell.trim().to_owned())
+                        .unwrap_or_default(),
                 });
             }
-            break;
+            rows.extend(grid);
+        } else if looks_like_bindings(&grid) {
+            skipped.push(SkippedTab {
+                name: name.clone(),
+                rows: grid,
+                kind: SkippedTabKind::UnreadableA1,
+            });
+        } else {
+            continue; // nothing was retained, so nothing was spent
         }
-        kept_rows += grid.len();
-        rows.extend(grid);
+
+        // Skipped tabs are held on to as well as imported ones, so both count
+        // against the budget. Stopping after a whole tab rather than part way
+        // through one keeps every mode that did come in whole.
+        kept_rows += spent;
+        if kept_rows < MAX_WORKBOOK_ROWS {
+            continue;
+        }
+        let left = parts.len().saturating_sub(index + 1);
+        if left > 0 && !matches!(limitation, Some(WorkbookLimitation::WorkbookRows { .. })) {
+            limitation = Some(WorkbookLimitation::WorkbookRows {
+                max: MAX_WORKBOOK_ROWS,
+                // A count would be a lie once another cap has fired: the tabs
+                // past that one are not in this list to be counted.
+                remaining_tabs: if limitation.is_some() {
+                    None
+                } else {
+                    Some(left)
+                },
+            });
+        }
+        break;
     }
 
     let renamed = name_modes_from_tabs(&mut rows, &modes);
@@ -373,20 +390,24 @@ fn sheet_parts<R: Read + std::io::Seek>(
 
     let mut reader = Reader::from_str(&workbook);
     let mut parts = Vec::new();
+    let mut seen = BTreeSet::new();
     let mut sheet_cap_hit = false;
     loop {
         match reader.read_event().map_err(|_| WorkbookError::InvalidXml)? {
             Event::Start(element) | Event::Empty(element)
                 if local_name(element.name().as_ref()) == "sheet" =>
             {
-                if parts.len() >= MAX_SHEETS + 1 {
+                if parts.len() > MAX_SHEETS {
                     sheet_cap_hit = true;
                     continue;
                 }
                 let name = attribute(&element, b"name")?.unwrap_or_default();
                 let relationship = relationship_id(&element)?;
                 if let Some(target) = relationships.get(&relationship) {
-                    parts.push((name, workbook_part(target)));
+                    let part = workbook_part(target);
+                    if seen.insert(part.clone()) {
+                        parts.push((name, part));
+                    }
                 }
             }
             Event::DocType(_) => return Err(WorkbookError::InvalidXml),
@@ -503,15 +524,16 @@ fn parse_sheet<R: Read + std::io::Seek>(
                 finish_row(blank, &mut rows, &mut last_number, &mut lost_rows)?;
             }
             Event::Start(element) if local_name(element.name().as_ref()) == "c" => {
-                if row.is_some() {
-                    cell = Some(CellState::from_element(&element)?);
+                if let Some(current_row) = row.as_ref() {
+                    cell = Some(CellState::from_element(&element, current_row.next_column)?);
                     in_value = false;
                     in_text = false;
                 }
             }
             Event::Empty(element) if local_name(element.name().as_ref()) == "c" => {
                 if let Some(current_row) = row.as_mut() {
-                    place_cell(current_row, CellState::from_element(&element)?, shared);
+                    let placed = CellState::from_element(&element, current_row.next_column)?;
+                    place_cell(current_row, placed, shared);
                 }
             }
             Event::Start(element) if local_name(element.name().as_ref()) == "v" => {
@@ -579,6 +601,7 @@ struct RowState {
     number: i32,
     cells: Vec<String>,
     has_cells: bool,
+    next_column: usize,
 }
 
 impl RowState {
@@ -590,6 +613,7 @@ impl RowState {
             number,
             cells: Vec::new(),
             has_cells: false,
+            next_column: 0,
         })
     }
 }
@@ -611,8 +635,16 @@ enum CellKind {
 }
 
 impl CellState {
-    fn from_element(element: &BytesStart<'_>) -> Result<Self, WorkbookError> {
+    fn from_element(element: &BytesStart<'_>, next_column: usize) -> Result<Self, WorkbookError> {
         let reference = attribute(element, b"r")?.unwrap_or_default();
+        // The reference is optional. Without one the cell follows the one
+        // before it, the same as the legacy reader; landing every such cell in
+        // column A would turn outputs into inputs.
+        let column = if reference.starts_with(|c: char| c.is_ascii_alphabetic()) {
+            column_index(&reference)
+        } else {
+            next_column
+        };
         let kind = match attribute(element, b"t")?.as_deref() {
             Some("s") => CellKind::Shared,
             Some("inlineStr") => CellKind::Inline,
@@ -620,7 +652,7 @@ impl CellState {
             _ => CellKind::Raw,
         };
         Ok(Self {
-            column: column_index(&reference),
+            column,
             kind,
             value: String::new(),
             inline_text: String::new(),
@@ -630,6 +662,7 @@ impl CellState {
 
 fn place_cell(row: &mut RowState, cell: CellState, shared: &[String]) {
     row.has_cells = true;
+    row.next_column = cell.column.saturating_add(1);
     if cell.column > MAX_COLUMN {
         return;
     }
@@ -720,7 +753,7 @@ fn relationship_id(element: &BytesStart<'_>) -> Result<String, WorkbookError> {
         let key = local_name(attribute.key.as_ref());
         if key == "id" {
             return attribute
-                .unescape_value()
+                .normalized_value(XmlVersion::Implicit1_0)
                 .map(|value| value.into_owned())
                 .map_err(|_| WorkbookError::InvalidXml);
         }
@@ -733,7 +766,7 @@ fn attribute(element: &BytesStart<'_>, wanted: &[u8]) -> Result<Option<String>, 
         let attribute = attribute.map_err(|_| WorkbookError::InvalidXml)?;
         if local_name(attribute.key.as_ref()).as_bytes() == wanted {
             return attribute
-                .unescape_value()
+                .normalized_value(XmlVersion::Implicit1_0)
                 .map(|value| Some(value.into_owned()))
                 .map_err(|_| WorkbookError::InvalidXml);
         }
@@ -741,9 +774,8 @@ fn attribute(element: &BytesStart<'_>, wanted: &[u8]) -> Result<Option<String>, 
     Ok(None)
 }
 
-fn local_name(name: &[u8]) -> String {
-    let text = String::from_utf8_lossy(name);
-    text.rsplit(':').next().unwrap_or(&text).to_owned()
+fn local_name(name: &str) -> String {
+    name.rsplit(':').next().unwrap_or(name).to_owned()
 }
 
 fn column_index(reference: &str) -> usize {

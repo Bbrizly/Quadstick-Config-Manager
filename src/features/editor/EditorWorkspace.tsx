@@ -166,6 +166,7 @@ function RawGrid({
                 {Array.from({ length: columns }, (_, column) => (
                   <td key={column}>
                     <input
+                      key={`${String(snapshot.revision)}-${String(row)}-${String(column)}`}
                       aria-label={t("Review_ContentsOfCellWhereMeaning", [columnName(column), row])}
                       defaultValue={cells[column] ?? ""}
                       disabled={disabled}
@@ -298,6 +299,9 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   useEffect(() => {
     const onKeyDown = (event: globalThis.KeyboardEvent): void => {
       if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+      // A modal owns the keyboard while it is open: Ctrl+S inside the close
+      // prompt must not race a background save against the prompt's own.
+      if (document.querySelector('[aria-modal="true"]') !== null) return;
       const key = event.key.toLowerCase();
       if (key === "z") {
         event.preventDefault();
@@ -412,6 +416,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                       <span>{mode.name || t("Review_UnnamedMode")}</span>
                     </button>
                     <input
+                      key={`${String(snapshot.revision)}-${String(mode.index)}`}
                       className="mode-name-input"
                       aria-label={t("Modes_NameOfModeOrdinal", [mode.number ?? mode.index + 1])}
                       defaultValue={mode.name}
@@ -485,7 +490,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
             {snapshot.issues.map((issue, index) => (
               <li key={`${issue.cell}-${issue.kind}-${String(index)}`}>
                 <button type="button" className={`issue-link issue-${issue.severity}`} onClick={() => focusIssue(issue)}>
-                  <span>{t("Main_SeverityLabelBaseName", [issue.severity, issue.cell])}</span>
+                  <span>{t("Main_SeverityLabelBaseName", [t(issue.severity === "error" ? "Rewrite_SeverityError" : "Rewrite_SeverityWarning"), issue.cell])}</span>
                   <span>{issue.message}</span>
                 </button>
               </li>

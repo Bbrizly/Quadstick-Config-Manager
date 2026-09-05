@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
 import { useI18n } from "../../i18n";
+import { localizedErrorMessage } from "../../i18n/errors";
 import {
   asQcmError,
   type DeletePlan,
@@ -41,8 +42,8 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
   const selectedLibrary = library !== null && library.deviceId === selectedId ? library : null;
 
   const showFailure = useCallback((reason: unknown): void => {
-    setMessage(asQcmError(reason).payload.message);
-  }, []);
+    setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
+  }, [t]);
 
   const applyPresence = useCallback((next: DevicePresenceSnapshot): void => {
     setPresence(next);

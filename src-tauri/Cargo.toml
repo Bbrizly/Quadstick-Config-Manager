@@ -31,7 +31,7 @@ qcm-config = { path = "../crates/qcm-config" }
 qcm-core = { path = "../crates/qcm-core" }
 # All HTTP is native. Blocking is deliberate: commands run native work and the
 # domain crates stay runtime-free; response bodies are explicitly bounded.
-reqwest = { version = "=0.13.4", default-features = false, features = ["blocking", "rustls", "form"] }
+reqwest = { version = "=0.13.4", default-features = false, features = ["blocking", "rustls", "form", "json", "query"] }
 rfd = "=0.17.2"
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"

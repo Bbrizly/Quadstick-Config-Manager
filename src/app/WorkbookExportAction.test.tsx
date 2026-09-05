@@ -28,7 +28,7 @@ describe("TASK-040B editor XLSX export", () => {
     fireEvent.click(screen.getByRole("button", { name: "Save .xlsx" }));
 
     await waitFor(() => expect(client.exportCalls).toHaveLength(1));
-    expect(client.exportCalls[0]?.revision).toBe(0);
+    expect(client.exportCalls[0]?.revision).toBe(1);
     expect(await screen.findByText("Saved to untitled.xlsx.")).toBeInTheDocument();
   });
 

@@ -10,5 +10,10 @@
   "Rewrite_PrimaryNavigation",
   "Rewrite_ProductName",
   "Rewrite_PseudoLocaleName",
-  "Rewrite_SkipToMainContent"
+  "Rewrite_SaveFromThePageFirst",
+  "Rewrite_SaveXlsx",
+  "Rewrite_SeverityError",
+  "Rewrite_SeverityWarning",
+  "Rewrite_SkipToMainContent",
+  "Rewrite_TurnOff"
 ]

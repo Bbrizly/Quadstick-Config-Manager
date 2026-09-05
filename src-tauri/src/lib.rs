@@ -23,24 +23,56 @@ pub mod streaming;
 pub mod workbook_shell;
 
 #[must_use]
-pub fn core_policy() -> &'static str { qcm_core::CORE_CRATE_POLICY }
+pub fn core_policy() -> &'static str {
+    qcm_core::CORE_CRATE_POLICY
+}
 
 #[must_use]
 pub fn registered_commands() -> &'static [&'static str] {
     &[
-        "get_app_snapshot", "get_settings", "update_settings", "new_profile",
-        "choose_and_open_profile", "get_profile_snapshot", "apply_editor_ops", "undo_editor",
-        "save_profile", "save_profile_as", "close_profile", "choose_and_import_workbook",
-        "repair_workbook_tab", "accept_workbook_import", "cancel_workbook_import",
-        "export_profile_xlsx", "get_preference_catalog", "load_community_catalog",
-        "import_community_profile", "open_community_sheet", "get_google_auth_status",
-        "connect_google", "disconnect_google", "backup_profile_to_drive",
-        "resolve_drive_conflict", "list_drive_backups", "restore_drive_backup",
-        "share_drive_profile", "list_devices", "refresh_devices", "choose_device_folder",
-        "get_device_library", "prepare_install", "commit_install", "prepare_delete_device_profile",
-        "commit_delete_device_profile", "rename_device_profile", "open_device_profile",
-        "open_device_preferences", "start_live_input", "stop_live_input",
-        "subscribe_devices_changed", "unsubscribe_devices_changed",
+        "get_app_snapshot",
+        "get_settings",
+        "update_settings",
+        "new_profile",
+        "choose_and_open_profile",
+        "get_profile_snapshot",
+        "apply_editor_ops",
+        "undo_editor",
+        "save_profile",
+        "save_profile_as",
+        "close_profile",
+        "choose_and_import_workbook",
+        "repair_workbook_tab",
+        "accept_workbook_import",
+        "cancel_workbook_import",
+        "export_profile_xlsx",
+        "get_preference_catalog",
+        "load_community_catalog",
+        "import_community_profile",
+        "open_community_sheet",
+        "get_google_auth_status",
+        "connect_google",
+        "disconnect_google",
+        "backup_profile_to_drive",
+        "resolve_drive_conflict",
+        "list_drive_backups",
+        "restore_drive_backup",
+        "share_drive_profile",
+        "list_devices",
+        "refresh_devices",
+        "choose_device_folder",
+        "get_device_library",
+        "prepare_install",
+        "commit_install",
+        "prepare_delete_device_profile",
+        "commit_delete_device_profile",
+        "rename_device_profile",
+        "open_device_profile",
+        "open_device_preferences",
+        "start_live_input",
+        "stop_live_input",
+        "subscribe_devices_changed",
+        "unsubscribe_devices_changed",
     ]
 }
 
@@ -49,8 +81,13 @@ fn navigation_allowed_for(url: &tauri::webview::Url, development: bool) -> bool 
         (url.scheme(), url.host_str(), url.port()),
         ("tauri", Some("localhost"), None) | ("http", Some("tauri.localhost"), None)
     );
-    if packaged { return true; }
-    development && url.scheme() == "http" && url.host_str() == Some("localhost") && url.port() == Some(1420)
+    if packaged {
+        return true;
+    }
+    development
+        && url.scheme() == "http"
+        && url.host_str() == Some("localhost")
+        && url.port() == Some(1420)
 }
 
 fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
@@ -60,14 +97,23 @@ fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
 }
 
 pub fn run() {
-    let google = Arc::new(google_auth::GoogleAuthService::native().expect("failed to build native Google auth client"));
-    let drive = Arc::new(drive::DriveService::native(Arc::clone(&google)).expect("failed to build native Drive client"));
+    let google = Arc::new(
+        google_auth::GoogleAuthService::native()
+            .expect("failed to build native Google auth client"),
+    );
+    let drive = Arc::new(
+        drive::DriveService::native(Arc::clone(&google))
+            .expect("failed to build native Drive client"),
+    );
     tauri::Builder::default()
         .plugin(navigation_guard())
         .manage(shell::native_shell())
         .manage(workbook_shell::native_workbook_shell())
         .manage(device_shell::native_device_shell())
-        .manage(community::CommunityService::native().expect("failed to build native Community HTTP client"))
+        .manage(
+            community::CommunityService::native()
+                .expect("failed to build native Community HTTP client"),
+        )
         .manage(google)
         .manage(drive)
         .manage(streaming::LiveRuntime::new())
@@ -127,7 +173,10 @@ mod tests {
 
     #[test]
     fn shell_is_linked_against_the_native_core() {
-        assert_eq!(super::core_policy(), "pure-rust-no-tauri-no-os-no-network-no-filesystem-write");
+        assert_eq!(
+            super::core_policy(),
+            "pure-rust-no-tauri-no-os-no-network-no-filesystem-write"
+        );
     }
 
     #[test]
@@ -135,35 +184,58 @@ mod tests {
         let commands = super::registered_commands();
         assert_eq!(commands.len(), 43);
         for expected in [
-            "import_community_profile", "open_community_sheet", "get_google_auth_status",
-            "connect_google", "disconnect_google", "backup_profile_to_drive",
-            "resolve_drive_conflict", "list_drive_backups", "restore_drive_backup",
-            "share_drive_profile", "prepare_install", "commit_install", "start_live_input",
+            "import_community_profile",
+            "open_community_sheet",
+            "get_google_auth_status",
+            "connect_google",
+            "disconnect_google",
+            "backup_profile_to_drive",
+            "resolve_drive_conflict",
+            "list_drive_backups",
+            "restore_drive_backup",
+            "share_drive_profile",
+            "prepare_install",
+            "commit_install",
+            "start_live_input",
         ] {
             assert!(commands.contains(&expected), "{expected}");
         }
         for absent in [
-            "emit_live_frame", "listen_live_frame", "reorder_device_profiles",
-            "get_google_access_token", "get_google_refresh_token", "get_drive_file_id",
-            "drive_raw_request", "open_arbitrary_url",
+            "emit_live_frame",
+            "listen_live_frame",
+            "reorder_device_profiles",
+            "get_google_access_token",
+            "get_google_refresh_token",
+            "get_drive_file_id",
+            "drive_raw_request",
+            "open_arbitrary_url",
         ] {
             assert!(!commands.contains(&absent), "{absent}");
         }
-        assert!(commands.iter().all(|command| !command.starts_with("plugin:")));
+        assert!(
+            commands
+                .iter()
+                .all(|command| !command.starts_with("plugin:"))
+        );
     }
 
     #[test]
     fn packaged_navigation_is_local_only() {
         for allowed in [
-            "tauri://localhost/index.html", "tauri://localhost/editor?session=session-1",
+            "tauri://localhost/index.html",
+            "tauri://localhost/editor?session=session-1",
             "http://tauri.localhost/index.html",
         ] {
             let url = Url::parse(allowed).expect("valid app URL");
             assert!(super::navigation_allowed_for(&url, false), "{allowed}");
         }
         for forbidden in [
-            "https://example.com/", "http://example.com/", "file:///tmp/profile.html",
-            "data:text/html,hello", "http://localhost:1420/", "http://tauri.localhost:8080/index.html",
+            "https://example.com/",
+            "http://example.com/",
+            "file:///tmp/profile.html",
+            "data:text/html,hello",
+            "http://localhost:1420/",
+            "http://tauri.localhost:8080/index.html",
             "https://tauri.localhost/index.html",
         ] {
             let url = Url::parse(forbidden).expect("valid forbidden URL");
@@ -176,7 +248,9 @@ mod tests {
         let vite = Url::parse("http://localhost:1420/").expect("valid Vite URL");
         assert!(super::navigation_allowed_for(&vite, true));
         for forbidden in [
-            "http://localhost:1421/", "https://localhost:1420/", "http://127.0.0.1:1420/",
+            "http://localhost:1421/",
+            "https://localhost:1420/",
+            "http://127.0.0.1:1420/",
             "https://example.com/",
         ] {
             let url = Url::parse(forbidden).expect("valid forbidden URL");

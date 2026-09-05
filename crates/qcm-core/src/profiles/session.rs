@@ -10,17 +10,24 @@ use std::str::FromStr;
 pub struct SessionId(u64);
 impl SessionId {
     #[must_use]
-    pub const fn from_raw(raw: u64) -> Self { Self(raw) }
+    pub const fn from_raw(raw: u64) -> Self {
+        Self(raw)
+    }
     #[must_use]
-    pub const fn raw(self) -> u64 { self.0 }
+    pub const fn raw(self) -> u64 {
+        self.0
+    }
 }
 impl fmt::Display for SessionId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "session-{}", self.0) }
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "session-{}", self.0)
+    }
 }
 impl FromStr for SessionId {
     type Err = ();
     fn from_str(value: &str) -> Result<Self, Self::Err> {
-        value.strip_prefix("session-")
+        value
+            .strip_prefix("session-")
             .and_then(|digits| digits.parse().ok())
             .map(Self)
             .ok_or(())
@@ -36,11 +43,17 @@ pub enum ProfileOrigin {
         generation: DeviceGeneration,
         name: DeviceFileName,
     },
-    Community { catalog_id: String },
+    Community {
+        catalog_id: String,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CloseRequest { IfClean, Save, Discard }
+pub enum CloseRequest {
+    IfClean,
+    Save,
+    Discard,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CloseOutcome {
@@ -72,21 +85,38 @@ impl ProfileSession {
         target: Option<LocalProfileRef>,
         file: ProfileFile,
     ) -> Self {
-        Self { id, origin, target, file }
+        Self {
+            id,
+            origin,
+            target,
+            file,
+        }
     }
 
     #[must_use]
-    pub const fn id(&self) -> SessionId { self.id }
+    pub const fn id(&self) -> SessionId {
+        self.id
+    }
     #[must_use]
-    pub const fn origin(&self) -> &ProfileOrigin { &self.origin }
+    pub const fn origin(&self) -> &ProfileOrigin {
+        &self.origin
+    }
     #[must_use]
-    pub const fn file(&self) -> &ProfileFile { &self.file }
+    pub const fn file(&self) -> &ProfileFile {
+        &self.file
+    }
     #[must_use]
-    pub const fn revision(&self) -> u64 { self.file.revision() }
+    pub const fn revision(&self) -> u64 {
+        self.file.revision()
+    }
     #[must_use]
-    pub const fn dirty(&self) -> bool { self.file.dirty() }
+    pub const fn dirty(&self) -> bool {
+        self.file.dirty()
+    }
     #[must_use]
-    pub fn can_undo(&self) -> bool { self.file.can_undo() }
+    pub fn can_undo(&self) -> bool {
+        self.file.can_undo()
+    }
 
     #[must_use]
     pub fn save_target_name(&self) -> Option<&ProfileDisplayName> {
@@ -101,10 +131,18 @@ impl ProfileSession {
         self.target.as_ref()
     }
 
-    pub(crate) const fn target(&self) -> Option<&LocalProfileRef> { self.target.as_ref() }
-    pub(crate) fn set_target(&mut self, target: Option<LocalProfileRef>) { self.target = target; }
-    pub(crate) const fn file_mut(&mut self) -> &mut ProfileFile { &mut self.file }
-    pub(crate) fn replace_file(&mut self, file: ProfileFile) { self.file = file; }
+    pub(crate) const fn target(&self) -> Option<&LocalProfileRef> {
+        self.target.as_ref()
+    }
+    pub(crate) fn set_target(&mut self, target: Option<LocalProfileRef>) {
+        self.target = target;
+    }
+    pub(crate) const fn file_mut(&mut self) -> &mut ProfileFile {
+        &mut self.file
+    }
+    pub(crate) fn replace_file(&mut self, file: ProfileFile) {
+        self.file = file;
+    }
 }
 
 #[cfg(test)]

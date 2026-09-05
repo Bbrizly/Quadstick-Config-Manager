@@ -1,4 +1,6 @@
-use crate::community::{CommunityCatalogDto, CommunityImportRequest, CommunityLoadRequest, CommunityService};
+use crate::community::{
+    CommunityCatalogDto, CommunityImportRequest, CommunityLoadRequest, CommunityService,
+};
 use crate::ipc::parse;
 use crate::workbook_shell::{WorkbookImportReviewDto, WorkbookShellState};
 use qcm_core::error::{InternalError, OsDetail, QcmError, QcmErrorDto, RequestError};
@@ -48,19 +50,24 @@ pub fn import_community_profile(
     workbook: State<'_, WorkbookShellState>,
     request: Value,
 ) -> Result<WorkbookImportReviewDto, Failure> {
-    let request: CommunityImportRequest = redact(parse(request, "import_community_profile request"))?;
+    let request: CommunityImportRequest =
+        redact(parse(request, "import_community_profile request"))?;
     let bytes = redact(community.download_workbook(&request))?;
     let display_name = request
         .csv_name
         .strip_suffix(".csv")
         .or_else(|| request.csv_name.strip_suffix(".CSV"))
-        .map_or_else(|| format!("{}.xlsx", request.csv_name), |stem| format!("{stem}.xlsx"));
+        .map_or_else(
+            || format!("{}.xlsx", request.csv_name),
+            |stem| format!("{stem}.xlsx"),
+        );
     redact(workbook.import_bytes(&display_name, bytes))
 }
 
 #[tauri::command]
 pub fn open_community_sheet(request: Value) -> Result<(), Failure> {
-    let request: OpenCommunitySheetRequest = redact(parse(request, "open_community_sheet request"))?;
+    let request: OpenCommunitySheetRequest =
+        redact(parse(request, "open_community_sheet request"))?;
     let sheet_id = redact(checked_sheet_id(&request.sheet_id))?;
     let url = format!("https://docs.google.com/spreadsheets/d/{sheet_id}/edit");
     open::that(url).map_err(|error| {

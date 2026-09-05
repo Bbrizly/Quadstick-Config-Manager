@@ -32,7 +32,10 @@ impl<V> FileSystemProfileLibrary<V> {
     pub const fn new(volumes: V) -> Self {
         Self {
             volumes,
-            table: Mutex::new(Table { files: BTreeMap::new(), next: 0 }),
+            table: Mutex::new(Table {
+                files: BTreeMap::new(),
+                next: 0,
+            }),
         }
     }
 
@@ -41,10 +44,10 @@ impl<V> FileSystemProfileLibrary<V> {
     }
 
     pub fn adopt(&self, path: &Path) -> LocalProfileRef {
-        let display = path.file_name().and_then(|name| name.to_str()).map_or_else(
-            || ProfileDisplayName::new(""),
-            ProfileDisplayName::new,
-        );
+        let display = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .map_or_else(|| ProfileDisplayName::new(""), ProfileDisplayName::new);
         let mut table = self.table();
         table.next = table.next.saturating_add(1);
         let id = table.next;
@@ -52,22 +55,37 @@ impl<V> FileSystemProfileLibrary<V> {
         LocalProfileRef::new(LocalProfileId::from_raw(id), display)
     }
 
-    fn path_of(&self, target: &LocalProfileRef, stage: StorageStage) -> Result<PathBuf, StorageError> {
-        self.table().files.get(&target.id().raw()).cloned().ok_or(StorageError::Io {
-            stage,
-            target: TargetState::Unchanged,
-            detail: qcm_core::error::OsDetail::new("unknown local profile id".to_owned()),
-        })
+    fn path_of(
+        &self,
+        target: &LocalProfileRef,
+        stage: StorageStage,
+    ) -> Result<PathBuf, StorageError> {
+        self.table()
+            .files
+            .get(&target.id().raw())
+            .cloned()
+            .ok_or(StorageError::Io {
+                stage,
+                target: TargetState::Unchanged,
+                detail: qcm_core::error::OsDetail::new("unknown local profile id".to_owned()),
+            })
     }
 }
 
-impl<V: crate::adapters::storage::volumes::VolumeSource> LocalProfileStore for FileSystemProfileLibrary<V> {
+impl<V: crate::adapters::storage::volumes::VolumeSource> LocalProfileStore
+    for FileSystemProfileLibrary<V>
+{
     fn read(&self, target: &LocalProfileRef) -> Result<String, StorageError> {
         let path = self.path_of(target, StorageStage::ReadFile)?;
-        fs::read_to_string(&path).map_err(|error| map_io(&error, StorageStage::ReadFile, TargetState::Unchanged))
+        fs::read_to_string(&path)
+            .map_err(|error| map_io(&error, StorageStage::ReadFile, TargetState::Unchanged))
     }
 
-    fn write(&self, target: &LocalProfileRef, text: &str) -> Result<LocalWriteReceipt, StorageError> {
+    fn write(
+        &self,
+        target: &LocalProfileRef,
+        text: &str,
+    ) -> Result<LocalWriteReceipt, StorageError> {
         let path = self.path_of(target, StorageStage::TempCreate)?;
         let temp = temp_beside(&path);
         fs::write(&temp, text.as_bytes()).map_err(|error| {
@@ -76,7 +94,11 @@ impl<V: crate::adapters::storage::volumes::VolumeSource> LocalProfileStore for F
         })?;
         fs::rename(&temp, &path).map_err(|error| {
             let _ = fs::remove_file(&temp);
-            map_io(&error, StorageStage::ReplaceBeforeDisplace, TargetState::Unchanged)
+            map_io(
+                &error,
+                StorageStage::ReplaceBeforeDisplace,
+                TargetState::Unchanged,
+            )
         })?;
         Ok(LocalWriteReceipt { bytes: text.len() })
     }

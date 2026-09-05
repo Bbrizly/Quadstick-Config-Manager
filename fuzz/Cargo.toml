@@ -32,6 +32,13 @@ test = false
 doc = false
 bench = false
 
+[[bin]]
+name = "import_xlsx"
+path = "fuzz_targets/import_xlsx.rs"
+test = false
+doc = false
+bench = false
+
 # Keep libFuzzer out of the cross-platform product workspace. cargo-fuzz uses
 # this independent workspace on its supported Unix-like hosts.
 [workspace]

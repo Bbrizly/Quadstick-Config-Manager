@@ -110,10 +110,22 @@ mod tests {
                 && definition.minimum.is_some()
                 && definition.maximum.is_some()
         }));
-        assert!(catalog.definitions.iter().any(|definition| definition.editor == "toggle"));
-        assert!(catalog.definitions.iter().any(|definition| {
-            definition.editor == "choice" && !definition.options.is_empty()
-        }));
-        assert!(catalog.definitions.iter().any(|definition| definition.editor == "text"));
+        assert!(
+            catalog
+                .definitions
+                .iter()
+                .any(|definition| definition.editor == "toggle")
+        );
+        assert!(
+            catalog.definitions.iter().any(|definition| {
+                definition.editor == "choice" && !definition.options.is_empty()
+            })
+        );
+        assert!(
+            catalog
+                .definitions
+                .iter()
+                .any(|definition| definition.editor == "text")
+        );
     }
 }

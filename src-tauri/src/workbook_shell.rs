@@ -94,7 +94,17 @@ impl WorkbookPicker for NativeWorkbookPicker {
         else {
             return Ok(None);
         };
-        fs::write(&path, bytes).map_err(|error| workbook_io("write workbook", error))?;
+        // Beside the target, then renamed, so a failed write cannot leave a
+        // truncated workbook under the name the person chose.
+        let temp = path.with_extension("xlsx.qscm-tmp");
+        fs::write(&temp, bytes).map_err(|error| {
+            let _ = fs::remove_file(&temp);
+            workbook_io("write workbook", error)
+        })?;
+        fs::rename(&temp, &path).map_err(|error| {
+            let _ = fs::remove_file(&temp);
+            workbook_io("replace workbook", error)
+        })?;
         Ok(Some(
             path.file_name().and_then(|name| name.to_str()).map_or_else(
                 || ProfileDisplayName::new(&suggested),
@@ -185,10 +195,10 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
         }
         let import = import_xlsx(&bytes).map_err(import_error)?;
         let mut table = self.pending();
-        if table.items.len() >= MAX_PENDING_IMPORTS {
-            if let Some(oldest) = table.items.keys().next().copied() {
-                table.items.remove(&oldest);
-            }
+        if table.items.len() >= MAX_PENDING_IMPORTS
+            && let Some(oldest) = table.items.keys().next().copied()
+        {
+            table.items.remove(&oldest);
         }
         table.next = table.next.saturating_add(1);
         let id = table.next;
@@ -304,11 +314,21 @@ fn import_id(raw: &str) -> Result<u64, QcmError> {
         }))
 }
 
+/// A workbook can put 32 MB in one cell; the review shows a person a name.
+const MAX_REVIEW_TEXT: usize = 200;
+
+fn bounded(text: &str) -> String {
+    text.chars()
+        .filter(|c| !c.is_control())
+        .take(MAX_REVIEW_TEXT)
+        .collect()
+}
+
 fn review(id: u64, pending: &PendingWorkbook) -> WorkbookImportReviewDto {
     let profile = ProfileFile::load(&pending.import.csv);
     WorkbookImportReviewDto {
         import_id: format!("workbook-{id}"),
-        name: pending.name.as_str().to_owned(),
+        name: bounded(pending.name.as_str()),
         modes: profile
             .document
             .sheets
@@ -316,7 +336,7 @@ fn review(id: u64, pending: &PendingWorkbook) -> WorkbookImportReviewDto {
             .enumerate()
             .map(|(index, mode)| WorkbookModeDto {
                 number: index + 1,
-                name: mode.mode_name.clone(),
+                name: bounded(&mode.mode_name),
                 kind: match mode.sheet_type {
                     qcm_config::SheetType::ProfileName => "mode",
                     qcm_config::SheetType::Preferences => "preferences",
@@ -333,7 +353,7 @@ fn review(id: u64, pending: &PendingWorkbook) -> WorkbookImportReviewDto {
             .enumerate()
             .map(|(index, tab)| WorkbookSkippedTabDto {
                 index,
-                name: tab.name.clone(),
+                name: bounded(&tab.name),
                 kind: match tab.kind {
                     SkippedTabKind::UnreadableA1 => "unreadable_a1",
                     SkippedTabKind::Helper => "helper",
@@ -345,12 +365,36 @@ fn review(id: u64, pending: &PendingWorkbook) -> WorkbookImportReviewDto {
                     .rows
                     .iter()
                     .take(MAX_PREVIEW_ROWS)
-                    .map(|row| row.iter().take(MAX_PREVIEW_COLUMNS).cloned().collect())
+                    .map(|row| {
+                        row.iter()
+                            .take(MAX_PREVIEW_COLUMNS)
+                            .map(|cell| bounded(cell))
+                            .collect()
+                    })
                     .collect(),
             })
             .collect(),
-        limitation: pending.import.limitation.clone(),
-        renamed: pending.import.renamed.clone(),
+        limitation: pending
+            .import
+            .limitation
+            .clone()
+            .map(|limitation| match limitation {
+                WorkbookLimitation::SheetRows { tab, max } => WorkbookLimitation::SheetRows {
+                    tab: bounded(&tab),
+                    max,
+                },
+                other => other,
+            }),
+        renamed: pending
+            .import
+            .renamed
+            .iter()
+            .map(|rename| TabRename {
+                mode_number: rename.mode_number,
+                tab_name: bounded(&rename.tab_name),
+                cell_c1: bounded(&rename.cell_c1),
+            })
+            .collect(),
         error_count: profile
             .issues
             .iter()

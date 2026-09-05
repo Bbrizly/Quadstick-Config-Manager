@@ -110,7 +110,10 @@ impl DriveService {
             .build()
             .map_err(|error| drive_internal("build Drive HTTP client", error))?;
         let state_path = config_dir().map(|dir| dir.join("drive-links.json"));
-        let state = state_path.as_deref().and_then(read_state).unwrap_or_default();
+        let state = state_path
+            .as_deref()
+            .and_then(read_state)
+            .unwrap_or_default();
         Ok(Self {
             auth,
             http,
@@ -136,7 +139,9 @@ impl DriveService {
         link.backup_dirty = true;
         self.set_link(&profile.persistent_key, link.clone())?;
         match self.modified_time(&link.spreadsheet_id) {
-            Ok(current) if current == link.last_seen_modified_time => self.push_and_record(&profile, link),
+            Ok(current) if current == link.last_seen_modified_time => {
+                self.push_and_record(&profile, link)
+            }
             Ok(current) => {
                 let id = self.remember_conflict(profile, Some(current), false);
                 Ok(DriveBackupOutcomeDto::Conflict { resolution_id: id })
@@ -149,7 +154,11 @@ impl DriveService {
         }
     }
 
-    pub fn resolve(&self, raw_id: &str, choice: ConflictChoice) -> Result<DriveResolution, QcmError> {
+    pub fn resolve(
+        &self,
+        raw_id: &str,
+        choice: ConflictChoice,
+    ) -> Result<DriveResolution, QcmError> {
         let id = resolution_id(raw_id)?;
         let pending = self
             .pending()
@@ -168,7 +177,9 @@ impl DriveService {
                 .map(DriveResolution::Finished),
             ConflictChoice::ReplaceWithMine => {
                 if pending.missing {
-                    return self.create_and_record(&pending.profile).map(DriveResolution::Finished);
+                    return self
+                        .create_and_record(&pending.profile)
+                        .map(DriveResolution::Finished);
                 }
                 let link = self
                     .state()
@@ -176,7 +187,8 @@ impl DriveService {
                     .get(&key)
                     .cloned()
                     .ok_or_else(unknown_resolution)?;
-                self.push_and_record(&pending.profile, link).map(DriveResolution::Finished)
+                self.push_and_record(&pending.profile, link)
+                    .map(DriveResolution::Finished)
             }
             ConflictChoice::KeepOnline => {
                 if pending.missing {
@@ -215,14 +227,29 @@ impl DriveService {
             let value = self.send_json(request)?;
             if let Some(files) = value.get("files").and_then(Value::as_array) {
                 for file in files {
-                    let Some(id) = file.get("id").and_then(Value::as_str) else { continue; };
-                    let name = file.get("name").and_then(Value::as_str).unwrap_or("Google Sheet").to_owned();
-                    let modified_time = file.get("modifiedTime").and_then(Value::as_str).unwrap_or("").to_owned();
+                    let Some(id) = file.get("id").and_then(Value::as_str) else {
+                        continue;
+                    };
+                    let name = file
+                        .get("name")
+                        .and_then(Value::as_str)
+                        .unwrap_or("Google Sheet")
+                        .to_owned();
+                    let modified_time = file
+                        .get("modifiedTime")
+                        .and_then(Value::as_str)
+                        .unwrap_or("")
+                        .to_owned();
                     found.push((id.to_owned(), name, modified_time));
                 }
             }
-            page_token = value.get("nextPageToken").and_then(Value::as_str).map(ToOwned::to_owned);
-            if page_token.is_none() { break; }
+            page_token = value
+                .get("nextPageToken")
+                .and_then(Value::as_str)
+                .map(ToOwned::to_owned);
+            if page_token.is_none() {
+                break;
+            }
         }
 
         let mut pending = self.pending();
@@ -243,39 +270,73 @@ impl DriveService {
 
     pub fn restore_workbook(&self, cloud_ref: &str) -> Result<(String, Vec<u8>), QcmError> {
         let id = cloud_id(cloud_ref)?;
-        let drive_id = self.pending().cloud_refs.get(&id).cloned().ok_or_else(unknown_cloud_ref)?;
-        let name = self.drive_name(&drive_id).unwrap_or_else(|_| "Drive backup.xlsx".to_owned());
+        let drive_id = self
+            .pending()
+            .cloud_refs
+            .get(&id)
+            .cloned()
+            .ok_or_else(unknown_cloud_ref)?;
+        let name = self
+            .drive_name(&drive_id)
+            .unwrap_or_else(|_| "Drive backup.xlsx".to_owned());
         let bytes = self.download_workbook(&drive_id)?;
         Ok((xlsx_name(&name), bytes))
     }
 
     pub fn share(&self, profile_key: &str) -> Result<DriveShareDto, QcmError> {
-        let mut link = self.state().links.get(profile_key).cloned().ok_or_else(|| drive_message("this profile has no Drive backup yet"))?;
+        let mut link = self
+            .state()
+            .links
+            .get(profile_key)
+            .cloned()
+            .ok_or_else(|| drive_message("this profile has no Drive backup yet"))?;
         if !link.shared {
             let body = json!({ "role": "reader", "type": "anyone", "allowFileDiscovery": false });
-            self.send_json(self.http.post(format!("{DRIVE_BASE}/{}/permissions", link.spreadsheet_id)).json(&body))?;
+            self.send_json(
+                self.http
+                    .post(format!("{DRIVE_BASE}/{}/permissions", link.spreadsheet_id))
+                    .json(&body),
+            )?;
             link.shared = true;
             self.set_link(profile_key, link.clone())?;
         }
         Ok(DriveShareDto {
-            url: format!("https://docs.google.com/spreadsheets/d/{}/edit?usp=sharing", link.spreadsheet_id),
+            url: format!(
+                "https://docs.google.com/spreadsheets/d/{}/edit?usp=sharing",
+                link.spreadsheet_id
+            ),
         })
     }
 
-    fn remember_conflict(&self, profile: DriveProfileSnapshot, remote_modified: Option<String>, missing: bool) -> String {
+    fn remember_conflict(
+        &self,
+        profile: DriveProfileSnapshot,
+        remote_modified: Option<String>,
+        missing: bool,
+    ) -> String {
         let mut pending = self.pending();
-        if pending.conflicts.len() >= MAX_PENDING {
-            if let Some(oldest) = pending.conflicts.keys().next().copied() {
-                pending.conflicts.remove(&oldest);
-            }
+        if pending.conflicts.len() >= MAX_PENDING
+            && let Some(oldest) = pending.conflicts.keys().next().copied()
+        {
+            pending.conflicts.remove(&oldest);
         }
         pending.next = pending.next.saturating_add(1);
         let id = pending.next;
-        pending.conflicts.insert(id, PendingConflict { profile, remote_modified, missing });
+        pending.conflicts.insert(
+            id,
+            PendingConflict {
+                profile,
+                remote_modified,
+                missing,
+            },
+        );
         format!("drive-resolution-{id}")
     }
 
-    fn create_and_record(&self, profile: &DriveProfileSnapshot) -> Result<DriveBackupOutcomeDto, QcmError> {
+    fn create_and_record(
+        &self,
+        profile: &DriveProfileSnapshot,
+    ) -> Result<DriveBackupOutcomeDto, QcmError> {
         let title = backup_title(profile);
         let body = json!({ "properties": { "title": title } });
         let created = self.send_json(self.http.post(SHEETS_BASE).json(&body))?;
@@ -284,69 +345,136 @@ impl DriveService {
             .and_then(Value::as_str)
             .ok_or_else(|| drive_message("Google did not return a spreadsheet id"))?
             .to_owned();
-        let link = DriveLink { spreadsheet_id: id.clone(), backup_dirty: true, ..DriveLink::default() };
+        let link = DriveLink {
+            spreadsheet_id: id.clone(),
+            backup_dirty: true,
+            ..DriveLink::default()
+        };
         self.set_link(&profile.persistent_key, link.clone())?;
         self.push_tabs(&id, &profile.file)?;
         let modified = self.modified_time(&id).map_err(DriveHttpError::into_qcm)?;
-        self.set_link(&profile.persistent_key, DriveLink {
-            last_seen_modified_time: modified,
+        self.set_link(
+            &profile.persistent_key,
+            DriveLink {
+                last_seen_modified_time: modified,
+                backup_dirty: false,
+                ..link
+            },
+        )?;
+        Ok(DriveBackupOutcomeDto::Pushed {
             backup_dirty: false,
-            ..link
-        })?;
-        Ok(DriveBackupOutcomeDto::Pushed { backup_dirty: false })
+        })
     }
 
-    fn push_and_record(&self, profile: &DriveProfileSnapshot, mut link: DriveLink) -> Result<DriveBackupOutcomeDto, QcmError> {
+    fn push_and_record(
+        &self,
+        profile: &DriveProfileSnapshot,
+        mut link: DriveLink,
+    ) -> Result<DriveBackupOutcomeDto, QcmError> {
         self.push_tabs(&link.spreadsheet_id, &profile.file)?;
-        link.last_seen_modified_time = self.modified_time(&link.spreadsheet_id).map_err(DriveHttpError::into_qcm)?;
+        link.last_seen_modified_time = self
+            .modified_time(&link.spreadsheet_id)
+            .map_err(DriveHttpError::into_qcm)?;
         link.backup_dirty = false;
         self.set_link(&profile.persistent_key, link)?;
-        Ok(DriveBackupOutcomeDto::Pushed { backup_dirty: false })
+        Ok(DriveBackupOutcomeDto::Pushed {
+            backup_dirty: false,
+        })
     }
 
     fn push_tabs(&self, id: &str, profile: &ProfileFile) -> Result<(), QcmError> {
         let tabs = drive_tabs(profile);
-        if !tabs.iter().any(|tab| tab.rows.iter().flatten().any(|cell| !cell.trim().is_empty())) {
-            return Err(drive_message("refusing to replace a Drive backup with an empty profile"));
+        if !tabs.iter().any(|tab| {
+            tab.rows
+                .iter()
+                .flatten()
+                .any(|cell| !cell.trim().is_empty())
+        }) {
+            return Err(drive_message(
+                "refusing to replace a Drive backup with an empty profile",
+            ));
         }
         self.shape_tabs(id, &tabs)?;
         let mut data = Vec::new();
         let mut clear_ranges = Vec::new();
         for tab in &tabs {
             let width = tab.rows.iter().map(Vec::len).max().unwrap_or(1).max(1);
-            let grid = tab.rows.iter().map(|row| {
-                let mut padded = row.clone();
-                padded.resize(width, String::new());
-                padded
-            }).collect::<Vec<_>>();
+            let grid = tab
+                .rows
+                .iter()
+                .map(|row| {
+                    let mut padded = row.clone();
+                    padded.resize(width, String::new());
+                    padded
+                })
+                .collect::<Vec<_>>();
             data.push(json!({ "range": format!("{}!A1", quoted(&tab.title)), "values": grid }));
             if grid.len() < LAST_ROW {
-                clear_ranges.push(format!("{}!A{}:ZZ{LAST_ROW}", quoted(&tab.title), grid.len() + 1));
+                clear_ranges.push(format!(
+                    "{}!A{}:ZZ{LAST_ROW}",
+                    quoted(&tab.title),
+                    grid.len() + 1
+                ));
             }
             if width < LAST_COLUMN {
-                clear_ranges.push(format!("{}!{}1:ZZ{LAST_ROW}", quoted(&tab.title), column_name(width + 1)));
+                clear_ranges.push(format!(
+                    "{}!{}1:ZZ{LAST_ROW}",
+                    quoted(&tab.title),
+                    column_name(width + 1)
+                ));
             }
         }
-        self.send_json(self.http.post(format!("{SHEETS_BASE}/{id}/values:batchUpdate")).json(&json!({
-            "valueInputOption": "RAW",
-            "data": data,
-        })))?;
+        self.send_json(
+            self.http
+                .post(format!("{SHEETS_BASE}/{id}/values:batchUpdate"))
+                .json(&json!({
+                    "valueInputOption": "RAW",
+                    "data": data,
+                })),
+        )?;
         if !clear_ranges.is_empty() {
-            self.send_json(self.http.post(format!("{SHEETS_BASE}/{id}/values:batchClear")).json(&json!({ "ranges": clear_ranges })))?;
+            self.send_json(
+                self.http
+                    .post(format!("{SHEETS_BASE}/{id}/values:batchClear"))
+                    .json(&json!({ "ranges": clear_ranges })),
+            )?;
         }
         Ok(())
     }
 
     fn shape_tabs(&self, id: &str, tabs: &[DriveTab]) -> Result<(), QcmError> {
-        let metadata = self.send_json(self.http.get(format!("{SHEETS_BASE}/{id}")).query(&[("fields", "sheets.properties(sheetId,title)")]))?;
-        let existing = metadata.get("sheets").and_then(Value::as_array).map(|sheets| {
-            sheets.iter().filter_map(|sheet| {
-                let properties = sheet.get("properties")?;
-                Some((properties.get("sheetId")?.as_i64()?, properties.get("title")?.as_str()?.to_owned()))
-            }).collect::<Vec<_>>()
-        }).unwrap_or_default();
-        let wanted = tabs.iter().map(|tab| tab.title.as_str()).collect::<Vec<_>>();
-        if existing.iter().map(|(_, title)| title.as_str()).eq(wanted.iter().copied()) { return Ok(()); }
+        let metadata = self.send_json(
+            self.http
+                .get(format!("{SHEETS_BASE}/{id}"))
+                .query(&[("fields", "sheets.properties(sheetId,title)")]),
+        )?;
+        let existing = metadata
+            .get("sheets")
+            .and_then(Value::as_array)
+            .map(|sheets| {
+                sheets
+                    .iter()
+                    .filter_map(|sheet| {
+                        let properties = sheet.get("properties")?;
+                        Some((
+                            properties.get("sheetId")?.as_i64()?,
+                            properties.get("title")?.as_str()?.to_owned(),
+                        ))
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+        let wanted = tabs
+            .iter()
+            .map(|tab| tab.title.as_str())
+            .collect::<Vec<_>>();
+        if existing
+            .iter()
+            .map(|(_, title)| title.as_str())
+            .eq(wanted.iter().copied())
+        {
+            return Ok(());
+        }
         let mut requests = Vec::new();
         for (index, (sheet_id, _)) in existing.iter().enumerate() {
             requests.push(json!({ "updateSheetProperties": { "properties": { "sheetId": sheet_id, "title": format!("_qsc_{index}") }, "fields": "title" } }));
@@ -361,39 +489,74 @@ impl DriveService {
         for (sheet_id, _) in existing.iter().skip(tabs.len()) {
             requests.push(json!({ "deleteSheet": { "sheetId": sheet_id } }));
         }
-        self.send_json(self.http.post(format!("{SHEETS_BASE}/{id}:batchUpdate")).json(&json!({ "requests": requests })))?;
+        self.send_json(
+            self.http
+                .post(format!("{SHEETS_BASE}/{id}:batchUpdate"))
+                .json(&json!({ "requests": requests })),
+        )?;
         Ok(())
     }
 
     fn modified_time(&self, id: &str) -> Result<String, DriveHttpError> {
-        let value = self.send_json_http(self.http.get(format!("{DRIVE_BASE}/{id}")).query(&[("fields", "modifiedTime")]))?;
-        value.get("modifiedTime").and_then(Value::as_str).map(ToOwned::to_owned)
+        let value = self.send_json_http(
+            self.http
+                .get(format!("{DRIVE_BASE}/{id}"))
+                .query(&[("fields", "modifiedTime")]),
+        )?;
+        value
+            .get("modifiedTime")
+            .and_then(Value::as_str)
+            .map(ToOwned::to_owned)
             .ok_or_else(|| DriveHttpError::Message("Drive did not return modifiedTime".to_owned()))
     }
 
     fn drive_name(&self, id: &str) -> Result<String, QcmError> {
-        let value = self.send_json(self.http.get(format!("{DRIVE_BASE}/{id}")).query(&[("fields", "name")]))?;
-        Ok(value.get("name").and_then(Value::as_str).unwrap_or("Drive backup").to_owned())
+        let value = self.send_json(
+            self.http
+                .get(format!("{DRIVE_BASE}/{id}"))
+                .query(&[("fields", "name")]),
+        )?;
+        Ok(value
+            .get("name")
+            .and_then(Value::as_str)
+            .unwrap_or("Drive backup")
+            .to_owned())
     }
 
     fn download_workbook(&self, id: &str) -> Result<Vec<u8>, QcmError> {
-        let request = self.http.get(format!("{DRIVE_BASE}/{id}/export")).query(&[("mimeType", XLSX_MIME)]);
+        let request = self
+            .http
+            .get(format!("{DRIVE_BASE}/{id}/export"))
+            .query(&[("mimeType", XLSX_MIME)]);
         let response = self.send(request).map_err(DriveHttpError::into_qcm)?;
-        read_bounded(response, XLSX_MAX_WORKBOOK_BYTES).map_err(|error| drive_internal("download Drive workbook", error))
+        read_bounded(response, XLSX_MAX_WORKBOOK_BYTES)
+            .map_err(|error| drive_internal("download Drive workbook", error))
     }
 
     fn send_json(&self, request: RequestBuilder) -> Result<Value, QcmError> {
-        self.send_json_http(request).map_err(DriveHttpError::into_qcm)
+        self.send_json_http(request)
+            .map_err(DriveHttpError::into_qcm)
     }
     fn send_json_http(&self, request: RequestBuilder) -> Result<Value, DriveHttpError> {
         let response = self.send(request)?;
-        let bytes = read_bounded(response, JSON_LIMIT).map_err(|error| DriveHttpError::Message(error.to_string()))?;
+        let bytes = read_bounded(response, JSON_LIMIT)
+            .map_err(|error| DriveHttpError::Message(error.to_string()))?;
         serde_json::from_slice(&bytes).map_err(|error| DriveHttpError::Message(error.to_string()))
     }
     fn send(&self, request: RequestBuilder) -> Result<Response, DriveHttpError> {
-        let token = self.auth.access_token().map_err(|error| DriveHttpError::Message(error.to_string()))?;
-        let response = request.bearer_auth(token).send().map_err(|error| DriveHttpError::Message(error.to_string()))?;
-        if response.status().is_success() { Ok(response) } else { Err(DriveHttpError::Status(response.status())) }
+        let token = self
+            .auth
+            .access_token()
+            .map_err(|error| DriveHttpError::Message(error.to_string()))?;
+        let response = request
+            .bearer_auth(token)
+            .send()
+            .map_err(|error| DriveHttpError::Message(error.to_string()))?;
+        if response.status().is_success() {
+            Ok(response)
+        } else {
+            Err(DriveHttpError::Status(response.status()))
+        }
     }
 
     fn set_link(&self, key: &str, link: DriveLink) -> Result<(), QcmError> {
@@ -401,9 +564,17 @@ impl DriveService {
         self.save_state()
     }
     fn save_state(&self) -> Result<(), QcmError> {
-        let Some(path) = self.state_path.as_deref() else { return Err(drive_message("this platform has no per-user config directory")); };
-        if let Some(parent) = path.parent() { fs::create_dir_all(parent).map_err(|error| drive_internal("create Drive state directory", error))?; }
-        let text = serde_json::to_vec_pretty(&*self.state()).map_err(|error| drive_internal("serialize Drive state", error))?;
+        let Some(path) = self.state_path.as_deref() else {
+            return Err(drive_message(
+                "this platform has no per-user config directory",
+            ));
+        };
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent)
+                .map_err(|error| drive_internal("create Drive state directory", error))?;
+        }
+        let text = serde_json::to_vec_pretty(&*self.state())
+            .map_err(|error| drive_internal("serialize Drive state", error))?;
         let temp = path.with_extension("json.qscm-tmp");
         fs::write(&temp, text).map_err(|error| drive_internal("write Drive state", error))?;
         replace_file(&temp, path).map_err(|error| drive_internal("replace Drive state", error))
@@ -411,7 +582,10 @@ impl DriveService {
 }
 
 #[derive(Debug)]
-enum DriveHttpError { Status(StatusCode), Message(String) }
+enum DriveHttpError {
+    Status(StatusCode),
+    Message(String),
+}
 impl DriveHttpError {
     fn into_qcm(self) -> QcmError {
         match self {
@@ -422,58 +596,133 @@ impl DriveHttpError {
 }
 
 #[derive(Debug, Clone)]
-struct DriveTab { title: String, rows: Vec<Vec<String>> }
+struct DriveTab {
+    title: String,
+    rows: Vec<Vec<String>>,
+}
 
 fn drive_tabs(profile: &ProfileFile) -> Vec<DriveTab> {
     if profile.document.sheets.is_empty() {
-        return vec![DriveTab { title: "Profile".to_owned(), rows: profile.grid.clone() }];
+        return vec![DriveTab {
+            title: "Profile".to_owned(),
+            rows: profile.grid.clone(),
+        }];
     }
     let mut used = BTreeSet::new();
-    profile.document.sheets.iter().enumerate().map(|(index, sheet)| {
-        let start = if index == 0 && profile.document.has_version_header { 0 } else { sheet.start_row.saturating_sub(1).min(profile.grid.len()) };
-        let end = profile.document.sheets.get(index + 1).map_or(profile.grid.len(), |next| next.start_row.saturating_sub(1).min(profile.grid.len()));
-        let base = if !sheet.mode_name.trim().is_empty() { sheet.mode_name.as_str() } else { match sheet.sheet_type { SheetType::ProfileName => "Mode", SheetType::Preferences => "Preferences", SheetType::Infrared => "Infrared" } };
-        DriveTab { title: unique_title(base, &mut used), rows: profile.grid[start..end].to_vec() }
-    }).collect()
+    profile
+        .document
+        .sheets
+        .iter()
+        .enumerate()
+        .map(|(index, sheet)| {
+            let start = if index == 0 && profile.document.has_version_header {
+                0
+            } else {
+                sheet.start_row.saturating_sub(1).min(profile.grid.len())
+            };
+            let end = profile
+                .document
+                .sheets
+                .get(index + 1)
+                .map_or(profile.grid.len(), |next| {
+                    next.start_row.saturating_sub(1).min(profile.grid.len())
+                });
+            let base = if !sheet.mode_name.trim().is_empty() {
+                sheet.mode_name.as_str()
+            } else {
+                match sheet.sheet_type {
+                    SheetType::ProfileName => "Mode",
+                    SheetType::Preferences => "Preferences",
+                    SheetType::Infrared => "Infrared",
+                }
+            };
+            DriveTab {
+                title: unique_title(base, &mut used),
+                rows: profile.grid[start..end].to_vec(),
+            }
+        })
+        .collect()
 }
 
 fn unique_title(raw: &str, used: &mut BTreeSet<String>) -> String {
-    let cleaned: String = raw.chars().filter(|c| !c.is_control() && !"[]:*?/\\".contains(*c)).take(31).collect();
-    let base = if cleaned.trim().is_empty() { "Profile" } else { cleaned.trim() };
-    if used.insert(base.to_lowercase()) { return base.to_owned(); }
+    let cleaned: String = raw
+        .chars()
+        .filter(|c| !c.is_control() && !"[]:*?/\\".contains(*c))
+        .take(31)
+        .collect();
+    let base = if cleaned.trim().is_empty() {
+        "Profile"
+    } else {
+        cleaned.trim()
+    };
+    if used.insert(base.to_lowercase()) {
+        return base.to_owned();
+    }
     for suffix in 2..10_000usize {
         let tail = format!(" {suffix}");
         let keep = 31usize.saturating_sub(tail.chars().count());
         let candidate = format!("{}{}", base.chars().take(keep).collect::<String>(), tail);
-        if used.insert(candidate.to_lowercase()) { return candidate; }
+        if used.insert(candidate.to_lowercase()) {
+            return candidate;
+        }
     }
     "Profile".to_owned()
 }
 
 fn backup_title(profile: &DriveProfileSnapshot) -> String {
     let title = profile.file.document.title().trim();
-    if title.is_empty() { profile.display_name.trim_end_matches(".csv").to_owned() } else { title.to_owned() }
+    if title.is_empty() {
+        profile.display_name.trim_end_matches(".csv").to_owned()
+    } else {
+        title.to_owned()
+    }
 }
-fn quoted(title: &str) -> String { format!("'{}'", title.replace('\'', "''")) }
+fn quoted(title: &str) -> String {
+    format!("'{}'", title.replace('\'', "''"))
+}
 fn column_name(mut index: usize) -> String {
     let mut name = String::new();
-    while index > 0 { index -= 1; name.insert(0, (b'A' + (index % 26) as u8) as char); index /= 26; }
+    while index > 0 {
+        index -= 1;
+        name.insert(0, (b'A' + (index % 26) as u8) as char);
+        index /= 26;
+    }
     name
 }
 fn xlsx_name(name: &str) -> String {
-    let stem = name.strip_suffix(".csv").or_else(|| name.strip_suffix(".CSV")).unwrap_or(name).trim();
-    format!("{}.xlsx", if stem.is_empty() { "Drive backup" } else { stem })
+    let stem = name
+        .strip_suffix(".csv")
+        .or_else(|| name.strip_suffix(".CSV"))
+        .unwrap_or(name)
+        .trim();
+    format!(
+        "{}.xlsx",
+        if stem.is_empty() {
+            "Drive backup"
+        } else {
+            stem
+        }
+    )
 }
 fn read_bounded(mut response: Response, limit: usize) -> std::io::Result<Vec<u8>> {
     let mut bytes = Vec::new();
-    response.by_ref().take(limit as u64 + 1).read_to_end(&mut bytes)?;
-    if bytes.len() > limit { return Err(std::io::Error::other("response exceeded size limit")); }
+    response
+        .by_ref()
+        .take(limit as u64 + 1)
+        .read_to_end(&mut bytes)?;
+    if bytes.len() > limit {
+        return Err(std::io::Error::other("response exceeded size limit"));
+    }
     Ok(bytes)
 }
-fn read_state(path: &Path) -> Option<DriveState> { serde_json::from_slice(&fs::read(path).ok()?).ok() }
+fn read_state(path: &Path) -> Option<DriveState> {
+    serde_json::from_slice(&fs::read(path).ok()?).ok()
+}
 fn replace_file(temp: &Path, target: &Path) -> std::io::Result<()> {
     #[cfg(target_os = "windows")]
-    if target.exists() { fs::remove_file(target)?; }
+    if target.exists() {
+        fs::remove_file(target)?;
+    }
     fs::rename(temp, target)
 }
 fn config_dir() -> Option<PathBuf> {
@@ -481,18 +730,46 @@ fn config_dir() -> Option<PathBuf> {
     #[cfg(target_os = "windows")]
     let base = std::env::var_os("APPDATA").map(PathBuf::from);
     #[cfg(target_os = "macos")]
-    let base = std::env::var_os("HOME").map(PathBuf::from).map(|home| home.join("Library").join("Application Support"));
+    let base = std::env::var_os("HOME")
+        .map(PathBuf::from)
+        .map(|home| home.join("Library").join("Application Support"));
     #[cfg(not(any(target_os = "windows", target_os = "macos")))]
-    let base = std::env::var_os("XDG_CONFIG_HOME").map(PathBuf::from).or_else(|| std::env::var_os("HOME").map(|home| PathBuf::from(home).join(".config")));
+    let base = std::env::var_os("XDG_CONFIG_HOME")
+        .map(PathBuf::from)
+        .or_else(|| std::env::var_os("HOME").map(|home| PathBuf::from(home).join(".config")));
     base.map(|dir| dir.join(APP_DIR))
 }
 fn resolution_id(raw: &str) -> Result<u64, QcmError> {
-    raw.strip_prefix("drive-resolution-").and_then(|value| value.parse().ok()).ok_or_else(unknown_resolution)
+    raw.strip_prefix("drive-resolution-")
+        .and_then(|value| value.parse().ok())
+        .ok_or_else(unknown_resolution)
 }
 fn cloud_id(raw: &str) -> Result<u64, QcmError> {
-    raw.strip_prefix("cloud-").and_then(|value| value.parse().ok()).ok_or_else(unknown_cloud_ref)
+    raw.strip_prefix("cloud-")
+        .and_then(|value| value.parse().ok())
+        .ok_or_else(unknown_cloud_ref)
 }
-fn unknown_resolution() -> QcmError { RequestError::OutOfRange { what: "Drive conflict resolution" }.into() }
-fn unknown_cloud_ref() -> QcmError { RequestError::OutOfRange { what: "Drive cloud reference" }.into() }
-fn drive_message(message: &str) -> QcmError { QcmError::Internal(InternalError { what: "Google Drive", detail: OsDetail::new(message) }) }
-fn drive_internal(what: &'static str, error: impl std::fmt::Display) -> QcmError { QcmError::Internal(InternalError { what, detail: OsDetail::new(error.to_string()) }) }
+fn unknown_resolution() -> QcmError {
+    RequestError::OutOfRange {
+        what: "Drive conflict resolution",
+    }
+    .into()
+}
+fn unknown_cloud_ref() -> QcmError {
+    RequestError::OutOfRange {
+        what: "Drive cloud reference",
+    }
+    .into()
+}
+fn drive_message(message: &str) -> QcmError {
+    QcmError::Internal(InternalError {
+        what: "Google Drive",
+        detail: OsDetail::new(message),
+    })
+}
+fn drive_internal(what: &'static str, error: impl std::fmt::Display) -> QcmError {
+    QcmError::Internal(InternalError {
+        what,
+        detail: OsDetail::new(error.to_string()),
+    })
+}

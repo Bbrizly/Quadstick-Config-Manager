@@ -112,7 +112,7 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
       <div className="settings-drive-actions">
         {auth?.connected ? (
           <button type="button" disabled={busy} onClick={() => void disconnectNow()}>
-            {t("Settings_TurnOff")}
+            {t("Rewrite_TurnOff")}
           </button>
         ) : (
           <button type="button" disabled={busy || auth?.configured === false || auth?.supported === false} onClick={() => void connectNow()}>
@@ -284,7 +284,7 @@ export function ProfileDriveActions({
             {t("Shell_SaveCtrlS")}
           </button>
           <button type="button" disabled={busy} onClick={() => void resolveNow("disable")}>
-            {t("Settings_TurnOff")}
+            {t("Rewrite_TurnOff")}
           </button>
         </div>
       ) : null}

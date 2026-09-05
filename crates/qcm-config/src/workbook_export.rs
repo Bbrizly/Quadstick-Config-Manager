@@ -84,7 +84,7 @@ fn worksheet_slices(profile: &ProfileFile) -> Vec<Grid> {
 
     let mut result = Vec::with_capacity(profile.document.sheets.len());
     for (index, sheet) in profile.document.sheets.iter().enumerate() {
-        let start = if index == 0 && profile.document.has_version_header {
+        let start = if index == 0 {
             0
         } else {
             sheet.start_row.saturating_sub(1).min(profile.grid.len())
@@ -95,7 +95,8 @@ fn worksheet_slices(profile: &ProfileFile) -> Vec<Grid> {
             .get(index + 1)
             .map_or(profile.grid.len(), |next| {
                 next.start_row.saturating_sub(1).min(profile.grid.len())
-            });
+            })
+            .max(start);
         result.push(trim_trailing_blank(profile.grid[start..end].to_vec()));
     }
     result
@@ -117,16 +118,13 @@ fn worksheet_names(profile: &ProfileFile, count: usize) -> Vec<String> {
         .map(|index| {
             let base = profile.document.sheets.get(index).map_or_else(
                 || format!("Profile {}", index + 1),
-                |sheet| {
-                    if !sheet.mode_name.trim().is_empty() {
-                        sheet.mode_name.clone()
-                    } else {
-                        match sheet.sheet_type {
-                            SheetType::ProfileName => format!("Mode {}", index + 1),
-                            SheetType::Preferences => "Preferences".to_owned(),
-                            SheetType::Infrared => "Infrared".to_owned(),
-                        }
+                |sheet| match sheet.sheet_type {
+                    SheetType::Preferences => "Preferences".to_owned(),
+                    SheetType::Infrared => "Infrared".to_owned(),
+                    SheetType::ProfileName if sheet.mode_name.trim().is_empty() => {
+                        format!("Mode {}", index + 1)
                     }
+                    SheetType::ProfileName => sheet.mode_name.clone(),
                 },
             );
             unique_sheet_name(&base, &mut used)
@@ -140,10 +138,11 @@ fn unique_sheet_name(given: &str, used: &mut BTreeSet<String>) -> String {
         .filter(|character| !character.is_control() && !"[]:*?/\\".contains(*character))
         .take(31)
         .collect();
-    let base = if cleaned.trim().is_empty() {
+    let trimmed = cleaned.trim().trim_matches('\'').trim();
+    let base = if trimmed.is_empty() || trimmed.eq_ignore_ascii_case("History") {
         "Profile".to_owned()
     } else {
-        cleaned.trim().to_owned()
+        trimmed.to_owned()
     };
     if used.insert(base.to_lowercase()) {
         return base;
@@ -258,6 +257,12 @@ fn column_name(mut zero_based: usize) -> String {
 }
 
 fn xml_escape(value: &str) -> String {
+    // XML 1.0 cannot carry most control characters even escaped; a cell
+    // holding one would make a workbook Excel refuses to open.
+    let value: String = value
+        .chars()
+        .filter(|c| !c.is_control() || matches!(c, '\t' | '\n' | '\r'))
+        .collect();
     value
         .replace('&', "&amp;")
         .replace('<', "&lt;")
