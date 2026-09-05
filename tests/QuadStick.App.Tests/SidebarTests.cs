@@ -36,12 +36,12 @@ public class SidebarTests
         "Outputs,Function,usb\n" +
         "circle,normal,right_sip\n";
 
-    static MainWindow Open(string csv = ThreeSheets, bool deviceView = true)
+    static MainWindow Open(string csv = ThreeSheets, bool deviceView = true, int scalePercent = 100)
     {
         var s = Settings.Load();
         s.TutorialSeen = true;
         s.RememberWindow = false;
-        s.InterfaceScalePercent = 100;
+        s.InterfaceScalePercent = scalePercent;
         s.Model = "FPS";
         Settings.Save(s);
         var w = new MainWindow();
@@ -144,13 +144,13 @@ public class SidebarTests
         // useful three-row minimum rather than making Configuration scroll too.
         Assert.Equal(112, listScroll.MinHeight);
         Assert.True(listScroll.AllowAutoHide);
-        // The modes list is the only scroller in the sidebar. The sidebar
-        // itself stays pinned to the workspace so Configuration and the view
-        // keys remain visible while a long mode list is browsed.
+        // Two scrollers, and only two: this list, and the one around the whole
+        // sidebar that catches a panel too short to lay itself out. A third
+        // would mean some section had started scrolling on its own.
         var sidebar = Named(w, "EditorSidebar");
         var scrollers = sidebar.GetVisualDescendants().OfType<ScrollViewer>().ToList();
-        Assert.Single(scrollers);
-        Assert.Same(listScroll, scrollers[0]);
+        Assert.Equal(2, scrollers.Count);
+        Assert.Same(listScroll, scrollers.Last());
         Assert.Contains("modeRow", Rows(w)[0].Classes);
 
         // The word "Modes" is the explanatory target on the left; the edit
@@ -276,5 +276,80 @@ public class SidebarTests
         Assert.True(Named(w, "DeviceHeaderStatus").IsVisible);
 
         w.Close();
+    }
+
+    // Drew Redepenning reported the mode rows drawing on top of Configuration
+    // on 2026-09-05, running a raised interface scale. Scale is a
+    // LayoutTransform, so every point above 100 leaves the sidebar less room
+    // to lay itself out, and with no scroller around the panel the rows and
+    // Configuration were arranged over each other. Every supported scale, not
+    // just the one the rest of this suite runs at. Overlap only, not "is it on
+    // screen": the headless window is 1024x768 whatever the scale, while the
+    // app refuses a window under 560*scale, so at 150 and above this runs in a
+    // panel smaller than a real user can produce. Nothing may be drawn over
+    // anything even there.
+    [AvaloniaTheory]
+    [InlineData(100)]
+    [InlineData(125)]
+    [InlineData(150)]
+    [InlineData(200)]
+    public void Modes_never_draw_on_top_of_configuration(int scalePercent)
+    {
+        var w = Open(scalePercent: scalePercent);
+        try
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Ui.Click(Named(w, "AddModeButton"));
+                Dispatcher.UIThread.RunJobs();
+            }
+            w.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+
+            var list = Named(w, "ModeListScroll");
+            var picker = Named(w, "ModelPicker");
+            var listBottom = list.TranslatePoint(new Point(0, list.Bounds.Height), w)!.Value.Y;
+            var pickerTop = picker.TranslatePoint(new Point(0, 0), w)!.Value.Y;
+
+            Assert.True(listBottom <= pickerTop + 1,
+                $"at {scalePercent}% the mode list reaches {listBottom:0}, over Configuration at {pickerTop:0}");
+        }
+        finally
+        {
+            w.OpenFile!.Dirty = false;
+            w.Close();
+        }
+    }
+
+    // The cap on the mode list is load-bearing, not a leftover: inside the
+    // sidebar scroller the list measures against infinite height, so without
+    // it twenty modes push Configuration and the view keys past the bottom of
+    // the panel every time.
+    [AvaloniaFact]
+    public void A_long_mode_list_leaves_configuration_on_screen()
+    {
+        var w = Open();
+        try
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                Ui.Click(Named(w, "AddModeButton"));
+                Dispatcher.UIThread.RunJobs();
+            }
+            w.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+
+            var sidebar = Named(w, "EditorSidebar");
+            var picker = Named(w, "ModelPicker");
+            var pickerTop = picker.TranslatePoint(new Point(0, 0), sidebar)!.Value.Y;
+
+            Assert.True(pickerTop < sidebar.Bounds.Height,
+                $"twenty modes pushed Configuration to {pickerTop:0}, past the {sidebar.Bounds.Height:0} panel");
+        }
+        finally
+        {
+            w.OpenFile!.Dirty = false;
+            w.Close();
+        }
     }
 }
