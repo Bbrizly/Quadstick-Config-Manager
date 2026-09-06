@@ -8034,7 +8034,8 @@ public partial class MainWindow : Window
             body.Children.Clear();
             scroll.ScrollToHome();
             var hits = all.Where(t => t.Contains(q, StringComparison.OrdinalIgnoreCase)
-                                   || labelFor(t).Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+                                   || labelFor(t).Contains(q, StringComparison.OrdinalIgnoreCase)
+                                   || OutputCatalog.OtherNames(t).Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
             foreach (var t in hits.Take(40)) body.Children.Add(Item(t));
             if (hits.Count > 40)
                 body.Children.Add(new TextBlock

@@ -2365,6 +2365,10 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Outputs_FunctionKeys2" xml:space="preserve">
     <value>Function keys</value>
   </data>
+  <data name="Outputs_GuiKeyOtherNames" xml:space="preserve">
+    <value>windows win start super meta command cmd apple flag</value>
+    <comment>Not shown. Search words that find kb_left_gui and kb_right_gui, which every keyboard prints as something else. Add the names your language types, keep the English ones.</comment>
+  </data>
   <data name="Outputs_ModeSwitching" xml:space="preserve">
     <value>Mode switching</value>
   </data>
