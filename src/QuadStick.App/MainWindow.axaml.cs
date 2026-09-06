@@ -6660,9 +6660,11 @@ public partial class MainWindow : Window
         p.Children.Add(At(Mid(WithDuplicateMark(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, string.Format(CultureInfo.CurrentCulture, Strings.Main_OutputForRowBRow, b.Row), OutputTint, outputs.Catalog, Strings.Main_AnOutput,
             picked => CommitOutputFromList(b, outputs, picked),
             _labelStyle == 0 ? null
-                // Picker rows have enough room for the full wrapped keycap;
-                // compact keycaps are reserved for the dense mapping cards.
-                : token => OutputVisuals.Render(VisualFor(token), TokenLabel(token), compact: false),
+                // Picker rows are deliberately compact: the button already
+                // supplies the 48px hit target, so a full-size keycap or
+                // controller prompt makes the popup grow vertically and can
+                // push the rest of the option's content out of view.
+                : token => OutputVisuals.Render(VisualFor(token), TokenLabel(token), compact: true),
             vocabularyFilter: true),
             _dupes.Output(b.Output))), 1));
         // List View is the raw grid, so the function's numbers explain
@@ -7702,9 +7704,10 @@ public partial class MainWindow : Window
             token =>
             {
                 var label = outputs.TokenFor.ContainsKey(token) ? token : TokenLabel(token);
-                // The dropdown item needs to show the complete keypad label;
-                // use the full wrapped keycap presentation here.
-                return OutputVisuals.Render(VisualFor(token, _ => label), compact: false);
+                // Keep every dropdown option on the same visual scale. The
+                // button remains the full hit target; the artwork is the
+                // compact presentation so its label and prompt stay together.
+                return OutputVisuals.Render(VisualFor(token, _ => label), compact: true);
             },
             vocabularyFilter: true);
     }

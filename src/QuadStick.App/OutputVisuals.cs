@@ -625,10 +625,13 @@ public static class OutputVisuals
         // A fallback keycap must be a real label, not a tiny icon with an
         // ellipsis. This matters for tokens such as "Keyboard" and
         // "Page Down", whose artwork may be unavailable. Keep the compact
-        // version narrow enough for mapping cards; genuinely long names wrap
-        // inside the keycap instead of overflowing the output cell.
-        var height = compact ? 42 : 56;
-        var width = compact ? 58 : 86;
+        // version narrow enough for mapping cards. Two-word keys such as
+        // "Right Alt" need a little more room: the old 58x42 compact plate
+        // could measure the first word and clip the second before the picker
+        // had a chance to show it.
+        bool multiWord = text.Contains(' ', StringComparison.Ordinal);
+        var height = compact ? (multiWord ? 52 : 42) : 56;
+        var width = compact ? (multiWord ? 86 : 58) : 86;
         var plate = new Grid { Width = width, Height = height };
         var back = new Border
         {
