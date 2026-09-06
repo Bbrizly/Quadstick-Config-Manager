@@ -495,8 +495,10 @@ if (args.Contains("--drew2"))
             SamplePrefs + "enable_DS3_emulation,0,,\n", category: "USB and compatibility");
     });
 
+    // The lip row takes numbers, because 8-functions is the shot Drew read the
+    // parameter wording off and a function with no numbers shows none of it.
     const string Combos = "Profile Name,,Gameplay\nmygame.csv\nOutputs,Function,usb\n"
-        + "x,normal,mp_left_center_sip\nkb_space,normal,lip\ncircle,normal,digital_in_8\n";
+        + "x,normal,mp_left_center_sip\nkb_space,tap 500 1,lip\ncircle,normal,digital_in_8\n";
 
     Capture("5-hole-combos", w =>
     {
