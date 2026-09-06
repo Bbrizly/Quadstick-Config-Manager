@@ -304,7 +304,9 @@ public class DeviceFilesWindow : Window
 
         if (_groups.Count == 0)
         {
-            _summary.Text = Strings.Device_NoQuadStickDriveIsPlugged;
+            _summary.Text = string.Format(CultureInfo.CurrentCulture,
+                Strings.Device_NoQuadStickDriveIsPlugged,
+                string.Join(", ", Validator.ModesWithNoDrive));
             return;
         }
 

@@ -584,6 +584,12 @@ public static class Validator
         [7] = "DualShock 4 wireless",
     };
 
+    /// <summary>The USB emulation modes that leave no drive for a computer to
+    /// find, in order. The "no drive is plugged in" message names them, and it
+    /// named only mode 6 for a while because it carried its own copy.</summary>
+    public static IReadOnlyList<int> ModesWithNoDrive { get; } =
+        EmulationModesWithNoDrive.Keys.OrderBy(m => m).ToList();
+
     /// <summary>Whether a USB emulation mode leaves the QuadStick's drive
     /// reachable from a computer. A value that is not a number is nobody's
     /// business here, so it counts as safe and the writer's own rules judge it.</summary>

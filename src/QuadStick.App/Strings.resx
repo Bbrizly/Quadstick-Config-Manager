@@ -635,7 +635,7 @@
     <value>, no linked Google Sheet in its header</value>
   </data>
   <data name="Device_NoQuadStickDriveIsPlugged" xml:space="preserve">
-    <value>No QuadStick drive is plugged in. It must contain default.csv. In USB emulation mode 6, it does not appear.</value>
+    <value>No QuadStick drive is plugged in. It must contain default.csv. USB emulation modes {0} hide the drive, so a QuadStick on one of those is connected and playing but cannot be seen here.</value>
   </data>
   <data name="Device_NumberFileNameNoLightPattern" xml:space="preserve">
     <value>{0}. {1}: no light pattern is documented for this position</value>

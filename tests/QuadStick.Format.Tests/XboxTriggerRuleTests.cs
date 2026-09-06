@@ -110,3 +110,25 @@ public class XboxTriggerRuleTests
         Assert.Single(issues, i => i.Message.Contains("pressure axis"));
     }
 }
+
+// The "no drive is plugged in" message used to carry its own copy of the list
+// and named only mode 6, so somebody stuck in DS3 mode read a message about a
+// mode they were not on. It reads the rule now, and this holds the two together.
+public class NoDriveModeListTests
+{
+    [Fact]
+    public void The_list_is_every_mode_that_hides_the_drive()
+    {
+        Assert.Equal(new[] { 1, 5, 6, 7 }, Validator.ModesWithNoDrive);
+    }
+
+    [Theory]
+    [InlineData("1")]
+    [InlineData("5")]
+    [InlineData("6")]
+    [InlineData("7")]
+    public void A_mode_on_the_list_is_one_the_rule_also_calls_driveless(string mode)
+    {
+        Assert.False(Validator.EmulationKeepsTheDrive(mode));
+    }
+}
