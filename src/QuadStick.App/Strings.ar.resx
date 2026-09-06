@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>البحث في ملفات المجتمع الشخصية</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>ملفات ألعاب شخصية شاركها لاعبو QuadStick آخرون كجداول Google.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>عرض جميع {0}.</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>جارٍ البحث عن جهاز QuadStick الخاص بك...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>كل شيء هنا يقرأ ويكتب ملفات على محرك أقراص QuadStick، ولا شيء غير ذلك.</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>لا يوجد نمط إضاءة موثّق لهذا الموضع</value>
@@ -2167,6 +2173,9 @@
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>الوضع هو تخطيط كامل لمدخلاتك. بدّل بينها أثناء اللعب باستخدام increment_mode و decrement_mode. يربط ملف المصنع هذين الأمرين بشفط ونفخ أنبوب الجانب، ولهذا يغيّر أنبوب الجانب الوضع إلى أن تعيد ربطه.</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>الوضع هو تخطيط كامل لمدخلاتك.</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>يحتاج الوضع إلى اسم. الاسم القديم ما زال موجودًا.</value>
   </data>
@@ -3195,6 +3204,9 @@
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>كل واحد من هذه ملف لعبة كامل، وليس وضعاً. مع تفعيل “اختيار الملفات”، يفتح الشفط الطويل القوي على أنبوب الجانب هذه القائمة على الجهاز: اختر واحداً بعصا التحكم، ثم حمّله بمفتاح الشفة أو بشفط أو نفخ من الفتحة الوسطى أو بمفتاح الضغط. أما الأوضاع فهي التخطيطات داخل ملف واحد.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>كل واحد من هذه ملف لعبة كامل، وليس وضعاً.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>تعديل الأوضاع</value>

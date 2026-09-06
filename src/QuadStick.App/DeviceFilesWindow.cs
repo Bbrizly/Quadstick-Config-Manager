@@ -73,11 +73,8 @@ public class DeviceFilesWindow : Window
         Height = Math.Min(700 * owner.UiScale, 880);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-        var explain = new TextBlock
-        {
-            Text = Strings.Device_EverythingHereReadsAndWrites,
-            FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
-        };
+        var explain = MainWindow.Explain(Strings.Device_ManageFilesOnTheQuadStick,
+            Strings.Device_FilesOnYourQuadStick, Strings.Device_EverythingHereReadsAndWrites);
 
         _summary = new TextBlock
         {

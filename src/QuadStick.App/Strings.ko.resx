@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>커뮤니티 프로필 검색</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>다른 QuadStick 사용자들이 Google 시트로 공유한 게임 프로필입니다.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>전체 {0} 표시 중.</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>QuadStick을 찾는 중...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>여기서는 QuadStick 드라이브의 파일만 읽고 쓰며, 그 외에는 아무것도 하지 않습니다.</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>이 위치에 대해 문서화된 조명 패턴이 없습니다</value>
@@ -2167,6 +2173,9 @@
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>모드는 입력 전체의 배치입니다. 플레이 중에는 increment_mode와 decrement_mode로 전환합니다. 공장 프로필이 이 둘을 사이드 튜브의 흡입과 불기에 연결해 두었기 때문에, 다시 지정하기 전까지는 사이드 튜브로 모드가 바뀝니다.</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>모드는 입력 전체의 배치입니다.</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>모드에는 이름이 필요합니다. 기존 이름이 그대로 유지됩니다.</value>
   </data>
@@ -3195,6 +3204,9 @@
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>여기 있는 것은 모드가 아니라 각각 하나의 게임 파일입니다. “파일 선택”이 켜져 있으면 사이드 튜브를 길고 세게 흡입할 때 기기에서 이 목록이 열립니다. 조이스틱으로 고른 다음 립 스위치, 가운데 흡입이나 불기, 또는 푸시 스위치로 불러옵니다. 모드는 한 파일 안에 있는 배치입니다.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>여기 있는 것은 모드가 아니라 각각 하나의 게임 파일입니다.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>모드 편집</value>

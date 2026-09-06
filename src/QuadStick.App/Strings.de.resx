@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>Die Community-Profile durchsuchen</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>Spielprofile, die andere QuadStick-Spieler als Google Sheets geteilt haben.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>Alle {0} werden angezeigt.</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>Ihr QuadStick wird gesucht...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>Alles hier liest und schreibt Dateien auf dem Laufwerk des QuadStick, sonst nichts.</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>für diese Position ist kein Lichtmuster dokumentiert</value>
@@ -2167,6 +2173,9 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>Ein Modus ist ein vollständiges Layout Ihrer Eingaben. Wechseln Sie im Spiel mit increment_mode und decrement_mode zwischen ihnen. Das Werksprofil legt diese auf Saugen und Pusten am Seitenschlauch, weshalb der Seitenschlauch den Modus wechselt, bis Sie ihn neu belegen.</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>Ein Modus ist ein vollständiges Layout Ihrer Eingaben.</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Ein Modus braucht einen Namen. Der alte ist noch da.</value>
   </data>
@@ -3195,6 +3204,9 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>Jede davon ist eine ganze Spieldatei, kein Modus. Wenn „Dateien auswählen“ aktiv ist, öffnet ein langes kräftiges Saugen am Seitenschlauch diese Liste auf dem Gerät: mit dem Joystick auswählen, dann mit dem Lippenschalter, mit Saugen oder Pusten am mittleren Loch oder mit dem Druckschalter laden. Modi sind die Layouts innerhalb einer einzelnen Datei.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>Jede davon ist eine ganze Spieldatei, kein Modus.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Modi bearbeiten</value>

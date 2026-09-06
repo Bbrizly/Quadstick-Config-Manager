@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>[Šéárçh thé çómmúñítý prófíléš xxxxxxxxxxx]</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>[Šháréd Góóglé Šhéétš fór gámé prófíléš. xxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>[Šhówíñg áll {0}. xxxxxx]</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>[Lóókíñg fór ýóúr QúádŠtíçk... xxxxxxxxxxx]</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>[Máñágé fíléš óñ thé QúádŠtíçk drívé. xxxxxxxxxxxxxx]</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>[ñó líght páttérñ íš dóçúméñtéd fór thíš póšítíóñ xxxxxxxxxxxxxxxxxxx]</value>
@@ -2167,6 +2173,9 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>[Á módé íš á fúll láýóút óf ýóúr íñpútš. Šwítçh bétwééñ thém whílé pláýíñg wíth íñçréméñt_módé áñd déçréméñt_módé. Thé fáçtórý prófílé bíñdš thóšé tó á šídé túbé šíp áñd púff, whíçh íš whý thé šídé túbé çháñgéš módé úñtíl ýóú rébíñd ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>[Á módé íš á fúll láýóút óf ýóúr íñpútš. xxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>[Á módé ñéédš á ñámé. Thé óld óñé íš štíll théré. xxxxxxxxxxxxxxxxxxx]</value>
   </data>
@@ -3195,6 +3204,9 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>[Éáçh óf théšé íš á whólé gámé fílé, ñót á módé. Wíth Šéléçt fíléš óñ, á lóñg hárd šíp óñ thé šídé túbé ópéñš thíš líšt óñ thé dévíçé: píçk óñé wíth thé jóýštíçk, théñ lóád ít wíth thé líp šwítçh, á çéñtré šíp ór púff, ór thé púšh šwítçh. Módéš áré thé láýóútš íñšídé á šíñglé fílé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>[Éáçh óf théšé íš á whólé gámé fílé, ñót á módé. xxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>[Édít módéš xxxx]</value>

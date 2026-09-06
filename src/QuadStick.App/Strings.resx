@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>Search the community profiles</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>Shared Google Sheets for game profiles.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>Showing all {0}.</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>Looking for your QuadStick...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>Manage files on the QuadStick drive.</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>no light pattern is documented for this position</value>
@@ -2167,6 +2173,9 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>A mode is a full layout of your inputs. Switch between them while playing with increment_mode and decrement_mode. The factory profile binds those to a side tube sip and puff, which is why the side tube changes mode until you rebind it.</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>A mode is a full layout of your inputs.</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>A mode needs a name. The old one is still there.</value>
   </data>
@@ -3195,6 +3204,9 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>Each of these is a whole game file, not a mode. With Select files on, a long hard sip on the side tube opens this list on the device: pick one with the joystick, then load it with the lip switch, a centre sip or puff, or the push switch. Modes are the layouts inside a single file.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>Each of these is a whole game file, not a mode.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Edit modes</value>

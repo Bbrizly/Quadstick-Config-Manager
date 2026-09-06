@@ -88,13 +88,8 @@ public class ModesWindow : Window
             Spacing = 16,
             Children =
             {
-                new TextBlock
-                {
-                    Text = Strings.Modes_AModeIsAFull,
-                    TextWrapping = TextWrapping.Wrap,
-                    FontSize = Size("BodySize"),
-                    Classes = { "muted" },
-                },
+                MainWindow.Explain(Strings.Modes_AModeIsAFullLayout,
+                    Strings.Main_WhatIsAMode, Strings.Modes_AModeIsAFull),
                 ColumnHeadings(),
                 new ScrollViewer
                 {

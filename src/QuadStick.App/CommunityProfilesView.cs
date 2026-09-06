@@ -71,11 +71,8 @@ public class CommunityProfilesView : UserControl
             Text = Strings.Community_CommunityProfiles, Classes = { "section" },
         };
 
-        var explain = new TextBlock
-        {
-            Text = Strings.Community_GameProfilesOtherQuadStickPlayers,
-            FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
-        };
+        var explain = MainWindow.Explain(Strings.Community_SharedGoogleSheetsForGame,
+            Strings.Community_CommunityProfiles, Strings.Community_GameProfilesOtherQuadStickPlayers);
 
         _search = new TextBox
         {

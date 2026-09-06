@@ -870,6 +870,8 @@ public partial class MainWindow : Window
             Strings.Main_AModeIsOneFull);
         DeviceHelpButton.Click += (_, _) => ShowInfoFlyout(DeviceHelpButton, Strings.Main_UsingDeviceView,
             Strings.Main_ClickAnyPartOfThe + ModelDescription);
+        HomeFilesHelpButton.Click += (_, _) => ShowInfoFlyout(HomeFilesHelpButton,
+            Strings.Shell_OnYourQuadStick, Strings.Shell_EachOfTheseIsA);
 
         ProblemsToggle.Click += (_, _) => ToggleProblems();
 
@@ -4799,10 +4801,7 @@ public partial class MainWindow : Window
         // Keep the part name as the heading. The count is supporting context,
         // not part of the title, and the one-click explanation belongs behind
         // the same question-mark pattern used for modes.
-        var help = new Button { Classes = { "icon", "quiet" }, Content = "?" };
-        ToolTip.SetTip(help, zone.Title);
-        AutomationProperties.SetName(help, zone.Title);
-        help.Click += (_, _) => ShowInfoFlyout(help, zone.Title, zone.Blurb);
+        var help = HelpDot(zone.Title, zone.Blurb);
 
         var count = new TextBlock
         {
@@ -7472,7 +7471,36 @@ public partial class MainWindow : Window
                 sp.Children.Add(new TextBlock { Text = d, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
             return sp;
         });
+        // The list explains each choice, because that is where a choice is
+        // made. The closed box shows the name only: with the description in it
+        // the box was ten lines tall in a 230px panel and pushed the numbers
+        // it belongs to off the bottom. The dot beside it holds the words.
+        combo.SelectionBoxItemTemplate = new FuncDataTemplate<string>((name, _) =>
+            new TextBlock
+            {
+                // Never wrapped: this column is 110px in the parts panel and a
+                // wrapping name came out as "Ta" over "p".
+                Text = TokenLabel(name), FontWeight = FontWeight.SemiBold,
+                FontSize = Size("BodySize"), TextTrimming = TextTrimming.CharacterEllipsis,
+            });
         AutomationProperties.SetName(combo, string.Format(CultureInfo.CurrentCulture, Strings.Main_HowShortInputZoneBPresses, ShortInput(zone, b), FunctionExplain(current)));
+
+        // One dot for the whole cell: what the function does, then what its
+        // numbers mean. Titled with the function, so a screen reader announces
+        // "Tap" rather than a generic "help".
+        var fnHelp = new Button { Classes = { "icon", "quiet" }, Content = "?" };
+        void TitleHelp(string name)
+        {
+            ToolTip.SetTip(fnHelp, TokenLabel(name));
+            AutomationProperties.SetName(fnHelp, TokenLabel(name));
+        }
+        TitleHelp(firstToken);
+        fnHelp.VerticalAlignment = VerticalAlignment.Center;
+        fnHelp.Click += (_, _) =>
+        {
+            var name = combo.SelectedItem as string ?? firstToken;
+            ShowInfoFlyout(fnHelp, TokenLabel(name), FunctionHelpBody(name));
+        };
 
         bool startHasParams = Vocab.FunctionArity.TryGetValue(firstToken, out var startArity) && startArity.Max > 0;
         var paramsBox = new TextBox
@@ -7480,17 +7508,29 @@ public partial class MainWindow : Window
             Text = currentParams,
             Watermark = ParameterWatermark(firstToken),
             FontSize = Size("SmallSize"),
-            Margin = new Avalonia.Thickness(0, 4, 0, 0),
             IsVisible = startHasParams,
         };
         AutomationProperties.SetName(paramsBox, ParameterAccessibleName(firstToken));
 
+        // The dot shares the line under the picker with the numbers box, which
+        // is half empty anyway. Beside the picker it took a third of a 145px
+        // column off a control that has a name to show.
+        var underRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+            Margin = new Avalonia.Thickness(0, 4, 0, 0),
+        };
+        underRow.Children.Add(paramsBox);
+        Grid.SetColumn(fnHelp, 1);
+        underRow.Children.Add(fnHelp);
+
         // The ranges and defaults sit under the box, not in a tooltip: a
         // tooltip is unreachable by keyboard and silent to a screen reader,
         // and this is the guidance somebody needs before typing, not after.
+        // What each number does is a click away on the dot beside the box.
         var paramsHint = new TextBlock
         {
-            Text = ParameterHint(firstToken),
+            Text = ParameterSummary(firstToken),
             FontSize = Size("SmallSize"),
             Classes = { "muted" },
             TextWrapping = TextWrapping.Wrap,
@@ -7521,7 +7561,8 @@ public partial class MainWindow : Window
                 bool hasParams = Vocab.FunctionArity.TryGetValue(name, out var ar) && ar.Max > 0;
                 paramsBox.IsVisible = hasParams;
                 paramsHint.IsVisible = hasParams;
-                paramsHint.Text = ParameterHint(name);
+                paramsHint.Text = ParameterSummary(name);
+                TitleHelp(name);
                 paramsBox.Watermark = ParameterWatermark(name);
                 AutomationProperties.SetName(paramsBox, ParameterAccessibleName(name));
                 if (!hasParams) paramsBox.Text = "";
@@ -7536,7 +7577,7 @@ public partial class MainWindow : Window
         // too. Without the wrapper, B{row} lives nowhere in _cellBorders.
         // RefreshIssues mirrors the wrapper child's accessible name onto the
         // highlight; the panel needs the combo's name or an error reads as nothing.
-        var stack = new StackPanel { Children = { combo, paramsBox, paramsHint } };
+        var stack = new StackPanel { Children = { combo, underRow, paramsHint } };
         AutomationProperties.SetName(stack, AutomationProperties.GetName(combo));
         var wrapper = new Border
         {
@@ -8121,6 +8162,44 @@ public partial class MainWindow : Window
         return wrapper;
     }
 
+    /// <summary>A screen's opening line, plus the dot holding the rest of it.
+    /// Screens used to open with a paragraph, and a paragraph at the top of a
+    /// dialog is furniture: the eye goes to the buttons. The sentence that
+    /// stops a wrong guess stays on screen and the mechanics move behind the
+    /// dot, laid out like the part headings in Device View.</summary>
+    internal static Control Explain(string line, string title, string body)
+    {
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        row.Children.Add(new TextBlock
+        {
+            Text = line, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        // Top, not centre: beside a sentence that wrapped, the dot belongs on
+        // the line the sentence starts on.
+        var dot = HelpDot(title, body);
+        dot.VerticalAlignment = VerticalAlignment.Top;
+        Grid.SetColumn(dot, 1);
+        row.Children.Add(dot);
+        return row;
+    }
+
+    // Every screen used to carry its explanation inline, and a wall of muted
+    // paragraphs is a wall nobody reads. What stays inline is the line that
+    // stops a wrong guess; the mechanics move behind one of these.
+    internal static Button HelpDot(string title, string body) => HelpDot(title, () => body);
+
+    /// <summary>For a dot whose subject changes under it, such as the numbers
+    /// beside whichever function the row is set to now.</summary>
+    internal static Button HelpDot(string title, Func<string> body)
+    {
+        var dot = new Button { Classes = { "icon", "quiet" }, Content = "?" };
+        ToolTip.SetTip(dot, title);
+        AutomationProperties.SetName(dot, title);
+        dot.Click += (_, _) => ShowInfoFlyout(dot, title, body());
+        return dot;
+    }
+
     // A dismissable popup anchored to its "?" button: the answer is one click
     // away and never clutters the editing surface.
     static void ShowInfoFlyout(Control anchor, string title, string body)
@@ -8208,6 +8287,26 @@ public partial class MainWindow : Window
     {
         var spec = FunctionParameters.For(FunctionToken(function));
         return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Sentence));
+    }
+
+    // Everything the dot beside a function cell says: what the behaviour is,
+    // then what its numbers mean. One or the other may be empty.
+    internal static string FunctionHelpBody(string function)
+    {
+        var what = FunctionExplain(function);
+        var numbers = ParameterHint(function);
+        if (what.Length == 0) return numbers;
+        return numbers.Length == 0 ? what : what + "\n\n" + numbers;
+    }
+
+    // The same lines without the behaviour half. Once "tap" had to explain that
+    // a second number of 1 toggles rather than presses, the sentence that told
+    // you the range was two lines from the box it belonged to. The numbers stay
+    // under the box; what they do sits behind the question mark beside it.
+    internal static string ParameterSummary(string function)
+    {
+        var spec = FunctionParameters.For(FunctionToken(function));
+        return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Summary));
     }
 
     // A screen reader gets the same sentences the sighted user reads under the

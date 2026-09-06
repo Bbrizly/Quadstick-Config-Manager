@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>コミュニティプロファイルを検索</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>他の QuadStick ユーザーが Google スプレッドシートとして共有したゲームプロファイルです。</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>すべての {0} を表示しています。</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>QuadStick を探しています...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>ここでの操作はすべて QuadStick のドライブ上のファイルの読み書きに限られ、それ以外には及びません。</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>この位置のライトパターンは記載されていません</value>
@@ -2165,6 +2171,9 @@
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>モードは入力全体のレイアウトです。プレイ中は increment_mode と decrement_mode で切り替えます。工場出荷時のプロファイルはこれらをサイドチューブの吸いと吹きに割り当てているため、割り当てを変えるまではサイドチューブでモードが変わります。</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>モードは入力全体のレイアウトです。</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>モードには名前が必要です。元の名前はそのまま残っています。</value>
   </data>
@@ -3193,6 +3202,9 @@
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>ここに並ぶのはモードではなく、それぞれが 1 つのゲームファイルです。「ファイル選択」が有効なとき、サイドチューブを長く強く吸うとデバイス上でこの一覧が開きます。ジョイスティックで選び、リップスイッチ、中央の吸いまたは吹き、あるいはプッシュスイッチで読み込みます。モードは 1 つのファイルの中にあるレイアウトです。</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>ここに並ぶのはモードではなく、それぞれが 1 つのゲームファイルです。</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>モードを編集</value>

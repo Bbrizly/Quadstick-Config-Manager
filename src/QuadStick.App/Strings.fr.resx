@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>Rechercher dans les profils de la communauté</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>Des profils de jeu que d'autres joueurs QuadStick ont partagés sous forme de Google Sheets.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>Tous les {0} sont affichés.</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>Recherche de votre QuadStick...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>Tout ici lit et écrit des fichiers sur le lecteur du QuadStick, rien d'autre.</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>aucun motif de voyants n'est documenté pour cette position</value>
@@ -2167,6 +2173,9 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>Un mode est une disposition complète de vos entrées. Passez de l'un à l'autre en jouant avec increment_mode et decrement_mode. Le profil d'usine les associe à une aspiration et un souffle sur le tube latéral, c'est pourquoi le tube latéral change de mode tant que vous ne le réaffectez pas.</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>Un mode est une disposition complète de vos entrées.</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Un mode a besoin d'un nom. L'ancien est toujours là.</value>
   </data>
@@ -3195,6 +3204,9 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>Chacun de ces éléments est un fichier de jeu entier, pas un mode. Avec Sélection des fichiers activée, une aspiration longue et forte sur le tube latéral ouvre cette liste sur l'appareil : choisissez avec le joystick, puis chargez avec le contacteur labial, une aspiration ou un souffle central, ou le bouton-poussoir. Les modes sont les dispositions à l'intérieur d'un même fichier.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>Chacun de ces éléments est un fichier de jeu entier, pas un mode.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Modifier les modes</value>

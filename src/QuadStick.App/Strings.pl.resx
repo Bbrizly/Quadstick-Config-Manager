@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>Przeszukaj profile społeczności</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>Profile gier udostępnione przez innych graczy QuadStick jako arkusze Google.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>Wyświetlono wszystkie: {0}.</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>Wyszukiwanie Twojego QuadSticka...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>Wszystko tutaj odczytuje i zapisuje pliki na dysku QuadSticka, nic więcej.</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>brak udokumentowanego wzoru świateł dla tej pozycji</value>
@@ -2167,6 +2173,9 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>Tryb to pełny układ twoich wejść. Przełączaj się między nimi podczas gry za pomocą increment_mode i decrement_mode. Profil fabryczny przypisuje je do wciągnięcia i dmuchnięcia w bocznej rurce, dlatego boczna rurka zmienia tryb, dopóki nie zmienisz przypisania.</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>Tryb to pełny układ twoich wejść.</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Tryb musi mieć nazwę. Stara nazwa nadal tam jest.</value>
   </data>
@@ -3195,6 +3204,9 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>Każda z nich to cały plik gry, a nie tryb. Gdy Wybór plików jest włączony, długie mocne wciągnięcie w boczną rurkę otwiera tę listę na urządzeniu: wybierz joystickiem, a potem wczytaj przełącznikiem wargowym, środkowym wciągnięciem lub dmuchnięciem albo przyciskiem. Tryby to układy wewnątrz jednego pliku.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>Każda z nich to cały plik gry, a nie tryb.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Edytuj tryby</value>

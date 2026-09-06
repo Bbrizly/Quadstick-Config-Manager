@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>Cerca nei profili della community</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>Profili di gioco condivisi da altri utenti QuadStick come Google Sheets.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>Mostrati tutti i {0}.</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>Ricerca del Suo QuadStick in corso...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>Tutto qui legge e scrive file sull'unità del QuadStick, nient'altro.</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>nessuno schema di luci è documentato per questa posizione</value>
@@ -2167,6 +2173,9 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>Una modalità è un layout completo dei tuoi ingressi. Passa dall'una all'altra mentre giochi con increment_mode e decrement_mode. Il profilo di fabbrica li assegna a un sorso e a un soffio sul tubo laterale, ed è per questo che il tubo laterale cambia modalità finché non lo riassegni.</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>Una modalità è un layout completo dei tuoi ingressi.</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Una modalità ha bisogno di un nome. Quello vecchio è ancora lì.</value>
   </data>
@@ -3195,6 +3204,9 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>Ognuno di questi è un intero file di gioco, non una modalità. Con Selezione file attiva, un sorso lungo e forte sul tubo laterale apre questo elenco sul dispositivo: scegline uno con il joystick, poi caricalo con l'interruttore a labbro, con un sorso o un soffio centrale, o con il pulsante. Le modalità sono i layout all'interno di un singolo file.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>Ognuno di questi è un intero file di gioco, non una modalità.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Modifica modalità</value>

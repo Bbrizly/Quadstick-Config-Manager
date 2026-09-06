@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>सामुदायिक प्रोफ़ाइलों में खोजें</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>गेम प्रोफ़ाइलें जो दूसरे QuadStick खिलाड़ियों ने Google Sheets के रूप में साझा की हैं।</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>सभी {0} दिखाई जा रही हैं।</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>आपका QuadStick खोजा जा रहा है...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>यहां सब कुछ QuadStick की ड्राइव पर फ़ाइलें पढ़ता और लिखता है, और कुछ नहीं।</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>इस स्थिति के लिए कोई लाइट पैटर्न दर्ज नहीं है</value>
@@ -2167,6 +2173,9 @@
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>मोड आपके इनपुट का एक पूरा लेआउट है। खेलते समय increment_mode और decrement_mode से इनके बीच स्विच करें। फ़ैक्टरी प्रोफ़ाइल इन्हें साइड ट्यूब के सिप और पफ़ से जोड़ती है, इसीलिए जब तक आप दोबारा बाइंड न करें तब तक साइड ट्यूब मोड बदलता है।</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>मोड आपके इनपुट का एक पूरा लेआउट है।</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>एक मोड को नाम चाहिए। पुराना नाम अभी भी वहीं है।</value>
   </data>
@@ -3195,6 +3204,9 @@
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>इनमें से हर एक पूरी गेम फ़ाइल है, मोड नहीं। “फ़ाइलें चुनें” चालू होने पर, साइड ट्यूब पर लंबा तेज़ सिप डिवाइस पर यह सूची खोलता है: जॉयस्टिक से एक चुनें, फिर लिप स्विच, बीच के छेद से सिप या पफ़, या पुश स्विच से लोड करें। मोड एक ही फ़ाइल के भीतर के लेआउट होते हैं।</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>इनमें से हर एक पूरी गेम फ़ाइल है, मोड नहीं।</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>मोड संपादित करें</value>

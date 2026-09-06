@@ -20,13 +20,21 @@ public sealed record FunctionParameter(
     string Default,
     string What)
 {
-    /// <summary>The whole thing as one line, for a hint under the box or a
-    /// screen reader: "Rate: 1 to 1000 taps a second. Blank means 10 a second.
-    /// How fast it taps while you hold the input."</summary>
-    public string Sentence =>
+    /// <summary>The whole thing as one line, for a screen reader or the help
+    /// behind the field: "Rate: 1 to 1000 taps a second. Blank means 10 a
+    /// second. How fast it taps while you hold the input."</summary>
+    public string Sentence => Say(What);
+
+    /// <summary>Range and default only, no behaviour: "Rate: 1 to 1000 taps a
+    /// second. Blank means 10 a second." This is what sits under the box.
+    /// <see cref="What"/> is the half that grew long enough to bury the
+    /// numbers, so it moved behind the question mark beside it.</summary>
+    public string Summary => Say("");
+
+    string Say(string what) =>
         string.Format(CultureInfo.CurrentCulture,
             Unit.Length > 0 ? Strings.Fn_SentenceWithUnit : Strings.Fn_Sentence,
-            Label, Minimum, Maximum, Default, What, Unit);
+            Label, Minimum, Maximum, Default, what, Unit).TrimEnd();
 }
 
 /// <summary>

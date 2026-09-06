@@ -1,3 +1,4 @@
+using System.Globalization;
 using QuadStick.Format;
 using Xunit;
 
@@ -147,6 +148,58 @@ public class FunctionParameterTests
         var issues = Check(function);
         Assert.True(Says(issues, "as no value at all"),
             "expected the leave-it-out reading: " + string.Join(" | ", issues.Select(i => i.Message)));
+    }
+
+    // Drew, 2026-09-05: the descriptions read long. The numbers a person needs
+    // before typing stay under the box; what the number does moved behind a
+    // question mark. Summary is that split, so it has to keep the range and
+    // drop the behaviour, not merely be shorter.
+    [Theory]
+    [InlineData("tap")]
+    [InlineData("repeat")]
+    [InlineData("delay_on")]
+    [InlineData("greater_than")]
+    public void The_short_line_keeps_the_range_and_drops_the_behaviour(string function)
+    {
+        foreach (var p in FunctionParameters.For(function))
+        {
+            Assert.Contains(p.Label, p.Summary, StringComparison.Ordinal);
+            Assert.Contains(p.Default, p.Summary, StringComparison.Ordinal);
+            Assert.Contains(p.Maximum.ToString(CultureInfo.InvariantCulture), p.Summary, StringComparison.Ordinal);
+            Assert.DoesNotContain(p.What, p.Summary, StringComparison.Ordinal);
+            Assert.Contains(p.What, p.Sentence, StringComparison.Ordinal);
+            // No orphaned space or stop where the behaviour used to be.
+            Assert.Equal(p.Summary.TrimEnd(), p.Summary);
+        }
+    }
+
+    // Summary is Sentence with the behaviour argument left empty, so it only
+    // comes out clean while every translation ends on that placeholder. A
+    // translator who moves it leaves a space in the middle of the short line.
+    [Fact]
+    public void Every_language_puts_the_behaviour_last_in_the_sentence()
+    {
+        foreach (var path in Directory.GetFiles(
+            Path.Combine(RepoRoot(), "src", "QuadStick.Format"), "Strings*.resx"))
+        {
+            if (path.EndsWith("qps-ploc.resx", StringComparison.Ordinal)) continue;
+            var doc = System.Xml.Linq.XDocument.Load(path);
+            foreach (var key in new[] { "Fn_Sentence", "Fn_SentenceWithUnit" })
+            {
+                var value = doc.Root!.Elements("data")
+                    .First(d => (string?)d.Attribute("name") == key)
+                    .Element("value")!.Value;
+                Assert.EndsWith("{4}", value.TrimEnd(), StringComparison.Ordinal);
+            }
+        }
+    }
+
+    static string RepoRoot()
+    {
+        var dir = AppContext.BaseDirectory;
+        while (!File.Exists(Path.Combine(dir, "QuadStick.sln")))
+            dir = Path.GetDirectoryName(dir.TrimEnd(Path.DirectorySeparatorChar))!;
+        return dir;
     }
 
     // FunctionArity used to be a second hand-written table beside this one.

@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>搜索社区配置文件</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>其他 QuadStick 玩家以 Google 表格形式分享的游戏配置文件。</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>显示全部 {0} 个。</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>正在查找您的 QuadStick…</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>此处的所有操作只读写 QuadStick 驱动器上的文件，不涉及其他任何内容。</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>此位置没有记录的指示灯模式</value>
@@ -2167,6 +2173,9 @@
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>模式是你全部输入的一整套布局。游戏中用 increment_mode 和 decrement_mode 在模式之间切换。出厂配置把它们绑定到侧管的吸和吹上，所以在你重新绑定之前，侧管会切换模式。</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>模式是你全部输入的一整套布局。</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>模式需要一个名称。旧名称仍然保留。</value>
   </data>
@@ -3195,6 +3204,9 @@
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>这里的每一项都是一个完整的游戏文件，不是模式。开启“选择文件”后，在侧管上长而用力地吸就会在设备上打开这个列表：用摇杆选择，然后用唇键、中孔的吸或吹、或者按压开关载入。模式是单个文件内部的布局。</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>这里的每一项都是一个完整的游戏文件，不是模式。</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>编辑模式</value>

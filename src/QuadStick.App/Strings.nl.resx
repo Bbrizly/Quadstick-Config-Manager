@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>De communityprofielen doorzoeken</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>Spelprofielen die andere QuadStick-spelers hebben gedeeld als Google Sheets.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>Alle {0} worden weergegeven.</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>Uw QuadStick wordt gezocht...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>Alles hier leest en schrijft bestanden op het station van de QuadStick, verder niets.</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>er is geen lichtpatroon gedocumenteerd voor deze positie</value>
@@ -2167,6 +2173,9 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>Een modus is een volledige indeling van je ingangen. Wissel er tijdens het spelen tussen met increment_mode en decrement_mode. Het fabrieksprofiel koppelt die aan zuigen en blazen op de zijbuis, en daarom wisselt de zijbuis van modus totdat je hem opnieuw koppelt.</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>Een modus is een volledige indeling van je ingangen.</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Een modus heeft een naam nodig. De oude staat er nog.</value>
   </data>
@@ -3195,6 +3204,9 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>Elk hiervan is een heel spelbestand, geen modus. Als Bestanden kiezen aan staat, opent lang en hard zuigen op de zijbuis deze lijst op het apparaat: kies er een met de joystick en laad hem dan met de lipschakelaar, met zuigen of blazen in het midden, of met de drukschakelaar. Modi zijn de indelingen binnen één bestand.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>Elk hiervan is een heel spelbestand, geen modus.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Modi bewerken</value>

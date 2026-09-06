@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>Buscar nos perfis da comunidade</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>Perfis de jogos que outros jogadores de QuadStick compartilharam como planilhas do Google.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>Mostrando todos os {0}.</value>
   </data>
@@ -621,6 +624,9 @@
   </data>
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>Procurando seu QuadStick...</value>
+  </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>Tudo aqui lê e grava arquivos na unidade do QuadStick, nada mais.</value>
   </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>nenhum padrão de luz documentado para esta posição</value>
@@ -2167,6 +2173,9 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   <data name="Modes_AModeIsAFull" xml:space="preserve">
     <value>Um modo é uma disposição completa das suas entradas. Alterne entre eles enquanto joga com increment_mode e decrement_mode. O perfil de fábrica associa-os a um sopro e a uma sucção no tubo lateral, e é por isso que o tubo lateral muda de modo até que o reatribua.</value>
   </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>Um modo é uma disposição completa das suas entradas.</value>
+  </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Um modo precisa de um nome. O antigo ainda está lá.</value>
   </data>
@@ -3195,6 +3204,9 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
     <value>Cada um destes é um ficheiro de jogo inteiro, não um modo. Com Selecionar ficheiros ativado, uma sucção longa e forte no tubo lateral abre esta lista no dispositivo: escolha um com o joystick e carregue-o com o interruptor de lábio, com uma sucção ou sopro central, ou com o botão de pressão. Os modos são as disposições dentro de um único ficheiro.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>Cada um destes é um ficheiro de jogo inteiro, não um modo.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Editar modos</value>

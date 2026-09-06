@@ -104,26 +104,45 @@ public sealed class HomeDeviceGroupingTests : IDisposable
     }
 
     // Drew Redepenning, 2026-09-05: gamers read this list as the modes. The
-    // sentence has to sit above the cards, because after them it is an
-    // explanation for a mistake somebody has already made. It also has to name
-    // the long hard sip, not the ordinary side tube sip: that one only changes
-    // mode because the factory profile binds right_sip to increment_mode.
+    // correction has to sit above the cards, because after them it is an
+    // explanation for a mistake somebody has already made.
     [AvaloniaFact]
     public void The_file_list_says_it_is_files_and_not_modes()
     {
         var w = HomeWith(Drive("QUADSTICK", "racing.csv"));
         var cards = Cards(w);
         var line = w.GetVisualDescendants().OfType<TextBlock>()
-            .First(t => t.Text == Strings.Shell_EachOfTheseIsA);
+            .First(t => t.Text == Strings.Shell_EachOfTheseIsAWhole);
 
         Assert.Contains("game file", line.Text!, StringComparison.Ordinal);
         Assert.Contains("not a mode", line.Text!, StringComparison.Ordinal);
-        Assert.Contains("long hard sip", line.Text!, StringComparison.Ordinal);
         Assert.True(line.IsVisible);
 
         var lineTop = line.TranslatePoint(new Avalonia.Point(0, 0), w)!.Value.Y;
         var cardsTop = cards.TranslatePoint(new Avalonia.Point(0, 0), w)!.Value.Y;
         Assert.True(lineTop < cardsTop, "the sentence is below the files it explains");
+
+        w.Close();
+    }
+
+    // The gesture moved behind the question mark, and that is the half a user
+    // is most likely to get wrong: a long hard sip opens the file list, while
+    // the ordinary side tube sip only changes mode because the factory profile
+    // binds right_sip to increment_mode. Losing it to the shortening would be
+    // the shortening going too far, so the dot has to be there and has to
+    // carry it.
+    [AvaloniaFact]
+    public void The_help_dot_beside_the_files_still_names_the_gesture()
+    {
+        var w = HomeWith(Drive("QUADSTICK", "racing.csv"));
+
+        var dot = w.GetVisualDescendants().OfType<Button>()
+            .First(b => b.Name == "HomeFilesHelpButton");
+        Assert.True(dot.IsVisible);
+        Assert.Equal("?", dot.Content);
+
+        Assert.Contains("long hard sip", Strings.Shell_EachOfTheseIsA, StringComparison.Ordinal);
+        Assert.Contains("lip switch", Strings.Shell_EachOfTheseIsA, StringComparison.Ordinal);
 
         w.Close();
     }

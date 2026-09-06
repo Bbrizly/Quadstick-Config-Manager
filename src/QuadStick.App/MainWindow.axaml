@@ -138,6 +138,9 @@
                    and read as unrelated furniture. -->
               <StackPanel Orientation="Horizontal" Spacing="14">
                 <TextBlock Classes="section" Text="{x:Static app:Strings.Shell_OnYourQuadStick}" VerticalAlignment="Center"/>
+                <Button x:Name="HomeFilesHelpButton" Classes="icon quiet" Content="?" VerticalAlignment="Center"
+                        ToolTip.Tip="{x:Static app:Strings.Shell_OnYourQuadStick}"
+                        AutomationProperties.Name="{x:Static app:Strings.Shell_OnYourQuadStick}"/>
                 <Button x:Name="HomeDeviceFilesButton" VerticalAlignment="Center" Classes="quiet"
                         FontSize="{DynamicResource SmallSize}"
                         AutomationProperties.Name="{x:Static app:Strings.Shell_ManageTheProfileFilesOn}">
@@ -145,12 +148,11 @@
                 </Button>
               </StackPanel>
               <!-- Drew Redepenning, 2026-09-05: gamers read this list as the
-                   modes. It is the files, and the gesture that opens it is a
-                   long hard sip, not the ordinary side tube sip that the
-                   factory profile happens to bind to increment_mode. Says so
-                   before the list rather than after somebody is confused. -->
+                   modes. It is the files, and that correction is the only part
+                   that has to be on screen. The gesture that opens the list on
+                   the device is behind the dot beside it. -->
               <TextBlock FontSize="{DynamicResource BodySize}" Classes="secondary"
-                         Text="{x:Static app:Strings.Shell_EachOfTheseIsA}"
+                         Text="{x:Static app:Strings.Shell_EachOfTheseIsAWhole}"
                          TextWrapping="Wrap"/>
               <TextBlock x:Name="DeviceEmptyText" FontSize="{DynamicResource BodySize}" Classes="secondary"
                          Text="{x:Static app:Strings.Shell_PlugInYourQuadStickTo}"

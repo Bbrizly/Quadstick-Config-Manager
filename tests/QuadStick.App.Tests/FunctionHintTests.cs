@@ -1,3 +1,5 @@
+using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
@@ -72,6 +74,82 @@ public class FunctionHintTests
         Assert.Contains("taps a second", hint, StringComparison.Ordinal);
         Assert.Contains("First hold", hint, StringComparison.Ordinal);
         Assert.Contains("Blank means 10 a second", hint, StringComparison.Ordinal);
+    }
+
+    // Drew, 2026-09-05: the descriptions read long. What survived under the box
+    // is the range and the default, which is what somebody needs before typing.
+    // What the number does is a click away on the dot beside the box, and this
+    // is the pair: the short half on screen, the long half not on screen but
+    // reachable.
+    [AvaloniaFact]
+    public void The_behaviour_sentence_moves_off_the_screen_and_onto_the_dot()
+    {
+        var w = Editor(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,tap 500 1,lip\n");
+        var text = AllText(w);
+
+        Assert.Contains("Press: 1 to 16383 milliseconds", text, StringComparison.Ordinal);
+        Assert.Contains("Blank means 100 ms", text, StringComparison.Ordinal);
+        // The half that made the hint three lines tall.
+        Assert.DoesNotContain("the next turns it off", text, StringComparison.Ordinal);
+
+        var dot = w.GetVisualDescendants().OfType<Button>()
+            .Single(b => (b.Content as string) == "?"
+                      && AutomationProperties.GetName(b) == "Tap"
+                      && b.IsEffectivelyVisible);
+        Assert.Contains("the next turns it off", MainWindow.ParameterHint("tap"), StringComparison.Ordinal);
+
+        w.Close();
+    }
+
+    // A screen reader never had the dot to click, so the box itself still says
+    // everything. Shortening what is drawn must not shorten what is read out.
+    [AvaloniaFact]
+    public void The_box_still_reads_out_the_whole_sentence()
+    {
+        var name = MainWindow.ParameterAccessibleName("tap");
+        Assert.Contains("the next turns it off", name, StringComparison.Ordinal);
+        Assert.Contains("Blank means 100 ms", name, StringComparison.Ordinal);
+    }
+
+    // A function with no numbers still gets the dot, because the description
+    // left the closed picker with it. What it must not grow is an empty hint.
+    [AvaloniaFact]
+    public void A_function_with_no_numbers_still_explains_itself()
+    {
+        var w = Editor(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,normal,lip\n");
+        Assert.Contains(w.GetVisualDescendants().OfType<Button>(),
+            b => (b.Content as string) == "?"
+              && AutomationProperties.GetName(b) == "Normal"
+              && b.IsEffectivelyVisible);
+        Assert.Equal(MainWindow.FunctionExplain("normal"), MainWindow.FunctionHelpBody("normal"));
+        w.Close();
+    }
+
+    // The picker used to print the whole description inside the closed box, so
+    // a 145px column carried ten lines of prose and pushed the numbers it
+    // belongs to off the bottom. The list still explains every choice; the
+    // resting state is the name, and the dot holds the words.
+    [AvaloniaFact]
+    public void The_closed_picker_shows_the_name_and_not_the_description()
+    {
+        var w = Editor(
+            "Profile Name,,Solo\n" +
+            "game.csv\n" +
+            "Outputs,Function,usb\n" +
+            "x,tap 500 1,lip\n");
+        Assert.DoesNotContain("quickly press and release", AllText(w), StringComparison.Ordinal);
+        Assert.Contains("quickly press and release", MainWindow.FunctionHelpBody("tap"), StringComparison.Ordinal);
+        // Both halves, in the order somebody reads them.
+        Assert.Contains("Counts as a tap", MainWindow.FunctionHelpBody("tap"), StringComparison.Ordinal);
+        w.Close();
     }
 
     // Every function the dropdown offers has to answer for its numbers, or the

@@ -181,6 +181,26 @@ public sealed class DeviceFilesWindowTests : IDisposable
 
     // DEV-01: two plugged-in QuadSticks are two lists. A file on one drive is
     // never shown under the other, so no action can be aimed at the wrong one.
+    // Drew, 2026-09-05: every window opened with a paragraph. This one now
+    // opens with what it is, and the promises that matter (a backup before a
+    // delete, the two files it will not touch) sit behind the dot rather than
+    // in prose above the file list somebody came here to read.
+    [AvaloniaFact]
+    public async Task The_window_opens_with_one_line_and_a_dot()
+    {
+        var w = NewWindow();
+        var (win, _) = await OpenAsync(w, Root("stick-one", "Racing.csv"));
+
+        var texts = win.GetVisualDescendants().OfType<TextBlock>()
+            .Select(t => t.Text ?? "").ToList();
+        Assert.Contains(Strings.Device_ManageFilesOnTheQuadStick, texts);
+        Assert.DoesNotContain(Strings.Device_EverythingHereReadsAndWrites, texts);
+        Assert.True(HasButton(win, Strings.Device_FilesOnYourQuadStick));
+
+        win.Close();
+        w.Close();
+    }
+
     [AvaloniaFact]
     public async Task Two_drives_render_as_two_groups()
     {
