@@ -46,6 +46,10 @@ public static class Validator
         // game profile and is not in these two.
         var decidesTheBootMode = doc.IsDefaultConfig || doc.IsDevicePreferences;
 
+        // Read before the sheet loop: a Preferences sheet may sit after the
+        // modes it applies to, and the mode is what the trigger check turns on.
+        var fileEmulationMode = EmulationModeFromPreferences(doc);
+
         int profileSheets = 0;
         foreach (var sheet in doc.Sheets)
         {
@@ -107,8 +111,60 @@ public static class Validator
             }
 
             ValidatePreferenceOrder(modeNumbers, "C", issues);
+
+            // A mode's own override wins over the Preferences sheet, and a file
+            // that sets neither leaves the mode to whatever the device booted
+            // with, which this app cannot see and so says nothing about.
+            WarnAboutXboxTriggers(sheet,
+                modeNumbers.TryGetValue("enable_DS3_emulation", out var em) ? em.Value : fileEmulationMode,
+                issues);
         }
         return issues;
+    }
+
+    static int? EmulationModeFromPreferences(ProfileDocument doc)
+    {
+        int? mode = null;
+        foreach (var sheet in doc.Sheets)
+        {
+            if (sheet.Type != SheetType.Preferences) continue;
+            // Column B is the value on this sheet, and a repeated name keeps the
+            // last row, the way the device's own sequential read does.
+            foreach (var b in sheet.Bindings)
+                if (b.Output == "enable_DS3_emulation"
+                    && int.TryParse(b.Function.Trim(), NumberStyles.Integer,
+                                    CultureInfo.InvariantCulture, out var n))
+                    mode = n;
+        }
+        return mode;
+    }
+
+    // left_2 and right_2 answer to left_trigger and right_trigger too
+    // (output_keywords.h aliases both spellings to LEFT_2 and RIGHT_2).
+    static readonly System.Collections.Generic.HashSet<string> TriggerOutputs =
+        new(StringComparer.Ordinal) { "left_2", "right_2", "left_trigger", "right_trigger" };
+
+    // The two Xbox reports carry the triggers as an axis and nothing else.
+    // DataFlow.c:2721 and :2768 set left_trigger_axis from ps3.press_L2, and
+    // neither block ever sets an L2 or R2 switch bit; modes 0, 1, 4, 5, 6 and 7
+    // all copy ps3.L2 across as a button as well (DataFlow.c:2659, :2792,
+    // :2871). press_L2 is the sip's own pressure, value >> 2 (DataFlow.c:2153),
+    // and a sip that only just crosses the threshold has a value of 4
+    // (DataFlow.c:368), so it reaches the game as 1 of 255. On every other mode
+    // the button fires regardless and the row works, which is why this reads as
+    // "the triggers do not work on Xbox" and nowhere else.
+    static void WarnAboutXboxTriggers(ModeSheet sheet, int? emulationMode, List<Issue> issues)
+    {
+        if (emulationMode is not (2 or 3)) return;
+
+        var row = sheet.Bindings.FirstOrDefault(
+            b => !IsPreferenceOverride(b) && TriggerOutputs.Contains(b.Output));
+        if (row is null) return;
+
+        issues.Add(new Issue(Severity.Warning, $"A{row.Row}",
+            string.Format(CultureInfo.CurrentCulture, Strings.Issue_XboxTriggersAreAnAxis,
+                emulationMode, row.Output, row.Row),
+            Strings.Issue_LowerSipPuffMaximum));
     }
 
     // A mode-sheet row whose output cell is a preference name sets that

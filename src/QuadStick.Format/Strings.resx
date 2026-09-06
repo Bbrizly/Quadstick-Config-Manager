@@ -695,4 +695,10 @@
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>This spreadsheet is larger than {0} rows, far larger than any profile, so we stopped reading part way through.</value>
   </data>
+  <data name="Issue_XboxTriggersAreAnAxis" xml:space="preserve">
+    <value>USB emulation mode {0} sends the triggers as a pressure axis and no button, so row {2} ("{1}") presses only as hard as the sip does. Every other mode sends a plain button as well, which is why the same row works there.</value>
+  </data>
+  <data name="Issue_LowerSipPuffMaximum" xml:space="preserve">
+    <value>Lower sip_puff_maximum until a comfortable sip reaches full pressure. A sip that only just crosses the threshold arrives at the game as 1 out of 255.</value>
+  </data>
 </root>
