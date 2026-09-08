@@ -10,7 +10,10 @@ public partial class MainWindow
         Status(Strings.Community_LoadingTheCommunityList2, StatusKind.Info);
         try
         {
-            var result = await new ProfileRegistryClient().LoadAsync();
+            // A deep link may point at a profile published seconds ago. Always
+            // try main first; ProfileRegistryClient still falls back to the last
+            // good cache when GitHub/network access is unavailable.
+            var result = await new ProfileRegistryClient().LoadAsync(refresh: true);
             var profile = result.Profiles.FirstOrDefault(p =>
                 p.Id.Equals(profileId, StringComparison.Ordinal));
             if (profile is null)

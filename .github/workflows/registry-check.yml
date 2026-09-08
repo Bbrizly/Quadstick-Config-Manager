@@ -21,4 +21,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Check JavaScript syntax
+        run: |
+          node --check tools/registry/validate.mjs
+          node --check tools/registry/ingest-issue.mjs
+          node --check docs/profiles/app.js
       - run: node tools/registry/validate.mjs --check

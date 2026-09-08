@@ -52,12 +52,31 @@ jobs:
             echo 'accepted=false' >> "$GITHUB_OUTPUT"
             exit 0
           fi
+
           node tools/registry/validate.mjs --write-index
           node tools/registry/validate.mjs --check
           echo 'accepted=true' >> "$GITHUB_OUTPUT"
           echo "path=$(cat /tmp/profile-path)" >> "$GITHUB_OUTPUT"
+          if git diff --quiet -- registry; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Close unchanged submission
+        if: steps.ingest.outputs.accepted == 'true' && steps.ingest.outputs.changed == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+          PROFILE_PATH: ${{ steps.ingest.outputs.path }}
+        shell: bash
+        run: |
+          printf 'This exact profile is already published as `%s`; nothing needed to change.\n' "$PROFILE_PATH" > /tmp/comment
+          gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment
+          gh issue close "$ISSUE" --repo "$GITHUB_REPOSITORY" --reason completed
+
       - name: Commit valid profile
-        if: steps.ingest.outputs.accepted == 'true'
+        if: steps.ingest.outputs.accepted == 'true' && steps.ingest.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           ISSUE: ${{ github.event.issue.number }}
@@ -68,6 +87,11 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add registry
           git commit -m "Registry: accept profile from @${{ github.actor }} (#${ISSUE})"
+          # A normal code/documentation merge can land while this issue is being
+          # validated. Rebase the tiny generated commit onto the newest main so
+          # that unrelated traffic does not turn into a manual recovery task.
+          git pull --rebase origin main
+          node tools/registry/validate.mjs --check
           git push origin HEAD:main
           printf 'Accepted and published as `%s`. The registry index has been regenerated automatically.\n' "$PROFILE_PATH" > /tmp/comment
           gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment
