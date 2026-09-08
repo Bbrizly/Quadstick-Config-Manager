@@ -1860,6 +1860,10 @@ public partial class MainWindow : Window
             // without a heading there is nothing to say whose profiles are whose.
             if (drives.Length > 1) DeviceCards.Children.Add(DriveHeading(root));
 
+            // Before the profiles: a device whose settings file the firmware
+            // would refuse is the first thing somebody needs to know about it.
+            if (PrefsBanner(root) is { } prefs) DeviceCards.Children.Add(prefs);
+
             // The number the profile switch counts to reach this file, from the
             // same order the selection guide draws. prefs.csv is not selectable
             // and gets no number.
@@ -1875,6 +1879,76 @@ public partial class MainWindow : Window
                 cards.Children.Add(ProfileCard(path, onDevice: true, position: position));
             DeviceCards.Children.Add(cards);
         }
+    }
+
+    // Injectable for the same reason FindDeviceRoots is: a test that writes the
+    // spare copy into the real backups folder leaves it there for the next run
+    // and for the person whose machine it is.
+    internal Func<string> BackupRoot { get; set; } = Device.DefaultBackupDir;
+
+    string PrefsSnapshotDir() => Path.Combine(BackupRoot(), "prefs");
+
+    // Takes the spare copy when the device's settings file is one the firmware
+    // would load, and offers it back when it is not.
+    //
+    // A profile switch that changes usb emulation mode makes the QuadStick
+    // disconnect and re-enumerate its own drive (Configuration.c:320), so the
+    // volume is surprise-removed from Windows twice a session and prefs.csv is
+    // what the repair keeps eating. Nothing here prevents that. It replaces the
+    // part the user was doing by hand.
+    Control? PrefsBanner(string root)
+    {
+        var state = PrefsGuard.Check(root);
+        if (state == PrefsGuard.State.Healthy)
+        {
+            // Best effort and deliberately unreported: the copy is a safety net,
+            // and a home screen that complains it could not take one is noise
+            // about a problem the user does not have yet.
+            PrefsGuard.TrySnapshot(root, PrefsSnapshotDir());
+            return null;
+        }
+
+        var taken = PrefsGuard.SnapshotTaken(PrefsSnapshotDir());
+        // Missing is only worth a word to somebody who had one. A device that
+        // never had a prefs.csv has no spare either, so this says nothing to
+        // the many people running on the firmware's defaults.
+        if (state == PrefsGuard.State.Missing && taken is null) return null;
+
+        var line = state == PrefsGuard.State.Missing ? Strings.Shell_PrefsGone : Strings.Shell_PrefsBroken;
+        var rows = new StackPanel { Spacing = 6 };
+        rows.Children.Add(Explain(line, Strings.Shell_PrefsTitle, Strings.Shell_PrefsAbout));
+
+        if (taken is { } when)
+        {
+            var day = when.ToString("d", CultureInfo.CurrentCulture);
+            var put = new Button { Content = string.Format(CultureInfo.CurrentCulture, Strings.Shell_PrefsPutBack, day) };
+            AutomationProperties.SetName(put, string.Format(CultureInfo.CurrentCulture, Strings.Shell_PrefsPutBackName, day));
+            put.Click += (_, _) =>
+            {
+                try
+                {
+                    PrefsGuard.Restore(root, PrefsSnapshotDir(), BackupRoot());
+                    Status(string.Format(CultureInfo.CurrentCulture, Strings.Shell_PrefsRestored, root), StatusKind.Ready);
+                }
+                catch (Exception ex)
+                {
+                    // Say what went wrong rather than leaving a button that
+                    // looks like it did nothing.
+                    Status(ex.Message, StatusKind.Error);
+                }
+                RefreshHomeCards();
+            };
+            rows.Children.Add(put);
+        }
+        else
+        {
+            rows.Children.Add(new TextBlock
+            {
+                Text = Strings.Shell_PrefsNoCopy, FontSize = Size("SmallSize"),
+                Classes = { "secondary" }, TextWrapping = TextWrapping.Wrap,
+            });
+        }
+        return rows;
     }
 
     // The agent writes its working copies as qcm-agent-<guid>.csv in the temp

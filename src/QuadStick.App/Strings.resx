@@ -763,6 +763,34 @@
   <data name="Install_SafeToUnplugTitle" xml:space="preserve">
     <value>Why it waits before saying this</value>
   </data>
+  <data name="Shell_PrefsBroken" xml:space="preserve">
+    <value>The QuadStick's settings file is damaged.</value>
+  </data>
+  <data name="Shell_PrefsGone" xml:space="preserve">
+    <value>The QuadStick's settings file is no longer on the drive.</value>
+  </data>
+  <data name="Shell_PrefsPutBack" xml:space="preserve">
+    <value>Put back the copy from {0}</value>
+  </data>
+  <data name="Shell_PrefsPutBackName" xml:space="preserve">
+    <value>Put the saved copy of prefs.csv back on the QuadStick. It was saved on {0}.</value>
+  </data>
+  <data name="Shell_PrefsNoCopy" xml:space="preserve">
+    <value>No saved copy to put back.</value>
+  </data>
+  <data name="Shell_PrefsRestored" xml:space="preserve">
+    <value>prefs.csv put back on {0}.</value>
+  </data>
+  <data name="Shell_PrefsTitle" xml:space="preserve">
+    <value>What happens to this file</value>
+  </data>
+  <data name="Shell_PrefsAbout" xml:space="preserve">
+    <value>prefs.csv holds the QuadStick's own settings, the ones that apply across every profile. The device reads it at startup and whenever it changes, and it will refuse a copy that does not begin with the word QuadStick or that is missing its first few lines. This one does, which is usually what is left after Windows repairs the drive.
+
+The drive gets damaged when a profile switch changes the USB emulation mode. The QuadStick has to disconnect its drive and reconnect it so your computer sees the new controller type, and Windows is not told in advance, so its record of the drive and the drive itself can end up disagreeing. It lands on prefs.csv more often than anything else. Setting the same USB emulation mode in every profile stops the switch happening at all.
+
+This app keeps a copy of the last version the device would accept, taken whenever it sees a good one. Putting it back writes those exact bytes, and keeps the damaged file in your backups folder in case it still holds something.</value>
+  </data>
   <data name="Install_BackupPath" xml:space="preserve">
     <value>Backup: {0}</value>
   </data>
