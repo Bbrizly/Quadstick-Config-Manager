@@ -751,6 +751,18 @@
   <data name="Install_BackingUpAndInstalling" xml:space="preserve">
     <value>Backing up and installing…</value>
   </data>
+  <data name="Install_LettingTheDeviceFinish" xml:space="preserve">
+    <value>Letting the QuadStick finish writing…</value>
+  </data>
+  <data name="Install_SafeToUnplug" xml:space="preserve">
+    <value>Safe to unplug.</value>
+  </data>
+  <data name="Install_SafeToUnplugAbout" xml:space="preserve">
+    <value>The QuadStick holds the last few kilobytes it was sent in memory and writes them to its flash about a second and a half later. Unplug it inside that gap and the drive loses a block of its own index, which breaks files you never touched, most often prefs.csv. Windows then reports error 0x80070570 and you have to run Error checking on the drive and put the file back. "Safely remove hardware" does not help, because the QuadStick does not answer the command Windows sends to flush a drive. Waiting does. The app has already waited, so once this line appears the write is on the flash and the QuadStick can come out.</value>
+  </data>
+  <data name="Install_SafeToUnplugTitle" xml:space="preserve">
+    <value>Why it waits before saying this</value>
+  </data>
   <data name="Install_BackupPath" xml:space="preserve">
     <value>Backup: {0}</value>
   </data>

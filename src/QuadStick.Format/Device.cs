@@ -62,6 +62,27 @@ public static class Device
     public static bool IsInstallTarget(string deviceRoot) =>
         File.Exists(Path.Combine(deviceRoot, "default.csv"));
 
+    // How long to hold still after writing, before telling anyone it is done.
+    //
+    // The device's drive is serial flash behind a single 4KB page write cache in
+    // RAM (FlashManager.c). A page only reaches flash when a write touches a
+    // different page, or when Cache_timer counts down to zero and the main loop
+    // flushes it (Cache_timer = 12000, "at least 1.5 seconds", decremented in
+    // the Timer 1 interrupt in sound.c). Unplug inside that window and the last
+    // page is lost. On this 2MB FAT12 volume the FATs and the root directory sit
+    // in pages 1 to 7, so the volatile page is nearly always metadata, and one
+    // lost page breaks the cluster chains of files nobody touched. That is the
+    // 0x80070570 the field reports, on prefs.csv, after installing something
+    // else entirely.
+    //
+    // Nothing else can force the flush. SCSI.c answers no SYNCHRONIZE CACHE and
+    // no START STOP UNIT, so Windows "safely remove hardware" does not reach it,
+    // and disk_read serves the dirty page back out of the same RAM, so a
+    // readback proves the bytes are on the device and not that they are in
+    // flash. Waiting is the whole mechanism, so never shorten this below the
+    // firmware's 1.5s and never drop it because the readback passed.
+    public static readonly TimeSpan CacheFlushWait = TimeSpan.FromSeconds(2);
+
     public sealed record InstallResult(string InstalledPath, string? BackupPath);
 
     public static InstallResult Install(

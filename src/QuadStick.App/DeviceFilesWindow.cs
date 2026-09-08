@@ -691,9 +691,15 @@ public class DeviceFilesWindow : Window
             return;
         }
 
+        // A delete rewrites the drive's index the same way an install does, so
+        // it is unsafe to unplug for the same window. Device.CacheFlushWait has
+        // the mechanism. Wait before the line that reads as "finished".
+        await Task.Delay(Device.CacheFlushWait);
+
         await LoadAsync();
         _owner.RefreshHomeAfterRestore();
-        _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_DeletedResultDeletedPathACopy, result.DeletedPath, result.BackupPath);
+        _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_DeletedResultDeletedPathACopy, result.DeletedPath, result.BackupPath)
+            + " " + Strings.Install_SafeToUnplug;
     }
 
     // A drive that vanished mid-action is normal for this hardware. Say what

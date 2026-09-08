@@ -156,6 +156,13 @@ public partial class MainWindow
             // continuation on the UI thread, so the content swap below is safe.
             var result = await Task.Run(() => Device.Install(file, root, Device.DefaultBackupDir(), confirmDefault, confirmPrefs));
 
+            // The write is not on the flash yet. Device.CacheFlushWait says why,
+            // and why no readback or eject can stand in for the wait. The
+            // receipt has to come after it, because the receipt is what tells
+            // somebody they may pull the device out.
+            progressLine.Text = Strings.Install_LettingTheDeviceFinish;
+            await Task.Delay(Device.CacheFlushWait);
+
             SetContent(new StackPanel
             {
                 Spacing = 12,
@@ -167,6 +174,7 @@ public partial class MainWindow
                     new TextBlock { Text = string.Format(CultureInfo.CurrentCulture, Strings.Install_TargetDriveRoot, root), FontSize = 15, TextWrapping = TextWrapping.Wrap },
                     new TextBlock { Text = string.Format(CultureInfo.CurrentCulture, Strings.Install_BackupPath, result.BackupPath ?? Strings.Install_NoPreviousFile),
                                      FontSize = 15, TextWrapping = TextWrapping.Wrap, Classes = { "muted" } },
+                    Explain(Strings.Install_SafeToUnplug, Strings.Install_SafeToUnplugTitle, Strings.Install_SafeToUnplugAbout),
                     close,
                 },
             });
