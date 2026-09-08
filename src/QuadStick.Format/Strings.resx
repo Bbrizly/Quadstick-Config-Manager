@@ -58,6 +58,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Prefs_NoSavedCopyOfPrefs" xml:space="preserve">
+    <value>There is no saved copy of prefs.csv to put back.</value>
+  </data>
   <data name="Device_DeclaredIsTooLongFor" xml:space="preserve">
     <value>"{0}" is too long for the QuadStick to load, so nothing was written. A profile name can be {1} characters at most, counting ".csv", and this one is {2}. Shorten the name in cell A2 and install again.</value>
   </data>
