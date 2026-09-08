@@ -102,7 +102,8 @@ public class Firmware2373RuleTests
     // A computer can only reach the QuadStick's files while the emulation it is
     // running declares a mass-storage interface, and four of the eight do not:
     // DS3_t (mode 1), NS_t (5), Mode6_t (6) and PS4_t (7) have no MS_Interface,
-    // while PS3_t (0), X360CE_t (2), X360_t (3) and CM_t (4 on a computer) do.
+    // while PS3_t (0), X360CE_t (2) and CM_t (4 on a computer) do. X360_t (3)
+    // declares one and is still no good; see the test below it.
     // Put one of the four in the file the device boots with and there is no way
     // to edit it back: recovery is the physical force-erase.
     [Theory]
@@ -117,6 +118,24 @@ public class Firmware2373RuleTests
         var issue = Assert.Single(issues, i => i.Message.Contains("access to the QuadStick's drive"));
         Assert.Equal(Severity.Error, issue.Severity);
         Assert.Contains("force-erase", issue.Message);
+    }
+
+    // Mode 3 is the trap this rule was on the wrong side of. Its descriptor
+    // declares a mass-storage interface like the safe modes, so reading the
+    // descriptors alone calls it safe, and the fix hint used to offer it as
+    // somewhere to boot from. Joystick.c:399 is the oracle: MS_Device_USBTask
+    // runs for modes 0, 2 and 4 only. So mode 3 shows the computer a drive and
+    // answers nothing on it, which is the one thing worse than hiding it, and
+    // the file the device boots with is the one place it must never go.
+    [Fact]
+    public void The_mode_that_offers_a_drive_and_answers_nothing_cannot_boot_either()
+    {
+        var issues = Load("Preferences\nprefs.csv\nName,Value\nenable_DS3_emulation,3\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("never answers it"));
+        Assert.Equal(Severity.Error, issue.Severity);
+        Assert.Contains("force-erase", issue.Message);
+        Assert.DoesNotContain("3", issue.Fix ?? "");
     }
 
     // default.csv is the other file the device comes up on, so the same rule.

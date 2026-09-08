@@ -278,6 +278,15 @@
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}" reads 0 for {1} as no value at all, so the device uses {2}.</value>
   </data>
+  <data name="Issue_DriveStopsAnswering" xml:space="preserve">
+    <value>drive stops answering</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeDead" xml:space="preserve">
+    <value>USB emulation mode {0} ({1}) still shows a computer a QuadStick drive but never answers it, and this file is one the device boots with. Installing it would leave the computer waiting on a drive that never replies, with no way to edit any profile back, and recovery is a physical force-erase.</value>
+  </data>
+  <data name="Issue_USBEmulationModeModeDead2" xml:space="preserve">
+    <value>USB emulation mode {0} ({1}) still shows a computer a QuadStick drive but never answers it, so while this profile is running the drive appears and hangs instead of opening.</value>
+  </data>
   <data name="Issue_HidesTheDrive" xml:space="preserve">
     <value>no drive</value>
   </data>
@@ -507,7 +516,7 @@
     <value>Use {0} to {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
-    <value>Use mode 0, 2, 3 or 4 here, and set the other mode in a game profile instead.</value>
+    <value>Use mode 0, 2 or 4 here, and set the other mode in a game profile instead.</value>
   </data>
   <data name="Issue_UseOneOfStringJoin" xml:space="preserve">
     <value>Use one of: {0}.</value>

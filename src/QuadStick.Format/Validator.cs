@@ -569,13 +569,10 @@ public static class Validator
             Strings.Issue_CheckWhichFirmwareYourQuadStick));
     }
 
-    // A computer can only reach the QuadStick's files while the USB emulation
-    // it is running declares a mass-storage interface, and four of the eight do
-    // not. Read off the configuration descriptors in firmware 2373: PS3_t (mode
-    // 0), X360CE_t (2), X360_t (3) and CM_t (4, which is what mode 4 answers
-    // with on a computer) each carry an MS_Interface; DS3_t (1), NS_t (5),
-    // Mode6_t (6) and PS4_t (7) carry none. Joystick.c:656 skips configuring
-    // the endpoints for 6 on top of that.
+    // Modes that show a computer no drive at all. Read off the configuration
+    // descriptors in firmware 2373: DS3_t (mode 1), NS_t (5), Mode6_t (6) and
+    // PS4_t (7) declare no MS_Interface, so nothing is ever enumerated.
+    // Joystick.c:656 skips configuring the endpoints for 6 on top of that.
     static readonly Dictionary<int, string> EmulationModesWithNoDrive = new()
     {
         [1] = "DualShock 3",
@@ -584,25 +581,47 @@ public static class Validator
         [7] = "DualShock 4 wireless",
     };
 
-    /// <summary>The USB emulation modes that leave no drive for a computer to
-    /// find, in order. The "no drive is plugged in" message names them, and it
-    /// named only mode 6 for a while because it carried its own copy.</summary>
+    // Mode 3 is the trap, and this list used to be on the wrong side of it.
+    // USB_Descriptor_Configuration_X360_t does declare an MS_Interface, so
+    // reading the descriptors alone puts mode 3 with the safe ones, and it was
+    // there, and Issue_UseMode023 offered it as a mode to boot into. The main
+    // loop is the oracle: Joystick.c:399 calls MS_Device_USBTask for modes 0, 2
+    // and 4 only. So in mode 3 the drive is advertised and then never answers a
+    // single SCSI command. That is worse than absent, not better, because the
+    // computer mounts a volume and waits on it. Never fold this back into the
+    // list above: the two need different words.
+    static readonly Dictionary<int, string> EmulationModesWithADeadDrive = new()
+    {
+        [3] = "Xbox 360 controller",
+    };
+
+    /// <summary>Every USB emulation mode a computer cannot read the files on,
+    /// in order, whether the drive is missing or present and unanswering. The
+    /// "no drive is plugged in" message names them, and it named only mode 6
+    /// for a while because it carried its own copy.</summary>
     public static IReadOnlyList<int> ModesWithNoDrive { get; } =
-        EmulationModesWithNoDrive.Keys.OrderBy(m => m).ToList();
+        EmulationModesWithNoDrive.Keys.Concat(EmulationModesWithADeadDrive.Keys).OrderBy(m => m).ToList();
 
     /// <summary>Whether a USB emulation mode leaves the QuadStick's drive
     /// reachable from a computer. A value that is not a number is nobody's
     /// business here, so it counts as safe and the writer's own rules judge it.</summary>
     public static bool EmulationKeepsTheDrive(string value) =>
-        !int.TryParse(value.Trim(), System.Globalization.NumberStyles.Integer,
-                      System.Globalization.CultureInfo.InvariantCulture, out var mode)
-        || !EmulationModesWithNoDrive.ContainsKey(mode);
+        !TryMode(value, out var mode)
+        || !(EmulationModesWithNoDrive.ContainsKey(mode) || EmulationModesWithADeadDrive.ContainsKey(mode));
+
+    static bool TryMode(string value, out int mode) =>
+        int.TryParse(value.Trim(), System.Globalization.NumberStyles.Integer,
+                     System.Globalization.CultureInfo.InvariantCulture, out mode);
 
     /// <summary>What to say beside an emulation mode that would take the drive
     /// away, or null when it keeps it. Every mode is offered, so the list is
     /// where a person has to be able to read the cost of picking one.</summary>
-    public static string? EmulationDriveWarning(string value) =>
-        EmulationKeepsTheDrive(value) ? null : Strings.Issue_HidesTheDrive;
+    public static string? EmulationDriveWarning(string value)
+    {
+        if (!TryMode(value, out var mode)) return null;
+        if (EmulationModesWithADeadDrive.ContainsKey(mode)) return Strings.Issue_DriveStopsAnswering;
+        return EmulationModesWithNoDrive.ContainsKey(mode) ? Strings.Issue_HidesTheDrive : null;
+    }
 
     // Losing the drive is survivable in a game profile: the device boots back
     // into default.csv and the files come back. In default.csv or prefs.csv it
@@ -615,6 +634,21 @@ public static class Validator
         if (name != "enable_DS3_emulation") return;
         if (!int.TryParse(value.Trim(), System.Globalization.NumberStyles.Integer,
                           System.Globalization.CultureInfo.InvariantCulture, out var mode)) return;
+        // Mode 3 gets its own sentences. "Does not give a computer access" is
+        // not what happens there: the drive is offered and then goes silent,
+        // which is what a person has to be told to recognise it.
+        if (EmulationModesWithADeadDrive.TryGetValue(mode, out var dead))
+        {
+            issues.Add(decidesTheBootMode
+                ? new Issue(Severity.Error, cell,
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_USBEmulationModeModeDead, mode, dead),
+                    Strings.Issue_UseMode023)
+                : new Issue(Severity.Warning, cell,
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_USBEmulationModeModeDead2, mode, dead),
+                    Strings.Issue_ExpectedForThisConsoleSwitch));
+            return;
+        }
+
         if (!EmulationModesWithNoDrive.TryGetValue(mode, out var what)) return;
 
         issues.Add(decidesTheBootMode

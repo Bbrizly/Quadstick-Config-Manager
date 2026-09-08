@@ -119,8 +119,13 @@ public class NoDriveModeListTests
     [Fact]
     public void The_list_is_every_mode_that_hides_the_drive()
     {
-        Assert.Equal(new[] { 1, 5, 6, 7 }, Validator.ModesWithNoDrive);
+        // 3 is here on Joystick.c:399, not on its descriptor. X360_t declares a
+        // mass-storage interface like the safe modes do, but the main loop calls
+        // MS_Device_USBTask for 0, 2 and 4 only, so mode 3 offers the computer a
+        // drive and then answers nothing.
+        Assert.Equal(new[] { 1, 3, 5, 6, 7 }, Validator.ModesWithNoDrive);
     }
+
 
     [Theory]
     [InlineData("1")]

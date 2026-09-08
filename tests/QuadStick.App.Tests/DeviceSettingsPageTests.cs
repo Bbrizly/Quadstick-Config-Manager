@@ -730,7 +730,9 @@ public class DeviceSettingsPageTests
         foreach (var mode in new[] { "(1)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.Contains(mode, StringComparison.Ordinal)
                                      && t.Contains("no drive", StringComparison.Ordinal));
-        foreach (var mode in new[] { "(0)", "(2)", "(3)", "(4)" })
+        Assert.Contains(shown, t => t.Contains("(3)", StringComparison.Ordinal)
+                                 && t.Contains("drive stops answering", StringComparison.Ordinal));
+        foreach (var mode in new[] { "(0)", "(2)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(mode, StringComparison.Ordinal));
 
         w.Close();

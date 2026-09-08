@@ -121,7 +121,11 @@ public class PreferenceUiTests
         foreach (var costly in new[] { "(1)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.Contains(costly, StringComparison.Ordinal)
                                      && t.EndsWith(", no drive", StringComparison.Ordinal));
-        foreach (var safe in new[] { "(0)", "(2)", "(3)", "(4)" })
+        // Mode 3 costs the drive too and says something else, because it does
+        // something else: it offers one and never answers.
+        Assert.Contains(shown, t => t.Contains("(3)", StringComparison.Ordinal)
+                                 && t.EndsWith(", drive stops answering", StringComparison.Ordinal));
+        foreach (var safe in new[] { "(0)", "(2)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(safe, StringComparison.Ordinal));
 
         Assert.Contains(Said(w), t => t.Contains("will not write one of the drive-hiding modes"));
@@ -524,7 +528,8 @@ public class PreferenceUiTests
 
         foreach (var mode in new[] { "(1)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.EndsWith(mode + ", no drive", StringComparison.Ordinal));
-        foreach (var mode in new[] { "(0)", "(2)", "(3)", "(4)" })
+        Assert.Contains(shown, t => t.EndsWith("(3), drive stops answering", StringComparison.Ordinal));
+        foreach (var mode in new[] { "(0)", "(2)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(mode, StringComparison.Ordinal));
 
         combo.SelectedIndex = 0;
