@@ -48,7 +48,7 @@ jobs:
               echo 'Please use the structured form to submit a corrected profile.'
             } > /tmp/comment
             gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment
-            gh issue close "$ISSUE" --repo "$GITHUB_REPOSITORY" --reason not_planned
+            gh issue close "$ISSUE" --repo "$GITHUB_REPOSITORY" --reason "not planned"
             echo 'accepted=false' >> "$GITHUB_OUTPUT"
             exit 0
           fi

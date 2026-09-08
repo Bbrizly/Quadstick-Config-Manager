@@ -3,10 +3,10 @@ name: Registry validation
 on:
   push:
     branches: [main]
-    paths: ["registry/**", "tools/registry/**", "site/**", ".github/workflows/registry-*.yml"]
+    paths: ["registry/**", "tools/registry/**", "docs/profiles/**", ".github/workflows/registry-*.yml"]
   pull_request:
     branches: [main]
-    paths: ["registry/**", "tools/registry/**", "site/**", ".github/workflows/registry-*.yml"]
+    paths: ["registry/**", "tools/registry/**", "docs/profiles/**", ".github/workflows/registry-*.yml"]
   workflow_dispatch:
 
 permissions:

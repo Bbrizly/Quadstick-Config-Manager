@@ -23,7 +23,6 @@
       <h1>Think in actions, not buttons.</h1>
       <p>Find a game, pick your adaptive controller, see what each input actually does, then open the profile in QCM.</p>
     </div>
-
     <div class="toolbar panel">
       <label class="search"><span class="sr-only">Search profiles</span><input id="search" type="search" placeholder="Search games or profiles…" autocomplete="off"></label>
       <select id="platform" aria-label="Platform"><option value="">All platforms</option></select>
@@ -38,22 +37,18 @@
       <button class="primary" data-go="contribute">Create a profile</button>
     </div>
   </section>
-
   <section id="contribute" class="view" hidden>
     <div class="hero compact">
       <p class="eyebrow">STRUCTURED CONTRIBUTION</p>
       <h1>Share a profile without uploading a file.</h1>
       <p>Your Google Sheet stays the install source. This form stores only validated game-action mappings in GitHub.</p>
     </div>
-
     <form id="profileForm" class="panel form">
       <div class="grid2">
         <label>Game<select id="formGame" required></select></label>
         <label>Platform<select id="formPlatform" required></select></label>
         <label>Adaptive device<select id="formDevice" required></select></label>
-        <label>Profile style<select id="formVariant" required>
-          <option value="standard">Standard</option><option value="beginner">Beginner</option><option value="low-fatigue">Low fatigue</option><option value="competitive">Competitive</option><option value="one-mode">One mode</option><option value="custom">Custom</option>
-        </select></label>
+        <label>Profile style<select id="formVariant" required><option value="standard">Standard</option><option value="beginner">Beginner</option><option value="low-fatigue">Low fatigue</option><option value="competitive">Competitive</option><option value="one-mode">One mode</option><option value="custom">Custom</option></select></label>
       </div>
       <label>Public Google Sheet URL or ID<input id="sheet" required placeholder="https://docs.google.com/spreadsheets/d/…/edit"></label>
       <label>CSV name <span class="optional">optional</span><input id="csvName" placeholder="Minecraft.csv"></label>
