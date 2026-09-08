@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 
 namespace QuadStick.App;
 
@@ -33,6 +34,18 @@ public class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var window = WindowFor(desktop.Args);
+            // Before returning control to the platform, subscribe to activation.
+            // macOS delivers custom URL schemes here rather than as argv.
+            if (this.TryGetFeature<IActivatableLifetime>() is { } activatable)
+            {
+                activatable.Activated += (_, e) =>
+                {
+                    if (e is ProtocolActivatedEventArgs protocol &&
+                        RegistryDeepLink.TryGetProfileId(protocol.Uri, out var id) &&
+                        desktop.MainWindow is MainWindow main)
+                        Dispatcher.UIThread.Post(() => _ = main.OpenRegistryProfileAsync(id));
+                };
+            }
             // Only the real app reads the stick, and it reads it for as long as
             // the app is open rather than while one page is showing. The
             // headless tests and the render tool build a MainWindow without
@@ -41,6 +54,13 @@ public class App : Application
             // cost the suite should not pay.
             (window as MainWindow)?.StartLiveInput();
             desktop.MainWindow = window;
+
+            // Windows/unpackaged desktop activation arrives as the command-line
+            // qcm:// argument. Post it so the window and its import dialog owner
+            // are fully initialized first.
+            if (window is MainWindow qcm &&
+                RegistryDeepLink.TryGetProfileId(desktop.Args, out var profileId))
+                Dispatcher.UIThread.Post(() => _ = qcm.OpenRegistryProfileAsync(profileId));
         }
         base.OnFrameworkInitializationCompleted();
     }

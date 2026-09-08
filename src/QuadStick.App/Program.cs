@@ -9,6 +9,7 @@ class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        ProtocolRegistration.EnsureCurrentUser();
         InstallNativeLibraryFallback();
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }

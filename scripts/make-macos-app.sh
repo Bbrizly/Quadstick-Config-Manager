@@ -41,6 +41,14 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSMinimumSystemVersion</key><string>11.0</string>
   <key>NSHighResolutionCapable</key><true/>
   <key>LSApplicationCategoryType</key><string>public.app-category.utilities</string>
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLName</key><string>com.bbrizly.quadstickconfigmanager.profile</string>
+      <key>CFBundleTypeRole</key><string>Viewer</string>
+      <key>CFBundleURLSchemes</key><array><string>qcm</string></array>
+    </dict>
+  </array>
   <!-- Only standard HTTPS (the Sheets import), which is exempt encryption.
        Declaring this clears "Missing Compliance" without the per-build prompt. -->
   <key>ITSAppUsesNonExemptEncryption</key><false/>
