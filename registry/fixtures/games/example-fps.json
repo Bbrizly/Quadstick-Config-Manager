@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "example-fps",
+  "name": "Example FPS",
+  "status": "draft",
+  "platforms": ["pc", "xbox", "playstation"],
+  "actions": [
+    { "id": "move", "label": "Move", "category": "movement", "defaultOutputs": { "pc": ["keyboard-wasd"], "xbox": ["left-stick"], "playstation": ["left-stick"] } },
+    { "id": "look", "label": "Look", "category": "camera", "defaultOutputs": { "pc": ["mouse-move"], "xbox": ["right-stick"], "playstation": ["right-stick"] } },
+    { "id": "attack", "label": "Primary attack", "category": "combat", "defaultOutputs": { "pc": ["mouse-left"], "xbox": ["rt"], "playstation": ["r2"] } },
+    { "id": "jump", "label": "Jump", "category": "movement", "defaultOutputs": { "pc": ["space"], "xbox": ["a"], "playstation": ["cross"] } }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "registryId": "adaptive-control-registry",
+  "supportedPlatforms": ["pc", "xbox", "playstation", "switch"],
+  "profileVariants": ["standard", "beginner", "low-fatigue", "competitive", "one-mode", "custom"],
+  "profileTags": ["beginner", "low-fatigue", "competitive", "one-mode", "limited-sip", "limited-puff"],
+  "bindingBehaviors": ["normal", "tap", "hold", "toggle", "repeat"]
+}

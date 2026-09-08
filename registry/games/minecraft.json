@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "minecraft",
+  "name": "Minecraft",
+  "status": "published",
+  "platforms": ["pc", "xbox", "playstation", "switch"],
+  "actions": [
+    { "id": "move", "label": "Move", "category": "movement" },
+    { "id": "look", "label": "Look", "category": "camera" },
+    { "id": "attack", "label": "Attack / break", "category": "combat" },
+    { "id": "use", "label": "Use / place", "category": "interaction" },
+    { "id": "jump", "label": "Jump", "category": "movement" },
+    { "id": "inventory", "label": "Inventory", "category": "navigation" },
+    { "id": "sneak", "label": "Sneak", "category": "movement" },
+    { "id": "sprint", "label": "Sprint", "category": "movement" },
+    { "id": "drop", "label": "Drop item", "category": "interaction" },
+    { "id": "pause", "label": "Pause / menu", "category": "system" }
+  ]
+}

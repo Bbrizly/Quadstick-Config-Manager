@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quadstick.org/schemas/adaptive-profile-v1.json",
+  "title": "Adaptive Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "gameId", "platform", "deviceId", "variant", "contributor", "source", "bindings", "tags"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 220 },
+    "gameId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "platform": { "enum": ["pc", "xbox", "playstation", "switch"] },
+    "deviceId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "variant": { "enum": ["standard", "beginner", "low-fatigue", "competitive", "one-mode", "custom"] },
+    "contributor": { "type": "string", "pattern": "^[A-Za-z0-9-]{1,39}$" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "sheetId"],
+      "properties": {
+        "kind": { "const": "google-sheet" },
+        "sheetId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{20,200}$" },
+        "csvName": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._ -]{0,99}\\.csv$" }
+      }
+    },
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["actionId", "inputId"],
+        "properties": {
+          "actionId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "inputId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "behavior": { "enum": ["normal", "tap", "hold", "toggle", "repeat"] }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 6,
+      "items": { "enum": ["beginner", "low-fatigue", "competitive", "one-mode", "limited-sip", "limited-puff"] }
+    }
+  }
+}

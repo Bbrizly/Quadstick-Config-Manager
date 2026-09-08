@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "example-fps--pc--quadstick-fps--beginner--example",
+  "gameId": "example-fps",
+  "platform": "pc",
+  "deviceId": "quadstick-fps",
+  "variant": "beginner",
+  "contributor": "example",
+  "source": {
+    "kind": "google-sheet",
+    "sheetId": "1AbCdEfGhIjKlMnOpQrStUvWxYz012345678",
+    "csvName": "ExampleFPS.csv"
+  },
+  "bindings": [
+    { "actionId": "move", "inputId": "joystick" },
+    { "actionId": "attack", "inputId": "right-sip" },
+    { "actionId": "jump", "inputId": "right-puff" }
+  ],
+  "tags": ["beginner"]
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quadstick.org/schemas/adaptive-game-v1.json",
+  "title": "Adaptive Game",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "name", "status", "platforms", "actions"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "status": { "enum": ["published", "draft"] },
+    "platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["pc", "xbox", "playstation", "switch"] }
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "category"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "label": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "category": { "enum": ["movement", "camera", "combat", "interaction", "navigation", "communication", "system", "other"] },
+          "defaultOutputs": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "pc": { "$ref": "#/$defs/outputList" },
+              "xbox": { "$ref": "#/$defs/outputList" },
+              "playstation": { "$ref": "#/$defs/outputList" },
+              "switch": { "$ref": "#/$defs/outputList" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "outputList": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$", "maxLength": 60 }
+    }
+  }
+}
