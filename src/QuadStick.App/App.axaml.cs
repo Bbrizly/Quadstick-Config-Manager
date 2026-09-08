@@ -35,8 +35,9 @@ public class App : Application
         {
             var window = WindowFor(desktop.Args);
             // Before returning control to the platform, subscribe to activation.
-            // macOS delivers custom URL schemes here rather than as argv.
-            if (this.TryGetFeature<IActivatableLifetime>() is { } activatable)
+            // Avalonia 11 exposes TryGetFeature(Type); macOS delivers custom URL
+            // schemes through IActivatableLifetime rather than argv.
+            if (TryGetFeature(typeof(IActivatableLifetime)) is IActivatableLifetime activatable)
             {
                 activatable.Activated += (_, e) =>
                 {

@@ -6,18 +6,63 @@
       "id": "minecraft",
       "name": "Minecraft",
       "status": "published",
-      "platforms": ["pc", "xbox", "playstation", "switch"],
+      "platforms": [
+        "pc",
+        "xbox",
+        "playstation",
+        "switch"
+      ],
       "actions": [
-        { "id": "move", "label": "Move", "category": "movement" },
-        { "id": "look", "label": "Look", "category": "camera" },
-        { "id": "attack", "label": "Attack / break", "category": "combat" },
-        { "id": "use", "label": "Use / place", "category": "interaction" },
-        { "id": "jump", "label": "Jump", "category": "movement" },
-        { "id": "inventory", "label": "Inventory", "category": "navigation" },
-        { "id": "sneak", "label": "Sneak", "category": "movement" },
-        { "id": "sprint", "label": "Sprint", "category": "movement" },
-        { "id": "drop", "label": "Drop item", "category": "interaction" },
-        { "id": "pause", "label": "Pause / menu", "category": "system" }
+        {
+          "id": "move",
+          "label": "Move",
+          "category": "movement"
+        },
+        {
+          "id": "look",
+          "label": "Look",
+          "category": "camera"
+        },
+        {
+          "id": "attack",
+          "label": "Attack / break",
+          "category": "combat"
+        },
+        {
+          "id": "use",
+          "label": "Use / place",
+          "category": "interaction"
+        },
+        {
+          "id": "jump",
+          "label": "Jump",
+          "category": "movement"
+        },
+        {
+          "id": "inventory",
+          "label": "Inventory",
+          "category": "navigation"
+        },
+        {
+          "id": "sneak",
+          "label": "Sneak",
+          "category": "movement"
+        },
+        {
+          "id": "sprint",
+          "label": "Sprint",
+          "category": "movement"
+        },
+        {
+          "id": "drop",
+          "label": "Drop item",
+          "category": "interaction"
+        },
+        {
+          "id": "pause",
+          "label": "Pause / menu",
+          "category": "system"
+        }
       ]
     }
   ],
@@ -29,14 +74,46 @@
       "manufacturer": "QuadStick",
       "status": "published",
       "inputs": [
-        { "id": "joystick", "label": "Joystick", "kind": "analog-2d" },
-        { "id": "left-sip", "label": "Left sip", "kind": "digital" },
-        { "id": "left-puff", "label": "Left puff", "kind": "digital" },
-        { "id": "center-sip", "label": "Center sip", "kind": "digital" },
-        { "id": "center-puff", "label": "Center puff", "kind": "digital" },
-        { "id": "right-sip", "label": "Right sip", "kind": "digital" },
-        { "id": "right-puff", "label": "Right puff", "kind": "digital" },
-        { "id": "lip", "label": "Lip", "kind": "digital" }
+        {
+          "id": "joystick",
+          "label": "Joystick",
+          "kind": "analog-2d"
+        },
+        {
+          "id": "left-sip",
+          "label": "Left sip",
+          "kind": "digital"
+        },
+        {
+          "id": "left-puff",
+          "label": "Left puff",
+          "kind": "digital"
+        },
+        {
+          "id": "center-sip",
+          "label": "Center sip",
+          "kind": "digital"
+        },
+        {
+          "id": "center-puff",
+          "label": "Center puff",
+          "kind": "digital"
+        },
+        {
+          "id": "right-sip",
+          "label": "Right sip",
+          "kind": "digital"
+        },
+        {
+          "id": "right-puff",
+          "label": "Right puff",
+          "kind": "digital"
+        },
+        {
+          "id": "lip",
+          "label": "Lip",
+          "kind": "digital"
+        }
       ]
     },
     {
@@ -46,14 +123,46 @@
       "manufacturer": "QuadStick",
       "status": "published",
       "inputs": [
-        { "id": "joystick", "label": "Joystick", "kind": "analog-2d" },
-        { "id": "left-sip", "label": "Left sip", "kind": "digital" },
-        { "id": "left-puff", "label": "Left puff", "kind": "digital" },
-        { "id": "center-sip", "label": "Center sip", "kind": "digital" },
-        { "id": "center-puff", "label": "Center puff", "kind": "digital" },
-        { "id": "right-sip", "label": "Right sip", "kind": "digital" },
-        { "id": "right-puff", "label": "Right puff", "kind": "digital" },
-        { "id": "lip", "label": "Lip", "kind": "digital" }
+        {
+          "id": "joystick",
+          "label": "Joystick",
+          "kind": "analog-2d"
+        },
+        {
+          "id": "left-sip",
+          "label": "Left sip",
+          "kind": "digital"
+        },
+        {
+          "id": "left-puff",
+          "label": "Left puff",
+          "kind": "digital"
+        },
+        {
+          "id": "center-sip",
+          "label": "Center sip",
+          "kind": "digital"
+        },
+        {
+          "id": "center-puff",
+          "label": "Center puff",
+          "kind": "digital"
+        },
+        {
+          "id": "right-sip",
+          "label": "Right sip",
+          "kind": "digital"
+        },
+        {
+          "id": "right-puff",
+          "label": "Right puff",
+          "kind": "digital"
+        },
+        {
+          "id": "lip",
+          "label": "Lip",
+          "kind": "digital"
+        }
       ]
     }
   ],
