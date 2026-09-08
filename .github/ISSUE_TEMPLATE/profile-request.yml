@@ -1,0 +1,28 @@
+name: Request an adaptive profile
+description: Ask the community for a missing game/platform/device combination
+title: "[REQUEST] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: "Request profiles only. Do not include medical, identifying, or private information."
+  - type: input
+    id: game
+    attributes:
+      label: Game
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options: [PC, Xbox, PlayStation, Switch]
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Adaptive controller
+      placeholder: QuadStick FPS
+    validations:
+      required: true
