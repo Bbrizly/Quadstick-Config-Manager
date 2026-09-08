@@ -615,18 +615,18 @@
       "QuadStick (PC and PS3)",
       "DualShock 3",
       "x360ce, needs the x360ce app",
-      "Xbox 360 controller, works on a PC as it is",
+      "Xbox 360 controller, gamepad only",
       "DualShock 4, for a PS4",
       "Nintendo Switch Pro Controller",
       "DualShock 4",
       "DualShock 4 wireless"
     ],
     "firmwareMayAddMore": true,
-    "description": "Which controller the QuadStick pretends to be. The console has to know the one you pick. On a PC, mode 3 is the one games see on their own: it reports itself as a real Xbox 360 controller. Mode 2 is a plain gamepad that only becomes an Xbox controller once you install the separate x360ce program and set it up for that game, so a game asking you to press A sees nothing until you do.",
+    "description": "Which controller the QuadStick pretends to be. The console has to know the one you pick. Modes 2 and 3 are both Xbox on a PC and they are not the same trade. Mode 3 reports itself as a real Xbox 360 controller, so any game sees it with nothing else installed, but it is the only thing the QuadStick offers on that mode: no keyboard, no mouse and no drive. Mode 2 keeps the keyboard, the mouse and the drive, but the gamepad is a plain one that games only read as an Xbox controller once you install the separate x360ce program and set it up for that game.",
     "modeOverride": true,
-    "risk": "A mode marked no drive hides the QuadStick's files from your computer until you set it back. Mode 3 is worse than hidden: it still offers the drive and then never answers it, so the computer waits on a drive that never opens. The numbers also mean something different on older QuadSticks.",
+    "risk": "A mode marked no drive hides the QuadStick's files from your computer until you set it back. Mode 3 drops the keyboard and mouse with them, so a profile that types or moves a pointer stops doing it. The numbers also mean something different on older QuadSticks.",
     "alsoCalled": "Boot in PS4 Mode",
-    "source": "firmware 2373 preference_keywords.h maps it to USB_EMULATION_MODE; Descriptors.c:1292 switches on all eight values, DescriptorsDS4.c:803 and :807 tell 6 (no USB drive) from 7 (straight DS4 wireless), and Joystick.c and DataFlow.c switch on the same numbers. Mode 2 is DeviceDescriptor_X360CE, VID 0x16D0 PID 0x092C, a plain composite HID that the x360ce program translates; mode 3 is DeviceDescriptor_X360, VID 0x045E PID 0x028E, the Xbox 360 controller's own identity, which is why only 3 works without extra software. Which modes a computer can read the files on is not the configuration descriptors: PS3_t (0), X360CE_t (2), X360_t (3) and CM_t (4) all declare an MS_Interface, but Joystick.c:399 calls MS_Device_USBTask for 0, 2 and 4 only, so mode 3 advertises a drive it never answers. Firmware 1476 Descriptors.c:1523 had 5 as PC only, no joystick. Preferences.h:138 defaults to 0. QMP-4 QuadStick.py checkbox_ps4_boot_mode treats it as a checkbox."
+    "source": "firmware 2373 preference_keywords.h maps it to USB_EMULATION_MODE; Descriptors.c:1292 switches on all eight values, DescriptorsDS4.c:803 and :807 tell 6 (no USB drive) from 7 (straight DS4 wireless), and Joystick.c and DataFlow.c switch on the same numbers. Mode 2 is DeviceDescriptor_X360CE, VID 0x16D0 PID 0x092C, a plain composite HID that the x360ce program translates; mode 3 is DeviceDescriptor_X360, VID 0x045E PID 0x028E, the Xbox 360 controller's own identity, which is why only 3 is seen without extra software. What each mode offers is the configuration descriptor it actually sends, and mode 3 is the trap: Descriptors.h defines a USB_Descriptor_Configuration_X360_t with mouse, keyboard and MS_Interface members, but that struct is only used by the descriptor commented out at Descriptors.c:1000. The live one is the byte array at Descriptors.c:857, the real Xbox 360 controller's 4 interfaces, all class 0xFF subclass 0x5D or 0xFD, with no HID and no mass storage; the mode 3 GetDescriptor branch returns no mouse or keyboard report descriptor either. ConfigurationDescriptor_X360CE at Descriptors.c:476 is live and does carry all four. Firmware 1476 Descriptors.c:1523 had 5 as PC only, no joystick. Preferences.h:138 defaults to 0. QMP-4 QuadStick.py checkbox_ps4_boot_mode treats it as a checkbox."
   },
   {
     "name": "titan_two",

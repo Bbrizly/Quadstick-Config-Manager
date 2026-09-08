@@ -251,12 +251,12 @@ public class FirmwareReaderTests
         // source proves their values, so the catalog claims nothing about them.
         Assert.DoesNotContain(All(PrefsHead + "bluetooth_remote_address,001122334455\n"),
             i => i.Cell == "B9");
-        // Mode 3 is the one exception, and it is not the catalog talking. The
-        // firmware serves the drive in modes 0, 2 and 4 only (Joystick.c:399)
-        // while mode 3 still advertises one, so a person is told it will hang
-        // rather than open. It stays a value the app writes as typed.
+        // Mode 3 is the one exception, and it is not the catalog talking. Its
+        // live configuration descriptor is the real Xbox 360 controller's, which
+        // carries no mass storage, so a person is told the files go away. It
+        // stays a value the app writes as typed.
         Assert.Contains(All(PrefsHead + "enable_DS3_emulation,3\n"),
-            i => i.Cell == "B9" && i.Message.Contains("never answers it", StringComparison.Ordinal));
+            i => i.Cell == "B9" && i.Message.Contains("access to the QuadStick's drive", StringComparison.Ordinal));
     }
 
     // The four orderings the sources establish. Each warns only when both

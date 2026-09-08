@@ -118,13 +118,9 @@ public class PreferenceUiTests
 
         var shown = Cell<ComboBox>(w, 4).ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
         Assert.Equal(8, shown.Count);
-        foreach (var costly in new[] { "(1)", "(5)", "(6)", "(7)" })
+        foreach (var costly in new[] { "(1)", "(3)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.Contains(costly, StringComparison.Ordinal)
                                      && t.EndsWith(", no drive", StringComparison.Ordinal));
-        // Mode 3 costs the drive too and says something else, because it does
-        // something else: it offers one and never answers.
-        Assert.Contains(shown, t => t.Contains("(3)", StringComparison.Ordinal)
-                                 && t.EndsWith(", drive stops answering", StringComparison.Ordinal));
         foreach (var safe in new[] { "(0)", "(2)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(safe, StringComparison.Ordinal));
 
@@ -526,9 +522,8 @@ public class PreferenceUiTests
         Assert.Null(combo.SelectedItem);
         Assert.False(add.IsEnabled);
 
-        foreach (var mode in new[] { "(1)", "(5)", "(6)", "(7)" })
+        foreach (var mode in new[] { "(1)", "(3)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.EndsWith(mode + ", no drive", StringComparison.Ordinal));
-        Assert.Contains(shown, t => t.EndsWith("(3), drive stops answering", StringComparison.Ordinal));
         foreach (var mode in new[] { "(0)", "(2)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(mode, StringComparison.Ordinal));
 

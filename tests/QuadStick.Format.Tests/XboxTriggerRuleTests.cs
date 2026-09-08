@@ -119,10 +119,11 @@ public class NoDriveModeListTests
     [Fact]
     public void The_list_is_every_mode_that_hides_the_drive()
     {
-        // 3 is here on Joystick.c:399, not on its descriptor. X360_t declares a
-        // mass-storage interface like the safe modes do, but the main loop calls
-        // MS_Device_USBTask for 0, 2 and 4 only, so mode 3 offers the computer a
-        // drive and then answers nothing.
+        // 3 is here on the descriptor it actually sends. The
+        // USB_Descriptor_Configuration_X360_t in Descriptors.h has an
+        // MS_Interface and put mode 3 on the safe side for a while; nothing uses
+        // that struct. The live descriptor at Descriptors.c:857 is the real Xbox
+        // 360 controller's four interfaces, no mass storage and no HID.
         Assert.Equal(new[] { 1, 3, 5, 6, 7 }, Validator.ModesWithNoDrive);
     }
 
