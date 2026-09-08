@@ -68,12 +68,21 @@ public static class Device
     // RAM (FlashManager.c). A page only reaches flash when a write touches a
     // different page, or when Cache_timer counts down to zero and the main loop
     // flushes it (Cache_timer = 12000, "at least 1.5 seconds", decremented in
-    // the Timer 1 interrupt in sound.c). Unplug inside that window and the last
-    // page is lost. On this 2MB FAT12 volume the FATs and the root directory sit
-    // in pages 1 to 7, so the volatile page is nearly always metadata, and one
-    // lost page breaks the cluster chains of files nobody touched. That is the
-    // 0x80070570 the field reports, on prefs.csv, after installing something
-    // else entirely.
+    // the Timer 1 interrupt in sound.c). Lose power inside that window and the
+    // last page is lost. On this 2MB FAT12 volume the FATs and the root
+    // directory sit in pages 1 to 7, so the volatile page is nearly always
+    // metadata, and one lost page breaks the cluster chains of files nobody
+    // touched. That is the 0x80070570 the field reports, on prefs.csv, after
+    // writing something else entirely.
+    //
+    // Unplugging is not the only way in, and not the common one. A profile that
+    // changes usb emulation mode makes the firmware call USB_Disconnect() and
+    // re-enumerate (Configuration.c:325), so the drive surprise-removes itself
+    // on an ordinary profile switch. Nothing on that path flushes: every
+    // Flush_Cache() outside FlashManager's own page-change logic is commented
+    // out, including the one in the reset path at Configuration.c:829. Waiting
+    // covers the app's own writes and nothing else, so it is a floor, not a
+    // fix.
     //
     // Nothing else can force the flush. SCSI.c answers no SYNCHRONIZE CACHE and
     // no START STOP UNIT, so Windows "safely remove hardware" does not reach it,
