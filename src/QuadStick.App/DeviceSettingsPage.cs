@@ -148,7 +148,7 @@ public partial class MainWindow
     /// which the headless tests and the render tool never reach. Neither has a
     /// QuadStick to read, and neither wants a thread parked on a USB
     /// enumeration for the length of the run.</remarks>
-    internal void StartLiveInput()
+    public void StartLiveInput()
     {
         if (_liveInput is not null) return;
         _liveInput = new LiveInput(state =>

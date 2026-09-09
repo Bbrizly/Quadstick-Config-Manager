@@ -4,14 +4,17 @@ using Avalonia;
 
 namespace QuadStick.App;
 
-class Program
+// Public so another host executable can start this app: it builds the same
+// AppBuilder and gets the same native-library fix.
+public class Program
 {
     [STAThread]
     public static void Main(string[] args)
-    {
-        InstallNativeLibraryFallback();
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-    }
+        => BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
+    // BuildAvaloniaApp is public and may be called more than once. Without the
+    // guard each call hangs another resolver off the load context.
+    static bool _nativeFallbackInstalled;
 
     // The Mac App Store installs the bundle under the store name, which is
     // "Quadstick: Config Manager". CoreCLR passes the native search path to
@@ -20,7 +23,10 @@ class Program
     // single pixel (App Store review, 2026-07-21). AppContext.BaseDirectory is
     // a single string, so it survives the colon. Load from there by hand when
     // the normal search fails.
-    static void InstallNativeLibraryFallback() =>
+    static void InstallNativeLibraryFallback()
+    {
+        if (_nativeFallbackInstalled) return;
+        _nativeFallbackInstalled = true;
         AssemblyLoadContext.Default.ResolvingUnmanagedDll += (_, name) =>
         {
             foreach (var file in new[] { name, name + ".dylib", "lib" + name + ".dylib" })
@@ -31,10 +37,16 @@ class Program
             }
             return IntPtr.Zero;
         };
+    }
 
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
+    {
+        // First, before Configure: registering the resolver later can be too
+        // late for the first native load.
+        InstallNativeLibraryFallback();
+        return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();
+    }
 }

@@ -21,6 +21,11 @@ public class App : Application
     internal static Window WindowFor(IReadOnlyList<string>? args) =>
         args is not null && args.Contains("--gallery") ? new GalleryWindow() : new MainWindow();
 
+    /// <summary>What the app opens, WindowFor unless something replaces it.
+    /// Another host executable sets this before starting, so the app opens that
+    /// host's own window instead of the editor.</summary>
+    public static Func<IReadOnlyList<string>?, Window> StartWindow { get; set; } = WindowFor;
+
     public override void OnFrameworkInitializationCompleted()
     {
         CrashGuard.Install(); // before ANY window exists: nothing runs uncovered
@@ -32,7 +37,7 @@ public class App : Application
         Theme.Apply(settings.Theme);
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var window = WindowFor(desktop.Args);
+            var window = StartWindow(desktop.Args);
             // Only the real app reads the stick, and it reads it for as long as
             // the app is open rather than while one page is showing. The
             // headless tests and the render tool build a MainWindow without
