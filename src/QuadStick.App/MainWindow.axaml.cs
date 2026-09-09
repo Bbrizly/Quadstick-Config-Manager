@@ -1560,13 +1560,22 @@ public partial class MainWindow : Window
             next.OpenInEditor(_file, _savePath, ProfileSource.File, track: false);
             next.SelectSheet(_sheetIndex); // same mode open as before
         }
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.MainWindow = next;
+        HandOverMainWindow(
+            Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime, next);
         next.Show();
         if (onSettings) next.ShowSettingsPage();
         _closeConfirmed = true; // the profile moved, it was not discarded
         Close();
         return next;
+    }
+
+    /// <summary>Give the rebuilt window the main-window role, but only if this
+    /// window held it. Under another host the main window is the host's own, and
+    /// taking it there would close the host when the editor closes. Split out
+    /// because the headless suite cannot install an application lifetime.</summary>
+    internal void HandOverMainWindow(IClassicDesktopStyleApplicationLifetime? desktop, Window next)
+    {
+        if (desktop is not null && ReferenceEquals(desktop.MainWindow, this)) desktop.MainWindow = next;
     }
 
     public void SetInterfaceScale(int pct)

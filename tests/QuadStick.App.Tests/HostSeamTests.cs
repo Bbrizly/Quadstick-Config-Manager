@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Headless.XUnit;
 using QuadStick.Format;
 using Xunit;
@@ -68,6 +69,37 @@ public class HostSeamTests
             w.Close();
             Directory.Delete(dir, true);
         }
+    }
+    // Changing the language rebuilds the window, and the rebuild hands the new
+    // window the main-window role. Under a host that role belongs to the host,
+    // and an editor taking it closes the host's own screen when the editor
+    // closes. The lifetime cannot be installed headlessly, so the decision is
+    // driven directly.
+    [AvaloniaFact]
+    public void A_rebuilt_editor_leaves_a_hosts_main_window_alone()
+    {
+        var w = new MainWindow();
+        var next = new MainWindow();
+        var host = new Window();
+        var desktop = new ClassicDesktopStyleApplicationLifetime { MainWindow = host };
+
+        w.HandOverMainWindow(desktop, next);
+
+        Assert.Same(host, desktop.MainWindow);
+    }
+
+    // The other half: the free app IS the main window, so the rebuild still has
+    // to carry the role over or closing the old window shuts the app down.
+    [AvaloniaFact]
+    public void A_rebuilt_editor_still_takes_over_the_apps_own_main_window()
+    {
+        var w = new MainWindow();
+        var next = new MainWindow();
+        var desktop = new ClassicDesktopStyleApplicationLifetime { MainWindow = w };
+
+        w.HandOverMainWindow(desktop, next);
+
+        Assert.Same(next, desktop.MainWindow);
     }
     // The three statics a host redirects so a session's files land in its own
     // folder instead of the free app's. Settable and public is the whole
