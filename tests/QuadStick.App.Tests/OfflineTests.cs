@@ -120,6 +120,25 @@ public class OfflineTests
         finally { NetworkFeature.Enabled = true; }
     }
 
+    // Handing a web address to the machine's browser is not this app making a
+    // request, but it is this app being the reason one happens.
+    [AvaloniaFact]
+    public void Settings_offers_no_link_that_opens_a_browser()
+    {
+        try
+        {
+            var w = Offline();
+            w.ShowSettingsPage();
+            w.UpdateLayout();
+            var words = w.GetVisualDescendants().OfType<Button>()
+                .Select(b => b.Content as string ?? "").ToList();
+            Assert.DoesNotContain(Strings.Settings_ReportBug, words);
+            Assert.DoesNotContain("LinkedIn", words);
+            w.Close();
+        }
+        finally { NetworkFeature.Enabled = true; }
+    }
+
     // The free app is the reason this defaults on. A change here that quietly
     // flipped it would take Community and backup away from everybody.
     [AvaloniaFact]

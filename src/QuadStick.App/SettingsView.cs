@@ -685,22 +685,29 @@ public class SettingsView : UserControl
             FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
         });
 
-        panel.Children.Add(LinkButton(
-            Strings.Settings_ReportBug,
-            "https://github.com/Bbrizly/Quadstick-Config-Manager/issues",
-            Strings.Settings_ReportBugHelp));
-        panel.Children.Add(LinkButton(
-            string.Format(CultureInfo.CurrentCulture, Strings.Settings_WebsiteLink, "bbrizly.github.io"),
-            "https://bbrizly.github.io",
-            Strings.Settings_WebsiteHelp));
-        panel.Children.Add(LinkButton(
-            "LinkedIn",
-            "https://www.linkedin.com/in/bassam-k/",
-            Strings.Settings_LinkedInHelp));
-        panel.Children.Add(LinkButton(
-            string.Format(CultureInfo.CurrentCulture, Strings.Settings_EmailLink, "bassamkamal.py@gmail.com"),
-            "mailto:bassamkamal.py@gmail.com",
-            Strings.Settings_EmailHelp));
+        // Every one of these hands a web address to the machine's browser.
+        // That is not this app making a request, but it is this app being the
+        // reason one happens, and a build sold on "it makes no network calls
+        // at all" should not be the reason.
+        if (NetworkFeature.Enabled)
+        {
+            panel.Children.Add(LinkButton(
+                Strings.Settings_ReportBug,
+                "https://github.com/Bbrizly/Quadstick-Config-Manager/issues",
+                Strings.Settings_ReportBugHelp));
+            panel.Children.Add(LinkButton(
+                string.Format(CultureInfo.CurrentCulture, Strings.Settings_WebsiteLink, "bbrizly.github.io"),
+                "https://bbrizly.github.io",
+                Strings.Settings_WebsiteHelp));
+            panel.Children.Add(LinkButton(
+                "LinkedIn",
+                "https://www.linkedin.com/in/bassam-k/",
+                Strings.Settings_LinkedInHelp));
+            panel.Children.Add(LinkButton(
+                string.Format(CultureInfo.CurrentCulture, Strings.Settings_EmailLink, "bassamkamal.py@gmail.com"),
+                "mailto:bassamkamal.py@gmail.com",
+                Strings.Settings_EmailHelp));
+        }
 
         if (NetworkFeature.Enabled) panel.Children.Add(FeedbackArea());
         return Tab(panel);
