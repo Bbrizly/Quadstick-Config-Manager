@@ -15,7 +15,7 @@ public class InstallCleanupTests
 
         var result = Device.Install(file, dir, backups);
 
-        Assert.Empty(Directory.GetFiles(dir, "*.qscm-tmp"));
+        Assert.Empty(Directory.GetFiles(dir, "*.qscm-tmp*"));
         Assert.True(File.Exists(result.InstalledPath));
     }
 
@@ -39,6 +39,6 @@ public class InstallCleanupTests
         var file = ProfileFile.NewFromTemplate("mygame.csv");
 
         Assert.ThrowsAny<Exception>(() => Device.Install(file, dir, backups));
-        Assert.Empty(Directory.GetFiles(dir, "*.qscm-tmp"));
+        Assert.Empty(Directory.GetFiles(dir, "*.qscm-tmp*"));
     }
 }

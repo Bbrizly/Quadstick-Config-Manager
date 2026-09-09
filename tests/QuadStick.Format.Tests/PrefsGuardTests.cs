@@ -98,6 +98,6 @@ public class PrefsGuardTests : IDisposable
         PrefsGuard.TrySnapshot(Drive, Snapshots);
         Write("wrecked");
         PrefsGuard.Restore(Drive, Snapshots, Backups);
-        Assert.Empty(Directory.GetFiles(Drive, "*.qscm-tmp"));
+        Assert.Empty(Directory.GetFiles(Drive, "*.qscm-tmp*"));
     }
 }
