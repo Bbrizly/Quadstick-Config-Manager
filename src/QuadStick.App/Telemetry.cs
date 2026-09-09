@@ -389,7 +389,10 @@ public static partial class Telemetry
         try
         {
             var c = _client;
-            if (c is null || !_usage || _distinctId.Length == 0) return false;
+            // KillSwitch as well as the client: a host can turn the network
+            // off after a client was already built, and a client that exists
+            // is a client that would still send.
+            if (c is null || KillSwitch || !_usage || _distinctId.Length == 0) return false;
 
             var props = Envelope();
             if (key is not null && value is not null) props[key] = value;
@@ -498,7 +501,7 @@ public static partial class Telemetry
 
             lock (Gate) { Start(); }
             var c = _client;
-            if (c is null) return false;
+            if (c is null || KillSwitch) return false;
 
             var props = ExceptionProperties(payload);
             props[CrashConsentMarker] = true;   // stripped again inside Scrub
