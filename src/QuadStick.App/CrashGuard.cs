@@ -107,6 +107,12 @@ public static class CrashGuard
     {
         try
         {
+            // The folder is made by the rescue path, and on a machine where
+            // nothing has ever crashed hard there is no folder, so every
+            // handled error was written into a directory that did not exist
+            // and swallowed by the catch below. A log nobody can read is the
+            // same as no log.
+            Directory.CreateDirectory(Path.GetDirectoryName(CrashLogPath)!);
             File.AppendAllText(CrashLogPath,
                 $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] handled, {where}: {ex}\n\n");
         }
