@@ -200,6 +200,62 @@ public class HostSeamTests
         }
     }
 
+    // The line that says whose profile this is. The free app has nobody to
+    // name and shows nothing, so the layout it has today is the layout it
+    // keeps; a host sets it and it is above everything, in words, and read
+    // out by a screen reader as soon as it changes.
+    [AvaloniaFact]
+    public void A_host_can_name_whose_profile_this_is()
+    {
+        var w = new MainWindow();
+        w.Show();
+        try
+        {
+            var bar = w.GetVisualDescendants().OfType<Border>().First(b => b.Name == "HostBannerBar");
+            Assert.False(bar.IsVisible);
+            Assert.Null(w.HostBanner);
+
+            w.HostBanner = "Editing for Anna R.";
+            w.UpdateLayout();
+            Assert.True(bar.IsEffectivelyVisible);
+            Assert.Equal("Editing for Anna R.", w.HostBanner);
+            Assert.Equal("Editing for Anna R.",
+                w.GetVisualDescendants().OfType<TextBlock>().First(t => t.Name == "HostBannerText").Text);
+
+            w.HostBanner = null;
+            w.UpdateLayout();
+            Assert.False(bar.IsVisible);
+        }
+        finally { w.Close(); }
+    }
+
+    // Nothing reaches a QuadStick without the host getting to say the name of
+    // the person whose device it is, and getting to be told no.
+    [AvaloniaFact]
+    public async Task A_host_can_stop_an_install_before_it_starts()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var asked = 0;
+        w.BeforeInstall = () => { asked++; return Task.FromResult(false); };
+        try
+        {
+            w.LoadProfile(Solo());
+            await w.RunInstallFlowForTest();
+            Assert.Equal(1, asked);
+            // Said no, so nothing after it ran: no drive was even looked for.
+            Assert.Empty(w.OwnedWindows);
+        }
+        finally
+        {
+            w.OpenFile!.Dirty = false;
+            w.Close();
+        }
+    }
+
     // The three statics a host redirects so a session's files land in its own
     // folder instead of the free app's. Settable and public is the whole
     // contract; this fails to compile if one of them stops being either.

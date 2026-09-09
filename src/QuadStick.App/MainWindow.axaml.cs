@@ -1590,6 +1590,8 @@ public partial class MainWindow : Window
         // saves, and records no more snapshots.
         next.ProfileSaved = ProfileSaved;
         next.EditorReplaced = EditorReplaced;
+        next.HostBanner = HostBanner;
+        next.BeforeInstall = BeforeInstall;
         EditorReplaced?.Invoke(next);
         next.Show();
         if (onSettings) next.ShowSettingsPage();
@@ -5301,6 +5303,29 @@ public partial class MainWindow : Window
     /// that opened this editor has no other way to learn a save happened, and
     /// without it cannot record what the file looked like at that moment.</summary>
     public event Action<string>? ProfileSaved;
+
+    /// <summary>A line a host owns, across the top of the editor and never
+    /// scrolled away. Null in the free app, where there is no host and no
+    /// second person's file to confuse this one with. A clinic puts the
+    /// client's name here: editing the wrong person's profile is the one
+    /// mistake this product exists to make hard.</summary>
+    public string? HostBanner
+    {
+        get => HostBannerBar.IsVisible ? HostBannerText.Text : null;
+        set
+        {
+            HostBannerText.Text = value ?? "";
+            HostBannerBar.IsVisible = !string.IsNullOrEmpty(value);
+            AutomationProperties.SetName(HostBannerBar, value ?? "");
+            AutomationProperties.SetLiveSetting(HostBannerText, AutomationLiveSetting.Assertive);
+        }
+    }
+
+    /// <summary>Asked once, before anything is written to a QuadStick, and the
+    /// install stops if it answers false. A host uses it to name the person
+    /// whose device this is about to change; the free app has nobody to name
+    /// and leaves it null.</summary>
+    public Func<Task<bool>>? BeforeInstall { get; set; }
 
     /// <summary>Raised with the window that replaces this one. Changing the
     /// language rebuilds the editor, so a host holding a reference to it is

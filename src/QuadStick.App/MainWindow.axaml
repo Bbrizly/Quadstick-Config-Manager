@@ -7,11 +7,18 @@
         Width="1180" Height="920" MinWidth="760" MinHeight="560">
   <Panel x:Name="RootHost">
   <LayoutTransformControl x:Name="ZoomHost" HorizontalAlignment="Left" VerticalAlignment="Top">
-  <Grid x:Name="RootPanel" RowDefinitions="Auto,*">
+  <Grid x:Name="RootPanel" RowDefinitions="Auto,Auto,*">
+  <!-- A line a host owns, above everything else and never scrolled away. The
+       free app never shows it. A clinic puts the client's name here, because
+       the whole danger of editing somebody else's profile is not knowing whose
+       it is. -->
+  <Border x:Name="HostBannerBar" Grid.Row="0" Classes="hostbanner" IsVisible="False">
+    <TextBlock x:Name="HostBannerText" Classes="hostbannertext" TextWrapping="Wrap"/>
+  </Border>
   <!-- Persistent application chrome. Home and Editor are pages inside QCM,
        not separate utilities with unrelated headers. The major destinations
        stay in the same place while the content below changes. -->
-  <Border Grid.Row="0" Classes="appchrome">
+  <Border Grid.Row="1" Classes="appchrome">
     <Grid ColumnDefinitions="Auto,*,Auto">
       <!-- The mark is the way home. It is the biggest, most predictable target
            in the window and it is in the corner every other app puts one, so
@@ -70,7 +77,7 @@
     </Grid>
   </Border>
 
-  <Panel Grid.Row="1" x:Name="ScaleContent">
+  <Panel Grid.Row="2" x:Name="ScaleContent">
 
     <!-- ============ HOME ============ -->
     <DockPanel x:Name="HomeView" Margin="28,22">

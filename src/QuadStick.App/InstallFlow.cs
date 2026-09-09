@@ -19,11 +19,20 @@ namespace QuadStick.App;
 // step with no other feedback otherwise.
 public partial class MainWindow
 {
+    /// <summary>Test seam: the install flow is what the Install button runs,
+    /// and the host gate in front of it has to be driven through the real
+    /// thing rather than around it.</summary>
+    internal Task RunInstallFlowForTest() => RunInstallFlowAsync();
+
     async Task RunInstallFlowAsync()
     {
         // Every exit below is one reason, so the funnel says where installs
         // actually die rather than only that they did.
         Telemetry.Track(TelemetryEvent.InstallAttempted);
+
+        // Before anything is read, picked or written. A host that knows whose
+        // device this is gets to say the name out loud and be told no.
+        if (BeforeInstall is not null && !await BeforeInstall()) return;
 
         if (_file is null)
         {
