@@ -442,3 +442,47 @@ for it or not.
 **Still open, and both need somebody who is not a machine.** Signing identities
 (Developer ID and notarization, Azure Artifact Signing) and gate D, two weeks
 on a real caseload.
+
+### A second review, after it was finished
+
+A final adversarial pass over the built product found more. What it changed:
+
+**The banner and the install question moved before the switch was accepted.**
+Opening client B while client A's profile was dirty set the banner, the client
+a save is recorded against and the install confirmation to B, and only then
+asked about A's unsaved work. Answering "cancel" left A's profile on screen
+under B's name, and an install would have named B while writing A's mappings.
+Nothing about who a window belongs to changes now until the file is open.
+
+**A rescued file had no owner.** Crash rescues went to one folder for the whole
+caseload, and a rescue carries no name, no id and nothing else that says whose
+it was, so the app would have offered the newest one back to whoever was on
+screen. Rescues and pending crash reports now live in the client's own folder.
+
+**A note or a profile in the wrong folder was accepted as that client's.** Every
+record carries the client it belongs to, and one that names somebody else is a
+stray rather than history.
+
+**Two clients can be called the same thing.** Everywhere a mistake would matter
+names a client by their name and the first six characters of their id.
+
+**Leaving a client's details threw the typing away.** It asks now, and a name
+cannot be emptied, because an empty name is a banner and an install question
+that name nobody.
+
+**Two saves at once lost the file.** `ProfileFile.WriteAtomic` used one fixed
+temp name per target, so the Save button and Ctrl+S each filled and moved the
+same temp and what landed was neither. This is the free app's bug, found by
+hosting it, and the third fixed that way.
+
+**Two live input readers.** The rebuilt editor started reading the stick before
+the window it replaced had closed. It waits now.
+
+**The release could not publish what it restored, and CI never ran the free
+app's tests.** The clinic solution carries core's suites, and a release proves
+the lock file did not move rather than pretending a runtime restore was locked.
+
+Deliberately left: the snapshot's csv and its record are two writes, and a
+failure between them leaves the csv reported as a stray rather than silently
+lost, which is the behaviour we want. A failure to keep a snapshot at all now
+says so out loud instead of throwing inside the save.
