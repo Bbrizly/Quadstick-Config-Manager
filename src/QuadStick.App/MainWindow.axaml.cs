@@ -5259,6 +5259,11 @@ public partial class MainWindow : Window
 
     public void LoadProfile(ProfileFile file) => OpenInEditor(file, savePath: null, ProfileSource.File);
 
+    /// <summary>Raised after a save lands on disk, with the path written. A host
+    /// that opened this editor has no other way to learn a save happened, and
+    /// without it cannot record what the file looked like at that moment.</summary>
+    public event Action<string>? ProfileSaved;
+
     /// <summary>Open a profile from a path, in the editor, exactly as opening a
     /// file does. The agent window hands its result back through here rather
     /// than through anything of its own, so what it wrote is checked, validated
@@ -5440,6 +5445,7 @@ public partial class MainWindow : Window
         PersistDrafts();           // and gives an untitled profile's names somewhere to live
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
         Telemetry.Track(TelemetryEvent.ProfileSaved);
+        ProfileSaved?.Invoke(_savePath);
         Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_SavedToSavePath, _savePath), StatusKind.Ready);
         // Local save is done. Push the exact bytes just written to the sheet in
         // the background; the save path never waits on the network.

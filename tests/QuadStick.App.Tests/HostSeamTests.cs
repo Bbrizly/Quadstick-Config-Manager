@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using QuadStick.Format;
 using Xunit;
 
 namespace QuadStick.App.Tests;
@@ -10,7 +11,14 @@ namespace QuadStick.App.Tests;
 // so a change that looks harmless here breaks something no test over there can
 // catch first.
 public class HostSeamTests
-{    // The default has to stay the free app's own choice: a host that never sets
+{
+    static ProfileFile Solo() => ProfileFile.Load(
+        "Profile Name,,Solo\n" +
+        "game.csv\n" +
+        "Outputs,Function,usb\n" +
+        "mouse_left,normal,lip\n");
+
+    // The default has to stay the free app's own choice: a host that never sets
     // StartWindow must be indistinguishable from one that does not exist.
     [AvaloniaFact]
     public void The_app_opens_the_window_it_always_did()
@@ -31,6 +39,35 @@ public class HostSeamTests
             Assert.Same(host, App.StartWindow(new[] { "--gallery" }));
         }
         finally { App.StartWindow = was; }
+    }
+    // A save is the only moment a host can record what the file looked like,
+    // and nothing else tells it one happened.
+    [AvaloniaFact]
+    public async Task A_save_says_where_it_landed()
+    {
+        var dir = Directory.CreateTempSubdirectory("qscm-hostseam-").FullName;
+        var path = Path.Combine(dir, "game.csv");
+        File.WriteAllText(path, Solo().ToCsvText());
+
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        string? said = null;
+        w.ProfileSaved += p => said = p;
+        try
+        {
+            w.OpenPath(path);
+            Assert.True(await w.SaveProfileAsync());
+            Assert.Equal(path, said);
+        }
+        finally
+        {
+            w.OpenFile!.Dirty = false;
+            w.Close();
+            Directory.Delete(dir, true);
+        }
     }
     // The three statics a host redirects so a session's files land in its own
     // folder instead of the free app's. Settable and public is the whole
