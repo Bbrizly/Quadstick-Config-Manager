@@ -377,3 +377,68 @@ Each of these was raised in review and rejected, with the reason.
   said. Phase 3, needs Drew.
 - Whether a site ever wants a shared read-only view across its clinicians'
   folders. Ask after the first paying site.
+
+## What changed while building it
+
+Phases 0 to 4 are built. Two adversarial reviews found things this plan had
+wrong, and the answers are here rather than left as a diff to read.
+
+**The host contract is eleven members, not six.** The plan said revisit past
+ten. Revisited, and every one of them earned its place, so the answer is not a
+clinic-owned editor. The extra five:
+
+- `NetworkFeature.Enabled`. "No network at all" was going to be a promise about
+  what a clinician would not click. The hosted editor has a community page, a
+  Google sign-in, a Sheets import box, a share menu, an update check, an
+  analytics consent dialog and four links that open a browser. Off means all of
+  it is out of the layout and no HTTP client is ever built.
+- `MainWindow.EditorReplaced`. Changing the language throws the editor away and
+  builds another. The roster held the old one, so it would have recorded
+  snapshots until the day somebody picked French and then silently stopped.
+- `MainWindow.OpenPathGuardedAsync`. `OpenPath` replaces the open profile with
+  no question asked, so switching clients would have dropped unsaved edits.
+- `MainWindow.HostBanner` and `MainWindow.BeforeInstall`. The wrong-client work
+  the plan puts in phase 3 cannot live in the roster window alone: the danger
+  is inside the editor, and the last moment worth catching is the write to a
+  device.
+
+**Read-only never opens the editor.** The plan wanted `ClinicAccess` on every
+write path, but the core's save and install are private and a roster button is
+not a gate. The editor is a way of writing a profile, so it is a write, and an
+unlicensed roster does not open it. No core policy hook, no new surface.
+
+**The snapshot record cannot say the device model.** The model is a setting in
+the editor and is never written into a profile, so a snapshot claiming to know
+it would be making it up. It records the profile's own title and mode count;
+the client's rig field is where the hardware is written down.
+
+**The editor opens a working file, never a snapshot.** A snapshot is what was
+true on a day. Opening one for editing would rewrite history the first time
+somebody pressed save. Each client has `working.csv`, every save of it becomes
+a new snapshot, and restoring is a copy onto it.
+
+**Expiry compares a build stamp that has to exist.** `-p:` alone generates
+nothing, so an MSBuild target writes the stamp into a generated source file and
+refuses anything that is not exactly `yyyy-MM-ddTHH:mm:ssZ`. An unstamped build
+is read only. The release workflow takes the stamp from the tag's own commit
+date, so building the same tag twice stamps the same instant.
+
+**A licence has exactly one text.** Strict DER was in the plan; two more ways
+to spell one licence were not. base64 keeps spare bits in the last character of
+a group, which gave every licence sixteen other spellings, and
+`DateTimeOffset.TryParse` accepts a bare date that means a different instant in
+each timezone. Both are refused now.
+
+**The submodule pin is committed but checked.** A gitlink is a commit id. If it
+is not on the public remote nobody else can build the private repo, so
+`scripts/check-pin.sh` asks the remote and the release workflow runs it first.
+
+**Two bugs in the free app, found by hosting it.** `CrashGuard.Note` appended
+into a folder only the crash path creates and swallowed its own failure, so on
+most machines every handled error was logged nowhere. And the one `HttpClient`
+was a static field, so opening any window built one whether the run ever asked
+for it or not.
+
+**Still open, and both need somebody who is not a machine.** Signing identities
+(Developer ID and notarization, Azure Artifact Signing) and gate D, two weeks
+on a real caseload.
