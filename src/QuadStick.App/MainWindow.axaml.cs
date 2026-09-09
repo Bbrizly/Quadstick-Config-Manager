@@ -94,6 +94,7 @@ public partial class MainWindow : Window
     DriveBackup? Backup()
     {
         if (_driveBackup != null) return _driveBackup;
+        if (!NetworkFeature.Enabled) return null;
         if (!_settings.DriveBackup || !GoogleAuth.IsConfigured) return null;
         var store = TokenStore.Create();
         if (store.Load() is null) return null;
@@ -232,7 +233,7 @@ public partial class MainWindow : Window
     // setting and rebuilds the engine.
     public async Task<bool> ConnectGoogleAsync(CancellationToken ct = default)
     {
-        if (!GoogleAuth.IsConfigured) return false;
+        if (!NetworkFeature.Enabled || !GoogleAuth.IsConfigured) return false;
         try
         {
             var auth = new GoogleAuth(TokenStore.Create());
@@ -277,7 +278,7 @@ public partial class MainWindow : Window
         _driveArmed = false;
         _driveArmTimer?.Stop();
 
-        HomeDriveButton.IsVisible = GoogleAuth.IsConfigured;
+        HomeDriveButton.IsVisible = NetworkFeature.Enabled && GoogleAuth.IsConfigured;
         if (!GoogleAuth.IsConfigured)
         {
             SetDriveButton(Strings.Main_BackupOff, "Error", enabled: false,
@@ -383,6 +384,7 @@ public partial class MainWindow : Window
 
     public void ShowCommunityPage()
     {
+        if (!NetworkFeature.Enabled) return;
         _file = null; // no profile is open on a page; a stale dirty file re-asks "leave?" on the next action
         if (CommunityPageBody.Children.Count == 0) CommunityPageBody.Children.Add(CommunityView);
         ShowPage(CommunityPage, ShellCommunityButton);
@@ -585,15 +587,27 @@ public partial class MainWindow : Window
     // download, which the import path already reports.
     internal const int MaxWorkbookBytes = 32 * 1024 * 1024;
 
-    static readonly HttpClient Http = new()
-    {
-        Timeout = TimeSpan.FromSeconds(15),
-        MaxResponseContentBufferSize = MaxWorkbookBytes,
-    };
+    // Built on first use, not with the window. It used to be a static field,
+    // so opening any window built an HTTP client whether or not the run ever
+    // asked for one, and a host that turns the network off could not prove
+    // otherwise.
+    static HttpClient? _http;
 
     /// <summary>The app's one HTTP client, for windows that need it. Settings
-    /// uses it for the update check.</summary>
-    internal HttpClient HttpClient => Http;
+    /// uses it for the update check. Throws when the network is off, which no
+    /// caller can reach: every screen that would ask is out of the layout.</summary>
+    internal HttpClient HttpClient
+    {
+        get
+        {
+            if (!NetworkFeature.Enabled) throw new InvalidOperationException(nameof(NetworkFeature));
+            return _http ??= new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(15),
+                MaxResponseContentBufferSize = MaxWorkbookBytes,
+            };
+        }
+    }
     const string DefaultNewName = "mygame.csv";
 
     // The same page the store listings declare. bbrizly.github.io still
@@ -781,6 +795,14 @@ public partial class MainWindow : Window
         HomeAgentButton.Click += (_, _) => ShowAgent();
         AgentButton.Click += (_, _) => ShowAgent(changing: true);
         HomeCommunityButton.Click += (_, _) => ShowCommunityPage();
+
+        // A host can turn the network off, and then these four are not hidden
+        // buttons, they are gone: nothing here has a page to open. Sharing goes
+        // through Google Sheets, so it goes with them.
+        HomeCommunityButton.IsVisible = NetworkFeature.Enabled;
+        ShellCommunityButton.IsVisible = NetworkFeature.Enabled;
+        ShareButton.IsVisible = NetworkFeature.Enabled;
+        HomeSheetsPanel.IsVisible = NetworkFeature.Enabled;
         HomeDeviceFilesButton.Click += async (_, _) => await ShowDeviceFilesAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
@@ -5514,7 +5536,7 @@ public partial class MainWindow : Window
     internal async Task ImportSheetsAsync(string pasted, HttpClient? http = null, Action<string>? onError = null,
         Window? dialogOwner = null)
     {
-        var client = http ?? Http;
+        var client = http ?? HttpClient;
         void HomeError(string message)
         {
             if (onError is not null) { onError(message); return; }

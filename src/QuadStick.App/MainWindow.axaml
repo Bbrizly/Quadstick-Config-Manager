@@ -183,7 +183,8 @@
             </StackPanel>
           </Border>
 
-          <Border Classes="homepanel">
+          <!-- Google Sheets, so it goes when a host turns the network off. -->
+          <Border x:Name="HomeSheetsPanel" Classes="homepanel">
             <StackPanel Spacing="12">
               <StackPanel Orientation="Horizontal" Spacing="14">
                 <TextBlock Classes="section" Text="{x:Static app:Strings.Shell_ImportFromSheets}" VerticalAlignment="Center"/>

@@ -108,7 +108,11 @@ public static partial class Telemetry
 
     public static bool IsLive => _client is not null;
 
-    static bool KillSwitch => Environment.GetEnvironmentVariable("QSCM_TELEMETRY") == "0";
+    // Two ways off: the environment variable a build machine or a user sets,
+    // and a host that turned the whole network off, where a consent question
+    // would be asking about something that cannot happen.
+    static bool KillSwitch =>
+        !NetworkFeature.Enabled || Environment.GetEnvironmentVariable("QSCM_TELEMETRY") == "0";
 
     /// <summary>True when QSCM_TELEMETRY=0. There is nothing to consent to, so do not ask.</summary>
     public static bool DisabledByEnvironment => KillSwitch;

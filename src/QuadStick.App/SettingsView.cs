@@ -319,8 +319,12 @@ public class SettingsView : UserControl
         panel.Children.Add(Field(Strings.Settings_CardSentenceStyle,
             Strings.Settings_CardSentenceStyleCaption, cardSentence));
 
-        panel.Children.Add(BackupArea());
-        panel.Children.Add(UpdateArea());
+        // Both of these reach the network, so with it off neither is built.
+        if (NetworkFeature.Enabled)
+        {
+            panel.Children.Add(BackupArea());
+            panel.Children.Add(UpdateArea());
+        }
 
         return Tab(panel);
     }
@@ -698,7 +702,7 @@ public class SettingsView : UserControl
             "mailto:bassamkamal.py@gmail.com",
             Strings.Settings_EmailHelp));
 
-        panel.Children.Add(FeedbackArea());
+        if (NetworkFeature.Enabled) panel.Children.Add(FeedbackArea());
         return Tab(panel);
     }
 
