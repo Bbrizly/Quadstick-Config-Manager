@@ -796,9 +796,9 @@ public partial class MainWindow : Window
         AgentButton.Click += (_, _) => ShowAgent(changing: true);
         HomeCommunityButton.Click += (_, _) => ShowCommunityPage();
 
-        // A host can turn the network off, and then these four are not hidden
-        // buttons, they are gone: nothing here has a page to open. Sharing goes
-        // through Google Sheets, so it goes with them.
+        // A host can turn the network off, and then these three are not
+        // hidden buttons, they are gone: nothing here has a page to open.
+        // Sharing goes through Google Sheets, so it goes with them.
         HomeCommunityButton.IsVisible = NetworkFeature.Enabled;
         ShellCommunityButton.IsVisible = NetworkFeature.Enabled;
         ShareButton.IsVisible = NetworkFeature.Enabled;
@@ -1584,6 +1584,13 @@ public partial class MainWindow : Window
         }
         HandOverMainWindow(
             Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime, next);
+        // A host subscribed to this window, and this window is about to close.
+        // Its subscriptions move to the replacement and it is told which
+        // window to hold now, or a roster keeps a closed editor, hears no more
+        // saves, and records no more snapshots.
+        next.ProfileSaved = ProfileSaved;
+        next.EditorReplaced = EditorReplaced;
+        EditorReplaced?.Invoke(next);
         next.Show();
         if (onSettings) next.ShowSettingsPage();
         _closeConfirmed = true; // the profile moved, it was not discarded
@@ -5294,6 +5301,11 @@ public partial class MainWindow : Window
     /// that opened this editor has no other way to learn a save happened, and
     /// without it cannot record what the file looked like at that moment.</summary>
     public event Action<string>? ProfileSaved;
+
+    /// <summary>Raised with the window that replaces this one. Changing the
+    /// language rebuilds the editor, so a host holding a reference to it is
+    /// holding a window that is about to close.</summary>
+    public event Action<MainWindow>? EditorReplaced;
 
     /// <summary>Open a profile from a path, in the editor, exactly as opening a
     /// file does. The agent window hands its result back through here rather

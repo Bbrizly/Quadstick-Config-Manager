@@ -101,6 +101,59 @@ public class HostSeamTests
 
         Assert.Same(next, desktop.MainWindow);
     }
+    // Changing the language throws the editor away and builds another. A host
+    // holding the old one hears no more saves, so both the subscription and
+    // the news of the swap have to cross over. Without this a clinic records
+    // snapshots until the day somebody picks French, and then silently stops.
+    //
+    // Switched away and back rather than switched once: the second rebuild is
+    // what proves the subscriptions keep travelling, and it puts the process
+    // back in its own language through the app's own path. Doing that in a
+    // finally after an await does not work, because the save hops threads and
+    // CurrentUICulture is per thread, so the restore lands on the wrong one and
+    // the rest of the suite runs in French.
+    [AvaloniaFact]
+    public async Task A_rebuilt_editor_still_belongs_to_its_host()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        s.Language = Localization.FollowSystem;
+        Settings.Save(s);
+
+        var dir = Directory.CreateTempSubdirectory("qscm-hostseam-").FullName;
+        var path = Path.Combine(dir, "game.csv");
+        File.WriteAllText(path, Solo().ToCsvText());
+
+        var w = new MainWindow();
+        w.Show();
+        var told = new List<MainWindow>();
+        string? said = null;
+        w.ProfileSaved += p => said = p;
+        w.EditorReplaced += n => told.Add(n);
+
+        MainWindow? last = null;
+        try
+        {
+            w.OpenPath(path);
+            var french = w.SetLanguage("fr");
+            last = french.SetLanguage(Localization.FollowSystem);
+
+            Assert.Equal(new[] { french, last }, told);     // the host was told, twice
+            Assert.True(await last.SaveProfileAsync());
+            Assert.Equal(path, said);                       // and still hears saves
+        }
+        finally
+        {
+            var s2 = Settings.Load();
+            s2.Language = Localization.FollowSystem;
+            Settings.Save(s2);
+            if (last?.OpenFile is { } f) f.Dirty = false;
+            last?.Close();
+            Directory.Delete(dir, true);
+        }
+    }
+
     // The three statics a host redirects so a session's files land in its own
     // folder instead of the free app's. Settable and public is the whole
     // contract; this fails to compile if one of them stops being either.
