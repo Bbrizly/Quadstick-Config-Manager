@@ -36,6 +36,17 @@ jobs:
           dotnet-version: "8.0.x"
       - run: dotnet test QuadStick.sln --nologo
 
+      # The paid layer is a separate program in a separate repository, and the
+      # only thing keeping it that way is that nothing here ever reaches for it.
+      # One helpful import or one copied project reference would put paid code
+      # in a free download, so both halves are checked rather than trusted.
+      - name: The free build carries nothing paid
+        shell: bash
+        run: |
+          dotnet publish src/QuadStick.App/QuadStick.App.csproj -c Release -o free --nologo
+          ! ls free | grep -i clinic
+          ! grep -ril "quadstick\.clinic" src tests tools scripts packaging
+
   # One self-contained download per platform, built only for v* tags.
   # Windows/Linux ship one compressed single-file binary; macOS ships a proper
   # .app bundle via scripts/make-macos-app.sh (the same script `make package`
