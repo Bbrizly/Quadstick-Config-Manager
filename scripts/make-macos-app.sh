@@ -5,10 +5,21 @@
 # same thing.
 #
 #   make-macos-app.sh <publish-dir> <version> <output.app>
+#
+# The four names below are arguments with defaults, and the defaults are what
+# this app has always shipped, byte for byte. A second program built on the
+# same core needs its own bundle identifier or the two collide in
+# LaunchServices: open one and macOS may hand you the other.
+#
+#   QSCM_EXE=QuadStickClinic QSCM_ID=com.example.thing QSCM_NAME="Thing" \
+#     QSCM_ICNS=path/to/Icon.icns make-macos-app.sh publish 1.0.0 Thing.app
 set -euo pipefail
 
 PUBLISH="$1"; VERSION="$2"; APP="$3"
-EXE="QuadStickConfigManager"      # AssemblyName == the apphost == CFBundleExecutable
+EXE="${QSCM_EXE:-QuadStickConfigManager}"   # AssemblyName == apphost == CFBundleExecutable
+BUNDLE_ID="${QSCM_ID:-com.bbrizly.quadstickconfigmanager}"
+DISPLAY="${QSCM_NAME:-Quadstick: Config Manager}"
+ICNS="${QSCM_ICNS:-$(dirname "$0")/../src/QuadStick.App/Assets/AppIcon.icns}"
 SHORT="${VERSION%%-*}"            # CFBundleVersion must be dotted integers only
 
 rm -rf "$APP"
@@ -22,16 +33,16 @@ rm -f "$APP/Contents/MacOS/"*.pdb
 chmod +x "$APP/Contents/MacOS/$EXE"
 
 # Dock / Finder icon. Same AppIcon the running window uses, in macOS .icns form.
-cp "$(dirname "$0")/../src/QuadStick.App/Assets/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+cp "$ICNS" "$APP/Contents/Resources/AppIcon.icns"
 
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleName</key><string>Quadstick: Config Manager</string>
-  <key>CFBundleDisplayName</key><string>Quadstick: Config Manager</string>
-  <key>CFBundleIdentifier</key><string>com.bbrizly.quadstickconfigmanager</string>
+  <key>CFBundleName</key><string>$DISPLAY</string>
+  <key>CFBundleDisplayName</key><string>$DISPLAY</string>
+  <key>CFBundleIdentifier</key><string>$BUNDLE_ID</string>
   <key>CFBundleExecutable</key><string>$EXE</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundlePackageType</key><string>APPL</string>
