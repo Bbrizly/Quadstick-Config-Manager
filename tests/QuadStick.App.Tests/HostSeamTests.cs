@@ -2,6 +2,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Headless.XUnit;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using QuadStick.Format;
 using Xunit;
 
@@ -150,6 +153,49 @@ public class HostSeamTests
             Settings.Save(s2);
             if (last?.OpenFile is { } f) f.Dirty = false;
             last?.Close();
+            Directory.Delete(dir, true);
+        }
+    }
+
+    // A host switching between two people's profiles must not load the next
+    // one over the top of unsaved work. OpenPath alone does exactly that, so
+    // there is a second door that asks first and reports the answer.
+    [AvaloniaFact]
+    public async Task Opening_another_profile_asks_before_it_throws_work_away()
+    {
+        var dir = Directory.CreateTempSubdirectory("qscm-hostseam-").FullName;
+        var one = Path.Combine(dir, "one.csv");
+        var two = Path.Combine(dir, "two.csv");
+        File.WriteAllText(one, Solo().ToCsvText());
+        File.WriteAllText(two, Solo().ToCsvText());
+
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        try
+        {
+            // Clean: nothing to ask about, so it just opens.
+            Assert.True(await w.OpenPathGuardedAsync(one));
+            Assert.Equal(one, w.CurrentProfilePath);
+
+            w.OpenFile!.Dirty = true;
+            var asking = w.OpenPathGuardedAsync(two);
+            Dispatcher.UIThread.RunJobs();
+
+            var dialog = Assert.Single(w.OwnedWindows);
+            dialog.GetVisualDescendants().OfType<Button>()
+                .First(b => (b.Content as string) == Strings.Main_Cancel)
+                .RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+            Assert.False(await asking);
+            Assert.Equal(one, w.CurrentProfilePath);   // still on the first one
+        }
+        finally
+        {
+            w.OpenFile!.Dirty = false;
+            w.Close();
             Directory.Delete(dir, true);
         }
     }

@@ -5314,6 +5314,17 @@ public partial class MainWindow : Window
     public void OpenPath(string path) =>
         OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path, ProfileSource.File);
 
+    /// <summary>Open a profile from a path, asking about unsaved work first.
+    /// Returns false when the person said no, so a host that is switching
+    /// between two people's profiles cannot throw away the edits in front of
+    /// them by loading the next one over the top.</summary>
+    public async Task<bool> OpenPathGuardedAsync(string path)
+    {
+        if (!await ConfirmLeaveAsync()) return false;
+        OpenPath(path);
+        return true;
+    }
+
     /// <summary>Open what the agent wrote and go straight into installing it.
     ///
     /// Straight into the real install flow, not past it: it re-reads the file,
