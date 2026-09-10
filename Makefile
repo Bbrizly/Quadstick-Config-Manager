@@ -12,6 +12,7 @@ all: test build
 
 test:
 	dotnet test $(SLN) --nologo -c Release
+	node --test tests/*.test.mjs
 
 run:
 	dotnet run --project $(APP)

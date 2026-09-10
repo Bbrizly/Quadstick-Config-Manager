@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuadStick Clinic · one record per client</title>
+<meta name="description" content="A private clinician workspace for QuadStick caseloads: capabilities, client history and profile snapshots in one place. The editor stays free, Clinic is the paid caseload layer.">
+
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<!-- the two audiences are two pages, so the switch is only instant if the other
+     one is already in cache when it is clicked -->
+<link rel="prefetch" href="index.html">
+
+<meta property="og:title" content="QuadStick Clinic">
+<meta property="og:description" content="One record per client, across every visit: capabilities, history, profile snapshots and the next step.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="screenshot-device-view.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* the palette is the free app's, one page over, with a clinical green where
+     the free page uses blue. same paper, so the two pages read as one product. */
+  :root{
+    --paper:#F4F1EA;
+    --paper-2:#FBF9F4;
+    --ink:#1A1714;
+    --ink-soft:#5F584D;
+    --ink-faint:#8C8478;
+    --line:#E2DBCC;
+
+    --in-bg:#DAE6F7;   --in-ink:#2B558C;
+    --out-bg:#F5E9C6;  --out-ink:#8A6A1E;
+    --fn-bg:#F5D9E2;   --fn-ink:#A13E5B;
+
+    /* the top bar is the same component on both pages, so it keeps the free
+       app's action blue. green is the clinic page's own accent below it. */
+    --action:#1B4D9B;
+    --action-ink:#fff;
+
+    --clinic:#1F4E46;
+    --accent:#1F4E46;
+    --clinic-soft:#DCE9E2;
+    --clinic-ink:#2B6B5D;
+
+    --radius:16px;
+    --shadow:0 1px 2px rgba(40,33,20,.04), 0 12px 30px -12px rgba(40,33,20,.14);
+    --shadow-soft:0 1px 2px rgba(40,33,20,.04), 0 20px 50px -24px rgba(40,33,20,.18);
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --maxw:1520px;
+    --navw:1080px;
+    --gut:clamp(20px,3.4vw,48px);
+    --navh:86px;
+    --herow:1400px;
+    --herodrop:clamp(24px,7vh,86px);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Instrument Sans",system-ui,sans-serif;
+    font-size:18px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  a{color:inherit}
+  button,input,textarea{font:inherit}
+  button{cursor:pointer}
+  img{max-width:100%;height:auto;display:block}
+  code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+  /* the two properties that stop a heading dropping one word onto its own line */
+  h1,h2,h3{text-wrap:balance}
+  p{text-wrap:pretty}
+
+  .wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
+  .display{font-family:"Space Grotesk",sans-serif;font-weight:700;letter-spacing:-.025em;line-height:1.04}
+  .kicker{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:var(--clinic-ink)}
+
+  /* ---------- nav: floating island ---------- */
+  header.nav{position:sticky;top:0;z-index:30;padding:14px 0 10px;transition:padding .35s var(--ease)}
+  header.nav.scrolled{padding:8px 0}
+  .nav-shell{max-width:var(--navw);margin:0 auto;padding:0 24px}
+  .nav-inner{display:flex;align-items:center;gap:6px;
+    padding:7px 7px 7px 16px;border-radius:999px;
+    background:color-mix(in srgb, var(--paper-2) 74%, transparent);
+    backdrop-filter:saturate(170%) blur(18px);-webkit-backdrop-filter:saturate(170%) blur(18px);
+    border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+    transition:background .35s var(--ease),border-color .35s var(--ease),box-shadow .35s var(--ease)}
+  header.nav.scrolled .nav-inner{
+    background:color-mix(in srgb, var(--paper-2) 92%, transparent);
+    border-color:var(--line);box-shadow:var(--shadow)}
+  .brand{display:flex;align-items:center;gap:11px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:17px;letter-spacing:-.01em;text-decoration:none;white-space:nowrap}
+  .brand .glyph{width:32px;height:32px;flex:none;object-fit:contain;background:none;border-radius:0}
+  .brand .sub{color:var(--ink-faint);font-weight:500}
+  @media(max-width:520px){.brand .sub{display:none}}
+  .nav-links{display:flex;align-items:center;gap:4px;margin-left:auto}
+  .nav-links a.text{padding:9px 13px;font-size:15px;font-weight:500;color:var(--ink-soft);border-radius:999px;text-decoration:none;white-space:nowrap;transition:color .2s var(--ease),background .2s var(--ease)}
+  .nav-links a.text:hover{color:var(--ink);background:var(--paper)}
+  .icon-btn{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;color:var(--ink-soft);text-decoration:none;
+    transition:color .2s var(--ease),background .2s var(--ease)}
+  .icon-btn:hover{color:var(--ink);background:var(--paper)}
+  .icon-btn svg{width:18px;height:18px;display:block}
+  .nav-links .btn.primary{background:var(--clinic);color:#fff;box-shadow:0 8px 22px -10px rgba(31,78,70,.7)}
+  .nav-links .btn.primary:hover{box-shadow:0 14px 30px -10px rgba(31,78,70,.75)}
+  .nav-links .btn{padding:9px 9px 9px 18px;font-size:14px;margin-left:4px}
+  .nav-links .btn .cap{width:26px;height:26px}
+  .nav-links .btn svg{width:13px;height:13px}
+  @media(max-width:1010px){.nav-links a.text{display:none}}
+  @media(max-width:400px){.nav-links .icon-btn{display:none}}
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;
+    padding:12px 12px 12px 22px;border-radius:999px;text-decoration:none;cursor:pointer;border:1px solid transparent;
+    transition:transform .4s var(--ease),box-shadow .4s var(--ease),background .3s var(--ease)}
+  .btn:active{transform:scale(.975)}
+  .btn .cap{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;transition:transform .4s var(--ease)}
+  .btn svg{width:15px;height:15px}
+  .btn.primary{background:var(--clinic);color:#fff;box-shadow:0 8px 22px -10px rgba(31,78,70,.7)}
+  .btn.primary .cap{background:rgba(255,255,255,.18)}
+  .btn.primary:hover{box-shadow:0 14px 30px -10px rgba(31,78,70,.75)}
+  .btn.primary:hover .cap{transform:translateX(3px) translateY(-1px)}
+  .btn.ghost{background:var(--paper-2);color:var(--ink);border-color:var(--line);padding:11px 20px}
+  .btn.ghost:hover{background:#fff;box-shadow:var(--shadow)}
+
+  /* ---------- the audience switch ----------
+     one track, one filled pill. it lives inside the hero on both pages, so the
+     gradient runs behind it instead of stopping at it. */
+  .switch-row{display:flex;justify-content:center}
+  .switch{display:inline-flex;padding:3px;border-radius:999px;
+    background:color-mix(in srgb, var(--paper-2) 80%, transparent);
+    border:1px solid color-mix(in srgb, var(--line) 72%, transparent);
+    backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px)}
+  .switch a{padding:7px 20px;border-radius:999px;text-decoration:none;white-space:nowrap;
+    font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:13px;color:var(--ink-faint);
+    transition:color .25s var(--ease),background .25s var(--ease)}
+  .switch a:hover{color:var(--ink)}
+  .switch a[aria-current="page"]{background:var(--accent);color:#fff;box-shadow:0 1px 2px rgba(40,33,20,.18)}
+  @media(max-width:400px){.switch a{padding:7px 14px;font-size:12.5px}}
+
+  /* ---------- hero ----------
+     the same box as the free page's hero, so the switch, the headline and the
+     lede do not jump when somebody flips between the two. */
+  .hero-shell{position:relative;isolation:isolate;overflow:hidden;
+    min-height:calc(100svh - var(--navh));display:flex;flex-direction:column;
+    padding:clamp(18px,2.4vw,30px) 0 0}
+  .hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none;background:
+    radial-gradient(80% 65% at 82% 2%, rgba(31,78,70,.20), transparent 62%),
+    radial-gradient(70% 55% at 2% 12%, rgba(138,106,30,.12), transparent 60%),
+    radial-gradient(60% 50% at 50% 100%, rgba(43,85,140,.10), transparent 64%)}
+  .hero-inner{position:relative;z-index:1;flex:1;width:100%;max-width:var(--herow);
+    margin-inline:auto;padding:0 clamp(24px,3.4vw,48px) clamp(48px,6vh,80px);
+    display:flex;flex-direction:column;gap:clamp(16px,2.6vh,32px)}
+  .hero-copy{flex:1;display:flex;flex-direction:column;padding-top:var(--herodrop);max-width:min(64%,840px)}
+  .hero h1{font-size:clamp(30px,3.6vw,52px);margin:0}
+  .hero .lede{font-size:clamp(18px,1.7vw,21px);color:var(--ink-soft);max-width:52ch;margin:22px 0 30px;line-height:1.5}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:12px}
+  /* the free page's hero art, the same crop, so the two heroes are one picture */
+  .hero-stick{position:absolute;z-index:-2;right:calc(50% - 50vw + clamp(24px,5vw,100px));top:46%;transform:translateY(-50%);
+    width:min(46%,660px);height:auto;max-width:none;pointer-events:none;user-select:none;
+    border-radius:18px;background:#fff;
+    box-shadow:0 1px 2px rgba(40,33,20,.05), 0 30px 64px -30px rgba(40,33,20,.32)}
+  .hero-veil{position:absolute;inset:-50vh calc(50% - 50vw);z-index:-1;pointer-events:none;background:
+    linear-gradient(to right, var(--paper) 0%, rgba(244,241,234,.96) 38%, rgba(244,241,234,.66) 55%, rgba(244,241,234,.18) 74%, rgba(244,241,234,0) 90%)}
+  @media(max-width:1100px){
+    .hero-copy{max-width:min(70%,840px)}
+    .hero-stick{width:min(38%,440px);right:calc(50% - 50vw + 20px)}
+  }
+
+  /* ---------- the band under the hero ----------
+     full width, its own ground, and the marks slide on their own so a narrow
+     window still gets all six. pointing at it stops it. */
+  .band{position:relative;z-index:1;width:100%;background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .band-in{max-width:var(--herow);margin-inline:auto;padding:clamp(24px,3.4vh,42px) 0}
+  .rail{overflow:hidden;
+    -webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);
+    mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent)}
+  .rail + .rail{margin-top:clamp(22px,3vh,36px)}
+  .track{display:flex;align-items:stretch;width:max-content;animation:slide 46s linear infinite}
+  .rail:hover .track,.track:focus-within{animation-play-state:paused}
+  .track.back{animation-direction:reverse;animation-duration:74s}
+  @keyframes slide{to{transform:translateX(-50%)}}
+  .mark-item{display:grid;place-items:center;padding:0 clamp(24px,3.2vw,52px);
+    transition:transform .3s var(--ease)}
+  .mark-item:hover,.mark-item:focus-visible{transform:scale(1.06)}
+  /* AbleGamers publish this mark knocked out in white, so it gets the ground it was drawn for */
+  .mark-item.knockout img{background:#1A1714;padding:7px 11px;border-radius:10px}
+  .mark-item img{height:calc(clamp(26px,2.6vw,38px) * 1.5 * var(--s,1));width:auto;max-width:none;object-fit:contain;display:block}
+  .band-foot{margin-top:clamp(16px,2.2vh,24px);text-align:center;font-size:12px;color:var(--ink-faint);padding:0 var(--gut)}
+
+  @media(max-width:900px){
+    .hero-shell{min-height:0;overflow:visible}
+    .hero-copy{max-width:none}
+    .hero h1{font-size:clamp(30px,7vw,48px)}
+    .hero .lede{max-width:none}
+    .hero-stick{position:static;transform:none;width:100%;height:auto;max-width:none;margin:22px 0 26px}
+    .hero-veil{display:none}
+  }
+
+  /* ---------- workspace preview ----------
+     its own section, centred, wider than the page. the frame's height is fixed:
+     picking a client with a longer history scrolls that pane, it never resizes
+     the window somebody is pointing at. */
+  .console{width:100%;max-width:1260px;margin-inline:auto;padding:0 var(--gut)}
+  .console .app-frame{margin-top:clamp(36px,4.4vw,58px)}
+  .app-frame{position:relative;padding:9px;border-radius:26px;
+    background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.52));
+    box-shadow:0 1px 1px rgba(40,33,20,.05), 0 34px 70px -30px rgba(40,33,20,.34), 0 80px 140px -70px rgba(40,33,20,.3)}
+  .app-frame::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,.85), inset 0 0 0 1px rgba(255,255,255,.6)}
+  .app-frame .screen{position:relative;border-radius:19px;overflow:hidden;background:var(--paper-2);
+    box-shadow:0 0 0 1px rgba(40,33,20,.07)}
+  @media(max-width:640px){.app-frame{padding:7px;border-radius:20px}.app-frame .screen{border-radius:15px}}
+
+  .dash-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);background:#fff}
+  .dash-top b{font-family:"Space Grotesk",sans-serif;font-size:13.5px}
+  .dash-top small{color:var(--ink-faint);font-size:12px}
+  .dash-body{display:grid;grid-template-columns:210px minmax(0,1fr) 264px;height:clamp(400px,50vh,500px)}
+  /* a grid item's auto minimum is its content, so the scrolling client list would
+     otherwise widen the whole page on a phone */
+  .dash-side,.dash-main,.dash-rail{min-width:0;min-height:0;overflow-y:auto}
+  .dash-side{padding:14px 10px;background:#F1EFE7;border-right:1px solid var(--line)}
+  .side-label{color:var(--ink-faint);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:0 8px 8px}
+  .client{display:flex;align-items:center;gap:9px;width:100%;padding:8px;border:0;border-radius:11px;background:transparent;color:var(--ink-soft);text-align:left;font-size:13.5px;
+    transition:background .25s var(--ease),color .25s var(--ease),transform .25s var(--ease)}
+  .client:hover{background:#fff;color:var(--ink)}
+  .client[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+  .client .who{min-width:0}
+  .client .who i{display:block;font-style:normal;font-size:11px;color:var(--ink-faint)}
+  .avatar{display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:9px;background:var(--in-bg);color:var(--in-ink);font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:11.5px}
+  .avatar.warm{background:var(--out-bg);color:var(--out-ink)}
+  .avatar.rose{background:var(--fn-bg);color:var(--fn-ink)}
+  .avatar.green{background:var(--clinic-soft);color:var(--clinic-ink)}
+  .dash-main{padding:18px;background:var(--paper-2)}
+  .patient-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .patient-head h2{font-family:"Space Grotesk",sans-serif;font-size:23px;letter-spacing:-.03em}
+  .patient-head p{color:var(--ink-faint);font-size:12.5px;margin-top:2px}
+  .status{padding:5px 10px;background:var(--clinic-soft);color:var(--clinic-ink);border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap}
+  .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+  .stat{padding:11px;border-radius:12px;background:#fff;border:1px solid var(--line)}
+  .stat b{display:block;font-family:"Space Grotesk",sans-serif;font-size:20px}
+  .stat span{display:block;margin-top:1px;color:var(--ink-faint);font-size:11px}
+  .dash-section{margin-top:16px}
+  .dash-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .dash-section-head b{font-family:"Space Grotesk",sans-serif;font-size:13px}
+  .dash-section-head span{color:var(--clinic-ink);font-size:12px}
+  .timeline{display:grid;gap:7px;margin-top:9px}
+  .event{display:grid;grid-template-columns:66px 1fr;gap:10px;padding:10px;border-radius:11px;background:#fff;border:1px solid var(--line)}
+  .event time{color:var(--ink-faint);font-family:"JetBrains Mono",monospace;font-size:10.5px;padding-top:2px}
+  .event p{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+  .event strong{color:var(--ink);font-weight:600}
+  .dash-rail{padding:16px 14px;background:#F1EFE7;border-left:1px solid var(--line)}
+  .rail-card{padding:12px;border-radius:12px;background:#fff;border:1px solid var(--line)}
+  .rail-card + .rail-card{margin-top:8px}
+  .rail-card b{display:block;font-family:"Space Grotesk",sans-serif;font-size:12.5px}
+  .rail-card p{font-size:12px;color:var(--ink-soft);margin-top:4px;line-height:1.4}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .chip{padding:4px 9px;border-radius:999px;font-size:11px;background:var(--in-bg);color:var(--in-ink)}
+  .chip.warm{background:var(--out-bg);color:var(--out-ink)}
+  .chip.green{background:var(--clinic-soft);color:var(--clinic-ink)}
+  @media(max-width:1100px){.dash-body{grid-template-columns:190px minmax(0,1fr)}.dash-rail{display:none}}
+  @media(max-width:760px){
+    .dash-body{grid-template-columns:1fr;height:auto}
+    /* the roster is the flex row here, not its container: the buttons are one
+       level down, inside #roster */
+    .dash-side{overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:10px}
+    #roster{display:flex;gap:6px}
+    .side-label{display:none}
+    .client{width:auto;min-width:max-content}
+    .client .who i{display:none}
+    .stats{grid-template-columns:1fr 1fr}
+    .stats .stat:last-child{grid-column:1/-1}
+  }
+
+  /* ---------- sections ---------- */
+  section{padding:clamp(70px,8vw,120px) 0;scroll-margin-top:90px}
+  .section-head{max-width:720px}
+  .section-head.mid{margin-inline:auto;text-align:center}
+  .section-head h2{font-size:clamp(30px,3.8vw,52px);margin-top:12px}
+  .section-head p{color:var(--ink-soft);font-size:18px;margin-top:16px;max-width:56ch}
+  .section-head.mid p{margin-inline:auto}
+
+  .card{height:100%;padding:clamp(22px,2.2vw,32px);border-radius:24px;background:var(--paper-2);border:1px solid var(--line);
+    transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-soft)}
+  .card h3{font-family:"Space Grotesk",sans-serif;font-size:22px;letter-spacing:-.02em;margin-top:16px}
+  .card p{color:var(--ink-soft);font-size:16px;margin-top:10px}
+  .card ul{display:grid;gap:10px;margin-top:18px;list-style:none}
+  .card li{display:flex;gap:10px;align-items:flex-start;color:var(--ink-soft);font-size:15.5px}
+  .card li::before{content:"";flex:0 0 7px;height:7px;border-radius:50%;margin-top:9px;background:var(--clinic-ink)}
+  .glyph{display:grid;place-items:center;width:50px;height:50px;border-radius:15px;background:var(--in-bg);color:var(--in-ink)}
+  .glyph.warm{background:var(--out-bg);color:var(--out-ink)}
+  .glyph.rose{background:var(--fn-bg);color:var(--fn-ink)}
+  .glyph.green{background:var(--clinic-soft);color:var(--clinic-ink)}
+  .grid-3{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:clamp(36px,4.4vw,58px)}
+  @media(max-width:1000px){.grid-3{grid-template-columns:1fr 1fr}.grid-3 > :first-child{grid-column:1/-1}}
+  @media(max-width:700px){.grid-3{grid-template-columns:1fr}.grid-3 > :first-child{grid-column:auto}}
+
+  /* ---------- screenshot showcase ---------- */
+  .shots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:clamp(36px,4.4vw,58px)}
+  .shot{border-radius:22px;overflow:hidden;background:var(--paper-2);border:1px solid var(--line);box-shadow:var(--shadow);
+    transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+  .shot:hover{transform:translateY(-4px);box-shadow:var(--shadow-soft)}
+  /* the shots are 1440x900 windows. cropping them to a tidier ratio cut the
+     sidebar off the side of every one, so the whole window shows or none of it does. */
+  .shot img{width:100%;height:auto;aspect-ratio:1440/900;object-fit:contain;background:var(--paper);border-bottom:1px solid var(--line)}
+  .shot figcaption{padding:16px 18px 20px}
+  .shot b{display:block;font-family:"Space Grotesk",sans-serif;font-size:16px}
+  .shot span{display:block;color:var(--ink-soft);font-size:14.5px;margin-top:5px;line-height:1.45}
+  @media(max-width:1000px){.shots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:700px){.shots{grid-template-columns:1fr}}
+
+  /* ---------- who it was built with ---------- */
+  .with{display:flex;align-items:center;gap:18px;margin-top:clamp(30px,4vw,44px);padding:20px 22px;border-radius:20px;
+    background:var(--paper-2);border:1px solid var(--line)}
+  .with .avatar{width:46px;height:46px;border-radius:15px;font-size:15px}
+  .with b{display:block;font-family:"Space Grotesk",sans-serif;font-size:16px}
+  .with p{color:var(--ink-soft);font-size:15px;margin-top:3px}
+  @media(max-width:560px){.with{flex-direction:column;align-items:flex-start;gap:12px}}
+
+  /* ---------- clinician voices ---------- */
+  .voices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:clamp(36px,4.4vw,58px)}
+  .voice{padding:clamp(22px,2.2vw,30px);border-radius:24px;background:var(--paper-2);border:1px solid var(--line)}
+  .voice img{width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--clinic-soft)}
+  .voice b{display:block;margin-top:16px;font-family:"Space Grotesk",sans-serif;font-size:17px}
+  .voice i{display:block;margin-top:2px;font-style:normal;color:var(--ink-faint);font-size:13.5px}
+  .voice blockquote{margin-top:14px;color:var(--ink-soft);font-size:16px;line-height:1.5}
+  @media(max-width:900px){.voices{grid-template-columns:1fr}}
+
+  /* ---------- dark trust band ---------- */
+  .quiet{background:var(--clinic);color:#EAF2EE}
+  .quiet .kicker{color:#9CC4B7}
+  .quiet .section-head p{color:#BFD6CD}
+  .quiet .card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+  .quiet .card:hover{box-shadow:none;background:rgba(255,255,255,.09)}
+  .quiet .card p{color:#BFD6CD}
+  .quiet .glyph{background:rgba(255,255,255,.12);color:#EAF2EE;font-family:"Space Grotesk",sans-serif;font-weight:600}
+  .quiet .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:900px){.quiet .grid-3{grid-template-columns:1fr}}
+
+  /* ---------- phone demo ----------
+     the same two jobs as the desktop workspace, on the device a clinician
+     actually has in the room: change a binding, and check a client. */
+  .phone-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.78fr);gap:clamp(36px,5vw,80px);align-items:center}
+  .phone-copy h2{font-size:clamp(30px,3.6vw,50px);margin-top:12px}
+  .phone-copy p{color:var(--ink-soft);font-size:18px;margin-top:16px;max-width:44ch}
+  .phone-copy ul{display:grid;gap:12px;margin-top:24px;list-style:none}
+  .phone-copy li{display:flex;gap:11px;align-items:flex-start;color:var(--ink-soft);font-size:16px}
+  .phone-copy li::before{content:"";flex:0 0 8px;height:8px;border-radius:50%;margin-top:9px;background:var(--clinic-ink)}
+  .phone{width:min(330px,100%);margin-inline:auto;padding:11px;border-radius:46px;
+    background:linear-gradient(180deg,#2C2822,#151311);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,.18), 0 34px 70px -30px rgba(40,33,20,.5), 0 80px 140px -70px rgba(40,33,20,.4)}
+  .phone-screen{display:flex;flex-direction:column;aspect-ratio:9/16;border-radius:36px;overflow:hidden;background:var(--paper-2)}
+  .phone-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px 10px;background:#fff;border-bottom:1px solid var(--line)}
+  .phone-top b{font-family:"Space Grotesk",sans-serif;font-size:15px}
+  .phone-top small{color:var(--ink-faint);font-size:11px}
+  .phone-body{flex:1;min-height:0;overflow:hidden;padding:14px}
+  .phone-body h4{font-family:"Space Grotesk",sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:9px}
+  .bind{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:7px;padding:10px;border-radius:12px;background:#fff;border:1px solid var(--line)}
+  .bind + .bind{margin-top:7px}
+  .bind .chip{font-size:10.5px;padding:3px 8px}
+  .bind .to{color:var(--ink-faint);font-size:11px}
+  .bind .val{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .phone-note{margin-top:12px;padding:11px;border-radius:12px;background:var(--clinic-soft);color:var(--clinic-ink);font-size:12px;line-height:1.45}
+  .phone-client{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:#fff;border:1px solid var(--line)}
+  .phone-client + .phone-client{margin-top:7px}
+  .phone-client .who{min-width:0;flex:1}
+  .phone-client .who b{display:block;font-family:"Space Grotesk",sans-serif;font-size:13px}
+  .phone-client .who span{display:block;color:var(--ink-faint);font-size:11px}
+  .phone-client .status{padding:4px 8px;font-size:10px}
+  .phone-tabs{display:flex;gap:4px;padding:8px;background:#fff;border-top:1px solid var(--line)}
+  .phone-tabs button{flex:1;padding:9px 6px;border:0;border-radius:11px;background:transparent;color:var(--ink-faint);
+    font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:12.5px;
+    transition:background .25s var(--ease),color .25s var(--ease)}
+  .phone-tabs button[aria-selected="true"]{background:var(--clinic);color:#fff}
+  .phone-cap{margin-top:12px;text-align:center;font-size:12px;color:var(--ink-faint)}
+  @media(max-width:900px){.phone-layout{grid-template-columns:1fr}}
+
+  /* ---------- form ---------- */
+  .form-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(36px,5vw,80px);align-items:start}
+  .form-copy h2{font-size:clamp(30px,3.6vw,50px);margin-top:12px}
+  .form-copy p{color:var(--ink-soft);font-size:18px;margin-top:16px;max-width:38ch}
+  .form-meta{display:grid;gap:10px;margin-top:24px;color:var(--ink-soft);font-size:15px}
+  .form-meta span{display:flex;gap:11px;align-items:center}
+  .form-meta i{width:8px;height:8px;flex:none;border-radius:50%;background:var(--clinic-ink)}
+  form{padding:clamp(22px,2.4vw,34px);border-radius:26px;background:var(--paper-2);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .field{display:grid;gap:7px}
+  .field.full{grid-column:1/-1}
+  .field label{font-size:13px;font-weight:600;color:var(--ink-soft)}
+  .field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:13px;background:#fff;padding:13px 14px;color:var(--ink);outline:none;
+    transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
+  .field textarea{min-height:118px;resize:vertical}
+  .field input:focus,.field textarea:focus{border-color:var(--clinic-ink);box-shadow:0 0 0 4px rgba(43,107,93,.14)}
+  .field input:invalid:not(:placeholder-shown),.field textarea:invalid:not(:placeholder-shown){border-color:#B26A5C}
+  .form-foot{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:20px}
+  .form-foot small{color:var(--ink-faint);font-size:12.5px;max-width:30ch}
+  .form-status{min-height:22px;margin-top:14px;color:var(--clinic-ink);font-size:14px}
+  .form-status.error{color:#9A4B42}
+  @media(max-width:900px){.form-layout{grid-template-columns:1fr}}
+  @media(max-width:560px){.field-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.form-foot{flex-direction:column;align-items:stretch}.form-foot .btn{justify-content:center}}
+
+  footer{padding:44px 0 60px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:14px}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .foot a{color:var(--ink-soft);text-decoration:none}
+  .foot a:hover{color:var(--ink)}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    .btn,.switch a,.client,.card,.shot,.mark-item,.field input,.field textarea{transition:none}
+    .track{animation:none}
+    .rail{overflow-x:auto}
+  }
+  :focus-visible{outline:2.5px solid var(--clinic);outline-offset:3px;border-radius:8px}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="nav-shell">
+    <div class="nav-inner">
+      <a class="brand" href="clinic.html" aria-label="QuadStick Clinic home">
+        <img class="glyph" src="QSLogo.png" alt="" width="32" height="32">
+        QuadStick&nbsp;<span class="sub">Clinic</span>
+      </a>
+      <nav class="nav-links">
+        <a class="text" href="#workspace">Workspace</a>
+        <a class="text" href="#what">What changes</a>
+        <a class="text" href="#inside">Inside Clinic</a>
+        <a class="text" href="#principles">Privacy</a>
+        <a class="icon-btn" href="https://discord.gg/ceqrZmnWyT" aria-label="QuadStick Clinic Discord">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03ZM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418Zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418Z"/></svg>
+        </a>
+        <a class="icon-btn" href="https://github.com/Bbrizly/Quadstick-Config-Manager" aria-label="QuadStick source on GitHub">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.19-3.08-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14 0 1.55-.01 2.8-.01 3.18 0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>
+        </a>
+        <a class="btn primary" href="#demo">
+          Book a demo
+          <span class="cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="hero-shell">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-inner hero">
+      <div class="hero-veil" aria-hidden="true"></div>
+
+      <div class="switch-row">
+        <nav class="switch" data-audience-switch aria-label="Choose your view">
+          <a href="index.html" data-audience="individual">For individuals</a>
+          <a href="clinic.html" data-audience="clinician" aria-current="page">For clinicians</a>
+        </nav>
+      </div>
+
+      <div class="hero-copy">
+        <h1 class="display">One record per client, across every visit.</h1>
+        <p class="lede">Capabilities, profile history and the next step, in one place. A session starts where the last one ended.</p>
+        <img class="hero-stick" src="hero-device.png" alt="The device view: a photo of the QuadStick with a labelled box beside each part, showing what a sip, a puff and a soft version of either does." width="750" height="572" loading="eager" decoding="async">
+        <div class="hero-actions">
+          <a class="btn primary" href="#demo">Book a demo
+            <span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+          </a>
+          <a class="btn ghost" href="#principles">How it stays private</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="band">
+    <div class="band-in">
+      <div class="rail">
+        <div class="track">
+          <a class="mark-item" href="https://craighospital.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/craig-hospital.svg" alt="Craig Hospital" loading="lazy"></a>
+          <a class="mark-item" href="https://shepherd.org/" target="_blank" rel="noopener"><img src="logos/shepherd-center.svg" alt="Shepherd Center" loading="lazy"></a>
+          <a class="mark-item" href="https://livelifetherapysolutions.com/" target="_blank" rel="noopener"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="Live Life Therapy Solutions" loading="lazy"></a>
+          <a class="mark-item" href="https://aztap.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/aztap.png" alt="AzTAP, the Arizona Technology Access Program" loading="lazy"></a>
+          <a class="mark-item knockout" href="https://ablegamers.org/" target="_blank" rel="noopener"><img style="--s:1.5" src="logos/ablegamers.webp" alt="AbleGamers Charity" loading="lazy"></a>
+          <a class="mark-item" href="https://www.respawnfoundation.org/" target="_blank" rel="noopener"><img src="logos/respawn-foundation.webp" alt="Respawn Foundation" loading="lazy"></a>
+        </div>
+      </div>
+      <p class="band-foot">Organisations working in adaptive gaming and rehabilitation. Their sites are linked. They are not customers or endorsements.</p>
+    </div>
+  </div>
+  </div>
+
+  <section id="workspace">
+    <div class="console">
+      <div class="section-head mid reveal">
+        <span class="kicker">The workspace</span>
+        <h2 class="display">Your caseload, open.</h2>
+      </div>
+      <figure class="app-frame reveal" id="clinic-console">
+        <div class="screen">
+          <div class="dash-top"><b>Clinic workspace</b><small>Pick a client</small></div>
+          <div class="dash-body">
+            <aside class="dash-side">
+              <div class="side-label" id="roster-label">Clients</div>
+              <div id="roster" role="group" aria-labelledby="roster-label"></div>
+            </aside>
+            <div class="dash-main" id="client-panel" aria-live="polite"></div>
+            <aside class="dash-rail" id="client-rail"></aside>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section id="what">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">The clinician layer</span>
+        <h2 class="display">The profile is only half the story.</h2>
+        <p>The free app makes a good setup. Clinic remembers why it works and what changed, so the next appointment does not start from scratch.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card reveal">
+          <div class="glyph green"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 19.5V5.8A1.8 1.8 0 0 1 5.8 4H20v16H5.5A1.5 1.5 0 0 1 4 18.5Z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div>
+          <h3>Client history, in order.</h3>
+          <p>Visits, notes, changes and saved profiles on one timeline. No guessing which CSV was the one that finally worked.</p>
+          <ul>
+            <li>Visit notes and profile snapshots by date</li>
+            <li>What changed between two appointments</li>
+            <li>Records you can export from your own folder</li>
+          </ul>
+        </div>
+        <div class="card reveal">
+          <div class="glyph warm"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 20c.5-3.7 2.8-5.5 7-5.5s6.5 1.8 7 5.5"/></svg></div>
+          <h3>The person, not just the mapping.</h3>
+          <p>Capabilities, preferences and goals sit beside the technical setup, so the reason for a binding survives the visit.</p>
+        </div>
+        <div class="card reveal">
+          <div class="glyph rose"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 18V6M4 18h16"/><path d="m7 15 3-4 3 2 4-6"/></svg></div>
+          <h3>Patterns across a caseload.</h3>
+          <p>See what helped a similar client sooner, using your own work instead of a blank profile every time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="inside" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Inside the app</span>
+        <h2 class="display">The editor your clients already use.</h2>
+        <p>Clinic wraps the free QuadStick Config Manager. Same device view, same plain-English checks, now with a client attached to every change.</p>
+      </div>
+      <div class="shots">
+        <figure class="shot reveal"><img src="screenshot-device-view.png" alt="The device view, showing each input on a photo of the QuadStick with its current mapping" loading="lazy" width="1440" height="900"><figcaption><b>Set it up on the device itself</b><span>Every sip, puff, lip and switch jack on a photo of the hardware, so a mapping is a place, not a row number.</span></figcaption></figure>
+        <figure class="shot reveal"><img src="screenshot-errors.png" alt="The import review, listing what the app could not read from a profile in plain English" loading="lazy" width="1440" height="900"><figcaption><b>Nothing silently dropped</b><span>If a file has a line the app cannot read, the import review says so before it reaches somebody's hands.</span></figcaption></figure>
+        <figure class="shot reveal"><img src="screenshot-device-settings.png" alt="The device settings page, with a slider and a typeable number for each bounded setting" loading="lazy" width="1440" height="900"><figcaption><b>Every global setting, in one place</b><span>Thresholds, delays, emulation mode and Bluetooth, with the range and the device default on every number.</span></figcaption></figure>
+      </div>
+      <!-- Drew's line is parked until it belongs in the voices section below, with a photo and his own words
+      <div class="with reveal">
+        <span class="avatar green" aria-hidden="true">DR</span>
+        <div>
+          <b>Drew Redepenning, rehabilitation engineer</b>
+          <p>Sent five ranked requests in August 2026 after watching the old tool get in the way. All five are in the shipped app, and Clinic is being built the same way.</p>
+        </div>
+      </div>
+      -->
+    </div>
+  </section>
+
+
+  <!-- ===== VOICES =====
+       occupational therapists and AT clinicians, one card each: photo, name,
+       title, and what they said. parked until the photos and the quotes are in
+       hand, because a made-up endorsement on this page is worse than no section.
+  <section id="voices" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head mid reveal">
+        <span class="kicker">From the clinic</span>
+        <h2 class="display">The people who fit these every week.</h2>
+        <p>Occupational therapists, rehabilitation engineers and assistive technology staff on what Clinic changes about a session.</p>
+      </div>
+      <div class="voices">
+        <figure class="voice reveal">
+          <img src="voices/NAME.jpg" alt="" width="120" height="120" loading="lazy">
+          <b>Full name</b>
+          <i>Title, organisation</i>
+          <blockquote>One or two sentences, their words.</blockquote>
+        </figure>
+        <figure class="voice reveal">
+          <img src="voices/NAME.jpg" alt="" width="120" height="120" loading="lazy">
+          <b>Full name</b>
+          <i>Title, organisation</i>
+          <blockquote>One or two sentences, their words.</blockquote>
+        </figure>
+        <figure class="voice reveal">
+          <img src="voices/NAME.jpg" alt="" width="120" height="120" loading="lazy">
+          <b>Full name</b>
+          <i>Title, organisation</i>
+          <blockquote>One or two sentences, their words.</blockquote>
+        </figure>
+      </div>
+    </div>
+  </section>
+  -->
+
+  <section class="quiet" id="principles">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Built for trust</span>
+        <h2 class="display">Professional where it counts.</h2>
+        <p>Clear records, careful boundaries, and no mysterious cloud layer between you and your work.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card reveal"><div class="glyph"><span aria-hidden="true">01</span></div><h3>Private clinic folder</h3><p>Your roster lives in a private clinic folder you choose. No pooled patient database, no account, and nothing used as training data.</p></div>
+        <div class="card reveal"><div class="glyph"><span aria-hidden="true">02</span></div><h3>One roster per clinician</h3><p>Simple ownership keeps the first version understandable, instead of pretending offline files are a live team system.</p></div>
+        <div class="card reveal"><div class="glyph"><span aria-hidden="true">03</span></div><h3>Free app, paid workflow</h3><p>The editor stays free for everyone who uses a QuadStick. Clinic is the paid caseload layer for the teams who need it.</p></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== PHONE, parked =====
+  <section id="phone">
+    <div class="wrap phone-layout">
+      <div class="phone-copy reveal">
+        <span class="kicker">On the phone too</span>
+        <h2 class="display">The fitting happens beside the chair.</h2>
+        <p>A clinician is rarely sitting at a desk when a binding turns out to be wrong. The phone app does the two things that cannot wait: change the mapping, and read the client.</p>
+        <ul>
+          <li>Edit a QuadStick profile input by input, then send it to the device</li>
+          <li>Open the client you are with: capabilities, last change, next step</li>
+          <li>Write the visit note while it is still true, not that evening</li>
+        </ul>
+      </div>
+
+      <div class="reveal">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-top"><b id="phone-title">Jordan, driving</b><small id="phone-sub">Mode 2 of 4</small></div>
+            <div class="phone-body" id="phone-body"></div>
+            <div class="phone-tabs" role="tablist" aria-label="Phone app screens">
+              <button type="button" role="tab" id="tab-edit" aria-controls="phone-body" aria-selected="true">Edit profile</button>
+              <button type="button" role="tab" id="tab-clients" aria-controls="phone-body" aria-selected="false">Clients</button>
+            </div>
+          </div>
+        </div>
+        <p class="phone-cap">Illustrative phone app, tap a tab. Invented client names.</p>
+      </div>
+    </div>
+  </section>
+  -->
+
+  <section id="demo">
+    <div class="wrap form-layout">
+      <div class="form-copy reveal">
+        <span class="kicker">Start a conversation</span>
+        <h2 class="display">Bring the hard part to the table.</h2>
+        <p>Tell me what your team is trying to make easier. I will show you the workflow and help you decide whether Clinic fits.</p>
+        <div class="form-meta">
+          <span><i aria-hidden="true"></i>30 minute walkthrough</span>
+          <span><i aria-hidden="true"></i>Designed for small teams first</span>
+          <span><i aria-hidden="true"></i>No patient information needed</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <form id="demo-form" action="mailto:bassam@bbrizly.com" method="post" enctype="text/plain">
+          <div class="field-grid">
+            <div class="field"><label for="name">Your name</label><input id="name" name="name" type="text" autocomplete="name" placeholder="Dr. Jordan Lee" required></div>
+            <div class="field"><label for="email">Work email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@clinic.org" required></div>
+            <div class="field full"><label for="organization">Clinic or organisation</label><input id="organization" name="organization" type="text" autocomplete="organization" placeholder="North Shore Rehab" required></div>
+            <div class="field full"><label for="message">What would you like to see?</label><textarea id="message" name="message" placeholder="A few clients, a small team, or a specific workflow" required></textarea></div>
+          </div>
+          <div class="form-foot">
+            <small>Opens your email app with a prepared message. Please do not include patient-identifying information.</small>
+            <button class="btn primary" type="submit">Request a consult
+              <span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+            </button>
+          </div>
+          <p class="form-status" id="demo-status" aria-live="polite">No patient data is stored on this page.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>QuadStick Config Manager, the free editor, plus QuadStick Clinic for caseloads</span>
+    <div><a href="index.html">Free app</a> · <a href="privacy.html">Privacy</a> · <a href="https://github.com/Bbrizly/Quadstick-Config-Manager">Source</a></div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.querySelector('header.nav');
+  addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 12), { passive: true });
+
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) { entry.target.classList.add('in'); observer.unobserve(entry.target); }
+  }), { threshold: .12, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    el.style.transitionDelay = `${Math.min(i % 4, 3) * 60}ms`;
+    observer.observe(el);
+  });
+
+
+  // one copy of the marks is in the HTML, the loop makes the second so the slide
+  // can wrap without a seam. the copy is hidden from readers and from tab order.
+  function loopTrack(track) {
+    for (const node of [...track.children]) {
+      const copy = node.cloneNode(true);
+      copy.setAttribute('aria-hidden', 'true');
+      for (const link of [copy, ...copy.querySelectorAll('a')]) if (link.tagName === 'A') link.tabIndex = -1;
+      track.append(copy);
+    }
+  }
+  document.querySelectorAll('.track').forEach(loopTrack);
+
+  // the preview is the pitch, so it is a real roster you can click through.
+  // invented people, invented notes: the caption says so.
+  const CLIENTS = [
+    { id:'JL', tone:'', name:'Jordan Lee', sub:'Updated today', status:'Active plan',
+      meta:'Updated today, 12 profile snapshots',
+      stats:[['4','preferred inputs'],['8','working mappings'],['12','saved snapshots']],
+      caps:['Sip and puff','Lip position','Head rest switch'],
+      next:'Test the lighter sip threshold with the racing profile.',
+      last:'Soft puff delay 1300 to 1500 ms, mode 2.',
+      history:[['Today','Switch profile','Reduced puff sensitivity after the practice session.'],
+               ['Aug 22','Note added','Prefers a single action per breath.'],
+               ['Aug 08','Snapshot saved','"Jordan, driving setup, v4"']] },
+    { id:'AM', tone:'warm', name:'Alex Morgan', sub:'Visit Thursday', status:'Review booked',
+      meta:'Visit Thursday, 7 profile snapshots',
+      stats:[['3','preferred inputs'],['11','working mappings'],['7','saved snapshots']],
+      caps:['Hard puff','Chin switch','Voice command'],
+      next:'Try the chin switch for mode change instead of a long sip.',
+      last:'Mode 3 renamed to "Shooter, seated".',
+      history:[['Sep 02','Note added','Long sips are tiring by the end of a session.'],
+               ['Aug 30','Snapshot saved','"Alex, shooter, v2"'],
+               ['Aug 14','Visit','Fitted the chin switch on jack 2.']] },
+    { id:'SK', tone:'rose', name:'Sam Kim', sub:'Trial setup', status:'Trial, week 2',
+      meta:'Trial started Aug 26, 3 profile snapshots',
+      stats:[['2','preferred inputs'],['5','working mappings'],['3','saved snapshots']],
+      caps:['Soft sip','Lip position'],
+      next:'Decide between lip left and a second switch for the D-pad.',
+      last:'Sip threshold 22 to 18, all modes.',
+      history:[['Sep 04','Note added','Fatigue after about 20 minutes, keep sessions short.'],
+               ['Aug 29','Snapshot saved','"Sam, trial, v1"'],
+               ['Aug 26','Visit','First fitting, mouthpiece height set.']] },
+    { id:'RP', tone:'green', name:'Riley Patel', sub:'Review due', status:'Review due',
+      meta:'Last seen Jul 18, 15 profile snapshots',
+      stats:[['5','preferred inputs'],['14','working mappings'],['15','saved snapshots']],
+      caps:['Sip and puff','Head array','Two switch jacks','Bluetooth'],
+      next:'Check whether the school tablet still pairs on channel 2.',
+      last:'Bluetooth channel 1 to 2 on mode 4.',
+      history:[['Jul 18','Visit','Reviewed the school setup with the AT team.'],
+               ['Jun 30','Snapshot saved','"Riley, classroom, v6"'],
+               ['Jun 12','Note added','Wants one mode kept exactly as it is.']] },
+  ];
+
+  const roster = document.getElementById('roster');
+  const panel = document.getElementById('client-panel');
+  const rail = document.getElementById('client-rail');
+  const chipTone = ['', 'warm', 'green'];
+
+  function show(client) {
+    for (const button of roster.children) button.setAttribute('aria-pressed', String(button.dataset.id === client.id));
+    panel.innerHTML = `
+      <div class="patient-head">
+        <div><h2>${client.name}</h2><p>${client.meta}</p></div>
+        <span class="status">${client.status}</span>
+      </div>
+      <div class="stats">${client.stats.map(([n, label]) => `<div class="stat"><b>${n}</b><span>${label}</span></div>`).join('')}</div>
+      <div class="dash-section">
+        <div class="dash-section-head"><b>Client history</b><span>View all</span></div>
+        <div class="timeline">${client.history.map(([when, what, detail]) =>
+          `<div class="event"><time>${when}</time><p><strong>${what}</strong><br>${detail}</p></div>`).join('')}</div>
+      </div>`;
+    rail.innerHTML = `
+      <div class="side-label">This client</div>
+      <div class="rail-card"><b>Capabilities</b><p>What ${client.name.split(' ')[0]} can reach today, in their words and yours.</p>
+        <div class="chips">${client.caps.map((cap, i) => `<span class="chip ${chipTone[i % 3]}">${cap}</span>`).join('')}</div></div>
+      <div class="rail-card"><b>Next visit</b><p>${client.next}</p></div>
+      <div class="rail-card"><b>Last change</b><p>${client.last}</p></div>`;
+  }
+
+  for (const client of CLIENTS) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'client';
+    button.dataset.id = client.id;
+    button.setAttribute('aria-pressed', 'false');
+    button.innerHTML = `<span class="avatar ${client.tone}">${client.id}</span><span class="who">${client.name}<i>${client.sub}</i></span>`;
+    button.addEventListener('click', () => show(client));
+    roster.append(button);
+  }
+  show(CLIENTS[0]);
+
+
+  /* the phone preview, parked with its section above
+  // the phone preview is the same pitch as the workspace above, one thumb wide:
+  // change a binding, or open the client you are sitting with.
+  const PHONE = {
+    edit: {
+      title: 'Jordan, driving', sub: 'Mode 2 of 4',
+      html: `<h4>Inputs</h4>
+        <div class="bind"><span class="chip">Sip</span><span class="to">to</span><span class="val">A button</span></div>
+        <div class="bind"><span class="chip">Hard puff</span><span class="to">to</span><span class="val">Right trigger</span></div>
+        <div class="bind"><span class="chip warm">Lip left</span><span class="to">to</span><span class="val">Left stick, left</span></div>
+        <div class="bind"><span class="chip green">Jack 1</span><span class="to">to</span><span class="val">increment_mode</span></div>
+        <div class="bind"><span class="chip">Soft sip</span><span class="to">to</span><span class="val">B button</span></div>
+        <div class="bind"><span class="chip warm">Lip right</span><span class="to">to</span><span class="val">Left stick, right</span></div>
+        <div class="phone-note">Soft sip threshold changed 22 to 18. Saved to Jordan's history and ready to send to the device.</div>`
+    },
+    clients: {
+      title: 'Your caseload', sub: '4 clients',
+      html: `<h4>Today</h4>
+        <div class="phone-client"><span class="avatar">JL</span><span class="who"><b>Jordan Lee</b><span>Lighter sip threshold to test</span></span><span class="status">Active</span></div>
+        <div class="phone-client"><span class="avatar warm">AM</span><span class="who"><b>Alex Morgan</b><span>Visit Thursday</span></span><span class="status">Booked</span></div>
+        <div class="phone-client"><span class="avatar rose">SK</span><span class="who"><b>Sam Kim</b><span>Trial, week 2</span></span><span class="status">Trial</span></div>
+        <div class="phone-client"><span class="avatar green">RP</span><span class="who"><b>Riley Patel</b><span>Check the tablet pairing</span></span><span class="status">Due</span></div>
+        <div class="phone-note">Every change you make on the phone lands on the same client record as the desktop app.</div>`
+    }
+  };
+
+  const phoneBody = document.getElementById('phone-body');
+  const phoneTabs = [['tab-edit', 'edit'], ['tab-clients', 'clients']];
+  function showPhone(key) {
+    const screen = PHONE[key];
+    document.getElementById('phone-title').textContent = screen.title;
+    document.getElementById('phone-sub').textContent = screen.sub;
+    phoneBody.innerHTML = screen.html;
+    for (const [id, k] of phoneTabs) document.getElementById(id).setAttribute('aria-selected', String(k === key));
+  }
+  for (const [id, key] of phoneTabs) document.getElementById(id).addEventListener('click', () => showPhone(key));
+  showPhone('edit');
+  */
+
+  const form = document.getElementById('demo-form');
+  const status = document.getElementById('demo-status');
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+    const data = new FormData(form);
+    const subject = `QuadStick Clinic consult, ${data.get('organization')}`;
+    const body = `Name: ${data.get('name')}\nWork email: ${data.get('email')}\nOrganisation: ${data.get('organization')}\n\nWhat I would like to see:\n${data.get('message')}\n\nI confirm I have not included patient-identifying information.`;
+    status.classList.remove('error');
+    status.textContent = 'Opening your email app.';
+    window.location.href = `mailto:bassam@bbrizly.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  });
+</script>
+</body>
+</html>
