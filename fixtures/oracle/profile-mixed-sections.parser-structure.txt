@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "fixtureId": "profile-mixed-sections",
+  "document": {
+    "csvFileName": "mixed.csv",
+    "fileNameCellRow": 3,
+    "hasVersionHeader": true,
+    "headerVersion": "Version 1.5",
+    "headerSource": "source-id",
+    "headerName": "Mixed",
+    "title": "Mixed",
+    "isDefaultConfig": false,
+    "isDevicePreferences": false,
+    "sheets": [
+      {
+        "type": "ProfileName",
+        "modeName": "Play",
+        "csvFileName": "mixed.csv",
+        "headerLabel": "Outputs",
+        "channel": "usb",
+        "startRow": 2,
+        "bindings": [
+          {
+            "row": 5,
+            "output": "x",
+            "function": "normal",
+            "inputs": [
+              "lip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          }
+        ]
+      },
+      {
+        "type": "Preferences",
+        "modeName": "Settings",
+        "csvFileName": null,
+        "headerLabel": "Preference",
+        "channel": "",
+        "startRow": 7,
+        "bindings": [
+          {
+            "row": 10,
+            "output": "volume",
+            "function": "",
+            "inputs": [
+              "50"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          }
+        ]
+      },
+      {
+        "type": "Infrared",
+        "modeName": "TV",
+        "csvFileName": null,
+        "headerLabel": "Command",
+        "channel": "bluetooth",
+        "startRow": 12,
+        "bindings": [
+          {
+            "row": 15,
+            "output": "ir_play",
+            "function": "normal",
+            "inputs": [
+              "lip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          }
+        ]
+      }
+    ]
+  }
+}

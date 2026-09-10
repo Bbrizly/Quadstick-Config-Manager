@@ -1,0 +1,211 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "apply-canonical",
+  "source": {
+    "name": "profile-headerless.csv",
+    "sha256": "f63230e49d66c522a0d830400284d535a0e0c22be6eec3f5de8a55bd503b4ff6",
+    "kind": "csv"
+  },
+  "operations": [
+    {
+      "index": 0,
+      "op": "set_cell",
+      "applied": true
+    },
+    {
+      "index": 1,
+      "op": "set_output",
+      "applied": true
+    },
+    {
+      "index": 2,
+      "op": "add_row",
+      "applied": true
+    },
+    {
+      "index": 3,
+      "op": "set_output",
+      "applied": true
+    },
+    {
+      "index": 4,
+      "op": "set_cell",
+      "applied": true
+    },
+    {
+      "index": 5,
+      "op": "move_row",
+      "applied": true
+    },
+    {
+      "index": 6,
+      "op": "add_mode",
+      "applied": true
+    },
+    {
+      "index": 7,
+      "op": "rename_mode",
+      "applied": true
+    },
+    {
+      "index": 8,
+      "op": "set_mode_channel",
+      "applied": true
+    },
+    {
+      "index": 9,
+      "op": "normalize",
+      "applied": true
+    }
+  ],
+  "snapshot": {
+    "rawGrid": [
+      [
+        "QuadStick Configuration",
+        "Version 1.5",
+        "",
+        "config"
+      ],
+      [
+        "Profile Name",
+        "",
+        "Mode 1"
+      ],
+      [
+        "config.csv"
+      ],
+      [
+        "PlayStation Outputs",
+        "Function",
+        "usb",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Action"
+      ],
+      [
+        "square",
+        "normal",
+        "mp_left",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Interact"
+      ],
+      [
+        "circle",
+        "toggle",
+        "lip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Jump"
+      ],
+      [],
+      [
+        "Profile Name",
+        "",
+        "Second Mode"
+      ],
+      [],
+      [
+        "PlayStation Outputs",
+        "Function",
+        "bluetooth"
+      ]
+    ],
+    "document": {
+      "csvFileName": "config.csv",
+      "fileNameCellRow": 3,
+      "hasVersionHeader": true,
+      "headerVersion": "Version 1.5",
+      "headerSource": "",
+      "headerName": "config",
+      "title": "config",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Mode 1",
+          "csvFileName": "config.csv",
+          "headerLabel": "PlayStation Outputs",
+          "channel": "usb",
+          "startRow": 2,
+          "bindings": [
+            {
+              "row": 5,
+              "output": "square",
+              "function": "normal",
+              "inputs": [
+                "mp_left"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": "Interact"
+            },
+            {
+              "row": 6,
+              "output": "circle",
+              "function": "toggle",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": "Jump"
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "type": "ProfileName",
+          "modeName": "Second Mode",
+          "csvFileName": null,
+          "headerLabel": "PlayStation Outputs",
+          "channel": "bluetooth",
+          "startRow": 8,
+          "bindings": []
+        }
+      ]
+    },
+    "issues": [
+      {
+        "severity": "Warning",
+        "cell": "C5",
+        "kind": "UnknownInput",
+        "message": "\u0022mp_left\u0022 is not a documented input name, so the device ignores it.",
+        "fix": "Pick an input from the Inputs dropdown list, e.g. \u0022mp_left_sip\u0022 or \u0022lip\u0022, or move the text to the notes column."
+      }
+    ],
+    "editor": {
+      "dirty": true,
+      "revision": 10,
+      "canUndo": true
+    },
+    "serialized": {
+      "sha256": "a7520b9ecf72e6cee5f277c10fa2fa39ae2ca5f0099c26f77a6556d90cbfbd9a",
+      "utf8Bytes": 271,
+      "text": "QuadStick Configuration,Version 1.5,,config\r\nProfile Name,,Mode 1\r\nconfig.csv\r\nPlayStation Outputs,Function,usb,,,,,,,,,Action\r\nsquare,normal,mp_left,,,,,,,,,Interact\r\ncircle,toggle,lip,,,,,,,,,Jump\r\n\r\nProfile Name,,Second Mode\r\n\r\nPlayStation Outputs,Function,bluetooth\r\n"
+    }
+  }
+}

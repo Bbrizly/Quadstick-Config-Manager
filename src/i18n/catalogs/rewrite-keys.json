@@ -1,0 +1,19 @@
+[
+  "Rewrite_ErrorCancelled",
+  "Rewrite_ErrorConfig",
+  "Rewrite_ErrorConfirmation",
+  "Rewrite_ErrorDevice",
+  "Rewrite_ErrorInternal",
+  "Rewrite_ErrorProfile",
+  "Rewrite_ErrorRequest",
+  "Rewrite_ErrorStorage",
+  "Rewrite_PrimaryNavigation",
+  "Rewrite_ProductName",
+  "Rewrite_PseudoLocaleName",
+  "Rewrite_SaveFromThePageFirst",
+  "Rewrite_SaveXlsx",
+  "Rewrite_SeverityError",
+  "Rewrite_SeverityWarning",
+  "Rewrite_SkipToMainContent",
+  "Rewrite_TurnOff"
+]

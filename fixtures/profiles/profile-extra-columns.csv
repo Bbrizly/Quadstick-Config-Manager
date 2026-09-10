@@ -1,0 +1,5 @@
+QuadStick Configuration,Version 1.5,,Extra Columns
+Profile Name,,Mode 1
+extra.csv
+PlayStation Outputs,Function,usb,,,,,,,,,Note,Action,Opaque
+mouse_left,normal,lip,,,,,,,,,keep me,Shoot,do-not-drop

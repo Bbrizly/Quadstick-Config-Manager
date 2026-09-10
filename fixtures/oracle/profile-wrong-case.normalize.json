@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "normalize-canonical",
+  "source": {
+    "name": "profile-wrong-case.csv",
+    "sha256": "28cfe6d29d116a349e261ddec8958e6bd6ca5aaa8cf9b66d6d5a1e775cebd7b0",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "QuadStick Configuration",
+        "Version 1.5",
+        "",
+        "wrong"
+      ],
+      [
+        "profile name",
+        "",
+        "Wrong Case"
+      ],
+      [
+        "wrong.csv"
+      ],
+      [
+        "Outputs",
+        "Function",
+        "usb"
+      ],
+      [
+        "x",
+        "normal",
+        "lip"
+      ]
+    ],
+    "document": {
+      "csvFileName": "wrong.csv",
+      "fileNameCellRow": 3,
+      "hasVersionHeader": true,
+      "headerVersion": "Version 1.5",
+      "headerSource": "",
+      "headerName": "wrong",
+      "title": "wrong",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Wrong Case",
+          "csvFileName": "wrong.csv",
+          "headerLabel": "Outputs",
+          "channel": "usb",
+          "startRow": 2,
+          "bindings": [
+            {
+              "row": 5,
+              "output": "x",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [
+      {
+        "severity": "Error",
+        "cell": "A2",
+        "kind": "None",
+        "message": "\u0022profile name\u0022 does not START with \u0022Profile\u0022, \u0022Preferences\u0022 or \u0022Infrared\u0022 (capitalized exactly), so the device skips this whole sheet.",
+        "fix": "Begin the cell with the sheet keyword, e.g. \u0022Profile Name\u0022."
+      }
+    ],
+    "editor": {
+      "dirty": true,
+      "revision": 1,
+      "canUndo": true
+    },
+    "serialized": {
+      "sha256": "12c221f5981e1311ed7ab579669f38814978c3fc801d3235f1212b60322f61c3",
+      "utf8Bytes": 117,
+      "text": "QuadStick Configuration,Version 1.5,,wrong\r\nprofile name,,Wrong Case\r\nwrong.csv\r\nOutputs,Function,usb\r\nx,normal,lip\r\n"
+    }
+  }
+}

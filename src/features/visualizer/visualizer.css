@@ -1,0 +1,191 @@
+/* Physical geometry stays LTR even when surrounding UI is RTL. */
+.quadstick-visualizer {
+  min-width: 0;
+  display: grid;
+  gap: var(--qcm-space-md);
+}
+
+.visualizer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--qcm-space-md);
+}
+
+.visualizer-header h2,
+.visualizer-header p {
+  margin: 0;
+}
+
+.visualizer-header p,
+.practice-status {
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+}
+
+.practice-toggle.active,
+.visualizer-hotspot[aria-pressed="true"],
+.semantic-parts button[aria-pressed="true"] {
+  border-color: var(--qcm-accent);
+  background: var(--qcm-selection-tint);
+}
+
+.visualizer-stage-scroll {
+  min-width: 0;
+  overflow: auto hidden;
+  border-radius: var(--qcm-radius-panel);
+}
+
+.visualizer-stage {
+  position: relative;
+  margin-inline: auto;
+  transform-origin: top center;
+}
+
+.quadstick-photo {
+  position: absolute;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.hotspot-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hotspot-line line {
+  stroke: var(--qcm-text-secondary);
+  stroke-width: 2;
+}
+
+.hotspot-marker {
+  position: absolute;
+  z-index: 2;
+  width: 14px;
+  height: 14px;
+  border: 3px solid var(--qcm-text-secondary);
+  border-radius: 50%;
+  background: var(--qcm-surface);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.hotspot-marker[data-active="true"],
+.visualizer-hotspot[data-live-active="true"] {
+  outline: 3px solid var(--qcm-accent);
+  outline-offset: 2px;
+}
+
+.visualizer-hotspot {
+  position: absolute;
+  z-index: 3;
+  width: 116px;
+  min-height: 68px;
+  display: grid;
+  gap: 2px;
+  align-content: center;
+  padding: var(--qcm-space-xs);
+  text-align: center;
+}
+
+.visualizer-hotspot span,
+.visualizer-extra-zones span,
+.semantic-parts button span:last-child {
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+}
+
+.live-word {
+  font-weight: 700;
+}
+
+.live-stick-dot {
+  position: absolute;
+  z-index: 4;
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--qcm-bg);
+  border-radius: 50%;
+  background: var(--qcm-accent);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.visualizer-extra-zones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--qcm-space-sm);
+}
+
+.visualizer-extra-zones button {
+  min-height: 64px;
+  display: grid;
+  gap: var(--qcm-space-xs);
+  text-align: start;
+}
+
+.practice-status {
+  min-height: 1.4em;
+  margin: 0;
+}
+
+.semantic-parts {
+  display: grid;
+  gap: var(--qcm-space-md);
+  padding-top: var(--qcm-space-sm);
+  border-top: var(--qcm-hairline) solid var(--qcm-border);
+}
+
+.semantic-parts section,
+.semantic-parts ul {
+  display: grid;
+  gap: var(--qcm-space-xs);
+  margin: 0;
+  padding: 0;
+}
+
+.semantic-parts h3 {
+  margin: 0;
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+}
+
+.semantic-parts li {
+  list-style: none;
+}
+
+.semantic-parts button {
+  width: 100%;
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: minmax(110px, .8fr) 1fr;
+  gap: var(--qcm-space-sm);
+  align-items: center;
+  text-align: start;
+}
+
+@media (max-width: 1180px) {
+  .visualizer-stage {
+    transform: scale(.82);
+    margin-bottom: -84px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-stick-dot,
+  .visualizer-hotspot,
+  .hotspot-marker {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .visualizer-hotspot[data-live-active="true"],
+  .hotspot-marker[data-active="true"] {
+    outline-color: Highlight;
+  }
+}

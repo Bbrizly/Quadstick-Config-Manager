@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "firmware-canonical",
+  "source": {
+    "name": "profile-missing-blank.csv",
+    "sha256": "2352d7c1073f05d7c56e8866dee165da618a066cb4a77de43fd3e5550fda7879",
+    "kind": "csv"
+  },
+  "modes": [],
+  "serialized": {
+    "sha256": "0562d5fb9f809c832cb6e840d48abbb3a8e5c9c1e6f07afe39c85abef7db9bf7",
+    "utf8Bytes": 132,
+    "text": "Profile Name,,One\r\ntwo.csv\r\nOutputs,Function,usb\r\nx,normal,lip\r\nProfile Name,,Two\r\n\r\nOutputs,Function,bluetooth\r\ncircle,normal,lip\r\n"
+  }
+}

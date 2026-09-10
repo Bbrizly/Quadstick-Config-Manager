@@ -1,0 +1,15 @@
+QuadStick Configuration,Version 1.5,source-id,Mixed
+Profile Name,,Play
+mixed.csv
+Outputs,Function,usb
+x,normal,lip
+
+Preferences,,Settings
+
+Preference,Value,
+volume,,50
+
+Infrared,Samsung Most Models - Set #: 595,TV
+
+Command,Value,bluetooth
+ir_play,normal,lip

@@ -1,0 +1,1097 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "inspect-canonical",
+  "source": {
+    "name": "single-tab.xlsx",
+    "sha256": "611380dfb5a42d168e3b154cfe113dd11118bd6110e61462e0f80d0c9f0d8e27",
+    "kind": "xlsx"
+  },
+  "import": {
+    "skipped": [],
+    "limitation": null,
+    "renamed": []
+  },
+  "snapshot": {
+    "rawGrid": [
+      [
+        "Profile Name",
+        "",
+        "Keyboard \u0026 Mouse",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Comment"
+      ],
+      [
+        "div2.csv",
+        "",
+        "Normal"
+      ],
+      [
+        "Output or Function",
+        "Function",
+        "usb"
+      ],
+      [
+        "kb_i",
+        "tap 150",
+        "right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "inventory"
+      ],
+      [
+        "kb_v",
+        "delay_on 250",
+        "right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "heal"
+      ],
+      [
+        "kb_c",
+        "toggle",
+        "right_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "push to talk"
+      ],
+      [
+        "kb_w",
+        "toggle",
+        "mp_left_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "forward"
+      ],
+      [
+        "kb_s",
+        "toggle",
+        "mp_left_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "backward"
+      ],
+      [
+        "kb_left_shift",
+        "toggle",
+        "mp_right_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Sprint"
+      ],
+      [
+        "kb_w",
+        "force_off",
+        "mp_left_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "force off backwards"
+      ],
+      [
+        "kb_s",
+        "force_off",
+        "mp_left_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "force off forward"
+      ],
+      [
+        "kb_a",
+        "normal",
+        "digital_in_1",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "left"
+      ],
+      [
+        "kb_d",
+        "normal",
+        "digital_in_8",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "right"
+      ],
+      [
+        "kb_left_control",
+        "tap 150",
+        "mp_right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Jump/climb"
+      ],
+      [
+        "kb_space",
+        "normal",
+        "digital_in_7",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Cover\u00A0/ click"
+      ],
+      [
+        "kb_space",
+        "normal",
+        "lip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Cover\u00A0/ click"
+      ],
+      [
+        "kb_space",
+        "normal",
+        "lip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "change Cover / hold click"
+      ],
+      [
+        "kb_space",
+        "normal",
+        "lip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "roll / Double click"
+      ],
+      [
+        "kb_f",
+        "normal",
+        "mp_left_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "interact"
+      ],
+      [
+        "mouse_wheel_up",
+        "tap 150",
+        "mp_right_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "change weapon up"
+      ],
+      [
+        "mouse_wheel_down",
+        "tap 150",
+        "mp_right_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "change weapon down"
+      ],
+      [
+        "mouse_right_button",
+        "toggle",
+        "mp_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "aim"
+      ],
+      [
+        "mouse_left_button",
+        "normal",
+        "mp_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "shoot"
+      ],
+      [
+        "mouse_left",
+        "normal",
+        "left",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "look around"
+      ],
+      [
+        "mouse_right",
+        "normal",
+        "right"
+      ],
+      [
+        "mouse_up",
+        "normal",
+        "up"
+      ],
+      [
+        "mouse_down",
+        "normal",
+        "down"
+      ],
+      [
+        "kb_g",
+        "delay_on 180",
+        "mp_right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "throw grenade"
+      ],
+      [
+        "kb_m",
+        "tap 200",
+        "mp_left_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "map"
+      ],
+      [
+        "kb_escape",
+        "delay_on 201",
+        "mp_left_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "main menu"
+      ],
+      [
+        "kb_q",
+        "delay_on 200",
+        "mp_right_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "turret/shield etc"
+      ],
+      [
+        "kb_e",
+        "delay_on 200",
+        "mp_right_center_sip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "smart grenade"
+      ],
+      [
+        "joystick_deflection_maximum",
+        "normal",
+        "45",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "joystick sensivity"
+      ],
+      [
+        "joystick_deflection_minimum",
+        "normal",
+        "3"
+      ],
+      [
+        "deflection_multiplier_up",
+        "normal",
+        "85"
+      ],
+      [
+        "deflection_multiplier_down",
+        "normal",
+        "85"
+      ],
+      [
+        "deflection_multiplier_left",
+        "normal",
+        "85"
+      ],
+      [
+        "deflection_multiplier_right",
+        "normal",
+        "85"
+      ],
+      [
+        "kb_x",
+        "normal",
+        "mp_left_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "travel"
+      ],
+      [
+        "kb_h",
+        "delay_off 6000",
+        "mp_right_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "emotions"
+      ],
+      [
+        "kb_r",
+        "normal",
+        "mp_center_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "reload"
+      ],
+      [
+        "kb_t",
+        "normal",
+        "mp_center_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "melee / zoom"
+      ],
+      [
+        "mouse_speed",
+        "normal",
+        "110"
+      ],
+      [
+        "kb_q",
+        "normal",
+        "mp_right_center_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "lock target for skill"
+      ],
+      [
+        "kb_e",
+        "normal",
+        "mp_right_center_sip_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "lock target for skill"
+      ],
+      [
+        "kb_q",
+        "force_off",
+        "mp_center_puff"
+      ],
+      [
+        "kb_left_control",
+        "normal",
+        "mp_left_puff_soft",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "kill yourself"
+      ]
+    ],
+    "document": {
+      "csvFileName": "div2.csv",
+      "fileNameCellRow": 2,
+      "hasVersionHeader": false,
+      "headerVersion": "",
+      "headerSource": "",
+      "headerName": "",
+      "title": "Keyboard \u0026 Mouse",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Keyboard \u0026 Mouse",
+          "csvFileName": "div2.csv",
+          "headerLabel": "Output or Function",
+          "channel": "usb",
+          "startRow": 1,
+          "bindings": [
+            {
+              "row": 4,
+              "output": "kb_i",
+              "function": "tap 150",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 5,
+              "output": "kb_v",
+              "function": "delay_on 250",
+              "inputs": [
+                "right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 6,
+              "output": "kb_c",
+              "function": "toggle",
+              "inputs": [
+                "right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 7,
+              "output": "kb_w",
+              "function": "toggle",
+              "inputs": [
+                "mp_left_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 8,
+              "output": "kb_s",
+              "function": "toggle",
+              "inputs": [
+                "mp_left_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 9,
+              "output": "kb_left_shift",
+              "function": "toggle",
+              "inputs": [
+                "mp_right_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 10,
+              "output": "kb_w",
+              "function": "force_off",
+              "inputs": [
+                "mp_left_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 11,
+              "output": "kb_s",
+              "function": "force_off",
+              "inputs": [
+                "mp_left_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 12,
+              "output": "kb_a",
+              "function": "normal",
+              "inputs": [
+                "digital_in_1"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 13,
+              "output": "kb_d",
+              "function": "normal",
+              "inputs": [
+                "digital_in_8"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 14,
+              "output": "kb_left_control",
+              "function": "tap 150",
+              "inputs": [
+                "mp_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 15,
+              "output": "kb_space",
+              "function": "normal",
+              "inputs": [
+                "digital_in_7"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 16,
+              "output": "kb_space",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 17,
+              "output": "kb_space",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 18,
+              "output": "kb_space",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 19,
+              "output": "kb_f",
+              "function": "normal",
+              "inputs": [
+                "mp_left_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 20,
+              "output": "mouse_wheel_up",
+              "function": "tap 150",
+              "inputs": [
+                "mp_right_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 21,
+              "output": "mouse_wheel_down",
+              "function": "tap 150",
+              "inputs": [
+                "mp_right_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 22,
+              "output": "mouse_right_button",
+              "function": "toggle",
+              "inputs": [
+                "mp_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 23,
+              "output": "mouse_left_button",
+              "function": "normal",
+              "inputs": [
+                "mp_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 24,
+              "output": "mouse_left",
+              "function": "normal",
+              "inputs": [
+                "left"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 25,
+              "output": "mouse_right",
+              "function": "normal",
+              "inputs": [
+                "right"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 26,
+              "output": "mouse_up",
+              "function": "normal",
+              "inputs": [
+                "up"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 27,
+              "output": "mouse_down",
+              "function": "normal",
+              "inputs": [
+                "down"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 28,
+              "output": "kb_g",
+              "function": "delay_on 180",
+              "inputs": [
+                "mp_right_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 29,
+              "output": "kb_m",
+              "function": "tap 200",
+              "inputs": [
+                "mp_left_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 30,
+              "output": "kb_escape",
+              "function": "delay_on 201",
+              "inputs": [
+                "mp_left_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 31,
+              "output": "kb_q",
+              "function": "delay_on 200",
+              "inputs": [
+                "mp_right_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 32,
+              "output": "kb_e",
+              "function": "delay_on 200",
+              "inputs": [
+                "mp_right_center_sip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 33,
+              "output": "joystick_deflection_maximum",
+              "function": "normal",
+              "inputs": [
+                "45"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 34,
+              "output": "joystick_deflection_minimum",
+              "function": "normal",
+              "inputs": [
+                "3"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 35,
+              "output": "deflection_multiplier_up",
+              "function": "normal",
+              "inputs": [
+                "85"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 36,
+              "output": "deflection_multiplier_down",
+              "function": "normal",
+              "inputs": [
+                "85"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 37,
+              "output": "deflection_multiplier_left",
+              "function": "normal",
+              "inputs": [
+                "85"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 38,
+              "output": "deflection_multiplier_right",
+              "function": "normal",
+              "inputs": [
+                "85"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 39,
+              "output": "kb_x",
+              "function": "normal",
+              "inputs": [
+                "mp_left_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 40,
+              "output": "kb_h",
+              "function": "delay_off 6000",
+              "inputs": [
+                "mp_right_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 41,
+              "output": "kb_r",
+              "function": "normal",
+              "inputs": [
+                "mp_center_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 42,
+              "output": "kb_t",
+              "function": "normal",
+              "inputs": [
+                "mp_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 43,
+              "output": "mouse_speed",
+              "function": "normal",
+              "inputs": [
+                "110"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 44,
+              "output": "kb_q",
+              "function": "normal",
+              "inputs": [
+                "mp_right_center_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 45,
+              "output": "kb_e",
+              "function": "normal",
+              "inputs": [
+                "mp_right_center_sip_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 46,
+              "output": "kb_q",
+              "function": "force_off",
+              "inputs": [
+                "mp_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 47,
+              "output": "kb_left_control",
+              "function": "normal",
+              "inputs": [
+                "mp_left_puff_soft"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [],
+    "editor": {
+      "dirty": false,
+      "revision": 0,
+      "canUndo": false
+    },
+    "serialized": {
+      "sha256": "5130032a72b452d1406b348797cb826a94c980f828ce776e9f894008be5c2249",
+      "utf8Bytes": 2200,
+      "text": "Profile Name,,Keyboard \u0026 Mouse,,,,,,,,Comment\r\ndiv2.csv,,Normal\r\nOutput or Function,Function,usb\r\nkb_i,tap 150,right_puff,,,,,,,,inventory\r\nkb_v,delay_on 250,right_puff,,,,,,,,heal\r\nkb_c,toggle,right_sip,,,,,,,,push to talk\r\nkb_w,toggle,mp_left_center_puff,,,,,,,,forward\r\nkb_s,toggle,mp_left_center_sip,,,,,,,,backward\r\nkb_left_shift,toggle,mp_right_sip,,,,,,,,Sprint\r\nkb_w,force_off,mp_left_center_sip,,,,,,,,force off backwards\r\nkb_s,force_off,mp_left_center_puff,,,,,,,,force off forward\r\nkb_a,normal,digital_in_1,,,,,,,,left\r\nkb_d,normal,digital_in_8,,,,,,,,right\r\nkb_left_control,tap 150,mp_right_puff,,,,,,,,Jump/climb\r\nkb_space,normal,digital_in_7,,,,,,,,Cover\u00A0/ click\r\nkb_space,normal,lip,,,,,,,,Cover\u00A0/ click\r\nkb_space,normal,lip,,,,,,,,change Cover / hold click\r\nkb_space,normal,lip,,,,,,,,roll / Double click\r\nkb_f,normal,mp_left_puff,,,,,,,,interact\r\nmouse_wheel_up,tap 150,mp_right_center_puff,,,,,,,,change weapon up\r\nmouse_wheel_down,tap 150,mp_right_center_sip,,,,,,,,change weapon down\r\nmouse_right_button,toggle,mp_center_sip,,,,,,,,aim\r\nmouse_left_button,normal,mp_center_puff,,,,,,,,shoot\r\nmouse_left,normal,left,,,,,,,,look around\r\nmouse_right,normal,right\r\nmouse_up,normal,up\r\nmouse_down,normal,down\r\nkb_g,delay_on 180,mp_right_puff,,,,,,,,throw grenade\r\nkb_m,tap 200,mp_left_sip,,,,,,,,map\r\nkb_escape,delay_on 201,mp_left_sip,,,,,,,,main menu\r\nkb_q,delay_on 200,mp_right_center_puff,,,,,,,,turret/shield etc\r\nkb_e,delay_on 200,mp_right_center_sip,,,,,,,,smart grenade\r\njoystick_deflection_maximum,normal,45,,,,,,,,joystick sensivity\r\njoystick_deflection_minimum,normal,3\r\ndeflection_multiplier_up,normal,85\r\ndeflection_multiplier_down,normal,85\r\ndeflection_multiplier_left,normal,85\r\ndeflection_multiplier_right,normal,85\r\nkb_x,normal,mp_left_sip_soft,,,,,,,,travel\r\nkb_h,delay_off 6000,mp_right_sip_soft,,,,,,,,emotions\r\nkb_r,normal,mp_center_sip_soft,,,,,,,,reload\r\nkb_t,normal,mp_center_puff_soft,,,,,,,,melee / zoom\r\nmouse_speed,normal,110\r\nkb_q,normal,mp_right_center_puff_soft,,,,,,,,lock target for skill\r\nkb_e,normal,mp_right_center_sip_soft,,,,,,,,lock target for skill\r\nkb_q,force_off,mp_center_puff\r\nkb_left_control,normal,mp_left_puff_soft,,,,,,,,kill yourself\r\n"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "firmware-canonical",
+  "source": {
+    "name": "profile-wrong-case.csv",
+    "sha256": "28cfe6d29d116a349e261ddec8958e6bd6ca5aaa8cf9b66d6d5a1e775cebd7b0",
+    "kind": "csv"
+  },
+  "modes": [],
+  "serialized": {
+    "sha256": "5b509919691d8c143c8af5b156f37ddd0b934311f168c3b97deae26a61aaa200",
+    "utf8Bytes": 73,
+    "text": "profile name,,Wrong Case\r\nwrong.csv\r\nOutputs,Function,usb\r\nx,normal,lip\r\n"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "inspect-canonical",
+  "source": {
+    "name": "csv-quoted.csv",
+    "sha256": "fa4641ff3a572d505cafbe8c002735b1bfa99d8ec1b6b461b5a796f82a050db7",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "a,b",
+        "quote \u0022inside\u0022",
+        "tail"
+      ]
+    ],
+    "document": {
+      "csvFileName": null,
+      "fileNameCellRow": 2,
+      "hasVersionHeader": false,
+      "headerVersion": "",
+      "headerSource": "",
+      "headerName": "",
+      "title": "",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": []
+    },
+    "issues": [
+      {
+        "severity": "Error",
+        "cell": "A1",
+        "kind": "None",
+        "message": "First cell must contain \u0022Profile\u0022 or be \u0022Preferences\u0022 or \u0022Infrared\u0022. Found \u0022a,b\u0022.",
+        "fix": "Set cell A1 to the sheet type keyword, e.g. \u0022Profile Name\u0022."
+      },
+      {
+        "severity": "Error",
+        "cell": "A2",
+        "kind": "None",
+        "message": "The cell under the first sheet\u0027s keyword must contain the CSV filename.",
+        "fix": "Set it to a name like \u0022mygame.csv\u0022."
+      }
+    ],
+    "editor": {
+      "dirty": false,
+      "revision": 0,
+      "canUndo": false
+    },
+    "serialized": {
+      "sha256": "fa4641ff3a572d505cafbe8c002735b1bfa99d8ec1b6b461b5a796f82a050db7",
+      "utf8Bytes": 31,
+      "text": "\u0022a,b\u0022,\u0022quote \u0022\u0022inside\u0022\u0022\u0022,tail\r\n"
+    }
+  }
+}

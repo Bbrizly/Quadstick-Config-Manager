@@ -1,0 +1,268 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "fixtureId": "legacy-gta-mode1-profile",
+  "document": {
+    "csvFileName": "gta.csv",
+    "fileNameCellRow": 2,
+    "hasVersionHeader": false,
+    "headerVersion": "",
+    "headerSource": "",
+    "headerName": "",
+    "title": "Left joy",
+    "isDefaultConfig": false,
+    "isDevicePreferences": false,
+    "sheets": [
+      {
+        "type": "ProfileName",
+        "modeName": "Left joy",
+        "csvFileName": "gta.csv",
+        "headerLabel": "Output or Function",
+        "channel": "usb",
+        "startRow": 1,
+        "bindings": [
+          {
+            "row": 4,
+            "output": "increment_mode",
+            "function": "normal",
+            "inputs": [
+              "right_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 5,
+            "output": "decrement_mode",
+            "function": "normal",
+            "inputs": [
+              "right_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 6,
+            "output": "left_joy_left",
+            "function": "normal",
+            "inputs": [
+              "left"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 7,
+            "output": "left_joy_right",
+            "function": "normal",
+            "inputs": [
+              "right"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 8,
+            "output": "left_joy_up",
+            "function": "normal",
+            "inputs": [
+              "up"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 9,
+            "output": "left_joy_down",
+            "function": "normal",
+            "inputs": [
+              "down"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 10,
+            "output": "left_1",
+            "function": "normal",
+            "inputs": [
+              "mp_left_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 11,
+            "output": "left_2",
+            "function": "normal",
+            "inputs": [
+              "mp_left_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 12,
+            "output": "left_3",
+            "function": "normal",
+            "inputs": [
+              "mp_left_center_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 13,
+            "output": "right_1",
+            "function": "normal",
+            "inputs": [
+              "lip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 14,
+            "output": "right_2",
+            "function": "normal",
+            "inputs": [
+              "mp_right_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 15,
+            "output": "right_3",
+            "function": "normal",
+            "inputs": [
+              "mp_right_center_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 16,
+            "output": "x",
+            "function": "repeat",
+            "inputs": [
+              "mp_right_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 17,
+            "output": "circle",
+            "function": "normal",
+            "inputs": [
+              "mp_center_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 18,
+            "output": "square",
+            "function": "normal",
+            "inputs": [
+              "mp_center_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 19,
+            "output": "triangle",
+            "function": "normal",
+            "inputs": [
+              "mp_right_center_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 20,
+            "output": "select",
+            "function": "normal",
+            "inputs": [
+              "mp_left_sip_soft"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 21,
+            "output": "select",
+            "function": "normal",
+            "inputs": [
+              "right_sip_soft"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 22,
+            "output": "ps3",
+            "function": "normal",
+            "inputs": [
+              "mp_center_sip_soft"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 23,
+            "output": "start",
+            "function": "normal",
+            "inputs": [
+              "mp_right_sip_soft"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          }
+        ]
+      }
+    ]
+  }
+}

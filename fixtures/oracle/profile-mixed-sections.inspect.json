@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "inspect-canonical",
+  "source": {
+    "name": "profile-mixed-sections.csv",
+    "sha256": "f91e0d8272d47f156525ac358513952878a327aae47e72929c058024c2bc3166",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "QuadStick Configuration",
+        "Version 1.5",
+        "source-id",
+        "Mixed"
+      ],
+      [
+        "Profile Name",
+        "",
+        "Play"
+      ],
+      [
+        "mixed.csv"
+      ],
+      [
+        "Outputs",
+        "Function",
+        "usb"
+      ],
+      [
+        "x",
+        "normal",
+        "lip"
+      ],
+      [
+        ""
+      ],
+      [
+        "Preferences",
+        "",
+        "Settings"
+      ],
+      [
+        ""
+      ],
+      [
+        "Preference",
+        "Value",
+        ""
+      ],
+      [
+        "volume",
+        "",
+        "50"
+      ],
+      [
+        ""
+      ],
+      [
+        "Infrared",
+        "Samsung Most Models - Set #: 595",
+        "TV"
+      ],
+      [
+        ""
+      ],
+      [
+        "Command",
+        "Value",
+        "bluetooth"
+      ],
+      [
+        "ir_play",
+        "normal",
+        "lip"
+      ]
+    ],
+    "document": {
+      "csvFileName": "mixed.csv",
+      "fileNameCellRow": 3,
+      "hasVersionHeader": true,
+      "headerVersion": "Version 1.5",
+      "headerSource": "source-id",
+      "headerName": "Mixed",
+      "title": "Mixed",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Play",
+          "csvFileName": "mixed.csv",
+          "headerLabel": "Outputs",
+          "channel": "usb",
+          "startRow": 2,
+          "bindings": [
+            {
+              "row": 5,
+              "output": "x",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "type": "Preferences",
+          "modeName": "Settings",
+          "csvFileName": null,
+          "headerLabel": "Preference",
+          "channel": "",
+          "startRow": 7,
+          "bindings": [
+            {
+              "row": 10,
+              "output": "volume",
+              "function": "",
+              "inputs": [
+                "50"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "type": "Infrared",
+          "modeName": "TV",
+          "csvFileName": null,
+          "headerLabel": "Command",
+          "channel": "bluetooth",
+          "startRow": 12,
+          "bindings": [
+            {
+              "row": 15,
+              "output": "ir_play",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [
+      {
+        "severity": "Warning",
+        "cell": "B10",
+        "kind": "None",
+        "message": "On a Preferences sheet the device reads \u0022volume\u0022\u0027s value from column B, but B is empty and the value sits in column C. (A mode sheet uses column C; a Preferences sheet uses column B.)",
+        "fix": "Move the value into column B: \u0022volume,50\u0022."
+      }
+    ],
+    "editor": {
+      "dirty": false,
+      "revision": 0,
+      "canUndo": false
+    },
+    "serialized": {
+      "sha256": "eda44987b6900d788558d30893b745c427c5e2a2a7cb226e32ec9c696e89f6b5",
+      "utf8Bytes": 273,
+      "text": "QuadStick Configuration,Version 1.5,source-id,Mixed\r\nProfile Name,,Play\r\nmixed.csv\r\nOutputs,Function,usb\r\nx,normal,lip\r\n\r\nPreferences,,Settings\r\n\r\nPreference,Value,\r\nvolume,,50\r\n\r\nInfrared,Samsung Most Models - Set #: 595,TV\r\n\r\nCommand,Value,bluetooth\r\nir_play,normal,lip\r\n"
+    }
+  }
+}

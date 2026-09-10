@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "firmware-canonical",
+  "source": {
+    "name": "device-style.csv",
+    "sha256": "8b9851d57bafbdeccaf26c6c0e7180cdedf9fda93819bd671693e07af25e9aa4",
+    "kind": "csv"
+  },
+  "modes": [
+    {
+      "index": 0,
+      "channel": "usb",
+      "bindings": [
+        {
+          "output": "x",
+          "function": "normal",
+          "inputs": [
+            "lip"
+          ]
+        },
+        {
+          "output": "circle",
+          "function": "toggle",
+          "inputs": [
+            "mp_center_puff"
+          ]
+        },
+        {
+          "output": "left_1",
+          "function": "normal",
+          "inputs": [
+            "mp_left_sip",
+            "right_puff"
+          ]
+        },
+        {
+          "output": "mouse_left",
+          "function": "normal",
+          "inputs": [
+            "left"
+          ]
+        },
+        {
+          "output": "mouse_right",
+          "function": "normal",
+          "inputs": [
+            "right"
+          ]
+        },
+        {
+          "output": "mouse_left_button",
+          "function": "normal",
+          "inputs": [
+            "lip"
+          ]
+        },
+        {
+          "output": "mouse_speed",
+          "function": "",
+          "inputs": []
+        },
+        {
+          "output": "volume",
+          "function": "",
+          "inputs": []
+        }
+      ]
+    }
+  ],
+  "serialized": {
+    "sha256": "9024e72e12eecbc981a738215d8424aeb4f162b3e2d3980b9ae93af05eac6c03",
+    "utf8Bytes": 614,
+    "text": "QuadStick Configuration,Version 1.5,142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds,QuadStick\r\nProfile Name,,Left Joystick,,,,,,,\r\nmygame.csv,,,,,,,,,\r\nPlayStation Outputs,Function,usb,,,,,,,\r\nx,normal,lip,,,,,,,\r\ncircle,toggle,mp_center_puff,,,,,,,\r\nleft_1,normal,mp_left_sip,right_puff,,,,,,\r\n,,,,,,,,,\r\nProfile Name,,Mouse,,,,,,,\r\n,,,,,,,,,\r\nPlayStation Outputs,Function,usb,,,,,,,\r\nmouse_left,normal,left,,,,,,,\r\nmouse_right,normal,right,,,,,,,\r\nmouse_left_button,normal,lip,,,,,,,\r\n,,,,,,,,,\r\nPreferences,,,,,,,,,\r\n,,,,,,,,,\r\nPreference,Value,Units,Description,,,,,,\r\nmouse_speed,201,,,,,,,,\r\nvolume,40,,,,,,,,\r\n"
+  }
+}

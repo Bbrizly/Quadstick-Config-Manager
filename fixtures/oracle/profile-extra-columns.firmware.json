@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "firmware-canonical",
+  "source": {
+    "name": "profile-extra-columns.csv",
+    "sha256": "f549e0f4f122021b8c492ea5e61cb1deff42709ba6a54c8c9c4ba14739887af0",
+    "kind": "csv"
+  },
+  "modes": [
+    {
+      "index": 0,
+      "channel": "usb",
+      "bindings": [
+        {
+          "output": "mouse_left",
+          "function": "normal",
+          "inputs": [
+            "lip"
+          ]
+        }
+      ]
+    }
+  ],
+  "serialized": {
+    "sha256": "f549e0f4f122021b8c492ea5e61cb1deff42709ba6a54c8c9c4ba14739887af0",
+    "utf8Bytes": 203,
+    "text": "QuadStick Configuration,Version 1.5,,Extra Columns\r\nProfile Name,,Mode 1\r\nextra.csv\r\nPlayStation Outputs,Function,usb,,,,,,,,,Note,Action,Opaque\r\nmouse_left,normal,lip,,,,,,,,,keep me,Shoot,do-not-drop\r\n"
+  }
+}

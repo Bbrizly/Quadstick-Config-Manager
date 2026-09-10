@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://qcm.local/schemas/qcm-parity-1.json",
+  "title": "QCM canonical parity envelope",
+  "type": "object",
+  "required": ["schemaVersion", "legacyBase", "command", "source"],
+  "properties": {
+    "schemaVersion": { "const": "qcm-parity-1" },
+    "legacyBase": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "command": {
+      "enum": ["inspect-canonical", "normalize-canonical", "apply-canonical", "firmware-canonical"]
+    },
+    "source": { "$ref": "#/$defs/source" },
+    "import": { "type": ["object", "null"] },
+    "snapshot": { "$ref": "#/$defs/snapshot" },
+    "operations": { "type": "array" },
+    "modes": { "type": "array" },
+    "serialized": { "$ref": "#/$defs/serialized" }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": ["name", "sha256", "kind"],
+      "properties": {
+        "name": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "kind": { "enum": ["csv", "xlsx"] }
+      },
+      "additionalProperties": false
+    },
+    "serialized": {
+      "type": "object",
+      "required": ["sha256", "utf8Bytes", "text"],
+      "properties": {
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "utf8Bytes": { "type": "integer", "minimum": 0 },
+        "text": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "binding": {
+      "type": "object",
+      "required": ["row", "output", "function", "inputs", "inputCols", "actionName"],
+      "properties": {
+        "row": { "type": "integer", "minimum": 1 },
+        "output": { "type": "string" },
+        "function": { "type": "string" },
+        "inputs": { "type": "array", "items": { "type": "string" } },
+        "inputCols": { "type": "array", "items": { "type": "integer", "minimum": 0 } },
+        "actionName": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "sheet": {
+      "type": "object",
+      "required": ["index", "type", "modeName", "csvFileName", "headerLabel", "channel", "startRow", "bindings"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 0 },
+        "type": { "enum": ["ProfileName", "Preferences", "Infrared"] },
+        "modeName": { "type": "string" },
+        "csvFileName": { "type": ["string", "null"] },
+        "headerLabel": { "type": "string" },
+        "channel": { "type": "string" },
+        "startRow": { "type": "integer", "minimum": 1 },
+        "bindings": { "type": "array", "items": { "$ref": "#/$defs/binding" } }
+      },
+      "additionalProperties": false
+    },
+    "issue": {
+      "type": "object",
+      "required": ["severity", "cell", "kind", "message", "fix"],
+      "properties": {
+        "severity": { "enum": ["Error", "Warning"] },
+        "cell": { "type": "string" },
+        "kind": { "type": "string" },
+        "message": { "type": "string" },
+        "fix": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "snapshot": {
+      "type": "object",
+      "required": ["rawGrid", "document", "issues", "editor", "serialized"],
+      "properties": {
+        "rawGrid": {
+          "type": "array",
+          "items": { "type": "array", "items": { "type": "string" } }
+        },
+        "document": {
+          "type": "object",
+          "required": ["csvFileName", "fileNameCellRow", "hasVersionHeader", "headerVersion", "headerSource", "headerName", "title", "isDefaultConfig", "isDevicePreferences", "sheets"],
+          "properties": {
+            "csvFileName": { "type": ["string", "null"] },
+            "fileNameCellRow": { "type": "integer", "minimum": 1 },
+            "hasVersionHeader": { "type": "boolean" },
+            "headerVersion": { "type": "string" },
+            "headerSource": { "type": "string" },
+            "headerName": { "type": "string" },
+            "title": { "type": "string" },
+            "isDefaultConfig": { "type": "boolean" },
+            "isDevicePreferences": { "type": "boolean" },
+            "sheets": { "type": "array", "items": { "$ref": "#/$defs/sheet" } }
+          },
+          "additionalProperties": false
+        },
+        "issues": { "type": "array", "items": { "$ref": "#/$defs/issue" } },
+        "editor": {
+          "type": "object",
+          "required": ["dirty", "revision", "canUndo"],
+          "properties": {
+            "dirty": { "type": "boolean" },
+            "revision": { "type": "integer", "minimum": 0 },
+            "canUndo": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "serialized": { "$ref": "#/$defs/serialized" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

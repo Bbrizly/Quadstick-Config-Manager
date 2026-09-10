@@ -1,0 +1,374 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "normalize-canonical",
+  "source": {
+    "name": "device-style.csv",
+    "sha256": "8b9851d57bafbdeccaf26c6c0e7180cdedf9fda93819bd671693e07af25e9aa4",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "QuadStick Configuration",
+        "Version 1.5",
+        "142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds",
+        "QuadStick"
+      ],
+      [
+        "Profile Name",
+        "",
+        "Left Joystick",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "mygame.csv",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "PlayStation Outputs",
+        "Function",
+        "usb",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "x",
+        "normal",
+        "lip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "circle",
+        "toggle",
+        "mp_center_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "left_1",
+        "normal",
+        "mp_left_sip",
+        "right_puff",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [],
+      [
+        "Profile Name",
+        "",
+        "Mouse",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "PlayStation Outputs",
+        "Function",
+        "usb",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "mouse_left",
+        "normal",
+        "left",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "mouse_right",
+        "normal",
+        "right",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "mouse_left_button",
+        "normal",
+        "lip",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [],
+      [
+        "Preferences",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "Preference",
+        "Value",
+        "Units",
+        "Description",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "mouse_speed",
+        "201",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "volume",
+        "40",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    ],
+    "document": {
+      "csvFileName": "mygame.csv",
+      "fileNameCellRow": 3,
+      "hasVersionHeader": true,
+      "headerVersion": "Version 1.5",
+      "headerSource": "142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds",
+      "headerName": "QuadStick",
+      "title": "QuadStick",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Left Joystick",
+          "csvFileName": "mygame.csv",
+          "headerLabel": "PlayStation Outputs",
+          "channel": "usb",
+          "startRow": 2,
+          "bindings": [
+            {
+              "row": 5,
+              "output": "x",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 6,
+              "output": "circle",
+              "function": "toggle",
+              "inputs": [
+                "mp_center_puff"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 7,
+              "output": "left_1",
+              "function": "normal",
+              "inputs": [
+                "mp_left_sip",
+                "right_puff"
+              ],
+              "inputCols": [
+                2,
+                3
+              ],
+              "actionName": ""
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "type": "ProfileName",
+          "modeName": "Mouse",
+          "csvFileName": null,
+          "headerLabel": "PlayStation Outputs",
+          "channel": "usb",
+          "startRow": 9,
+          "bindings": [
+            {
+              "row": 12,
+              "output": "mouse_left",
+              "function": "normal",
+              "inputs": [
+                "left"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 13,
+              "output": "mouse_right",
+              "function": "normal",
+              "inputs": [
+                "right"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 14,
+              "output": "mouse_left_button",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "type": "Preferences",
+          "modeName": "",
+          "csvFileName": null,
+          "headerLabel": "Preference",
+          "channel": "Units",
+          "startRow": 16,
+          "bindings": [
+            {
+              "row": 19,
+              "output": "mouse_speed",
+              "function": "201",
+              "inputs": [],
+              "inputCols": [],
+              "actionName": ""
+            },
+            {
+              "row": 20,
+              "output": "volume",
+              "function": "40",
+              "inputs": [],
+              "inputCols": [],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [],
+    "editor": {
+      "dirty": true,
+      "revision": 1,
+      "canUndo": true
+    },
+    "serialized": {
+      "sha256": "450733a5200f376343d500c9a1f74b97ef2c554e8fa99a2f422da75b63a96652",
+      "utf8Bytes": 596,
+      "text": "QuadStick Configuration,Version 1.5,142Em6Lyr8zT0f3RNI1rjBw92MQWpehcOAuvU6sHzxds,QuadStick\r\nProfile Name,,Left Joystick,,,,,,,\r\nmygame.csv,,,,,,,,,\r\nPlayStation Outputs,Function,usb,,,,,,,\r\nx,normal,lip,,,,,,,\r\ncircle,toggle,mp_center_puff,,,,,,,\r\nleft_1,normal,mp_left_sip,right_puff,,,,,,\r\n\r\nProfile Name,,Mouse,,,,,,,\r\n,,,,,,,,,\r\nPlayStation Outputs,Function,usb,,,,,,,\r\nmouse_left,normal,left,,,,,,,\r\nmouse_right,normal,right,,,,,,,\r\nmouse_left_button,normal,lip,,,,,,,\r\n\r\nPreferences,,,,,,,,,\r\n,,,,,,,,,\r\nPreference,Value,Units,Description,,,,,,\r\nmouse_speed,201,,,,,,,,\r\nvolume,40,,,,,,,,\r\n"
+    }
+  }
+}

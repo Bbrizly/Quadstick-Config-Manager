@@ -1,0 +1,52 @@
+[
+  {
+    "op": "set_cell",
+    "row": 4,
+    "col": 1,
+    "value": "toggle"
+  },
+  {
+    "op": "set_output",
+    "row": 4,
+    "token": "circle",
+    "action": "Jump"
+  },
+  {
+    "op": "add_row",
+    "sheet": 0
+  },
+  {
+    "op": "set_output",
+    "row": 5,
+    "token": "square",
+    "action": "Interact"
+  },
+  {
+    "op": "set_cell",
+    "row": 5,
+    "col": 2,
+    "value": "mp_left"
+  },
+  {
+    "op": "move_row",
+    "from": 5,
+    "to": 4
+  },
+  {
+    "op": "add_mode",
+    "name": "Mode 2"
+  },
+  {
+    "op": "rename_mode",
+    "sheet": 1,
+    "name": "Second Mode"
+  },
+  {
+    "op": "set_mode_channel",
+    "sheet": 1,
+    "channel": "bluetooth"
+  },
+  {
+    "op": "normalize"
+  }
+]
