@@ -191,14 +191,20 @@ struct HomeView: View {
                 homeRow("Review Controls", icon: "checklist",
                         detail: "Walk through every input, one at a time")
             }
-            NavigationLink(value: Screen.drive) {
-                homeRow("Google Drive", icon: "arrow.triangle.2.circlepath",
-                        detail: driveDetail, iconColor: Theme.accent)
+            // A build with no Google client has no Drive at all, so it gets no
+            // row. A row that can only say "not set up" reads as unfinished.
+            if case .notConfigured = model.drive.status {} else {
+                NavigationLink(value: Screen.drive) {
+                    homeRow("Google Drive", icon: "arrow.triangle.2.circlepath",
+                            detail: driveDetail, iconColor: Theme.accent)
+                }
             }
             NavigationLink(value: Screen.install) {
                 homeRow("Install to QuadStick", icon: "arrow.down.circle",
                         detail: "Put \(model.profile.name) on the device with a USB-C cable")
             }
+            TipJar()
+                .padding(.top, 10)
         }
     }
 
