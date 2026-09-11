@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 
 namespace QuadStick.App;
 
@@ -38,6 +39,22 @@ public class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var window = StartWindow(desktop.Args);
+            desktop.MainWindow = window;
+
+            // Avalonia 11.1 exposes TryGetFeature(Type). macOS delivers custom
+            // URL schemes through IActivatableLifetime, while unpackaged Windows
+            // launches QCM again with the qcm:// URL in argv.
+            if (TryGetFeature(typeof(IActivatableLifetime)) is IActivatableLifetime activatable)
+            {
+                activatable.Activated += (_, e) =>
+                {
+                    if (e is ProtocolActivatedEventArgs protocol &&
+                        RegistryDeepLink.TryGetProfileId(protocol.Uri, out var id) &&
+                        desktop.MainWindow is MainWindow main)
+                        Dispatcher.UIThread.Post(() => _ = main.OpenRegistryProfileAsync(id));
+                };
+            }
+
             // Only the real app reads the stick, and it reads it for as long as
             // the app is open rather than while one page is showing. The
             // headless tests and the render tool build a MainWindow without
@@ -45,7 +62,10 @@ public class App : Application
             // and a thread parked on a USB enumeration per test window is a
             // cost the suite should not pay.
             (window as MainWindow)?.StartLiveInput();
-            desktop.MainWindow = window;
+
+            if (window is MainWindow qcm &&
+                RegistryDeepLink.TryGetProfileId(desktop.Args, out var profileId))
+                Dispatcher.UIThread.Post(() => _ = qcm.OpenRegistryProfileAsync(profileId));
         }
         base.OnFrameworkInitializationCompleted();
     }
