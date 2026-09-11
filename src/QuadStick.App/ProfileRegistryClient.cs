@@ -64,7 +64,7 @@ internal sealed class ProfileRegistryClient
             using var response = await _http.GetAsync(CatalogUrl, HttpCompletionOption.ResponseHeadersRead, ct);
             response.EnsureSuccessStatusCode();
             var bytes = await ReadLimitedAsync(response, MaxCatalogBytes, ct);
-            var json = DecodeUtf8(bytes, "Registry JSON is not valid UTF-8.");
+            var json = DecodeUtf8(bytes, "REGISTRY_UTF8_INVALID");
             var profiles = Parse(json);
             WriteCache(_cachePath, json);
             return new(profiles, false);
@@ -84,7 +84,7 @@ internal sealed class ProfileRegistryClient
             response.EnsureSuccessStatusCode();
             var bytes = await ReadLimitedAsync(response, MaxCsvBytes, ct);
             VerifySnapshot(bytes, profile.SnapshotSha256);
-            var csv = DecodeUtf8(bytes, "Profile CSV is not valid UTF-8.");
+            var csv = DecodeUtf8(bytes, "PROFILE_CSV_UTF8_INVALID");
             WriteCache(cachePath, csv);
             return csv;
         }
@@ -196,7 +196,7 @@ internal sealed class ProfileRegistryClient
             var bytes = File.ReadAllBytes(path);
             if (bytes.Length is <= 0 or > MaxCsvBytes) return false;
             VerifySnapshot(bytes, expectedSha);
-            csv = DecodeUtf8(bytes, "Cached profile CSV is not valid UTF-8.");
+            csv = DecodeUtf8(bytes, "CACHED_PROFILE_CSV_UTF8_INVALID");
             return true;
         }
         catch { return false; }
