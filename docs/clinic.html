@@ -182,14 +182,11 @@
     -webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);
     mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent)}
   .rail + .rail{margin-top:clamp(22px,3vh,36px)}
-  .track{display:flex;align-items:stretch;width:max-content;animation:slide 46s linear infinite}
-  .mark-set{display:flex;align-items:stretch}
-  .rail:hover .track,.track:focus-within{animation-play-state:paused}
+  .track{display:flex;align-items:stretch;width:max-content;animation:slide 46s linear infinite;will-change:transform}
+  .mark-set{display:flex;align-items:stretch;flex:none}
   .track.back{animation-direction:reverse;animation-duration:74s}
   @keyframes slide{to{transform:translateX(-50%)}}
-  .mark-item{display:grid;place-items:center;padding:0 clamp(24px,3.2vw,52px);
-    transition:transform .3s var(--ease)}
-  .mark-item:hover,.mark-item:focus-visible{transform:scale(1.06)}
+  .mark-item{display:grid;place-items:center;padding:0 clamp(24px,3.2vw,52px)}
   /* AbleGamers publish this mark knocked out in white, so it gets the ground it was drawn for */
   .mark-item.knockout img{background:#1A1714;padding:7px 11px;border-radius:10px}
   .mark-item img{height:calc(clamp(26px,2.6vw,38px) * 1.5 * var(--s,1));width:auto;max-width:none;object-fit:contain;display:block}
@@ -485,23 +482,15 @@
     <div class="band-in">
       <div class="rail">
         <div class="track">
-          <a class="mark-item" href="https://craighospital.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/craig-hospital.svg" alt="Craig Hospital" loading="lazy"></a>
-          <a class="mark-item" href="https://shepherd.org/" target="_blank" rel="noopener"><img src="logos/shepherd-center.svg" alt="Shepherd Center" loading="lazy"></a>
-          <a class="mark-item" href="https://livelifetherapysolutions.com/" target="_blank" rel="noopener"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="Live Life Therapy Solutions" loading="lazy"></a>
-          <a class="mark-item" href="https://aztap.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/aztap.png" alt="AzTAP, the Arizona Technology Access Program" loading="lazy"></a>
-          <a class="mark-item knockout" href="https://ablegamers.org/" target="_blank" rel="noopener"><img style="--s:1.5" src="logos/ablegamers.webp" alt="AbleGamers Charity" loading="lazy"></a>
-          <a class="mark-item" href="https://www.respawnfoundation.org/" target="_blank" rel="noopener"><img src="logos/respawn-foundation.webp" alt="Respawn Foundation" loading="lazy"></a>
-          <span class="mark-set" aria-hidden="true">
-            <a class="mark-item" href="https://craighospital.org/" tabindex="-1"><img style="--s:.95" src="logos/craig-hospital.svg" alt="" loading="lazy"></a>
-            <a class="mark-item" href="https://shepherd.org/" tabindex="-1"><img src="logos/shepherd-center.svg" alt="" loading="lazy"></a>
-            <a class="mark-item" href="https://livelifetherapysolutions.com/" tabindex="-1"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="" loading="lazy"></a>
-            <a class="mark-item" href="https://aztap.org/" tabindex="-1"><img style="--s:.95" src="logos/aztap.png" alt="" loading="lazy"></a>
-            <a class="mark-item knockout" href="https://ablegamers.org/" tabindex="-1"><img style="--s:1.5" src="logos/ablegamers.webp" alt="" loading="lazy"></a>
-            <a class="mark-item" href="https://www.respawnfoundation.org/" tabindex="-1"><img src="logos/respawn-foundation.webp" alt="" loading="lazy"></a>
-          </span>
+          <a class="mark-item" href="https://craighospital.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/craig-hospital.svg" alt="Craig Hospital"></a>
+          <a class="mark-item" href="https://shepherd.org/" target="_blank" rel="noopener"><img src="logos/shepherd-center.svg" alt="Shepherd Center"></a>
+          <a class="mark-item" href="https://livelifetherapysolutions.com/" target="_blank" rel="noopener"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="Live Life Therapy Solutions"></a>
+          <a class="mark-item" href="https://aztap.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/aztap.png" alt="AzTAP, the Arizona Technology Access Program"></a>
+          <a class="mark-item knockout" href="https://ablegamers.org/" target="_blank" rel="noopener"><img style="--s:1.5" src="logos/ablegamers.webp" alt="AbleGamers Charity"></a>
+          <a class="mark-item" href="https://www.respawnfoundation.org/" target="_blank" rel="noopener"><img src="logos/respawn-foundation.webp" alt="Respawn Foundation"></a>
         </div>
       </div>
-      <p class="band-foot">Organisations working in adaptive gaming and rehabilitation. Their sites are linked. They are not customers or endorsements.</p>
+      <p class="band-foot">Organisations working in adaptive gaming and rehabilitation.</p>
     </div>
   </div>
   </div>
@@ -721,15 +710,18 @@
   });
 
 
-  // one copy of the marks is in the HTML, the loop makes the second so the slide
-  // can wrap without a seam. the copy is hidden from readers and from tab order.
+  // Group one source set and one identical copy so -50% always lands exactly
+  // at the next set. Both sets have fixed intrinsic widths before animation.
   function loopTrack(track) {
-    for (const node of [...track.children]) {
-      const copy = node.cloneNode(true);
-      copy.setAttribute('aria-hidden', 'true');
-      for (const link of [copy, ...copy.querySelectorAll('a')]) if (link.tagName === 'A') link.tabIndex = -1;
-      track.append(copy);
-    }
+    const set = document.createElement('span');
+    set.className = 'mark-set';
+    const children = [...track.children];
+    track.replaceChildren();
+    set.append(...children);
+    const copy = set.cloneNode(true);
+    copy.setAttribute('aria-hidden', 'true');
+    for (const link of copy.querySelectorAll('a')) link.tabIndex = -1;
+    track.append(set, copy);
   }
   document.querySelectorAll('.track').forEach(loopTrack);
 

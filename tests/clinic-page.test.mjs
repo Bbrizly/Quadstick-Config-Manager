@@ -69,7 +69,7 @@ test('the switch is under the header, not inside the header that follows you', (
 test('the hero carries the programs band, so it is not a scroll away', () => {
   const hero = page.slice(page.indexOf('hero-shell'), page.indexOf('<section id="workspace"'));
   assert.match(hero, /Craig Hospital/);
-  assert.match(hero, /not customers or endorsements/i);
+  assert.doesNotMatch(hero, /not customers or endorsements/i);
 });
 
 test('the page sells a free app and a paid workflow, never "open core"', () => {
@@ -141,10 +141,12 @@ test('both pages carry the same six marks, each a real file and a real link', ()
   }
 });
 
-test('the marks slide on their own, and stop for anyone who asked motion to stop', () => {
+test('the marks use two exact sets and keep moving smoothly', () => {
   for (const [name, text] of pages) {
     assert.match(text, /\.track\{[^}]*animation:slide/, `${name}: the marks do not move`);
-    assert.match(text, /\.rail:hover \.track[^{]*\{animation-play-state:paused\}/, `${name}: pointing at it does not stop it`);
+    assert.match(text, /\.mark-set\{[^}]*flex:none\}/, `${name}: each mark set must keep its width`);
+    assert.match(text, /const children = \[\.\.\.track\.children\];[\s\S]*track\.replaceChildren\(\);[\s\S]*set\.append\(\.\.\.children\)/, `${name}: the source set is not grouped before copying`);
+    assert.doesNotMatch(text, /\.rail:hover \.track[^{]*\{animation-play-state:paused\}/, `${name}: hover should not change animation state`);
     const reduced = text.slice(text.indexOf('prefers-reduced-motion'));
     assert.match(reduced.slice(0, 400), /\.track\{animation:none\}/, `${name}: reduced motion still slides`);
   }
