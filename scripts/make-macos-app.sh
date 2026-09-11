@@ -55,7 +55,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundleURLTypes</key>
   <array>
     <dict>
-      <key>CFBundleURLName</key><string>com.bbrizly.quadstickconfigmanager.profile</string>
+      <key>CFBundleURLName</key><string>$BUNDLE_ID.profile</string>
       <key>CFBundleTypeRole</key><string>Viewer</string>
       <key>CFBundleURLSchemes</key><array><string>qcm</string></array>
     </dict>
