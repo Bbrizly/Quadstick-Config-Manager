@@ -10,7 +10,10 @@ public class Program
 {
     [STAThread]
     public static void Main(string[] args)
-        => BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    {
+        ProtocolRegistration.EnsureCurrentUser();
+        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    }
 
     // BuildAvaloniaApp is public and may be called more than once. Without the
     // guard each call hangs another resolver off the load context.
