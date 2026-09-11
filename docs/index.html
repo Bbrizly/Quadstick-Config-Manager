@@ -150,6 +150,7 @@
     mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent)}
   .rail + .rail{margin-top:clamp(22px,3vh,36px)}
   .track{display:flex;align-items:stretch;width:max-content;animation:slide 46s linear infinite}
+  .mark-set{display:flex;align-items:stretch}
   .rail:hover .track,.track:focus-within{animation-play-state:paused}
   .track.back{animation-direction:reverse;animation-duration:74s}
   @keyframes slide{to{transform:translateX(-50%)}}
@@ -500,6 +501,14 @@
           <a class="mark-item" href="https://aztap.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/aztap.png" alt="AzTAP, the Arizona Technology Access Program" loading="lazy"></a>
           <a class="mark-item knockout" href="https://ablegamers.org/" target="_blank" rel="noopener"><img style="--s:1.5" src="logos/ablegamers.webp" alt="AbleGamers Charity" loading="lazy"></a>
           <a class="mark-item" href="https://www.respawnfoundation.org/" target="_blank" rel="noopener"><img src="logos/respawn-foundation.webp" alt="Respawn Foundation" loading="lazy"></a>
+          <span class="mark-set" aria-hidden="true">
+            <a class="mark-item" href="https://craighospital.org/" tabindex="-1"><img style="--s:.95" src="logos/craig-hospital.svg" alt="" loading="lazy"></a>
+            <a class="mark-item" href="https://shepherd.org/" tabindex="-1"><img src="logos/shepherd-center.svg" alt="" loading="lazy"></a>
+            <a class="mark-item" href="https://livelifetherapysolutions.com/" tabindex="-1"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="" loading="lazy"></a>
+            <a class="mark-item" href="https://aztap.org/" tabindex="-1"><img style="--s:.95" src="logos/aztap.png" alt="" loading="lazy"></a>
+            <a class="mark-item knockout" href="https://ablegamers.org/" tabindex="-1"><img style="--s:1.5" src="logos/ablegamers.webp" alt="" loading="lazy"></a>
+            <a class="mark-item" href="https://www.respawnfoundation.org/" tabindex="-1"><img src="logos/respawn-foundation.webp" alt="" loading="lazy"></a>
+          </span>
         </div>
       </div>
       <div class="rail" id="quote-rail" hidden>
