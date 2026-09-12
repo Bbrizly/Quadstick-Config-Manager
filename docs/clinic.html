@@ -147,30 +147,39 @@
   /* ---------- hero ----------
      the same box as the free page's hero, so the switch, the headline and the
      lede do not jump when somebody flips between the two. */
-  .hero-shell{position:relative;isolation:isolate;overflow:hidden;
-    min-height:calc(100svh - var(--navh));display:flex;flex-direction:column;
-    padding:clamp(18px,2.4vw,30px) 0 0}
-  .hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none;background:
-    radial-gradient(80% 65% at 82% 2%, rgba(31,78,70,.20), transparent 62%),
-    radial-gradient(70% 55% at 2% 12%, rgba(138,106,30,.12), transparent 60%),
-    radial-gradient(60% 50% at 50% 100%, rgba(43,85,140,.10), transparent 64%)}
+  .hero-shell{--pad:clamp(18px,2.4vw,30px);--side:clamp(24px,3.4vw,48px);--copyw:min(520px,40vw);
+    position:relative;isolation:isolate;overflow:hidden;
+    margin-top:calc(-1 * var(--navh));background:#EDE6D2;
+    min-height:100svh;display:flex;flex-direction:column;
+    padding:calc(var(--navh) + var(--pad)) 0 0}
   .hero-inner{position:relative;z-index:1;flex:1;width:100%;max-width:var(--herow);
-    margin-inline:auto;padding:0 clamp(24px,3.4vw,48px) clamp(48px,6vh,80px);
+    margin-inline:auto;padding:0 var(--side) clamp(48px,6vh,80px);
     display:flex;flex-direction:column;gap:clamp(16px,2.6vh,32px)}
-  .hero-copy{flex:1;display:flex;flex-direction:column;padding-top:var(--herodrop);max-width:min(64%,840px)}
+  .hero-copy{flex:1;display:flex;flex-direction:column;padding-top:var(--herodrop);max-width:var(--copyw)}
   .hero h1{font-size:clamp(30px,3.6vw,52px);margin:0}
-  .hero .lede{font-size:clamp(18px,1.7vw,21px);color:var(--ink-soft);max-width:52ch;margin:22px 0 30px;line-height:1.5}
+  /* ink-soft falls under 4.5:1 on the lower wall, so the lede is a step darker here */
+  .hero .lede{font-size:clamp(18px,1.7vw,21px);color:#433D34;max-width:52ch;margin:22px 0 30px;line-height:1.5}
   .hero-actions{display:flex;flex-wrap:wrap;gap:12px}
-  /* the free page's hero art, the same crop, so the two heroes are one picture */
-  .hero-stick{position:absolute;z-index:-2;right:calc(50% - 50vw + clamp(24px,5vw,100px));top:46%;transform:translateY(-50%);
-    width:min(46%,660px);height:auto;max-width:none;pointer-events:none;user-select:none;
-    border-radius:18px;background:#fff;
-    box-shadow:0 1px 2px rgba(40,33,20,.05), 0 30px 64px -30px rgba(40,33,20,.32)}
-  .hero-veil{position:absolute;inset:-50vh calc(50% - 50vw);z-index:-1;pointer-events:none;background:
-    linear-gradient(to right, var(--paper) 0%, rgba(244,241,234,.96) 38%, rgba(244,241,234,.66) 55%, rgba(244,241,234,.18) 74%, rgba(244,241,234,0) 90%)}
-  @media(max-width:1100px){
+  /* the photo runs up under the nav and is mirrored so the plain wall sits behind
+     the copy. its left edge is pinned to where the copy ends, so the people never
+     slide under the text at any width. the ground is the wall's own colours. */
+  .hero-ground{position:absolute;z-index:-2;top:calc(-1 * (var(--navh) + var(--pad)));bottom:0;
+    left:calc(50% - 50vw);right:calc(50% - 50vw);pointer-events:none;
+    background:linear-gradient(#E3D9BE 20%,#DBD1B8 40%,#D2C7B1 60%,#C5BAA6 80%,#B4AD9A)}
+  .hero-photo{position:absolute;z-index:-1;top:calc(-1 * (var(--navh) + var(--pad)));
+    left:calc(var(--side) + var(--copyw));transform:translateX(-14%);
+    height:calc(100% + var(--navh) + var(--pad));width:auto;max-width:none;pointer-events:none;user-select:none;
+    -webkit-mask-image:linear-gradient(to right,transparent 2%,#000 20%,#000 88%,transparent);
+    mask-image:linear-gradient(to right,transparent 2%,#000 20%,#000 88%,transparent)}
+  /* narrow or tall windows cannot fit copy and people side by side, so the photo
+     drops under the copy and runs to the band */
+  @media (max-width:900px), (max-aspect-ratio:13/10){
     .hero-copy{max-width:min(70%,840px)}
-    .hero-stick{width:min(38%,440px);right:calc(50% - 50vw + 20px)}
+    .hero-inner{padding-bottom:0}
+    .hero-ground{display:none}
+    /* never crop it here: both heads sit near the top edge and the chair at the bottom */
+    .hero-photo{position:static;transform:none;width:100vw;height:auto;margin-inline:calc(50% - 50vw);
+      -webkit-mask-image:none;mask-image:none}
   }
 
   /* ---------- the band under the hero ----------
@@ -197,8 +206,6 @@
     .hero-copy{max-width:none}
     .hero h1{font-size:clamp(30px,7vw,48px)}
     .hero .lede{max-width:none}
-    .hero-stick{position:static;transform:none;width:100%;height:auto;max-width:none;margin:22px 0 26px}
-    .hero-veil{display:none}
   }
 
   /* ---------- workspace preview ----------
@@ -453,9 +460,8 @@
 
 <main>
   <div class="hero-shell">
-    <div class="hero-bg" aria-hidden="true"></div>
     <div class="hero-inner hero">
-      <div class="hero-veil" aria-hidden="true"></div>
+      <div class="hero-ground" aria-hidden="true"></div>
 
       <div class="switch-row">
         <nav class="switch" data-audience-switch aria-label="Choose your view">
@@ -467,7 +473,6 @@
       <div class="hero-copy">
         <h1 class="display">One record per client, across every visit.</h1>
         <p class="lede">Capabilities, profile history and the next step, in one place. A session starts where the last one ended.</p>
-        <img class="hero-stick" src="hero-device.png" alt="The device view: a photo of the QuadStick with a labelled box beside each part, showing what a sip, a puff and a soft version of either does." width="750" height="572" loading="eager" decoding="async">
         <div class="hero-actions">
           <a class="btn primary" href="#demo">Book a demo
             <span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
@@ -475,6 +480,9 @@
           <a class="btn ghost" href="#principles">How it stays private</a>
         </div>
       </div>
+
+      <!-- unsplash.com/photos/rXqfl7MKEJ4 by Ortopediatri, Unsplash License, mirrored -->
+      <img class="hero-photo" src="hero-clinic.webp" srcset="hero-clinic-1200.webp 1200w, hero-clinic.webp 2400w" sizes="100vw" alt="A clinician in scrubs rests a hand on the shoulder of a young man in a wheelchair. Both are smiling." width="2400" height="1599" fetchpriority="high" decoding="async">
 
     </div>
 

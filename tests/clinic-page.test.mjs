@@ -176,12 +176,13 @@ test('the nav logo is the same mark on both pages', () => {
   assert.match(page, /\.brand \.glyph\{[^}]*background:none/);
 });
 
-test('both heroes open on the same picture, in the same place', () => {
-  for (const [name, text] of pages) {
-    assert.match(text, /class="hero-stick" src="hero-device\.png"/, `${name} lost the hero art`);
+test('the clinic hero is a clinician with a patient, the free page keeps the device', () => {
+  assert.match(homepage, /class="hero-stick" src="hero-device\.png"/, 'index.html lost the hero art');
+  assert.match(page, /<img class="hero-photo" src="hero-clinic\.webp"[^>]*alt="[^"]+"/);
+  assert.doesNotMatch(page, /hero-device\.png/);
+  for (const file of ['hero-clinic.webp', 'hero-clinic-1200.webp']) {
+    assert.ok(existsSync(new URL(`../docs/${file}`, import.meta.url)), `${file} is missing`);
   }
-  const rule = text => text.slice(text.indexOf('.hero-stick{'), text.indexOf('}', text.indexOf('.hero-stick{')));
-  assert.equal(rule(page), rule(homepage));
 });
 
 test('the testimonials are a file you append to, and the band hides while it is empty', () => {
