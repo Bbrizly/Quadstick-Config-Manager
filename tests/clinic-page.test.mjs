@@ -176,9 +176,11 @@ test('the nav logo is the same mark on both pages', () => {
   assert.match(page, /\.brand \.glyph\{[^}]*background:none/);
 });
 
-test('the clinic hero is a clinician with a patient, the free page keeps the device', () => {
+test('the clinic hero is a QuadStick in use, credited, and the free page keeps the device', () => {
   assert.match(homepage, /class="hero-stick" src="hero-device\.png"/, 'index.html lost the hero art');
-  assert.match(page, /<img class="hero-photo" src="hero-clinic\.webp"[^>]*alt="[^"]+"/);
+  assert.match(page, /<img class="hero-photo" src="hero-clinic\.webp"[^>]*alt="[^"]*QuadStick[^"]*"/);
+  // CC BY-SA: the credit has to be readable on the page, a comment does not count
+  assert.match(page, /class="hero-credit">Photo: <a href="https:\/\/commons\.wikimedia\.org\/wiki\/File:InclusiveGameLab[^"]+">InclusiveGameLab<\/a>, <a href="https:\/\/creativecommons\.org\/licenses\/by-sa\/4\.0\/">CC BY-SA 4\.0<\/a>/);
   assert.doesNotMatch(page, /hero-device\.png/);
   for (const file of ['hero-clinic.webp', 'hero-clinic-1200.webp']) {
     assert.ok(existsSync(new URL(`../docs/${file}`, import.meta.url)), `${file} is missing`);
