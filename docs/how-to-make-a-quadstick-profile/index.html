@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to make a QuadStick game profile · QuadStick Config Manager</title>
+<meta name="description" content="Step by step: map sips, puffs, the lip switch and joystick to game buttons, catch mistakes, and install the profile on your QuadStick safely.">
+<link rel="canonical" href="https://bassamkamal.dev/Quadstick-Config-Manager/how-to-make-a-quadstick-profile/">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../favicon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to make a QuadStick game profile">
+<meta property="og:description" content="Map sips, puffs, the lip switch and joystick to game buttons, catch mistakes, and install the profile on your QuadStick safely.">
+<meta property="og:url" content="https://bassamkamal.dev/Quadstick-Config-Manager/how-to-make-a-quadstick-profile/">
+<meta property="og:image" content="https://bassamkamal.dev/Quadstick-Config-Manager/screenshot-device-view.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "How to make a QuadStick game profile",
+  "description": "Step by step: map sips, puffs, the lip switch and joystick to game buttons, catch mistakes, and install the profile on your QuadStick safely.",
+  "image": "https://bassamkamal.dev/Quadstick-Config-Manager/screenshot-device-view.png",
+  "datePublished": "2026-09-13",
+  "author": {"@type": "Person", "name": "Bassam Kamal", "url": "https://bassamkamal.dev/"},
+  "publisher": {"@type": "Person", "name": "Bassam Kamal", "url": "https://bassamkamal.dev/"},
+  "about": {"@type": "Thing", "name": "QuadStick"},
+  "mainEntityOfPage": "https://bassamkamal.dev/Quadstick-Config-Manager/how-to-make-a-quadstick-profile/"
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* the homepage's tokens, plus a dark set the homepage does not have yet */
+  :root{
+    color-scheme:light dark;
+    --paper:#F4F1EA; --paper-2:#FBF9F4; --ink:#1A1714; --ink-soft:#5F584D; --line:#E2DBCC;
+    --in-bg:#DAE6F7;  --in-ink:#2B558C;
+    --out-bg:#F5E9C6; --out-ink:#7A5D16;
+    --fn-bg:#F5D9E2;  --fn-ink:#A13E5B;
+    --action:#1B4D9B; --action-ink:#fff;
+    --code-bg:rgba(26,23,20,.06);
+    --radius:16px;
+    --shadow:0 1px 2px rgba(40,33,20,.04), 0 12px 30px -12px rgba(40,33,20,.14);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#15130F; --paper-2:#1E1B16; --ink:#EEE9DF; --ink-soft:#BDB5A7; --line:#37322A;
+      --in-bg:#1D3150;  --in-ink:#B3CFF5;
+      --out-bg:#3A3018; --out-ink:#EDD393;
+      --fn-bg:#42212C;  --fn-ink:#F3B6C9;
+      --action:#8DB4F2; --action-ink:#0E1420;
+      --code-bg:rgba(238,233,223,.09);
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 12px 30px -12px rgba(0,0,0,.6);
+    }
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:"Instrument Sans",system-ui,sans-serif;
+    font-size:18px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--action);text-underline-offset:3px}
+  img{max-width:100%;height:auto;display:block}
+  code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.84em;background:var(--code-bg);
+    padding:1px 6px;border-radius:5px;overflow-wrap:anywhere}
+  b{font-weight:600}
+  :focus-visible{outline:2.5px solid var(--action);outline-offset:3px;border-radius:6px}
+
+  .skip{position:absolute;left:16px;top:-60px;background:var(--action);color:var(--action-ink);
+    padding:10px 16px;border-radius:10px;z-index:40;font-weight:600}
+  .skip:focus{top:12px}
+
+  /* nav: the homepage's floating island */
+  header.nav{position:sticky;top:0;z-index:30;padding:12px 0 8px}
+  .nav-shell{max-width:1080px;margin:0 auto;padding:0 16px}
+  .nav-inner{display:flex;align-items:center;gap:6px;padding:7px 7px 7px 14px;border-radius:999px;
+    background:color-mix(in srgb, var(--paper-2) 90%, transparent);
+    backdrop-filter:saturate(170%) blur(18px);-webkit-backdrop-filter:saturate(170%) blur(18px);
+    border:1px solid var(--line);box-shadow:var(--shadow)}
+  .brand{display:flex;align-items:center;gap:10px;font-family:"Space Grotesk",sans-serif;font-weight:600;
+    font-size:17px;letter-spacing:-.01em;text-decoration:none;color:var(--ink);white-space:nowrap}
+  /* the mark is black, so it keeps a light tile in dark mode */
+  .brand .glyph{width:32px;height:32px;flex:none;object-fit:contain;background:#fff;border-radius:8px}
+  .brand .sub{color:var(--ink-soft);font-weight:500}
+  @media(max-width:520px){.brand .sub{display:none}}
+  .nav-links{display:flex;align-items:center;gap:4px;margin-left:auto}
+  .nav-links a.text{padding:9px 13px;font-size:15px;font-weight:500;color:var(--ink-soft);border-radius:999px;text-decoration:none}
+  .nav-links a.text:hover{color:var(--ink);background:var(--paper)}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;
+    padding:11px 20px;border-radius:999px;text-decoration:none;border:1px solid transparent;
+    transition:box-shadow .3s var(--ease),background .3s var(--ease)}
+  .btn.primary{background:var(--action);color:var(--action-ink)}
+  .btn.primary:hover{box-shadow:0 10px 24px -10px rgba(27,77,155,.7)}
+  .btn.ghost{background:var(--paper-2);color:var(--ink);border-color:var(--line)}
+  .nav-links .btn{padding:9px 18px;font-size:14px}
+
+  /* article */
+  main{padding:clamp(28px,6vw,64px) 16px 40px}
+  .guide{max-width:720px;margin:0 auto}
+  .crumb{font-size:14px;color:var(--ink-soft)}
+  .crumb a{color:var(--ink-soft)}
+  h1,h2,h3{font-family:"Space Grotesk",sans-serif;letter-spacing:-.02em;line-height:1.15;color:var(--ink)}
+  h1{font-size:clamp(34px,6vw,54px);font-weight:700;margin:14px 0 22px}
+  h2{font-size:clamp(25px,3.6vw,32px);font-weight:700;margin:64px 0 16px;scroll-margin-top:96px;
+    display:flex;align-items:baseline;gap:12px}
+  h2 .n{flex:none;display:inline-grid;place-items:center;min-width:1.6em;height:1.6em;border-radius:999px;
+    background:var(--in-bg);color:var(--in-ink);font-size:.62em;letter-spacing:0;transform:translateY(-.15em)}
+  h3{font-size:21px;font-weight:600;margin:34px 0 10px;scroll-margin-top:96px}
+  p,ul,ol,dl{margin:0 0 16px}
+  .lede{font-size:clamp(19px,2.2vw,21px);line-height:1.55}
+  .byline{font-size:15px;color:var(--ink-soft)}
+  .byline a{color:var(--ink-soft)}
+  ul,ol{padding-left:1.3em}
+  li{margin:0 0 8px}
+  li::marker{color:var(--ink-soft)}
+  q{quotes:"\201C" "\201D"}
+
+  .toc{margin:34px 0 8px;padding:20px 24px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper-2)}
+  .toc h2{font-size:14px;margin:0 0 10px;text-transform:uppercase;letter-spacing:.13em;color:var(--ink-soft);display:block}
+  .toc ol{margin:0;padding-left:1.4em;columns:2 260px;column-gap:28px;font-size:16px}
+  .toc li{margin:0 0 6px;break-inside:avoid}
+
+  /* the three columns, named in words and coloured like the app */
+  .cols{display:grid;gap:12px}
+  .cols > div{display:grid;grid-template-columns:minmax(0,210px) minmax(0,1fr);gap:4px 18px;align-items:start;
+    padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--paper-2)}
+  @media(max-width:560px){.cols > div{grid-template-columns:1fr}}
+  .chip{justify-self:start;font-size:13.5px;font-weight:600;padding:5px 11px;border-radius:8px;line-height:1.35}
+  .chip.out{background:var(--out-bg);color:var(--out-ink)}
+  .chip.fn{background:var(--fn-bg);color:var(--fn-ink)}
+  .chip.in{background:var(--in-bg);color:var(--in-ink)}
+  .cols dd{font-size:16.5px}
+
+  .table-wrap{overflow-x:auto;margin:0 0 18px;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:16px;background:var(--paper-2)}
+  th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{font-family:"Space Grotesk",sans-serif;font-weight:600}
+  tr:last-child td{border-bottom:0}
+
+  figure{margin:26px 0 30px}
+  .shot{border-radius:var(--radius);border:1px solid var(--line);background:var(--paper-2);box-shadow:var(--shadow);padding:6px}
+  .shot img{border-radius:calc(var(--radius) - 6px);width:100%}
+  figcaption{font-size:15px;color:var(--ink-soft);margin-top:10px;line-height:1.5}
+
+  .steps{counter-reset:s;list-style:none;padding:0}
+  .steps li{counter-increment:s;position:relative;padding-left:44px;margin-bottom:12px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:.1em;width:28px;height:28px;border-radius:50%;
+    display:grid;place-items:center;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:14px;
+    background:var(--paper-2);border:1px solid var(--line);color:var(--ink)}
+
+  .mistakes{list-style:none;padding:0}
+  .mistakes li{padding:14px 18px;border:1px solid var(--line);border-left:4px solid var(--fn-ink);border-radius:10px;
+    background:var(--paper-2);margin-bottom:10px;font-size:16.5px}
+
+  .next{margin-top:56px;padding:26px;border-radius:var(--radius);border:1px solid var(--line);background:var(--paper-2)}
+  .next .row{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+
+  footer{padding:40px 16px 60px;color:var(--ink-soft);font-size:15px;border-top:1px solid var(--line);margin-top:40px}
+  .foot{max-width:1080px;margin:0 auto}
+  .foot-links{display:flex;flex-wrap:wrap;gap:10px 22px}
+  .foot-links a{color:var(--ink-soft);text-decoration:none}
+  .foot-links a:hover{color:var(--ink);text-decoration:underline}
+  .disclaimer{margin-top:24px;font-size:13.5px;max-width:70ch}
+
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the guide</a>
+
+<header class="nav">
+  <div class="nav-shell">
+    <div class="nav-inner">
+      <a class="brand" href="../" aria-label="QuadStick Config Manager home">
+        <img class="glyph" src="../QSLogo.png" alt="" width="32" height="32">
+        QuadStick&nbsp;<span class="sub">Config Manager</span>
+      </a>
+      <nav class="nav-links" aria-label="Site">
+        <a class="text" href="../">Home</a>
+        <a class="btn primary" href="../#download">Download</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<article class="guide">
+
+<p class="crumb"><a href="../">QuadStick Config Manager</a> <span aria-hidden="true">/</span> Guide</p>
+<h1>How to make a QuadStick game profile</h1>
+
+<p class="lede">A QuadStick game profile is a CSV file on the QuadStick's own drive. Each row names a game button (the output), how it presses (the function), and the sip, puff, lip press or joystick move that sets it off (the input). To make one, start from a profile that already works, change the rows for your game, fix anything that gets flagged, and install the file on the device.</p>
+
+<p>This guide does it in <a href="../">QuadStick Config Manager</a>, a free, open source app for Windows, macOS and Linux. <a href="#spreadsheet">The spreadsheet route</a> that QuadStick's own tools use is at the end. Both make the same file.</p>
+
+<p class="byline">By <a href="https://bassamkamal.dev/">Bassam Kamal</a>, who makes the app. Checked against the app's source and QuadStick firmware 2373.</p>
+
+<nav class="toc" aria-labelledby="toc-title">
+  <h2 id="toc-title">On this page</h2>
+  <ol>
+    <li><a href="#get-the-app">Get the app</a></li>
+    <li><a href="#start">Start from a working profile</a></li>
+    <li><a href="#rows">Output, function, input</a></li>
+    <li><a href="#sips-and-puffs">Map sips and puffs</a></li>
+    <li><a href="#soft">Soft sips and puffs</a></li>
+    <li><a href="#lip">The lip switch</a></li>
+    <li><a href="#joystick">The joystick</a></li>
+    <li><a href="#modes">Modes</a></li>
+    <li><a href="#problems">Fix what gets flagged</a></li>
+    <li><a href="#install">Install it on the QuadStick</a></li>
+    <li><a href="#test">Load it and test it</a></li>
+  </ol>
+  <p style="margin:12px 0 0;font-size:16px">Also: <a href="#mistakes">common mistakes</a> and <a href="#spreadsheet">the spreadsheet route</a>.</p>
+</nav>
+
+<h2 id="get-the-app"><span class="n">1</span>Get the app</h2>
+<p>Get it from the <a href="https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12">Mac App Store</a> or the <a href="https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&amp;gl=EG&amp;ocid=pdpshare">Microsoft Store</a>, or take a zip (or a Linux <code>tar.gz</code>) from the <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">GitHub releases page</a>. Every build is in the <a href="../#download">download section</a>. Everything below works offline except the Google Sheets features and the community list.</p>
+
+<h2 id="start"><span class="n">2</span>Start from a profile that already works</h2>
+<p>Building from nothing is slow and easy to get wrong. Open something close and change it. The Home screen has a <b>Start a profile</b> row:</p>
+<ul>
+  <li><b>New profile</b> starts from the factory layout shipped on every QuadStick.</li>
+  <li><b>Open a file</b> opens a profile <code>.csv</code>, or an <code>.xlsx</code> workbook downloaded from Google Sheets.</li>
+  <li><b>Community profiles</b> searches the shared list from quadstick.com. <b>Import</b> opens one in the editor and writes nothing to your QuadStick.</li>
+  <li><b>Use template</b> starts from a profile you saved with <b>Save as template</b>.</li>
+</ul>
+<p><b>Import from Sheets</b>, lower down, takes a Google Sheets link shared with "Anyone with the link". After an import, the <b>Import review</b> window says which tabs came in and which were left out.</p>
+
+<figure>
+  <div class="shot">
+    <picture>
+      <source srcset="../screenshot-home-dark.png" media="(prefers-color-scheme: dark)">
+      <img src="../screenshot-home.png" width="1440" height="1280" loading="lazy" decoding="async"
+        alt="The Home screen. A Start a profile row holds New profile, Open a file, Use template, Community profiles and How it works. Below it are the profiles saved on this computer and a box to paste a Google Sheets link.">
+    </picture>
+  </div>
+  <figcaption>Home: start a profile, open a saved one, or paste a Sheets link.</figcaption>
+</figure>
+
+<h3 id="name">Name it</h3>
+<p>The <b>Profile</b> box at the top of the editor is the file name on the device. Leave out spaces, and let the app add <code>.csv</code>. Keep the whole name to 31 characters with <code>.csv</code>, or the QuadStick cannot open it. Do not call it <code>default</code> unless you mean to replace the device's fallback file.</p>
+
+<h2 id="rows"><span class="n">3</span>Read a row: output, function, input</h2>
+<p>Every binding is one row with three parts, labelled and coloured like the official spreadsheets:</p>
+<dl class="cols">
+  <div>
+    <dt class="chip out">Output (game button)</dt>
+    <dd>What the game gets: a button like <code>x</code> or <code>left_trigger</code>, a mouse move like <code>mouse_up</code>, or a key like <code>kb_space</code>.</dd>
+  </div>
+  <div>
+    <dt class="chip fn">Function (behavior)</dt>
+    <dd>How it presses. <code>normal</code> holds the button while your input is active. <code>toggle</code> turns it on with one activation and off with the next. A blank function counts as <code>normal</code>.</dd>
+  </div>
+  <div>
+    <dt class="chip in">Inputs (sips, puffs, joystick)</dt>
+    <dd>What you do. Up to eight, in columns C to J.</dd>
+  </div>
+</dl>
+<p>One input is a plain trigger. Two or more in one row are a sequence, not a chord: you do them one after the other, left to right, and the last one sets off the output.</p>
+<p><b>Device view</b> shows each binding beside a photo of the QuadStick; pick a part to change it. <b>List view</b> shows the rows the way the file stores them. Switch with <b>Device</b> and <b>Rows</b> under <b>View</b>, or Ctrl+D (Cmd+D on a Mac).</p>
+
+<figure>
+  <div class="shot">
+    <picture>
+      <source srcset="../screenshot-device-view-dark.png" media="(prefers-color-scheme: dark)">
+      <img src="../screenshot-device-view.png" width="1440" height="900" loading="lazy" decoding="async"
+        alt="Device view. A photo of the QuadStick with a box beside each part listing what its sip, puff, soft sip and soft puff press in this mode. The joystick's four mappings are written out in a panel on the right.">
+    </picture>
+  </div>
+  <figcaption>Device view: each part of the stick and what it presses in this mode.</figcaption>
+</figure>
+
+<figure>
+  <div class="shot">
+    <picture>
+      <source srcset="../screenshot-editor-dark.png" media="(prefers-color-scheme: dark)">
+      <img src="../screenshot-editor.png" width="1440" height="900" loading="lazy" decoding="async"
+        alt="List view. One row per binding, with Output (game button), Function (behavior) and Inputs (sips, puffs, joystick) columns, a note field, and buttons to add, delete and move rows.">
+    </picture>
+  </div>
+  <figcaption>List view: the same kind of profile as rows.</figcaption>
+</figure>
+
+<h2 id="sips-and-puffs"><span class="n">4</span>Map sips and puffs</h2>
+<p>The FPS and the Original have a three hole mouthpiece and a side tube. Each takes a sip and a puff:</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th scope="col">Part</th><th scope="col">Sip</th><th scope="col">Puff</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Left hole</th><td><code>mp_left_sip</code></td><td><code>mp_left_puff</code></td></tr>
+    <tr><th scope="row">Center hole</th><td><code>mp_center_sip</code></td><td><code>mp_center_puff</code></td></tr>
+    <tr><th scope="row">Right hole</th><td><code>mp_right_sip</code></td><td><code>mp_right_puff</code></td></tr>
+    <tr><th scope="row">Side tube</th><td><code>right_sip</code></td><td><code>right_puff</code></td></tr>
+  </tbody>
+</table>
+</div>
+<p><b>Hole combos</b> cover more than one hole at once, like <code>mp_left_center_sip</code>, or <code>mp_triple_puff</code> for all three. They suit actions you never want to set off by accident.</p>
+<p>The factory profile puts <code>increment_mode</code> and <code>decrement_mode</code> on the side tube sip and puff, which is why the side tube changes mode until you remap it.</p>
+<p>Set your model in the <b>Configuration</b> box on the left of the editor. Parts your model does not have are dimmed and marked <b>Not on your model</b>.</p>
+
+<h2 id="soft"><span class="n">5</span>Add soft sips and puffs</h2>
+<p>Each hole, each combo and the side tube also has a soft input ending in <code>_soft</code>, like <code>mp_left_sip_soft</code>. It lets a gentle sip do something different from a normal one.</p>
+<p>This is how firmware 2373 tells them apart. A sip past the normal threshold counts as normal at once. If a soft input is mapped on that hole, a gentler sip, past the soft threshold only, counts as soft once it lasts the soft delay. It then stays soft until you let go, even if you sip harder. So on that hole, a normal sip has to cross the normal threshold before the soft delay runs out.</p>
+<p>The levels are device settings in <code>prefs.csv</code>, shared by every profile. Change them on the Device screen under <b>Sip and puff</b> (<b>Soft sip/puff threshold</b>, <b>Normal sip/puff threshold</b>, <b>Soft sip/puff delay</b>), then press <b>Save to your QuadStick</b>.</p>
+
+<figure>
+  <div class="shot">
+    <picture>
+      <source srcset="../screenshot-device-settings-dark.png" media="(prefers-color-scheme: dark)">
+      <img src="../screenshot-device-settings.png" width="1440" height="900" loading="lazy" decoding="async"
+        alt="The device settings screen with the Sip and puff group open. Soft sip/puff threshold, Normal sip/puff threshold, Soft sip/puff delay and Hard sip/puff delay each have a slider, an exact number, and a line saying what they change.">
+    </picture>
+  </div>
+  <figcaption>Sip and puff settings belong to the device, not to one profile.</figcaption>
+</figure>
+
+<h2 id="lip"><span class="n">6</span>Use the lip switch</h2>
+<p><code>lip</code> is the lip switch. The factory profile puts <code>x</code> on it. To give one input two jobs, use a function. For these two, the number after the name is milliseconds:</p>
+<ul>
+  <li><code>tap 300</code> gives a short press if you let go within 300 ms. Hold longer and nothing fires.</li>
+  <li><code>delayed_latch</code> is a normal press when short. Hold past its time (one second if you give none) and the button locks on, with a beep.</li>
+</ul>
+
+<h2 id="joystick"><span class="n">7</span>Map the joystick</h2>
+<p>Moving the mouthpiece works as a joystick. Its inputs are <code>up</code>, <code>down</code>, <code>left</code> and <code>right</code>, plus eight compass points such as <code>N</code> and <code>NE</code>. The factory profile sends the four directions to the left stick (<code>left_joy_up</code> and so on). For a mouse pointer, use the mouse outputs such as <code>mouse_up</code> instead.</p>
+<p><code>greater_than 80</code> fires only once the stick is pushed at least 80 percent, so a small push and a full push can press different buttons.</p>
+
+<h2 id="modes"><span class="n">8</span>Add modes for different parts of a game</h2>
+<p>A mode is one full layout, like one for walking and one for driving. A profile holds up to 16, though most use one. The <b>Modes</b> list numbers them, and <b>Edit modes</b> adds, renames, reorders and deletes them.</p>
+<p>Map <code>increment_mode</code> and <code>decrement_mode</code> to switch while playing. They step to the next or the previous mode, and wrap around at the ends.</p>
+<p>The QuadStick tells modes apart by their order in the file, never by name, so two modes can share a name. Each mode holds up to 128 rows with an output.</p>
+
+<h2 id="problems"><span class="n">9</span>Fix what the Problems list flags</h2>
+<p>The bar at the bottom of the editor counts errors and warnings. Click it to open the Problems list. Each problem names its cell, like C4, says what is wrong, and says how to fix it.</p>
+<ul>
+  <li><b>Errors block installing.</b> The QuadStick would misread the row, or could not load the file. <b>Fix first problem</b> jumps to the first one.</li>
+  <li><b>Warnings still install.</b> They flag rows the device will skip, or read in a way you might not expect.</li>
+</ul>
+
+<figure>
+  <div class="shot">
+    <picture>
+      <source srcset="../screenshot-errors-dark.png" media="(prefers-color-scheme: dark)">
+      <img src="../screenshot-errors.png" width="1440" height="900" loading="lazy" decoding="async"
+        alt="The Problems list under the rows. It shows one error and two warnings in plain English, each starting with its cell, such as Error C4, and ending with how to fix it. The bad cells are outlined, and a Fix first problem button sits at the bottom right.">
+    </picture>
+  </div>
+  <figcaption>The error blocks the install. The two warnings do not.</figcaption>
+</figure>
+
+<h2 id="install"><span class="n">10</span>Install it on the QuadStick</h2>
+<p>Plug the QuadStick in. It shows up on your computer as a drive. <b>Save</b> (Ctrl+S) keeps the profile on your computer. <b>Install to QuadStick</b> (Ctrl+I) is what writes to the device:</p>
+<ol class="steps">
+  <li>It stops if the profile has errors.</li>
+  <li>It finds the drive with <code>default.csv</code> on it, and asks which one if there are several.</li>
+  <li>Before replacing <code>default.csv</code> it asks <q>Overwrite default.csv?</q>, because a wrong one can cut off the drive until a physical force-erase. <code>prefs.csv</code> gets its own question.</li>
+  <li>It copies the old file to a <code>QuadStickBackups</code> folder in your home folder, with the time in its name.</li>
+  <li>It writes a temporary copy, reads it back, then swaps it in. If the swap fails, it puts the backup back, and says so if it cannot.</li>
+  <li>It waits two seconds, then says <q>Safe to unplug.</q> The QuadStick keeps the end of a write in memory for about a second and a half, and unplugging inside that gap can break other files, most often <code>prefs.csv</code>.</li>
+</ol>
+<p>If the drive does not show up, the QuadStick may be in a USB emulation mode that hides it. Turn controller emulation off and reconnect. The app will not install a <code>default.csv</code> or <code>prefs.csv</code> that sets one of those modes, because the device starts from those files and a computer could not reach them again.</p>
+
+<h2 id="test"><span class="n">11</span>Load it and test it</h2>
+<p><b><code>default.csv</code> loads by itself:</b> at startup, and again whenever the device sees it or <code>prefs.csv</code> change.</p>
+<p><b>Other files, you pick on the device.</b> With <b>Select files with the side tube</b> on, a long hard sip on the side tube opens the file list. Push the joystick right or left to move one file, or up or down to move five. The lip switch, a center sip or puff, or the push switch loads it, and it starts on mode 1. <code>default.csv</code> comes first and the rest are sorted by name. <b>Manage files</b> on the Home screen shows that order and the lights for each position.</p>
+<p><b>Then check it.</b> With the editor showing <b>QuadStick connected</b>, a row lights while the device sends that row's output, so you can sip and watch. The device never says which file or mode is running, so a lit row can come from another profile. Mouse, keyboard and infrared outputs never light.</p>
+
+<figure>
+  <div class="shot">
+    <picture>
+      <source srcset="../screenshot-live-dark.png" media="(prefers-color-scheme: dark)">
+      <img src="../screenshot-live.png" width="1440" height="900" loading="lazy" decoding="async"
+        alt="List view with QuadStick connected shown on the left. Three rows are lit while the QuadStick sends them, and each lit row has a dot beside its number as well as a tint.">
+    </picture>
+  </div>
+  <figcaption>Lit rows carry a dot as well as colour.</figcaption>
+</figure>
+
+<h2 id="mistakes">Common mistakes the app catches</h2>
+<p>These come from the checks the app runs. The quoted lines are what it says.</p>
+<ul class="mistakes">
+  <li><b>A misspelled input.</b> <q><code>left_sip</code> is not a documented input name, so the device ignores it.</q> The left hole sip is <code>mp_left_sip</code>. If the text was a note, <b>Move to notes</b> puts it in a column the QuadStick never reads.</li>
+  <li><b>A row under a blank row.</b> The device stops reading a mode at the first blank line, so rows below it do nothing.</li>
+  <li><b>A word where a number goes.</b> A device setting like <code>mouse_speed</code> can go in the output column to change it while a mode runs. Its value goes in column C as a whole number, so <q><code>fast</code> is not a whole number</q> is an error.</li>
+  <li><b>A decimal in a function.</b> The device reads whole numbers only, so <code>repeat 2.5</code> acts as <code>repeat 2</code>.</li>
+  <li><b>A file name that is too long.</b> Over 31 characters with <code>.csv</code>, the QuadStick cannot load it, so the app will not install it.</li>
+  <li><b>Too many modes or rows.</b> Past 16 modes, or 128 rows in a mode, the device drops the extras without a word.</li>
+  <li><b>A note on two lines.</b> The device reads each line as its own row, and a blank one ends the mode early. Saving joins the lines and warns you.</li>
+</ul>
+
+<h2 id="spreadsheet">The spreadsheet route</h2>
+<p>QuadStick's own route is a spreadsheet. You fill in the same three columns in Google Sheets or Excel, and the QuadStick Manager Program (QMP) turns it into a CSV file and puts it on the device. It works, and the <a href="https://www.quadstick.com/online-user-manual">QuadStick user manual</a> walks through it.</p>
+<p>The file is the same either way, so you can switch. <b>Import from Sheets</b> brings a sheet into this app, and <b>Share as a Google Sheet</b> sends a profile back out to your own Google Drive. Whichever you use, keep backups on your computer. At startup the QuadStick deletes every file on its drive that is not a <code>.csv</code>, apart from <code>joystick.bin</code>.</p>
+
+<aside class="next" aria-label="Get the app">
+  <p style="margin:0">Stuck on a binding the app will not let you make? <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/issues/new">Report it on GitHub</a> or ask in the <a href="https://discord.gg/ceqrZmnWyT">QuadStick developers Discord</a>.</p>
+  <div class="row">
+    <a class="btn primary" href="../#download">Download QuadStick Config Manager</a>
+    <a class="btn ghost" href="../">Back to the homepage</a>
+  </div>
+</aside>
+
+</article>
+</main>
+
+<footer>
+  <div class="foot">
+    <div class="foot-links">
+      <a href="../">QuadStick Config Manager</a>
+      <a href="https://github.com/Bbrizly/Quadstick-Config-Manager">GitHub</a>
+      <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/releases">Releases</a>
+      <a href="https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12">Mac App Store</a>
+      <a href="https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&amp;gl=EG&amp;ocid=pdpshare">Microsoft Store</a>
+      <a href="https://discord.gg/ceqrZmnWyT">Discord</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="https://www.quadstick.com/">QuadStick.com</a>
+      <a href="https://www.quadstick.com/online-user-manual">User manual</a>
+    </div>
+    <p class="disclaimer">Not affiliated with QuadStick or Fred Davison. An independent, community-made tool, open source under the MIT license.</p>
+  </div>
+</footer>
+</body>
+</html>

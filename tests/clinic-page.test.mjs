@@ -177,7 +177,7 @@ test('the nav logo is the same mark on both pages', () => {
 });
 
 test('the clinic hero is a QuadStick in use, credited, and the free page keeps the device', () => {
-  assert.match(homepage, /class="hero-stick" src="hero-device\.png"/, 'index.html lost the hero art');
+  assert.match(homepage, /class="hero-stick" src="hero-device\.webp"/, 'index.html lost the hero art');
   assert.match(page, /<img class="hero-photo" src="hero-clinic\.webp"[^>]*alt="[^"]*QuadStick[^"]*"/);
   // CC BY-SA: the credit has to be readable on the page, a comment does not count
   assert.match(page, /class="hero-credit">Photo: <a href="https:\/\/commons\.wikimedia\.org\/wiki\/File:InclusiveGameLab[^"]+">InclusiveGameLab<\/a>, <a href="https:\/\/creativecommons\.org\/licenses\/by-sa\/4\.0\/">CC BY-SA 4\.0<\/a>/);

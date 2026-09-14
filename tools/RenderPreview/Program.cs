@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using QuadStick.App;
 using QuadStick.Format;
+using SkiaSharp;
 
 // Renders MainWindow to PNGs for docs, and the appearance gallery beside them,
 // so a change to Style.cs or Palette.cs can be looked at in both themes without
@@ -231,6 +232,11 @@ if (args.Contains("--docs"))
                 0, -0.6, Array.Empty<int>(), "QuadStick", LitRows(f), true));
         });
     }
+
+    // The site shows the light shots as WebP, so they come out of this same run.
+    // The README keeps the PNGs.
+    foreach (var png in Directory.GetFiles(outDir, "screenshot-*.png"))
+        if (!png.EndsWith("-dark.png", StringComparison.Ordinal)) WriteWebp(png);
 
     Console.WriteLine("docs set written");
     return;
@@ -962,6 +968,22 @@ void CaptureWindow(string name, Window win, bool shown = false)
     win.Close();
     Dispatcher.UIThread.RunJobs();
     Console.WriteLine($"  {name}.png");
+}
+
+// Two WebPs beside a PNG: the same size, and half of it for a phone screen.
+void WriteWebp(string png)
+{
+    using var full = SKBitmap.Decode(png);
+    using var half = full.Resize(new SKImageInfo(full.Width / 2, full.Height / 2), SKFilterQuality.High);
+    Save(full, Path.ChangeExtension(png, ".webp"));
+    Save(half, Path.ChangeExtension(png, null) + $"-{half.Width}.webp");
+    Console.WriteLine($"  {Path.GetFileNameWithoutExtension(png)}.webp");
+
+    static void Save(SKBitmap bitmap, string path)
+    {
+        using var data = bitmap.Encode(SKEncodedImageFormat.Webp, 80);
+        File.WriteAllBytes(path, data.ToArray());
+    }
 }
 
 void CaptureOwned(string name, Func<MainWindow, Window> create)

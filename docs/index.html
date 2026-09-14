@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QuadStick Config Manager · edit your sip &amp; puff profiles safely</title>
 <meta name="description" content="A free, open-source desktop app for editing and installing QuadStick game profiles on Windows, macOS and Linux. Catches mistakes in plain English before they reach the device.">
+<link rel="canonical" href="https://bassamkamal.dev/Quadstick-Config-Manager/">
 
 <!-- favicon: the site logo on white, so the black mark reads on light and dark tab strips -->
 <link rel="icon" type="image/png" href="favicon.png">
@@ -13,23 +14,57 @@
 <link rel="prefetch" href="clinic.html">
 <link rel="apple-touch-icon" href="favicon.png">
 
-<!-- Open Graph / social preview -->
+<!-- Open Graph / social preview. scrapers do not resolve relative paths, so every URL is absolute -->
+<meta property="og:site_name" content="QuadStick Config Manager">
 <meta property="og:title" content="QuadStick Config Manager">
 <meta property="og:description" content="Map every sip and puff without bricking your stick. A free editor for QuadStick profiles, in plain English.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="screenshot-device-view.png">
+<meta property="og:url" content="https://bassamkamal.dev/Quadstick-Config-Manager/">
+<meta property="og:image" content="https://bassamkamal.dev/Quadstick-Config-Manager/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The app's device view: a photo of the QuadStick with a box beside each part saying what it does.">
+<meta name="twitter:card" content="summary_large_image">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- only what the page itself can back up: no version number to go stale, no ratings -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "QuadStick Config Manager",
+  "description": "A free, open-source desktop app for editing and installing QuadStick game profiles on Windows, macOS and Linux.",
+  "url": "https://bassamkamal.dev/Quadstick-Config-Manager/",
+  "operatingSystem": "Windows, macOS, Linux",
+  "applicationCategory": "UtilitiesApplication",
+  "isAccessibleForFree": true,
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "downloadUrl": "https://github.com/Bbrizly/Quadstick-Config-Manager/releases",
+  "screenshot": "https://bassamkamal.dev/Quadstick-Config-Manager/screenshot-device-view.png",
+  "sameAs": [
+    "https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12",
+    "https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&gl=EG&ocid=pdpshare",
+    "https://github.com/Bbrizly/Quadstick-Config-Manager"
+  ],
+  "author": {"@type": "Person", "name": "Bassam Kamal", "url": "https://bassamkamal.dev/"}
+}
+</script>
+
+<!-- the latin cut of each Google font, served from here so no stylesheet blocks the first paint -->
+<link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 
 <style>
+  @font-face{font-family:"Space Grotesk";font-weight:500 700;font-display:swap;src:url(fonts/space-grotesk-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:"Instrument Sans";font-weight:400 600;font-display:swap;src:url(fonts/instrument-sans-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:"JetBrains Mono";font-weight:400 500;font-display:swap;src:url(fonts/jetbrains-mono-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
   :root{
     --paper:#F4F1EA;
     --paper-2:#FBF9F4;
     --ink:#1A1714;
     --ink-soft:#5F584D;
-    --ink-faint:#8C8478;
+    --ink-faint:#726B61;
     --line:#E2DBCC;
 
     /* the product's own grammar */
@@ -66,7 +101,8 @@
     overflow-x:hidden;
   }
   a{color:inherit}
-  img{max-width:100%;display:block}
+  /* height:auto, or a width and height attribute squashes an image max-width shrank */
+  img{max-width:100%;height:auto;display:block}
   code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
 
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
@@ -145,18 +181,17 @@
      window still gets all six. pointing at it stops it. */
   .band{position:relative;z-index:1;width:100%;background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
   .band-in{max-width:var(--herow);margin-inline:auto;padding:clamp(24px,3.4vh,42px) 0}
-  .rail{overflow:hidden;
-    -webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);
-    mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent)}
+  .rail{overflow-x:clip}
   .rail + .rail{margin-top:clamp(22px,3vh,36px)}
-  .track{display:flex;align-items:stretch;width:max-content;animation:slide 46s linear infinite;will-change:transform}
-  .mark-set{display:flex;align-items:stretch;flex:none}
-  .track.back{animation-direction:reverse;animation-duration:74s}
-  @keyframes slide{to{transform:translateX(-50%)}}
+  .marquee-track{display:flex;align-items:stretch;width:max-content;will-change:transform;
+    animation-name:marquee-scroll;animation-timing-function:linear;animation-iteration-count:infinite}
+  .marquee-track > *{flex:0 0 auto}
+  @keyframes marquee-scroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
   .mark-item{display:grid;place-items:center;padding:0 clamp(24px,3.2vw,52px)}
   /* AbleGamers publish this mark knocked out in white, so it gets the ground it was drawn for */
   .mark-item.knockout img{background:#1A1714;padding:7px 11px;border-radius:10px}
-  .mark-item img{height:calc(clamp(26px,2.6vw,38px) * 1.5 * var(--s,1));width:auto;max-width:none;object-fit:contain;display:block}
+  .mark-item img{height:calc(clamp(26px,2.6vw,38px) * 1.5 * var(--s,1));width:auto;max-width:none;object-fit:contain;display:block;filter:saturate(.5);transition:filter .2s var(--ease)}
+  .mark-item:hover img{filter:saturate(1)}
   .band-foot{margin-top:clamp(16px,2.2vh,24px);text-align:center;font-size:12px;color:var(--ink-faint);padding:0 var(--gut)}
 
   /* one testimonial card. the quotes live in testimonials.js, appended by hand. */
@@ -365,8 +400,8 @@
     .fade-swap,.btn,.dl-card{transition:none}
     html{scroll-behavior:auto}
     .decoder-head .file .live{animation:none}
-    .track{animation:none}
-    .rail{overflow-x:auto}
+    .marquee-track{animation:none}
+    .rail{overflow-x:clip}
   }
 
   :focus-visible{outline:2.5px solid var(--action);outline-offset:3px;border-radius:6px}
@@ -379,7 +414,7 @@
   <div class="nav-shell">
     <div class="nav-inner">
       <a class="brand" href="#top" aria-label="QuadStick Config Manager home">
-        <img class="glyph" src="QSLogo.png" alt="" width="32" height="32">
+        <img class="glyph" src="QSLogo-64.png" alt="" width="32" height="32">
         QuadStick&nbsp;<span class="sub">Config Manager</span>
       </a>
       <nav class="nav-links">
@@ -421,7 +456,7 @@
   <h1 class="display reveal">Set up your QuadStick <br>without the spreadsheet.</h1>
   <p class="lede reveal">Map inputs on a picture of the stick, catch every bad cell, and install straight to the device.</p>
 
-  <img class="hero-stick" src="hero-device.png" alt="The device view: a photo of the QuadStick with a labelled box beside each part, showing what a sip, a puff and a soft version of either does." width="750" height="572" loading="eager" decoding="async">
+  <img class="hero-stick" src="hero-device.webp" alt="The device view: a photo of the QuadStick with a labelled box beside each part, showing what a sip, a puff and a soft version of either does." width="750" height="572" fetchpriority="high" decoding="async">
 
   <div class="stores reveal">
     <span class="plat store-note">Free and open source · works offline</span>
@@ -490,18 +525,18 @@
 
 <div class="band">
     <div class="band-in">
-      <div class="rail">
-        <div class="track">
-          <a class="mark-item" href="https://craighospital.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/craig-hospital.svg" alt="Craig Hospital"></a>
-          <a class="mark-item" href="https://shepherd.org/" target="_blank" rel="noopener"><img src="logos/shepherd-center.svg" alt="Shepherd Center"></a>
-          <a class="mark-item" href="https://livelifetherapysolutions.com/" target="_blank" rel="noopener"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="Live Life Therapy Solutions"></a>
-          <a class="mark-item" href="https://aztap.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/aztap.png" alt="AzTAP, the Arizona Technology Access Program"></a>
-          <a class="mark-item knockout" href="https://ablegamers.org/" target="_blank" rel="noopener"><img style="--s:1.5" src="logos/ablegamers.webp" alt="AbleGamers Charity"></a>
-          <a class="mark-item" href="https://www.respawnfoundation.org/" target="_blank" rel="noopener"><img src="logos/respawn-foundation.webp" alt="Respawn Foundation"></a>
+      <div class="rail marquee-interaction">
+        <div class="marquee-track">
+          <a class="mark-item" href="https://craighospital.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/craig-hospital.svg" alt="Craig Hospital" width="149" height="40"></a>
+          <a class="mark-item" href="https://shepherd.org/" target="_blank" rel="noopener"><img src="logos/shepherd-center.svg" alt="Shepherd Center" width="227" height="62"></a>
+          <a class="mark-item" href="https://livelifetherapysolutions.com/" target="_blank" rel="noopener"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="Live Life Therapy Solutions" width="525" height="303"></a>
+          <a class="mark-item" href="https://aztap.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/aztap.png" alt="AzTAP, the Arizona Technology Access Program" width="229" height="68"></a>
+          <a class="mark-item knockout" href="https://ablegamers.org/" target="_blank" rel="noopener"><img style="--s:1.5" src="logos/ablegamers.webp" alt="AbleGamers Charity" width="360" height="126"></a>
+          <a class="mark-item" href="https://www.respawnfoundation.org/" target="_blank" rel="noopener"><img src="logos/respawn-foundation.webp" alt="Respawn Foundation" width="1114" height="295"></a>
         </div>
       </div>
       <div class="rail" id="quote-rail" hidden>
-        <div class="track back" id="quote-track"></div>
+        <div class="marquee-track" id="quote-track"></div>
       </div>
       <p class="band-foot">Organisations working in adaptive gaming and rehabilitation.</p>
     </div>
@@ -551,7 +586,7 @@
           <span class="key out"><span class="sw"></span>Output: the game button</span>
         </div>
       </div>
-      <div class="shot"><img src="screenshot-device-view.png" alt="The device view: a photo of the QuadStick with a callout beside each part saying what a sip, puff or soft version of either does, and the joystick's four mappings written out in the panel beside it." loading="lazy"></div>
+      <div class="shot"><img src="screenshot-device-view.webp" srcset="screenshot-device-view-720.webp 720w, screenshot-device-view.webp 1440w" sizes="(max-width:820px) 100vw, 470px" alt="The device view: a photo of the QuadStick with a callout beside each part saying what a sip, puff or soft version of either does, and the joystick's four mappings written out in the panel beside it." width="1440" height="900" loading="lazy"></div>
     </div>
 
     <!-- feature 2: list view -->
@@ -560,7 +595,7 @@
         <h3>Or work row by row, with real autocomplete.</h3>
         <p>The list view knows the real input, output, and function names from Fred's validation data, so you type <code style="font-size:.85em">left_joy_left</code>, not a guess. Add and delete rows without touching a formula.</p>
       </div>
-      <div class="shot"><img src="screenshot-editor.png" alt="The list view: one row per mapping, output, function and inputs in their own coloured columns, with a note field and Add row and Delete row controls." loading="lazy"></div>
+      <div class="shot"><img src="screenshot-editor.webp" srcset="screenshot-editor-720.webp 720w, screenshot-editor.webp 1440w" sizes="(max-width:820px) 100vw, 470px" alt="The list view: one row per mapping, output, function and inputs in their own coloured columns, with a note field and Add row and Delete row controls." width="1440" height="900" loading="lazy"></div>
     </div>
 
     <!-- feature 3: errors -->
@@ -570,7 +605,7 @@
         <p>Which cell, what's off, and how to fix it, in plain English. The bad cell gets a red outline, and errors block the install so nothing broken can reach the device.</p>
         <p>Click any problem to copy it straight into a bug report.</p>
       </div>
-      <div class="shot"><img src="screenshot-errors.png" alt="The problems panel: one error and two warnings written out in plain English, each naming its cell, with the bad cells outlined in red." loading="lazy"></div>
+      <div class="shot"><img src="screenshot-errors.webp" srcset="screenshot-errors-720.webp 720w, screenshot-errors.webp 1440w" sizes="(max-width:820px) 100vw, 470px" alt="The problems panel: one error and two warnings written out in plain English, each naming its cell, with the bad cells outlined in red." width="1440" height="900" loading="lazy"></div>
     </div>
 
     <!-- feature 4: device settings -->
@@ -580,7 +615,7 @@
         <p>The Device screen reads <code style="font-size:.85em">prefs.csv</code> off the QuadStick and gives every setting a real control: a slider with the exact number beside it, a box where it's a flag, a dropdown where it's a list. Each one says what it does, and what the device falls back to when your file leaves it out.</p>
         <p>Nothing reaches the stick until you press Save, and nothing you didn't type gets rewritten.</p>
       </div>
-      <div class="shot"><img src="screenshot-device-settings.png" alt="The device settings screen: the sip and puff group, each setting on a slider with its exact number beside it and a line saying what it changes." loading="lazy"></div>
+      <div class="shot"><img src="screenshot-device-settings.webp" srcset="screenshot-device-settings-720.webp 720w, screenshot-device-settings.webp 1440w" sizes="(max-width:820px) 100vw, 470px" alt="The device settings screen: the sip and puff group, each setting on a slider with its exact number beside it and a line saying what it changes." width="1440" height="900" loading="lazy"></div>
     </div>
 
     <!-- feature 5: live -->
@@ -590,7 +625,7 @@
         <p>Plug a QuadStick in and the app finds it on its own. While it sends an output, the row bound to that output lights up, in the list and on the picture. Sip on the mouthpiece and the sip row stays lit for as long as the sip lasts.</p>
         <p>You can check a binding does what you meant without opening the game.</p>
       </div>
-      <div class="shot"><img src="screenshot-live.png" alt="The list view with three rows lit while the QuadStick is sending them, each lit row marked with a dot as well as colour." loading="lazy"></div>
+      <div class="shot"><img src="screenshot-live.webp" srcset="screenshot-live-720.webp 720w, screenshot-live.webp 1440w" sizes="(max-width:820px) 100vw, 470px" alt="The list view with three rows lit while the QuadStick is sending them, each lit row marked with a dot as well as colour." width="1440" height="900" loading="lazy"></div>
     </div>
   </div>
 </section>
@@ -676,7 +711,7 @@
   <div class="wrap">
     <div class="foot-top">
       <div class="brand" style="font-size:16px">
-        <img class="glyph" src="QSLogo.png" alt="" width="32" height="32">
+        <img class="glyph" src="QSLogo-64.png" alt="" width="32" height="32">
         QuadStick Config Manager
       </div>
       <div class="foot-links">
@@ -685,6 +720,8 @@
         <a href="https://apps.apple.com/ca/app/quadstick-config-manager/id6791035050?mt=12">Mac App Store</a>
         <a href="https://apps.microsoft.com/detail/9ppqzqnl4wkp?hl=en-US&gl=EG&ocid=pdpshare">Microsoft Store</a>
         <a href="https://discord.gg/ceqrZmnWyT">Discord</a>
+        <a href="how-to-make-a-quadstick-profile/">How to make a profile</a>
+        <a href="how-it-works.html">How the code works</a>
         <a href="privacy.html">Privacy</a>
         <a href="https://github.com/Bbrizly/Quadstick-Config-Manager/issues/new">Report a bug</a>
         <a href="https://www.quadstick.com/">QuadStick.com</a>
@@ -699,6 +736,7 @@
 </footer>
 
 <script src="testimonials.js"></script>
+<script src="marquee.js"></script>
 <script>
   // the band under the hero. the quotes come from testimonials.js, which is the
   // only file to touch to add one.
@@ -713,20 +751,15 @@
     quoteRail.hidden = false;
   }
 
-  // Group one source set and one identical copy so -50% always lands exactly
-  // at the next set. Both sets have fixed intrinsic widths before animation.
-  function loopTrack(track) {
-    const set = document.createElement('span');
-    set.className = 'mark-set';
-    const children = [...track.children];
-    track.replaceChildren();
-    set.append(...children);
-    const copy = set.cloneNode(true);
-    copy.setAttribute('aria-hidden', 'true');
-    for (const link of copy.querySelectorAll('a')) link.tabIndex = -1;
-    track.append(set, copy);
+  const logoMarquee = document.querySelector('.marquee-interaction');
+  createMarquee(logoMarquee, logoMarquee.querySelector('.marquee-track'), {
+    speed: 1.15, inverted: false, interactiveSpeed: 2.5,
+  });
+  if (quotes.length) {
+    createMarquee(document.getElementById('quote-rail'), document.getElementById('quote-track'), {
+      speed: 1.15, inverted: true, interactiveSpeed: 2.5,
+    });
   }
-  document.querySelectorAll('.track').forEach(loopTrack);
 
   // nav border on scroll
   const nav = document.getElementById('nav');

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QuadStick Clinic · one record per client</title>
 <meta name="description" content="A private clinician workspace for QuadStick caseloads: capabilities, client history and profile snapshots in one place. The editor stays free, Clinic is the paid caseload layer.">
+<link rel="canonical" href="https://bassamkamal.dev/Quadstick-Config-Manager/clinic.html">
 
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
@@ -12,16 +13,27 @@
      one is already in cache when it is clicked -->
 <link rel="prefetch" href="index.html">
 
+<meta property="og:site_name" content="QuadStick Config Manager">
 <meta property="og:title" content="QuadStick Clinic">
 <meta property="og:description" content="One record per client, across every visit: capabilities, history, profile snapshots and the next step.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="screenshot-device-view.png">
+<meta property="og:url" content="https://bassamkamal.dev/Quadstick-Config-Manager/clinic.html">
+<meta property="og:image" content="https://bassamkamal.dev/Quadstick-Config-Manager/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The app's device view: a photo of the QuadStick with a box beside each part saying what it does.">
+<meta name="twitter:card" content="summary_large_image">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- the latin cut of each Google font, served from here so no stylesheet blocks the first paint -->
+<link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
 
 <style>
+  @font-face{font-family:"Space Grotesk";font-weight:500 700;font-display:swap;src:url(fonts/space-grotesk-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:"Instrument Sans";font-weight:400 600;font-display:swap;src:url(fonts/instrument-sans-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:"JetBrains Mono";font-weight:400 500;font-display:swap;src:url(fonts/jetbrains-mono-latin.woff2) format("woff2");
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
   /* the palette is the free app's, one page over, with a clinical green where
      the free page uses blue. same paper, so the two pages read as one product. */
   :root{
@@ -29,7 +41,7 @@
     --paper-2:#FBF9F4;
     --ink:#1A1714;
     --ink-soft:#5F584D;
-    --ink-faint:#8C8478;
+    --ink-faint:#726B61;
     --line:#E2DBCC;
 
     --in-bg:#DAE6F7;   --in-ink:#2B558C;
@@ -183,18 +195,17 @@
      window still gets all six. pointing at it stops it. */
   .band{position:relative;z-index:1;width:100%;background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
   .band-in{max-width:var(--herow);margin-inline:auto;padding:clamp(24px,3.4vh,42px) 0}
-  .rail{overflow:hidden;
-    -webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);
-    mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent)}
+  .rail{overflow-x:clip}
   .rail + .rail{margin-top:clamp(22px,3vh,36px)}
-  .track{display:flex;align-items:stretch;width:max-content;animation:slide 46s linear infinite;will-change:transform}
-  .mark-set{display:flex;align-items:stretch;flex:none}
-  .track.back{animation-direction:reverse;animation-duration:74s}
-  @keyframes slide{to{transform:translateX(-50%)}}
+  .marquee-track{display:flex;align-items:stretch;width:max-content;will-change:transform;
+    animation-name:marquee-scroll;animation-timing-function:linear;animation-iteration-count:infinite}
+  .marquee-track > *{flex:0 0 auto}
+  @keyframes marquee-scroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
   .mark-item{display:grid;place-items:center;padding:0 clamp(24px,3.2vw,52px)}
   /* AbleGamers publish this mark knocked out in white, so it gets the ground it was drawn for */
   .mark-item.knockout img{background:#1A1714;padding:7px 11px;border-radius:10px}
-  .mark-item img{height:calc(clamp(26px,2.6vw,38px) * 1.5 * var(--s,1));width:auto;max-width:none;object-fit:contain;display:block}
+  .mark-item img{height:calc(clamp(26px,2.6vw,38px) * 1.5 * var(--s,1));width:auto;max-width:none;object-fit:contain;display:block;filter:saturate(.5);transition:filter .2s var(--ease)}
+  .mark-item:hover img{filter:saturate(1)}
   .band-foot{margin-top:clamp(16px,2.2vh,24px);text-align:center;font-size:12px;color:var(--ink-faint);padding:0 var(--gut)}
 
   @media(max-width:900px){
@@ -419,8 +430,7 @@
     html{scroll-behavior:auto}
     .reveal{opacity:1;transform:none;transition:none}
     .btn,.switch a,.client,.card,.shot,.mark-item,.field input,.field textarea{transition:none}
-    .track{animation:none}
-    .rail{overflow-x:auto}
+    .marquee-track{animation:none}
   }
   :focus-visible{outline:2.5px solid var(--clinic);outline-offset:3px;border-radius:8px}
 </style>
@@ -431,7 +441,7 @@
   <div class="nav-shell">
     <div class="nav-inner">
       <a class="brand" href="clinic.html" aria-label="QuadStick Clinic home">
-        <img class="glyph" src="QSLogo.png" alt="" width="32" height="32">
+        <img class="glyph" src="QSLogo-64.png" alt="" width="32" height="32">
         QuadStick&nbsp;<span class="sub">Clinic</span>
       </a>
       <nav class="nav-links">
@@ -466,9 +476,9 @@
       </div>
 
       <div class="hero-copy">
-        <h1 class="display">One record per client, across every visit.</h1>
-        <p class="lede">Capabilities, profile history and the next step, in one place. A session starts where the last one ended.</p>
-        <div class="hero-actions">
+        <h1 class="display reveal">One record per client, across every visit.</h1>
+        <p class="lede reveal">Capabilities, profile history and the next step, in one place. A session starts where the last one ended.</p>
+        <div class="hero-actions reveal">
           <a class="btn primary" href="#demo">Book a demo
             <span class="cap" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
           </a>
@@ -483,14 +493,14 @@
 
     <div class="band">
     <div class="band-in">
-      <div class="rail">
-        <div class="track">
-          <a class="mark-item" href="https://craighospital.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/craig-hospital.svg" alt="Craig Hospital"></a>
-          <a class="mark-item" href="https://shepherd.org/" target="_blank" rel="noopener"><img src="logos/shepherd-center.svg" alt="Shepherd Center"></a>
-          <a class="mark-item" href="https://livelifetherapysolutions.com/" target="_blank" rel="noopener"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="Live Life Therapy Solutions"></a>
-          <a class="mark-item" href="https://aztap.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/aztap.png" alt="AzTAP, the Arizona Technology Access Program"></a>
-          <a class="mark-item knockout" href="https://ablegamers.org/" target="_blank" rel="noopener"><img style="--s:1.5" src="logos/ablegamers.webp" alt="AbleGamers Charity"></a>
-          <a class="mark-item" href="https://www.respawnfoundation.org/" target="_blank" rel="noopener"><img src="logos/respawn-foundation.webp" alt="Respawn Foundation"></a>
+      <div class="rail marquee-interaction">
+        <div class="marquee-track">
+          <a class="mark-item" href="https://craighospital.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/craig-hospital.svg" alt="Craig Hospital" width="149" height="40"></a>
+          <a class="mark-item" href="https://shepherd.org/" target="_blank" rel="noopener"><img src="logos/shepherd-center.svg" alt="Shepherd Center" width="227" height="62"></a>
+          <a class="mark-item" href="https://livelifetherapysolutions.com/" target="_blank" rel="noopener"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="Live Life Therapy Solutions" width="525" height="303"></a>
+          <a class="mark-item" href="https://aztap.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/aztap.png" alt="AzTAP, the Arizona Technology Access Program" width="229" height="68"></a>
+          <a class="mark-item knockout" href="https://ablegamers.org/" target="_blank" rel="noopener"><img style="--s:1.5" src="logos/ablegamers.webp" alt="AbleGamers Charity" width="360" height="126"></a>
+          <a class="mark-item" href="https://www.respawnfoundation.org/" target="_blank" rel="noopener"><img src="logos/respawn-foundation.webp" alt="Respawn Foundation" width="1114" height="295"></a>
         </div>
       </div>
       <p class="band-foot">Organisations working in adaptive gaming and rehabilitation.</p>
@@ -700,6 +710,7 @@
   </div>
 </footer>
 
+<script src="marquee.js"></script>
 <script>
   const nav = document.querySelector('header.nav');
   addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 12), { passive: true });
@@ -713,20 +724,10 @@
   });
 
 
-  // Group one source set and one identical copy so -50% always lands exactly
-  // at the next set. Both sets have fixed intrinsic widths before animation.
-  function loopTrack(track) {
-    const set = document.createElement('span');
-    set.className = 'mark-set';
-    const children = [...track.children];
-    track.replaceChildren();
-    set.append(...children);
-    const copy = set.cloneNode(true);
-    copy.setAttribute('aria-hidden', 'true');
-    for (const link of copy.querySelectorAll('a')) link.tabIndex = -1;
-    track.append(set, copy);
-  }
-  document.querySelectorAll('.track').forEach(loopTrack);
+  const logoMarquee = document.querySelector('.marquee-interaction');
+  createMarquee(logoMarquee, logoMarquee.querySelector('.marquee-track'), {
+    speed: 1.15, inverted: false, interactiveSpeed: 2.5,
+  });
 
   // the preview is the pitch, so it is a real roster you can click through.
   // invented people, invented notes: the caption says so.
