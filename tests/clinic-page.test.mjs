@@ -141,14 +141,13 @@ test('both pages carry the same six marks, each a real file and a real link', ()
   }
 });
 
-test('the marks use two exact sets and keep moving smoothly', () => {
+test('the marks duplicate and keep moving smoothly', () => {
   for (const [name, text] of pages) {
-    assert.match(text, /\.track\{[^}]*animation:slide/, `${name}: the marks do not move`);
-    assert.match(text, /\.mark-set\{[^}]*flex:none\}/, `${name}: each mark set must keep its width`);
-    assert.match(text, /const children = \[\.\.\.track\.children\];[\s\S]*track\.replaceChildren\(\);[\s\S]*set\.append\(\.\.\.children\)/, `${name}: the source set is not grouped before copying`);
-    assert.doesNotMatch(text, /\.rail:hover \.track[^{]*\{animation-play-state:paused\}/, `${name}: hover should not change animation state`);
+    assert.match(text, /\.marquee-track\{[^}]*animation-name:marquee-scroll/, `${name}: the marks do not move`);
+    assert.match(text, /<script src="marquee\.js"><\/script>/, `${name}: the reusable marquee script is missing`);
+    assert.match(text, /createMarquee\([^;]*interactiveSpeed:\s*2\.5/, `${name}: the marquee is not wired for interaction`);
     const reduced = text.slice(text.indexOf('prefers-reduced-motion'));
-    assert.match(reduced.slice(0, 400), /\.track\{animation:none\}/, `${name}: reduced motion still slides`);
+    assert.match(reduced.slice(0, 400), /\.marquee-track\{animation:none\}/, `${name}: reduced motion still slides`);
   }
 });
 
