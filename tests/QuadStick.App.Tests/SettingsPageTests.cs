@@ -68,6 +68,29 @@ public class SettingsPageTests
         w.Close();
     }
 
+    // DerPasi's steps: the cog again while Settings is open, then Back.
+    [AvaloniaFact]
+    public void Cog_twice_then_back_returns_to_the_profile()
+    {
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = ProfileFile.NewFromTemplate("smoke.csv");
+        w.LoadProfile(file);
+
+        w.SettingsButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        w.SettingsButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        w.LeaveSettingsPage();
+
+        Assert.True(w.EditorView.IsVisible);
+        Assert.Same(file, w.OpenFile);
+        file.Dirty = false;
+        w.Close();
+    }
+
     [AvaloniaFact]
     public void Language_row_appears_only_when_there_is_more_than_one_language()
     {
