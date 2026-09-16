@@ -1,5 +1,9 @@
 using System.Globalization;
+using Avalonia.Automation;
+using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using QuadStick.Format;
 using Xunit;
 
@@ -67,6 +71,53 @@ public class LanguageSwitchTests
             Settings.Save(s2);
             file.Dirty = false; // let the window close without asking
             next?.Close();
+        }
+    }
+
+    // Reported by a German user: Settings, change language, Back, and the
+    // profile was gone behind Home. The rebuild opened Settings twice, and
+    // the second open recorded Settings itself as the page to return to.
+    [AvaloniaFact]
+    public void Leaving_settings_after_a_language_change_returns_to_the_profile()
+    {
+        var uiWas = CultureInfo.CurrentUICulture;
+        var defWas = CultureInfo.DefaultThreadCurrentUICulture;
+        var s = Settings.Load();
+        s.TutorialSeen = true;
+        s.RememberWindow = false;
+        s.Language = Localization.FollowSystem;
+        Settings.Save(s);
+        var w = new MainWindow();
+        w.Show();
+        var file = Solo();
+        w.LoadProfile(file);
+        MainWindow? next = null;
+        w.EditorReplaced += n => next = n;
+        try
+        {
+            w.ShowSettingsPage();
+            Dispatcher.UIThread.RunJobs();
+            w.UpdateLayout();
+            var language = w.GetVisualDescendants().OfType<ComboBox>().Single(c =>
+                AutomationProperties.GetName(c) == Strings.Settings_LanguageHelp);
+            language.SelectedIndex = Localization.IndexOf("de"); // the real control, not SetLanguage
+
+            Assert.NotNull(next);
+            Assert.True(next!.SettingsPage.IsVisible);
+            next.LeaveSettingsPage();
+
+            Assert.True(next.EditorView.IsVisible);
+            Assert.Same(file, next.OpenFile);
+        }
+        finally
+        {
+            CultureInfo.DefaultThreadCurrentUICulture = defWas;
+            CultureInfo.CurrentUICulture = uiWas;
+            Localization.Relocalize();
+            var s2 = Settings.Load();
+            s2.Language = Localization.FollowSystem;
+            Settings.Save(s2);
+            (next ?? w).Close();
         }
     }
 

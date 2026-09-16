@@ -1736,7 +1736,9 @@ public partial class MainWindow : Window
 
     public void ShowSettingsPage()
     {
-        _settingsReturnPage = CurrentVisiblePage();
+        // A second open (the language rebuild opens it twice) must keep the first
+        // return page, or Back lands on Home and drops the open profile.
+        if (!SettingsPage.IsVisible) _settingsReturnPage = CurrentVisiblePage();
         if (SettingsPageBody.Children.Count == 0)
             SettingsPageBody.Children.Add(SettingsView);
         ShowPage(SettingsPage, null);
