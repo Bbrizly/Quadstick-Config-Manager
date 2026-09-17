@@ -1,3 +1,4 @@
+using System.Net;
 using QuadStick.App;
 using Xunit;
 
@@ -34,6 +35,16 @@ public sealed class ProfileRegistryTests
         "{\"schemaVersion\":1,\"games\":[],\"devices\":[],\"profiles\":[" +
         string.Join(',', profiles) + "]}";
 
+    sealed class RoutingHandler(Func<Uri, HttpResponseMessage> route) : HttpMessageHandler
+    {
+        public List<Uri> Requests { get; } = [];
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Requests.Add(request.RequestUri!);
+            return Task.FromResult(route(request.RequestUri!));
+        }
+    }
+
     [Fact]
     public void Registry_parser_accepts_new_registry_shape_and_double_separator_id()
     {
@@ -45,8 +56,35 @@ public sealed class ProfileRegistryTests
         Assert.Equal("google-sheet", row.SourceType);
         Assert.Equal("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", row.SnapshotSha256);
         Assert.Equal(
-            "https://raw.githubusercontent.com/Bbrizly/Adaptive-Profiles/main/data/profiles/minecraft/quadstick-fps/minecraft--pc--quadstick-fps--standard--sam/profile.csv",
+            "https://raw.githubusercontent.com/Bbrizly/Adaptive-Profiles-Registry/main/data/profiles/minecraft/quadstick-fps/minecraft--pc--quadstick-fps--standard--sam/profile.csv",
             ProfileRegistryClient.CsvUrl(row));
+    }
+
+    [Fact]
+    public void Registry_uses_new_primary_and_legacy_fallback_urls()
+    {
+        Assert.Equal("https://raw.githubusercontent.com/Bbrizly/Adaptive-Profiles-Registry/main/generated/index.json", ProfileRegistryClient.CatalogUrl);
+        Assert.Equal("https://raw.githubusercontent.com/Bbrizly/Adaptive-Profiles/main/generated/index.json", ProfileRegistryClient.LegacyCatalogUrl);
+        Assert.Equal(2, ProfileRegistryClient.CsvUrls(ProfileRegistryClient.Parse(Catalog(ValidProfile)).Single()).Count());
+    }
+
+    [Fact]
+    public async Task Registry_load_falls_back_to_legacy_catalog()
+    {
+        var handler = new RoutingHandler(uri => uri.ToString() == ProfileRegistryClient.LegacyCatalogUrl
+            ? new(HttpStatusCode.OK) { Content = new StringContent(Catalog(ValidProfile)) }
+            : new(HttpStatusCode.ServiceUnavailable));
+        var temp = Path.Combine(Path.GetTempPath(), "qcm-registry-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(temp);
+        try
+        {
+            var client = new ProfileRegistryClient(handler, Path.Combine(temp, "catalog.json"), Path.Combine(temp, "snapshots"));
+            var result = await client.LoadAsync(refresh: true);
+            Assert.False(result.FromCache);
+            Assert.Single(result.Profiles);
+            Assert.Equal(new[] { ProfileRegistryClient.CatalogUrl, ProfileRegistryClient.LegacyCatalogUrl }, handler.Requests.Select(uri => uri.ToString()));
+        }
+        finally { Directory.Delete(temp, recursive: true); }
     }
 
     [Fact]

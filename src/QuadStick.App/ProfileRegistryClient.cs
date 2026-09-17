@@ -31,9 +31,15 @@ internal sealed class ProfileRegistryException(string message) : Exception(messa
 internal sealed class ProfileRegistryClient
 {
     internal const string CatalogUrl =
+        "https://raw.githubusercontent.com/Bbrizly/Adaptive-Profiles-Registry/main/generated/index.json";
+
+    internal const string LegacyCatalogUrl =
         "https://raw.githubusercontent.com/Bbrizly/Adaptive-Profiles/main/generated/index.json";
 
     const string RawRoot =
+        "https://raw.githubusercontent.com/Bbrizly/Adaptive-Profiles-Registry/main";
+
+    const string LegacyRawRoot =
         "https://raw.githubusercontent.com/Bbrizly/Adaptive-Profiles/main";
     const int MaxCatalogBytes = 8 * 1024 * 1024;
     const int MaxCsvBytes = 512 * 1024;
@@ -59,20 +65,26 @@ internal sealed class ProfileRegistryClient
     public async Task<RegistryCatalogResult> LoadAsync(bool refresh = false, CancellationToken ct = default)
     {
         if (!refresh && TryReadCache(out var cached)) return new(cached, true);
-        try
+        Exception? last = null;
+        foreach (var catalogUrl in new[] { CatalogUrl, LegacyCatalogUrl }.Distinct(StringComparer.Ordinal))
         {
-            using var response = await _http.GetAsync(CatalogUrl, HttpCompletionOption.ResponseHeadersRead, ct);
-            response.EnsureSuccessStatusCode();
-            var bytes = await ReadLimitedAsync(response, MaxCatalogBytes, ct);
-            var json = DecodeUtf8(bytes, "REGISTRY_UTF8_INVALID");
-            var profiles = Parse(json);
-            WriteCache(_cachePath, json);
-            return new(profiles, false);
+            try
+            {
+                using var response = await _http.GetAsync(catalogUrl, HttpCompletionOption.ResponseHeadersRead, ct);
+                response.EnsureSuccessStatusCode();
+                var bytes = await ReadLimitedAsync(response, MaxCatalogBytes, ct);
+                var json = DecodeUtf8(bytes, "REGISTRY_UTF8_INVALID");
+                var profiles = Parse(json);
+                WriteCache(_cachePath, json);
+                return new(profiles, false);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                last = ex;
+            }
         }
-        catch when (TryReadCache(out var fallback))
-        {
-            return new(fallback, true);
-        }
+        if (TryReadCache(out var fallback)) return new(fallback, true);
+        throw new ProfileRegistryException($"Adaptive Profiles registry unavailable: {last?.Message ?? "unknown error"}");
     }
 
     public async Task<string> DownloadCsvAsync(RegistryInstallProfile profile, CancellationToken ct = default)
@@ -80,13 +92,25 @@ internal sealed class ProfileRegistryClient
         var cachePath = Path.Combine(_snapshotCacheDir, profile.Id + ".csv");
         try
         {
-            using var response = await _http.GetAsync(CsvUrl(profile), HttpCompletionOption.ResponseHeadersRead, ct);
-            response.EnsureSuccessStatusCode();
-            var bytes = await ReadLimitedAsync(response, MaxCsvBytes, ct);
-            VerifySnapshot(bytes, profile.SnapshotSha256);
-            var csv = DecodeUtf8(bytes, "PROFILE_CSV_UTF8_INVALID");
-            WriteCache(cachePath, csv);
-            return csv;
+            Exception? last = null;
+            foreach (var csvUrl in CsvUrls(profile).Distinct(StringComparer.Ordinal))
+            {
+                try
+                {
+                    using var response = await _http.GetAsync(csvUrl, HttpCompletionOption.ResponseHeadersRead, ct);
+                    response.EnsureSuccessStatusCode();
+                    var bytes = await ReadLimitedAsync(response, MaxCsvBytes, ct);
+                    VerifySnapshot(bytes, profile.SnapshotSha256);
+                    var csv = DecodeUtf8(bytes, "PROFILE_CSV_UTF8_INVALID");
+                    WriteCache(cachePath, csv);
+                    return csv;
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    last = ex;
+                }
+            }
+            throw new ProfileRegistryException($"Profile snapshot unavailable: {last?.Message ?? "unknown error"}");
         }
         catch when (TryReadSnapshotCache(cachePath, profile.SnapshotSha256, out var cached))
         {
@@ -163,6 +187,12 @@ internal sealed class ProfileRegistryClient
 
     internal static string CsvUrl(RegistryInstallProfile profile) =>
         $"{RawRoot}/data/profiles/{profile.GameId}/{profile.DeviceId}/{profile.Id}/profile.csv";
+
+    internal static IEnumerable<string> CsvUrls(RegistryInstallProfile profile)
+    {
+        yield return CsvUrl(profile);
+        yield return $"{LegacyRawRoot}/data/profiles/{profile.GameId}/{profile.DeviceId}/{profile.Id}/profile.csv";
+    }
 
     static bool IsAllowedGoogleSheet(string? value)
     {
