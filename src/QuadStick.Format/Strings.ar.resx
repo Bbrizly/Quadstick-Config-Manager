@@ -102,7 +102,7 @@
     <value>10 في الثانية</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1 يُبقي المخرج مفعّلاً. أي رقم أكبر من 1 هو مدة استمرار الضغطة.</value>
+    <value>اضبطه على 1 بالضبط ليبقى المخرج مفعّلاً. أي رقم أكبر من 1 هو مدة استمرار الضغطة.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>يُحتسب كنقرة</value>
@@ -126,7 +126,7 @@
     <value>استمرار للتثبيت</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>يُبقي النقرة الأولى لهذه المدة قبل أن يبدأ الإطلاق السريع.</value>
+    <value>يُبقي النقرة الأولى لهذه المدة قبل أن يبدأ الإطلاق السريع. إذا كانت أقصر من الفاصل بين النقرات فلن تغيّر شيئاً.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>يستمر ما دمت تضغط</value>
@@ -144,7 +144,7 @@
     <value>مدة استمرار كل ضغطة.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>مدة ضغط النقرة. 1 يُبقي المخرج مفعّلاً بدلاً من ذلك.</value>
+    <value>مدة ضغط النقرة. اضبطه على 1 بالضبط ليعمل كمفتاح تبديل بدلاً من ذلك: نقرة تشغّل المخرج والنقرة التالية توقفه.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>كم ضغطة يرسلها التفعيل الواحد.</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>فعّله من شيء غير push، أو من مجموعة لا يستطيع push الاحتفاظ بها بمفرده.</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>"{0}" يقرأ 0 لـ {1}، ويليه رقم ثانٍ. الرقمان يتشاركان كلمة واحدة، لذا لا يستخدم الجهاز {2} إلا عندما يكون 0 هو محتوى الخلية كله. هنا يقرأ {1} كصفر صريح.</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}" يقرأ 0 لـ {1} كأنه لا قيمة على الإطلاق، لذا يستخدم الجهاز {2}.</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>بدون قرص</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>"{0}" اسم مدخل قديم: يعرفه البرنامج الثابت لكن القائمة الرسمية الحالية لا تتضمنه.</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>اجعله "normal" لتوضيح ذلك صراحةً.</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>اضبط {0} بين {1} و {2}، أو احذف الرقم الثاني.</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>قصّره إلى {0} حرفًا أو أقل، مثل "game.csv".</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>يؤدي تساوي الحدين إلى قسمة الجهاز على صفر في كل مرة يقرأ فيها الأنبوب.</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>بدون قرص</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>وضع محاكاة USB {0} ({1}) لا يتيح للكمبيوتر الوصول إلى محرك أقراص QuadStick، وهذا الملف من الملفات التي يُقلع بها الجهاز. تثبيته لن يترك أي طريقة لتعديل أي ملف شخصي لاحقًا، والاستعادة تتطلب مسحًا إجباريًا ماديًا.</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>استخدم {0} أو أكثر.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>استخدم {0} إلى {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>استخدم النمط 0 أو 2 أو 3 أو 4 هنا، واضبط النمط الآخر في ملف شخصي للعبة بدلًا من ذلك.</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>يحتوي جدول البيانات هذا على أكثر من {0} صف، وهو أكبر بكثير من أي ملف شخصي، لذا توقفنا عن القراءة في منتصف الطريق.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>استخدم {0} إلى {1}. {2}</value>
   </data>
 </root>

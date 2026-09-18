@@ -102,7 +102,7 @@
     <value>10 por segundo</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1 deja la salida enganchada. Cualquier valor mayor que 1 es cuánto dura la pulsación.</value>
+    <value>Ponlo exactamente en 1 y la salida queda enganchada. Cualquier valor mayor que 1 es cuánto dura la pulsación.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Cuenta como un toque</value>
@@ -126,7 +126,7 @@
     <value>Mantener para enganchar</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Mantiene el primer toque este tiempo antes de que empiece el disparo rápido.</value>
+    <value>Mantiene el primer toque este tiempo antes de que empiece el disparo rápido. Si es menor que el intervalo entre toques, no cambia nada.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>se mantiene mientras usted mantiene</value>
@@ -144,7 +144,7 @@
     <value>Cuánto dura cada pulsación.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Cuánto dura la pulsación del toque. 1, en cambio, deja la salida enganchada.</value>
+    <value>Cuánto dura la pulsación del toque. Ponlo exactamente en 1 y en cambio alterna: un toque enciende la salida y el siguiente la apaga.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>Cuántas pulsaciones envía una activación.</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>Dispárelo desde algo que no sea push, o desde una combinación que push no pueda mantener por sí solo.</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>"{0}" lee 0 en {1} y le sigue un segundo número. Ambos números comparten una palabra, así que el dispositivo solo pone {2} cuando el 0 es toda la celda. Aquí lee {1} como un 0 literal.</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}" lee el 0 de {1} como ausencia de valor, así que el dispositivo usa {2}.</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>sin unidad</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>"{0}" es un nombre de entrada antiguo: el firmware lo conoce pero la lista oficial actual no lo incluye.</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>Póngalo en "normal" para hacerlo explícito.</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>Pon {0} entre {1} y {2}, o quita el segundo número.</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>Acórtelo a {0} caracteres o menos, por ejemplo "game.csv".</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Dos umbrales iguales hacen que el dispositivo divida por cero cada vez que lee el tubo.</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>sin unidad</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>El modo de emulación USB {0} ({1}) no da al equipo acceso a la unidad del QuadStick, y este archivo es uno de los que el dispositivo usa al arrancar. Instalarlo no dejaría forma de volver a editar ningún perfil, y la recuperación es un borrado forzado físico.</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Use {0} o más.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Use {0} a {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Use aquí el modo 0, 2, 3 o 4, y ponga el otro modo en un perfil de juego.</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Esta hoja de cálculo tiene más de {0} filas, mucho más que cualquier perfil, así que dejamos de leer a medio camino.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Use {0} a {1}. {2}</value>
   </data>
 </root>

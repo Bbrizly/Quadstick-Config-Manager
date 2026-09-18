@@ -102,7 +102,7 @@
     <value>[10 á šéçóñd xxxx]</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>[1 látçhéš thé óútpút óñ. Áñýthíñg ábóvé 1 íš hów lóñg thé préšš láštš. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Šét ít tó éxáçtlý 1 áñd thé óútpút látçhéš óñ. Áñýthíñg ábóvé 1 íš hów lóñg thé préšš láštš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>[Çóúñtš áš á táp xxxxxx]</value>
@@ -126,7 +126,7 @@
     <value>[Hóld tó látçh xxxxx]</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>[Hóldš thé fíršt táp thíš lóñg béfóré thé rápíd-fíré štártš. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hóldš thé fíršt táp thíš lóñg béfóré thé rápíd-fíré štártš. Šhórtér tháñ thé gáp bétwééñ tápš áñd ít çháñgéš ñóthíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>[hóldš whílé ýóú hóld xxxxxxxx]</value>
@@ -144,7 +144,7 @@
     <value>[Hów lóñg éáçh préšš láštš. xxxxxxxxxx]</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>[Hów lóñg thé táp préššéš fór. 1 látçhéš thé óútpút óñ íñštéád. xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów lóñg thé táp préššéš fór. Šét ít tó éxáçtlý 1 áñd ít tóggléš íñštéád: óñé táp túrñš thé óútpút óñ, thé ñéxt túrñš ít óff. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>[Hów máñý préššéš óñé áçtívátíóñ šéñdš. xxxxxxxxxxxxxxx]</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>[Fíré ít fróm šóméthíñg óthér tháñ púšh, ór fróm á çómbíñátíóñ púšh çáññót hóld óñ ítš ówñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>["{0}" réádš 0 fór {1}, áñd á šéçóñd ñúmbér fóllówš ít. Bóth ñúmbérš šháré óñé wórd, šó thé dévíçé óñlý fíllš íñ {2} whéñ 0 íš thé whólé çéll. Héré ít réádš {1} áš á pláíñ 0. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>["{0}" réádš 0 fór {1} áš ñó válúé át áll, šó thé dévíçé úšéš {2}. xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>[ñó drívé xxx]</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>["{0}" íš á légáçý íñpút ñámé: thé fírmwáré kñówš ít bút thé çúrréñt óffíçíál líšt dóéš ñót íñçlúdé ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>[Šét ít tó "ñórmál" tó máké thát éxplíçít. xxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>[Šét {0} bétwééñ {1} áñd {2}, ór táké thé šéçóñd ñúmbér óút. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>[Šhórtéñ ít tó {0} çháráçtérš ór féwér, fór éxámplé "gámé.çšv". xxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>[Twó éqúál thréšhóldš máké thé dévíçé dívídé bý žéró évérý tímé ít réádš thé túbé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>[ñó drívé xxx]</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>[ÚŠB émúlátíóñ módé {0} ({1}) dóéš ñót gívé á çómpútér áççéšš tó thé QúádŠtíçk'š drívé, áñd thíš fílé íš óñé thé dévíçé bóótš wíth. Íñštállíñg ít wóúld léávé ñó wáý tó édít áñý prófílé báçk, áñd réçóvérý íš á phýšíçál fórçé-érášé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>[Úšé {0} ór móré. xxxxxx]</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>[Úšé {0} tó {1}. {2} xxxxxxx]</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>[Úšé módé 0, 2, 3 ór 4 héré, áñd šét thé óthér módé íñ á gámé prófílé íñštéád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>[Thíš špréádšhéét íš lárgér tháñ {0} rówš, fár lárgér tháñ áñý prófílé, šó wé štóppéd réádíñg párt wáý thróúgh. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>[Úšé {0} tó {1}. {2} xxxxxxx]</value>
   </data>
 </root>

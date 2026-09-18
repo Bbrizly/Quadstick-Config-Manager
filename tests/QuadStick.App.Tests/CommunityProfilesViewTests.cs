@@ -229,6 +229,28 @@ public sealed class CommunityProfilesViewTests : IDisposable
 
     // A saved copy is never announced as new, and dropped rows are counted out
     // loud instead of silently shrinking the list.
+    // Drew, 2026-09-05: the paragraph over the search box said what the page
+    // is, where the list comes from, what Refresh does, what Import does, and
+    // that nothing is written to the device. Only the first of those is worth
+    // the space above a search box; the rest is one click to the right of it.
+    [AvaloniaFact]
+    public async Task The_page_opens_with_one_line_and_a_dot()
+    {
+        var w = NewWindow();
+        var view = await OpenAsync(w, Serving(GoodBody));
+
+        var texts = view.GetVisualDescendants().OfType<TextBlock>()
+            .Select(t => t.Text ?? "").ToList();
+        Assert.Contains(Strings.Community_SharedGoogleSheetsForGame, texts);
+        Assert.DoesNotContain(Strings.Community_GameProfilesOtherQuadStickPlayers, texts);
+
+        var dot = view.GetVisualDescendants().OfType<Button>()
+            .Single(b => (b.Content as string) == "?");
+        Assert.Equal(Strings.Community_CommunityProfiles, AutomationProperties.GetName(dot));
+
+        w.Close();
+    }
+
     [AvaloniaFact]
     public async Task A_saved_copy_says_so_and_names_the_skipped_rows()
     {

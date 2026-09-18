@@ -727,10 +727,10 @@ public class DeviceSettingsPageTests
         var shown = combo.ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
 
         Assert.Equal(8, shown.Count);
-        foreach (var mode in new[] { "(1)", "(5)", "(6)", "(7)" })
+        foreach (var mode in new[] { "(1)", "(3)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.Contains(mode, StringComparison.Ordinal)
                                      && t.Contains("no drive", StringComparison.Ordinal));
-        foreach (var mode in new[] { "(0)", "(2)", "(3)", "(4)" })
+        foreach (var mode in new[] { "(0)", "(2)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(mode, StringComparison.Ordinal));
 
         w.Close();

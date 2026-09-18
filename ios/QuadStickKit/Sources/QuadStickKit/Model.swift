@@ -229,14 +229,46 @@ public struct GlobalSettings: Codable, Hashable, Sendable {
     public var bootPS4: Bool
     public var titanTwoPS4: Bool
     public var usbHostMode: Bool
+    public var deviceModel: QuadStickModel
 
     public init(joystickSensitivity: Int = 50, sipPuffThreshold: Int = 40, deadZone: Int = 5,
-                bootPS4: Bool = false, titanTwoPS4: Bool = false, usbHostMode: Bool = false) {
+                bootPS4: Bool = false, titanTwoPS4: Bool = false, usbHostMode: Bool = false,
+                deviceModel: QuadStickModel = .fps) {
         self.joystickSensitivity = joystickSensitivity
         self.sipPuffThreshold = sipPuffThreshold
         self.deadZone = deadZone
         self.bootPS4 = bootPS4
         self.titanTwoPS4 = titanTwoPS4
         self.usbHostMode = usbHostMode
+        self.deviceModel = deviceModel
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case joystickSensitivity, sipPuffThreshold, deadZone, bootPS4, titanTwoPS4, usbHostMode, deviceModel
+    }
+
+    // Custom so a settings.json saved before deviceModel existed still
+    // decodes: this app is already installed on devices, and a decode
+    // failure would lose all of somebody's settings, not just the model.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        joystickSensitivity = try c.decodeIfPresent(Int.self, forKey: .joystickSensitivity) ?? 50
+        sipPuffThreshold = try c.decodeIfPresent(Int.self, forKey: .sipPuffThreshold) ?? 40
+        deadZone = try c.decodeIfPresent(Int.self, forKey: .deadZone) ?? 5
+        bootPS4 = try c.decodeIfPresent(Bool.self, forKey: .bootPS4) ?? false
+        titanTwoPS4 = try c.decodeIfPresent(Bool.self, forKey: .titanTwoPS4) ?? false
+        usbHostMode = try c.decodeIfPresent(Bool.self, forKey: .usbHostMode) ?? false
+        deviceModel = try c.decodeIfPresent(QuadStickModel.self, forKey: .deviceModel) ?? .fps
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(joystickSensitivity, forKey: .joystickSensitivity)
+        try c.encode(sipPuffThreshold, forKey: .sipPuffThreshold)
+        try c.encode(deadZone, forKey: .deadZone)
+        try c.encode(bootPS4, forKey: .bootPS4)
+        try c.encode(titanTwoPS4, forKey: .titanTwoPS4)
+        try c.encode(usbHostMode, forKey: .usbHostMode)
+        try c.encode(deviceModel, forKey: .deviceModel)
     }
 }

@@ -94,6 +94,7 @@ public partial class MainWindow : Window
     DriveBackup? Backup()
     {
         if (_driveBackup != null) return _driveBackup;
+        if (!NetworkFeature.Enabled) return null;
         if (!_settings.DriveBackup || !GoogleAuth.IsConfigured) return null;
         var store = TokenStore.Create();
         if (store.Load() is null) return null;
@@ -232,7 +233,7 @@ public partial class MainWindow : Window
     // setting and rebuilds the engine.
     public async Task<bool> ConnectGoogleAsync(CancellationToken ct = default)
     {
-        if (!GoogleAuth.IsConfigured) return false;
+        if (!NetworkFeature.Enabled || !GoogleAuth.IsConfigured) return false;
         try
         {
             var auth = new GoogleAuth(TokenStore.Create());
@@ -277,7 +278,7 @@ public partial class MainWindow : Window
         _driveArmed = false;
         _driveArmTimer?.Stop();
 
-        HomeDriveButton.IsVisible = GoogleAuth.IsConfigured;
+        HomeDriveButton.IsVisible = NetworkFeature.Enabled && GoogleAuth.IsConfigured;
         if (!GoogleAuth.IsConfigured)
         {
             SetDriveButton(Strings.Main_BackupOff, "Error", enabled: false,
@@ -383,6 +384,7 @@ public partial class MainWindow : Window
 
     public void ShowCommunityPage()
     {
+        if (!NetworkFeature.Enabled) return;
         _file = null; // no profile is open on a page; a stale dirty file re-asks "leave?" on the next action
         if (CommunityPageBody.Children.Count == 0) CommunityPageBody.Children.Add(CommunityView);
         ShowPage(CommunityPage, ShellCommunityButton);
@@ -585,15 +587,27 @@ public partial class MainWindow : Window
     // download, which the import path already reports.
     internal const int MaxWorkbookBytes = 32 * 1024 * 1024;
 
-    static readonly HttpClient Http = new()
-    {
-        Timeout = TimeSpan.FromSeconds(15),
-        MaxResponseContentBufferSize = MaxWorkbookBytes,
-    };
+    // Built on first use, not with the window. It used to be a static field,
+    // so opening any window built an HTTP client whether or not the run ever
+    // asked for one, and a host that turns the network off could not prove
+    // otherwise.
+    static HttpClient? _http;
 
     /// <summary>The app's one HTTP client, for windows that need it. Settings
-    /// uses it for the update check.</summary>
-    internal HttpClient HttpClient => Http;
+    /// uses it for the update check. Throws when the network is off, which no
+    /// caller can reach: every screen that would ask is out of the layout.</summary>
+    internal HttpClient HttpClient
+    {
+        get
+        {
+            if (!NetworkFeature.Enabled) throw new InvalidOperationException(nameof(NetworkFeature));
+            return _http ??= new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(15),
+                MaxResponseContentBufferSize = MaxWorkbookBytes,
+            };
+        }
+    }
     const string DefaultNewName = "mygame.csv";
 
     // The same page the store listings declare. bbrizly.github.io still
@@ -781,6 +795,14 @@ public partial class MainWindow : Window
         HomeAgentButton.Click += (_, _) => ShowAgent();
         AgentButton.Click += (_, _) => ShowAgent(changing: true);
         HomeCommunityButton.Click += (_, _) => ShowCommunityPage();
+
+        // A host can turn the network off, and then these three are not
+        // hidden buttons, they are gone: nothing here has a page to open.
+        // Sharing goes through Google Sheets, so it goes with them.
+        HomeCommunityButton.IsVisible = NetworkFeature.Enabled;
+        ShellCommunityButton.IsVisible = NetworkFeature.Enabled;
+        ShareButton.IsVisible = NetworkFeature.Enabled;
+        HomeSheetsPanel.IsVisible = NetworkFeature.Enabled;
         HomeDeviceFilesButton.Click += async (_, _) => await ShowDeviceFilesAsync();
         HomeHelpButton.Click += (_, _) => ShowHelp();
         ImportButton.Click += async (_, _) => await ImportAsync();
@@ -870,6 +892,8 @@ public partial class MainWindow : Window
             Strings.Main_AModeIsOneFull);
         DeviceHelpButton.Click += (_, _) => ShowInfoFlyout(DeviceHelpButton, Strings.Main_UsingDeviceView,
             Strings.Main_ClickAnyPartOfThe + ModelDescription);
+        HomeFilesHelpButton.Click += (_, _) => ShowInfoFlyout(HomeFilesHelpButton,
+            Strings.Shell_OnYourQuadStick, Strings.Shell_EachOfTheseIsA);
 
         ProblemsToggle.Click += (_, _) => ToggleProblems();
 
@@ -1558,13 +1582,31 @@ public partial class MainWindow : Window
             next.OpenInEditor(_file, _savePath, ProfileSource.File, track: false);
             next.SelectSheet(_sheetIndex); // same mode open as before
         }
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.MainWindow = next;
+        HandOverMainWindow(
+            Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime, next);
+        // A host subscribed to this window, and this window is about to close.
+        // Its subscriptions move to the replacement and it is told which
+        // window to hold now, or a roster keeps a closed editor, hears no more
+        // saves, and records no more snapshots.
+        next.ProfileSaved = ProfileSaved;
+        next.EditorReplaced = EditorReplaced;
+        next.HostBanner = HostBanner;
+        next.BeforeInstall = BeforeInstall;
+        EditorReplaced?.Invoke(next);
         next.Show();
         if (onSettings) next.ShowSettingsPage();
         _closeConfirmed = true; // the profile moved, it was not discarded
         Close();
         return next;
+    }
+
+    /// <summary>Give the rebuilt window the main-window role, but only if this
+    /// window held it. Under another host the main window is the host's own, and
+    /// taking it there would close the host when the editor closes. Split out
+    /// because the headless suite cannot install an application lifetime.</summary>
+    internal void HandOverMainWindow(IClassicDesktopStyleApplicationLifetime? desktop, Window next)
+    {
+        if (desktop is not null && ReferenceEquals(desktop.MainWindow, this)) desktop.MainWindow = next;
     }
 
     public void SetInterfaceScale(int pct)
@@ -1694,7 +1736,9 @@ public partial class MainWindow : Window
 
     public void ShowSettingsPage()
     {
-        _settingsReturnPage = CurrentVisiblePage();
+        // A second open (the language rebuild opens it twice) must keep the first
+        // return page, or Back lands on Home and drops the open profile.
+        if (!SettingsPage.IsVisible) _settingsReturnPage = CurrentVisiblePage();
         if (SettingsPageBody.Children.Count == 0)
             SettingsPageBody.Children.Add(SettingsView);
         ShowPage(SettingsPage, null);
@@ -1858,6 +1902,10 @@ public partial class MainWindow : Window
             // without a heading there is nothing to say whose profiles are whose.
             if (drives.Length > 1) DeviceCards.Children.Add(DriveHeading(root));
 
+            // Before the profiles: a device whose settings file the firmware
+            // would refuse is the first thing somebody needs to know about it.
+            if (PrefsBanner(root) is { } prefs) DeviceCards.Children.Add(prefs);
+
             // The number the profile switch counts to reach this file, from the
             // same order the selection guide draws. prefs.csv is not selectable
             // and gets no number.
@@ -1873,6 +1921,76 @@ public partial class MainWindow : Window
                 cards.Children.Add(ProfileCard(path, onDevice: true, position: position));
             DeviceCards.Children.Add(cards);
         }
+    }
+
+    // Injectable for the same reason FindDeviceRoots is: a test that writes the
+    // spare copy into the real backups folder leaves it there for the next run
+    // and for the person whose machine it is.
+    internal Func<string> BackupRoot { get; set; } = Device.DefaultBackupDir;
+
+    string PrefsSnapshotDir() => Path.Combine(BackupRoot(), "prefs");
+
+    // Takes the spare copy when the device's settings file is one the firmware
+    // would load, and offers it back when it is not.
+    //
+    // A profile switch that changes usb emulation mode makes the QuadStick
+    // disconnect and re-enumerate its own drive (Configuration.c:320), so the
+    // volume is surprise-removed from Windows twice a session and prefs.csv is
+    // what the repair keeps eating. Nothing here prevents that. It replaces the
+    // part the user was doing by hand.
+    Control? PrefsBanner(string root)
+    {
+        var state = PrefsGuard.Check(root);
+        if (state == PrefsGuard.State.Healthy)
+        {
+            // Best effort and deliberately unreported: the copy is a safety net,
+            // and a home screen that complains it could not take one is noise
+            // about a problem the user does not have yet.
+            PrefsGuard.TrySnapshot(root, PrefsSnapshotDir());
+            return null;
+        }
+
+        var taken = PrefsGuard.SnapshotTaken(PrefsSnapshotDir());
+        // Missing is only worth a word to somebody who had one. A device that
+        // never had a prefs.csv has no spare either, so this says nothing to
+        // the many people running on the firmware's defaults.
+        if (state == PrefsGuard.State.Missing && taken is null) return null;
+
+        var line = state == PrefsGuard.State.Missing ? Strings.Shell_PrefsGone : Strings.Shell_PrefsBroken;
+        var rows = new StackPanel { Spacing = 6 };
+        rows.Children.Add(Explain(line, Strings.Shell_PrefsTitle, Strings.Shell_PrefsAbout));
+
+        if (taken is { } when)
+        {
+            var day = when.ToString("d", CultureInfo.CurrentCulture);
+            var put = new Button { Content = string.Format(CultureInfo.CurrentCulture, Strings.Shell_PrefsPutBack, day) };
+            AutomationProperties.SetName(put, string.Format(CultureInfo.CurrentCulture, Strings.Shell_PrefsPutBackName, day));
+            put.Click += (_, _) =>
+            {
+                try
+                {
+                    PrefsGuard.Restore(root, PrefsSnapshotDir(), BackupRoot());
+                    Status(string.Format(CultureInfo.CurrentCulture, Strings.Shell_PrefsRestored, root), StatusKind.Ready);
+                }
+                catch (Exception ex)
+                {
+                    // Say what went wrong rather than leaving a button that
+                    // looks like it did nothing.
+                    Status(ex.Message, StatusKind.Error);
+                }
+                RefreshHomeCards();
+            };
+            rows.Children.Add(put);
+        }
+        else
+        {
+            rows.Children.Add(new TextBlock
+            {
+                Text = Strings.Shell_PrefsNoCopy, FontSize = Size("SmallSize"),
+                Classes = { "secondary" }, TextWrapping = TextWrapping.Wrap,
+            });
+        }
+        return rows;
     }
 
     // The agent writes its working copies as qcm-agent-<guid>.csv in the temp
@@ -4799,10 +4917,7 @@ public partial class MainWindow : Window
         // Keep the part name as the heading. The count is supporting context,
         // not part of the title, and the one-click explanation belongs behind
         // the same question-mark pattern used for modes.
-        var help = new Button { Classes = { "icon", "quiet" }, Content = "?" };
-        ToolTip.SetTip(help, zone.Title);
-        AutomationProperties.SetName(help, zone.Title);
-        help.Click += (_, _) => ShowInfoFlyout(help, zone.Title, zone.Blurb);
+        var help = HelpDot(zone.Title, zone.Blurb);
 
         var count = new TextBlock
         {
@@ -5186,12 +5301,56 @@ public partial class MainWindow : Window
 
     public void LoadProfile(ProfileFile file) => OpenInEditor(file, savePath: null, ProfileSource.File);
 
+    /// <summary>Raised after a save lands on disk, with the path written. A host
+    /// that opened this editor has no other way to learn a save happened, and
+    /// without it cannot record what the file looked like at that moment.</summary>
+    public event Action<string>? ProfileSaved;
+
+    /// <summary>A line a host owns, across the top of the editor and never
+    /// scrolled away. Null in the free app, where there is no host and no
+    /// second person's file to confuse this one with. A clinic puts the
+    /// client's name here: editing the wrong person's profile is the one
+    /// mistake this product exists to make hard.</summary>
+    public string? HostBanner
+    {
+        get => HostBannerBar.IsVisible ? HostBannerText.Text : null;
+        set
+        {
+            HostBannerText.Text = value ?? "";
+            HostBannerBar.IsVisible = !string.IsNullOrEmpty(value);
+            AutomationProperties.SetName(HostBannerBar, value ?? "");
+            AutomationProperties.SetLiveSetting(HostBannerText, AutomationLiveSetting.Assertive);
+        }
+    }
+
+    /// <summary>Asked once, before anything is written to a QuadStick, and the
+    /// install stops if it answers false. A host uses it to name the person
+    /// whose device this is about to change; the free app has nobody to name
+    /// and leaves it null.</summary>
+    public Func<Task<bool>>? BeforeInstall { get; set; }
+
+    /// <summary>Raised with the window that replaces this one. Changing the
+    /// language rebuilds the editor, so a host holding a reference to it is
+    /// holding a window that is about to close.</summary>
+    public event Action<MainWindow>? EditorReplaced;
+
     /// <summary>Open a profile from a path, in the editor, exactly as opening a
     /// file does. The agent window hands its result back through here rather
     /// than through anything of its own, so what it wrote is checked, validated
     /// and installed by the same screens as any other profile.</summary>
     public void OpenPath(string path) =>
         OpenInEditor(ProfileFile.Load(File.ReadAllText(path)), path, ProfileSource.File);
+
+    /// <summary>Open a profile from a path, asking about unsaved work first.
+    /// Returns false when the person said no, so a host that is switching
+    /// between two people's profiles cannot throw away the edits in front of
+    /// them by loading the next one over the top.</summary>
+    public async Task<bool> OpenPathGuardedAsync(string path)
+    {
+        if (!await ConfirmLeaveAsync()) return false;
+        OpenPath(path);
+        return true;
+    }
 
     /// <summary>Open what the agent wrote and go straight into installing it.
     ///
@@ -5367,6 +5526,7 @@ public partial class MainWindow : Window
         PersistDrafts();           // and gives an untitled profile's names somewhere to live
         RefreshEditor(); // header insertion shifted every row; BOTH views must rebind
         Telemetry.Track(TelemetryEvent.ProfileSaved);
+        ProfileSaved?.Invoke(_savePath);
         Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_SavedToSavePath, _savePath), StatusKind.Ready);
         // Local save is done. Push the exact bytes just written to the sheet in
         // the background; the save path never waits on the network.
@@ -5426,7 +5586,7 @@ public partial class MainWindow : Window
     internal async Task ImportSheetsAsync(string pasted, HttpClient? http = null, Action<string>? onError = null,
         Window? dialogOwner = null)
     {
-        var client = http ?? Http;
+        var client = http ?? HttpClient;
         void HomeError(string message)
         {
             if (onError is not null) { onError(message); return; }
@@ -6661,9 +6821,11 @@ public partial class MainWindow : Window
         p.Children.Add(At(Mid(WithDuplicateMark(ListPickerCell(b.Row, 0, OutputFieldValue(b), outputs.Options, string.Format(CultureInfo.CurrentCulture, Strings.Main_OutputForRowBRow, b.Row), OutputTint, outputs.Catalog, Strings.Main_AnOutput,
             picked => CommitOutputFromList(b, outputs, picked),
             _labelStyle == 0 ? null
-                // Picker rows have enough room for the full wrapped keycap;
-                // compact keycaps are reserved for the dense mapping cards.
-                : token => OutputVisuals.Render(VisualFor(token), TokenLabel(token), compact: false),
+                // Picker rows are deliberately compact: the button already
+                // supplies the 48px hit target, so a full-size keycap or
+                // controller prompt makes the popup grow vertically and can
+                // push the rest of the option's content out of view.
+                : token => OutputVisuals.Render(VisualFor(token), TokenLabel(token), compact: true),
             vocabularyFilter: true),
             _dupes.Output(b.Output))), 1));
         // List View is the raw grid, so the function's numbers explain
@@ -7472,7 +7634,36 @@ public partial class MainWindow : Window
                 sp.Children.Add(new TextBlock { Text = d, FontSize = Size("SmallSize"), Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
             return sp;
         });
+        // The list explains each choice, because that is where a choice is
+        // made. The closed box shows the name only: with the description in it
+        // the box was ten lines tall in a 230px panel and pushed the numbers
+        // it belongs to off the bottom. The dot beside it holds the words.
+        combo.SelectionBoxItemTemplate = new FuncDataTemplate<string>((name, _) =>
+            new TextBlock
+            {
+                // Never wrapped: this column is 110px in the parts panel and a
+                // wrapping name came out as "Ta" over "p".
+                Text = TokenLabel(name), FontWeight = FontWeight.SemiBold,
+                FontSize = Size("BodySize"), TextTrimming = TextTrimming.CharacterEllipsis,
+            });
         AutomationProperties.SetName(combo, string.Format(CultureInfo.CurrentCulture, Strings.Main_HowShortInputZoneBPresses, ShortInput(zone, b), FunctionExplain(current)));
+
+        // One dot for the whole cell: what the function does, then what its
+        // numbers mean. Titled with the function, so a screen reader announces
+        // "Tap" rather than a generic "help".
+        var fnHelp = new Button { Classes = { "icon", "quiet" }, Content = "?" };
+        void TitleHelp(string name)
+        {
+            ToolTip.SetTip(fnHelp, TokenLabel(name));
+            AutomationProperties.SetName(fnHelp, TokenLabel(name));
+        }
+        TitleHelp(firstToken);
+        fnHelp.VerticalAlignment = VerticalAlignment.Center;
+        fnHelp.Click += (_, _) =>
+        {
+            var name = combo.SelectedItem as string ?? firstToken;
+            ShowInfoFlyout(fnHelp, TokenLabel(name), FunctionHelpBody(name));
+        };
 
         bool startHasParams = Vocab.FunctionArity.TryGetValue(firstToken, out var startArity) && startArity.Max > 0;
         var paramsBox = new TextBox
@@ -7480,17 +7671,29 @@ public partial class MainWindow : Window
             Text = currentParams,
             Watermark = ParameterWatermark(firstToken),
             FontSize = Size("SmallSize"),
-            Margin = new Avalonia.Thickness(0, 4, 0, 0),
             IsVisible = startHasParams,
         };
         AutomationProperties.SetName(paramsBox, ParameterAccessibleName(firstToken));
 
+        // The dot shares the line under the picker with the numbers box, which
+        // is half empty anyway. Beside the picker it took a third of a 145px
+        // column off a control that has a name to show.
+        var underRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
+            Margin = new Avalonia.Thickness(0, 4, 0, 0),
+        };
+        underRow.Children.Add(paramsBox);
+        Grid.SetColumn(fnHelp, 1);
+        underRow.Children.Add(fnHelp);
+
         // The ranges and defaults sit under the box, not in a tooltip: a
         // tooltip is unreachable by keyboard and silent to a screen reader,
         // and this is the guidance somebody needs before typing, not after.
+        // What each number does is a click away on the dot beside the box.
         var paramsHint = new TextBlock
         {
-            Text = ParameterHint(firstToken),
+            Text = ParameterSummary(firstToken),
             FontSize = Size("SmallSize"),
             Classes = { "muted" },
             TextWrapping = TextWrapping.Wrap,
@@ -7521,7 +7724,8 @@ public partial class MainWindow : Window
                 bool hasParams = Vocab.FunctionArity.TryGetValue(name, out var ar) && ar.Max > 0;
                 paramsBox.IsVisible = hasParams;
                 paramsHint.IsVisible = hasParams;
-                paramsHint.Text = ParameterHint(name);
+                paramsHint.Text = ParameterSummary(name);
+                TitleHelp(name);
                 paramsBox.Watermark = ParameterWatermark(name);
                 AutomationProperties.SetName(paramsBox, ParameterAccessibleName(name));
                 if (!hasParams) paramsBox.Text = "";
@@ -7536,7 +7740,7 @@ public partial class MainWindow : Window
         // too. Without the wrapper, B{row} lives nowhere in _cellBorders.
         // RefreshIssues mirrors the wrapper child's accessible name onto the
         // highlight; the panel needs the combo's name or an error reads as nothing.
-        var stack = new StackPanel { Children = { combo, paramsBox, paramsHint } };
+        var stack = new StackPanel { Children = { combo, underRow, paramsHint } };
         AutomationProperties.SetName(stack, AutomationProperties.GetName(combo));
         var wrapper = new Border
         {
@@ -7661,9 +7865,10 @@ public partial class MainWindow : Window
             token =>
             {
                 var label = outputs.TokenFor.ContainsKey(token) ? token : TokenLabel(token);
-                // The dropdown item needs to show the complete keypad label;
-                // use the full wrapped keycap presentation here.
-                return OutputVisuals.Render(VisualFor(token, _ => label), compact: false);
+                // Keep every dropdown option on the same visual scale. The
+                // button remains the full hit target; the artwork is the
+                // compact presentation so its label and prompt stay together.
+                return OutputVisuals.Render(VisualFor(token, _ => label), compact: true);
             },
             vocabularyFilter: true);
     }
@@ -7990,7 +8195,8 @@ public partial class MainWindow : Window
             body.Children.Clear();
             scroll.ScrollToHome();
             var hits = all.Where(t => t.Contains(q, StringComparison.OrdinalIgnoreCase)
-                                   || labelFor(t).Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+                                   || labelFor(t).Contains(q, StringComparison.OrdinalIgnoreCase)
+                                   || OutputCatalog.OtherNames(t).Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
             foreach (var t in hits.Take(40)) body.Children.Add(Item(t));
             if (hits.Count > 40)
                 body.Children.Add(new TextBlock
@@ -8121,6 +8327,44 @@ public partial class MainWindow : Window
         return wrapper;
     }
 
+    /// <summary>A screen's opening line, plus the dot holding the rest of it.
+    /// Screens used to open with a paragraph, and a paragraph at the top of a
+    /// dialog is furniture: the eye goes to the buttons. The sentence that
+    /// stops a wrong guess stays on screen and the mechanics move behind the
+    /// dot, laid out like the part headings in Device View.</summary>
+    internal static Control Explain(string line, string title, string body)
+    {
+        var row = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+        row.Children.Add(new TextBlock
+        {
+            Text = line, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+        // Top, not centre: beside a sentence that wrapped, the dot belongs on
+        // the line the sentence starts on.
+        var dot = HelpDot(title, body);
+        dot.VerticalAlignment = VerticalAlignment.Top;
+        Grid.SetColumn(dot, 1);
+        row.Children.Add(dot);
+        return row;
+    }
+
+    // Every screen used to carry its explanation inline, and a wall of muted
+    // paragraphs is a wall nobody reads. What stays inline is the line that
+    // stops a wrong guess; the mechanics move behind one of these.
+    internal static Button HelpDot(string title, string body) => HelpDot(title, () => body);
+
+    /// <summary>For a dot whose subject changes under it, such as the numbers
+    /// beside whichever function the row is set to now.</summary>
+    internal static Button HelpDot(string title, Func<string> body)
+    {
+        var dot = new Button { Classes = { "icon", "quiet" }, Content = "?" };
+        ToolTip.SetTip(dot, title);
+        AutomationProperties.SetName(dot, title);
+        dot.Click += (_, _) => ShowInfoFlyout(dot, title, body());
+        return dot;
+    }
+
     // A dismissable popup anchored to its "?" button: the answer is one click
     // away and never clutters the editing surface.
     static void ShowInfoFlyout(Control anchor, string title, string body)
@@ -8208,6 +8452,26 @@ public partial class MainWindow : Window
     {
         var spec = FunctionParameters.For(FunctionToken(function));
         return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Sentence));
+    }
+
+    // Everything the dot beside a function cell says: what the behaviour is,
+    // then what its numbers mean. One or the other may be empty.
+    internal static string FunctionHelpBody(string function)
+    {
+        var what = FunctionExplain(function);
+        var numbers = ParameterHint(function);
+        if (what.Length == 0) return numbers;
+        return numbers.Length == 0 ? what : what + "\n\n" + numbers;
+    }
+
+    // The same lines without the behaviour half. Once "tap" had to explain that
+    // a second number of 1 toggles rather than presses, the sentence that told
+    // you the range was two lines from the box it belonged to. The numbers stay
+    // under the box; what they do sits behind the question mark beside it.
+    internal static string ParameterSummary(string function)
+    {
+        var spec = FunctionParameters.For(FunctionToken(function));
+        return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Summary));
     }
 
     // A screen reader gets the same sentences the sighted user reads under the

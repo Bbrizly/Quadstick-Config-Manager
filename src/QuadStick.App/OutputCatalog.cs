@@ -137,6 +137,13 @@ public static class OutputCatalog
         "kb_left_alt", "kb_right_alt", "kb_left_gui", "kb_right_gui",
     };
 
+    /// <summary>Words that find a token but are not written on it. The
+    /// Windows key is GUI in the HID tables the firmware follows, so the
+    /// keyboard in front of somebody and the name in this app share no
+    /// letters. Searched, never drawn.</summary>
+    public static string OtherNames(string t) =>
+        t is "kb_left_gui" or "kb_right_gui" ? Strings.Outputs_GuiKeyOtherNames : "";
+
     public static (string Category, string Sub) Classify(string t) => t switch
     {
         _ when t.StartsWith("kb_keypad_", StringComparison.Ordinal) => ("Keyboard", Strings.Outputs_NumberPad2),

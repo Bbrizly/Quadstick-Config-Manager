@@ -102,7 +102,7 @@
     <value>10 na sekundę</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1 blokuje wyjście w stanie włączonym. Każda wartość powyżej 1 określa, jak długo trwa naciśnięcie.</value>
+    <value>Ustaw dokładnie 1, a wyjście zostanie zablokowane w stanie włączonym. Każda wartość powyżej 1 określa, jak długo trwa naciśnięcie.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Liczy się jako stuknięcie</value>
@@ -126,7 +126,7 @@
     <value>Przytrzymaj, aby zablokować</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Utrzymuje pierwsze stuknięcie przez ten czas, zanim zacznie się szybkie powtarzanie.</value>
+    <value>Utrzymuje pierwsze stuknięcie przez ten czas, zanim zacznie się szybkie powtarzanie. Wartość krótsza niż odstęp między stuknięciami nic nie zmienia.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>trzyma, dopóki wejście jest przytrzymane</value>
@@ -144,7 +144,7 @@
     <value>Jak długo trwa każde naciśnięcie.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Jak długo trwa naciśnięcie stuknięcia. 1 zamiast tego blokuje wyjście w stanie włączonym.</value>
+    <value>Jak długo trwa naciśnięcie stuknięcia. Ustaw dokładnie 1, a zamiast tego przełącza: jedno stuknięcie włącza wyjście, następne je wyłącza.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>Ile naciśnięć wysyła jedna aktywacja.</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>Proszę uruchomić to z czegoś innego niż push, albo z kombinacji, której push nie utrzyma samodzielnie.</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>"{0}" odczytuje 0 dla {1}, a po nim następuje druga liczba. Obie liczby dzielą jedno słowo, więc urządzenie wstawia {2} tylko wtedy, gdy 0 jest całą zawartością komórki. Tutaj odczytuje {1} jako zwykłe 0.</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>„{0}” odczytuje 0 dla {1} jako brak jakiejkolwiek wartości, więc urządzenie używa {2}.</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>bez dysku</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>„{0}” to przestarzała nazwa wejścia: firmware ją rozpoznaje, ale aktualna oficjalna lista jej nie zawiera.</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>Ustaw ją na "normal", aby to jasno określić.</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>Ustaw {0} między {1} a {2} albo usuń drugą liczbę.</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>Skróć ją do {0} znaków lub mniej, na przykład "game.csv".</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Dwa równe progi powodują, że urządzenie dzieli przez zero za każdym razem, gdy odczytuje rurkę.</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>bez dysku</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>Tryb emulacji USB {0} ({1}) nie daje komputerowi dostępu do dysku QuadSticka, a to plik, z którym urządzenie się uruchamia. Zainstalowanie go nie pozostawiłoby żadnego sposobu, aby ponownie edytować jakikolwiek profil, a przywrócenie wymaga fizycznego wymuszonego kasowania.</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Użyj {0} lub więcej.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Użyj od {0} do {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Użyj tu trybu 0, 2, 3 lub 4, a drugi tryb ustaw zamiast tego w profilu gry.</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Ten arkusz kalkulacyjny jest większy niż {0} wierszy, znacznie większy niż jakikolwiek profil, więc przestaliśmy odczytywać w połowie.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Użyj od {0} do {1}. {2}</value>
   </data>
 </root>

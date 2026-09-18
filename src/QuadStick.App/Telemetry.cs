@@ -108,7 +108,11 @@ public static partial class Telemetry
 
     public static bool IsLive => _client is not null;
 
-    static bool KillSwitch => Environment.GetEnvironmentVariable("QSCM_TELEMETRY") == "0";
+    // Two ways off: the environment variable a build machine or a user sets,
+    // and a host that turned the whole network off, where a consent question
+    // would be asking about something that cannot happen.
+    static bool KillSwitch =>
+        !NetworkFeature.Enabled || Environment.GetEnvironmentVariable("QSCM_TELEMETRY") == "0";
 
     /// <summary>True when QSCM_TELEMETRY=0. There is nothing to consent to, so do not ask.</summary>
     public static bool DisabledByEnvironment => KillSwitch;
@@ -385,7 +389,10 @@ public static partial class Telemetry
         try
         {
             var c = _client;
-            if (c is null || !_usage || _distinctId.Length == 0) return false;
+            // KillSwitch as well as the client: a host can turn the network
+            // off after a client was already built, and a client that exists
+            // is a client that would still send.
+            if (c is null || KillSwitch || !_usage || _distinctId.Length == 0) return false;
 
             var props = Envelope();
             if (key is not null && value is not null) props[key] = value;
@@ -494,7 +501,7 @@ public static partial class Telemetry
 
             lock (Gate) { Start(); }
             var c = _client;
-            if (c is null) return false;
+            if (c is null || KillSwitch) return false;
 
             var props = ExceptionProperties(payload);
             props[CrashConsentMarker] = true;   // stripped again inside Scrub

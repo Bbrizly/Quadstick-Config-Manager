@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Globalization;
 
 namespace QuadStick.Format;
@@ -44,6 +45,10 @@ public static class Validator
         // comes up as. A USB emulation mode without a drive is survivable in a
         // game profile and is not in these two.
         var decidesTheBootMode = doc.IsDefaultConfig || doc.IsDevicePreferences;
+
+        // Read before the sheet loop: a Preferences sheet may sit after the
+        // modes it applies to, and the mode is what the trigger check turns on.
+        var fileEmulationMode = EmulationModeFromPreferences(doc);
 
         int profileSheets = 0;
         foreach (var sheet in doc.Sheets)
@@ -106,8 +111,60 @@ public static class Validator
             }
 
             ValidatePreferenceOrder(modeNumbers, "C", issues);
+
+            // A mode's own override wins over the Preferences sheet, and a file
+            // that sets neither leaves the mode to whatever the device booted
+            // with, which this app cannot see and so says nothing about.
+            WarnAboutXboxTriggers(sheet,
+                modeNumbers.TryGetValue("enable_DS3_emulation", out var em) ? em.Value : fileEmulationMode,
+                issues);
         }
         return issues;
+    }
+
+    static int? EmulationModeFromPreferences(ProfileDocument doc)
+    {
+        int? mode = null;
+        foreach (var sheet in doc.Sheets)
+        {
+            if (sheet.Type != SheetType.Preferences) continue;
+            // Column B is the value on this sheet, and a repeated name keeps the
+            // last row, the way the device's own sequential read does.
+            foreach (var b in sheet.Bindings)
+                if (b.Output == "enable_DS3_emulation"
+                    && int.TryParse(b.Function.Trim(), NumberStyles.Integer,
+                                    CultureInfo.InvariantCulture, out var n))
+                    mode = n;
+        }
+        return mode;
+    }
+
+    // left_2 and right_2 answer to left_trigger and right_trigger too
+    // (output_keywords.h aliases both spellings to LEFT_2 and RIGHT_2).
+    static readonly System.Collections.Generic.HashSet<string> TriggerOutputs =
+        new(StringComparer.Ordinal) { "left_2", "right_2", "left_trigger", "right_trigger" };
+
+    // The two Xbox reports carry the triggers as an axis and nothing else.
+    // DataFlow.c:2721 and :2768 set left_trigger_axis from ps3.press_L2, and
+    // neither block ever sets an L2 or R2 switch bit; modes 0, 1, 4, 5, 6 and 7
+    // all copy ps3.L2 across as a button as well (DataFlow.c:2659, :2792,
+    // :2871). press_L2 is the sip's own pressure, value >> 2 (DataFlow.c:2153),
+    // and a sip that only just crosses the threshold has a value of 4
+    // (DataFlow.c:368), so it reaches the game as 1 of 255. On every other mode
+    // the button fires regardless and the row works, which is why this reads as
+    // "the triggers do not work on Xbox" and nowhere else.
+    static void WarnAboutXboxTriggers(ModeSheet sheet, int? emulationMode, List<Issue> issues)
+    {
+        if (emulationMode is not (2 or 3)) return;
+
+        var row = sheet.Bindings.FirstOrDefault(
+            b => !IsPreferenceOverride(b) && TriggerOutputs.Contains(b.Output));
+        if (row is null) return;
+
+        issues.Add(new Issue(Severity.Warning, $"A{row.Row}",
+            string.Format(CultureInfo.CurrentCulture, Strings.Issue_XboxTriggersAreAnAxis,
+                emulationMode, row.Output, row.Row),
+            Strings.Issue_LowerSipPuffMaximum));
     }
 
     // A mode-sheet row whose output cell is a preference name sets that
@@ -512,20 +569,28 @@ public static class Validator
             Strings.Issue_CheckWhichFirmwareYourQuadStick));
     }
 
-    // A computer can only reach the QuadStick's files while the USB emulation
-    // it is running declares a mass-storage interface, and four of the eight do
-    // not. Read off the configuration descriptors in firmware 2373: PS3_t (mode
-    // 0), X360CE_t (2), X360_t (3) and CM_t (4, which is what mode 4 answers
-    // with on a computer) each carry an MS_Interface; DS3_t (1), NS_t (5),
-    // Mode6_t (6) and PS4_t (7) carry none. Joystick.c:656 skips configuring
-    // the endpoints for 6 on top of that.
+    // Modes that show a computer no drive. Read off the configuration descriptor
+    // each one actually sends in firmware 2373, which is the part worth being
+    // careful about: Descriptors.h defines a USB_Descriptor_Configuration_X360_t
+    // carrying an MS_Interface, and mode 3 was once counted safe on the strength
+    // of it. That struct is only used by the descriptor commented out at
+    // Descriptors.c:1000. The live one is the byte array at :857, a copy of the
+    // real Xbox 360 controller's: four interfaces, all class 0xFF, no mass
+    // storage and no HID. So mode 3 belongs here with the rest.
     static readonly Dictionary<int, string> EmulationModesWithNoDrive = new()
     {
         [1] = "DualShock 3",
+        [3] = "Xbox 360 controller",
         [5] = "Nintendo Switch Pro Controller",
         [6] = Strings.Issue_DualShock4WithNoUSB,
         [7] = "DualShock 4 wireless",
     };
+
+    /// <summary>The USB emulation modes that leave no drive for a computer to
+    /// find, in order. The "no drive is plugged in" message names them, and it
+    /// named only mode 6 for a while because it carried its own copy.</summary>
+    public static IReadOnlyList<int> ModesWithNoDrive { get; } =
+        EmulationModesWithNoDrive.Keys.OrderBy(m => m).ToList();
 
     /// <summary>Whether a USB emulation mode leaves the QuadStick's drive
     /// reachable from a computer. A value that is not a number is nobody's
@@ -787,7 +852,7 @@ public static class Validator
                     string.Format(CultureInfo.CurrentCulture, Strings.Issue_ArgsIIsLargerThan, args[i], FunctionParameters.Ceiling),
                     string.Format(CultureInfo.CurrentCulture, Strings.Issue_UseAValueUpTo, FunctionParameters.Ceiling)));
             else
-                WarnIfOutOfRange(b, parts[0], args[i], i, n, issues);
+                WarnIfOutOfRange(b, parts[0], args[i], i, n, args, issues);
         }
     }
 
@@ -797,7 +862,7 @@ public static class Validator
     // a warning, never a rewrite. Nothing here fires for a function whose
     // parameters this app cannot vouch for.
     static void WarnIfOutOfRange(
-        Binding b, string function, string text, int index, long n, List<Issue> issues)
+        Binding b, string function, string text, int index, long n, string[] args, List<Issue> issues)
     {
         var spec = FunctionParameters.For(function);
         if (index >= spec.Count) return;
@@ -806,11 +871,30 @@ public static class Validator
 
         // 0 is how a file says "leave this one out", and the device substitutes
         // its own default for it. Saying that is worth more than calling it low.
+        //
+        // Except when a second number follows. Both numbers are packed into one
+        // word (Configuration.c:302), and every default test in the firmware is
+        // `if (!function_parameter)` or `function_parameter ? ... : default` on
+        // the whole word, not on the first 14 bits: DataFlow.c:1654 (repeat),
+        // :1689 (pulse), :1739 (delay_on), :1846 (greater_than), :1960 (tap).
+        // So a second number makes the word non-zero and the first number stays
+        // a literal 0. `repeat 0 500` is the worst of them: 1000 / 0, which this
+        // core returns as 0 rather than trapping (nothing sets DIV_0_TRP), so
+        // the row holds the output on instead of tapping ten times a second.
+        // Telling somebody their 0 means the default here would be false.
         if (n == 0)
         {
-            issues.Add(new Issue(Severity.Warning, $"B{b.Row}",
-                string.Format(CultureInfo.CurrentCulture, Strings.Issue_FunctionReads0ForP, function, p.Label.ToLowerInvariant(), p.Default),
-                string.Format(CultureInfo.CurrentCulture, Strings.Issue_LeaveItOutToMean, p.Label.ToLowerInvariant(), p.Minimum, p.Maximum)));
+            bool packedWithAnother = index == 0 && args.Skip(1).Any(
+                a => long.TryParse(a, System.Globalization.NumberStyles.Integer,
+                                   System.Globalization.CultureInfo.InvariantCulture, out var later)
+                     && later != 0);
+            issues.Add(packedWithAnother
+                ? new Issue(Severity.Warning, $"B{b.Row}",
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_Function0ForPIsPacked, function, p.Label.ToLowerInvariant(), p.Default),
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_SetPBetweenMinAndMaxOrDrop, p.Label.ToLowerInvariant(), p.Minimum, p.Maximum))
+                : new Issue(Severity.Warning, $"B{b.Row}",
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_FunctionReads0ForP, function, p.Label.ToLowerInvariant(), p.Default),
+                    string.Format(CultureInfo.CurrentCulture, Strings.Issue_LeaveItOutToMean, p.Label.ToLowerInvariant(), p.Minimum, p.Maximum)));
             return;
         }
 

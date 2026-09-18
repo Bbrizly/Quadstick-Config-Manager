@@ -102,7 +102,8 @@ public class Firmware2373RuleTests
     // A computer can only reach the QuadStick's files while the emulation it is
     // running declares a mass-storage interface, and four of the eight do not:
     // DS3_t (mode 1), NS_t (5), Mode6_t (6) and PS4_t (7) have no MS_Interface,
-    // while PS3_t (0), X360CE_t (2), X360_t (3) and CM_t (4 on a computer) do.
+    // while PS3_t (0), X360CE_t (2) and CM_t (4 on a computer) do. X360_t (3)
+    // declares one and is still no good; see the test below it.
     // Put one of the four in the file the device boots with and there is no way
     // to edit it back: recovery is the physical force-erase.
     [Theory]
@@ -117,6 +118,25 @@ public class Firmware2373RuleTests
         var issue = Assert.Single(issues, i => i.Message.Contains("access to the QuadStick's drive"));
         Assert.Equal(Severity.Error, issue.Severity);
         Assert.Contains("force-erase", issue.Message);
+    }
+
+    // Mode 3 is the trap this rule was on the wrong side of, and the reason is
+    // worth keeping: Descriptors.h defines a USB_Descriptor_Configuration_X360_t
+    // with mouse, keyboard and MS_Interface members, so reading that struct puts
+    // mode 3 with the safe ones, and the fix hint then offered it as somewhere
+    // to boot from. The struct is used by nothing: the descriptor at
+    // Descriptors.c:1000 that would have used it is commented out, and the live
+    // one at :857 is the real Xbox 360 controller's four interfaces, all class
+    // 0xFF, no HID and no mass storage. Mode 3 gives a computer no drive at all.
+    [Fact]
+    public void The_xbox_mode_cannot_go_in_the_file_the_device_boots_with()
+    {
+        var issues = Load("Preferences\nprefs.csv\nName,Value\nenable_DS3_emulation,3\n");
+
+        var issue = Assert.Single(issues, i => i.Message.Contains("access to the QuadStick's drive"));
+        Assert.Equal(Severity.Error, issue.Severity);
+        Assert.Contains("force-erase", issue.Message);
+        Assert.DoesNotContain("3", issue.Fix ?? "");
     }
 
     // default.csv is the other file the device comes up on, so the same rule.
@@ -143,12 +163,12 @@ public class Firmware2373RuleTests
         Assert.DoesNotContain(issues, i => i.Severity == Severity.Error);
     }
 
-    // The four that keep the drive say nothing at all, including 4, which
-    // answers a computer with CM_t and a PS4 with PS4_t.
+    // The three that keep the drive say nothing at all, including 4, which
+    // answers a computer with CM_t and a PS4 with PS4_t. 3 was here once, on
+    // the strength of a struct no live descriptor uses.
     [Theory]
     [InlineData("0")]
     [InlineData("2")]
-    [InlineData("3")]
     [InlineData("4")]
     public void An_emulation_that_keeps_the_drive_is_not_worth_a_word(string mode)
     {

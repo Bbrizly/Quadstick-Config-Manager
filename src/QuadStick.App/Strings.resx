@@ -226,6 +226,9 @@
   <data name="Community_SearchTheCommunityProfiles" xml:space="preserve">
     <value>Search the community profiles</value>
   </data>
+  <data name="Community_SharedGoogleSheetsForGame" xml:space="preserve">
+    <value>Shared Google Sheets for game profiles.</value>
+  </data>
   <data name="Community_ShowingAllProfilesAllCount" xml:space="preserve">
     <value>Showing all {0}.</value>
   </data>
@@ -622,6 +625,9 @@
   <data name="Device_LookingForYourQuadStick" xml:space="preserve">
     <value>Looking for your QuadStick...</value>
   </data>
+  <data name="Device_ManageFilesOnTheQuadStick" xml:space="preserve">
+    <value>Manage files on the QuadStick drive.</value>
+  </data>
   <data name="Device_NoLightPatternIsDocumented" xml:space="preserve">
     <value>no light pattern is documented for this position</value>
   </data>
@@ -629,7 +635,7 @@
     <value>, no linked Google Sheet in its header</value>
   </data>
   <data name="Device_NoQuadStickDriveIsPlugged" xml:space="preserve">
-    <value>No QuadStick drive is plugged in. It must contain default.csv. In USB emulation mode 6, it does not appear.</value>
+    <value>No QuadStick drive is plugged in. It must contain default.csv. USB emulation modes {0} hide the drive, so a QuadStick on one of those is connected and playing but cannot be seen here.</value>
   </data>
   <data name="Device_NumberFileNameNoLightPattern" xml:space="preserve">
     <value>{0}. {1}: no light pattern is documented for this position</value>
@@ -745,6 +751,46 @@
   <data name="Install_BackingUpAndInstalling" xml:space="preserve">
     <value>Backing up and installing…</value>
   </data>
+  <data name="Install_LettingTheDeviceFinish" xml:space="preserve">
+    <value>Letting the QuadStick finish writing…</value>
+  </data>
+  <data name="Install_SafeToUnplug" xml:space="preserve">
+    <value>Safe to unplug.</value>
+  </data>
+  <data name="Install_SafeToUnplugAbout" xml:space="preserve">
+    <value>The QuadStick holds the last few kilobytes it was sent in memory and writes them to its flash about a second and a half later. Unplug it inside that gap and the drive loses a block of its own index, which breaks files you never touched, most often prefs.csv. Windows then reports error 0x80070570 and you have to run Error checking on the drive and put the file back. "Safely remove hardware" does not help, because the QuadStick does not answer the command Windows sends to flush a drive. Waiting does. The app has already waited, so once this line appears the write is on the flash and the QuadStick can come out.</value>
+  </data>
+  <data name="Install_SafeToUnplugTitle" xml:space="preserve">
+    <value>Why it waits before saying this</value>
+  </data>
+  <data name="Shell_PrefsBroken" xml:space="preserve">
+    <value>The QuadStick's settings file is damaged.</value>
+  </data>
+  <data name="Shell_PrefsGone" xml:space="preserve">
+    <value>The QuadStick's settings file is no longer on the drive.</value>
+  </data>
+  <data name="Shell_PrefsPutBack" xml:space="preserve">
+    <value>Put back the copy from {0}</value>
+  </data>
+  <data name="Shell_PrefsPutBackName" xml:space="preserve">
+    <value>Put the saved copy of prefs.csv back on the QuadStick. It was saved on {0}.</value>
+  </data>
+  <data name="Shell_PrefsNoCopy" xml:space="preserve">
+    <value>No saved copy to put back.</value>
+  </data>
+  <data name="Shell_PrefsRestored" xml:space="preserve">
+    <value>prefs.csv put back on {0}.</value>
+  </data>
+  <data name="Shell_PrefsTitle" xml:space="preserve">
+    <value>What happens to this file</value>
+  </data>
+  <data name="Shell_PrefsAbout" xml:space="preserve">
+    <value>prefs.csv holds the QuadStick's own settings, the ones that apply across every profile. The device reads it at startup and whenever it changes, and it will refuse a copy that does not begin with the word QuadStick or that is missing its first few lines. This one does, which is usually what is left after Windows repairs the drive.
+
+The drive gets damaged when a profile switch changes the USB emulation mode. The QuadStick has to disconnect its drive and reconnect it so your computer sees the new controller type, and Windows is not told in advance, so its record of the drive and the drive itself can end up disagreeing. It lands on prefs.csv more often than anything else. Setting the same USB emulation mode in every profile stops the switch happening at all.
+
+This app keeps a copy of the last version the device would accept, taken whenever it sees a good one. Putting it back writes those exact bytes, and keeps the damaged file in your backups folder in case it still holds something.</value>
+  </data>
   <data name="Install_BackupPath" xml:space="preserve">
     <value>Backup: {0}</value>
   </data>
@@ -818,7 +864,9 @@
     <value>A joystick plugged in here arrives as </value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>A mode is one full layout of your inputs. A profile can hold several and you switch between them while playing, for example a walking layout and a driving layout. To switch modes in the game, sip or puff the side tube, or map increment_mode / decrement_mode to an input.
+    <value>A mode is one full layout of your inputs. A profile can hold several and you switch between them while playing, for example a walking layout and a driving layout. To switch modes in the game, map increment_mode or decrement_mode to an input. The factory profile puts them on a side tube sip and puff, which is why the side tube changes mode until you rebind it.
+
+A long hard sip on that same tube is a different thing: it opens the list of game files on the device, not the modes in this one.
 
 Most profiles have just one mode, so this list often shows a single entry. That is normal.</value>
   </data>
@@ -1529,7 +1577,7 @@ Pick a part of the QuadStick on the left to see what it does in this mode, chang
     <value>Press once to turn on, press again to turn off. The output stays on after you release the input.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>A CSV file that maps sips, puffs, lip presses, and joystick moves to game buttons. A profile has one or more mode sheets, such as walking, driving, or menus. Sip or puff the side tube, or bind increment_mode / decrement_mode, to switch modes in-game.</value>
+    <value>A CSV file that maps sips, puffs, lip presses, and joystick moves to game buttons. A profile has one or more mode sheets, such as walking, driving, or menus. Bind increment_mode or decrement_mode to switch modes in-game; the factory profile puts them on a side tube sip and puff.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>A quick press each time you activate the input, however long you hold it.</value>
@@ -2163,7 +2211,10 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
     <value>{0}, {1} not used. Opens this part in device view.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>A mode is a full layout of your inputs. Switch between them while playing with the side tube, or with increment_mode and decrement_mode.</value>
+    <value>A mode is a full layout of your inputs. Switch between them while playing with increment_mode and decrement_mode. The factory profile binds those to a side tube sip and puff, which is why the side tube changes mode until you rebind it.</value>
+  </data>
+  <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
+    <value>A mode is a full layout of your inputs.</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>A mode needs a name. The old one is still there.</value>
@@ -2353,6 +2404,10 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Outputs_FunctionKeys2" xml:space="preserve">
     <value>Function keys</value>
+  </data>
+  <data name="Outputs_GuiKeyOtherNames" xml:space="preserve">
+    <value>windows win start super meta command cmd apple flag</value>
+    <comment>Not shown. Search words that find kb_left_gui and kb_right_gui, which every keyboard prints as something else. Add the names your language types, keep the English ones.</comment>
   </data>
   <data name="Outputs_ModeSwitching" xml:space="preserve">
     <value>Mode switching</value>
@@ -3190,6 +3245,12 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Shell_Dismiss" xml:space="preserve">
     <value>Dismiss</value>
+  </data>
+  <data name="Shell_EachOfTheseIsA" xml:space="preserve">
+    <value>Each of these is a whole game file, not a mode. With Select files on, a long hard sip on the side tube opens this list on the device: pick one with the joystick, then load it with the lip switch, a centre sip or puff, or the push switch. Modes are the layouts inside a single file.</value>
+  </data>
+  <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
+    <value>Each of these is a whole game file, not a mode.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Edit modes</value>

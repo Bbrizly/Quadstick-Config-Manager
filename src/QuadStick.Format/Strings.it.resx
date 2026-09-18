@@ -102,7 +102,7 @@
     <value>10 al secondo</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1 blocca l'output acceso. Un valore superiore a 1 indica la durata della pressione.</value>
+    <value>Impostalo esattamente su 1 e l'output resta bloccato acceso. Un valore superiore a 1 indica la durata della pressione.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Conta come un tocco</value>
@@ -126,7 +126,7 @@
     <value>Tieni premuto per bloccare</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Mantiene il primo tocco per questa durata prima che inizi il fuoco rapido.</value>
+    <value>Mantiene il primo tocco per questa durata prima che inizi il fuoco rapido. Se è inferiore all'intervallo tra i tocchi non cambia nulla.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>resta attivo finché rimane premuto</value>
@@ -144,7 +144,7 @@
     <value>Per quanto tempo dura ogni pressione.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Per quanto tempo preme il tocco. 1 blocca invece l'output acceso.</value>
+    <value>Per quanto tempo preme il tocco. Impostalo esattamente su 1 e invece commuta: un tocco accende l'output, il successivo lo spegne.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>Quante pressioni invia una singola attivazione.</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>Lo attivi da qualcosa di diverso da push, oppure da una combinazione che push non può contenere da solo.</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>"{0}" legge 0 per {1} e dopo c'è un secondo numero. I due numeri condividono una sola parola, quindi il dispositivo inserisce {2} solo quando lo 0 è tutta la cella. Qui legge {1} come uno 0 puro.</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}" legge 0 per {1} come nessun valore, quindi il dispositivo usa {2}.</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>senza unità</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>"{0}" è un nome di input legacy: il firmware lo riconosce, ma l'attuale elenco ufficiale non lo include.</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>Lo imposti su "normal" per renderlo esplicito.</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>Imposta {0} tra {1} e {2}, oppure togli il secondo numero.</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>Lo accorci a {0} caratteri o meno, per esempio "game.csv".</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Due soglie uguali fanno sì che il dispositivo divida per zero ogni volta che legge il tubo.</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>senza unità</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>La modalità di emulazione USB {0} ({1}) non dà a un computer accesso all'unità del QuadStick, e questo è un file con cui il dispositivo si avvia. Installarlo non lascerebbe alcun modo per modificare di nuovo un profilo, e il ripristino richiede una cancellazione forzata fisica.</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Usi {0} o più.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Usare da {0} a {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Usi qui la modalità 0, 2, 3 o 4, e imposti l'altra modalità in un profilo di gioco invece.</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Questo foglio di calcolo è più grande di {0} righe, molto più grande di qualsiasi profilo, quindi abbiamo interrotto la lettura a metà.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Usare da {0} a {1}. {2}</value>
   </data>
 </root>

@@ -59,6 +59,32 @@ public class ModesWindowTests
         w.UpdateLayout();
     }
 
+    // Drew, 2026-09-05: the app explained itself in paragraphs and the
+    // paragraphs read as furniture. What is left on screen is the sentence a
+    // person is wrong about without it; the mechanics of switching a mode mid
+    // game sit behind the dot, which is the same dot the editor uses.
+    [AvaloniaFact]
+    public void The_modes_dialog_opens_with_one_line_and_a_dot()
+    {
+        var w = Open(ModePrefsMode);
+        var modes = new ModesWindow(w);
+        _ = modes.ShowDialog(w);
+        Dispatcher.UIThread.RunJobs();
+        modes.UpdateLayout();
+
+        var texts = modes.GetVisualDescendants().OfType<TextBlock>()
+            .Select(t => t.Text ?? "").ToList();
+        Assert.Contains(Strings.Modes_AModeIsAFullLayout, texts);
+        Assert.DoesNotContain(Strings.Modes_AModeIsAFull, texts);
+
+        var dot = modes.GetVisualDescendants().OfType<Button>()
+            .Single(b => (b.Content as string) == "?");
+        Assert.Equal(Strings.Main_WhatIsAMode, AutomationProperties.GetName(dot));
+
+        modes.Close();
+        w.Close();
+    }
+
     // Every fixed width in a row added up to more than the window, so the last
     // button was cut in half by the edge with no scrollbar to reach it. Run at
     // the narrowest the window can be dragged, which is where it broke: the

@@ -68,6 +68,19 @@ public class OutputVisualTests
         Assert.Equal(keycap, visual.FriendlyLabel);
     }
 
+    [AvaloniaFact]
+    public void Two_word_keyboard_keycaps_keep_the_complete_label_in_compact_mode()
+    {
+        var rendered = OutputVisuals.Render(OutputVisuals.For("kb_right_alt"),
+            includeLabel: false, compact: true);
+
+        var plate = Assert.IsType<Grid>(rendered);
+        Assert.Equal("Right Alt", plate.GetVisualDescendants().OfType<TextBlock>()
+            .Single().Text);
+        Assert.Equal(86, plate.Width);
+        Assert.Equal(52, plate.Height);
+    }
+
     // Mouse prompts were bundled with the controller and key artwork, but
     // mouse outputs quietly fell all the way through to a text-only fallback.
     // Keep the firmware tokens tied to their actual highlighted prompt files.

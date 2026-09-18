@@ -118,10 +118,10 @@ public class PreferenceUiTests
 
         var shown = Cell<ComboBox>(w, 4).ItemsSource!.Cast<object>().Select(o => o.ToString()!).ToList();
         Assert.Equal(8, shown.Count);
-        foreach (var costly in new[] { "(1)", "(5)", "(6)", "(7)" })
+        foreach (var costly in new[] { "(1)", "(3)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.Contains(costly, StringComparison.Ordinal)
                                      && t.EndsWith(", no drive", StringComparison.Ordinal));
-        foreach (var safe in new[] { "(0)", "(2)", "(3)", "(4)" })
+        foreach (var safe in new[] { "(0)", "(2)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(safe, StringComparison.Ordinal));
 
         Assert.Contains(Said(w), t => t.Contains("will not write one of the drive-hiding modes"));
@@ -522,9 +522,9 @@ public class PreferenceUiTests
         Assert.Null(combo.SelectedItem);
         Assert.False(add.IsEnabled);
 
-        foreach (var mode in new[] { "(1)", "(5)", "(6)", "(7)" })
+        foreach (var mode in new[] { "(1)", "(3)", "(5)", "(6)", "(7)" })
             Assert.Contains(shown, t => t.EndsWith(mode + ", no drive", StringComparison.Ordinal));
-        foreach (var mode in new[] { "(0)", "(2)", "(3)", "(4)" })
+        foreach (var mode in new[] { "(0)", "(2)", "(4)" })
             Assert.Contains(shown, t => t.EndsWith(mode, StringComparison.Ordinal));
 
         combo.SelectedIndex = 0;

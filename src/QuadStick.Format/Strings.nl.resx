@@ -102,7 +102,7 @@
     <value>10 per seconde</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>1 zet de output aan en houdt hem vast. Alles boven 1 bepaalt hoe lang de druk duurt.</value>
+    <value>Zet hem op precies 1 en de output blijft aan staan. Alles boven 1 bepaalt hoe lang de druk duurt.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Telt als een tik</value>
@@ -126,7 +126,7 @@
     <value>Vasthouden om te vergrendelen</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Houdt de eerste tik zo lang vast voordat het snelvuur begint.</value>
+    <value>Houdt de eerste tik zo lang vast voordat het snelvuur begint. Korter dan de tussenpoos tussen de tikken verandert niets.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>blijft vast zolang u vasthoudt</value>
@@ -144,7 +144,7 @@
     <value>Hoe lang elke druk duurt.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Hoe lang de tik drukt. 1 zet de output in plaats daarvan aan en houdt hem vast.</value>
+    <value>Hoe lang de tik drukt. Zet hem op precies 1 en hij schakelt in plaats daarvan om: één tik zet de output aan, de volgende zet hem uit.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>Hoeveel drukken één activering verstuurt.</value>
@@ -269,8 +269,14 @@
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>Activeer dit vanuit iets anders dan push, of vanuit een combinatie die push niet alleen kan vasthouden.</value>
   </data>
+  <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
+    <value>"{0}" leest 0 voor {1}, en daarna volgt een tweede getal. Beide getallen delen één woord, dus het apparaat vult {2} alleen in als 0 de hele cel is. Hier leest het {1} als een kale 0.</value>
+  </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}" leest 0 voor {1} als helemaal geen waarde, dus het apparaat gebruikt {2}.</value>
+  </data>
+  <data name="Issue_HidesTheDrive" xml:space="preserve">
+    <value>geen schijf</value>
   </data>
   <data name="Issue_InputIsALegacyInput" xml:space="preserve">
     <value>"{0}" is een verouderde inputnaam: de firmware kent deze, maar de huidige officiële lijst bevat hem niet.</value>
@@ -404,6 +410,9 @@
   <data name="Issue_SetItToNormalTo" xml:space="preserve">
     <value>Stel het in op "normal" om dat expliciet te maken.</value>
   </data>
+  <data name="Issue_SetPBetweenMinAndMaxOrDrop" xml:space="preserve">
+    <value>Zet {0} tussen {1} en {2}, of haal het tweede getal weg.</value>
+  </data>
   <data name="Issue_ShortenItToSafeFileNameMaxDeviceFileNameLength" xml:space="preserve">
     <value>Verkort het tot {0} tekens of minder, bijvoorbeeld "game.csv".</value>
   </data>
@@ -455,9 +464,6 @@
   <data name="Issue_TwoEqualThresholdsMakeThe" xml:space="preserve">
     <value>Twee gelijke drempels laten het apparaat delen door nul, telkens wanneer het de buis uitleest.</value>
   </data>
-  <data name="Issue_HidesTheDrive" xml:space="preserve">
-    <value>geen schijf</value>
-  </data>
   <data name="Issue_USBEmulationModeModeWhat" xml:space="preserve">
     <value>USB-emulatiemodus {0} ({1}) geeft een computer geen toegang tot het station van de QuadStick, en dit bestand is er een waarmee het apparaat opstart. Het installeren ervan laat geen manier meer over om een profiel terug te bewerken, en herstel is een fysieke force-erase.</value>
   </data>
@@ -493,6 +499,9 @@
   </data>
   <data name="Issue_UseMinOrMore" xml:space="preserve">
     <value>Gebruik {0} of meer.</value>
+  </data>
+  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
+    <value>Gebruik {0} tot {1}. {2}</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
     <value>Gebruik hier modus 0, 2, 3 of 4, en stel de andere modus in plaats daarvan in een gameprofiel in.</value>
@@ -685,8 +694,5 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Deze spreadsheet is groter dan {0} rijen, veel groter dan enig profiel, dus we zijn halverwege gestopt met lezen.</value>
-  </data>
-  <data name="Issue_UseMinToMaxWhat" xml:space="preserve">
-    <value>Gebruik {0} tot {1}. {2}</value>
   </data>
 </root>

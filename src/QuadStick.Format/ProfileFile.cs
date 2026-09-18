@@ -93,9 +93,16 @@ public sealed class ProfileFile
 
     // Temp file then rename, so a crash mid-write can't leave a half-written
     // profile. Same pattern Device uses.
+    //
+    // The temp name carries the process and the thread that made it. It used
+    // to be one fixed name per target, and two writes to the same file at once
+    // (the Save button and Ctrl+S, or an autosave landing on a save) each
+    // wrote and moved the same temp: one of them moves a file the other is
+    // still filling in, and the profile that reaches disk is neither.
     public static void WriteAtomic(string path, string text)
     {
-        var tmp = path + ".qscm-tmp";
+        var tmp = string.Create(System.Globalization.CultureInfo.InvariantCulture,
+            $"{path}.qscm-tmp-{Environment.ProcessId}-{Environment.CurrentManagedThreadId}");
         try
         {
             File.WriteAllText(tmp, text);

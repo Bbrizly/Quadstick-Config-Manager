@@ -12,6 +12,7 @@ all: test build
 
 test:
 	dotnet test $(SLN) --nologo -c Release
+	node --test tests/*.test.mjs
 
 # Regenerate the frozen C# oracle outputs and require the Rust core to match
 # them. Requires dotnet, the pinned Rust toolchain and jsonschema==4.26.0.

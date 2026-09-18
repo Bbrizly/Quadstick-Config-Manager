@@ -73,11 +73,8 @@ public class DeviceFilesWindow : Window
         Height = Math.Min(700 * owner.UiScale, 880);
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-        var explain = new TextBlock
-        {
-            Text = Strings.Device_EverythingHereReadsAndWrites,
-            FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap,
-        };
+        var explain = MainWindow.Explain(Strings.Device_ManageFilesOnTheQuadStick,
+            Strings.Device_FilesOnYourQuadStick, Strings.Device_EverythingHereReadsAndWrites);
 
         _summary = new TextBlock
         {
@@ -307,7 +304,9 @@ public class DeviceFilesWindow : Window
 
         if (_groups.Count == 0)
         {
-            _summary.Text = Strings.Device_NoQuadStickDriveIsPlugged;
+            _summary.Text = string.Format(CultureInfo.CurrentCulture,
+                Strings.Device_NoQuadStickDriveIsPlugged,
+                string.Join(", ", Validator.ModesWithNoDrive));
             return;
         }
 
@@ -692,9 +691,15 @@ public class DeviceFilesWindow : Window
             return;
         }
 
+        // A delete rewrites the drive's index the same way an install does, so
+        // it is unsafe to unplug for the same window. Device.CacheFlushWait has
+        // the mechanism. Wait before the line that reads as "finished".
+        await Task.Delay(Device.CacheFlushWait);
+
         await LoadAsync();
         _owner.RefreshHomeAfterRestore();
-        _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_DeletedResultDeletedPathACopy, result.DeletedPath, result.BackupPath);
+        _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Device_DeletedResultDeletedPathACopy, result.DeletedPath, result.BackupPath)
+            + " " + Strings.Install_SafeToUnplug;
     }
 
     // A drive that vanished mid-action is normal for this hardware. Say what

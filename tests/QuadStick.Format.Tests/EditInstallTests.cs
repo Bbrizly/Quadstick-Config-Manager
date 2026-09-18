@@ -513,7 +513,7 @@ public class DeviceTests : IDisposable
         Assert.Contains("prefs.csv", ex.Message);
         // Refused means nothing was touched: no file, no temp, no backup.
         Assert.False(File.Exists(Path.Combine(_drive, "prefs.csv")));
-        Assert.Empty(Directory.GetFiles(_drive, "*.qscm-tmp"));
+        Assert.Empty(Directory.GetFiles(_drive, "*.qscm-tmp*"));
         Assert.Empty(Directory.GetFiles(_backups));
 
         var result = Device.Install(f, _drive, _backups, confirmPreferencesCsv: true);
@@ -579,7 +579,7 @@ public class DeviceTests : IDisposable
         {
             Assert.ThrowsAny<Exception>(() => Device.Install(Valid(), _drive, _backups));
             Assert.Equal("old", File.ReadAllText(existing));
-            Assert.Empty(Directory.GetFiles(_drive, "*.qscm-tmp"));
+            Assert.Empty(Directory.GetFiles(_drive, "*.qscm-tmp*"));
         }
         finally
         {
@@ -592,7 +592,7 @@ public class DeviceTests : IDisposable
     public void No_temp_files_left_behind()
     {
         Device.Install(Valid(), _drive, _backups);
-        Assert.Empty(Directory.GetFiles(_drive, "*.qscm-tmp"));
+        Assert.Empty(Directory.GetFiles(_drive, "*.qscm-tmp*"));
     }
 
     [Fact]

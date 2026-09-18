@@ -622,6 +622,14 @@ public class GalleryWindow : Window
                 },
             },
         });
+        // The line a host owns, above the chrome. The free app never shows it;
+        // it is here so somebody changing the accent can see what it does to
+        // the one strip that is always on top of everything.
+        wrap.Children.Add(new Border
+        {
+            Classes = { "hostbanner" }, Width = 360, Margin = new Thickness(0, 0, 10, 10),
+            Child = new TextBlock { Text = "Editing for Anna R.", Classes = { "hostbannertext" } },
+        });
         // The editor's command band, with the two kinds of button that sit on
         // it: a plain command lifted off the fill, and the accented one.
         wrap.Children.Add(new Border

@@ -26,7 +26,10 @@ final class AppModel {
     var modeIndex: Int = 0
     var face: DeviceFace = .front
 
-    let capabilities = QuadStickCatalog.capabilities
+    // Derives from settings.deviceModel so switching the picker in
+    // QuadStickSettingsView changes what the whole app shows. Filters a
+    // short fixed array, so cheap to recompute on every read.
+    var capabilities: DeviceCapabilities { QuadStickCatalog.capabilities(for: settings.deviceModel) }
     let drive = DriveAccount()
     private let repo: ConfigurationRepository
     private var undoStack: [Profile] = []

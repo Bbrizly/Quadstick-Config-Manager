@@ -40,16 +40,19 @@ private struct ActionRow: View {
             Button {
                 showPicker = true
             } label: {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(action.name)
-                        .foregroundStyle(.primary)
-                    Text(assignment.display)
-                        .font(.subheadline)
-                        .foregroundStyle(assignment.output == nil ? .secondary : Theme.accent)
-                    if let f = assignment.function {
-                        Text(f.summary)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                HStack(spacing: 10) {
+                    OutputGlyph(action: assignment.output, promptStyle: model.profile.controllerType.promptStyle)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(action.name)
+                            .foregroundStyle(.primary)
+                        Text(assignment.display)
+                            .font(.subheadline)
+                            .foregroundStyle(assignment.output == nil ? .secondary : Theme.accent)
+                        if let f = assignment.function {
+                            Text(f.summary)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -95,6 +98,7 @@ struct ActionEditorView: View {
                     HStack {
                         Text("Action").foregroundStyle(.primary)
                         Spacer()
+                        OutputGlyph(action: assignment.output, promptStyle: model.profile.controllerType.promptStyle)
                         Text(assignment.output?.name ?? "Not set")
                             .foregroundStyle(assignment.output == nil ? .secondary : Theme.accent)
                         Image(systemName: "chevron.right")

@@ -175,4 +175,26 @@ public sealed class PickerGroupingTests : IDisposable
 
         w.Close();
     }
+
+    // Somebody who wanted the Windows key searched every category for it and
+    // found nothing: the firmware calls it kb_left_gui, the picker draws it as
+    // "Left Gui", and the word printed on the key they are looking at appears
+    // nowhere. The search knows the other names now.
+    [AvaloniaFact]
+    public void Searching_for_the_windows_key_finds_the_gui_key()
+    {
+        var w = Open("Detailed");
+        var picker = OpenPicker(w);
+
+        var search = picker.GetVisualDescendants().OfType<TextBox>()
+            .First(t => AutomationProperties.GetName(t) == Strings.Main_SearchThisList);
+        search.Text = "windows";
+        Dispatcher.UIThread.RunJobs();
+        picker.UpdateLayout();
+
+        Assert.Contains("kb_left_gui", Buttons(picker));
+        Assert.Contains("kb_right_gui", Buttons(picker));
+
+        w.Close();
+    }
 }

@@ -73,7 +73,13 @@ public enum ConfigValidator {
 
             var outputsSeen: [String: String] = [:]
             for (actionID, a) in mode.assignments.sorted(by: { $0.key < $1.key }) {
-                let actionName = capabilities.action(actionID)?.fullName ?? actionID
+                // Falls back to the full catalog so a part the chosen model
+                // lacks is still named. Reporting a problem against
+                // "left-tube-normal-sip" instead of "Left Tube Normal Sip"
+                // tells somebody less than nothing.
+                let actionName = capabilities.action(actionID)?.fullName
+                    ?? QuadStickCatalog.action(actionID)?.fullName
+                    ?? actionID
 
                 if let f = a.function {
                     switch f {

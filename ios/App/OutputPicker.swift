@@ -84,6 +84,7 @@ struct OutputPicker: View {
             dismiss()
         } label: {
             HStack(spacing: 12) {
+                OutputGlyph(action: output, promptStyle: model.profile.controllerType.promptStyle)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(output?.name ?? "Not set")
                         .foregroundStyle(.primary)

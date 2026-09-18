@@ -19,11 +19,20 @@ namespace QuadStick.App;
 // step with no other feedback otherwise.
 public partial class MainWindow
 {
+    /// <summary>Test seam: the install flow is what the Install button runs,
+    /// and the host gate in front of it has to be driven through the real
+    /// thing rather than around it.</summary>
+    internal Task RunInstallFlowForTest() => RunInstallFlowAsync();
+
     async Task RunInstallFlowAsync()
     {
         // Every exit below is one reason, so the funnel says where installs
         // actually die rather than only that they did.
         Telemetry.Track(TelemetryEvent.InstallAttempted);
+
+        // Before anything is read, picked or written. A host that knows whose
+        // device this is gets to say the name out loud and be told no.
+        if (BeforeInstall is not null && !await BeforeInstall()) return;
 
         if (_file is null)
         {
@@ -156,6 +165,13 @@ public partial class MainWindow
             // continuation on the UI thread, so the content swap below is safe.
             var result = await Task.Run(() => Device.Install(file, root, Device.DefaultBackupDir(), confirmDefault, confirmPrefs));
 
+            // The write is not on the flash yet. Device.CacheFlushWait says why,
+            // and why no readback or eject can stand in for the wait. The
+            // receipt has to come after it, because the receipt is what tells
+            // somebody they may pull the device out.
+            progressLine.Text = Strings.Install_LettingTheDeviceFinish;
+            await Task.Delay(Device.CacheFlushWait);
+
             SetContent(new StackPanel
             {
                 Spacing = 12,
@@ -167,6 +183,7 @@ public partial class MainWindow
                     new TextBlock { Text = string.Format(CultureInfo.CurrentCulture, Strings.Install_TargetDriveRoot, root), FontSize = 15, TextWrapping = TextWrapping.Wrap },
                     new TextBlock { Text = string.Format(CultureInfo.CurrentCulture, Strings.Install_BackupPath, result.BackupPath ?? Strings.Install_NoPreviousFile),
                                      FontSize = 15, TextWrapping = TextWrapping.Wrap, Classes = { "muted" } },
+                    Explain(Strings.Install_SafeToUnplug, Strings.Install_SafeToUnplugTitle, Strings.Install_SafeToUnplugAbout),
                     close,
                 },
             });

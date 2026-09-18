@@ -105,6 +105,18 @@
       <Setter Property="BorderThickness" Value="0,0,0,1"/>
       <Setter Property="Padding" Value="20,11"/>
     </Style>
+    <!-- The host's line. Accent on purpose: it has to be the first thing seen
+         and it must not read as part of the app's own chrome. Never colour
+         alone, so it always carries words. -->
+    <Style Selector="Border.hostbanner">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Padding" Value="20,8"/>
+    </Style>
+    <Style Selector="TextBlock.hostbannertext">
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontSize" Value="14"/>
+    </Style>
     <Style Selector="TextBlock.shellbrand">
       <Setter Property="FontFamily" Value="{DynamicResource BrandFont}"/>
       <Setter Property="FontSize" Value="21"/>
