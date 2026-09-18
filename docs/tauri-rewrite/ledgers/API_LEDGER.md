@@ -33,8 +33,8 @@ than as a framework string the UI cannot switch on.
 | commit_install | command+Channel | critical device-write | plan/confirmation/generation | REGISTERED |
 | prepare_delete_device_profile | command | preparation | file ID | REGISTERED |
 | commit_delete_device_profile | command | critical device-delete | plan/confirmation/generation | REGISTERED |
-| rename_device_profile | command | device-write | safe filename/generation | PLANNED |
-| reorder_device_profiles | command | device-write | IDs/generation/full ordering | PLANNED |
+| rename_device_profile | command | device-write | safe filename/generation | REGISTERED |
+| reorder_device_profiles | command | device-write | IDs/generation/full ordering | PARKED (rename is order primitive) |
 | open_device_preferences | command | device-read | device | REGISTERED |
 | start_live_input | command+Channel | HID read | candidate/one-stream | REGISTERED |
 | stop_live_input | command | HID lifecycle | stream ID | REGISTERED |

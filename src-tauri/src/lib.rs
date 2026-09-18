@@ -108,6 +108,7 @@ fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
 }
 
 pub fn run() {
+    diagnostics::install_panic_hook();
     let google = Arc::new(
         google_auth::GoogleAuthService::native()
             .expect("failed to build native Google auth client"),

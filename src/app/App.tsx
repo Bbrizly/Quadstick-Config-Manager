@@ -12,6 +12,7 @@ import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
 import { EditorWorkspace } from "../features/editor/EditorWorkspace";
 import { WorkbookImportReviewDialog } from "../features/import/WorkbookImportReview";
 import { SettingsPage } from "../features/settings/SettingsPage";
+import { TutorialTour } from "../features/tutorial/TutorialTour";
 import {
   I18nProvider,
   useI18n,
@@ -74,6 +75,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [message, setMessage] = useState("");
   const [crashReport, setCrashReport] = useState<PendingCrashReport | null>(null);
   const [rescue, setRescue] = useState<PendingRescue | null>(null);
+  const [tourOpen, setTourOpen] = useState(false);
 
   useEffect(() => applyThemePreference(themePreference), [themePreference]);
   useEffect(() => {
@@ -85,6 +87,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         applyThemePreference(settings.theme);
         applyInterfaceScale(settings.interfaceScalePercent);
         applyReduceMotion(settings.reduceMotion);
+        if (!settings.tutorialSeen) setTourOpen(true);
       },
       () => undefined,
     );
@@ -487,6 +490,15 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           onDismiss={() => setCrashReport(null)}
         />
       )}
+      <TutorialTour
+        open={tourOpen}
+        onDone={() => {
+          setTourOpen(false);
+          void client.getSettings().then((settings) => {
+            void client.updateSettings(settings.revision, { tutorialSeen: true });
+          });
+        }}
+      />
       {editor === null ? null : (
         <InstallProfileDialog client={client} profile={editor} open={installOpen} onClose={() => setInstallOpen(false)} />
       )}

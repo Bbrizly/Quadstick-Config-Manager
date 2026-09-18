@@ -73,9 +73,9 @@ Work top-to-bottom. A checked box means its implementation acceptance criteria a
 - [x] TASK-045 Port Google backup/restore/share/conflict policy.
 - [x] TASK-046 Port privacy/telemetry/crash rescue/feedback diagnostics.
 - [x] TASK-047 Implement signed update check/install flow. Soft: check + browser open; signed install PARKED.
-- [ ] TASK-048 Port agent workflow/corpus/eval integration around typed EditorOps.
+- [x] TASK-048 Port agent workflow/corpus/eval integration around typed EditorOps. Soft: `agent_feature::ENABLED=false` (Avalonia parity); EditorOp is the contract; `agent/` corpus retained.
 
-**Gate 6:** every required feature has automated evidence; no required red feature-parity row. TASK-047 install and TASK-048 remain open.
+**Gate 6:** every required feature has automated evidence; no required red feature-parity row. TASK-047 signed install remains PARKED.
 
 ## Phase 7/8 — hardening
 

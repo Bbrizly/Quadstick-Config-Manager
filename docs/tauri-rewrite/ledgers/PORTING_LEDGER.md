@@ -47,13 +47,13 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `Localization.cs`, `Plural.cs` | locale runtime | frontend i18n | REWRITE | pseudo/RTL | 5 | PORTED |
 | `Strings*.resx` | translations | generated frontend catalogs | CONVERT | key/placeholder | 5 | PORTED |
 | `Theme.cs`, `Style.cs`, `Palette.cs`, `Icons.axaml` | design system | CSS/components/assets | REWRITE | visual/contrast | 5 | ASSESSED |
-| `TutorialTour.cs` | onboarding | React tutorial | REWRITE | E2E/AT | 6 | ASSESSED |
-| `CrashGuard.cs`, `CrashReport.cs` | rescue/report | core/native + React | SPLIT/REWRITE | crash/privacy | 6 | PORTED: draft + offer/open + crash prompt |
+| `TutorialTour.cs` | onboarding | React TutorialTour | REWRITE | E2E/AT | 6 | SOFT: callout steps; spotlight later |
+| `CrashGuard.cs`, `CrashReport.cs` | rescue/report | core/native + React | SPLIT/REWRITE | crash/privacy | 6 | PORTED: draft + offer/open + panic hook + crash prompt |
 | `Telemetry.cs`, `TelemetryToken.cs` | analytics/feedback | diagnostics service | REWRITE | network/allowlist | 6 | PORTED: allowlist + feedback UI (no PostHog send) |
 | `UpdateCheck.cs` | updater | browser check + open URL | REWRITE | GitHub latest | 6 | SOFT: check_for_update + open_external_url; install_update PARKED |
-| `AgentBridge.cs` | agent integration | core typed ops | REWRITE | corpus/eval | 6 | ASSESSED |
-| `AgentFeature.cs` | feature gating | core/settings/UI | REWRITE | feature tests | 6 | ASSESSED |
-| `AgentGuide.cs`, `AgentWindow.cs` | agent UX | React AgentPanel | REWRITE | E2E/AT | 6 | ASSESSED |
+| `AgentBridge.cs` | agent integration | core typed EditorOp | REWRITE | corpus/eval | 6 | SOFT: EditorOp contract; UI off |
+| `AgentFeature.cs` | feature gating | `qcm_core::agent_feature` | REWRITE | feature tests | 6 | PORTED: ENABLED=false |
+| `AgentGuide.cs`, `AgentWindow.cs` | agent UX | React AgentPanel | REWRITE | E2E/AT | 6 | PARKED until ENABLED |
 | `agent/**` | corpus/eval/model pipeline | retain/adapt | RETAIN-TEMPORARILY | old/new qsf eval | 0/6 | ASSESSED |
 | `tools/qsf` | machine profile tool | Rust qsf | REWRITE | JSON parity | 2 | CONTRACTED |
 | `GalleryWindow.cs` | component gallery | web gallery | REPLACE/RETIRE | visual tooling | 7 | ASSESSED |

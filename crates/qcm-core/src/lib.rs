@@ -10,6 +10,7 @@
 //! that touches a real volume lives outside, and `qcm-testkit` supplies a fake
 //! so every device-safety test runs without hardware.
 
+pub mod agent_feature;
 pub mod cancel;
 pub mod clock;
 pub mod confirmation;

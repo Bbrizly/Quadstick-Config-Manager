@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
 import {
@@ -49,6 +49,20 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
   const [message, setMessage] = useState("");
   const [update, setUpdate] = useState<UpdateResult | null>(null);
   const [feedback, setFeedback] = useState("");
+  const [scalePreview, setScalePreview] = useState<number | null>(null);
+  const [scaleCountdown, setScaleCountdown] = useState(0);
+  const scaleTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearScalePreview = useCallback(() => {
+    if (scaleTimer.current !== null) {
+      clearInterval(scaleTimer.current);
+      scaleTimer.current = null;
+    }
+    setScalePreview(null);
+    setScaleCountdown(0);
+  }, []);
+
+  useEffect(() => () => clearScalePreview(), [clearScalePreview]);
 
   useEffect(() => {
     let disposed = false;
@@ -81,6 +95,7 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
       }
       if (patch.interfaceScalePercent !== undefined) {
         applyInterfaceScale(patch.interfaceScalePercent);
+        clearScalePreview();
       }
       if (patch.reduceMotion !== undefined) {
         applyReduceMotion(patch.reduceMotion);
@@ -90,7 +105,30 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
     } finally {
       setBusy(false);
     }
-  }, [busy, client, onThemeChange, setPreference, settings, t]);
+  }, [busy, clearScalePreview, client, onThemeChange, setPreference, settings, t]);
+
+  const previewScale = (percent: number): void => {
+    if (settings === null) return;
+    if (percent === settings.interfaceScalePercent) {
+      clearScalePreview();
+      applyInterfaceScale(percent);
+      return;
+    }
+    applyInterfaceScale(percent);
+    setScalePreview(percent);
+    setScaleCountdown(15);
+    if (scaleTimer.current !== null) clearInterval(scaleTimer.current);
+    scaleTimer.current = setInterval(() => {
+      setScaleCountdown((remaining) => {
+        if (remaining <= 1) {
+          clearScalePreview();
+          applyInterfaceScale(settings.interfaceScalePercent);
+          return 0;
+        }
+        return remaining - 1;
+      });
+    }, 1000);
+  };
 
   const sendFeedback = async (): Promise<void> => {
     const send = client.sendFeedback;
@@ -141,11 +179,12 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
     return <p>{t("Settings_Checking")}</p>;
   }
 
-  const scaleValue = INTERFACE_SCALES.includes(
+  const savedScale = INTERFACE_SCALES.includes(
     settings.interfaceScalePercent as (typeof INTERFACE_SCALES)[number],
   )
     ? settings.interfaceScalePercent
     : 100;
+  const scaleValue = scalePreview ?? savedScale;
 
   return (
     <div className="settings-page">
@@ -198,7 +237,7 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
           onChange={(event) => {
             const percent = Number(event.currentTarget.value);
             if (!INTERFACE_SCALES.includes(percent as (typeof INTERFACE_SCALES)[number])) return;
-            void patchSettings({ interfaceScalePercent: percent });
+            previewScale(percent);
           }}
         >
           {INTERFACE_SCALES.map((percent) => (
@@ -206,6 +245,20 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
           ))}
         </select>
       </label>
+      {scalePreview === null ? null : (
+        <div className="scale-preview-actions">
+          <button
+            type="button"
+            className="primary-action"
+            aria-label={t("Settings_SaveSizeHelp")}
+            disabled={busy}
+            onClick={() => void patchSettings({ interfaceScalePercent: scalePreview })}
+          >
+            {t("Settings_SaveSize")}
+          </button>
+          <p aria-live="assertive">{t("Settings_Reverting", [scaleCountdown])}</p>
+        </div>
+      )}
       <p>{t("Settings_ScaleCaption")}</p>
 
       <label>

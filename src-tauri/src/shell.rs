@@ -55,7 +55,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
                 live_input: true,
                 community_catalog: true,
                 google_backup: cfg!(any(target_os = "macos", target_os = "windows")),
-                agent: false,
+                agent: qcm_core::agent_feature::ENABLED,
             },
             settings: self.settings().snapshot(),
         }

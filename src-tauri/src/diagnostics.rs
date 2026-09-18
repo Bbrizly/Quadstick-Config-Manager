@@ -212,6 +212,8 @@ static PENDING_DIR_OVERRIDE: Mutex<Option<PathBuf>> = Mutex::new(None);
 static RESCUE_DIR_OVERRIDE: Mutex<Option<PathBuf>> = Mutex::new(None);
 #[cfg(test)]
 static PENDING_TEST_LOCK: Mutex<()> = Mutex::new(());
+#[cfg(test)]
+static RESCUE_TEST_LOCK: Mutex<()> = Mutex::new(());
 
 /// Test seam for pending crash reports.
 pub fn set_pending_dir_override(path: Option<PathBuf>) {
@@ -314,6 +316,22 @@ pub fn acknowledge_crash_consent(ask_about_crashes: bool) {
     if !ask_about_crashes {
         discard_pending_crash_report(None);
     }
+}
+
+/// Persist a crash report before the default panic handler runs.
+pub fn install_panic_hook() {
+    let previous = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        let message = sanitize_path(&info.to_string());
+        let body = json!({
+            "schema": 1,
+            "where": "panic",
+            "message": message,
+        })
+        .to_string();
+        let _ = write_pending_crash_report("panic", &body);
+        previous(info);
+    }));
 }
 
 /// Write a pending crash report JSON under the pending dir (testable override).
@@ -829,6 +847,7 @@ mod tests {
 
     #[test]
     fn rescue_write_uses_sanitized_filename() {
+        let _lock = RESCUE_TEST_LOCK.lock().expect("rescue test lock");
         let dir = std::env::temp_dir().join(format!(
             "qcm-rescue-test-{}",
             std::time::SystemTime::now()
@@ -851,6 +870,7 @@ mod tests {
 
     #[test]
     fn pending_rescue_lists_newest_csv_by_filename_only() {
+        let _lock = RESCUE_TEST_LOCK.lock().expect("rescue test lock");
         let dir = std::env::temp_dir().join(format!(
             "qcm-rescue-offer-{}",
             std::time::SystemTime::now()
@@ -1011,6 +1031,26 @@ mod tests {
         let empty = write_pending_crash_report("ui", "   ").expect("write");
         assert!(pending_crash_report_offer(true).is_none());
         assert!(!empty.exists());
+        let _ = fs::remove_dir_all(&dir);
+        set_pending_dir_override(None);
+    }
+
+    #[test]
+    fn panic_hook_path_writes_report_body() {
+        let _lock = PENDING_TEST_LOCK.lock().expect("pending test lock");
+        let dir = std::env::temp_dir().join(format!(
+            "qcm-pending-panic-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0)
+        ));
+        set_pending_dir_override(Some(dir.clone()));
+        let body = json!({"schema":1,"where":"panic","message":"soft"}).to_string();
+        let written = write_pending_crash_report("panic", &body).expect("write");
+        assert!(written.exists());
+        let offer = pending_crash_report_offer(true).expect("offer");
+        assert!(offer.details.contains("panic") || offer.details.contains("soft"));
         let _ = fs::remove_dir_all(&dir);
         set_pending_dir_override(None);
     }

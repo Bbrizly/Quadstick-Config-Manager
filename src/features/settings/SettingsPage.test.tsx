@@ -14,7 +14,7 @@ function renderSettings(client: MockQcmClient) {
 }
 
 describe("GATE_SOFT settings page", () => {
-  it("loads settings and patches with the expected revision", async () => {
+  it("previews interface size and only persists after Save size", async () => {
     const client = new MockQcmClient();
     const update = vi.spyOn(client, "updateSettings");
     renderSettings(client);
@@ -24,6 +24,13 @@ describe("GATE_SOFT settings page", () => {
     });
 
     fireEvent.change(screen.getByLabelText(/Interface size/u), { target: { value: "80" } });
+    await waitFor(() => {
+      expect(document.documentElement.style.zoom).toBe("80%");
+      expect(screen.getByRole("button", { name: /Keep this interface size/u })).toBeInTheDocument();
+    });
+    expect(update).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: /Keep this interface size/u }));
     await waitFor(() => {
       expect(update).toHaveBeenCalledWith(1, { interfaceScalePercent: 80 });
     });
@@ -77,10 +84,10 @@ describe("GATE_SOFT settings page", () => {
       expect(screen.getByLabelText(/Show the tutorial next time/u)).toBeInTheDocument();
     });
     const box = screen.getByLabelText(/Show the tutorial next time/u) as HTMLInputElement;
-    expect(box.checked).toBe(true);
+    expect(box.checked).toBe(false);
     fireEvent.click(box);
     await waitFor(async () => {
-      expect((await client.getSettings()).tutorialSeen).toBe(true);
+      expect((await client.getSettings()).tutorialSeen).toBe(false);
     });
   });
 

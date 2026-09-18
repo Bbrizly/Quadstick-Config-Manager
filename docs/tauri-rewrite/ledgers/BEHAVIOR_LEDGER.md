@@ -36,14 +36,14 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-030 | A | keep-online rescues local then validates remote | conflict tests | CONTRACTED |
 | B-031 | A | telemetry opt-in/allowlist/scrub/CI-off | network tests | PORTED Soft (no PostHog) |
 | B-032 | A | persistent theme/lang/scale/reduced motion | settings tests | PORTED |
-| B-033 | A | scale preview auto-revert | timer/UI | CONTRACTED |
+| B-033 | A | scale preview auto-revert | timer/UI | PORTED |
 | B-034 | A | all locales + RTL + pseudo | i18n CI | PARITY-TESTED |
 | B-035 | A | import/XLSX review limitations | fixtures/E2E | CONTRACTED |
 | B-036 | A | community profiles | HTTP/E2E | CONTRACTED |
 | B-037 | A | mode operations | mutation/E2E | PORTED |
 | B-038 | A | preference catalog/editor | parity/E2E | CONTRACTED |
-| B-039 | A | agent constrained typed edits | corpus/eval | CONTRACTED |
-| B-040 | A | crash rescue/report | forced crash/privacy | PORTED Soft (prompt + draft offer; panic hook later) |
+| B-039 | A | agent constrained typed edits | corpus/eval | Soft: ENABLED=false; EditorOp ready |
+| B-040 | A | crash rescue/report | forced crash/privacy | PORTED Soft (prompt + draft + panic hook; no PostHog) |
 | B-041 | A | update behavior | signed updater | SOFT: GitHub check + browser open; signed install PARKED |
 | B-042 | E | Avalonia gallery | web tooling replacement | ASSESSED |
 | B-043 | E forbidden | generic JS filesystem | capability test absent | CONTRACTED |

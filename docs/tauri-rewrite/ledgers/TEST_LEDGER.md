@@ -24,10 +24,10 @@ Evidence paths are target placeholders until implemented.
 | T-017 | Google auth | mock state/PKCE | DPAPI/Keychain | PLANNED |
 | T-018 | Drive backup/conflict | fake/HTTP mock | real account | PLANNED |
 | T-019 | telemetry privacy | `src-tauri` diagnostics unit tests (allowlist/kill-switch/feedback cap) | policy review | SOFT IMPLEMENTED |
-| T-020 | crash rescue | diagnostics draft + pending offer/open + CrashReportPrompt | packaged restart | Soft IMPLEMENTED |
+| T-020 | crash rescue | diagnostics draft + pending offer/open + panic hook + CrashReportPrompt | packaged restart | Soft IMPLEMENTED |
 | T-021 | i18n | generated key/placeholder/pseudo/RTL/error-code suite | locales | IMPLEMENTED |
 | T-022 | updater signature/state | updates.rs Compare unit tests; Soft browser check | packaged rollback | SOFT: Compare tested; signed install PARKED |
-| T-023 | agent/qsf | old/new corpus eval | human sample | PLANNED |
+| T-023 | agent/qsf | agent_feature off + EditorOp contract; corpus under agent/ | human sample | Soft: gated off like Avalonia |
 | T-024 | performance | benchmarks | target vs baseline | PLANNED |
 | T-025 | packaging | CI build/sign verify | clean machines | PLANNED |
 | T-026 | privacy launch network | integration traffic spy | packet/support review | PLANNED |

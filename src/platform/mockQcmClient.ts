@@ -66,7 +66,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   rememberWindow: true,
   deviceCards: true,
   pickerGrouping: "detailed",
-  tutorialSeen: false,
+  tutorialSeen: true,
   usageAnalytics: false,
   askAboutCrashes: true,
   telemetryNoticeVersion: 0,
