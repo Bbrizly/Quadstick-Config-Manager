@@ -6,7 +6,7 @@ export type {
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, DeviceProfileEntry,
   DeviceSummary, EditorOp, EditorSnapshot, InstallPlan, InstallProgress, InstallReceipt,
   InterfaceScale, Issue, IssueSeverity, LedColour, LiveMotion, LiveSnapshot, LiveStatus, Mode,
-  ModelChoice, PendingCrashReport, PickerGrouping, ProfileSource, QcmErrorPayload,
+  ModelChoice, PendingCrashReport, PendingRescue, PickerGrouping, ProfileSource, QcmErrorPayload,
   RecoveryAction, SaveReceipt, SettingsPatch, Subscription, ThemeChoice, UpdateResult,
 } from "./contracts";
 export type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";

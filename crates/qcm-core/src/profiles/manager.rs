@@ -131,6 +131,14 @@ impl<S: LocalProfileStore> ProfileSessions<S> {
         self.insert(ProfileOrigin::New, None, file)
     }
 
+    /// Recovered autosave/crash copy: no save target, already dirty so leave warns.
+    pub fn open_unsaved(&mut self, csv_text: &str) -> EditorSnapshot {
+        let mut file = ProfileFile::load(csv_text);
+        file.clear_undo();
+        file.mark_dirty();
+        self.insert(ProfileOrigin::New, None, file)
+    }
+
     /// Open a file from the user's own library. Save writes back to it.
     pub fn open_local(&mut self, target: LocalProfileRef) -> Result<EditorSnapshot, QcmError> {
         let text = self.store.read(&target)?;

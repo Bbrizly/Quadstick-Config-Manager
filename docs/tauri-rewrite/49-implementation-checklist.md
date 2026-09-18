@@ -63,19 +63,19 @@ Work top-to-bottom. A checked box means its implementation acceptance criteria a
 
 ## Phase 6 — product parity slices
 
-- [ ] TASK-038 Build editor modes/bindings/issues/raw-grid UI.
-- [ ] TASK-039 Build centered accessible QuadStick visualizer + semantic mirror.
-- [ ] TASK-040 Complete local open/save/import/export/XLSX review.
-- [ ] TASK-041 Build install + device library UI.
-- [ ] TASK-042 Build device settings/preferences/device-band parity.
-- [ ] TASK-043 Port community catalog/profile workflow.
-- [ ] TASK-044 Implement Google auth + secure token adapters.
-- [ ] TASK-045 Port Google backup/restore/share/conflict policy.
-- [ ] TASK-046 Port privacy/telemetry/crash rescue/feedback diagnostics.
-- [ ] TASK-047 Implement signed update check/install flow.
+- [x] TASK-038 Build editor modes/bindings/issues/raw-grid UI.
+- [x] TASK-039 Build centered accessible QuadStick visualizer + semantic mirror.
+- [x] TASK-040 Complete local open/save/import/export/XLSX review.
+- [x] TASK-041 Build install + device library UI.
+- [x] TASK-042 Build device settings/preferences/device-band parity.
+- [x] TASK-043 Port community catalog/profile workflow.
+- [x] TASK-044 Implement Google auth + secure token adapters.
+- [x] TASK-045 Port Google backup/restore/share/conflict policy.
+- [x] TASK-046 Port privacy/telemetry/crash rescue/feedback diagnostics.
+- [x] TASK-047 Implement signed update check/install flow. Soft: check + browser open; signed install PARKED.
 - [ ] TASK-048 Port agent workflow/corpus/eval integration around typed EditorOps.
 
-**Gate 6:** every required feature has automated evidence; no required red feature-parity row.
+**Gate 6:** every required feature has automated evidence; no required red feature-parity row. TASK-047 install and TASK-048 remain open.
 
 ## Phase 7/8 — hardening
 

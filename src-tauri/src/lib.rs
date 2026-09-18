@@ -81,6 +81,9 @@ pub fn registered_commands() -> &'static [&'static str] {
         "track_telemetry_event",
         "get_pending_crash_report",
         "resolve_crash_report",
+        "get_pending_rescue",
+        "open_rescue_profile",
+        "discard_pending_rescues",
     ]
 }
 
@@ -176,6 +179,9 @@ pub fn run() {
             diagnostics::track_telemetry_event,
             diagnostics::get_pending_crash_report,
             diagnostics::resolve_crash_report,
+            diagnostics::get_pending_rescue,
+            diagnostics::open_rescue_profile,
+            diagnostics::discard_pending_rescues,
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window");
@@ -196,7 +202,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 49);
+        assert_eq!(commands.len(), 52);
         for expected in [
             "import_community_profile",
             "open_community_sheet",
@@ -217,6 +223,9 @@ mod tests {
             "track_telemetry_event",
             "get_pending_crash_report",
             "resolve_crash_report",
+            "get_pending_rescue",
+            "open_rescue_profile",
+            "discard_pending_rescues",
         ] {
             assert!(commands.contains(&expected), "{expected}");
         }

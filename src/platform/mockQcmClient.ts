@@ -38,6 +38,7 @@ import type {
   PendingCrashReport,
   CrashReportChoice,
   CrashResolveResult,
+  PendingRescue,
 } from "./contracts";
 import { ERROR_CODES, INTERFACE_SCALES } from "./contracts";
 import { QcmCommandError, type QcmClient } from "./qcmClient";
@@ -219,10 +220,16 @@ export class MockQcmClient implements QcmClient {
   #deviceListeners = new Map<number, (event: DeviceInvalidation) => void>();
   #deviceRevision = 0;
   #pendingCrashReport: PendingCrashReport | null = null;
+  #pendingRescue: PendingRescue | null = null;
 
   /** Queue a pending crash report for startup-prompt tests. */
   queuePendingCrashReport(report: PendingCrashReport): void {
     this.#pendingCrashReport = report;
+  }
+
+  /** Queue a rescue offer for home-screen recovery tests. */
+  queuePendingRescue(rescue: PendingRescue): void {
+    this.#pendingRescue = rescue;
   }
 
   willOpen(name: string): void {
@@ -412,6 +419,29 @@ export class MockQcmClient implements QcmClient {
     // Soft mock: empty-token keep-on-fail. Tests that need sent:true set a
     // reportId and we still keep unless they clear via never.
     return Promise.resolve({ sent: false });
+  }
+
+  getPendingRescue(): Promise<PendingRescue | null> {
+    return Promise.resolve(this.#pendingRescue);
+  }
+
+  openRescueProfile(rescueId: string): Promise<EditorSnapshot> {
+    if (this.#pendingRescue?.rescueId !== rescueId) {
+      return Promise.reject(
+        fail(ERROR_CODES.requestOutOfRange, "Unknown rescue.", "retry"),
+      );
+    }
+    this.#pendingRescue = null;
+    return this.newProfile(`${rescueId.replace(/\.csv$/u, "")}.csv`).then((opened) =>
+      this.applyEditorOps(opened.sessionId, opened.revision, [
+        { op: "set_cell", row: 3, col: 0, value: "rescued" },
+      ]),
+    );
+  }
+
+  discardPendingRescues(): Promise<void> {
+    this.#pendingRescue = null;
+    return Promise.resolve();
   }
 
   newProfile(name: string): Promise<EditorSnapshot> {

@@ -90,20 +90,30 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         let request: ApplyEditorOpsRequest = parse(raw, "apply_editor_ops request")?;
         request.check()?;
         let session = session_id(&request.session_id)?;
-        self.sessions()
-            .apply_ops(session, request.expected_revision, &request.ops)
+        let snapshot = self.sessions().apply_ops(
+            session,
+            request.expected_revision,
+            &request.ops,
+        )?;
+        sync_autosave_draft(self, &snapshot);
+        Ok(snapshot)
     }
     pub fn undo_editor(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "undo_editor request")?;
         let session = session_id(&request.session_id)?;
-        self.sessions().undo(session, request.expected_revision)
+        let snapshot = self.sessions().undo(session, request.expected_revision)?;
+        sync_autosave_draft(self, &snapshot);
+        Ok(snapshot)
     }
     pub fn save_profile(&self, raw: Value) -> Result<SaveReceiptDto, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "save_profile request")?;
         let session = session_id(&request.session_id)?;
-        self.sessions()
+        let receipt = self
+            .sessions()
             .save(session, request.expected_revision)
-            .map(|receipt| SaveReceiptDto::from(&receipt))
+            .map(|receipt| SaveReceiptDto::from(&receipt))?;
+        crate::diagnostics::clear_autosave_draft();
+        Ok(receipt)
     }
     pub fn save_profile_as(&self, raw: Value) -> Result<Option<SaveReceiptDto>, QcmError> {
         let request: SessionRevisionRequest = parse(raw, "save_profile_as request")?;
@@ -126,17 +136,30 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         let Some(target) = self.picker.pick_save_as(&suggested)? else {
             return Ok(None);
         };
-        self.sessions()
+        let receipt = self
+            .sessions()
             .save_as(session, request.expected_revision, target)
-            .map(|receipt| Some(SaveReceiptDto::from(&receipt)))
+            .map(|receipt| Some(SaveReceiptDto::from(&receipt)))?;
+        if receipt.is_some() {
+            crate::diagnostics::clear_autosave_draft();
+        }
+        Ok(receipt)
     }
     pub fn close_profile(&self, raw: Value) -> Result<CloseOutcomeDto, QcmError> {
         let request: CloseProfileRequest = parse(raw, "close_profile request")?;
         let session = session_id(&request.session_id)?;
         let close = request.close_request()?;
-        self.sessions()
+        let outcome = self
+            .sessions()
             .close(session, close)
-            .map(|outcome| CloseOutcomeDto::from(&outcome))
+            .map(|outcome| CloseOutcomeDto::from(&outcome))?;
+        if matches!(
+            outcome,
+            CloseOutcomeDto::Closed | CloseOutcomeDto::SavedAndClosed { .. }
+        ) {
+            crate::diagnostics::clear_autosave_draft();
+        }
+        Ok(outcome)
     }
     pub fn profile_for_install(&self, session_raw: &str) -> Result<ProfileFile, QcmError> {
         let session = session_id(session_raw)?;
@@ -234,6 +257,31 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         self.sessions()
             .open_device_copy(device, generation, name, csv_text)
     }
+
+    /// Crash/autosave recovery: dirty working copy with no save target.
+    pub fn open_unsaved_profile(&self, csv_text: &str) -> EditorSnapshot {
+        self.sessions().open_unsaved(csv_text)
+    }
+}
+
+fn sync_autosave_draft<L, P, S>(shell: &Shell<L, P, S>, snapshot: &EditorSnapshot)
+where
+    L: LocalProfileStore,
+    P: ProfilePicker,
+    S: SettingsStore,
+{
+    if !snapshot.dirty {
+        crate::diagnostics::clear_autosave_draft();
+        return;
+    }
+    let Ok(session) = session_id(&snapshot.session_id) else {
+        return;
+    };
+    let sessions = shell.sessions();
+    let Ok(open) = sessions.session(session) else {
+        return;
+    };
+    crate::diagnostics::write_autosave_draft(open.file().to_csv_text().as_bytes());
 }
 
 pub type ShellState = Shell<

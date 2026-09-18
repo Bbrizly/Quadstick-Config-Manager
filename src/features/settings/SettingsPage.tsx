@@ -19,7 +19,7 @@ import {
   type ThemeChoice,
   type UpdateResult,
 } from "../../platform";
-import { applyThemePreference, type ThemePreference } from "../../app/theme";
+import { applyThemePreference, applyInterfaceScale, applyReduceMotion, type ThemePreference } from "../../app/theme";
 
 const MODEL_LABELS: Record<ModelChoice, string> = {
   fps: "QuadStick FPS",
@@ -48,16 +48,22 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [update, setUpdate] = useState<UpdateResult | null>(null);
+  const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
     let disposed = false;
     void client.getSettings().then((value) => {
-      if (!disposed) setSettings(value);
+      if (disposed) return;
+      setSettings(value);
+      applyThemePreference(value.theme);
+      applyInterfaceScale(value.interfaceScalePercent);
+      applyReduceMotion(value.reduceMotion);
+      onThemeChange?.(value.theme);
     }).catch((reason: unknown) => {
       if (!disposed) setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
     });
     return () => { disposed = true; };
-  }, [client, t]);
+  }, [client, onThemeChange, t]);
 
   const patchSettings = useCallback(async (patch: SettingsPatch): Promise<void> => {
     if (settings === null || busy) return;
@@ -73,8 +79,11 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
       if (patch.language !== undefined) {
         setPreference(patch.language as LocalePreference);
       }
-      if (patch.askAboutCrashes === false) {
-        // Soft: turning this off clears the ask; native discard is a later prompt.
+      if (patch.interfaceScalePercent !== undefined) {
+        applyInterfaceScale(patch.interfaceScalePercent);
+      }
+      if (patch.reduceMotion !== undefined) {
+        applyReduceMotion(patch.reduceMotion);
       }
     } catch (reason) {
       setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
@@ -82,6 +91,22 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
       setBusy(false);
     }
   }, [busy, client, onThemeChange, setPreference, settings, t]);
+
+  const sendFeedback = async (): Promise<void> => {
+    const send = client.sendFeedback;
+    if (send === undefined || busy || feedback.trim() === "") return;
+    setBusy(true);
+    setMessage("");
+    try {
+      await send.call(client, feedback);
+      setFeedback("");
+      setMessage(t("Settings_FeedbackSent"));
+    } catch {
+      setMessage(t("Settings_FeedbackFailed"));
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const checkUpdates = async (): Promise<void> => {
     const check = client.checkForUpdate;
@@ -290,6 +315,32 @@ export function SettingsPage({ client, onThemeChange }: SettingsPageProps) {
         />
         <span>{t("Settings_AskCrashes")}</span>
       </label>
+
+      <h3>{t("Settings_SendFeedback")}</h3>
+      <p>{t("Settings_FeedbackCaption")}</p>
+      <label>
+        <span>{t("Settings_FeedbackLabel")}</span>
+        <textarea
+          aria-label={t("Settings_FeedbackLabel")}
+          placeholder={t("Settings_FeedbackWatermark")}
+          value={feedback}
+          disabled={busy || !settings.usageAnalytics || client.sendFeedback === undefined}
+          rows={4}
+          onChange={(event) => setFeedback(event.currentTarget.value)}
+        />
+      </label>
+      <button
+        type="button"
+        disabled={
+          busy
+          || !settings.usageAnalytics
+          || client.sendFeedback === undefined
+          || feedback.trim() === ""
+        }
+        onClick={() => void sendFeedback()}
+      >
+        {t("Settings_SendFeedback")}
+      </button>
 
       <h3>{t("Settings_Updates")}</h3>
       <p>{t("Settings_UpdatesCaption")}</p>

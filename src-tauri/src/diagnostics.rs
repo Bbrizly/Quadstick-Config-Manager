@@ -396,6 +396,111 @@ pub fn write_rescue_profile(stem: &str, csv_bytes: &[u8]) -> Result<PathBuf, Qcm
     Ok(path)
 }
 
+const AUTOSAVE_DRAFT: &str = "autosave-draft.csv";
+
+/// Newest-first CSV rescues waiting from a previous session.
+pub fn pending_rescue_paths() -> Vec<PathBuf> {
+    let dir = rescue_dir();
+    let Ok(entries) = fs::read_dir(&dir) else {
+        return Vec::new();
+    };
+    let mut files: Vec<_> = entries
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .filter(|path| path.extension().and_then(|ext| ext.to_str()) == Some("csv"))
+        .collect();
+    files.sort_by_key(|path| {
+        std::cmp::Reverse(fs::metadata(path).and_then(|meta| meta.modified()).ok())
+    });
+    files
+}
+
+/// Opaque rescue offer. `rescue_id` is a filename only, never a host path.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PendingRescueDto {
+    pub rescue_id: String,
+    pub display_name: String,
+}
+
+#[must_use]
+pub fn pending_rescue_offer() -> Option<PendingRescueDto> {
+    let path = pending_rescue_paths().into_iter().next()?;
+    let rescue_id = path.file_name()?.to_str()?.to_owned();
+    if rescue_id.contains('/') || rescue_id.contains('\\') || rescue_id.contains("..") {
+        return None;
+    }
+    let display_name = path
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .unwrap_or("profile")
+        .to_owned();
+    Some(PendingRescueDto {
+        rescue_id,
+        display_name,
+    })
+}
+
+fn checked_rescue_path(rescue_id: &str) -> Result<PathBuf, QcmError> {
+    if rescue_id.is_empty()
+        || rescue_id.contains('/')
+        || rescue_id.contains('\\')
+        || rescue_id.contains("..")
+        || Path::new(rescue_id).components().count() != 1
+    {
+        return Err(QcmError::Request(RequestError::OutOfRange {
+            what: "rescue id",
+        }));
+    }
+    let path = rescue_dir().join(rescue_id);
+    if !path.is_file() {
+        return Err(QcmError::Request(RequestError::OutOfRange {
+            what: "rescue id",
+        }));
+    }
+    Ok(path)
+}
+
+/// Read one rescue CSV by opaque filename id.
+pub fn read_rescue_csv(rescue_id: &str) -> Result<String, QcmError> {
+    let path = checked_rescue_path(rescue_id)?;
+    fs::read_to_string(&path).map_err(|error| {
+        QcmError::Internal(qcm_core::error::InternalError {
+            what: "read rescue profile",
+            detail: qcm_core::error::OsDetail::new(error.to_string()),
+        })
+    })
+}
+
+/// Drop every rescue CSV (including the autosave draft).
+pub fn discard_rescues() {
+    for path in pending_rescue_paths() {
+        let _ = fs::remove_file(path);
+    }
+}
+
+/// Best-effort dirty autosave. Never interrupts the editor path.
+pub fn write_autosave_draft(csv_bytes: &[u8]) {
+    let dir = rescue_dir();
+    if fs::create_dir_all(&dir).is_err() {
+        return;
+    }
+    let path = dir.join(AUTOSAVE_DRAFT);
+    let temp = path.with_extension("csv.tmp");
+    if fs::write(&temp, csv_bytes).is_err() {
+        return;
+    }
+    if fs::rename(&temp, &path).is_err() {
+        let _ = fs::remove_file(&temp);
+    }
+}
+
+/// Drop the autosave draft when the open profile is clean or closed.
+pub fn clear_autosave_draft() {
+    let path = rescue_dir().join(AUTOSAVE_DRAFT);
+    let _ = fs::remove_file(path);
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct SendFeedbackRequest {
@@ -619,6 +724,33 @@ pub fn resolve_crash_report(
     Ok(result)
 }
 
+#[tauri::command]
+pub fn get_pending_rescue() -> Option<PendingRescueDto> {
+    pending_rescue_offer()
+}
+
+#[tauri::command]
+pub fn open_rescue_profile(
+    state: State<'_, ShellState>,
+    request: Value,
+) -> Result<qcm_core::profiles::EditorSnapshot, Failure> {
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase", deny_unknown_fields)]
+    struct OpenRescueRequest {
+        rescue_id: String,
+    }
+    let request: OpenRescueRequest = redact_err(parse(request, "open_rescue_profile request"))?;
+    let csv = redact_err(read_rescue_csv(&request.rescue_id))?;
+    let snapshot = state.open_unsaved_profile(&csv);
+    discard_rescues();
+    Ok(snapshot)
+}
+
+#[tauri::command]
+pub fn discard_pending_rescues() {
+    discard_rescues();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -715,6 +847,37 @@ mod tests {
         assert_eq!(body, b"Profile Name,Racing\n");
         let _ = fs::remove_dir_all(&dir);
         set_rescue_dir_override(None);
+    }
+
+    #[test]
+    fn pending_rescue_lists_newest_csv_by_filename_only() {
+        let dir = std::env::temp_dir().join(format!(
+            "qcm-rescue-offer-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0)
+        ));
+        let _ = fs::remove_dir_all(&dir);
+        set_rescue_dir_override(Some(dir.clone()));
+        let path = write_rescue_profile("Racing", b"Profile Name,Racing\n").expect("write");
+        let offer = pending_rescue_offer().expect("offer");
+        assert_eq!(
+            offer.rescue_id,
+            path.file_name().and_then(|n| n.to_str()).unwrap()
+        );
+        assert!(offer.display_name.contains("Racing"));
+        assert!(!offer.rescue_id.contains('/'));
+        discard_rescues();
+        assert!(pending_rescue_offer().is_none());
+        set_rescue_dir_override(None);
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn rescue_id_rejects_path_traversal() {
+        assert!(read_rescue_csv("../secrets.csv").is_err());
+        assert!(read_rescue_csv("a/b.csv").is_err());
     }
 
     #[test]

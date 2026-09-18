@@ -53,8 +53,11 @@ than as a framework string the UI cannot switch on.
 | get_diagnostics_summary | command | local diagnostic | redaction | PLANNED |
 | export_diagnostics_bundle | command | local file write | picker/redaction | PLANNED |
 | send_feedback | command | network | consent/length/allowlist | REGISTERED (Soft: consent+cap, no PostHog) |
-| get_pending_crash_report | command | local diagnostic | ask_about_crashes + opaque report id | Soft IMPLEMENTED |
-| resolve_crash_report | command | network (gated) | pending report + send/later/never | Soft IMPLEMENTED (empty token keeps file; no PostHog) |
+| get_pending_crash_report | command | local diagnostic | ask_about_crashes + opaque report id | REGISTERED |
+| resolve_crash_report | command | network (gated) | pending report + send/later/never | REGISTERED (empty token keeps file; no PostHog) |
+| get_pending_rescue | command | local rescue | opaque rescue filename | REGISTERED |
+| open_rescue_profile | command | local rescue + session | opaque rescue id | REGISTERED |
+| discard_pending_rescues | command | local rescue | none | REGISTERED |
 | send_crash_report | command | network | pending report + explicit user action | Soft IMPLEMENTED (via resolve_crash_report send) |
 | check_for_update | command | network | GitHub latest (Soft) | REGISTERED |
 | open_external_url | command | open browser | https github.com /releases only | REGISTERED |

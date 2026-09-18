@@ -349,6 +349,23 @@ button:hover {
   }
 }
 
+:root[data-reduce-motion="true"] *,
+:root[data-reduce-motion="true"] *::before,
+:root[data-reduce-motion="true"] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.rescue-offer {
+  margin-block: var(--qcm-space-lg);
+  padding: var(--qcm-space-md);
+  border: var(--qcm-hairline) solid var(--qcm-warning);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface-subtle);
+}
+
 @media (forced-colors: active) {
   .shell-header,
   .shell-placeholder,

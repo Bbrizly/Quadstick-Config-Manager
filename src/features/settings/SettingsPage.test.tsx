@@ -83,4 +83,37 @@ describe("GATE_SOFT settings page", () => {
       expect((await client.getSettings()).tutorialSeen).toBe(true);
     });
   });
+
+  it("applies interface scale and reduce motion to the document", async () => {
+    const client = new MockQcmClient();
+    renderSettings(client);
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Interface size/u)).toBeInTheDocument();
+    });
+    fireEvent.change(screen.getByLabelText(/Interface size/u), { target: { value: "125" } });
+    await waitFor(() => {
+      expect(document.documentElement.style.zoom).toBe("125%");
+    });
+    fireEvent.click(screen.getByLabelText(/Reduce motion/u));
+    await waitFor(() => {
+      expect(document.documentElement.dataset["reduceMotion"]).toBe("true");
+    });
+  });
+
+  it("sends feedback when usage analytics is on", async () => {
+    const client = new MockQcmClient();
+    await client.updateSettings(1, { usageAnalytics: true });
+    const send = vi.spyOn(client, "sendFeedback");
+    renderSettings(client);
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Your feedback/u)).toBeInTheDocument();
+    });
+    fireEvent.change(screen.getByLabelText(/Your feedback/u), {
+      target: { value: "Ship the rewrite" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^Send feedback$/u }));
+    await waitFor(() => {
+      expect(send).toHaveBeenCalledWith("Ship the rewrite");
+    });
+  });
 });

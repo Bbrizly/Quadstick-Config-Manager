@@ -10,6 +10,8 @@ import { App } from "./App";
 afterEach(() => {
   delete document.documentElement.dataset["theme"];
   delete document.documentElement.dataset["locale"];
+  delete document.documentElement.dataset["reduceMotion"];
+  document.documentElement.style.removeProperty("zoom");
   document.documentElement.removeAttribute("lang");
   document.documentElement.removeAttribute("dir");
 });

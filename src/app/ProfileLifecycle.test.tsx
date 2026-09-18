@@ -30,6 +30,22 @@ describe("TASK-040A local profile lifecycle", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Racing.csv" })).toBeInTheDocument();
   });
 
+  it("offers recovered work on home and opens it dirty", async () => {
+    const client = new MockQcmClient();
+    client.queuePendingRescue({
+      rescueId: "Racing-rescued-1.csv",
+      displayName: "Racing-rescued-1",
+    });
+    render(<App client={client} />);
+
+    await screen.findByText(/Unsaved work from last time was recovered/u);
+    fireEvent.click(screen.getByRole("button", { name: "Open recovered work" }));
+    await screen.findByText(/Recovered profile opened/u);
+    expect(
+      screen.getByLabelText("This profile has unsaved changes. Save them before leaving?"),
+    ).toBeInTheDocument();
+  });
+
   it("blocks navigation away from dirty work until the user explicitly decides", async () => {
     const client = new MockQcmClient();
     render(<App client={client} />);

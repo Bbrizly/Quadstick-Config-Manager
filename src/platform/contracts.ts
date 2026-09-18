@@ -134,6 +134,12 @@ export interface PendingCrashReport {
   readonly details: string;
 }
 
+/** Opaque crash/autosave rescue. `rescueId` is a filename only, never a host path. */
+export interface PendingRescue {
+  readonly rescueId: string;
+  readonly displayName: string;
+}
+
 export type CrashReportChoice = "send" | "later" | "never";
 
 export interface CrashResolveResult {

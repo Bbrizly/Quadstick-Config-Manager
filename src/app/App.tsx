@@ -23,10 +23,16 @@ import {
   asQcmError,
   type EditorSnapshot,
   type PendingCrashReport,
+  type PendingRescue,
   type QcmClient,
   type WorkbookImportReview,
 } from "../platform";
-import { applyThemePreference, type ThemePreference } from "./theme";
+import {
+  applyInterfaceScale,
+  applyReduceMotion,
+  applyThemePreference,
+  type ThemePreference,
+} from "./theme";
 
 const DESTINATION_COPY: Record<ShellDestination, { title: MessageKey; detail: MessageKey }> = {
   home: { title: "Rewrite_ProductName", detail: "Shell_ProfilesYouSaveWillShow" },
@@ -67,8 +73,25 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [closing, setClosing] = useState(false);
   const [message, setMessage] = useState("");
   const [crashReport, setCrashReport] = useState<PendingCrashReport | null>(null);
+  const [rescue, setRescue] = useState<PendingRescue | null>(null);
 
   useEffect(() => applyThemePreference(themePreference), [themePreference]);
+  useEffect(() => {
+    let cancelled = false;
+    void client.getSettings().then(
+      (settings) => {
+        if (cancelled) return;
+        setThemePreference(settings.theme);
+        applyThemePreference(settings.theme);
+        applyInterfaceScale(settings.interfaceScalePercent);
+        applyReduceMotion(settings.reduceMotion);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
   useEffect(() => {
     const getPending = client.getPendingCrashReport;
     if (getPending === undefined) return;
@@ -83,8 +106,47 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       cancelled = true;
     };
   }, [client]);
+  useEffect(() => {
+    const getRescue = client.getPendingRescue;
+    if (getRescue === undefined) return;
+    let cancelled = false;
+    void getRescue.call(client).then(
+      (pending) => {
+        if (!cancelled && pending !== null) setRescue(pending);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const copy = DESTINATION_COPY[activeDestination];
+
+  const openRescue = async (): Promise<void> => {
+    const open = client.openRescueProfile;
+    if (open === undefined || rescue === null) return;
+    try {
+      const opened = await open.call(client, rescue.rescueId);
+      setRescue(null);
+      showEditor(opened);
+      setMessage(t("Main_RecoveredProfileOpenedSaveIt"));
+    } catch (reason) {
+      showFailure(reason);
+    }
+  };
+
+  const dismissRescue = async (): Promise<void> => {
+    const discard = client.discardPendingRescues;
+    if (discard !== undefined) {
+      try {
+        await discard.call(client);
+      } catch {
+        /* best effort */
+      }
+    }
+    setRescue(null);
+  };
 
   const showFailure = useCallback(
     (reason: unknown): void => {
@@ -340,6 +402,23 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       <section className="shell-placeholder home-start" aria-labelledby="page-title">
         <h1 id="page-title">{t(copy.title)}</h1>
         <p data-testid="boot-state">{t(copy.detail)}</p>
+        {rescue === null ? null : (
+          <section className="rescue-offer" aria-label={t("Shell_OpenRecoveredWork")}>
+            <p>{t("Main_UnsavedWorkFromLastTime", [rescue.displayName])}</p>
+            <div className="home-start-actions">
+              <button className="primary-action" type="button" onClick={() => void openRescue()}>
+                {t("Shell_OpenRecoveredWork")}
+              </button>
+              <button
+                type="button"
+                aria-label={t("Shell_DiscardTheRecoveredWorkPermanently")}
+                onClick={() => void dismissRescue()}
+              >
+                {t("Shell_Dismiss")}
+              </button>
+            </div>
+          </section>
+        )}
         <div className="home-start-actions">
           <button className="primary-action" type="button" onClick={() => void newProfile()}>
             {t("Shell_NewProfile")}

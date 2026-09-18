@@ -82,6 +82,11 @@ impl ProfileFile {
         self.dirty = false;
     }
 
+    /// Crash-rescue / recovered copy: leave without a save target must warn.
+    pub fn mark_dirty(&mut self) {
+        self.dirty = true;
+    }
+
     pub fn clear_undo(&mut self) {
         self.undo.clear();
     }
