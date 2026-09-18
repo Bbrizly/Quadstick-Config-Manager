@@ -30,6 +30,9 @@ fn a_fresh_install_starts_at_the_shipped_defaults() {
     assert!(dto.device_cards);
     assert!(!dto.reduce_motion);
     assert!(!dto.tutorial_seen);
+    assert!(!dto.usage_analytics);
+    assert!(dto.ask_about_crashes);
+    assert_eq!(dto.telemetry_notice_version, 0);
 }
 
 // The legacy `Settings.Load` swallowed every exception and returned defaults.
@@ -103,6 +106,8 @@ fn an_edit_made_against_a_stale_revision_is_refused() {
 #[test]
 fn an_illegal_interface_scale_cannot_even_be_built() {
     assert!(InterfaceScale::new(137).is_none());
+    assert!(InterfaceScale::new(60).is_some());
+    assert!(InterfaceScale::new(90).is_some());
     assert!(InterfaceScale::new(150).is_some());
 }
 

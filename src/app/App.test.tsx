@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import axe from "axe-core";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -41,22 +41,23 @@ describe("TASK-036/037 app shell", () => {
     expect(document.documentElement).not.toHaveAttribute("data-theme");
   });
 
-  it("switches the document and shell to Arabic RTL", () => {
+  it("switches the document and shell to Arabic RTL", async () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Open Settings" }));
-    fireEvent.change(screen.getByRole("combobox", { name: "Language" }), { target: { value: "ar" } });
+    const language = await waitFor(() => screen.getByRole("combobox", { name: "Language" }));
+    fireEvent.change(language, { target: { value: "ar" } });
     expect(document.documentElement).toHaveAttribute("lang", "ar");
     expect(document.documentElement).toHaveAttribute("dir", "rtl");
     expect(screen.getByRole("button", { name: arCatalog.Shell_Home })).toBeInTheDocument();
   });
 
-  it("traps modal focus, closes on Escape and restores the invoking control", () => {
+  it("traps modal focus, closes on Escape and restores the invoking control", async () => {
     render(<App />);
     const settings = screen.getByRole("button", { name: "Open Settings" });
     settings.focus();
     fireEvent.click(settings);
     const dialog = screen.getByRole("dialog", { name: "Settings" });
-    const language = screen.getByRole("combobox", { name: "Language" });
+    const language = await waitFor(() => screen.getByRole("combobox", { name: "Language" }));
     const done = screen.getByRole("button", { name: "Done" });
     expect(dialog).toHaveAttribute("aria-modal", "true");
     expect(done).toHaveFocus();
@@ -88,6 +89,7 @@ describe("TASK-036/037 app shell", () => {
     let result = await axe.run(container, { rules: { "color-contrast": { enabled: false } } });
     expect(result.violations).toEqual([]);
     fireEvent.click(screen.getByRole("button", { name: "Open Settings" }));
+    await waitFor(() => screen.getByRole("combobox", { name: "Language" }));
     result = await axe.run(container, { rules: { "color-contrast": { enabled: false } } });
     expect(result.violations).toEqual([]);
   });

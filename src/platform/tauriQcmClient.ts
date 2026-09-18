@@ -5,6 +5,7 @@ import type {
   AppSettings, AppSnapshot, CloseDisposition, CloseOutcome, DeletePlan, DeleteReceipt,
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, EditorOp, EditorSnapshot,
   InstallPlan, InstallProgress, InstallReceipt, LiveSnapshot, SaveReceipt, SettingsPatch, Subscription,
+  UpdateResult,
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
@@ -35,6 +36,11 @@ export class TauriQcmClient implements QcmClient {
   getAppSnapshot(): Promise<AppSnapshot> { return call("get_app_snapshot"); }
   getSettings(): Promise<AppSettings> { return call("get_settings"); }
   updateSettings(expectedRevision: number, patch: SettingsPatch): Promise<AppSettings> { return call("update_settings", { expectedRevision, patch }); }
+  checkForUpdate(currentVersion?: string): Promise<UpdateResult> {
+    return call("check_for_update", currentVersion === undefined ? {} : { currentVersion });
+  }
+  openExternalUrl(url: string): Promise<void> { return call("open_external_url", { url }); }
+  sendFeedback(text: string): Promise<void> { return call("send_feedback", { text }); }
   newProfile(name: string): Promise<EditorSnapshot> { return call("new_profile", { name }); }
   chooseAndOpenProfile(): Promise<EditorSnapshot | null> { return call("choose_and_open_profile"); }
   getProfileSnapshot(sessionId: string): Promise<EditorSnapshot> { return call("get_profile_snapshot", { sessionId }); }
@@ -98,4 +104,5 @@ export const TAURI_COMMANDS = [
   "prepare_delete_device_profile", "commit_delete_device_profile", "rename_device_profile",
   "open_device_profile", "open_device_preferences", "start_live_input", "stop_live_input",
   "subscribe_devices_changed", "unsubscribe_devices_changed",
+  "check_for_update", "open_external_url", "send_feedback",
 ] as const;

@@ -203,6 +203,12 @@ pub struct SettingsPatchDto {
     pub picker_grouping: Option<String>,
     #[serde(default)]
     pub tutorial_seen: Option<bool>,
+    #[serde(default)]
+    pub usage_analytics: Option<bool>,
+    #[serde(default)]
+    pub ask_about_crashes: Option<bool>,
+    #[serde(default)]
+    pub telemetry_notice_version: Option<u32>,
 }
 
 impl SettingsPatchDto {
@@ -250,6 +256,9 @@ impl SettingsPatchDto {
             device_cards: self.device_cards,
             picker_grouping,
             tutorial_seen: self.tutorial_seen,
+            usage_analytics: self.usage_analytics,
+            ask_about_crashes: self.ask_about_crashes,
+            telemetry_notice_version: self.telemetry_notice_version,
         })
     }
 }

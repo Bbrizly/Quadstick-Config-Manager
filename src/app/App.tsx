@@ -10,12 +10,10 @@ import { DevicePreferencesPage } from "../features/device/DevicePreferencesPage"
 import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
 import { EditorWorkspace } from "../features/editor/EditorWorkspace";
 import { WorkbookImportReviewDialog } from "../features/import/WorkbookImportReview";
+import { SettingsPage } from "../features/settings/SettingsPage";
 import {
   I18nProvider,
-  LOCALE_NAMES,
-  LOCALE_TAGS,
   useI18n,
-  type LocalePreference,
   type MessageKey,
 } from "../i18n";
 import { localizedErrorMessage } from "../i18n/errors";
@@ -48,7 +46,7 @@ function isDevicePreferences(snapshot: EditorSnapshot): boolean {
 }
 
 function LocalizedApp({ client }: { readonly client: QcmClient }) {
-  const { t, preference, setPreference } = useI18n();
+  const { t } = useI18n();
   const [activeDestination, setActiveDestination] = useState<ShellDestination>("home");
   const [themePreference, setThemePreference] = useState<ThemePreference>("system");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -402,23 +400,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           </button>
         }
       >
-        <div className="settings-foundation">
-          <label>
-            <span>{t("Settings_Language")}</span>
-            <select
-              aria-label={t("Settings_Language")}
-              value={preference}
-              onChange={(event) => setPreference(event.currentTarget.value as LocalePreference)}
-            >
-              <option value="system">{t("Settings_LanguageSystem")}</option>
-              {LOCALE_TAGS.map((tag) => (
-                <option key={tag} value={tag}>{LOCALE_NAMES[tag]}</option>
-              ))}
-              {import.meta.env.DEV ? <option value="qps-ploc">{t("Rewrite_PseudoLocaleName")}</option> : null}
-            </select>
-          </label>
-          <p>{t("Settings_AppearanceHelp")}</p>
-        </div>
+        <SettingsPage client={client} onThemeChange={setThemePreference} />
         <GoogleDriveSettings
           client={client}
           onReview={(review) => {

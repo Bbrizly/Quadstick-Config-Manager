@@ -669,7 +669,7 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 43);
+    assert_eq!(registered.len(), 47);
     for name in [
         "get_app_snapshot",
         "get_settings",
@@ -714,10 +714,15 @@ fn every_command_this_build_registers_is_on_the_list() {
         "stop_live_input",
         "subscribe_devices_changed",
         "unsubscribe_devices_changed",
+        "check_for_update",
+        "open_external_url",
+        "send_feedback",
+        "track_telemetry_event",
     ] {
         assert!(registered.contains(&name), "{name}");
     }
     assert!(!registered.contains(&"reorder_device_profiles"));
+    assert!(!registered.contains(&"install_update"));
 }
 
 #[test]

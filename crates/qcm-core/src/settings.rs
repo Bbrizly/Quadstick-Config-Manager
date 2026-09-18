@@ -43,13 +43,14 @@ pub enum ThemeChoice {
     Dark,
 }
 
-/// The four sizes the legacy app offered, and no fifth.
+/// The discrete sizes Avalonia offered (`MainWindow.ValidScalePercents`).
+/// Nothing else is accepted, and nothing is rounded toward a neighbour.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(into = "u16", try_from = "u16")]
 pub struct InterfaceScale(u16);
 
 impl InterfaceScale {
-    pub const ALLOWED: [u16; 4] = [100, 125, 150, 200];
+    pub const ALLOWED: [u16; 8] = [60, 70, 80, 90, 100, 125, 150, 200];
 
     /// `None` for anything not in [`InterfaceScale::ALLOWED`]. There is no
     /// nearest-legal-value constructor on purpose.
@@ -80,7 +81,8 @@ impl TryFrom<u16> for InterfaceScale {
     type Error = &'static str;
 
     fn try_from(percent: u16) -> Result<Self, Self::Error> {
-        Self::new(percent).ok_or("interface scale is not one of 100, 125, 150 or 200")
+        Self::new(percent)
+            .ok_or("interface scale is not one of 60, 70, 80, 90, 100, 125, 150 or 200")
     }
 }
 
@@ -150,9 +152,9 @@ impl TryFrom<String> for LanguageChoice {
 /// Everything the app remembers between launches that a person chose.
 ///
 /// Deliberately smaller than the legacy `AppSettings`. Window geometry belongs
-/// to TASK-036, the Drive links and recents to TASK-045, and the telemetry
-/// consent to TASK-046. Each arrives with the feature that reads it rather than
-/// sitting here as a field nothing honours.
+/// to TASK-036 and the Drive links and recents to TASK-045. Soft privacy
+/// consent lives here so Settings can persist it; install_id stays out of the
+/// patch until diagnostics mints one.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct AppSettings {
@@ -165,6 +167,9 @@ pub struct AppSettings {
     pub device_cards: bool,
     pub picker_grouping: PickerGrouping,
     pub tutorial_seen: bool,
+    pub usage_analytics: bool,
+    pub ask_about_crashes: bool,
+    pub telemetry_notice_version: u32,
 }
 
 impl Default for AppSettings {
@@ -179,6 +184,9 @@ impl Default for AppSettings {
             device_cards: true,
             picker_grouping: PickerGrouping::Detailed,
             tutorial_seen: false,
+            usage_analytics: false,
+            ask_about_crashes: true,
+            telemetry_notice_version: 0,
         }
     }
 }
@@ -197,6 +205,9 @@ pub struct AppSettingsDto {
     pub device_cards: bool,
     pub picker_grouping: String,
     pub tutorial_seen: bool,
+    pub usage_analytics: bool,
+    pub ask_about_crashes: bool,
+    pub telemetry_notice_version: u32,
 }
 
 /// A change to some settings and not the others.
@@ -215,6 +226,9 @@ pub struct SettingsPatch {
     pub device_cards: Option<bool>,
     pub picker_grouping: Option<PickerGrouping>,
     pub tutorial_seen: Option<bool>,
+    pub usage_analytics: Option<bool>,
+    pub ask_about_crashes: Option<bool>,
+    pub telemetry_notice_version: Option<u32>,
 }
 
 impl SettingsPatch {
@@ -246,6 +260,15 @@ impl SettingsPatch {
         }
         if let Some(tutorial_seen) = self.tutorial_seen {
             next.tutorial_seen = tutorial_seen;
+        }
+        if let Some(usage_analytics) = self.usage_analytics {
+            next.usage_analytics = usage_analytics;
+        }
+        if let Some(ask_about_crashes) = self.ask_about_crashes {
+            next.ask_about_crashes = ask_about_crashes;
+        }
+        if let Some(telemetry_notice_version) = self.telemetry_notice_version {
+            next.telemetry_notice_version = telemetry_notice_version;
         }
         next
     }
@@ -313,6 +336,9 @@ impl<S: SettingsStore> Settings<S> {
             device_cards: self.current.device_cards,
             picker_grouping: grouping_wire(self.current.picker_grouping).to_owned(),
             tutorial_seen: self.current.tutorial_seen,
+            usage_analytics: self.current.usage_analytics,
+            ask_about_crashes: self.current.ask_about_crashes,
+            telemetry_notice_version: self.current.telemetry_notice_version,
         }
     }
 
@@ -419,7 +445,14 @@ mod tests {
             InterfaceScale::new(125).map(InterfaceScale::percent),
             Some(125)
         );
-        for rejected in [0, 99, 101, 137, 175, 201, u16::MAX] {
+        for allowed in InterfaceScale::ALLOWED {
+            assert_eq!(
+                InterfaceScale::new(allowed).map(InterfaceScale::percent),
+                Some(allowed),
+                "{allowed}"
+            );
+        }
+        for rejected in [0, 59, 65, 99, 101, 137, 175, 201, u16::MAX] {
             assert!(InterfaceScale::new(rejected).is_none(), "{rejected}");
         }
     }

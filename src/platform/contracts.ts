@@ -88,7 +88,7 @@ export type ThemeChoice = "system" | "light" | "dark";
 export type ModelChoice = "fps" | "original" | "singleton";
 export type PickerGrouping = "detailed" | "wide" | "flat";
 
-export const INTERFACE_SCALES = [100, 125, 150, 200] as const;
+export const INTERFACE_SCALES = [60, 70, 80, 90, 100, 125, 150, 200] as const;
 export type InterfaceScale = (typeof INTERFACE_SCALES)[number];
 
 export interface AppSettings {
@@ -102,6 +102,9 @@ export interface AppSettings {
   readonly deviceCards: boolean;
   readonly pickerGrouping: PickerGrouping;
   readonly tutorialSeen: boolean;
+  readonly usageAnalytics: boolean;
+  readonly askAboutCrashes: boolean;
+  readonly telemetryNoticeVersion: number;
 }
 
 export interface SettingsPatch {
@@ -114,6 +117,15 @@ export interface SettingsPatch {
   readonly deviceCards?: boolean;
   readonly pickerGrouping?: PickerGrouping;
   readonly tutorialSeen?: boolean;
+  readonly usageAnalytics?: boolean;
+  readonly askAboutCrashes?: boolean;
+  readonly telemetryNoticeVersion?: number;
+}
+
+export interface UpdateResult {
+  readonly message: string;
+  readonly downloadUrl: string | null;
+  readonly isNewer: boolean;
 }
 
 export interface Capabilities {

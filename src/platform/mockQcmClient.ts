@@ -34,6 +34,7 @@ import type {
   SaveReceipt,
   SettingsPatch,
   Subscription,
+  UpdateResult,
 } from "./contracts";
 import { ERROR_CODES, INTERFACE_SCALES } from "./contracts";
 import { QcmCommandError, type QcmClient } from "./qcmClient";
@@ -62,6 +63,9 @@ const DEFAULT_SETTINGS: AppSettings = {
   deviceCards: true,
   pickerGrouping: "detailed",
   tutorialSeen: false,
+  usageAnalytics: false,
+  askAboutCrashes: true,
+  telemetryNoticeVersion: 0,
 };
 
 interface MockSession {
@@ -340,6 +344,37 @@ export class MockQcmClient implements QcmClient {
     );
     if (changed) this.#settings = { ...next, revision: this.#settings.revision + 1 };
     return Promise.resolve(this.#settings);
+  }
+
+  checkForUpdate(currentVersion = "0.1.0-mock"): Promise<UpdateResult> {
+    return Promise.resolve({
+      message: `You are on ${currentVersion}, which is the latest.`,
+      downloadUrl: null,
+      isNewer: false,
+    });
+  }
+
+  openExternalUrl(url: string): Promise<void> {
+    if (!url.startsWith("https://github.com/") || !url.includes("/releases")) {
+      return Promise.reject(
+        fail(ERROR_CODES.requestOutOfRange, "That URL is not allowed.", "retry"),
+      );
+    }
+    return Promise.resolve();
+  }
+
+  sendFeedback(text: string): Promise<void> {
+    if (!this.#settings.usageAnalytics) {
+      return Promise.reject(
+        fail(ERROR_CODES.requestOutOfRange, "Usage analytics is off.", "retry"),
+      );
+    }
+    if (text.length === 0 || text.length > 1000) {
+      return Promise.reject(
+        fail(ERROR_CODES.requestTooLarge, "Feedback is too long.", "retry"),
+      );
+    }
+    return Promise.resolve();
   }
 
   newProfile(name: string): Promise<EditorSnapshot> {

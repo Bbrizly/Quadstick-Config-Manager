@@ -12,6 +12,7 @@ pub mod community_commands;
 pub mod device_ipc;
 pub mod device_rename_ipc;
 pub mod device_shell;
+pub mod diagnostics;
 pub mod drive;
 pub mod drive_commands;
 pub mod google_auth;
@@ -20,6 +21,7 @@ pub mod ipc;
 pub mod preference_ipc;
 pub mod shell;
 pub mod streaming;
+pub mod updates;
 pub mod workbook_shell;
 
 #[must_use]
@@ -73,6 +75,10 @@ pub fn registered_commands() -> &'static [&'static str] {
         "stop_live_input",
         "subscribe_devices_changed",
         "unsubscribe_devices_changed",
+        "check_for_update",
+        "open_external_url",
+        "send_feedback",
+        "track_telemetry_event",
     ]
 }
 
@@ -162,6 +168,10 @@ pub fn run() {
             commands::stop_live_input,
             commands::subscribe_devices_changed,
             commands::unsubscribe_devices_changed,
+            updates::check_for_update,
+            updates::open_external_url,
+            diagnostics::send_feedback,
+            diagnostics::track_telemetry_event,
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window");
@@ -182,7 +192,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 43);
+        assert_eq!(commands.len(), 47);
         for expected in [
             "import_community_profile",
             "open_community_sheet",
@@ -197,6 +207,10 @@ mod tests {
             "prepare_install",
             "commit_install",
             "start_live_input",
+            "check_for_update",
+            "open_external_url",
+            "send_feedback",
+            "track_telemetry_event",
         ] {
             assert!(commands.contains(&expected), "{expected}");
         }
@@ -209,6 +223,7 @@ mod tests {
             "get_drive_file_id",
             "drive_raw_request",
             "open_arbitrary_url",
+            "install_update",
         ] {
             assert!(!commands.contains(&absent), "{absent}");
         }

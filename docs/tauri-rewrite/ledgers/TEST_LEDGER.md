@@ -23,10 +23,10 @@ Evidence paths are target placeholders until implemented.
 | T-016 | community privacy/offline | HTTP spy/cache | offline | PLANNED |
 | T-017 | Google auth | mock state/PKCE | DPAPI/Keychain | PLANNED |
 | T-018 | Drive backup/conflict | fake/HTTP mock | real account | PLANNED |
-| T-019 | telemetry privacy | network spy/allowlist | policy review | PLANNED |
-| T-020 | crash rescue | forced panic | packaged restart | PLANNED |
+| T-019 | telemetry privacy | `src-tauri` diagnostics unit tests (allowlist/kill-switch/feedback cap) | policy review | SOFT IMPLEMENTED |
+| T-020 | crash rescue | diagnostics rescue write + pending discard tests | packaged restart | SOFT IMPLEMENTED |
 | T-021 | i18n | generated key/placeholder/pseudo/RTL/error-code suite | locales | IMPLEMENTED |
-| T-022 | updater signature/state | mock/bad signature | packaged rollback | PLANNED |
+| T-022 | updater signature/state | updates.rs Compare unit tests; Soft browser check | packaged rollback | SOFT: Compare tested; signed install PARKED |
 | T-023 | agent/qsf | old/new corpus eval | human sample | PLANNED |
 | T-024 | performance | benchmarks | target vs baseline | PLANNED |
 | T-025 | packaging | CI build/sign verify | clean machines | PLANNED |

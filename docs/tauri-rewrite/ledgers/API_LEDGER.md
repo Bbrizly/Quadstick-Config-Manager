@@ -52,10 +52,12 @@ than as a framework string the UI cannot switch on.
 | enable_profile_link_sharing | command | network/permission | explicit confirmation | PLANNED |
 | get_diagnostics_summary | command | local diagnostic | redaction | PLANNED |
 | export_diagnostics_bundle | command | local file write | picker/redaction | PLANNED |
-| send_feedback | command | network | consent/length/allowlist | PLANNED |
+| send_feedback | command | network | consent/length/allowlist | REGISTERED (Soft: consent+cap, no PostHog) |
 | send_crash_report | command | network | pending report + explicit user action | PLANNED |
-| check_for_update | command | network | signed manifest | PLANNED |
-| install_update | command | process/restart | safe app state + signature | PLANNED |
+| check_for_update | command | network | GitHub latest (Soft) | REGISTERED |
+| open_external_url | command | open browser | https github.com /releases only | REGISTERED |
+| track_telemetry_event | command | analytics | allowlist + kill-switch | REGISTERED (Soft no-op without token) |
+| install_update | command | process/restart | safe app state + signature | PARKED |
 | subscribe_devices_changed | command+Channel | low | native invalidation producer only | REGISTERED |
 | unsubscribe_devices_changed | command | low | opaque subscription id | REGISTERED |
 | qcm://devices-changed | event | low | native producer only | PLANNED |

@@ -42,15 +42,15 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `GoogleAuth.cs` | OAuth PKCE | native auth adapter | REWRITE | auth mock/OS | 6 | CONTRACTED |
 | `GoogleClient.cs` | client config/helper | native Google adapter | MERGE | HTTP | 6 | ASSESSED |
 | `TokenStore.cs` | secure token | native secure store | REWRITE | OS integration | 6 | CONTRACTED |
-| `SettingsView.cs` | settings UI | React SettingsPage | REWRITE | component/AT | 5/6 | CONTRACTED |
+| `SettingsView.cs` | settings UI | React SettingsPage | REWRITE | component/AT | 5/6 | SOFT: SettingsPage wired |
 | `Theme.cs::{AppSettings,DriveLink,Settings,SettingsJsonContext}` | atomic persisted settings + migration schema | qcm-core/native settings | REWRITE/COMPAT-READ | migration/consent/link tests | 5/9 | CONTRACTED |
 | `Localization.cs`, `Plural.cs` | locale runtime | frontend i18n | REWRITE | pseudo/RTL | 5 | PORTED |
 | `Strings*.resx` | translations | generated frontend catalogs | CONVERT | key/placeholder | 5 | PORTED |
 | `Theme.cs`, `Style.cs`, `Palette.cs`, `Icons.axaml` | design system | CSS/components/assets | REWRITE | visual/contrast | 5 | ASSESSED |
 | `TutorialTour.cs` | onboarding | React tutorial | REWRITE | E2E/AT | 6 | ASSESSED |
-| `CrashGuard.cs`, `CrashReport.cs` | rescue/report | core/native + React | SPLIT/REWRITE | crash/privacy | 6 | CONTRACTED |
-| `Telemetry.cs`, `TelemetryToken.cs` | analytics/feedback | diagnostics service | REWRITE | network/allowlist | 6 | CONTRACTED |
-| `UpdateCheck.cs` | updater | native updater | REWRITE | signature/rollback | 6/8 | CONTRACTED |
+| `CrashGuard.cs`, `CrashReport.cs` | rescue/report | core/native + React | SPLIT/REWRITE | crash/privacy | 6 | SOFT: rescue write + pending/discard hooks |
+| `Telemetry.cs`, `TelemetryToken.cs` | analytics/feedback | diagnostics service | REWRITE | network/allowlist | 6 | SOFT: allowlist + consent gates (no PostHog send) |
+| `UpdateCheck.cs` | updater | browser check + open URL | REWRITE | GitHub latest | 6 | SOFT: check_for_update + open_external_url; install_update PARKED |
 | `AgentBridge.cs` | agent integration | core typed ops | REWRITE | corpus/eval | 6 | ASSESSED |
 | `AgentFeature.cs` | feature gating | core/settings/UI | REWRITE | feature tests | 6 | ASSESSED |
 | `AgentGuide.cs`, `AgentWindow.cs` | agent UX | React AgentPanel | REWRITE | E2E/AT | 6 | ASSESSED |

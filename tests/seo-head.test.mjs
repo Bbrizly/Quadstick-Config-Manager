@@ -29,6 +29,12 @@ const fileFor = url => {
   return path === '' || path.endsWith('/') ? `${path}index.html` : path;
 };
 
+const luminance = hex => {
+  const [r, g, b] = [0, 2, 4].map(i => parseInt(hex.slice(i + 1, i + 3), 16) / 255)
+    .map(c => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
 test('every page names its own canonical address', () => {
   for (const [name, text] of pages) {
     const canonical = head(text).match(/<link rel="canonical" href="([^"]*)"/)?.[1];
@@ -112,7 +118,7 @@ test('the sitemap lists every public page and the profile guide', async () => {
   assert.match(xml, /<\/urlset>\s*$/);
   assert.equal((xml.match(/<url>/g) ?? []).length, (xml.match(/<\/url>/g) ?? []).length, 'unbalanced <url>');
   const listed = [...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(m => m[1]);
-  assert.deepEqual([...listed].sort(), [...Object.values(ADDRESS), GUIDE].sort());
+  assert.deepEqual([...listed].toSorted(), [...Object.values(ADDRESS), GUIDE].toSorted());
   for (const url of listed) {
     // the guide is built in its own branch, so it may not be on disk yet
     if (url === GUIDE && !existsSync(docs(fileFor(url)))) continue;
@@ -127,13 +133,8 @@ test('the home page footer links the code tour and the profile guide', () => {
 });
 
 test('faint text is readable on both papers', () => {
-  const luminance = hex => {
-    const [r, g, b] = [0, 2, 4].map(i => parseInt(hex.slice(i + 1, i + 3), 16) / 255)
-      .map(c => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  };
   const ratio = (a, b) => {
-    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    const [hi, lo] = [luminance(a), luminance(b)].toSorted((x, y) => y - x);
     return (hi + 0.05) / (lo + 0.05);
   };
   for (const [name, text] of pages.filter(([, t]) => /--ink-faint:/.test(t))) {

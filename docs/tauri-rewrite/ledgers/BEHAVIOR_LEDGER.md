@@ -34,8 +34,8 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-028 | A | DPAPI/Keychain; Linux unavailable | OS tests | CONTRACTED |
 | B-029 | A | cloud push does not block local save | fake cloud | CONTRACTED |
 | B-030 | A | keep-online rescues local then validates remote | conflict tests | CONTRACTED |
-| B-031 | A | telemetry opt-in/allowlist/scrub/CI-off | network tests | CONTRACTED |
-| B-032 | A | persistent theme/lang/scale/reduced motion | settings tests | CONTRACTED |
+| B-031 | A | telemetry opt-in/allowlist/scrub/CI-off | network tests | SOFT: gates + redaction unit tests |
+| B-032 | A | persistent theme/lang/scale/reduced motion | settings tests | SOFT: Avalonia scale set + privacy fields |
 | B-033 | A | scale preview auto-revert | timer/UI | CONTRACTED |
 | B-034 | A | all locales + RTL + pseudo | i18n CI | PARITY-TESTED |
 | B-035 | A | import/XLSX review limitations | fixtures/E2E | CONTRACTED |
@@ -43,8 +43,8 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-037 | A | mode operations | mutation/E2E | IMPLEMENTING |
 | B-038 | A | preference catalog/editor | parity/E2E | CONTRACTED |
 | B-039 | A | agent constrained typed edits | corpus/eval | CONTRACTED |
-| B-040 | A | crash rescue/report | forced crash/privacy | CONTRACTED |
-| B-041 | A | update behavior | signed updater | CONTRACTED |
+| B-040 | A | crash rescue/report | forced crash/privacy | SOFT: rescue write + pending list (prompt UI later) |
+| B-041 | A | update behavior | signed updater | SOFT: GitHub check + browser open; signed install PARKED |
 | B-042 | E | Avalonia gallery | web tooling replacement | ASSESSED |
 | B-043 | E forbidden | generic JS filesystem | capability test absent | CONTRACTED |
 | B-044 | E forbidden | generic JS shell/process | capability test absent | CONTRACTED |
