@@ -598,8 +598,11 @@ fn the_app_snapshot_claims_only_what_is_wired() {
     assert!(snapshot.capabilities.profile_editing);
     assert!(snapshot.capabilities.device_install);
     assert!(snapshot.capabilities.live_input);
-    assert!(!snapshot.capabilities.community_catalog);
-    assert!(!snapshot.capabilities.google_backup);
+    assert!(snapshot.capabilities.community_catalog);
+    assert_eq!(
+        snapshot.capabilities.google_backup,
+        cfg!(any(target_os = "macos", target_os = "windows"))
+    );
     assert!(!snapshot.capabilities.agent);
     assert!(!snapshot.version.is_empty());
     assert_eq!(snapshot.settings.revision, 1);
@@ -666,7 +669,7 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 25);
+    assert_eq!(registered.len(), 43);
     for name in [
         "get_app_snapshot",
         "get_settings",
@@ -679,6 +682,23 @@ fn every_command_this_build_registers_is_on_the_list() {
         "save_profile",
         "save_profile_as",
         "close_profile",
+        "choose_and_import_workbook",
+        "repair_workbook_tab",
+        "accept_workbook_import",
+        "cancel_workbook_import",
+        "export_profile_xlsx",
+        "get_preference_catalog",
+        "load_community_catalog",
+        "import_community_profile",
+        "open_community_sheet",
+        "get_google_auth_status",
+        "connect_google",
+        "disconnect_google",
+        "backup_profile_to_drive",
+        "resolve_drive_conflict",
+        "list_drive_backups",
+        "restore_drive_backup",
+        "share_drive_profile",
         "list_devices",
         "refresh_devices",
         "choose_device_folder",
@@ -687,6 +707,7 @@ fn every_command_this_build_registers_is_on_the_list() {
         "commit_install",
         "prepare_delete_device_profile",
         "commit_delete_device_profile",
+        "rename_device_profile",
         "open_device_profile",
         "open_device_preferences",
         "start_live_input",
@@ -696,9 +717,7 @@ fn every_command_this_build_registers_is_on_the_list() {
     ] {
         assert!(registered.contains(&name), "{name}");
     }
-    for later in ["rename_device_profile", "reorder_device_profiles"] {
-        assert!(!registered.contains(&later), "{later}");
-    }
+    assert!(!registered.contains(&"reorder_device_profiles"));
 }
 
 #[test]

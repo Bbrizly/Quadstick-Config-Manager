@@ -118,7 +118,7 @@ fn local_csv_edit_undo_save_close_reopen_preserves_canonical_state() {
         .expect("picker did not cancel");
 
     assert_eq!(reopened.grid, saved.grid);
-    assert_eq!(reopened.grid[3][0], "square");
+    assert_eq!(reopened.grid[4][0], "square");
     assert!(!reopened.dirty);
     assert!(!reopened.can_undo);
     assert_ne!(reopened.session_id, saved.session_id);
