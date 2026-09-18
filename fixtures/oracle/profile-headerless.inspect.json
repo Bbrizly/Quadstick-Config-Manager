@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "inspect-canonical",
+  "source": {
+    "name": "profile-headerless.csv",
+    "sha256": "f63230e49d66c522a0d830400284d535a0e0c22be6eec3f5de8a55bd503b4ff6",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "Profile Name",
+        "",
+        "Mode 1"
+      ],
+      [
+        "config.csv"
+      ],
+      [
+        "PlayStation Outputs",
+        "Function",
+        "usb"
+      ],
+      [
+        "triangle",
+        "normal",
+        "lip"
+      ]
+    ],
+    "document": {
+      "csvFileName": "config.csv",
+      "fileNameCellRow": 2,
+      "hasVersionHeader": false,
+      "headerVersion": "",
+      "headerSource": "",
+      "headerName": "",
+      "title": "Mode 1",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Mode 1",
+          "csvFileName": "config.csv",
+          "headerLabel": "PlayStation Outputs",
+          "channel": "usb",
+          "startRow": 1,
+          "bindings": [
+            {
+              "row": 4,
+              "output": "triangle",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [],
+    "editor": {
+      "dirty": false,
+      "revision": 0,
+      "canUndo": false
+    },
+    "serialized": {
+      "sha256": "f63230e49d66c522a0d830400284d535a0e0c22be6eec3f5de8a55bd503b4ff6",
+      "utf8Bytes": 89,
+      "text": "Profile Name,,Mode 1\r\nconfig.csv\r\nPlayStation Outputs,Function,usb\r\ntriangle,normal,lip\r\n"
+    }
+  }
+}

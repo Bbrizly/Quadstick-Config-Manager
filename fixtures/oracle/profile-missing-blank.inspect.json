@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "inspect-canonical",
+  "source": {
+    "name": "profile-missing-blank.csv",
+    "sha256": "2352d7c1073f05d7c56e8866dee165da618a066cb4a77de43fd3e5550fda7879",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "Profile Name",
+        "",
+        "One"
+      ],
+      [
+        "two.csv"
+      ],
+      [
+        "Outputs",
+        "Function",
+        "usb"
+      ],
+      [
+        "x",
+        "normal",
+        "lip"
+      ],
+      [
+        "Profile Name",
+        "",
+        "Two"
+      ],
+      [
+        ""
+      ],
+      [
+        "Outputs",
+        "Function",
+        "bluetooth"
+      ],
+      [
+        "circle",
+        "normal",
+        "lip"
+      ]
+    ],
+    "document": {
+      "csvFileName": "two.csv",
+      "fileNameCellRow": 2,
+      "hasVersionHeader": false,
+      "headerVersion": "",
+      "headerSource": "",
+      "headerName": "",
+      "title": "One",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "One",
+          "csvFileName": "two.csv",
+          "headerLabel": "Outputs",
+          "channel": "usb",
+          "startRow": 1,
+          "bindings": [
+            {
+              "row": 4,
+              "output": "x",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "type": "ProfileName",
+          "modeName": "Two",
+          "csvFileName": null,
+          "headerLabel": "Outputs",
+          "channel": "bluetooth",
+          "startRow": 5,
+          "bindings": [
+            {
+              "row": 8,
+              "output": "circle",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [],
+    "editor": {
+      "dirty": false,
+      "revision": 0,
+      "canUndo": false
+    },
+    "serialized": {
+      "sha256": "0562d5fb9f809c832cb6e840d48abbb3a8e5c9c1e6f07afe39c85abef7db9bf7",
+      "utf8Bytes": 132,
+      "text": "Profile Name,,One\r\ntwo.csv\r\nOutputs,Function,usb\r\nx,normal,lip\r\nProfile Name,,Two\r\n\r\nOutputs,Function,bluetooth\r\ncircle,normal,lip\r\n"
+    }
+  }
+}

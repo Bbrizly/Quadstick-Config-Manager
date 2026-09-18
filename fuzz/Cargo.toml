@@ -1,0 +1,45 @@
+[package]
+name = "qcm-config-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "=0.4.13"
+qcm-config = { path = "../crates/qcm-config" }
+
+[[bin]]
+name = "parse"
+path = "fuzz_targets/parse.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "normalize"
+path = "fuzz_targets/normalize.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "apply_ops"
+path = "fuzz_targets/apply_ops.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "import_xlsx"
+path = "fuzz_targets/import_xlsx.rs"
+test = false
+doc = false
+bench = false
+
+# Keep libFuzzer out of the cross-platform product workspace. cargo-fuzz uses
+# this independent workspace on its supported Unix-like hosts.
+[workspace]
+members = ["."]

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "firmware-canonical",
+  "source": {
+    "name": "profile-headerless.csv",
+    "sha256": "f63230e49d66c522a0d830400284d535a0e0c22be6eec3f5de8a55bd503b4ff6",
+    "kind": "csv"
+  },
+  "modes": [],
+  "serialized": {
+    "sha256": "f63230e49d66c522a0d830400284d535a0e0c22be6eec3f5de8a55bd503b4ff6",
+    "utf8Bytes": 89,
+    "text": "Profile Name,,Mode 1\r\nconfig.csv\r\nPlayStation Outputs,Function,usb\r\ntriangle,normal,lip\r\n"
+  }
+}

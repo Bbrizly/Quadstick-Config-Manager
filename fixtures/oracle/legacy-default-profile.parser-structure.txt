@@ -1,0 +1,364 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "fixtureId": "legacy-default-profile",
+  "document": {
+    "csvFileName": "default.csv",
+    "fileNameCellRow": 2,
+    "hasVersionHeader": false,
+    "headerVersion": "",
+    "headerSource": "",
+    "headerName": "",
+    "title": "Left Joystick",
+    "isDefaultConfig": true,
+    "isDevicePreferences": false,
+    "sheets": [
+      {
+        "type": "ProfileName",
+        "modeName": "Left Joystick",
+        "csvFileName": "default.csv",
+        "headerLabel": "PlayStation Outputs",
+        "channel": "usb",
+        "startRow": 1,
+        "bindings": [
+          {
+            "row": 4,
+            "output": "increment_mode",
+            "function": "normal",
+            "inputs": [
+              "right_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 5,
+            "output": "decrement_mode",
+            "function": "normal",
+            "inputs": [
+              "right_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 6,
+            "output": "dpad_N",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 7,
+            "output": "dpad_NE",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 8,
+            "output": "dpad_E",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 9,
+            "output": "dpad_SE",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 10,
+            "output": "dpad_S",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 11,
+            "output": "dpad_SW",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 12,
+            "output": "dpad_W",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 13,
+            "output": "dpad_NW",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 14,
+            "output": "left_joy_left",
+            "function": "normal",
+            "inputs": [
+              "left"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 15,
+            "output": "left_joy_right",
+            "function": "normal",
+            "inputs": [
+              "right"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 16,
+            "output": "left_joy_up",
+            "function": "normal",
+            "inputs": [
+              "up"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 17,
+            "output": "left_joy_down",
+            "function": "normal",
+            "inputs": [
+              "down"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 18,
+            "output": "right_joy_left",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 19,
+            "output": "right_joy_right",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 20,
+            "output": "right_joy_up",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 21,
+            "output": "right_joy_down",
+            "function": "normal",
+            "inputs": [],
+            "inputCols": [],
+            "actionName": ""
+          },
+          {
+            "row": 22,
+            "output": "left_1",
+            "function": "normal",
+            "inputs": [
+              "mp_left_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 23,
+            "output": "left_2",
+            "function": "normal",
+            "inputs": [
+              "mp_left_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 24,
+            "output": "left_3",
+            "function": "normal",
+            "inputs": [
+              "mp_left_center_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 25,
+            "output": "right_1",
+            "function": "normal",
+            "inputs": [
+              "mp_right_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 26,
+            "output": "right_2",
+            "function": "normal",
+            "inputs": [
+              "mp_right_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 27,
+            "output": "right_3",
+            "function": "normal",
+            "inputs": [
+              "mp_right_center_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 28,
+            "output": "x",
+            "function": "normal",
+            "inputs": [
+              "lip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 29,
+            "output": "circle",
+            "function": "normal",
+            "inputs": [
+              "mp_center_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 30,
+            "output": "square",
+            "function": "normal",
+            "inputs": [
+              "mp_center_sip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 31,
+            "output": "triangle",
+            "function": "normal",
+            "inputs": [
+              "mp_right_center_puff"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 32,
+            "output": "select",
+            "function": "normal",
+            "inputs": [
+              "mp_left_sip_soft"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 33,
+            "output": "ps3",
+            "function": "normal",
+            "inputs": [
+              "mp_center_sip_soft"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 34,
+            "output": "start",
+            "function": "normal",
+            "inputs": [
+              "mp_right_sip_soft"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          },
+          {
+            "row": 35,
+            "output": "touch",
+            "function": "normal",
+            "inputs": [
+              "mp_left_puff_soft"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": ""
+          }
+        ]
+      }
+    ]
+  }
+}

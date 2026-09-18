@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "firmware-canonical",
+  "source": {
+    "name": "gta-mode1.csv",
+    "sha256": "638eee2c8e466fb8f942bcb6e006315d7be5db3383cd1fbd171aac497504df1d",
+    "kind": "csv"
+  },
+  "modes": [],
+  "serialized": {
+    "sha256": "101111aa51bf67277d4598d742518cf80038bff8f2e0769f1a3c56d2d2f43a77",
+    "utf8Bytes": 828,
+    "text": "Profile Name,,Left joy,,,,,,,\r\ngta.csv,,Normal,,,,,,,\r\nOutput or Function,Function,usb,,,,,,,\r\nincrement_mode,normal,right_sip,,,,,,,\r\ndecrement_mode,normal,right_puff,,,,,,,\r\nleft_joy_left,normal,left,,,,,,,\r\nleft_joy_right,normal,right,,,,,,,\r\nleft_joy_up,normal,up,,,,,,,\r\nleft_joy_down,normal,down,,,,,,,\r\nleft_1,normal,mp_left_sip,,,,,,,\r\nleft_2,normal,mp_left_puff,,,,,,,\r\nleft_3,normal,mp_left_center_sip,,,,,,,\r\nright_1,normal,lip,,,,,,,\r\nright_2,normal,mp_right_puff,,,,,,,\r\nright_3,normal,mp_right_center_sip,,,,,,,\r\nx,repeat,mp_right_sip,,,,,,,\r\ncircle,normal,mp_center_puff,,,,,,,\r\nsquare,normal,mp_center_sip,,,,,,,\r\ntriangle,normal,mp_right_center_puff,,,,,,,\r\nselect,normal,mp_left_sip_soft,,,,,,,\r\nselect,normal,right_sip_soft,,,,,,,\r\nps3,normal,mp_center_sip_soft,,,,,,,\r\nstart,normal,mp_right_sip_soft,,,,,,,\r\n"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "fixtureId": "profile-extra-columns",
+  "document": {
+    "csvFileName": "extra.csv",
+    "fileNameCellRow": 3,
+    "hasVersionHeader": true,
+    "headerVersion": "Version 1.5",
+    "headerSource": "",
+    "headerName": "Extra Columns",
+    "title": "Extra Columns",
+    "isDefaultConfig": false,
+    "isDevicePreferences": false,
+    "sheets": [
+      {
+        "type": "ProfileName",
+        "modeName": "Mode 1",
+        "csvFileName": "extra.csv",
+        "headerLabel": "PlayStation Outputs",
+        "channel": "usb",
+        "startRow": 2,
+        "bindings": [
+          {
+            "row": 5,
+            "output": "mouse_left",
+            "function": "normal",
+            "inputs": [
+              "lip"
+            ],
+            "inputCols": [
+              2
+            ],
+            "actionName": "keep me"
+          }
+        ]
+      }
+    ]
+  }
+}

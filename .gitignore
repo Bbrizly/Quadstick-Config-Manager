@@ -3,6 +3,8 @@ obj/
 dist/
 .vs/
 *.user
+# Rust workspace build output. Cargo.lock is committed for reproducible rewrite CI.
+target/
 # Fred Davison's Apps Script sources, shared privately as reference. Not ours to publish.
 docs/google_apps_script_projects/
 # Internal planning and design notes, kept locally, not published.
@@ -49,3 +51,9 @@ docs/UI-UX-REVAMP-BRIEF.md
 docs/hackathon-pitch.html
 docs/present.sh
 docs/research/
+
+# Frontend and Tauri shell build output. The lockfiles are committed, the
+# installed tree and the generated Tauri schemas are not.
+node_modules/
+dist-ui/
+src-tauri/gen/

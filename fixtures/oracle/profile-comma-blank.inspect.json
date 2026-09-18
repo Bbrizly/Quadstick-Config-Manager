@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "qcm-parity-1",
+  "legacyBase": "f7783944387202bcafaeb7ff3f67789098fa6a4e",
+  "command": "inspect-canonical",
+  "source": {
+    "name": "profile-comma-blank.csv",
+    "sha256": "be0831d5aa6cb1c45ed3d0b2c6caedfa45339069ba0496505b8ffcdfbe3c8a93",
+    "kind": "csv"
+  },
+  "import": null,
+  "snapshot": {
+    "rawGrid": [
+      [
+        "Profile Name",
+        "",
+        "Comma row"
+      ],
+      [
+        "comma.csv"
+      ],
+      [
+        "Outputs",
+        "Function",
+        "usb"
+      ],
+      [
+        "x",
+        "normal",
+        "lip"
+      ],
+      [
+        "",
+        "",
+        ""
+      ],
+      [
+        "circle",
+        "normal",
+        "lip"
+      ]
+    ],
+    "document": {
+      "csvFileName": "comma.csv",
+      "fileNameCellRow": 2,
+      "hasVersionHeader": false,
+      "headerVersion": "",
+      "headerSource": "",
+      "headerName": "",
+      "title": "Comma row",
+      "isDefaultConfig": false,
+      "isDevicePreferences": false,
+      "sheets": [
+        {
+          "index": 0,
+          "type": "ProfileName",
+          "modeName": "Comma row",
+          "csvFileName": "comma.csv",
+          "headerLabel": "Outputs",
+          "channel": "usb",
+          "startRow": 1,
+          "bindings": [
+            {
+              "row": 4,
+              "output": "x",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            },
+            {
+              "row": 6,
+              "output": "circle",
+              "function": "normal",
+              "inputs": [
+                "lip"
+              ],
+              "inputCols": [
+                2
+              ],
+              "actionName": ""
+            }
+          ]
+        }
+      ]
+    },
+    "issues": [],
+    "editor": {
+      "dirty": false,
+      "revision": 0,
+      "canUndo": false
+    },
+    "serialized": {
+      "sha256": "fc86f1b0208474347fe36909bdaa08ac8ea7c907a543657508cd8990893b3f43",
+      "utf8Bytes": 95,
+      "text": "Profile Name,,Comma row\r\ncomma.csv\r\nOutputs,Function,usb\r\nx,normal,lip\r\n,,\r\ncircle,normal,lip\r\n"
+    }
+  }
+}
