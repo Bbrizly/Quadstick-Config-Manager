@@ -7,8 +7,8 @@
 use crate::ipc::parse;
 use crate::shell::ShellState;
 use qcm_core::error::{QcmError, QcmErrorDto, RequestError};
-use serde::Deserialize;
-use serde_json::Value;
+use serde::{Deserialize, Serialize};
+use serde_json::{Value, json};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
@@ -210,6 +210,8 @@ pub fn track_event_gated(
 
 static PENDING_DIR_OVERRIDE: Mutex<Option<PathBuf>> = Mutex::new(None);
 static RESCUE_DIR_OVERRIDE: Mutex<Option<PathBuf>> = Mutex::new(None);
+#[cfg(test)]
+static PENDING_TEST_LOCK: Mutex<()> = Mutex::new(());
 
 /// Test seam for pending crash reports.
 pub fn set_pending_dir_override(path: Option<PathBuf>) {
@@ -406,6 +408,157 @@ struct TrackTelemetryRequest {
     event: String,
 }
 
+/// Opaque crash-report offer for the WebView. `report_id` is a filename only.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PendingCrashReportDto {
+    pub report_id: String,
+    pub details: String,
+}
+
+/// Soft send outcome. Empty telemetry token cannot network-send.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CrashResolveResultDto {
+    pub sent: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CrashReportChoice {
+    Send,
+    Later,
+    Never,
+}
+
+impl CrashReportChoice {
+    fn from_wire(value: &str) -> Option<Self> {
+        match value {
+            "send" => Some(Self::Send),
+            "later" => Some(Self::Later),
+            "never" => Some(Self::Never),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct ResolveCrashReportRequest {
+    report_id: String,
+    choice: String,
+}
+
+/// Soft body check: Avalonia needs a non-empty `chain`, Soft accepts any
+/// non-empty body written by [`write_pending_crash_report`].
+fn is_offerable_pending_body(text: &str) -> bool {
+    let trimmed = text.trim();
+    if trimmed.is_empty() {
+        return false;
+    }
+    if let Ok(value) = serde_json::from_str::<Value>(trimmed) {
+        if let Some(object) = value.as_object() {
+            if let Some(chain) = object.get("chain").and_then(Value::as_array) {
+                return !chain.is_empty();
+            }
+            // Soft plain JSON body (no chain field): any non-empty object/value.
+            return true;
+        }
+        // Non-object JSON (string/number/array): still a Soft plain body.
+        return true;
+    }
+    // Non-JSON text Soft body.
+    true
+}
+
+/// Filename-only id under the pending dir. Never returns a host path.
+fn pending_report_path(report_id: &str) -> Result<PathBuf, QcmError> {
+    if report_id.is_empty()
+        || report_id.contains('/')
+        || report_id.contains('\\')
+        || report_id.contains("..")
+        || Path::new(report_id)
+            .file_name()
+            .and_then(|name| name.to_str())
+            != Some(report_id)
+        || !(report_id.starts_with("crash-") && report_id.ends_with(".json"))
+    {
+        return Err(RequestError::OutOfRange {
+            what: "crash report id",
+        }
+        .into());
+    }
+    let path = pending_dir().join(report_id);
+    if !path.is_file() {
+        return Err(RequestError::OutOfRange {
+            what: "crash report id",
+        }
+        .into());
+    }
+    Ok(path)
+}
+
+/// Newest readable, offerable pending report. Skips locked files; discards
+/// unparseable ones so they cannot bury good reports forever.
+#[must_use]
+pub fn pending_crash_report_offer(ask_about_crashes: bool) -> Option<PendingCrashReportDto> {
+    if !ask_about_crashes {
+        return None;
+    }
+    for path in pending_crash_reports().into_iter().rev() {
+        let text = match fs::read_to_string(&path) {
+            Ok(text) => text,
+            Err(_) => continue,
+        };
+        if !is_offerable_pending_body(&text) {
+            discard_pending_crash_report(Some(&path));
+            continue;
+        }
+        let report_id = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("")
+            .to_owned();
+        if report_id.is_empty() {
+            discard_pending_crash_report(Some(&path));
+            continue;
+        }
+        return Some(PendingCrashReportDto {
+            report_id,
+            details: text,
+        });
+    }
+    None
+}
+
+/// Apply Send / Later / Never. Soft send never networks; empty token keeps the
+/// file and returns `sent: false` (Avalonia keep-on-fail). Non-empty Soft token
+/// still skips the network but returns `sent: true` and discards that one file.
+pub fn resolve_pending_crash_report(
+    report_id: &str,
+    choice: CrashReportChoice,
+    token: &str,
+) -> Result<CrashResolveResultDto, QcmError> {
+    match choice {
+        CrashReportChoice::Later => Ok(CrashResolveResultDto { sent: false }),
+        CrashReportChoice::Never => {
+            discard_pending_crash_report(None);
+            Ok(CrashResolveResultDto { sent: false })
+        }
+        CrashReportChoice::Send => {
+            let path = pending_report_path(report_id)?;
+            if token.is_empty() {
+                // Soft: cannot network-send. Keep the file so the next launch
+                // can ask again, matching Avalonia keep-on-fail.
+                return Ok(CrashResolveResultDto { sent: false });
+            }
+            // Soft: token present still does not open a socket. Treat as sent
+            // for UI thank-you + discard of the one report the user saw.
+            discard_pending_crash_report(Some(&path));
+            Ok(CrashResolveResultDto { sent: true })
+        }
+    }
+}
+
 #[tauri::command]
 pub fn send_feedback(state: State<'_, ShellState>, request: Value) -> Result<(), Failure> {
     let request: SendFeedbackRequest = redact_err(parse(request, "send_feedback request"))?;
@@ -429,6 +582,41 @@ pub fn track_telemetry_event(
     })?;
     let settings = state.get_settings();
     Ok(track_event(event, settings.usage_analytics))
+}
+
+#[tauri::command]
+pub fn get_pending_crash_report(state: State<'_, ShellState>) -> Option<PendingCrashReportDto> {
+    let settings = state.get_settings();
+    pending_crash_report_offer(settings.ask_about_crashes)
+}
+
+#[tauri::command]
+pub fn resolve_crash_report(
+    state: State<'_, ShellState>,
+    request: Value,
+) -> Result<CrashResolveResultDto, Failure> {
+    let request: ResolveCrashReportRequest =
+        redact_err(parse(request, "resolve_crash_report request"))?;
+    let choice = CrashReportChoice::from_wire(&request.choice).ok_or_else(|| {
+        Box::new(QcmErrorDto::from(&QcmError::Request(
+            RequestError::OutOfRange {
+                what: "crash report choice",
+            },
+        )))
+    })?;
+    let result = redact_err(resolve_pending_crash_report(
+        &request.report_id,
+        choice,
+        telemetry_token(),
+    ))?;
+    if choice == CrashReportChoice::Never {
+        let settings = state.get_settings();
+        redact_err(state.update_settings(json!({
+            "expectedRevision": settings.revision,
+            "patch": { "askAboutCrashes": false },
+        })))?;
+    }
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -531,6 +719,7 @@ mod tests {
 
     #[test]
     fn pending_crash_list_discard_and_consent() {
+        let _lock = PENDING_TEST_LOCK.lock().expect("pending test lock");
         let dir = std::env::temp_dir().join(format!(
             "qcm-pending-test-{}",
             std::time::SystemTime::now()
@@ -544,6 +733,121 @@ mod tests {
         assert_eq!(pending_crash_reports().len(), 1);
         acknowledge_crash_consent(false);
         assert!(pending_crash_reports().is_empty());
+        let _ = fs::remove_dir_all(&dir);
+        set_pending_dir_override(None);
+    }
+
+    #[test]
+    fn get_pending_returns_details_and_filename_id() {
+        let _lock = PENDING_TEST_LOCK.lock().expect("pending test lock");
+        let dir = std::env::temp_dir().join(format!(
+            "qcm-pending-offer-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0)
+        ));
+        set_pending_dir_override(Some(dir.clone()));
+        assert!(pending_crash_report_offer(false).is_none());
+        let body = r#"{"schema":1,"note":"soft plain body"}"#;
+        let written = write_pending_crash_report("ui", body).expect("write");
+        let name = written
+            .file_name()
+            .and_then(|n| n.to_str())
+            .expect("filename")
+            .to_owned();
+        let offer = pending_crash_report_offer(true).expect("offer");
+        assert_eq!(offer.report_id, name);
+        assert!(!offer.report_id.contains('/') && !offer.report_id.contains('\\'));
+        assert_eq!(offer.details, body);
+        let _ = fs::remove_dir_all(&dir);
+        set_pending_dir_override(None);
+    }
+
+    #[test]
+    fn resolve_later_keeps_send_empty_token_keeps_never_discards_all() {
+        let _lock = PENDING_TEST_LOCK.lock().expect("pending test lock");
+        let dir = std::env::temp_dir().join(format!(
+            "qcm-pending-resolve-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0)
+        ));
+        set_pending_dir_override(Some(dir.clone()));
+        let first = write_pending_crash_report("ui", r#"{"schema":1,"a":1}"#).expect("write");
+        std::thread::sleep(std::time::Duration::from_millis(2));
+        let second = write_pending_crash_report("ui", r#"{"schema":1,"a":2}"#).expect("write");
+        let first_id = first
+            .file_name()
+            .and_then(|n| n.to_str())
+            .expect("id")
+            .to_owned();
+
+        let later =
+            resolve_pending_crash_report(&first_id, CrashReportChoice::Later, "").expect("later");
+        assert!(!later.sent);
+        assert_eq!(pending_crash_reports().len(), 2);
+        assert!(first.exists());
+
+        let send_fail =
+            resolve_pending_crash_report(&first_id, CrashReportChoice::Send, "").expect("send");
+        assert!(!send_fail.sent);
+        assert!(first.exists());
+
+        let never =
+            resolve_pending_crash_report(&first_id, CrashReportChoice::Never, "").expect("never");
+        assert!(!never.sent);
+        assert!(pending_crash_reports().is_empty());
+        assert!(!first.exists());
+        assert!(!second.exists());
+
+        let _ = fs::remove_dir_all(&dir);
+        set_pending_dir_override(None);
+    }
+
+    #[test]
+    fn resolve_send_with_token_discards_one_soft_without_network() {
+        let _lock = PENDING_TEST_LOCK.lock().expect("pending test lock");
+        let dir = std::env::temp_dir().join(format!(
+            "qcm-pending-send-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0)
+        ));
+        set_pending_dir_override(Some(dir.clone()));
+        let keep = write_pending_crash_report("ui", r#"{"schema":1,"keep":true}"#).expect("write");
+        std::thread::sleep(std::time::Duration::from_millis(2));
+        let send = write_pending_crash_report("ui", r#"{"schema":1,"send":true}"#).expect("write");
+        let send_id = send
+            .file_name()
+            .and_then(|n| n.to_str())
+            .expect("id")
+            .to_owned();
+        let result = resolve_pending_crash_report(&send_id, CrashReportChoice::Send, "soft-token")
+            .expect("send");
+        assert!(result.sent);
+        assert!(!send.exists());
+        assert!(keep.exists());
+        let _ = fs::remove_dir_all(&dir);
+        set_pending_dir_override(None);
+    }
+
+    #[test]
+    fn empty_pending_body_is_discarded_not_offered() {
+        let _lock = PENDING_TEST_LOCK.lock().expect("pending test lock");
+        let dir = std::env::temp_dir().join(format!(
+            "qcm-pending-empty-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map(|d| d.as_nanos())
+                .unwrap_or(0)
+        ));
+        set_pending_dir_override(Some(dir.clone()));
+        let empty = write_pending_crash_report("ui", "   ").expect("write");
+        assert!(pending_crash_report_offer(true).is_none());
+        assert!(!empty.exists());
         let _ = fs::remove_dir_all(&dir);
         set_pending_dir_override(None);
     }

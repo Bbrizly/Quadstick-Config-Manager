@@ -128,6 +128,18 @@ export interface UpdateResult {
   readonly isNewer: boolean;
 }
 
+/** Opaque pending crash report. `reportId` is a filename only, never a host path. */
+export interface PendingCrashReport {
+  readonly reportId: string;
+  readonly details: string;
+}
+
+export type CrashReportChoice = "send" | "later" | "never";
+
+export interface CrashResolveResult {
+  readonly sent: boolean;
+}
+
 export interface Capabilities {
   readonly profileEditing: boolean;
   readonly deviceInstall: boolean;

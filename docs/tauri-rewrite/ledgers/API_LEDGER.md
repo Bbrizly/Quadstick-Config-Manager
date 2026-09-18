@@ -53,7 +53,9 @@ than as a framework string the UI cannot switch on.
 | get_diagnostics_summary | command | local diagnostic | redaction | PLANNED |
 | export_diagnostics_bundle | command | local file write | picker/redaction | PLANNED |
 | send_feedback | command | network | consent/length/allowlist | REGISTERED (Soft: consent+cap, no PostHog) |
-| send_crash_report | command | network | pending report + explicit user action | PLANNED |
+| get_pending_crash_report | command | local diagnostic | ask_about_crashes + opaque report id | Soft IMPLEMENTED |
+| resolve_crash_report | command | network (gated) | pending report + send/later/never | Soft IMPLEMENTED (empty token keeps file; no PostHog) |
+| send_crash_report | command | network | pending report + explicit user action | Soft IMPLEMENTED (via resolve_crash_report send) |
 | check_for_update | command | network | GitHub latest (Soft) | REGISTERED |
 | open_external_url | command | open browser | https github.com /releases only | REGISTERED |
 | track_telemetry_event | command | analytics | allowlist + kill-switch | REGISTERED (Soft no-op without token) |

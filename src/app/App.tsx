@@ -5,6 +5,7 @@ import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
 import { GoogleDriveSettings, ProfileDriveActions } from "../features/cloud/GoogleDrivePanel";
 import { CommunityProfilesPage } from "../features/community/CommunityProfilesPage";
+import { CrashReportPrompt } from "../features/diagnostics/CrashReportPrompt";
 import { DeviceLibraryPage } from "../features/device/DeviceLibraryPage";
 import { DevicePreferencesPage } from "../features/device/DevicePreferencesPage";
 import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
@@ -21,6 +22,7 @@ import {
   MockQcmClient,
   asQcmError,
   type EditorSnapshot,
+  type PendingCrashReport,
   type QcmClient,
   type WorkbookImportReview,
 } from "../platform";
@@ -64,8 +66,23 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [pendingDestination, setPendingDestination] = useState<ShellDestination | null>(null);
   const [closing, setClosing] = useState(false);
   const [message, setMessage] = useState("");
+  const [crashReport, setCrashReport] = useState<PendingCrashReport | null>(null);
 
   useEffect(() => applyThemePreference(themePreference), [themePreference]);
+  useEffect(() => {
+    const getPending = client.getPendingCrashReport;
+    if (getPending === undefined) return;
+    let cancelled = false;
+    void getPending.call(client).then(
+      (pending) => {
+        if (!cancelled && pending !== null) setCrashReport(pending);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
   const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const copy = DESTINATION_COPY[activeDestination];
 
@@ -380,6 +397,17 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         {content}
       </AppShell>
       <LiveRegion>{message}</LiveRegion>
+      {crashReport === null ? null : (
+        <CrashReportPrompt
+          client={client}
+          report={crashReport}
+          onResolved={(statusMessage) => {
+            setCrashReport(null);
+            setMessage(statusMessage);
+          }}
+          onDismiss={() => setCrashReport(null)}
+        />
+      )}
       {editor === null ? null : (
         <InstallProfileDialog client={client} profile={editor} open={installOpen} onClose={() => setInstallOpen(false)} />
       )}

@@ -669,7 +669,7 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 47);
+    assert_eq!(registered.len(), 49);
     for name in [
         "get_app_snapshot",
         "get_settings",
@@ -718,6 +718,8 @@ fn every_command_this_build_registers_is_on_the_list() {
         "open_external_url",
         "send_feedback",
         "track_telemetry_event",
+        "get_pending_crash_report",
+        "resolve_crash_report",
     ] {
         assert!(registered.contains(&name), "{name}");
     }

@@ -35,6 +35,9 @@ import type {
   SettingsPatch,
   Subscription,
   UpdateResult,
+  PendingCrashReport,
+  CrashReportChoice,
+  CrashResolveResult,
 } from "./contracts";
 import { ERROR_CODES, INTERFACE_SCALES } from "./contracts";
 import { QcmCommandError, type QcmClient } from "./qcmClient";
@@ -215,6 +218,12 @@ export class MockQcmClient implements QcmClient {
   #liveListeners = new Map<number, (frame: LiveSnapshot) => void>();
   #deviceListeners = new Map<number, (event: DeviceInvalidation) => void>();
   #deviceRevision = 0;
+  #pendingCrashReport: PendingCrashReport | null = null;
+
+  /** Queue a pending crash report for startup-prompt tests. */
+  queuePendingCrashReport(report: PendingCrashReport): void {
+    this.#pendingCrashReport = report;
+  }
 
   willOpen(name: string): void {
     this.#openAnswers.push({ cancelled: false, name });
@@ -375,6 +384,34 @@ export class MockQcmClient implements QcmClient {
       );
     }
     return Promise.resolve();
+  }
+
+  getPendingCrashReport(): Promise<PendingCrashReport | null> {
+    if (!this.#settings.askAboutCrashes) return Promise.resolve(null);
+    return Promise.resolve(this.#pendingCrashReport);
+  }
+
+  resolveCrashReport(reportId: string, choice: CrashReportChoice): Promise<CrashResolveResult> {
+    if (choice === "later") {
+      return Promise.resolve({ sent: false });
+    }
+    if (choice === "never") {
+      this.#pendingCrashReport = null;
+      this.#settings = {
+        ...this.#settings,
+        askAboutCrashes: false,
+        revision: this.#settings.revision + 1,
+      };
+      return Promise.resolve({ sent: false });
+    }
+    if (this.#pendingCrashReport?.reportId !== reportId) {
+      return Promise.reject(
+        fail(ERROR_CODES.requestOutOfRange, "Unknown crash report.", "retry"),
+      );
+    }
+    // Soft mock: empty-token keep-on-fail. Tests that need sent:true set a
+    // reportId and we still keep unless they clear via never.
+    return Promise.resolve({ sent: false });
   }
 
   newProfile(name: string): Promise<EditorSnapshot> {

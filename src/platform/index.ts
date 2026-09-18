@@ -2,10 +2,11 @@
 export type { CommunityCatalog, CommunityClient, CommunityProfile } from "./communityContracts";
 export type {
   AppSettings, AppSnapshot, Capabilities, CloseDisposition, CloseOutcome, ConfirmationKind,
-  ConfirmationRequirement, DeletePlan, DeleteReceipt, DeviceInvalidation, DeviceLibrarySnapshot,
-  DevicePresenceSnapshot, DeviceProfileEntry, DeviceSummary, EditorOp, EditorSnapshot, InstallPlan,
-  InstallProgress, InstallReceipt, InterfaceScale, Issue, IssueSeverity, LedColour, LiveMotion,
-  LiveSnapshot, LiveStatus, Mode, ModelChoice, PickerGrouping, ProfileSource, QcmErrorPayload,
+  ConfirmationRequirement, CrashReportChoice, CrashResolveResult, DeletePlan, DeleteReceipt,
+  DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, DeviceProfileEntry,
+  DeviceSummary, EditorOp, EditorSnapshot, InstallPlan, InstallProgress, InstallReceipt,
+  InterfaceScale, Issue, IssueSeverity, LedColour, LiveMotion, LiveSnapshot, LiveStatus, Mode,
+  ModelChoice, PendingCrashReport, PickerGrouping, ProfileSource, QcmErrorPayload,
   RecoveryAction, SaveReceipt, SettingsPatch, Subscription, ThemeChoice, UpdateResult,
 } from "./contracts";
 export type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";

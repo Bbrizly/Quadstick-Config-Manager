@@ -4,7 +4,8 @@ import type {
   AppSettings, AppSnapshot, CloseDisposition, CloseOutcome, DeletePlan, DeleteReceipt,
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, EditorOp, EditorSnapshot,
   InstallPlan, InstallProgress, InstallReceipt, LiveSnapshot, QcmErrorPayload, SaveReceipt,
-  SettingsPatch, Subscription, UpdateResult,
+  SettingsPatch, Subscription, UpdateResult, PendingCrashReport, CrashReportChoice,
+  CrashResolveResult,
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
@@ -21,6 +22,8 @@ export interface QcmClient {
   checkForUpdate?(currentVersion?: string): Promise<UpdateResult>;
   openExternalUrl?(url: string): Promise<void>;
   sendFeedback?(text: string): Promise<void>;
+  getPendingCrashReport?(): Promise<PendingCrashReport | null>;
+  resolveCrashReport?(reportId: string, choice: CrashReportChoice): Promise<CrashResolveResult>;
   newProfile(name: string): Promise<EditorSnapshot>;
   chooseAndOpenProfile(): Promise<EditorSnapshot | null>;
   getProfileSnapshot(sessionId: string): Promise<EditorSnapshot>;

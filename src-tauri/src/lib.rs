@@ -79,6 +79,8 @@ pub fn registered_commands() -> &'static [&'static str] {
         "open_external_url",
         "send_feedback",
         "track_telemetry_event",
+        "get_pending_crash_report",
+        "resolve_crash_report",
     ]
 }
 
@@ -172,6 +174,8 @@ pub fn run() {
             updates::open_external_url,
             diagnostics::send_feedback,
             diagnostics::track_telemetry_event,
+            diagnostics::get_pending_crash_report,
+            diagnostics::resolve_crash_report,
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window");
@@ -192,7 +196,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 47);
+        assert_eq!(commands.len(), 49);
         for expected in [
             "import_community_profile",
             "open_community_sheet",
@@ -211,6 +215,8 @@ mod tests {
             "open_external_url",
             "send_feedback",
             "track_telemetry_event",
+            "get_pending_crash_report",
+            "resolve_crash_report",
         ] {
             assert!(commands.contains(&expected), "{expected}");
         }

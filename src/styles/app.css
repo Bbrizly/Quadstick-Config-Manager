@@ -270,6 +270,26 @@ button:hover {
   margin-top: var(--qcm-space-xl);
 }
 
+.crash-report-note {
+  white-space: pre-wrap;
+  margin: 0 0 var(--qcm-space-md);
+  line-height: 1.45;
+}
+
+.crash-report-details {
+  margin: 0;
+  max-height: 220px;
+  overflow: auto;
+  padding: var(--qcm-space-sm);
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-control);
+  background: var(--qcm-surface-muted, var(--qcm-surface));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  white-space: pre;
+  tab-size: 2;
+}
+
 .primary-action {
   background: var(--qcm-accent);
   border-color: var(--qcm-accent);
