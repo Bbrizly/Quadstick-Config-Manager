@@ -1,4 +1,5 @@
-/* Physical geometry stays LTR even when surrounding UI is RTL. */
+/* Avalonia device view: stage, zone callouts, gesture tables */
+
 .quadstick-visualizer {
   min-width: 0;
   display: grid;
@@ -23,16 +24,15 @@
   font-size: var(--qcm-small-size);
 }
 
-.practice-toggle.active,
-.visualizer-hotspot[aria-pressed="true"],
-.semantic-parts button[aria-pressed="true"] {
+.practice-toggle.active {
   border-color: var(--qcm-accent);
   background: var(--qcm-selection-tint);
+  color: var(--qcm-accent-text);
 }
 
 .visualizer-stage-scroll {
   min-width: 0;
-  overflow: auto hidden;
+  overflow: auto;
   border-radius: var(--qcm-radius-panel);
 }
 
@@ -44,7 +44,7 @@
 
 .quadstick-photo {
   position: absolute;
-  object-fit: contain;
+  object-fit: fill;
   user-select: none;
   pointer-events: none;
 }
@@ -57,7 +57,12 @@
   pointer-events: none;
 }
 
-.hotspot-line line {
+.hotspot-line .leader-under {
+  stroke: var(--qcm-surface);
+  stroke-width: 5;
+}
+
+.hotspot-line .leader-over {
   stroke: var(--qcm-text-secondary);
   stroke-width: 2;
 }
@@ -75,32 +80,135 @@
 }
 
 .hotspot-marker[data-active="true"],
-.visualizer-hotspot[data-live-active="true"] {
+.zone-callout[data-live-active="true"] {
   outline: 3px solid var(--qcm-accent);
   outline-offset: 2px;
 }
 
-.visualizer-hotspot {
+/* Avalonia ToggleButton.zone */
+.zone-callout,
+.zone {
   position: absolute;
   z-index: 3;
-  width: 116px;
-  min-height: 68px;
-  display: grid;
-  gap: 2px;
-  align-content: center;
-  padding: var(--qcm-space-xs);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  padding: var(--qcm-pad-zone);
+  border: 2px solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
+  color: var(--qcm-text);
+  text-align: center;
+  min-width: 0;
+}
+
+.zone-callout:hover,
+.zone:hover {
+  background: var(--qcm-surface-subtle);
+  border-color: var(--qcm-accent);
+}
+
+.zone-callout.selected,
+.zone.selected,
+.zone-rail-row.selected,
+.row-chip.selected,
+.sentence-card.selected {
+  border-width: 3px;
+  border-color: var(--qcm-accent);
+  background: var(--qcm-input-tint);
+}
+
+.zone-callout-title {
+  font-size: var(--qcm-body-size);
+  font-weight: 700;
   text-align: center;
 }
 
-.visualizer-hotspot span,
-.visualizer-extra-zones span,
-.semantic-parts button span:last-child {
+.accent-count {
+  color: var(--qcm-accent-text);
+  font-size: var(--qcm-small-size);
+  font-weight: 600;
+}
+
+.muted {
   color: var(--qcm-text-secondary);
   font-size: var(--qcm-small-size);
 }
 
-.live-word {
-  font-weight: 700;
+/* Avalonia GestureTable */
+.gesture-table {
+  display: grid;
+  width: 100%;
+  margin-top: 2px;
+  border-top: 1px solid var(--qcm-surface-subtle);
+  padding-top: 5px;
+  gap: 0;
+}
+
+.gesture-table-rule {
+  display: none;
+}
+
+.gesture-row {
+  display: grid;
+  grid-template-columns: 10px minmax(0, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: 0;
+  position: relative;
+  min-height: 28px;
+}
+
+.gesture-row + .gesture-row {
+  border-top: 1px solid var(--qcm-surface-subtle);
+}
+
+.gesture-row.live {
+  background: var(--qcm-live-tint);
+}
+
+.gesture-pip-slot {
+  width: 6px;
+  height: 6px;
+  justify-self: center;
+}
+
+.gesture-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--qcm-accent);
+  justify-self: center;
+}
+
+.gesture-name {
+  padding: 5px 6px 5px 0;
+  font-size: var(--qcm-small-size);
+  font-weight: 600;
+  text-align: right;
+  line-height: 1.25;
+}
+
+.gesture-action {
+  padding: 5px 0 5px 4px;
+  font-size: var(--qcm-small-size);
+  text-align: left;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.gesture-action.muted {
+  color: var(--qcm-text-secondary);
+}
+
+.joystick-summary {
+  display: grid;
+  gap: 1px;
+  justify-items: center;
+  font-size: var(--qcm-small-size);
 }
 
 .live-stick-dot {
@@ -121,11 +229,9 @@
   gap: var(--qcm-space-sm);
 }
 
-.visualizer-extra-zones button {
+.visualizer-extra-zones .zone {
+  position: static;
   min-height: 64px;
-  display: grid;
-  gap: var(--qcm-space-xs);
-  text-align: start;
 }
 
 .practice-status {
@@ -133,59 +239,102 @@
   margin: 0;
 }
 
-.semantic-parts {
+.parts-rail {
   display: grid;
-  gap: var(--qcm-space-md);
-  padding-top: var(--qcm-space-sm);
-  border-top: var(--qcm-hairline) solid var(--qcm-border);
+  gap: 6px;
 }
 
-.semantic-parts section,
-.semantic-parts ul {
-  display: grid;
-  gap: var(--qcm-space-xs);
+.zone-rail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--qcm-space-sm);
+  min-height: 52px;
+  padding: 8px 12px;
+  border: 2px solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
+  text-align: start;
+}
+
+.rows-list {
   margin: 0;
   padding: 0;
-}
-
-.semantic-parts h3 {
-  margin: 0;
-  color: var(--qcm-text-secondary);
-  font-size: var(--qcm-small-size);
-}
-
-.semantic-parts li {
   list-style: none;
+  display: grid;
+  gap: 8px;
 }
 
-.semantic-parts button {
+.row-chip {
   width: 100%;
-  min-height: 52px;
-  display: grid;
-  grid-template-columns: minmax(110px, .8fr) 1fr;
-  gap: var(--qcm-space-sm);
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 2px solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
   text-align: start;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: var(--qcm-body-size);
+  font-weight: 600;
+}
+
+.tint-output {
+  background: var(--qcm-output-tint);
+}
+
+.tint-function {
+  background: var(--qcm-function-tint);
+}
+
+.tint-input {
+  background: var(--qcm-input-tint);
+}
+
+.binding-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tint-swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: var(--qcm-small-size);
 }
 
 @media (max-width: 1180px) {
   .visualizer-stage {
-    transform: scale(.82);
-    margin-bottom: -84px;
+    transform: scale(0.72);
+    margin-bottom: -140px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .live-stick-dot,
-  .visualizer-hotspot,
+  .zone-callout,
   .hotspot-marker {
     transition: none;
   }
 }
 
 @media (forced-colors: active) {
-  .visualizer-hotspot[data-live-active="true"],
-  .hotspot-marker[data-active="true"] {
-    outline-color: Highlight;
+  .zone-callout[data-live-active="true"],
+  .hotspot-marker[data-active="true"],
+  .zone-callout.selected,
+  .sentence-card.selected {
+    outline: 2px solid Highlight;
   }
 }

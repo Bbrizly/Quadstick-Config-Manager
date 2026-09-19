@@ -14,12 +14,17 @@ import {
   type QcmClient,
 } from "../../platform";
 import { QuadStickVisualizer } from "../visualizer/QuadStickVisualizer";
+import { zonesForRow, type ZoneId } from "../visualizer/deviceSummary";
+import { BindingInspector } from "./BindingInspector";
+import { SentenceCard } from "./SentenceCard";
 
 interface EditorWorkspaceProps {
   readonly client: QcmClient;
   readonly snapshot: EditorSnapshot;
   readonly onSnapshot: (snapshot: EditorSnapshot) => void;
 }
+
+type EditorView = "device" | "parts" | "rows";
 
 interface BindingRow {
   readonly row: number;
@@ -71,73 +76,6 @@ function columnName(index: number): string {
     value = Math.floor((value - 1) / 26);
   }
   return name;
-}
-
-function BindingInspector({
-  row,
-  cells,
-  disabled,
-  onSetCell,
-}: {
-  readonly row: number;
-  readonly cells: readonly string[];
-  readonly disabled: boolean;
-  readonly onSetCell: (row: number, column: number, value: string) => void;
-}) {
-  const { t } = useI18n();
-  const [draft, setDraft] = useState(() => Array.from({ length: 10 }, (_, column) => cells[column] ?? ""));
-
-  const commit = (column: number): void => {
-    const value = draft[column] ?? "";
-    if (value !== (cells[column] ?? "")) onSetCell(row, column, value);
-  };
-
-  return (
-    <div className="binding-inspector" data-testid={`binding-inspector-${String(row)}`}>
-      <div className="binding-header" aria-hidden="true">
-        <span className="tint-swatch tint-output">{t("Main_OutputGameButton")}</span>
-        <span className="tint-swatch tint-function">{t("Main_FunctionBehavior")}</span>
-        <span className="tint-swatch tint-input">{t("Main_InputsSipsPuffsJoystick")}</span>
-      </div>
-      <label className="editor-field output">
-        <span>{t("Main_OutputGameButton")}</span>
-        <input
-          aria-label={t("Main_OutputForRowBRow", [row])}
-          disabled={disabled}
-          value={draft[0] ?? ""}
-          onChange={(event) => setDraft((current) => current.with(0, event.currentTarget.value))}
-          onBlur={() => commit(0)}
-        />
-      </label>
-      <label className="editor-field function">
-        <span>{t("Main_FunctionForRowBRow", [row, draft[1] ?? ""])}</span>
-        <input
-          aria-label={t("Main_FunctionForRowBRow", [row, draft[1] ?? ""])}
-          disabled={disabled}
-          value={draft[1] ?? ""}
-          onChange={(event) => setDraft((current) => current.with(1, event.currentTarget.value))}
-          onBlur={() => commit(1)}
-        />
-      </label>
-      <div className="editor-input-grid">
-        {Array.from({ length: 8 }, (_, index) => {
-          const column = index + 2;
-          return (
-            <label className="editor-field input-col" key={column}>
-              <span>{t("Main_InputI1ForRow", [index + 1, row])}</span>
-              <input
-                aria-label={t("Main_InputI1ForRow", [index + 1, row])}
-                disabled={disabled}
-                value={draft[column] ?? ""}
-                onChange={(event) => setDraft((current) => current.with(column, event.currentTarget.value))}
-                onBlur={() => commit(column)}
-              />
-            </label>
-          );
-        })}
-      </div>
-    </div>
-  );
 }
 
 function RawGrid({
@@ -200,6 +138,8 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   );
   const [selectedSheet, setSelectedSheet] = useState(() => profileModes[0]?.index ?? 0);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  const [selectedZone, setSelectedZone] = useState<ZoneId | null>(null);
+  const [view, setView] = useState<EditorView>("device");
   const [raw, setRaw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [armedDelete, setArmedDelete] = useState<number | null>(null);
@@ -209,6 +149,10 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
     (mode) => mode.index === selectedSheet && mode.kind === "mode",
   ) ?? profileModes[0] ?? null;
   const rows = useMemo(() => bindingRows(snapshot, selectedMode), [snapshot, selectedMode]);
+  const zoneRows = useMemo(() => {
+    if (selectedZone === null) return rows;
+    return rows.filter((row) => zonesForRow(row).includes(selectedZone));
+  }, [rows, selectedZone]);
   const selectionBelongsToCurrentSheet = selectedMode?.index === selectedSheet;
   const visibleSelectedRow = selectionBelongsToCurrentSheet ? selectedRow : null;
   const activeRow = visibleSelectedRow === null ? null : rows.find((row) => row.row === visibleSelectedRow) ?? null;
@@ -326,6 +270,9 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
     if (row === null) return;
     const mode = sheetForRow(snapshot, row);
     if (mode?.kind === "mode") setSelectedSheet(mode.index);
+    const cells = snapshot.grid[row - 1] ?? [];
+    const zones = zonesForRow({ row, cells });
+    setSelectedZone(zones[0] ?? null);
     setSelectedRow(row);
     requestAnimationFrame(() => {
       document.querySelector<HTMLElement>(`[data-binding-row="${String(row)}"]`)?.focus();
@@ -338,6 +285,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
     void apply([{ op: "move_mode", sheet: mode.index, delta }], () => {
       setSelectedSheet(target);
       setSelectedRow(null);
+      setSelectedZone(null);
     });
   };
 
@@ -352,8 +300,18 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
       const fallback = remaining.find((candidate) => candidate.index >= mode.index) ?? remaining.at(-1);
       if (fallback !== undefined) setSelectedSheet(fallback.index);
       setSelectedRow(null);
+      setSelectedZone(null);
     });
   };
+
+  const selectMode = (index: number): void => {
+    setSelectedSheet(index);
+    setSelectedRow(null);
+    setSelectedZone(null);
+    setArmedDelete(null);
+  };
+
+  const zoneIdForRow = (row: BindingRow): ZoneId => zonesForRow(row)[0] ?? "unset";
 
   return (
     <section className="editor-workspace" aria-labelledby="editor-title">
@@ -392,110 +350,174 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
       {raw ? (
         <RawGrid snapshot={snapshot} disabled={busy} onSetCell={setCell} />
       ) : (
-        <div className="editor-columns">
+        <div className="editor-plate">
           <aside className="modes-panel" aria-label={t("Shell_SelectWhichModeToEdit")}>
-            <div className="panel-heading-row">
-              <h2>{t("Modes_Modes")}</h2>
-              <button
-                type="button"
-                disabled={busy}
-                aria-label={t("Modes_AddAMode")}
-                onClick={() => {
-                  const name = `Mode ${String(profileModes.length + 1)}`;
-                  void apply([{ op: "add_mode", name }], (next) => {
-                    const added = next.modes.findLast((mode) => mode.kind === "mode");
-                    if (added !== undefined) setSelectedSheet(added.index);
-                    setSelectedRow(null);
-                  });
-                }}
-              >
-                {t("Modes_AddMode")}
-              </button>
-            </div>
-            <ol className="mode-list">
-              {snapshot.modes.filter((mode) => mode.kind !== "infrared").map((mode) => {
-                if (mode.kind !== "mode") {
+            <div className="modes-panel-body">
+              <div className="panel-heading-row">
+                <h2>{t("Modes_Modes")}</h2>
+                <button
+                  type="button"
+                  disabled={busy}
+                  aria-label={t("Modes_AddAMode")}
+                  onClick={() => {
+                    const name = `Mode ${String(profileModes.length + 1)}`;
+                    void apply([{ op: "add_mode", name }], (next) => {
+                      const added = next.modes.findLast((mode) => mode.kind === "mode");
+                      if (added !== undefined) setSelectedSheet(added.index);
+                      setSelectedRow(null);
+                      setSelectedZone(null);
+                    });
+                  }}
+                >
+                  {t("Modes_AddMode")}
+                </button>
+              </div>
+              <ol className="mode-list">
+                {snapshot.modes.filter((mode) => mode.kind !== "infrared").map((mode) => {
+                  if (mode.kind !== "mode") {
+                    return (
+                      <li className="mode-structure-row" key={`sheet-${String(mode.index)}`}>
+                        <span>{t("Modes_PreferencesDeviceSettings")}</span>
+                        <span className="mode-row-actions">
+                          <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, -1) === null} aria-label={t("Review_MoveItEarlier")} onClick={() => moveMode(mode, -1)}>↑</button>
+                          <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, 1) === null} aria-label={t("Review_MoveItLater")} onClick={() => moveMode(mode, 1)}>↓</button>
+                          <button type="button" disabled={busy} aria-label={armedDelete === mode.index ? t("Modes_ReallyDelete") : t("Shell_Delete")} onClick={() => deleteMode(mode)}>×</button>
+                        </span>
+                      </li>
+                    );
+                  }
+                  const selected = selectedMode?.index === mode.index;
                   return (
-                    <li className="mode-structure-row" key={`sheet-${String(mode.index)}`}>
-                      <span>{t("Modes_PreferencesDeviceSettings")}</span>
-                      <span className="mode-row-actions">
+                    <li className="mode-row" data-testid={`mode-row-${String(mode.index)}`} key={`mode-${String(mode.index)}`}>
+                      <button
+                        className="mode-select"
+                        type="button"
+                        aria-current={selected ? "true" : undefined}
+                        onClick={() => selectMode(mode.index)}
+                      >
+                        <span className="mode-number">{mode.number}</span>
+                        <span>{mode.name || t("Review_UnnamedMode")}</span>
+                      </button>
+                      <input
+                        key={`${String(snapshot.revision)}-${String(mode.index)}`}
+                        className="mode-name-input"
+                        aria-label={t("Modes_NameOfModeOrdinal", [mode.number ?? mode.index + 1])}
+                        defaultValue={mode.name}
+                        disabled={busy}
+                        onBlur={(event) => {
+                          const name = event.currentTarget.value.trim();
+                          if (name !== "" && name !== mode.name) void apply([{ op: "rename_mode", sheet: mode.index, name }]);
+                        }}
+                      />
+                      <div className="mode-row-actions">
                         <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, -1) === null} aria-label={t("Review_MoveItEarlier")} onClick={() => moveMode(mode, -1)}>↑</button>
                         <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, 1) === null} aria-label={t("Review_MoveItLater")} onClick={() => moveMode(mode, 1)}>↓</button>
-                        <button type="button" disabled={busy} aria-label={armedDelete === mode.index ? t("Modes_ReallyDelete") : t("Shell_Delete")} onClick={() => deleteMode(mode)}>×</button>
-                      </span>
+                        <button type="button" disabled={busy} aria-label={t("Modes_MakeACopyOfName", [mode.name])} onClick={() => void apply([{ op: "duplicate_mode", sheet: mode.index, name: `${mode.name} copy` }], (next) => { const copy = next.modes.findLast((candidate) => candidate.kind === "mode"); if (copy !== undefined) setSelectedSheet(copy.index); setSelectedRow(null); setSelectedZone(null); })}>＋</button>
+                        <button type="button" disabled={busy || profileModes.length <= 1} aria-label={armedDelete === mode.index ? t("Modes_ReallyDeleteName", [mode.name]) : t("Shell_Delete")} onClick={() => deleteMode(mode)}>×</button>
+                      </div>
                     </li>
                   );
-                }
-                const selected = selectedMode?.index === mode.index;
-                return (
-                  <li className="mode-row" data-testid={`mode-row-${String(mode.index)}`} key={`mode-${String(mode.index)}`}>
-                    <button className="mode-select" type="button" aria-current={selected ? "true" : undefined} onClick={() => { setSelectedSheet(mode.index); setSelectedRow(null); setArmedDelete(null); }}>
-                      <span className="mode-number">{mode.number}</span>
-                      <span>{mode.name || t("Review_UnnamedMode")}</span>
-                    </button>
-                    <input
-                      key={`${String(snapshot.revision)}-${String(mode.index)}`}
-                      className="mode-name-input"
-                      aria-label={t("Modes_NameOfModeOrdinal", [mode.number ?? mode.index + 1])}
-                      defaultValue={mode.name}
-                      disabled={busy}
-                      onBlur={(event) => {
-                        const name = event.currentTarget.value.trim();
-                        if (name !== "" && name !== mode.name) void apply([{ op: "rename_mode", sheet: mode.index, name }]);
-                      }}
-                    />
-                    <div className="mode-row-actions">
-                      <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, -1) === null} aria-label={t("Review_MoveItEarlier")} onClick={() => moveMode(mode, -1)}>↑</button>
-                      <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, 1) === null} aria-label={t("Review_MoveItLater")} onClick={() => moveMode(mode, 1)}>↓</button>
-                      <button type="button" disabled={busy} aria-label={t("Modes_MakeACopyOfName", [mode.name])} onClick={() => void apply([{ op: "duplicate_mode", sheet: mode.index, name: `${mode.name} copy` }], (next) => { const copy = next.modes.findLast((candidate) => candidate.kind === "mode"); if (copy !== undefined) setSelectedSheet(copy.index); setSelectedRow(null); })}>＋</button>
-                      <button type="button" disabled={busy || profileModes.length <= 1} aria-label={armedDelete === mode.index ? t("Modes_ReallyDeleteName", [mode.name]) : t("Shell_Delete")} onClick={() => deleteMode(mode)}>×</button>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </aside>
-
-          <section className="bindings-panel" aria-labelledby="rows-title">
-            <div className="panel-heading-row">
-              <h2 id="rows-title">{t("Shell_Rows")}</h2>
-              {selectedMode !== null ? (
-                <button type="button" disabled={busy} aria-label={t("Shell_AddANewBindingRow")} onClick={() => void apply([{ op: "add_row", sheet: selectedMode.index }])}>
-                  {t("Shell_AddRow")}
-                </button>
-              ) : null}
+                })}
+              </ol>
             </div>
-            <QuadStickVisualizer
-              client={client}
-              rows={rows}
-              selectedRow={visibleSelectedRow}
-              modeName={selectedMode?.name ?? ""}
-              modeNumber={selectedMode?.number ?? null}
-              onSelectRow={setSelectedRow}
-            />
-            {activeRow !== null ? (
-              <div className="row-actions">
-                <button type="button" disabled={busy || rows[0]?.row === activeRow.row} aria-label={t("Review_MoveItEarlier")} onClick={() => void apply([{ op: "move_row", from: activeRow.row, to: activeRow.row - 1 }], () => setSelectedRow(activeRow.row - 1))}>↑</button>
-                <button type="button" disabled={busy || rows.at(-1)?.row === activeRow.row} aria-label={t("Review_MoveItLater")} onClick={() => void apply([{ op: "move_row", from: activeRow.row, to: activeRow.row + 1 }], () => setSelectedRow(activeRow.row + 1))}>↓</button>
-                <button type="button" disabled={busy} onClick={() => void apply([{ op: "delete_row", row: activeRow.row }], () => setSelectedRow(null))}>{t("Shell_Delete")}</button>
-              </div>
-            ) : null}
-          </section>
-
-          <aside className="inspector-panel" aria-labelledby="inspector-title">
-            <h2 id="inspector-title">{t("Shell_Configuration")}</h2>
-            {activeRow === null ? (
-              <p className="empty-copy">{t("Main_NoInputYet")}</p>
-            ) : (
-              <BindingInspector
-                key={`${String(snapshot.revision)}-${String(activeRow.row)}`}
-                row={activeRow.row}
-                cells={activeRow.cells}
-                disabled={busy}
-                onSetCell={setCell}
-              />
-            )}
+            <div className="switchtrack" role="group" aria-label={t("Main_UsingDeviceView")}>
+              <button
+                className={view === "device" ? "switchkey viewkey active" : "switchkey viewkey"}
+                type="button"
+                aria-pressed={view === "device"}
+                aria-label={t("Shell_ShowTheMappingsOnA")}
+                title={t("Shell_SeeTheMappingsOnA")}
+                onClick={() => setView("device")}
+              >
+                <Icon name="viewDevice" size={22} />
+                <span>{t("Shell_Device")}</span>
+              </button>
+              <button
+                className={view === "parts" ? "switchkey viewkey active" : "switchkey viewkey"}
+                type="button"
+                aria-pressed={view === "parts"}
+                aria-label={t("Shell_ShowThePartsAsA")}
+                onClick={() => setView("parts")}
+              >
+                <Icon name="viewRail" size={22} />
+                <span>{t("Shell_Parts")}</span>
+              </button>
+              <button
+                className={view === "rows" ? "switchkey viewkey active" : "switchkey viewkey"}
+                type="button"
+                aria-pressed={view === "rows"}
+                aria-label={t("Shell_ShowTheMappingsAsA")}
+                onClick={() => setView("rows")}
+              >
+                <Icon name="viewSheet" size={22} />
+                <span>{t("Shell_Rows")}</span>
+              </button>
+            </div>
           </aside>
+
+          <div className="device-workspace">
+            <section className="device-canvas">
+              <div className="panel-heading-row">
+                <h2>{t("Shell_Rows")}</h2>
+                {selectedMode !== null ? (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    aria-label={t("Shell_AddANewBindingRow")}
+                    onClick={() => void apply([{ op: "add_row", sheet: selectedMode.index }])}
+                  >
+                    {t("Shell_AddRow")}
+                  </button>
+                ) : null}
+              </div>
+              <QuadStickVisualizer
+                client={client}
+                rows={rows}
+                selectedRow={visibleSelectedRow}
+                selectedZone={selectedZone}
+                modeName={selectedMode?.name ?? ""}
+                modeNumber={selectedMode?.number ?? null}
+                view={view}
+                onSelectRow={setSelectedRow}
+                onSelectZone={setSelectedZone}
+              />
+            </section>
+
+            <aside className="mapping-panel" aria-labelledby="mapping-title">
+              <h2 id="mapping-title">{t("Shell_Configuration")}</h2>
+              {zoneRows.length === 0 ? (
+                <p className="empty-copy">{t("Main_NoInputYet")}</p>
+              ) : (
+                <div className="binding-list">
+                  {zoneRows.map((row) => (
+                    <SentenceCard
+                      key={row.row}
+                      row={row}
+                      zoneId={zoneIdForRow(row)}
+                      selected={visibleSelectedRow === row.row}
+                      onSelect={() => setSelectedRow(row.row)}
+                    />
+                  ))}
+                </div>
+              )}
+              {activeRow !== null ? (
+                <>
+                  <div className="row-actions">
+                    <button type="button" disabled={busy || rows[0]?.row === activeRow.row} aria-label={t("Review_MoveItEarlier")} onClick={() => void apply([{ op: "move_row", from: activeRow.row, to: activeRow.row - 1 }], () => setSelectedRow(activeRow.row - 1))}>↑</button>
+                    <button type="button" disabled={busy || rows.at(-1)?.row === activeRow.row} aria-label={t("Review_MoveItLater")} onClick={() => void apply([{ op: "move_row", from: activeRow.row, to: activeRow.row + 1 }], () => setSelectedRow(activeRow.row + 1))}>↓</button>
+                    <button type="button" disabled={busy} onClick={() => void apply([{ op: "delete_row", row: activeRow.row }], () => { setSelectedRow(null); setSelectedZone(null); })}>{t("Shell_Delete")}</button>
+                  </div>
+                  <BindingInspector
+                    key={`${String(snapshot.revision)}-${String(activeRow.row)}`}
+                    row={activeRow.row}
+                    cells={activeRow.cells}
+                    disabled={busy}
+                    onSetCell={setCell}
+                  />
+                </>
+              ) : null}
+            </aside>
+          </div>
         </div>
       )}
 
