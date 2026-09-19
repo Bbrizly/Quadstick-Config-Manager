@@ -550,6 +550,38 @@
   line-height: 1;
 }
 
+.keycap-prompt {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.keycap-back {
+  position: absolute;
+  inset: 3px 0 0;
+  border-radius: 6px;
+  background: var(--qcm-border);
+}
+
+.keycap-front {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: calc(100% - 2px);
+  height: calc(100% - 6px);
+  margin-bottom: 3px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--qcm-surface);
+  border: 1px solid var(--qcm-border);
+  color: var(--qcm-text);
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: center;
+}
+
 .joystick-summary {
   display: flex;
   flex-wrap: wrap;

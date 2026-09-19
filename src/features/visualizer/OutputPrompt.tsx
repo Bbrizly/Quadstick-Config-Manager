@@ -18,8 +18,6 @@ import xboxA from "../../QuadStick.App/Assets/OutputVisuals/Xbox/Xbox0001.png";
 import xboxB from "../../QuadStick.App/Assets/OutputVisuals/Xbox/Xbox0002.png";
 import xboxY from "../../QuadStick.App/Assets/OutputVisuals/Xbox/Xbox0003.png";
 import xboxX from "../../QuadStick.App/Assets/OutputVisuals/Xbox/Xbox0004.png";
-import xboxLeftStick from "../../QuadStick.App/Assets/OutputVisuals/Xbox/Xbox0007.png";
-import xboxRightStick from "../../QuadStick.App/Assets/OutputVisuals/Xbox/Xbox0008.png";
 import xboxDpad from "../../QuadStick.App/Assets/OutputVisuals/Xbox/Xbox0009.png";
 import xboxDpadN from "../../QuadStick.App/Assets/OutputVisuals/Xbox/Xbox0010.png";
 import xboxDpadE from "../../QuadStick.App/Assets/OutputVisuals/Xbox/Xbox0011.png";
@@ -97,6 +95,45 @@ const SHOULDERS: Record<string, { mark: string; trigger: boolean }> = {
   right_trigger: { mark: "RT", trigger: true },
 };
 
+function keycapText(key: string): string {
+  const lower = key.toLowerCase();
+  switch (lower) {
+    case "space":
+      return "Space";
+    case "enter":
+      return "Enter";
+    case "return":
+      return "Return";
+    case "escape":
+      return "Esc";
+    case "backspace":
+      return "Backspace";
+    case "tab":
+      return "Tab";
+    case "left_arrow":
+      return "←";
+    case "right_arrow":
+      return "→";
+    case "up_arrow":
+      return "↑";
+    case "down_arrow":
+      return "↓";
+    default:
+      break;
+  }
+  if (lower.length === 1 && /[a-z0-9]/u.test(lower)) return lower.toUpperCase();
+  if (/^f\d+$/u.test(lower)) return lower.toUpperCase();
+  return lower
+    .split("_")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function isKeycap(token: string): boolean {
+  return token.startsWith("kb_");
+}
+
 /**
  * HID button index (1-based, mode-0 PS3 report) → profile output words.
  * Matches Avalonia LiveInput.Ps3Buttons / FW 2373 output_keywords.h.
@@ -123,7 +160,12 @@ export function promptSrc(token: string): string | null {
 
 /** True when OutputPrompt can draw art (PNG or vector). */
 export function hasPromptArt(token: string): boolean {
-  return promptSrc(token) !== null || token in STICK_DIRS || token in SHOULDERS;
+  return (
+    promptSrc(token) !== null ||
+    token in STICK_DIRS ||
+    token in SHOULDERS ||
+    isKeycap(token)
+  );
 }
 
 export function requiresTextLabel(token: string): boolean {
@@ -240,6 +282,33 @@ function ShoulderPrompt({
   );
 }
 
+function KeycapPrompt({
+  text,
+  size,
+  label,
+}: {
+  readonly text: string;
+  readonly size: number;
+  readonly label: string;
+}) {
+  const multiWord = text.includes(" ");
+  const height = multiWord ? size * 1.35 : size * 1.15;
+  const width = multiWord ? size * 2.4 : size * 1.7;
+  return (
+    <span
+      className="keycap-prompt"
+      title={label}
+      aria-hidden="true"
+      style={{ width: `${String(width)}px`, height: `${String(height)}px` }}
+    >
+      <span className="keycap-back" />
+      <span className="keycap-front" style={{ fontSize: size <= 30 ? "11px" : "13px" }}>
+        {text}
+      </span>
+    </span>
+  );
+}
+
 export function OutputPrompt({
   token,
   label,
@@ -263,6 +332,9 @@ export function OutputPrompt({
         label={label}
       />
     );
+  }
+  if (isKeycap(token)) {
+    return <KeycapPrompt text={keycapText(token.slice(3))} size={size} label={label} />;
   }
 
   const src = promptSrc(token);
@@ -290,9 +362,4 @@ export function OutputPrompt({
       style={rotate === undefined ? undefined : { transform: `rotate(${rotate})` }}
     />
   );
-}
-
-/** Stick-click prompts still use Xelu assets (left_stick / right_stick). */
-export function stickClickSrc(side: "left" | "right"): string {
-  return side === "left" ? xboxLeftStick : xboxRightStick;
 }

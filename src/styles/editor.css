@@ -300,12 +300,37 @@
   background: var(--qcm-surface);
 }
 
-.panel-heading-row {
-  min-height: 52px;
+.mapping-panel-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--qcm-space-sm);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mapping-panel-head h2 {
+  margin: 0;
+  flex: 1 1 auto;
+  font-size: var(--qcm-section-size, var(--qcm-subhead-size));
+  font-weight: 700;
+}
+
+.mapping-count {
+  font-size: var(--qcm-small-size);
+}
+
+.mapping-count.accent {
+  color: var(--qcm-accent-text);
+  font-weight: 600;
+}
+
+.mapping-add {
+  min-height: var(--qcm-control-height);
+  padding: 6px 12px;
+}
+
+.mapping-panel .empty-copy {
+  white-space: pre-line;
 }
 
 .panel-heading-row h2,

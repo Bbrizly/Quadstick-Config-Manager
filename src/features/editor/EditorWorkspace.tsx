@@ -18,6 +18,21 @@ import { QuadStickVisualizer } from "../visualizer/QuadStickVisualizer";
 import { zonesForRow, type ZoneId } from "../visualizer/deviceSummary";
 import { BindingInspector } from "./BindingInspector";
 import { SentenceCard } from "./SentenceCard";
+import type { MessageKey } from "../../i18n";
+
+const ZONE_TITLES: Record<ZoneId, MessageKey> = {
+  joystick: "Main_Joystick",
+  mp_left: "Main_LeftMouthpieceHole",
+  mp_center: "Main_CenterMouthpieceHole",
+  mp_right: "Main_RightMouthpieceHole",
+  side: "Main_SideTube",
+  lip: "Main_LipSwitch",
+  combo: "Main_HoleCombos",
+  jacks: "Main_SwitchJacks",
+  other: "Main_USBDevices",
+  settings: "Main_ModeSettings",
+  unset: "Main_NoInputYet",
+};
 
 interface EditorWorkspaceProps {
   readonly client: QcmClient;
@@ -132,7 +147,7 @@ function RawGrid({
 }
 
 export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspaceProps) {
-  const { t } = useI18n();
+  const { t, plural } = useI18n();
   const profileModes = useMemo(
     () => snapshot.modes.filter((mode) => mode.kind === "mode"),
     [snapshot.modes],
@@ -516,8 +531,36 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
             </section>
 
             <aside className="mapping-panel" aria-labelledby="mapping-title">
-              <h2 id="mapping-title">{t("Shell_Configuration")}</h2>
-              {zoneRows.length === 0 ? (
+              <div className="mapping-panel-head">
+                <h2 id="mapping-title">
+                  {selectedZone === null
+                    ? t("Shell_Configuration")
+                    : t(ZONE_TITLES[selectedZone])}
+                </h2>
+                <span
+                  className={
+                    zoneRows.length === 0 ? "mapping-count muted" : "mapping-count accent"
+                  }
+                >
+                  {zoneRows.length === 0
+                    ? t("Main_NotMapped")
+                    : plural("Count_Mapping", zoneRows.length, [zoneRows.length])}
+                </span>
+                {selectedMode !== null && selectedZone !== null && selectedZone !== "unset" ? (
+                  <button
+                    type="button"
+                    className="mapping-add"
+                    disabled={busy}
+                    aria-label={t("Shell_AddANewBindingRow")}
+                    onClick={() => void apply([{ op: "add_row", sheet: selectedMode.index }])}
+                  >
+                    {t("Shell_AddRow")}
+                  </button>
+                ) : null}
+              </div>
+              {selectedZone === null && zoneRows.length === 0 ? (
+                <p className="empty-copy">{t("Main_NothingSelectedNNPickA")}</p>
+              ) : zoneRows.length === 0 ? (
                 <p className="empty-copy">{t("Main_NoInputYet")}</p>
               ) : (
                 <div className="binding-list">
