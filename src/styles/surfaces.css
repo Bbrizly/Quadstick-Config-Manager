@@ -1,0 +1,117 @@
+/* Shared Avalonia surface language for device / community / feature pages */
+
+.feature-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--qcm-space-md);
+  margin-bottom: var(--qcm-space-lg);
+}
+
+.feature-page-header h1 {
+  margin: 0;
+  font-size: var(--qcm-section-size);
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.feature-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--qcm-space-sm);
+}
+
+.feature-status {
+  display: block;
+  margin: 0 0 var(--qcm-space-md);
+  color: var(--qcm-text-secondary);
+}
+
+.device-page,
+.community-page,
+.device-preferences-page {
+  margin: 22px 28px;
+  max-width: 1120px;
+}
+
+.device-card,
+.empty-state,
+.community-catalog-card {
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
+  padding: var(--qcm-pad-card);
+}
+
+.device-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--qcm-space-md);
+  margin-bottom: var(--qcm-space-md);
+}
+
+.device-file-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--qcm-space-sm);
+}
+
+.device-file-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--qcm-space-md);
+  padding: var(--qcm-space-md);
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-control);
+  background: var(--qcm-surface-subtle);
+  min-height: var(--qcm-card-height);
+}
+
+.device-file-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--qcm-space-xs);
+}
+
+.device-preference-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  gap: var(--qcm-space-lg);
+}
+
+.device-preference-categories {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+}
+
+.device-preference-categories button {
+  text-align: left;
+  background: var(--qcm-surface);
+}
+
+.device-preference-categories button[aria-current="true"] {
+  background: var(--qcm-selection-tint);
+  color: var(--qcm-accent-text);
+  border-color: var(--qcm-accent);
+}
+
+.device-preference-row {
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
+  padding: var(--qcm-pad-card);
+  margin-bottom: var(--qcm-space-md);
+}
+
+@media (max-width: 820px) {
+  .device-preference-layout {
+    grid-template-columns: 1fr;
+  }
+}

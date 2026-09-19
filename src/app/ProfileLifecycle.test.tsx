@@ -24,7 +24,7 @@ describe("TASK-040A local profile lifecycle", () => {
 
     await openLocal(client);
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    await screen.findByRole("heading", { level: 1, name: "QuadStick Config Manager" });
+    await screen.findByRole("heading", { level: 2, name: "Start a profile" });
 
     await openLocal(client);
     expect(screen.getByRole("heading", { level: 1, name: "Racing.csv" })).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe("TASK-040A local profile lifecycle", () => {
     const dialog = await screen.findByRole("dialog", { name: "Profile" });
     fireEvent.click(within(dialog).getByRole("button", { name: "Save (Ctrl+S)" }));
 
-    await screen.findByRole("heading", { level: 1, name: "QuadStick Config Manager" });
+    await screen.findByRole("heading", { level: 2, name: "Start a profile" });
     expect(client.dialogsOpened).toBe(1);
   });
 });

@@ -1,5 +1,8 @@
 @import "./tokens.css";
+@import "./home.css";
+@import "./settings.css";
 @import "./editor.css";
+@import "./surfaces.css";
 
 * {
   box-sizing: border-box;
@@ -40,6 +43,8 @@ button {
   background: var(--qcm-surface);
   color: var(--qcm-text);
   cursor: pointer;
+  padding: var(--qcm-pad-control);
+  transform: scale(1);
 }
 
 button:hover {
@@ -47,9 +52,98 @@ button:hover {
   border-color: var(--qcm-accent);
 }
 
-:focus-visible {
-  outline: 3px solid var(--qcm-focus);
-  outline-offset: 3px;
+button:active {
+  transform: scale(0.985);
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  border-color: var(--qcm-focus);
+  border-width: 2px;
+  box-shadow: none;
+}
+
+.primary,
+.primary-action {
+  background: var(--qcm-accent);
+  border-color: var(--qcm-accent);
+  color: var(--qcm-on-accent);
+  font-weight: 600;
+}
+
+.primary:hover,
+.primary-action:hover {
+  background: var(--qcm-accent);
+  border-color: var(--qcm-accent-text);
+  filter: brightness(1.05);
+}
+
+.quiet {
+  background: transparent;
+  border-color: transparent;
+}
+
+.quiet:hover {
+  background: var(--qcm-surface-subtle);
+  border-color: transparent;
+}
+
+.icon {
+  width: var(--qcm-icon-button);
+  height: var(--qcm-icon-button);
+  min-width: var(--qcm-icon-button);
+  min-height: var(--qcm-icon-button);
+  padding: 0;
+  border-radius: var(--qcm-radius-icon);
+  display: grid;
+  place-items: center;
+}
+
+.command {
+  width: var(--qcm-command-button);
+  height: var(--qcm-command-button);
+  min-width: var(--qcm-command-button);
+  min-height: var(--qcm-command-button);
+  padding: 0;
+  display: grid;
+  place-items: center;
+  background: var(--qcm-surface-subtle);
+}
+
+.command svg {
+  width: var(--qcm-command-icon);
+  height: var(--qcm-command-icon);
+}
+
+.install {
+  min-height: var(--qcm-command-button);
+  padding: 10px 18px;
+  font-size: var(--qcm-subhead-size);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--qcm-space-sm);
+}
+
+.install svg {
+  width: var(--qcm-install-icon);
+  height: var(--qcm-install-icon);
+}
+
+.section {
+  margin: 0;
+  font-size: var(--qcm-section-size);
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--qcm-text);
+}
+
+.secondary,
+.muted {
+  color: var(--qcm-text-secondary);
 }
 
 .skip-link {
@@ -71,43 +165,47 @@ button:hover {
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr;
+  background: var(--qcm-bg);
 }
 
-.shell-header {
+.shell-header,
+.appchrome {
   min-height: 86px;
   display: grid;
   grid-template-columns: minmax(220px, 1fr) auto minmax(220px, 1fr);
   align-items: center;
   gap: var(--qcm-space-lg);
-  padding: 10px 20px;
+  padding: 11px 20px;
   background: var(--qcm-surface);
   border-bottom: var(--qcm-hairline) solid var(--qcm-border);
 }
 
-.shell-brand {
+.shell-brand,
+.shellbrandbutton {
   justify-self: start;
   min-height: var(--qcm-control-height);
   display: inline-flex;
   align-items: center;
   gap: 11px;
-  padding: 5px 8px;
+  padding: 4px 6px;
   border: 0;
   background: transparent;
   text-align: left;
 }
 
+.shell-brand:hover,
+.shellbrandbutton:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
 .shell-brand-mark {
-  display: grid;
-  place-items: center;
   width: 38px;
   height: 38px;
   flex: 0 0 auto;
   border-radius: 9px;
-  background: var(--qcm-accent);
-  color: var(--qcm-on-accent);
-  font-family: var(--qcm-brand-font);
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  object-fit: cover;
+  display: block;
 }
 
 .shell-brand-copy {
@@ -118,8 +216,8 @@ button:hover {
 .shell-brand-name {
   font-family: var(--qcm-brand-font);
   font-size: 21px;
-  font-weight: 800;
-  letter-spacing: 0.07em;
+  font-weight: 700;
+  letter-spacing: 1.5px;
 }
 
 .shell-brand-caption {
@@ -135,8 +233,9 @@ button:hover {
 }
 
 .shell-nav-button,
-.shell-settings-button {
-  position: relative;
+.shell-settings-button,
+.shellnav,
+.shellutility {
   width: var(--qcm-shell-nav-button);
   height: var(--qcm-shell-nav-button);
   min-width: var(--qcm-shell-nav-button);
@@ -144,29 +243,28 @@ button:hover {
   padding: 0;
   display: grid;
   place-items: center;
+  border: 0;
   border-color: transparent;
   background: transparent;
+  color: var(--qcm-text);
 }
 
-.shell-nav-button svg,
-.shell-settings-button svg {
-  width: var(--qcm-shell-nav-icon);
-  height: var(--qcm-shell-nav-icon);
-  stroke: currentColor;
+.shell-nav-button:hover,
+.shell-settings-button:hover,
+.shellnav:hover,
+.shellutility:hover {
+  background: var(--qcm-surface-subtle);
+  border-color: transparent;
 }
 
-.shell-nav-button[aria-current="page"] {
+.shell-nav-button.active,
+.shell-nav-button[aria-current="page"],
+.shellnav.active,
+.shell-settings-button.active,
+.shellutility.active {
   background: var(--qcm-selection-tint);
   color: var(--qcm-accent-text);
-}
-
-.shell-nav-button[aria-current="page"]::after {
-  content: "";
-  position: absolute;
-  inset: auto 12px 5px;
-  height: 3px;
-  border-radius: 2px;
-  background: currentColor;
+  font-weight: 600;
 }
 
 .shell-utilities {
@@ -177,7 +275,7 @@ button:hover {
 }
 
 .appearance-picker {
-  min-width: 126px;
+  min-width: 112px;
   padding: 0 var(--qcm-space-md);
   border: var(--qcm-hairline) solid var(--qcm-border);
   border-radius: var(--qcm-radius-control);
@@ -187,6 +285,11 @@ button:hover {
 
 .shell-main {
   width: 100%;
+  min-height: 0;
+  overflow: auto;
+}
+
+.shell-main:not(:has(.home-view)):not(:has(.editor-route)):not(:has(.settings-page)) {
   max-width: 1180px;
   margin-inline: auto;
   padding: var(--qcm-space-xl) var(--qcm-space-2xl) var(--qcm-space-2xl);
@@ -209,17 +312,6 @@ button:hover {
 .shell-placeholder p {
   margin: 0;
   color: var(--qcm-text-secondary);
-}
-
-.home-start-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--qcm-space-sm);
-  margin-top: var(--qcm-space-lg);
-}
-
-.home-start-actions button {
-  padding-inline: var(--qcm-space-lg);
 }
 
 .visually-hidden {
@@ -255,12 +347,13 @@ button:hover {
   border-radius: var(--qcm-radius-panel);
   background: var(--qcm-surface);
   color: var(--qcm-text);
-  box-shadow: 0 18px 50px rgb(0 0 0 / 22%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
 }
 
 .dialog-title {
   margin: 0 0 var(--qcm-space-lg);
   font-size: var(--qcm-section-size);
+  font-weight: 600;
 }
 
 .dialog-actions {
@@ -283,18 +376,11 @@ button:hover {
   padding: var(--qcm-space-sm);
   border: var(--qcm-hairline) solid var(--qcm-border);
   border-radius: var(--qcm-radius-control);
-  background: var(--qcm-surface-muted, var(--qcm-surface));
+  background: var(--qcm-surface-subtle);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.85rem;
   white-space: pre;
   tab-size: 2;
-}
-
-.primary-action {
-  background: var(--qcm-accent);
-  border-color: var(--qcm-accent);
-  color: var(--qcm-on-accent);
-  padding-inline: var(--qcm-space-lg);
 }
 
 .live-region,
@@ -332,10 +418,6 @@ button:hover {
   .appearance-picker {
     display: none;
   }
-
-  .shell-main {
-    padding-inline: var(--qcm-space-lg);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -358,33 +440,27 @@ button:hover {
   transition-duration: 0.01ms !important;
 }
 
-.rescue-offer {
-  margin-block: var(--qcm-space-lg);
-  padding: var(--qcm-space-md);
-  border: var(--qcm-hairline) solid var(--qcm-warning);
-  border-radius: var(--qcm-radius-panel);
-  background: var(--qcm-surface-subtle);
-}
-
 @media (forced-colors: active) {
   .shell-header,
   .shell-placeholder,
   .dialog-panel,
-  .toast {
+  .toast,
+  .homepanel,
+  .card,
+  .homeaction {
     border-color: CanvasText;
   }
 
-  .shell-nav-button[aria-current="page"] {
+  .shell-nav-button.active,
+  .shell-nav-button[aria-current="page"],
+  .shellutility.active {
     color: HighlightText;
     background: Highlight;
     outline: 2px solid Highlight;
     outline-offset: -4px;
   }
 
-  .shell-nav-button[aria-current="page"]::after {
-    background: HighlightText;
-  }
-
+  .primary,
   .primary-action {
     color: HighlightText;
     background: Highlight;

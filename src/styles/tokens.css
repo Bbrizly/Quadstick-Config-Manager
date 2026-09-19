@@ -1,5 +1,4 @@
-/* TASK-036 ports the shipping Avalonia presentation tokens verbatim. Feature
-   colors stay semantic so later editor/device UI never hard-codes palette values. */
+/* Avalonia Palette.cs + Style.cs presentation tokens. */
 :root,
 :root[data-theme="light"] {
   color-scheme: light;
@@ -21,12 +20,14 @@
   --qcm-input-tint: #d3e6f5;
   --qcm-new-row-tint: #cdeed8;
   --qcm-selection-tint: #c2d3ee;
+  --qcm-live-tint: #fbd9b4;
 
   --qcm-title-size: 30px;
   --qcm-section-size: 22px;
   --qcm-subhead-size: 17px;
   --qcm-body-size: 15px;
   --qcm-small-size: 14px;
+  --qcm-sidebar-toggle-text: 12px;
 
   --qcm-space-xs: 4px;
   --qcm-space-sm: 8px;
@@ -46,7 +47,19 @@
   --qcm-shell-nav-button: 64px;
   --qcm-shell-nav-icon: 32px;
   --qcm-shell-settings-button: 64px;
+  --qcm-shell-settings-icon: 40px;
+  --qcm-card-width: 280px;
+  --qcm-card-height: 112px;
+  --qcm-sidebar-width: 304px;
+  --qcm-command-button: 56px;
+  --qcm-command-icon: 26px;
+  --qcm-install-icon: 36px;
   --qcm-hairline: 1px;
+
+  --qcm-pad-control: 10px 16px;
+  --qcm-pad-card: 16px 18px;
+  --qcm-pad-track: 3px;
+  --qcm-pad-zone: 6px;
 
   --qcm-font: system-ui, -apple-system, "Segoe UI", sans-serif;
   --qcm-brand-font: "Cascadia Mono", "JetBrains Mono", Menlo, "DejaVu Sans Mono", monospace;
@@ -72,6 +85,7 @@
   --qcm-input-tint: #1e2f3f;
   --qcm-new-row-tint: #1c3a28;
   --qcm-selection-tint: #33475f;
+  --qcm-live-tint: #4a3418;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -95,6 +109,7 @@
     --qcm-input-tint: #1e2f3f;
     --qcm-new-row-tint: #1c3a28;
     --qcm-selection-tint: #33475f;
+    --qcm-live-tint: #4a3418;
   }
 }
 
@@ -116,5 +131,6 @@
     --qcm-warning: CanvasText;
     --qcm-focus: Highlight;
     --qcm-selection-tint: Highlight;
+    --qcm-live-tint: Highlight;
   }
 }

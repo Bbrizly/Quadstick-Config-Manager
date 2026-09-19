@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
+import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
@@ -93,7 +94,12 @@ function BindingInspector({
 
   return (
     <div className="binding-inspector" data-testid={`binding-inspector-${String(row)}`}>
-      <label className="editor-field">
+      <div className="binding-header" aria-hidden="true">
+        <span className="tint-swatch tint-output">{t("Main_OutputGameButton")}</span>
+        <span className="tint-swatch tint-function">{t("Main_FunctionBehavior")}</span>
+        <span className="tint-swatch tint-input">{t("Main_InputsSipsPuffsJoystick")}</span>
+      </div>
+      <label className="editor-field output">
         <span>{t("Main_OutputGameButton")}</span>
         <input
           aria-label={t("Main_OutputForRowBRow", [row])}
@@ -103,7 +109,7 @@ function BindingInspector({
           onBlur={() => commit(0)}
         />
       </label>
-      <label className="editor-field">
+      <label className="editor-field function">
         <span>{t("Main_FunctionForRowBRow", [row, draft[1] ?? ""])}</span>
         <input
           aria-label={t("Main_FunctionForRowBRow", [row, draft[1] ?? ""])}
@@ -117,7 +123,7 @@ function BindingInspector({
         {Array.from({ length: 8 }, (_, index) => {
           const column = index + 2;
           return (
-            <label className="editor-field" key={column}>
+            <label className="editor-field input-col" key={column}>
               <span>{t("Main_InputI1ForRow", [index + 1, row])}</span>
               <input
                 aria-label={t("Main_InputI1ForRow", [index + 1, row])}
@@ -359,11 +365,23 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
           ) : null}
         </div>
         <div className="editor-actions">
-          <button type="button" disabled={busy || !snapshot.canUndo} onClick={() => void undo()}>
-            {t("Shell_UndoCtrlZ")}
+          <button
+            className="command"
+            type="button"
+            disabled={busy || !snapshot.canUndo}
+            aria-label={t("Shell_UndoCtrlZ")}
+            onClick={() => void undo()}
+          >
+            <Icon name="undo" />
           </button>
-          <button className="primary-action" type="button" disabled={busy} onClick={() => void save()}>
-            {t("Shell_SaveCtrlS")}
+          <button
+            className="command"
+            type="button"
+            disabled={busy}
+            aria-label={t("Shell_SaveCtrlS")}
+            onClick={() => void save()}
+          >
+            <Icon name="save" />
           </button>
           <button type="button" aria-pressed={raw} onClick={() => setRaw((value) => !value)}>
             {raw ? t("Review_GoBackToTheSimple") : t("Review_ShowTheSpreadsheetWithThe")}

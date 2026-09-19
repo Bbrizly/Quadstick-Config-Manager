@@ -20,7 +20,7 @@ describe("TASK-036/037 app shell", () => {
   it("renders stable landmarks and localized shell navigation", () => {
     render(<App />);
     expect(screen.getByRole("main")).toHaveAttribute("id", "qcm-main");
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("QuadStick Config Manager");
+    expect(screen.getByRole("heading", { level: 2, name: "Start a profile" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Skip to main content" })).toHaveAttribute("href", "#qcm-main");
 
     const home = screen.getByRole("button", { name: "Home" });
@@ -53,37 +53,29 @@ describe("TASK-036/037 app shell", () => {
     expect(screen.getByRole("button", { name: arCatalog.Shell_Home })).toBeInTheDocument();
   });
 
-  it("traps modal focus, closes on Escape and restores the invoking control", async () => {
+  it("opens settings as an in-shell page and closes with Done", async () => {
     render(<App />);
     const settings = screen.getByRole("button", { name: "Open Settings" });
-    settings.focus();
     fireEvent.click(settings);
-    const dialog = screen.getByRole("dialog", { name: "Settings" });
-    const language = await waitFor(() => screen.getByRole("combobox", { name: "Language" }));
-    const done = screen.getByRole("button", { name: "Done" });
-    expect(dialog).toHaveAttribute("aria-modal", "true");
-    expect(done).toHaveFocus();
-
-    // Done is the last focusable control. Tab wraps to the first, and
-    // Shift+Tab from the first wraps back to Done.
-    fireEvent.keyDown(document, { key: "Tab" });
-    expect(language).toHaveFocus();
-    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
-    expect(done).toHaveFocus();
-
-    fireEvent.keyDown(document, { key: "Escape" });
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(settings).toHaveFocus();
+    expect(settings).toHaveAttribute("aria-pressed", "true");
+    await waitFor(() => screen.getByRole("combobox", { name: "Language" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Settings" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Done" }));
+    await waitFor(() => {
+      expect(screen.queryByRole("heading", { level: 1, name: "Settings" })).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole("heading", { level: 2, name: "Start a profile" })).toBeInTheDocument();
   });
 
   it("keeps minimum targets, reduced motion and forced colors in the substrate", () => {
     expect(tokenCss).toContain("--qcm-control-height: 48px");
     expect(tokenCss).toContain("--qcm-shell-nav-button: 64px");
+    expect(tokenCss).toContain("--qcm-live-tint:");
     expect(tokenCss).toContain("@media (forced-colors: active)");
     expect(tokenCss).toContain("--qcm-focus: Highlight");
     expect(appCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(appCss).toContain("@media (forced-colors: active)");
-    expect(appCss).toContain(".shell-nav-button[aria-current=\"page\"]::after");
+    expect(appCss).toContain(".shell-nav-button.active");
   });
 
   it("has no automated accessibility violations in shell and settings", async () => {

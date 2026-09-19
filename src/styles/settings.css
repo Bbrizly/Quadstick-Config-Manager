@@ -1,0 +1,115 @@
+/* Avalonia SettingsView: page + tab card + 560 field column */
+
+.settings-page {
+  margin: 22px 28px;
+  max-width: 720px;
+}
+
+.settings-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--qcm-space-lg);
+  margin-bottom: 18px;
+}
+
+.settings-title {
+  margin: 0;
+  font-size: var(--qcm-section-size);
+  font-weight: 600;
+}
+
+.settings-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--qcm-space-xs);
+  margin-bottom: var(--qcm-space-lg);
+}
+
+.settings-tab {
+  min-height: var(--qcm-control-height);
+  padding: var(--qcm-pad-control);
+  border: var(--qcm-hairline) solid transparent;
+  background: transparent;
+  color: var(--qcm-text-secondary);
+  font-weight: 600;
+}
+
+.settings-tab[aria-selected="true"] {
+  background: var(--qcm-selection-tint);
+  color: var(--qcm-accent-text);
+  border-color: var(--qcm-accent);
+}
+
+.settings-tab-card {
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
+  padding: 16px 20px;
+}
+
+.settings-fields {
+  display: grid;
+  gap: 16px;
+  max-width: 560px;
+}
+
+.settings-field {
+  display: grid;
+  gap: 4px;
+}
+
+.settings-heading {
+  margin: 8px 0 0;
+  font-size: var(--qcm-subhead-size);
+  font-weight: 700;
+}
+
+.settings-caption {
+  margin: 0;
+  font-size: var(--qcm-small-size);
+  color: var(--qcm-text-secondary);
+  max-width: 560px;
+}
+
+.settings-field label {
+  display: grid;
+  gap: 4px;
+}
+
+.settings-field label.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--qcm-space-sm);
+}
+
+.settings-field select,
+.settings-field input[type="text"],
+.settings-field textarea {
+  min-height: var(--qcm-control-height);
+  width: 100%;
+  padding: var(--qcm-pad-control);
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-control);
+  background: var(--qcm-bg);
+  color: var(--qcm-text);
+}
+
+.settings-field textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.scale-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--qcm-space-md);
+  margin-top: var(--qcm-space-sm);
+}
+
+.scale-preview-actions p {
+  margin: 0;
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+}

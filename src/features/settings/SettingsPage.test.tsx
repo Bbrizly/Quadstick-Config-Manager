@@ -63,6 +63,10 @@ describe("GATE_SOFT settings page", () => {
     renderSettings(client);
 
     await waitFor(() => {
+      expect(screen.getByRole("tab", { name: /Help/u })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole("tab", { name: /Help/u }));
+    await waitFor(() => {
       expect(screen.getByRole("button", { name: /Check for updates/u })).toBeInTheDocument();
     });
     fireEvent.click(screen.getByRole("button", { name: /Check for updates/u }));
@@ -112,6 +116,10 @@ describe("GATE_SOFT settings page", () => {
     await client.updateSettings(1, { usageAnalytics: true });
     const send = vi.spyOn(client, "sendFeedback");
     renderSettings(client);
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: /Contact/u })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole("tab", { name: /Contact/u }));
     await waitFor(() => {
       expect(screen.getByLabelText(/Your feedback/u)).toBeInTheDocument();
     });

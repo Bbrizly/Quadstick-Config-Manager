@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AppShell, type ShellDestination } from "../components/primitives/AppShell";
 import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
+import { Icon } from "../components/primitives/icons";
 import { GoogleDriveSettings, ProfileDriveActions } from "../features/cloud/GoogleDrivePanel";
 import { CommunityProfilesPage } from "../features/community/CommunityProfilesPage";
 import { CrashReportPrompt } from "../features/diagnostics/CrashReportPrompt";
@@ -10,6 +11,7 @@ import { DeviceLibraryPage } from "../features/device/DeviceLibraryPage";
 import { DevicePreferencesPage } from "../features/device/DevicePreferencesPage";
 import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
 import { EditorWorkspace } from "../features/editor/EditorWorkspace";
+import { HomePage } from "../features/home/HomePage";
 import { WorkbookImportReviewDialog } from "../features/import/WorkbookImportReview";
 import { SettingsPage } from "../features/settings/SettingsPage";
 import { TutorialTour } from "../features/tutorial/TutorialTour";
@@ -52,6 +54,19 @@ interface AppProps {
 
 function isDevicePreferences(snapshot: EditorSnapshot): boolean {
   return snapshot.source.kind === "device" && snapshot.source.name.toLowerCase() === "prefs.csv";
+}
+
+function snapshotTitle(snapshot: EditorSnapshot): string {
+  if (snapshot.title.trim() !== "") return snapshot.title;
+  switch (snapshot.source.kind) {
+    case "local":
+    case "device":
+      return snapshot.source.name;
+    case "community":
+      return snapshot.source.catalogId;
+    case "new":
+      return "untitled.csv";
+  }
 }
 
 function LocalizedApp({ client }: { readonly client: QcmClient }) {
@@ -372,21 +387,62 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   );
 
   let content;
-  if (activeDestination === "home" && editor !== null) {
+  if (settingsOpen) {
+    content = (
+      <SettingsPage
+        client={client}
+        onThemeChange={setThemePreference}
+        onDone={closeSettings}
+        extra={
+          <GoogleDriveSettings
+            client={client}
+            onReview={(review) => {
+              setWorkbookReview(review);
+              setSettingsOpen(false);
+              setMessage("");
+            }}
+          />
+        }
+      />
+    );
+  } else if (activeDestination === "home" && editor !== null) {
     content = (
       <section className="editor-route" aria-label={t("Shell_Profile")}>
-        <div className="editor-route-actions">
-          {client.exportProfileXlsx === undefined ? null : (
-            <button type="button" disabled={closing || workbookExportBusy} onClick={() => void exportWorkbook()}>
-              {t("Rewrite_SaveXlsx")}
+        <div className="editorchrome">
+          <div className="editorchrome-left">
+            <span className="secondary">{t("Shell_Profile")}</span>
+            <span className="editor-chrome-title">{snapshotTitle(editor)}</span>
+          </div>
+          <div className="editorchrome-right">
+            {client.exportProfileXlsx === undefined ? null : (
+              <button
+                className="command quiet"
+                type="button"
+                disabled={closing || workbookExportBusy}
+                aria-label={t("Rewrite_SaveXlsx")}
+                onClick={() => void exportWorkbook()}
+              >
+                <Icon name="share" />
+              </button>
+            )}
+            <button
+              className="primary install"
+              type="button"
+              disabled={closing}
+              onClick={() => setInstallOpen(true)}
+            >
+              <Icon name="install" />
+              <span>{t("Shell_InstallToQuadStick")}</span>
             </button>
-          )}
-          <button type="button" disabled={closing} onClick={() => setInstallOpen(true)}>
-            {t("Shell_InstallToQuadStick")}
-          </button>
-          <button type="button" disabled={closing} onClick={() => void requestEditorClose("home")}>
-            {t("Community_Close")}
-          </button>
+            <button
+              className="quiet"
+              type="button"
+              disabled={closing}
+              onClick={() => void requestEditorClose("home")}
+            >
+              {t("Community_Close")}
+            </button>
+          </div>
         </div>
         <ProfileDriveActions
           client={client}
@@ -402,40 +458,21 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     );
   } else if (activeDestination === "home") {
     content = (
-      <section className="shell-placeholder home-start" aria-labelledby="page-title">
-        <h1 id="page-title">{t(copy.title)}</h1>
-        <p data-testid="boot-state">{t(copy.detail)}</p>
-        {rescue === null ? null : (
-          <section className="rescue-offer" aria-label={t("Shell_OpenRecoveredWork")}>
-            <p>{t("Main_UnsavedWorkFromLastTime", [rescue.displayName])}</p>
-            <div className="home-start-actions">
-              <button className="primary-action" type="button" onClick={() => void openRescue()}>
-                {t("Shell_OpenRecoveredWork")}
-              </button>
-              <button
-                type="button"
-                aria-label={t("Shell_DiscardTheRecoveredWorkPermanently")}
-                onClick={() => void dismissRescue()}
-              >
-                {t("Shell_Dismiss")}
-              </button>
-            </div>
-          </section>
-        )}
-        <div className="home-start-actions">
-          <button className="primary-action" type="button" onClick={() => void newProfile()}>
-            {t("Shell_NewProfile")}
-          </button>
-          <button type="button" onClick={() => void openProfile()}>
-            {t("Shell_OpenAProfileFile")}
-          </button>
-          {client.chooseAndImportWorkbook !== undefined ? (
-            <button type="button" disabled={workbookBusy} onClick={() => void importWorkbook()}>
-              {t("Community_Import")}
-            </button>
-          ) : null}
-        </div>
-      </section>
+      <HomePage
+        client={client}
+        rescue={rescue}
+        workbookBusy={workbookBusy}
+        onNewProfile={() => void newProfile()}
+        onOpenProfile={() => void openProfile()}
+        onImportWorkbook={() => void importWorkbook()}
+        onOpenCommunity={() => setActiveDestination("community")}
+        onManageDevice={() => setActiveDestination("device")}
+        onOpenHelp={() => {
+          setSettingsOpen(true);
+        }}
+        onOpenRescue={() => void openRescue()}
+        onDismissRescue={() => void dismissRescue()}
+      />
     );
   } else if (activeDestination === "device" && devicePreferences !== null) {
     content = (
@@ -471,10 +508,14 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     <>
       <AppShell
         activeDestination={activeDestination}
-        onNavigate={navigate}
+        onNavigate={(destination) => {
+          if (settingsOpen) setSettingsOpen(false);
+          navigate(destination);
+        }}
         themePreference={themePreference}
         onThemePreferenceChange={setThemePreference}
-        onOpenSettings={() => setSettingsOpen(true)}
+        onOpenSettings={() => setSettingsOpen((open) => !open)}
+        settingsOpen={settingsOpen}
       >
         {content}
       </AppShell>
@@ -510,26 +551,6 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         onCancel={() => void cancelWorkbook()}
       />
       <Dialog
-        open={settingsOpen}
-        title={t("Shell_Settings")}
-        onClose={closeSettings}
-        actions={
-          <button className="primary-action" type="button" data-autofocus onClick={closeSettings}>
-            {t("Main_Done")}
-          </button>
-        }
-      >
-        <SettingsPage client={client} onThemeChange={setThemePreference} />
-        <GoogleDriveSettings
-          client={client}
-          onReview={(review) => {
-            setWorkbookReview(review);
-            setSettingsOpen(false);
-            setMessage("");
-          }}
-        />
-      </Dialog>
-      <Dialog
         open={closePromptOpen}
         title={t("Shell_Profile")}
         onClose={cancelClose}
@@ -538,7 +559,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
             <button type="button" disabled={closing} onClick={cancelClose}>{t("Device_Cancel")}</button>
             <button type="button" disabled={closing} onClick={() => void discardAndClose()}>{t("Main_DonTSave")}</button>
             {closePromptFor === "prefs" ? null : (
-              <button className="primary-action" type="button" data-autofocus disabled={closing} onClick={() => void saveAndClose()}>
+              <button className="primary" type="button" data-autofocus disabled={closing} onClick={() => void saveAndClose()}>
                 {t("Shell_SaveCtrlS")}
               </button>
             )}
