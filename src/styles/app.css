@@ -77,8 +77,21 @@ button:hover {
   border-color: var(--qcm-accent);
 }
 
+button.zone-callout:hover,
+button.zone:hover,
+button.zone-rail-row:hover {
+  border-color: var(--qcm-border);
+}
+
 button:active {
   transform: scale(0.985);
+}
+
+button.zone-callout:active,
+button.zone:active,
+button.sentence-card:active,
+button.row-chip:active {
+  transform: none;
 }
 
 button:focus-visible,

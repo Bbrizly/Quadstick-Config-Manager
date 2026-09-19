@@ -523,7 +523,7 @@ export function QuadStickVisualizer({
         <div className="joystick-summary">
           <span>{t("Main_Movement")}</span>
           {summary.roleToken !== "" ? (
-            <OutputPrompt token={summary.roleToken} label={t(summary.roleKey)} size={28} />
+            <OutputPrompt token={summary.roleToken} label={t(summary.roleKey)} size={30} />
           ) : null}
           <strong>{t(summary.roleKey)}</strong>
           {summary.extraActionCount > 0 ? (
@@ -1063,17 +1063,38 @@ export function QuadStickVisualizer({
                   const joy = diagram.hotspots.find((spot) => spot.zone === "joystick");
                   if (joy === undefined) return null;
                   const at = onPhoto(diagram, joy.pointX, joy.pointY);
-                  const x = diagram.photoX + at.x + live.status.motion.x * 30;
-                  const y = photoY + at.y + live.status.motion.y * 30;
+                  const homeX = diagram.photoX + at.x;
+                  const homeY = photoY + at.y;
+                  const reach = 20;
+                  const x = homeX + live.status.motion.x * reach;
+                  const y = homeY + live.status.motion.y * reach;
                   return (
-                    <span
-                      className="live-stick-dot"
-                      aria-hidden="true"
-                      style={{
-                        left: `${String((x / STAGE_W) * 100)}%`,
-                        top: `${String((y / stageH) * 100)}%`,
-                      }}
-                    />
+                    <>
+                      <span
+                        className="live-stick-home"
+                        aria-hidden="true"
+                        style={{
+                          left: `${String((homeX / STAGE_W) * 100)}%`,
+                          top: `${String((homeY / stageH) * 100)}%`,
+                        }}
+                      />
+                      <span
+                        className="live-stick-dot halo"
+                        aria-hidden="true"
+                        style={{
+                          left: `${String((x / STAGE_W) * 100)}%`,
+                          top: `${String((y / stageH) * 100)}%`,
+                        }}
+                      />
+                      <span
+                        className="live-stick-dot core"
+                        aria-hidden="true"
+                        style={{
+                          left: `${String((x / STAGE_W) * 100)}%`,
+                          top: `${String((y / stageH) * 100)}%`,
+                        }}
+                      />
+                    </>
                   );
                 })()
               : null}

@@ -3,21 +3,20 @@ import {
   summaryActionText,
   type GestureSummary,
 } from "./deviceSummary";
-import { OutputPrompt, promptSrc, requiresTextLabel } from "./OutputPrompt";
+import { OutputPrompt, hasPromptArt, requiresTextLabel } from "./OutputPrompt";
 
 export interface GestureTableProps {
   readonly rows: readonly GestureSummary[];
   readonly liveRows?: ReadonlySet<number>;
 }
 
-/** Avalonia GestureTable: read-only mini-table inside a zone callout. */
+/** Avalonia GestureTable: name | 10px gutter with pip | action. */
 export function GestureTable({ rows, liveRows }: GestureTableProps) {
   const { t, plural } = useI18n();
 
   return (
     <div className="gesture-table" role="table" aria-label={t("Main_InputsSipsPuffsJoystick")}>
-      <div className="gesture-gutter" aria-hidden="true" />
-      {rows.map((summary) => {
+      {rows.map((summary, index) => {
         const spoken = summaryActionText(
           summary,
           (count) => plural("Count_Action", count, [count]),
@@ -35,7 +34,7 @@ export function GestureTable({ rows, liveRows }: GestureTableProps) {
             (action) =>
               !action.hasCustomName &&
               !requiresTextLabel(action.output) &&
-              promptSrc(action.output) !== null,
+              hasPromptArt(action.output),
           );
 
         return (
@@ -45,13 +44,16 @@ export function GestureTable({ rows, liveRows }: GestureTableProps) {
             key={`${summary.zone}-${summary.inputToken}`}
             data-live={lit ? "true" : undefined}
           >
-            {lit ? (
-              <span className="gesture-pip" role="img" aria-label={t("Main_SendingNow")} />
-            ) : (
-              <span className="gesture-pip-slot" aria-hidden="true" />
-            )}
+            {index > 0 ? <span className="gesture-rule" aria-hidden="true" /> : null}
             <span className="gesture-name" role="cell">
               {t(summary.friendlyGestureKey)}
+            </span>
+            <span className="gesture-gutter-cell" aria-hidden="true">
+              {lit ? (
+                <span className="gesture-pip" role="img" aria-label={t("Main_SendingNow")} />
+              ) : summary.isMapped ? (
+                <span className="gesture-pip-slot" />
+              ) : null}
             </span>
             <span
               className={summary.isMapped ? "gesture-action" : "gesture-action muted"}
@@ -60,10 +62,10 @@ export function GestureTable({ rows, liveRows }: GestureTableProps) {
             >
               {showArt ? (
                 <span className="gesture-prompts">
-                  {named.map((action, index) => (
+                  {named.map((action, artIndex) => (
                     <span className="gesture-prompt-item" key={`${action.row}-${action.output}`}>
-                      {index > 0 ? <span className="gesture-dot" aria-hidden="true">·</span> : null}
-                      <OutputPrompt token={action.output} label={action.friendlyOutput} size={20} />
+                      {artIndex > 0 ? <span className="gesture-dot" aria-hidden="true">·</span> : null}
+                      <OutputPrompt token={action.output} label={action.friendlyOutput} size={30} />
                     </span>
                   ))}
                 </span>

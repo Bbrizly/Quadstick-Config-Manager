@@ -72,7 +72,7 @@ export function SentenceCard({ row, zoneId, selected, live = false, onSelect }: 
       <span className="sentence-grid" aria-hidden="true">
         <span className="sentence-word">{t("Main_PressVerb")}</span>
         <span className="pill tint-output">
-          <OutputPrompt token={output} label={outputLabel} size={18} />
+                      <OutputPrompt token={output} label={outputLabel} size={30} />
           {promptSrc(output) !== null ? (
             <span className="visually-hidden">{outputLabel}</span>
           ) : null}
