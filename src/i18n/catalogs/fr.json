@@ -1052,6 +1052,7 @@
   "Shell_Device": "Appareil",
   "Shell_DiscardTheRecoveredWorkPermanently": "Abandonner définitivement le travail récupéré",
   "Shell_Dismiss": "Ignorer",
+  "Shell_EachOfTheseIsAWhole": "Chacun de ces éléments est un fichier de jeu entier, pas un mode.",
   "Shell_EditModes": "Modifier les modes",
   "Shell_EditModesAddRenameReorder": "Modifier les modes : ajouter, renommer, réordonner et supprimer",
   "Shell_FixFirstProblem": "Corriger le premier problème",

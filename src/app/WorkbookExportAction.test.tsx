@@ -22,7 +22,11 @@ describe("TASK-040B editor XLSX export", () => {
     const client = new ExportClient();
     render(<App client={client} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "New profile" }));
+    fireEvent.click(
+      screen.getAllByRole("button", {
+        name: "Create a new profile from the factory default template",
+      })[0]!,
+    );
     await screen.findByRole("heading", { level: 1, name: "untitled.csv" });
 
     fireEvent.click(screen.getByRole("button", { name: "Save .xlsx" }));
@@ -37,7 +41,11 @@ describe("TASK-040B editor XLSX export", () => {
     client.exportResult = null;
     render(<App client={client} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "New profile" }));
+    fireEvent.click(
+      screen.getAllByRole("button", {
+        name: "Create a new profile from the factory default template",
+      })[0]!,
+    );
     await screen.findByRole("heading", { level: 1, name: "untitled.csv" });
     fireEvent.click(screen.getByRole("button", { name: "Save .xlsx" }));
 

@@ -1,18 +1,26 @@
 /* Avalonia HomeView: homepanel / homeaction / card */
 
 .home-view {
-  margin: 22px 28px;
-  max-width: 1120px;
-  margin-inline: auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(1120px + 56px);
+  margin: 22px auto;
+  padding: 0 28px 32px;
   display: grid;
   gap: 30px;
-  padding-bottom: var(--qcm-space-2xl);
 }
 
 .homepanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   background: transparent;
   border: 0;
-  padding: 4px 0;
+  padding: 0 4px;
+}
+
+.homepanel.start {
+  gap: 14px;
 }
 
 .homepanel-header {
@@ -20,15 +28,24 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
+  margin: 0;
+}
+
+.homepanel.device .homepanel-header {
+  gap: 14px;
 }
 
 .homepanel-header .section {
   margin: 0;
 }
 
+.homepanel-lead {
+  margin: 0;
+  color: var(--qcm-text-secondary);
+}
+
 .homepanel-caption {
-  margin: 0 0 12px;
+  margin: 0;
   font-size: var(--qcm-body-size);
   color: var(--qcm-text-secondary);
 }
@@ -43,7 +60,7 @@
 .homeaction {
   min-width: 154px;
   min-height: 104px;
-  margin: 0 0 10px 10px;
+  margin: 0 10px 10px 0;
   padding: var(--qcm-space-md);
   border-radius: var(--qcm-radius-panel);
   font-weight: 600;
@@ -90,7 +107,7 @@
 }
 
 .card {
-  margin: 0 0 14px 14px;
+  margin: 0 14px 14px 0;
   min-width: var(--qcm-card-width);
   min-height: var(--qcm-card-height);
   padding: var(--qcm-pad-card);
@@ -118,7 +135,6 @@
   font-size: var(--qcm-subhead-size);
   font-weight: 700;
   color: #fff;
-  background: var(--qcm-accent);
 }
 
 .card-body {
@@ -159,6 +175,19 @@
   gap: 10px;
 }
 
+.library-empty-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.manage-files {
+  font-size: var(--qcm-small-size);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .sheets-row {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -169,7 +198,7 @@
 
 .sheets-row input {
   min-height: var(--qcm-control-height);
-  min-width: 420px;
+  min-width: 0;
   width: 100%;
   padding: var(--qcm-pad-control);
   border: var(--qcm-hairline) solid var(--qcm-border);
@@ -193,22 +222,30 @@
 }
 
 .rescue-offer {
-  margin-block: var(--qcm-space-md);
-  padding: var(--qcm-space-md);
-  border: var(--qcm-hairline) solid var(--qcm-warning);
-  border-radius: var(--qcm-radius-panel);
-  background: var(--qcm-surface-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
 }
 
-.rescue-offer .home-start-actions,
+.rescue-offer p {
+  margin: 0;
+}
+
 .rescue-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: var(--qcm-space-sm);
 }
 
 .device-empty {
   margin: 0;
+  font-size: var(--qcm-body-size);
   color: var(--qcm-text-secondary);
+}
+
+@media (max-width: 520px) {
+  .sheets-row {
+    grid-template-columns: 1fr;
+  }
 }

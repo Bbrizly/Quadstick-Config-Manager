@@ -1052,6 +1052,7 @@
   "Shell_Device": "장치",
   "Shell_DiscardTheRecoveredWorkPermanently": "복구된 작업을 영구적으로 삭제",
   "Shell_Dismiss": "닫기",
+  "Shell_EachOfTheseIsAWhole": "여기 있는 것은 모드가 아니라 각각 하나의 게임 파일입니다.",
   "Shell_EditModes": "모드 편집",
   "Shell_EditModesAddRenameReorder": "모드 편집: 추가, 이름 변경, 순서 변경, 삭제",
   "Shell_FixFirstProblem": "첫 번째 문제 수정",

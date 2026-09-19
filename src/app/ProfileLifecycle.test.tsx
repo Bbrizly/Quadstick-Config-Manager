@@ -6,7 +6,11 @@ import { App } from "./App";
 
 async function openLocal(client: MockQcmClient, name = "Racing.csv"): Promise<void> {
   client.willOpen(name);
-  fireEvent.click(screen.getByRole("button", { name: "Open a profile file" }));
+  fireEvent.click(
+    screen.getAllByRole("button", {
+      name: "Open a profile CSV file from your computer",
+    })[0]!,
+  );
   await screen.findByRole("heading", { level: 1, name });
 }
 
@@ -76,7 +80,11 @@ describe("TASK-040A local profile lifecycle", () => {
     client.willSaveAs("Saved.csv");
     render(<App client={client} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "New profile" }));
+    fireEvent.click(
+      screen.getAllByRole("button", {
+        name: "Create a new profile from the factory default template",
+      })[0]!,
+    );
     await screen.findByRole("heading", { level: 1, name: "untitled.csv" });
     await dirtyCurrentProfile("Saved mode");
 

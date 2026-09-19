@@ -1052,6 +1052,7 @@
   "Shell_Device": "デバイス",
   "Shell_DiscardTheRecoveredWorkPermanently": "復元された作業を完全に破棄",
   "Shell_Dismiss": "閉じる",
+  "Shell_EachOfTheseIsAWhole": "ここに並ぶのはモードではなく、それぞれが 1 つのゲームファイルです。",
   "Shell_EditModes": "モードを編集",
   "Shell_EditModesAddRenameReorder": "モードを編集: 追加、名前変更、並べ替え、削除",
   "Shell_FixFirstProblem": "最初の問題を修正",

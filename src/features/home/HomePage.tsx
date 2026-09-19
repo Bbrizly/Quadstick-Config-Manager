@@ -18,20 +18,30 @@ export interface HomePageProps {
   readonly onDismissRescue: () => void;
 }
 
-function initials(name: string): string {
-  const cleaned = name.replace(/\.csv$/iu, "").trim();
-  const parts = cleaned.split(/[\s_-]+/u).filter(Boolean);
-  if (parts.length >= 2) {
-    return `${parts[0]!.slice(0, 1)}${parts[1]!.slice(0, 1)}`.toUpperCase();
+/** Avalonia MainWindow.TileColors — fixed swatches, FNV name hash. */
+const TILE_COLORS = [
+  "#1F4E79", "#6B2D5C", "#1B5E4A", "#8A3A1E",
+  "#3B3577", "#7A2E2E", "#245563", "#5A4414",
+  "#4A2E6B", "#0F5132", "#8A2B4A", "#34495E",
+] as const;
+
+function tileColorFor(name: string): string {
+  let h = 2166136261;
+  for (const ch of name.toLowerCase()) {
+    h ^= ch.charCodeAt(0);
+    h = Math.imul(h, 16777619);
   }
-  return cleaned.slice(0, 2).toUpperCase() || "?";
+  return TILE_COLORS[(h >>> 0) % TILE_COLORS.length]!;
 }
 
-function hueFor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i += 1) hash = (hash * 31 + name.charCodeAt(i)) | 0;
-  const hue = Math.abs(hash) % 360;
-  return `hsl(${String(hue)} 42% 42%)`;
+function initials(name: string): string {
+  const cleaned = name.replace(/\.csv$/iu, "").trim();
+  const words = cleaned
+    .split(/[\s_\-.+]+/u)
+    .filter((word) => word.length > 0 && /[0-9A-Za-z]/u.test(word[0]!));
+  if (words.length === 0) return "?";
+  if (words.length === 1) return words[0]!.slice(0, 2).toUpperCase();
+  return `${words[0]!.slice(0, 1)}${words[1]!.slice(0, 1)}`.toUpperCase();
 }
 
 export function HomePage({
@@ -69,15 +79,21 @@ export function HomePage({
 
   return (
     <div className="home-view">
-      <section className="homepanel" aria-labelledby="home-start-title">
+      <section className="homepanel start" aria-labelledby="home-start-title">
         <div className="homepanel-header">
           <h2 className="section" id="home-start-title">
             {t("Shell_StartAProfile")}
           </h2>
+          <p className="homepanel-lead">{t("Shell_BuildOpenOrFindA")}</p>
         </div>
         <div className="start-cards">
-          <button className="homeaction featured" type="button" onClick={onNewProfile}>
-            <Icon name="add" />
+          <button
+            className="homeaction featured"
+            type="button"
+            aria-label={t("Shell_CreateANewProfileFrom")}
+            onClick={onNewProfile}
+          >
+            <Icon name="add" size={32} />
             <span>{t("Shell_NewProfile")}</span>
           </button>
           <button
@@ -86,8 +102,8 @@ export function HomePage({
             aria-label={t("Shell_OpenAProfileCSVFile")}
             onClick={onOpenProfile}
           >
-            <Icon name="folder" />
-            <span>{t("Shell_OpenAProfileFile")}</span>
+            <Icon name="folder" size={28} />
+            <span>{t("Shell_OpenAFile")}</span>
           </button>
           <button
             className="homeaction"
@@ -95,20 +111,25 @@ export function HomePage({
             aria-label={t("Shell_StartANewProfileFrom")}
             onClick={onNewProfile}
           >
-            <Icon name="template" />
-            <span>{t("Main_StartFromATemplate")}</span>
-          </button>
-          <button className="homeaction" type="button" onClick={onOpenCommunity}>
-            <Icon name="community" />
-            <span>{t("Shell_Community")}</span>
+            <Icon name="template" size={28} />
+            <span>{t("Shell_UseTemplate")}</span>
           </button>
           <button
             className="homeaction"
             type="button"
-            aria-label={t("Shell_HowItWorksF1")}
+            aria-label={t("Shell_BrowseTheCommunityListOf")}
+            onClick={onOpenCommunity}
+          >
+            <Icon name="community" size={28} />
+            <span>{t("Shell_CommunityProfiles")}</span>
+          </button>
+          <button
+            className="homeaction"
+            type="button"
+            aria-label={t("Shell_OpenTheQuickGuideThat")}
             onClick={onOpenHelp}
           >
-            <Icon name="help" />
+            <Icon name="help" size={28} />
             <span>{t("Shell_HowItWorks")}</span>
           </button>
         </div>
@@ -134,26 +155,38 @@ export function HomePage({
         </p>
       </section>
 
-      <section className="homepanel" aria-labelledby="home-device-title">
+      <section className="homepanel device" aria-labelledby="home-device-title">
         <div className="homepanel-header">
           <h2 className="section" id="home-device-title">
             {t("Shell_OnYourQuadStick")}
           </h2>
-          <button className="icon quiet" type="button" aria-label={t("Shell_HowItWorks")} onClick={onOpenHelp}>
-            <Icon name="help" size={18} />
+          <button
+            className="icon quiet"
+            type="button"
+            title={t("Shell_OnYourQuadStick")}
+            aria-label={t("Shell_OnYourQuadStick")}
+            onClick={onOpenHelp}
+          >
+            ?
           </button>
-          <button className="quiet" type="button" onClick={onManageDevice}>
+          <button
+            className="quiet manage-files"
+            type="button"
+            aria-label={t("Shell_ManageTheProfileFilesOn")}
+            onClick={onManageDevice}
+          >
             <Icon name="files" size={18} />
             <span>{t("Shell_ManageFiles")}</span>
           </button>
         </div>
+        <p className="homepanel-caption">{t("Shell_EachOfTheseIsAWhole")}</p>
         {deviceNames.length === 0 ? (
-          <p className="device-empty">{t("Shell_ProfilesYouSaveWillShow")}</p>
+          <p className="device-empty">{t("Shell_PlugInYourQuadStickTo")}</p>
         ) : (
           <div className="card-grid">
             {deviceNames.map((name) => (
               <button className="card" type="button" key={name} onClick={onManageDevice}>
-                <span className="card-initials" style={{ background: hueFor(name) }}>
+                <span className="card-initials" style={{ background: tileColorFor(name) }}>
                   {initials(name)}
                 </span>
                 <span className="card-body">
@@ -175,18 +208,23 @@ export function HomePage({
         <div className="library-empty">
           <p className="homepanel-caption">{t("Shell_ProfilesYouSaveWillShow")}</p>
           <div className="library-empty-actions">
-            <button type="button" aria-label={t("Shell_StartANewProfileFrom")} onClick={onNewProfile}>
+            <button type="button" aria-label={t("Shell_CreateANewProfileFrom")} onClick={onNewProfile}>
               <Icon name="add" size={18} />
               <span>{t("Shell_NewProfile")}</span>
             </button>
-            <button type="button" onClick={onOpenProfile}>
+            <button type="button" aria-label={t("Shell_OpenAProfileCSVFile")} onClick={onOpenProfile}>
               <Icon name="folder" size={18} />
-              <span>{t("Shell_OpenAProfileFile")}</span>
+              <span>{t("Shell_OpenAFile")}</span>
             </button>
             {client.chooseAndImportWorkbook === undefined ? null : (
-              <button type="button" disabled={workbookBusy} onClick={onImportWorkbook}>
+              <button
+                type="button"
+                disabled={workbookBusy}
+                aria-label={t("Shell_ImportTheProfileFromThe")}
+                onClick={onImportWorkbook}
+              >
                 <Icon name="link" size={18} />
-                <span>{t("Community_Import")}</span>
+                <span>{t("Shell_ImportFromSheets")}</span>
               </button>
             )}
           </div>
@@ -211,10 +249,11 @@ export function HomePage({
             className="primary sheets-import"
             type="button"
             disabled={sheetUrl.trim() === "" || workbookBusy}
+            aria-label={t("Shell_ImportTheProfileFromThe")}
             onClick={onImportWorkbook}
           >
             <Icon name="link" size={18} />
-            <span>{t("Community_Import")}</span>
+            <span>{t("Shell_Import")}</span>
           </button>
         </div>
       </section>

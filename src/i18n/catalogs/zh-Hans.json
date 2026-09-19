@@ -1052,6 +1052,7 @@
   "Shell_Device": "设备",
   "Shell_DiscardTheRecoveredWorkPermanently": "永久放弃已恢复的工作",
   "Shell_Dismiss": "关闭",
+  "Shell_EachOfTheseIsAWhole": "这里的每一项都是一个完整的游戏文件，不是模式。",
   "Shell_EditModes": "编辑模式",
   "Shell_EditModesAddRenameReorder": "编辑模式：添加、重命名、重新排序和删除",
   "Shell_FixFirstProblem": "修复第一个问题",

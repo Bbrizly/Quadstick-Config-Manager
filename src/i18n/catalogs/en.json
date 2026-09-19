@@ -1052,6 +1052,7 @@
   "Shell_Device": "Device",
   "Shell_DiscardTheRecoveredWorkPermanently": "Discard the recovered work permanently",
   "Shell_Dismiss": "Dismiss",
+  "Shell_EachOfTheseIsAWhole": "Each of these is a whole game file, not a mode.",
   "Shell_EditModes": "Edit modes",
   "Shell_EditModesAddRenameReorder": "Edit modes: add, rename, reorder and delete",
   "Shell_FixFirstProblem": "Fix first problem",

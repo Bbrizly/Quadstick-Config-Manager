@@ -77,18 +77,31 @@ textarea:focus-visible {
 .primary:hover,
 .primary-action:hover {
   background: var(--qcm-accent);
-  border-color: var(--qcm-accent-text);
-  filter: brightness(1.05);
+  border-color: var(--qcm-accent);
+  color: var(--qcm-on-accent);
+  filter: none;
+}
+
+.primary svg,
+.primary-action svg {
+  color: var(--qcm-on-accent);
 }
 
 .quiet {
   background: transparent;
   border-color: transparent;
+  color: var(--qcm-accent-text);
+  font-weight: 600;
+}
+
+.quiet svg {
+  color: var(--qcm-accent-text);
 }
 
 .quiet:hover {
   background: var(--qcm-surface-subtle);
   border-color: transparent;
+  color: var(--qcm-accent-text);
 }
 
 .icon {
@@ -172,7 +185,7 @@ textarea:focus-visible {
 .appchrome {
   min-height: 86px;
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto minmax(220px, 1fr);
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: var(--qcm-space-lg);
   padding: 11px 20px;
@@ -195,7 +208,7 @@ textarea:focus-visible {
 
 .shell-brand:hover,
 .shellbrandbutton:hover {
-  background: transparent;
+  background: var(--qcm-surface);
   border-color: transparent;
 }
 
@@ -267,6 +280,14 @@ textarea:focus-visible {
   font-weight: 600;
 }
 
+.shell-nav-button.active svg,
+.shell-nav-button[aria-current="page"] svg,
+.shellnav.active svg,
+.shell-settings-button.active svg,
+.shellutility.active svg {
+  color: var(--qcm-accent-text);
+}
+
 .shell-utilities {
   justify-self: end;
   display: flex;
@@ -276,6 +297,7 @@ textarea:focus-visible {
 
 .appearance-picker {
   min-width: 112px;
+  min-height: var(--qcm-control-height);
   padding: 0 var(--qcm-space-md);
   border: var(--qcm-hairline) solid var(--qcm-border);
   border-radius: var(--qcm-radius-control);

@@ -1052,6 +1052,7 @@
   "Shell_Device": "Gerät",
   "Shell_DiscardTheRecoveredWorkPermanently": "Die wiederhergestellte Arbeit endgültig verwerfen",
   "Shell_Dismiss": "Schließen",
+  "Shell_EachOfTheseIsAWhole": "Jede davon ist eine ganze Spieldatei, kein Modus.",
   "Shell_EditModes": "Modi bearbeiten",
   "Shell_EditModesAddRenameReorder": "Modi bearbeiten: hinzufügen, umbenennen, neu anordnen und löschen",
   "Shell_FixFirstProblem": "Erstes Problem beheben",
