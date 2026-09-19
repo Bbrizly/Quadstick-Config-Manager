@@ -23,9 +23,76 @@ export interface GestureAction {
   readonly row: number;
   readonly output: string;
   readonly friendlyOutput: string;
+  /** True when column L named the action (Avalonia ActionName). */
+  readonly hasCustomName: boolean;
   readonly functionName: string;
   readonly isSupport: boolean;
   readonly inputs: readonly string[];
+}
+
+/** Mode-sheet preference overrides are not physical bindings (Vocab.PreferenceOverrides). */
+const PREFERENCE_OVERRIDES = new Set([
+  "sip_puff_threshold_soft",
+  "sip_puff_threshold",
+  "sip_puff_maximum",
+  "sip_puff_delay_soft",
+  "sip_puff_delay_hard",
+  "sip_threshold_soft",
+  "sip_threshold",
+  "sip_maximum",
+  "puff_threshold_soft",
+  "puff_threshold",
+  "puff_maximum",
+  "joystick_deflection_minimum",
+  "joystick_deflection_maximum",
+  "joystick_warning",
+  "joystick_alarm",
+  "joystick_D_Pad_inner",
+  "joystick_D_Pad_outer",
+  "joystick_dead_zone_shape",
+  "anti_dead_zone",
+  "volume",
+  "brightness",
+  "watchdog_disable",
+  "bluetooth_device_mode",
+  "bluetooth_authentication_mode",
+  "bluetooth_connection_mode",
+  "lip_position_minimum",
+  "lip_position_maximum",
+  "mouse_speed",
+  "mouse_response_curve",
+  "debug",
+  "deflection_multiplier_up",
+  "deflection_multiplier_down",
+  "deflection_multiplier_left",
+  "deflection_multiplier_right",
+  "usb_1_multiplier_right",
+  "usb_1_multiplier_left",
+  "usb_1_multiplier_down",
+  "usb_1_multiplier_up",
+  "usb_2_multiplier_right",
+  "usb_2_multiplier_left",
+  "usb_2_multiplier_down",
+  "usb_2_multiplier_up",
+  "usb_1_dead_zone",
+  "usb_2_dead_zone",
+  "enable_usb_a_device",
+  "enable_usb_a_host",
+  "enable_swap_inputs",
+  "enable_select_files",
+  "enable_DS3_emulation",
+  "enable_auto_zero",
+  "enable_left_side_tube",
+  "enable_usb_comm",
+  "enable_rumble",
+  "bluetooth_throttle",
+  "bluetooth_remote_address",
+  "bluetooth_remote_adapter",
+  "titan_two",
+]);
+
+export function isPreferenceOverride(output: string): boolean {
+  return PREFERENCE_OVERRIDES.has(output);
 }
 
 export interface GestureSummary {
@@ -159,6 +226,8 @@ function actionName(cells: readonly string[]): string {
 
 function physicalBindings(rows: readonly BindingCells[], zone: ZoneId): BindingCells[] {
   return rows.filter((row) => {
+    const output = row.cells[0]?.trim() ?? "";
+    if (isPreferenceOverride(output)) return false;
     const inputs = rowInputs(row.cells);
     if (inputs.length === 0) return false;
     return inputs.some((input) => zoneOf(input) === zone);
@@ -173,6 +242,7 @@ function toAction(row: BindingCells): GestureAction {
     row: row.row,
     output,
     friendlyOutput: name.length > 0 ? name : tokenLabel(output),
+    hasCustomName: name.length > 0,
     functionName: functionName(fn),
     isSupport: functionName(fn) === "force_off",
     inputs: rowInputs(row.cells),

@@ -3,7 +3,7 @@ import {
   summaryActionText,
   type GestureSummary,
 } from "./deviceSummary";
-import { OutputPrompt, promptSrc } from "./OutputPrompt";
+import { OutputPrompt, promptSrc, requiresTextLabel } from "./OutputPrompt";
 
 export interface GestureTableProps {
   readonly rows: readonly GestureSummary[];
@@ -31,7 +31,12 @@ export function GestureTable({ rows, liveRows }: GestureTableProps) {
           !summary.hasComplexBehavior &&
           named.length > 0 &&
           named.length <= 4 &&
-          named.every((action) => promptSrc(action.output) !== null);
+          named.every(
+            (action) =>
+              !action.hasCustomName &&
+              !requiresTextLabel(action.output) &&
+              promptSrc(action.output) !== null,
+          );
 
         return (
           <div

@@ -14,6 +14,13 @@
   gap: var(--qcm-space-md);
 }
 
+.visualizer-header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--qcm-space-sm);
+}
+
 .visualizer-header h2,
 .visualizer-header p {
   margin: 0;
@@ -31,14 +38,16 @@
   font-size: var(--qcm-small-size);
 }
 
-.practice-toggle {
+.practice-toggle,
+.combo-toggle {
   flex: 0 0 auto;
   min-width: 0;
   min-height: var(--qcm-control-height);
   padding: 8px 14px;
 }
 
-.practice-toggle.active {
+.practice-toggle.active,
+.combo-toggle.active {
   border-color: var(--qcm-accent);
   background: var(--qcm-selection-tint);
   color: var(--qcm-accent-text);
@@ -61,10 +70,20 @@
   margin-inline: auto;
 }
 
+.photo-frame {
+  pointer-events: none;
+}
+
 .quadstick-photo {
-  position: absolute;
-  object-fit: fill;
   user-select: none;
+  pointer-events: none;
+}
+
+.mode-light {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
@@ -72,6 +91,73 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+}
+
+.hotspot-group.faded {
+  opacity: 0.3;
+}
+
+.combo-highlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.combo-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.combo-link {
+  stroke: var(--qcm-accent);
+  stroke-width: 4;
+  opacity: 0.7;
+}
+
+.combo-ring {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  margin-left: -19px;
+  margin-top: -19px;
+  border-radius: 50%;
+  border: 7px solid var(--qcm-focus, #fff);
+  box-shadow:
+    0 0 0 5px var(--qcm-bg),
+    0 0 0 9px var(--qcm-accent);
+  pointer-events: none;
+}
+
+.model-mismatch {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-selection-tint);
+  color: var(--qcm-text);
+  font-size: var(--qcm-small-size);
+}
+
+.back-stage .back-photo {
+  position: absolute;
+  object-fit: fill;
+}
+
+.back-socket {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+}
+
+.joystick-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
 }
 
 .hotspot-group .zone-callout {

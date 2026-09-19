@@ -11,6 +11,7 @@ import {
   type EditorSnapshot,
   type Issue,
   type Mode,
+  type ModelChoice,
   type QcmClient,
 } from "../../platform";
 import { QuadStickVisualizer } from "../visualizer/QuadStickVisualizer";
@@ -144,6 +145,28 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   const [busy, setBusy] = useState(false);
   const [armedDelete, setArmedDelete] = useState<number | null>(null);
   const [message, setMessage] = useState("");
+  const [model, setModel] = useState<ModelChoice>("fps");
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = (): void => {
+      void client.getSettings().then(
+        (settings) => {
+          if (!cancelled) setModel(settings.model);
+        },
+        () => undefined,
+      );
+    };
+    load();
+    const onFocus = (): void => {
+      load();
+    };
+    window.addEventListener("focus", onFocus);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [client]);
 
   const selectedMode = snapshot.modes.find(
     (mode) => mode.index === selectedSheet && mode.kind === "mode",
@@ -458,7 +481,13 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
           <div className="device-workspace">
             <section className="device-canvas">
               <div className="panel-heading-row">
-                <h2>{t("Shell_Rows")}</h2>
+                <h2>
+                  {view === "device"
+                    ? t("Shell_Device")
+                    : view === "parts"
+                      ? t("Shell_Parts")
+                      : t("Shell_Rows")}
+                </h2>
                 {selectedMode !== null ? (
                   <button
                     type="button"
@@ -477,6 +506,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                 selectedZone={selectedZone}
                 modeName={selectedMode?.name ?? ""}
                 modeNumber={selectedMode?.number ?? null}
+                model={model}
                 view={view}
                 onSelectRow={setSelectedRow}
                 onSelectZone={setSelectedZone}

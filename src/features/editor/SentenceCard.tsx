@@ -70,7 +70,7 @@ export function SentenceCard({ row, zoneId, selected, onSelect }: SentenceCardPr
             </span>
           ))}
         </span>
-        {functionLabel !== "" && functionLabel !== "Normal" ? (
+        {functionLabel !== "" && fn.trim().toLowerCase() !== "normal" ? (
           <>
             <span className="sentence-word">{t("Main_AsJoiner")}</span>
             <span className="pill tint-function">{functionLabel}</span>

@@ -1,27 +1,39 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 
 import fpsPhoto from "../../QuadStick.App/Assets/QuadStickFPS.png";
+import originalPhoto from "../../QuadStick.App/Assets/QuadStickOriginal.png";
+import singletonPhoto from "../../QuadStick.App/Assets/QuadStickSingleton.png";
+import backPhoto from "../../QuadStick.App/Assets/QuadStickBack.png";
 import { useI18n, type MessageKey } from "../../i18n";
 import type { LiveSnapshot, QcmClient } from "../../platform";
 import {
-  FPS_DIAGRAM,
   PILL_H,
   PILL_W,
   SMALL_PILL_H,
   STAGE_W,
   TOP_CALLOUT_GAP,
+  comboHotspots,
+  comboPoints,
   deviceBottomLabelY,
   devicePhotoY,
   deviceStageHeight,
+  diagramFor,
+  lightX,
   onPhoto,
   photoHeight,
+  type DeviceDiagramSpec,
+  type Hotspot,
+  type QsModel,
 } from "./deviceDiagram";
+import { ledCss, modeLightsFor, type ModeLight } from "./modeLights";
+import { OutputPrompt, outputsForButtons } from "./OutputPrompt";
 import {
   joystickSummary,
   mouthpiece,
   summaryActionText,
   zonesForRow,
   type BindingCells,
+  type GestureSummary,
   type ZoneId,
 } from "./deviceSummary";
 import { GestureTable } from "./GestureTable";
@@ -39,6 +51,7 @@ interface QuadStickVisualizerProps {
   readonly view: "device" | "parts" | "rows";
   readonly onSelectRow: (row: number) => void;
   readonly onSelectZone: (zone: ZoneId) => void;
+  readonly model?: QsModel;
 }
 
 interface ZoneMeta {
@@ -62,6 +75,94 @@ const ZONE_META: readonly ZoneMeta[] = [
 ];
 
 const MOUTHPIECE_ZONES = new Set<ZoneId>(["mp_left", "mp_center", "mp_right", "side", "lip"]);
+
+const COMBO_PREFIXES = [
+  "mp_left_center_",
+  "mp_right_center_",
+  "mp_left_right_",
+  "mp_right_mode_",
+  "mp_triple_",
+] as const;
+
+const BACK_STAGE_W = 720;
+const BACK_STAGE_H = 285;
+const BACK_PHOTO_X = 150;
+const BACK_PHOTO_Y = 27;
+const BACK_PHOTO_W = 420;
+const BACK_PHOTO_H = 228;
+const BACK_PILL_W = 145;
+const BACK_PILL_H = 54;
+
+/** Avalonia MainWindow.BackSockets — measured off QuadStickBack.png. */
+const BACK_SOCKETS = [
+  { nameKey: "Main_OneSwitchIn8" as const, detailKey: "Main_SwitchJacks" as const, left: true, labelY: 44, fx: 0.1114, fy: 0.2963 },
+  { nameKey: "Main_OneSwitchIn5" as const, detailKey: "Main_LipSwitch" as const, left: true, labelY: 122, fx: 0.1114, fy: 0.5 },
+  { nameKey: "Main_OneSwitchIn1" as const, detailKey: "Main_SwitchJacks" as const, left: true, labelY: 200, fx: 0.1114, fy: 0.7147 },
+  { nameKey: "Main_USBBPort" as const, detailKey: "Main_ToTheComputer" as const, left: false, labelY: 58, fx: 0.9005, fy: 0.3354 },
+  { nameKey: "Main_USBAPort" as const, detailKey: "Main_JoystickOrIn34" as const, left: false, labelY: 158, fx: 0.9107, fy: 0.6254 },
+] as const;
+
+const MODEL_SHORT: Record<QsModel, string> = {
+  fps: "FPS",
+  original: "Original",
+  singleton: "Singleton",
+};
+
+const PHOTOS: Record<QsModel, string> = {
+  fps: fpsPhoto,
+  original: originalPhoto,
+  singleton: singletonPhoto,
+};
+
+function photoFor(model: QsModel): string {
+  return PHOTOS[model];
+}
+
+function comboPrefix(token: string): string {
+  return COMBO_PREFIXES.find((prefix) => token.startsWith(prefix)) ?? "";
+}
+
+function comboPairTitle(input: string, t: ReturnType<typeof useI18n>["t"]): string {
+  if (input.startsWith("mp_triple_")) return t("Main_AllThree");
+  if (input.startsWith("mp_left_center_")) return t("Main_APlusB", [t("Main_Left"), t("Main_Center")]);
+  if (input.startsWith("mp_right_center_")) return t("Main_APlusB", [t("Main_Right"), t("Main_Center")]);
+  if (input.startsWith("mp_right_mode_")) return t("Main_RightSideTube");
+  if (input.startsWith("mp_left_right_")) return t("Main_APlusB", [t("Main_Left"), t("Main_Right")]);
+  return t("Main_Combos");
+}
+
+function modelHasZone(diagram: DeviceDiagramSpec, zoneId: ZoneId): boolean {
+  return diagram.zones.includes(zoneId);
+}
+
+function isForeignZone(zoneId: ZoneId, diagram: DeviceDiagramSpec): boolean {
+  return zoneId !== "settings" && zoneId !== "unset" && !modelHasZone(diagram, zoneId);
+}
+
+function series(parts: readonly string[]): string {
+  if (parts.length === 1) return parts[0]!;
+  return `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]!}`;
+}
+
+/** Inner describe string for Main_DeviceShowsModeLightsDescribeLit (Avalonia ModeLights.Describe). */
+function describeModeLights(lights: readonly ModeLight[]): string {
+  const lit = lights
+    .map((light, index) => ({ light, number: index + 1 }))
+    .filter((entry) => entry.light !== "off");
+  if (lit.length === 0) return "no lights";
+  const groups = new Map<ModeLight, number[]>();
+  for (const entry of lit) {
+    const bucket = groups.get(entry.light) ?? [];
+    bucket.push(entry.number);
+    groups.set(entry.light, bucket);
+  }
+  return [...groups.entries()]
+    .map(([light, numbers]) => {
+      const label = numbers.length === 1 ? "light " : "lights ";
+      return `${label}${series(numbers.map(String))} ${light}`;
+    })
+    .join(", ");
+}
 
 function liveJoystickActive(frame: LiveSnapshot | null): boolean {
   if (frame?.status.kind !== "reading") return false;
@@ -117,6 +218,43 @@ function zoneAccessibleName(
   }`;
 }
 
+function comboAccessibleName(
+  input: string,
+  rows: readonly BindingCells[],
+  t: ReturnType<typeof useI18n>["t"],
+  plural: ReturnType<typeof useI18n>["plural"],
+): string {
+  const prefix = comboPrefix(input);
+  const comboRows = rows.filter((row) =>
+    row.cells.slice(2, 10).some((cell) => comboPrefix(cell.trim()) === prefix),
+  );
+  const count = comboRows.length;
+  const countLabel = count === 0 ? t("Main_NotMapped") : plural("Count_Mapping", count, [count]);
+  const gestures = mouthpiece(rows, "combo", prefix);
+  const spoken = gestures
+    .map((summary) => {
+      const action = summaryActionText(
+        summary,
+        (n) => plural("Count_Action", n, [n]),
+        t("Main_Sequence"),
+      );
+      return `${t(summary.friendlyGestureKey)}: ${action}`;
+    })
+    .join(", ");
+  return `${t("Main_HolePairingPairCount", [comboPairTitle(input, t), countLabel])} ${spoken}`;
+}
+
+function gestureRowsLive(
+  summaries: readonly GestureSummary[],
+  liveRows: ReadonlySet<number>,
+): boolean {
+  return summaries.some((summary) => summary.actions.some((action) => liveRows.has(action.row)));
+}
+
+function zoneRowsLive(zoneRows: readonly BindingCells[], liveRows: ReadonlySet<number>): boolean {
+  return zoneRows.some((row) => liveRows.has(row.row));
+}
+
 export function QuadStickVisualizer({
   client,
   rows,
@@ -127,13 +265,20 @@ export function QuadStickVisualizer({
   view,
   onSelectRow,
   onSelectZone,
+  model = "fps",
 }: QuadStickVisualizerProps) {
   const { t, plural } = useI18n();
   const [practice, setPractice] = useState(false);
+  const [combos, setCombos] = useState(false);
+  const [pickedCombo, setPickedCombo] = useState<string | null>(null);
   const [live, setLive] = useState<LiveSnapshot | null>(null);
   const [focusedZone, setFocusedZone] = useState(0);
   const hotspotRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const diagram = FPS_DIAGRAM;
+  const diagram = diagramFor(model);
+
+  const showBack = selectedZone === "jacks" || selectedZone === "other";
+  const showCombos =
+    !showBack && (combos || selectedZone === "combo") && diagram.zones.includes("combo");
 
   const rowsByZone = useMemo(() => {
     const map = new Map<ZoneId, BindingCells[]>();
@@ -144,14 +289,31 @@ export function QuadStickVisualizer({
     return map;
   }, [rows]);
 
+  const foreignZones = useMemo(() => {
+    return ZONE_META.filter(
+      (zone) =>
+        isForeignZone(zone.id, diagram) && (rowsByZone.get(zone.id)?.length ?? 0) > 0,
+    );
+  }, [diagram, rowsByZone]);
+
   const selectedZones = useMemo(() => {
     if (selectedZone !== null) return new Set<ZoneId>([selectedZone]);
     const row = selectedRow === null ? undefined : rows.find((candidate) => candidate.row === selectedRow);
     return new Set(row === undefined ? [] : zonesForRow(row));
   }, [rows, selectedRow, selectedZone]);
 
+  const liveRows = useMemo(() => {
+    if (live?.status.kind !== "reading") return new Set<number>();
+    const outputs = outputsForButtons(live.status.motion.buttons);
+    const set = new Set<number>();
+    for (const row of rows) {
+      const output = row.cells[0]?.trim() ?? "";
+      if (output !== "" && outputs.has(output)) set.add(row.row);
+    }
+    return set;
+  }, [live, rows]);
+
   useEffect(() => {
-    if (!practice) return;
     let disposed = false;
     let subscription: { dispose(): void } | null = null;
     void client
@@ -169,33 +331,59 @@ export function QuadStickVisualizer({
       disposed = true;
       subscription?.dispose();
     };
-  }, [client, practice]);
+  }, [client]);
+
+  useEffect(() => {
+    if (selectedZone === "combo" && !combos) setCombos(true);
+  }, [selectedZone, combos]);
 
   const photoY = devicePhotoY(diagram);
   const photoH = photoHeight(diagram);
   const stageH = deviceStageHeight(diagram);
   const bottomY = deviceBottomLabelY(diagram);
   const calloutBottom = photoY - TOP_CALLOUT_GAP;
-  const photoZones = ZONE_META.filter((zone) => diagram.hotspots.some((spot) => spot.zone === zone.id));
-  const extraZones = ZONE_META.filter(
-    (zone) =>
-      !diagram.hotspots.some((spot) => spot.zone === zone.id) &&
-      (rowsByZone.get(zone.id)?.length ?? 0) > 0,
-  );
+  const { source } = diagram;
 
-  const selectZone = (zone: ZoneDefinitionOrMeta): void => {
+  const photoZones = ZONE_META.filter((zone) => diagram.hotspots.some((spot) => spot.zone === zone.id));
+  const comboSpots = comboHotspots(diagram);
+  const normalSpots = photoZones.map((zone) => diagram.hotspots.find((spot) => spot.zone === zone.id)!);
+  const stageSpots: readonly Hotspot[] = showCombos ? comboSpots : normalSpots;
+  const stageSpotCount = stageSpots.length;
+
+  const extraZones = ZONE_META.filter((zone) => {
+    if (diagram.hotspots.some((spot) => spot.zone === zone.id)) return false;
+    if (zone.id === "combo") return false;
+    const count = rowsByZone.get(zone.id)?.length ?? 0;
+    if (count > 0) return true;
+    return diagram.zones.includes(zone.id);
+  });
+
+  const modeLights = modeNumber === null ? null : modeLightsFor(modeNumber);
+
+  const selectZone = (zone: ZoneMeta): void => {
     onSelectZone(zone.id);
     const first = rowsByZone.get(zone.id)?.[0];
     if (first !== undefined) onSelectRow(first.row);
   };
 
-  type ZoneDefinitionOrMeta = ZoneMeta;
+  const selectCombo = (input: string): void => {
+    setPickedCombo(input);
+    setCombos(true);
+    onSelectZone("combo");
+    const prefix = comboPrefix(input);
+    const comboRows = rowsByZone.get("combo") ?? [];
+    const first = comboRows.find((row) =>
+      row.cells.slice(2, 10).some((cell) => comboPrefix(cell.trim()) === prefix),
+    );
+    if (first !== undefined) onSelectRow(first.row);
+  };
 
   const onHotspotKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number): void => {
+    if (stageSpotCount === 0) return;
     let next = index;
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % photoZones.length;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % stageSpotCount;
     else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      next = (index - 1 + photoZones.length) % photoZones.length;
+      next = (index - 1 + stageSpotCount) % stageSpotCount;
     } else return;
     event.preventDefault();
     setFocusedZone(next);
@@ -203,8 +391,24 @@ export function QuadStickVisualizer({
   };
 
   const togglePractice = (): void => {
-    if (practice) setLive(null);
     setPractice((value) => !value);
+  };
+
+  const toggleCombos = (): void => {
+    setCombos((value) => {
+      const next = !value;
+      if (!next) {
+        setPickedCombo(null);
+        if (selectedZone === "combo") onSelectZone("mp_left");
+      }
+      return next;
+    });
+    setFocusedZone(0);
+  };
+
+  const showFront = (): void => {
+    onSelectZone("mp_center");
+    setFocusedZone(0);
   };
 
   const joystickBody = () => {
@@ -213,6 +417,9 @@ export function QuadStickVisualizer({
       return (
         <div className="joystick-summary">
           <span>{t("Main_Movement")}</span>
+          {summary.roleToken !== "" ? (
+            <OutputPrompt token={summary.roleToken} label={t(summary.roleKey)} size={28} />
+          ) : null}
           <strong>{t(summary.roleKey)}</strong>
           {summary.extraActionCount > 0 ? (
             <span className="muted">{t("Main_ExtraActions", [summary.extraActionCount])}</span>
@@ -231,18 +438,30 @@ export function QuadStickVisualizer({
     );
   };
 
+  const foreignLabel = (zoneId: ZoneId) => {
+    if (!isForeignZone(zoneId, diagram)) return null;
+    return <span className="muted">{t("Main_NotOnModel")}</span>;
+  };
+
   const calloutBody = (zone: ZoneMeta, zoneRows: readonly BindingCells[]) => {
     if (MOUTHPIECE_ZONES.has(zone.id)) {
-      return <GestureTable rows={mouthpiece(rows, zone.id)} />;
+      return <GestureTable rows={mouthpiece(rows, zone.id)} liveRows={liveRows} />;
     }
     if (zone.id === "joystick") return joystickBody();
     const count = zoneRows.length;
     return (
-      <span className={count === 0 ? "muted" : "accent-count"}>
-        {count === 0 ? t("Main_NotMapped") : plural("Count_Mapping", count, [count])}
-      </span>
+      <>
+        <span className={count === 0 ? "muted" : "accent-count"}>
+          {count === 0 ? t("Main_NotMapped") : plural("Count_Mapping", count, [count])}
+        </span>
+        {foreignLabel(zone.id)}
+      </>
     );
   };
+
+  const comboCalloutBody = (input: string) => (
+    <GestureTable rows={mouthpiece(rows, "combo", comboPrefix(input))} liveRows={liveRows} />
+  );
 
   if (view === "parts") {
     return (
@@ -258,12 +477,14 @@ export function QuadStickVisualizer({
             const zoneRows = rowsByZone.get(zone.id) ?? [];
             if (zoneRows.length === 0 && !diagram.zones.includes(zone.id)) return null;
             const selected = selectedZones.has(zone.id);
+            const foreign = isForeignZone(zone.id, diagram);
             return (
               <button
                 key={zone.id}
                 type="button"
                 className={selected ? "zone-rail-row selected" : "zone-rail-row"}
                 aria-pressed={selected}
+                style={foreign ? { opacity: 0.5 } : undefined}
                 onClick={() => selectZone(zone)}
               >
                 <strong>{t(zone.titleKey)}</strong>
@@ -272,6 +493,7 @@ export function QuadStickVisualizer({
                     ? t("Main_NotMapped")
                     : plural("Count_Mapping", zoneRows.length, [zoneRows.length])}
                 </span>
+                {foreign ? <span className="muted">{t("Main_NotOnModel")}</span> : null}
               </button>
             );
           })}
@@ -299,7 +521,6 @@ export function QuadStickVisualizer({
             const zone = zonesForRow(row)[0] ?? "unset";
             return (
               <li key={row.row}>
-                {/* Sentence cards live in the detail panel; rows view shows tinted chips. */}
                 <button
                   type="button"
                   className={selectedRow === row.row ? "row-chip selected" : "row-chip"}
@@ -314,7 +535,11 @@ export function QuadStickVisualizer({
                   <span className="pill tint-output">
                     {row.cells[11]?.trim() || row.cells[0]?.trim() || t("Main_NothingYet")}
                   </span>
-                  <span className="pill tint-function">{row.cells[1]?.trim() || "normal"}</span>
+                  <span className="pill tint-function">
+                    {row.cells[1]?.trim() && row.cells[1].trim().toLowerCase() !== "normal"
+                      ? row.cells[1].trim()
+                      : t("Main_NothingYet")}
+                  </span>
                   <span className="pill tint-input">
                     {row.cells
                       .slice(2, 10)
@@ -331,6 +556,295 @@ export function QuadStickVisualizer({
     );
   }
 
+  const renderModeLights = () => {
+    if (modeNumber === null || diagram.lights === null || modeLights === null) return null;
+    const lightRow = diagram.lights;
+    const elements = [];
+    for (let index = 0; index < modeLights.length; index += 1) {
+      const light = modeLights[index]!;
+      if (light === "off") continue;
+      const at = onPhoto(diagram, lightX(lightRow, index), lightRow.y);
+      const pointX = diagram.photoX + at.x;
+      const pointY = photoY + at.y;
+      const colour = ledCss(light);
+      for (const [size, opacity] of [
+        [26, 0.3],
+        [13, 1],
+      ] as const) {
+        elements.push(
+          <span
+            key={`${String(index)}-${String(size)}`}
+            className="mode-light"
+            aria-hidden="true"
+            style={{
+              left: `${String((pointX / STAGE_W) * 100)}%`,
+              top: `${String((pointY / stageH) * 100)}%`,
+              width: `${String((size / STAGE_W) * 100)}%`,
+              height: `${String((size / stageH) * 100)}%`,
+              background: colour,
+              opacity,
+            }}
+          />,
+        );
+      }
+    }
+    return (
+      <>
+        {elements}
+        <output className="visually-hidden">
+          {t("Main_DeviceShowsModeLightsDescribeLit", [describeModeLights(modeLights)])}
+        </output>
+      </>
+    );
+  };
+
+  const renderComboHighlight = () => {
+    if (!showCombos || pickedCombo === null) return null;
+    const points = comboPoints(diagram, pickedCombo);
+    if (points.length === 0) return null;
+    const stagePoints = points.map((point) => {
+      const at = onPhoto(diagram, point.x, point.y);
+      return { x: diagram.photoX + at.x, y: photoY + at.y };
+    });
+    return (
+      <div className="combo-highlight" aria-hidden="true">
+        <svg
+          className="combo-links"
+          viewBox={`0 0 ${String(STAGE_W)} ${String(stageH)}`}
+          preserveAspectRatio="none"
+        >
+          {stagePoints.slice(1).map((point, index) => (
+            <line
+              key={String(index)}
+              className="combo-link"
+              x1={stagePoints[index]!.x}
+              y1={stagePoints[index]!.y}
+              x2={point.x}
+              y2={point.y}
+            />
+          ))}
+        </svg>
+        {stagePoints.map((point, index) => (
+          <span
+            key={String(index)}
+            className="combo-ring"
+            style={{
+              left: `${String((point.x / STAGE_W) * 100)}%`,
+              top: `${String((point.y / stageH) * 100)}%`,
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const renderHotspot = (spot: Hotspot, index: number, comboMode: boolean) => {
+    const at = onPhoto(diagram, spot.pointX, spot.pointY);
+    const pointX = diagram.photoX + at.x;
+    const pointY = photoY + at.y;
+    const calloutHeight = spot.bottom ? SMALL_PILL_H : PILL_H;
+    const labelTop = spot.bottom ? bottomY : calloutBottom - calloutHeight;
+    const lineY = spot.bottom ? bottomY : calloutBottom;
+
+    if (comboMode) {
+      const input = spot.zone;
+      const prefix = comboPrefix(input);
+      const selected = pickedCombo !== null && comboPrefix(pickedCombo) === prefix;
+      const faded = pickedCombo !== null && !selected;
+      const summaries = mouthpiece(rows, "combo", prefix);
+      const active = gestureRowsLive(summaries, liveRows);
+      const name = comboAccessibleName(input, rows, t, plural);
+
+      return (
+        <div className={faded ? "hotspot-group faded" : "hotspot-group"} key={input}>
+          <span
+            className="hotspot-marker"
+            aria-hidden="true"
+            style={{
+              left: `${String((pointX / STAGE_W) * 100)}%`,
+              top: `${String((pointY / stageH) * 100)}%`,
+            }}
+          />
+          <svg
+            className="hotspot-line"
+            aria-hidden="true"
+            viewBox={`0 0 ${String(STAGE_W)} ${String(stageH)}`}
+            preserveAspectRatio="none"
+          >
+            <line
+              className="leader-under"
+              x1={spot.labelX + PILL_W / 2}
+              y1={lineY}
+              x2={pointX}
+              y2={pointY}
+            />
+            <line
+              className="leader-over"
+              x1={spot.labelX + PILL_W / 2}
+              y1={lineY}
+              x2={pointX}
+              y2={pointY}
+            />
+          </svg>
+          <button
+            ref={(element) => {
+              hotspotRefs.current[index] = element;
+            }}
+            type="button"
+            className={selected ? "zone-callout selected" : "zone-callout"}
+            aria-label={name}
+            aria-pressed={selected}
+            data-live={active ? "true" : undefined}
+            tabIndex={focusedZone === index ? 0 : -1}
+            style={{
+              left: `${String((spot.labelX / STAGE_W) * 100)}%`,
+              top: `${String((labelTop / stageH) * 100)}%`,
+              width: `${String((PILL_W / STAGE_W) * 100)}%`,
+              minHeight: `${String((calloutHeight / stageH) * 100)}%`,
+            }}
+            onFocus={() => setFocusedZone(index)}
+            onKeyDown={(event) => onHotspotKeyDown(event, index)}
+            onClick={() => selectCombo(input)}
+          >
+            <strong className="zone-callout-title">{comboPairTitle(input, t)}</strong>
+            {comboCalloutBody(input)}
+          </button>
+        </div>
+      );
+    }
+
+    const zone = photoZones.find((candidate) => candidate.id === spot.zone);
+    if (zone === undefined) return <div key={spot.zone} />;
+    const zoneRows = rowsByZone.get(zone.id) ?? [];
+    const selected = selectedZones.has(zone.id);
+    const summaries = MOUTHPIECE_ZONES.has(zone.id) ? mouthpiece(rows, zone.id) : [];
+    const active =
+      (zone.id === "joystick" && liveJoystickActive(live)) ||
+      (MOUTHPIECE_ZONES.has(zone.id)
+        ? gestureRowsLive(summaries, liveRows)
+        : zoneRowsLive(zoneRows, liveRows));
+    const name = zoneAccessibleName(zone, rows, t, plural);
+
+    return (
+      <div className="hotspot-group" key={zone.id}>
+        <span
+          className="hotspot-marker"
+          aria-hidden="true"
+          data-active={zone.id === "joystick" && liveJoystickActive(live) ? "true" : undefined}
+          style={{
+            left: `${String((pointX / STAGE_W) * 100)}%`,
+            top: `${String((pointY / stageH) * 100)}%`,
+          }}
+        />
+        <svg
+          className="hotspot-line"
+          aria-hidden="true"
+          viewBox={`0 0 ${String(STAGE_W)} ${String(stageH)}`}
+          preserveAspectRatio="none"
+        >
+          <line className="leader-under" x1={spot.labelX + PILL_W / 2} y1={lineY} x2={pointX} y2={pointY} />
+          <line className="leader-over" x1={spot.labelX + PILL_W / 2} y1={lineY} x2={pointX} y2={pointY} />
+        </svg>
+        <button
+          ref={(element) => {
+            hotspotRefs.current[index] = element;
+          }}
+          type="button"
+          className={selected ? "zone-callout selected" : "zone-callout"}
+          aria-label={name}
+          aria-pressed={selected}
+          data-live-active={active ? "true" : undefined}
+          data-live={active ? "true" : undefined}
+          tabIndex={focusedZone === index ? 0 : -1}
+          style={{
+            left: `${String((spot.labelX / STAGE_W) * 100)}%`,
+            top: `${String((labelTop / stageH) * 100)}%`,
+            width: `${String((PILL_W / STAGE_W) * 100)}%`,
+            minHeight: `${String((calloutHeight / stageH) * 100)}%`,
+          }}
+          onFocus={() => setFocusedZone(index)}
+          onKeyDown={(event) => onHotspotKeyDown(event, index)}
+          onClick={() => selectZone(zone)}
+        >
+          <strong className="zone-callout-title">{t(zone.shortKey)}</strong>
+          {calloutBody(zone, zoneRows)}
+        </button>
+      </div>
+    );
+  };
+
+  const renderBackPanel = () => (
+    <div
+      className="visualizer-stage back-stage"
+      style={{ aspectRatio: `${String(BACK_STAGE_W)} / ${String(BACK_STAGE_H)}` }}
+      dir="ltr"
+    >
+      <img
+        className="quadstick-photo back-photo"
+        src={backPhoto}
+        alt=""
+        aria-hidden="true"
+        style={{
+          left: `${String((BACK_PHOTO_X / BACK_STAGE_W) * 100)}%`,
+          top: `${String((BACK_PHOTO_Y / BACK_STAGE_H) * 100)}%`,
+          width: `${String((BACK_PHOTO_W / BACK_STAGE_W) * 100)}%`,
+          height: `${String((BACK_PHOTO_H / BACK_STAGE_H) * 100)}%`,
+        }}
+      />
+      {BACK_SOCKETS.map((socket) => {
+        const pointX = BACK_PHOTO_X + socket.fx * BACK_PHOTO_W;
+        const pointY = BACK_PHOTO_Y + socket.fy * BACK_PHOTO_H;
+        const labelX = socket.left ? 0 : BACK_STAGE_W - BACK_PILL_W;
+        const anchorX = socket.left ? BACK_PILL_W : labelX;
+        return (
+          <div className="hotspot-group" key={socket.nameKey}>
+            <span
+              className="hotspot-marker"
+              aria-hidden="true"
+              style={{
+                left: `${String((pointX / BACK_STAGE_W) * 100)}%`,
+                top: `${String((pointY / BACK_STAGE_H) * 100)}%`,
+              }}
+            />
+            <svg
+              className="hotspot-line"
+              aria-hidden="true"
+              viewBox={`0 0 ${String(BACK_STAGE_W)} ${String(BACK_STAGE_H)}`}
+              preserveAspectRatio="none"
+            >
+              <line
+                className="leader-under"
+                x1={anchorX}
+                y1={socket.labelY + BACK_PILL_H / 2}
+                x2={pointX}
+                y2={pointY}
+              />
+              <line
+                className="leader-over"
+                x1={anchorX}
+                y1={socket.labelY + BACK_PILL_H / 2}
+                x2={pointX}
+                y2={pointY}
+              />
+            </svg>
+            <div
+              className="zone-callout back-socket"
+              style={{
+                left: `${String((labelX / BACK_STAGE_W) * 100)}%`,
+                top: `${String((socket.labelY / BACK_STAGE_H) * 100)}%`,
+                width: `${String((BACK_PILL_W / BACK_STAGE_W) * 100)}%`,
+                minHeight: `${String((BACK_PILL_H / BACK_STAGE_H) * 100)}%`,
+              }}
+            >
+              <strong className="zone-callout-title">{t(socket.nameKey)}</strong>
+              <span className="muted">{t(socket.detailKey)}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
     <section className="quadstick-visualizer" aria-labelledby="quadstick-visualizer-title">
       <header className="visualizer-header">
@@ -338,141 +852,123 @@ export function QuadStickVisualizer({
           <h2 id="quadstick-visualizer-title">{t("Tour_ThisIsYourQuadStickEach")}</h2>
           <p>{modeNumber === null ? modeName : `${String(modeNumber)} · ${modeName}`}</p>
         </div>
-        <button
-          type="button"
-          className={practice ? "practice-toggle active" : "practice-toggle"}
-          aria-pressed={practice}
-          onClick={togglePractice}
-        >
-          {practice ? t("Main_UsingDeviceView") : t("DevicePage_JoystickTravel")}
-        </button>
+        <div className="visualizer-header-actions">
+          {showBack ? (
+            <button type="button" className="combo-toggle" onClick={showFront}>
+              {t("Main_MainControls")}
+            </button>
+          ) : null}
+          {!showBack && diagram.zones.includes("combo") ? (
+            <button
+              type="button"
+              className={showCombos ? "combo-toggle active" : "combo-toggle"}
+              aria-pressed={showCombos}
+              onClick={toggleCombos}
+            >
+              {t("Main_Combos")}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className={practice ? "practice-toggle active" : "practice-toggle"}
+            aria-pressed={practice}
+            onClick={togglePractice}
+          >
+            {practice ? t("Main_UsingDeviceView") : t("DevicePage_JoystickTravel")}
+          </button>
+        </div>
       </header>
 
+      {foreignZones.length > 0 ? (
+        <p className="model-mismatch" role="status">
+          {t("Main_ThisProfileMapsPartsYour", [
+            foreignZones.map((zone) => t(zone.shortKey)).join(", "),
+            MODEL_SHORT[model],
+          ])}
+        </p>
+      ) : null}
+
       <div className="visualizer-stage-scroll">
-        <div
-          className="visualizer-stage"
-          style={{ aspectRatio: `${String(STAGE_W)} / ${String(stageH)}` }}
-          dir="ltr"
-        >
-          <img
-            className="quadstick-photo"
-            src={fpsPhoto}
-            alt=""
-            aria-hidden="true"
-            style={{
-              left: `${String((diagram.photoX / STAGE_W) * 100)}%`,
-              top: `${String((photoY / stageH) * 100)}%`,
-              width: `${String((diagram.photoW / STAGE_W) * 100)}%`,
-              height: `${String((photoH / stageH) * 100)}%`,
-            }}
-          />
-          {practice && live?.status.kind === "reading"
-            ? (() => {
-                const joy = diagram.hotspots.find((spot) => spot.zone === "joystick");
-                if (joy === undefined) return null;
-                const at = onPhoto(diagram, joy.pointX, joy.pointY);
-                const x = diagram.photoX + at.x + live.status.motion.x * 30;
-                const y = photoY + at.y + live.status.motion.y * 30;
-                return (
-                  <span
-                    className="live-stick-dot"
-                    aria-hidden="true"
-                    style={{
-                      left: `${String((x / STAGE_W) * 100)}%`,
-                      top: `${String((y / stageH) * 100)}%`,
-                    }}
-                  />
-                );
-              })()
-            : null}
+        {showBack ? (
+          renderBackPanel()
+        ) : (
+          <div
+            className="visualizer-stage"
+            style={{ aspectRatio: `${String(STAGE_W)} / ${String(stageH)}` }}
+            dir="ltr"
+          >
+            <div
+              className="photo-frame"
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                overflow: "hidden",
+                left: `${String((diagram.photoX / STAGE_W) * 100)}%`,
+                top: `${String((photoY / stageH) * 100)}%`,
+                width: `${String((diagram.photoW / STAGE_W) * 100)}%`,
+                height: `${String((photoH / stageH) * 100)}%`,
+              }}
+            >
+              <img
+                className="quadstick-photo"
+                src={photoFor(model)}
+                alt=""
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: `${String((-source.x / source.w) * 100)}%`,
+                  top: `${String((-source.y / source.h) * 100)}%`,
+                  width: `${String((100 / source.w) * 100)}%`,
+                  height: `${String((100 / source.h) * 100)}%`,
+                  objectFit: "fill",
+                }}
+              />
+            </div>
 
-          {photoZones.map((zone, index) => {
-            const spot = diagram.hotspots.find((candidate) => candidate.zone === zone.id)!;
-            const at = onPhoto(diagram, spot.pointX, spot.pointY);
-            const pointX = diagram.photoX + at.x;
-            const pointY = photoY + at.y;
-            const calloutHeight = spot.bottom ? SMALL_PILL_H : PILL_H;
-            const labelTop = spot.bottom ? bottomY : calloutBottom - calloutHeight;
-            const lineY = spot.bottom ? bottomY : calloutBottom;
-            const zoneRows = rowsByZone.get(zone.id) ?? [];
-            const selected = selectedZones.has(zone.id);
-            const active = zone.id === "joystick" && practice && liveJoystickActive(live);
-            const name = zoneAccessibleName(zone, rows, t, plural);
+            {renderModeLights()}
+            {renderComboHighlight()}
 
-            return (
-              <div className="hotspot-group" key={zone.id}>
-                <span
-                  className="hotspot-marker"
-                  aria-hidden="true"
-                  data-active={active ? "true" : undefined}
-                  style={{
-                    left: `${String((pointX / STAGE_W) * 100)}%`,
-                    top: `${String((pointY / stageH) * 100)}%`,
-                  }}
-                />
-                <svg
-                  className="hotspot-line"
-                  aria-hidden="true"
-                  viewBox={`0 0 ${String(STAGE_W)} ${String(stageH)}`}
-                  preserveAspectRatio="none"
-                >
-                  <line
-                    className="leader-under"
-                    x1={spot.labelX + PILL_W / 2}
-                    y1={lineY}
-                    x2={pointX}
-                    y2={pointY}
-                  />
-                  <line
-                    className="leader-over"
-                    x1={spot.labelX + PILL_W / 2}
-                    y1={lineY}
-                    x2={pointX}
-                    y2={pointY}
-                  />
-                </svg>
-                <button
-                  ref={(element) => {
-                    hotspotRefs.current[index] = element;
-                  }}
-                  type="button"
-                  className={selected ? "zone-callout selected" : "zone-callout"}
-                  aria-label={name}
-                  aria-pressed={selected}
-                  data-live-active={active ? "true" : undefined}
-                  tabIndex={focusedZone === index ? 0 : -1}
-                  style={{
-                    left: `${String((spot.labelX / STAGE_W) * 100)}%`,
-                    top: `${String((labelTop / stageH) * 100)}%`,
-                    width: `${String((PILL_W / STAGE_W) * 100)}%`,
-                    minHeight: `${String((calloutHeight / stageH) * 100)}%`,
-                  }}
-                  onFocus={() => setFocusedZone(index)}
-                  onKeyDown={(event) => onHotspotKeyDown(event, index)}
-                  onClick={() => selectZone(zone)}
-                >
-                  <strong className="zone-callout-title">{t(zone.shortKey)}</strong>
-                  {calloutBody(zone, zoneRows)}
-                </button>
-              </div>
-            );
-          })}
-        </div>
+            {practice && live?.status.kind === "reading"
+              ? (() => {
+                  const joy = diagram.hotspots.find((spot) => spot.zone === "joystick");
+                  if (joy === undefined) return null;
+                  const at = onPhoto(diagram, joy.pointX, joy.pointY);
+                  const x = diagram.photoX + at.x + live.status.motion.x * 30;
+                  const y = photoY + at.y + live.status.motion.y * 30;
+                  return (
+                    <span
+                      className="live-stick-dot"
+                      aria-hidden="true"
+                      style={{
+                        left: `${String((x / STAGE_W) * 100)}%`,
+                        top: `${String((y / stageH) * 100)}%`,
+                      }}
+                    />
+                  );
+                })()
+              : null}
+
+            {stageSpots.map((spot, index) => renderHotspot(spot, index, showCombos))}
+          </div>
+        )}
       </div>
 
       {extraZones.length > 0 ? (
         <div className="visualizer-extra-zones" aria-label={t("Main_Parts")}>
           {extraZones.map((zone) => {
             const count = rowsByZone.get(zone.id)?.length ?? 0;
+            const foreign = isForeignZone(zone.id, diagram);
             return (
               <button
                 key={zone.id}
                 type="button"
                 className={selectedZones.has(zone.id) ? "zone selected" : "zone"}
+                style={foreign ? { opacity: 0.5 } : undefined}
                 onClick={() => selectZone(zone)}
               >
                 <strong>{t(zone.titleKey)}</strong>
                 <span>{plural("Count_Mapping", count, [count])}</span>
+                {foreign ? <span className="muted">{t("Main_NotOnModel")}</span> : null}
               </button>
             );
           })}
@@ -480,7 +976,7 @@ export function QuadStickVisualizer({
       ) : null}
 
       <output className="practice-status" aria-live="polite">
-        {practice ? liveText(live, t) : t("Main_WhatALitRowMeans")}
+        {live?.status.kind === "reading" ? liveText(live, t) : t("Main_WhatALitRowMeans")}
       </output>
     </section>
   );

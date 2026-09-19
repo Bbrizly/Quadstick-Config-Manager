@@ -12,7 +12,13 @@ const rows: readonly VisualizerBinding[] = [
   { row: 5, cells: ["left_joy_left", "normal", "left", "", "", "", "", "", "", ""] },
 ];
 
-function Harness({ client }: { readonly client: MockQcmClient }) {
+function Harness({
+  client,
+  model = "fps",
+}: {
+  readonly client: MockQcmClient;
+  readonly model?: "fps" | "original" | "singleton";
+}) {
   const [selected, setSelected] = useState<number | null>(null);
   const [zone, setZone] = useState<ZoneId | null>(null);
   return (
@@ -24,11 +30,13 @@ function Harness({ client }: { readonly client: MockQcmClient }) {
         selectedZone={zone}
         modeName="Racing"
         modeNumber={1}
+        model={model}
         view="device"
         onSelectRow={setSelected}
         onSelectZone={setZone}
       />
       <output data-testid="selected">{selected}</output>
+      <output data-testid="zone">{zone}</output>
     </I18nProvider>
   );
 }
@@ -52,10 +60,9 @@ describe("TASK-039 QuadStick visualizer", () => {
     expect(left.querySelector('img.output-prompt[title="Cross"]')).not.toBeNull();
   });
 
-  it("owns one live subscription and clears the active joystick on stale", async () => {
+  it("starts live on mount and clears the active joystick on stale", async () => {
     const client = new MockQcmClient();
     render(<Harness client={client} />);
-    fireEvent.click(screen.getByRole("button", { name: /Joystick travel/u }));
     await waitFor(() => expect(client.liveListenerCount).toBe(1));
 
     const reading: LiveSnapshot = {
@@ -81,5 +88,27 @@ describe("TASK-039 QuadStick visualizer", () => {
     joystick.focus();
     fireEvent.keyDown(joystick, { key: "ArrowRight" });
     expect(document.activeElement).toHaveTextContent(/Left/u);
+  });
+
+  it("opens combo stage when Combos is pressed", () => {
+    const client = new MockQcmClient();
+    render(<Harness client={client} />);
+    fireEvent.click(screen.getByRole("button", { name: /^Combos$/u }));
+    expect(screen.getByRole("button", { name: /Left \+ Center/u })).toBeTruthy();
+  });
+
+  it("shows the back panel for switch jacks", () => {
+    const client = new MockQcmClient();
+    render(<Harness client={client} />);
+    fireEvent.click(screen.getByRole("button", { name: /Switch jacks/i }));
+    expect(screen.getByText("One switch: in 8")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Main controls/i })).toBeTruthy();
+  });
+
+  it("lights mode 1 as the leftmost purple LED", () => {
+    const client = new MockQcmClient();
+    render(<Harness client={client} />);
+    expect(document.querySelectorAll(".mode-light").length).toBeGreaterThan(0);
+    expect(screen.getByText(/Device shows light 1 purple/u)).toBeTruthy();
   });
 });
