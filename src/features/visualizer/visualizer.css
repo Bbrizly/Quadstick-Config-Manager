@@ -1,9 +1,10 @@
-/* Avalonia device view: stage, zone callouts, gesture tables */
+/* Avalonia device view: sharp stage fit, zone callouts, gesture tables */
 
 .quadstick-visualizer {
   min-width: 0;
   display: grid;
   gap: var(--qcm-space-md);
+  contain: layout;
 }
 
 .visualizer-header {
@@ -18,28 +19,46 @@
   margin: 0;
 }
 
+.visualizer-header h2 {
+  font-size: var(--qcm-subhead-size);
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
 .visualizer-header p,
 .practice-status {
   color: var(--qcm-text-secondary);
   font-size: var(--qcm-small-size);
 }
 
+.practice-toggle {
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: var(--qcm-control-height);
+  padding: 8px 14px;
+}
+
 .practice-toggle.active {
   border-color: var(--qcm-accent);
   background: var(--qcm-selection-tint);
   color: var(--qcm-accent-text);
+  font-weight: 600;
 }
 
 .visualizer-stage-scroll {
   min-width: 0;
-  overflow: auto;
+  overflow: hidden;
   border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-bg);
+  border: var(--qcm-hairline) solid var(--qcm-border);
 }
 
+/* Avalonia Viewbox: fill width, keep aspect. Positions are % so text stays crisp. */
 .visualizer-stage {
   position: relative;
+  width: 100%;
+  max-width: 910px;
   margin-inline: auto;
-  transform-origin: top center;
 }
 
 .quadstick-photo {
@@ -47,6 +66,16 @@
   object-fit: fill;
   user-select: none;
   pointer-events: none;
+}
+
+.hotspot-group {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hotspot-group .zone-callout {
+  pointer-events: auto;
 }
 
 .hotspot-line {
@@ -60,11 +89,13 @@
 .hotspot-line .leader-under {
   stroke: var(--qcm-surface);
   stroke-width: 5;
+  stroke-linecap: round;
 }
 
 .hotspot-line .leader-over {
   stroke: var(--qcm-text-secondary);
   stroke-width: 2;
+  stroke-linecap: round;
 }
 
 .hotspot-marker {
@@ -77,6 +108,7 @@
   background: var(--qcm-surface);
   transform: translate(-50%, -50%);
   pointer-events: none;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 8%);
 }
 
 .hotspot-marker[data-active="true"],
@@ -85,7 +117,7 @@
   outline-offset: 2px;
 }
 
-/* Avalonia ToggleButton.zone */
+/* Avalonia ToggleButton.zone — reset global 48px button floor */
 .zone-callout,
 .zone {
   position: absolute;
@@ -93,20 +125,28 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 3px;
-  padding: var(--qcm-pad-zone);
+  gap: 2px;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 6px 8px !important;
   border: 2px solid var(--qcm-border);
   border-radius: var(--qcm-radius-panel);
   background: var(--qcm-surface);
   color: var(--qcm-text);
   text-align: center;
-  min-width: 0;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+  transform: none !important;
 }
 
 .zone-callout:hover,
 .zone:hover {
   background: var(--qcm-surface-subtle);
   border-color: var(--qcm-accent);
+}
+
+.zone-callout:active,
+.zone:active {
+  transform: none !important;
 }
 
 .zone-callout.selected,
@@ -117,12 +157,14 @@
   border-width: 3px;
   border-color: var(--qcm-accent);
   background: var(--qcm-input-tint);
+  box-shadow: none;
 }
 
 .zone-callout-title {
   font-size: var(--qcm-body-size);
   font-weight: 700;
   text-align: center;
+  line-height: 1.2;
 }
 
 .accent-count {
@@ -136,31 +178,39 @@
   font-size: var(--qcm-small-size);
 }
 
-/* Avalonia GestureTable */
+/* Avalonia GestureTable with column gutter */
 .gesture-table {
+  position: relative;
   display: grid;
   width: 100%;
-  margin-top: 2px;
-  border-top: 1px solid var(--qcm-surface-subtle);
-  padding-top: 5px;
+  margin-top: 4px;
+  border-top: 1px solid var(--qcm-border);
+  padding-top: 4px;
   gap: 0;
 }
 
-.gesture-table-rule {
-  display: none;
+.gesture-gutter {
+  position: absolute;
+  top: 4px;
+  bottom: 0;
+  left: calc(10px + 42%);
+  width: 1px;
+  background: var(--qcm-border);
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 .gesture-row {
   display: grid;
-  grid-template-columns: 10px minmax(0, auto) minmax(0, 1fr);
+  grid-template-columns: 10px minmax(52px, 0.42fr) minmax(0, 1fr);
   align-items: center;
   gap: 0;
   position: relative;
-  min-height: 28px;
+  min-height: 26px;
 }
 
 .gesture-row + .gesture-row {
-  border-top: 1px solid var(--qcm-surface-subtle);
+  border-top: 1px solid var(--qcm-border);
 }
 
 .gesture-row.live {
@@ -182,18 +232,18 @@
 }
 
 .gesture-name {
-  padding: 5px 6px 5px 0;
-  font-size: var(--qcm-small-size);
+  padding: 4px 8px 4px 0;
+  font-size: 12px;
   font-weight: 600;
   text-align: right;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 .gesture-action {
-  padding: 5px 0 5px 4px;
-  font-size: var(--qcm-small-size);
+  padding: 4px 0 4px 8px;
+  font-size: 12px;
   text-align: left;
-  line-height: 1.25;
+  line-height: 1.2;
   overflow-wrap: anywhere;
   border: 0;
   background: transparent;
@@ -202,6 +252,34 @@
 
 .gesture-action.muted {
   color: var(--qcm-text-secondary);
+}
+
+.gesture-prompts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+}
+
+.gesture-prompt-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.gesture-dot {
+  margin: 0 2px;
+  color: var(--qcm-text-secondary);
+}
+
+.output-prompt {
+  display: block;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.output-prompt-text {
+  font-weight: 600;
 }
 
 .joystick-summary {
@@ -231,7 +309,7 @@
 
 .visualizer-extra-zones .zone {
   position: static;
-  min-height: 64px;
+  min-height: 64px !important;
 }
 
 .practice-status {
@@ -249,6 +327,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--qcm-space-sm);
+  min-width: 0;
   min-height: 52px;
   padding: 8px 12px;
   border: 2px solid var(--qcm-border);
@@ -267,6 +346,8 @@
 
 .row-chip {
   width: 100%;
+  min-width: 0;
+  min-height: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -281,6 +362,7 @@
 .pill {
   display: inline-flex;
   align-items: center;
+  gap: 5px;
   padding: 2px 7px;
   border-radius: 4px;
   font-size: var(--qcm-body-size);
@@ -313,13 +395,6 @@
   padding: 2px 8px;
   border-radius: 4px;
   font-size: var(--qcm-small-size);
-}
-
-@media (max-width: 1180px) {
-  .visualizer-stage {
-    transform: scale(0.72);
-    margin-bottom: -140px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

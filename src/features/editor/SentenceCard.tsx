@@ -1,4 +1,5 @@
 import { useI18n } from "../../i18n";
+import { OutputPrompt, promptSrc } from "../visualizer/OutputPrompt";
 import { humanize, tokenLabel, type BindingCells, type ZoneId } from "../visualizer/deviceSummary";
 
 export interface SentenceCardProps {
@@ -10,7 +11,6 @@ export interface SentenceCardProps {
 
 function cardInput(token: string, zoneId: ZoneId): string {
   if (zoneId === "combo") return token.replaceAll("_", " ");
-  // Strip zone prefix the way Avalonia CardInput / StripInput does for display.
   let s = token;
   for (const prefix of [
     "mp_left_center_",
@@ -39,11 +39,10 @@ export function SentenceCard({ row, zoneId, selected, onSelect }: SentenceCardPr
   const fn = row.cells[1]?.trim() ?? "";
   const actionName = row.cells[11]?.trim() ?? "";
   const inputs = row.cells.slice(2, 10).map((value) => value.trim()).filter(Boolean);
-  const outputLabel = actionName.length > 0 ? actionName : output.length > 0 ? tokenLabel(output) : t("Main_NothingYet");
+  const outputLabel =
+    actionName.length > 0 ? actionName : output.length > 0 ? tokenLabel(output) : t("Main_NothingYet");
   const inputLabels =
-    inputs.length > 0
-      ? inputs.map((input) => cardInput(input, zoneId))
-      : [t("Main_NoInput")];
+    inputs.length > 0 ? inputs.map((input) => cardInput(input, zoneId)) : [t("Main_NoInput")];
   const functionLabel = fn.length > 0 ? humanize(fn) : "";
 
   return (
@@ -57,7 +56,12 @@ export function SentenceCard({ row, zoneId, selected, onSelect }: SentenceCardPr
     >
       <span className="sentence-grid" aria-hidden="true">
         <span className="sentence-word">{t("Main_PressVerb")}</span>
-        <span className="pill tint-output">{outputLabel}</span>
+        <span className="pill tint-output">
+          <OutputPrompt token={output} label={outputLabel} size={18} />
+          {promptSrc(output) !== null ? (
+            <span className="visually-hidden">{outputLabel}</span>
+          ) : null}
+        </span>
         <span className="sentence-word">{t("Main_WhenYou")}</span>
         <span className="sentence-inputs">
           {inputLabels.map((label) => (

@@ -22,6 +22,8 @@ body {
   font-family: var(--qcm-font);
   font-size: var(--qcm-body-size);
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button,
@@ -35,6 +37,29 @@ button,
 select {
   min-width: var(--qcm-control-height);
   min-height: var(--qcm-control-height);
+}
+
+/* Specialized plates set their own hit area. The 48px floor made callouts,
+   nav icons, and home cards read as fat web buttons. */
+button.zone-callout,
+button.zone,
+button.homeaction,
+button.switchkey,
+button.viewkey,
+button.icon,
+button.command,
+button.shell-nav-button,
+button.shellnav,
+button.shell-settings-button,
+button.shellutility,
+button.shell-brand,
+button.shellbrandbutton,
+button.sentence-card,
+button.row-chip,
+button.zone-rail-row,
+button.card {
+  min-width: 0;
+  min-height: 0;
 }
 
 button {

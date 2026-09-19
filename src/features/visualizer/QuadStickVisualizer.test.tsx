@@ -49,7 +49,7 @@ describe("TASK-039 QuadStick visualizer", () => {
     expect(left).toHaveTextContent("Puff");
     expect(left).toHaveTextContent("Sip");
     expect(left).toHaveTextContent("Soft Sip");
-    expect(left).toHaveTextContent("Cross");
+    expect(left.querySelector('img.output-prompt[title="Cross"]')).not.toBeNull();
   });
 
   it("owns one live subscription and clears the active joystick on stale", async () => {

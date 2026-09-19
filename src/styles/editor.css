@@ -45,19 +45,16 @@
 .editor-toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: var(--qcm-space-lg);
-  min-height: 64px;
-  padding: 10px 16px;
+  min-height: 56px;
+  padding: 8px 16px;
   border-bottom: var(--qcm-hairline) solid var(--qcm-border);
   background: var(--qcm-surface);
 }
 
 .editor-title-wrap {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--qcm-space-sm);
+  display: none;
 }
 
 .editor-title-wrap h1 {
@@ -143,16 +140,23 @@
 
 .sentence-card {
   width: 100%;
+  min-width: 0;
+  min-height: 0;
   padding: 10px 12px;
   border: 2px solid var(--qcm-border);
   border-radius: var(--qcm-radius-panel);
   background: var(--qcm-surface);
   text-align: start;
+  transform: none;
 }
 
 .sentence-card:hover {
   background: var(--qcm-surface-subtle);
   border-color: var(--qcm-accent);
+}
+
+.sentence-card:active {
+  transform: none;
 }
 
 .sentence-grid {
@@ -171,6 +175,10 @@
   display: inline-flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+.pill .output-prompt-text {
+  font-weight: 600;
 }
 
 .switchtrack {

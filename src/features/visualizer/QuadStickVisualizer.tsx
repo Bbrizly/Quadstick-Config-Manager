@@ -349,17 +349,21 @@ export function QuadStickVisualizer({
       </header>
 
       <div className="visualizer-stage-scroll">
-        <div className="visualizer-stage" style={{ width: STAGE_W, height: stageH }} dir="ltr">
+        <div
+          className="visualizer-stage"
+          style={{ aspectRatio: `${String(STAGE_W)} / ${String(stageH)}` }}
+          dir="ltr"
+        >
           <img
             className="quadstick-photo"
             src={fpsPhoto}
             alt=""
             aria-hidden="true"
             style={{
-              left: diagram.photoX,
-              top: photoY,
-              width: diagram.photoW,
-              height: photoH,
+              left: `${String((diagram.photoX / STAGE_W) * 100)}%`,
+              top: `${String((photoY / stageH) * 100)}%`,
+              width: `${String((diagram.photoW / STAGE_W) * 100)}%`,
+              height: `${String((photoH / stageH) * 100)}%`,
             }}
           />
           {practice && live?.status.kind === "reading"
@@ -367,13 +371,15 @@ export function QuadStickVisualizer({
                 const joy = diagram.hotspots.find((spot) => spot.zone === "joystick");
                 if (joy === undefined) return null;
                 const at = onPhoto(diagram, joy.pointX, joy.pointY);
+                const x = diagram.photoX + at.x + live.status.motion.x * 30;
+                const y = photoY + at.y + live.status.motion.y * 30;
                 return (
                   <span
                     className="live-stick-dot"
                     aria-hidden="true"
                     style={{
-                      left: diagram.photoX + at.x + live.status.motion.x * 30,
-                      top: photoY + at.y + live.status.motion.y * 30,
+                      left: `${String((x / STAGE_W) * 100)}%`,
+                      top: `${String((y / stageH) * 100)}%`,
                     }}
                   />
                 );
@@ -399,12 +405,16 @@ export function QuadStickVisualizer({
                   className="hotspot-marker"
                   aria-hidden="true"
                   data-active={active ? "true" : undefined}
-                  style={{ left: pointX, top: pointY }}
+                  style={{
+                    left: `${String((pointX / STAGE_W) * 100)}%`,
+                    top: `${String((pointY / stageH) * 100)}%`,
+                  }}
                 />
                 <svg
                   className="hotspot-line"
                   aria-hidden="true"
                   viewBox={`0 0 ${String(STAGE_W)} ${String(stageH)}`}
+                  preserveAspectRatio="none"
                 >
                   <line
                     className="leader-under"
@@ -432,10 +442,10 @@ export function QuadStickVisualizer({
                   data-live-active={active ? "true" : undefined}
                   tabIndex={focusedZone === index ? 0 : -1}
                   style={{
-                    left: spot.labelX,
-                    top: labelTop,
-                    width: PILL_W,
-                    minHeight: calloutHeight,
+                    left: `${String((spot.labelX / STAGE_W) * 100)}%`,
+                    top: `${String((labelTop / stageH) * 100)}%`,
+                    width: `${String((PILL_W / STAGE_W) * 100)}%`,
+                    minHeight: `${String((calloutHeight / stageH) * 100)}%`,
                   }}
                   onFocus={() => setFocusedZone(index)}
                   onKeyDown={(event) => onHotspotKeyDown(event, index)}
