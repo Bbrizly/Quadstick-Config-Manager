@@ -6,6 +6,7 @@ export interface SentenceCardProps {
   readonly row: BindingCells;
   readonly zoneId: ZoneId;
   readonly selected: boolean;
+  readonly live?: boolean;
   readonly onSelect: () => void;
 }
 
@@ -33,7 +34,7 @@ function cardInput(token: string, zoneId: ZoneId): string {
 }
 
 /** Avalonia SentenceCard compact Input→Output form with tinted pills. */
-export function SentenceCard({ row, zoneId, selected, onSelect }: SentenceCardProps) {
+export function SentenceCard({ row, zoneId, selected, live = false, onSelect }: SentenceCardProps) {
   const { t } = useI18n();
   const output = row.cells[0]?.trim() ?? "";
   const fn = row.cells[1]?.trim() ?? "";
@@ -44,16 +45,30 @@ export function SentenceCard({ row, zoneId, selected, onSelect }: SentenceCardPr
   const inputLabels =
     inputs.length > 0 ? inputs.map((input) => cardInput(input, zoneId)) : [t("Main_NoInput")];
   const functionLabel = fn.length > 0 ? humanize(fn) : "";
+  const spoken = `${t("Main_PressVerb")} ${outputLabel} ${t("Main_WhenYou")} ${inputLabels.join(", ")}`;
 
   return (
     <button
-      className={selected ? "sentence-card selected" : "sentence-card"}
+      className={[
+        "sentence-card",
+        selected ? "selected" : "",
+        live ? "live" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       type="button"
       data-binding-row={row.row}
       data-testid={`binding-row-${String(row.row)}`}
+      data-live={live ? "true" : undefined}
       aria-pressed={selected}
+      aria-label={live ? t("Main_RowSendingNow", [spoken]) : spoken}
       onClick={onSelect}
     >
+      {live ? (
+        <span className="sentence-live-pip" role="img" aria-label={t("Main_SendingNow")} />
+      ) : (
+        <span className="sentence-live-pip-slot" aria-hidden="true" />
+      )}
       <span className="sentence-grid" aria-hidden="true">
         <span className="sentence-word">{t("Main_PressVerb")}</span>
         <span className="pill tint-output">
@@ -76,9 +91,6 @@ export function SentenceCard({ row, zoneId, selected, onSelect }: SentenceCardPr
             <span className="pill tint-function">{functionLabel}</span>
           </>
         ) : null}
-      </span>
-      <span className="visually-hidden">
-        {`${t("Main_PressVerb")} ${outputLabel} ${t("Main_WhenYou")} ${inputLabels.join(", ")}`}
       </span>
     </button>
   );

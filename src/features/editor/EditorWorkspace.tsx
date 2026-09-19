@@ -146,6 +146,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   const [armedDelete, setArmedDelete] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [model, setModel] = useState<ModelChoice>("fps");
+  const [liveRows, setLiveRows] = useState<ReadonlySet<number>>(() => new Set());
 
   useEffect(() => {
     let cancelled = false;
@@ -510,6 +511,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                 view={view}
                 onSelectRow={setSelectedRow}
                 onSelectZone={setSelectedZone}
+                onLiveRows={setLiveRows}
               />
             </section>
 
@@ -525,6 +527,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                       row={row}
                       zoneId={zoneIdForRow(row)}
                       selected={visibleSelectedRow === row.row}
+                      live={liveRows.has(row.row)}
                       onSelect={() => setSelectedRow(row.row)}
                     />
                   ))}

@@ -101,8 +101,16 @@ describe("TASK-039 QuadStick visualizer", () => {
     const client = new MockQcmClient();
     render(<Harness client={client} />);
     fireEvent.click(screen.getByRole("button", { name: /Switch jacks/i }));
+    expect(screen.getByText("Top jack")).toBeTruthy();
     expect(screen.getByText("One switch: in 8")).toBeTruthy();
     expect(screen.getByRole("button", { name: /Main controls/i })).toBeTruthy();
+  });
+
+  it("auto-picks a combo pairing so hole rings appear", () => {
+    const client = new MockQcmClient();
+    render(<Harness client={client} />);
+    fireEvent.click(screen.getByRole("button", { name: /^Combos$/u }));
+    expect(document.querySelector(".combo-rings")).not.toBeNull();
   });
 
   it("lights mode 1 as the leftmost purple LED", () => {

@@ -148,6 +148,31 @@
   background: var(--qcm-surface);
   text-align: start;
   transform: none;
+  display: grid;
+  grid-template-columns: 12px 1fr;
+  gap: 8px;
+  align-items: start;
+}
+
+.sentence-card.live {
+  background: var(--qcm-live-tint, var(--qcm-selection-tint));
+  border-color: var(--qcm-accent);
+}
+
+.sentence-live-pip,
+.sentence-live-pip-slot {
+  width: 8px;
+  height: 8px;
+  margin-top: 8px;
+  border-radius: 50%;
+}
+
+.sentence-live-pip {
+  background: var(--qcm-accent);
+}
+
+.sentence-live-pip-slot {
+  background: transparent;
 }
 
 .sentence-card:hover {

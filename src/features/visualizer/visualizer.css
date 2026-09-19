@@ -119,16 +119,69 @@
 
 .combo-ring {
   position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.combo-rings {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  margin-left: -23px;
+  margin-top: -23px;
+  pointer-events: none;
+}
+
+.combo-ring.ring-halo {
+  width: 46px;
+  height: 46px;
+  border: 10px solid var(--qcm-surface, #fff);
+  opacity: 0.95;
+}
+
+.combo-ring.ring-focus {
   width: 38px;
   height: 38px;
-  margin-left: -19px;
-  margin-top: -19px;
-  border-radius: 50%;
   border: 7px solid var(--qcm-focus, #fff);
-  box-shadow:
-    0 0 0 5px var(--qcm-bg),
-    0 0 0 9px var(--qcm-accent);
-  pointer-events: none;
+}
+
+.combo-ring.ring-accent {
+  width: 28px;
+  height: 28px;
+  border: 4px solid var(--qcm-accent);
+}
+
+.back-panel {
+  display: grid;
+  gap: var(--qcm-space-sm);
+}
+
+.back-guide {
+  margin: 0;
+  padding-inline-start: 1.2em;
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+}
+
+.back-mapped {
+  font-size: var(--qcm-small-size);
+  color: var(--qcm-accent-text);
+}
+
+.back-socket {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+}
+
+.back-stage .back-photo {
+  position: absolute;
+  object-fit: fill;
 }
 
 .model-mismatch {
@@ -140,24 +193,38 @@
   font-size: var(--qcm-small-size);
 }
 
-.back-stage .back-photo {
-  position: absolute;
-  object-fit: fill;
+.off-model-card {
+  grid-column: 1 / -1;
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  padding: 8px 10px;
+  background: var(--qcm-bg);
 }
 
-.back-socket {
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 6px 8px;
-}
-
-.joystick-summary {
-  display: flex;
-  flex-wrap: wrap;
+.off-model-card > summary {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
   align-items: center;
-  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.off-model-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+.off-model-card[open] > summary {
+  margin-bottom: 8px;
+}
+
+.off-model-card .zone {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.zone.main-controls {
+  font-weight: 600;
 }
 
 .hotspot-group .zone-callout {

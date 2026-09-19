@@ -14,6 +14,7 @@ import {
   TOP_CALLOUT_GAP,
   comboHotspots,
   comboPoints,
+  COMBO_PLACES,
   deviceBottomLabelY,
   devicePhotoY,
   deviceStageHeight,
@@ -26,7 +27,8 @@ import {
   type QsModel,
 } from "./deviceDiagram";
 import { ledCss, modeLightsFor, type ModeLight } from "./modeLights";
-import { OutputPrompt, outputsForButtons } from "./OutputPrompt";
+import { OutputPrompt } from "./OutputPrompt";
+import { liveRowsForOutputs, outputsFromMotion } from "./liveOutputs";
 import {
   joystickSummary,
   mouthpiece,
@@ -52,6 +54,7 @@ interface QuadStickVisualizerProps {
   readonly onSelectRow: (row: number) => void;
   readonly onSelectZone: (zone: ZoneId) => void;
   readonly model?: QsModel;
+  readonly onLiveRows?: (rows: ReadonlySet<number>) => void;
 }
 
 interface ZoneMeta {
@@ -95,11 +98,66 @@ const BACK_PILL_H = 54;
 
 /** Avalonia MainWindow.BackSockets — measured off QuadStickBack.png. */
 const BACK_SOCKETS = [
-  { nameKey: "Main_OneSwitchIn8" as const, detailKey: "Main_SwitchJacks" as const, left: true, labelY: 44, fx: 0.1114, fy: 0.2963 },
-  { nameKey: "Main_OneSwitchIn5" as const, detailKey: "Main_LipSwitch" as const, left: true, labelY: 122, fx: 0.1114, fy: 0.5 },
-  { nameKey: "Main_OneSwitchIn1" as const, detailKey: "Main_SwitchJacks" as const, left: true, labelY: 200, fx: 0.1114, fy: 0.7147 },
-  { nameKey: "Main_USBBPort" as const, detailKey: "Main_ToTheComputer" as const, left: false, labelY: 58, fx: 0.9005, fy: 0.3354 },
-  { nameKey: "Main_USBAPort" as const, detailKey: "Main_JoystickOrIn34" as const, left: false, labelY: 158, fx: 0.9107, fy: 0.6254 },
+  {
+    nameKey: "Jack_TopJack" as const,
+    detailKey: "Main_OneSwitchIn8" as const,
+    guideKey: "Jack_PlugOneSwitchIntoThe" as const,
+    zone: "jacks" as ZoneId,
+    seed: "digital_in_8",
+    left: true,
+    labelY: 44,
+    fx: 0.1114,
+    fy: 0.2963,
+    channels: ["digital_in_8", "digital_in_7"],
+  },
+  {
+    nameKey: "Jack_LipJack" as const,
+    detailKey: "Main_OneSwitchIn5" as const,
+    guideKey: "Jack_TheMiddleJackIsThe" as const,
+    zone: "jacks" as ZoneId,
+    seed: "digital_in_5",
+    left: true,
+    labelY: 122,
+    fx: 0.1114,
+    fy: 0.5,
+    channels: ["digital_in_5", "digital_in_6"],
+  },
+  {
+    nameKey: "Jack_BottomJack" as const,
+    detailKey: "Main_OneSwitchIn1" as const,
+    guideKey: "Jack_PlugOneSwitchIntoThe2" as const,
+    zone: "jacks" as ZoneId,
+    seed: "digital_in_1",
+    left: true,
+    labelY: 200,
+    fx: 0.1114,
+    fy: 0.7147,
+    channels: ["digital_in_1", "digital_in_2"],
+  },
+  {
+    nameKey: "Main_USBBPort" as const,
+    detailKey: "Main_ToTheComputer" as const,
+    guideKey: "Main_ToTheComputer" as const,
+    zone: "other" as ZoneId,
+    seed: null,
+    left: false,
+    labelY: 58,
+    fx: 0.9005,
+    fy: 0.3354,
+    channels: [] as string[],
+  },
+  {
+    nameKey: "Main_USBAPort" as const,
+    detailKey: "Main_JoystickOrIn34" as const,
+    guideKey: "Main_JoystickOrIn34" as const,
+    zone: "other" as ZoneId,
+    seed: "digital_in_3",
+    left: false,
+    labelY: 158,
+    fx: 0.9107,
+    fy: 0.6254,
+    channels: ["digital_in_3", "digital_in_4"],
+  },
 ] as const;
 
 const MODEL_SHORT: Record<QsModel, string> = {
@@ -266,14 +324,17 @@ export function QuadStickVisualizer({
   onSelectRow,
   onSelectZone,
   model = "fps",
+  onLiveRows,
 }: QuadStickVisualizerProps) {
   const { t, plural } = useI18n();
   const [practice, setPractice] = useState(false);
   const [combos, setCombos] = useState(false);
   const [pickedCombo, setPickedCombo] = useState<string | null>(null);
   const [live, setLive] = useState<LiveSnapshot | null>(null);
+  const [liveOutputs, setLiveOutputs] = useState<ReadonlySet<string>>(new Set());
   const [focusedZone, setFocusedZone] = useState(0);
   const hotspotRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const previousOutputs = useRef<ReadonlySet<string> | null>(null);
   const diagram = diagramFor(model);
 
   const showBack = selectedZone === "jacks" || selectedZone === "other";
@@ -302,30 +363,40 @@ export function QuadStickVisualizer({
     return new Set(row === undefined ? [] : zonesForRow(row));
   }, [rows, selectedRow, selectedZone]);
 
-  const liveRows = useMemo(() => {
-    if (live?.status.kind !== "reading") return new Set<number>();
-    const outputs = outputsForButtons(live.status.motion.buttons);
-    const set = new Set<number>();
-    for (const row of rows) {
-      const output = row.cells[0]?.trim() ?? "";
-      if (output !== "" && outputs.has(output)) set.add(row.row);
-    }
-    return set;
-  }, [live, rows]);
+  const liveRows = useMemo(
+    () => liveRowsForOutputs(rows, liveOutputs),
+    [rows, liveOutputs],
+  );
+
+  useEffect(() => {
+    onLiveRows?.(liveRows);
+  }, [liveRows, onLiveRows]);
 
   useEffect(() => {
     let disposed = false;
     let subscription: { dispose(): void } | null = null;
     void client
       .startLiveInput((frame) => {
-        if (!disposed) setLive(frame);
+        if (disposed) return;
+        setLive(frame);
+        if (frame.status.kind === "reading") {
+          const next = outputsFromMotion(frame.status.motion, previousOutputs.current);
+          previousOutputs.current = next;
+          setLiveOutputs(next);
+        } else {
+          previousOutputs.current = null;
+          setLiveOutputs(new Set());
+        }
       })
       .then((value) => {
         if (disposed) value.dispose();
         else subscription = value;
       })
       .catch(() => {
-        if (!disposed) setLive(null);
+        if (!disposed) {
+          setLive(null);
+          setLiveOutputs(new Set());
+        }
       });
     return () => {
       disposed = true;
@@ -336,6 +407,19 @@ export function QuadStickVisualizer({
   useEffect(() => {
     if (selectedZone === "combo" && !combos) setCombos(true);
   }, [selectedZone, combos]);
+
+  // Avalonia auto-picks the first mapped pairing so hole rings appear immediately.
+  useEffect(() => {
+    if (!showCombos) return;
+    if (pickedCombo !== null && comboPrefix(pickedCombo) !== "") return;
+    const comboRows = rowsByZone.get("combo") ?? [];
+    const mapped = COMBO_PLACES.find((place) =>
+      comboRows.some((row) =>
+        row.cells.slice(2, 10).some((cell) => comboPrefix(cell.trim()) === comboPrefix(place.input)),
+      ),
+    );
+    setPickedCombo(mapped?.input ?? COMBO_PLACES[0]?.input ?? null);
+  }, [showCombos, pickedCombo, rowsByZone]);
 
   const photoY = devicePhotoY(diagram);
   const photoH = photoHeight(diagram);
@@ -350,20 +434,41 @@ export function QuadStickVisualizer({
   const stageSpots: readonly Hotspot[] = showCombos ? comboSpots : normalSpots;
   const stageSpotCount = stageSpots.length;
 
-  const extraZones = ZONE_META.filter((zone) => {
+  const extraOnModel = ZONE_META.filter((zone) => {
     if (diagram.hotspots.some((spot) => spot.zone === zone.id)) return false;
     if (zone.id === "combo") return false;
+    if (isForeignZone(zone.id, diagram)) return false;
     const count = rowsByZone.get(zone.id)?.length ?? 0;
-    if (count > 0) return true;
-    return diagram.zones.includes(zone.id);
+    return count > 0 || diagram.zones.includes(zone.id);
   });
 
   const modeLights = modeNumber === null ? null : modeLightsFor(modeNumber);
+
+  const mappedOnChannels = (channels: readonly string[]): string[] => {
+    if (channels.length === 0) return [];
+    const labels: string[] = [];
+    for (const row of rows) {
+      const inputs = row.cells.slice(2, 10).map((value) => value.trim());
+      if (!inputs.some((input) => channels.includes(input))) continue;
+      const name = row.cells[11]?.trim() || row.cells[0]?.trim();
+      if (name) labels.push(name);
+    }
+    return labels;
+  };
 
   const selectZone = (zone: ZoneMeta): void => {
     onSelectZone(zone.id);
     const first = rowsByZone.get(zone.id)?.[0];
     if (first !== undefined) onSelectRow(first.row);
+  };
+
+  const selectBackSocket = (zone: ZoneId, seed: string | null): void => {
+    onSelectZone(zone);
+    if (seed === null) return;
+    const match = rows.find((row) =>
+      row.cells.slice(2, 10).some((cell) => cell.trim() === seed),
+    );
+    if (match !== undefined) onSelectRow(match.row);
   };
 
   const selectCombo = (input: string): void => {
@@ -627,12 +732,16 @@ export function QuadStickVisualizer({
         {stagePoints.map((point, index) => (
           <span
             key={String(index)}
-            className="combo-ring"
+            className="combo-rings"
             style={{
               left: `${String((point.x / STAGE_W) * 100)}%`,
               top: `${String((point.y / stageH) * 100)}%`,
             }}
-          />
+          >
+            <span className="combo-ring ring-halo" />
+            <span className="combo-ring ring-focus" />
+            <span className="combo-ring ring-accent" />
+          </span>
         ))}
       </div>
     );
@@ -774,75 +883,96 @@ export function QuadStickVisualizer({
   };
 
   const renderBackPanel = () => (
-    <div
-      className="visualizer-stage back-stage"
-      style={{ aspectRatio: `${String(BACK_STAGE_W)} / ${String(BACK_STAGE_H)}` }}
-      dir="ltr"
-    >
-      <img
-        className="quadstick-photo back-photo"
-        src={backPhoto}
-        alt=""
-        aria-hidden="true"
-        style={{
-          left: `${String((BACK_PHOTO_X / BACK_STAGE_W) * 100)}%`,
-          top: `${String((BACK_PHOTO_Y / BACK_STAGE_H) * 100)}%`,
-          width: `${String((BACK_PHOTO_W / BACK_STAGE_W) * 100)}%`,
-          height: `${String((BACK_PHOTO_H / BACK_STAGE_H) * 100)}%`,
-        }}
-      />
-      {BACK_SOCKETS.map((socket) => {
-        const pointX = BACK_PHOTO_X + socket.fx * BACK_PHOTO_W;
-        const pointY = BACK_PHOTO_Y + socket.fy * BACK_PHOTO_H;
-        const labelX = socket.left ? 0 : BACK_STAGE_W - BACK_PILL_W;
-        const anchorX = socket.left ? BACK_PILL_W : labelX;
-        return (
-          <div className="hotspot-group" key={socket.nameKey}>
-            <span
-              className="hotspot-marker"
-              aria-hidden="true"
-              style={{
-                left: `${String((pointX / BACK_STAGE_W) * 100)}%`,
-                top: `${String((pointY / BACK_STAGE_H) * 100)}%`,
-              }}
-            />
-            <svg
-              className="hotspot-line"
-              aria-hidden="true"
-              viewBox={`0 0 ${String(BACK_STAGE_W)} ${String(BACK_STAGE_H)}`}
-              preserveAspectRatio="none"
-            >
-              <line
-                className="leader-under"
-                x1={anchorX}
-                y1={socket.labelY + BACK_PILL_H / 2}
-                x2={pointX}
-                y2={pointY}
+    <div className="back-panel">
+      <div
+        className="visualizer-stage back-stage"
+        style={{ aspectRatio: `${String(BACK_STAGE_W)} / ${String(BACK_STAGE_H)}` }}
+        dir="ltr"
+      >
+        <img
+          className="quadstick-photo back-photo"
+          src={backPhoto}
+          alt=""
+          aria-hidden="true"
+          style={{
+            left: `${String((BACK_PHOTO_X / BACK_STAGE_W) * 100)}%`,
+            top: `${String((BACK_PHOTO_Y / BACK_STAGE_H) * 100)}%`,
+            width: `${String((BACK_PHOTO_W / BACK_STAGE_W) * 100)}%`,
+            height: `${String((BACK_PHOTO_H / BACK_STAGE_H) * 100)}%`,
+          }}
+        />
+        {BACK_SOCKETS.map((socket) => {
+          const pointX = BACK_PHOTO_X + socket.fx * BACK_PHOTO_W;
+          const pointY = BACK_PHOTO_Y + socket.fy * BACK_PHOTO_H;
+          const labelX = socket.left ? 0 : BACK_STAGE_W - BACK_PILL_W;
+          const anchorX = socket.left ? BACK_PILL_W : labelX;
+          const mapped = mappedOnChannels(socket.channels);
+          const selected = selectedZone === socket.zone;
+          return (
+            <div className="hotspot-group" key={socket.nameKey}>
+              <span
+                className="hotspot-marker"
+                aria-hidden="true"
+                style={{
+                  left: `${String((pointX / BACK_STAGE_W) * 100)}%`,
+                  top: `${String((pointY / BACK_STAGE_H) * 100)}%`,
+                }}
               />
-              <line
-                className="leader-over"
-                x1={anchorX}
-                y1={socket.labelY + BACK_PILL_H / 2}
-                x2={pointX}
-                y2={pointY}
-              />
-            </svg>
-            <div
-              className="zone-callout back-socket"
-              style={{
-                left: `${String((labelX / BACK_STAGE_W) * 100)}%`,
-                top: `${String((socket.labelY / BACK_STAGE_H) * 100)}%`,
-                width: `${String((BACK_PILL_W / BACK_STAGE_W) * 100)}%`,
-                minHeight: `${String((BACK_PILL_H / BACK_STAGE_H) * 100)}%`,
-              }}
-            >
-              <strong className="zone-callout-title">{t(socket.nameKey)}</strong>
-              <span className="muted">{t(socket.detailKey)}</span>
+              <svg
+                className="hotspot-line"
+                aria-hidden="true"
+                viewBox={`0 0 ${String(BACK_STAGE_W)} ${String(BACK_STAGE_H)}`}
+                preserveAspectRatio="none"
+              >
+                <line
+                  className="leader-under"
+                  x1={anchorX}
+                  y1={socket.labelY + BACK_PILL_H / 2}
+                  x2={pointX}
+                  y2={pointY}
+                />
+                <line
+                  className="leader-over"
+                  x1={anchorX}
+                  y1={socket.labelY + BACK_PILL_H / 2}
+                  x2={pointX}
+                  y2={pointY}
+                />
+              </svg>
+              <button
+                type="button"
+                className={selected ? "zone-callout back-socket selected" : "zone-callout back-socket"}
+                aria-pressed={selected}
+                aria-label={`${t(socket.nameKey)}. ${t(socket.detailKey)}`}
+                style={{
+                  left: `${String((labelX / BACK_STAGE_W) * 100)}%`,
+                  top: `${String((socket.labelY / BACK_STAGE_H) * 100)}%`,
+                  width: `${String((BACK_PILL_W / BACK_STAGE_W) * 100)}%`,
+                  minHeight: `${String((BACK_PILL_H / BACK_STAGE_H) * 100)}%`,
+                }}
+                onClick={() => selectBackSocket(socket.zone, socket.seed)}
+              >
+                <strong className="zone-callout-title">{t(socket.nameKey)}</strong>
+                <span className="muted">{t(socket.detailKey)}</span>
+                {mapped.length > 0 ? (
+                  <span className="back-mapped">{mapped.slice(0, 3).join(" · ")}</span>
+                ) : null}
+              </button>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
+      <ul className="back-guide">
+        {BACK_SOCKETS.filter((socket) => socket.zone === "jacks").map((socket) => (
+          <li key={socket.guideKey}>{t(socket.guideKey)}</li>
+        ))}
+      </ul>
     </div>
+  );
+
+  const offModelTotal = foreignZones.reduce(
+    (sum, zone) => sum + (rowsByZone.get(zone.id)?.length ?? 0),
+    0,
   );
 
   return (
@@ -882,7 +1012,7 @@ export function QuadStickVisualizer({
       {foreignZones.length > 0 ? (
         <p className="model-mismatch" role="status">
           {t("Main_ThisProfileMapsPartsYour", [
-            foreignZones.map((zone) => t(zone.shortKey)).join(", "),
+            plural("Count_Part", foreignZones.length, [foreignZones.length]),
             MODEL_SHORT[model],
           ])}
         </p>
@@ -953,25 +1083,81 @@ export function QuadStickVisualizer({
         )}
       </div>
 
-      {extraZones.length > 0 ? (
+      {extraOnModel.length > 0 || foreignZones.length > 0 ? (
         <div className="visualizer-extra-zones" aria-label={t("Main_Parts")}>
-          {extraZones.map((zone) => {
+          {!showBack ? (
+            <button
+              type="button"
+              className="zone main-controls"
+              aria-label={t("Main_MainControlsCount", [
+                plural(
+                  "Count_Mapping",
+                  rows.filter((row) =>
+                    zonesForRow(row).some((zone) => diagram.zones.includes(zone) && zone !== "combo"),
+                  ).length,
+                  [
+                    rows.filter((row) =>
+                      zonesForRow(row).some((zone) => diagram.zones.includes(zone) && zone !== "combo"),
+                    ).length,
+                  ],
+                ),
+              ])}
+              onClick={showFront}
+            >
+              <strong>{t("Main_MainControls")}</strong>
+            </button>
+          ) : null}
+          {extraOnModel.map((zone) => {
             const count = rowsByZone.get(zone.id)?.length ?? 0;
-            const foreign = isForeignZone(zone.id, diagram);
             return (
               <button
                 key={zone.id}
                 type="button"
                 className={selectedZones.has(zone.id) ? "zone selected" : "zone"}
-                style={foreign ? { opacity: 0.5 } : undefined}
                 onClick={() => selectZone(zone)}
               >
                 <strong>{t(zone.titleKey)}</strong>
-                <span>{plural("Count_Mapping", count, [count])}</span>
-                {foreign ? <span className="muted">{t("Main_NotOnModel")}</span> : null}
+                <span>
+                  {count === 0 ? t("Main_NotMapped") : plural("Count_Mapping", count, [count])}
+                </span>
               </button>
             );
           })}
+          {foreignZones.length > 0 ? (
+            <details className="off-model-card">
+              <summary
+                aria-label={t("Main_NotOnYourModelNameParts", [
+                  t("Main_NotOnYourModelName", [MODEL_SHORT[model]]),
+                  plural("Count_Part", foreignZones.length, [foreignZones.length]),
+                  plural("Count_Mapping", offModelTotal, [offModelTotal]),
+                ])}
+              >
+                <strong>{t("Main_NotOnYourModelName", [MODEL_SHORT[model]])}</strong>
+                <span className="muted">
+                  {plural("Count_Part", foreignZones.length, [foreignZones.length])}
+                </span>
+                <span className="accent-count">
+                  {plural("Count_Mapping", offModelTotal, [offModelTotal])}
+                </span>
+              </summary>
+              <p className="muted">{t("Main_TheseRowsAreKeptInThe")}</p>
+              {foreignZones.map((zone) => {
+                const count = rowsByZone.get(zone.id)?.length ?? 0;
+                return (
+                  <button
+                    key={zone.id}
+                    type="button"
+                    className={selectedZones.has(zone.id) ? "zone selected" : "zone"}
+                    onClick={() => selectZone(zone)}
+                  >
+                    <strong>{t(zone.titleKey)}</strong>
+                    <span>{plural("Count_Mapping", count, [count])}</span>
+                    <span className="muted">{t("Main_NotOnModel")}</span>
+                  </button>
+                );
+              })}
+            </details>
+          ) : null}
         </div>
       ) : null}
 

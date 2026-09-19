@@ -361,6 +361,8 @@ export function summaryActionText(
 }
 
 export function zonesForRow(row: BindingCells): readonly ZoneId[] {
+  const output = row.cells[0]?.trim() ?? "";
+  if (isPreferenceOverride(output)) return ["settings"];
   const inputs = rowInputs(row.cells);
   if (inputs.length === 0) return ["unset"];
   return [...new Set(inputs.map(zoneOf))];
