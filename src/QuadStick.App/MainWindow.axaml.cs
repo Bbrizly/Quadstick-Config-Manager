@@ -968,7 +968,13 @@ public partial class MainWindow : Window
         // Settings can connect or disconnect Drive, and the Home button reads
         // that state. Without the refresh it keeps the old label until the user
         // navigates away from Home and back.
-        SettingsButton.Click += (_, _) => ShowSettingsPage();
+        // Same control opens Settings and leaves it. A second cog used to
+        // re-enter and could lose the return page; now it is Back.
+        SettingsButton.Click += (_, _) =>
+        {
+            if (SettingsPage.IsVisible) LeaveSettingsPage();
+            else ShowSettingsPage();
+        };
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
         // key. Ctrl-combos are safe to fire even while a field has focus
@@ -1723,6 +1729,19 @@ public partial class MainWindow : Window
             p.IsVisible = ReferenceEquals(p, page);
         foreach (var t in new[] { ShellHomeButton, ShellDeviceButton, ShellCommunityButton })
             if (ReferenceEquals(t, tab)) t.Classes.Add("active"); else t.Classes.Remove("active");
+        SyncSettingsChrome();
+    }
+
+    // Cog while Settings is open is Back: same leave path, icon and name swap
+    // so colour is never the only signal.
+    void SyncSettingsChrome()
+    {
+        bool on = SettingsPage.IsVisible;
+        ((PathIcon)SettingsButton.Content!).Data =
+            (Geometry)Application.Current!.FindResource(on ? "IconBack" : "IconSettings")!;
+        ToolTip.SetTip(SettingsButton, on ? Strings.Main_Back : Strings.Shell_Settings);
+        AutomationProperties.SetName(SettingsButton,
+            on ? Strings.Settings_BackHelp : Strings.Shell_OpenSettings);
     }
 
     SettingsView? _settingsView;
@@ -1742,7 +1761,7 @@ public partial class MainWindow : Window
         if (SettingsPageBody.Children.Count == 0)
             SettingsPageBody.Children.Add(SettingsView);
         ShowPage(SettingsPage, null);
-        SettingsView.FocusBack();
+        SettingsButton.Focus();
         UpdateLayout();
     }
 

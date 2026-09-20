@@ -22,7 +22,6 @@ namespace QuadStick.App;
 public class SettingsView : UserControl
 {
     readonly MainWindow _owner;
-    readonly Button _back;
     readonly TabControl _tabs;
 
     // The feedback button rides on the usage-data consent, and that consent is
@@ -42,15 +41,6 @@ public class SettingsView : UserControl
         HorizontalAlignment = HorizontalAlignment.Stretch;
         VerticalAlignment = VerticalAlignment.Stretch;
 
-        _back = new Button
-        {
-            Content = new TextBlock { Text = Strings.Main_Back, FontSize = Size("BodySize") },
-            Classes = { "shellnav" },
-            HorizontalAlignment = HorizontalAlignment.Left,
-        };
-        AutomationProperties.SetName(_back, Strings.Settings_BackHelp);
-        _back.Click += (_, _) => _owner.LeaveSettingsPage();
-
         _tabs = new TabControl
         {
             Items =
@@ -62,17 +52,12 @@ public class SettingsView : UserControl
             },
         };
 
+        // Back lives on the shell cog (it turns into the leave control while
+        // this page is open). A second Back here was two places for one job.
         var title = new TextBlock
         {
             Text = Strings.Settings_Title, Classes = { "section" },
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-
-        var header = new StackPanel
-        {
-            Orientation = Orientation.Horizontal, Spacing = 14,
             Margin = new Thickness(0, 0, 0, 18),
-            Children = { _back, title },
         };
 
         Content = new Grid
@@ -80,14 +65,12 @@ public class SettingsView : UserControl
             RowDefinitions = new RowDefinitions("Auto,*"),
             Children =
             {
-                header,
+                title,
                 _tabs,
             },
         };
         Grid.SetRow(_tabs, 1);
     }
-
-    internal void FocusBack() => _back.Focus();
 
     // Leaving with an interface-size preview still pending counts as "not
     // confirmed", so put the size back, matching the countdown.

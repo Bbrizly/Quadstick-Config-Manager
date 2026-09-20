@@ -68,9 +68,9 @@ public class SettingsPageTests
         w.Close();
     }
 
-    // DerPasi's steps: the cog again while Settings is open, then Back.
+    // DerPasi's steps: the cog again while Settings is open leaves, same as Back.
     [AvaloniaFact]
-    public void Cog_twice_then_back_returns_to_the_profile()
+    public void Cog_twice_returns_to_the_profile()
     {
         var s = Settings.Load();
         s.TutorialSeen = true;
@@ -81,12 +81,15 @@ public class SettingsPageTests
         w.LoadProfile(file);
 
         w.SettingsButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Assert.True(w.FindControl<DockPanel>("SettingsPage")!.IsVisible);
+        Assert.Equal("Go back from Settings", AutomationProperties.GetName(w.SettingsButton));
+
         w.SettingsButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Dispatcher.UIThread.RunJobs();
-        w.LeaveSettingsPage();
 
         Assert.True(w.EditorView.IsVisible);
         Assert.Same(file, w.OpenFile);
+        Assert.Equal("Open Settings", AutomationProperties.GetName(w.SettingsButton));
         file.Dirty = false;
         w.Close();
     }
@@ -201,7 +204,7 @@ public class SettingsPageTests
     }
 
     [AvaloniaFact]
-    public void Back_button_returns_to_the_page_you_came_from()
+    public void Shell_cog_returns_to_the_page_you_came_from()
     {
         var s = Settings.Load();
         s.TutorialSeen = true;
@@ -214,9 +217,8 @@ public class SettingsPageTests
         OpenSettings(w);
         Assert.True(w.FindControl<DockPanel>("SettingsPage")!.IsVisible);
 
-        var back = w.GetVisualDescendants().OfType<Button>()
-            .First(b => AutomationProperties.GetName(b) == "Go back from Settings");
-        Ui.Click(back);
+        Assert.Equal("Go back from Settings", AutomationProperties.GetName(w.SettingsButton));
+        Ui.Click(w.SettingsButton);
 
         Assert.True(w.FindControl<DockPanel>("EditorView")!.IsVisible);
         Assert.False(w.FindControl<DockPanel>("SettingsPage")!.IsVisible);
