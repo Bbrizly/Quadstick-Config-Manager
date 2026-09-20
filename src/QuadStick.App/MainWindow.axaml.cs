@@ -8087,17 +8087,38 @@ public partial class MainWindow : Window
 
         Button Item(string token)
         {
+            // The name on the pad, when the firmware's word is not printed on
+            // it anywhere. A PS5 owner hunting for Options finds "start" and
+            // gives up, which is the bug this line answers.
+            var also = OutputCatalog.OtherNames(token);
+            Control face = visualFor is null
+                ? new TextBlock
+                { Text = labelFor(token), FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap }
+                : visualFor(token);
+            if (also.Length > 0)
+                face = new StackPanel
+                {
+                    Children =
+                    {
+                        face,
+                        new TextBlock
+                        {
+                            Text = also, FontSize = Size("SmallSize"), Classes = { "muted" },
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                    },
+                };
             var it = new Button
             {
-                Content = visualFor is null
-                    ? new TextBlock
-                    { Text = labelFor(token), FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap }
-                    : visualFor(token),
+                Content = face,
                 Classes = { "quiet" },
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Left,
             };
+            // Name stays the token, because the token is what the row gets.
+            // The pad's word for it is the description beside it.
             AutomationProperties.SetName(it, labelFor(token));
+            if (also.Length > 0) AutomationProperties.SetHelpText(it, also);
             it.Click += (_, _) => Commit(token);
             return it;
         }

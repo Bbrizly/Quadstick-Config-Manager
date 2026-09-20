@@ -107,6 +107,25 @@ public sealed class PickerVocabularyTests : IDisposable
         Assert.Contains("start", options);
     }
 
+    // Sony renamed start to Options in 2013 and the firmware kept the PS3
+    // word. A PS5 owner read the whole list, found no Options, and reported
+    // the button missing (Drew, 2026-09-18). It is there; it was unnamed.
+    [AvaloniaTheory]
+    [InlineData("start", "Options")]
+    [InlineData("select", "Share")]
+    [InlineData("ps3", "PS button")]
+    [InlineData("touch", "touchpad")]
+    public void ThePadsOwnWordIsOnTheRow(string token, string word)
+    {
+        var w = Open("All");
+        var row = OpenPicker(w).GetVisualDescendants().OfType<Button>()
+            .First(b => AutomationProperties.GetName(b) == token);
+        Assert.Contains(word, AutomationProperties.GetHelpText(row), StringComparison.Ordinal);
+        // Spoken is not enough: it has to be readable on the row too.
+        var seen = row.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text ?? "");
+        Assert.Contains(seen, t => t.Contains(word, StringComparison.Ordinal));
+    }
+
     // Filtering the list must never filter away what the row already holds,
     // or the cell reads one output and its own picker denies it exists.
     [AvaloniaFact]

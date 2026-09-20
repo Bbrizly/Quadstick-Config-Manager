@@ -751,46 +751,6 @@
   <data name="Install_BackingUpAndInstalling" xml:space="preserve">
     <value>Backing up and installing…</value>
   </data>
-  <data name="Install_LettingTheDeviceFinish" xml:space="preserve">
-    <value>Letting the QuadStick finish writing…</value>
-  </data>
-  <data name="Install_SafeToUnplug" xml:space="preserve">
-    <value>Safe to unplug.</value>
-  </data>
-  <data name="Install_SafeToUnplugAbout" xml:space="preserve">
-    <value>The QuadStick holds the last few kilobytes it was sent in memory and writes them to its flash about a second and a half later. Unplug it inside that gap and the drive loses a block of its own index, which breaks files you never touched, most often prefs.csv. Windows then reports error 0x80070570 and you have to run Error checking on the drive and put the file back. "Safely remove hardware" does not help, because the QuadStick does not answer the command Windows sends to flush a drive. Waiting does. The app has already waited, so once this line appears the write is on the flash and the QuadStick can come out.</value>
-  </data>
-  <data name="Install_SafeToUnplugTitle" xml:space="preserve">
-    <value>Why it waits before saying this</value>
-  </data>
-  <data name="Shell_PrefsBroken" xml:space="preserve">
-    <value>The QuadStick's settings file is damaged.</value>
-  </data>
-  <data name="Shell_PrefsGone" xml:space="preserve">
-    <value>The QuadStick's settings file is no longer on the drive.</value>
-  </data>
-  <data name="Shell_PrefsPutBack" xml:space="preserve">
-    <value>Put back the copy from {0}</value>
-  </data>
-  <data name="Shell_PrefsPutBackName" xml:space="preserve">
-    <value>Put the saved copy of prefs.csv back on the QuadStick. It was saved on {0}.</value>
-  </data>
-  <data name="Shell_PrefsNoCopy" xml:space="preserve">
-    <value>No saved copy to put back.</value>
-  </data>
-  <data name="Shell_PrefsRestored" xml:space="preserve">
-    <value>prefs.csv put back on {0}.</value>
-  </data>
-  <data name="Shell_PrefsTitle" xml:space="preserve">
-    <value>What happens to this file</value>
-  </data>
-  <data name="Shell_PrefsAbout" xml:space="preserve">
-    <value>prefs.csv holds the QuadStick's own settings, the ones that apply across every profile. The device reads it at startup and whenever it changes, and it will refuse a copy that does not begin with the word QuadStick or that is missing its first few lines. This one does, which is usually what is left after Windows repairs the drive.
-
-The drive gets damaged when a profile switch changes the USB emulation mode. The QuadStick has to disconnect its drive and reconnect it so your computer sees the new controller type, and Windows is not told in advance, so its record of the drive and the drive itself can end up disagreeing. It lands on prefs.csv more often than anything else. Setting the same USB emulation mode in every profile stops the switch happening at all.
-
-This app keeps a copy of the last version the device would accept, taken whenever it sees a good one. Putting it back writes those exact bytes, and keeps the damaged file in your backups folder in case it still holds something.</value>
-  </data>
   <data name="Install_BackupPath" xml:space="preserve">
     <value>Backup: {0}</value>
   </data>
@@ -830,6 +790,9 @@ This app keeps a copy of the last version the device would accept, taken wheneve
   <data name="Install_InstallingTo" xml:space="preserve">
     <value>Installing to</value>
   </data>
+  <data name="Install_LettingTheDeviceFinish" xml:space="preserve">
+    <value>Letting the QuadStick finish writing…</value>
+  </data>
   <data name="Install_NoPreviousFile" xml:space="preserve">
     <value>no previous file to back up</value>
   </data>
@@ -844,6 +807,15 @@ This app keeps a copy of the last version the device would accept, taken wheneve
   </data>
   <data name="Install_PrefsCsvHoldsTheDevice" xml:space="preserve">
     <value>prefs.csv holds the device's own settings, so this changes how the QuadStick behaves in every profile on {0}. The prefs.csv already on the drive is backed up first. Continue?</value>
+  </data>
+  <data name="Install_SafeToUnplug" xml:space="preserve">
+    <value>Safe to unplug.</value>
+  </data>
+  <data name="Install_SafeToUnplugAbout" xml:space="preserve">
+    <value>The QuadStick holds the last few kilobytes it was sent in memory and writes them to its flash about a second and a half later. Unplug it inside that gap and the drive loses a block of its own index, which breaks files you never touched, most often prefs.csv. Windows then reports error 0x80070570 and you have to run Error checking on the drive and put the file back. "Safely remove hardware" does not help, because the QuadStick does not answer the command Windows sends to flush a drive. Waiting does. The app has already waited, so once this line appears the write is on the flash and the QuadStick can come out.</value>
+  </data>
+  <data name="Install_SafeToUnplugTitle" xml:space="preserve">
+    <value>Why it waits before saying this</value>
   </data>
   <data name="Install_TargetDriveRoot" xml:space="preserve">
     <value>Target drive: {0}</value>
@@ -2393,6 +2365,27 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   <data name="Names_YourNameForThisOutput" xml:space="preserve">
     <value>Your name for this output</value>
   </data>
+  <data name="Outputs_AlsoBack" xml:space="preserve">
+    <value>View on an Xbox pad</value>
+  </data>
+  <data name="Outputs_AlsoCapture" xml:space="preserve">
+    <value>The Share button on an Xbox pad</value>
+  </data>
+  <data name="Outputs_AlsoGuide" xml:space="preserve">
+    <value>The Xbox button in the middle of the pad</value>
+  </data>
+  <data name="Outputs_AlsoPsButton" xml:space="preserve">
+    <value>The PS button in the middle of the pad</value>
+  </data>
+  <data name="Outputs_AlsoSelect" xml:space="preserve">
+    <value>Share on a PS4 pad, Create on a PS5 pad</value>
+  </data>
+  <data name="Outputs_AlsoStart" xml:space="preserve">
+    <value>Options on a PlayStation pad, Menu on an Xbox pad</value>
+  </data>
+  <data name="Outputs_AlsoTouch" xml:space="preserve">
+    <value>The touchpad, pressed like a button</value>
+  </data>
   <data name="Outputs_DeviceSettings" xml:space="preserve">
     <value>Device settings</value>
   </data>
@@ -3374,6 +3367,34 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
   </data>
   <data name="Shell_PlugInYourQuadStickTo" xml:space="preserve">
     <value>Plug in your QuadStick to see its profiles. If the drive is hidden, turn off controller emulation and reconnect it.</value>
+  </data>
+  <data name="Shell_PrefsAbout" xml:space="preserve">
+    <value>prefs.csv holds the QuadStick's own settings, the ones that apply across every profile. The device reads it at startup and whenever it changes, and it will refuse a copy that does not begin with the word QuadStick or that is missing its first few lines. This one does, which is usually what is left after Windows repairs the drive.
+
+The drive gets damaged when a profile switch changes the USB emulation mode. The QuadStick has to disconnect its drive and reconnect it so your computer sees the new controller type, and Windows is not told in advance, so its record of the drive and the drive itself can end up disagreeing. It lands on prefs.csv more often than anything else. Setting the same USB emulation mode in every profile stops the switch happening at all.
+
+This app keeps a copy of the last version the device would accept, taken whenever it sees a good one. Putting it back writes those exact bytes, and keeps the damaged file in your backups folder in case it still holds something.</value>
+  </data>
+  <data name="Shell_PrefsBroken" xml:space="preserve">
+    <value>The QuadStick's settings file is damaged.</value>
+  </data>
+  <data name="Shell_PrefsGone" xml:space="preserve">
+    <value>The QuadStick's settings file is no longer on the drive.</value>
+  </data>
+  <data name="Shell_PrefsNoCopy" xml:space="preserve">
+    <value>No saved copy to put back.</value>
+  </data>
+  <data name="Shell_PrefsPutBack" xml:space="preserve">
+    <value>Put back the copy from {0}</value>
+  </data>
+  <data name="Shell_PrefsPutBackName" xml:space="preserve">
+    <value>Put the saved copy of prefs.csv back on the QuadStick. It was saved on {0}.</value>
+  </data>
+  <data name="Shell_PrefsRestored" xml:space="preserve">
+    <value>prefs.csv put back on {0}.</value>
+  </data>
+  <data name="Shell_PrefsTitle" xml:space="preserve">
+    <value>What happens to this file</value>
   </data>
   <data name="Shell_Profile" xml:space="preserve">
     <value>Profile</value>

@@ -137,12 +137,29 @@ public static class OutputCatalog
         "kb_left_alt", "kb_right_alt", "kb_left_gui", "kb_right_gui",
     };
 
-    /// <summary>Words that find a token but are not written on it. The
-    /// Windows key is GUI in the HID tables the firmware follows, so the
-    /// keyboard in front of somebody and the name in this app share no
-    /// letters. Searched, never drawn.</summary>
-    public static string OtherNames(string t) =>
-        t is "kb_left_gui" or "kb_right_gui" ? Strings.Outputs_GuiKeyOtherNames : "";
+    /// <summary>What the button is called on the pad in front of somebody,
+    /// when the firmware's word for it is not printed anywhere. Sony renamed
+    /// start to Options and select to Share in 2013 and the firmware kept the
+    /// PS3 spellings, so a PS5 owner reads a list with no Options in it.
+    /// Drawn under the token and searched with it. Empty means the token says
+    /// it already.</summary>
+    public static string OtherNames(string t) => t switch
+    {
+        "kb_left_gui" or "kb_right_gui" => Strings.Outputs_GuiKeyOtherNames,
+        "start" => Strings.Outputs_AlsoStart,
+        "select" => Strings.Outputs_AlsoSelect,
+        "back" => Strings.Outputs_AlsoBack,
+        "ps3" => Strings.Outputs_AlsoPsButton,
+        "guide" => Strings.Outputs_AlsoGuide,
+        "touch" => Strings.Outputs_AlsoTouch,
+        "capture" => Strings.Outputs_AlsoCapture,
+        // Printed on the pad, so no sentence and nothing to translate.
+        "left_1" => "L1", "left_2" => "L2", "left_3" => "L3",
+        "right_1" => "R1", "right_2" => "R2", "right_3" => "R3",
+        "left_bumper" => "LB", "left_trigger" => "LT", "left_stick" => "LS",
+        "right_bumper" => "RB", "right_trigger" => "RT", "right_stick" => "RS",
+        _ => "",
+    };
 
     public static (string Category, string Sub) Classify(string t) => t switch
     {
