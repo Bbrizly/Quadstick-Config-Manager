@@ -282,14 +282,14 @@
  {
   "name": "enable_DS3_emulation",
   "label": "[ÚŠB émúlátíóñ módé xxxxxxx]",
-  "description": "[Whíçh çóñtróllér thé QúádŠtíçk prétéñdš tó bé. Thé çóñšólé háš tó kñów thé óñé ýóú píçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
-  "risk": "[Á módé márkéd ñó drívé hídéš thé QúádŠtíçk'š fíléš fróm ýóúr çómpútér úñtíl ýóú šét ít báçk. Thé ñúmbérš álšó méáñ šóméthíñg dífféréñt óñ óldér QúádŠtíçkš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "description": "[Whíçh çóñtróllér thé QúádŠtíçk prétéñdš tó bé. Thé çóñšólé háš tó kñów thé óñé ýóú píçk. Módéš 2 áñd 3 áré bóth Xbóx óñ á PÇ áñd théý áré ñót thé šámé trádé. Óñ módé 2 thé QúádŠtíçk íš á pláíñ gámépád, áñd á prógrám óñ thé çómpútér háš tó túrñ ít íñtó áñ Xbóx çóñtróllér: QúádŠtíçk Máñágér dóéš thíš whílé ít íš ópéñ, áñd x360çé dóéš ít pér gámé. Wíth ñéíthér rúññíñg, á gámé áškíñg ýóú tó préšš Á šééš ñó çóñtróllér át áll. Módé 3 ñéédš ñóthíñg rúññíñg, béçáúšé thé QúádŠtíçk répórtš ítšélf áš á réál Xbóx 360 çóñtróllér, bút thát íš thé óñlý thíñg ít ófférš óñ thát módé: ñó kéýbóárd, ñó móúšé áñd ñó drívé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "risk": "[Á módé márkéd ñó drívé hídéš thé QúádŠtíçk'š fíléš fróm ýóúr çómpútér úñtíl ýóú šét ít báçk. Módé 3 drópš thé kéýbóárd áñd móúšé wíth thém, šó á prófílé thát týpéš ór móvéš á póíñtér štópš dóíñg ít. Thé ñúmbérš álšó méáñ šóméthíñg dífféréñt óñ óldér QúádŠtíçkš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
   "alsoCalled": "[Bóót íñ PŠ4 Módé xxxxxx]",
   "optionLabels": [
    "[QúádŠtíçk (PÇ áñd PŠ3) xxxxxxxx]",
    "[DúálŠhóçk 3 xxxx]",
-   "[x360çé, fór á PÇ xxxxxx]",
-   "[Xbóx 360 çóñtróllér xxxxxxx]",
+   "[x360çé, ñéédš á hélpér rúññíñg xxxxxxxxxxxx]",
+   "[Xbóx 360 çóñtróllér, gámépád óñlý xxxxxxxxxxxxx]",
    "[DúálŠhóçk 4, fór á PŠ4 xxxxxxxx]",
    "[Ñíñtéñdó Šwítçh Pró Çóñtróllér xxxxxxxxxxxx]",
    "[DúálŠhóçk 4 xxxx]",

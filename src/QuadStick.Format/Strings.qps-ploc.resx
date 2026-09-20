@@ -58,6 +58,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Prefs_NoSavedCopyOfPrefs" xml:space="preserve">
+    <value>[Théré íš ñó šávéd çópý óf préfš.çšv tó pút báçk. xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Device_DeclaredIsTooLongFor" xml:space="preserve">
     <value>["{0}" íš tóó lóñg fór thé QúádŠtíçk tó lóád, šó ñóthíñg wáš wríttéñ. Á prófílé ñámé çáñ bé {1} çháráçtérš át móšt, çóúñtíñg ".çšv", áñd thíš óñé íš {2}. Šhórtéñ thé ñámé íñ çéll Á2 áñd íñštáll ágáíñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
@@ -504,7 +507,7 @@
     <value>[Úšé {0} tó {1}. {2} xxxxxxx]</value>
   </data>
   <data name="Issue_UseMode023" xml:space="preserve">
-    <value>[Úšé módé 0, 2, 3 ór 4 héré, áñd šét thé óthér módé íñ á gámé prófílé íñštéád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Úšé módé 0, 2 ór 4 héré, áñd šét thé óthér módé íñ á gámé prófílé íñštéád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Issue_UseOneOfStringJoin" xml:space="preserve">
     <value>[Úšé óñé óf: {0}. xxxxxx]</value>
@@ -694,5 +697,11 @@
   </data>
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>[Thíš špréádšhéét íš lárgér tháñ {0} rówš, fár lárgér tháñ áñý prófílé, šó wé štóppéd réádíñg párt wáý thróúgh. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Issue_XboxTriggersAreAnAxis" xml:space="preserve">
+    <value>[ÚŠB émúlátíóñ módé {0} šéñdš thé tríggérš áš á préššúré áxíš áñd ñó búttóñ, šó rów {2} ("{1}") préššéš óñlý áš hárd áš thé šíp dóéš. Évérý óthér módé šéñdš á pláíñ búttóñ áš wéll, whíçh íš whý thé šámé rów wórkš théré. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Issue_LowerSipPuffMaximum" xml:space="preserve">
+    <value>[Thé gáp bétwééñ šíp_púff_thréšhóld áñd šíp_púff_máxímúm íš thé whólé tríggér trávél héré, áñd ít íš 60 tó 80 bý défáúlt. Móvé šíp_púff_máxímúm çlóšér tó thé thréšhóld, bút ñévér óñtó ít, šó á çómfórtáblé šíp réáçhéš fúll púll. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
 </root>
