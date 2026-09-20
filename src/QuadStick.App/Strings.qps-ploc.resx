@@ -1420,6 +1420,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_NamesShownTip" xml:space="preserve">
     <value>[Whíçh çóñtróllér ñáméš thíš líšt ófférš. Thé QúádŠtíçk réádš bóth špéllíñgš áš thé šámé óútpút, šó hídíñg óñé hídéš ñó búttóñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_NarrowedToPart" xml:space="preserve">
+    <value>[Šhówíñg {0} óñlý. xxxxxx]</value>
+  </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>[Ñéw ñámé fór thíš témpláté xxxxxxxxxx]</value>
   </data>
@@ -1850,6 +1853,12 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
   </data>
   <data name="Main_ShareThisSheet" xml:space="preserve">
     <value>[Šháré thíš šhéét? xxxxxx]</value>
+  </data>
+  <data name="Main_ShowAllCount" xml:space="preserve">
+    <value>[Šhów áll {0} xxxx]</value>
+  </data>
+  <data name="Main_ShowEveryMappingHere" xml:space="preserve">
+    <value>[Šhów évérý máppíñg óñ thíš párt óf thé dévíçé xxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_ShowsTheProblems" xml:space="preserve">
     <value>[{0}. Šhówš thé líšt óf próblémš. xxxxxxxxxxxx]</value>

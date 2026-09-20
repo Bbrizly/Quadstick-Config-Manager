@@ -3179,6 +3179,28 @@ public partial class MainWindow : Window
     static string Pair(string a, string b) =>
         string.Format(CultureInfo.CurrentCulture, Strings.Main_APlusB, a, b);
 
+    // Which part of a zone an input sits on, when the zone holds more than one.
+    // A mouthpiece hole is its own zone, so a click on it narrows the list to
+    // itself and nothing here is needed. Switch jacks and hole pairings are not:
+    // four sockets share one zone and five pairings share another, so a click on
+    // the picture picked a part the list beside it then ignored. Null means the
+    // zone is the part.
+    internal static string? PartOf(string input) => ZoneOf(input) switch
+    {
+        "jacks" => SwitchJacks.For(input)?.Port,
+        "combo" => ComboPrefix(input) is { Length: > 0 } c ? c : null,
+        _ => null,
+    };
+
+    // The name of that part in the reader's language, for the line that says
+    // the list is narrowed.
+    internal static string PartLabel(string input) => ZoneOf(input) switch
+    {
+        "jacks" => SwitchJacks.For(input) is { } j ? SwitchJacks.PortLabel(j.Port) : "",
+        "combo" => ComboPair(input),
+        _ => "",
+    };
+
     // Chip text: the short form, since the zone heading above it already says
     // which part it is on. Combos are the exception. Every pairing strips to
     // the same word, so a combo chip has to name its pairing.
@@ -4924,6 +4946,17 @@ public partial class MainWindow : Window
         byZone.TryGetValue(zone.Id, out var bindings);
         bindings = SortedLikeTheDiagram(bindings, zone.Id);
 
+        // Drew asked for this (2026-09-18): picking a socket or a hole pairing
+        // in the picture used to leave all four sockets in the list beside it,
+        // while picking a hole on the front narrowed to that hole. The count
+        // under the heading is what the list holds, and the line below it says
+        // it is narrowed and undoes it, so nothing is hidden silently.
+        int zoneCount = bindings?.Count ?? 0;
+        string? part = _pickedInput is { Length: > 0 } picked && ZoneOf(picked) == zone.Id
+            ? PartOf(picked) : null;
+        if (part is not null && bindings is { Count: > 0 })
+            bindings = bindings.Where(b => b.Inputs.Any(i => PartOf(i) == part)).ToList();
+
         int mappingCount = bindings?.Count ?? 0;
         var zoneTitle = new TextBlock
         {
@@ -4969,6 +5002,9 @@ public partial class MainWindow : Window
         Grid.SetColumn(meta, 1);
         heading.Children.Add(meta);
         ZoneDetailPanel.Children.Add(heading);
+
+        if (part is not null && zoneCount > mappingCount)
+            ZoneDetailPanel.Children.Add(NarrowedRow(_pickedInput!, zoneCount));
 
         // The two zones that live on the back of the case get the panel drawn
         // out, because the numbering is the whole problem: nothing on the
@@ -5180,7 +5216,11 @@ public partial class MainWindow : Window
             // Ordered by socket, top of the case down, so the first thing
             // offered on the jacks is the top jack rather than digital_in_1.
             // The USB-A data pins sort last: nothing plugs into them.
-            var freeHere = UnusedInputs(zone.Id).Where(i => ZoneOf(i) == zone.Id)
+            // "on this part" has to mean the part the list is narrowed to, or
+            // the jacks screen offers the bottom jack under the top jack's
+            // heading.
+            var freeHere = UnusedInputs(zone.Id)
+                .Where(i => ZoneOf(i) == zone.Id && (part is null || PartOf(i) == part))
                 .OrderBy(JackRank).ToList();
             if (freeHere.Count > 0)
             {
@@ -5263,6 +5303,36 @@ public partial class MainWindow : Window
     // A row on something that is not one of the part's gestures keeps its place
     // behind the ones that are. OrderBy is stable, so two rows on one gesture
     // stay in the order the file has them.
+    // Says the list is narrowed and takes it back. A list that quietly holds
+    // fewer rows than the zone has is the app knowing something and not saying
+    // it, which is how a mapping gets reported missing.
+    Control NarrowedRow(string picked, int zoneCount)
+    {
+        var said = new TextBlock
+        {
+            Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_NarrowedToPart, PartLabel(picked)),
+            FontSize = Size("SmallSize"), Classes = { "muted" },
+            TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center,
+        };
+        var all = new Button
+        {
+            Content = new TextBlock
+            {
+                Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_ShowAllCount, zoneCount),
+                FontSize = Size("SmallSize"),
+            },
+            Classes = { "quiet" },
+        };
+        AutomationProperties.SetName(all, Strings.Main_ShowEveryMappingHere);
+        all.Click += (_, _) => { _pickedInput = null; BuildDeviceView(); BuildZoneDetail(); };
+        return new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            Margin = new Thickness(0, 0, 16, 6),
+            Children = { said, all },
+        };
+    }
+
     List<Binding>? SortedLikeTheDiagram(List<Binding>? bindings, string zoneId)
     {
         if (bindings is null || bindings.Count < 2) return bindings;
