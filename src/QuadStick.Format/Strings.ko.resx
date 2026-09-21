@@ -177,10 +177,10 @@
     <value>반복 간격</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: {1}에서 {2}까지. 비워두면 {3}을 의미합니다. {4}</value>
+    <value>{4} {0}: {1}에서 {2}까지. 비워두면 {3}을 의미합니다.</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: {1}에서 {2} {5}까지. 비워두면 {3}을 의미합니다. {4}</value>
+    <value>{4} {0}: {1}에서 {2} {5}까지. 비워두면 {3}을 의미합니다.</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>입력이 이 값을 넘으면 다시 실행되지 않으므로, 두 숫자가 하나의 구간을 이룹니다.</value>

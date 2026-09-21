@@ -177,10 +177,10 @@
     <value>التكرار كل</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: من {1} إلى {2}. الفراغ يعني {3}. {4}</value>
+    <value>{4} {0}: من {1} إلى {2}. الفراغ يعني {3}.</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: من {1} إلى {2} {5}. الفراغ يعني {3}. {4}</value>
+    <value>{4} {0}: من {1} إلى {2} {5}. الفراغ يعني {3}.</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>يتوقف عن الإطلاق مرة أخرى بمجرد أن يتجاوز مدخلك هذا الحد، فيشكل الرقمان نطاقًا.</value>

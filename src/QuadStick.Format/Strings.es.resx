@@ -177,10 +177,10 @@
     <value>Repetir cada</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: de {1} a {2}. En blanco significa {3}. {4}</value>
+    <value>{4} {0}: de {1} a {2}. En blanco significa {3}.</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: de {1} a {2} {5}. En blanco significa {3}. {4}</value>
+    <value>{4} {0}: de {1} a {2} {5}. En blanco significa {3}.</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>Deja de dispararse cuando su entrada supera este valor, de modo que los dos números forman una banda.</value>

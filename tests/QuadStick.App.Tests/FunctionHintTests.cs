@@ -76,13 +76,12 @@ public class FunctionHintTests
         Assert.Contains("Blank means 10 a second", hint, StringComparison.Ordinal);
     }
 
-    // Drew, 2026-09-05: the descriptions read long. What survived under the box
-    // is the range and the default, which is what somebody needs before typing.
-    // What the number does is a click away on the dot beside the box, and this
-    // is the pair: the short half on screen, the long half not on screen but
-    // reachable.
+    // Drew, 2026-09-19: the line left under the box was range and default and
+    // nothing else, which a reader without a technical background cannot act
+    // on. Both halves are on screen again, plain words first. The dot still
+    // carries them too, for the reader who opens it.
     [AvaloniaFact]
-    public void The_behaviour_sentence_moves_off_the_screen_and_onto_the_dot()
+    public void The_box_says_what_the_number_does_before_its_range()
     {
         var w = Editor(
             "Profile Name,,Solo\n" +
@@ -93,8 +92,8 @@ public class FunctionHintTests
 
         Assert.Contains("Press: 1 to 16383 milliseconds", text, StringComparison.Ordinal);
         Assert.Contains("Blank means 100 ms", text, StringComparison.Ordinal);
-        // The half that made the hint three lines tall.
-        Assert.DoesNotContain("the next turns it off", text, StringComparison.Ordinal);
+        // The half that was missing: what the number actually changes.
+        Assert.Contains("the next turns it off", text, StringComparison.Ordinal);
 
         var dot = w.GetVisualDescendants().OfType<Button>()
             .Single(b => (b.Content as string) == "?"

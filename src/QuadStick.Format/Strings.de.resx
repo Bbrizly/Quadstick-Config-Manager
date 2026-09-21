@@ -177,10 +177,10 @@
     <value>Wiederholen alle</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: {1} bis {2}. Leer bedeutet {3}. {4}</value>
+    <value>{4} {0}: {1} bis {2}. Leer bedeutet {3}.</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: {1} bis {2} {5}. Leer bedeutet {3}. {4}</value>
+    <value>{4} {0}: {1} bis {2} {5}. Leer bedeutet {3}.</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>Löst nicht mehr aus, sobald Ihre Eingabe darüber hinausgeht, sodass die beiden Zahlen einen Bereich bilden.</value>

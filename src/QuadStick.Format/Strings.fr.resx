@@ -177,10 +177,10 @@
     <value>Répéter toutes les</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0} : {1} à {2}. Vide signifie {3}. {4}</value>
+    <value>{4} {0} : {1} à {2}. Vide signifie {3}.</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0} : {1} à {2} {5}. Vide signifie {3}. {4}</value>
+    <value>{4} {0} : {1} à {2} {5}. Vide signifie {3}.</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>Cesse de se déclencher une fois que votre entrée dépasse cette valeur, donc les deux nombres forment une bande.</value>

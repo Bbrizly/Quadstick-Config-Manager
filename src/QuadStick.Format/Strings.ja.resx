@@ -177,10 +177,10 @@
     <value>繰り返し間隔</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: {1}から{2}まで。空欄の場合は{3}。{4}</value>
+    <value>{4} {0}: {1}から{2}まで。空欄の場合は{3}。</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: {1}から{2} {5}まで。空欄の場合は{3}。{4}</value>
+    <value>{4} {0}: {1}から{2} {5}まで。空欄の場合は{3}。</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>入力がこの値を超えると再発動を止めるため、2つの数値で範囲(バンド)ができます。</value>

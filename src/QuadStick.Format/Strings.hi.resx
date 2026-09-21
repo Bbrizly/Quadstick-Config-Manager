@@ -177,10 +177,10 @@
     <value>हर इतने समय पर दोहराएं</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: {1} से {2} तक। खाली छोड़ने का मतलब {3}। {4}</value>
+    <value>{4} {0}: {1} से {2} तक। खाली छोड़ने का मतलब {3}।</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: {1} से {2} {5} तक। खाली छोड़ने का मतलब {3}। {4}</value>
+    <value>{4} {0}: {1} से {2} {5} तक। खाली छोड़ने का मतलब {3}।</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>आपका इनपुट इससे आगे जाने पर फिर फायर होना बंद कर देता है, इसलिए दोनों संख्याएँ मिलकर एक बैंड बनाती हैं।</value>

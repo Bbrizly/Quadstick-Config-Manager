@@ -180,10 +180,10 @@
     <value>[Répéát évérý xxxx]</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>[{0}: {1} tó {2}. Bláñk méáñš {3}. {4} xxxxxxxxxxxxxx]</value>
+    <value>{4} [{0}: {1} tó {2}. Bláñk méáñš {3}. xxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>[{0}: {1} tó {2} {5}. Bláñk méáñš {3}. {4} xxxxxxxxxxxxxxxx]</value>
+    <value>{4} [{0}: {1} tó {2} {5}. Bláñk méáñš {3}. xxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>[Štópš fíríñg ágáíñ óñçé ýóúr íñpút góéš pášt thíš, šó thé twó ñúmbérš máké á báñd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>

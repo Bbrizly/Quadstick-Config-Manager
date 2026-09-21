@@ -180,10 +180,10 @@
     <value>Repeat every</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: {1} to {2}. Blank means {3}. {4}</value>
+    <value>{4} {0}: {1} to {2}. Blank means {3}.</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: {1} to {2} {5}. Blank means {3}. {4}</value>
+    <value>{4} {0}: {1} to {2} {5}. Blank means {3}.</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>Stops firing again once your input goes past this, so the two numbers make a band.</value>

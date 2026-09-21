@@ -177,10 +177,10 @@
     <value>Herhaal elke</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: {1} tot {2}. Leeg betekent {3}. {4}</value>
+    <value>{4} {0}: {1} tot {2}. Leeg betekent {3}.</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: {1} tot {2} {5}. Leeg betekent {3}. {4}</value>
+    <value>{4} {0}: {1} tot {2} {5}. Leeg betekent {3}.</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>Stopt weer met activeren zodra uw input hierboven komt, zodat de twee getallen een band vormen.</value>

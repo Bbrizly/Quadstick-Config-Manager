@@ -177,10 +177,10 @@
     <value>Powtarzaj co</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: {1} do {2}. Puste oznacza {3}. {4}</value>
+    <value>{4} {0}: {1} do {2}. Puste oznacza {3}.</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: {1} do {2} {5}. Puste oznacza {3}. {4}</value>
+    <value>{4} {0}: {1} do {2} {5}. Puste oznacza {3}.</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>Przestaje ponownie uruchamiać się, gdy wejście przekroczy tę wartość, więc te dwie liczby tworzą przedział.</value>

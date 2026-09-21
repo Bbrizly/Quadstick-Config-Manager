@@ -177,10 +177,10 @@
     <value>Ripeti ogni</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}: da {1} a {2}. Vuoto significa {3}. {4}</value>
+    <value>{4} {0}: da {1} a {2}. Vuoto significa {3}.</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}: da {1} a {2} {5}. Vuoto significa {3}. {4}</value>
+    <value>{4} {0}: da {1} a {2} {5}. Vuoto significa {3}.</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>Smette di attivarsi di nuovo quando il Suo input supera questo valore, così i due numeri formano una fascia.</value>

@@ -20,21 +20,16 @@ public sealed record FunctionParameter(
     string Default,
     string What)
 {
-    /// <summary>The whole thing as one line, for a screen reader or the help
-    /// behind the field: "Rate: 1 to 1000 taps a second. Blank means 10 a
-    /// second. How fast it taps while you hold the input."</summary>
-    public string Sentence => Say(What);
-
-    /// <summary>Range and default only, no behaviour: "Rate: 1 to 1000 taps a
-    /// second. Blank means 10 a second." This is what sits under the box.
-    /// <see cref="What"/> is the half that grew long enough to bury the
-    /// numbers, so it moved behind the question mark beside it.</summary>
-    public string Summary => Say("");
-
-    string Say(string what) =>
+    /// <summary>The whole thing as one line: what the number does first, then
+    /// its range and what the device uses without it. "How fast it taps while
+    /// you hold the input. Rate: 1 to 1000 taps a second. Blank means 10 a
+    /// second." Plain words lead because the numbers alone were the half a
+    /// non-technical reader could not act on (Drew Redepenning, 2026-09-19).
+    /// This is what sits under the box and what a screen reader reads.</summary>
+    public string Sentence =>
         string.Format(CultureInfo.CurrentCulture,
             Unit.Length > 0 ? Strings.Fn_SentenceWithUnit : Strings.Fn_Sentence,
-            Label, Minimum, Maximum, Default, what, Unit).TrimEnd();
+            Label, Minimum, Maximum, Default, What, Unit).Trim();
 }
 
 /// <summary>

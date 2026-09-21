@@ -150,34 +150,33 @@ public class FunctionParameterTests
             "expected the leave-it-out reading: " + string.Join(" | ", issues.Select(i => i.Message)));
     }
 
-    // Drew, 2026-09-05: the descriptions read long. The numbers a person needs
-    // before typing stay under the box; what the number does moved behind a
-    // question mark. Summary is that split, so it has to keep the range and
-    // drop the behaviour, not merely be shorter.
+    // Drew, 2026-09-19: the line under the box held only numbers, which is the
+    // half a reader without a technical background cannot act on. The two
+    // halves are one sentence again, and the plain words lead it.
     [Theory]
     [InlineData("tap")]
     [InlineData("repeat")]
     [InlineData("delay_on")]
     [InlineData("greater_than")]
-    public void The_short_line_keeps_the_range_and_drops_the_behaviour(string function)
+    public void The_line_under_the_box_says_what_the_number_does_and_its_range(string function)
     {
         foreach (var p in FunctionParameters.For(function))
         {
-            Assert.Contains(p.Label, p.Summary, StringComparison.Ordinal);
-            Assert.Contains(p.Default, p.Summary, StringComparison.Ordinal);
-            Assert.Contains(p.Maximum.ToString(CultureInfo.InvariantCulture), p.Summary, StringComparison.Ordinal);
-            Assert.DoesNotContain(p.What, p.Summary, StringComparison.Ordinal);
+            Assert.Contains(p.Label, p.Sentence, StringComparison.Ordinal);
+            Assert.Contains(p.Default, p.Sentence, StringComparison.Ordinal);
+            Assert.Contains(p.Maximum.ToString(CultureInfo.InvariantCulture), p.Sentence, StringComparison.Ordinal);
             Assert.Contains(p.What, p.Sentence, StringComparison.Ordinal);
-            // No orphaned space or stop where the behaviour used to be.
-            Assert.Equal(p.Summary.TrimEnd(), p.Summary);
+            // The behaviour leads, so the reader meets words before numbers.
+            Assert.StartsWith(p.What, p.Sentence, StringComparison.Ordinal);
+            Assert.Equal(p.Sentence.Trim(), p.Sentence);
         }
     }
 
-    // Summary is Sentence with the behaviour argument left empty, so it only
-    // comes out clean while every translation ends on that placeholder. A
-    // translator who moves it leaves a space in the middle of the short line.
+    // The behaviour is the first placeholder in every translation. A translator
+    // who moves it back to the end buries the plain words under the numbers
+    // again, which is the complaint this sentence exists to answer.
     [Fact]
-    public void Every_language_puts_the_behaviour_last_in_the_sentence()
+    public void Every_language_puts_the_behaviour_first_in_the_sentence()
     {
         foreach (var path in Directory.GetFiles(
             Path.Combine(RepoRoot(), "src", "QuadStick.Format"), "Strings*.resx"))
@@ -189,7 +188,7 @@ public class FunctionParameterTests
                 var value = doc.Root!.Elements("data")
                     .First(d => (string?)d.Attribute("name") == key)
                     .Element("value")!.Value;
-                Assert.EndsWith("{4}", value.TrimEnd(), StringComparison.Ordinal);
+                Assert.StartsWith("{4}", value.TrimStart(), StringComparison.Ordinal);
             }
         }
     }

@@ -177,10 +177,10 @@
     <value>每隔</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0}：{1} 到 {2}。留空表示 {3}。{4}</value>
+    <value>{4} {0}：{1} 到 {2}。留空表示 {3}。</value>
   </data>
   <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{0}：{1} 到 {2} {5}。留空表示 {3}。{4}</value>
+    <value>{4} {0}：{1} 到 {2} {5}。留空表示 {3}。</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
     <value>一旦您的输入超过此值，就会停止再次触发，因此这两个数字构成一个区间。</value>
