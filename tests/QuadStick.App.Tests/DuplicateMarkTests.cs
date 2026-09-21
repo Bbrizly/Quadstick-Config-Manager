@@ -224,7 +224,10 @@ public class DuplicateMarkTests
         w.UpdateLayout();
 
         var device = w.FindControl<Control>("DeviceContainer")!;
-        Assert.Equal(4, DuplicateMarks(device).Length);
+        // Three, not four: both rows sit on one input, so the editor draws
+        // them as one combo card. The input is asked for once and marked once;
+        // each output keeps its own mark, which is where the repeat is.
+        Assert.Equal(3, DuplicateMarks(device).Length);
 
         file.Dirty = false;
         w.Close();
@@ -252,7 +255,10 @@ public class DuplicateMarkTests
         w.UpdateLayout();
 
         var device = w.FindControl<Control>("DeviceContainer")!;
-        Assert.Equal(4, DuplicateMarks(device).Length);
+        // Three, not four: both rows are on one input, so the editor draws
+        // them as one combo card. The input is asked for once and marked once;
+        // each output keeps its own mark, which is where the repeat is.
+        Assert.Equal(3, DuplicateMarks(device).Length);
 
         file.Dirty = false;
         w.Close();

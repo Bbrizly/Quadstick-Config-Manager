@@ -3383,7 +3383,12 @@ public partial class MainWindow : Window
     void RebuildDeviceAfterEdit(int row, int col)
     {
         if (col >= 2 && _file is not null) // an input cell: its zone follows the new value
+        {
+            // The card that owns this cell may be holding a combo, whose other
+            // rows carry the same inputs. Move them with it.
+            if (_comboRows.TryGetValue(row, out var together)) SyncComboInputs(row, together);
             _selectedZone = ZoneOf(_file.GetCell(row, col));
+        }
         BuildDeviceView();
         BuildZoneDetail();
         RefreshIssues();
@@ -4920,6 +4925,45 @@ public partial class MainWindow : Window
         return p;
     }
 
+    // Rows that fire together. A button combo is two rows in the sheet, one
+    // output each, sharing the same inputs; the device has no other way to
+    // press two buttons off one sip. Drew Redepenning, 2026-09-19: combos are
+    // used often and the editor made you keep two cards in your head. The file
+    // shape does not change. These rows are edited in one card.
+    //
+    // Keyed on row number so the loop can ask about the row it is holding. A
+    // row with no inputs is a settings override and never joins a group.
+    // The rows each open card is editing as one, keyed on the row whose input
+    // cells are on screen. Rebuilt with the panel; empty when nothing is open.
+    readonly Dictionary<int, List<int>> _comboRows = new();
+
+    static Dictionary<int, List<Binding>> ComboGroups(IReadOnlyList<Binding>? bindings)
+    {
+        var groups = new Dictionary<int, List<Binding>>();
+        if (bindings is null) return groups;
+        var byInputs = new Dictionary<string, List<Binding>>(StringComparer.Ordinal);
+        foreach (var b in bindings)
+        {
+            var tokens = b.Inputs.Select(i => i.Trim()).Where(i => i.Length > 0).ToList();
+            if (tokens.Count == 0) { groups[b.Row] = new List<Binding> { b }; continue; }
+            // Order matters: the device walks several inputs on a row in
+            // sequence, so "sip then puff" is not "puff then sip".
+            var key = string.Join("\u001f", tokens);
+            if (!byInputs.TryGetValue(key, out var list)) byInputs[key] = list = new List<Binding>();
+            list.Add(b);
+        }
+        foreach (var list in byInputs.Values)
+            foreach (var b in list) groups[b.Row] = list;
+        return groups;
+    }
+
+    // The inputs live on the card, not on one row, so an edit to them has to
+    // land on every row the card is holding. Without this, renaming the input
+    // on a combo moves one output off it and leaves the other behind, and
+    // nothing on screen says the pair came apart.
+    void SyncComboInputs(int fromRow, IEnumerable<int> toRows) =>
+        _file?.CopyInputs(fromRow, toRows);
+
     void BuildZoneDetail()
     {
         // Read the width now rather than trust the last resize: the first build
@@ -4927,6 +4971,7 @@ public partial class MainWindow : Window
         _narrowCards = NarrowCards(ZoneDetailPanel.Bounds.Width);
         ZoneDetailPanel.Children.Clear();
         _rowPanels.Clear(); // device view owns the selection targets while visible
+        _comboRows.Clear(); // stale rows here would sync inputs onto another zone's mapping
         _livePips.Clear();
         UpdateLiveRows(); // against the mode about to be drawn, not the last one
         _dupes = DuplicateUses.In(CurrentSheet?.Bindings);
@@ -5019,6 +5064,9 @@ public partial class MainWindow : Window
             int firstMapping = ZoneDetailPanel.Children.Count;
             var zoneInputs = Vocab.AllInputs.Where(i => ZoneOf(i) == zone.Id).OrderBy(GroupRank).ThenBy(x => x).ToList();
             bool cards = _settings.DeviceCards;
+            var combos = ComboGroups(bindings);
+            foreach (var group in combos.Values.Distinct())
+                if (group.Count > 1) _comboRows[group[0].Row] = group.Select(x => x.Row).ToList();
             int n = 0;
             foreach (var b in bindings)
             {
@@ -5026,8 +5074,13 @@ public partial class MainWindow : Window
                 // Card mode: a closed mapping is one readable sentence. Only
                 // the expanded one (at most one, accordion style) gets the
                 // full editor below.
-                if (cards && b.Row != _expandedMapping)
+                var combo = combos.TryGetValue(b.Row, out var g) ? g : new List<Binding> { b };
+                bool comboOpen = !cards || combo.Any(x => x.Row == _expandedMapping);
+                if (!comboOpen)
                 { ZoneDetailPanel.Children.Add(SentenceCard(zone, b, n)); continue; }
+                // One card for the whole combo, so the rows that fire together
+                // are not two cards apart. The rest of the group is inside it.
+                if (combo[0].Row != b.Row) { n--; continue; }
                 // One compact card per mapping. A header line carries the number
                 // and a small remove button; the body is three aligned label|field
                 // rows ("When you / Press / As") so a mapping reads like a short
@@ -5058,7 +5111,12 @@ public partial class MainWindow : Window
                     var card = del.FindAncestorOfType<Border>();
                     double gap = card is not null ? card.Bounds.Height + 14 : 0;
                     if (card is not null) GhostRowAway(card, ZoneOverlay); // snapshot while still attached
-                    _file!.DeleteRow(b.Row);
+                    // The card holds every output on these inputs, so its trash
+                    // takes the whole combo. Each output has its own trash.
+                    _file!.DeleteRows(combo.Select(x => x.Row));
+                    // Rows below shift up, so a kept row number would open a
+                    // mapping the user never asked for.
+                    _expandedMapping = -1;
                     BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                     // Counted off the panel as it was built rather than guessed
                     // from the zone: what sits above the cards has changed twice
@@ -5135,6 +5193,7 @@ public partial class MainWindow : Window
                         rmv.Click += (_, _) =>
                         {
                             _file!.RemoveInput(b.Row, idx);
+                            SyncComboInputs(b.Row, combo.Select(x => x.Row));
                             BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                             SayIfNothingFiresIt(b.Row);
                             FocusZoneDetailSibling(zone.Id, bindings!.IndexOf(b));
@@ -5192,12 +5251,91 @@ public partial class MainWindow : Window
                 body.Children.Add(Labeled(Strings.Main_WhenYou2, inputsBox));
 
                 // ---- "Press" (game button) and "As" (how it presses) ----
-                body.Children.Add(Labeled(Strings.Main_PressVerb, WithDuplicateMark(
-                    OutputPicker(b, Outputs(),
-                        string.Format(CultureInfo.CurrentCulture, Strings.Main_GameButtonPressedByShortInput, ShortInput(zone, b)), OutputTint),
-                    _dupes.Output(b.Output))));
-                body.Children.Add(Labeled(Strings.Main_AsLabel, FunctionCombo(b, zone)));
-                body.Children.Add(Labeled(Strings.Main_NoteLabel, NoteBox(b.Row, NoteColumn, Strings.Main_NoteForThisMappingSaved)));
+                // One pair per output. Two outputs on the same inputs are a
+                // button combo, which is two rows in the file and one card
+                // here; each output keeps its own behaviour and its own note,
+                // because that is what the file holds.
+                if (combo.Count > 1)
+                    body.Children.Add(new TextBlock
+                    {
+                        Text = Strings.Main_TheseArePressedTogether,
+                        FontSize = Size("SmallSize"), Classes = { "muted" },
+                        TextWrapping = TextWrapping.Wrap,
+                    });
+                foreach (var m in combo)
+                {
+                    var pressRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                    var picker = WithDuplicateMark(
+                        OutputPicker(m, Outputs(),
+                            string.Format(CultureInfo.CurrentCulture, Strings.Main_GameButtonPressedByShortInput, ShortInput(zone, m)), OutputTint),
+                        _dupes.Output(m.Output));
+                    Grid.SetColumn(picker, 0);
+                    pressRow.Children.Add(picker);
+                    if (combo.Count > 1)
+                    {
+                        // Named by what it removes, not by a number: every
+                        // output in the card would otherwise announce the same
+                        // thing and a screen reader user could not tell which
+                        // binding the button takes away.
+                        var dropOutput = IconButton("IconDelete",
+                            string.Format(CultureInfo.CurrentCulture, Strings.Main_RemoveThisOutputFromMapping,
+                                m.ActionName.Length > 0 ? m.ActionName : TokenLabel(m.Output)));
+                        dropOutput.Margin = new Avalonia.Thickness(8, 0, 0, 0);
+                        int dropRow = m.Row;
+                        int keepRow = combo.First(x => x.Row != dropRow).Row;
+                        dropOutput.Click += (_, _) =>
+                        {
+                            // Keep the card open on a row that survives, or the
+                            // combo closes under the click that edited it. Rows
+                            // below the deleted one shift up by one, so the
+                            // number has to move with them.
+                            int kept = keepRow > dropRow ? keepRow - 1 : keepRow;
+                            _file!.DeleteRow(dropRow);
+                            _expandedMapping = kept;
+                            BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                            AfterLayout(() =>
+                            {
+                                if (!_cellBorders.TryGetValue($"A{kept}", out var cell)) return;
+                                cell.BringIntoView();
+                                (cell.Child as Control)?.Focus();
+                            });
+                        };
+                        Grid.SetColumn(dropOutput, 1);
+                        pressRow.Children.Add(dropOutput);
+                    }
+                    body.Children.Add(Labeled(Strings.Main_PressVerb, pressRow));
+                    body.Children.Add(Labeled(Strings.Main_AsLabel, FunctionCombo(m, zone)));
+                    body.Children.Add(Labeled(Strings.Main_NoteLabel, NoteBox(m.Row, NoteColumn, Strings.Main_NoteForThisMappingSaved)));
+                }
+
+                // Drew Redepenning, 2026-09-19: a combo was two cards, and the
+                // plus was the shape he asked for. A new output copies the
+                // inputs rather than starting empty, so the rows stay a combo.
+                // No inputs yet means nothing to copy, so there is nothing to
+                // add an output to.
+                if (b.Inputs.Count > 0 && combo.Count < 8)
+                {
+                    var addOutput = IconButton("IconAdd",
+                        string.Format(CultureInfo.CurrentCulture, Strings.Main_AddAnotherOutputToMapping, n));
+                    addOutput.HorizontalAlignment = HorizontalAlignment.Left;
+                    ToolTip.SetTip(addOutput, Strings.Main_AddAnotherOutput);
+                    int fromRow = b.Row;
+                    addOutput.Click += (_, _) =>
+                    {
+                        if (_file is null || CurrentSheet is null) return;
+                        int newRow = _file.AddBindingRow(CurrentSheet);
+                        SyncComboInputs(fromRow, new[] { newRow });
+                        _expandedMapping = fromRow;
+                        BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                        AfterLayout(() =>
+                        {
+                            if (!_cellBorders.TryGetValue($"A{newRow}", out var cell)) return;
+                            cell.BringIntoView();
+                            (cell.Child as Control)?.Focus();
+                        });
+                    };
+                    body.Children.Add(addOutput);
+                }
 
                 ZoneDetailPanel.Children.Add(MappingCard(body));
             }
@@ -8574,15 +8712,10 @@ public partial class MainWindow : Window
         return numbers.Length == 0 ? what : what + "\n\n" + numbers;
     }
 
-    // The same lines without the behaviour half. Once "tap" had to explain that
-    // a second number of 1 toggles rather than presses, the sentence that told
-    // you the range was two lines from the box it belonged to. The numbers stay
-    // under the box; what they do sits behind the question mark beside it.
-    internal static string ParameterSummary(string function)
-    {
-        var spec = FunctionParameters.For(FunctionToken(function));
-        return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Summary));
-    }
+    // The line under the box. It leads with what the number does and ends on
+    // the range, because a reader without a technical background could not do
+    // anything with the range on its own.
+    internal static string ParameterSummary(string function) => ParameterHint(function);
 
     // A screen reader gets the same sentences the sighted user reads under the
     // box, because the ranges are the whole point of the field.

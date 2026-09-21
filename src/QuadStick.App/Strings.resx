@@ -878,6 +878,18 @@ Most profiles have just one mode, so this list often shows a single entry. That 
   <data name="Main_AddARowToThe" xml:space="preserve">
     <value>Add a row to the custom output names table</value>
   </data>
+  <data name="Main_AddAnotherOutput" xml:space="preserve">
+    <value>Add another output</value>
+  </data>
+  <data name="Main_AddAnotherOutputToMapping" xml:space="preserve">
+    <value>Add another output to mapping {0}; the outputs on one mapping are pressed together</value>
+  </data>
+  <data name="Main_RemoveThisOutputFromMapping" xml:space="preserve">
+    <value>Remove {0} from this mapping</value>
+  </data>
+  <data name="Main_TheseArePressedTogether" xml:space="preserve">
+    <value>These are pressed together as one combo.</value>
+  </data>
   <data name="Main_AddAnotherInput" xml:space="preserve">
     <value>Add another input</value>
   </data>

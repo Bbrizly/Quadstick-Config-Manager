@@ -723,6 +723,25 @@ public sealed class ProfileFile
     // to its real column via the parsed binding, and the remaining inputs are
     // repacked from column C. Columns A, B, and K onward (comments) are never
     // touched: removing an input must not shift a comment into the data area.
+    /// <summary>Copy one row's input cells onto other rows as a single undo
+    /// step. A button combo is several rows that share one set of inputs, one
+    /// output each, so an edit to the inputs has to move every row or the combo
+    /// comes apart with nothing on screen saying so. Writing cell by cell would
+    /// put eight undo entries per row between the user and the state they
+    /// started from.</summary>
+    public void CopyInputs(int fromRow, IEnumerable<int> toRows)
+    {
+        var targets = toRows.Where(r => r != fromRow).Distinct().ToList();
+        if (targets.Count == 0) return;
+        Snapshot();
+        for (int col = 2; col < 2 + 8; col++) // inputs live in columns C..J
+        {
+            var value = GetCell(fromRow, col);
+            foreach (int row in targets) Widen(row, col)[col] = value;
+        }
+        Reparse();
+    }
+
     public void RemoveInput(int row, int inputIndex)
     {
         var binding = Document.Sheets.SelectMany(s => s.Bindings).FirstOrDefault(b => b.Row == row);
