@@ -111,4 +111,24 @@ public class ComboOutputTests
         Assert.Equal(3, LabelCount(w, Strings.Main_PressVerb));
         Close(w);
     }
+
+    // One gesture, one Undo. The edit and the copy onto the other rows used to
+    // be two snapshots, so Undo put the siblings back and left the edited row
+    // changed: a combo split in half by the control meant to put it back.
+    [AvaloniaFact]
+    public void One_undo_puts_the_whole_combo_back()
+    {
+        var file = ProfileFile.Load(Csv);
+        var rows = file.Document.Sheets[0].Bindings
+            .Where(b => b.Inputs.Contains("mp_center_sip")).Select(b => b.Row).ToList();
+        Assert.Equal(2, rows.Count);
+
+        // What the editor does when the input on a combo card is retyped.
+        file.SetCell(rows[0], 2, "mp_center_puff");
+        file.CopyInputs(rows[0], rows);
+        Assert.All(rows, r => Assert.Equal("mp_center_puff", file.GetCell(r, 2)));
+
+        Assert.True(file.Undo());
+        Assert.All(rows, r => Assert.Equal("mp_center_sip", file.GetCell(r, 2)));
+    }
 }

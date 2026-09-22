@@ -5313,7 +5313,10 @@ public partial class MainWindow : Window
                 // inputs rather than starting empty, so the rows stay a combo.
                 // No inputs yet means nothing to copy, so there is nothing to
                 // add an output to.
-                if (b.Inputs.Count > 0 && combo.Count < 8)
+                // No cap on outputs: eight is the limit on INPUT columns, and
+                // copying it here would have refused a ninth button on a combo
+                // the file is perfectly happy to hold.
+                if (b.Inputs.Count > 0)
                 {
                     var addOutput = IconButton("IconAdd",
                         string.Format(CultureInfo.CurrentCulture, Strings.Main_AddAnotherOutputToMapping, n));
