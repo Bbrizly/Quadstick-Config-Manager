@@ -124,6 +124,7 @@ public static class PrefsGuard
         {
             File.Copy(snapshot, tmp, overwrite: true);
             File.Move(tmp, target, overwrite: true);
+            Device.Flush(target);
         }
         finally
         {

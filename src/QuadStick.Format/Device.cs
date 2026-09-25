@@ -92,6 +92,34 @@ public static class Device
     // firmware's 1.5s and never drop it because the readback passed.
     public static readonly TimeSpan CacheFlushWait = TimeSpan.FromSeconds(2);
 
+    // That wait only counts once the bytes have left the computer. Windows
+    // writes a removable drive through; macOS and Linux keep a FAT write in
+    // their own cache for up to about 30s. So every write to the stick ends
+    // here. Flush(true) is fsync (F_FULLFSYNC on macOS) for the file, its
+    // directory entry and the FAT. sync() reaches the other half of a rename
+    // or a delete, which no file handle can.
+    public static void FlushToDevice(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                using var s = new FileStream(path, FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
+                s.Flush(flushToDisk: true);
+            }
+        }
+        // The file is already in place, so a failed open must not report the
+        // write as failed. sync() below still pushes it.
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        if (!OperatingSystem.IsWindows()) sync();
+    }
+
+    // Swapped by tests to see that each write reaches it.
+    internal static Action<string> Flush = FlushToDevice;
+
+    [System.Runtime.InteropServices.DllImport("libc")]
+    static extern void sync();
+
     public sealed record InstallResult(string InstalledPath, string? BackupPath);
 
     public static InstallResult Install(
@@ -170,6 +198,7 @@ public static class Device
             try
             {
                 File.Move(tmp, target, overwrite: true);
+                Flush(target);
             }
             // Any failure, not just an IOException. The guard that matters is
             // the second one: the old file is gone, so whatever the exception
@@ -208,6 +237,7 @@ public static class Device
                 {
                     File.Copy(backup, back, overwrite: true);
                     File.Move(back, target, overwrite: true);
+                    Flush(target);
                 }
                 catch (Exception restore)
                 {
@@ -297,6 +327,7 @@ public static class Device
         // have deleted nothing.
         var backup = BackupExisting(target, backupDir);
         File.Delete(target);
+        Flush(target);
         return new DeleteResult(target, backup);
     }
 
