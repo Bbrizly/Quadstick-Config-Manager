@@ -1,0 +1,17 @@
+[package]
+name = "qs-bridge"
+version = "0.1.0"
+description = "Copies a QuadStick in x360ce mode onto a virtual Xbox 360 pad"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+hidapi = { version = "=2.6.6", default-features = false, features = ["linux-native-basic-udev", "macos-shared-device", "windows-native"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+evdev = "=0.13.2"
+
+[lints]
+workspace = true

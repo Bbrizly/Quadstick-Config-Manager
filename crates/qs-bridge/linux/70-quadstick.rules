@@ -1,0 +1,14 @@
+# QuadStick: let the person at the desk read the stick and make a virtual pad.
+# Copy to /etc/udev/rules.d/, then: sudo udevadm control --reload && sudo udevadm trigger
+# Replug the stick after.
+
+# uinput, for qs-bridge's virtual Xbox 360 pad.
+KERNEL=="uinput", SUBSYSTEM=="misc", TAG+="uaccess", OPTIONS+="static_node=uinput"
+
+# The stick in every emulation mode, for qs-bridge and the Config Manager's Live Inputs.
+# Sony ids are what modes 1, 4 and 7 present as, same grant Steam's rule gives a real pad.
+KERNEL=="hidraw*", ATTRS{idVendor}=="16d0", ATTRS{idProduct}=="092[b-e]", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0268|05c4|05c5", TAG+="uaccess"
+
+# The gamepad event node, so qs-bridge can hide it from games while the virtual pad runs.
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{idVendor}=="16d0", ATTRS{idProduct}=="092c", TAG+="uaccess"

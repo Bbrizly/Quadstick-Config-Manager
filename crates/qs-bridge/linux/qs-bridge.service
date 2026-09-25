@@ -1,0 +1,10 @@
+[Unit]
+Description=QuadStick to Xbox 360 pad bridge
+
+[Service]
+ExecStart=%h/.local/bin/qs-bridge
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
