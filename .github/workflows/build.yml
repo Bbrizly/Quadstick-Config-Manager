@@ -36,6 +36,12 @@ jobs:
           dotnet-version: "8.0.x"
       - run: dotnet test QuadStick.sln --nologo
       - run: node --test tests/*.test.mjs
+      # The controller bridge's pad code is Linux only, so this runner is the
+      # one place its uinput tests actually run.
+      - name: Controller bridge
+        run: |
+          cargo clippy --locked --all-targets --manifest-path crates/qs-bridge/Cargo.toml -- -D warnings
+          cargo test --locked --manifest-path crates/qs-bridge/Cargo.toml
 
       # The paid layer is a separate program in a separate repository, and the
       # only thing keeping it that way is that nothing here ever reaches for it.
@@ -175,6 +181,12 @@ jobs:
         run: |
           mkdir -p dist
           rm -f publish/*.pdb
+          # The app offers the Xbox controller bridge when it finds this binary
+          # beside itself. The rule file is what lets it read the stick.
+          cargo build --release --locked --manifest-path crates/qs-bridge/Cargo.toml \
+            --config profile.release.strip=true
+          install -m755 crates/qs-bridge/target/release/qs-bridge publish/
+          install -m644 crates/qs-bridge/linux/70-quadstick.rules publish/
           tar -C publish -czf "dist/QuadStickConfigManager-${{ matrix.label }}.tar.gz" .
 
       - uses: actions/upload-artifact@v6
