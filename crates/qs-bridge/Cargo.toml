@@ -2,10 +2,12 @@
 name = "qs-bridge"
 version = "0.1.0"
 description = "Copies a QuadStick in x360ce mode onto a virtual Xbox 360 pad"
-edition.workspace = true
-rust-version.workspace = true
-license.workspace = true
-repository.workspace = true
+# Standalone on main so the .NET app can ship it; the Tauri workspace takes it
+# as a member unchanged, which is why nothing here says `workspace = true`.
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/Bbrizly/Quadstick-Config-Manager"
 
 [dependencies]
 hidapi = { version = "=2.6.6", default-features = false, features = ["linux-native-basic-udev", "macos-shared-device", "windows-native"] }
@@ -13,5 +15,9 @@ hidapi = { version = "=2.6.6", default-features = false, features = ["linux-nati
 [target.'cfg(target_os = "linux")'.dependencies]
 evdev = "=0.13.2"
 
-[lints]
-workspace = true
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "warn"
+

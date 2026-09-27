@@ -41,6 +41,39 @@ pub struct Buttons {
     pub right_stick: bool,
 }
 
+/// What the bridge is doing, as a host app shows it. `--json` prints one line
+/// per change; the keys are stable because the host translates them, and a
+/// Tauri host can take this type directly instead of parsing the line.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Status {
+    /// No QuadStick in emulation mode 2 is plugged in.
+    Waiting,
+    /// Games see a virtual Xbox 360 pad.
+    Bridging,
+    /// The stick is there but this user cannot read it (Linux: the udev rule).
+    NoAccess,
+    /// The virtual pad cannot be made (Linux: /dev/uinput, the same rule).
+    NoVirtualPad,
+    /// This OS cannot make a virtual pad yet. The process exits after it.
+    Unsupported,
+}
+
+impl Status {
+    pub fn key(self) -> &'static str {
+        match self {
+            Status::Waiting => "waiting",
+            Status::Bridging => "bridging",
+            Status::NoAccess => "no_access",
+            Status::NoVirtualPad => "no_virtual_pad",
+            Status::Unsupported => "unsupported",
+        }
+    }
+
+    pub fn json(self) -> String {
+        format!("{{\"status\":\"{}\"}}", self.key())
+    }
+}
+
 /// The shortest report that holds every field the pad uses.
 pub const REPORT_LEN: usize = 14;
 
@@ -109,6 +142,20 @@ mod tests {
         }
         r[13] = 15 << 3;
         r
+    }
+
+    // The .NET app reads these exact lines; ControllerBridgeTests holds the
+    // other half, so a renamed key fails on both sides.
+    #[test]
+    fn status_lines_are_the_protocol() {
+        assert_eq!(Status::Waiting.json(), r#"{"status":"waiting"}"#);
+        assert_eq!(Status::Bridging.json(), r#"{"status":"bridging"}"#);
+        assert_eq!(Status::NoAccess.json(), r#"{"status":"no_access"}"#);
+        assert_eq!(
+            Status::NoVirtualPad.json(),
+            r#"{"status":"no_virtual_pad"}"#
+        );
+        assert_eq!(Status::Unsupported.json(), r#"{"status":"unsupported"}"#);
     }
 
     #[test]
