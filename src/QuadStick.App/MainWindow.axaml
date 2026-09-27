@@ -561,7 +561,14 @@
                  useful but does not need half the screen for a short sentence.
                  Keeping a 30% right track also makes card view intentionally
                  compact, where its stacked layout is easier to scan. -->
-            <Grid ColumnDefinitions="1.4*,0.6*">
+            <!-- The floor sits on the column, not the Border: a MinWidth on the
+                 child only clips it. Below 340 a mapping card's input box is
+                 squeezed to nothing by its label and its two buttons. -->
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.4*"/>
+                <ColumnDefinition Width="0.6*" MinWidth="340"/>
+              </Grid.ColumnDefinitions>
               <!-- Scrolls only when the space left is under the floor the
                    picture stops being readable at; above that it fits itself to
                    the room it has. See FitDeviceStage. -->
@@ -571,7 +578,7 @@
                 <StackPanel x:Name="DeviceCanvas"/>
               </ScrollViewer>
               <Border x:Name="MappingPanel" Grid.Column="1" Background="{DynamicResource SurfaceSubtleBrush}" BorderBrush="{DynamicResource SurfaceBorderBrush}"
-                      BorderThickness="1,0,0,0" Padding="16" MinWidth="260">
+                      BorderThickness="1,0,0,0" Padding="16">
                 <Panel x:Name="ZoneOverlay" ClipToBounds="True">
                   <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="ZoneDetailPanel" Spacing="14"/>

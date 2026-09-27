@@ -157,7 +157,9 @@ public class DeviceChromeTests
 
         Assert.True(sidebar.Bounds.Width >= 300,
             $"the sidebar is still cramped at {sidebar.Bounds.Width:0}px");
-        Assert.True(mapping.Bounds.Width < stage.Bounds.Width,
+        // Only its 340px floor may take it past the canvas, in a small window,
+        // because below that a mapping card's input box cannot be read.
+        Assert.True(mapping.Bounds.Width <= Math.Max(340, stage.Bounds.Width - 1),
             $"the mapping panel is wider than the device canvas: {mapping.Bounds.Width:0} vs {stage.Bounds.Width:0}");
         Assert.True(mapping.Bounds.Width <= workspace.Bounds.Width * 0.35 + 1,
             $"the mapping panel takes too much of the workspace: {mapping.Bounds.Width:0} of {workspace.Bounds.Width:0}");

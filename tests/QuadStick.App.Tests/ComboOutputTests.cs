@@ -83,6 +83,20 @@ public class ComboOutputTests
         Close(w);
     }
 
+    // At the window size the tests run at, the label and the add and trash
+    // buttons once left the input box a few pixels wide.
+    [AvaloniaFact]
+    public void The_combo_input_box_has_room_to_be_read()
+    {
+        var w = Open();
+        var label = Panel(w).GetVisualDescendants().OfType<TextBlock>()
+            .First(t => t.Text == Strings.Main_WhenYou2);
+        var inputs = (StackPanel)((Grid)label.Parent!).Children.First(c => Grid.GetColumn(c) == 1);
+        var box = ((Grid)inputs.Children[0]).Children.First(c => Grid.GetColumn(c) == 0);
+        Assert.True(box.Bounds.Width >= 80, $"the input box is {box.Bounds.Width:0}px wide");
+        Close(w);
+    }
+
     // A single mapping is unchanged: no combo line, no per-output trash.
     [AvaloniaFact]
     public void A_single_output_still_reads_as_one_mapping()
