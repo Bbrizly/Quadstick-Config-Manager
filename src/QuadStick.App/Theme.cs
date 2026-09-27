@@ -49,6 +49,8 @@ public sealed class AppSettings
     // On by default, but inert until a token is stored, so it never touches
     // the network until the user signs in.
     public bool DriveBackup = true;
+    // The Xbox controller bridge, Linux only. Runs while the app is open.
+    public bool ControllerBridge = false;
     public Dictionary<string, DriveLink> DriveLinks = new(); // key: profile file path
     // Profiles opened from outside the library folder, newest first. Without
     // this they leave no trace in the app: Save writes them back where they

@@ -878,6 +878,18 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_AddARowToThe" xml:space="preserve">
     <value>[Ádd á rów tó thé çúštóm óútpút ñáméš táblé xxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_AddAnotherOutput" xml:space="preserve">
+    <value>[Ádd áñóthér óútpút xxxxxxx]</value>
+  </data>
+  <data name="Main_AddAnotherOutputToMapping" xml:space="preserve">
+    <value>[Ádd áñóthér óútpút tó máppíñg {0}; thé óútpútš óñ óñé máppíñg áré préššéd tógéthér xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_RemoveThisOutputFromMapping" xml:space="preserve">
+    <value>[Rémóvé {0} fróm thíš máppíñg xxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_TheseArePressedTogether" xml:space="preserve">
+    <value>[Théšé áré préššéd tógéthér áš óñé çómbó. xxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Main_AddAnotherInput" xml:space="preserve">
     <value>[Ádd áñóthér íñpút xxxxxx]</value>
   </data>
@@ -3590,5 +3602,38 @@ Thíš ápp kéépš á çópý óf thé lášt véršíóñ thé dévíçé wó
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>[Ýóú áré óñ {0}, whíçh íš thé látéšt. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_Bridge" xml:space="preserve">
+    <value>[Xbóx çóñtróllér brídgé xxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeLine" xml:space="preserve">
+    <value>[Létš gáméš thát óñlý táké áñ Xbóx çóñtróllér úšé á QúádŠtíçk íñ émúlátíóñ módé 2. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeHelp" xml:space="preserve">
+    <value>[Íñ émúlátíóñ módé 2 thé QúádŠtíçk íš á pláíñ gámépád, á kéýbóárd áñd á móúšé. Gáméš thát óñlý táké áñ Xbóx çóñtróllér dó ñót šéé thát gámépád. Whílé thíš šwítçh íš óñ áñd thíš ápp íš ópéñ, thé brídgé çópíéš thé gámépád óñtó á vírtúál Xbóx 360 çóñtróllér, áñd thé kéýbóárd, móúšé áñd drívé kéép wórkíñg. Ít çópíéš, ít dóéš ñót rémáp: thé prófílé óñ thé štíçk štíll déçídéš whát éáçh šíp áñd púff dóéš. Çlóšé thé ápp ór túrñ thé šwítçh óff, áñd évérý búttóñ óñ thé vírtúál çóñtróllér íš lét gó fíršt.
+
+Íf thé ápp šáýš ít íš ñót állówéd, íñštáll thé rúlé fílé thát çámé wíth thé dówñlóád, théñ úñplúg thé QúádŠtíçk áñd plúg ít báçk íñ:
+
+šúdó íñštáll -m644 70-qúádštíçk.rúléš /étç/údév/rúléš.d/
+šúdó údévádm çóñtról --rélóád
+šúdó údévádm tríggér xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeWaiting" xml:space="preserve">
+    <value>[Wáítíñg fór á QúádŠtíçk íñ émúlátíóñ módé 2. xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeOn" xml:space="preserve">
+    <value>[Óñ. Gáméš šéé áñ Xbóx 360 çóñtróllér. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeNoAccess" xml:space="preserve">
+    <value>[Thíš çómpútér dóéš ñót lét thé ápp réád thé QúádŠtíçk. Íñštáll thé rúlé fílé, théñ réplúg thé štíçk. Thé qúéštíóñ márk šáýš hów. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeNoPad" xml:space="preserve">
+    <value>[Thíš çómpútér dóéš ñót lét thé ápp máké á vírtúál çóñtróllér. Íñštáll thé rúlé fílé, théñ réplúg thé štíçk. Thé qúéštíóñ márk šáýš hów. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeStopped" xml:space="preserve">
+    <value>[Thé brídgé štóppéd. Túrñ thé šwítçh óff áñd óñ ágáíñ. xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
+    <value>[Thíš çómpútér çáññót máké á vírtúál çóñtróllér ýét. xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
 </root>

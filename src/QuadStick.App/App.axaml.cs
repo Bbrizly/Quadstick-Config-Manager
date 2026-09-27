@@ -62,6 +62,7 @@ public class App : Application
             // and a thread parked on a USB enumeration per test window is a
             // cost the suite should not pay.
             (window as MainWindow)?.StartLiveInput();
+            (window as MainWindow)?.StartBridgeIfOn();
 
             if (window is MainWindow qcm &&
                 RegistryDeepLink.TryGetProfileId(desktop.Args, out var profileId))

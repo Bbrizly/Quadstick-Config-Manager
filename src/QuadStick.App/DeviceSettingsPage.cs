@@ -70,6 +70,11 @@ public partial class MainWindow
     LiveInput? _liveInput;
     LiveState? _live;
 
+    ControllerBridge? _bridge;
+    ControllerBridge.State? _bridgeState;
+    TextBlock? _bridgeStatus;
+    bool _bridgeStopsOnClose;
+
     public async Task ShowDevicePageAsync()
     {
         _file = null; // no profile is open on a page; a stale dirty file re-asks "leave?" on the next action
@@ -194,6 +199,109 @@ public partial class MainWindow
             : _live is { OutputsUnderstood: true } ? Strings.Main_WhatALitRowMeans
             : Strings.Main_ThisEmulationModeIsNot);
         DeviceHeaderStatus.Content = chip;
+    }
+
+    // ---- the Xbox controller bridge ----
+
+    /// <summary>Starts the bridge if it was left on. Called beside
+    /// <see cref="StartLiveInput"/>, so the tests and the render tool, which
+    /// never come through App startup, never spawn it.</summary>
+    public void StartBridgeIfOn()
+    {
+        if (Settings.Load().ControllerBridge) StartBridge();
+    }
+
+    void StartBridge()
+    {
+        if (_bridge is not null || ControllerBridge.FindBinary() is not { } path) return;
+        if (!_bridgeStopsOnClose)
+        {
+            Closed += (_, _) => StopBridge();
+            _bridgeStopsOnClose = true;
+        }
+        _bridgeState = ControllerBridge.State.Waiting;
+        try
+        {
+            _bridge = new ControllerBridge(path, state => Dispatcher.UIThread.Post(() =>
+            {
+                _bridgeState = state;
+                ShowBridgeState();
+            }));
+        }
+        catch (Exception e) when (e is System.ComponentModel.Win32Exception or IOException)
+        {
+            _bridgeState = ControllerBridge.State.Stopped;
+        }
+        ShowBridgeState();
+    }
+
+    void StopBridge()
+    {
+        _bridge?.Dispose();
+        _bridge = null;
+        _bridgeState = null;
+        ShowBridgeState();
+    }
+
+    void ShowBridgeState()
+    {
+        if (_bridgeStatus is null) return;
+        _bridgeStatus.Text = _bridgeState switch
+        {
+            ControllerBridge.State.Waiting => Strings.DevicePage_BridgeWaiting,
+            ControllerBridge.State.Bridging => Strings.DevicePage_BridgeOn,
+            ControllerBridge.State.NoAccess => Strings.DevicePage_BridgeNoAccess,
+            ControllerBridge.State.NoVirtualPad => Strings.DevicePage_BridgeNoPad,
+            ControllerBridge.State.Unsupported => Strings.DevicePage_BridgeUnsupported,
+            ControllerBridge.State.Stopped => Strings.DevicePage_BridgeStopped,
+            _ => "",
+        };
+        _bridgeStatus.IsVisible = _bridgeStatus.Text.Length > 0;
+        _bridgeStatus.Classes.Set("warn", _bridgeState is ControllerBridge.State.NoAccess
+            or ControllerBridge.State.NoVirtualPad or ControllerBridge.State.Stopped);
+    }
+
+    /// <summary>The switch, its one line, and what it is doing. Null where the
+    /// bridge cannot run, so nobody is offered a switch that does nothing.</summary>
+    Control? BridgeRow()
+    {
+        _bridgeStatus = null;
+        if (!ControllerBridge.Offered) return null;
+        var toggle = new ToggleSwitch
+        {
+            IsChecked = _bridge is not null,
+            OnContent = null, OffContent = null,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        AutomationProperties.SetName(toggle, Strings.DevicePage_Bridge);
+        toggle.IsCheckedChanged += (_, _) =>
+        {
+            bool on = toggle.IsChecked == true;
+            var s = Settings.Load();
+            s.ControllerBridge = on;
+            Settings.Save(s);
+            if (on) StartBridge(); else StopBridge();
+        };
+        var title = new TextBlock
+        {
+            Text = Strings.DevicePage_Bridge, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        var top = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, Children = { toggle, title } };
+        _bridgeStatus = new TextBlock { FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap };
+        AutomationProperties.SetLiveSetting(_bridgeStatus, AutomationLiveSetting.Polite);
+        ShowBridgeState();
+        return new StackPanel
+        {
+            Spacing = 4, Margin = new Thickness(0, 12, 0, 0), MaxWidth = 720,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Children =
+            {
+                top,
+                Explain(Strings.DevicePage_BridgeLine, Strings.DevicePage_Bridge, Strings.DevicePage_BridgeHelp),
+                _bridgeStatus,
+            },
+        };
     }
 
     void StopLiveInput()
@@ -431,7 +539,9 @@ public partial class MainWindow
             HorizontalAlignment = HorizontalAlignment.Left,
         };
 
-        return new StackPanel { Children = { top, scope, _deviceStatus } };
+        var headerStack = new StackPanel { Children = { top, scope, _deviceStatus } };
+        if (BridgeRow() is { } bridge) headerStack.Children.Add(bridge);
+        return headerStack;
     }
 
     // One row per group, in the catalog's own order. A list and not a row of

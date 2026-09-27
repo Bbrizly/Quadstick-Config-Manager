@@ -3603,4 +3603,37 @@ This app keeps a copy of the last version the device would accept, taken wheneve
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>You are on {0}, which is the latest.</value>
   </data>
+  <data name="DevicePage_Bridge" xml:space="preserve">
+    <value>Xbox controller bridge</value>
+  </data>
+  <data name="DevicePage_BridgeLine" xml:space="preserve">
+    <value>Lets games that only take an Xbox controller use a QuadStick in emulation mode 2.</value>
+  </data>
+  <data name="DevicePage_BridgeHelp" xml:space="preserve">
+    <value>In emulation mode 2 the QuadStick is a plain gamepad, a keyboard and a mouse. Games that only take an Xbox controller do not see that gamepad. While this switch is on and this app is open, the bridge copies the gamepad onto a virtual Xbox 360 controller, and the keyboard, mouse and drive keep working. It copies, it does not remap: the profile on the stick still decides what each sip and puff does. Close the app or turn the switch off, and every button on the virtual controller is let go first.
+
+If the app says it is not allowed, install the rule file that came with the download, then unplug the QuadStick and plug it back in:
+
+sudo install -m644 70-quadstick.rules /etc/udev/rules.d/
+sudo udevadm control --reload
+sudo udevadm trigger</value>
+  </data>
+  <data name="DevicePage_BridgeWaiting" xml:space="preserve">
+    <value>Waiting for a QuadStick in emulation mode 2.</value>
+  </data>
+  <data name="DevicePage_BridgeOn" xml:space="preserve">
+    <value>On. Games see an Xbox 360 controller.</value>
+  </data>
+  <data name="DevicePage_BridgeNoAccess" xml:space="preserve">
+    <value>This computer does not let the app read the QuadStick. Install the rule file, then replug the stick. The question mark says how.</value>
+  </data>
+  <data name="DevicePage_BridgeNoPad" xml:space="preserve">
+    <value>This computer does not let the app make a virtual controller. Install the rule file, then replug the stick. The question mark says how.</value>
+  </data>
+  <data name="DevicePage_BridgeStopped" xml:space="preserve">
+    <value>The bridge stopped. Turn the switch off and on again.</value>
+  </data>
+  <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
+    <value>This computer cannot make a virtual controller yet.</value>
+  </data>
 </root>
