@@ -5180,7 +5180,9 @@ public partial class MainWindow : Window
                         ? TokenField(b.Row, col, value, zoneInputs,
                             t => InputOptionLabel(t, zone.Id), name, InputTint)
                         : DeviceInputPicker(b.Row, col, value, name, zone.Id);
-                    var markedInput = WithDuplicateMark(inputBox, _dupes.Input(value));
+                    // The other rows of this combo share the input by design and are drawn
+                    // right here, so only a use outside the card counts.
+                    var markedInput = WithDuplicateMark(inputBox, _dupes.Input(value) - (combo.Count - 1));
                     Grid.SetColumn(markedInput, 0);
                     row.Children.Add(markedInput);
                     // Every committed input gets a trash. Removing the last one

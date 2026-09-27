@@ -72,6 +72,17 @@ public class ComboOutputTests
         Close(w);
     }
 
+    // The combo's own rows share its input by design, so the card must not
+    // flag that input as used twice. Only a use outside the card counts.
+    [AvaloniaFact]
+    public void A_combo_input_is_not_marked_as_its_own_duplicate()
+    {
+        var w = Open();
+        string twice = string.Format(System.Globalization.CultureInfo.CurrentCulture, Strings.Main_DuplicateMark, 2);
+        Assert.Equal(0, LabelCount(w, twice));
+        Close(w);
+    }
+
     // A single mapping is unchanged: no combo line, no per-output trash.
     [AvaloniaFact]
     public void A_single_output_still_reads_as_one_mapping()
