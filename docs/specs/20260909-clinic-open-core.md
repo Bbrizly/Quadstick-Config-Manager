@@ -21,8 +21,9 @@ The clinic layer answers two questions:
 - Vertical. What did we do with this client, when, and did it stick.
 - Horizontal. New C5 who wants shooters, what worked for the other three.
 
-Both are a search over one clinician's own folder. No server, no account, no
-pooled data, no model training.
+Both are a search over one clinician's own folder. Whether anything leaves
+that folder, to a server or a registry, is open (see Network calls below). No
+model training.
 
 ## Decisions
 
@@ -40,9 +41,12 @@ offline enforcement is not possible and pretending otherwise writes code that
 lies. The licence text has to say the count is what was bought, not what is
 prevented, or the number becomes a support argument.
 
-**The clinic build makes no network calls at all.** Not "telemetry off". No
-community catalog, no Drive, no loopback auth listener. This is the sentence
-that gets the product through hospital procurement, so it has to be true and
+**Network calls: open, decide later.** The first version of this spec said the
+clinic build makes no network calls at all: no community catalog, no Drive, no
+loopback auth listener, because that sentence is the easiest route through
+hospital procurement. Changed 2026-09-15: Clinic should be able to make network
+calls, for example to send session data to a registry. Which calls, and how
+they pass procurement, is not settled. Whatever is picked has to be true and
 tested rather than asserted.
 
 **Keep the seam, do not redesign the editor.** The review argued the editor
