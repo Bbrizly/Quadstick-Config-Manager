@@ -69,7 +69,7 @@
 
     /* the product's own grammar */
     --in-bg:#DAE6F7;   --in-ink:#2B558C;
-    --out-bg:#F5E9C6;  --out-ink:#8A6A1E;
+    --out-bg:#F5E9C6;  --out-ink:#6F500D;
     --fn-bg:#F5D9E2;   --fn-ink:#A13E5B;
 
     --action:#1B4D9B;
@@ -110,8 +110,8 @@
 
 
   /* ---------- nav: floating island ---------- */
-  header.nav{position:sticky;top:0;z-index:30;padding:14px 0 10px;transition:padding .35s var(--ease)}
-  header.nav.scrolled{padding:8px 0}
+  header.nav{position:sticky;top:0;z-index:30;padding:14px 0 10px}
+  header.nav.scrolled{padding:14px 0 10px}
   .nav-shell{max-width:var(--navw);margin:0 auto;padding:0 24px}
   .nav-inner{display:flex;align-items:center;gap:6px;
     padding:7px 7px 7px 16px;border-radius:999px;
@@ -159,6 +159,8 @@
   .btn.discord:hover{background:#fff;
     box-shadow:0 0 0 1px rgba(88,101,242,.5), 0 0 20px rgba(88,101,242,.7), 0 0 44px -4px rgba(88,101,242,.55)}
   .btn.discord svg{width:30px;height:30px;color:#5865F2}
+  .maker-cta .btn.discord{border-color:var(--line);box-shadow:none}
+  .maker-cta .btn.discord:hover{box-shadow:var(--shadow)}
 
   /* ---------- the audience switch ----------
      one track, one filled pill. it lives inside the hero on both pages, so the
@@ -177,16 +179,14 @@
 
 
   /* ---------- the band under the hero ----------
-     full width, its own ground, and the marks slide on their own so a narrow
-     window still gets all six. pointing at it stops it. */
+     full width, its own ground, and a static row of partner marks that can be
+     read at every viewport. */
   .band{position:relative;z-index:1;width:100%;background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .band-in{max-width:var(--herow);margin-inline:auto;padding:clamp(24px,3.4vh,42px) 0}
+  .band-in{max-width:var(--herow);margin-inline:auto;padding:clamp(24px,3.4vh,42px) var(--gut)}
   .rail{overflow-x:clip}
   .rail + .rail{margin-top:clamp(22px,3vh,36px)}
-  .marquee-track{display:flex;align-items:stretch;width:max-content;will-change:transform;
-    animation-name:marquee-scroll;animation-timing-function:linear;animation-iteration-count:infinite}
-  .marquee-track > *{flex:0 0 auto}
-  @keyframes marquee-scroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+  .static-rail{display:flex;align-items:stretch;justify-content:center;flex-wrap:wrap;width:100%;gap:8px 0}
+  .static-rail > *{flex:0 0 auto}
   .mark-item{display:grid;place-items:center;padding:0 clamp(24px,3.2vw,52px)}
   /* AbleGamers publish this mark knocked out in white, so it gets the ground it was drawn for */
   .mark-item.knockout img{background:#1A1714;padding:7px 11px;border-radius:10px}
@@ -294,40 +294,9 @@
   .stores.big{gap:16px;margin-top:46px}
   .dl-or{margin-top:44px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-faint)}
 
-  /* ---------- decoder (signature) ---------- */
-  .decoder{margin:clamp(48px,7vw,80px) auto 0;max-width:860px;
-    background:var(--paper-2);border:1px solid var(--line);border-radius:calc(var(--radius) + 8px);
-    box-shadow:var(--shadow-soft);padding:8px}
-  .decoder-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px 12px}
-  .decoder-head .lbl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-faint)}
-  .decoder-head .file{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
-  .decoder-head .file .live{width:7px;height:7px;border-radius:50%;background:#2FA05B;box-shadow:0 0 0 0 rgba(47,160,91,.5);animation:pulse 2.6s var(--ease) infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,160,91,.45)}70%{box-shadow:0 0 0 7px rgba(47,160,91,0)}100%{box-shadow:0 0 0 0 rgba(47,160,91,0)}}
-
-  .decoder-core{background:#fff;border-radius:var(--radius);border:1px solid var(--line);padding:clamp(22px,4vw,38px)}
-  .grammar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px}
-  .pill{display:inline-flex;flex-direction:column;gap:2px;padding:11px 16px;border-radius:12px;min-width:0}
-  .pill .role{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.13em;opacity:.72}
-  .pill .val{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:clamp(15px,2vw,17px);white-space:nowrap}
-  .pill.in{background:var(--in-bg);color:var(--in-ink)}
-  .pill.out{background:var(--out-bg);color:var(--out-ink)}
-  .pill.fn{background:var(--fn-bg);color:var(--fn-ink)}
-  .arrow{color:var(--ink-faint);flex:none}
-  .arrow svg{width:20px;height:20px;display:block}
-  .translation{margin-top:26px;padding-top:24px;border-top:1px dashed var(--line);
-    display:flex;align-items:baseline;gap:14px}
-  .translation .say{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-faint);flex:none;transform:translateY(-1px)}
-  .translation .plain{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:clamp(19px,2.6vw,27px);letter-spacing:-.015em;line-height:1.24;color:var(--ink)}
-  .fade-swap{transition:opacity .5s var(--ease),transform .5s var(--ease)}
-  .fade-swap.out{opacity:0;transform:translateY(6px)}
-  .decoder-dots{display:flex;gap:7px;padding:16px 18px 12px;justify-content:center}
-  .decoder-dots button{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:var(--line);cursor:pointer;transition:background .3s var(--ease),width .3s var(--ease)}
-  .decoder-dots button[aria-current="true"]{background:var(--action);width:20px;border-radius:4px}
-
   /* ---------- generic section ---------- */
   section{padding:clamp(64px,10vw,120px) 0;scroll-margin-top:84px}
   .sec-head{max-width:60ch}
-  .sec-head .kicker{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--action)}
   .sec-head h2{font-size:clamp(28px,4.4vw,46px);margin:16px 0 0}
   .sec-head p{color:var(--ink-soft);font-size:clamp(17px,2vw,20px);margin-top:18px;max-width:54ch}
 
@@ -337,9 +306,6 @@
   .stake{border-radius:var(--radius);padding:30px;border:1px solid var(--line)}
   .stake.bad{background:#FBEEE9;border-color:#F0D9CE}
   .stake.good{background:var(--paper-2)}
-  .stake .tag{display:inline-block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.13em;padding:5px 11px;border-radius:999px;margin-bottom:16px}
-  .stake.bad .tag{background:#F4D9CC;color:#9A4322}
-  .stake.good .tag{background:var(--in-bg);color:var(--in-ink)}
   .stake h3{font-family:"Space Grotesk",sans-serif;font-size:21px;letter-spacing:-.01em;margin-bottom:8px}
   .stake p{color:var(--ink-soft);font-size:16px}
   .stake code{background:rgba(0,0,0,.05);padding:1px 6px;border-radius:5px;font-size:.86em}
@@ -352,7 +318,7 @@
   .feat-copy h3{font-family:"Space Grotesk",sans-serif;font-size:clamp(22px,3vw,30px);letter-spacing:-.015em;margin-bottom:14px}
   .feat-copy p{color:var(--ink-soft);font-size:17px;max-width:42ch}
   .feat-copy p + p{margin-top:14px}
-  .shot{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:var(--paper-2);box-shadow:var(--shadow);padding:8px}
+  .shot{border-radius:var(--radius);overflow:hidden;background:var(--paper-2);box-shadow:var(--shadow);padding:8px}
   .shot img{border-radius:calc(var(--radius) - 6px)}
 
   .grammar-key{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
@@ -363,7 +329,7 @@
   .key.fn{background:var(--fn-bg);color:var(--fn-ink)} .key.fn .sw{background:var(--fn-ink)}
 
   /* download */
-  .download{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .download{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding-block:clamp(72px,10vw,120px)}
   .dl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
   @media(max-width:760px){.dl-grid{grid-template-columns:1fr}}
   .dl-card{display:flex;flex-direction:column;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
@@ -392,19 +358,17 @@
   .foot-links a:hover{color:var(--ink)}
   .disclaimer{margin-top:34px;padding-top:24px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-faint);max-width:70ch}
 
-  /* reveal on scroll */
-  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
-  .reveal.in{opacity:1;transform:none}
+  /* Keep content available immediately; motion is reserved for intentional controls. */
+  .reveal{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){
-    .reveal{opacity:1;transform:none;transition:none}
-    .fade-swap,.btn,.dl-card{transition:none}
+    .reveal{opacity:1;transform:none}
+    .btn,.dl-card{transition:none}
     html{scroll-behavior:auto}
-    .decoder-head .file .live{animation:none}
-    .marquee-track{animation:none}
     .rail{overflow-x:clip}
   }
 
   :focus-visible{outline:2.5px solid var(--action);outline-offset:3px;border-radius:6px}
+  ::selection{background:var(--action);color:#fff}
 </style>
 </head>
 <body>
@@ -499,34 +463,12 @@
   </div>
   -->
 
-  <!-- the decoder, off for now. the CSS and the script below are still here, uncomment both to bring it back
-  <div class="decoder reveal" role="region" aria-label="Example: a QuadStick binding translated into plain English">
-    <div class="decoder-head">
-      <span class="lbl">The Decoder</span>
-      <span class="file"><span class="live" aria-hidden="true"></span>gta5.csv · loaded</span>
-    </div>
-    <div class="decoder-core">
-      <div class="grammar" id="grammar">
-        <span class="pill in"><span class="role">Input</span><span class="val" data-in>sip</span></span>
-        <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span>
-        <span class="pill fn"><span class="role">Function</span><span class="val" data-fn>normal</span></span>
-        <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m0 0-5-5m5 5-5 5"/></svg></span>
-        <span class="pill out"><span class="role">Output</span><span class="val" data-out>increment_mode</span></span>
-      </div>
-      <div class="translation">
-        <span class="say">In plain English</span>
-        <span class="plain fade-swap" data-plain>A sip on the tube switches you to the next mode.</span>
-      </div>
-    </div>
-    <div class="decoder-dots" id="dots" role="group" aria-label="Choose an example binding"></div>
-  </div>
-  -->
 </div>
 
 <div class="band">
     <div class="band-in">
-      <div class="rail marquee-interaction">
-        <div class="marquee-track">
+      <div class="rail">
+        <div class="static-rail">
           <a class="mark-item" href="https://craighospital.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/craig-hospital.svg" alt="Craig Hospital" width="149" height="40"></a>
           <a class="mark-item" href="https://shepherd.org/" target="_blank" rel="noopener"><img src="logos/shepherd-center.svg" alt="Shepherd Center" width="227" height="62"></a>
           <a class="mark-item" href="https://livelifetherapysolutions.com/" target="_blank" rel="noopener"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="Live Life Therapy Solutions" width="525" height="303"></a>
@@ -536,7 +478,7 @@
         </div>
       </div>
       <div class="rail" id="quote-rail" hidden>
-        <div class="marquee-track" id="quote-track"></div>
+        <div class="static-rail" id="quote-track"></div>
       </div>
       <p class="band-foot">Organisations working in adaptive gaming and rehabilitation.</p>
     </div>
@@ -547,19 +489,16 @@
 <section id="how">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="kicker">Why it exists</span>
       <h2 class="display">A spreadsheet shouldn't be able to take your controller offline.</h2>
       <p>Today most people edit a QuadStick profile in Google Sheets, export it with an add-on, and copy it over with a Windows-only tool. The device just reads whatever CSV it's handed, and trusts it completely.</p>
     </div>
     <div class="stakes">
       <div class="stake bad reveal">
-        <span class="tag">Without a net</span>
-        <h3>One bad cell, and it's gone.</h3>
+        <h3>Without a safety net: one bad cell, and it's gone.</h3>
         <p>Break <code>default.csv</code> and the USB drive can vanish until you do a physical reset on the hardware. No warning, no undo. Just a controller that stopped showing up.</p>
       </div>
       <div class="stake good reveal">
-        <span class="tag">With this app</span>
-        <h3>Mistakes get caught first.</h3>
+        <h3>With this app, mistakes get caught first.</h3>
         <p>Every input, output, and function is checked against Fred's own validation data. Install backs up the old file, writes a copy, reads it back, then swaps it in. Overwriting <code>default.csv</code> always asks first.</p>
       </div>
     </div>
@@ -570,7 +509,6 @@
 <section id="features" style="padding-top:0">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="kicker">What you get</span>
       <h2 class="display">Two ways to see a profile, and one screen for the stick itself.</h2>
     </div>
 
@@ -634,7 +572,6 @@
 <section class="download" id="download">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="kicker">Download</span>
       <h2 class="display">Free, forever. Unzip and run.</h2>
       <p>No installer, no account, works offline (except the Sheets import and Drive backup). Take it from a store, or grab the plain zip for your computer.</p>
     </div>
@@ -684,7 +621,6 @@
 <section id="maker">
   <div class="wrap">
     <div class="maker-card reveal">
-      <span class="kicker">Who made this</span>
       <h2 class="display">One person who thinks accessible gaming should be ACCESSIBLE.</h2>
       <p>Hi, I'm Bassam. A game developer and I built the QuadStick Config Manager because setting up a profile shouldn't mean wrestling a spreadsheet and hoping you don't brick your controller. The QuadStick opens up gaming for people, and the software around it should feel as accessible as the hardware does.</p>
       <p><b>I'm actively maintaining this.</b> If you hit a bug, or there's a mapping the app won't let you make, tell me and I'll fix it. That's the whole reason it exists. You can also find me in the QuadStick developers Discord.</p>
@@ -736,10 +672,9 @@
 </footer>
 
 <script src="testimonials.js"></script>
-<script src="marquee.js"></script>
 <script>
-  // the band under the hero. the quotes come from testimonials.js, which is the
-  // only file to touch to add one.
+  // Optional testimonials are rendered as a static rail; the logos stay still so
+  // users can read and recognize them without chasing moving content.
   const quoteRail = document.getElementById('quote-rail');
   const quotes = typeof TESTIMONIALS === 'undefined' ? [] : TESTIMONIALS;
   if (quotes.length) {
@@ -751,70 +686,11 @@
     quoteRail.hidden = false;
   }
 
-  const logoMarquee = document.querySelector('.marquee-interaction');
-  createMarquee(logoMarquee, logoMarquee.querySelector('.marquee-track'), {
-    speed: 1.15, inverted: false, interactiveSpeed: 2.5,
-  });
-  if (quotes.length) {
-    createMarquee(document.getElementById('quote-rail'), document.getElementById('quote-track'), {
-      speed: 1.15, inverted: true, interactiveSpeed: 2.5,
-    });
-  }
-
   // nav border on scroll
   const nav = document.getElementById('nav');
   const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
   addEventListener('scroll', onScroll, {passive:true}); onScroll();
 
-  // scroll reveal
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
-  document.querySelectorAll('.reveal').forEach((el,i) => {
-    el.style.transitionDelay = (Math.min(i,4) * 60) + 'ms';
-    io.observe(el);
-  });
-
-  /* the Decoder, off with its markup above. uncomment both together.
-  const bindings = [
-    {in:'sip',  fn:'normal', out:'increment_mode', say:'A sip on the tube switches you to the next mode.'},
-    {in:'lip',  fn:'normal', out:'x',              say:'A tap on the lip switch presses the X button.'},
-    {in:'puff', fn:'normal', out:'circle',         say:'A puff on the tube presses the Circle button.'},
-  ];
-  const grammar = document.getElementById('grammar');
-  const inEl  = grammar.querySelector('[data-in]');
-  const fnEl  = grammar.querySelector('[data-fn]');
-  const outEl = grammar.querySelector('[data-out]');
-  const plainEl = document.querySelector('[data-plain]');
-  const dotsWrap = document.getElementById('dots');
-  const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
-  let idx = 0, timer;
-
-  bindings.forEach((_, i) => {
-    const b = document.createElement('button');
-    b.setAttribute('aria-label', 'Show example ' + (i+1));
-    b.addEventListener('click', () => { show(i); restart(); });
-    dotsWrap.appendChild(b);
-  });
-  const dots = [...dotsWrap.children];
-
-  function show(i){
-    idx = i;
-    const b = bindings[i];
-    plainEl.classList.add('out');
-    setTimeout(() => {
-      inEl.textContent = b.in; fnEl.textContent = b.fn; outEl.textContent = b.out;
-      plainEl.textContent = b.say;
-      plainEl.classList.remove('out');
-    }, reduce ? 0 : 260);
-    dots.forEach((d,di) => d.setAttribute('aria-current', di===i ? 'true' : 'false'));
-  }
-  function next(){ show((idx+1) % bindings.length); }
-  function restart(){ if(reduce) return; clearInterval(timer); timer = setInterval(next, 3600); }
-
-  show(0);
-  if(!reduce) timer = setInterval(next, 3600);
-  */
 </script>
 </body>
 </html>
