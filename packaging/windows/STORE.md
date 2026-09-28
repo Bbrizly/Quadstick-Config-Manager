@@ -35,15 +35,20 @@ certificate is needed on our side.
     msstore reconfigure
 
 `reconfigure` asks for four Partner Center values and saves them, so this is
-once and not once per release. Account settings > **Tenants** is where you
-associate an Entra ID tenant and create the app registration:
+once and not once per release. All four come from one place: Partner Center >
+Account settings > **User management** > **Microsoft Entra applications** >
+Add Microsoft Entra application > Create, with the **Manager** role. If that
+tab asks for a tenant first, associate one (it is free).
 
 | It asks for | Where it is |
 |---|---|
-| Tenant ID | The associated Entra tenant |
-| Seller ID | Account settings > Account details |
-| Client ID | The app registration |
-| Client Secret | The app registration |
+| Tenant ID | The Entra application's page |
+| Client ID | The Entra application's page |
+| Client Secret | **Add new key** on that page. Shown once, and it expires |
+| Seller ID | Account settings > Legal info > Developer tab |
+
+Check it with `msstore apps list`: it should print `9PPQZQNL4WKP`. When the
+key expires the upload fails, so add a new key and run `reconfigure` again.
 
 The credentials stay on this machine. They are deliberately not repo secrets:
 nothing in CI should be able to push a package into certification on its own.
