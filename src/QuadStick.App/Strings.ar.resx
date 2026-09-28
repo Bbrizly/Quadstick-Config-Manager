@@ -2999,7 +2999,7 @@
     <value>تقليل الحركة</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>يوقف حركة التلاشي في الشرح التوجيهي.</value>
+    <value>لا شيء ينزلق أو يتلاشى. تُضاء الصفوف الجديدة لحظة قصيرة.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>تذكّر حجم النافذة وموضعها</value>

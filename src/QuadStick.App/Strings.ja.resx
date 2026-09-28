@@ -2997,7 +2997,7 @@
     <value>アニメーションを減らす</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>チュートリアルのフェードアニメーションをオフにします。</value>
+    <value>スライドやフェードは行いません。新しい行は少しの間強調表示されます。</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>ウィンドウのサイズと位置を記憶する</value>

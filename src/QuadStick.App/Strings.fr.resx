@@ -2999,7 +2999,7 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
     <value>Réduire les animations</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>Désactive l'animation de fondu du tutoriel.</value>
+    <value>Rien ne glisse ni ne s'estompe. Les nouvelles lignes s'allument brièvement.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>Mémoriser la taille et la position de la fenêtre</value>

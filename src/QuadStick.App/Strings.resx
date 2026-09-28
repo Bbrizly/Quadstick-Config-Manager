@@ -3057,7 +3057,7 @@ Blue, INPUTS: what your mouth does. mp_… names are mouthpiece holes (mp_left_s
     <value>Reduce motion</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>Turns off the tutorial fade animation.</value>
+    <value>Nothing slides or fades. New rows still light up briefly.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>Remember window size and position</value>

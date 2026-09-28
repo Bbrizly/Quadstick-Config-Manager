@@ -2999,7 +2999,7 @@
     <value>गति कम करें</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>ट्यूटोरियल के फेड एनिमेशन को बंद करता है।</value>
+    <value>कुछ भी खिसकता या फीका नहीं होता। नई पंक्तियाँ थोड़ी देर के लिए हाइलाइट होती हैं।</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>विंडो का आकार और स्थिति याद रखें</value>

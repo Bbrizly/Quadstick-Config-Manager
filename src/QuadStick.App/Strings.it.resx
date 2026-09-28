@@ -2999,7 +2999,7 @@ Blu, INPUT: cosa fa la Sua bocca. i nomi mp_… sono i fori del boccaglio (mp_le
     <value>Riduci le animazioni</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>Disattiva l'animazione di dissolvenza del tutorial.</value>
+    <value>Niente scorre o sfuma. Le nuove righe si illuminano per un attimo.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>Ricorda dimensione e posizione della finestra</value>

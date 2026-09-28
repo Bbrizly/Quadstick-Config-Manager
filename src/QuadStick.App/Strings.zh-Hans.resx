@@ -2999,7 +2999,7 @@
     <value>减少动效</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>关闭教程的淡入淡出动画。</value>
+    <value>不再有滑动或淡入淡出。新行仍会短暂高亮。</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>记住窗口大小和位置</value>

@@ -199,8 +199,7 @@ public partial class MainWindow
         _tourOverlay = new Grid { IsVisible = false, Children = { blocker, _tourCanvas, _tourCallout } };
         RootHost.Children.Add(_tourOverlay); // last child: sits above (and outside) the scaled content
 
-        // Motion is the reduce-motion toggle's one observable effect: a gentle
-        // fade per step when motion is allowed, nothing when it is reduced.
+        // A gentle fade per step when motion is allowed, nothing when it is reduced.
         RefreshTourMotion();
 
         // Keep the spotlight aligned with its target as the window resizes.

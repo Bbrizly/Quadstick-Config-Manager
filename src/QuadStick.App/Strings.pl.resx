@@ -2999,7 +2999,7 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
     <value>Ogranicz animacje</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>Wyłącza animację przenikania w samouczku.</value>
+    <value>Nic się nie przesuwa ani nie przenika. Nowe wiersze na chwilę się podświetlają.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>Zapamiętaj rozmiar i położenie okna</value>

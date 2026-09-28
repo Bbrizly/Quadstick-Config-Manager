@@ -2999,7 +2999,7 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
     <value>Beweging beperken</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>Schakelt de overvloeianimatie van de rondleiding uit.</value>
+    <value>Niets schuift of vervaagt. Nieuwe rijen lichten even op.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>Venstergrootte en -positie onthouden</value>

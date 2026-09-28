@@ -2999,7 +2999,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Reduzir movimento</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>Desliga a animação de fade do tutorial.</value>
+    <value>Nada desliza nem esmaece. As linhas novas acendem por um instante.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>Lembrar tamanho e posição da janela</value>

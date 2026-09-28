@@ -2999,7 +2999,7 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
     <value>Bewegung reduzieren</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>Schaltet die Überblendanimation der Anleitung aus.</value>
+    <value>Nichts gleitet oder blendet über. Neue Zeilen leuchten kurz auf.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>Fenstergröße und -position merken</value>

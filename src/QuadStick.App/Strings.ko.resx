@@ -2999,7 +2999,7 @@
     <value>애니메이션 줄이기</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>튜토리얼의 페이드 애니메이션을 끕니다.</value>
+    <value>슬라이드나 페이드 효과가 없습니다. 새 행은 잠시 강조 표시됩니다.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>창 크기와 위치 기억</value>

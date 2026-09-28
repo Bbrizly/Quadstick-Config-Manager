@@ -7484,7 +7484,8 @@ public partial class MainWindow : Window
     }
 
     // Motion is feedback, never a gate: every data change below lands
-    // synchronously and these overlays only show where it went. Fire and
+    // synchronously and these overlays only show where it went. Reduce motion
+    // skips all of it; the row tint above is colour, not motion, and stays. Fire and
     // forget, so headless tests (which never tick the render timer) see the
     // exact same resting state with or without the animation.
     //
@@ -7536,8 +7537,9 @@ public partial class MainWindow : Window
     }
 
     // A just-added row or card fades in while rising into place.
-    static void AnimateIn(Control c)
+    void AnimateIn(Control c)
     {
+        if (_reduceMotion) return;
         SlideFrom(c, 10);
         _ = Between(OpacityProperty, 0, 1).RunAsync(c);
     }
@@ -7545,8 +7547,9 @@ public partial class MainWindow : Window
     // After a delete, everything below the gap starts shifted down by the
     // deleted row's height and settles up into place, so the eye can track
     // what moved instead of seeing the list teleport.
-    static void AnimateGapClose(Panel panel, int fromChildIndex, double dy)
+    void AnimateGapClose(Panel panel, int fromChildIndex, double dy)
     {
+        if (_reduceMotion) return;
         dy = Math.Min(dy, 120); // a mass delete should settle, not fly
         if (dy <= 0 || fromChildIndex < 0) return;
         // ponytail: first 30 children only, offscreen rows need no theater
@@ -7562,6 +7565,7 @@ public partial class MainWindow : Window
     // Headless tests have no renderer; the try/catch makes this a no-op there.
     void GhostRowAway(Control row, Panel overlay)
     {
+        if (_reduceMotion) return;
         try
         {
             if (row.Bounds.Width <= 0 || row.Bounds.Height <= 0) return;

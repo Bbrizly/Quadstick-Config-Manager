@@ -2999,7 +2999,7 @@ Azul, INPUTS: lo que hace su boca. Los nombres mp_… son orificios de la boquil
     <value>Reducir el movimiento</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>Desactiva la animación de fundido del tutorial.</value>
+    <value>Nada se desliza ni se funde. Las filas nuevas se resaltan un momento.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>Recordar tamaño y posición de la ventana</value>
