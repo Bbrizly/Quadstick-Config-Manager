@@ -51,6 +51,7 @@
 
 <!-- the latin cut of each Google font, served from here so no stylesheet blocks the first paint -->
 <link rel="preload" href="fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script>document.documentElement.classList.add('js')</script>
 
 <style>
   @font-face{font-family:"Space Grotesk";font-weight:500 700;font-display:swap;src:url(fonts/space-grotesk-latin.woff2) format("woff2");
@@ -80,6 +81,7 @@
     --shadow:0 1px 2px rgba(40,33,20,.04), 0 12px 30px -12px rgba(40,33,20,.14);
     --shadow-soft:0 1px 2px rgba(40,33,20,.04), 0 20px 50px -24px rgba(40,33,20,.18);
     --ease:cubic-bezier(.22,.61,.36,1);
+    --arrive:cubic-bezier(.16,1,.3,1);
     --maxw:1080px;
     --gut:clamp(20px,3.4vw,48px);
     --navw:1080px;
@@ -110,8 +112,8 @@
 
 
   /* ---------- nav: floating island ---------- */
-  header.nav{position:sticky;top:0;z-index:30;padding:14px 0 10px}
-  header.nav.scrolled{padding:14px 0 10px}
+  header.nav{position:sticky;top:0;z-index:30;padding:14px 0 10px;transition:padding .35s var(--ease)}
+  header.nav.scrolled{padding:8px 0}
   .nav-shell{max-width:var(--navw);margin:0 auto;padding:0 24px}
   .nav-inner{display:flex;align-items:center;gap:6px;
     padding:7px 7px 7px 16px;border-radius:999px;
@@ -143,7 +145,7 @@
   .btn{display:inline-flex;align-items:center;gap:10px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:15px;
     padding:12px 12px 12px 22px;border-radius:999px;text-decoration:none;cursor:pointer;border:1px solid transparent;
     transition:transform .4s var(--ease),box-shadow .4s var(--ease),background .3s var(--ease)}
-  .btn:active{transform:scale(.975)}
+  .btn:active{transform:scale(.975);transition-duration:.1s}
   .btn .cap{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;transition:transform .4s var(--ease)}
   .btn svg{width:15px;height:15px}
   .btn.primary{background:var(--action);color:var(--action-ink);box-shadow:0 8px 22px -10px rgba(27,77,155,.7)}
@@ -179,14 +181,19 @@
 
 
   /* ---------- the band under the hero ----------
-     full width, its own ground, and a static row of partner marks that can be
-     read at every viewport. */
+     full width, its own ground, and the marks slide on their own so a narrow
+     window still gets all six. pointing near an edge runs them that way. */
   .band{position:relative;z-index:1;width:100%;background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .band-in{max-width:var(--herow);margin-inline:auto;padding:clamp(24px,3.4vh,42px) var(--gut)}
-  .rail{overflow-x:clip}
+  .band-in{max-width:var(--herow);margin-inline:auto;padding:clamp(24px,3.4vh,42px) 0}
+  /* the marks fade out at the ends instead of being sliced by the edge */
+  .rail{overflow-x:clip;
+    -webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);
+    mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent)}
   .rail + .rail{margin-top:clamp(22px,3vh,36px)}
-  .static-rail{display:flex;align-items:stretch;justify-content:center;flex-wrap:wrap;width:100%;gap:8px 0}
-  .static-rail > *{flex:0 0 auto}
+  .marquee-track{display:flex;align-items:stretch;width:max-content;will-change:transform;
+    animation-name:marquee-scroll;animation-timing-function:linear;animation-iteration-count:infinite}
+  .marquee-track > *{flex:0 0 auto}
+  @keyframes marquee-scroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
   .mark-item{display:grid;place-items:center;padding:0 clamp(24px,3.2vw,52px)}
   /* AbleGamers publish this mark knocked out in white, so it gets the ground it was drawn for */
   .mark-item.knockout img{background:#1A1714;padding:7px 11px;border-radius:10px}
@@ -280,6 +287,7 @@
     background:var(--ink);color:#fff;text-decoration:none;
     transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
   .store:hover{transform:translateY(-2px);box-shadow:0 16px 32px -16px rgba(26,23,20,.85)}
+  .store:active{transform:translateY(0) scale(.98);box-shadow:0 6px 14px -10px rgba(26,23,20,.7);transition-duration:.1s}
   .store .mark{width:25px;height:25px;flex:none}
   .store .mark svg{width:100%;height:100%;display:block}
   .store{flex:none}
@@ -338,7 +346,10 @@
   .dl-card .os{display:flex;align-items:center;gap:11px;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:19px}
   .dl-card .os svg{width:22px;height:22px;color:var(--ink-soft)}
   .dl-card .file{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink-faint);margin-top:6px;word-break:break-all}
+  .dl-card:active{transform:translateY(-1px);transition-duration:.1s}
   .dl-card .go{margin-top:auto;padding-top:18px;font-size:14px;font-weight:600;color:var(--action);display:flex;align-items:center;gap:6px}
+  .dl-card .go svg{transition:transform .4s var(--ease)}
+  .dl-card:hover .go svg{transform:translateX(4px)}
   .dl-note{margin-top:26px;font-size:15px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:8px 20px}
   .dl-note b{color:var(--ink);font-weight:600}
 
@@ -358,13 +369,35 @@
   .foot-links a:hover{color:var(--ink)}
   .disclaimer{margin-top:34px;padding-top:24px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-faint);max-width:70ch}
 
-  /* Keep content available immediately; motion is reserved for intentional controls. */
-  .reveal{opacity:1;transform:none}
+  /* motion is one idea: things come into focus. the js class is set in the
+     head, so a page whose script never runs still shows everything. */
+  .js .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--arrive),transform .8s var(--arrive)}
+  .js .reveal.in{opacity:1;transform:none}
+  /* a screenshot sharpens a beat after its words arrive */
+  .js .feature.reveal .shot{filter:blur(6px);transform:scale(.985);
+    transition:filter .9s var(--arrive) .14s,transform .9s var(--arrive) .14s}
+  .js .feature.reveal.in .shot{filter:none;transform:none}
+  /* the stick behind the headline settles into focus once, on load. scale, not
+     transform, because transform is already placing it */
+  .js .hero-stick{animation:stick-focus 1.1s var(--arrive) .1s both}
+  @keyframes stick-focus{from{opacity:0;filter:blur(12px);scale:1.035}to{opacity:1;filter:none;scale:1}}
+
   @media(prefers-reduced-motion:reduce){
-    .reveal{opacity:1;transform:none}
-    .btn,.dl-card{transition:none}
+    .marquee-track{animation:none}
+    /* still, the strip wraps so all six marks show without the copies */
+    .marquee-track{flex-wrap:wrap;justify-content:center;width:auto;row-gap:12px}
+    .marquee-track > [aria-hidden="true"]{display:none}
+    .rail{-webkit-mask-image:none;mask-image:none}
     html{scroll-behavior:auto}
-    .rail{overflow-x:clip}
+    header.nav{transition:none}
+    /* arrival keeps a plain fade, nothing travels */
+    .js .reveal{transform:none;transition:opacity .4s linear}
+    .js .feature.reveal .shot{filter:none;transform:none;transition:none}
+    .js .hero-stick{animation:stick-fade .5s linear both}
+    @keyframes stick-fade{from{opacity:0}to{opacity:1}}
+    .btn,.store,.dl-card,.btn .cap,.dl-card .go svg{transition:none}
+    .btn:active,.store:hover,.store:active,.dl-card:hover,.dl-card:active,
+    .btn.primary:hover .cap,.dl-card:hover .go svg{transform:none}
   }
 
   :focus-visible{outline:2.5px solid var(--action);outline-offset:3px;border-radius:6px}
@@ -467,8 +500,8 @@
 
 <div class="band">
     <div class="band-in">
-      <div class="rail">
-        <div class="static-rail">
+      <div class="rail marquee-interaction">
+        <div class="marquee-track">
           <a class="mark-item" href="https://craighospital.org/" target="_blank" rel="noopener"><img style="--s:.95" src="logos/craig-hospital.svg" alt="Craig Hospital" width="149" height="40"></a>
           <a class="mark-item" href="https://shepherd.org/" target="_blank" rel="noopener"><img src="logos/shepherd-center.svg" alt="Shepherd Center" width="227" height="62"></a>
           <a class="mark-item" href="https://livelifetherapysolutions.com/" target="_blank" rel="noopener"><img style="--s:1.35" src="logos/live-life-therapy.webp" alt="Live Life Therapy Solutions" width="525" height="303"></a>
@@ -478,7 +511,7 @@
         </div>
       </div>
       <div class="rail" id="quote-rail" hidden>
-        <div class="static-rail" id="quote-track"></div>
+        <div class="marquee-track" id="quote-track"></div>
       </div>
       <p class="band-foot">Organisations working in adaptive gaming and rehabilitation.</p>
     </div>
@@ -672,9 +705,10 @@
 </footer>
 
 <script src="testimonials.js"></script>
+<script src="marquee.js"></script>
 <script>
-  // Optional testimonials are rendered as a static rail; the logos stay still so
-  // users can read and recognize them without chasing moving content.
+  // the band under the hero. the quotes come from testimonials.js, which is the
+  // only file to touch to add one.
   const quoteRail = document.getElementById('quote-rail');
   const quotes = typeof TESTIMONIALS === 'undefined' ? [] : TESTIMONIALS;
   if (quotes.length) {
@@ -686,11 +720,35 @@
     quoteRail.hidden = false;
   }
 
+  const logoMarquee = document.querySelector('.marquee-interaction');
+  createMarquee(logoMarquee, logoMarquee.querySelector('.marquee-track'), {
+    speed: 1.15, inverted: false, interactiveSpeed: 2.5,
+  });
+  if (quotes.length) {
+    createMarquee(quoteRail, document.getElementById('quote-track'), {
+      speed: 1.15, inverted: true, interactiveSpeed: 2.5,
+    });
+  }
+
   // nav border on scroll
   const nav = document.getElementById('nav');
   const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
   addEventListener('scroll', onScroll, {passive:true}); onScroll();
 
+  // scroll reveal. things that arrive together stagger in reading order, so a
+  // lone section further down never waits on a delay meant for the hero.
+  const reveals = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) reveals.forEach(el => el.classList.add('in'));
+  else {
+    const io = new IntersectionObserver(entries => {
+      entries.filter(e => e.isIntersecting).forEach((e, i) => {
+        e.target.style.transitionDelay = Math.min(i, 4) * 70 + 'ms';
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      });
+    }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+    reveals.forEach(el => io.observe(el));
+  }
 </script>
 </body>
 </html>
