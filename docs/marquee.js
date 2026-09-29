@@ -35,15 +35,26 @@
     });
     track.append(...duplicateChildren);
 
-    let isHovered = false;
+    // it also holds still offscreen (no work nobody sees) and while a mark has
+    // keyboard focus, so the link being read is not sliding away.
+    let isHovered = false, isOffscreen = false, isFocused = false;
     const updatePlayState = () => {
-      track.style.animationPlayState = paused || (pauseOnHover && isHovered)
+      track.style.animationPlayState = paused || isOffscreen || isFocused || (pauseOnHover && isHovered)
         ? 'paused'
         : 'running';
     };
     track.style.animationDuration = animationDuration;
     track.style.animationDirection = animationDirection;
     updatePlayState();
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => {
+        isOffscreen = !entry.isIntersecting;
+        updatePlayState();
+      }).observe(container);
+    }
+    container.addEventListener('focusin', () => { isFocused = true; updatePlayState(); });
+    container.addEventListener('focusout', () => { isFocused = false; updatePlayState(); });
 
     if (pauseOnHover) {
       container.addEventListener('mouseenter', () => {
