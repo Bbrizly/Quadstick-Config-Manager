@@ -266,7 +266,7 @@ public partial class MainWindow
     Control? BridgeRow()
     {
         _bridgeStatus = null;
-        if (!ControllerBridge.Offered) return null;
+        if (!ControllerBridge.Offered) return ControllerBridge.OnMac ? MacGamesRow() : null;
         var toggle = new ToggleSwitch
         {
             IsChecked = _bridge is not null,
@@ -303,6 +303,19 @@ public partial class MainWindow
             },
         };
     }
+
+    // No virtual pad on a Mac without Apple's entitlement, and none needed:
+    // mode 7 is a DualShock 4, which macOS, SDL and Steam take as it is.
+    static Control MacGamesRow() => new StackPanel
+    {
+        Spacing = 4, Margin = new Thickness(0, 12, 0, 0), MaxWidth = 720,
+        HorizontalAlignment = HorizontalAlignment.Left,
+        Children =
+        {
+            new TextBlock { Text = Strings.DevicePage_MacGames, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold },
+            Explain(Strings.DevicePage_MacGamesLine, Strings.DevicePage_MacGames, Strings.DevicePage_MacGamesHelp),
+        },
+    };
 
     void StopLiveInput()
     {

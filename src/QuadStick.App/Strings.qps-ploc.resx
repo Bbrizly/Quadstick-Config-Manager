@@ -3636,4 +3636,15 @@ Thíš ápp kéépš á çópý óf thé lášt véršíóñ thé dévíçé wó
   <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
     <value>[Thíš çómpútér çáññót máké á vírtúál çóñtróllér ýét. xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>[Gáméš óñ á Máç xxxxx]</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>[Óñ á Máç, šét émúlátíóñ módé 7 íñ thé gámé prófílé'š préféréñçéš šhéét, áñd gáméš šéé á PláýŠtátíóñ 4 çóñtróllér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>[Á Máç çáññót rúñ thé Xbóx çóñtróllér brídgé ýét, béçáúšé mákíñg á vírtúál çóñtróllér ñéédš á pérmíššíóñ fróm Ápplé. Módé 7 dóéš ñót ñééd ít: thé QúádŠtíçk répórtš ítšélf áš á DúálŠhóçk 4 wíréléšš çóñtróllér, whíçh máçÓŠ áñd Štéám šúppórt óvér ÚŠB.
+
+Módé 7 íš á gámépád óñlý. Théré íš ñó kéýbóárd, ñó móúšé áñd ñó drívé, šó thíš ápp çáññót šéé thé štíçk whílé ít íš óñ. Pút ít íñ thé gámé prófílé'š préféréñçéš šhéét, ñót íñ thé dévíçé šéttíñgš: šwítçhíñg tó áñóthér prófílé théñ bríñgš thé drívé, kéýbóárd áñd móúšé báçk. Šwítçhíñg módéš íñšídé thé šámé prófílé dóéš ñót. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
 </root>

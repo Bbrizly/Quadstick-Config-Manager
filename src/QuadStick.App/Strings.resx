@@ -3636,4 +3636,15 @@ sudo udevadm trigger</value>
   <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
     <value>This computer cannot make a virtual controller yet.</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Games on a Mac</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>On a Mac, set emulation mode 7 in the game profile's preferences sheet, and games see a PlayStation 4 controller.</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>A Mac cannot run the Xbox controller bridge yet, because making a virtual controller needs a permission from Apple. Mode 7 does not need it: the QuadStick reports itself as a DualShock 4 wireless controller, which macOS and Steam support over USB.
+
+Mode 7 is a gamepad only. There is no keyboard, no mouse and no drive, so this app cannot see the stick while it is on. Put it in the game profile's preferences sheet, not in the device settings: switching to another profile then brings the drive, keyboard and mouse back. Switching modes inside the same profile does not.</value>
+  </data>
 </root>

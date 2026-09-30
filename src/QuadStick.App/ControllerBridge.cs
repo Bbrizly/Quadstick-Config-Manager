@@ -30,6 +30,9 @@ public sealed class ControllerBridge : IDisposable
     /// virtual pad so far; macOS waits on Apple's virtual HID entitlement.</summary>
     public static bool Offered => PathOverride is not null || (OperatingSystem.IsLinux() && FindBinary() is not null);
 
+    // Tests flip this to see both pages from one machine.
+    internal static bool OnMac = OperatingSystem.IsMacOS();
+
     /// <summary>One status line from <c>qs-bridge --json</c>. Null for anything
     /// else, so a newer bridge with a new status is ignored, not misread.</summary>
     public static State? Parse(string? line)

@@ -3517,4 +3517,15 @@ Blauw, INPUTS: wat uw mond doet. mp_…-namen zijn mondstukopeningen (mp_left_si
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>U gebruikt {0}, de nieuwste versie.</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Games op een Mac</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>Zet op een Mac USB-emulatiemodus 7 in het voorkeurenblad van het gameprofiel, en games zien een PlayStation 4-controller.</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Een Mac kan de Xbox-controllerbrug nog niet draaien, want een virtuele controller maken vraagt toestemming van Apple. Modus 7 heeft die niet nodig: de QuadStick meldt zich als een draadloze DualShock 4, die macOS en Steam via USB ondersteunen.
+
+Modus 7 is alleen een gamepad. Er is geen toetsenbord, geen muis en geen schijf, dus deze app ziet de stick niet zolang hij aan staat. Zet hem in het voorkeurenblad van het gameprofiel, niet in de apparaatinstellingen: overschakelen naar een ander profiel brengt dan schijf, toetsenbord en muis terug. Van modus wisselen binnen hetzelfde profiel doet dat niet.</value>
+  </data>
 </root>

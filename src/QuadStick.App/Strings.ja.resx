@@ -3515,4 +3515,15 @@
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>現在のバージョンは{0}で、これが最新です。</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Mac でゲームをする</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>Mac では、ゲームのプロファイルの Preferences シートで USB エミュレーションモードを 7 にすると、ゲームから PlayStation 4 コントローラーとして見えます。</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Mac ではまだ Xbox コントローラーブリッジを使えません。仮想コントローラーを作るには Apple の許可が必要だからです。モード 7 には不要です。QuadStick がワイヤレスの DualShock 4 として名乗り、macOS と Steam は USB でこれに対応しています。
+
+モード 7 はゲームパッドだけです。キーボードもマウスもドライブもないため、オンの間はこのアプリからスティックが見えません。デバイス設定ではなく、ゲームのプロファイルの Preferences シートに入れてください。そうすれば別のプロファイルに切り替えたときにドライブ、キーボード、マウスが戻ります。同じプロファイル内でモードを切り替えても戻りません。</value>
+  </data>
 </root>

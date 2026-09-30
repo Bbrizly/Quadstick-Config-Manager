@@ -133,6 +133,34 @@ public class ControllerBridgeTests
         w.Close();
     }
 
+    // A Mac cannot make a virtual pad without Apple's entitlement, but it does
+    // not need one: mode 7 is a DualShock 4, which macOS takes as it is. So the
+    // Mac gets that recipe where Linux gets the switch, and nobody else does.
+    [AvaloniaFact]
+    public void A_mac_is_pointed_at_mode_7_instead_of_a_switch()
+    {
+        ControllerBridge.PathOverride = null;
+        bool Shown(MainWindow w) => w.GetVisualDescendants().OfType<TextBlock>()
+            .Any(t => t.Text == Strings.DevicePage_MacGamesLine && t.IsVisible);
+        try
+        {
+            ControllerBridge.OnMac = true;
+            var w = OpenDevicePage();
+            Assert.Null(Switch(w));
+            Assert.True(Shown(w), "a Mac is not told how to play games with the stick");
+            w.Close();
+
+            ControllerBridge.OnMac = false;
+            w = OpenDevicePage();
+            Assert.False(Shown(w), "the Mac recipe shows on a computer that is not a Mac");
+            w.Close();
+        }
+        finally
+        {
+            ControllerBridge.OnMac = OperatingSystem.IsMacOS();
+        }
+    }
+
     // The whole loop through the real page: on, it says what it is doing, and
     // closing the app stops the bridge the safe way.
     [AvaloniaFact]

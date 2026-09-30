@@ -3517,4 +3517,15 @@ Bleu, INPUTS : ce que fait votre bouche. Les noms mp_… sont les trous de l'emb
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>Vous utilisez la version {0}, qui est la plus récente.</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Jeux sur Mac</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>Sur Mac, réglez le mode d'émulation USB 7 dans la feuille de préférences du profil du jeu, et les jeux verront une manette PlayStation 4.</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Un Mac ne peut pas encore utiliser le pont de manette Xbox, car créer une manette virtuelle demande une autorisation d'Apple. Le mode 7 n'en a pas besoin : le QuadStick se présente comme une DualShock 4 sans fil, que macOS et Steam prennent en charge en USB.
+
+Le mode 7 est uniquement une manette. Il n'y a ni clavier, ni souris, ni lecteur, donc cette app ne voit pas le stick tant qu'il est actif. Mettez-le dans la feuille de préférences du profil du jeu, pas dans les réglages de l'appareil : passer à un autre profil ramène alors le lecteur, le clavier et la souris. Changer de mode dans le même profil ne le fait pas.</value>
+  </data>
 </root>

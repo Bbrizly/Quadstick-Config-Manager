@@ -3517,4 +3517,15 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>Używana wersja: {0}, czyli najnowsza.</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Gry na Macu</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>Na Macu ustaw tryb emulacji USB 7 w arkuszu preferencji profilu gry, a gry zobaczą kontroler PlayStation 4.</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Mac nie może jeszcze uruchomić mostka kontrolera Xbox, bo wirtualny kontroler wymaga zgody Apple. Tryb 7 jej nie potrzebuje: QuadStick przedstawia się jako bezprzewodowy DualShock 4, który macOS i Steam obsługują przez USB.
+
+Tryb 7 to tylko gamepad. Nie ma klawiatury, myszy ani dysku, więc ta aplikacja nie widzi drążka, dopóki jest włączony. Ustaw go w arkuszu preferencji profilu gry, nie w ustawieniach urządzenia: przejście na inny profil przywraca wtedy dysk, klawiaturę i mysz. Zmiana trybu w tym samym profilu tego nie robi.</value>
+  </data>
 </root>

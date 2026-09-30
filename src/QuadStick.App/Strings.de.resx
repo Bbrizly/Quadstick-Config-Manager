@@ -3517,4 +3517,15 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>Sie nutzen {0}, die aktuellste Version.</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Spiele auf dem Mac</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>Auf dem Mac den USB-Emulationsmodus 7 im Einstellungsblatt des Spielprofils setzen, dann sehen Spiele einen PlayStation-4-Controller.</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Ein Mac kann die Xbox-Controller-Brücke noch nicht ausführen, denn ein virtueller Controller braucht eine Erlaubnis von Apple. Modus 7 braucht sie nicht: Der QuadStick meldet sich als kabelloser DualShock 4, den macOS und Steam über USB unterstützen.
+
+Modus 7 ist nur ein Gamepad. Es gibt keine Tastatur, keine Maus und kein Laufwerk, daher sieht diese App den Stick nicht, solange er aktiv ist. Setze ihn im Einstellungsblatt des Spielprofils, nicht in den Geräteeinstellungen: Ein Wechsel zu einem anderen Profil bringt dann Laufwerk, Tastatur und Maus zurück. Ein Moduswechsel innerhalb desselben Profils tut das nicht.</value>
+  </data>
 </root>

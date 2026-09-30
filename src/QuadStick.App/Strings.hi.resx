@@ -3517,4 +3517,15 @@
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>आप {0} पर हैं, जो सबसे नया है।</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Mac पर गेम</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>Mac पर, गेम प्रोफ़ाइल की प्रेफ़रेंसेस शीट में USB एम्युलेशन मोड 7 सेट करें, तो गेम को PlayStation 4 कंट्रोलर दिखेगा।</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Mac अभी Xbox कंट्रोलर ब्रिज नहीं चला सकता, क्योंकि वर्चुअल कंट्रोलर बनाने के लिए Apple की अनुमति चाहिए। मोड 7 को इसकी ज़रूरत नहीं: QuadStick खुद को वायरलेस DualShock 4 बताता है, जिसे macOS और Steam USB पर सपोर्ट करते हैं।
+
+मोड 7 सिर्फ़ गेमपैड है। इसमें कीबोर्ड, माउस और ड्राइव नहीं होते, इसलिए चालू रहते यह ऐप स्टिक को नहीं देख पाता। इसे डिवाइस सेटिंग्स में नहीं, गेम प्रोफ़ाइल की प्रेफ़रेंसेस शीट में रखें: तब दूसरी प्रोफ़ाइल पर जाने से ड्राइव, कीबोर्ड और माउस वापस आ जाते हैं। उसी प्रोफ़ाइल के अंदर मोड बदलने से नहीं आते।</value>
+  </data>
 </root>

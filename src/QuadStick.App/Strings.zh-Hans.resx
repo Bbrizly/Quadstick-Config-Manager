@@ -3517,4 +3517,15 @@
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>您当前使用的是 {0}，这是最新版本。</value>
   </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>在 Mac 上玩游戏</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>在 Mac 上，在游戏配置文件的 Preferences 表中把 USB 仿真模式设为 7，游戏就会看到一个 PlayStation 4 手柄。</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Mac 暂时无法运行 Xbox 手柄桥接，因为创建虚拟手柄需要 Apple 的许可。模式 7 不需要：QuadStick 会把自己报告为无线 DualShock 4，macOS 和 Steam 都支持通过 USB 使用它。
+
+模式 7 只有手柄。没有键盘、鼠标和驱动器，所以开启期间本应用看不到摇杆。请把它放在游戏配置文件的 Preferences 表中，而不是设备设置里：这样切换到其他配置文件时，驱动器、键盘和鼠标就会回来。在同一个配置文件内切换模式则不会。</value>
+  </data>
 </root>
