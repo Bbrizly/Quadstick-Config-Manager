@@ -163,19 +163,24 @@ public class DeviceFilesWindow : Window
     // it, because that is the thing an action actually touches.
     // Home shows the same name over its own per-drive groups, so this stays the
     // one place that decides what a drive is called.
+    // On macOS and Linux, .NET hands back the mount path as VolumeLabel, and the
+    // mount folder is already named after the label.
     internal static string LabelFor(string root)
     {
-        try
+        if (OperatingSystem.IsWindows())
         {
-            var match = DriveInfo.GetDrives()
-                .FirstOrDefault(d => string.Equals(
-                    Path.TrimEndingDirectorySeparator(d.RootDirectory.FullName),
-                    Path.TrimEndingDirectorySeparator(root),
-                    StringComparison.Ordinal));
-            if (match is not null && !string.IsNullOrWhiteSpace(match.VolumeLabel))
-                return match.VolumeLabel;
+            try
+            {
+                var match = DriveInfo.GetDrives()
+                    .FirstOrDefault(d => string.Equals(
+                        Path.TrimEndingDirectorySeparator(d.RootDirectory.FullName),
+                        Path.TrimEndingDirectorySeparator(root),
+                        StringComparison.Ordinal));
+                if (match is not null && !string.IsNullOrWhiteSpace(match.VolumeLabel))
+                    return match.VolumeLabel;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* fall through */ }
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* fall through */ }
 
         var folder = Path.GetFileName(Path.TrimEndingDirectorySeparator(root));
         return string.IsNullOrWhiteSpace(folder) ? root : folder;

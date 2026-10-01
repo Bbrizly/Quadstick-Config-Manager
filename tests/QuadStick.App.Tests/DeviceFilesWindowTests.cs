@@ -762,4 +762,19 @@ public sealed class DeviceFilesWindowTests : IDisposable
         win.Close();
         w.Close();
     }
+
+    // .NET gives the mount path as the label on macOS and Linux, so the heading
+    // read "/Volumes/QUADSTICK/ (/Volumes/QUADSTICK/)". Every real mount here
+    // has to come back as its folder name instead.
+    [Fact]
+    public void A_drive_is_called_by_its_name_not_its_mount_path()
+    {
+        if (OperatingSystem.IsWindows()) return;
+        foreach (var d in DriveInfo.GetDrives())
+        {
+            var name = Path.GetFileName(Path.TrimEndingDirectorySeparator(d.RootDirectory.FullName));
+            if (name.Length > 0)
+                Assert.Equal(name, DeviceFilesWindow.LabelFor(d.RootDirectory.FullName));
+        }
+    }
 }
