@@ -41,8 +41,9 @@ Add Microsoft Entra application > Create, with the **Manager** role.
 
 That tab only opens once the account has a tenant, and this one had none
 (2026-09-28). Make one first: Account settings > **Tenants** > Create Microsoft
-Entra ID. Microsoft says a tenant made from Partner Center costs nothing extra.
-Its sign-up shows a "Payment setup" step: if it asks for a card, stop. Then
+Entra ID. Its sign-up asks for a credit card after the business details
+(checked 2026-10-01), and nothing from Microsoft says the card is never charged.
+Until that is worth it, upload the .msix by hand in Partner Center. Then
 sign in to User management with the new tenant's admin, not the Gmail login.
 
 | It asks for | Where it is |
