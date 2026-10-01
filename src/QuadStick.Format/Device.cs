@@ -339,6 +339,13 @@ public static class Device
     // delete. Dot files are hidden by every OS that writes them, so the name is
     // enough. ponytail: name check only, sniffing the AppleDouble magic bytes
     // would force every caller to open the file first.
+    // Linux matches "*.csv" by case, and a name written 8.3-only shows as
+    // GTA5.CSV on a vfat mount. Missing it shifts every light pattern after it.
+    public static string[] ProfileFiles(string root) =>
+        Directory.GetFiles(root, "*.csv", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive })
+            .Where(p => IsProfileFileName(Path.GetFileName(p)))
+            .ToArray();
+
     public static bool IsProfileFileName(string fileName) =>
         !string.IsNullOrWhiteSpace(fileName)
         && fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)

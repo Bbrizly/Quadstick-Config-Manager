@@ -2027,8 +2027,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            return Directory.GetFiles(root, "*.csv")
-                .Where(p => Device.IsProfileFileName(Path.GetFileName(p)))
+            return Device.ProfileFiles(root)
                 .OrderBy(Path.GetFileName)
                 .ToArray();
         }

@@ -24,6 +24,19 @@ public class DeviceFileManagementTests
         return path;
     }
 
+    // A file written with only its 8.3 name reads GTA5.CSV on a Linux vfat
+    // mount. Linux matches "*.csv" by case, so it vanished from the list and
+    // every light pattern after it named the wrong file.
+    [Fact]
+    public void An_upper_case_name_is_still_a_profile()
+    {
+        var root = NewDeviceRoot();
+        WriteProfile(root, "GTA5.CSV");
+        WriteProfile(root, ".hidden.csv");
+        Assert.Equal(new[] { "GTA5.CSV", "default.csv" },
+            Device.ProfileFiles(root).Select(Path.GetFileName).Order(StringComparer.Ordinal));
+    }
+
     [Theory]
     [InlineData("default.csv")]
     [InlineData("Default.CSV")]
