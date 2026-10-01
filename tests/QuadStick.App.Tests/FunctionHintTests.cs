@@ -44,15 +44,15 @@ public class FunctionHintTests
         "Outputs,Function,usb\n" +
         "x,greater_than 40,lip\n";
 
-    // The range and the default are the two facts he named. Both have to be on
-    // screen beside the box, in words.
+    // What the number does and the default have to be on screen beside the
+    // box, in words, and the 1-to-16383 range Drew asked to drop must not be.
     [AvaloniaFact]
-    public void The_editor_shows_the_range_and_the_default_beside_the_numbers()
+    public void The_editor_shows_what_the_number_does_and_the_default()
     {
         var w = Editor(Csv);
         var text = AllText(w);
-        Assert.Contains("Threshold: 1 to 100 percent", text, StringComparison.Ordinal);
-        Assert.Contains("Blank means 100 percent", text, StringComparison.Ordinal);
+        Assert.Contains("First number: The percentage where the output turns on. Default: 100 percent.", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("1 to 100", text, StringComparison.Ordinal);
         w.Close();
     }
 
@@ -71,17 +71,15 @@ public class FunctionHintTests
     public void A_function_that_already_has_values_still_explains_them()
     {
         var hint = MainWindow.ParameterHint("repeat 5 2000");
-        Assert.Contains("taps a second", hint, StringComparison.Ordinal);
-        Assert.Contains("First hold", hint, StringComparison.Ordinal);
-        Assert.Contains("Blank means 10 a second", hint, StringComparison.Ordinal);
+        Assert.Contains("presses per second", hint, StringComparison.Ordinal);
+        Assert.Contains("Second number: How long to hold", hint, StringComparison.Ordinal);
+        Assert.Contains("Default: 10 a second", hint, StringComparison.Ordinal);
     }
 
-    // Drew, 2026-09-19: the line left under the box was range and default and
-    // nothing else, which a reader without a technical background cannot act
-    // on. Both halves are on screen again, plain words first. The dot still
-    // carries them too, for the reader who opens it.
+    // Drew, 2026-09-19 and his sheet: plain words, each number named by its
+    // position, no range. The dot still carries them too.
     [AvaloniaFact]
-    public void The_box_says_what_the_number_does_before_its_range()
+    public void The_box_says_what_each_number_does_in_plain_words()
     {
         var w = Editor(
             "Profile Name,,Solo\n" +
@@ -90,8 +88,9 @@ public class FunctionHintTests
             "x,tap 500 1,lip\n");
         var text = AllText(w);
 
-        Assert.Contains("Press: 1 to 16383 milliseconds", text, StringComparison.Ordinal);
-        Assert.Contains("Blank means 100 ms", text, StringComparison.Ordinal);
+        Assert.Contains("Second number: How long the output presses for, in milliseconds.", text, StringComparison.Ordinal);
+        Assert.Contains("Default: 100 ms", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("16383", text, StringComparison.Ordinal);
         // The half that was missing: what the number actually changes.
         Assert.Contains("the next turns it off", text, StringComparison.Ordinal);
 
@@ -111,7 +110,7 @@ public class FunctionHintTests
     {
         var name = MainWindow.ParameterAccessibleName("tap");
         Assert.Contains("the next turns it off", name, StringComparison.Ordinal);
-        Assert.Contains("Blank means 100 ms", name, StringComparison.Ordinal);
+        Assert.Contains("Default: 100 ms", name, StringComparison.Ordinal);
     }
 
     // A function with no numbers still gets the dot, because the description
@@ -147,7 +146,7 @@ public class FunctionHintTests
         Assert.DoesNotContain("quickly press and release", AllText(w), StringComparison.Ordinal);
         Assert.Contains("quickly press and release", MainWindow.FunctionHelpBody("tap"), StringComparison.Ordinal);
         // Both halves, in the order somebody reads them.
-        Assert.Contains("Counts as a tap", MainWindow.FunctionHelpBody("tap"), StringComparison.Ordinal);
+        Assert.Contains("still count as a tap", MainWindow.FunctionHelpBody("tap"), StringComparison.Ordinal);
         w.Close();
     }
 

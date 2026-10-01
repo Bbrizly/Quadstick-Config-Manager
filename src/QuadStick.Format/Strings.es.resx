@@ -102,16 +102,16 @@
     <value>10 por segundo</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>Ponlo exactamente en 1 y la salida queda enganchada. Cualquier valor mayor que 1 es cuánto dura la pulsación.</value>
+    <value>Cuánto dura la pulsación después de la espera, en milisegundos. Ponlo exactamente en 1 y la salida se queda activa.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Cuenta como un toque</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>Se dispara cuando su entrada llega al menos a esta fuerza.</value>
+    <value>El porcentaje en el que la salida se activa.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Se dispara mientras su entrada se mantiene por debajo de esta fuerza.</value>
+    <value>La salida está activa mientras la entrada esté por debajo de este porcentaje.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>Retención inicial</value>
@@ -120,43 +120,43 @@
     <value>Mantener pulsado</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>Mantenga la entrada más tiempo que esto y la salida se engancha en vez de dar un toque.</value>
+    <value>Cuánto tienes que mantener la entrada antes de que la salida quede fija, en milisegundos. Si la mantienes menos, funciona como una pulsación normal.</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>Mantener para enganchar</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Mantiene el primer toque este tiempo antes de que empiece el disparo rápido. Si es menor que el intervalo entre toques, no cambia nada.</value>
+    <value>Cuánto se mantiene el botón pulsado normalmente antes de que empiece a repetir, en milisegundos.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>se mantiene mientras usted mantiene</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>Cuánto baja la salida analógica cada vez.</value>
+    <value>Cuánto baja el valor cada vez, en porcentaje.</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>Cuánto sube la salida analógica cada vez.</value>
+    <value>Cuánto sube el valor cada vez, en porcentaje.</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>A qué velocidad da toques mientras mantiene la entrada.</value>
+    <value>Cuántas pulsaciones por segundo mientras mantienes la entrada.</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>Cuánto dura cada pulsación.</value>
+    <value>Cuánto dura cada pulsación, en milisegundos.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Cuánto dura la pulsación del toque. Ponlo exactamente en 1 y en cambio alterna: un toque enciende la salida y el siguiente la apaga.</value>
+    <value>Cuánto pulsa la salida, en milisegundos. Ponlo exactamente en 1 y los toques alternan: un toque activa la salida y el siguiente la desactiva.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>Cuántas pulsaciones envía una activación.</value>
+    <value>Cuántas pulsaciones cada vez. 2 funciona como un doble toque.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>Sigue dando pasos con esta frecuencia mientras mantiene la entrada.</value>
+    <value>Cada cuánto sigue cambiando mientras mantienes, en milisegundos.</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>Mantiene la salida pulsada este tiempo después de soltar.</value>
+    <value>Cuánto sigue activa la salida después de soltar, en milisegundos.</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>Suelte dentro de esta ventana y cuenta como un toque. Manténgalo más tiempo y no se dispara nada.</value>
+    <value>Lo máximo que puedes mantener y que siga contando como toque, en milisegundos. Si mantienes más, no pasa nada.</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>sin retención extra</value>
@@ -177,28 +177,31 @@
     <value>Repetir cada</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: de {1} a {2}. En blanco significa {3}.</value>
+    <value>{0} Predeterminado: {1}.</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: de {1} a {2} {5}. En blanco significa {3}.</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>Segundo número: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>Primer número: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>Deja de dispararse cuando su entrada supera este valor, de modo que los dos números forman una banda.</value>
+    <value>Un porcentaje mayor en el que se vuelve a desactivar. 25 75 se activa por encima del 25 % y se desactiva por encima del 75 %.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>toques por segundo</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>La duración del ciclo de encendido y apagado a fuerza máxima. Una entrada más suave lo alarga.</value>
+    <value>El tiempo de encendido/apagado más corto, en milisegundos. Los números menores cambian más rápido, y una entrada más suave lo alarga.</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>Límite superior</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>Espera este tiempo después de que usted active, y luego pulsa.</value>
+    <value>Cuánto tienes que mantener antes de que la salida se active, en milisegundos.</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>Espera este tiempo antes de soltar la salida enganchada de la otra fila.</value>
+    <value>Cuánto esperar antes de soltar la salida que otra fila dejó fija, en milisegundos.</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0 solía significar ninguna zona muerta en absoluto, y el firmware de 2025 pone 129 cuentas en bruto en su lugar, así que el joystick gana una pequeña zona muerta que este archivo nunca pidió</value>

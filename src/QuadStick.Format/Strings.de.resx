@@ -102,16 +102,16 @@
     <value>10 pro Sekunde</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>Auf genau 1 gesetzt rastet der Ausgang ein. Alles über 1 gibt an, wie lange der Druck dauert.</value>
+    <value>Wie lange der Druck nach der Wartezeit dauert, in Millisekunden. Auf genau 1 gesetzt, bleibt der Ausgang an.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Zählt als Tippen</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>Löst aus, sobald Ihre Eingabe mindestens so stark ist.</value>
+    <value>Der Prozentwert, ab dem der Ausgang einschaltet.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Löst aus, solange Ihre Eingabe unter dieser Stärke bleibt.</value>
+    <value>Der Ausgang ist an, solange der Eingang unter diesem Prozentwert bleibt.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>Erstes Halten</value>
@@ -120,43 +120,43 @@
     <value>Halten aktiv</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>Wenn Sie die Eingabe länger als dies halten, rastet der Ausgang ein, statt zu tippen.</value>
+    <value>Wie lange Sie den Eingang halten müssen, bis der Ausgang einrastet, in Millisekunden. Kürzeres Halten wirkt wie ein normaler Druck.</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>Halten zum Einrasten</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Hält den ersten Tipp so lange, bevor das Dauerfeuer beginnt. Kürzer als der Abstand zwischen den Tipps ändert nichts.</value>
+    <value>Wie lange die Taste normal gehalten wird, bevor das Wiederholen beginnt, in Millisekunden.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>hält, solange Sie halten</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>Wie weit sich der analoge Ausgang jedes Mal nach unten bewegt.</value>
+    <value>Um wie viel der Wert jedes Mal sinkt, in Prozent.</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>Wie weit sich der analoge Ausgang jedes Mal nach oben bewegt.</value>
+    <value>Um wie viel der Wert jedes Mal steigt, in Prozent.</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>Wie schnell es tippt, solange Sie die Eingabe halten.</value>
+    <value>Wie viele Drücke pro Sekunde, solange Sie den Eingang halten.</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>Wie lange jeder Druck dauert.</value>
+    <value>Wie lange jeder Druck dauert, in Millisekunden.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Wie lange der Tipp drückt. Auf genau 1 gesetzt schaltet er stattdessen um: ein Tipp schaltet den Ausgang ein, der nächste aus.</value>
+    <value>Wie lange der Ausgang drückt, in Millisekunden. Auf genau 1 gesetzt, schaltet Tippen um: einmal Tippen schaltet den Ausgang ein, das nächste aus.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>Wie viele Drücke eine Aktivierung sendet.</value>
+    <value>Wie viele Drücke jedes Mal. 2 wirkt wie ein Doppeltipp.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>Schreitet so oft weiter, solange Sie die Eingabe halten.</value>
+    <value>Wie oft er sich weiter ändert, solange Sie halten, in Millisekunden.</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>Hält den Ausgang so lange gedrückt, nachdem Sie loslassen.</value>
+    <value>Wie lange der Ausgang nach dem Loslassen an bleibt, in Millisekunden.</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>Wenn Sie innerhalb dieses Fensters loslassen, zählt es als Tippen. Halten Sie länger, löst nichts aus.</value>
+    <value>Das längste Halten, das noch als Tippen zählt, in Millisekunden. Länger, und nichts passiert.</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>kein zusätzliches Halten</value>
@@ -177,28 +177,31 @@
     <value>Wiederholen alle</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: {1} bis {2}. Leer bedeutet {3}.</value>
+    <value>{0} Standard: {1}.</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: {1} bis {2} {5}. Leer bedeutet {3}.</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>Zweite Zahl: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>Erste Zahl: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>Löst nicht mehr aus, sobald Ihre Eingabe darüber hinausgeht, sodass die beiden Zahlen einen Bereich bilden.</value>
+    <value>Ein höherer Prozentwert, ab dem er wieder ausschaltet. 25 75 schaltet über 25 % ein und über 75 % wieder aus.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>Tipps pro Sekunde</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>Die Länge des Ein-und-Aus-Zyklus bei voller Stärke. Schwächere Eingabe verlängert ihn.</value>
+    <value>Die kürzeste Ein/Aus-Zeit, in Millisekunden. Kleinere Werte wechseln schneller, schwächere Eingabe verlängert sie.</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>Obergrenze</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>Wartet so lange, nachdem Sie aktivieren, und drückt dann.</value>
+    <value>Wie lange Sie halten müssen, bevor der Ausgang einschaltet, in Millisekunden.</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>Wartet so lange, bevor der eingerastete Ausgang der anderen Zeile losgelassen wird.</value>
+    <value>Wie lange gewartet wird, bevor der Ausgang losgelassen wird, den eine andere Zeile eingerastet hat, in Millisekunden.</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0 bedeutete früher überhaupt keine Totzone, und Firmware ab 2025 setzt stattdessen 129 Rohwerte ein, sodass der Stick eine kleine Totzone erhält, um die diese Datei nie gebeten hat</value>

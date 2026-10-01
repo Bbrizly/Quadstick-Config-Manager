@@ -102,16 +102,16 @@
     <value>1秒に10回</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>ちょうど 1 にすると出力がオンのまま固定されます。1 より大きい値は押している長さになります。</value>
+    <value>待ち時間の後に押す長さ (ミリ秒)。ちょうど 1 にすると出力はオンのままになります。</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>タップとして扱われます</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>入力がこの強さ以上になると発動します。</value>
+    <value>出力がオンになるパーセント。</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>入力がこの強さ未満である間、発動し続けます。</value>
+    <value>入力がこのパーセントを下回っている間、出力はオンです。</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>最初の保持</value>
@@ -120,43 +120,43 @@
     <value>保持してオン</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>これより長く入力を保持すると、タップの代わりに出力がオンのまま固定されます。</value>
+    <value>出力がロックされるまで入力を押し続ける時間 (ミリ秒)。それより短いと普通の押下になります。</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>保持で固定</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>連射が始まる前に、最初のタップをこの長さだけ保持します。タップの間隔より短い場合は何も変わりません。</value>
+    <value>連続入力が始まる前に、ボタンを普通に押し続ける時間 (ミリ秒)。</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>保持している間、保持されます</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>アナログ出力が1回ごとにどれだけ下に動くか。</value>
+    <value>1 回ごとに値が下がる量 (パーセント)。</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>アナログ出力が1回ごとにどれだけ上に動くか。</value>
+    <value>1 回ごとに値が上がる量 (パーセント)。</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>入力を保持している間、どれくらいの速さでタップするか。</value>
+    <value>入力を押している間、1 秒あたりに押す回数。</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>1回の押下がどれだけ続くか。</value>
+    <value>1 回の押下の長さ (ミリ秒)。</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>タップが押される長さ。ちょうど 1 にすると代わりに切り替えになります。1 回のタップで出力がオンになり、次のタップでオフになります。</value>
+    <value>出力を押す長さ (ミリ秒)。ちょうど 1 にするとタップで切り替わります。1 回目のタップでオン、次でオフ。</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>1回の作動で何回押下を送るか。</value>
+    <value>1 回に押す回数。2 にするとダブルタップのように動きます。</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>入力を保持している間、この頻度でステップを続けます。</value>
+    <value>押し続けている間、値を変え続ける間隔 (ミリ秒)。</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>指を離した後も、この長さだけ出力を押し続けます。</value>
+    <value>離した後も出力がオンのままの時間 (ミリ秒)。</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>この時間内に離すとタップとして扱われます。これより長く保持すると何も発動しません。</value>
+    <value>タップとして数えられる最長の押し時間 (ミリ秒)。それより長いと何も起きません。</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>追加の保持なし</value>
@@ -177,28 +177,31 @@
     <value>繰り返し間隔</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: {1}から{2}まで。空欄の場合は{3}。</value>
+    <value>{0} 既定値: {1}。</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: {1}から{2} {5}まで。空欄の場合は{3}。</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>2 つ目の数値: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>1 つ目の数値: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>入力がこの値を超えると再発動を止めるため、2つの数値で範囲(バンド)ができます。</value>
+    <value>出力がまたオフになる、より高いパーセント。25 75 なら 25% を超えるとオン、75% を超えるとオフ。</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>1秒あたりのタップ数</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>最大強度でのオンオフの周期の長さ。入力が弱いほど周期は長くなります。</value>
+    <value>オン/オフの最短時間 (ミリ秒)。小さいほど速く切り替わり、入力が弱いと長くなります。</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>上限</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>作動してからこの長さだけ待ってから押します。</value>
+    <value>出力がオンになるまで押し続ける時間 (ミリ秒)。</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>他の行の固定された出力を解放する前に、この長さだけ待ちます。</value>
+    <value>別の行がロックした出力を離すまでの待ち時間 (ミリ秒)。</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0はかつて不感帯なしを意味していましたが、2025年以降のファームウェアは代わりに生カウントで129を使うため、このファイルが指定していない小さな不感帯がスティックに生じます</value>

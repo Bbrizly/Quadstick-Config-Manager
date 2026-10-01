@@ -8698,13 +8698,12 @@ public partial class MainWindow : Window
 
     // The numbers beside a function are where people guess, and a guess here is
     // silent: "greater_than 250" is a strength no input reaches, so the row
-    // simply never fires and nothing says why. Each line names one number, its
-    // unit, how far it goes, and what the device substitutes when it is left
-    // out. All of it read off firmware 2373, see FunctionParameters.
+    // simply never fires and nothing says why. Each line says what one number
+    // does, in what unit, and what the device substitutes when it is left out.
+    // All of it read off firmware 2373, see FunctionParameters.
     internal static string ParameterHint(string function)
     {
-        var spec = FunctionParameters.For(FunctionToken(function));
-        return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Sentence));
+        return string.Join("\n", FunctionParameters.Sentences(FunctionToken(function)));
     }
 
     // Everything the dot beside a function cell says: what the behaviour is,
@@ -8717,20 +8716,19 @@ public partial class MainWindow : Window
         return numbers.Length == 0 ? what : what + "\n\n" + numbers;
     }
 
-    // The line under the box. It leads with what the number does and ends on
-    // the range, because a reader without a technical background could not do
-    // anything with the range on its own.
+    // The line under the box. It says what the number does and what blank
+    // means, and leaves the range to the validator.
     internal static string ParameterSummary(string function) => ParameterHint(function);
 
     // A screen reader gets the same sentences the sighted user reads under the
-    // box, because the ranges are the whole point of the field.
+    // box.
     internal static string ParameterAccessibleName(string function)
     {
         var spec = FunctionParameters.For(FunctionToken(function));
         return spec.Count == 0
             ? string.Format(CultureInfo.CurrentCulture, Strings.Main_FunctionTakesNoNumbers, function)
             : string.Format(CultureInfo.CurrentCulture, Strings.Main_NumbersForFunctionOptionalWhole, function)
-              + string.Join(" ", spec.Select(x => x.Sentence));
+              + string.Join(" ", FunctionParameters.Sentences(FunctionToken(function)));
     }
 
     // What to put in an empty box: the parameter names in order, so the shape

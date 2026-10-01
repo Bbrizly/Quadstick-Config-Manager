@@ -105,16 +105,16 @@
     <value>[10 á šéçóñd xxxx]</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>[Šét ít tó éxáçtlý 1 áñd thé óútpút látçhéš óñ. Áñýthíñg ábóvé 1 íš hów lóñg thé préšš láštš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów lóñg thé préšš láštš áftér thé wáít, íñ míllíšéçóñdš. Šét ít tó éxáçtlý 1 áñd thé óútpút látçhéš óñ íñštéád. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>[Çóúñtš áš á táp xxxxxx]</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>[Fíréš óñçé ýóúr íñpút íš át léášt thíš štróñg. xxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thé pérçéñtágé whéré thé óútpút túrñš óñ. xxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>[Fíréš whílé ýóúr íñpút štáýš úñdér thíš štréñgth. xxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thé óútpút íš óñ whílé thé íñpút íš bélów thíš pérçéñtágé. xxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>[Fíršt hóld xxxx]</value>
@@ -123,43 +123,43 @@
     <value>[Hóld óñ xx]</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>[Hóld thé íñpút lóñgér tháñ thíš áñd thé óútpút látçhéš óñ íñštéád óf táppíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów lóñg ýóú múšt hóld thé íñpút béfóré thé óútpút lóçkš óñ, íñ míllíšéçóñdš. Á šhórtér hóld wórkš líké á ñórmál préšš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>[Hóld tó látçh xxxxx]</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>[Hóldš thé fíršt táp thíš lóñg béfóré thé rápíd-fíré štártš. Šhórtér tháñ thé gáp bétwééñ tápš áñd ít çháñgéš ñóthíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów lóñg tó hóld thé búttóñ ñórmállý béfóré répéátíñg štártš, íñ míllíšéçóñdš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>[hóldš whílé ýóú hóld xxxxxxxx]</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>[Hów fár dówñ thé áñálóg óútpút móvéš éáçh tímé. xxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów múçh thé válúé góéš dówñ éáçh tímé, íñ pérçéñt. xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>[Hów fár úp thé áñálóg óútpút móvéš éáçh tímé. xxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów múçh thé válúé góéš úp éáçh tímé, íñ pérçéñt. xxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>[Hów fášt ít tápš whílé ýóú hóld thé íñpút. xxxxxxxxxxxxxxxx]</value>
+    <value>[Hów máñý préššéš pér šéçóñd whílé ýóú hóld thé íñpút. xxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>[Hów lóñg éáçh préšš láštš. xxxxxxxxxx]</value>
+    <value>[Hów lóñg éáçh préšš láštš, íñ míllíšéçóñdš. xxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>[Hów lóñg thé táp préššéš fór. Šét ít tó éxáçtlý 1 áñd ít tóggléš íñštéád: óñé táp túrñš thé óútpút óñ, thé ñéxt túrñš ít óff. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów lóñg thé óútpút préššéš fór, íñ míllíšéçóñdš. Šét ít tó éxáçtlý 1 áñd tápš tógglé íñštéád: óñé táp túrñš thé óútpút óñ, thé ñéxt túrñš ít óff. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>[Hów máñý préššéš óñé áçtívátíóñ šéñdš. xxxxxxxxxxxxxxx]</value>
+    <value>[Hów máñý préššéš éáçh tímé. 2 áçtš líké á dóúblé-táp. xxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>[Kéépš štéppíñg thíš óftéñ whílé ýóú hóld thé íñpút. xxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów óftéñ ít kéépš štéppíñg whílé ýóú hóld, íñ míllíšéçóñdš. xxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>[Kéépš thé óútpút préššéd thíš lóñg áftér ýóú lét gó. xxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów lóñg thé óútpút štáýš óñ áftér ýóú lét gó, íñ míllíšéçóñdš. xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>[Lét gó íñšídé thíš wíñdów áñd ít çóúñtš áš á táp. Hóld lóñgér áñd ñóthíñg fíréš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thé lóñgéšt ýóú çáñ hóld áñd štíll çóúñt áš á táp, íñ míllíšéçóñdš. Hóld lóñgér áñd ñóthíñg háppéñš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>[ñó éxtrá hóld xxxxx]</value>
@@ -180,28 +180,31 @@
     <value>[Répéát évérý xxxx]</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>[{4} {0}: {1} tó {2}. Bláñk méáñš {3}. xxxxxxxxxxxxxx]</value>
+    <value>[{0} Défáúlt: {1}. xxxxxx]</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>[{4} {0}: {1} tó {2} {5}. Bláñk méáñš {3}. xxxxxxxxxxxxxxxx]</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>[Šéçóñd ñúmbér: {0} xxxxxxx]</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>[Fíršt ñúmbér: {0} xxxxxx]</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>[Štópš fíríñg ágáíñ óñçé ýóúr íñpút góéš pášt thíš, šó thé twó ñúmbérš máké á báñd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Á híghér pérçéñtágé whéré ít túrñš báçk óff. 25 75 túrñš óñ ábóvé 25% áñd óff ágáíñ ábóvé 75%. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>[tápš á šéçóñd xxxxx]</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>[Thé óñ-áñd-óff çýçlé léñgth át fúll štréñgth. Šóftér íñpút štrétçhéš ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Thé šhórtéšt óñ/óff tímé, íñ míllíšéçóñdš. Šmállér ñúmbérš çháñgé fáštér, áñd á šóftér íñpút štrétçhéš ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>[Úppér límít xxxx]</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>[Wáítš thíš lóñg áftér ýóú áçtíváté, théñ préššéš. xxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów lóñg ýóú múšt hóld béfóré thé óútpút túrñš óñ, íñ míllíšéçóñdš. xxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>[Wáítš thíš lóñg béfóré réléášíñg thé óthér rów'š látçhéd óútpút. xxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Hów lóñg tó wáít béfóré léttíñg gó óf thé óútpút áñóthér rów látçhéd óñ, íñ míllíšéçóñdš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>[0 úšéd tó méáñ ñó déád žóñé át áll, áñd fírmwáré fróm 2025 šúbštítútéš 129 ráw çóúñtš íñštéád, šó thé štíçk gáíñš á šmáll déád žóñé thíš fílé ñévér áškéd fór xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>

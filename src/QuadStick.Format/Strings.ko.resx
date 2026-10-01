@@ -102,16 +102,16 @@
     <value>초당 10회</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>정확히 1로 설정하면 출력이 켜진 상태로 고정됩니다. 1보다 크면 누르는 시간을 나타냅니다.</value>
+    <value>기다린 뒤 누르는 시간(밀리초). 정확히 1로 하면 출력이 계속 켜져 있습니다.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>탭으로 인식됨</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>입력이 이 값 이상이 되면 한 번 실행됩니다.</value>
+    <value>출력이 켜지는 퍼센트.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>입력이 이 값 미만인 동안 계속 실행됩니다.</value>
+    <value>입력이 이 퍼센트보다 낮은 동안 출력이 켜집니다.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>첫 유지 시간</value>
@@ -120,43 +120,43 @@
     <value>유지</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>이 시간보다 길게 입력을 유지하면 출력이 탭 대신 켜진 상태로 고정됩니다.</value>
+    <value>출력이 고정되기까지 입력을 누르고 있어야 하는 시간(밀리초). 더 짧게 누르면 보통 누름처럼 동작합니다.</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>유지하면 고정</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>연속 실행이 시작되기 전까지 첫 탭을 이 시간만큼 유지합니다. 탭 사이 간격보다 짧으면 아무것도 바뀌지 않습니다.</value>
+    <value>반복이 시작되기 전에 버튼을 평소처럼 누르고 있는 시간(밀리초).</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>누르고 있는 동안 유지</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>아날로그 출력이 매번 얼마나 아래로 움직이는지입니다.</value>
+    <value>한 번마다 값이 내려가는 양(퍼센트).</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>아날로그 출력이 매번 얼마나 위로 움직이는지입니다.</value>
+    <value>한 번마다 값이 올라가는 양(퍼센트).</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>입력을 누르고 있는 동안 얼마나 빠르게 탭하는지입니다.</value>
+    <value>입력을 누르고 있는 동안 1초에 누르는 횟수.</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>각 누름이 지속되는 시간입니다.</value>
+    <value>한 번 누르는 시간(밀리초).</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>탭이 누르는 시간입니다. 정확히 1로 설정하면 대신 토글됩니다. 한 번 탭하면 출력이 켜지고 다음 탭에서 꺼집니다.</value>
+    <value>출력을 누르는 시간(밀리초). 정확히 1로 하면 탭이 전환으로 바뀝니다. 한 번 탭하면 켜지고, 다음 탭에 꺼집니다.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>한 번의 활성화가 몇 번의 누름을 보내는지입니다.</value>
+    <value>한 번에 누르는 횟수. 2는 두 번 탭처럼 동작합니다.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>입력을 누르고 있는 동안 이 빈도로 계속 단계 이동합니다.</value>
+    <value>누르고 있는 동안 값을 계속 바꾸는 간격(밀리초).</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>손을 뗀 후에도 출력을 이 시간만큼 계속 누른 상태로 유지합니다.</value>
+    <value>손을 뗀 뒤에도 출력이 켜져 있는 시간(밀리초).</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>이 시간 안에 손을 떼면 탭으로 인식됩니다. 더 길게 누르면 아무것도 실행되지 않습니다.</value>
+    <value>탭으로 인정되는 가장 긴 누름 시간(밀리초). 더 길면 아무 일도 일어나지 않습니다.</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>추가 유지 없음</value>
@@ -177,28 +177,31 @@
     <value>반복 간격</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: {1}에서 {2}까지. 비워두면 {3}을 의미합니다.</value>
+    <value>{0} 기본값: {1}.</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: {1}에서 {2} {5}까지. 비워두면 {3}을 의미합니다.</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>두 번째 숫자: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>첫 번째 숫자: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>입력이 이 값을 넘으면 다시 실행되지 않으므로, 두 숫자가 하나의 구간을 이룹니다.</value>
+    <value>출력이 다시 꺼지는 더 높은 퍼센트. 25 75는 25%를 넘으면 켜지고 75%를 넘으면 꺼집니다.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>초당 탭 수</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>최대 강도에서의 켜짐-꺼짐 주기 길이입니다. 입력이 약할수록 길어집니다.</value>
+    <value>가장 짧은 켜짐/꺼짐 시간(밀리초). 작을수록 빨리 바뀌고, 입력이 약하면 길어집니다.</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>상한</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>활성화 후 이 시간만큼 기다린 다음 누릅니다.</value>
+    <value>출력이 켜지기까지 누르고 있어야 하는 시간(밀리초).</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>다른 행의 고정된 출력을 해제하기 전에 이 시간만큼 기다립니다.</value>
+    <value>다른 줄이 고정한 출력을 놓기 전에 기다리는 시간(밀리초).</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0은 원래 데드존이 전혀 없다는 의미였지만, 2025년 펌웨어부터는 대신 원시 카운트 129를 사용하므로 이 파일이 요청하지 않은 작은 데드존이 스틱에 생깁니다</value>

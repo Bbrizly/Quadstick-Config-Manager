@@ -102,16 +102,16 @@
     <value>10 par seconde</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>Réglez-le exactement sur 1 et la sortie se verrouille. Au-dessus de 1, c'est la durée de l'appui.</value>
+    <value>Durée de l'appui après l'attente, en millisecondes. Réglez-le sur exactement 1 et la sortie reste active.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Compte comme un appui bref</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>Se déclenche dès que votre entrée atteint au moins cette force.</value>
+    <value>Le pourcentage où la sortie s'active.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Se déclenche tant que votre entrée reste sous cette force.</value>
+    <value>La sortie est active tant que l'entrée reste sous ce pourcentage.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>Premier maintien</value>
@@ -120,43 +120,43 @@
     <value>Maintien</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>Maintenez l'entrée plus longtemps que cela et la sortie se verrouille au lieu de faire un appui bref.</value>
+    <value>Combien de temps maintenir l'entrée avant que la sortie se verrouille, en millisecondes. Un maintien plus court agit comme un appui normal.</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>Maintenir pour verrouiller</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Maintient le premier appui pendant cette durée avant le début du tir rapide. Plus court que l'intervalle entre les appuis, cela ne change rien.</value>
+    <value>Combien de temps le bouton reste appuyé normalement avant que la répétition commence, en millisecondes.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>maintient tant que vous maintenez</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>De combien la sortie analogique descend à chaque fois.</value>
+    <value>De combien la valeur descend à chaque fois, en pourcentage.</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>De combien la sortie analogique monte à chaque fois.</value>
+    <value>De combien la valeur monte à chaque fois, en pourcentage.</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>À quelle vitesse les appuis se répètent pendant que vous maintenez l'entrée.</value>
+    <value>Combien d'appuis par seconde tant que vous maintenez l'entrée.</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>Combien de temps dure chaque appui.</value>
+    <value>Durée de chaque appui, en millisecondes.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Combien de temps dure l'appui bref. Réglez-le exactement sur 1 et il bascule à la place : un appui active la sortie, le suivant la désactive.</value>
+    <value>Durée de l'appui de la sortie, en millisecondes. Réglez-le sur exactement 1 et les appuis brefs basculent : un appui active la sortie, le suivant la désactive.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>Combien d'appuis une activation envoie.</value>
+    <value>Combien d'appuis à chaque fois. 2 agit comme un double appui.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>Continue d'avancer à ce rythme tant que vous maintenez l'entrée.</value>
+    <value>À quelle fréquence elle continue de changer tant que vous maintenez, en millisecondes.</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>Garde la sortie appuyée pendant cette durée après que vous relâchez.</value>
+    <value>Combien de temps la sortie reste active après que vous relâchez, en millisecondes.</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>Relâchez dans cette fenêtre et cela compte comme un appui bref. Maintenez plus longtemps et rien ne se déclenche.</value>
+    <value>Le plus long maintien qui compte encore comme un appui bref, en millisecondes. Plus long, et rien ne se passe.</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>pas de maintien supplémentaire</value>
@@ -177,28 +177,31 @@
     <value>Répéter toutes les</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0} : {1} à {2}. Vide signifie {3}.</value>
+    <value>{0} Par défaut : {1}.</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0} : {1} à {2} {5}. Vide signifie {3}.</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>Second nombre : {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>Premier nombre : {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>Cesse de se déclencher une fois que votre entrée dépasse cette valeur, donc les deux nombres forment une bande.</value>
+    <value>Un pourcentage plus haut où elle se désactive. 25 75 s'active au-dessus de 25 % et se désactive au-dessus de 75 %.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>appuis par seconde</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>La durée du cycle marche-arrêt à pleine force. Une entrée plus douce l'allonge.</value>
+    <value>Le temps marche/arrêt le plus court, en millisecondes. Plus petit change plus vite, et une entrée plus douce l'allonge.</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>Limite haute</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>Attend cette durée après votre activation, puis appuie.</value>
+    <value>Combien de temps maintenir avant que la sortie s'active, en millisecondes.</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>Attend cette durée avant de relâcher la sortie verrouillée de l'autre ligne.</value>
+    <value>Combien de temps attendre avant de relâcher la sortie qu'une autre ligne a verrouillée, en millisecondes.</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0 signifiait autrefois aucune zone morte du tout, et le firmware de 2025 lui substitue 129 comptes bruts, donc le manche gagne une petite zone morte que ce fichier n'a jamais demandée</value>

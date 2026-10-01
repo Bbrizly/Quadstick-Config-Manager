@@ -102,16 +102,16 @@
     <value>10 por segundo</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>Defina-o exatamente como 1 e o output fica ligado. Qualquer valor acima de 1 é a duração da pressão.</value>
+    <value>Quanto dura o toque depois da espera, em milissegundos. Defina exatamente 1 e a saída fica ligada.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Conta como um toque</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>Dispara assim que o seu input tiver pelo menos esta força.</value>
+    <value>A percentagem em que a saída liga.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Dispara enquanto o seu input permanecer abaixo desta força.</value>
+    <value>A saída fica ligada enquanto a entrada estiver abaixo desta percentagem.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>Primeira retenção</value>
@@ -120,43 +120,43 @@
     <value>Manter</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>Segure o input mais tempo do que isto e o output mantém-se ligado em vez de dar um toque.</value>
+    <value>Quanto tempo tem de manter a entrada até a saída ficar presa, em milissegundos. Menos tempo funciona como um toque normal.</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>Segurar para manter ligado</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Mantém o primeiro toque por este tempo antes de o disparo rápido começar. Mais curto do que o intervalo entre toques não muda nada.</value>
+    <value>Quanto tempo o botão fica premido normalmente antes de a repetição começar, em milissegundos.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>mantém-se enquanto você segura</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>Quanto o output analógico desce a cada vez.</value>
+    <value>Quanto o valor desce de cada vez, em percentagem.</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>Quanto o output analógico sobe a cada vez.</value>
+    <value>Quanto o valor sobe de cada vez, em percentagem.</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>Com que rapidez dá toques enquanto você segura o input.</value>
+    <value>Quantos toques por segundo enquanto mantém a entrada.</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>Quanto tempo cada pressão dura.</value>
+    <value>Quanto dura cada toque, em milissegundos.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Por quanto tempo o toque pressiona. Defina-o exatamente como 1 e em vez disso alterna: um toque liga o output, o seguinte desliga-o.</value>
+    <value>Quanto tempo a saída fica premida, em milissegundos. Defina exatamente 1 e os toques alternam: um toque liga a saída, o seguinte desliga.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>Quantas pressões uma ativação envia.</value>
+    <value>Quantos toques de cada vez. 2 funciona como um toque duplo.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>Continua a avançar com esta frequência enquanto você segura o input.</value>
+    <value>De quanto em quanto tempo continua a mudar enquanto mantém, em milissegundos.</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>Mantém o output pressionado por este tempo depois de soltar.</value>
+    <value>Quanto tempo a saída fica ligada depois de soltar, em milissegundos.</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>Solte dentro desta janela de tempo e conta como um toque. Segure mais tempo e nada dispara.</value>
+    <value>O máximo que pode manter e ainda contar como toque curto, em milissegundos. Mais do que isso e nada acontece.</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>sem retenção extra</value>
@@ -177,28 +177,31 @@
     <value>Repetir a cada</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: {1} a {2}. Em branco significa {3}.</value>
+    <value>{0} Predefinição: {1}.</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: {1} a {2} {5}. Em branco significa {3}.</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>Segundo número: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>Primeiro número: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>Deixa de disparar novamente assim que o seu input ultrapassar isto, formando uma faixa com os dois números.</value>
+    <value>Uma percentagem mais alta em que volta a desligar. 25 75 liga acima de 25% e desliga acima de 75%.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>toques por segundo</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>A duração do ciclo ligado-desligado com força total. Um input mais suave alonga-o.</value>
+    <value>O tempo ligado/desligado mais curto, em milissegundos. Números menores mudam mais depressa, e uma entrada mais suave alonga-o.</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>Limite superior</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>Espera este tempo depois de você ativar, e então pressiona.</value>
+    <value>Quanto tempo tem de manter até a saída ligar, em milissegundos.</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>Espera este tempo antes de libertar o output mantido ligado pela outra linha.</value>
+    <value>Quanto esperar antes de soltar a saída que outra linha deixou presa, em milissegundos.</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0 costumava significar nenhuma zona morta, e o firmware de 2025 substitui-o por 129 contagens brutas, portanto o stick ganha uma pequena zona morta que este ficheiro nunca pediu</value>
