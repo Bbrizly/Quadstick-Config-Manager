@@ -3676,4 +3676,7 @@ Gáméš thát dó ñót úšé ŠDL wíll ñót šéé thé gámépád. Fór th
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>[Çópíéd. Pášté ít íñtó Térmíñál áñd préšš Rétúrñ. xxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>[QúádŠtíçk plúggéd íñ bút ñót líštéd? Thé Máç Ápp Štóré véršíóñ çáñ ópéñ ítš drívé óñlý áftér ýóú çhóóšé ít óñçé. Áftér thát ít fíñdš ít óñ ítš ówñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
 </root>

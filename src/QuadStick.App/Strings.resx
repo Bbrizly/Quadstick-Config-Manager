@@ -3676,4 +3676,7 @@ Games that do not use SDL will not see the gamepad. For those, use mode 7. Turni
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>Copied. Paste it into Terminal and press Return.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick plugged in but not listed? The Mac App Store version can open its drive only after you choose it once. After that it finds it on its own.</value>
+  </data>
 </root>

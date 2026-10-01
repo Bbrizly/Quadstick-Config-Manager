@@ -608,6 +608,8 @@ public partial class MainWindow
             Orientation = Orientation.Horizontal, Spacing = 10,
             Children = { reload, files },
         };
+        if (_deviceRoot is null && DriveAccessButton(() => LoadDeviceSettingsAsync(), t => { if (_deviceStatus is { } line) line.Text = t; }) is { } choose)
+            buttons.Children.Insert(0, choose);
         Grid.SetColumn(buttons, 1);
         top.Children.Add(buttons);
 

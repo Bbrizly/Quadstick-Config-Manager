@@ -3557,4 +3557,7 @@
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>कॉपी हो गया। Terminal में पेस्ट करें और Return दबाएँ।</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick लगा है पर सूची में नहीं है? Mac App Store वाला संस्करण उसकी ड्राइव तभी खोल सकता है जब आप उसे एक बार चुन लें। उसके बाद वह उसे अपने आप ढूँढ लेता है।</value>
+  </data>
 </root>

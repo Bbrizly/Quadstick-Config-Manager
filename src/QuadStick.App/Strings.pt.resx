@@ -3557,4 +3557,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>Copiado. Cole-o no Terminal e prima Return.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick ligado mas não aparece? A versão da Mac App Store só consegue abrir a unidade depois de a escolher uma vez. Depois disso, encontra-a sozinha.</value>
+  </data>
 </root>

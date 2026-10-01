@@ -3555,4 +3555,7 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>コピーしました。ターミナルに貼り付けて Return キーを押してください。</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick を接続しているのに表示されませんか？ Mac App Store 版は、一度ドライブを選ぶまでそれを開けません。その後は自動で見つけます。</value>
+  </data>
 </root>

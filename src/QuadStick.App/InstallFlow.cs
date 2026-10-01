@@ -74,6 +74,9 @@ public partial class MainWindow
                 return;
             }
             root = folders[0].Path.LocalPath;
+            // The sandboxed Mac build keeps this pick, so the next install and
+            // Home find the drive without asking again.
+            if (MacDriveAccess.Needed && Device.IsInstallTarget(root)) MacDriveAccess.Remember(root);
         }
 
         if (!Device.IsInstallTarget(root))

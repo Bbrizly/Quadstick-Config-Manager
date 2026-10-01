@@ -310,6 +310,15 @@ public class DeviceFilesWindow : Window
             _summary.Text = string.Format(CultureInfo.CurrentCulture,
                 Strings.Device_NoQuadStickDriveIsPlugged,
                 string.Join(", ", Validator.ModesWithNoDrive));
+            if (_owner.DriveAccessButton(() => LoadAsync(refresh: true), t => _summary.Text = t) is { } choose)
+            {
+                _groupsPanel.Children.Add(new TextBlock
+                {
+                    Text = Strings.Shell_StoreBuildChooseDrive, TextWrapping = TextWrapping.Wrap,
+                    Classes = { "secondary" }, FontSize = Size("BodySize"), Margin = new Thickness(0, 0, 0, 10),
+                });
+                _groupsPanel.Children.Add(choose);
+            }
             return;
         }
 

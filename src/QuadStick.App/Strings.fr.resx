@@ -3557,4 +3557,7 @@ Les jeux qui n'utilisent pas SDL ne verront pas la manette. Pour eux, utilisez l
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>Copié. Collez-la dans Terminal et appuyez sur Retour.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick branché mais absent de la liste ? La version Mac App Store ne peut ouvrir son lecteur qu'après que vous l'avez choisi une fois. Ensuite, elle le trouve toute seule.</value>
+  </data>
 </root>

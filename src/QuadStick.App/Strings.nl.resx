@@ -3557,4 +3557,7 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>Gekopieerd. Plak hem in Terminal en druk op Return.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick aangesloten maar niet in de lijst? De Mac App Store-versie kan het station pas openen nadat u het één keer hebt gekozen. Daarna vindt ze het zelf.</value>
+  </data>
 </root>

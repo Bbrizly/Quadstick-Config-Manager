@@ -3557,4 +3557,7 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>Skopiowano. Wklej je w Terminalu i naciśnij Return.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick jest podłączony, ale go nie ma na liście? Wersja z Mac App Store może otworzyć jego dysk dopiero po tym, jak raz go wybierzesz. Potem znajduje go sama.</value>
+  </data>
 </root>

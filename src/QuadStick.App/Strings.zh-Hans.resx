@@ -3557,4 +3557,7 @@
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>已复制。请粘贴到“终端”中并按回车键。</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick 已插入却没有列出？Mac App Store 版本需要你先选择一次它的驱动器才能打开。之后它会自动找到。</value>
+  </data>
 </root>

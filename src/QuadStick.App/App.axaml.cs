@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using QuadStick.Format;
 
 namespace QuadStick.App;
 
@@ -36,6 +37,7 @@ public class App : Application
         Localization.Apply(settings.Language);
         Theme.RegisterInto(this);
         Theme.Apply(settings.Theme);
+        if (MacDriveAccess.Needed) Device.BeforeScan = MacDriveAccess.Restore;
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var window = StartWindow(desktop.Args);

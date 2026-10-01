@@ -3557,4 +3557,7 @@ I giochi che non usano SDL non vedranno il gamepad. Per quelli, usa la modalità
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>Copiato. Incollalo nel Terminale e premi Invio.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick collegato ma non in elenco? La versione del Mac App Store può aprire la sua unità solo dopo che l'hai scelta una volta. Dopo la trova da sola.</value>
+  </data>
 </root>

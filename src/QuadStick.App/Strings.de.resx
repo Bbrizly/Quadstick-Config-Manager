@@ -3557,4 +3557,7 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>Kopiert. In Terminal einfügen und Return drücken.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick angeschlossen, aber nicht aufgeführt? Die Mac App Store-Version kann das Laufwerk erst öffnen, nachdem Sie es einmal gewählt haben. Danach findet sie es von selbst.</value>
+  </data>
 </root>

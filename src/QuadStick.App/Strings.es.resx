@@ -3557,4 +3557,7 @@ Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desact
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>Copiado. Pégalo en Terminal y pulsa Retorno.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>¿El QuadStick está conectado pero no aparece? La versión de la Mac App Store solo puede abrir su unidad después de que la elija una vez. Después la encuentra sola.</value>
+  </data>
 </root>

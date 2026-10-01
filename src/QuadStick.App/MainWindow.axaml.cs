@@ -751,6 +751,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         FlowDirection = Localization.Direction;
+        PickDriveFolder = PickDriveFolderAsync;
         InitializeComponent();
         var v = typeof(MainWindow).Assembly.GetName().Version;
         HomeVersionText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_VVMajorVMinor, v?.Major, v?.Minor, v?.Build);
@@ -1879,6 +1880,52 @@ public partial class MainWindow : Window
     // two QuadSticks, and grouping is only visible when it can.
     internal Func<IReadOnlyList<string>> FindDeviceRoots { get; set; } = () => Device.FindCandidatesCached();
 
+    // Test seam: a headless window has no folder picker to click.
+    internal Func<Task<string?>> PickDriveFolder { get; set; }
+
+    async Task<string?> PickDriveFolderAsync()
+    {
+        var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = Strings.Install_ChooseTheQuadStickDrive,
+            SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync("/Volumes"),
+        });
+        return folders.Count == 0 ? null : folders[0].Path.LocalPath;
+    }
+
+    // The Mac App Store build cannot read a QuadStick until the person picks
+    // its drive once (MacDriveAccess). True when the pick is a QuadStick and
+    // is now remembered for every launch after.
+    internal async Task<bool> ChooseDriveAsync(Action<string> say)
+    {
+        var root = await PickDriveFolder();
+        if (root is null) return false;
+        if (!Device.IsInstallTarget(root) || !MacDriveAccess.Remember(root))
+        {
+            say(Strings.Install_ThatFolderDoesNotLook);
+            return false;
+        }
+        Device.InvalidateCandidateCache();
+        RefreshHomeCards();
+        return true;
+    }
+
+    void SayOnHome(string text)
+    {
+        HomeStatusText.Text = text;
+        HomeStatusText.IsVisible = true;
+    }
+
+    // Only where it is needed: a normal build finds the drive on its own.
+    internal Button? DriveAccessButton(Func<Task> afterGranted, Action<string> say)
+    {
+        if (!MacDriveAccess.Needed) return null;
+        var b = new Button { Content = Strings.Install_ChooseTheQuadStickDrive };
+        AutomationProperties.SetHelpText(b, Strings.Shell_StoreBuildChooseDrive);
+        b.Click += async (_, _) => { if (await ChooseDriveAsync(say)) await afterGranted(); };
+        return b;
+    }
+
     void RefreshHomeCards()
     {
         // The Drive button is a live status light, refreshed on every home load.
@@ -1913,6 +1960,15 @@ public partial class MainWindow : Window
             .OrderBy(d => d.Root, StringComparer.OrdinalIgnoreCase)
             .ToArray();
         DeviceEmptyText.IsVisible = drives.Length == 0;
+        if (drives.Length == 0 && DriveAccessButton(() => Task.CompletedTask, SayOnHome) is { } choose)
+        {
+            DeviceCards.Children.Add(new TextBlock
+            {
+                Text = Strings.Shell_StoreBuildChooseDrive, TextWrapping = TextWrapping.Wrap,
+                Classes = { "secondary" }, FontSize = Size("BodySize"),
+            });
+            DeviceCards.Children.Add(choose);
+        }
 
         foreach (var (root, files) in drives)
         {

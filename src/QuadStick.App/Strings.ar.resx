@@ -3557,4 +3557,7 @@
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>تم النسخ. الصقه في Terminal واضغط Return.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>هل QuadStick موصول لكنه غير ظاهر؟ لا يستطيع إصدار Mac App Store فتح محرك الأقراص إلا بعد أن تختاره مرة واحدة. بعد ذلك يجده تلقائيًا.</value>
+  </data>
 </root>

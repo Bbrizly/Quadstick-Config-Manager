@@ -36,8 +36,13 @@ public static class Device
     // next cached lookup enumerates drives again.
     public static void InvalidateCandidateCache() => _cache = null;
 
+    /// <summary>Runs before every drive scan. The sandboxed Mac build sets it to
+    /// reopen drives the person picked on an earlier launch.</summary>
+    public static Action? BeforeScan { get; set; }
+
     public static List<string> FindCandidates()
     {
+        BeforeScan?.Invoke();
         var found = new List<string>();
         foreach (var d in DriveInfo.GetDrives())
         {

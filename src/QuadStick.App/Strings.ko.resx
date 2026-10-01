@@ -3557,4 +3557,7 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
     <value>복사했습니다. 터미널에 붙여 넣고 Return 키를 누르세요.</value>
   </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>QuadStick을 연결했는데 목록에 없나요? Mac App Store 버전은 드라이브를 한 번 선택해야 열 수 있습니다. 그 후에는 알아서 찾습니다.</value>
+  </data>
 </root>
