@@ -102,16 +102,16 @@
     <value>10 na sekundę</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>Ustaw dokładnie 1, a wyjście zostanie zablokowane w stanie włączonym. Każda wartość powyżej 1 określa, jak długo trwa naciśnięcie.</value>
+    <value>Jak długo trwa naciśnięcie po odczekaniu, w milisekundach. Ustaw dokładnie 1, a wyjście zostanie włączone.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Liczy się jako stuknięcie</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>Uruchamia się, gdy wejście osiągnie co najmniej tę siłę.</value>
+    <value>Procent, przy którym wyjście się włącza.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Uruchamia się, dopóki wejście pozostaje poniżej tej siły.</value>
+    <value>Wyjście jest włączone, dopóki wejście jest poniżej tego procentu.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>Pierwsze przytrzymanie</value>
@@ -120,43 +120,43 @@
     <value>Przytrzymaj</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>Przytrzymanie wejścia dłużej niż ten czas powoduje zablokowanie wyjścia w stanie włączonym zamiast stuknięcia.</value>
+    <value>Jak długo trzeba trzymać wejście, zanim wyjście się zablokuje, w milisekundach. Krótsze przytrzymanie działa jak zwykłe naciśnięcie.</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>Przytrzymaj, aby zablokować</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Utrzymuje pierwsze stuknięcie przez ten czas, zanim zacznie się szybkie powtarzanie. Wartość krótsza niż odstęp między stuknięciami nic nie zmienia.</value>
+    <value>Jak długo przycisk jest normalnie wciśnięty, zanim zacznie się powtarzanie, w milisekundach.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>trzyma, dopóki wejście jest przytrzymane</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>Jak daleko w dół przesuwa się wyjście analogowe za każdym razem.</value>
+    <value>O ile wartość maleje za każdym razem, w procentach.</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>Jak daleko w górę przesuwa się wyjście analogowe za każdym razem.</value>
+    <value>O ile wartość rośnie za każdym razem, w procentach.</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>Jak szybko stuka, gdy wejście jest przytrzymane.</value>
+    <value>Ile naciśnięć na sekundę, gdy przytrzymujesz wejście.</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>Jak długo trwa każde naciśnięcie.</value>
+    <value>Jak długo trwa każde naciśnięcie, w milisekundach.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Jak długo trwa naciśnięcie stuknięcia. Ustaw dokładnie 1, a zamiast tego przełącza: jedno stuknięcie włącza wyjście, następne je wyłącza.</value>
+    <value>Jak długo wyjście jest wciśnięte, w milisekundach. Ustaw dokładnie 1, a stuknięcia przełączają: jedno włącza wyjście, następne je wyłącza.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>Ile naciśnięć wysyła jedna aktywacja.</value>
+    <value>Ile naciśnięć za każdym razem. 2 działa jak podwójne stuknięcie.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>Wykonuje kolejny krok w tym odstępie czasu, dopóki wejście jest przytrzymane.</value>
+    <value>Jak często zmienia się dalej, gdy przytrzymujesz, w milisekundach.</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>Utrzymuje wyjście naciśnięte przez ten czas po puszczeniu.</value>
+    <value>Jak długo wyjście zostaje włączone po puszczeniu, w milisekundach.</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>Puszczenie w tym oknie czasowym liczy się jako stuknięcie. Dłuższe przytrzymanie nie uruchamia niczego.</value>
+    <value>Najdłuższe przytrzymanie, które nadal liczy się jako stuknięcie, w milisekundach. Dłużej i nic się nie dzieje.</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>bez dodatkowego przytrzymania</value>
@@ -177,28 +177,31 @@
     <value>Powtarzaj co</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: {1} do {2}. Puste oznacza {3}.</value>
+    <value>{0} Domyślnie: {1}.</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: {1} do {2} {5}. Puste oznacza {3}.</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>Druga liczba: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>Pierwsza liczba: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>Przestaje ponownie uruchamiać się, gdy wejście przekroczy tę wartość, więc te dwie liczby tworzą przedział.</value>
+    <value>Wyższy procent, przy którym znów się wyłącza. 25 75 włącza powyżej 25% i wyłącza powyżej 75%.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>stuknięć na sekundę</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>Długość cyklu włącz-wyłącz przy pełnej sile. Słabsze wejście go wydłuża.</value>
+    <value>Najkrótszy czas włączenia/wyłączenia, w milisekundach. Mniejsze liczby zmieniają się szybciej, a słabsze wejście go wydłuża.</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>Górny limit</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>Czeka tyle czasu po aktywacji, a potem naciska.</value>
+    <value>Jak długo trzeba trzymać, zanim wyjście się włączy, w milisekundach.</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>Czeka tyle czasu przed zwolnieniem zablokowanego wyjścia innego wiersza.</value>
+    <value>Jak długo czekać przed zwolnieniem wyjścia zablokowanego przez inny wiersz, w milisekundach.</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0 oznaczało wcześniej całkowity brak martwej strefy, a firmware z 2025 roku zastępuje to wartością 129 surowych jednostek, więc drążek zyskuje małą martwą strefę, o którą ten plik nigdy nie prosił</value>

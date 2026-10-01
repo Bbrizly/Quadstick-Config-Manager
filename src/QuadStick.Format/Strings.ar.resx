@@ -102,16 +102,16 @@
     <value>10 في الثانية</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>اضبطه على 1 بالضبط ليبقى المخرج مفعّلاً. أي رقم أكبر من 1 هو مدة استمرار الضغطة.</value>
+    <value>كم تدوم الضغطة بعد الانتظار، بالميلي ثانية. اضبطه على 1 بالضبط فيبقى المخرج يعمل.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>يُحتسب كنقرة</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>يُفعَّل بمجرد أن يبلغ مدخلك هذه القوة على الأقل.</value>
+    <value>النسبة المئوية التي يعمل عندها المخرج.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>يُفعَّل ما دام مدخلك أقل من هذه القوة.</value>
+    <value>يبقى المخرج يعمل ما دام المدخل تحت هذه النسبة.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>الاستمرار الأول</value>
@@ -120,43 +120,43 @@
     <value>استمرار</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>استمر بالمدخل أطول من هذا وسيُبقي المخرج مفعّلاً بدلاً من النقر.</value>
+    <value>كم يجب أن تضغط المدخل قبل أن يثبت المخرج، بالميلي ثانية. الضغط الأقصر يعمل كضغطة عادية.</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>استمرار للتثبيت</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>يُبقي النقرة الأولى لهذه المدة قبل أن يبدأ الإطلاق السريع. إذا كانت أقصر من الفاصل بين النقرات فلن تغيّر شيئاً.</value>
+    <value>كم يبقى الزر مضغوطًا بشكل عادي قبل أن يبدأ التكرار، بالميلي ثانية.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>يستمر ما دمت تضغط</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>إلى أي مدى ينخفض المخرج التناظري في كل مرة.</value>
+    <value>كم تنخفض القيمة كل مرة، بالنسبة المئوية.</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>إلى أي مدى يرتفع المخرج التناظري في كل مرة.</value>
+    <value>كم ترتفع القيمة كل مرة، بالنسبة المئوية.</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>بأي سرعة ينقر أثناء استمرارك بالضغط على المدخل.</value>
+    <value>كم ضغطة في الثانية ما دمت تضغط المدخل.</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>مدة استمرار كل ضغطة.</value>
+    <value>كم تدوم كل ضغطة، بالميلي ثانية.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>مدة ضغط النقرة. اضبطه على 1 بالضبط ليعمل كمفتاح تبديل بدلاً من ذلك: نقرة تشغّل المخرج والنقرة التالية توقفه.</value>
+    <value>كم يبقى المخرج مضغوطًا، بالميلي ثانية. اضبطه على 1 بالضبط فتصبح النقرات تبديلًا: نقرة تشغّل المخرج والتالية توقفه.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>كم ضغطة يرسلها التفعيل الواحد.</value>
+    <value>كم ضغطة في كل مرة. 2 تعمل مثل نقرة مزدوجة.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>يستمر في التدرج بهذا المعدل أثناء استمرارك بالضغط على المدخل.</value>
+    <value>كل كم تواصل تغيير القيمة ما دمت تضغط، بالميلي ثانية.</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>يُبقي المخرج مضغوطًا لهذه المدة بعد أن تُفلت.</value>
+    <value>كم يبقى المخرج يعمل بعد أن تترك، بالميلي ثانية.</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>أفلت خلال هذه النافذة الزمنية وستُحتسب نقرة. استمر لفترة أطول ولن يُفعَّل شيء.</value>
+    <value>أطول ضغط يُحسب نقرة، بالميلي ثانية. إن ضغطت أطول لا يحدث شيء.</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>بلا استمرار إضافي</value>
@@ -177,28 +177,31 @@
     <value>التكرار كل</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: من {1} إلى {2}. الفراغ يعني {3}.</value>
+    <value>{0} الافتراضي: {1}.</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: من {1} إلى {2} {5}. الفراغ يعني {3}.</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>الرقم الثاني: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>الرقم الأول: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>يتوقف عن الإطلاق مرة أخرى بمجرد أن يتجاوز مدخلك هذا الحد، فيشكل الرقمان نطاقًا.</value>
+    <value>نسبة أعلى يتوقف عندها من جديد. 25 75 يعمل فوق 25% ويتوقف فوق 75%.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>نقرة في الثانية</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>مدة دورة التشغيل والإيقاف عند القوة الكاملة. المدخل الأضعف يطيلها.</value>
+    <value>أقصر زمن تشغيل وإيقاف، بالميلي ثانية. الأرقام الأصغر تتبدل أسرع، والمدخل الأخف يطيله.</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>الحد الأعلى</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>ينتظر هذه المدة بعد التفعيل، ثم يضغط.</value>
+    <value>كم يجب أن تضغط قبل أن يعمل المخرج، بالميلي ثانية.</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>ينتظر هذه المدة قبل إطلاق المخرج المثبت للصف الآخر.</value>
+    <value>كم تنتظر قبل تحرير المخرج الذي ثبّته صف آخر، بالميلي ثانية.</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>كان 0 يعني عدم وجود منطقة ميتة على الإطلاق، والبرنامج الثابت من عام 2025 يستبدله بـ 129 وحدة خام بدلاً من ذلك، فتكتسب العصا منطقة ميتة صغيرة لم يطلبها هذا الملف قط</value>

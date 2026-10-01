@@ -150,31 +150,31 @@ public class FunctionParameterTests
             "expected the leave-it-out reading: " + string.Join(" | ", issues.Select(i => i.Message)));
     }
 
-    // Drew, 2026-09-19: the line under the box held only numbers, which is the
-    // half a reader without a technical background cannot act on. The two
-    // halves are one sentence again, and the plain words lead it.
+    // Drew's sheet, 2026-10-01: what the number does, then the default, and no
+    // range. With two numbers each line says which one it is, as his sheet does.
     [Theory]
     [InlineData("tap")]
     [InlineData("repeat")]
     [InlineData("delay_on")]
     [InlineData("greater_than")]
-    public void The_line_under_the_box_says_what_the_number_does_and_its_range(string function)
+    [InlineData("duty")]
+    public void The_line_under_the_box_says_what_the_number_does_and_its_default(string function)
     {
-        foreach (var p in FunctionParameters.For(function))
+        var spec = FunctionParameters.For(function);
+        var lines = FunctionParameters.Sentences(function).ToList();
+        Assert.Equal(spec.Count, lines.Count);
+        for (int i = 0; i < spec.Count; i++)
         {
-            Assert.Contains(p.Label, p.Sentence, StringComparison.Ordinal);
-            Assert.Contains(p.Default, p.Sentence, StringComparison.Ordinal);
-            Assert.Contains(p.Maximum.ToString(CultureInfo.InvariantCulture), p.Sentence, StringComparison.Ordinal);
-            Assert.Contains(p.What, p.Sentence, StringComparison.Ordinal);
-            // The behaviour leads, so the reader meets words before numbers.
-            Assert.StartsWith(p.What, p.Sentence, StringComparison.Ordinal);
-            Assert.Equal(p.Sentence.Trim(), p.Sentence);
+            var p = spec[i];
+            Assert.Contains(p.What, lines[i], StringComparison.Ordinal);
+            Assert.EndsWith("Default: " + p.Default + ".", lines[i], StringComparison.Ordinal);
+            Assert.DoesNotContain("1 to " + p.Maximum.ToString(CultureInfo.InvariantCulture), lines[i], StringComparison.Ordinal);
+            Assert.StartsWith(spec.Count < 2 ? p.What : i == 0 ? "First number: " : "Second number: ", lines[i], StringComparison.Ordinal);
         }
     }
 
-    // The behaviour is the first placeholder in every translation. A translator
-    // who moves it back to the end buries the plain words under the numbers
-    // again, which is the complaint this sentence exists to answer.
+    // The behaviour is the first placeholder in every translation, and the
+    // position names wrap it, so a translator cannot bury the plain words.
     [Fact]
     public void Every_language_puts_the_behaviour_first_in_the_sentence()
     {
@@ -183,12 +183,13 @@ public class FunctionParameterTests
         {
             if (path.EndsWith("qps-ploc.resx", StringComparison.Ordinal)) continue;
             var doc = System.Xml.Linq.XDocument.Load(path);
-            foreach (var key in new[] { "Fn_Sentence", "Fn_SentenceWithUnit" })
+            foreach (var key in new[] { "Fn_Sentence", "Fn_FirstNumber", "Fn_SecondNumber" })
             {
                 var value = doc.Root!.Elements("data")
                     .First(d => (string?)d.Attribute("name") == key)
                     .Element("value")!.Value;
-                Assert.StartsWith("{4}", value.TrimStart(), StringComparison.Ordinal);
+                Assert.Contains("{0}", value, StringComparison.Ordinal);
+                if (key == "Fn_Sentence") Assert.StartsWith("{0}", value.TrimStart(), StringComparison.Ordinal);
             }
         }
     }

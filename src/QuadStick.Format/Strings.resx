@@ -105,16 +105,16 @@
     <value>10 a second</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>Set it to exactly 1 and the output latches on. Anything above 1 is how long the press lasts.</value>
+    <value>How long the press lasts after the wait, in milliseconds. Set it to exactly 1 and the output latches on instead.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Counts as a tap</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>Fires once your input is at least this strong.</value>
+    <value>The percentage where the output turns on.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Fires while your input stays under this strength.</value>
+    <value>The output is on while the input is below this percentage.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>First hold</value>
@@ -123,43 +123,43 @@
     <value>Hold on</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>Hold the input longer than this and the output latches on instead of tapping.</value>
+    <value>How long you must hold the input before the output locks on, in milliseconds. A shorter hold works like a normal press.</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>Hold to latch</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Holds the first tap this long before the rapid-fire starts. Shorter than the gap between taps and it changes nothing.</value>
+    <value>How long to hold the button normally before repeating starts, in milliseconds.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>holds while you hold</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>How far down the analog output moves each time.</value>
+    <value>How much the value goes down each time, in percent.</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>How far up the analog output moves each time.</value>
+    <value>How much the value goes up each time, in percent.</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>How fast it taps while you hold the input.</value>
+    <value>How many presses per second while you hold the input.</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>How long each press lasts.</value>
+    <value>How long each press lasts, in milliseconds.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>How long the tap presses for. Set it to exactly 1 and it toggles instead: one tap turns the output on, the next turns it off.</value>
+    <value>How long the output presses for, in milliseconds. Set it to exactly 1 and taps toggle instead: one tap turns the output on, the next turns it off.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>How many presses one activation sends.</value>
+    <value>How many presses each time. 2 acts like a double-tap.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>Keeps stepping this often while you hold the input.</value>
+    <value>How often it keeps stepping while you hold, in milliseconds.</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>Keeps the output pressed this long after you let go.</value>
+    <value>How long the output stays on after you let go, in milliseconds.</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>Let go inside this window and it counts as a tap. Hold longer and nothing fires.</value>
+    <value>The longest you can hold and still count as a tap, in milliseconds. Hold longer and nothing happens.</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>no extra hold</value>
@@ -180,28 +180,31 @@
     <value>Repeat every</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: {1} to {2}. Blank means {3}.</value>
+    <value>{0} Default: {1}.</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: {1} to {2} {5}. Blank means {3}.</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>Second number: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>First number: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>Stops firing again once your input goes past this, so the two numbers make a band.</value>
+    <value>A higher percentage where it turns back off. 25 75 turns on above 25% and off again above 75%.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>taps a second</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>The on-and-off cycle length at full strength. Softer input stretches it.</value>
+    <value>The shortest on/off time, in milliseconds. Smaller numbers change faster, and a softer input stretches it.</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>Upper limit</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>Waits this long after you activate, then presses.</value>
+    <value>How long you must hold before the output turns on, in milliseconds.</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>Waits this long before releasing the other row's latched output.</value>
+    <value>How long to wait before letting go of the output another row latched on, in milliseconds.</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0 used to mean no dead zone at all, and firmware from 2025 substitutes 129 raw counts instead, so the stick gains a small dead zone this file never asked for</value>

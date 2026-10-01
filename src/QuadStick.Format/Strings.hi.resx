@@ -102,16 +102,16 @@
     <value>प्रति सेकंड 10</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>इसे ठीक 1 पर सेट करें और आउटपुट ऑन लैच हो जाता है। 1 से ऊपर कुछ भी यह बताता है कि प्रेस कितनी देर चलता है।</value>
+    <value>इंतज़ार के बाद दबाव कितनी देर चलता है, मिलीसेकंड में। इसे ठीक 1 करें तो आउटपुट चालू ही रहता है।</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>टैप के रूप में गिना जाता है</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>जब आपका इनपुट कम से कम इतना मज़बूत हो, तब फायर होता है।</value>
+    <value>वह प्रतिशत जिस पर आउटपुट चालू होता है।</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>जब तक आपका इनपुट इस ताकत से कम रहता है, तब तक फायर होता है।</value>
+    <value>जब तक इनपुट इस प्रतिशत से नीचे है, आउटपुट चालू रहता है।</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>पहली होल्ड</value>
@@ -120,43 +120,43 @@
     <value>होल्ड ऑन</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>इनपुट को इससे ज़्यादा देर तक होल्ड करें और आउटपुट टैप करने के बजाय ऑन लैच हो जाएगा।</value>
+    <value>आउटपुट लॉक होने से पहले इनपुट कितनी देर दबाए रखना है, मिलीसेकंड में। इससे कम दबाने पर सामान्य दबाव होता है।</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>लैच करने के लिए होल्ड करें</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>रैपिड-फायर शुरू होने से पहले पहले टैप को इतनी देर तक होल्ड करता है। टैप के बीच के अंतराल से कम होने पर कुछ नहीं बदलता।</value>
+    <value>दोहराना शुरू होने से पहले बटन सामान्य रूप से कितनी देर दबा रहता है, मिलीसेकंड में।</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>जब तक आप होल्ड करते हैं, तब तक होल्ड करता है</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>एनालॉग आउटपुट हर बार कितना नीचे जाता है।</value>
+    <value>हर बार मान कितना घटता है, प्रतिशत में।</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>एनालॉग आउटपुट हर बार कितना ऊपर जाता है।</value>
+    <value>हर बार मान कितना बढ़ता है, प्रतिशत में।</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>जब आप इनपुट होल्ड करते हैं तो यह कितनी तेज़ी से टैप करता है।</value>
+    <value>इनपुट दबाए रखने पर हर सेकंड कितनी बार दबता है।</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>हर प्रेस कितनी देर तक चलता है।</value>
+    <value>हर दबाव कितनी देर चलता है, मिलीसेकंड में।</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>टैप कितनी देर तक दबाता है। इसे ठीक 1 पर सेट करें और यह इसके बजाय टॉगल करता है: एक टैप आउटपुट को चालू करता है, अगला उसे बंद कर देता है।</value>
+    <value>आउटपुट कितनी देर दबता है, मिलीसेकंड में। इसे ठीक 1 करें तो टैप टॉगल बन जाता है: एक टैप आउटपुट चालू करता है, अगला बंद।</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>एक सक्रियण कितने प्रेस भेजता है।</value>
+    <value>हर बार कितनी बार दबता है। 2 डबल-टैप जैसा काम करता है।</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>जब तक आप इनपुट होल्ड करते हैं, तब तक इतनी बार कदम बढ़ाता रहता है।</value>
+    <value>दबाए रखने पर मान कितनी-कितनी देर में बदलता रहता है, मिलीसेकंड में।</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>छोड़ने के बाद आउटपुट को इतनी देर तक दबाए रखता है।</value>
+    <value>छोड़ने के बाद आउटपुट कितनी देर चालू रहता है, मिलीसेकंड में।</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>इस समय-सीमा के अंदर छोड़ दें तो यह टैप के रूप में गिना जाता है। ज़्यादा देर होल्ड करें तो कुछ भी फायर नहीं होता।</value>
+    <value>सबसे लंबा दबाव जो फिर भी टैप गिना जाता है, मिलीसेकंड में। इससे ज़्यादा देर दबाने पर कुछ नहीं होता।</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>कोई अतिरिक्त होल्ड नहीं</value>
@@ -177,28 +177,31 @@
     <value>हर इतने समय पर दोहराएं</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: {1} से {2} तक। खाली छोड़ने का मतलब {3}।</value>
+    <value>{0} डिफ़ॉल्ट: {1}।</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: {1} से {2} {5} तक। खाली छोड़ने का मतलब {3}।</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>दूसरी संख्या: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>पहली संख्या: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>आपका इनपुट इससे आगे जाने पर फिर फायर होना बंद कर देता है, इसलिए दोनों संख्याएँ मिलकर एक बैंड बनाती हैं।</value>
+    <value>एक ऊँचा प्रतिशत जिस पर यह फिर बंद हो जाता है। 25 75 का मतलब 25% से ऊपर चालू और 75% से ऊपर बंद।</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>प्रति सेकंड टैप</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>पूरी ताकत पर ऑन-ऑफ चक्र की लंबाई। हल्का इनपुट इसे लंबा कर देता है।</value>
+    <value>सबसे छोटा चालू/बंद समय, मिलीसेकंड में। छोटी संख्या जल्दी बदलती है, और हल्का इनपुट इसे लंबा कर देता है।</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>ऊपरी सीमा</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>सक्रिय करने के बाद इतनी देर तक इंतज़ार करता है, फिर दबाता है।</value>
+    <value>आउटपुट चालू होने से पहले कितनी देर दबाए रखना है, मिलीसेकंड में।</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>दूसरी पंक्ति के लैच किए गए आउटपुट को छोड़ने से पहले इतनी देर तक इंतज़ार करता है।</value>
+    <value>किसी दूसरी पंक्ति के लॉक किए आउटपुट को छोड़ने से पहले कितना इंतज़ार करना है, मिलीसेकंड में।</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0 का मतलब पहले कोई डेड ज़ोन न होना होता था, और 2025 का फ़र्मवेयर इसके बदले 129 रॉ काउंट इस्तेमाल करता है, इसलिए स्टिक को एक छोटा डेड ज़ोन मिल जाता है जो इस फ़ाइल ने कभी माँगा नहीं था</value>

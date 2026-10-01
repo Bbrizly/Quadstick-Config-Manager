@@ -102,16 +102,16 @@
     <value>每秒 10 次</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>设为正好 1 时输出会锁定为开启。大于 1 的值表示按压持续的时长。</value>
+    <value>等待之后按下持续的时间（毫秒）。设为正好 1，输出会保持开启。</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>算作一次轻点</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>一旦您的输入达到此强度即触发。</value>
+    <value>输出开启的百分比。</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>只要您的输入强度低于此值就会触发。</value>
+    <value>输入低于这个百分比时，输出保持开启。</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>首次按住</value>
@@ -120,43 +120,43 @@
     <value>按住</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>按住输入超过此时长，输出会锁定为开启，而不是轻点。</value>
+    <value>输出锁定前需要按住输入的时间（毫秒）。按得更短则是普通按下。</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>按住以锁定</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>在连发开始前，第一次轻点会保持这么长时间。短于两次轻点之间的间隔时不会有任何变化。</value>
+    <value>开始连发前，按钮正常按住的时间（毫秒）。</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>按住时保持</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>每次模拟输出向下移动的幅度。</value>
+    <value>每次数值下降的幅度（百分比）。</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>每次模拟输出向上移动的幅度。</value>
+    <value>每次数值上升的幅度（百分比）。</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>您按住输入时的轻点速度。</value>
+    <value>按住输入时每秒按下的次数。</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>每次按压持续的时长。</value>
+    <value>每次按下持续的时间（毫秒）。</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>轻点按压持续的时长。设为正好 1 时改为切换：轻点一次打开输出，再轻点一次关闭。</value>
+    <value>输出按下的时间（毫秒）。设为正好 1，轻点就变成切换：轻点一次开启输出，下一次关闭。</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>一次激活发送多少次按压。</value>
+    <value>每次按下的次数。2 相当于双击。</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>您按住输入时，会按此频率持续步进。</value>
+    <value>按住时持续改变数值的间隔（毫秒）。</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>松开后，输出会保持按下这么长时间。</value>
+    <value>松开后输出继续保持开启的时间（毫秒）。</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>在此时间窗口内松开算作一次轻点。按住更久则不会触发任何操作。</value>
+    <value>仍算作轻点的最长按住时间（毫秒）。按得更久则什么也不会发生。</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>无额外按住时间</value>
@@ -177,28 +177,31 @@
     <value>每隔</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}：{1} 到 {2}。留空表示 {3}。</value>
+    <value>{0} 默认：{1}。</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}：{1} 到 {2} {5}。留空表示 {3}。</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>第二个数字：{0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>第一个数字：{0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>一旦您的输入超过此值，就会停止再次触发，因此这两个数字构成一个区间。</value>
+    <value>输出再次关闭的更高百分比。25 75 表示超过 25% 开启，超过 75% 关闭。</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>每秒轻点次数</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>满强度时的开关循环时长。较弱的输入会延长它。</value>
+    <value>最短的开/关时间（毫秒）。数字越小切换越快，输入越轻时间越长。</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>上限</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>激活后等待这么长时间，然后按压。</value>
+    <value>输出开启前需要按住的时间（毫秒）。</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>等待这么长时间后，才释放另一行锁定的输出。</value>
+    <value>松开另一行锁定的输出之前等待的时间（毫秒）。</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0 以前表示完全没有死区，而 2025 年的固件会改用 129 个原始计数代替，因此摇杆会出现一个此文件从未要求的小死区</value>

@@ -102,16 +102,16 @@
     <value>10 per seconde</value>
   </data>
   <data name="Fn_1LatchesTheOutputOn" xml:space="preserve">
-    <value>Zet hem op precies 1 en de output blijft aan staan. Alles boven 1 bepaalt hoe lang de druk duurt.</value>
+    <value>Hoe lang de druk duurt na het wachten, in milliseconden. Zet het op precies 1 en de uitvoer blijft aan.</value>
   </data>
   <data name="Fn_CountsAsATap" xml:space="preserve">
     <value>Telt als een tik</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>Wordt geactiveerd zodra uw input minstens zo sterk is.</value>
+    <value>Het percentage waarbij de uitvoer aangaat.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>Wordt geactiveerd zolang uw input onder deze sterkte blijft.</value>
+    <value>De uitvoer staat aan zolang de invoer onder dit percentage blijft.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>Eerste keer vasthouden</value>
@@ -120,43 +120,43 @@
     <value>Vasthouden</value>
   </data>
   <data name="Fn_HoldTheInputLongerThan" xml:space="preserve">
-    <value>Houd de input langer dan dit vast en de output blijft aan staan in plaats van te tikken.</value>
+    <value>Hoe lang je de invoer moet vasthouden voordat de uitvoer vast blijft staan, in milliseconden. Korter vasthouden werkt als een gewone druk.</value>
   </data>
   <data name="Fn_HoldToLatch" xml:space="preserve">
     <value>Vasthouden om te vergrendelen</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Houdt de eerste tik zo lang vast voordat het snelvuur begint. Korter dan de tussenpoos tussen de tikken verandert niets.</value>
+    <value>Hoe lang de knop normaal ingedrukt blijft voordat het herhalen begint, in milliseconden.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>blijft vast zolang u vasthoudt</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>Hoe ver de analoge output elke keer omlaag beweegt.</value>
+    <value>Hoeveel de waarde elke keer daalt, in procent.</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>Hoe ver de analoge output elke keer omhoog beweegt.</value>
+    <value>Hoeveel de waarde elke keer stijgt, in procent.</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
-    <value>Hoe snel het tikt terwijl u de input vasthoudt.</value>
+    <value>Hoeveel drukken per seconde zolang je de invoer vasthoudt.</value>
   </data>
   <data name="Fn_HowLongEachPressLasts" xml:space="preserve">
-    <value>Hoe lang elke druk duurt.</value>
+    <value>Hoe lang elke druk duurt, in milliseconden.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Hoe lang de tik drukt. Zet hem op precies 1 en hij schakelt in plaats daarvan om: één tik zet de output aan, de volgende zet hem uit.</value>
+    <value>Hoe lang de uitvoer drukt, in milliseconden. Zet het op precies 1 en tikken schakelen: één tik zet de uitvoer aan, de volgende uit.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
-    <value>Hoeveel drukken één activering verstuurt.</value>
+    <value>Hoeveel drukken per keer. 2 werkt als een dubbeltik.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>Blijft zo vaak stappen zolang u de input vasthoudt.</value>
+    <value>Hoe vaak hij blijft veranderen zolang je vasthoudt, in milliseconden.</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
-    <value>Houdt de output zo lang ingedrukt nadat u loslaat.</value>
+    <value>Hoe lang de uitvoer aan blijft nadat je loslaat, in milliseconden.</value>
   </data>
   <data name="Fn_LetGoInsideThisWindow" xml:space="preserve">
-    <value>Laat los binnen dit venster en het telt als een tik. Houd langer vast en er gebeurt niets.</value>
+    <value>Het langste vasthouden dat nog als tik telt, in milliseconden. Langer, en er gebeurt niets.</value>
   </data>
   <data name="Fn_NoExtraHold" xml:space="preserve">
     <value>geen extra vasthouden</value>
@@ -177,28 +177,31 @@
     <value>Herhaal elke</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{4} {0}: {1} tot {2}. Leeg betekent {3}.</value>
+    <value>{0} Standaard: {1}.</value>
   </data>
-  <data name="Fn_SentenceWithUnit" xml:space="preserve">
-    <value>{4} {0}: {1} tot {2} {5}. Leeg betekent {3}.</value>
+  <data name="Fn_SecondNumber" xml:space="preserve">
+    <value>Tweede getal: {0}</value>
+  </data>
+  <data name="Fn_FirstNumber" xml:space="preserve">
+    <value>Eerste getal: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>Stopt weer met activeren zodra uw input hierboven komt, zodat de twee getallen een band vormen.</value>
+    <value>Een hoger percentage waarbij hij weer uitgaat. 25 75 gaat aan boven 25% en weer uit boven 75%.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>tikken per seconde</value>
   </data>
   <data name="Fn_TheOnAndOffCycle" xml:space="preserve">
-    <value>De lengte van de aan-uitcyclus bij volle sterkte. Een zachtere input rekt deze op.</value>
+    <value>De kortste aan/uit-tijd, in milliseconden. Kleinere getallen wisselen sneller, en zachtere invoer rekt hem op.</value>
   </data>
   <data name="Fn_UpperLimit" xml:space="preserve">
     <value>Bovengrens</value>
   </data>
   <data name="Fn_WaitsThisLongAfterYou" xml:space="preserve">
-    <value>Wacht zo lang nadat u activeert, en drukt dan.</value>
+    <value>Hoe lang je moet vasthouden voordat de uitvoer aangaat, in milliseconden.</value>
   </data>
   <data name="Fn_WaitsThisLongBeforeReleasing" xml:space="preserve">
-    <value>Wacht zo lang voordat de vergrendelde output van de andere rij wordt losgelaten.</value>
+    <value>Hoe lang te wachten voordat de uitvoer wordt losgelaten die een andere rij vastzette, in milliseconden.</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
     <value>0 betekende vroeger helemaal geen dode zone, en firmware uit 2025 vervangt dit door 129 ruwe counts, waardoor de stick een kleine dode zone krijgt die dit bestand nooit heeft gevraagd</value>
