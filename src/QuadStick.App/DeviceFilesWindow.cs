@@ -233,9 +233,7 @@ public class DeviceFilesWindow : Window
             string[] paths;
             try
             {
-                paths = Directory.GetFiles(root, "*.csv")
-                    .Where(p => Device.IsProfileFileName(Path.GetFileName(p)))
-                    .ToArray();
+                paths = Device.ProfileFiles(root);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
             {
