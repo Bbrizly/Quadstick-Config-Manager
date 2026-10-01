@@ -25,20 +25,28 @@ permissions:
   contents: read
 
 jobs:
+  # Every OS the app ships on runs the whole suite, so a path, line ending
+  # or culture bug shows up here and not in somebody's hands.
   test:
-    name: Test
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    name: Test ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
       - run: dotnet test QuadStick.sln --nologo
-      - run: node --test tests/*.test.mjs
+      - if: runner.os == 'Linux'
+        run: node --test tests/*.test.mjs
       # The controller bridge's pad code is Linux only, so this runner is the
       # one place its uinput tests actually run.
       - name: Controller bridge
+        if: runner.os == 'Linux'
         run: |
           cargo clippy --locked --all-targets --manifest-path crates/qs-bridge/Cargo.toml -- -D warnings
           cargo test --locked --manifest-path crates/qs-bridge/Cargo.toml
@@ -48,6 +56,7 @@ jobs:
       # One helpful import or one copied project reference would put paid code
       # in a free download, so both halves are checked rather than trusted.
       - name: The free build carries nothing paid
+        if: runner.os == 'Linux'
         shell: bash
         run: |
           dotnet publish src/QuadStick.App/QuadStick.App.csproj -c Release -o free --nologo
