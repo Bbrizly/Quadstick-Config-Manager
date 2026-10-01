@@ -3647,4 +3647,33 @@ sudo udevadm trigger</value>
 
 Mode 7 is a gamepad only. There is no keyboard, no mouse and no drive, so this app cannot see the stick while it is on. Put it in the game profile's preferences sheet, not in the device settings: switching to another profile then brings the drive, keyboard and mouse back. Switching modes inside the same profile does not.</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>Gamepad in mode 0</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>Lets games built on SDL, as many Mac games are, see the QuadStick as a gamepad in emulation mode 0, with the keyboard, mouse and drive still working.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL is the controller library many games are built on. It only treats a device as a gamepad when it knows its layout, and no copy of SDL knows the QuadStick's. This tells it, for every app opened from now on and again at each login, so quit and reopen a game that is already running. It needs nothing from Apple and changes nothing on the stick.
+
+Games that do not use SDL will not see the gamepad. For those, use mode 7. Turning this off takes the change back.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>On. Games opened from now on see a gamepad.</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>This Mac did not take the change, so nothing was changed.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>The App Store version cannot make this change itself. Copy the command, paste it into Terminal and press Return. Then quit and reopen the game.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>Copy the command</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>Copy the undo command</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>Copied. Paste it into Terminal and press Return.</value>
+  </data>
 </root>

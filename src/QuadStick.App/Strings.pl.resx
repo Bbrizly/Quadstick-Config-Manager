@@ -3528,4 +3528,33 @@ Niebieski, INPUTS: co robią usta. Nazwy mp_… to otwory ustnika (mp_left_sip).
 
 Tryb 7 to tylko gamepad. Nie ma klawiatury, myszy ani dysku, więc ta aplikacja nie widzi drążka, dopóki jest włączony. Ustaw go w arkuszu preferencji profilu gry, nie w ustawieniach urządzenia: przejście na inny profil przywraca wtedy dysk, klawiaturę i mysz. Zmiana trybu w tym samym profilu tego nie robi.</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>Gamepad w trybie 0</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>Pozwala grom opartym na SDL, jak wiele gier na Maca, widzieć QuadStick jako gamepad w trybie emulacji 0, a klawiatura, mysz i dysk nadal działają.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL to biblioteka kontrolerów, na której opiera się wiele gier. Traktuje urządzenie jako gamepad tylko wtedy, gdy zna jego układ, a żadna wersja SDL nie zna układu QuadStick. To ustawienie go przekazuje, każdej aplikacji otwartej od teraz i ponownie przy każdym logowaniu, więc zamknij i otwórz ponownie grę, która już działa. Nie wymaga niczego od Apple i nic nie zmienia w kontrolerze.
+
+Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wyłączenie cofa zmianę.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>Włączone. Gry otwarte od teraz widzą gamepad.</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>Ten Mac nie przyjął zmiany, więc nic nie zostało zmienione.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>Wersja z App Store nie może sama wprowadzić tej zmiany. Skopiuj polecenie, wklej je w Terminalu i naciśnij Return. Potem zamknij i otwórz ponownie grę.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>Kopiuj polecenie</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>Kopiuj polecenie cofające</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>Skopiowano. Wklej je w Terminalu i naciśnij Return.</value>
+  </data>
 </root>

@@ -3528,4 +3528,33 @@ Blau, INPUTS: was Ihr Mund tut. mp_…-Namen sind die Mundstück-Öffnungen (mp_
 
 Modus 7 ist nur ein Gamepad. Es gibt keine Tastatur, keine Maus und kein Laufwerk, daher sieht diese App den Stick nicht, solange er aktiv ist. Setze ihn im Einstellungsblatt des Spielprofils, nicht in den Geräteeinstellungen: Ein Wechsel zu einem anderen Profil bringt dann Laufwerk, Tastatur und Maus zurück. Ein Moduswechsel innerhalb desselben Profils tut das nicht.</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>Gamepad in Modus 0</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>Lässt Spiele, die auf SDL aufbauen, wie viele Mac-Spiele, den QuadStick im Emulationsmodus 0 als Gamepad sehen, während Tastatur, Maus und Laufwerk weiter funktionieren.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL ist die Controller-Bibliothek, auf der viele Spiele aufbauen. Sie behandelt ein Gerät nur als Gamepad, wenn sie seine Belegung kennt, und keine SDL-Version kennt die des QuadStick. Diese Einstellung teilt sie ihr mit, für jede ab jetzt geöffnete App und erneut bei jeder Anmeldung. Ein bereits laufendes Spiel also beenden und neu öffnen. Sie braucht nichts von Apple und ändert nichts am Stick.
+
+Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten nimmt die Änderung zurück.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>Ein. Ab jetzt geöffnete Spiele sehen ein Gamepad.</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>Dieser Mac hat die Änderung nicht angenommen, es wurde nichts geändert.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>Die App-Store-Version kann diese Änderung nicht selbst vornehmen. Den Befehl kopieren, in Terminal einfügen und Return drücken. Dann das Spiel beenden und neu öffnen.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>Befehl kopieren</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>Befehl zum Rückgängigmachen kopieren</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>Kopiert. In Terminal einfügen und Return drücken.</value>
+  </data>
 </root>

@@ -3528,4 +3528,33 @@
 
 मोड 7 सिर्फ़ गेमपैड है। इसमें कीबोर्ड, माउस और ड्राइव नहीं होते, इसलिए चालू रहते यह ऐप स्टिक को नहीं देख पाता। इसे डिवाइस सेटिंग्स में नहीं, गेम प्रोफ़ाइल की प्रेफ़रेंसेस शीट में रखें: तब दूसरी प्रोफ़ाइल पर जाने से ड्राइव, कीबोर्ड और माउस वापस आ जाते हैं। उसी प्रोफ़ाइल के अंदर मोड बदलने से नहीं आते।</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>मोड 0 में गेमपैड</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>SDL पर बने गेम, जैसे कई Mac गेम, इम्यूलेशन मोड 0 में QuadStick को गेमपैड के रूप में देख पाते हैं, और कीबोर्ड, माउस और ड्राइव चलते रहते हैं।</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL कंट्रोलर लाइब्रेरी है जिस पर कई गेम बने हैं। यह किसी डिवाइस को तभी गेमपैड मानती है जब उसे उसका लेआउट पता हो, और SDL के किसी भी संस्करण को QuadStick का लेआउट पता नहीं है। यह सेटिंग उसे बताती है, अब से खोले गए हर ऐप के लिए और हर लॉगिन पर फिर से, इसलिए पहले से चल रहे गेम को बंद करके फिर से खोलें। इसके लिए Apple से कुछ नहीं चाहिए और स्टिक पर कुछ नहीं बदलता।
+
+जो गेम SDL का उपयोग नहीं करते, उन्हें गेमपैड नहीं दिखेगा। उनके लिए मोड 7 का उपयोग करें। इसे बंद करने से बदलाव वापस हो जाता है।</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>चालू। अब से खोले गए गेम एक गेमपैड देखते हैं।</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>इस Mac ने बदलाव स्वीकार नहीं किया, इसलिए कुछ नहीं बदला गया।</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>App Store संस्करण यह बदलाव खुद नहीं कर सकता। कमांड कॉपी करें, Terminal में पेस्ट करें और Return दबाएँ। फिर गेम बंद करके फिर से खोलें।</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>कमांड कॉपी करें</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>वापस लेने का कमांड कॉपी करें</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>कॉपी हो गया। Terminal में पेस्ट करें और Return दबाएँ।</value>
+  </data>
 </root>

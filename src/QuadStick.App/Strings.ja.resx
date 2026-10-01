@@ -3526,4 +3526,33 @@
 
 モード 7 はゲームパッドだけです。キーボードもマウスもドライブもないため、オンの間はこのアプリからスティックが見えません。デバイス設定ではなく、ゲームのプロファイルの Preferences シートに入れてください。そうすれば別のプロファイルに切り替えたときにドライブ、キーボード、マウスが戻ります。同じプロファイル内でモードを切り替えても戻りません。</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>モード 0 でゲームパッド</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>SDL で作られたゲーム (多くの Mac ゲームがそうです) で、エミュレーションモード 0 の QuadStick をゲームパッドとして使えるようにします。キーボード、マウス、ドライブもそのまま使えます。</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL は多くのゲームが使うコントローラー用ライブラリです。配置を知っているデバイスしかゲームパッドとして扱わず、QuadStick の配置を知っている SDL はありません。この設定はそれを SDL に伝えます。これから開くアプリと、ログインのたびに有効になるので、起動中のゲームは一度終了して開き直してください。Apple の許可は不要で、スティック側は何も変わりません。
+
+SDL を使わないゲームにはゲームパッドが見えません。その場合はモード 7 を使ってください。オフにすると元に戻ります。</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>オン。これから開くゲームにはゲームパッドが見えます。</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>この Mac が変更を受け付けなかったため、何も変更されていません。</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>App Store 版はこの変更を自分で行えません。コマンドをコピーしてターミナルに貼り付け、Return キーを押してください。その後ゲームを終了して開き直してください。</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>コマンドをコピー</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>元に戻すコマンドをコピー</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>コピーしました。ターミナルに貼り付けて Return キーを押してください。</value>
+  </data>
 </root>

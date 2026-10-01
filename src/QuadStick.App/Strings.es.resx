@@ -3528,4 +3528,33 @@ Azul, INPUTS: lo que hace su boca. Los nombres mp_… son orificios de la boquil
 
 El modo 7 es solo un mando. No hay teclado, ni ratón, ni unidad, así que esta app no ve el stick mientras está activo. Ponlo en la hoja de preferencias del perfil del juego, no en los ajustes del dispositivo: así, al cambiar a otro perfil vuelven la unidad, el teclado y el ratón. Cambiar de modo dentro del mismo perfil no lo hace.</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>Mando en modo 0</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>Permite que los juegos basados en SDL, como muchos juegos de Mac, vean el QuadStick como un mando en el modo de emulación 0, sin perder el teclado, el ratón ni la unidad.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL es la biblioteca de mandos en la que se basan muchos juegos. Solo trata un dispositivo como mando si conoce su disposición, y ninguna versión de SDL conoce la del QuadStick. Esto se la indica, para cada app que se abra a partir de ahora y otra vez en cada inicio de sesión, así que cierra y vuelve a abrir un juego que ya esté en marcha. No necesita nada de Apple ni cambia nada en el mando.
+
+Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desactivarlo deshace el cambio.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>Activado. Los juegos que se abran a partir de ahora ven un mando.</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>Este Mac no aceptó el cambio, así que no se cambió nada.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>La versión de la App Store no puede hacer este cambio por sí misma. Copia el comando, pégalo en Terminal y pulsa Retorno. Después cierra y vuelve a abrir el juego.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>Copiar el comando</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>Copiar el comando para deshacer</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>Copiado. Pégalo en Terminal y pulsa Retorno.</value>
+  </data>
 </root>

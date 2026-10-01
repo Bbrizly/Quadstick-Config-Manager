@@ -3647,4 +3647,33 @@ Thíš ápp kéépš á çópý óf thé lášt véršíóñ thé dévíçé wó
 
 Módé 7 íš á gámépád óñlý. Théré íš ñó kéýbóárd, ñó móúšé áñd ñó drívé, šó thíš ápp çáññót šéé thé štíçk whílé ít íš óñ. Pút ít íñ thé gámé prófílé'š préféréñçéš šhéét, ñót íñ thé dévíçé šéttíñgš: šwítçhíñg tó áñóthér prófílé théñ bríñgš thé drívé, kéýbóárd áñd móúšé báçk. Šwítçhíñg módéš íñšídé thé šámé prófílé dóéš ñót. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>[Gámépád íñ módé 0 xxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>[Létš gáméš búílt óñ ŠDL, áš máñý Máç gáméš áré, šéé thé QúádŠtíçk áš á gámépád íñ émúlátíóñ módé 0, wíth thé kéýbóárd, móúšé áñd drívé štíll wórkíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>[ŠDL íš thé çóñtróllér líbrárý máñý gáméš áré búílt óñ. Ít óñlý tréátš á dévíçé áš á gámépád whéñ ít kñówš ítš láýóút, áñd ñó çópý óf ŠDL kñówš thé QúádŠtíçk'š. Thíš téllš ít, fór évérý ápp ópéñéd fróm ñów óñ áñd ágáíñ át éáçh lógíñ, šó qúít áñd réópéñ á gámé thát íš álréádý rúññíñg. Ít ñéédš ñóthíñg fróm Ápplé áñd çháñgéš ñóthíñg óñ thé štíçk.
+
+Gáméš thát dó ñót úšé ŠDL wíll ñót šéé thé gámépád. Fór thóšé, úšé módé 7. Túrñíñg thíš óff tákéš thé çháñgé báçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>[Óñ. Gáméš ópéñéd fróm ñów óñ šéé á gámépád. xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>[Thíš Máç díd ñót táké thé çháñgé, šó ñóthíñg wáš çháñgéd. xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>[Thé Ápp Štóré véršíóñ çáññót máké thíš çháñgé ítšélf. Çópý thé çómmáñd, pášté ít íñtó Térmíñál áñd préšš Rétúrñ. Théñ qúít áñd réópéñ thé gámé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>[Çópý thé çómmáñd xxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>[Çópý thé úñdó çómmáñd xxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>[Çópíéd. Pášté ít íñtó Térmíñál áñd préšš Rétúrñ. xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
 </root>

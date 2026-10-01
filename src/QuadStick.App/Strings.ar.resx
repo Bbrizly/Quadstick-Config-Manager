@@ -3528,4 +3528,33 @@
 
 الوضع 7 وحدة تحكم ألعاب فقط. لا لوحة مفاتيح ولا فأرة ولا محرك أقراص، لذلك لا يرى هذا التطبيق العصا ما دام مفعّلًا. ضعه في ورقة التفضيلات لملف اللعبة، لا في إعدادات الجهاز: عندها يعيد الانتقال إلى ملف آخر محرك الأقراص ولوحة المفاتيح والفأرة. أما تبديل الأوضاع داخل الملف نفسه فلا يفعل ذلك.</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>يد تحكم في الوضع 0</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>يتيح للألعاب المبنية على SDL، مثل كثير من ألعاب Mac، أن ترى QuadStick كيد تحكم في وضع المحاكاة 0، مع بقاء لوحة المفاتيح والفأرة ومحرك الأقراص تعمل.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL هي مكتبة أذرع التحكم التي تُبنى عليها ألعاب كثيرة. لا تعامل جهازًا كيد تحكم إلا إذا عرفت ترتيب أزراره، ولا تعرف أي نسخة من SDL ترتيب QuadStick. هذا الإعداد يخبرها به، لكل تطبيق يُفتح من الآن ومن جديد عند كل تسجيل دخول، لذا أغلق اللعبة التي تعمل الآن وافتحها من جديد. لا يحتاج إلى شيء من Apple ولا يغيّر شيئًا في العصا.
+
+الألعاب التي لا تستخدم SDL لن ترى يد التحكم. استخدم الوضع 7 لها. إيقاف هذا الإعداد يتراجع عن التغيير.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>مفعّل. الألعاب التي تُفتح من الآن ترى يد تحكم.</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>لم يقبل جهاز Mac هذا التغيير، لذلك لم يتغير شيء.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>لا تستطيع نسخة App Store إجراء هذا التغيير بنفسها. انسخ الأمر، والصقه في Terminal، واضغط Return. ثم أغلق اللعبة وافتحها من جديد.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>نسخ الأمر</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>نسخ أمر التراجع</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>تم النسخ. الصقه في Terminal واضغط Return.</value>
+  </data>
 </root>

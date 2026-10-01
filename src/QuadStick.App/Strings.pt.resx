@@ -3528,4 +3528,33 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
 
 O modo 7 é apenas um comando. Não há teclado, rato nem unidade, por isso esta app não vê o stick enquanto está ativo. Coloque-o na folha de preferências do perfil do jogo, não nas definições do dispositivo: mudar para outro perfil traz de volta a unidade, o teclado e o rato. Mudar de modo dentro do mesmo perfil não.</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>Comando em modo 0</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>Permite que jogos feitos com SDL, como muitos jogos de Mac, vejam o QuadStick como um comando no modo de emulação 0, sem perder o teclado, o rato e a unidade.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>O SDL é a biblioteca de comandos em que muitos jogos se baseiam. Só trata um dispositivo como comando se conhecer a sua disposição, e nenhuma versão do SDL conhece a do QuadStick. Isto indica-lha, para cada app aberta a partir de agora e outra vez em cada início de sessão, por isso feche e volte a abrir um jogo que já esteja a correr. Não precisa de nada da Apple e não altera nada no comando.
+
+Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desligar anula a alteração.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>Ligado. Os jogos abertos a partir de agora veem um comando.</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>Este Mac não aceitou a alteração, por isso nada foi alterado.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>A versão da App Store não consegue fazer esta alteração sozinha. Copie o comando, cole-o no Terminal e prima Return. Depois feche e volte a abrir o jogo.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>Copiar o comando</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>Copiar o comando para anular</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>Copiado. Cole-o no Terminal e prima Return.</value>
+  </data>
 </root>

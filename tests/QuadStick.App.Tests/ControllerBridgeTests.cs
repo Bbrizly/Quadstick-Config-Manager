@@ -161,6 +161,100 @@ public class ControllerBridgeTests
         }
     }
 
+    static ToggleSwitch? MacPad(MainWindow w) => w.GetVisualDescendants().OfType<ToggleSwitch>()
+        .FirstOrDefault(t => AutomationProperties.GetName(t) == Strings.DevicePage_MacPad);
+
+    static bool Says(MainWindow w, string text) => w.GetVisualDescendants().OfType<TextBlock>()
+        .Any(t => t.Text == text && t.IsVisible);
+
+    // The Mac switch runs the real command (launchctl swapped for a recorder,
+    // HOME a scratch folder): on leaves the login agent, off takes it away.
+    [AvaloniaFact]
+    public void The_mac_gamepad_switch_installs_and_removes_the_layout()
+    {
+        if (!OperatingSystem.IsMacOS()) return;
+        var (home, _) = MacGamepadTests.Scratch();
+        ControllerBridge.PathOverride = null;
+        ControllerBridge.OnMac = true;
+        try
+        {
+            var w = OpenDevicePage();
+            var toggle = MacPad(w);
+            Assert.NotNull(toggle);
+            Assert.False(toggle!.IsChecked);
+
+            toggle.IsChecked = true;
+            Assert.True(MacGamepad.IsOn, "the switch is on but no login agent was written");
+            Assert.True(Says(w, Strings.DevicePage_MacPadOn));
+
+            toggle.IsChecked = false;
+            Assert.False(MacGamepad.IsOn, "the switch is off but the login agent is still there");
+            Assert.False(Says(w, Strings.DevicePage_MacPadOn));
+            w.Close();
+        }
+        finally
+        {
+            ControllerBridge.OnMac = OperatingSystem.IsMacOS();
+            MacGamepad.TestEnvironment = null;
+            Directory.Delete(Path.GetDirectoryName(home)!, true);
+        }
+    }
+
+    // A command that fails partway must not leave an agent behind or a switch
+    // that reads on over nothing.
+    [AvaloniaFact]
+    public void A_failed_mac_switch_leaves_nothing_and_says_so()
+    {
+        if (!OperatingSystem.IsMacOS()) return;
+        var (home, _) = MacGamepadTests.Scratch(launchctlFails: true);
+        ControllerBridge.PathOverride = null;
+        ControllerBridge.OnMac = true;
+        try
+        {
+            var w = OpenDevicePage();
+            var toggle = MacPad(w)!;
+            toggle.IsChecked = true;
+            Assert.False(toggle.IsChecked);
+            Assert.False(MacGamepad.IsOn);
+            Assert.True(Says(w, Strings.DevicePage_MacPadFailed));
+            w.Close();
+        }
+        finally
+        {
+            ControllerBridge.OnMac = OperatingSystem.IsMacOS();
+            MacGamepad.TestEnvironment = null;
+            Directory.Delete(Path.GetDirectoryName(home)!, true);
+        }
+    }
+
+    // The App Store sandbox refuses launchctl, so a switch there would always
+    // fail. It gets the command to copy instead.
+    [AvaloniaFact]
+    public async System.Threading.Tasks.Task The_store_build_hands_over_the_command_instead_of_a_switch()
+    {
+        ControllerBridge.PathOverride = null;
+        ControllerBridge.OnMac = true;
+        MacGamepad.Sandboxed = true;
+        try
+        {
+            var w = OpenDevicePage();
+            Assert.Null(MacPad(w));
+            Assert.True(Says(w, Strings.DevicePage_MacPadStoreLine));
+            var copy = w.GetVisualDescendants().OfType<Button>()
+                .FirstOrDefault(b => b.Content as string == Strings.DevicePage_MacPadCopy);
+            Assert.NotNull(copy);
+            copy!.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(MacGamepad.Command, await w.Clipboard!.GetTextAsync());
+            w.Close();
+        }
+        finally
+        {
+            ControllerBridge.OnMac = OperatingSystem.IsMacOS();
+            MacGamepad.Sandboxed = false;
+        }
+    }
+
     // The whole loop through the real page: on, it says what it is doing, and
     // closing the app stops the bridge the safe way.
     [AvaloniaFact]

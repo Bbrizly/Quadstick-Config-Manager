@@ -3528,4 +3528,33 @@
 
 模式 7 只有手柄。没有键盘、鼠标和驱动器，所以开启期间本应用看不到摇杆。请把它放在游戏配置文件的 Preferences 表中，而不是设备设置里：这样切换到其他配置文件时，驱动器、键盘和鼠标就会回来。在同一个配置文件内切换模式则不会。</value>
   </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>模式 0 下的游戏手柄</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>让基于 SDL 的游戏 (许多 Mac 游戏都是) 把仿真模式 0 下的 QuadStick 识别为游戏手柄，键盘、鼠标和驱动器照常可用。</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL 是许多游戏使用的控制器库。它只把知道按键布局的设备当作游戏手柄，而没有哪个版本的 SDL 知道 QuadStick 的布局。此设置会告诉它，对今后打开的每个应用生效，并在每次登录时再次生效，所以正在运行的游戏需要退出后重新打开。它不需要 Apple 的许可，也不会改动摇杆上的任何内容。
+
+不使用 SDL 的游戏看不到这个手柄。这类游戏请使用模式 7。关闭此开关即可撤销更改。</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>已开启。今后打开的游戏会看到一个游戏手柄。</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>这台 Mac 没有接受更改，因此没有任何改动。</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>App Store 版本无法自行完成此更改。请复制命令，粘贴到“终端”中并按回车键，然后退出并重新打开游戏。</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>复制命令</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>复制撤销命令</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>已复制。请粘贴到“终端”中并按回车键。</value>
+  </data>
 </root>

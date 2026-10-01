@@ -304,18 +304,100 @@ public partial class MainWindow
         };
     }
 
-    // No virtual pad on a Mac without Apple's entitlement, and none needed:
-    // mode 7 is a DualShock 4, which macOS, SDL and Steam take as it is.
-    static Control MacGamesRow() => new StackPanel
+    // No virtual pad on a Mac without Apple's entitlement. Two ways round it:
+    // mode 7 is a DualShock 4, which macOS takes as it is, and mode 0 becomes a
+    // gamepad for SDL games once SDL is told its layout (MacGamepad).
+    Control MacGamesRow()
     {
-        Spacing = 4, Margin = new Thickness(0, 12, 0, 0), MaxWidth = 720,
-        HorizontalAlignment = HorizontalAlignment.Left,
-        Children =
+        var status = new TextBlock { FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap, IsVisible = false };
+        AutomationProperties.SetLiveSetting(status, AutomationLiveSetting.Polite);
+        void Say(string text, bool warn = false)
         {
-            new TextBlock { Text = Strings.DevicePage_MacGames, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold },
-            Explain(Strings.DevicePage_MacGamesLine, Strings.DevicePage_MacGames, Strings.DevicePage_MacGamesHelp),
-        },
-    };
+            status.Text = text;
+            status.IsVisible = text.Length > 0;
+            status.Classes.Set("warn", warn);
+        }
+
+        Control control;
+        if (MacGamepad.Sandboxed)
+        {
+            // The store build cannot run launchctl, so the user runs the command.
+            Button Copy(string label, string command)
+            {
+                var b = new Button { Content = label };
+                b.Click += async (_, _) =>
+                {
+                    if (TopLevel.GetTopLevel(this)?.Clipboard is not { } c) return;
+                    await c.SetTextAsync(command);
+                    Say(Strings.DevicePage_MacPadCopied);
+                };
+                return b;
+            }
+            control = new StackPanel
+            {
+                Spacing = 6,
+                Children =
+                {
+                    new TextBlock { Text = Strings.DevicePage_MacPadStoreLine, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap },
+                    new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal, Spacing = 10,
+                        Children = { Copy(Strings.DevicePage_MacPadCopy, MacGamepad.Command), Copy(Strings.DevicePage_MacPadCopyUndo, MacGamepad.UndoCommand) },
+                    },
+                },
+            };
+        }
+        else
+        {
+            var toggle = new ToggleSwitch
+            {
+                IsChecked = MacGamepad.IsOn, OnContent = null, OffContent = null,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            AutomationProperties.SetName(toggle, Strings.DevicePage_MacPad);
+            bool settling = false;
+            toggle.IsCheckedChanged += (_, _) =>
+            {
+                if (settling) return;
+                bool on = toggle.IsChecked == true;
+                if (MacGamepad.Run(on ? MacGamepad.Command : MacGamepad.UndoCommand))
+                {
+                    Say(on ? Strings.DevicePage_MacPadOn : "");
+                    return;
+                }
+                // Half a change is worse than none: take back whatever got made.
+                if (on) MacGamepad.Run(MacGamepad.UndoCommand);
+                settling = true;
+                toggle.IsChecked = MacGamepad.IsOn;
+                settling = false;
+                Say(Strings.DevicePage_MacPadFailed, warn: true);
+            };
+            control = new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 10,
+                Children =
+                {
+                    toggle,
+                    new TextBlock { Text = Strings.DevicePage_MacPad, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center },
+                },
+            };
+        }
+
+        return new StackPanel
+        {
+            Spacing = 4, Margin = new Thickness(0, 12, 0, 0), MaxWidth = 720,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Children =
+            {
+                new TextBlock { Text = Strings.DevicePage_MacGames, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold },
+                Explain(Strings.DevicePage_MacGamesLine, Strings.DevicePage_MacGames, Strings.DevicePage_MacGamesHelp),
+                new Border { Height = 8 },
+                control,
+                Explain(Strings.DevicePage_MacPadLine, Strings.DevicePage_MacPad, Strings.DevicePage_MacPadHelp),
+                status,
+            },
+        };
+    }
 
     void StopLiveInput()
     {
