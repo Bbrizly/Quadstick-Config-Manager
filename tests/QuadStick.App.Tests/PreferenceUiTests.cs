@@ -107,6 +107,17 @@ public class PreferenceUiTests
         w.Close();
     }
 
+    // List View gets the adapter table too, not just the device page.
+    [AvaloniaFact]
+    public void The_emulation_row_says_which_mode_each_adapter_wants()
+    {
+        var w = ShowPrefs("enable_DS3_emulation,0\n", out var file);
+        Assert.Contains(w.GetVisualDescendants().OfType<Button>(), b => (b.Content as string) == "?"
+            && AutomationProperties.GetName(b) == Strings.Prefs_Adapters && b.IsEffectivelyVisible);
+        file.Dirty = false;
+        w.Close();
+    }
+
     // prefs.csv is what the device boots into, so a mode with no mass-storage
     // interface takes its drive away and the only way back is the physical
     // force-erase. All eight are still on the list, because people pick those
