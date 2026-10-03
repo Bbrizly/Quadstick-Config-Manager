@@ -755,6 +755,9 @@ public partial class MainWindow
 
         if (def.Description.Length > 0)
             stack.Children.Add(Caption(def.Description, "secondary"));
+        // Drew's adapter table: an adapter that gets the wrong mode just looks dead.
+        if (def.Name == "enable_DS3_emulation")
+            stack.Children.Add(Explain(Strings.Prefs_AdaptersLine, Strings.Prefs_Adapters, Strings.Prefs_AdaptersHelp));
 
         // Range, unit, and what the device falls back to, in one line. These
         // are facts about the number rather than help, so they read smaller

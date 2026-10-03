@@ -3636,4 +3636,17 @@ sudo udevadm trigger</value>
   <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
     <value>This computer cannot make a virtual controller yet.</value>
   </data>
+  <data name="Prefs_AdaptersLine" xml:space="preserve">
+    <value>Playing through a console adapter? It only works in the mode it expects.</value>
+  </data>
+  <data name="Prefs_Adapters" xml:space="preserve">
+    <value>Modes for console adapters</value>
+  </data>
+  <data name="Prefs_AdaptersHelp" xml:space="preserve">
+    <value>If you use an adapter to play on a different console, the QuadStick has to be in the right mode for it.
+
+Mayflash Magic-X, Magic-S and Magic-NS, and the Brook XE 2 and Brook XB 3: mode 0.
+
+Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two adapter turned on. QMP calls that setting the Titan 2 PS4 flag.</value>
+  </data>
 </root>
