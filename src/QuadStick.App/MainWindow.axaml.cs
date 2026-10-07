@@ -5888,7 +5888,11 @@ public partial class MainWindow : Window
             Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
             HomeStatusText.IsVisible = false; // the progress line has done its job
             OpenInEditor(imported, savePath: null, ProfileSource.Sheets);
-            Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_ImportedModesImportedFromThe, Modes(imported)), StatusKind.Ready);
+            var line = string.Format(CultureInfo.CurrentCulture, Strings.Main_ImportedModesImportedFromThe, Modes(imported));
+            // The download is anonymous, so a save can never reach the user's
+            // sheet. Users have edited and then looked for the change in Drive.
+            // ponytail: an app-backed sheet is left out, since a save can relink to it.
+            Status(ours is null ? line + " " + Strings.Main_ImportIsACopy : line, StatusKind.Ready);
             // A published link hands back one tab and no way to ask for the
             // rest, so the review has to say that before it counts anything.
             // Without it, a profile missing four of its five modes would be
