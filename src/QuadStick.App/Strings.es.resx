@@ -1965,7 +1965,7 @@ Enviar lo convierte al formato propio del sistema de informes de fallos. Tambié
     <value>Estas pestañas se pasaron por alto: </value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Esta aplicación puede enviar datos de uso anónimos: qué pantallas se usan, si instalar en un QuadStick funcionó, y nada más. Mientras está activado, esos eventos se envían según ocurren.
+    <value>Esta aplicación puede enviar datos de uso anónimos: qué pantallas se usan, si instalar en un QuadStick funcionó, cuánto tardó desde abrir un perfil hasta instalarlo, para qué juego es un perfil de la biblioteca en línea, y nada más. Mientras está activado, esos eventos se envían según ocurren.
 
 Nunca se envía, elija lo que elija: sus perfiles, nombres de archivos, rutas de archivos, su cuenta de Google, ni su nombre o el nombre de su equipo. Nada de lo que escribe se envía tampoco, salvo el cuadro de comentarios de Ajustes, que solo envía cuando pulsa Enviar en él.
 

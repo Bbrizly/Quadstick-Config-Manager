@@ -2001,7 +2001,7 @@ Sending converts this into the crash reporter's own format. It also adds your an
     <value>These tabs were passed over: </value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>This app can send anonymous usage data: which screens get used, whether installing to a QuadStick worked, and nothing else. While it is on, those events are sent as they happen.
+    <value>This app can send anonymous usage data: which screens get used, whether installing to a QuadStick worked, how long it took from opening a profile to installing it, which game a profile from the online library is for, and nothing else. While it is on, those events are sent as they happen.
 
 Never sent, whatever you pick: your profiles, file names, file paths, your Google account, and your name or machine name. Nothing you type is sent either, apart from the feedback box in Settings, which only sends when you press Send on it.
 

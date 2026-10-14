@@ -2409,9 +2409,10 @@ public partial class MainWindow : Window
     // worse than no source: it reads as a real measurement.
     // track is false only when a profile moves between windows it is already
     // open in (the language rebuild): the person did not open anything.
-    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source, bool track = true)
+    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source, bool track = true,
+                      string? game = null)
     {
-        if (track) Telemetry.Track(TelemetryEvent.ProfileOpened, source);
+        if (track) Telemetry.Opened(source, game);
         _file = file;
         _savePath = savePath;
         LoadDrafts(savePath);

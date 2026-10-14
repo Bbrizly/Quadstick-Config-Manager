@@ -1965,7 +1965,7 @@ Envoyer convertit ceci au format propre du rapporteur de plantage. Cela ajoute a
     <value>Ces onglets ont été ignorés : </value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Cette application peut envoyer des données d'utilisation anonymes : quels écrans sont utilisés, si l'installation sur un QuadStick a marché, et rien d'autre. Tant que c'est activé, ces événements sont envoyés au fil de l'eau.
+    <value>Cette application peut envoyer des données d'utilisation anonymes : quels écrans sont utilisés, si l'installation sur un QuadStick a marché, combien de temps il a fallu entre l'ouverture d'un profil et son installation, à quel jeu correspond un profil de la bibliothèque en ligne, et rien d'autre. Tant que c'est activé, ces événements sont envoyés au fil de l'eau.
 
 Jamais envoyé, quel que soit votre choix : vos profils, noms de fichiers, chemins de fichiers, votre compte Google, et votre nom ou celui de votre machine. Rien de ce que vous tapez n'est envoyé non plus, à part la zone de retour dans Réglages, qui n'envoie que quand vous pressez Envoyer dessus.
 

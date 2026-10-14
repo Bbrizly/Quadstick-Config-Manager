@@ -400,4 +400,25 @@ public class TelemetryTests
         Assert.False(scrubbed.Properties.ContainsKey("__crash_consent"));
         Assert.DoesNotContain("SECRETMESSAGE", JsonSerializer.Serialize(scrubbed.Properties));
     }
+
+    [Fact]
+    public void SetupTimeAndGameRideOnlyOnTheirOwnEvents()
+    {
+        Telemetry.ResetForTest(usage: true);
+        var install = Telemetry.Scrub(CapturedEventFor("install_succeeded"))!.Properties;
+        Assert.Equal(42L, install["setup_seconds"]);
+        Assert.Equal("minecraft", install["game"]);
+
+        var saved = Telemetry.Scrub(CapturedEventFor("profile_saved"))!.Properties;
+        Assert.Equal("minecraft", saved["game"]);
+        Assert.False(saved.ContainsKey("setup_seconds"));
+
+        var launch = Telemetry.Scrub(CapturedEventFor("app_launched"))!.Properties;
+        Assert.False(launch.ContainsKey("game"));
+        Assert.False(launch.ContainsKey("setup_seconds"));
+    }
+
+    static PostHog.Api.CapturedEvent CapturedEventFor(string name) => new(name, "install-1",
+        new Dictionary<string, object> { ["setup_seconds"] = 42L, ["game"] = "minecraft" },
+        DateTimeOffset.UtcNow);
 }

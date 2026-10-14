@@ -1965,7 +1965,7 @@ Wysłanie przekształca to w format właściwy dla narzędzia raportowania awari
     <value>Te karty zostały pominięte:</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Ta aplikacja może wysyłać anonimowe dane użycia: które ekrany są używane, czy instalacja na QuadSticku się powiodła, i nic poza tym. Gdy ta opcja jest włączona, te zdarzenia są wysyłane na bieżąco.
+    <value>Ta aplikacja może wysyłać anonimowe dane użycia: które ekrany są używane, czy instalacja na QuadSticku się powiodła, ile czasu minęło od otwarcia profilu do jego instalacji, do jakiej gry jest profil z biblioteki online, i nic poza tym. Gdy ta opcja jest włączona, te zdarzenia są wysyłane na bieżąco.
 
 Nigdy nie jest wysyłane, niezależnie od wyboru: profile, nazwy plików, ścieżki plików, konto Google oraz nazwa użytkownika lub nazwa komputera. Nic, co zostanie wpisane, również nie jest wysyłane, poza polem opinii w Ustawieniach, które wysyła dane tylko po naciśnięciu w nim Wyślij.
 

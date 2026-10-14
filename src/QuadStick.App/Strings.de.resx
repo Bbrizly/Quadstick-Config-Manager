@@ -1965,7 +1965,7 @@ Das Senden wandelt dies in das eigene Format des Absturzberichtdienstes um. Auß
     <value>Diese Tabs wurden übersprungen:</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Diese App kann anonyme Nutzungsdaten senden: welche Bildschirme verwendet werden, ob die Installation auf einen QuadStick funktioniert hat, und sonst nichts. Solange dies aktiviert ist, werden diese Ereignisse gesendet, sobald sie eintreten.
+    <value>Diese App kann anonyme Nutzungsdaten senden: welche Bildschirme verwendet werden, ob die Installation auf einen QuadStick funktioniert hat, wie lange es vom Öffnen eines Profils bis zur Installation gedauert hat, für welches Spiel ein Profil aus der Online-Bibliothek ist, und sonst nichts. Solange dies aktiviert ist, werden diese Ereignisse gesendet, sobald sie eintreten.
 
 Niemals gesendet, egal was Sie wählen: Ihre Profile, Dateinamen, Dateipfade, Ihr Google-Konto sowie Ihr Name oder Rechnername. Auch nichts, was Sie eingeben, wird gesendet, außer dem Feedback-Feld in den Einstellungen, das nur sendet, wenn Sie dort auf Senden drücken.
 

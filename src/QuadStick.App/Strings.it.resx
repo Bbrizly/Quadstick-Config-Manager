@@ -1965,7 +1965,7 @@ Inviarlo lo converte nel formato proprio del sistema di segnalazione degli arres
     <value>Queste schede sono state saltate:</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Questa app può inviare dati di utilizzo anonimi: quali schermate vengono usate, se l'installazione su un QuadStick è riuscita, e nient'altro. Mentre è attiva, questi eventi vengono inviati man mano che accadono.
+    <value>Questa app può inviare dati di utilizzo anonimi: quali schermate vengono usate, se l'installazione su un QuadStick è riuscita, quanto tempo è passato dall'apertura di un profilo alla sua installazione, a quale gioco è destinato un profilo della libreria online, e nient'altro. Mentre è attiva, questi eventi vengono inviati man mano che accadono.
 
 Non viene mai inviato, qualunque cosa scelga: i Suoi profili, i nomi dei file, i percorsi dei file, il Suo account Google, e il Suo nome o il nome della macchina. Non viene inviato nemmeno ciò che digita, a parte la casella di feedback in Impostazioni, che invia solo quando preme Invia su di essa.
 

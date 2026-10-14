@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Options;
@@ -87,7 +88,8 @@ public static partial class Telemetry
     };
 
     // Bump to re-prompt when what gets sent materially changes.
-    public const int NoticeVersion = 1;
+    // 2: setup time and the library game were added (2026-10-14).
+    public const int NoticeVersion = 2;
 
     const string Host = "https://us.i.posthog.com";
 
@@ -277,6 +279,10 @@ public static partial class Telemetry
         EnvelopeKeys.Contains(key) || (eventName, key) switch
         {
             ("profile_opened", "source")        => true,
+            ("profile_opened", "game")          => true,
+            ("profile_saved", "game")           => true,
+            ("install_succeeded", "game")       => true,
+            ("install_succeeded", "setup_seconds") => true,
             ("install_failed", "reason")        => true,
             ("feature_used", "feature")         => true,
             ("feedback_submitted", "text")      => true,
@@ -384,7 +390,7 @@ public static partial class Telemetry
     // telemetry and a telemetry failure never reaches the user, the same rule
     // as DriveBackup.cs:10. The bool says whether the event was handed to a
     // live client, so a caller never tells the user "sent" when nothing was.
-    static bool Track(TelemetryEvent e, string? key, string? value)
+    static bool Track(TelemetryEvent e, string? key, object? value)
     {
         try
         {
@@ -396,6 +402,9 @@ public static partial class Telemetry
 
             var props = Envelope();
             if (key is not null && value is not null) props[key] = value;
+            if (_game is not null && e is TelemetryEvent.ProfileOpened or TelemetryEvent.ProfileSaved
+                                                  or TelemetryEvent.InstallSucceeded)
+                props["game"] = _game;
 
             // flags: null, not sendFeatureFlags: false. That older overload is
             // [Obsolete] in 2.12.0, which TreatWarningsAsErrors makes fatal.
@@ -409,6 +418,29 @@ public static partial class Telemetry
 
     public static bool Track(TelemetryEvent e) => Track(e, null, null);
     public static bool Track(TelemetryEvent e, ProfileSource s) => Track(e, "source", Wire(s));
+
+    // The profile in the editor right now: when it was opened, and its game
+    // when the public library said so. Only a registry slug ever lands here,
+    // never a file name or a profile's own text, so it names a game, not you.
+    // ponytail: a profile the person made has no game, add a picker if that
+    // number turns out to matter.
+    static volatile string? _game;
+    static long _openedAt;
+
+    /// <summary>A profile was opened. Starts the setup clock.</summary>
+    public static bool Opened(ProfileSource s, string? game)
+    {
+        _game = game;
+        Interlocked.Exchange(ref _openedAt, Stopwatch.GetTimestamp());
+        return Track(TelemetryEvent.ProfileOpened, s);
+    }
+
+    /// <summary>Install worked. Carries the seconds since the profile was opened.</summary>
+    // ponytail: a profile left open overnight reads as a night of setup. The
+    // median is what gets looked at, so outliers are left in, not clamped.
+    public static bool Installed() =>
+        Track(TelemetryEvent.InstallSucceeded, "setup_seconds",
+              (long)Stopwatch.GetElapsedTime(Interlocked.Read(ref _openedAt)).TotalSeconds);
     public static bool Track(TelemetryEvent e, InstallFailure f) => Track(e, "reason", Wire(f));
     public static bool Track(TelemetryEvent e, AppFeature f) => Track(e, "feature", Wire(f));
 
@@ -528,6 +560,6 @@ public static partial class Telemetry
     /// <param name="usage">Stands in for standing consent, so Scrub can be tested without a client.</param>
     internal static void ResetForTest(bool usage = false)
     {
-        lock (Gate) { _usage = usage; _client = null; _distinctId = ""; }
+        lock (Gate) { _usage = usage; _client = null; _distinctId = ""; _game = null; }
     }
 }

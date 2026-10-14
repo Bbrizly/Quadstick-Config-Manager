@@ -1965,7 +1965,7 @@ Verzenden zet dit om naar het eigen formaat van de crashrapportage. Er wordt ook
     <value>Deze tabbladen zijn overgeslagen: </value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Deze app kan anonieme gebruiksgegevens verzenden: welke schermen worden gebruikt, of installeren naar een QuadStick lukte, en verder niets. Terwijl dit aanstaat, worden die gebeurtenissen verzonden zodra ze plaatsvinden.
+    <value>Deze app kan anonieme gebruiksgegevens verzenden: welke schermen worden gebruikt, of installeren naar een QuadStick lukte, hoe lang het duurde van het openen van een profiel tot het installeren, voor welk spel een profiel uit de online bibliotheek is, en verder niets. Terwijl dit aanstaat, worden die gebeurtenissen verzonden zodra ze plaatsvinden.
 
 Nooit verzonden, wat u ook kiest: uw profielen, bestandsnamen, bestandspaden, uw Google-account, en uw naam of machinenaam. Ook wat u typt wordt niet verzonden, behalve het feedbackvak in Instellingen, dat alleen verzendt wanneer u daar op Verzenden drukt.
 

@@ -1965,7 +1965,7 @@ Enviar converte isso para o formato próprio do relator de falhas. Também adici
     <value>Estas abas foram ignoradas:</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Este aplicativo pode enviar dados de uso anônimos: quais telas são usadas, se a instalação em um QuadStick funcionou, e nada mais. Enquanto estiver ativado, esses eventos são enviados conforme acontecem.
+    <value>Este aplicativo pode enviar dados de uso anônimos: quais telas são usadas, se a instalação em um QuadStick funcionou, quanto tempo levou desde abrir um perfil até instalá-lo, para qual jogo é um perfil da biblioteca online, e nada mais. Enquanto estiver ativado, esses eventos são enviados conforme acontecem.
 
 Nunca enviados, seja qual for sua escolha: seus perfis, nomes de arquivo, caminhos de arquivo, sua conta do Google, e seu nome ou o nome da sua máquina. Nada do que você digita é enviado também, exceto a caixa de feedback em Configurações, que só envia quando você pressiona Enviar nela.
 
