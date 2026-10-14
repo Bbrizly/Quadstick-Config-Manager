@@ -698,4 +698,25 @@
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Deze spreadsheet is groter dan {0} rijen, veel groter dan enig profiel, dus we zijn halverwege gestopt met lezen.</value>
   </data>
+  <data name="DeviceConsole_NoAnswer" xml:space="preserve">
+    <value>De QuadStick antwoordde niet. Controleer of hij via Bluetooth is gekoppeld of dat de kabel erin zit. Een profiel dat digital_in_1 of digital_in_2 gebruikt, schakelt de kabelpoort uit.</value>
+  </data>
+  <data name="DeviceConsole_SettingRefused" xml:space="preserve">
+    <value>De QuadStick nam de instelling {0} niet aan.</value>
+  </data>
+  <data name="DeviceConsole_CouldNotOpen" xml:space="preserve">
+    <value>De QuadStick kon {0} niet openen om te schrijven. Er is niets op veranderd.</value>
+  </data>
+  <data name="DeviceConsole_WriteRefused" xml:space="preserve">
+    <value>De QuadStick stopte halverwege met het accepteren van {0}. Het is niet geladen.</value>
+  </data>
+  <data name="DeviceConsole_CouldNotLoad" xml:space="preserve">
+    <value>{0} staat op de QuadStick, maar de QuadStick kon het niet laden.</value>
+  </data>
+  <data name="DeviceConsole_ReadBackDiffers" xml:space="preserve">
+    <value>{0} wordt anders teruggelezen dan het is verstuurd, dus het is niet geladen. Wat de QuadStick eerst had, is opgeslagen in {1}.</value>
+  </data>
+  <data name="DeviceConsole_NoEarlierFile" xml:space="preserve">
+    <value>(niets: er was geen bestand met die naam)</value>
+  </data>
 </root>

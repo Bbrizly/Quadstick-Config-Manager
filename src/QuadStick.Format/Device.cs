@@ -125,11 +125,10 @@ public static class Device
     [System.Runtime.InteropServices.DllImport("libc")]
     static extern void sync();
 
-    public sealed record InstallResult(string InstalledPath, string? BackupPath);
-
-    public static InstallResult Install(
-        ProfileFile file, string deviceRoot, string backupDir,
-        bool confirmDefaultCsv = false, bool confirmPreferencesCsv = false)
+    /// <summary>The file name an install would write, after every rule that
+    /// refuses one. Shared by the drive install and the console send, so the
+    /// two can never disagree about what is safe to put on somebody's device.</summary>
+    public static string InstallName(ProfileFile file, bool confirmDefaultCsv = false, bool confirmPreferencesCsv = false)
     {
         // Before the generic error dump, because this one has a single fix and
         // the user needs to read it. The device holds each root file name in a
@@ -161,10 +160,6 @@ public static class Device
             throw new InvalidOperationException(
                 Strings.Device_RefusingToOverwritePrefsCsv);
 
-        if (!IsInstallTarget(deviceRoot))
-            throw new InvalidOperationException(
-                Strings.Device_ThatFolderDoesNotLook);
-
         // The name comes out of cell A2 of a file that may have arrived from
         // anywhere: a download, a shared workbook, a community profile.
         // ValidateFileName already refuses separators, so the first test cannot
@@ -181,6 +176,40 @@ public static class Device
         if (name != Path.GetFileName(name) || name.Any(char.IsControl) || SafeFileName.IsReservedOnWindows(name))
             throw new InvalidOperationException(
                 string.Format(CultureInfo.CurrentCulture, Strings.Device_NameIsNotAPlain, name));
+
+        return name;
+    }
+
+    /// <summary>Keep what the device had, under the same name pattern a drive
+    /// install's backup uses.</summary>
+    public static string SaveBackup(string name, string text, string backupDir)
+    {
+        Directory.CreateDirectory(backupDir);
+        var path = BackupPathFor(name, backupDir);
+        File.WriteAllText(path, text);
+        return path;
+    }
+
+    static string BackupPathFor(string name, string backupDir)
+    {
+        var stamp = $"{DateTime.Now:yyyyMMdd-HHmmss-fff}";
+        var backup = Path.Combine(backupDir, $"{stamp}-{name}");
+        for (int n = 2; File.Exists(backup); n++)
+            backup = Path.Combine(backupDir, $"{stamp}-{n}-{name}");
+        return backup;
+    }
+
+    public sealed record InstallResult(string InstalledPath, string? BackupPath);
+
+    public static InstallResult Install(
+        ProfileFile file, string deviceRoot, string backupDir,
+        bool confirmDefaultCsv = false, bool confirmPreferencesCsv = false)
+    {
+        var name = InstallName(file, confirmDefaultCsv, confirmPreferencesCsv);
+
+        if (!IsInstallTarget(deviceRoot))
+            throw new InvalidOperationException(
+                Strings.Device_ThatFolderDoesNotLook);
 
         var target = Path.Combine(deviceRoot, name);
 
@@ -279,11 +308,7 @@ public static class Device
     static string BackupExisting(string path, string backupDir)
     {
         Directory.CreateDirectory(backupDir);
-        var name = Path.GetFileName(path);
-        var stamp = $"{DateTime.Now:yyyyMMdd-HHmmss-fff}";
-        var backup = Path.Combine(backupDir, $"{stamp}-{name}");
-        for (int n = 2; File.Exists(backup); n++)
-            backup = Path.Combine(backupDir, $"{stamp}-{n}-{name}");
+        var backup = BackupPathFor(Path.GetFileName(path), backupDir);
         File.Copy(path, backup, overwrite: false);
         return backup;
     }

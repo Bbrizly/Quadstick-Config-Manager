@@ -1965,7 +1965,7 @@
     <value>見送られたタブ:</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>このアプリは匿名の使用データを送信できます。どの画面が使われたか、QuadStickへのインストールが成功したかどうか、プロファイルを開いてからインストールするまでにかかった時間、オンラインライブラリのプロファイルがどのゲーム用か、それだけです。オンにしている間、これらのイベントは発生の都度送信されます。
+    <value>このアプリは匿名の使用データを送信できます。どの画面が使われたか、QuadStickへのインストールが成功したかどうか、プロファイルを開いてからインストールするまでにかかった時間、オンラインライブラリのプロファイルがどのゲーム用か、強度テストを実行した場合は吸う力と吹く力の強さ、それだけです。オンにしている間、これらのイベントは発生の都度送信されます。
 
 どちらを選んでも、次のものは決して送信されません。プロファイル、ファイル名、ファイルパス、Googleアカウント、あなたの名前やマシン名。入力した内容も送信されません。ただし設定画面のフィードバック欄は例外で、「送信」を押したときだけ送信されます。
 
@@ -3557,5 +3557,101 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   </data>
   <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
     <value>QuadStick を接続しているのに表示されませんか？ Mac App Store 版は、一度ドライブを選ぶまでそれを開けません。その後は自動で見つけます。</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>BluetoothまたはケーブルでQuadStickに接続</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>QuadStick自身のコンソール経由で接続します。Bluetoothでペアリングするか、シリアルケーブルを使います。</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>QuadStickのBluetoothがSPPモードのときにパソコンのBluetooth設定でペアリングした場合、またはデジタル入力1と2のジャックに3.3VのUSBシリアルケーブルを挿した場合に使えます。BluetoothがSPPモードの間、QuadStickはBluetoothゲームパッドではなくなります。USB接続ではゲームパッドのままです。digital_in_1またはdigital_in_2を使うプロファイルは、ケーブルポートをオフにします。</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>ポート</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>接続</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>シリアルポートが見つかりません。パソコンのBluetooth設定でQuadStickをペアリングするか、ケーブルを接続してから、更新を押してください。</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>接続中…</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>QuadStickに接続しました。ファームウェア {0}。</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>そのポートから応答がありましたが、QuadStickではありません。</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>{0} を開けませんでした: {1}</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>プロファイルを送信…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>{0} を送信中…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} がQuadStickに入り、読み込まれました。以前の内容は {1} に保存されています。</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} がQuadStickに入り、読み込まれました。</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>prefs.csv を置き換えますか?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv にはQuadStick自身の設定が入っているため、すべてのプロファイルが一度に変わります。現在のコピーは先に保存されます。</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>吸う力と吹く力を測定</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>強さを測定しますか?</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>強い吸いと強い吹きだけを入れたテスト用プロファイルを読み込み、吹く操作7回と吸う操作7回を求めたあと、QuadStickを再起動します。再起動すると、お使いのプロファイルと設定が元に戻ります。問題が起きたら、QuadStickを抜いてもう一度挿してください。それでもすべて元に戻ります。</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>QuadStickをUSBでも接続してください。テストはUSB経由でボタンを監視しており、Xbox 360モード(エミュレーションモード3)では見えません。</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>センサーをゼロに合わせる間は、マウスピースに触れないでください。</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>できるだけ強く吹いてください。{0} 回目 / 7。</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>できるだけ強く吸ってください。{0} 回目 / 7。</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>最も強い吹き: センサー範囲の {0}。最も強い吸い: {1}。強のしきい値は {2} です。</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>{0}% 未満</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>停止しました。QuadStickが再起動されたため、お使いのプロファイルと設定は元に戻っています。</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetoothまたはケーブル</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>BluetoothまたはシリアルケーブルでQuadStickに接続</value>
   </data>
 </root>

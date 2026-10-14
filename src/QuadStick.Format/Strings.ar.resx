@@ -698,4 +698,25 @@
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>يحتوي جدول البيانات هذا على أكثر من {0} صف، وهو أكبر بكثير من أي ملف شخصي، لذا توقفنا عن القراءة في منتصف الطريق.</value>
   </data>
+  <data name="DeviceConsole_NoAnswer" xml:space="preserve">
+    <value>لم يردّ QuadStick. تحقق من أنه مقترن عبر Bluetooth أو أن الكابل موصول. ملف التعريف الذي يستخدم digital_in_1 أو digital_in_2 يوقف منفذ الكابل.</value>
+  </data>
+  <data name="DeviceConsole_SettingRefused" xml:space="preserve">
+    <value>لم يقبل QuadStick الإعداد {0}.</value>
+  </data>
+  <data name="DeviceConsole_CouldNotOpen" xml:space="preserve">
+    <value>لم يتمكن QuadStick من فتح {0} للكتابة. لم يتغير شيء عليه.</value>
+  </data>
+  <data name="DeviceConsole_WriteRefused" xml:space="preserve">
+    <value>توقف QuadStick عن استقبال {0} في المنتصف. لم يتم تحميله.</value>
+  </data>
+  <data name="DeviceConsole_CouldNotLoad" xml:space="preserve">
+    <value>{0} موجود على QuadStick، لكن QuadStick لم يتمكن من تحميله.</value>
+  </data>
+  <data name="DeviceConsole_ReadBackDiffers" xml:space="preserve">
+    <value>{0} يُقرأ مجددًا مختلفًا عمّا أُرسل، لذا لم يتم تحميله. ما كان لدى QuadStick قبل ذلك محفوظ في {1}.</value>
+  </data>
+  <data name="DeviceConsole_NoEarlierFile" xml:space="preserve">
+    <value>(لا شيء: لم يكن لديه ملف بهذا الاسم)</value>
+  </data>
 </root>

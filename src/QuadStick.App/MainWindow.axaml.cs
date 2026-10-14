@@ -8973,7 +8973,7 @@ public partial class MainWindow : Window
         return picked;
     }
 
-    async Task<bool> ConfirmAsync(string title, string message)
+    internal async Task<bool> ConfirmAsync(string title, string message)
     {
         var yes = new Button { Content = Strings.Main_YesContinue, MinWidth = 140 };
         var no = new Button { Content = Strings.Main_Cancel, MinWidth = 140, IsDefault = true, IsCancel = true };

@@ -1249,6 +1249,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_ImportedModesImportedFromPicks" xml:space="preserve">
     <value>[Ímpórtéd {0} fróm {1}. Šávé tó kéép ít áš á prófílé. xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_ImportIsACopy" xml:space="preserve">
+    <value>[Thíš íš á çópý. Šávíñg wrítéš á fílé óñ thíš çómpútér, áñd thé Góóglé Šhéét ýóú ópéñéd štáýš áš ít wáš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
     <value>[Ímpórtéd {0} fróm thé špréádšhéét. xxxxxxxxxxxxx]</value>
   </data>
@@ -1998,7 +2001,7 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
     <value>[Théšé tábš wéré páššéd óvér:  xxxxxxxxxxx]</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>[Thíš ápp çáñ šéñd áñóñýmóúš úšágé dátá: whíçh šçrééñš gét úšéd, whéthér íñštállíñg tó á QúádŠtíçk wórkéd, hów lóñg ít tóók fróm ópéñíñg á prófílé tó íñštállíñg ít, whíçh gámé á prófílé fróm thé óñlíñé líbrárý íš fór, áñd ñóthíñg élšé. Whílé ít íš óñ, thóšé évéñtš áré šéñt áš théý háppéñ.
+    <value>[Thíš ápp çáñ šéñd áñóñýmóúš úšágé dátá: whíçh šçrééñš gét úšéd, whéthér íñštállíñg tó á QúádŠtíçk wórkéd, hów lóñg ít tóók fróm ópéñíñg á prófílé tó íñštállíñg ít, whíçh gámé á prófílé fróm thé óñlíñé líbrárý íš fór, hów hárd ýóú çóúld šíp áñd púff íf ýóú rúñ thé štréñgth téšt, áñd ñóthíñg élšé. Whílé ít íš óñ, thóšé évéñtš áré šéñt áš théý háppéñ.
 
 Ñévér šéñt, whátévér ýóú píçk: ýóúr prófíléš, fílé ñáméš, fílé páthš, ýóúr Góóglé áççóúñt, áñd ýóúr ñámé ór máçhíñé ñámé. Ñóthíñg ýóú týpé íš šéñt éíthér, ápárt fróm thé féédbáçk bóx íñ Šéttíñgš, whíçh óñlý šéñdš whéñ ýóú préšš Šéñd óñ ít.
 
@@ -2006,7 +2009,7 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
 
 Whát íš šéñt góéš tó PóštHóg, óñ šérvérš íñ thé Úñítéd Štátéš.
 
-Ýóú çáñ çháñgé thíš áñý tímé íñ Šéttíñgš, úñdér Ádváñçéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+Ýóú çáñ çháñgé thíš áñý tímé íñ Šéttíñgš, úñdér Ádváñçéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
     <value>[Thé ápp háš ñót bééñ táúght tó réád thíš émúlátíóñ módé'š répórt, šó ñó rów wíll líght whílé thé QúádŠtíçk íš íñ ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -3678,5 +3681,114 @@ Gáméš thát dó ñót úšé ŠDL wíll ñót šéé thé gámépád. Fór th
   </data>
   <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
     <value>[QúádŠtíçk plúggéd íñ bút ñót líštéd? Thé Máç Ápp Štóré véršíóñ çáñ ópéñ ítš drívé óñlý áftér ýóú çhóóšé ít óñçé. Áftér thát ít fíñdš ít óñ ítš ówñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_AdaptersLine" xml:space="preserve">
+    <value>[Pláýíñg thróúgh á çóñšólé ádáptér? Ít óñlý wórkš íñ thé módé ít éxpéçtš. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_Adapters" xml:space="preserve">
+    <value>[Módéš fór çóñšólé ádáptérš xxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_AdaptersHelp" xml:space="preserve">
+    <value>[Íf ýóú úšé áñ ádáptér tó pláý óñ á dífféréñt çóñšólé, thé QúádŠtíçk háš tó bé íñ thé ríght módé fór ít.
+
+Máýflášh Mágíç-X, Mágíç-Š áñd Mágíç-ÑŠ, áñd thé Bróók XÉ 2 áñd Bróók XB 3: módé 0.
+
+Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, wíth Títáñ Twó ádáptér túrñéd óñ. QMP çállš thát šéttíñg thé Títáñ 2 PŠ4 flág. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>[QúádŠtíçk óvér Blúétóóth ór çáblé xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>[Réáçh á QúádŠtíçk thróúgh ítš ówñ çóñšólé: páíréd óvér Blúétóóth, ór wíth á šéríál çáblé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>[Thíš wórkš wíth á QúádŠtíçk páíréd íñ ýóúr çómpútér'š Blúétóóth šéttíñgš whílé ítš Blúétóóth íš íñ ŠPP módé, ór wíth á 3.3V ÚŠB šéríál çáblé íñ thé dígítál íñpútš 1 áñd 2 jáçk. Whílé Blúétóóth íš íñ ŠPP módé thé QúádŠtíçk íš ñót á Blúétóóth gámépád; óvér ÚŠB ít štíll íš. Á prófílé thát úšéš dígítál_íñ_1 ór dígítál_íñ_2 šwítçhéš thé çáblé pórt óff. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>[Pórt x]</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>[Réfréšh xx]</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>[Çóññéçt xx]</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>[Ñó šéríál pórtš fóúñd. Páír thé QúádŠtíçk íñ ýóúr çómpútér'š Blúétóóth šéttíñgš, ór plúg thé çáblé íñ, théñ préšš Réfréšh. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>[Çóññéçtíñg… xxxx]</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>[Çóññéçtéd tó á QúádŠtíçk, fírmwáré {0}. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>[Šóméthíñg áñšwéréd óñ thát pórt, bút ít íš ñót á QúádŠtíçk. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>[Çóúld ñót ópéñ {0}: {1} xxxxxxxxx]</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>[Šéñd á prófílé… xxxxxx]</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>[Šéñdíñg {0}… xxxx]</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>[{0} íš óñ thé QúádŠtíçk áñd lóádéd. Whát ít hád béfóré íš šávéd át {1}. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>[{0} íš óñ thé QúádŠtíçk áñd lóádéd. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>[Répláçé préfš.çšv? xxxxxxx]</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>[préfš.çšv hóldš thé QúádŠtíçk'š ówñ šéttíñgš, šó ít çháñgéš évérý prófílé át óñçé. Thé çópý ít háš ñów íš šávéd fíršt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>[Méášúré šíp áñd púff štréñgth xxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>[Méášúré štréñgth? xxxxxx]</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>[Thíš lóádš á téšt prófílé wíth óñlý hárd šíp áñd hárd púff óñ ít, áškš fór šévéñ púffš áñd šévéñ šípš, théñ réštártš thé QúádŠtíçk, whíçh pútš ýóúr ówñ prófílé áñd šéttíñgš báçk. Íf áñýthíñg góéš wróñg, úñplúg thé QúádŠtíçk áñd plúg ít báçk íñ. Thát pútš évérýthíñg báçk tóó. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>[Plúg thé QúádŠtíçk íñ bý ÚŠB áš wéll. Thé téšt wátçhéš ítš búttóñš óvér ÚŠB, áñd íñ Xbóx 360 módé (émúlátíóñ módé 3) ít çáññót šéé thém. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>[Háñdš óff thé móúthpíéçé whílé thé šéñšórš áré žéróéd. xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>[Púff áš hárd áš ýóú çáñ. Trý {0} óf 7. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>[Šíp áš hárd áš ýóú çáñ. Trý {0} óf 7. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>[Štróñgéšt púff: {0} óf thé šéñšór'š ráñgé. Štróñgéšt šíp: {1}. Ýóúr hárd thréšhóld íš {2}. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>[úñdér {0}% xxxx]</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>[{0}% x]</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>[Štóppéd. Thé QúádŠtíçk wáš réštártéd, šó ýóúr ówñ prófílé áñd šéttíñgš áré báçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>[Štóp x]</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>[Çlóšé xx]</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>[Blúétóóth ór çáblé xxxxxxx]</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>[Çóññéçt tó thé QúádŠtíçk óvér Blúétóóth ór á šéríál çáblé xxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
 </root>

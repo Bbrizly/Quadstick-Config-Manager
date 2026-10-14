@@ -698,4 +698,25 @@
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>このスプレッドシートは{0}行を超えており、どのプロファイルよりもはるかに大きいため、途中で読み取りを止めました。</value>
   </data>
+  <data name="DeviceConsole_NoAnswer" xml:space="preserve">
+    <value>QuadStickから応答がありませんでした。Bluetoothでペアリングされているか、ケーブルが挿さっているか確認してください。digital_in_1またはdigital_in_2を使うプロファイルは、ケーブルポートをオフにします。</value>
+  </data>
+  <data name="DeviceConsole_SettingRefused" xml:space="preserve">
+    <value>QuadStickが設定 {0} を受け付けませんでした。</value>
+  </data>
+  <data name="DeviceConsole_CouldNotOpen" xml:space="preserve">
+    <value>QuadStickが書き込み用に {0} を開けませんでした。QuadStick上のものは何も変更されていません。</value>
+  </data>
+  <data name="DeviceConsole_WriteRefused" xml:space="preserve">
+    <value>QuadStickが {0} の受け付けを途中でやめました。読み込まれていません。</value>
+  </data>
+  <data name="DeviceConsole_CouldNotLoad" xml:space="preserve">
+    <value>{0} はQuadStickに入っていますが、QuadStickが読み込めませんでした。</value>
+  </data>
+  <data name="DeviceConsole_ReadBackDiffers" xml:space="preserve">
+    <value>{0} を読み戻すと送信した内容と違うため、読み込まれませんでした。QuadStickの以前の内容は {1} に保存されています。</value>
+  </data>
+  <data name="DeviceConsole_NoEarlierFile" xml:space="preserve">
+    <value>(なし: その名前のファイルはありませんでした)</value>
+  </data>
 </root>

@@ -1965,7 +1965,7 @@
     <value>ये टैब छोड़ दिए गए:</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>यह ऐप अनाम उपयोग डेटा भेज सकता है: कौन सी स्क्रीन उपयोग होती हैं, QuadStick पर इंस्टॉल करना सफल हुआ या नहीं, प्रोफ़ाइल खोलने से इंस्टॉल करने तक कितना समय लगा, ऑनलाइन लाइब्रेरी की प्रोफ़ाइल किस गेम के लिए है, और बस इतना ही। जब यह चालू होता है, तो ये इवेंट होते ही भेज दिए जाते हैं।
+    <value>यह ऐप अनाम उपयोग डेटा भेज सकता है: कौन सी स्क्रीन उपयोग होती हैं, QuadStick पर इंस्टॉल करना सफल हुआ या नहीं, प्रोफ़ाइल खोलने से इंस्टॉल करने तक कितना समय लगा, ऑनलाइन लाइब्रेरी की प्रोफ़ाइल किस गेम के लिए है, अगर आप ताक़त का टेस्ट चलाएँ तो आप कितनी ज़ोर से चूस और फूँक सके, और बस इतना ही। जब यह चालू होता है, तो ये इवेंट होते ही भेज दिए जाते हैं।
 
 आप जो भी चुनें, ये कभी नहीं भेजे जाते: आपकी प्रोफ़ाइलें, फ़ाइल नाम, फ़ाइल पाथ, आपका Google अकाउंट, और आपका नाम या मशीन का नाम। आप जो भी टाइप करते हैं वह भी नहीं भेजा जाता, सिवाय Settings में मौजूद फ़ीडबैक बॉक्स के, जो तभी भेजता है जब आप उस पर Send दबाते हैं।
 
@@ -3559,5 +3559,101 @@
   </data>
   <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
     <value>QuadStick लगा है पर सूची में नहीं है? Mac App Store वाला संस्करण उसकी ड्राइव तभी खोल सकता है जब आप उसे एक बार चुन लें। उसके बाद वह उसे अपने आप ढूँढ लेता है।</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>Bluetooth या केबल से QuadStick</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>QuadStick के अपने कंसोल से जुड़ें: Bluetooth से पेयर करके, या सीरियल केबल से।</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>यह उस QuadStick के साथ काम करता है जो आपके कंप्यूटर की Bluetooth सेटिंग में पेयर है और जिसका Bluetooth SPP मोड में है, या डिजिटल इनपुट 1 और 2 वाले जैक में लगी 3.3V USB सीरियल केबल के साथ। जब Bluetooth SPP मोड में होता है, तब QuadStick Bluetooth गेमपैड नहीं रहता; USB पर वह अब भी गेमपैड है। जो प्रोफ़ाइल digital_in_1 या digital_in_2 इस्तेमाल करती है, वह केबल पोर्ट को बंद कर देती है।</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>पोर्ट</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>रीफ़्रेश करें</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>कनेक्ट करें</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>कोई सीरियल पोर्ट नहीं मिला। QuadStick को अपने कंप्यूटर की Bluetooth सेटिंग में पेयर करें, या केबल लगाएं, फिर रीफ़्रेश करें दबाएं।</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>कनेक्ट हो रहा है…</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>QuadStick से जुड़ गया, फ़र्मवेयर {0}।</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>उस पोर्ट पर कुछ जवाब आया, लेकिन वह QuadStick नहीं है।</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>{0} नहीं खुल सका: {1}</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>प्रोफ़ाइल भेजें…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>{0} भेजा जा रहा है…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} QuadStick पर है और लोड हो गई है। पहले जो था वह {1} में सहेजा गया है।</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} QuadStick पर है और लोड हो गई है।</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>prefs.csv बदलें?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv में QuadStick की अपनी सेटिंग हैं, इसलिए यह सभी प्रोफ़ाइलों को एक साथ बदलती है। इसकी मौजूदा कॉपी पहले सहेज ली जाती है।</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>चूसने और फूँकने की ताक़त मापें</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>ताक़त मापें?</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>यह एक टेस्ट प्रोफ़ाइल लोड करता है जिसमें सिर्फ़ ज़ोर से चूसना और ज़ोर से फूँकना है, सात बार फूँकने और सात बार चूसने को कहता है, फिर QuadStick को रीस्टार्ट करता है, जिससे आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ जाती हैं। कुछ गड़बड़ हो तो QuadStick को निकालकर दोबारा लगा दें। इससे भी सब कुछ वापस आ जाता है।</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>QuadStick को USB से भी लगाएं। टेस्ट USB से उसके बटन देखता है, और Xbox 360 मोड (इम्यूलेशन मोड 3) में उन्हें नहीं देख पाता।</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>सेंसर शून्य किए जाते समय माउथपीस से हाथ हटा लें।</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>जितना ज़ोर से हो सके फूँकें। कोशिश {0} / 7।</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>जितना ज़ोर से हो सके चूसें। कोशिश {0} / 7।</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>सबसे तेज़ फूँक: सेंसर की रेंज का {0}। सबसे तेज़ चूसना: {1}। आपकी तेज़ सीमा {2} है।</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>{0}% से कम</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>रुक गया। QuadStick रीस्टार्ट हो गया, इसलिए आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ गई हैं।</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>रोकें</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>बंद करें</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth या केबल</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>Bluetooth या सीरियल केबल से QuadStick से जुड़ें</value>
   </data>
 </root>

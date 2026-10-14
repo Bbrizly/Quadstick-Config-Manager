@@ -698,4 +698,25 @@
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>该电子表格超过了 {0} 行，远大于任何配置文件，因此我们在读到一半时就停止了。</value>
   </data>
+  <data name="DeviceConsole_NoAnswer" xml:space="preserve">
+    <value>QuadStick 没有响应。请检查它是否已通过蓝牙配对，或线缆是否已插好。使用 digital_in_1 或 digital_in_2 的配置文件会关闭线缆端口。</value>
+  </data>
+  <data name="DeviceConsole_SettingRefused" xml:space="preserve">
+    <value>QuadStick 没有接受设置 {0}。</value>
+  </data>
+  <data name="DeviceConsole_CouldNotOpen" xml:space="preserve">
+    <value>QuadStick 无法打开 {0} 进行写入。它上面没有任何改动。</value>
+  </data>
+  <data name="DeviceConsole_WriteRefused" xml:space="preserve">
+    <value>QuadStick 在接收 {0} 的过程中停止了。它没有被加载。</value>
+  </data>
+  <data name="DeviceConsole_CouldNotLoad" xml:space="preserve">
+    <value>{0} 已在 QuadStick 上，但 QuadStick 无法加载它。</value>
+  </data>
+  <data name="DeviceConsole_ReadBackDiffers" xml:space="preserve">
+    <value>回读的 {0} 与发送的内容不同，所以没有加载。QuadStick 之前的内容已保存在 {1}。</value>
+  </data>
+  <data name="DeviceConsole_NoEarlierFile" xml:space="preserve">
+    <value>（无：没有该名称的文件）</value>
+  </data>
 </root>

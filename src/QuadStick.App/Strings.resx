@@ -2001,7 +2001,7 @@ Sending converts this into the crash reporter's own format. It also adds your an
     <value>These tabs were passed over: </value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>This app can send anonymous usage data: which screens get used, whether installing to a QuadStick worked, how long it took from opening a profile to installing it, which game a profile from the online library is for, and nothing else. While it is on, those events are sent as they happen.
+    <value>This app can send anonymous usage data: which screens get used, whether installing to a QuadStick worked, how long it took from opening a profile to installing it, which game a profile from the online library is for, how hard you could sip and puff if you run the strength test, and nothing else. While it is on, those events are sent as they happen.
 
 Never sent, whatever you pick: your profiles, file names, file paths, your Google account, and your name or machine name. Nothing you type is sent either, apart from the feedback box in Settings, which only sends when you press Send on it.
 
@@ -3694,5 +3694,101 @@ Games that do not use SDL will not see the gamepad. For those, use mode 7. Turni
 Mayflash Magic-X, Magic-S and Magic-NS, and the Brook XE 2 and Brook XB 3: mode 0.
 
 Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two adapter turned on. QMP calls that setting the Titan 2 PS4 flag.</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>QuadStick over Bluetooth or cable</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>Reach a QuadStick through its own console: paired over Bluetooth, or with a serial cable.</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>This works with a QuadStick paired in your computer's Bluetooth settings while its Bluetooth is in SPP mode, or with a 3.3V USB serial cable in the digital inputs 1 and 2 jack. While Bluetooth is in SPP mode the QuadStick is not a Bluetooth gamepad; over USB it still is. A profile that uses digital_in_1 or digital_in_2 switches the cable port off.</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>No serial ports found. Pair the QuadStick in your computer's Bluetooth settings, or plug the cable in, then press Refresh.</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>Connecting…</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>Connected to a QuadStick, firmware {0}.</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>Something answered on that port, but it is not a QuadStick.</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>Could not open {0}: {1}</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>Send a profile…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>Sending {0}…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} is on the QuadStick and loaded. What it had before is saved at {1}.</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} is on the QuadStick and loaded.</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>Replace prefs.csv?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv holds the QuadStick's own settings, so it changes every profile at once. The copy it has now is saved first.</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>Measure sip and puff strength</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>Measure strength?</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>This loads a test profile with only hard sip and hard puff on it, asks for seven puffs and seven sips, then restarts the QuadStick, which puts your own profile and settings back. If anything goes wrong, unplug the QuadStick and plug it back in. That puts everything back too.</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>Plug the QuadStick in by USB as well. The test watches its buttons over USB, and in Xbox 360 mode (emulation mode 3) it cannot see them.</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>Hands off the mouthpiece while the sensors are zeroed.</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>Puff as hard as you can. Try {0} of 7.</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>Sip as hard as you can. Try {0} of 7.</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>Strongest puff: {0} of the sensor's range. Strongest sip: {1}. Your hard threshold is {2}.</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>under {0}%</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>Stopped. The QuadStick was restarted, so your own profile and settings are back.</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth or cable</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>Connect to the QuadStick over Bluetooth or a serial cable</value>
   </data>
 </root>

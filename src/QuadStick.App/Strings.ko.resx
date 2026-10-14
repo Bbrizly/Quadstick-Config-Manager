@@ -1965,7 +1965,7 @@
     <value>다음 탭은 건너뛰었습니다:</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>이 앱은 익명 사용 데이터를 보낼 수 있습니다: 어떤 화면이 사용되는지, QuadStick 설치가 성공했는지 여부, 프로필을 연 뒤 설치하기까지 걸린 시간, 온라인 라이브러리의 프로필이 어떤 게임용인지, 그 외에는 아무것도 없습니다. 켜져 있는 동안 이러한 이벤트는 발생하는 즉시 전송됩니다.
+    <value>이 앱은 익명 사용 데이터를 보낼 수 있습니다: 어떤 화면이 사용되는지, QuadStick 설치가 성공했는지 여부, 프로필을 연 뒤 설치하기까지 걸린 시간, 온라인 라이브러리의 프로필이 어떤 게임용인지, 강도 테스트를 실행하면 얼마나 세게 빨고 불 수 있었는지, 그 외에는 아무것도 없습니다. 켜져 있는 동안 이러한 이벤트는 발생하는 즉시 전송됩니다.
 
 무엇을 선택하든 절대 전송되지 않는 것: 프로필, 파일 이름, 파일 경로, Google 계정, 이름이나 기기 이름. 입력한 내용도 전송되지 않습니다. 다만 설정의 피드백 상자는 예외이며, 보내기를 눌렀을 때만 전송됩니다.
 
@@ -3559,5 +3559,101 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
   </data>
   <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
     <value>QuadStick을 연결했는데 목록에 없나요? Mac App Store 버전은 드라이브를 한 번 선택해야 열 수 있습니다. 그 후에는 알아서 찾습니다.</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>Bluetooth 또는 케이블로 QuadStick 연결</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>QuadStick 자체 콘솔로 연결합니다. Bluetooth로 페어링하거나 시리얼 케이블을 사용합니다.</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>QuadStick의 Bluetooth가 SPP 모드일 때 컴퓨터의 Bluetooth 설정에서 페어링했거나, 디지털 입력 1과 2 잭에 3.3V USB 시리얼 케이블을 꽂은 경우에 작동합니다. Bluetooth가 SPP 모드인 동안에는 QuadStick이 Bluetooth 게임패드가 아닙니다. USB로는 계속 게임패드입니다. digital_in_1 또는 digital_in_2를 사용하는 프로필은 케이블 포트를 끕니다.</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>포트</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>새로 고침</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>연결</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>시리얼 포트를 찾을 수 없습니다. 컴퓨터의 Bluetooth 설정에서 QuadStick을 페어링하거나 케이블을 꽂은 다음 새로 고침을 누르세요.</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>연결 중…</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>QuadStick에 연결됨, 펌웨어 {0}.</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>그 포트에서 응답이 있었지만 QuadStick이 아닙니다.</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>{0}을(를) 열 수 없습니다: {1}</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>프로필 보내기…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>{0} 보내는 중…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0}이(가) QuadStick에 있고 불러왔습니다. 이전 내용은 {1}에 저장되어 있습니다.</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0}이(가) QuadStick에 있고 불러왔습니다.</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>prefs.csv를 바꿀까요?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv에는 QuadStick 자체 설정이 들어 있어서 모든 프로필이 한꺼번에 바뀝니다. 현재 사본은 먼저 저장됩니다.</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>빨기와 불기 세기 측정</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>세기를 측정할까요?</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>강하게 빨기와 강하게 불기만 들어 있는 테스트 프로필을 불러오고, 불기 7번과 빨기 7번을 요청한 다음 QuadStick을 다시 시작합니다. 다시 시작하면 사용자의 프로필과 설정이 돌아옵니다. 문제가 생기면 QuadStick을 뽑았다가 다시 꽂으세요. 그래도 모두 돌아옵니다.</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>QuadStick을 USB로도 연결하세요. 테스트는 USB로 버튼을 관찰하며, Xbox 360 모드(에뮬레이션 모드 3)에서는 버튼을 볼 수 없습니다.</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>센서를 0으로 맞추는 동안 마우스피스에서 손을 떼세요.</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>최대한 세게 부세요. {0}번째 / 7.</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>최대한 세게 빠세요. {0}번째 / 7.</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>가장 강한 불기: 센서 범위의 {0}. 가장 강한 빨기: {1}. 강함 기준값은 {2}입니다.</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>{0}% 미만</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>중지되었습니다. QuadStick이 다시 시작되어 사용자의 프로필과 설정이 돌아왔습니다.</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>중지</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>닫기</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth 또는 케이블</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>Bluetooth 또는 시리얼 케이블로 QuadStick에 연결</value>
   </data>
 </root>

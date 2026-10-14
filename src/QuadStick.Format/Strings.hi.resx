@@ -698,4 +698,25 @@
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>यह स्प्रेडशीट {0} पंक्तियों से बड़ी है, जो किसी भी प्रोफ़ाइल से कहीं बड़ी है, इसलिए हमने बीच में ही पढ़ना बंद कर दिया।</value>
   </data>
+  <data name="DeviceConsole_NoAnswer" xml:space="preserve">
+    <value>QuadStick ने जवाब नहीं दिया। जाँचें कि वह Bluetooth से पेयर है या केबल लगी है। जो प्रोफ़ाइल digital_in_1 या digital_in_2 इस्तेमाल करती है, वह केबल पोर्ट को बंद कर देती है।</value>
+  </data>
+  <data name="DeviceConsole_SettingRefused" xml:space="preserve">
+    <value>QuadStick ने सेटिंग {0} नहीं ली।</value>
+  </data>
+  <data name="DeviceConsole_CouldNotOpen" xml:space="preserve">
+    <value>QuadStick लिखने के लिए {0} नहीं खोल सका। उस पर कुछ नहीं बदला।</value>
+  </data>
+  <data name="DeviceConsole_WriteRefused" xml:space="preserve">
+    <value>QuadStick ने {0} लेना बीच में ही बंद कर दिया। यह लोड नहीं हुई।</value>
+  </data>
+  <data name="DeviceConsole_CouldNotLoad" xml:space="preserve">
+    <value>{0} QuadStick पर है, लेकिन QuadStick उसे लोड नहीं कर सका।</value>
+  </data>
+  <data name="DeviceConsole_ReadBackDiffers" xml:space="preserve">
+    <value>{0} वापस पढ़ने पर भेजी गई फ़ाइल से अलग निकली, इसलिए लोड नहीं हुई। QuadStick में पहले जो था वह {1} में सहेजा गया है।</value>
+  </data>
+  <data name="DeviceConsole_NoEarlierFile" xml:space="preserve">
+    <value>(कुछ नहीं: उस नाम की कोई फ़ाइल नहीं थी)</value>
+  </data>
 </root>

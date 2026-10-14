@@ -1965,7 +1965,7 @@ Verzenden zet dit om naar het eigen formaat van de crashrapportage. Er wordt ook
     <value>Deze tabbladen zijn overgeslagen: </value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Deze app kan anonieme gebruiksgegevens verzenden: welke schermen worden gebruikt, of installeren naar een QuadStick lukte, hoe lang het duurde van het openen van een profiel tot het installeren, voor welk spel een profiel uit de online bibliotheek is, en verder niets. Terwijl dit aanstaat, worden die gebeurtenissen verzonden zodra ze plaatsvinden.
+    <value>Deze app kan anonieme gebruiksgegevens verzenden: welke schermen worden gebruikt, of installeren naar een QuadStick lukte, hoe lang het duurde van het openen van een profiel tot het installeren, voor welk spel een profiel uit de online bibliotheek is, hoe hard u kon zuigen en blazen als u de krachttest uitvoert, en verder niets. Terwijl dit aanstaat, worden die gebeurtenissen verzonden zodra ze plaatsvinden.
 
 Nooit verzonden, wat u ook kiest: uw profielen, bestandsnamen, bestandspaden, uw Google-account, en uw naam of machinenaam. Ook wat u typt wordt niet verzonden, behalve het feedbackvak in Instellingen, dat alleen verzendt wanneer u daar op Verzenden drukt.
 
@@ -3559,5 +3559,101 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   </data>
   <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
     <value>QuadStick aangesloten maar niet in de lijst? De Mac App Store-versie kan het station pas openen nadat u het één keer hebt gekozen. Daarna vindt ze het zelf.</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>QuadStick via Bluetooth of kabel</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>Maak verbinding met een QuadStick via zijn eigen console: gekoppeld via Bluetooth, of met een seriële kabel.</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>Dit werkt met een QuadStick die is gekoppeld in de Bluetooth-instellingen van uw computer terwijl zijn Bluetooth in SPP-modus staat, of met een seriële 3.3V-USB-kabel in de aansluiting voor digitale ingangen 1 en 2. Zolang Bluetooth in SPP-modus staat, is de QuadStick geen Bluetooth-gamepad; via USB blijft hij dat wel. Een profiel dat digital_in_1 of digital_in_2 gebruikt, schakelt de kabelpoort uit.</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>Poort</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>Vernieuwen</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>Verbinden</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>Geen seriële poorten gevonden. Koppel de QuadStick in de Bluetooth-instellingen van uw computer, of steek de kabel in, en druk dan op Vernieuwen.</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>Verbinden…</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>Verbonden met een QuadStick, firmware {0}.</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>Er antwoordde iets op die poort, maar het is geen QuadStick.</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>Kon {0} niet openen: {1}</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>Een profiel versturen…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>{0} wordt verstuurd…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} staat op de QuadStick en is geladen. Wat er eerst op stond, is opgeslagen in {1}.</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} staat op de QuadStick en is geladen.</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>prefs.csv vervangen?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv bevat de eigen instellingen van de QuadStick, dus het verandert alle profielen tegelijk. De huidige kopie wordt eerst opgeslagen.</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>Zuig- en blaaskracht meten</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>Kracht meten?</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>Dit laadt een testprofiel met alleen hard zuigen en hard blazen, vraagt zeven keer blazen en zeven keer zuigen, en start de QuadStick daarna opnieuw op, waardoor uw eigen profiel en instellingen terugkomen. Als er iets misgaat, haalt u de QuadStick los en steekt u hem er weer in. Dan komt ook alles terug.</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>Sluit de QuadStick ook via USB aan. De test bekijkt zijn knoppen via USB, en in Xbox 360-modus (emulatiemodus 3) kan hij ze niet zien.</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>Raak het mondstuk niet aan terwijl de sensoren op nul worden gezet.</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>Blaas zo hard als u kunt. Poging {0} van 7.</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>Zuig zo hard als u kunt. Poging {0} van 7.</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>Sterkste blaas: {0} van het bereik van de sensor. Sterkste zuig: {1}. Uw harde drempel is {2}.</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>onder {0}%</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>Gestopt. De QuadStick is opnieuw opgestart, dus uw eigen profiel en instellingen zijn terug.</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>Stoppen</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth of kabel</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>Verbinden met de QuadStick via Bluetooth of een seriële kabel</value>
   </data>
 </root>

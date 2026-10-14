@@ -14,6 +14,9 @@
   <key>com.apple.security.files.user-selected.read-write</key><true/>
   <!-- Keeps that pick across launches, so the drive is chosen once (MacDriveAccess). -->
   <key>com.apple.security.files.bookmarks.app-scope</key><true/>
+  <!-- The QuadStick's console: a paired Bluetooth SPP port or a USB serial
+       cable, both /dev/cu.* (DeviceLinkWindow). -->
+  <key>com.apple.security.device.serial</key><true/>
   <!-- Sheets import and Drive backup call Google over HTTPS. -->
   <key>com.apple.security.network.client</key><true/>
   <!-- Google sign-in redirects the browser to a loopback listener; the

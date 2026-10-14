@@ -38,6 +38,9 @@ public class LocalizationTests
             "\" && launchctl setenv SDL_GAMECONTROLLERCONFIG $'\"",
             "\"launchctl unsetenv SDL_GAMECONTROLLERCONFIG; rm -f ~/Library/LaunchAgents/\"",
         },
+        // File bytes the firmware reads, like every profile: a translated
+        // "Profile Name" row is a profile the QuadStick does not load.
+        ["DeviceConsole.cs"] = new[] { "\"Profile Name,,Strength test,,,,,,,,\\n\"" },
         // A company's name, not a word.
         ["SettingsView.cs"] = new[] { "\"LinkedIn\"" },
         // A font stack, read by the text engine and not by anybody.

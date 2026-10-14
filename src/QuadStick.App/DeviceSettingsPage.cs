@@ -70,6 +70,9 @@ public partial class MainWindow
     LiveInput? _liveInput;
     LiveState? _live;
 
+    /// <summary>What the stick is sending right now, or null with no reading.</summary>
+    internal LiveState? LiveReading => _live;
+
     ControllerBridge? _bridge;
     ControllerBridge.State? _bridgeState;
     TextBlock? _bridgeStatus;
@@ -601,12 +604,16 @@ public partial class MainWindow
         AutomationProperties.SetName(files, Strings.Shell_ManageTheProfileFilesOn);
         files.Click += async (_, _) => await ShowDeviceFilesAsync();
 
+        var link = new Button { Classes = { "quiet" }, Content = Strings.Link_PageButton };
+        AutomationProperties.SetName(link, Strings.Link_PageButtonName);
+        link.Click += async (_, _) => { StartLiveInput(); await new DeviceLinkWindow(this).ShowDialog(this); };
+
         var top = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
         top.Children.Add(heading);
         var buttons = new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 10,
-            Children = { reload, files },
+            Children = { reload, files, link },
         };
         if (_deviceRoot is null && DriveAccessButton(() => LoadDeviceSettingsAsync(), t => { if (_deviceStatus is { } line) line.Text = t; }) is { } choose)
             buttons.Children.Insert(0, choose);

@@ -707,4 +707,25 @@
   <data name="Issue_LowerSipPuffMaximum" xml:space="preserve">
     <value>The gap between sip_puff_threshold and sip_puff_maximum is the whole trigger travel here, and it is 60 to 80 by default. Move sip_puff_maximum closer to the threshold, but never onto it, so a comfortable sip reaches full pull.</value>
   </data>
+  <data name="DeviceConsole_NoAnswer" xml:space="preserve">
+    <value>The QuadStick did not answer. Check it is paired over Bluetooth or the cable is in. A profile that uses digital_in_1 or digital_in_2 turns the cable port off.</value>
+  </data>
+  <data name="DeviceConsole_SettingRefused" xml:space="preserve">
+    <value>The QuadStick did not take the setting {0}.</value>
+  </data>
+  <data name="DeviceConsole_CouldNotOpen" xml:space="preserve">
+    <value>The QuadStick could not open {0} for writing. Nothing on it was changed.</value>
+  </data>
+  <data name="DeviceConsole_WriteRefused" xml:space="preserve">
+    <value>The QuadStick stopped taking {0} partway through. It was not loaded.</value>
+  </data>
+  <data name="DeviceConsole_CouldNotLoad" xml:space="preserve">
+    <value>{0} is on the QuadStick, but the QuadStick could not load it.</value>
+  </data>
+  <data name="DeviceConsole_ReadBackDiffers" xml:space="preserve">
+    <value>{0} reads back different from what was sent, so it was not loaded. What the QuadStick had before is saved at {1}.</value>
+  </data>
+  <data name="DeviceConsole_NoEarlierFile" xml:space="preserve">
+    <value>(nothing: it had no file by that name)</value>
+  </data>
 </root>

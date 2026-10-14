@@ -698,4 +698,25 @@
   <data name="Sheet_WorkbookPastTheRowCap" xml:space="preserve">
     <value>Esta hoja de cálculo tiene más de {0} filas, mucho más que cualquier perfil, así que dejamos de leer a medio camino.</value>
   </data>
+  <data name="DeviceConsole_NoAnswer" xml:space="preserve">
+    <value>El QuadStick no respondió. Compruebe que esté emparejado por Bluetooth o que el cable esté conectado. Un perfil que usa digital_in_1 o digital_in_2 desactiva el puerto del cable.</value>
+  </data>
+  <data name="DeviceConsole_SettingRefused" xml:space="preserve">
+    <value>El QuadStick no aceptó el ajuste {0}.</value>
+  </data>
+  <data name="DeviceConsole_CouldNotOpen" xml:space="preserve">
+    <value>El QuadStick no pudo abrir {0} para escribir. No se cambió nada en él.</value>
+  </data>
+  <data name="DeviceConsole_WriteRefused" xml:space="preserve">
+    <value>El QuadStick dejó de aceptar {0} a medias. No se cargó.</value>
+  </data>
+  <data name="DeviceConsole_CouldNotLoad" xml:space="preserve">
+    <value>{0} está en el QuadStick, pero el QuadStick no pudo cargarlo.</value>
+  </data>
+  <data name="DeviceConsole_ReadBackDiffers" xml:space="preserve">
+    <value>{0} se lee de vuelta distinto de lo que se envió, así que no se cargó. Lo que tenía antes el QuadStick se guardó en {1}.</value>
+  </data>
+  <data name="DeviceConsole_NoEarlierFile" xml:space="preserve">
+    <value>(nada: no tenía ningún archivo con ese nombre)</value>
+  </data>
 </root>

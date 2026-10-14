@@ -707,4 +707,25 @@
   <data name="Issue_LowerSipPuffMaximum" xml:space="preserve">
     <value>[Thé gáp bétwééñ šíp_púff_thréšhóld áñd šíp_púff_máxímúm íš thé whólé tríggér trávél héré, áñd ít íš 60 tó 80 bý défáúlt. Móvé šíp_púff_máxímúm çlóšér tó thé thréšhóld, bút ñévér óñtó ít, šó á çómfórtáblé šíp réáçhéš fúll púll. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="DeviceConsole_NoAnswer" xml:space="preserve">
+    <value>[Thé QúádŠtíçk díd ñót áñšwér. Çhéçk ít íš páíréd óvér Blúétóóth ór thé çáblé íš íñ. Á prófílé thát úšéš dígítál_íñ_1 ór dígítál_íñ_2 túrñš thé çáblé pórt óff. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DeviceConsole_SettingRefused" xml:space="preserve">
+    <value>[Thé QúádŠtíçk díd ñót táké thé šéttíñg {0}. xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DeviceConsole_CouldNotOpen" xml:space="preserve">
+    <value>[Thé QúádŠtíçk çóúld ñót ópéñ {0} fór wrítíñg. Ñóthíñg óñ ít wáš çháñgéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DeviceConsole_WriteRefused" xml:space="preserve">
+    <value>[Thé QúádŠtíçk štóppéd tákíñg {0} pártwáý thróúgh. Ít wáš ñót lóádéd. xxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DeviceConsole_CouldNotLoad" xml:space="preserve">
+    <value>[{0} íš óñ thé QúádŠtíçk, bút thé QúádŠtíçk çóúld ñót lóád ít. xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DeviceConsole_ReadBackDiffers" xml:space="preserve">
+    <value>[{0} réádš báçk dífféréñt fróm whát wáš šéñt, šó ít wáš ñót lóádéd. Whát thé QúádŠtíçk hád béfóré íš šávéd át {1}. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DeviceConsole_NoEarlierFile" xml:space="preserve">
+    <value>[(ñóthíñg: ít hád ñó fílé bý thát ñámé) xxxxxxxxxxxxxxx]</value>
+  </data>
 </root>

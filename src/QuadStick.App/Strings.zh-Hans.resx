@@ -1965,7 +1965,7 @@
     <value>以下标签页已被跳过： </value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>本应用可以发送匿名使用数据：哪些界面被使用过、安装到 QuadStick 是否成功、从打开配置文件到安装所用的时间、在线库中的配置文件对应哪款游戏，仅此而已。开启后，这些事件会在发生时立即发送。
+    <value>本应用可以发送匿名使用数据：哪些界面被使用过、安装到 QuadStick 是否成功、从打开配置文件到安装所用的时间、在线库中的配置文件对应哪款游戏，如果运行力度测试，则包括你吸气和吹气的力度，仅此而已。开启后，这些事件会在发生时立即发送。
 
 无论您如何选择，以下内容绝不会发送：您的配置文件、文件名、文件路径、您的 Google 账号，以及您的姓名或电脑名称。您输入的任何内容也不会被发送，除了“设置”中的反馈框，它只有在您点击“发送”时才会发送。
 
@@ -3559,5 +3559,101 @@
   </data>
   <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
     <value>QuadStick 已插入却没有列出？Mac App Store 版本需要你先选择一次它的驱动器才能打开。之后它会自动找到。</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>通过蓝牙或线缆连接 QuadStick</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>通过 QuadStick 自带的控制台连接：蓝牙配对，或使用串口线缆。</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>这适用于在电脑蓝牙设置中配对的 QuadStick（其蓝牙处于 SPP 模式），或插在数字输入 1 和 2 插孔中的 3.3V USB 串口线缆。蓝牙处于 SPP 模式时，QuadStick 不是蓝牙游戏手柄；通过 USB 时它仍然是。使用 digital_in_1 或 digital_in_2 的配置文件会关闭线缆端口。</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>端口</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>连接</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>未找到串口。请在电脑的蓝牙设置中配对 QuadStick，或插好线缆，然后点击刷新。</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>正在连接…</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>已连接到 QuadStick，固件 {0}。</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>该端口有设备响应，但它不是 QuadStick。</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>无法打开 {0}：{1}</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>发送配置文件…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>正在发送 {0}…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} 已在 QuadStick 上并已加载。之前的内容已保存在 {1}。</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} 已在 QuadStick 上并已加载。</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>替换 prefs.csv？</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv 保存 QuadStick 自身的设置，所以它会同时改变所有配置文件。当前的副本会先保存。</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>测量吸气和吹气力度</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>测量力度？</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>这会加载一个只有用力吸气和用力吹气的测试配置文件，要求你吹气七次、吸气七次，然后重启 QuadStick，你自己的配置文件和设置会恢复。如果出了问题，拔下 QuadStick 再插回去，这也会让一切恢复。</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>请同时用 USB 连接 QuadStick。测试通过 USB 观察它的按键，在 Xbox 360 模式（仿真模式 3）下无法看到按键。</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>传感器归零期间，请不要碰吹嘴。</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>请尽全力吹气。第 {0} 次，共 7 次。</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>请尽全力吸气。第 {0} 次，共 7 次。</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>最强吹气：传感器范围的 {0}。最强吸气：{1}。你的用力阈值是 {2}。</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>低于 {0}%</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>已停止。QuadStick 已重启，你自己的配置文件和设置已恢复。</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>蓝牙或线缆</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>通过蓝牙或串口线缆连接 QuadStick</value>
   </data>
 </root>

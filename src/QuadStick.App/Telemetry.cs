@@ -16,7 +16,7 @@ public enum TelemetryEvent
 {
     AppLaunched, ProfileOpened, ProfileSaved,
     InstallAttempted, InstallSucceeded, InstallFailed,
-    FeatureUsed, FeedbackSubmitted,
+    FeatureUsed, FeedbackSubmitted, StrengthMeasured,
 }
 
 public enum ProfileSource { New, File, Library, Device, Sheets, Drive, Rescue }
@@ -50,6 +50,7 @@ public static partial class Telemetry
         TelemetryEvent.InstallFailed     => "install_failed",
         TelemetryEvent.FeatureUsed       => "feature_used",
         TelemetryEvent.FeedbackSubmitted => "feedback_submitted",
+        TelemetryEvent.StrengthMeasured  => "strength_measured",
         _ => throw new ArgumentOutOfRangeException(nameof(e), e, "no wire name"),
     };
 
@@ -283,6 +284,8 @@ public static partial class Telemetry
             ("profile_saved", "game")           => true,
             ("install_succeeded", "game")       => true,
             ("install_succeeded", "setup_seconds") => true,
+            ("strength_measured", "puff")       => true,
+            ("strength_measured", "sip")        => true,
             ("install_failed", "reason")        => true,
             ("feature_used", "feature")         => true,
             ("feedback_submitted", "text")      => true,
@@ -438,6 +441,23 @@ public static partial class Telemetry
     /// <summary>Install worked. Carries the seconds since the profile was opened.</summary>
     // ponytail: a profile left open overnight reads as a night of setup. The
     // median is what gets looked at, so outliers are left in, not clamped.
+    /// <summary>The strength test finished. Percent of the sensor's range, the
+    /// device's own unit; 4 means below the bottom of the sweep.</summary>
+    public static bool StrengthMeasured(int puff, int sip)
+    {
+        try
+        {
+            var c = _client;
+            if (c is null || KillSwitch || !_usage || _distinctId.Length == 0) return false;
+            var props = Envelope();
+            props["puff"] = puff;
+            props["sip"] = sip;
+            return c.Capture(_distinctId, Wire(TelemetryEvent.StrengthMeasured), props,
+                             groups: null, flags: null, timestamp: null);
+        }
+        catch { return false; }
+    }
+
     public static bool Installed() =>
         Track(TelemetryEvent.InstallSucceeded, "setup_seconds",
               (long)Stopwatch.GetElapsedTime(Interlocked.Read(ref _openedAt)).TotalSeconds);

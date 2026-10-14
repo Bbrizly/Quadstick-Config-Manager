@@ -1965,7 +1965,7 @@ Inviarlo lo converte nel formato proprio del sistema di segnalazione degli arres
     <value>Queste schede sono state saltate:</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Questa app può inviare dati di utilizzo anonimi: quali schermate vengono usate, se l'installazione su un QuadStick è riuscita, quanto tempo è passato dall'apertura di un profilo alla sua installazione, a quale gioco è destinato un profilo della libreria online, e nient'altro. Mentre è attiva, questi eventi vengono inviati man mano che accadono.
+    <value>Questa app può inviare dati di utilizzo anonimi: quali schermate vengono usate, se l'installazione su un QuadStick è riuscita, quanto tempo è passato dall'apertura di un profilo alla sua installazione, a quale gioco è destinato un profilo della libreria online, con quanta forza ha potuto aspirare e soffiare se esegue il test di forza, e nient'altro. Mentre è attiva, questi eventi vengono inviati man mano che accadono.
 
 Non viene mai inviato, qualunque cosa scelga: i Suoi profili, i nomi dei file, i percorsi dei file, il Suo account Google, e il Suo nome o il nome della macchina. Non viene inviato nemmeno ciò che digita, a parte la casella di feedback in Impostazioni, che invia solo quando preme Invia su di essa.
 
@@ -3559,5 +3559,101 @@ I giochi che non usano SDL non vedranno il gamepad. Per quelli, usa la modalità
   </data>
   <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
     <value>QuadStick collegato ma non in elenco? La versione del Mac App Store può aprire la sua unità solo dopo che l'hai scelta una volta. Dopo la trova da sola.</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>QuadStick tramite Bluetooth o cavo</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>Raggiunga un QuadStick tramite la sua console: associato in Bluetooth, oppure con un cavo seriale.</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>Funziona con un QuadStick associato nelle impostazioni Bluetooth del suo computer mentre il suo Bluetooth è in modalità SPP, oppure con un cavo seriale USB da 3.3V nella presa degli ingressi digitali 1 e 2. Quando il Bluetooth è in modalità SPP, il QuadStick non è un gamepad Bluetooth; via USB lo resta. Un profilo che usa digital_in_1 o digital_in_2 disattiva la porta del cavo.</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>Porta</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>Aggiorna</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>Connetti</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>Nessuna porta seriale trovata. Associ il QuadStick nelle impostazioni Bluetooth del suo computer, oppure colleghi il cavo, poi prema Aggiorna.</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>Connessione in corso…</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>Connesso a un QuadStick, firmware {0}.</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>Qualcosa ha risposto su quella porta, ma non è un QuadStick.</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>Impossibile aprire {0}: {1}</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>Invia un profilo…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>Invio di {0}…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} è sul QuadStick e caricato. Quello che c'era prima è salvato in {1}.</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} è sul QuadStick e caricato.</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>Sostituire prefs.csv?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv contiene le impostazioni proprie del QuadStick, quindi cambia tutti i profili in una volta. La copia attuale viene salvata prima.</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>Misura la forza di aspirazione e soffio</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>Misurare la forza?</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>Questo carica un profilo di prova con solo aspirazione forte e soffio forte, le chiede sette soffi e sette aspirazioni, poi riavvia il QuadStick, che rimette il suo profilo e le sue impostazioni. Se qualcosa va storto, scolleghi il QuadStick e lo ricolleghi. Anche questo rimette tutto a posto.</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>Colleghi il QuadStick anche via USB. Il test osserva i suoi pulsanti via USB, e in modalità Xbox 360 (modalità di emulazione 3) non riesce a vederli.</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>Non tocchi il bocchino mentre i sensori vengono azzerati.</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>Soffi più forte che può. Tentativo {0} di 7.</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>Aspiri più forte che può. Tentativo {0} di 7.</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>Soffio più forte: {0} dell'intervallo del sensore. Aspirazione più forte: {1}. La sua soglia forte è {2}.</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>sotto {0}%</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>Fermato. Il QuadStick è stato riavviato, quindi il suo profilo e le sue impostazioni sono tornati.</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>Ferma</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth o cavo</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>Si connetta al QuadStick tramite Bluetooth o un cavo seriale</value>
   </data>
 </root>
