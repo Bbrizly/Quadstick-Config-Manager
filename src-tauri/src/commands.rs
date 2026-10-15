@@ -20,7 +20,7 @@ use crate::streaming::{
 use crate::workbook_shell::{
     WorkbookExportReceiptDto, WorkbookImportReviewDto, WorkbookShellState,
 };
-use qcm_core::error::{QcmErrorDto, StorageStage};
+use qcm_core::error::{ProfileError, QcmError, QcmErrorDto, StorageStage};
 use qcm_core::profiles::{EditorSnapshot, SaveReceiptDto};
 use qcm_core::settings::AppSettingsDto;
 use serde::Serialize;
@@ -28,7 +28,7 @@ use serde_json::Value;
 use tauri::State;
 use tauri::ipc::Channel;
 
-use crate::telemetry::{self, InstallFailure, ProfileSource};
+use crate::telemetry::{self, AppFeature, InstallFailure, ProfileSource};
 use qcm_core::ErrorCode;
 
 type Failure = Box<QcmErrorDto>;
@@ -171,6 +171,11 @@ pub fn accept_workbook_import(
 ) -> Result<EditorSnapshot, Failure> {
     let accepted = redact(workbook.accept_import(request))?;
     let opened = redact(profiles.open_workbook_copy(&accepted.name, &accepted.csv))?;
+    // A community profile is a Google Sheet import, as in the shipped app:
+    // counted only once it actually opened.
+    if accepted.source == ProfileSource::Sheets {
+        telemetry::global().feature_used(AppFeature::SheetsImport);
+    }
     telemetry::global().opened(accepted.source, None);
     Ok(opened)
 }
@@ -244,9 +249,13 @@ pub fn prepare_install(
     request: Value,
 ) -> Result<InstallPlanDto, Failure> {
     let request: PrepareInstallRequest = redact(parse(request, "prepare_install request"))?;
-    let file = redact(profile_state.profile_for_install(&request.session_id))?;
     let telemetry = telemetry::global();
     telemetry.install_attempted();
+    let file = profile_state.profile_for_install(&request.session_id);
+    if let Err(QcmError::Profile(ProfileError::UnknownSession)) = &file {
+        telemetry.install_failed(InstallFailure::NoProfile);
+    }
+    let file = redact(file)?;
     let plan = device_state.prepare_install(&request.device_id, &file);
     if let Err(error) = &plan {
         match error.code() {
@@ -276,14 +285,9 @@ pub fn commit_install(
         Ok(_) => {
             telemetry::global().installed();
         }
-        Err(failure)
-            if !matches!(
-                failure.error,
-                qcm_core::QcmError::Confirmation(_)
-                    | qcm_core::QcmError::Cancelled
-                    | qcm_core::QcmError::Request(_)
-            ) =>
-        {
+        // Storage and device failures only: a refused confirmation or a
+        // malformed request is not an I/O error.
+        Err(failure) if matches!(failure.error, QcmError::Storage(_) | QcmError::Device(_)) => {
             telemetry::global().install_failed(InstallFailure::IoError);
         }
         Err(_) => {}

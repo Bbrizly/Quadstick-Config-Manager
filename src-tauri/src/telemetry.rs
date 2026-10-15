@@ -371,15 +371,12 @@ impl Telemetry {
     /// Push the queue on exit so a short session is not a silent one, then
     /// let go.
     pub fn shutdown(&self) {
+        // Bounded: two seconds is the most a close ever waits. The sender is
+        // then detached, not joined, so a request already in flight cannot
+        // hold the exit for its full HTTP timeout.
         let _ = self.flush(SHUTDOWN_FLUSH);
         self.usage.store(false, Ordering::SeqCst);
-        let taken = lock(&self.worker).take();
-        if let Some(mut worker) = taken {
-            let _ = worker.tx.send(Msg::Stop);
-            if let Some(handle) = worker.handle.take() {
-                let _ = handle.join();
-            }
-        }
+        self.stop();
     }
 
     fn flush(&self, wait: Duration) -> bool {

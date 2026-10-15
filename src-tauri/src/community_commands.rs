@@ -62,7 +62,7 @@ pub fn import_community_profile(
             || format!("{}.xlsx", request.csv_name),
             |stem| format!("{stem}.xlsx"),
         );
-    redact(workbook.import_bytes(&display_name, bytes, ProfileSource::Library))
+    redact(workbook.import_bytes(&display_name, bytes, ProfileSource::Sheets))
 }
 
 #[tauri::command]
