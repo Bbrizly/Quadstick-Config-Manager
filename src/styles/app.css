@@ -108,7 +108,7 @@ button.zone-rail-row:hover {
   border-color: var(--qcm-border);
 }
 
-button:active {
+button:active:not(:disabled) {
   transform: scale(0.985);
   transition-duration: 0s;
 }

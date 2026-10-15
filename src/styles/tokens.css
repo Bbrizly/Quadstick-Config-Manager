@@ -26,7 +26,7 @@
   --qcm-field-bg: rgb(255 255 255 / 0.4);
   --qcm-field-border: #666666;
   --qcm-disabled-bg: #cccccc;
-  --qcm-disabled-text: #7a7a7a;
+  --qcm-disabled-text: #595959;
 
   --qcm-title-size: 30px;
   --qcm-section-size: 22px;
@@ -97,7 +97,7 @@
   --qcm-field-bg: rgb(0 0 0 / 0.4);
   --qcm-field-border: #a2a4a7;
   --qcm-disabled-bg: #4c5156;
-  --qcm-disabled-text: #939699;
+  --qcm-disabled-text: #c4c7ca;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -126,7 +126,7 @@
     --qcm-field-bg: rgb(0 0 0 / 0.4);
     --qcm-field-border: #a2a4a7;
     --qcm-disabled-bg: #4c5156;
-    --qcm-disabled-text: #939699;
+    --qcm-disabled-text: #c4c7ca;
   }
 }
 
