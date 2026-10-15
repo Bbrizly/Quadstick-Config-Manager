@@ -49,6 +49,9 @@ Evidence paths are target placeholders until implemented.
 | T-043 | console close mid-test/mid-send (6934bbf) | `src/features/device/DeviceLinkDialog.test.tsx` | close mid-test on a stick | IMPLEMENTED |
 | T-044 | Drive Home button, restore offer, bulk restore | `HomeDriveButton.test.tsx`, `DrivePickerDialog.test.tsx`, `drive.rs` tests | real Drive restore on each OS | IMPLEMENTED |
 | T-045 | Linux bundle has qs-bridge and the udev rule | `.github/workflows/rewrite.yml` `linux-bundle` | install the deb, start the bridge | IMPLEMENTED (CI) |
+| T-046 | restore folder follows .NET 8 `MyDocuments` (Linux XDG lookup) | `src-tauri/src/drive.rs` `linux_documents_follow_the_dotnet_xdg_lookup`; macOS checked with a `net8.0` snippet | run the restore on a Linux desktop with a moved Documents folder | IMPLEMENTED |
+| T-047 | focus follows a moved or copied mode (hidden controls never keep focus) | `src/features/editor/EditorWorkspace.test.tsx` | keyboard pass with VoiceOver | IMPLEMENTED |
+| T-048 | idle Home, editor rows and device view: zero frames, no timers | headless Chrome trace on the production build (phase 5 in `implementation-status.md`) | trace in the Tauri WebView on each OS | MEASURED |
 
 Critical behavior cannot move to PARITY-TESTED without at least one T row; storage/HID required parity also needs hardware evidence.
 

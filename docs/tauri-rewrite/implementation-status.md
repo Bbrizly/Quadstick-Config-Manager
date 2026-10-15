@@ -120,7 +120,31 @@ Local `follow-link` (10 commits on main) is merged; its C# side is Avalonia and 
 
 Gates (local, macOS): `pnpm check` (159 tests), `cargo test --workspace` (471), clippy `-D warnings`, fmt, catalog regeneration clean, `pnpm tauri build --debug --no-bundle`.
 
-Still open: the Linux bundle job has not run; Get the latest is editor-only (no Home cards); the app's own Drive token is not used for its own sheets; restore folder on Linux/macOS vs .NET `MyDocuments` is UNRESOLVED-FL1; real Drive/Sheets runs on each OS.
+Still open: the Linux bundle job has not run; Get the latest is editor-only (no Home cards); the app's own Drive token is not used for its own sheets; real Drive/Sheets runs on each OS. (UNRESOLVED-FL1 closed in phase 5.)
+
+## Phase 5 (2026-10-15): look the same
+
+Method: `RenderPreview --compare` draws the Avalonia screens headlessly at 1280x860 with the mock's two-mode Racing profile; the React app runs on the mock in headless Chrome at the same size. Pairs compared by eye and by sampled pixel colours.
+
+| Screen | Fixed |
+|---|---|
+| Device view | FPS photo was never drawn (crop scaled 10000%); stage now laid out at 910 px and scaled like the Viewbox, floor 0.6 then sideways scroll; frameless stage on the surface; tables shorter |
+| Home | column centred and as wide as its widest line; tiles keep 154x104 (an app-wide reset was zeroing them, also the cards); quiet buttons keep the hairline; Fluent field fill/edge; version footer |
+| Settings | Fluent tabs (24 px plain, accent bar), panel full width inset 12 px, per-tab heading, 20 px checkboxes, Back control no longer tinted |
+| Editor | undo, Add row, save and spreadsheet switch in the shell bar; one-line modes with controls on the picked one only; round Add mode; solid accent view key; sidebar and panel fills; no nav tab lit while editing |
+| Dialogs | Avalonia title strip with accent mark; disabled buttons a flat grey plate (a disabled primary looked live) |
+
+Still different: Home has no profile cards (no library list in the rewrite); validation stays a panel, not the status bar; Rows view keeps the mapping panel; the rewrite's raw grid has no Avalonia twin; device settings and DeviceLink are not compared (mock has no prefs.csv or console); Avalonia headless draws Arabic with missing glyphs, so RTL was checked on the rewrite only.
+
+Motion (ADR-016): hover eases in 100 ms, press lands at once and not on disabled buttons, entry animations 140 ms, all off under reduced motion.
+
+Idle (production build, headless Chrome, focus emulated, 5 s settle then a 5 s trace): Home, editor Rows and device view each 0 DrawFrame, 0 animation-frame callbacks, 0 timers, 0 layout/style passes. Control with one CSS loop: 300 DrawFrame per 5 s. Before this phase the device view drew 300 frames per 5 s (mode-light glow).
+
+Bundle (`vite build`): JS 487.12 to 489.20 kB (gzip 146.47 to 147.12), CSS 39.41 to 41.28 kB (gzip 7.72 to 8.23).
+
+UNRESOLVED-FL1 closed (B-072): .NET 8 `MyDocuments` read from the runtime source and a `net8.0` run on macOS. macOS `~/Documents` (NSDocumentDirectory; ignores a changed `HOME`, the rewrite reads `HOME`), Linux the .NET XDG lookup, Windows the Documents known folder.
+
+Gates (local, macOS): `pnpm check` (159 tests), `cargo test --workspace` (472), clippy `-D warnings`, fmt, `pnpm tauri build --debug --no-bundle`.
 
 ## Runtime cost while a game runs
 
