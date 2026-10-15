@@ -63,8 +63,7 @@
   min-width: 0;
   overflow: hidden;
   border-radius: var(--qcm-radius-panel);
-  background: var(--qcm-bg);
-  border: var(--qcm-hairline) solid var(--qcm-border);
+  background: var(--qcm-surface);
 }
 
 .visualizer-stage {
@@ -72,6 +71,15 @@
   width: 100%;
   max-width: 910px;
   margin-inline: auto;
+  overflow: hidden;
+}
+
+/* The design-size layer StageViewbox scales to fit, as Avalonia's Viewbox. */
+.stage-viewbox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
 }
 
 .photo-frame {
@@ -90,24 +98,11 @@
   transform: translate(-50%, -50%);
   pointer-events: none;
   box-shadow: 0 0 10px currentColor;
-  /* Scale only: it stays on the compositor. The old filter: brightness()
-     repainted the photo under every light, every frame, for as long as the
-     editor was open. Inline opacity sets the halo, so it is not animated. */
-  animation: mode-light-glow 1.8s ease-in-out infinite;
-}
-
-@keyframes mode-light-glow {
-  0%,
-  100% {
-    scale: 1;
-  }
-  50% {
-    scale: 1.12;
-  }
+  /* Still. A breathing glow ran a frame loop for as long as the editor was
+     open and focused, idle or not; the halo alone says the light is on. */
 }
 
 /* Nobody is looking: no frames at all. */
-.quadstick-visualizer[data-window-active="false"] .mode-light,
 .quadstick-visualizer[data-window-active="false"] .gesture-pip {
   animation: none;
 }
@@ -116,7 +111,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transition: opacity 180ms ease;
+  transition: opacity 140ms ease;
 }
 
 .hotspot-group.faded {
@@ -128,7 +123,7 @@
   inset: 0;
   pointer-events: none;
   z-index: 2;
-  animation: combo-in 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: combo-in 140ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes combo-in {
@@ -229,7 +224,7 @@
   background: var(--qcm-input-tint);
   color: var(--qcm-text);
   font-size: var(--qcm-small-size);
-  animation: card-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: card-enter 140ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .off-model-card {
@@ -645,7 +640,7 @@
 .visualizer-extra-zones .zone {
   position: static;
   min-height: 56px !important;
-  animation: card-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: card-enter 140ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes card-enter {
@@ -710,7 +705,7 @@
   border-radius: var(--qcm-radius-control);
   background: var(--qcm-surface);
   text-align: start;
-  animation: card-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: card-enter 140ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .pill {

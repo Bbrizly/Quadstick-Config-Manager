@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import fpsPhoto from "../../QuadStick.App/Assets/QuadStickFPS.png";
 import originalPhoto from "../../QuadStick.App/Assets/QuadStickOriginal.png";
@@ -84,6 +84,56 @@ const ZONE_META: readonly ZoneMeta[] = [
 const NO_OUTPUTS: ReadonlySet<string> = new Set();
 
 const MOUTHPIECE_ZONES = new Set<ZoneId>(["mp_left", "mp_center", "mp_right", "side", "lip"]);
+
+/**
+ * Avalonia draws the stage at its design size inside a Viewbox, so callouts,
+ * type and leader lines shrink with the picture. This does the same: the
+ * children lay out on a fixed design-size layer that is scaled to the width
+ * it gets. The scale is measured before paint and again only on a resize, so
+ * there is no layout shift on load and nothing runs while idle.
+ */
+function StageViewbox({
+  width,
+  height,
+  className,
+  children,
+}: {
+  readonly width: number;
+  readonly height: number;
+  readonly className: string;
+  readonly children: ReactNode;
+}) {
+  const outer = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useLayoutEffect(() => {
+    const element = outer.current;
+    if (element === null) return undefined;
+    const fit = () => {
+      const room = element.clientWidth;
+      if (room > 0) setScale(room / width);
+    };
+    fit();
+    if (typeof ResizeObserver === "undefined") return undefined;
+    const observer = new ResizeObserver(fit);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [width]);
+  return (
+    <div
+      ref={outer}
+      className={className}
+      style={{ aspectRatio: `${String(width)} / ${String(height)}` }}
+      dir="ltr"
+    >
+      <div
+        className="stage-viewbox"
+        style={{ width, height, transform: scale === 1 ? undefined : `scale(${String(scale)})` }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 const BACK_STAGE_W = 720;
 const BACK_STAGE_H = 285;
@@ -856,10 +906,10 @@ export function QuadStickVisualizer({
 
   const renderBackPanel = () => (
     <div className="back-panel">
-      <div
+      <StageViewbox
         className="visualizer-stage back-stage"
-        style={{ aspectRatio: `${String(BACK_STAGE_W)} / ${String(BACK_STAGE_H)}` }}
-        dir="ltr"
+        width={BACK_STAGE_W}
+        height={BACK_STAGE_H}
       >
         <img
           className="quadstick-photo back-photo"
@@ -933,7 +983,7 @@ export function QuadStickVisualizer({
             </div>
           );
         })}
-      </div>
+      </StageViewbox>
       <ul className="back-guide">
         {BACK_SOCKETS.filter((socket) => socket.zone === "jacks").map((socket) => (
           <li key={socket.guideKey}>{t(socket.guideKey)}</li>
@@ -998,11 +1048,7 @@ export function QuadStickVisualizer({
         {showBack ? (
           renderBackPanel()
         ) : (
-          <div
-            className="visualizer-stage"
-            style={{ aspectRatio: `${String(STAGE_W)} / ${String(stageH)}` }}
-            dir="ltr"
-          >
+          <StageViewbox className="visualizer-stage" width={STAGE_W} height={stageH}>
             <div
               className="photo-frame"
               aria-hidden="true"
@@ -1024,8 +1070,8 @@ export function QuadStickVisualizer({
                   position: "absolute",
                   left: `${String((-source.x / source.w) * 100)}%`,
                   top: `${String((-source.y / source.h) * 100)}%`,
-                  width: `${String((100 / source.w) * 100)}%`,
-                  height: `${String((100 / source.h) * 100)}%`,
+                  width: `${String(100 / source.w)}%`,
+                  height: `${String(100 / source.h)}%`,
                   objectFit: "fill",
                 }}
               />
@@ -1076,7 +1122,7 @@ export function QuadStickVisualizer({
               : null}
 
             {stageSpots.map((spot, index) => renderHotspot(spot, index, showCombos))}
-          </div>
+          </StageViewbox>
         )}
       </div>
 
