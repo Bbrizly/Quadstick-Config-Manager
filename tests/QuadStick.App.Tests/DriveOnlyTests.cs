@@ -51,6 +51,7 @@ public class DriveOnlyTests
     [InlineData("https://api.github.com/repos/x/y/releases/latest", false)] // update check
     [InlineData("https://docs.google.com/spreadsheets/d/x/export", false)]
     [InlineData("https://www.googleapis.com.evil.example/drive", false)]
+    [InlineData("https://www.googleapis.com:8443/drive/v3/files", false)]  // another port is another origin
     public async Task Only_google_api_hosts_get_through(string url, bool allowed)
     {
         var inner = new Recorder();

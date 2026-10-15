@@ -63,7 +63,8 @@ public sealed class GoogleOnlyHandler : DelegatingHandler
     public GoogleOnlyHandler(HttpMessageHandler inner) : base(inner) { }
 
     public static bool Allows(Uri? uri) =>
-        uri is not null && uri.IsAbsoluteUri && uri.Scheme == Uri.UriSchemeHttps && Allowed.Contains(uri.Host);
+        uri is not null && uri.IsAbsoluteUri && uri.Scheme == Uri.UriSchemeHttps && uri.IsDefaultPort
+        && Allowed.Contains(uri.Host);
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
     {
