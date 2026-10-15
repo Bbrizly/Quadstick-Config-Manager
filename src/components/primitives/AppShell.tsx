@@ -93,11 +93,14 @@ export function AppShell({
           <button
             className={settingsOpen ? "shell-settings-button shellutility active" : "shell-settings-button shellutility"}
             type="button"
-            aria-label={t("Shell_OpenSettings")}
-            aria-pressed={settingsOpen}
+            // One control opens Settings and leaves it, so the page to go back
+            // to cannot be lost. Icon and name swap with it: colour is never
+            // the only signal.
+            aria-label={settingsOpen ? t("Settings_BackHelp") : t("Shell_OpenSettings")}
+            title={settingsOpen ? t("Main_Back") : t("Shell_Settings")}
             onClick={onOpenSettings}
           >
-            <Icon name="settings" size={40} />
+            <Icon name={settingsOpen ? "back" : "settings"} size={40} />
           </button>
         </div>
       </header>

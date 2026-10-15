@@ -53,17 +53,17 @@ describe("TASK-036/037 app shell", () => {
     expect(screen.getByRole("button", { name: arCatalog.Shell_Home })).toBeInTheDocument();
   });
 
-  it("opens settings as an in-shell page and closes with Done", async () => {
+  it("opens settings as an in-shell page and the cog becomes Back", async () => {
     render(<App />);
-    const settings = screen.getByRole("button", { name: "Open Settings" });
-    fireEvent.click(settings);
-    expect(settings).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Open Settings" }));
     await waitFor(() => screen.getByRole("combobox", { name: "Language" }));
     expect(screen.getByRole("heading", { level: 1, name: "Settings" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Done" }));
+    expect(screen.queryByRole("button", { name: "Done" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Go back from Settings" }));
     await waitFor(() => {
       expect(screen.queryByRole("heading", { level: 1, name: "Settings" })).not.toBeInTheDocument();
     });
+    expect(screen.getByRole("button", { name: "Open Settings" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2, name: "Start a profile" })).toBeInTheDocument();
   });
 

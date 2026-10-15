@@ -47,11 +47,10 @@ type SettingsTab = "general" | "advanced" | "help" | "contact";
 interface SettingsPageProps {
   readonly client: QcmClient;
   readonly onThemeChange?: (theme: ThemePreference) => void;
-  readonly onDone?: () => void;
   readonly extra?: ReactNode;
 }
 
-export function SettingsPage({ client, onThemeChange, onDone, extra }: SettingsPageProps) {
+export function SettingsPage({ client, onThemeChange, extra }: SettingsPageProps) {
   const { t, preference, setPreference } = useI18n();
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [busy, setBusy] = useState(false);
@@ -208,11 +207,6 @@ export function SettingsPage({ client, onThemeChange, onDone, extra }: SettingsP
       <LiveRegion>{message}</LiveRegion>
       <div className="settings-page-header">
         <h1 className="settings-title">{t("Shell_Settings")}</h1>
-        {onDone === undefined ? null : (
-          <button className="primary" type="button" onClick={onDone}>
-            {t("Main_Done")}
-          </button>
-        )}
       </div>
 
       <div className="settings-tabs" role="tablist" aria-label={t("Shell_Settings")}>

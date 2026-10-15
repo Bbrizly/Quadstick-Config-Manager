@@ -138,7 +138,6 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       cancelled = true;
     };
   }, [client]);
-  const closeSettings = useCallback(() => setSettingsOpen(false), []);
   const copy = DESTINATION_COPY[activeDestination];
 
   const openRescue = async (): Promise<void> => {
@@ -392,7 +391,6 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       <SettingsPage
         client={client}
         onThemeChange={setThemePreference}
-        onDone={closeSettings}
         extra={
           <GoogleDriveSettings
             client={client}
