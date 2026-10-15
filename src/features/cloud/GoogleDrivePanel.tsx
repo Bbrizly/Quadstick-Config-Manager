@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
 import { DrivePickerDialog } from "./DrivePickerDialog";
+import { RestoreAfterConnect } from "./HomeDriveButton";
 import { ShareSetupDialog } from "./ShareSetupDialog";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
@@ -25,7 +26,8 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
   const [auth, setAuth] = useState<GoogleAuthStatus | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const [picker, setPicker] = useState(false);
+  const [picker, setPicker] = useState<{ readonly preCheck: boolean } | null>(null);
+  const [askRestore, setAskRestore] = useState(false);
 
   const status = client.getGoogleAuthStatus;
   const connect = client.connectGoogle;
@@ -57,6 +59,8 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
       const next = await connect.call(client);
       setAuth(next);
       setMessage(next.connected ? t("Settings_Connected") : "");
+      // After a first sign-in, offer to bring the backed-up profiles over.
+      if (next.connected && list !== undefined) setAskRestore(true);
     } catch (reason) {
       showFailure(reason);
     } finally {
@@ -93,14 +97,31 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
           </button>
         )}
         {auth?.connected && list !== undefined ? (
-          <button type="button" disabled={busy} onClick={() => setPicker(true)}>
+          <button
+            type="button"
+            disabled={busy}
+            aria-label={t("Settings_ImportDriveHelp")}
+            onClick={() => setPicker({ preCheck: false })}
+          >
             {t("Settings_ImportDrive")}
           </button>
         ) : null}
       </div>
-      {picker ? (
-        <DrivePickerDialog client={client} onReview={onReview} onClose={() => setPicker(false)} />
-      ) : null}
+      <RestoreAfterConnect
+        open={askRestore}
+        onAnswer={(yes) => {
+          setAskRestore(false);
+          if (yes) setPicker({ preCheck: true });
+        }}
+      />
+      {picker === null ? null : (
+        <DrivePickerDialog
+          client={client}
+          preCheck={picker.preCheck}
+          onReview={onReview}
+          onClose={() => setPicker(null)}
+        />
+      )}
       <LiveRegion>{message}</LiveRegion>
     </section>
   );

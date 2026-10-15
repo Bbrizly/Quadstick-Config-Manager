@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 
 import { Icon } from "../../components/primitives/icons";
+import { HomeDriveButton } from "../cloud/HomeDriveButton";
 import { useI18n } from "../../i18n";
-import type { PendingRescue, QcmClient } from "../../platform";
+import type { PendingRescue, QcmClient, WorkbookImportReview } from "../../platform";
 
 export interface HomePageProps {
   readonly client: QcmClient;
@@ -15,6 +16,8 @@ export interface HomePageProps {
   readonly onImportSheetsLink?: (url: string) => void;
   /** What the last link import said, shown under the link box. */
   readonly sheetsMessage?: string;
+  /** A single Drive backup restored into the review (no bulk restore). */
+  readonly onDriveReview?: (review: WorkbookImportReview) => void;
   readonly onOpenCommunity: () => void;
   readonly onManageDevice: () => void;
   readonly onOpenHelp: () => void;
@@ -57,6 +60,7 @@ export function HomePage({
   onImportWorkbook,
   onImportSheetsLink,
   sheetsMessage = "",
+  onDriveReview,
   onOpenCommunity,
   onManageDevice,
   onOpenHelp,
@@ -91,6 +95,9 @@ export function HomePage({
             {t("Shell_StartAProfile")}
           </h2>
           <p className="homepanel-lead">{t("Shell_BuildOpenOrFindA")}</p>
+          {onDriveReview === undefined ? null : (
+            <HomeDriveButton client={client} onReview={onDriveReview} />
+          )}
         </div>
         <div className="start-cards">
           <button

@@ -19,6 +19,7 @@ export type {
 export type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 export type {
   DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,
+  RestoreItem, RestoreReason, RestoreSummary,
 } from "./driveContracts";
 export type {
   FollowState, LatestCheck, LatestReplace, ProfileChange, SheetRefusal, SheetsImport,

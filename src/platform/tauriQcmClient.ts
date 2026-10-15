@@ -12,7 +12,7 @@ import type {
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
-  DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,
+  DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare, RestoreSummary,
 } from "./driveContracts";
 import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
@@ -125,6 +125,7 @@ export class TauriQcmClient implements QcmClient {
   resolveDriveConflict(resolutionId: string, choice: DriveConflictChoice): Promise<DriveResolution> { return call("resolve_drive_conflict", { resolutionId, choice }); }
   listDriveBackups(): Promise<readonly DriveFile[]> { return call("list_drive_backups"); }
   restoreDriveBackup(cloudRef: string): Promise<WorkbookImportReview> { return call("restore_drive_backup", { cloudRef }); }
+  restoreDriveBackups(cloudRefs: readonly string[]): Promise<RestoreSummary> { return call("restore_drive_backups", { cloudRefs }); }
   shareDriveProfile(sessionId: string, expectedRevision: number): Promise<DriveShare> { return call("share_drive_profile", { sessionId, expectedRevision }); }
   listDevices(): Promise<DevicePresenceSnapshot> { return call("list_devices"); }
   refreshDevices(): Promise<DevicePresenceSnapshot> { return call("refresh_devices"); }
@@ -175,5 +176,5 @@ export const TAURI_COMMANDS = [
   "unsubscribe_profile_links", "get_controller_options", "set_controller_bridge", "set_mac_gamepad",
   "subscribe_controller_bridge", "unsubscribe_controller_bridge",
   "import_sheets_link", "get_follow_state", "forget_follow_link", "check_latest_from_link",
-  "replace_with_latest",
+  "replace_with_latest", "restore_drive_backups",
 ] as const;

@@ -54,7 +54,8 @@ struct PendingConflict {
 struct PendingTable {
     next: u64,
     conflicts: BTreeMap<u64, PendingConflict>,
-    cloud_refs: BTreeMap<u64, String>,
+    /// Opaque ref to (Drive id, name as listed).
+    cloud_refs: BTreeMap<u64, (String, String)>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
@@ -72,6 +73,36 @@ pub struct DriveFileDto {
     pub cloud_ref: String,
     pub name: String,
     pub modified_time: String,
+    /// Already linked to a profile file that still exists here. Missing is
+    /// not deleted (an unmounted drive), so only an existing file counts.
+    pub already_linked: bool,
+}
+
+/// Why one pick of a bulk restore did not land (`RestoreSummary`).
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum RestoreReason {
+    AlreadyExists,
+    CouldNotReadTheSheet,
+    NotAValidProfile,
+    DownloadFailed,
+    CouldNotWriteTheFile,
+    CouldNotSaveTheLink,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct RestoreItemDto {
+    pub name: String,
+    pub reason: RestoreReason,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct RestoreSummaryDto {
+    pub imported: Vec<String>,
+    pub skipped: Vec<RestoreItemDto>,
+    pub failed: Vec<RestoreItemDto>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
@@ -252,17 +283,26 @@ impl DriveService {
             }
         }
 
+        let linked: BTreeSet<String> = self
+            .state()
+            .links
+            .iter()
+            .filter(|(key, _)| Path::new(key).exists())
+            .map(|(_, link)| link.spreadsheet_id.clone())
+            .collect();
         let mut pending = self.pending();
         pending.cloud_refs.clear();
         let mut result = Vec::with_capacity(found.len());
         for (id, name, modified_time) in found {
             pending.next = pending.next.saturating_add(1);
             let opaque = pending.next;
-            pending.cloud_refs.insert(opaque, id);
+            let already_linked = linked.contains(&id);
+            pending.cloud_refs.insert(opaque, (id, name.clone()));
             result.push(DriveFileDto {
                 cloud_ref: format!("cloud-{opaque}"),
                 name,
                 modified_time,
+                already_linked,
             });
         }
         Ok(result)
@@ -270,7 +310,7 @@ impl DriveService {
 
     pub fn restore_workbook(&self, cloud_ref: &str) -> Result<(String, Vec<u8>), QcmError> {
         let id = cloud_id(cloud_ref)?;
-        let drive_id = self
+        let (drive_id, _) = self
             .pending()
             .cloud_refs
             .get(&id)
@@ -281,6 +321,113 @@ impl DriveService {
             .unwrap_or_else(|_| "Drive backup.xlsx".to_owned());
         let bytes = self.download_workbook(&drive_id)?;
         Ok((xlsx_name(&name), bytes))
+    }
+
+    /// `DriveBackup.RestoreAsync`: import the picked sheets into `library`
+    /// and link each. A name already there is a skip, never an overwrite;
+    /// one pick failing never stops the batch; imported always means linked.
+    pub fn restore_into_library(
+        &self,
+        cloud_refs: &[String],
+        library: &Path,
+    ) -> Result<RestoreSummaryDto, QcmError> {
+        let mut picks = Vec::with_capacity(cloud_refs.len());
+        {
+            let pending = self.pending();
+            for raw in cloud_refs {
+                let id = cloud_id(raw)?;
+                picks.push(
+                    pending
+                        .cloud_refs
+                        .get(&id)
+                        .cloned()
+                        .ok_or_else(unknown_cloud_ref)?,
+                );
+            }
+        }
+        // A fresh machine has no library folder yet, and restore is exactly
+        // the moment that must still work.
+        fs::create_dir_all(library)
+            .map_err(|error| drive_internal("create profile library", error))?;
+        let mut on_disk: BTreeSet<String> = fs::read_dir(library)
+            .map(|entries| {
+                entries
+                    .filter_map(Result::ok)
+                    .map(|entry| entry.file_name().to_string_lossy().to_lowercase())
+                    .filter(|name| name.ends_with(".csv"))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let mut batch: BTreeSet<String> = BTreeSet::new();
+        let mut summary = RestoreSummaryDto::default();
+        for (drive_id, name) in picks {
+            let first = safe_csv_name(&name);
+            let mut report = first.trim_end_matches(".csv").to_owned();
+            let fail = |summary: &mut RestoreSummaryDto, name: &str, reason| {
+                summary.failed.push(RestoreItemDto {
+                    name: name.to_owned(),
+                    reason,
+                });
+            };
+            let Ok(bytes) = self.download_workbook(&drive_id) else {
+                fail(&mut summary, &report, RestoreReason::DownloadFailed);
+                continue;
+            };
+            let Ok(read) = qcm_config::import_xlsx(&bytes) else {
+                fail(&mut summary, &report, RestoreReason::CouldNotReadTheSheet);
+                continue;
+            };
+            if ProfileFile::load(&read.csv).document.sheets.is_empty() {
+                fail(&mut summary, &report, RestoreReason::NotAValidProfile);
+                continue;
+            }
+            let file_name = safe_csv_name_free(&name, &batch);
+            batch.insert(file_name.to_lowercase());
+            report = file_name.trim_end_matches(".csv").to_owned();
+            if on_disk.contains(&file_name.to_lowercase()) {
+                summary.skipped.push(RestoreItemDto {
+                    name: report,
+                    reason: RestoreReason::AlreadyExists,
+                });
+                continue;
+            }
+            // Metadata before the write, so a network failure lands before
+            // the disk has anything to undo.
+            let Ok(modified) = self.modified_time(&drive_id) else {
+                fail(&mut summary, &report, RestoreReason::DownloadFailed);
+                continue;
+            };
+            let dest = library.join(&file_name);
+            let temp = dest.with_extension("csv.qscm-tmp");
+            if fs::write(&temp, read.csv.as_bytes())
+                .and_then(|()| replace_file(&temp, &dest))
+                .is_err()
+            {
+                let _ = fs::remove_file(&temp);
+                fail(&mut summary, &report, RestoreReason::CouldNotWriteTheFile);
+                continue;
+            }
+            // The same key the profile library gives this file when opened.
+            let key = fs::canonicalize(&dest)
+                .unwrap_or_else(|_| dest.clone())
+                .to_string_lossy()
+                .into_owned();
+            let link = DriveLink {
+                spreadsheet_id: drive_id,
+                last_seen_modified_time: modified,
+                backup_dirty: false,
+                shared: false,
+            };
+            if self.set_link(&key, link).is_err() {
+                self.state().links.remove(&key);
+                let _ = fs::remove_file(&dest);
+                fail(&mut summary, &report, RestoreReason::CouldNotSaveTheLink);
+                continue;
+            }
+            on_disk.insert(file_name.to_lowercase());
+            summary.imported.push(report);
+        }
+        Ok(summary)
     }
 
     pub fn share(&self, profile_key: &str) -> Result<DriveShareDto, QcmError> {
@@ -704,6 +851,95 @@ fn xlsx_name(name: &str) -> String {
         }
     )
 }
+/// Avalonia `MainWindow.LibraryDir`: Documents/QuadStick Profiles. The
+/// rewrite has no library list of its own, so restore lands where the
+/// shipped app keeps profiles.
+#[must_use]
+pub fn library_dir() -> PathBuf {
+    #[cfg(target_os = "windows")]
+    let documents =
+        std::env::var_os("USERPROFILE").map(|home| PathBuf::from(home).join("Documents"));
+    #[cfg(not(target_os = "windows"))]
+    let documents = std::env::var_os("XDG_DOCUMENTS_DIR")
+        .filter(|_| cfg!(target_os = "linux"))
+        .map(PathBuf::from)
+        .or_else(|| std::env::var_os("HOME").map(|home| PathBuf::from(home).join("Documents")));
+    documents
+        .unwrap_or_else(std::env::temp_dir)
+        .join("QuadStick Profiles")
+}
+
+const MAX_BASE: usize = qcm_config::MAX_DEVICE_FILE_NAME_LENGTH - 4;
+
+fn bad_name_char(c: char) -> bool {
+    c.is_control() || matches!(c, '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|')
+}
+
+fn trim_dot_space(text: &str) -> &str {
+    text.trim_end_matches(['.', ' '])
+}
+
+/// `SafeFileName.ForCsv`: a sheet name as a CSV name safe on macOS and
+/// Windows and short enough for firmware 2373 (31 characters).
+#[must_use]
+pub fn safe_csv_name(name: &str) -> String {
+    let trimmed = name.trim();
+    if trimmed.is_empty() {
+        return "Untitled.csv".to_owned();
+    }
+    let trimmed = if trimmed.to_ascii_lowercase().ends_with(".csv") {
+        &trimmed[..trimmed.len() - 4]
+    } else {
+        trimmed
+    };
+    let cleaned: String = trimmed
+        .chars()
+        .map(|c| if bad_name_char(c) { '_' } else { c })
+        .collect();
+    let mut base = trim_dot_space(&cleaned).to_owned();
+    if base.is_empty() {
+        base = "Untitled".to_owned();
+    }
+    if qcm_config::is_reserved_windows_name(&base) {
+        base = match base.find('.') {
+            None => format!("{base}_file"),
+            Some(dot) => format!("{}_file{}", &base[..dot], &base[dot..]),
+        };
+    }
+    if base.chars().count() > MAX_BASE {
+        let cut: String = base.chars().take(MAX_BASE).collect();
+        base = trim_dot_space(&cut).to_owned();
+    }
+    if base.is_empty() {
+        base = "Untitled".to_owned();
+    }
+    format!("{base}.csv")
+}
+
+/// `SafeFileName.ForCsv(name, taken)`: never a name in `taken` (lower case).
+#[must_use]
+pub fn safe_csv_name_free(name: &str, taken: &BTreeSet<String>) -> String {
+    let first = safe_csv_name(name);
+    if !taken.contains(&first.to_lowercase()) {
+        return first;
+    }
+    let stem = &first[..first.len() - 4];
+    for n in 2u32.. {
+        let suffix = format!(" ({n})");
+        let room = MAX_BASE.saturating_sub(suffix.len());
+        let cut: String = stem.chars().take(room).collect();
+        let mut head = trim_dot_space(&cut).to_owned();
+        if head.is_empty() {
+            head = "Untitled".to_owned();
+        }
+        let candidate = format!("{head}{suffix}.csv");
+        if !taken.contains(&candidate.to_lowercase()) {
+            return candidate;
+        }
+    }
+    first
+}
+
 fn read_bounded(mut response: Response, limit: usize) -> std::io::Result<Vec<u8>> {
     let mut bytes = Vec::new();
     response
@@ -772,4 +1008,38 @@ fn drive_internal(what: &'static str, error: impl std::fmt::Display) -> QcmError
         what,
         detail: OsDetail::new(error.to_string()),
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{safe_csv_name, safe_csv_name_free};
+    use std::collections::BTreeSet;
+
+    // SafeFileNameTests: what a sheet name becomes on disk.
+    #[test]
+    fn sheet_names_become_safe_short_csv_names() {
+        assert_eq!(safe_csv_name("  "), "Untitled.csv");
+        assert_eq!(safe_csv_name("Mine.CSV"), "Mine.csv");
+        assert_eq!(safe_csv_name("a/b:c?"), "a_b_c_.csv");
+        assert_eq!(safe_csv_name("CON"), "CON_file.csv");
+        assert_eq!(safe_csv_name("con.old"), "con_file.old.csv");
+        assert_eq!(safe_csv_name("trailing. "), "trailing.csv");
+        let long = safe_csv_name("abcdefghijklmnopqrstuvwxyz0123456789");
+        assert_eq!(long.chars().count(), 31);
+    }
+
+    #[test]
+    fn a_name_taken_in_the_batch_gets_a_number_inside_the_limit() {
+        let mut taken = BTreeSet::new();
+        taken.insert("game.csv".to_owned());
+        assert_eq!(safe_csv_name_free("Game", &taken), "Game (2).csv");
+        taken.insert("game (2).csv".to_owned());
+        assert_eq!(safe_csv_name_free("game", &taken), "game (3).csv");
+        let long = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let mut taken = BTreeSet::new();
+        taken.insert(safe_csv_name(long).to_lowercase());
+        let next = safe_csv_name_free(long, &taken);
+        assert!(next.ends_with(" (2).csv"));
+        assert!(next.chars().count() <= 31);
+    }
 }

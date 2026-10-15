@@ -576,6 +576,11 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           ? {}
           : { onImportSheetsLink: (url: string) => void importSheetsLink(url) })}
         sheetsMessage={sheetsMessage}
+        onDriveReview={(review) => {
+          setWorkbookReview(review);
+          setReviewFromSheet(false);
+          setMessage("");
+        }}
         onOpenCommunity={() => setActiveDestination("community")}
         onManageDevice={() => setActiveDestination("device")}
         onOpenHelp={() => {

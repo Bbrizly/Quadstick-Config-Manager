@@ -11,7 +11,7 @@ import type {
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
-  DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,
+  DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare, RestoreSummary,
 } from "./driveContracts";
 import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
@@ -78,6 +78,8 @@ export interface QcmClient {
   resolveDriveConflict?(resolutionId: string, choice: DriveConflictChoice): Promise<DriveResolution>;
   listDriveBackups?(): Promise<readonly DriveFile[]>;
   restoreDriveBackup?(cloudRef: string): Promise<WorkbookImportReview>;
+  /** Copy the picked backups into the profile folder and link each. */
+  restoreDriveBackups?(cloudRefs: readonly string[]): Promise<RestoreSummary>;
   shareDriveProfile?(sessionId: string, expectedRevision: number): Promise<DriveShare>;
 
   listDevices(): Promise<DevicePresenceSnapshot>;

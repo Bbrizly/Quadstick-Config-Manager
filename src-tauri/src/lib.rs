@@ -118,6 +118,7 @@ pub fn registered_commands() -> &'static [&'static str] {
         "forget_follow_link",
         "check_latest_from_link",
         "replace_with_latest",
+        "restore_drive_backups",
     ]
 }
 
@@ -231,6 +232,7 @@ pub fn run() {
             drive_commands::resolve_drive_conflict,
             drive_commands::list_drive_backups,
             drive_commands::restore_drive_backup,
+            drive_commands::restore_drive_backups,
             drive_commands::share_drive_profile,
             commands::list_devices,
             commands::refresh_devices,
@@ -310,7 +312,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 78);
+        assert_eq!(commands.len(), 79);
         for expected in [
             "import_sheets_link",
             "check_latest_from_link",

@@ -1,6 +1,6 @@
 use crate::drive::{
     ConflictChoice, DriveBackupOutcomeDto, DriveFileDto, DriveResolution, DriveService,
-    DriveShareDto,
+    DriveShareDto, RestoreSummaryDto,
 };
 use crate::ipc::{SessionRevisionRequest, parse};
 use crate::shell::ShellState;
@@ -123,6 +123,42 @@ pub async fn restore_drive_backup(
     let review = redact(workbook.import_bytes(&restored.0, restored.1, ProfileSource::Drive))?;
     crate::telemetry::global().feature_used(crate::telemetry::AppFeature::DriveRestore);
     Ok(review)
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct CloudRefsRequest {
+    cloud_refs: Vec<String>,
+}
+
+/// Bulk restore into the profile library (`DriveBackup.RestoreAsync`).
+#[tauri::command]
+pub async fn restore_drive_backups(
+    drive: State<'_, Arc<DriveService>>,
+    request: Value,
+) -> Result<RestoreSummaryDto, Failure> {
+    let request: CloudRefsRequest = redact(parse(request, "restore_drive_backups request"))?;
+    if request.cloud_refs.len() > 500 {
+        return Err(Box::new(QcmErrorDto::from(&QcmError::Request(
+            RequestError::TooLarge {
+                what: "Drive restore picks",
+                limit: 500,
+                actual: request.cloud_refs.len(),
+            },
+        ))));
+    }
+    let service = Arc::clone(drive.inner());
+    let summary = tauri::async_runtime::spawn_blocking(move || {
+        service.restore_into_library(&request.cloud_refs, &crate::drive::library_dir())
+    })
+    .await
+    .map_err(join_error)
+    .and_then(redact)?;
+    // Opening the picker is not using restore; only an import is.
+    if !summary.imported.is_empty() {
+        crate::telemetry::global().feature_used(crate::telemetry::AppFeature::DriveRestore);
+    }
+    Ok(summary)
 }
 
 #[tauri::command]
