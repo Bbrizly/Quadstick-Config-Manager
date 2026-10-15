@@ -36,4 +36,28 @@ describe("qcm://profile links", () => {
     render(<App client={client} />);
     expect(await screen.findByText(/The community list could not be downloaded/u)).toBeInTheDocument();
   });
+
+  it("opens a link handed to the running app", async () => {
+    const client = new MockQcmClient();
+    const asked: string[] = [];
+    let push: ((id: string) => void) | null = null;
+    let disposed = 0;
+    Object.assign(client, {
+      takeLaunchProfileLink: () => Promise.resolve(null),
+      subscribeProfileLinks: (onLink: (id: string) => void) => {
+        push = onLink;
+        return Promise.resolve({ dispose: () => { disposed += 1; } });
+      },
+      openRegistryProfile: (id: string) => {
+        asked.push(id);
+        return client.newProfile("halo.csv");
+      },
+    });
+    const view = render(<App client={client} />);
+    await waitFor(() => expect(push).not.toBeNull());
+    push!("halo-pc");
+    await waitFor(() => expect(asked).toEqual(["halo-pc"]));
+    view.unmount();
+    expect(disposed).toBe(1);
+  });
 });

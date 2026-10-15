@@ -38,7 +38,7 @@ Evidence paths are target placeholders until implemented.
 | T-033 | console shell: opaque ports, mac tty/cu, confirm gate, strength steps, redaction | `src-tauri/src/console_shell.rs` unit tests | real port open/close | IMPLEMENTED |
 | T-034 | DeviceLink window (DeviceLinkWindowTests ported) | `src/features/device/DeviceLinkDialog.test.tsx` | sip/puff test with a person on a stick | IMPLEMENTED |
 | T-036 | usage notice, install id, cancel reasons, panic chain | `src/features/diagnostics/UsageNotice.test.tsx` + `telemetry.rs` tests | first launch on each OS; a real panic report sent | IMPLEMENTED |
-| T-035 | registry index/snapshot/link | `src-tauri/src/registry.rs` tests + `src/app/RegistryLink.test.tsx` | click a website link on each OS | IMPLEMENTED |
+| T-035 | registry index/snapshot/link + running-app handoff | `src-tauri/src/registry.rs` tests + `src/app/RegistryLink.test.tsx` | click a website link on each OS | IMPLEMENTED |
 | T-030 | settings revision/closed value sets | `qcm-core/tests/settings.rs` + `src-tauri/tests/local_library.rs` | settings screen with a real file | IMPLEMENTED |
 
 Critical behavior cannot move to PARITY-TESTED without at least one T row; storage/HID required parity also needs hardware evidence.

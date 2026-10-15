@@ -55,7 +55,7 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `RegistryDeepLink.cs` | `qcm://profile/<id>` parsing, argv launch | src-tauri/registry.rs | REWRITE | `registry.rs::links_match_the_canonical_shape_only` | 6 | PORTED |
 | `MainWindow.ShowTelemetryNoticeAsync`, `SettingsView.PrivacyArea` install id | first-run notice, install id copy | UsageNotice.tsx + SettingsPage.tsx | REWRITE | `UsageNotice.test.tsx` | 6 | PORTED |
 | `CrashReport.Build`/`FromJson` (panic) | crash payload with a chain | telemetry.rs `panic_report`/`exception_properties` | REWRITE | `telemetry.rs` tests | 6 | PORTED |
-| `ProtocolRegistration.cs`, macOS URL activation | register/deliver `qcm://` | needs `tauri-plugin-deep-link` (+ single-instance for a running app) | BLOCKED | — | 6 | ASSESSED: plugin not a dependency |
+| `ProtocolRegistration.cs`, macOS URL activation | register/deliver `qcm://`, running-app handoff | tauri-plugin-deep-link + single-instance, `registry.rs` `LinkInbox` | REWRITE | `registry.rs` inbox tests, `RegistryLink.test.tsx` | 6 | PORTED |
 | `Telemetry.cs`, `TelemetryToken.cs` | analytics/feedback/crash send | src-tauri/telemetry.rs + diagnostics commands | REWRITE | `telemetry.rs` unit tests with a recording sink | 6 | PORTED: closed events, per-event allowlist, consent v2, kill switch, build-time token, off-thread batched PostHog `/batch/` send, durable install id; first-run notice dialog not yet ported |
 | `UpdateCheck.cs` | updater | browser check + open URL | REWRITE | GitHub latest | 6 | SOFT: check_for_update + open_external_url; install_update PARKED |
 | `AgentBridge.cs` | agent integration | core typed EditorOp | REWRITE | corpus/eval | 6 | SOFT: EditorOp contract; UI off |

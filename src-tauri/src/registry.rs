@@ -7,11 +7,11 @@
 //! for an outage. A link only ever opens a profile in the editor; it can never
 //! write to a QuadStick.
 //!
-//! Registration: Store packages declare the `qcm` scheme in
-//! `Package.appxmanifest`, and an unpackaged Windows launch passes the link in
-//! argv, which [`launch_profile_id`] reads. The per-user registry write in
-//! `ProtocolRegistration.cs` and macOS `CFBundleURLTypes`/Apple-event delivery
-//! need `tauri-plugin-deep-link`, which is not a dependency yet.
+//! Registration and delivery: `tauri-plugin-deep-link` declares `qcm` in the
+//! bundle (macOS `CFBundleURLTypes`, the Windows installer) and registers it
+//! per user at runtime on Windows and Linux, like `ProtocolRegistration.cs`.
+//! A cold start's argv, a macOS Apple event and a second launch (forwarded by
+//! `tauri-plugin-single-instance`) all go through one [`LinkInbox`].
 
 use qcm_config::ProfileFile;
 use qcm_core::error::{InternalError, OsDetail, QcmError, RequestError};
@@ -96,20 +96,84 @@ pub fn profile_id_from_args<I: IntoIterator<Item = S>, S: AsRef<str>>(args: I) -
         .find_map(|arg| profile_id_from_link(arg.as_ref()))
 }
 
-static LAUNCH_LINK: OnceLock<Mutex<Option<String>>> = OnceLock::new();
+/// Sends one profile id to the window; false when the channel is gone.
+pub type LinkListener = Box<dyn Fn(&str) -> bool + Send>;
+
+/// Where a link waits for the window. One listener (the main window); a link
+/// that arrives with nobody listening waits, and the newest one wins, so a
+/// cold start, a macOS Apple event and a second launch all land the same way.
+#[derive(Default)]
+pub struct LinkInbox {
+    pending: Option<String>,
+    listener: Option<LinkListener>,
+    /// Which subscription the listener belongs to, so a late unsubscribe
+    /// from a window that remounted cannot remove its replacement.
+    generation: u64,
+}
+
+impl LinkInbox {
+    /// Hand a profile id to the window, or keep it until one listens.
+    pub fn deliver(&mut self, id: String) {
+        if let Some(listener) = &self.listener
+            && listener(&id)
+        {
+            return;
+        }
+        self.pending = Some(id);
+    }
+
+    /// A new listener replaces the old and gets anything waiting at once.
+    pub fn subscribe(&mut self, listener: LinkListener) -> u64 {
+        if let Some(id) = self.pending.take()
+            && !listener(&id)
+        {
+            self.pending = Some(id);
+        }
+        self.listener = Some(listener);
+        self.generation += 1;
+        self.generation
+    }
+
+    pub fn unsubscribe(&mut self, generation: u64) {
+        if generation == self.generation {
+            self.listener = None;
+        }
+    }
+
+    pub fn take(&mut self) -> Option<String> {
+        self.pending.take()
+    }
+}
+
+static INBOX: OnceLock<Mutex<LinkInbox>> = OnceLock::new();
+
+fn inbox() -> std::sync::MutexGuard<'static, LinkInbox> {
+    INBOX
+        .get_or_init(Mutex::default)
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+}
 
 /// Remember the link this process was launched with. Called once at startup.
 pub fn remember_launch_args() {
-    let id = profile_id_from_args(std::env::args().skip(1));
-    let _ = LAUNCH_LINK.set(Mutex::new(id));
+    if let Some(id) = profile_id_from_args(std::env::args().skip(1)) {
+        inbox().deliver(id);
+    }
 }
 
-/// The launch link's profile id, handed out once.
+/// Links from the OS while running: macOS Apple events, or the argv a second
+/// launch forwarded through the single-instance plugin. Anything that is not a
+/// canonical profile link is ignored.
+pub fn deliver_links<I: IntoIterator<Item = S>, S: AsRef<str>>(links: I) {
+    if let Some(id) = profile_id_from_args(links) {
+        inbox().deliver(id);
+    }
+}
+
+/// The waiting link's profile id, handed out once.
 #[must_use]
 pub fn launch_profile_id() -> Option<String> {
-    LAUNCH_LINK
-        .get()
-        .and_then(|slot| slot.lock().ok().and_then(|mut id| id.take()))
+    inbox().take()
 }
 
 fn invalid(what: &'static str) -> String {
@@ -464,6 +528,28 @@ pub fn take_launch_profile_link() -> Option<String> {
     launch_profile_id()
 }
 
+/// Push links that arrive while the app runs. Anything already waiting is
+/// sent at once. Nothing polls: a link is sent only when the OS hands one over.
+#[tauri::command]
+pub fn subscribe_profile_links(
+    on_link: tauri::ipc::Channel<String>,
+) -> crate::streaming::SubscriptionDto {
+    let generation = inbox().subscribe(Box::new(move |id| on_link.send(id.to_owned()).is_ok()));
+    crate::streaming::SubscriptionDto {
+        subscription_id: format!("links-{generation}"),
+    }
+}
+
+#[tauri::command]
+pub fn unsubscribe_profile_links(subscription_id: String) {
+    if let Some(generation) = subscription_id
+        .strip_prefix("links-")
+        .and_then(|n| n.parse().ok())
+    {
+        inbox().unsubscribe(generation);
+    }
+}
+
 /// Open a registry profile in the editor, unsaved, so Save asks where.
 #[tauri::command]
 pub async fn open_registry_profile(
@@ -501,6 +587,63 @@ pub async fn open_registry_profile(
 mod tests {
     use super::*;
     use std::collections::HashMap;
+    use std::sync::Arc;
+
+    #[test]
+    fn a_link_waits_for_the_window_and_is_handed_out_once() {
+        let mut inbox = LinkInbox::default();
+        inbox.deliver("a-1".into());
+        inbox.deliver("b-2".into());
+        assert_eq!(inbox.take().as_deref(), Some("b-2"));
+        assert_eq!(inbox.take(), None);
+    }
+
+    #[test]
+    fn a_running_window_gets_links_and_a_late_one_gets_what_waited() {
+        let seen = Arc::new(Mutex::new(Vec::<String>::new()));
+        let mut inbox = LinkInbox::default();
+        inbox.deliver("early".into());
+        let sink = Arc::clone(&seen);
+        inbox.subscribe(Box::new(move |id| {
+            sink.lock().unwrap().push(id.to_owned());
+            true
+        }));
+        inbox.deliver("second-launch".into());
+        assert_eq!(*seen.lock().unwrap(), ["early", "second-launch"]);
+        assert_eq!(inbox.take(), None);
+    }
+
+    #[test]
+    fn a_closed_channel_keeps_the_link_for_the_next_window() {
+        let mut inbox = LinkInbox::default();
+        let first = inbox.subscribe(Box::new(|_| false));
+        inbox.deliver("kept".into());
+        assert_eq!(inbox.take().as_deref(), Some("kept"));
+        // A remount: the old window's late unsubscribe leaves the new one.
+        let second = inbox.subscribe(Box::new(|_| true));
+        inbox.unsubscribe(first);
+        inbox.deliver("to-second".into());
+        assert_eq!(inbox.take(), None);
+        inbox.unsubscribe(second);
+        inbox.deliver("after".into());
+        assert_eq!(inbox.take().as_deref(), Some("after"));
+    }
+
+    #[test]
+    fn forwarded_argv_only_yields_canonical_links() {
+        assert_eq!(
+            profile_id_from_args([
+                "/Applications/QCM.app",
+                "--flag",
+                "qcm://profile/minecraft-pc"
+            ]),
+            Some("minecraft-pc".into())
+        );
+        assert_eq!(
+            profile_id_from_args(["qcm://profile/../x", "https://qcm/profile/a"]),
+            None
+        );
+    }
 
     const SHA: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 

@@ -26,6 +26,8 @@ Current pinned foundation:
 | `rfd` | native profile/device folder picker | called from Rust command; no WebView path API |
 | `hidapi = 2.6.6` | enumerate/open HID, read report descriptor and blocking reports | `src-tauri/src/adapters/hid.rs` only; HID path/handle stays native |
 | `serialport = 4.10.1` (no default features) | Bluetooth SPP / 3.3V cable console, 115200 baud | `src-tauri/src/console_shell.rs` only; opened by Connect, dropped on close; no libudev, so Linux needs no system library |
+| `tauri-plugin-deep-link = 2.4.10` | register `qcm://`, macOS Apple-event delivery (`ProtocolRegistration.cs`, `App.axaml.cs` activation) | `src-tauri/src/lib.rs` setup + `registry.rs` inbox; no window permission granted. Last release on tauri 2.11 (2.5+ needs 2.12). MIT/Apache-2.0 |
+| `tauri-plugin-single-instance = 2.4.5` (`deep-link`) | a second launch hands its link to the running app and exits | `lib.rs`; Linux pulls `zbus` (pure Rust D-Bus, no system lib). Last release on tauri 2.11. MIT/Apache-2.0 |
 | `chrono = 0.4.45` (`clock` only) | local wall-clock stamp for `write_file,2` | `src-tauri/src/console_shell.rs`; already in the lock through Tauri |
 | Vitest / RTL | frontend contract tests | dev-only |
 | `proptest` / cargo-fuzz | config assurance | test/fuzz only |

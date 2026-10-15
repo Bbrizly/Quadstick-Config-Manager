@@ -4,6 +4,7 @@
 //! at native adapters. The WebView receives bounded DTOs and opaque refs only.
 
 use std::sync::Arc;
+use tauri::Manager;
 
 pub mod adapters;
 pub mod commands;
@@ -101,6 +102,8 @@ pub fn registered_commands() -> &'static [&'static str] {
         "open_registry_profile",
         "record_install_cancelled",
         "open_privacy_policy",
+        "subscribe_profile_links",
+        "unsubscribe_profile_links",
     ]
 }
 
@@ -143,6 +146,27 @@ pub fn run() {
     // token.
     profiles.apply_telemetry_consent();
     tauri::Builder::default()
+        // First, so a second launch exits before building anything. With the
+        // deep-link feature it forwards the link to `on_open_url` below; this
+        // callback only brings the running window forward.
+        .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.unminimize();
+                let _ = window.set_focus();
+            }
+        }))
+        .plugin(tauri_plugin_deep_link::init())
+        .setup(|app| {
+            use tauri_plugin_deep_link::DeepLinkExt;
+            // `ProtocolRegistration.cs`: a per-user registration at runtime on
+            // Windows and Linux. macOS takes it from the bundle. Best effort.
+            #[cfg(any(windows, target_os = "linux"))]
+            let _ = app.deep_link().register_all();
+            app.deep_link().on_open_url(|event| {
+                registry::deliver_links(event.urls().iter().map(tauri::Url::as_str));
+            });
+            Ok(())
+        })
         .plugin(navigation_guard())
         .manage(profiles)
         .manage(workbook_shell::native_workbook_shell())
@@ -223,6 +247,8 @@ pub fn run() {
             registry::open_registry_profile,
             commands::record_install_cancelled,
             updates::open_privacy_policy,
+            registry::subscribe_profile_links,
+            registry::unsubscribe_profile_links,
         ])
         .build(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window")
@@ -249,7 +275,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 66);
+        assert_eq!(commands.len(), 68);
         for expected in [
             "import_community_profile",
             "open_community_sheet",

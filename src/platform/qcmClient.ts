@@ -50,6 +50,8 @@ export interface QcmClient {
 
   /** The `qcm://profile/<id>` id this launch was given, once; null when none. */
   takeLaunchProfileLink?(): Promise<string | null>;
+  /** Links the OS hands the running app (macOS, or a second launch). Pending ones arrive at once. */
+  subscribeProfileLinks?(onLink: (profileId: string) => void): Promise<Subscription>;
   /** Open an Adaptive Profiles registry profile in the editor, unsaved. */
   openRegistryProfile?(profileId: string): Promise<EditorSnapshot>;
   loadCommunityCatalog?(refresh: boolean): Promise<CommunityCatalog>;

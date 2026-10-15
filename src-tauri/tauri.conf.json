@@ -33,6 +33,13 @@
       }
     }
   },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["qcm"]
+      }
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",

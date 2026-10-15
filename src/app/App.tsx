@@ -209,26 +209,48 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
 
   // A website's "Open in QCM" link: resolve the registry id, fetch the
   // reviewed snapshot and open it in the editor. It never writes a device.
+  // A link can arrive at launch or, through the OS or a second launch, while
+  // the app runs. Like `App.axaml.cs`, a running app opens it straight away.
   useEffect(() => {
     const take = client.takeLaunchProfileLink;
     const open = client.openRegistryProfile;
-    if (take === undefined || open === undefined) return undefined;
+    if (open === undefined) return undefined;
     let cancelled = false;
-    void take.call(client).then(
-      async (profileId) => {
-        if (cancelled || profileId === null) return;
-        setMessage(t("Community_LoadingTheCommunityList2"));
-        try {
-          const opened = await open.call(client, profileId);
-          if (!cancelled) showEditor(opened);
-        } catch {
-          if (!cancelled) setMessage(t("Community_TheCommunityListCouldNot"));
-        }
-      },
-      () => undefined,
-    );
+    const openLink = async (profileId: string): Promise<void> => {
+      setMessage(t("Community_LoadingTheCommunityList2"));
+      try {
+        const opened = await open.call(client, profileId);
+        if (!cancelled) showEditor(opened);
+      } catch {
+        if (!cancelled) setMessage(t("Community_TheCommunityListCouldNot"));
+      }
+    };
+    if (take !== undefined) {
+      void take.call(client).then(
+        (profileId) => {
+          if (!cancelled && profileId !== null) void openLink(profileId);
+        },
+        () => undefined,
+      );
+    }
+    let subscription: { dispose(): void } | null = null;
+    const subscribe = client.subscribeProfileLinks;
+    if (subscribe !== undefined) {
+      void subscribe
+        .call(client, (profileId) => {
+          if (!cancelled) void openLink(profileId);
+        })
+        .then(
+          (next) => {
+            if (cancelled) next.dispose();
+            else subscription = next;
+          },
+          () => undefined,
+        );
+    }
     return () => {
       cancelled = true;
+      subscription?.dispose();
     };
   }, [client, showEditor, t]);
 

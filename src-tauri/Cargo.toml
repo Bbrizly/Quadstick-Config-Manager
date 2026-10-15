@@ -43,6 +43,11 @@ serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.151"
 sha2 = "=0.11.0"
 tauri = { version = "=2.11.5", features = [] }
+# `qcm://profile/<id>` links: registration, macOS Apple-event delivery, and
+# handing a second launch's link to the running app. The last releases that
+# accept tauri 2.11 (2.5+/2.6+ need 2.12). No window permission is granted.
+tauri-plugin-deep-link = "=2.4.10"
+tauri-plugin-single-instance = { version = "=2.4.5", features = ["deep-link"] }
 
 [dev-dependencies]
 qcm-testkit = { path = "../crates/qcm-testkit" }

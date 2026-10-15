@@ -74,6 +74,7 @@ than as a framework string the UI cannot switch on.
 | take_launch_profile_link | command | low | argv `qcm://profile/<id>` validated natively, handed out once | REGISTERED |
 | record_install_cancelled | command | low | one of four `cancelled_*` reasons, else out of range; telemetry only | REGISTERED |
 | open_privacy_policy | command | low | opens the one fixed policy URL; no URL from the window | REGISTERED |
+| subscribe_profile_links / unsubscribe_profile_links | channel | low | one window listener, generation-checked unsubscribe; sends validated profile ids only | REGISTERED |
 | open_registry_profile | command | network/read | id shape; registry index schema/size/dupes; snapshot SHA-256; opens unsaved, never writes a device | REGISTERED |
 | console_record_strength | command | analytics | puff/sip in 4..=95; `strength_measured` through the consent-gated sender | REGISTERED |
 | install_update | command | process/restart | safe app state + signature | PARKED |
