@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "build": {
-    "beforeBuildCommand": "pnpm build:web && sh scripts/stage-qs-bridge.sh"
+    "beforeBuildCommand": "pnpm build:web && pnpm stage:bridge"
   },
   "bundle": {
     "externalBin": ["binaries/qs-bridge"],

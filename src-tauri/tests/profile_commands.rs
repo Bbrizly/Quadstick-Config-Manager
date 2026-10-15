@@ -669,8 +669,14 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 73);
+    assert_eq!(registered.len(), 79);
     for name in [
+        "import_sheets_link",
+        "get_follow_state",
+        "forget_follow_link",
+        "check_latest_from_link",
+        "replace_with_latest",
+        "restore_drive_backups",
         "get_app_snapshot",
         "get_settings",
         "update_settings",

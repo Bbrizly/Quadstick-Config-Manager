@@ -6,9 +6,18 @@
 # Linux only: run by tauri.linux.conf.json's beforeBuildCommand.
 set -eu
 root=$(cd "$(dirname "$0")/.." && pwd)
-triple=$(rustc -vV | sed -n 's/^host: //p')
+# Tauri names the sidecar by the target it builds for; the host when unset.
+host=$(rustc -vV | sed -n 's/^host: //p')
+triple=${TAURI_ENV_TARGET_TRIPLE:-$host}
 target_dir=${CARGO_TARGET_DIR:-$root/target}
-cargo build --release --locked -p qs-bridge --config profile.release.strip=true \
-  --manifest-path "$root/Cargo.toml"
+if [ "$triple" = "$host" ]; then
+  out="$target_dir/release/qs-bridge"
+  cargo build --release --locked -p qs-bridge --config profile.release.strip=true \
+    --manifest-path "$root/Cargo.toml"
+else
+  out="$target_dir/$triple/release/qs-bridge"
+  cargo build --release --locked -p qs-bridge --config profile.release.strip=true \
+    --manifest-path "$root/Cargo.toml" --target "$triple"
+fi
 mkdir -p "$root/src-tauri/binaries"
-install -m755 "$target_dir/release/qs-bridge" "$root/src-tauri/binaries/qs-bridge-$triple"
+install -m755 "$out" "$root/src-tauri/binaries/qs-bridge-$triple"

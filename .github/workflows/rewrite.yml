@@ -130,7 +130,9 @@ jobs:
         shell: bash
         run: |
           deb=$(ls target/release/bundle/deb/*.deb | head -1)
+          # find_binary looks beside the app executable: both in /usr/bin.
           dpkg -c "$deb" | grep -q '/usr/bin/qs-bridge$'
+          dpkg -c "$deb" | grep '/usr/bin/.' | grep -vq '/usr/bin/qs-bridge$'
           dpkg -c "$deb" | grep -q '/usr/lib/udev/rules.d/70-quadstick.rules$'
 
   fuzz-smoke:
