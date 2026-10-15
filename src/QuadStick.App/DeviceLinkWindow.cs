@@ -55,6 +55,16 @@ public class DeviceLinkWindow : Window
     /// <summary>The last strength measured, puff then sip, for the test.</summary>
     internal (int Puff, int Sip)? LastStrength { get; private set; }
 
+    /// <summary>Raised when a strength test finishes, with puff then sip in
+    /// percent of the sensor's range. Below <see cref="StrengthSweep.Lowest"/>
+    /// means under the bottom of the sweep, not zero. Null in the free app,
+    /// which shows the result and keeps nothing: a host that knows whose
+    /// QuadStick this is can ask and keep it against them.</summary>
+    /// <remarks>Static because the window is opened from deep inside the
+    /// editor, where a host has no reference to it. Called on the UI thread,
+    /// after the QuadStick has been put back.</remarks>
+    public static Action<int, int>? StrengthMeasured { get; set; }
+
     public DeviceLinkWindow(MainWindow owner)
     {
         Classes.Add("dialog");
@@ -296,6 +306,9 @@ public class DeviceLinkWindow : Window
             Telemetry.StrengthMeasured(puff, sip);
             _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Link_Result,
                 Percent(puff), Percent(sip), Percent(threshold));
+            // Last, so the person has already been shown the result whatever
+            // the host does with it.
+            StrengthMeasured?.Invoke(puff, sip);
         }
         else if (_stopAsked) _status.Text = Strings.Link_Cancelled;
     }

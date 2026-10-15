@@ -84,6 +84,57 @@ public class DeviceLinkWindowTests
         finally { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
     }
 
+    // A host keeps the result against whoever it belongs to. The free app has
+    // nobody to keep it against and keeps nothing.
+    [AvaloniaFact]
+    public async Task A_finished_test_tells_the_host_puff_then_sip()
+    {
+        var (w, _, dir) = Open(puff: 0, sip: 37);
+        var heard = new List<(int, int)>();
+        DeviceLinkWindow.StrengthMeasured = (p, s) => heard.Add((p, s));
+        try
+        {
+            await w.MeasureNowAsync();
+            Assert.Equal((StrengthSweep.Lowest - 1, 37), Assert.Single(heard));
+        }
+        finally
+        {
+            DeviceLinkWindow.StrengthMeasured = null;
+            if (Directory.Exists(dir)) Directory.Delete(dir, true);
+        }
+    }
+
+    [AvaloniaFact]
+    public void The_free_app_sets_no_host_of_its_own()
+    {
+        _ = new MainWindow();
+        Assert.Null(DeviceLinkWindow.StrengthMeasured);
+    }
+
+    [AvaloniaFact]
+    public async Task A_stopped_test_tells_the_host_nothing()
+    {
+        var (w, _, dir) = Open();
+        var heard = 0;
+        DeviceLinkWindow.StrengthMeasured = (_, _) => heard++;
+        try
+        {
+            var run = w.MeasureNowAsync();
+            var give = DateTime.UtcNow.AddSeconds(10);
+            while ((w.PromptText.Length == 0 || w.PromptText.StartsWith("Hands", StringComparison.Ordinal))
+                   && DateTime.UtcNow < give)
+                await Task.Delay(5);
+            w.StopForTest();
+            await run;
+            Assert.Equal(0, heard);
+        }
+        finally
+        {
+            DeviceLinkWindow.StrengthMeasured = null;
+            if (Directory.Exists(dir)) Directory.Delete(dir, true);
+        }
+    }
+
     [AvaloniaFact]
     public async Task Stop_still_restarts_the_QuadStick()
     {
