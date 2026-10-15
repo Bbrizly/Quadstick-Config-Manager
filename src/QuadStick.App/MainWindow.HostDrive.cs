@@ -12,7 +12,9 @@ public sealed record HostShareResult(string? Url, string Message);
 public partial class MainWindow
 {
     /// <summary>Put one saved profile in a Google Sheet, turn on "anyone with
-    /// the link can view", and hand back the link. Asks the user to sign in
+    /// the link can view", and hand back the link. The host asks first: this
+    /// uploads without another question, because the free app's own question
+    /// comes after the upload and a no to it would not take the upload back. Asks the user to sign in
     /// when no Google account is connected yet. After this, every save of that
     /// file pushes to the same sheet, and a sheet edited online is asked about
     /// on the next save, exactly as in the free app.</summary>
@@ -43,7 +45,7 @@ public partial class MainWindow
             try { await inFlight; } catch { /* RunBackup already reported it */ }
 
         ShareLinkResult result;
-        try { result = await backup.GetShareLinkAsync(path, csv); }
+        try { result = await backup.GetShareLinkAsync(path, csv, askedAlready: true); }
         catch (Exception ex)
         {
             return new HostShareResult(null, string.Format(CultureInfo.CurrentCulture,

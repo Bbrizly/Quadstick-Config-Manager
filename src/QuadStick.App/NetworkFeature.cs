@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+
 namespace QuadStick.App;
 
 /// <summary>Whether this run of the app may use the network at all.</summary>
@@ -35,22 +37,53 @@ public static class NetworkFeature
 /// is not HTTPS to a Google API host, so the Drive engine cannot be pointed
 /// anywhere else by a bad URL, and a host that allows Drive alone can say so
 /// and have it be checked rather than promised.</summary>
+/// <remarks>Redirects are followed here, not by the handler underneath, so
+/// every hop is checked against the same list. Only GET is ever followed: a
+/// write that answers with a redirect is handed back as it is.</remarks>
 public sealed class GoogleOnlyHandler : DelegatingHandler
 {
-    public static readonly IReadOnlySet<string> Hosts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    static readonly FrozenSet<string> Allowed = new[]
     {
         "www.googleapis.com",     // Drive: create, list, share, download
         "sheets.googleapis.com",  // Sheets: write the tabs
         "oauth2.googleapis.com",  // sign-in: the token exchange and refresh
-    };
+    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
+    const int MaxRedirects = 3;
+
+    /// <summary>The hosts, as a copy: changing it changes nothing.</summary>
+    public static IReadOnlyList<string> Hosts => Allowed.ToArray();
+
+    /// <summary>The handler Drive and sign-in use: this, over a platform
+    /// handler that never follows a redirect by itself.</summary>
+    public static GoogleOnlyHandler Create() =>
+        new(new HttpClientHandler { AllowAutoRedirect = false });
 
     public GoogleOnlyHandler(HttpMessageHandler inner) : base(inner) { }
 
     public static bool Allows(Uri? uri) =>
-        uri is not null && uri.Scheme == Uri.UriSchemeHttps && Hosts.Contains(uri.Host);
+        uri is not null && uri.IsAbsoluteUri && uri.Scheme == Uri.UriSchemeHttps && Allowed.Contains(uri.Host);
 
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) =>
-        Allows(request.RequestUri)
-            ? base.SendAsync(request, ct)
-            : throw new HttpRequestException("Only Google Drive and Sheets may be reached here.");
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+    {
+        if (!Allows(request.RequestUri)) Refuse();
+        var response = await base.SendAsync(request, ct);
+        for (int hop = 0; hop < MaxRedirects; hop++)
+        {
+            var code = (int)response.StatusCode;
+            if (code < 300 || code > 399 || request.Method != HttpMethod.Get
+                || response.Headers.Location is not Uri location) return response;
+            var next = location.IsAbsoluteUri ? location : new Uri(request.RequestUri!, location);
+            response.Dispose();
+            if (!Allows(next)) Refuse();
+            var again = new HttpRequestMessage(HttpMethod.Get, next);
+            foreach (var h in request.Headers) again.Headers.TryAddWithoutValidation(h.Key, h.Value);
+            request = again;
+            response = await base.SendAsync(request, ct);
+        }
+        return response;
+    }
+
+    // Read by whoever is debugging, never shown as it is.
+    static void Refuse() => throw new HttpRequestException("Only Google Drive and Sheets may be reached here.");
 }

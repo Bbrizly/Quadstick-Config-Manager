@@ -93,13 +93,15 @@ public partial class MainWindow : Window
     DriveBackup? _driveBackup;
     DriveBackup? Backup()
     {
-        if (_driveBackup != null) return _driveBackup;
+        // Asked before the cached engine, so a host turning Drive off again
+        // stops the engine it had already built.
         if (!NetworkFeature.DriveAllowed) return null;
+        if (_driveBackup != null) return _driveBackup;
         if (!_settings.DriveBackup || !GoogleAuth.IsConfigured) return null;
         var store = TokenStore.Create();
         if (store.Load() is null) return null;
-        var auth = new GoogleAuth(store, new GoogleOnlyHandler(new HttpClientHandler()));
-        var client = new DriveClient(new GoogleOnlyHandler(new HttpClientHandler()), auth.GetAccessTokenAsync);
+        var auth = new GoogleAuth(store, GoogleOnlyHandler.Create());
+        var client = new DriveClient(GoogleOnlyHandler.Create(), auth.GetAccessTokenAsync);
         // Buttons are fixed Yes/Cancel, so the choice lives in the body text
         // (Yes = replace with mine / recreate). The engine runs off the UI
         // thread and dialogs build only on it, so prompts marshal through it.
@@ -241,7 +243,7 @@ public partial class MainWindow : Window
         if (!NetworkFeature.DriveAllowed || !GoogleAuth.IsConfigured) return false;
         try
         {
-            var auth = new GoogleAuth(TokenStore.Create(), new GoogleOnlyHandler(new HttpClientHandler()));
+            var auth = new GoogleAuth(TokenStore.Create(), GoogleOnlyHandler.Create());
             await auth.SignInAsync(uri => Launcher.LaunchUriAsync(uri), ct);
             _settings.DriveBackup = true;
             PersistSettings();

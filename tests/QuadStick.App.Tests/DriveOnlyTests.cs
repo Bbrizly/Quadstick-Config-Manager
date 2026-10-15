@@ -67,6 +67,49 @@ public class DriveOnlyTests
         }
     }
 
+    // A Google host answering with a redirect does not get to send the next
+    // request somewhere else: each hop is checked against the same list.
+    [Fact]
+    public async Task A_redirect_off_google_is_refused()
+    {
+        var inner = new Bouncer(new Uri("https://evil.example/steal"));
+        using var http = new HttpClient(new GoogleOnlyHandler(inner));
+        await Assert.ThrowsAsync<HttpRequestException>(() => http.GetAsync("https://www.googleapis.com/drive/v3/files"));
+        Assert.Single(inner.Hosts);   // only the Google one went out
+    }
+
+    [Fact]
+    public async Task A_redirect_within_google_is_followed()
+    {
+        var inner = new Bouncer(new Uri("https://www.googleapis.com/drive/v3/files/x"));
+        using var http = new HttpClient(new GoogleOnlyHandler(inner));
+        using var r = await http.GetAsync("https://www.googleapis.com/drive/v3/files");
+        Assert.Equal(HttpStatusCode.OK, r.StatusCode);
+        Assert.Equal(2, inner.Hosts.Count);
+    }
+
+    [Fact]
+    public void The_host_list_cannot_be_changed_from_outside()
+    {
+        Assert.False(GoogleOnlyHandler.Hosts is ICollection<string> { IsReadOnly: false });
+        Assert.False(GoogleOnlyHandler.Allows(new Uri("https://example.com/")));
+    }
+
+    sealed class Bouncer : HttpMessageHandler
+    {
+        readonly Uri _to;
+        public readonly List<string> Hosts = new();
+        public Bouncer(Uri to) => _to = to;
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            Hosts.Add(request.RequestUri!.Host);
+            if (Hosts.Count > 1) return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            var r = new HttpResponseMessage(HttpStatusCode.Found);
+            r.Headers.Location = _to;
+            return Task.FromResult(r);
+        }
+    }
+
     [Fact]
     public void Drive_alone_is_not_the_network()
     {

@@ -329,10 +329,15 @@ public sealed class DriveBackup
     // URL plus a message, or a Cancelled/Failed result. Step 1 (the local save)
     // is the caller's job, since the state map is keyed by path: no path, no
     // sheet.
-    public Task<ShareLinkResult> GetShareLinkAsync(string profilePath, string csvText, CancellationToken ct = default) =>
-        Locked(() => GetShareLinkCoreAsync(profilePath, csvText, ct), ct);
+    // askedAlready is for a host that asked its own question, naming what goes
+    // and who can see it, before anything was uploaded. The prompt here comes
+    // after the first push, so a no to it would leave the profile in Drive
+    // anyway; a host must not be asked twice in the wrong order.
+    public Task<ShareLinkResult> GetShareLinkAsync(string profilePath, string csvText,
+        bool askedAlready = false, CancellationToken ct = default) =>
+        Locked(() => GetShareLinkCoreAsync(profilePath, csvText, askedAlready, ct), ct);
 
-    async Task<ShareLinkResult> GetShareLinkCoreAsync(string profilePath, string csvText, CancellationToken ct)
+    async Task<ShareLinkResult> GetShareLinkCoreAsync(string profilePath, string csvText, bool askedAlready, CancellationToken ct)
     {
         var settings = _getSettings();
         settings.DriveLinks.TryGetValue(profilePath, out var link);
@@ -375,7 +380,7 @@ public sealed class DriveBackup
         // already shared sheet skips this and is a pure clipboard write below.
         if (!link.LinkShared)
         {
-            if (!await _shareConfirm())
+            if (!askedAlready && !await _shareConfirm())
                 return new ShareLinkResult(ShareLinkKind.Cancelled, null, "", keptOnlineCsv);
             try
             {

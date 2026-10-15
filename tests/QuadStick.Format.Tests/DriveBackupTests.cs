@@ -327,6 +327,23 @@ public class DriveBackupTests
         Assert.Equal("https://docs.google.com/spreadsheets/d/s/edit?usp=sharing", result.Url);
     }
 
+    // A host asked its own question before anything went up. The engine's
+    // question comes after the first push, so asking it there as well would
+    // put a "no" after the upload it was meant to stop.
+    [Fact]
+    public async Task Share_AskedAlready_DoesNotAskAgain()
+    {
+        var (backup, settings, _) = Make(r =>
+            IsCreate(r) ? Json("{\"spreadsheetId\":\"sheetH\"}")
+            : IsModified(r) ? Json("{\"modifiedTime\":\"t\"}") : Json("{}"),
+            shareConfirm: false);
+
+        var result = await backup.GetShareLinkAsync("/p.csv", Grid, askedAlready: true);
+
+        Assert.Equal(ShareLinkKind.Copied, result.Kind);
+        Assert.True(settings.DriveLinks["/p.csv"].LinkShared);
+    }
+
     // Declining the share confirmation copies nothing and leaves the sheet
     // unshared.
     [Fact]
