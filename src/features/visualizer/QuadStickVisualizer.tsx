@@ -37,6 +37,7 @@ import {
   type GestureSummary,
   type ZoneId,
 } from "./deviceSummary";
+import { useLiveInput } from "../live/useLiveInput";
 import { GestureTable } from "./GestureTable";
 import { comboPairTitle, comboPrefix, firstMappedCombo } from "./parts";
 import "./visualizer.css";
@@ -79,6 +80,8 @@ const ZONE_META: readonly ZoneMeta[] = [
   { id: "settings", titleKey: "Main_ModeSettings", shortKey: "Main_ModeSettings" },
   { id: "unset", titleKey: "Main_NoInputYet", shortKey: "Main_NoInputYet" },
 ];
+
+const NO_OUTPUTS: ReadonlySet<string> = new Set();
 
 const MOUTHPIECE_ZONES = new Set<ZoneId>(["mp_left", "mp_center", "mp_right", "side", "lip"]);
 
@@ -356,37 +359,17 @@ export function QuadStickVisualizer({
     onLiveRows?.(liveRows);
   }, [liveRows, onLiveRows]);
 
-  useEffect(() => {
-    let disposed = false;
-    let subscription: { dispose(): void } | null = null;
-    void client
-      .startLiveInput((frame) => {
-        if (disposed) return;
-        setLive(frame);
-        if (frame.status.kind === "reading") {
-          const next = outputsFromMotion(frame.status.motion, previousOutputs.current);
-          previousOutputs.current = next;
-          setLiveOutputs(next);
-        } else {
-          previousOutputs.current = null;
-          setLiveOutputs(new Set());
-        }
-      })
-      .then((value) => {
-        if (disposed) value.dispose();
-        else subscription = value;
-      })
-      .catch(() => {
-        if (!disposed) {
-          setLive(null);
-          setLiveOutputs(new Set());
-        }
-      });
-    return () => {
-      disposed = true;
-      subscription?.dispose();
-    };
-  }, [client]);
+  useLiveInput(client, (frame) => {
+    setLive(frame);
+    if (frame !== null && frame.status.kind === "reading") {
+      const next = outputsFromMotion(frame.status.motion, previousOutputs.current);
+      previousOutputs.current = next;
+      setLiveOutputs(next);
+    } else if (previousOutputs.current !== null || frame === null) {
+      previousOutputs.current = null;
+      setLiveOutputs(NO_OUTPUTS);
+    }
+  });
 
   // Entering the combo zone from outside (an issue link, a card) turns the
   // combo view on and keeps it on, as clicking the toggle would. Adjusted

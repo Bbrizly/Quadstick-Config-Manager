@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
 import { useI18n } from "../../i18n";
+import { useLiveInput } from "../live/useLiveInput";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
   asQcmError,
@@ -267,22 +268,7 @@ export function DevicePreferencesPage({
     };
   }, [client, showFailure]);
 
-  useEffect(() => {
-    let active = true;
-    let subscription: { dispose(): void } | null = null;
-    void client.startLiveInput((frame) => {
-      if (active) setLive(frame);
-    }).then((next) => {
-      if (active) subscription = next;
-      else next.dispose();
-    }).catch(() => {
-      if (active) setLive(null);
-    });
-    return () => {
-      active = false;
-      subscription?.dispose();
-    };
-  }, [client]);
+  useLiveInput(client, setLive);
 
   const apply = async (ops: readonly EditorOp[]): Promise<EditorSnapshot | null> => {
     if (busy || ops.length === 0) return null;
