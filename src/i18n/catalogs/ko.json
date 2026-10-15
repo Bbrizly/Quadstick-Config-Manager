@@ -1204,6 +1204,7 @@
   "Review_YourSheetCameInClean": "시트가 문제없이 들어왔습니다.",
   "Review_YourSpreadsheetArrowKeysPick": "스프레드시트입니다. 화살표 키로 셀을 선택하고, Enter로 편집하고, Delete로 비웁니다.",
   "Review_YourSpreadsheetWithWhatWe": "읽은 내용이 표시된 스프레드시트입니다. 색이 칠해진 셀은 QuadStick이 읽는 셀입니다. 색이 없는 셀은 QuadStick이 절대 보지 않으므로, 메모나 행에 붙인 이름을 안전하게 넣을 수 있습니다. 셀을 클릭해 바꾸거나, 같은 행의 다른 열로 드래그하세요. 여기서의 모든 변경은 이 창 뒤에 열려 있는 프로필에 대한 변경입니다.",
+  "Rewrite_ConnectGoogleDrive": "Google 드라이브 연결",
   "Rewrite_ErrorCancelled": "취소되었습니다.",
   "Rewrite_ErrorConfig": "이 프로필을 사용할 수 없습니다. 프로필을 확인한 뒤 다시 시도하세요.",
   "Rewrite_ErrorConfirmation": "이 확인은 더 이상 유효하지 않습니다. 작업을 다시 확인하세요.",

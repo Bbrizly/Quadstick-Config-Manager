@@ -1204,6 +1204,7 @@
   "Review_YourSheetCameInClean": "您的表格已干净地导入。",
   "Review_YourSpreadsheetArrowKeysPick": "您的电子表格。方向键选择单元格，Enter 编辑，Delete 清空。",
   "Review_YourSpreadsheetWithWhatWe": "您的电子表格，标出了我们读取的内容。带底色的单元格是 QuadStick 会读取的。普通单元格是它从不查看的，因此备注和您为各行起的名字放在那里很安全。点击任意单元格即可更改，或将其拖到同一行的另一列。此处的每项更改都会应用到此窗口背后打开的配置文件。",
+  "Rewrite_ConnectGoogleDrive": "连接 Google 云端硬盘",
   "Rewrite_ErrorCancelled": "已取消。",
   "Rewrite_ErrorConfig": "无法使用此配置文件。请检查配置文件后重试。",
   "Rewrite_ErrorConfirmation": "此确认已失效。请重新确认该操作。",

@@ -61,5 +61,6 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-056 | A | deep link: canonical `qcm://profile/<id>` on the original spelling, no query/fragment/user/port/dot segments; first matching argv entry | `registry.rs` tests | PARITY-TESTED |
 | B-057 | A | `qcm` scheme: bundle declares it (macOS `CFBundleURLTypes`, Windows installer), per-user runtime registration on Windows/Linux, macOS Apple events and second-launch argv go to one inbox; the running window opens the link straight away (no unsaved-changes prompt, as `OpenInEditor`), a link with no window yet waits, newest wins | `registry.rs` inbox tests + `RegistryLink.test.tsx` | IMPLEMENTED (OS click-through pending) |
 | B-049 | C | backups taken over the console use the rewrite's backup store and its location display, not a raw home path | `console_shell.rs` tests | IMPLEMENTED |
+| B-058 | A | share setup: Copy share link without Google opens the 2/3-step setup (connect, save if never saved, then the action); states in words, last step disabled with a spoken reason, the dialog never shares; Cancel shares nothing. "Connect Google Drive" (hard-coded English in Avalonia) is the localized `Rewrite_ConnectGoogleDrive` | `ShareSetupDialog.test.tsx` | PARITY-TESTED |
 
 Status moves to PARITY-TESTED/HARDWARE-VERIFIED only with linked TEST_LEDGER evidence.

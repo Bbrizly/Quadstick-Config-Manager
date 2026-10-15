@@ -1204,6 +1204,7 @@
   "Review_YourSheetCameInClean": "استُوردت ورقتك نظيفة.",
   "Review_YourSpreadsheetArrowKeysPick": "جدول بياناتك. مفاتيح الأسهم تختار خلية، Enter يعدّلها، Delete يفرغها.",
   "Review_YourSpreadsheetWithWhatWe": "جدول بياناتك، مع تمييز ما قرأناه عليه. الخلية المظللة هي خلية يقرأها QuadStick. الخلية العادية هي خلية لا ينظر إليها أبدًا، لذا الملاحظات وأسماؤك الخاصة للصفوف آمنة هناك. انقر على أي خلية لتغييرها، أو اسحبها إلى عمود آخر في الصف نفسه. كل تغيير هنا هو تغيير في الملف الشخصي المفتوح خلف هذه النافذة.",
+  "Rewrite_ConnectGoogleDrive": "ربط Google Drive",
   "Rewrite_ErrorCancelled": "تم الإلغاء.",
   "Rewrite_ErrorConfig": "تعذر استخدام هذا الملف الشخصي. تحقق منه وحاول مرة أخرى.",
   "Rewrite_ErrorConfirmation": "لم يعد هذا التأكيد صالحًا. أكّد العملية مرة أخرى.",

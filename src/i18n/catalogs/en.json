@@ -1204,6 +1204,7 @@
   "Review_YourSheetCameInClean": "Your sheet came in clean.",
   "Review_YourSpreadsheetArrowKeysPick": "Your spreadsheet. Arrow keys pick a cell, Enter edits it, Delete empties it.",
   "Review_YourSpreadsheetWithWhatWe": "Your spreadsheet, with what we read marked on it. A tinted cell is one the QuadStick reads. A plain cell is one it never looks at, so notes and your own names for rows are safe there. Click any cell to change it, or drag it to another column in the same row. Every change here is a change to the profile open behind this window.",
+  "Rewrite_ConnectGoogleDrive": "Connect Google Drive",
   "Rewrite_ErrorCancelled": "Cancelled.",
   "Rewrite_ErrorConfig": "That profile could not be used. Check the profile and try again.",
   "Rewrite_ErrorConfirmation": "That confirmation is no longer valid. Confirm the operation again.",

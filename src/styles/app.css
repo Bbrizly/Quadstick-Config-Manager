@@ -538,3 +538,12 @@ textarea:focus-visible {
   text-decoration: underline;
   cursor: pointer;
 }
+
+.share-step {
+  margin: var(--qcm-space-md) 0;
+}
+
+.share-step h3 {
+  margin: 0;
+  font-size: 1rem;
+}

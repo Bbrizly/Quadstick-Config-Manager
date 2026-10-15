@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
+import { ShareSetupDialog } from "./ShareSetupDialog";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
@@ -162,6 +163,13 @@ export function ProfileDriveActions({
   const [message, setMessage] = useState("");
   const [conflict, setConflict] = useState<DriveBackupOutcome | null>(null);
   const [shareUrl, setShareUrl] = useState("");
+  // `ReadyForDriveAsync`: sharing without a Google connection walks the
+  // setup steps first, then runs the share the person asked for.
+  const [setup, setSetup] = useState<{
+    readonly needsSave: boolean;
+    readonly connected: boolean;
+    readonly done: (completed: boolean) => void;
+  } | null>(null);
 
   const backup = client.backupProfileToDrive;
   const resolve = client.resolveDriveConflict;
@@ -231,10 +239,28 @@ export function ProfileDriveActions({
     }
   };
 
+  const readyForDrive = async (): Promise<boolean> => {
+    const status = client.getGoogleAuthStatus;
+    if (status === undefined) return true;
+    const auth = await status.call(client);
+    if (auth.connected) return true;
+    return new Promise<boolean>((settle) => {
+      setSetup({
+        needsSave: snapshot.saveTarget === null,
+        connected: false,
+        done: (completed) => {
+          setSetup(null);
+          settle(completed);
+        },
+      });
+    });
+  };
+
   const shareNow = async (): Promise<void> => {
     if (share === undefined || backup === undefined || busy) return;
     setBusy(true);
     try {
+      if (!(await readyForDrive())) return;
       const current = await ensureSaved();
       if (current === null) return;
       const backedUp = await backup.call(client, current.sessionId, current.revision);
@@ -296,6 +322,18 @@ export function ProfileDriveActions({
         </label>
       )}
       <LiveRegion>{message}</LiveRegion>
+      {setup === null ? null : (
+        <ShareSetupDialog
+          client={client}
+          snapshot={snapshot}
+          finishLabel={t("Main_CopyShareLink")}
+          needsSave={setup.needsSave}
+          connected={setup.connected}
+          onConnected={() => setSetup({ ...setup, connected: true })}
+          onSnapshot={onSnapshot}
+          onClose={setup.done}
+        />
+      )}
     </section>
   );
 }
