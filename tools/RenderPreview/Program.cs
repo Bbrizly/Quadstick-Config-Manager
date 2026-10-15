@@ -703,6 +703,57 @@ if (args.Contains("--drew"))
     return;
 }
 
+// The set the Tauri rewrite is compared against: one window size, and the
+// profile the rewrite's browser mock opens, so a pair of shots differs only
+// where the two apps do.
+if (args.Contains("--compare"))
+{
+    const int W = 1280, H = 860;
+    const string Fixture = "Profile Name,,Racing,,,,,,,,Comments\nuntitled.csv\n"
+        + "PlayStation Outputs,Function,usb\ncross,normal,sip\ncircle,normal,puff\n\n"
+        + "Profile Name,,Racing\n\nPlayStation Outputs,Function,usb\nsquare,normal,hard sip\n";
+    var full = MainWindow.LibraryDir;
+    var empty = Directory.CreateTempSubdirectory("qscm-empty-").FullName;
+    var pick = langAt >= 0 ? $"{lang}-" : "";
+    var themes = args.Contains("--light-only")
+        ? new[] { ("light", ThemeVariant.Light) }
+        : new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) };
+    var scale = args.Contains("--scale150") ? 150 : 100;
+    foreach (var (name, variant) in themes)
+    {
+        Application.Current!.RequestedThemeVariant = variant;
+        var s = $"{pick}{name}{(scale == 100 ? "" : "-150")}";
+        void Fresh() => Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false,
+            Language = lang, InterfaceScalePercent = scale });
+        Fresh();
+        MainWindow.LibraryDir = empty;
+        CaptureSized($"{s}-home-empty", W, H, _ => { });
+        MainWindow.LibraryDir = full;
+        Fresh();
+        CaptureSized($"{s}-home", W, H, _ => { });
+        CaptureSized($"{s}-editor", W, H, w =>
+        {
+            w.LoadProfile(ProfileFile.Load(Fixture));
+            w.SetDeviceViewForPreview(false);
+        });
+        CaptureSized($"{s}-device", W, H, w =>
+        {
+            w.LoadProfile(ProfileFile.Load(Fixture));
+            w.SetDeviceViewForPreview(true);
+            w.SelectZoneForPreview("sip");
+            w.ShowLiveInputForPreview(new LiveState(0.42, -0.30, PressedForShot(), "QuadStick",
+                new HashSet<string> { "cross" }, true));
+        });
+        CaptureSized($"{s}-device-settings", W, H, w =>
+            w.ShowDeviceSettingsForPreview(SamplePrefs, category: "Sip and puff"));
+        CaptureSized($"{s}-settings", W, H, w => w.ShowSettingsPage());
+        CaptureOwned($"{s}-devicelink", o => new DeviceLinkWindow(o));
+        CaptureOwned($"{s}-device-files", o => new DeviceFilesWindow(o));
+    }
+    Console.WriteLine("compare set written");
+    return;
+}
+
 foreach (var (suffix, variant) in new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) })
 {
     Application.Current!.RequestedThemeVariant = variant;
