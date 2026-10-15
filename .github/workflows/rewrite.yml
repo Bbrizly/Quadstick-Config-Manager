@@ -100,6 +100,39 @@ jobs:
       - name: Frontend tests
         run: pnpm test
 
+  linux-bundle:
+    name: Linux bundle / qs-bridge beside the app
+    needs: shell-frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+      - name: Enable the pinned pnpm
+        run: corepack enable
+      - name: Install with the committed lockfile
+        run: pnpm install --frozen-lockfile
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.98.0 --profile minimal
+      - name: Install Tauri Linux prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev libxdo-dev \
+            libayatana-appindicator3-dev libssl-dev libudev-dev
+      # tauri.linux.conf.json stages qs-bridge as an externalBin and maps the
+      # udev rule into the deb, as the Avalonia tarball does (ca813aa).
+      - name: Build the deb
+        run: pnpm tauri build --bundles deb
+      - name: The bridge and the rule are in the package
+        shell: bash
+        run: |
+          deb=$(ls target/release/bundle/deb/*.deb | head -1)
+          dpkg -c "$deb" | grep -q '/usr/bin/qs-bridge$'
+          dpkg -c "$deb" | grep -q '/usr/lib/udev/rules.d/70-quadstick.rules$'
+
   fuzz-smoke:
     name: Fuzz smoke / parse + normalize + apply
     needs: rust-core

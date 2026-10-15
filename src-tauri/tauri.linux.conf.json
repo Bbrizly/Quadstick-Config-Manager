@@ -1,0 +1,21 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "build": {
+    "beforeBuildCommand": "pnpm build:web && sh scripts/stage-qs-bridge.sh"
+  },
+  "bundle": {
+    "externalBin": ["binaries/qs-bridge"],
+    "linux": {
+      "deb": {
+        "files": {
+          "/usr/lib/udev/rules.d/70-quadstick.rules": "../crates/qs-bridge/linux/70-quadstick.rules"
+        }
+      },
+      "rpm": {
+        "files": {
+          "/usr/lib/udev/rules.d/70-quadstick.rules": "../crates/qs-bridge/linux/70-quadstick.rules"
+        }
+      }
+    }
+  }
+}

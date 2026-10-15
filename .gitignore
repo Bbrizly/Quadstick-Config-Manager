@@ -58,3 +58,6 @@ node_modules/
 dist-ui/
 src-tauri/gen/
 /crates/qs-bridge/target/
+
+# Staged by scripts/stage-qs-bridge.sh for the Linux bundle.
+src-tauri/binaries/
