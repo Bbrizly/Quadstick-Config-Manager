@@ -19,7 +19,9 @@ use std::time::{Duration, Instant};
 const AUTH_ENDPOINT: &str = "https://accounts.google.com/o/oauth2/v2/auth";
 const TOKEN_ENDPOINT: &str = "https://oauth2.googleapis.com/token";
 const DRIVE_FILE_SCOPE: &str = "https://www.googleapis.com/auth/drive.file";
+#[cfg(any(target_os = "macos", target_os = "windows"))]
 const SERVICE: &str = "QuadStick Config Manager";
+#[cfg(any(target_os = "macos", target_os = "windows"))]
 const ACCOUNT: &str = "google-drive";
 const CALLBACK_TIMEOUT: Duration = Duration::from_secs(120);
 const HTTP_TIMEOUT: Duration = Duration::from_secs(20);

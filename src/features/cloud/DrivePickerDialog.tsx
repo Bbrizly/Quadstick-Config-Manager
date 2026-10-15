@@ -81,7 +81,10 @@ export function DrivePickerDialog({ client, onReview, onClose }: DrivePickerDial
     <Dialog
       open
       title={t("DrivePick_ImportFromGoogleDrive")}
-      onClose={onClose}
+      // Not while an import runs: its result has to reach the review.
+      onClose={() => {
+        if (!busy) onClose();
+      }}
       actions={
         <>
           <button
@@ -93,7 +96,13 @@ export function DrivePickerDialog({ client, onReview, onClose }: DrivePickerDial
           >
             {t("DrivePick_Import")}
           </button>
-          <button type="button" data-autofocus aria-label={t("DrivePick_CloseThisWindow")} onClick={onClose}>
+          <button
+            type="button"
+            data-autofocus
+            disabled={busy}
+            aria-label={t("DrivePick_CloseThisWindow")}
+            onClick={onClose}
+          >
             {t("DrivePick_Close")}
           </button>
         </>
