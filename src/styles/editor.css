@@ -545,3 +545,32 @@
     border-bottom: var(--qcm-hairline) solid var(--qcm-border);
   }
 }
+
+.combo-note {
+  margin: 0;
+  font-size: var(--qcm-small-size);
+}
+
+.combo-output {
+  display: grid;
+  gap: 6px;
+}
+
+.combo-output-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.combo-output-remove,
+.combo-add-output {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--qcm-icon-button);
+}
+
+.combo-add-output {
+  justify-self: start;
+}

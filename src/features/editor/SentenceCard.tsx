@@ -7,6 +7,8 @@ export interface SentenceCardProps {
   readonly zoneId: ZoneId;
   readonly selected: boolean;
   readonly live?: boolean;
+  /** The other rows of a button combo: same inputs, one output each, one card. */
+  readonly together?: readonly BindingCells[];
   readonly onSelect: () => void;
 }
 
@@ -33,15 +35,29 @@ function cardInput(token: string, zoneId: ZoneId): string {
   return s.replaceAll("_", " ");
 }
 
+const NO_ROWS: readonly BindingCells[] = [];
+
+
 /** Avalonia SentenceCard compact Input→Output form with tinted pills. */
-export function SentenceCard({ row, zoneId, selected, live = false, onSelect }: SentenceCardProps) {
+export function SentenceCard({
+  row,
+  zoneId,
+  selected,
+  live = false,
+  together = NO_ROWS,
+  onSelect,
+}: SentenceCardProps) {
   const { t } = useI18n();
-  const output = row.cells[0]?.trim() ?? "";
   const fn = row.cells[1]?.trim() ?? "";
-  const actionName = row.cells[11]?.trim() ?? "";
   const inputs = row.cells.slice(2, 10).map((value) => value.trim()).filter(Boolean);
-  const outputLabel =
-    actionName.length > 0 ? actionName : output.length > 0 ? tokenLabel(output) : t("Main_NothingYet");
+  const outputs = [row, ...together].map((member) => {
+    const token = member.cells[0]?.trim() ?? "";
+    const actionName = member.cells[11]?.trim() ?? "";
+    const label =
+      actionName.length > 0 ? actionName : token.length > 0 ? tokenLabel(token) : t("Main_NothingYet");
+    return { row: member.row, token, label };
+  });
+  const outputLabel = outputs.map((entry) => entry.label).join(" + ");
   const inputLabels =
     inputs.length > 0 ? inputs.map((input) => cardInput(input, zoneId)) : [t("Main_NoInput")];
   const functionLabel = fn.length > 0 ? humanize(fn) : "";
@@ -71,11 +87,15 @@ export function SentenceCard({ row, zoneId, selected, live = false, onSelect }: 
       )}
       <span className="sentence-grid" aria-hidden="true">
         <span className="sentence-word">{t("Main_PressVerb")}</span>
-        <span className="pill tint-output">
-                      <OutputPrompt token={output} label={outputLabel} size={30} />
-          {promptSrc(output) !== null ? (
-            <span className="visually-hidden">{outputLabel}</span>
-          ) : null}
+        <span className="sentence-inputs">
+          {outputs.map((entry) => (
+            <span className="pill tint-output" key={entry.row}>
+              <OutputPrompt token={entry.token} label={entry.label} size={30} />
+              {promptSrc(entry.token) !== null ? (
+                <span className="visually-hidden">{entry.label}</span>
+              ) : null}
+            </span>
+          ))}
         </span>
         <span className="sentence-word">{t("Main_WhenYou")}</span>
         <span className="sentence-inputs">

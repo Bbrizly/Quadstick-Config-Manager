@@ -82,7 +82,11 @@ export type EditorOp =
   | { readonly op: "move_mode"; readonly sheet: number; readonly delta: -1 | 1 }
   | { readonly op: "rename_mode"; readonly sheet: number; readonly name: string }
   | { readonly op: "set_mode_channel"; readonly sheet: number; readonly channel: string }
-  | { readonly op: "normalize" };
+  | { readonly op: "normalize" }
+  | { readonly op: "copy_inputs"; readonly from: number; readonly to: readonly number[] }
+  | { readonly op: "delete_rows"; readonly rows: readonly number[] }
+  | { readonly op: "add_combo_output"; readonly sheet: number; readonly from: number }
+  | { readonly op: "group"; readonly ops: readonly EditorOp[] };
 
 export type ThemeChoice = "system" | "light" | "dark";
 export type ModelChoice = "fps" | "original" | "singleton";

@@ -102,11 +102,14 @@ pub struct ApplyEditorOpsRequest {
 
 impl ApplyEditorOpsRequest {
     pub fn check(&self) -> Result<(), QcmError> {
-        if self.ops.len() > MAX_OPS_PER_BATCH {
+        // A group or a row list is several edits in one entry, so it counts
+        // as all of them.
+        let weight = self.ops.iter().map(op_weight).sum::<usize>();
+        if weight > MAX_OPS_PER_BATCH {
             return Err(RequestError::TooLarge {
                 what: "editor operations",
                 limit: MAX_OPS_PER_BATCH,
-                actual: self.ops.len(),
+                actual: weight,
             }
             .into());
         }
@@ -135,7 +138,21 @@ fn op_text(op: &EditorOp) -> Vec<&str> {
         | EditorOp::MoveRow { .. }
         | EditorOp::DeleteMode { .. }
         | EditorOp::MoveMode { .. }
-        | EditorOp::Normalize => Vec::new(),
+        | EditorOp::Normalize
+        | EditorOp::CopyInputs { .. }
+        | EditorOp::DeleteRows { .. }
+        | EditorOp::AddComboOutput { .. } => Vec::new(),
+        EditorOp::Group { ops } => ops.iter().flat_map(op_text).collect(),
+    }
+}
+
+/// How many edits one entry stands for, for the batch limit.
+fn op_weight(op: &EditorOp) -> usize {
+    match op {
+        EditorOp::Group { ops } => ops.iter().map(op_weight).sum::<usize>().max(1),
+        EditorOp::CopyInputs { to, .. } => to.len().max(1),
+        EditorOp::DeleteRows { rows } => rows.len().max(1),
+        _ => 1,
     }
 }
 

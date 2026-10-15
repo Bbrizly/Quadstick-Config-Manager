@@ -17,6 +17,7 @@ import {
 import { QuadStickVisualizer } from "../visualizer/QuadStickVisualizer";
 import { zonesForRow, type ZoneId } from "../visualizer/deviceSummary";
 import { BindingInspector } from "./BindingInspector";
+import { comboGroups } from "./combos";
 import { SentenceCard } from "./SentenceCard";
 import type { MessageKey } from "../../i18n";
 
@@ -55,6 +56,10 @@ function bindingRows(snapshot: EditorSnapshot, mode: Mode | null): BindingRow[] 
     rows.push({ row, cells: snapshot.grid[row - 1] ?? [] });
   }
   return rows;
+}
+
+function zoneIdForRow(row: BindingRow): ZoneId {
+  return zonesForRow(row)[0] ?? "unset";
 }
 
 function issueRow(cell: string): number | null {
@@ -192,9 +197,16 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
     if (selectedZone === null) return rows;
     return rows.filter((row) => zonesForRow(row).includes(selectedZone));
   }, [rows, selectedZone]);
+  const groups = useMemo(() => comboGroups(rows), [rows]);
+  const groupOf = (row: BindingRow): readonly BindingRow[] => groups.get(row.row) ?? [row];
+  const cardRows = zoneRows.filter((row) => groupOf(row)[0]?.row === row.row);
   const selectionBelongsToCurrentSheet = selectedMode?.index === selectedSheet;
   const visibleSelectedRow = selectionBelongsToCurrentSheet ? selectedRow : null;
-  const activeRow = visibleSelectedRow === null ? null : rows.find((row) => row.row === visibleSelectedRow) ?? null;
+  const selectedBinding =
+    visibleSelectedRow === null ? null : rows.find((row) => row.row === visibleSelectedRow) ?? null;
+  // A combo opens as one card on its first row, whichever of its rows was picked.
+  const activeGroup = selectedBinding === null ? null : groupOf(selectedBinding);
+  const activeRow = activeGroup?.[0] ?? null;
 
   const showFailure = useCallback(
     (reason: unknown): void => {
@@ -244,6 +256,26 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   const setCell = useCallback(
     (row: number, column: number, value: string): void => {
       void apply([{ op: "set_cell", row, col: column, value }]);
+    },
+    [apply],
+  );
+
+  // The inputs live on the card, so in a combo an edit to them lands on every
+  // row the card holds, as one undo step. Without it, renaming the input moves
+  // one output off the combo and leaves the other behind.
+  const setInput = useCallback(
+    (lead: number, members: readonly BindingRow[], column: number, value: string): void => {
+      const edit: EditorOp = { op: "set_cell", row: lead, col: column, value };
+      if (members.length < 2) {
+        void apply([edit]);
+        return;
+      }
+      void apply([
+        {
+          op: "group",
+          ops: [edit, { op: "copy_inputs", from: lead, to: members.map((member) => member.row) }],
+        },
+      ]);
     },
     [apply],
   );
@@ -349,8 +381,6 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
     setSelectedZone(null);
     setArmedDelete(null);
   };
-
-  const zoneIdForRow = (row: BindingRow): ZoneId => zonesForRow(row)[0] ?? "unset";
 
   return (
     <section className="editor-workspace" aria-labelledby="editor-title">
@@ -564,16 +594,20 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                 <p className="empty-copy">{t("Main_NoInputYet")}</p>
               ) : (
                 <div className="binding-list">
-                  {zoneRows.map((row) => (
-                    <SentenceCard
-                      key={row.row}
-                      row={row}
-                      zoneId={zoneIdForRow(row)}
-                      selected={visibleSelectedRow === row.row}
-                      live={liveRows.has(row.row)}
-                      onSelect={() => setSelectedRow(row.row)}
-                    />
-                  ))}
+                  {cardRows.map((row) => {
+                    const group = groupOf(row);
+                    return (
+                      <SentenceCard
+                        key={row.row}
+                        row={row}
+                        together={group.slice(1)}
+                        zoneId={zoneIdForRow(row)}
+                        selected={group.some((member) => member.row === visibleSelectedRow)}
+                        live={group.some((member) => liveRows.has(member.row))}
+                        onSelect={() => setSelectedRow(row.row)}
+                      />
+                    );
+                  })}
                 </div>
               )}
               {activeRow !== null ? (
@@ -581,14 +615,54 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                   <div className="row-actions">
                     <button type="button" disabled={busy || rows[0]?.row === activeRow.row} aria-label={t("Review_MoveItEarlier")} onClick={() => void apply([{ op: "move_row", from: activeRow.row, to: activeRow.row - 1 }], () => setSelectedRow(activeRow.row - 1))}>↑</button>
                     <button type="button" disabled={busy || rows.at(-1)?.row === activeRow.row} aria-label={t("Review_MoveItLater")} onClick={() => void apply([{ op: "move_row", from: activeRow.row, to: activeRow.row + 1 }], () => setSelectedRow(activeRow.row + 1))}>↓</button>
-                    <button type="button" disabled={busy} onClick={() => void apply([{ op: "delete_row", row: activeRow.row }], () => { setSelectedRow(null); setSelectedZone(null); })}>{t("Shell_Delete")}</button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => {
+                        // The card holds every output on these inputs, so its
+                        // trash takes the whole combo. Each output has its own.
+                        const group = activeGroup ?? [activeRow];
+                        const op: EditorOp =
+                          group.length > 1
+                            ? { op: "delete_rows", rows: group.map((member) => member.row) }
+                            : { op: "delete_row", row: activeRow.row };
+                        void apply([op], () => {
+                          setSelectedRow(null);
+                          setSelectedZone(null);
+                        });
+                      }}
+                    >
+                      {t("Shell_Delete")}
+                    </button>
                   </div>
                   <BindingInspector
                     key={`${String(snapshot.revision)}-${String(activeRow.row)}`}
                     row={activeRow.row}
                     cells={activeRow.cells}
+                    members={activeGroup ?? [activeRow]}
+                    mappingNumber={Math.max(1, cardRows.findIndex((row) => row.row === activeRow.row) + 1)}
                     disabled={busy}
                     onSetCell={setCell}
+                    onSetInput={(column, value) =>
+                      setInput(activeRow.row, activeGroup ?? [activeRow], column, value)
+                    }
+                    onAddOutput={
+                      selectedMode === null
+                        ? undefined
+                        : () =>
+                            void apply(
+                              [{ op: "add_combo_output", sheet: selectedMode.index, from: activeRow.row }],
+                              () => setSelectedRow(activeRow.row),
+                            )
+                    }
+                    onRemoveOutput={(dropRow) => {
+                      const keep = (activeGroup ?? []).find((member) => member.row !== dropRow);
+                      if (keep === undefined) return;
+                      // Rows below the deleted one shift up, so the kept row
+                      // number moves with them and the card stays open.
+                      const kept = keep.row > dropRow ? keep.row - 1 : keep.row;
+                      void apply([{ op: "delete_row", row: dropRow }], () => setSelectedRow(kept));
+                    }}
                   />
                 </>
               ) : null}

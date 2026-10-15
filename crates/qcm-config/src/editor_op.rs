@@ -62,6 +62,27 @@ pub enum EditorOp {
         channel: String,
     },
     Normalize,
+    /// Copy one row's input cells (C..J) onto other rows: the inputs of a
+    /// button combo live on the card, not on one row.
+    CopyInputs {
+        from: usize,
+        to: Vec<usize>,
+    },
+    /// Delete several rows at once, as the trash on a combo card does.
+    DeleteRows {
+        rows: Vec<usize>,
+    },
+    /// Add a row to the sheet with `from`'s inputs already on it, so the new
+    /// output joins that combo. One undo step.
+    AddComboOutput {
+        sheet: usize,
+        from: usize,
+    },
+    /// Several operations applied as one undo step, all or nothing. Groups do
+    /// not nest.
+    Group {
+        ops: Vec<EditorOp>,
+    },
 }
 
 impl EditorOp {
@@ -80,6 +101,10 @@ impl EditorOp {
             Self::RenameMode { .. } => "rename_mode",
             Self::SetModeChannel { .. } => "set_mode_channel",
             Self::Normalize => "normalize",
+            Self::CopyInputs { .. } => "copy_inputs",
+            Self::DeleteRows { .. } => "delete_rows",
+            Self::AddComboOutput { .. } => "add_combo_output",
+            Self::Group { .. } => "group",
         }
     }
 }
@@ -101,7 +126,72 @@ impl ProfileFile {
             EditorOp::RenameMode { sheet, name } => self.rename_mode(*sheet, name),
             EditorOp::SetModeChannel { sheet, channel } => self.set_mode_channel(*sheet, channel),
             EditorOp::Normalize => self.normalize_for_device_csv(),
+            EditorOp::CopyInputs { from, to } => self.copy_inputs(*from, to),
+            EditorOp::DeleteRows { rows } => self.delete_rows(rows),
+            EditorOp::AddComboOutput { sheet, from } => {
+                self.add_combo_output(*sheet, *from).is_some()
+            }
+            EditorOp::Group { ops } => self.apply_group(ops),
         }
+    }
+
+    fn apply_group(&mut self, ops: &[EditorOp]) -> bool {
+        if ops.is_empty() || ops.iter().any(|op| matches!(op, EditorOp::Group { .. })) {
+            return false;
+        }
+        self.one_step(|file| ops.iter().all(|op| file.apply_editor_op(op)))
+    }
+
+    /// Legacy `CopyInputs`: copy the trimmed input cells C..J of `from_row`
+    /// onto every other row in `to_rows`, as one reparse. Unlike the legacy
+    /// `Widen`, a target past the end of the grid is refused rather than
+    /// created: the UI only ever names binding rows it can see.
+    pub fn copy_inputs(&mut self, from_row: usize, to_rows: &[usize]) -> bool {
+        let rows = self.grid.len();
+        if from_row == 0 || from_row > rows {
+            return false;
+        }
+        let mut targets = to_rows
+            .iter()
+            .copied()
+            .filter(|row| *row != from_row)
+            .collect::<Vec<_>>();
+        targets.sort_unstable();
+        targets.dedup();
+        if targets.iter().any(|row| *row == 0 || *row > rows) {
+            return false;
+        }
+        if targets.is_empty() {
+            return true;
+        }
+        let values = (FIRST_INPUT_COLUMN..=LAST_INPUT_COLUMN)
+            .map(|column| self.get_cell(from_row, column).to_owned())
+            .collect::<Vec<_>>();
+        for row in targets {
+            let Some(target) = self.widen(row, LAST_INPUT_COLUMN) else {
+                return false;
+            };
+            for (offset, value) in values.iter().enumerate() {
+                target[FIRST_INPUT_COLUMN + offset].clone_from(value);
+            }
+        }
+        self.reparse();
+        true
+    }
+
+    /// Add a binding row carrying `from_row`'s inputs. Returns the new row.
+    pub fn add_combo_output(&mut self, sheet_index: usize, from_row: usize) -> Option<usize> {
+        let mut added = None;
+        let applied = self.one_step(|file| {
+            let Some(row) = file.add_binding_row(sheet_index) else {
+                return false;
+            };
+            // The insert shifts every row at or below it down by one.
+            let source = if from_row >= row { from_row + 1 } else { from_row };
+            added = Some(row);
+            file.copy_inputs(source, &[row])
+        });
+        added.filter(|_| applied)
     }
 
     /// Legacy `GetCell`: one-based row, zero-based column, trimmed projection.
@@ -916,6 +1006,53 @@ mod tests {
                 .iter()
                 .any(|row| row.get(ACTION_COLUMN).is_some_and(|v| v == "Action"))
         );
+    }
+
+    #[test]
+    fn combo_edits_undo_in_one_step() {
+        let mut profile = ProfileFile::load(
+            "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\ncross,normal,mp_left_sip\ncircle,normal,mp_left_sip\n",
+        );
+        let edit = EditorOp::Group {
+            ops: vec![
+                EditorOp::SetCell {
+                    row: 4,
+                    col: 2,
+                    value: "mp_right_puff".to_owned(),
+                },
+                EditorOp::CopyInputs {
+                    from: 4,
+                    to: vec![4, 5],
+                },
+            ],
+        };
+        assert!(profile.apply_editor_op(&edit));
+        assert_eq!(profile.get_cell(5, 2), "mp_right_puff");
+        assert!(profile.undo());
+        assert_eq!(profile.get_cell(4, 2), "mp_left_sip");
+        assert_eq!(profile.get_cell(5, 2), "mp_left_sip");
+        assert!(!profile.undo());
+
+        assert_eq!(profile.add_combo_output(0, 4), Some(6));
+        assert_eq!(profile.get_cell(6, 2), "mp_left_sip");
+        assert!(profile.undo());
+        assert_eq!(profile.grid.len(), 5);
+
+        let rejected = EditorOp::Group {
+            ops: vec![
+                EditorOp::SetCell {
+                    row: 4,
+                    col: 2,
+                    value: "lip".to_owned(),
+                },
+                EditorOp::DeleteRow { row: 99 },
+            ],
+        };
+        assert!(!profile.apply_editor_op(&rejected));
+        assert_eq!(profile.get_cell(4, 2), "mp_left_sip");
+
+        assert!(profile.apply_editor_op(&EditorOp::DeleteRows { rows: vec![4, 5] }));
+        assert_eq!(profile.grid.len(), 3);
     }
 
     #[test]

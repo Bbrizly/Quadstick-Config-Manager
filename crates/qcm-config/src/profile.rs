@@ -195,6 +195,33 @@ impl ProfileFile {
         true
     }
 
+    /// Run several mutations as one undo step.
+    ///
+    /// A button combo is several rows that share one set of inputs, so one
+    /// gesture (an input typed, an output added) lands on more than one row.
+    /// Each mutation still reparses and moves the revision, but only the state
+    /// from before the whole gesture is kept for undo: one Undo must put the
+    /// combo back together, never leave half of it edited. All or nothing: if
+    /// any step refuses, the file is exactly as it was.
+    pub(crate) fn one_step(&mut self, apply: impl FnOnce(&mut Self) -> bool) -> bool {
+        let saved = std::mem::take(&mut self.undo);
+        let before = self.clone();
+        if !apply(self) {
+            *self = before;
+            self.undo = saved;
+            return false;
+        }
+        let changed = !self.undo.is_empty();
+        self.undo = saved;
+        if changed {
+            self.undo.push(before.reparse_baseline);
+            if self.undo.len() > MAX_UNDO {
+                self.undo.remove(0);
+            }
+        }
+        true
+    }
+
     /// Complete one successful editor mutation. All current editor operations
     /// call this exactly once after their no-op guards. Snapshotting the previous
     /// reparse baseline (rather than diffing bytes) preserves same-value edits.

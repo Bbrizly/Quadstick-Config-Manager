@@ -1148,7 +1148,48 @@ function apply(grid: string[][], op: EditorOp): string[][] | null {
     }
     case "normalize":
       return next;
+    case "copy_inputs":
+      return copyInputs(next, op.from, op.to);
+    case "delete_rows": {
+      const rows = [...new Set(op.rows)].filter((row) => row >= 1 && row <= next.length);
+      if (rows.length === 0) return null;
+      for (const row of rows.toSorted((a, b) => b - a)) next.splice(row - 1, 1);
+      return next;
+    }
+    case "add_combo_output": {
+      const mode = modesOf(next).find((candidate) => candidate.index === op.sheet);
+      if (mode === undefined) return null;
+      const row = mode.startRow + 3 + mode.bindingCount;
+      next.splice(row - 1, 0, ["", "normal", ""]);
+      return copyInputs(next, op.from >= row ? op.from + 1 : op.from, [row]);
+    }
+    case "group": {
+      if (op.ops.length === 0 || op.ops.some((inner) => inner.op === "group")) return null;
+      let grouped: string[][] | null = next;
+      for (const inner of op.ops) {
+        grouped = apply(grouped, inner);
+        if (grouped === null) return null;
+      }
+      return grouped;
+    }
   }
+}
+
+/** Rust `ProfileFile::copy_inputs`: trimmed C..J of one row onto others. */
+function copyInputs(grid: string[][], from: number, to: readonly number[]): string[][] | null {
+  const source = grid[from - 1];
+  if (from < 1 || source === undefined) return null;
+  const targets = [...new Set(to)].filter((row) => row !== from);
+  if (targets.some((row) => row < 1 || row > grid.length)) return null;
+  const values = Array.from({ length: 8 }, (_, offset) => (source[2 + offset] ?? "").trim());
+  for (const row of targets) {
+    const target = grid[row - 1]!;
+    while (target.length < 10) target.push("");
+    values.forEach((value, offset) => {
+      target[2 + offset] = value;
+    });
+  }
+  return grid;
 }
 
 function stripUndefined(patch: SettingsPatch): Partial<AppSettings> {
