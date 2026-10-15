@@ -80,6 +80,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [installOpen, setInstallOpen] = useState(false);
   const [editor, setEditor] = useState<EditorSnapshot | null>(null);
+  const [editorToolbarSlot, setEditorToolbarSlot] = useState<HTMLDivElement | null>(null);
   const [devicePreferences, setDevicePreferences] = useState<EditorSnapshot | null>(null);
   const [workbookReview, setWorkbookReview] = useState<WorkbookImportReview | null>(null);
   // A community profile is an anonymous Sheets download (1950d85): saving can
@@ -517,6 +518,8 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           <div className="editorchrome-left">
             <span className="secondary">{t("Shell_Profile")}</span>
             <span className="editor-chrome-title">{snapshotTitle(editor)}</span>
+            <span className="editorchrome-rule" aria-hidden="true" />
+            <div className="editorchrome-tools" ref={setEditorToolbarSlot} />
           </div>
           <div className="editorchrome-right">
             {client.exportProfileXlsx === undefined ? null : (
@@ -560,7 +563,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           }}
         />
         <FollowLinkActions client={client} snapshot={editor} onSnapshot={setEditor} />
-        <EditorWorkspace client={client} snapshot={editor} onSnapshot={setEditor} />
+        <EditorWorkspace client={client} snapshot={editor} onSnapshot={setEditor} toolbarSlot={editorToolbarSlot} />
       </section>
     );
   } else if (activeDestination === "home") {
@@ -624,7 +627,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   return (
     <>
       <AppShell
-        activeDestination={activeDestination}
+        activeDestination={activeDestination === "home" && editor !== null ? null : activeDestination}
         onNavigate={(destination) => {
           if (settingsOpen) setSettingsOpen(false);
           navigate(destination);

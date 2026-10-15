@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
 import { Icon } from "../../components/primitives/icons";
@@ -41,6 +42,11 @@ interface EditorWorkspaceProps {
   readonly client: QcmClient;
   readonly snapshot: EditorSnapshot;
   readonly onSnapshot: (snapshot: EditorSnapshot) => void;
+  /**
+   * The shell's editor bar. Undo, save and the spreadsheet switch go there,
+   * one row as on Avalonia, instead of a second bar inside the plate.
+   */
+  readonly toolbarSlot?: HTMLElement | null;
 }
 
 type EditorView = "device" | "parts" | "rows";
@@ -153,7 +159,7 @@ function RawGrid({
   );
 }
 
-export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspaceProps) {
+export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = null }: EditorWorkspaceProps) {
   const { t, plural } = useI18n();
   const profileModes = useMemo(
     () => snapshot.modes.filter((mode) => mode.kind === "mode"),
@@ -419,39 +425,77 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
     setArmedDelete(null);
   };
 
+  const title = (
+    <div className="editor-title-wrap">
+      <h1 id="editor-title">{snapshot.title || t("Shell_Profile")}</h1>
+      {snapshot.dirty ? (
+        <span className="dirty-indicator" aria-label={t("Main_ThisProfileHasUnsavedChanges")}>*</span>
+      ) : null}
+    </div>
+  );
+
+  const addRowButton = (sheet: number, primary = false) => (
+    <button
+      className={primary ? "primary add-row" : "add-row"}
+      type="button"
+      disabled={busy}
+      aria-label={t("Shell_AddANewBindingRow")}
+      onClick={() => void apply([{ op: "add_row", sheet }])}
+    >
+      {t("Shell_AddRow")}
+    </button>
+  );
+
+  const rawLabel = raw ? t("Review_GoBackToTheSimple") : t("Review_ShowTheSpreadsheetWithThe");
+  const actions = (
+    <div className="editor-actions">
+      <button
+        className="command"
+        type="button"
+        disabled={busy || !snapshot.canUndo}
+        aria-label={t("Shell_UndoCtrlZ")}
+        title={t("Shell_UndoCtrlZ")}
+        onClick={() => void undo()}
+      >
+        <Icon name="undo" />
+      </button>
+      {selectedMode !== null && !raw ? addRowButton(selectedMode.index, true) : null}
+      <button
+        className="command"
+        type="button"
+        disabled={busy}
+        aria-label={t("Shell_SaveCtrlS")}
+        title={t("Shell_SaveCtrlS")}
+        onClick={() => void save()}
+      >
+        <Icon name="save" />
+      </button>
+      <button
+        className={raw ? "command active" : "command"}
+        type="button"
+        aria-pressed={raw}
+        aria-label={rawLabel}
+        title={rawLabel}
+        onClick={() => setRaw((value) => !value)}
+      >
+        <Icon name="viewSheet" />
+      </button>
+    </div>
+  );
+
   return (
     <section className="editor-workspace" aria-labelledby="editor-title">
-      <div className="editor-toolbar">
-        <div className="editor-title-wrap">
-          <h1 id="editor-title">{snapshot.title || t("Shell_Profile")}</h1>
-          {snapshot.dirty ? (
-            <span className="dirty-indicator" aria-label={t("Main_ThisProfileHasUnsavedChanges")}>*</span>
-          ) : null}
+      {toolbarSlot ? (
+        <>
+          {title}
+          {createPortal(actions, toolbarSlot)}
+        </>
+      ) : (
+        <div className="editor-toolbar">
+          {title}
+          {actions}
         </div>
-        <div className="editor-actions">
-          <button
-            className="command"
-            type="button"
-            disabled={busy || !snapshot.canUndo}
-            aria-label={t("Shell_UndoCtrlZ")}
-            onClick={() => void undo()}
-          >
-            <Icon name="undo" />
-          </button>
-          <button
-            className="command"
-            type="button"
-            disabled={busy}
-            aria-label={t("Shell_SaveCtrlS")}
-            onClick={() => void save()}
-          >
-            <Icon name="save" />
-          </button>
-          <button type="button" aria-pressed={raw} onClick={() => setRaw((value) => !value)}>
-            {raw ? t("Review_GoBackToTheSimple") : t("Review_ShowTheSpreadsheetWithThe")}
-          </button>
-        </div>
-      </div>
+      )}
 
       {raw ? (
         <RawGrid snapshot={snapshot} disabled={busy} onSetCell={setCell} />
@@ -462,9 +506,11 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
               <div className="panel-heading-row">
                 <h2>{t("Modes_Modes")}</h2>
                 <button
+                  className="icon primary"
                   type="button"
                   disabled={busy}
                   aria-label={t("Modes_AddAMode")}
+                  title={t("Modes_AddMode")}
                   onClick={() => {
                     const name = `Mode ${String(profileModes.length + 1)}`;
                     void apply([{ op: "add_mode", name }], (next) => {
@@ -475,7 +521,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                     });
                   }}
                 >
-                  {t("Modes_AddMode")}
+                  <Icon name="add" size={24} />
                 </button>
               </div>
               <ol className="mode-list">
@@ -564,23 +610,14 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
           <div className="device-workspace">
             <section className="device-canvas">
               <div className="panel-heading-row">
-                <h2>
+                <h2 className={toolbarSlot ? "visually-hidden" : undefined}>
                   {view === "device"
                     ? t("Shell_Device")
                     : view === "parts"
                       ? t("Shell_Parts")
                       : t("Shell_Rows")}
                 </h2>
-                {selectedMode !== null ? (
-                  <button
-                    type="button"
-                    disabled={busy}
-                    aria-label={t("Shell_AddANewBindingRow")}
-                    onClick={() => void apply([{ op: "add_row", sheet: selectedMode.index }])}
-                  >
-                    {t("Shell_AddRow")}
-                  </button>
-                ) : null}
+                {selectedMode !== null && !toolbarSlot ? addRowButton(selectedMode.index) : null}
               </div>
               <QuadStickVisualizer
                 client={client}
