@@ -25,9 +25,11 @@ base64 = "=0.23.1"
 chrono = { version = "=0.4.45", default-features = false, features = ["clock"] }
 getrandom = "=0.4.3"
 hidapi = { version = "=2.6.6", features = ["macos-shared-device", "windows-native"] }
-# Tokens stay in the platform credential store on the two desktop platforms
-# where the shipping Google feature is enabled. Linux remains intentionally
-# unconfigured until a persistent store is part of the product contract.
+# Tokens stay in the platform credential store on macOS and Windows. Linux
+# keeps the token for the run only, the Avalonia `InMemoryTokenStore`
+# fallback: Secret Service would need keyring's dbus features (libdbus) or its
+# async ones (a second zbus major), and no persistent Linux store is in the
+# product contract yet.
 keyring = { version = "=3.6.3", default-features = false, features = ["apple-native", "windows-native"] }
 open = "=5.4.3"
 qcm-config = { path = "../crates/qcm-config" }

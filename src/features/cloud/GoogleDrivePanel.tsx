@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
+import { DrivePickerDialog } from "./DrivePickerDialog";
 import { ShareSetupDialog } from "./ShareSetupDialog";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
@@ -8,7 +9,6 @@ import {
   asQcmError,
   type DriveBackupOutcome,
   type DriveConflictChoice,
-  type DriveFile,
   type EditorSnapshot,
   type GoogleAuthStatus,
   type QcmClient,
@@ -23,40 +23,29 @@ interface GoogleDriveSettingsProps {
 export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsProps) {
   const { t } = useI18n();
   const [auth, setAuth] = useState<GoogleAuthStatus | null>(null);
-  const [files, setFiles] = useState<readonly DriveFile[]>([]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [picker, setPicker] = useState(false);
 
   const status = client.getGoogleAuthStatus;
   const connect = client.connectGoogle;
   const disconnect = client.disconnectGoogle;
   const list = client.listDriveBackups;
-  const restore = client.restoreDriveBackup;
 
   const showFailure = useCallback((reason: unknown): void => {
     setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
   }, [t]);
-
-  const refreshFiles = useCallback(async (): Promise<void> => {
-    if (list === undefined) return;
-    try {
-      setFiles(await list.call(client));
-    } catch (reason) {
-      showFailure(reason);
-    }
-  }, [client, list, showFailure]);
 
   useEffect(() => {
     if (status === undefined) return;
     let disposed = false;
     void status.call(client).then((value) => {
       if (!disposed) setAuth(value);
-      if (!disposed && value.connected) void refreshFiles();
     }).catch((reason: unknown) => {
       if (!disposed) showFailure(reason);
     });
     return () => { disposed = true; };
-  }, [client, refreshFiles, showFailure, status]);
+  }, [client, showFailure, status]);
 
   if (status === undefined || connect === undefined || disconnect === undefined) return null;
 
@@ -68,7 +57,6 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
       const next = await connect.call(client);
       setAuth(next);
       setMessage(next.connected ? t("Settings_Connected") : "");
-      if (next.connected) await refreshFiles();
     } catch (reason) {
       showFailure(reason);
     } finally {
@@ -81,23 +69,7 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
     setBusy(true);
     try {
       setAuth(await disconnect.call(client));
-      setFiles([]);
       setMessage("");
-    } catch (reason) {
-      showFailure(reason);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const restoreOne = async (file: DriveFile): Promise<void> => {
-    if (restore === undefined || busy) return;
-    setBusy(true);
-    setMessage(t("DrivePick_Importing"));
-    try {
-      const review = await restore.call(client, file.cloudRef);
-      setMessage("");
-      onReview(review);
     } catch (reason) {
       showFailure(reason);
     } finally {
@@ -121,25 +93,14 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
           </button>
         )}
         {auth?.connected && list !== undefined ? (
-          <button type="button" disabled={busy} onClick={() => void refreshFiles()}>
+          <button type="button" disabled={busy} onClick={() => setPicker(true)}>
             {t("Settings_ImportDrive")}
           </button>
         ) : null}
       </div>
-
-      {auth?.connected && files.length === 0 ? <p>{t("DrivePick_NoBackupsFoundInYour")}</p> : null}
-      {files.length === 0 ? null : (
-        <ul className="drive-backup-list" aria-label={t("DrivePick_YourGoogleDriveBackups")}>
-          {files.map((file) => (
-            <li key={file.cloudRef}>
-              <span>{file.name}</span>
-              <button type="button" disabled={busy} onClick={() => void restoreOne(file)}>
-                {t("DrivePick_Import")}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {picker ? (
+        <DrivePickerDialog client={client} onReview={onReview} onClose={() => setPicker(false)} />
+      ) : null}
       <LiveRegion>{message}</LiveRegion>
     </section>
   );

@@ -61,8 +61,14 @@ trait RefreshTokenStore: Send + Sync {
     fn supported(&self) -> bool;
 }
 
+/// Keychain / Credential Manager on macOS and Windows. Elsewhere the token
+/// lives only for this run, which is the Avalonia `InMemoryTokenStore`
+/// fallback: connecting works, and the next launch asks again.
 #[derive(Debug, Default)]
-struct PlatformTokenStore;
+struct PlatformTokenStore {
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    memory: Mutex<Option<String>>,
+}
 
 impl PlatformTokenStore {
     #[cfg(any(target_os = "macos", target_os = "windows"))]
@@ -84,7 +90,11 @@ impl RefreshTokenStore for PlatformTokenStore {
         }
         #[cfg(not(any(target_os = "macos", target_os = "windows")))]
         {
-            Ok(None)
+            Ok(self
+                .memory
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner)
+                .clone())
         }
     }
 
@@ -97,10 +107,8 @@ impl RefreshTokenStore for PlatformTokenStore {
         }
         #[cfg(not(any(target_os = "macos", target_os = "windows")))]
         {
-            let _ = token;
-            Err(auth_message(
-                "secure Google token storage is unavailable on this platform",
-            ))
+            *self.memory.lock().unwrap_or_else(PoisonError::into_inner) = Some(token.to_owned());
+            Ok(())
         }
     }
 
@@ -114,12 +122,17 @@ impl RefreshTokenStore for PlatformTokenStore {
         }
         #[cfg(not(any(target_os = "macos", target_os = "windows")))]
         {
+            *self.memory.lock().unwrap_or_else(PoisonError::into_inner) = None;
             Ok(())
         }
     }
 
     fn supported(&self) -> bool {
-        cfg!(any(target_os = "macos", target_os = "windows"))
+        cfg!(any(
+            target_os = "macos",
+            target_os = "windows",
+            target_os = "linux"
+        ))
     }
 }
 
@@ -138,7 +151,7 @@ impl GoogleAuthService {
             .map_err(|error| auth_internal("build Google HTTP client", error))?;
         Ok(Self {
             http,
-            store: PlatformTokenStore,
+            store: PlatformTokenStore::default(),
             access: Mutex::new(None),
         })
     }

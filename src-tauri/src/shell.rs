@@ -54,7 +54,11 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
                 device_install: true,
                 live_input: true,
                 community_catalog: true,
-                google_backup: cfg!(any(target_os = "macos", target_os = "windows")),
+                google_backup: cfg!(any(
+                    target_os = "macos",
+                    target_os = "windows",
+                    target_os = "linux"
+                )),
                 agent: qcm_core::agent_feature::ENABLED,
                 usage_data: !crate::telemetry::global().disabled_by_environment(),
             },
