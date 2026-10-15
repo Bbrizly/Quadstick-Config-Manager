@@ -111,7 +111,9 @@
 .device-workspace {
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+  /* The floor sits on the track: below 340 a mapping card's input box is
+     squeezed to nothing by its label and its buttons. */
+  grid-template-columns: minmax(0, 1.4fr) minmax(340px, 0.6fr);
   align-items: stretch;
 }
 
