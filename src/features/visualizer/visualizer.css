@@ -641,9 +641,10 @@
   gap: var(--qcm-space-sm);
 }
 
+/* One line each in the sidebar (`RailRow(compact)`), about 34px tall. */
 .visualizer-extra-zones .zone {
   position: static;
-  min-height: 56px !important;
+  min-height: 34px !important;
   animation: card-enter 140ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 

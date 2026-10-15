@@ -225,6 +225,20 @@ function PreferenceValue({
   );
 }
 
+/** The live stick, only while the Joystick group is open: nothing reads the
+ * stick for a picture nobody is looking at. */
+function JoystickTravel({ client, deadZone }: { readonly client: QcmClient; readonly deadZone: number }) {
+  const { t } = useI18n();
+  const [live, setLive] = useState<LiveSnapshot | null>(null);
+  useLiveInput(client, setLive);
+  return (
+    <>
+      <AxisView frame={live} deadZone={deadZone} />
+      <output>{liveText(live, t)}</output>
+    </>
+  );
+}
+
 export function DevicePreferencesPage({
   client,
   snapshot,
@@ -234,7 +248,6 @@ export function DevicePreferencesPage({
   const { t, plural } = useI18n();
   const [catalog, setCatalog] = useState<PreferenceCatalog | null>(null);
   const [category, setCategory] = useState<string | null>(null);
-  const [live, setLive] = useState<LiveSnapshot | null>(null);
   const [busy, setBusy] = useState(false);
   const [plan, setPlan] = useState<InstallPlan | null>(null);
   const [message, setMessage] = useState("");
@@ -250,6 +263,23 @@ export function DevicePreferencesPage({
   }
   const changed = rows.filter((row) => baseline.values.get(row.name) !== row.value).length;
   const [linkOpen, setLinkOpen] = useState(false);
+  // Reload and Undo both throw edits away, so with changes they ask first.
+  const [askDiscard, setAskDiscard] = useState(false);
+  const [deviceName, setDeviceName] = useState("");
+  const sourceDevice = snapshot.source.kind === "device" ? snapshot.source.device : null;
+  useEffect(() => {
+    if (sourceDevice === null) return undefined;
+    let cancelled = false;
+    void client.listDevices().then(
+      (presence) => {
+        if (!cancelled) setDeviceName(presence.devices.find((device) => device.deviceId === sourceDevice)?.displayName ?? "");
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client, sourceDevice]);
   const rowByName = useMemo(() => new Map(rows.map((row) => [row.name, row])), [rows]);
   const definitions = useMemo(
     () => catalog?.definitions.filter((definition) => category === null || definition.category === category) ?? [],
@@ -279,7 +309,6 @@ export function DevicePreferencesPage({
     };
   }, [client, showFailure]);
 
-  useLiveInput(client, setLive);
 
   const apply = async (ops: readonly EditorOp[]): Promise<EditorSnapshot | null> => {
     if (busy || ops.length === 0) return null;
@@ -382,11 +411,12 @@ export function DevicePreferencesPage({
         <div className="device-page-copy">
           <h1 id="device-preferences-title">{t("DevicePage_YourQuadStickSSettings")}</h1>
           <p className="secondary">{t("DevicePage_TheseSettingsLiveInPrefs")}</p>
-          {/* Avalonia prints the drive's path here; paths never reach the
-              window in the rewrite, so the line is left out. */}
+          {/* Avalonia names the drive's path; paths never reach the window
+              here, so it names the drive. */}
+          {deviceName === "" ? null : <p>{t("DevicePage_FoundYourQuadStickAtRoot", [deviceName])}</p>}
         </div>
         <div className="device-page-actions">
-          <button className="device-reload" type="button" disabled={busy} aria-label={t("DevicePage_ReadTheSettingsFromYour")} onClick={() => void reset()}>
+          <button className="device-reload" type="button" disabled={busy} aria-label={t("DevicePage_ReadTheSettingsFromYour")} onClick={() => (changed > 0 ? setAskDiscard(true) : void reset())}>
             {t("DevicePage_Reload")}
           </button>
           <button className="quiet" type="button" disabled={busy} onClick={onClose}>
@@ -423,8 +453,7 @@ export function DevicePreferencesPage({
             {category === "Joystick" ? (
               <section className="device-live-tuning" aria-labelledby="device-live-title">
                 <h2 id="device-live-title">{t("DevicePage_JoystickTravel")}</h2>
-                <AxisView frame={live} deadZone={deadZone} />
-                <output>{liveText(live, t)}</output>
+                <JoystickTravel client={client} deadZone={deadZone} />
               </section>
             ) : null}
             <div className="device-preference-list">
@@ -494,7 +523,7 @@ export function DevicePreferencesPage({
           {changed === 0 ? t("DevicePage_NoChangesYet") : plural("DevicePage_ChangedNotSavedYet", changed, [changed])}
         </span>
         <span className="device-save-actions">
-          <button type="button" disabled={busy || changed === 0} onClick={() => void reset()}>
+          <button type="button" disabled={busy || changed === 0} aria-label={t("DevicePage_PutEverySettingBackTo")} onClick={() => setAskDiscard(true)}>
             {t("DevicePage_UndoChanges")}
           </button>
           <button
@@ -508,6 +537,30 @@ export function DevicePreferencesPage({
           </button>
         </span>
       </div>
+
+      <Dialog
+        open={askDiscard}
+        title={t("DevicePage_ThrowAwayYourChanges")}
+        onClose={() => setAskDiscard(false)}
+        actions={
+          <>
+            <button type="button" data-autofocus onClick={() => setAskDiscard(false)}>
+              {t("Device_Cancel")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAskDiscard(false);
+                void reset();
+              }}
+            >
+              {t("DevicePage_UndoChanges")}
+            </button>
+          </>
+        }
+      >
+        <p>{t("DevicePage_TheSettingsYouChangedHere")}</p>
+      </Dialog>
 
       {client.console === undefined || !linkOpen ? null : (
         <DeviceLinkDialog client={client} console={client.console} open onClose={() => setLinkOpen(false)} />

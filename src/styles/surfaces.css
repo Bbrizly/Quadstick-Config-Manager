@@ -263,23 +263,29 @@ button.link-close {
 
 /* The page is the window tall: the groups and the open group's settings
    scroll inside themselves, the save bar stays put at the bottom. */
-.shell-main:has(> .device-preferences-page),
 .device-preferences-page {
   min-height: 0;
 }
 
 .device-preferences-page {
   box-sizing: border-box;
-  /* The shell's main area already pads 24 above and 32 below. */
+  /* The window less the shell chrome (86) and the main area's own padding
+     (24 + 32), the way the editor route sizes itself: the shell grows with
+     its content, so nothing above gives a height to fill. */
   height: calc(100vh - 86px - 56px);
   margin: 0;
   padding: 0;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.device-preferences-page > * {
+  flex: none;
 }
 
 .device-preferences-page > .device-preference-layout {
+  flex: 1 1 0;
   min-height: 0;
-  height: 100%;
 }
 
 .device-preference-categories,
