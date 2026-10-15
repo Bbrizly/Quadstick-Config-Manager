@@ -2,6 +2,7 @@ use crate::community::{
     CommunityCatalogDto, CommunityImportRequest, CommunityLoadRequest, CommunityService,
 };
 use crate::ipc::parse;
+use crate::telemetry::ProfileSource;
 use crate::workbook_shell::{WorkbookImportReviewDto, WorkbookShellState};
 use qcm_core::error::{InternalError, OsDetail, QcmError, QcmErrorDto, RequestError};
 use serde::Deserialize;
@@ -61,7 +62,7 @@ pub fn import_community_profile(
             || format!("{}.xlsx", request.csv_name),
             |stem| format!("{stem}.xlsx"),
         );
-    redact(workbook.import_bytes(&display_name, bytes))
+    redact(workbook.import_bytes(&display_name, bytes, ProfileSource::Library))
 }
 
 #[tauri::command]

@@ -23,7 +23,7 @@ Evidence paths are target placeholders until implemented.
 | T-016 | community privacy/offline | HTTP spy/cache | offline | PLANNED |
 | T-017 | Google auth | mock state/PKCE | DPAPI/Keychain | PLANNED |
 | T-018 | Drive backup/conflict | fake/HTTP mock | real account | PLANNED |
-| T-019 | telemetry privacy | `src-tauri` diagnostics unit tests (allowlist/kill-switch/feedback cap) | policy review | SOFT IMPLEMENTED |
+| T-019 | telemetry privacy | `src-tauri/src/telemetry.rs` (token/kill-switch/notice gates, allowlist, launch once, game/setup_seconds/strength, withdraw drops queue, feedback cap + flush, crash chain without message) + `qcm-core/tests/settings.rs` install id | policy review; one real PostHog event from a signed build | IMPLEMENTED |
 | T-020 | crash rescue | diagnostics draft + pending offer/open + panic hook + CrashReportPrompt | packaged restart | Soft IMPLEMENTED |
 | T-021 | i18n | generated key/placeholder/pseudo/RTL/error-code suite | locales | IMPLEMENTED |
 | T-022 | updater signature/state | updates.rs Compare unit tests; Soft browser check | packaged rollback | SOFT: Compare tested; signed install PARKED |

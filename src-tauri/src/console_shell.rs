@@ -15,7 +15,7 @@ use crate::ipc::parse;
 use qcm_config::ProfileFile;
 use qcm_core::console::{
     ConsoleError, DeviceConsole, FileStamp, STRENGTH_TEST_NAME, STRENGTH_TEST_PROFILE,
-    current_hard_threshold, maximum_preference, threshold_preference,
+    SWEEP_HIGHEST, SWEEP_LOWEST, current_hard_threshold, maximum_preference, threshold_preference,
 };
 use qcm_core::error::{
     ConfigError, InternalError, OsDetail, QcmError, QcmErrorDto, RecoveryActionDto, RequestError,
@@ -598,6 +598,27 @@ pub async fn console_strength_end(shell: Shell<'_>) -> Result<(), Failure> {
         Ok(())
     })
     .await
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct StrengthRequest {
+    puff: i32,
+    sip: i32,
+}
+
+/// The strength test finished: `strength_measured`, if usage data is on.
+#[tauri::command]
+pub fn console_record_strength(request: Value) -> Result<bool, Failure> {
+    let request: StrengthRequest =
+        parse(request, "console_record_strength request").map_err(|e| fail_qcm(&e))?;
+    let range = (SWEEP_LOWEST - 1)..=SWEEP_HIGHEST;
+    if !range.contains(&request.puff) || !range.contains(&request.sip) {
+        return Err(fail_qcm(&QcmError::Request(RequestError::OutOfRange {
+            what: "strength",
+        })));
+    }
+    Ok(crate::telemetry::global().strength_measured(request.puff, request.sip))
 }
 
 #[cfg(test)]

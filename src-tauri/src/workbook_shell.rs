@@ -4,6 +4,7 @@
 //! display name, an opaque one-shot import id and a bounded review projection.
 //! Full skipped-tab cells stay native until the user accepts or repairs them.
 
+use crate::telemetry::ProfileSource;
 use qcm_config::{
     Grid, ProfileFile, SkippedTabKind, TabRename, WorkbookImport, WorkbookLimitation,
     XLSX_MAX_WORKBOOK_BYTES, export_xlsx, import_xlsx, parse_csv, repaired_as_mode, write_csv,
@@ -143,6 +144,8 @@ fn import_error(error: qcm_config::WorkbookError) -> QcmError {
 struct PendingWorkbook {
     name: ProfileDisplayName,
     import: WorkbookImport,
+    /// Where it came from, for the `profile_opened` source on accept.
+    source: ProfileSource,
 }
 
 #[derive(Debug, Default)]
@@ -176,8 +179,12 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
         let Some(picked) = self.picker.pick_import()? else {
             return Ok(None);
         };
-        self.import_bytes(picked.display_name.as_str(), picked.bytes)
-            .map(Some)
+        self.import_bytes(
+            picked.display_name.as_str(),
+            picked.bytes,
+            ProfileSource::File,
+        )
+        .map(Some)
     }
 
     /// Register workbook bytes obtained by another native service such as
@@ -187,6 +194,7 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
         &self,
         display_name: &str,
         bytes: Vec<u8>,
+        source: ProfileSource,
     ) -> Result<WorkbookImportReviewDto, QcmError> {
         if bytes.len() > XLSX_MAX_WORKBOOK_BYTES {
             return Err(QcmError::Config(ConfigError::TooLarge {
@@ -207,6 +215,7 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
             PendingWorkbook {
                 name: ProfileDisplayName::new(display_name),
                 import,
+                source,
             },
         );
         table
@@ -254,6 +263,7 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
         Ok(AcceptedWorkbook {
             name: csv_name(pending.name.as_str()),
             csv: pending.import.csv,
+            source: pending.source,
         })
     }
 
@@ -450,6 +460,7 @@ struct ImportTabRequest {
 pub struct AcceptedWorkbook {
     pub name: String,
     pub csv: String,
+    pub source: ProfileSource,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]

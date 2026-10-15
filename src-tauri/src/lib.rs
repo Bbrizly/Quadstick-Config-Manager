@@ -22,6 +22,7 @@ pub mod ipc;
 pub mod preference_ipc;
 pub mod shell;
 pub mod streaming;
+pub mod telemetry;
 pub mod updates;
 pub mod workbook_shell;
 
@@ -94,6 +95,7 @@ pub fn registered_commands() -> &'static [&'static str] {
         "console_calibrate",
         "console_set_threshold",
         "console_strength_end",
+        "console_record_strength",
     ]
 }
 
@@ -127,9 +129,14 @@ pub fn run() {
         drive::DriveService::native(Arc::clone(&google))
             .expect("failed to build native Drive client"),
     );
+    let profiles = shell::native_shell();
+    // The saved answer, before any window can ask for anything. Nothing is
+    // started unless it is a yes to the current notice and the build has a
+    // token.
+    profiles.apply_telemetry_consent();
     tauri::Builder::default()
         .plugin(navigation_guard())
-        .manage(shell::native_shell())
+        .manage(profiles)
         .manage(workbook_shell::native_workbook_shell())
         .manage(device_shell::native_device_shell())
         .manage(
@@ -203,9 +210,16 @@ pub fn run() {
             console_shell::console_calibrate,
             console_shell::console_set_threshold,
             console_shell::console_strength_end,
+            console_shell::console_record_strength,
         ])
-        .run(tauri::generate_context!())
-        .expect("failed to start the QuadStick Config Manager window");
+        .build(tauri::generate_context!())
+        .expect("failed to start the QuadStick Config Manager window")
+        .run(|_app, event| {
+            if let tauri::RunEvent::Exit = event {
+                // Push what is queued so a short session is not a silent one.
+                telemetry::global().shutdown();
+            }
+        });
 }
 
 #[cfg(test)]
@@ -223,7 +237,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 61);
+        assert_eq!(commands.len(), 62);
         for expected in [
             "import_community_profile",
             "open_community_sheet",

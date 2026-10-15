@@ -51,7 +51,7 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `CrashGuard.cs`, `CrashReport.cs` | rescue/report | core/native + React | SPLIT/REWRITE | crash/privacy | 6 | PORTED: draft + offer/open + panic hook + crash prompt |
 | `QuadStick.Format/DeviceConsole.cs` | serial/Bluetooth console protocol + strength sweep | qcm-core/console.rs | REWRITE | `device_console.rs` | 3 | PARITY-TESTED |
 | `DeviceLinkWindow.cs` | console window: ports, connect, send, strength test | src-tauri/console_shell.rs + React DeviceLinkDialog | SPLIT | shell unit + vitest | 6 | PORTED |
-| `Telemetry.cs`, `TelemetryToken.cs` | analytics/feedback | diagnostics service | REWRITE | network/allowlist | 6 | PORTED: allowlist + feedback UI (no PostHog send) |
+| `Telemetry.cs`, `TelemetryToken.cs` | analytics/feedback/crash send | src-tauri/telemetry.rs + diagnostics commands | REWRITE | `telemetry.rs` unit tests with a recording sink | 6 | PORTED: closed events, per-event allowlist, consent v2, kill switch, build-time token, off-thread batched PostHog `/batch/` send, durable install id; first-run notice dialog not yet ported |
 | `UpdateCheck.cs` | updater | browser check + open URL | REWRITE | GitHub latest | 6 | SOFT: check_for_update + open_external_url; install_update PARKED |
 | `AgentBridge.cs` | agent integration | core typed EditorOp | REWRITE | corpus/eval | 6 | SOFT: EditorOp contract; UI off |
 | `AgentFeature.cs` | feature gating | `qcm_core::agent_feature` | REWRITE | feature tests | 6 | PORTED: ENABLED=false |

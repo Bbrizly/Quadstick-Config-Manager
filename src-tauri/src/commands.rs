@@ -28,6 +28,9 @@ use serde_json::Value;
 use tauri::State;
 use tauri::ipc::Channel;
 
+use crate::telemetry::{self, InstallFailure, ProfileSource};
+use qcm_core::ErrorCode;
+
 type Failure = Box<QcmErrorDto>;
 
 fn redact<T>(result: Result<T, qcm_core::QcmError>) -> Result<T, Failure> {
@@ -75,14 +78,20 @@ pub fn new_profile(
     state: State<'_, ShellState>,
     request: Value,
 ) -> Result<EditorSnapshot, Failure> {
-    redact(state.new_profile(request))
+    let opened = redact(state.new_profile(request))?;
+    telemetry::global().opened(ProfileSource::New, None);
+    Ok(opened)
 }
 
 #[tauri::command]
 pub fn choose_and_open_profile(
     state: State<'_, ShellState>,
 ) -> Result<Option<EditorSnapshot>, Failure> {
-    redact(state.choose_and_open_profile())
+    let opened = redact(state.choose_and_open_profile())?;
+    if opened.is_some() {
+        telemetry::global().opened(ProfileSource::File, None);
+    }
+    Ok(opened)
 }
 
 #[tauri::command]
@@ -114,7 +123,9 @@ pub fn save_profile(
     state: State<'_, ShellState>,
     request: Value,
 ) -> Result<SaveReceiptDto, Failure> {
-    redact(state.save_profile(request))
+    let saved = redact(state.save_profile(request))?;
+    telemetry::global().saved();
+    Ok(saved)
 }
 
 #[tauri::command]
@@ -122,7 +133,11 @@ pub fn save_profile_as(
     state: State<'_, ShellState>,
     request: Value,
 ) -> Result<Option<SaveReceiptDto>, Failure> {
-    redact(state.save_profile_as(request))
+    let saved = redact(state.save_profile_as(request))?;
+    if saved.is_some() {
+        telemetry::global().saved();
+    }
+    Ok(saved)
 }
 
 #[tauri::command]
@@ -155,7 +170,9 @@ pub fn accept_workbook_import(
     request: Value,
 ) -> Result<EditorSnapshot, Failure> {
     let accepted = redact(workbook.accept_import(request))?;
-    redact(profiles.open_workbook_copy(&accepted.name, &accepted.csv))
+    let opened = redact(profiles.open_workbook_copy(&accepted.name, &accepted.csv))?;
+    telemetry::global().opened(accepted.source, None);
+    Ok(opened)
 }
 
 #[tauri::command]
@@ -228,7 +245,21 @@ pub fn prepare_install(
 ) -> Result<InstallPlanDto, Failure> {
     let request: PrepareInstallRequest = redact(parse(request, "prepare_install request"))?;
     let file = redact(profile_state.profile_for_install(&request.session_id))?;
-    redact(device_state.prepare_install(&request.device_id, &file))
+    let telemetry = telemetry::global();
+    telemetry.install_attempted();
+    let plan = device_state.prepare_install(&request.device_id, &file);
+    if let Err(error) = &plan {
+        match error.code() {
+            ErrorCode::ConfigHasBlockingProblems => {
+                telemetry.install_failed(InstallFailure::HasErrors);
+            }
+            ErrorCode::DeviceNotQuadStick | ErrorCode::DeviceNotFound => {
+                telemetry.install_failed(InstallFailure::NotAQuadstick);
+            }
+            _ => {}
+        }
+    }
+    redact(plan)
 }
 
 #[tauri::command]
@@ -238,9 +269,26 @@ pub fn commit_install(
     request: Value,
     progress: Channel<InstallProgressDto>,
 ) -> Result<InstallReceiptDto, Failure> {
-    let receipt = redact_operation(state.commit_install_with_progress(request, |stage| {
+    let result = state.commit_install_with_progress(request, |stage| {
         let _ = progress.send(InstallProgressDto::from(stage));
-    }))?;
+    });
+    match &result {
+        Ok(_) => {
+            telemetry::global().installed();
+        }
+        Err(failure)
+            if !matches!(
+                failure.error,
+                qcm_core::QcmError::Confirmation(_)
+                    | qcm_core::QcmError::Cancelled
+                    | qcm_core::QcmError::Request(_)
+            ) =>
+        {
+            telemetry::global().install_failed(InstallFailure::IoError);
+        }
+        Err(_) => {}
+    }
+    let receipt = redact_operation(result)?;
     invalidation.notify();
     Ok(receipt)
 }
@@ -282,12 +330,14 @@ pub fn open_device_profile(
     request: Value,
 ) -> Result<EditorSnapshot, Failure> {
     let opened = redact(device_state.open_device_profile(request))?;
-    Ok(profile_state.open_device_copy(
+    let snapshot = profile_state.open_device_copy(
         opened.device,
         opened.generation,
         opened.name,
         &opened.csv_text,
-    ))
+    );
+    telemetry::global().opened(ProfileSource::Device, None);
+    Ok(snapshot)
 }
 
 #[tauri::command]

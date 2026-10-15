@@ -669,7 +669,7 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 61);
+    assert_eq!(registered.len(), 62);
     for name in [
         "get_app_snapshot",
         "get_settings",
@@ -732,6 +732,7 @@ fn every_command_this_build_registers_is_on_the_list() {
         "console_calibrate",
         "console_set_threshold",
         "console_strength_end",
+        "console_record_strength",
     ] {
         assert!(registered.contains(&name), "{name}");
     }

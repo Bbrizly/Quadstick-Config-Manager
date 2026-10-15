@@ -192,3 +192,24 @@ fn a_hand_edited_file_with_an_illegal_value_does_not_load_it() {
     let poisoned = r#"{"language":"/Users/bassam"}"#;
     assert!(serde_json::from_str::<AppSettings>(poisoned).is_err());
 }
+
+// Telemetry.InstallId: made once, and never used until it reached disk.
+#[test]
+fn an_install_id_is_made_once_and_only_kept_when_saved() {
+    let store = FakeSettingsFile::new();
+    store.fail_next_save();
+    let mut settings = Settings::load(store);
+    assert_eq!(settings.ensure_install_id(|| Some("first".into())), "");
+    assert_eq!(settings.current().install_id, "");
+
+    assert_eq!(
+        settings.ensure_install_id(|| Some("second".into())),
+        "second"
+    );
+    assert_eq!(
+        settings.ensure_install_id(|| Some("third".into())),
+        "second"
+    );
+    assert_eq!(settings.revision(), 1, "no window shows it, so no revision");
+    assert_eq!(settings.ensure_install_id(|| None), "second");
+}

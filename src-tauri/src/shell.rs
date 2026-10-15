@@ -66,8 +66,45 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
     }
     pub fn update_settings(&self, raw: Value) -> Result<AppSettingsDto, QcmError> {
         let request: UpdateSettingsRequest = parse(raw, "update_settings request")?;
-        let patch = request.patch.validate()?;
-        self.settings().update(request.expected_revision, &patch)
+        let mut patch = request.patch.validate()?;
+        // `ApplyTelemetryAnswer`: the Settings toggle is an answer to the
+        // current notice, so it records that notice as seen.
+        if patch.usage_analytics.is_some() {
+            patch.telemetry_notice_version = Some(crate::telemetry::NOTICE_VERSION);
+        }
+        let updated = self.settings().update(request.expected_revision, &patch)?;
+        if patch.usage_analytics.is_some() {
+            self.apply_telemetry_consent();
+        }
+        Ok(updated)
+    }
+
+    /// Push the saved answer into telemetry, minting the install id only for
+    /// someone who said yes. Called at launch and after the toggle.
+    pub fn apply_telemetry_consent(&self) {
+        let telemetry = crate::telemetry::global();
+        let (notice, usage, id) = {
+            let mut settings = self.settings();
+            let current = settings.current();
+            let (notice, usage) = (current.telemetry_notice_version, current.usage_analytics);
+            let wants = usage
+                && notice >= crate::telemetry::NOTICE_VERSION
+                && !telemetry.disabled_by_environment();
+            let id = if wants {
+                settings.ensure_install_id(crate::telemetry::new_install_id)
+            } else {
+                String::new()
+            };
+            (notice, usage && !id.is_empty(), id)
+        };
+        telemetry.apply_consent(notice, usage, &id);
+    }
+
+    /// The durable install id, minted if needed. A crash report the person
+    /// sends needs one even without usage consent.
+    pub fn install_id_for_crash_report(&self) -> String {
+        self.settings()
+            .ensure_install_id(crate::telemetry::new_install_id)
     }
     pub fn new_profile(&self, raw: Value) -> Result<EditorSnapshot, QcmError> {
         let request: NewProfileRequest = parse(raw, "new_profile request")?;

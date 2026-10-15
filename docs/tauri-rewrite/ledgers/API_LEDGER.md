@@ -61,7 +61,7 @@ than as a framework string the UI cannot switch on.
 | send_crash_report | command | network | pending report + explicit user action | Soft IMPLEMENTED (via resolve_crash_report send) |
 | check_for_update | command | network | GitHub latest (Soft) | REGISTERED |
 | open_external_url | command | open browser | https github.com /releases only | REGISTERED |
-| track_telemetry_event | command | analytics | allowlist + kill-switch | REGISTERED (Soft no-op without token) |
+| track_telemetry_event | command | analytics | only `profile_saved`/`install_attempted`; allowlist + consent + kill-switch + token | REGISTERED (sends through `telemetry.rs`) |
 | list_console_ports | command | serial metadata | ports become opaque per-list ids | REGISTERED |
 | connect_console | command | serial open | port id from the current list only; 115200 baud; `build` probe | REGISTERED |
 | close_console | command | serial lifecycle | none; drops the port | REGISTERED |
@@ -71,6 +71,7 @@ than as a framework string the UI cannot switch on.
 | console_calibrate | command | device command | connected console | REGISTERED |
 | console_set_threshold | command | device memory only | puff flag + 0..=100 | REGISTERED |
 | console_strength_end | command | device restart | always deletes the test file, boots, drops the port | REGISTERED |
+| console_record_strength | command | analytics | puff/sip in 4..=95; `strength_measured` through the consent-gated sender | REGISTERED |
 | install_update | command | process/restart | safe app state + signature | PARKED |
 | subscribe_devices_changed | command+Channel | low | native invalidation producer only | REGISTERED |
 | unsubscribe_devices_changed | command | low | opaque subscription id | REGISTERED |

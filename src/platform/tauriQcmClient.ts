@@ -45,6 +45,9 @@ export class TauriQcmClient implements QcmClient {
     consoleCalibrate: () => call("console_calibrate"),
     consoleSetThreshold: (puff, value) => call("console_set_threshold", { puff, value }),
     consoleStrengthEnd: () => call("console_strength_end"),
+    recordStrengthMeasured: async (puff, sip) => {
+      await call<boolean>("console_record_strength", { puff, sip });
+    },
   };
   getAppSnapshot(): Promise<AppSnapshot> { return call("get_app_snapshot"); }
   getSettings(): Promise<AppSettings> { return call("get_settings"); }
@@ -137,5 +140,5 @@ export const TAURI_COMMANDS = [
   "get_pending_rescue", "open_rescue_profile", "discard_pending_rescues",
   "list_console_ports", "connect_console", "close_console", "choose_console_profile",
   "console_send_profile", "console_strength_begin", "console_calibrate", "console_set_threshold",
-  "console_strength_end",
+  "console_strength_end", "console_record_strength",
 ] as const;

@@ -1,8 +1,8 @@
-//! Soft diagnostics: redaction, feedback, telemetry allowlist, crash rescue.
+//! Diagnostics: redaction, feedback, crash rescue, and the window-facing
+//! telemetry commands.
 //!
-//! Soft does not ship PostHog wiring. Events no-op when the token is empty,
-//! usage analytics is off, or `QSCM_TELEMETRY=0`. Signed network send stays
-//! behind a later gate; Soft proves the gates refuse the right things.
+//! The PostHog sender is `crate::telemetry`. Events no-op when the token is
+//! empty, usage analytics is off, or `QSCM_TELEMETRY=0`.
 
 use crate::ipc::parse;
 use crate::shell::ShellState;
@@ -23,59 +23,18 @@ fn redact_err<T>(result: Result<T, QcmError>) -> Result<T, Failure> {
 pub const MAX_FEEDBACK_CHARS: usize = 1000;
 pub const MAX_PENDING_CRASH_REPORTS: usize = 5;
 
-/// Avalonia `TelemetryEvent` wire names. Nothing else may be tracked.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum TelemetryEvent {
-    AppLaunched,
-    ProfileOpened,
-    ProfileSaved,
-    InstallAttempted,
-    InstallSucceeded,
-    InstallFailed,
-    FeatureUsed,
-    FeedbackSubmitted,
-}
+pub use crate::telemetry::TelemetryEvent;
 
-impl TelemetryEvent {
-    #[must_use]
-    pub const fn wire(self) -> &'static str {
-        match self {
-            Self::AppLaunched => "app_launched",
-            Self::ProfileOpened => "profile_opened",
-            Self::ProfileSaved => "profile_saved",
-            Self::InstallAttempted => "install_attempted",
-            Self::InstallSucceeded => "install_succeeded",
-            Self::InstallFailed => "install_failed",
-            Self::FeatureUsed => "feature_used",
-            Self::FeedbackSubmitted => "feedback_submitted",
-        }
-    }
-
-    #[must_use]
-    pub fn from_wire(name: &str) -> Option<Self> {
-        match name {
-            "app_launched" => Some(Self::AppLaunched),
-            "profile_opened" => Some(Self::ProfileOpened),
-            "profile_saved" => Some(Self::ProfileSaved),
-            "install_attempted" => Some(Self::InstallAttempted),
-            "install_succeeded" => Some(Self::InstallSucceeded),
-            "install_failed" => Some(Self::InstallFailed),
-            "feature_used" => Some(Self::FeatureUsed),
-            "feedback_submitted" => Some(Self::FeedbackSubmitted),
-            _ => None,
-        }
-    }
-}
-
-/// Soft project token. Empty means no client is ever built, matching Avalonia's
-/// gitignored `TelemetryToken.Local.cs` empty default.
+/// The build's project token. Empty means no sender is ever built, matching
+/// Avalonia's gitignored `TelemetryToken.Local.cs` empty default.
+#[must_use]
 pub fn telemetry_token() -> &'static str {
-    option_env!("QSCM_TELEMETRY_TOKEN").unwrap_or("")
+    crate::telemetry::build_token()
 }
 
 #[must_use]
 pub fn telemetry_kill_switch() -> bool {
-    std::env::var("QSCM_TELEMETRY").ok().as_deref() == Some("0")
+    crate::telemetry::kill_switch_from_env()
 }
 
 /// Replace home-directory usernames the way Avalonia `CrashReport.SanitizePath` did.
@@ -183,14 +142,15 @@ pub fn send_feedback_text(text: &str, usage_analytics: bool) -> Result<(), QcmEr
     Ok(())
 }
 
-/// Track a closed-set event. Soft no-ops when any gate is closed.
+/// Track a closed-set event that carries no properties. Every gate is
+/// checked again inside the sender.
 pub fn track_event(event: TelemetryEvent, usage_analytics: bool) -> bool {
     track_event_gated(
         event,
         usage_analytics,
         telemetry_kill_switch(),
         telemetry_token(),
-    )
+    ) && crate::telemetry::global().track(event)
 }
 
 /// Same gates as [`track_event`], with kill-switch and token passed in so tests
@@ -653,13 +613,12 @@ pub fn pending_crash_report_offer(ask_about_crashes: bool) -> Option<PendingCras
     None
 }
 
-/// Apply Send / Later / Never. Soft send never networks; empty token keeps the
-/// file and returns `sent: false` (Avalonia keep-on-fail). Non-empty Soft token
-/// still skips the network but returns `sent: true` and discards that one file.
+/// Apply Send / Later / Never. `send` gets the report and says whether it
+/// went out; only then is the file deleted (Avalonia keep-on-fail).
 pub fn resolve_pending_crash_report(
     report_id: &str,
     choice: CrashReportChoice,
-    token: &str,
+    send: impl FnOnce(&Value) -> bool,
 ) -> Result<CrashResolveResultDto, QcmError> {
     match choice {
         CrashReportChoice::Later => Ok(CrashResolveResultDto { sent: false }),
@@ -669,13 +628,14 @@ pub fn resolve_pending_crash_report(
         }
         CrashReportChoice::Send => {
             let path = pending_report_path(report_id)?;
-            if token.is_empty() {
-                // Soft: cannot network-send. Keep the file so the next launch
-                // can ask again, matching Avalonia keep-on-fail.
+            let report = fs::read_to_string(&path)
+                .ok()
+                .and_then(|text| serde_json::from_str::<Value>(&text).ok())
+                .unwrap_or(Value::Null);
+            if !send(&report) {
+                // Keep the file so the next launch can ask again.
                 return Ok(CrashResolveResultDto { sent: false });
             }
-            // Soft: token present still does not open a socket. Treat as sent
-            // for UI thank-you + discard of the one report the user saw.
             discard_pending_crash_report(Some(&path));
             Ok(CrashResolveResultDto { sent: true })
         }
@@ -686,7 +646,18 @@ pub fn resolve_pending_crash_report(
 pub fn send_feedback(state: State<'_, ShellState>, request: Value) -> Result<(), Failure> {
     let request: SendFeedbackRequest = redact_err(parse(request, "send_feedback request"))?;
     let settings = state.get_settings();
-    redact_err(send_feedback_text(&request.text, settings.usage_analytics))
+    redact_err(send_feedback_text(&request.text, settings.usage_analytics))?;
+    // The window clears the box on success, so success means the batch went.
+    if crate::telemetry::global().send_feedback(&request.text) {
+        Ok(())
+    } else {
+        Err(Box::new(QcmErrorDto::from(&QcmError::Internal(
+            qcm_core::error::InternalError {
+                what: "feedback was not sent",
+                detail: qcm_core::error::OsDetail::new("telemetry sender unavailable"),
+            },
+        ))))
+    }
 }
 
 #[tauri::command]
@@ -696,13 +667,22 @@ pub fn track_telemetry_event(
 ) -> Result<bool, Failure> {
     let request: TrackTelemetryRequest =
         redact_err(parse(request, "track_telemetry_event request"))?;
-    let event = TelemetryEvent::from_wire(&request.event).ok_or_else(|| {
-        Box::new(QcmErrorDto::from(&QcmError::Request(
-            RequestError::OutOfRange {
-                what: "telemetry event",
-            },
-        )))
-    })?;
+    // Only the events that carry nothing. The launch is native, once per
+    // process; everything with a property has its own typed native path.
+    let event = TelemetryEvent::from_wire(&request.event)
+        .filter(|event| {
+            matches!(
+                event,
+                TelemetryEvent::ProfileSaved | TelemetryEvent::InstallAttempted
+            )
+        })
+        .ok_or_else(|| {
+            Box::new(QcmErrorDto::from(&QcmError::Request(
+                RequestError::OutOfRange {
+                    what: "telemetry event",
+                },
+            )))
+        })?;
     let settings = state.get_settings();
     Ok(track_event(event, settings.usage_analytics))
 }
@@ -730,7 +710,10 @@ pub fn resolve_crash_report(
     let result = redact_err(resolve_pending_crash_report(
         &request.report_id,
         choice,
-        telemetry_token(),
+        |report| {
+            crate::telemetry::global()
+                .send_crash_report(report, &state.install_id_for_crash_report())
+        },
     ))?;
     if choice == CrashReportChoice::Never {
         let settings = state.get_settings();
@@ -760,6 +743,7 @@ pub fn open_rescue_profile(
     let request: OpenRescueRequest = redact_err(parse(request, "open_rescue_profile request"))?;
     let csv = redact_err(read_rescue_csv(&request.rescue_id))?;
     let snapshot = state.open_unsaved_profile(&csv);
+    crate::telemetry::global().opened(crate::telemetry::ProfileSource::Rescue, None);
     discard_rescues();
     Ok(snapshot)
 }
@@ -967,19 +951,19 @@ mod tests {
             .expect("id")
             .to_owned();
 
-        let later =
-            resolve_pending_crash_report(&first_id, CrashReportChoice::Later, "").expect("later");
+        let later = resolve_pending_crash_report(&first_id, CrashReportChoice::Later, |_| false)
+            .expect("later");
         assert!(!later.sent);
         assert_eq!(pending_crash_reports().len(), 2);
         assert!(first.exists());
 
-        let send_fail =
-            resolve_pending_crash_report(&first_id, CrashReportChoice::Send, "").expect("send");
+        let send_fail = resolve_pending_crash_report(&first_id, CrashReportChoice::Send, |_| false)
+            .expect("send");
         assert!(!send_fail.sent);
         assert!(first.exists());
 
-        let never =
-            resolve_pending_crash_report(&first_id, CrashReportChoice::Never, "").expect("never");
+        let never = resolve_pending_crash_report(&first_id, CrashReportChoice::Never, |_| false)
+            .expect("never");
         assert!(!never.sent);
         assert!(pending_crash_reports().is_empty());
         assert!(!first.exists());
@@ -990,7 +974,7 @@ mod tests {
     }
 
     #[test]
-    fn resolve_send_with_token_discards_one_soft_without_network() {
+    fn a_sent_report_is_deleted_and_the_others_kept() {
         let _lock = PENDING_TEST_LOCK.lock().expect("pending test lock");
         let dir = std::env::temp_dir().join(format!(
             "qcm-pending-send-{}",
@@ -1008,8 +992,10 @@ mod tests {
             .and_then(|n| n.to_str())
             .expect("id")
             .to_owned();
-        let result = resolve_pending_crash_report(&send_id, CrashReportChoice::Send, "soft-token")
-            .expect("send");
+        let result = resolve_pending_crash_report(&send_id, CrashReportChoice::Send, |report| {
+            report["send"] == true
+        })
+        .expect("send");
         assert!(result.sent);
         assert!(!send.exists());
         assert!(keep.exists());

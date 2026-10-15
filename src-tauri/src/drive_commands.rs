@@ -4,6 +4,7 @@ use crate::drive::{
 };
 use crate::ipc::{SessionRevisionRequest, parse};
 use crate::shell::ShellState;
+use crate::telemetry::ProfileSource;
 use crate::workbook_shell::{WorkbookImportReviewDto, WorkbookShellState};
 use qcm_core::error::{InternalError, OsDetail, QcmError, QcmErrorDto, RequestError};
 use serde::{Deserialize, Serialize};
@@ -51,10 +52,12 @@ pub async fn backup_profile_to_drive(
 ) -> Result<DriveBackupOutcomeDto, Failure> {
     let profile = redact(profiles.profile_for_drive(request))?;
     let service = Arc::clone(drive.inner());
-    tauri::async_runtime::spawn_blocking(move || service.backup(profile))
+    let outcome = tauri::async_runtime::spawn_blocking(move || service.backup(profile))
         .await
         .map_err(join_error)
-        .and_then(redact)
+        .and_then(redact)?;
+    crate::telemetry::global().feature_used(crate::telemetry::AppFeature::DriveBackup);
+    Ok(outcome)
 }
 
 #[tauri::command]
@@ -87,7 +90,7 @@ pub async fn resolve_drive_conflict(
     match resolution {
         DriveResolution::Finished(result) => Ok(DriveResolutionDto::Finished { result }),
         DriveResolution::KeepRemote { name, bytes } => {
-            let review = redact(workbook.import_bytes(&name, bytes))?;
+            let review = redact(workbook.import_bytes(&name, bytes, ProfileSource::Drive))?;
             Ok(DriveResolutionDto::Review { review })
         }
     }
@@ -117,7 +120,9 @@ pub async fn restore_drive_backup(
             .await
             .map_err(join_error)
             .and_then(redact)?;
-    redact(workbook.import_bytes(&restored.0, restored.1))
+    let review = redact(workbook.import_bytes(&restored.0, restored.1, ProfileSource::Drive))?;
+    crate::telemetry::global().feature_used(crate::telemetry::AppFeature::DriveRestore);
+    Ok(review)
 }
 
 #[tauri::command]
@@ -138,8 +143,10 @@ pub async fn share_drive_profile(
     }
     let key = profile.persistent_key;
     let service = Arc::clone(drive.inner());
-    tauri::async_runtime::spawn_blocking(move || service.share(&key))
+    let share = tauri::async_runtime::spawn_blocking(move || service.share(&key))
         .await
         .map_err(join_error)
-        .and_then(redact)
+        .and_then(redact)?;
+    crate::telemetry::global().feature_used(crate::telemetry::AppFeature::ShareLink);
+    Ok(share)
 }

@@ -170,6 +170,10 @@ pub struct AppSettings {
     pub usage_analytics: bool,
     pub ask_about_crashes: bool,
     pub telemetry_notice_version: u32,
+    /// A random id made once, the first time usage data is turned on or a
+    /// crash report is sent. Never part of a patch: only
+    /// [`Settings::ensure_install_id`] writes it.
+    pub install_id: String,
 }
 
 impl Default for AppSettings {
@@ -187,6 +191,7 @@ impl Default for AppSettings {
             usage_analytics: false,
             ask_about_crashes: true,
             telemetry_notice_version: 0,
+            install_id: String::new(),
         }
     }
 }
@@ -340,6 +345,26 @@ impl<S: SettingsStore> Settings<S> {
             ask_about_crashes: self.current.ask_about_crashes,
             telemetry_notice_version: self.current.telemetry_notice_version,
         }
+    }
+
+    /// The install id, minting and saving one if there is none. Not used until
+    /// it is durable: sending under an id that never reached disk would mint
+    /// a fresh identity next launch. Empty when minting or saving failed. Not
+    /// a revision change, since no window shows it.
+    pub fn ensure_install_id(&mut self, mint: impl FnOnce() -> Option<String>) -> String {
+        if !self.current.install_id.is_empty() {
+            return self.current.install_id.clone();
+        }
+        let Some(id) = mint().filter(|id| !id.is_empty()) else {
+            return String::new();
+        };
+        let mut candidate = self.current.clone();
+        candidate.install_id.clone_from(&id);
+        if self.store.save(&candidate).is_err() {
+            return String::new();
+        }
+        self.current = candidate;
+        id
     }
 
     /// Apply a patch made against `expected_revision`.
