@@ -15,13 +15,37 @@ public interface ITokenStore
 
 public static class TokenStore
 {
-    const string Service = "QuadStick Config Manager";
+    public const string DefaultName = "QuadStick Config Manager";
     const string Account = "google-drive";
+
+    static string _name = DefaultName;
+
+    /// <summary>Whose sign-in this is. A host sets it before the first store is
+    /// made, so its Google account is its own and never the free app's. It is
+    /// the Keychain service on macOS and, without spaces, the AppData folder on
+    /// Windows. The default is what the free app always used, so nobody already
+    /// signed in is signed out.</summary>
+    public static string Name
+    {
+        get => _name;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value) || value.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
+                || value.Contains('/') || value.Contains('\\'))
+                throw new ArgumentException("Token store name must be a plain, non-empty name.", nameof(value));
+            _name = value;
+        }
+    }
+
+    /// <summary>The DPAPI file on Windows for the current <see cref="Name"/>.</summary>
+    public static string WindowsPath => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        Name.Replace(" ", "", StringComparison.Ordinal), "google-drive.token");
 
     // Store for the current OS.
     public static ITokenStore Create() =>
-        OperatingSystem.IsMacOS() ? new MacKeychainTokenStore(Service, Account)
-        : OperatingSystem.IsWindows() ? new WindowsDpapiTokenStore()
+        OperatingSystem.IsMacOS() ? new MacKeychainTokenStore(Name, Account)
+        : OperatingSystem.IsWindows() ? new WindowsDpapiTokenStore(WindowsPath)
         : new InMemoryTokenStore();
 }
 
@@ -94,13 +118,7 @@ public class WindowsDpapiTokenStore : ITokenStore
 {
     readonly string _path;
 
-    public WindowsDpapiTokenStore()
-    {
-        var dir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "QuadStickConfigManager");
-        _path = Path.Combine(dir, "google-drive.token");
-    }
+    public WindowsDpapiTokenStore(string path) => _path = path;
 
     public string? Load()
     {

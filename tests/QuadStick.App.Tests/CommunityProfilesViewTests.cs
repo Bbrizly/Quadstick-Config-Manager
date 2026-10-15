@@ -550,4 +550,16 @@ public sealed class CommunityProfilesViewTests : IDisposable
             Assert.Contains("quadstick.com", text);
         }
     }
+    // The strength test result goes out with usage data, so the privacy text
+    // has to say so, the same as the in-app consent question does.
+    [Fact]
+    public void The_privacy_text_names_the_strength_result()
+    {
+        foreach (var file in new[] { "PRIVACY.md", Path.Combine("docs", "privacy.html") })
+        {
+            var text = File.ReadAllText(Path.Combine(RepoRoot, file)).ReplaceLineEndings(" ");
+            Assert.Contains("strength test", text, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("sip and puff", text, StringComparison.OrdinalIgnoreCase);
+        }
+    }
 }

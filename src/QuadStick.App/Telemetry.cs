@@ -115,7 +115,12 @@ public static partial class Telemetry
     // and a host that turned the whole network off, where a consent question
     // would be asking about something that cannot happen.
     static bool KillSwitch =>
-        !NetworkFeature.Enabled || Environment.GetEnvironmentVariable("QSCM_TELEMETRY") == "0";
+        !HostAllowsSending || Environment.GetEnvironmentVariable("QSCM_TELEMETRY") == "0";
+
+    /// <summary>Whether the host lets analytics and crash reports out at all.
+    /// The whole network, never the narrow Drive allowance: a host that turns
+    /// on Google Drive alone has not turned on this.</summary>
+    public static bool HostAllowsSending => NetworkFeature.Enabled;
 
     /// <summary>True when QSCM_TELEMETRY=0. There is nothing to consent to, so do not ask.</summary>
     public static bool DisabledByEnvironment => KillSwitch;
