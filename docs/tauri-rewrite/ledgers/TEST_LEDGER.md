@@ -99,3 +99,10 @@ because the failure cannot be injected through `std::fs`:
   A read-only volume fails at create, so it exercises the other branch.
 
 Both need the full-volume hardware case in TASK-056.
+
+## Phase 6 (2026-10-15)
+
+- `validation_parity.rs::compare_fixture_has_the_four_avalonia_warnings`: the RenderPreview fixture gives the C# oracle's four warnings (A4, C4, C5, C10).
+- `library_shell.rs`: template names, card facts (modes not sheets), ids retired by the next listing.
+- `profile_commands.rs`: the 85-command surface.
+- Frontend: problems bar (four warnings, expand, focus), Rows grid edit/note/"normal", device sidebar parts and nothing selected, Unused (145), Modes window rename/move, settings card wording.

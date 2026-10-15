@@ -100,3 +100,8 @@ dialog called from inside `choose_and_open_profile` and `save_profile_as`, so
 `capabilities/main.json` still grants the window nothing and the window has no
 way to open a dialog of its own. The path it returns never leaves the adapter:
 the library mints an opaque id for it and that is what travels.
+
+
+## Phase 6 commands
+
+`list_library_profiles`, `open_library_profile {id}`, `delete_library_profile {id}`, `list_templates`, `open_template {id}`, `save_template {sessionId, expectedRevision, name}`. Ids are opaque and replaced by each listing; no path crosses. Settings gain `rowCards`, `compactCards`, `cardSentenceStyle` (`press_when` | `input_to_output`).

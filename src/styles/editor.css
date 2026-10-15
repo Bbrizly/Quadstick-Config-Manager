@@ -981,6 +981,8 @@ button.mode-help h2 {
 
 .model-picker {
   width: 100%;
+  min-height: var(--qcm-control-height);
+  padding-left: 12px;
 }
 
 .device-status {

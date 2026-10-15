@@ -146,6 +146,29 @@ UNRESOLVED-FL1 closed (B-072): .NET 8 `MyDocuments` read from the runtime source
 
 Gates (local, macOS): `pnpm check` (159 tests), `cargo test --workspace` (472), clippy `-D warnings`, fmt, `pnpm tauri build --debug --no-bundle`.
 
+## Phase 6 (2026-10-15): the reviewer's diff list
+
+| Item | State |
+|---|---|
+| Profile name box with fixed .csv | **DONE** (writes the file-name cell) |
+| Toolbar set and order | **DONE** Share, Unused (N), Undo, Add row (Rows only), Select, template, Save, Install, Help; Close and the raw-grid switch gone, Home leaves the editor |
+| Modes sidebar | **DONE** ? and pencil (Modes window), Custom output names table, plain rows |
+| Sidebar config / status / view | **DONE** model picker, connection line (drives + live reader, no polling), words / cards / one-line toggles |
+| Device view | **DONE** parts list in the sidebar incl. Hole combos, nothing selected at start, callout rows no longer cover the photo top |
+| Rows view | **DONE** numbered cell grid; "nothing yet" was a display bug (normal hidden), now the file's word; Avalonia display names |
+| Validation | the Rust validator already matches C# (4 warnings, new test); the mock never validated. Now a bottom bar |
+| Home | **DONE** library cards with menus, Import from Sheets button, Import enabled, tighter line height |
+| Settings | **DONE** card wording, Drive backup, update check on General; Fluent selects |
+| Device settings / DeviceLink | **DONE** layout like Avalonia via `?device` mock (prefs.csv, console) |
+
+Still different: the device nav opens the file list (Avalonia opens settings, files in a window); device settings has no group picture or Mac games block; card menu actions open the profile first; custom-name drafts last the session only; template rename/delete not ported; Avalonia's path line names the drive instead.
+
+Idle (production build, headless Chrome, focus emulated, 5 s settle, 5 s trace): Home, editor Rows, device view each 0 DrawFrame / animation frames / timers / layout; control 300 DrawFrame.
+
+Bundle: main JS 489 to 542 kB (gzip 147 to 160): new views plus validation.json for Unused.
+
+Gates (local, macOS): `pnpm check` (162 tests), `cargo test --workspace` (475), clippy `-D warnings`, fmt, catalogs regenerated clean, `pnpm tauri build --debug --no-bundle`.
+
 ## Runtime cost while a game runs
 
 - Console: nothing runs while the dialog is closed or idle. Ports are listed on open and on Refresh only. Live input is subscribed, and the 30 ms breath wait runs, only during a measurement.

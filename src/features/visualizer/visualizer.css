@@ -397,7 +397,9 @@
   grid-template-columns: auto 10px minmax(0, 1fr);
   align-items: center;
   position: relative;
-  min-height: 32px;
+  /* Avalonia's callout rows are about 20 stage units; at 32 the four rows
+     ran past the callout and covered the top of the photo. */
+  min-height: 22px;
 }
 
 .gesture-rule {
