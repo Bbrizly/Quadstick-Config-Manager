@@ -5,6 +5,7 @@
   --qcm-bg: #e6e9ed;
   --qcm-surface: #ffffff;
   --qcm-surface-subtle: #f1f3f7;
+  --qcm-sidebar-bg: #f7f8fb;
   --qcm-border: #cbd1d9;
   --qcm-text: #16191c;
   --qcm-text-secondary: #4e545b;
@@ -21,6 +22,9 @@
   --qcm-new-row-tint: #cdeed8;
   --qcm-selection-tint: #c2d3ee;
   --qcm-live-tint: #fbd9b4;
+  /* Fluent text fields: white at 40% over whatever is behind, strong edge. */
+  --qcm-field-bg: rgb(255 255 255 / 0.4);
+  --qcm-field-border: #666666;
 
   --qcm-title-size: 30px;
   --qcm-section-size: 22px;
@@ -36,6 +40,7 @@
   --qcm-space-xl: 24px;
   --qcm-space-2xl: 32px;
 
+  --qcm-radius-field: 4px;
   --qcm-radius-cell: 6px;
   --qcm-radius-control: 8px;
   --qcm-radius-track: 10px;
@@ -70,6 +75,7 @@
   --qcm-bg: #0f1216;
   --qcm-surface: #1f252c;
   --qcm-surface-subtle: #2a313a;
+  --qcm-sidebar-bg: #191d23;
   --qcm-border: #3a434e;
   --qcm-text: #f0f4f6;
   --qcm-text-secondary: #aab4bc;
@@ -86,6 +92,8 @@
   --qcm-new-row-tint: #1c3a28;
   --qcm-selection-tint: #33475f;
   --qcm-live-tint: #4a3418;
+  --qcm-field-bg: rgb(0 0 0 / 0.4);
+  --qcm-field-border: #a2a4a7;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -94,6 +102,7 @@
     --qcm-bg: #0f1216;
     --qcm-surface: #1f252c;
     --qcm-surface-subtle: #2a313a;
+    --qcm-sidebar-bg: #191d23;
     --qcm-border: #3a434e;
     --qcm-text: #f0f4f6;
     --qcm-text-secondary: #aab4bc;
@@ -110,6 +119,8 @@
     --qcm-new-row-tint: #1c3a28;
     --qcm-selection-tint: #33475f;
     --qcm-live-tint: #4a3418;
+    --qcm-field-bg: rgb(0 0 0 / 0.4);
+    --qcm-field-border: #a2a4a7;
   }
 }
 
@@ -120,6 +131,7 @@
     --qcm-bg: Canvas;
     --qcm-surface: Canvas;
     --qcm-surface-subtle: Canvas;
+    --qcm-sidebar-bg: Canvas;
     --qcm-border: CanvasText;
     --qcm-text: CanvasText;
     --qcm-text-secondary: CanvasText;
@@ -132,5 +144,7 @@
     --qcm-focus: Highlight;
     --qcm-selection-tint: Highlight;
     --qcm-live-tint: Highlight;
+    --qcm-field-bg: Field;
+    --qcm-field-border: CanvasText;
   }
 }

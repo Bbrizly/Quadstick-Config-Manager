@@ -70,6 +70,22 @@ export function HomePage({
   const { t } = useI18n();
   const [deviceNames, setDeviceNames] = useState<string[]>([]);
   const [sheetUrl, setSheetUrl] = useState("");
+  const [version, setVersion] = useState<readonly [string, string, string] | null>(null);
+
+  // Avalonia HomeVersionText: "v1.8.0 · MIT · not affiliated with QuadStick".
+  useEffect(() => {
+    let cancelled = false;
+    void client.getAppSnapshot().then(
+      (snapshot) => {
+        const [major = "0", minor = "0", patch = "0"] = snapshot.version.split(/[.+-]/u);
+        if (!cancelled) setVersion([major, minor, patch]);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
 
   useEffect(() => {
     let cancelled = false;
@@ -279,7 +295,9 @@ export function HomePage({
         )}
       </section>
 
-      <p className="home-version">{t("Rewrite_ProductName")}</p>
+      <p className="home-version">
+        {version === null ? t("Rewrite_ProductName") : t("Main_VVMajorVMinor", [...version])}
+      </p>
     </div>
   );
 }

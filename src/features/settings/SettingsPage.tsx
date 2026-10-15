@@ -228,6 +228,7 @@ export function SettingsPage({ client, onThemeChange, extra }: SettingsPageProps
         <div className="settings-fields">
           {tab === "general" ? (
             <>
+              <h2 className="settings-heading">{t("Settings_TabGeneral")}</h2>
               <div className="settings-field">
                 <label>
                   <span>{t("Settings_Language")}</span>
@@ -365,6 +366,7 @@ export function SettingsPage({ client, onThemeChange, extra }: SettingsPageProps
 
           {tab === "advanced" ? (
             <>
+              <h2 className="settings-heading">{t("Settings_TabAdvanced")}</h2>
               <div className="settings-field">
                 <label>
                   <span>{t("Settings_Grouping")}</span>
@@ -497,6 +499,7 @@ export function SettingsPage({ client, onThemeChange, extra }: SettingsPageProps
 
           {tab === "contact" ? (
             <>
+              <h2 className="settings-heading">{t("Settings_TabContact")}</h2>
               <p className="settings-caption">{t("Settings_ContactIntro")}</p>
               <h3 className="settings-heading">{t("Settings_SendFeedback")}</h3>
               <p className="settings-caption">{t("Settings_FeedbackCaption")}</p>

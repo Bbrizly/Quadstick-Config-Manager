@@ -39,6 +39,25 @@ select {
   min-height: var(--qcm-control-height);
 }
 
+/* Avalonia Fluent TextBox and ComboBox: translucent fill, strong 1px edge,
+   small corners. One rule so every field in the app reads the same. */
+select,
+textarea,
+input:not([type="checkbox"], [type="radio"], [type="range"]) {
+  border: var(--qcm-hairline) solid var(--qcm-field-border);
+  border-radius: var(--qcm-radius-field);
+  background-color: var(--qcm-field-bg);
+  color: var(--qcm-text);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--qcm-accent);
+}
+
 /* Specialized plates set their own hit area. The 48px floor made callouts,
    nav icons, and home cards read as fat web buttons. */
 button.zone-callout,
@@ -70,6 +89,13 @@ button {
   cursor: pointer;
   padding: var(--qcm-pad-control);
   transform: scale(1);
+  /* Hover eases in; a press lands at once (below). Both only run on a state
+     change, never while idle, and reduced motion turns them off. */
+  transition:
+    background-color 100ms ease,
+    border-color 100ms ease,
+    color 100ms ease,
+    transform 100ms ease;
 }
 
 button:hover {
@@ -85,6 +111,7 @@ button.zone-rail-row:hover {
 
 button:active {
   transform: scale(0.985);
+  transition-duration: 0s;
 }
 
 button.zone-callout:active,
@@ -125,9 +152,9 @@ textarea:focus-visible {
   color: var(--qcm-on-accent);
 }
 
+/* Avalonia Button.quiet only drops the fill: the hairline edge stays. */
 .quiet {
   background: transparent;
-  border-color: transparent;
   color: var(--qcm-accent-text);
   font-weight: 600;
 }
@@ -138,7 +165,7 @@ textarea:focus-visible {
 
 .quiet:hover {
   background: var(--qcm-surface-subtle);
-  border-color: transparent;
+  border-color: var(--qcm-accent);
   color: var(--qcm-accent-text);
 }
 
@@ -310,9 +337,7 @@ textarea:focus-visible {
 
 .shell-nav-button.active,
 .shell-nav-button[aria-current="page"],
-.shellnav.active,
-.shell-settings-button.active,
-.shellutility.active {
+.shellnav.active {
   background: var(--qcm-selection-tint);
   color: var(--qcm-accent-text);
   font-weight: 600;
@@ -320,9 +345,7 @@ textarea:focus-visible {
 
 .shell-nav-button.active svg,
 .shell-nav-button[aria-current="page"] svg,
-.shellnav.active svg,
-.shell-settings-button.active svg,
-.shellutility.active svg {
+.shellnav.active svg {
   color: var(--qcm-accent-text);
 }
 

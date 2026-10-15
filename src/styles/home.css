@@ -1,13 +1,16 @@
 /* Avalonia HomeView: homepanel / homeaction / card */
 
+/* Avalonia centres a StackPanel (MaxWidth 1120) that is as wide as its widest
+   line, so headings, tiles and the link box share one left edge. */
 .home-view {
   box-sizing: border-box;
-  width: 100%;
+  width: fit-content;
   max-width: calc(1120px + 56px);
-  margin: 22px auto;
+  margin: 18px auto;
   padding: 0 28px 32px;
   display: grid;
   gap: 30px;
+  line-height: 1.33;
 }
 
 .homepanel {
@@ -57,7 +60,8 @@
   gap: 0;
 }
 
-.homeaction {
+/* .home-view so these beat the app-wide "button.homeaction" reset. */
+.home-view .homeaction {
   min-width: 154px;
   min-height: 104px;
   margin: 0 10px 10px 0;
@@ -106,7 +110,7 @@
   gap: 0;
 }
 
-.card {
+.home-view .card {
   margin: 0 14px 14px 0;
   min-width: var(--qcm-card-width);
   min-height: var(--qcm-card-height);
@@ -193,7 +197,6 @@
   grid-template-columns: 1fr auto;
   gap: 10px;
   align-items: center;
-  max-width: 760px;
 }
 
 .sheets-row input {
@@ -201,10 +204,6 @@
   min-width: 0;
   width: 100%;
   padding: var(--qcm-pad-control);
-  border: var(--qcm-hairline) solid var(--qcm-border);
-  border-radius: var(--qcm-radius-control);
-  background: var(--qcm-surface);
-  color: var(--qcm-text);
 }
 
 .sheets-import {

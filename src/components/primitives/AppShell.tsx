@@ -7,7 +7,8 @@ import { Icon, type IconName } from "./icons";
 export type ShellDestination = "home" | "device" | "community";
 
 export interface AppShellProps {
-  readonly activeDestination: ShellDestination;
+  /** Null while a page no tab owns is open (the editor), as on Avalonia. */
+  readonly activeDestination: ShellDestination | null;
   readonly onNavigate: (destination: ShellDestination) => void;
   readonly themePreference: ThemePreference;
   readonly onThemePreferenceChange: (preference: ThemePreference) => void;
