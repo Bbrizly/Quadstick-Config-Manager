@@ -81,8 +81,8 @@ TASK-038 does not make React a profile engine. The UI renders `EditorSnapshot`, 
 
 - Live input subscribes only while the window is visible and focused (DOM `visibilitychange`/`focus`/`blur`; Tauri window events would need an event permission the capability does not grant). Frames are coalesced to one React update per animation frame (`src/features/live/useLiveInput.ts`).
 - The native worker (`src-tauri/src/streaming.rs`) has no 4 ms or 50 ms polling. Without a device it sleeps on a condvar until the 1.5 s rescan (floor 250 ms); the last unsubscribe wakes and stops it, so nothing enumerates HID without a subscriber. A quiet open stick wakes twice a second (500 ms read timeout). A new subscriber gets the current state at once.
-- The mode-light glow animates `scale` (compositor only) instead of `filter`, and stops with the pips when the window is inactive.
-- Only the active catalog loads (English stays bundled): main JS chunk 2311 kB to 455 kB (gzip 683 to 137). No production source maps. Device photos recompressed losslessly (5.07 to 4.71 MB). `dist-ui` 9.2 MB to 7.6 MB.
+- The mode-light glow animates `scale` instead of `filter`, so it no longer repaints the photo (not profiled), and stops with the pips when the window is inactive.
+- Only the active catalog loads (English stays bundled). Measured with `pnpm build:web`: main JS chunk 2311 kB to 455 kB (gzip 683 to 137). No production source maps. Device photos recompressed losslessly (5.07 to 4.71 MB). `dist-ui` 9.2 MB to 7.6 MB.
 
 Not measured: real wakeups/CPU with a QuadStick plugged in and a game running. That needs the physical pass.
 
