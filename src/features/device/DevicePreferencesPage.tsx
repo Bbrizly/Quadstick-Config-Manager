@@ -73,6 +73,24 @@ function latestInsertionRow(snapshot: EditorSnapshot): number | null {
   return rows.at(-1)?.row !== undefined ? (rows.at(-1)?.row ?? 0) + 1 : sheet.startRow + 3;
 }
 
+// Drew's adapter table: an adapter that gets the wrong mode just looks dead.
+export const ADAPTER_MODE_PREFERENCE = "enable_DS3_emulation";
+
+export function AdapterModes() {
+  const { t } = useI18n();
+  return (
+    <details className="device-preference-adapters">
+      <summary>{t("Prefs_AdaptersLine")}</summary>
+      <h4>{t("Prefs_Adapters")}</h4>
+      {t("Prefs_AdaptersHelp")
+        .split(/\n\s*\n/u)
+        .map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+    </details>
+  );
+}
+
 function liveText(frame: LiveSnapshot | null, t: ReturnType<typeof useI18n>["t"]): string {
   if (frame?.status.kind === "reading") {
     return frame.status.motion.buttons.length === 0
@@ -411,6 +429,7 @@ export function DevicePreferencesPage({
                     {definition.description === "" ? null : <p>{definition.description}</p>}
                     {definition.risk === "" ? null : <p>{definition.risk}</p>}
                     {definition.alsoCalled === "" ? null : <small>{definition.alsoCalled}</small>}
+                    {definition.name === ADAPTER_MODE_PREFERENCE ? <AdapterModes /> : null}
                   </div>
                   {row === undefined ? (
                     <button type="button" disabled={busy} onClick={() => addMissing(definition)}>
