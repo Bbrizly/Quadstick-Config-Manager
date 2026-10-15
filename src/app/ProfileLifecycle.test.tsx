@@ -14,12 +14,18 @@ async function openLocal(client: MockQcmClient, name = "Racing.csv"): Promise<vo
   await screen.findByRole("heading", { level: 1, name });
 }
 
-async function dirtyCurrentProfile(name = "Changed mode"): Promise<void> {
-  const modeName = await screen.findByRole("textbox", { name: "Name of mode 1" });
-  fireEvent.change(modeName, { target: { value: name } });
-  fireEvent.blur(modeName);
+async function dirtyCurrentProfile(name = "Changed"): Promise<void> {
+  // Avalonia's FileNameBox: renaming the profile is an edit like any other.
+  const box = await screen.findByRole("textbox", { name: "Profile name. Edit to rename; .csv is added for you" });
+  fireEvent.change(box, { target: { value: name } });
+  fireEvent.blur(box);
   await screen.findByLabelText("This profile has unsaved changes. Save them before leaving?");
 }
+
+// Avalonia has no Close: Home (or the mark) leaves the editor.
+const leaveEditor = (): void => {
+  fireEvent.click(screen.getByRole("button", { name: "Home" }));
+};
 
 describe("TASK-040A local profile lifecycle", () => {
   it("closes a clean local profile and can reopen it through the native picker contract", async () => {
@@ -27,7 +33,7 @@ describe("TASK-040A local profile lifecycle", () => {
     render(<App client={client} />);
 
     await openLocal(client);
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    leaveEditor();
     await screen.findByRole("heading", { level: 2, name: "Start a profile" });
 
     await openLocal(client);
@@ -86,9 +92,9 @@ describe("TASK-040A local profile lifecycle", () => {
       })[0]!,
     );
     await screen.findByRole("heading", { level: 1, name: "untitled.csv" });
-    await dirtyCurrentProfile("Saved mode");
+    await dirtyCurrentProfile("Saved");
 
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    leaveEditor();
     const dialog = await screen.findByRole("dialog", { name: "Profile" });
     fireEvent.click(within(dialog).getByRole("button", { name: "Save (Ctrl+S)" }));
 

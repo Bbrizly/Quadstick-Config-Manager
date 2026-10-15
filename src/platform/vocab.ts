@@ -20,3 +20,5 @@ export const KNOWN_OUTPUTS: ReadonlySet<string> = new Set([
   ...validation.outputs_xbox,
   ...LEGACY_OUTPUTS,
 ]);
+/** The function names validation.json lists, the Function picker's choices. */
+export const FUNCTIONS: readonly string[] = validation.functions;

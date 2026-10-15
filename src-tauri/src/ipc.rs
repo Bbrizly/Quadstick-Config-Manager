@@ -16,7 +16,7 @@ use qcm_core::error::{ProfileError, QcmError, RequestError};
 use qcm_core::profiles::{CloseOutcome, CloseRequest, SaveReceiptDto, SessionId};
 use qcm_core::settings::{
     AppSettingsDto, InterfaceScale, LanguageChoice, SettingsPatch, grouping_from_wire,
-    model_from_wire, out_of_range, theme_from_wire,
+    model_from_wire, out_of_range, sentence_style_from_wire, theme_from_wire,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -217,6 +217,12 @@ pub struct SettingsPatchDto {
     #[serde(default)]
     pub device_cards: Option<bool>,
     #[serde(default)]
+    pub row_cards: Option<bool>,
+    #[serde(default)]
+    pub compact_cards: Option<bool>,
+    #[serde(default)]
+    pub card_sentence_style: Option<String>,
+    #[serde(default)]
     pub picker_grouping: Option<String>,
     #[serde(default)]
     pub tutorial_seen: Option<bool>,
@@ -263,6 +269,12 @@ impl SettingsPatchDto {
             }
             None => None,
         };
+        let card_sentence_style = match &self.card_sentence_style {
+            Some(value) => {
+                Some(sentence_style_from_wire(value).ok_or_else(|| out_of_range("card wording"))?)
+            }
+            None => None,
+        };
         Ok(SettingsPatch {
             model,
             theme,
@@ -271,6 +283,9 @@ impl SettingsPatchDto {
             reduce_motion: self.reduce_motion,
             remember_window: self.remember_window,
             device_cards: self.device_cards,
+            row_cards: self.row_cards,
+            compact_cards: self.compact_cards,
+            card_sentence_style,
             picker_grouping,
             tutorial_seen: self.tutorial_seen,
             usage_analytics: self.usage_analytics,

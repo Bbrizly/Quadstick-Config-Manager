@@ -15,6 +15,7 @@ import type {
 } from "./driveContracts";
 import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
+import type { LibraryCard, TemplateEntry, TemplateReceipt } from "./libraryContracts";
 import type { PreferenceCatalog } from "./preferenceContracts";
 import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
 
@@ -36,6 +37,13 @@ export interface QcmClient {
   discardPendingRescues?(): Promise<void>;
   newProfile(name: string): Promise<EditorSnapshot>;
   chooseAndOpenProfile(): Promise<EditorSnapshot | null>;
+  /** "Your profiles" on Home: the files in Documents/QuadStick Profiles. */
+  listLibraryProfiles?(): Promise<readonly LibraryCard[]>;
+  openLibraryProfile?(id: string): Promise<EditorSnapshot>;
+  deleteLibraryProfile?(id: string): Promise<void>;
+  listTemplates?(): Promise<readonly TemplateEntry[]>;
+  openTemplate?(id: string): Promise<EditorSnapshot>;
+  saveTemplate?(sessionId: string, expectedRevision: number, name: string): Promise<TemplateReceipt>;
   getProfileSnapshot(sessionId: string): Promise<EditorSnapshot>;
   applyEditorOps(sessionId: string, expectedRevision: number, ops: readonly EditorOp[]): Promise<EditorSnapshot>;
   undoEditor(sessionId: string, expectedRevision: number): Promise<EditorSnapshot>;

@@ -28,8 +28,10 @@ describe("TASK-038 editor workspace", () => {
     if (opened === null) throw new Error("mock open unexpectedly cancelled");
     renderEditor(client, opened);
 
-    fireEvent.click(screen.getByTestId("binding-row-4"));
-    const output = screen.getByLabelText("Output for row 4");
+    // Rows view: the sheet as Avalonia draws it, each cell a picker.
+    fireEvent.click(screen.getByRole("button", { name: /Show the mappings as a/u }));
+    fireEvent.click(screen.getByRole("button", { name: "Warning: Output for row 4: cross" }));
+    const output = screen.getByLabelText("Warning: Output for row 4");
     fireEvent.change(output, { target: { value: "circle" } });
     fireEvent.blur(output);
 
@@ -47,8 +49,8 @@ describe("TASK-038 editor workspace", () => {
       expect(current.grid[3]?.[0]).toBe("cross");
     });
 
-    fireEvent.click(screen.getByTestId("binding-row-4"));
-    const outputAgain = screen.getByLabelText("Output for row 4");
+    fireEvent.click(screen.getByRole("button", { name: "Warning: Output for row 4: cross" }));
+    const outputAgain = screen.getByLabelText("Warning: Output for row 4");
     fireEvent.change(outputAgain, { target: { value: "circle" } });
     fireEvent.blur(outputAgain);
     await waitFor(async () => {
@@ -56,7 +58,7 @@ describe("TASK-038 editor workspace", () => {
       expect(current.dirty).toBe(true);
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /Save/u }));
+    fireEvent.click(screen.getByRole("button", { name: "Save this profile. Shortcut Control S" }));
     await waitFor(async () => {
       const current = await client.getProfileSnapshot(opened.sessionId);
       expect(current.dirty).toBe(false);
@@ -69,7 +71,9 @@ describe("TASK-038 editor workspace", () => {
     const opened = await client.newProfile("racing.csv");
     renderEditor(client, opened);
 
-    const first = screen.getByTestId("mode-row-0");
+    // The pencil beside Modes opens the Modes window (`ModesWindow`).
+    fireEvent.click(screen.getByRole("button", { name: "Edit modes: add, rename, reorder and delete" }));
+    const first = screen.getByTestId("modes-dialog-row-0");
     const firstName = within(first).getByRole("textbox", { name: "Name of mode 1" });
     fireEvent.change(firstName, { target: { value: "First" } });
     fireEvent.blur(firstName);
@@ -77,7 +81,7 @@ describe("TASK-038 editor workspace", () => {
       expect((await client.getProfileSnapshot(opened.sessionId)).modes[0]?.name).toBe("First");
     });
 
-    const second = screen.getByTestId("mode-row-1");
+    const second = screen.getByTestId("modes-dialog-row-1");
     const secondName = within(second).getByRole("textbox", { name: "Name of mode 2" });
     fireEvent.change(secondName, { target: { value: "Second" } });
     fireEvent.blur(secondName);
@@ -85,15 +89,14 @@ describe("TASK-038 editor workspace", () => {
       expect((await client.getProfileSnapshot(opened.sessionId)).modes[1]?.name).toBe("Second");
     });
 
-    fireEvent.click(within(screen.getByTestId("mode-row-0")).getByRole("button", { name: "Move it later" }));
+    fireEvent.click(within(screen.getByTestId("modes-dialog-row-0")).getByRole("button", { name: "Move First down" }));
     await waitFor(async () => {
       const current = await client.getProfileSnapshot(opened.sessionId);
       expect(current.modes.map((mode) => mode.name)).toEqual(["Second", "First"]);
     });
-    // Only the picked mode shows its controls: focus follows the moved mode
-    // rather than staying on a button its old row now hides.
+    // The sidebar follows: the moved mode is still the one picked.
     await waitFor(() => {
-      expect(document.activeElement?.closest('[data-testid="mode-row-1"]')).not.toBeNull();
+      expect(within(screen.getByTestId("mode-row-1")).getByRole("button")).toHaveAttribute("aria-current", "true");
     });
   });
 
@@ -132,18 +135,31 @@ describe("TASK-038 editor workspace", () => {
     expect(screen.getAllByRole("listitem").filter((item) => item.closest(".problems-list"))).toHaveLength(4);
   });
 
-  it("keeps the advanced grid a projection that edits through the same session", async () => {
+  it("writes a row's note and its function through set_cell", async () => {
     const client = new MockQcmClient();
     const opened = await client.newProfile("racing.csv");
     renderEditor(client, opened);
 
-    fireEvent.click(screen.getByRole("button", { name: /spreadsheet/u }));
-    const cell = screen.getByLabelText("Contents of cell A, 4");
-    fireEvent.change(cell, { target: { value: "circle" } });
-    fireEvent.blur(cell);
-
+    fireEvent.click(screen.getByRole("button", { name: /Show the mappings as a/u }));
+    const note = screen.getByLabelText("Note for row 4. Saved in the file, ignored by the QuadStick");
+    fireEvent.change(note, { target: { value: "gas" } });
+    fireEvent.blur(note);
     await waitFor(async () => {
-      expect((await client.getProfileSnapshot(opened.sessionId)).grid[3]?.[0]).toBe("circle");
+      expect((await client.getProfileSnapshot(opened.sessionId)).grid[3]?.[10]).toBe("gas");
+    });
+    // The function cell reads "normal", the word the file holds, never "nothing yet".
+    expect(screen.getAllByRole("button", { name: /^Function for row 4.*normal$/u })).toHaveLength(1);
+  });
+
+  it("lists the four Avalonia sidebar parts in device view and starts with nothing selected", () => {
+    const client = new MockQcmClient();
+    return client.newProfile("racing.csv").then((opened) => {
+      renderEditor(client, opened);
+      for (const name of [/^Main controls\./u, /^Hole combos/u, /^Switch jacks/u, /^USB devices/u]) {
+        expect(screen.getByRole("button", { name })).toBeInTheDocument();
+      }
+      expect(screen.getByText(/^Nothing selected\./u)).toBeInTheDocument();
+      expect(screen.getByText("Unused (145)")).toBeInTheDocument();
     });
   });
 

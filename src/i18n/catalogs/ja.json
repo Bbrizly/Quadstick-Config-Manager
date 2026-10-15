@@ -1236,6 +1236,7 @@
   "Rewrite_ErrorProfile": "このプロファイルは変更されたか、すでに閉じられています。開き直して、もう一度お試しください。",
   "Rewrite_ErrorRequest": "アプリはこの要求を完了できませんでした。もう一度お試しください。",
   "Rewrite_ErrorStorage": "QuadStick の操作を完了できませんでした。表示された復旧手順に従ってください。",
+  "Rewrite_MoreActionsFor": "{0} のその他の操作",
   "Rewrite_PrimaryNavigation": "メインナビゲーション",
   "Rewrite_ProductName": "QuadStick Config Manager",
   "Rewrite_PseudoLocaleName": "Pseudo (finds missed text)",

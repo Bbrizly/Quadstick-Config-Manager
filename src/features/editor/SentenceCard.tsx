@@ -1,6 +1,6 @@
 import { useI18n } from "../../i18n";
 import { OutputPrompt, promptSrc } from "../visualizer/OutputPrompt";
-import { humanize, tokenLabel, type BindingCells, type ZoneId } from "../visualizer/deviceSummary";
+import { tokenLabel, type BindingCells, type ZoneId } from "../visualizer/deviceSummary";
 import { DuplicateMark } from "./DuplicateMark";
 import { NO_DUPLICATES, type DuplicateCounts } from "./duplicates";
 
@@ -13,6 +13,10 @@ export interface SentenceCardProps {
   readonly together?: readonly BindingCells[];
   /** This mode's repeat counts; a token used twice gets a mark. */
   readonly counts?: DuplicateCounts;
+  /** `CardSentenceStyle` InputToOutput: "Sip to X as normal." */
+  readonly inputFirst?: boolean;
+  /** `CompactCards`: input, "to", output on one line, the behaviour under it. */
+  readonly compact?: boolean;
   readonly onSelect: () => void;
 }
 
@@ -50,6 +54,8 @@ export function SentenceCard({
   live = false,
   together = NO_ROWS,
   counts = NO_DUPLICATES,
+  inputFirst = false,
+  compact = false,
   onSelect,
 }: SentenceCardProps) {
   const { t } = useI18n();
@@ -67,7 +73,8 @@ export function SentenceCard({
     inputs.length > 0 ? inputs.map((input) => cardInput(input, zoneId)) : [t("Main_NoInput")];
   // The combo's other rows are drawn on this card, so they are not repeats.
   const inputRepeats = inputs.map((input) => counts.input(input) - together.length);
-  const functionLabel = fn.length > 0 ? humanize(fn) : "";
+  // `func`: the cell with its underscores taken out, "as normal" included.
+  const functionLabel = fn.replaceAll("_", " ");
   // The marks sit in the hidden visual grid, so the card's name carries them.
   const repeats = [
     ...outputs.map((entry) => ({ label: entry.label, count: counts.output(entry.token) })),
@@ -75,8 +82,35 @@ export function SentenceCard({
   ]
     .filter((entry) => entry.count >= 2)
     .map((entry) => `${entry.label}: ${t("Main_UsedNTimesInThisMode", [entry.count])}`);
-  const sentence = `${t("Main_PressVerb")} ${outputLabel} ${t("Main_WhenYou")} ${inputLabels.join(", ")}`;
+  // Compact is always input first (`SentenceCard`: it turns that style on).
+  const inputLead = inputFirst || compact;
+  const asPart = functionLabel === "" ? "" : ` ${t("Main_AsJoiner")} ${functionLabel}`;
+  const sentence = inputLead
+    ? `${inputLabels.join(", ")} ${t("Main_ToJoiner")} ${outputLabel}${asPart}`
+    : `${t("Main_PressVerb")} ${outputLabel} ${t("Main_WhenYou")} ${inputLabels.join(", ")}${asPart}`;
   const spoken = repeats.length === 0 ? sentence : `${sentence}. ${repeats.join(". ")}`;
+
+  const outputPills = (
+    <span className="sentence-inputs">
+      {outputs.map((entry) => (
+        <span className="pill tint-output" key={entry.row}>
+          <OutputPrompt token={entry.token} label={entry.label} size={30} />
+          {promptSrc(entry.token) !== null ? <span className="visually-hidden">{entry.label}</span> : null}
+          <DuplicateMark count={counts.output(entry.token)} />
+        </span>
+      ))}
+    </span>
+  );
+  const inputPills = (
+    <span className="sentence-inputs">
+      {inputLabels.map((label, index) => (
+        <span className="pill tint-input" key={label}>
+          {label}
+          <DuplicateMark count={inputRepeats[index] ?? 0} />
+        </span>
+      ))}
+    </span>
+  );
 
   return (
     <button
@@ -100,33 +134,26 @@ export function SentenceCard({
       ) : (
         <span className="sentence-live-pip-slot" aria-hidden="true" />
       )}
-      <span className="sentence-grid" aria-hidden="true">
-        <span className="sentence-word">{t("Main_PressVerb")}</span>
-        <span className="sentence-inputs">
-          {outputs.map((entry) => (
-            <span className="pill tint-output" key={entry.row}>
-              <OutputPrompt token={entry.token} label={entry.label} size={30} />
-              {promptSrc(entry.token) !== null ? (
-                <span className="visually-hidden">{entry.label}</span>
-              ) : null}
-              <DuplicateMark count={counts.output(entry.token)} />
-            </span>
-          ))}
-        </span>
-        <span className="sentence-word">{t("Main_WhenYou")}</span>
-        <span className="sentence-inputs">
-          {inputLabels.map((label, index) => (
-            <span className="pill tint-input" key={label}>
-              {label}
-              <DuplicateMark count={inputRepeats[index] ?? 0} />
-            </span>
-          ))}
-        </span>
-        {functionLabel !== "" && fn.trim().toLowerCase() !== "normal" ? (
+      <span className={compact ? "sentence-grid compact" : "sentence-grid"} aria-hidden="true">
+        {inputLead ? (
           <>
+            {inputPills}
+            <span className="sentence-word">{t("Main_ToJoiner")}</span>
+            {outputPills}
+          </>
+        ) : (
+          <>
+            <span className="sentence-word">{t("Main_PressVerb")}</span>
+            {outputPills}
+            <span className="sentence-word">{t("Main_WhenYou")}</span>
+            {inputPills}
+          </>
+        )}
+        {functionLabel !== "" ? (
+          <span className={compact ? "sentence-as compact" : "sentence-as"}>
             <span className="sentence-word">{t("Main_AsJoiner")}</span>
             <span className="pill tint-function">{functionLabel}</span>
-          </>
+          </span>
         ) : null}
       </span>
     </button>

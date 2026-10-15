@@ -1236,6 +1236,7 @@
   "Rewrite_ErrorProfile": "Ten profil został zmieniony lub nie jest już otwarty. Otwórz go ponownie i spróbuj jeszcze raz.",
   "Rewrite_ErrorRequest": "Aplikacja nie mogła zakończyć tego żądania. Spróbuj ponownie.",
   "Rewrite_ErrorStorage": "Nie udało się zakończyć operacji na QuadSticku. Wykonaj wyświetloną czynność odzyskiwania.",
+  "Rewrite_MoreActionsFor": "Więcej działań dla {0}",
   "Rewrite_PrimaryNavigation": "Główna nawigacja",
   "Rewrite_ProductName": "QuadStick Config Manager",
   "Rewrite_PseudoLocaleName": "Pseudo (finds missed text)",

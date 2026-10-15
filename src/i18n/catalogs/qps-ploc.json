@@ -1236,6 +1236,7 @@
   "Rewrite_ErrorProfile": "[Thát prófílé çháñgéd ór íš ñó lóñgér ópéñ. Réópéñ ít áñd trý ágáíñ. xxxxxxxxxxxxxxxxxxxxxxxxxx]",
   "Rewrite_ErrorRequest": "[Thé ápp çóúld ñót çómplété thát réqúéšt. Trý ágáíñ. xxxxxxxxxxxxxxxxxxxx]",
   "Rewrite_ErrorStorage": "[Thé QúádŠtíçk ópérátíóñ çóúld ñót bé çómplétéd. Fóllów thé réçóvérý áçtíóñ šhówñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+  "Rewrite_MoreActionsFor": "[Móré áçtíóñš fór {0} xxxxxxxx]",
   "Rewrite_PrimaryNavigation": "[Prímárý ñávígátíóñ xxxxxxx]",
   "Rewrite_ProductName": "[QúádŠtíçk Çóñfíg Máñágér xxxxxxxxx]",
   "Rewrite_PseudoLocaleName": "[Pšéúdó (fíñdš míššéd téxt) xxxxxxxxxx]",

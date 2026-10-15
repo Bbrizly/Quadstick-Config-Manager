@@ -24,7 +24,20 @@ export function runningUnderTauri(): boolean {
 
 export async function resolveQcmClient(): Promise<QcmClient> {
   if (!runningUnderTauri()) {
-    return new MockQcmClient();
+    const mock = new MockQcmClient();
+    // `?library` fills "Your profiles" for the side-by-side shots; a plain
+    // browser load stays empty like a first run.
+    if (new URLSearchParams(window.location.search).has("library")) {
+      const day = 86_400_000;
+      const now = Date.now();
+      mock.seedLibrary([
+        { name: "Apex Legends", editedMs: now - 54 * day },
+        { name: "Forza Horizon 4", editedMs: now - 52 * day, follows: true },
+        { name: "Sea of Thieves", editedMs: now - 77 * day },
+        { name: "Starfield", editedMs: now - 59 * day },
+      ]);
+    }
+    return mock;
   }
   const { TauriQcmClient } = await import("./tauriQcmClient");
   return new TauriQcmClient();

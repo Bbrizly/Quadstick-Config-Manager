@@ -15,7 +15,8 @@
     "Rewrite_SeverityError": "Error",
     "Rewrite_SeverityWarning": "Warning",
     "Rewrite_SaveFromThePageFirst": "Use Save on this page first, or choose Don't save to leave without writing to the QuadStick.",
-    "Rewrite_ConnectGoogleDrive": "Connect Google Drive"
+    "Rewrite_ConnectGoogleDrive": "Connect Google Drive",
+    "Rewrite_MoreActionsFor": "More actions for {0}"
   },
   "ar": {
     "Rewrite_SkipToMainContent": "تخطي إلى المحتوى الرئيسي",
@@ -33,7 +34,8 @@
     "Rewrite_SeverityError": "خطأ",
     "Rewrite_SeverityWarning": "تحذير",
     "Rewrite_SaveFromThePageFirst": "استخدم زر الحفظ في هذه الصفحة أولًا، أو اختر عدم الحفظ للمغادرة دون الكتابة إلى QuadStick.",
-    "Rewrite_ConnectGoogleDrive": "ربط Google Drive"
+    "Rewrite_ConnectGoogleDrive": "ربط Google Drive",
+    "Rewrite_MoreActionsFor": "مزيد من الإجراءات لـ {0}"
   },
   "de": {
     "Rewrite_SkipToMainContent": "Zum Hauptinhalt springen",
@@ -51,7 +53,8 @@
     "Rewrite_SeverityError": "Fehler",
     "Rewrite_SeverityWarning": "Warnung",
     "Rewrite_SaveFromThePageFirst": "Verwenden Sie zuerst Speichern auf dieser Seite, oder wählen Sie Nicht speichern, um ohne Schreiben auf den QuadStick zu gehen.",
-    "Rewrite_ConnectGoogleDrive": "Google Drive verbinden"
+    "Rewrite_ConnectGoogleDrive": "Google Drive verbinden",
+    "Rewrite_MoreActionsFor": "Weitere Aktionen für {0}"
   },
   "es": {
     "Rewrite_SkipToMainContent": "Saltar al contenido principal",
@@ -69,7 +72,8 @@
     "Rewrite_SeverityError": "Error",
     "Rewrite_SeverityWarning": "Advertencia",
     "Rewrite_SaveFromThePageFirst": "Usa primero Guardar en esta página, o elige No guardar para salir sin escribir en el QuadStick.",
-    "Rewrite_ConnectGoogleDrive": "Conectar Google Drive"
+    "Rewrite_ConnectGoogleDrive": "Conectar Google Drive",
+    "Rewrite_MoreActionsFor": "Más acciones para {0}"
   },
   "fr": {
     "Rewrite_SkipToMainContent": "Aller au contenu principal",
@@ -87,7 +91,8 @@
     "Rewrite_SeverityError": "Erreur",
     "Rewrite_SeverityWarning": "Avertissement",
     "Rewrite_SaveFromThePageFirst": "Utilisez d'abord Enregistrer sur cette page, ou choisissez Ne pas enregistrer pour quitter sans écrire sur le QuadStick.",
-    "Rewrite_ConnectGoogleDrive": "Connecter Google Drive"
+    "Rewrite_ConnectGoogleDrive": "Connecter Google Drive",
+    "Rewrite_MoreActionsFor": "Autres actions pour {0}"
   },
   "hi": {
     "Rewrite_SkipToMainContent": "मुख्य सामग्री पर जाएँ",
@@ -105,7 +110,8 @@
     "Rewrite_SeverityError": "त्रुटि",
     "Rewrite_SeverityWarning": "चेतावनी",
     "Rewrite_SaveFromThePageFirst": "पहले इस पेज पर सहेजें दबाएँ, या QuadStick पर लिखे बिना जाने के लिए न सहेजें चुनें।",
-    "Rewrite_ConnectGoogleDrive": "Google Drive कनेक्ट करें"
+    "Rewrite_ConnectGoogleDrive": "Google Drive कनेक्ट करें",
+    "Rewrite_MoreActionsFor": "{0} के लिए और विकल्प"
   },
   "it": {
     "Rewrite_SkipToMainContent": "Vai al contenuto principale",
@@ -123,7 +129,8 @@
     "Rewrite_SeverityError": "Errore",
     "Rewrite_SeverityWarning": "Avviso",
     "Rewrite_SaveFromThePageFirst": "Usa prima Salva in questa pagina, oppure scegli Non salvare per uscire senza scrivere sul QuadStick.",
-    "Rewrite_ConnectGoogleDrive": "Collega Google Drive"
+    "Rewrite_ConnectGoogleDrive": "Collega Google Drive",
+    "Rewrite_MoreActionsFor": "Altre azioni per {0}"
   },
   "ja": {
     "Rewrite_SkipToMainContent": "メインコンテンツへ移動",
@@ -141,7 +148,8 @@
     "Rewrite_SeverityError": "エラー",
     "Rewrite_SeverityWarning": "警告",
     "Rewrite_SaveFromThePageFirst": "先にこのページの保存を使うか、QuadStick に書き込まずに離れるには保存しないを選んでください。",
-    "Rewrite_ConnectGoogleDrive": "Google ドライブに接続"
+    "Rewrite_ConnectGoogleDrive": "Google ドライブに接続",
+    "Rewrite_MoreActionsFor": "{0} のその他の操作"
   },
   "ko": {
     "Rewrite_SkipToMainContent": "주요 콘텐츠로 이동",
@@ -159,7 +167,8 @@
     "Rewrite_SeverityError": "오류",
     "Rewrite_SeverityWarning": "경고",
     "Rewrite_SaveFromThePageFirst": "먼저 이 페이지의 저장을 사용하거나, QuadStick에 쓰지 않고 나가려면 저장 안 함을 선택하세요.",
-    "Rewrite_ConnectGoogleDrive": "Google 드라이브 연결"
+    "Rewrite_ConnectGoogleDrive": "Google 드라이브 연결",
+    "Rewrite_MoreActionsFor": "{0}의 추가 작업"
   },
   "nl": {
     "Rewrite_SkipToMainContent": "Naar hoofdinhoud",
@@ -177,7 +186,8 @@
     "Rewrite_SeverityError": "Fout",
     "Rewrite_SeverityWarning": "Waarschuwing",
     "Rewrite_SaveFromThePageFirst": "Gebruik eerst Opslaan op deze pagina, of kies Niet opslaan om weg te gaan zonder naar de QuadStick te schrijven.",
-    "Rewrite_ConnectGoogleDrive": "Google Drive koppelen"
+    "Rewrite_ConnectGoogleDrive": "Google Drive koppelen",
+    "Rewrite_MoreActionsFor": "Meer acties voor {0}"
   },
   "pl": {
     "Rewrite_SkipToMainContent": "Przejdź do głównej treści",
@@ -195,7 +205,8 @@
     "Rewrite_SeverityError": "Błąd",
     "Rewrite_SeverityWarning": "Ostrzeżenie",
     "Rewrite_SaveFromThePageFirst": "Najpierw użyj Zapisz na tej stronie albo wybierz Nie zapisuj, aby wyjść bez zapisu na QuadStick.",
-    "Rewrite_ConnectGoogleDrive": "Połącz z Dyskiem Google"
+    "Rewrite_ConnectGoogleDrive": "Połącz z Dyskiem Google",
+    "Rewrite_MoreActionsFor": "Więcej działań dla {0}"
   },
   "pt": {
     "Rewrite_SkipToMainContent": "Ir para o conteúdo principal",
@@ -213,7 +224,8 @@
     "Rewrite_SeverityError": "Erro",
     "Rewrite_SeverityWarning": "Aviso",
     "Rewrite_SaveFromThePageFirst": "Use primeiro Guardar nesta página, ou escolha Não guardar para sair sem escrever no QuadStick.",
-    "Rewrite_ConnectGoogleDrive": "Conectar ao Google Drive"
+    "Rewrite_ConnectGoogleDrive": "Conectar ao Google Drive",
+    "Rewrite_MoreActionsFor": "Mais ações para {0}"
   },
   "zh-Hans": {
     "Rewrite_SkipToMainContent": "跳到主要内容",
@@ -231,6 +243,7 @@
     "Rewrite_SeverityError": "错误",
     "Rewrite_SeverityWarning": "警告",
     "Rewrite_SaveFromThePageFirst": "请先使用本页的保存，或选择不保存以在不写入 QuadStick 的情况下离开。",
-    "Rewrite_ConnectGoogleDrive": "连接 Google 云端硬盘"
+    "Rewrite_ConnectGoogleDrive": "连接 Google 云端硬盘",
+    "Rewrite_MoreActionsFor": "{0} 的更多操作"
   }
 }

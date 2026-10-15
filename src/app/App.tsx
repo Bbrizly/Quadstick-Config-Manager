@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { AppShell, type ShellDestination } from "../components/primitives/AppShell";
 import { Dialog } from "../components/primitives/Dialog";
 import { LiveRegion } from "../components/primitives/LiveRegion";
-import { Icon } from "../components/primitives/icons";
 import { GoogleDriveSettings, ProfileDriveActions } from "../features/cloud/GoogleDrivePanel";
 import { CommunityProfilesPage } from "../features/community/CommunityProfilesPage";
 import { CrashReportPrompt } from "../features/diagnostics/CrashReportPrompt";
@@ -60,18 +60,6 @@ function isDevicePreferences(snapshot: EditorSnapshot): boolean {
   return snapshot.source.kind === "device" && snapshot.source.name.toLowerCase() === "prefs.csv";
 }
 
-function snapshotTitle(snapshot: EditorSnapshot): string {
-  if (snapshot.title.trim() !== "") return snapshot.title;
-  switch (snapshot.source.kind) {
-    case "local":
-    case "device":
-      return snapshot.source.name;
-    case "community":
-      return snapshot.source.catalogId;
-    case "new":
-      return "untitled.csv";
-  }
-}
 
 function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const { t, plural } = useI18n();
@@ -80,7 +68,11 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [installOpen, setInstallOpen] = useState(false);
   const [editor, setEditor] = useState<EditorSnapshot | null>(null);
-  const [editorToolbarSlot, setEditorToolbarSlot] = useState<HTMLDivElement | null>(null);
+  const [shareSlot, setShareSlot] = useState<HTMLElement | null>(null);
+  const [settingsTab, setSettingsTab] = useState<"general" | "help">("general");
+  // A Home card's menu choice: the profile opens, then the action runs once.
+  const [followRequest, setFollowRequest] = useState<{ n: number; kind: "latest" | "forget" } | undefined>(undefined);
+  const [shareRequest, setShareRequest] = useState<{ n: number; open: boolean } | undefined>(undefined);
   const [devicePreferences, setDevicePreferences] = useState<EditorSnapshot | null>(null);
   const [workbookReview, setWorkbookReview] = useState<WorkbookImportReview | null>(null);
   // A community profile is an anonymous Sheets download (1950d85): saving can
@@ -483,7 +475,9 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         void requestPreferencesClose(destination);
         return;
       }
-      if (editor !== null && destination !== "home") {
+      // Avalonia: every shell destination leaves the editor, Home included,
+      // asking first when there is unsaved work.
+      if (editor !== null) {
         void requestEditorClose(destination);
         return;
       }
@@ -496,7 +490,9 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   if (settingsOpen) {
     content = (
       <SettingsPage
+        key={settingsTab}
         client={client}
+        initialTab={settingsTab}
         onThemeChange={setThemePreference}
         extra={
           <GoogleDriveSettings
@@ -514,56 +510,50 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   } else if (activeDestination === "home" && editor !== null) {
     content = (
       <section className="editor-route" aria-label={t("Shell_Profile")}>
-        <div className="editorchrome">
-          <div className="editorchrome-left">
-            <span className="secondary">{t("Shell_Profile")}</span>
-            <span className="editor-chrome-title">{snapshotTitle(editor)}</span>
-            <span className="editorchrome-rule" aria-hidden="true" />
-            <div className="editorchrome-tools" ref={setEditorToolbarSlot} />
-          </div>
-          <div className="editorchrome-right">
-            {client.exportProfileXlsx === undefined ? null : (
-              <button
-                className="command quiet"
-                type="button"
-                disabled={closing || workbookExportBusy}
-                aria-label={t("Rewrite_SaveXlsx")}
-                onClick={() => void exportWorkbook()}
-              >
-                <Icon name="share" />
-              </button>
-            )}
-            <button
-              className="primary install"
-              type="button"
-              disabled={closing}
-              onClick={() => setInstallOpen(true)}
-            >
-              <Icon name="install" />
-              <span>{t("Shell_InstallToQuadStick")}</span>
-            </button>
-            <button
-              className="quiet"
-              type="button"
-              disabled={closing}
-              onClick={() => void requestEditorClose("home")}
-            >
-              {t("Community_Close")}
-            </button>
-          </div>
-        </div>
         <ProfileDriveActions
           client={client}
           snapshot={editor}
           onSnapshot={setEditor}
+          buttonsSlot={shareSlot}
+          shareRequest={shareRequest}
           onReview={(review) => {
             setWorkbookReview(review);
             setReviewFromSheet(false);
             setMessage("");
           }}
         />
-        <FollowLinkActions client={client} snapshot={editor} onSnapshot={setEditor} />
-        <EditorWorkspace client={client} snapshot={editor} onSnapshot={setEditor} toolbarSlot={editorToolbarSlot} />
+        <FollowLinkActions
+          client={client}
+          snapshot={editor}
+          onSnapshot={setEditor}
+          buttonsSlot={shareSlot}
+          request={followRequest}
+        />
+        {shareSlot === null || client.exportProfileXlsx === undefined
+          ? null
+          : createPortal(
+              <button
+                className="menu-item"
+                type="button"
+                disabled={closing || workbookExportBusy}
+                onClick={() => void exportWorkbook()}
+              >
+                {t("Rewrite_SaveXlsx")}
+              </button>,
+              shareSlot,
+            )}
+        <EditorWorkspace
+          client={client}
+          snapshot={editor}
+          onSnapshot={setEditor}
+          onInstall={() => setInstallOpen(true)}
+          onHelp={() => {
+            setSettingsTab("help");
+            setSettingsOpen(true);
+          }}
+          onShareSlot={setShareSlot}
+          busyExternal={closing}
+        />
       </section>
     );
   } else if (activeDestination === "home") {
@@ -587,10 +577,17 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         onOpenCommunity={() => setActiveDestination("community")}
         onManageDevice={() => setActiveDestination("device")}
         onOpenHelp={() => {
+          setSettingsTab("help");
           setSettingsOpen(true);
         }}
         onOpenRescue={() => void openRescue()}
         onDismissRescue={() => void dismissRescue()}
+        onOpened={(opened, then) => {
+          showEditor(opened);
+          const n = Date.now();
+          if (then === "latest" || then === "forget") setFollowRequest({ n, kind: then });
+          else if (then === "copy_link" || then === "open_sheet") setShareRequest({ n, open: then === "open_sheet" });
+        }}
       />
     );
   } else if (activeDestination === "device" && devicePreferences !== null) {
@@ -634,7 +631,10 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         }}
         themePreference={themePreference}
         onThemePreferenceChange={setThemePreference}
-        onOpenSettings={() => setSettingsOpen((open) => !open)}
+        onOpenSettings={() => {
+          setSettingsTab("general");
+          setSettingsOpen((open) => !open);
+        }}
         settingsOpen={settingsOpen}
       >
         {content}

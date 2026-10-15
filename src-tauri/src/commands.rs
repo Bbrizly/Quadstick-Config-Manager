@@ -416,3 +416,60 @@ pub fn unsubscribe_devices_changed(
 ) {
     state.unsubscribe(&subscription_id);
 }
+
+// ---- Home library and templates (`library_shell.rs`) ----
+
+#[tauri::command]
+pub fn list_library_profiles(
+    state: State<'_, ShellState>,
+    cards: State<'_, crate::library_shell::LibraryCards>,
+) -> Vec<crate::library_shell::LibraryCardDto> {
+    state.library_cards(&cards, &crate::drive::library_dir())
+}
+
+#[tauri::command]
+pub fn open_library_profile(
+    state: State<'_, ShellState>,
+    cards: State<'_, crate::library_shell::LibraryCards>,
+    request: Value,
+) -> Result<EditorSnapshot, Failure> {
+    let opened = redact(state.open_library_card(&cards, request))?;
+    telemetry::global().opened(ProfileSource::Library, None);
+    Ok(opened)
+}
+
+#[tauri::command]
+pub fn delete_library_profile(
+    state: State<'_, ShellState>,
+    cards: State<'_, crate::library_shell::LibraryCards>,
+    request: Value,
+) -> Result<(), Failure> {
+    redact(state.delete_library_card(&cards, request))
+}
+
+#[tauri::command]
+pub fn list_templates(
+    state: State<'_, ShellState>,
+    cards: State<'_, crate::library_shell::LibraryCards>,
+) -> Vec<crate::library_shell::TemplateDto> {
+    state.template_list(&cards, &crate::library_shell::templates_dir())
+}
+
+#[tauri::command]
+pub fn open_template(
+    state: State<'_, ShellState>,
+    cards: State<'_, crate::library_shell::LibraryCards>,
+    request: Value,
+) -> Result<EditorSnapshot, Failure> {
+    let opened = redact(state.open_template_card(&cards, request))?;
+    telemetry::global().opened(ProfileSource::New, None);
+    Ok(opened)
+}
+
+#[tauri::command]
+pub fn save_template(
+    state: State<'_, ShellState>,
+    request: Value,
+) -> Result<crate::library_shell::TemplateReceiptDto, Failure> {
+    redact(state.save_template(&crate::library_shell::templates_dir(), request))
+}

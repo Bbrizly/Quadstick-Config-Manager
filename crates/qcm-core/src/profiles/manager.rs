@@ -131,6 +131,15 @@ impl<S: LocalProfileStore> ProfileSessions<S> {
         self.insert(ProfileOrigin::New, None, file)
     }
 
+    /// A saved template opened as a new profile (`UseTemplateAsync`): no save
+    /// target, so Save asks where, and nothing to undo or lose.
+    pub fn open_template_copy(&mut self, csv_text: &str) -> EditorSnapshot {
+        let mut file = ProfileFile::load(csv_text);
+        file.clear_undo();
+        file.mark_clean();
+        self.insert(ProfileOrigin::New, None, file)
+    }
+
     /// Recovered autosave/crash copy: no save target, already dirty so leave warns.
     pub fn open_unsaved(&mut self, csv_text: &str) -> EditorSnapshot {
         let mut file = ProfileFile::load(csv_text);

@@ -1,28 +1,39 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
 
 import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
   ERROR_CODES,
+  FUNCTIONS,
+  KNOWN_OUTPUTS,
+  PICKER_INPUTS,
   asQcmError,
+  type AppSettings,
   type EditorOp,
   type EditorSnapshot,
   type Issue,
   type Mode,
   type ModelChoice,
   type QcmClient,
+  type SettingsPatch,
 } from "../../platform";
 import { QuadStickVisualizer } from "../visualizer/QuadStickVisualizer";
+import { diagramFor } from "../visualizer/deviceDiagram";
 import { zoneOf, zonesForRow, type ZoneId } from "../visualizer/deviceSummary";
 import { firstMappedCombo, partLabel, partOf } from "../visualizer/parts";
+import type { MessageKey } from "../../i18n";
 import { BindingInspector } from "./BindingInspector";
 import { comboGroups } from "./combos";
+import { CustomNamesTable, customNames, nextDraftName } from "./CustomNames";
 import { duplicateCounts } from "./duplicates";
-import { ProblemsDock, useValidationStatus, type EditorStatus } from "./ProblemsDock";
+import { ModesDialog } from "./ModesDialog";
+import { InfoButton, Popover } from "./Popover";
+import { ProblemsDock, StatusChip, useValidationStatus, type EditorStatus } from "./ProblemsDock";
+import { RowsGrid, type LabelStyle } from "./RowsGrid";
+import { SaveTemplateDialog } from "./SaveTemplateDialog";
 import { SentenceCard } from "./SentenceCard";
-import type { MessageKey } from "../../i18n";
+import { UnusedButton } from "./UnusedInputs";
 
 /** Column K, where the device ignores what is written (`ProfileFile.NoteColumn`). */
 const NOTE_COLUMN = 10;
@@ -41,15 +52,39 @@ const ZONE_TITLES: Record<ZoneId, MessageKey> = {
   unset: "Main_NoInputYet",
 };
 
-interface EditorWorkspaceProps {
+const MODEL_CHOICES: readonly { readonly value: ModelChoice; readonly label: string }[] = [
+  { value: "fps", label: "QuadStick FPS" },
+  { value: "original", label: "QuadStick Original" },
+  { value: "singleton", label: "QuadStick Singleton" },
+];
+
+const MODEL_DESCRIPTION: Record<ModelChoice, MessageKey> = {
+  fps: "Main_FPS3HoleMouthpieceSide",
+  original: "Main_Original3HoleMouthpieceSide",
+  singleton: "Main_SingletonASingleSipPuff",
+};
+
+const LABEL_STYLE_TEXT: Record<LabelStyle, { readonly label: MessageKey; readonly name: MessageKey }> = {
+  0: { label: "Main_WordsListNames", name: "Main_WordsAreShownAsRaw" },
+  1: { label: "Main_WordsPlainEnglish", name: "Main_WordsAreShownInPlain" },
+  2: { label: "Main_WordsXboxStyle", name: "Main_WordsAreShownAsXbox" },
+};
+
+export interface EditorWorkspaceProps {
   readonly client: QcmClient;
   readonly snapshot: EditorSnapshot;
   readonly onSnapshot: (snapshot: EditorSnapshot) => void;
+  /** Install, the destination, pinned at the right of the command bar. */
+  readonly onInstall?: () => void;
+  /** The quick guide behind `?` (F1). */
+  readonly onHelp?: () => void;
   /**
-   * The shell's editor bar. Undo, save and the spreadsheet switch go there,
-   * one row as on Avalonia, instead of a second bar inside the plate.
+   * The Share flyout's body. The shell owns the Drive and follow actions and
+   * puts their buttons into this element while the flyout is open; their
+   * dialogs and messages stay mounted in the shell.
    */
-  readonly toolbarSlot?: HTMLElement | null;
+  readonly onShareSlot?: (element: HTMLElement | null) => void;
+  readonly busyExternal?: boolean;
 }
 
 type EditorView = "device" | "parts" | "rows";
@@ -99,97 +134,107 @@ function adjacentMovableSheet(snapshot: EditorSnapshot, sheet: number, delta: -1
   return null;
 }
 
-function columnName(index: number): string {
-  let value = index + 1;
-  let name = "";
-  while (value > 0) {
-    const remainder = (value - 1) % 26;
-    name = String.fromCharCode(65 + remainder) + name;
-    value = Math.floor((value - 1) / 26);
-  }
-  return name;
+/** The file name cell: the row under the first sheet's header (`FileNameCellRow`). */
+function fileNameRow(snapshot: EditorSnapshot): number {
+  return (snapshot.modes[0]?.startRow ?? 1) + 1;
 }
 
-function RawGrid({
-  snapshot,
+/** `BareName`: the user never types or reads ".csv". */
+function bareName(name: string): string {
+  const trimmed = name.trim();
+  return trimmed.toLowerCase().endsWith(".csv") ? trimmed.slice(0, -4) : trimmed;
+}
+
+/** The profile name box with its fixed ".csv" (`FileNameBox`). */
+function FileNameBox({
+  value,
   disabled,
-  onSetCell,
+  onCommit,
 }: {
-  readonly snapshot: EditorSnapshot;
+  readonly value: string;
   readonly disabled: boolean;
-  readonly onSetCell: (row: number, column: number, value: string) => void;
+  readonly onCommit: (bare: string) => void;
 }) {
   const { t } = useI18n();
-  const columns = Math.max(12, ...snapshot.grid.map((row) => row.length));
-
   return (
-    <div className="raw-grid-wrap">
-      <table className="raw-grid">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            {Array.from({ length: columns }, (_, column) => (
-              <th scope="col" key={column}>{columnName(column)}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {snapshot.grid.map((cells, rowIndex) => {
-            const row = rowIndex + 1;
-            return (
-              <tr key={row}>
-                <th scope="row">{row}</th>
-                {Array.from({ length: columns }, (_, column) => (
-                  <td key={column}>
-                    <input
-                      key={`${String(snapshot.revision)}-${String(row)}-${String(column)}`}
-                      aria-label={t("Review_ContentsOfCellWhereMeaning", [columnName(column), row])}
-                      defaultValue={cells[column] ?? ""}
-                      disabled={disabled}
-                      onBlur={(event) => {
-                        const value = event.currentTarget.value;
-                        if (value !== (cells[column] ?? "")) onSetCell(row, column, value);
-                      }}
-                    />
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <span className="filename-box">
+      <input
+        key={value}
+        defaultValue={value}
+        disabled={disabled}
+        aria-label={t("Shell_ProfileNameEditToRename")}
+        onBlur={(event) => {
+          const typed = bareName(event.currentTarget.value);
+          if (typed === "") {
+            event.currentTarget.value = value;
+            return;
+          }
+          event.currentTarget.value = typed;
+          if (typed !== value) onCommit(typed);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") event.currentTarget.blur();
+        }}
+      />
+      <span className="filename-suffix" aria-hidden="true">{t("Shell_Csv")}</span>
+    </span>
   );
 }
 
-// Only the picked mode shows its controls, so a control that just moved or
-// copied a mode would be left focused inside a row that hides it. Focus
-// follows the mode instead: the same button if it is still usable, else
-// the mode itself.
-function focusModeControl(sheet: number, label: string | null): void {
-  requestAnimationFrame(() => {
-    const row = document.querySelector<HTMLElement>(`[data-testid="mode-row-${String(sheet)}"]`);
-    const same =
-      label === null
-        ? null
-        : [...(row?.querySelectorAll<HTMLButtonElement>(".mode-row-actions button") ?? [])].find(
-            (button) => button.getAttribute("aria-label") === label && !button.disabled,
-          );
-    (same ?? row?.querySelector<HTMLElement>(".mode-select"))?.focus();
-  });
+/**
+ * Whether a QuadStick is here, said in the sidebar (`RefreshDeviceHeaderStatus`):
+ * a drive that is mounted, or a stick the live reader hears. Asked on open and
+ * again only when the device list says it changed; nothing polls.
+ */
+function useStickConnected(client: QcmClient, liveHeard: boolean): boolean {
+  const [drives, setDrives] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    let subscription: { dispose(): void } | null = null;
+    const ask = (): void => {
+      void client.listDevices().then(
+        (snapshot) => {
+          if (!cancelled) setDrives(snapshot.devices.length > 0);
+        },
+        () => undefined,
+      );
+    };
+    ask();
+    void client.subscribeDevicesChanged(ask).then(
+      (next) => {
+        if (cancelled) next.dispose();
+        else subscription = next;
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+      subscription?.dispose();
+    };
+  }, [client]);
+  return drives || liveHeard;
 }
 
-export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = null }: EditorWorkspaceProps) {
+export function EditorWorkspace({
+  client,
+  snapshot,
+  onSnapshot,
+  onInstall,
+  onHelp,
+  onShareSlot,
+  busyExternal = false,
+}: EditorWorkspaceProps) {
   const { t, plural } = useI18n();
   const profileModes = useMemo(
     () => snapshot.modes.filter((mode) => mode.kind === "mode"),
     [snapshot.modes],
   );
   const [selectedSheet, setSelectedSheet] = useState(() => profileModes[0]?.index ?? 0);
+  // One past the last sheet is the names table, as on Avalonia.
+  const [onCustomNames, setOnCustomNames] = useState(false);
+  const [drafts, setDrafts] = useState<ReadonlyMap<string, string>>(() => new Map());
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [selectedZone, setSelectedZoneState] = useState<ZoneId | null>(null);
-  // The socket or hole pairing picked on the picture. Four jacks share one zone
-  // and five pairings share another, so the list narrows to the part picked.
   const [pickedInput, setPickedInput] = useState<string | null>(null);
   const [wholeZone, setWholeZone] = useState(false);
   const setSelectedZone = useCallback(
@@ -207,7 +252,6 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
     setWholeZone(false);
   }, []);
   const [view, setView] = useState<EditorView>("device");
-  const [raw, setRaw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [armedDelete, setArmedDelete] = useState<number | null>(null);
   const [message, setMessage] = useState("");
@@ -215,15 +259,24 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
   // validation summary (`MainWindow.Status`).
   const [statusOverride, setStatusOverride] = useState<EditorStatus | null>(null);
   const validation = useValidationStatus(snapshot.issues);
-  const [model, setModel] = useState<ModelChoice>("fps");
+  const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [labelStyle, setLabelStyle] = useState<LabelStyle>(1);
   const [liveRows, setLiveRows] = useState<ReadonlySet<number>>(() => new Set());
+  const [liveHeard, setLiveHeard] = useState(false);
+  const [modesOpen, setModesOpen] = useState(false);
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [selecting, setSelecting] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>(() => new Set());
+  const [zoneListSlot, setZoneListSlot] = useState<HTMLDivElement | null>(null);
+  const connected = useStickConnected(client, liveHeard);
+  const model: ModelChoice = settings?.model ?? "fps";
 
   useEffect(() => {
     let cancelled = false;
     const load = (): void => {
       void client.getSettings().then(
-        (settings) => {
-          if (!cancelled) setModel(settings.model);
+        (next) => {
+          if (!cancelled) setSettings(next);
         },
         () => undefined,
       );
@@ -238,6 +291,17 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
       window.removeEventListener("focus", onFocus);
     };
   }, [client]);
+
+  const patchSettings = useCallback(
+    (patch: SettingsPatch): void => {
+      if (settings === null) return;
+      setSettings({ ...settings, ...patch });
+      void client.updateSettings(settings.revision, patch).then(setSettings, () => {
+        void client.getSettings().then(setSettings, () => undefined);
+      });
+    },
+    [client, settings],
+  );
 
   const selectedMode = snapshot.modes.find(
     (mode) => mode.index === selectedSheet && mode.kind === "mode",
@@ -271,9 +335,11 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
   const visibleSelectedRow = selectionBelongsToCurrentSheet ? selectedRow : null;
   const selectedBinding =
     visibleSelectedRow === null ? null : rows.find((row) => row.row === visibleSelectedRow) ?? null;
-  // A combo opens as one card on its first row, whichever of its rows was picked.
   const activeGroup = selectedBinding === null ? null : groupOf(selectedBinding);
   const activeRow = activeGroup?.[0] ?? null;
+  const deviceView = !onCustomNames && view !== "rows";
+  const cardsHere = deviceView ? settings?.deviceCards ?? true : settings?.rowCards ?? false;
+  const inputFirst = (settings?.compactCards ?? false) || settings?.cardSentenceStyle === "input_to_output";
 
   const status: EditorStatus =
     message !== "" ? { kind: "error", text: message } : statusOverride ?? validation;
@@ -332,8 +398,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
   );
 
   // The inputs live on the card, so in a combo an edit to them lands on every
-  // row the card holds, as one undo step. Without it, renaming the input moves
-  // one output off the combo and leaves the other behind.
+  // row the card holds, as one undo step.
   const setInput = useCallback(
     (lead: number, members: readonly BindingRow[], column: number, value: string): void => {
       const edit: EditorOp = { op: "set_cell", row: lead, col: column, value };
@@ -363,6 +428,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
       const next = await client.undoEditor(current.sessionId, current.revision);
       onSnapshot(next);
       setMessage("");
+      setStatusOverride(null);
     } catch (reason) {
       await refreshAfterConflict(reason);
     } finally {
@@ -388,12 +454,36 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
     }
   }, [busy, client, onSnapshot, refreshAfterConflict, snapshot, t]);
 
+  const saveTemplate = async (name: string): Promise<void> => {
+    const write = client.saveTemplate;
+    if (write === undefined || busy) return;
+    if (name.trim() === "") {
+      setTemplateOpen(false);
+      setStatusOverride({ kind: "warning", text: t("Main_ATemplateNeedsAName") });
+      return;
+    }
+    setBusy(true);
+    try {
+      const receipt = await write.call(client, snapshot.sessionId, snapshot.revision, name);
+      setTemplateOpen(false);
+      setStatusOverride({ kind: "ready", text: t("Main_SavedTemplateFileNameFindIt", [receipt.name]) });
+    } catch (reason) {
+      setTemplateOpen(false);
+      setMessage(t("Main_CouldNotSaveTheTemplate", [localizedErrorMessage(asQcmError(reason).payload, t)]));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   useEffect(() => {
     const onKeyDown = (event: globalThis.KeyboardEvent): void => {
-      if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
-      // A modal owns the keyboard while it is open: Ctrl+S inside the close
-      // prompt must not race a background save against the prompt's own.
       if (document.querySelector('[aria-modal="true"]') !== null) return;
+      if (event.key === "F1" && onHelp !== undefined) {
+        event.preventDefault();
+        onHelp();
+        return;
+      }
+      if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
       const key = event.key.toLowerCase();
       if (key === "z") {
         event.preventDefault();
@@ -401,11 +491,17 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
       } else if (key === "s") {
         event.preventDefault();
         void save();
+      } else if (key === "h" && onHelp !== undefined) {
+        event.preventDefault();
+        onHelp();
+      } else if (key === "i" && onInstall !== undefined) {
+        event.preventDefault();
+        onInstall();
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [save, undo]);
+  }, [onHelp, onInstall, save, undo]);
 
   const moveIssueToNotes = (issue: Issue): void => {
     const row = issueRow(issue.cell);
@@ -434,6 +530,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
     if (row === null) return;
     const mode = sheetForRow(snapshot, row);
     if (mode?.kind === "mode") setSelectedSheet(mode.index);
+    setOnCustomNames(false);
     const cells = snapshot.grid[row - 1] ?? [];
     const zones = zonesForRow({ row, cells });
     setSelectedZone(zones[0] ?? null);
@@ -450,7 +547,6 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
       setSelectedSheet(target);
       setSelectedRow(null);
       setSelectedZone(null);
-      focusModeControl(target, delta < 0 ? t("Review_MoveItEarlier") : t("Review_MoveItLater"));
     });
   };
 
@@ -471,243 +567,594 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
 
   const selectMode = (index: number): void => {
     setSelectedSheet(index);
+    setOnCustomNames(false);
     setSelectedRow(null);
     setSelectedZone(null);
     setArmedDelete(null);
+    setSelectedRows(new Set());
   };
 
-  const title = (
-    <div className="editor-title-wrap">
-      <h1 id="editor-title">{snapshot.title || t("Shell_Profile")}</h1>
-      {snapshot.dirty ? (
-        <span className="dirty-indicator" aria-label={t("Main_ThisProfileHasUnsavedChanges")}>*</span>
-      ) : null}
+  const addMode = (): void => {
+    const taken = new Set(profileModes.map((mode) => mode.name));
+    let n = profileModes.length + 1;
+    while (taken.has(`Mode ${String(n)}`)) n += 1;
+    void apply([{ op: "add_mode", name: `Mode ${String(n)}` }], (next) => {
+      const added = next.modes.findLast((mode) => mode.kind === "mode");
+      if (added !== undefined) selectMode(added.index);
+    });
+  };
+
+  // `AddMappingWithInput`: a new row on this mode with the input already on it.
+  const addRowWithInput = (input: string | null): void => {
+    if (selectedMode === null) return;
+    const newRow = selectedMode.startRow + 3 + selectedMode.bindingCount;
+    const add: EditorOp = { op: "add_row", sheet: selectedMode.index };
+    const ops: EditorOp[] =
+      input === null ? [add] : [{ op: "group", ops: [add, { op: "set_cell", row: newRow, col: 2, value: input }] }];
+    void apply(ops, () => {
+      setSelectedRow(newRow);
+      if (input !== null) setSelectedZone(zoneOf(input));
+    });
+  };
+
+  const addRowCommand = (): void => {
+    if (onCustomNames) {
+      const name = nextDraftName(customNames(snapshot, drafts), t);
+      setDrafts(new Map(drafts).set(name, ""));
+      setStatusOverride({ kind: "info", text: t("Names_PickTheOutputThenType") });
+      return;
+    }
+    addRowWithInput(null);
+  };
+
+  const deleteListRow = (row: number): void => {
+    void apply([{ op: "delete_row", row }], () => {
+      setSelectedRows((current) => {
+        if (!current.has(row)) return current;
+        const next = new Set(current);
+        next.delete(row);
+        return next;
+      });
+    });
+  };
+
+  const toggleSelecting = (): void => {
+    const next = !selecting;
+    setSelecting(next);
+    setSelectedRows(new Set());
+    if (next) setStatusOverride({ kind: "info", text: t("Shell_SelectRowsToMoveDeleteOrClear") });
+  };
+
+  const moveSelection = (top: boolean): void => {
+    const picked = rows.map((row) => row.row).filter((row) => selectedRows.has(row));
+    const first = rows[0]?.row;
+    const last = rows.at(-1)?.row;
+    if (picked.length === 0 || first === undefined || last === undefined) return;
+    const ops: EditorOp[] = top
+      ? picked.map((row, index) => ({ op: "move_row", from: row, to: first + index }))
+      : picked.toReversed().map((row, index) => ({ op: "move_row", from: row, to: last - index }));
+    const moved = top
+      ? picked.map((_, index) => first + index)
+      : picked.map((_, index) => last - picked.length + 1 + index);
+    void apply([{ op: "group", ops }], () => setSelectedRows(new Set(moved)));
+  };
+
+  const deleteSelection = (): void => {
+    const picked = [...selectedRows];
+    if (picked.length === 0) return;
+    void apply([{ op: "delete_rows", rows: picked }], () => setSelectedRows(new Set()));
+  };
+
+  // Stable, so the dialog's focus trap is not rebuilt on every render.
+  const closeModes = useCallback((): void => {
+    setModesOpen(false);
+    setArmedDelete(null);
+  }, []);
+
+  const fileName = bareName(snapshot.grid[fileNameRow(snapshot) - 1]?.[0] ?? "");
+  const title = snapshot.title || fileName || t("Shell_Profile");
+  const locked = busy || busyExternal;
+
+  const chrome = (
+    <div className="editorchrome">
+      <div className="editorchrome-left">
+        <span className="secondary">{t("Shell_Profile")}</span>
+        <FileNameBox
+          value={fileName}
+          disabled={locked}
+          onCommit={(bare) => setCell(fileNameRow(snapshot), 0, `${bare}.csv`)}
+        />
+        <Popover
+          label={<Icon name="share" />}
+          name={t("Shell_ShareThisProfileAsA")}
+          title={t("Shell_ShareAsAGoogleSheet")}
+          className="command quiet"
+        >
+          {() => <div className="share-menu" ref={onShareSlot} />}
+        </Popover>
+        <span className="editorchrome-rule" aria-hidden="true" />
+        {selectedMode !== null && !onCustomNames ? (
+          <UnusedButton
+            rows={rows}
+            modelZones={diagramFor(model).zones}
+            disabled={locked}
+            onPick={(input) => addRowWithInput(input)}
+          />
+        ) : null}
+        <button
+          className="command"
+          type="button"
+          disabled={locked || !snapshot.canUndo}
+          aria-label={t("Shell_UndoTheLastChangeShortcut")}
+          title={t("Shell_UndoCtrlZ")}
+          onClick={() => void undo()}
+        >
+          <Icon name="undo" />
+        </button>
+        {deviceView ? null : (
+          <button
+            className="primary add-row"
+            type="button"
+            disabled={locked}
+            title={onCustomNames ? t("Main_AddName") : t("Shell_AddRow")}
+            aria-label={onCustomNames ? t("Main_AddARowToThe") : t("Shell_AddANewBindingRow")}
+            onClick={addRowCommand}
+          >
+            {onCustomNames ? t("Main_AddName") : t("Shell_AddRow")}
+          </button>
+        )}
+        <button
+          className={selecting ? "command quiet active" : "command quiet"}
+          type="button"
+          aria-pressed={selecting}
+          disabled={onCustomNames}
+          aria-label={t("Shell_SelectRowsToMoveDeleteOrClear")}
+          title={t("Shell_SelectRowsToMoveDeleteOrClear")}
+          onClick={toggleSelecting}
+        >
+          <Icon name="edit" />
+        </button>
+        {selecting ? (
+          <span className="selection-bar">
+            <strong>
+              {selectedRows.size > 0
+                ? t("Main_SelectedRowsCountSelected", [selectedRows.size])
+                : t("Shell_SelectRowsToMoveDeleteOrClear")}
+            </strong>
+            <Popover
+              label={<Icon name="drag" />}
+              name={t("Shell_MoveTheSelectedRowsTo")}
+              title={t("Shell_Move")}
+              className="command quiet"
+              disabled={locked || selectedRows.size === 0}
+            >
+              {(close) => (
+                <div className="menu-list">
+                  <button type="button" className="menu-item" onClick={() => { close(); moveSelection(true); }}>
+                    {t("Main_ToTheTop")}
+                  </button>
+                  <button type="button" className="menu-item" onClick={() => { close(); moveSelection(false); }}>
+                    {t("Main_ToTheBottom")}
+                  </button>
+                </div>
+              )}
+            </Popover>
+            <button
+              className="command danger"
+              type="button"
+              disabled={locked || selectedRows.size === 0}
+              aria-label={t("Shell_DeleteTheSelectedRows")}
+              title={t("Shell_Delete")}
+              onClick={deleteSelection}
+            >
+              <Icon name="delete" />
+            </button>
+            <button
+              className="command quiet"
+              type="button"
+              disabled={selectedRows.size === 0}
+              aria-label={t("Shell_ClearTheSelection")}
+              title={t("Shell_Clear")}
+              onClick={() => setSelectedRows(new Set())}
+            >
+              <Icon name="clear" />
+            </button>
+          </span>
+        ) : null}
+      </div>
+      <div className="editorchrome-right">
+        {client.saveTemplate === undefined ? null : (
+          <button
+            className="command quiet"
+            type="button"
+            disabled={locked}
+            aria-label={t("Shell_SaveThisProfileAsA")}
+            title={t("Shell_SaveAsATemplate")}
+            onClick={() => setTemplateOpen(true)}
+          >
+            <Icon name="template" />
+          </button>
+        )}
+        <button
+          className="command"
+          type="button"
+          disabled={locked}
+          aria-label={t("Shell_SaveThisProfileShortcutControl")}
+          title={t("Shell_SaveCtrlS")}
+          onClick={() => void save()}
+        >
+          <Icon name="save" />
+        </button>
+        <button
+          className="primary install"
+          type="button"
+          disabled={locked || onInstall === undefined}
+          aria-label={t("Shell_InstallThisProfileOntoA")}
+          onClick={onInstall}
+        >
+          <Icon name="install" />
+          <span>{t("Shell_InstallToQuadStick")}</span>
+        </button>
+        <button
+          className="command quiet"
+          type="button"
+          disabled={onHelp === undefined}
+          aria-label={t("Shell_OpenTheQuickGuideShortcut")}
+          title={t("Shell_HowItWorksF1")}
+          onClick={onHelp}
+        >
+          <Icon name="help" />
+        </button>
+      </div>
     </div>
   );
 
-  const addRowButton = (sheet: number, primary = false) => (
-    <button
-      className={primary ? "primary add-row" : "add-row"}
-      type="button"
-      disabled={busy}
-      aria-label={t("Shell_AddANewBindingRow")}
-      onClick={() => void apply([{ op: "add_row", sheet }])}
-    >
-      {t("Shell_AddRow")}
-    </button>
-  );
-
-  const rawLabel = raw ? t("Review_GoBackToTheSimple") : t("Review_ShowTheSpreadsheetWithThe");
-  const actions = (
-    <div className="editor-actions">
+  const viewKey = (key: EditorView, icon: "viewDevice" | "viewRail" | "viewSheet", label: MessageKey, name: MessageKey, tip?: MessageKey) => {
+    const active = !onCustomNames && view === key;
+    return (
       <button
-        className="command"
+        className={active ? "switchkey viewkey active" : "switchkey viewkey"}
         type="button"
-        disabled={busy || !snapshot.canUndo}
-        aria-label={t("Shell_UndoCtrlZ")}
-        title={t("Shell_UndoCtrlZ")}
-        onClick={() => void undo()}
+        aria-pressed={active}
+        disabled={onCustomNames}
+        aria-label={t(name)}
+        title={tip === undefined ? undefined : t(tip)}
+        onClick={() => {
+          setView(key);
+          setSelectedRow(null);
+        }}
       >
-        <Icon name="undo" />
+        <Icon name={icon} size={22} />
+        <span>{t(label)}</span>
       </button>
-      {selectedMode !== null && !raw ? addRowButton(selectedMode.index, true) : null}
-      <button
-        className="command"
-        type="button"
-        disabled={busy}
-        aria-label={t("Shell_SaveCtrlS")}
-        title={t("Shell_SaveCtrlS")}
-        onClick={() => void save()}
-      >
-        <Icon name="save" />
-      </button>
-      <button
-        className={raw ? "command active" : "command"}
-        type="button"
-        aria-pressed={raw}
-        aria-label={rawLabel}
-        title={rawLabel}
-        onClick={() => setRaw((value) => !value)}
-      >
-        <Icon name="viewSheet" />
-      </button>
-    </div>
-  );
+    );
+  };
 
-  return (
-    <section className="editor-workspace" aria-labelledby="editor-title">
-      {toolbarSlot ? (
-        <>
-          {title}
-          {createPortal(actions, toolbarSlot)}
-        </>
-      ) : (
-        <div className="editor-toolbar">
-          {title}
-          {actions}
-        </div>
-      )}
-
-      {raw ? (
-        <RawGrid snapshot={snapshot} disabled={busy} onSetCell={setCell} />
-      ) : (
-        <div className="editor-plate">
-          <aside className="modes-panel" aria-label={t("Shell_SelectWhichModeToEdit")}>
-            <div className="modes-panel-body">
-              <div className="panel-heading-row">
+  const wordsOn = !onCustomNames && selectedMode !== null;
+  const sidebar = (
+    <aside className="modes-panel" aria-label={t("Shell_SelectWhichModeToEdit")}>
+      <div className="modes-panel-body">
+        <div className="panel-heading-row">
+          <InfoButton
+            name={t("Shell_WhatIsAModeAnd")}
+            title={t("Main_WhatIsAMode")}
+            body={t("Main_AModeIsOneFull")}
+            className="mode-help"
+            label={
+              <>
                 <h2>{t("Modes_Modes")}</h2>
+                <span className="mode-help-mark" aria-hidden="true">?</span>
+              </>
+            }
+          />
+          <span className="panel-heading-actions">
+            <button
+              className="icon quiet"
+              type="button"
+              disabled={locked}
+              aria-label={t("Shell_EditModesAddRenameReorder")}
+              title={t("Shell_EditModesAddRenameReorder")}
+              onClick={() => setModesOpen(true)}
+            >
+              <Icon name="edit" size={22} />
+            </button>
+            <button
+              className="icon primary"
+              type="button"
+              disabled={locked}
+              aria-label={t("Modes_AddAMode")}
+              title={t("Modes_AddAMode")}
+              onClick={addMode}
+            >
+              <Icon name="add" size={24} />
+            </button>
+          </span>
+        </div>
+        <ol className="mode-list">
+          {snapshot.modes.filter((mode) => mode.kind !== "infrared").map((mode) => {
+            const selected = !onCustomNames && selectedMode?.index === mode.index;
+            const label =
+              mode.kind === "mode"
+                ? t("Main_ModeNumberAndName", [mode.number ?? mode.index + 1, mode.name || t("Main_UnnamedMode")])
+                : "Preferences";
+            return (
+              <li className="mode-row" data-testid={`mode-row-${String(mode.index)}`} key={`mode-${String(mode.index)}`}>
                 <button
-                  className="icon primary"
+                  className="mode-select"
                   type="button"
-                  disabled={busy}
-                  aria-label={t("Modes_AddAMode")}
-                  title={t("Modes_AddMode")}
-                  onClick={() => {
-                    const name = `Mode ${String(profileModes.length + 1)}`;
-                    void apply([{ op: "add_mode", name }], (next) => {
-                      const added = next.modes.findLast((mode) => mode.kind === "mode");
-                      if (added !== undefined) setSelectedSheet(added.index);
-                      setSelectedRow(null);
-                      setSelectedZone(null);
-                    });
-                  }}
+                  aria-current={selected ? "true" : undefined}
+                  disabled={mode.kind !== "mode"}
+                  onClick={() => selectMode(mode.index)}
                 >
-                  <Icon name="add" size={24} />
+                  {label}
                 </button>
-              </div>
-              <ol className="mode-list">
-                {snapshot.modes.filter((mode) => mode.kind !== "infrared").map((mode) => {
-                  if (mode.kind !== "mode") {
-                    return (
-                      <li className="mode-structure-row" key={`sheet-${String(mode.index)}`}>
-                        <span>{t("Modes_PreferencesDeviceSettings")}</span>
-                        <span className="mode-row-actions">
-                          <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, -1) === null} aria-label={t("Review_MoveItEarlier")} onClick={() => moveMode(mode, -1)}>↑</button>
-                          <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, 1) === null} aria-label={t("Review_MoveItLater")} onClick={() => moveMode(mode, 1)}>↓</button>
-                          <button type="button" disabled={busy} aria-label={armedDelete === mode.index ? t("Modes_ReallyDelete") : t("Shell_Delete")} onClick={() => deleteMode(mode)}>×</button>
-                        </span>
-                      </li>
-                    );
-                  }
-                  const selected = selectedMode?.index === mode.index;
-                  return (
-                    <li className="mode-row" data-testid={`mode-row-${String(mode.index)}`} key={`mode-${String(mode.index)}`}>
-                      <button
-                        className="mode-select"
-                        type="button"
-                        aria-current={selected ? "true" : undefined}
-                        onClick={() => selectMode(mode.index)}
-                      >
-                        <span className="mode-number">{mode.number}</span>
-                        <span>{mode.name || t("Review_UnnamedMode")}</span>
-                      </button>
-                      <input
-                        key={`${String(snapshot.revision)}-${String(mode.index)}`}
-                        className="mode-name-input"
-                        aria-label={t("Modes_NameOfModeOrdinal", [mode.number ?? mode.index + 1])}
-                        defaultValue={mode.name}
-                        disabled={busy}
-                        onBlur={(event) => {
-                          const name = event.currentTarget.value.trim();
-                          if (name !== "" && name !== mode.name) void apply([{ op: "rename_mode", sheet: mode.index, name }]);
-                        }}
-                      />
-                      <div className="mode-row-actions">
-                        <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, -1) === null} aria-label={t("Review_MoveItEarlier")} onClick={() => moveMode(mode, -1)}>↑</button>
-                        <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, 1) === null} aria-label={t("Review_MoveItLater")} onClick={() => moveMode(mode, 1)}>↓</button>
-                        <button type="button" disabled={busy} aria-label={t("Modes_MakeACopyOfName", [mode.name])} onClick={() => void apply([{ op: "duplicate_mode", sheet: mode.index, name: `${mode.name} copy` }], (next) => { const copy = next.modes.findLast((candidate) => candidate.kind === "mode"); if (copy !== undefined) { setSelectedSheet(copy.index); focusModeControl(copy.index, null); } setSelectedRow(null); setSelectedZone(null); })}>＋</button>
-                        <button type="button" disabled={busy || profileModes.length <= 1} aria-label={armedDelete === mode.index ? t("Modes_ReallyDeleteName", [mode.name]) : t("Shell_Delete")} onClick={() => deleteMode(mode)}>×</button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
-            </div>
-            <div className="switchtrack" role="group" aria-label={t("Main_UsingDeviceView")}>
-              <button
-                className={view === "device" ? "switchkey viewkey active" : "switchkey viewkey"}
-                type="button"
-                aria-pressed={view === "device"}
-                aria-label={t("Shell_ShowTheMappingsOnA")}
-                title={t("Shell_SeeTheMappingsOnA")}
-                onClick={() => setView("device")}
-              >
-                <Icon name="viewDevice" size={22} />
-                <span>{t("Shell_Device")}</span>
-              </button>
-              <button
-                className={view === "parts" ? "switchkey viewkey active" : "switchkey viewkey"}
-                type="button"
-                aria-pressed={view === "parts"}
-                aria-label={t("Shell_ShowThePartsAsA")}
-                onClick={() => setView("parts")}
-              >
-                <Icon name="viewRail" size={22} />
-                <span>{t("Shell_Parts")}</span>
-              </button>
-              <button
-                className={view === "rows" ? "switchkey viewkey active" : "switchkey viewkey"}
-                type="button"
-                aria-pressed={view === "rows"}
-                aria-label={t("Shell_ShowTheMappingsAsA")}
-                onClick={() => setView("rows")}
-              >
-                <Icon name="viewSheet" size={22} />
-                <span>{t("Shell_Rows")}</span>
-              </button>
-            </div>
-          </aside>
+              </li>
+            );
+          })}
+          <li className="mode-row" key="names">
+            <button
+              className="mode-select"
+              type="button"
+              aria-current={onCustomNames ? "true" : undefined}
+              onClick={() => {
+                setOnCustomNames(true);
+                setSelecting(false);
+                setSelectedRows(new Set());
+              }}
+            >
+              {t("Names_CustomOutputNames")}
+            </button>
+          </li>
+        </ol>
+        <div className="sidebar-config">
+          <h3>{t("Shell_Configuration")}</h3>
+          <select
+            className="model-picker"
+            aria-label={t("Shell_WhichQuadStickModelYouHave")}
+            value={model}
+            disabled={settings === null}
+            onChange={(event) => patchSettings({ model: event.currentTarget.value as ModelChoice })}
+          >
+            {MODEL_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>{choice.label}</option>
+            ))}
+          </select>
+          <span className="device-status" title={connected ? t("Main_WhatALitRowMeans") : undefined}>
+            {connected ? (
+              <StatusChip status={{ kind: "ready", text: t("Main_QuadStickConnected") }} />
+            ) : (
+              <span className="status-chip status-info">
+                <span className="status-dot" aria-hidden="true" />
+                <span>{t("Main_NoQuadStickDetected")}</span>
+              </span>
+            )}
+          </span>
+          <div className="zone-list" ref={setZoneListSlot} hidden={!(deviceView && view === "device")} />
+        </div>
+      </div>
+      <div className="sidebar-view">
+        <div className="sidebar-view-head">
+          <span className="secondary">{t("Shell_View")}</span>
+          <InfoButton
+            name={t("Shell_HowDeviceViewWorksAnd")}
+            title={t("Main_UsingDeviceView")}
+            body={t("Main_ClickAnyPartOfThe") + t(MODEL_DESCRIPTION[model])}
+          />
+        </div>
+        {wordsOn ? (
+          <div className="sidebar-toggles">
+            <button
+              className="quiet sidebar-toggle"
+              type="button"
+              aria-label={t(LABEL_STYLE_TEXT[labelStyle].name)}
+              onClick={() => setLabelStyle(((labelStyle + 1) % 3) as LabelStyle)}
+            >
+              {t(LABEL_STYLE_TEXT[labelStyle].label)}
+            </button>
+            <button
+              className="quiet sidebar-toggle"
+              type="button"
+              disabled={settings === null}
+              aria-label={cardsHere ? t("Main_MappingsReadAsSimpleSentence") : t("Main_MappingsShowTheDetailedEditor")}
+              onClick={() => patchSettings(deviceView ? { deviceCards: !cardsHere } : { rowCards: !cardsHere })}
+            >
+              {cardsHere ? t("Main_DetailedEditor") : t("Main_SimpleCards")}
+            </button>
+            <button
+              className={settings?.compactCards === true ? "quiet sidebar-toggle format active" : "quiet sidebar-toggle format"}
+              type="button"
+              aria-pressed={settings?.compactCards === true}
+              disabled={settings === null}
+              aria-label={settings?.compactCards === true ? t("Main_MappingsAreOnOneLine") : t("Main_MappingsReadAsAFull")}
+              title={t("Main_FitEachMappingOnOne")}
+              onClick={() => patchSettings({ compactCards: settings?.compactCards !== true })}
+            >
+              <Icon name="format" size={20} />
+            </button>
+          </div>
+        ) : null}
+        <div className="switchtrack" role="group" aria-label={t("Main_UsingDeviceView")}>
+          {viewKey("device", "viewDevice", "Shell_Device", "Shell_ShowTheMappingsOnA", "Shell_SeeTheMappingsOnA")}
+          {viewKey("parts", "viewRail", "Shell_Parts", "Shell_ShowThePartsAsA")}
+          {viewKey("rows", "viewSheet", "Shell_Rows", "Shell_ShowTheMappingsAsA")}
+        </div>
+      </div>
+    </aside>
+  );
 
-          <div className="device-workspace">
-            <section className="device-canvas">
-              <div className="panel-heading-row">
-                <h2 className={toolbarSlot ? "visually-hidden" : undefined}>
-                  {view === "device"
-                    ? t("Shell_Device")
-                    : view === "parts"
-                      ? t("Shell_Parts")
-                      : t("Shell_Rows")}
-                </h2>
-                {selectedMode !== null && !toolbarSlot ? addRowButton(selectedMode.index) : null}
-              </div>
-              <QuadStickVisualizer
-                client={client}
-                rows={rows}
-                selectedRow={visibleSelectedRow}
-                selectedZone={selectedZone}
-                modeName={selectedMode?.name ?? ""}
-                modeNumber={selectedMode?.number ?? null}
-                model={model}
-                view={view}
-                onSelectRow={setSelectedRow}
-                onSelectZone={setSelectedZone}
-                onLiveRows={setLiveRows}
-                pickedInput={pickedInput}
-                onPickInput={pickInput}
-              />
-            </section>
+  const card = (row: BindingRow) => {
+    const group = groupOf(row);
+    return (
+      <SentenceCard
+        key={row.row}
+        row={row}
+        together={group.slice(1)}
+        counts={counts}
+        zoneId={zoneIdForRow(row)}
+        selected={group.some((member) => member.row === visibleSelectedRow)}
+        live={group.some((member) => liveRows.has(member.row))}
+        inputFirst={inputFirst}
+        compact={settings?.compactCards === true}
+        onSelect={() => setSelectedRow(row.row)}
+      />
+    );
+  };
 
-            <aside className="mapping-panel" aria-labelledby="mapping-title">
+  const inspector = (lead: BindingRow, members: readonly BindingRow[]) => (
+    // The open mapping is the detailed editor in the card's place (Avalonia's
+    // accordion), so it carries the row's handle for focus from a problem.
+    <div
+      className="mapping-editor"
+      key={`edit-${String(lead.row)}`}
+      data-binding-row={lead.row}
+      data-testid={`binding-row-${String(lead.row)}`}
+      tabIndex={-1}
+    >
+      <div className="row-actions">
+        <button type="button" disabled={locked || rows[0]?.row === lead.row} aria-label={t("Review_MoveItEarlier")} onClick={() => void apply([{ op: "move_row", from: lead.row, to: lead.row - 1 }], () => setSelectedRow(lead.row - 1))}>↑</button>
+        <button type="button" disabled={locked || rows.at(-1)?.row === lead.row} aria-label={t("Review_MoveItLater")} onClick={() => void apply([{ op: "move_row", from: lead.row, to: lead.row + 1 }], () => setSelectedRow(lead.row + 1))}>↓</button>
+        <button
+          type="button"
+          disabled={locked}
+          onClick={() => {
+            // The card holds every output on these inputs, so its trash takes
+            // the whole combo. Each output has its own.
+            const op: EditorOp =
+              members.length > 1
+                ? { op: "delete_rows", rows: members.map((member) => member.row) }
+                : { op: "delete_row", row: lead.row };
+            void apply([op], () => setSelectedRow(null));
+          }}
+        >
+          {t("Shell_Delete")}
+        </button>
+      </div>
+      <BindingInspector
+        key={`${String(snapshot.revision)}-${String(lead.row)}`}
+        row={lead.row}
+        cells={lead.cells}
+        members={members}
+        counts={counts}
+        mappingNumber={Math.max(1, cardRows.findIndex((row) => row.row === lead.row) + 1)}
+        disabled={locked}
+        onSetCell={setCell}
+        onSetInput={(column, value) => setInput(lead.row, members, column, value)}
+        onAddOutput={
+          selectedMode === null
+            ? undefined
+            : () =>
+                void apply(
+                  [{ op: "add_combo_output", sheet: selectedMode.index, from: lead.row }],
+                  () => setSelectedRow(lead.row),
+                )
+        }
+        onRemoveOutput={(dropRow) => {
+          const keep = members.find((member) => member.row !== dropRow);
+          if (keep === undefined) return;
+          const kept = keep.row > dropRow ? keep.row - 1 : keep.row;
+          void apply([{ op: "delete_row", row: dropRow }], () => setSelectedRow(kept));
+        }}
+      />
+    </div>
+  );
+
+  let main;
+  if (onCustomNames) {
+    main = (
+      <section className="rows-canvas" aria-label={t("Names_CustomOutputNames")}>
+        <CustomNamesTable
+          snapshot={snapshot}
+          drafts={drafts}
+          busy={locked}
+          onDrafts={setDrafts}
+          onApply={(ops, after) => void apply(ops, after)}
+          onStatus={setStatusOverride}
+        />
+      </section>
+    );
+  } else if (view === "rows") {
+    main = (
+      <section className="rows-canvas" aria-label={t("Shell_Rows")}>
+        {cardsHere ? (
+          <div className="binding-list">
+            {rows.filter((row) => groupOf(row)[0]?.row === row.row).map((row) =>
+              row.row === activeRow?.row ? inspector(row, groupOf(row)) : card(row),
+            )}
+          </div>
+        ) : (
+          <RowsGrid
+            rows={rows}
+            issues={snapshot.issues}
+            counts={counts}
+            labelStyle={labelStyle}
+            disabled={locked}
+            liveRows={liveRows}
+            selecting={selecting}
+            selectedRows={selectedRows}
+            onToggleRow={(row) =>
+              setSelectedRows((current) => {
+                const next = new Set(current);
+                if (next.has(row)) next.delete(row);
+                else next.add(row);
+                return next;
+              })
+            }
+            onApply={(ops) => void apply(ops)}
+            onDeleteRow={deleteListRow}
+          />
+        )}
+        <datalist id="qcm-row-outputs">
+          {[...KNOWN_OUTPUTS].map((output) => <option key={output} value={output}>{output}</option>)}
+        </datalist>
+        <datalist id="qcm-row-inputs">
+          {PICKER_INPUTS.map((input) => <option key={input} value={input}>{input}</option>)}
+        </datalist>
+        <datalist id="qcm-row-functions">
+          {FUNCTIONS.map((fn) => <option key={fn} value={fn}>{fn}</option>)}
+        </datalist>
+      </section>
+    );
+  } else {
+    main = (
+      <div className="device-workspace">
+        <section className="device-canvas" aria-label={view === "device" ? t("Shell_Device") : t("Shell_Parts")}>
+          <QuadStickVisualizer
+            client={client}
+            rows={rows}
+            selectedRow={visibleSelectedRow}
+            selectedZone={selectedZone}
+            modeName={selectedMode?.name ?? ""}
+            modeNumber={selectedMode?.number ?? null}
+            model={model}
+            view={view}
+            onSelectRow={setSelectedRow}
+            onSelectZone={setSelectedZone}
+            onLiveRows={setLiveRows}
+            onLiveHeard={setLiveHeard}
+            pickedInput={pickedInput}
+            onPickInput={pickInput}
+            zoneListSlot={view === "device" ? zoneListSlot : null}
+          />
+        </section>
+
+        <aside className="mapping-panel" aria-labelledby="mapping-title">
+          {selectedZone === null ? (
+            <>
+              <h2 id="mapping-title" className="visually-hidden">{t("Shell_Configuration")}</h2>
+              <p className="empty-copy">{t("Main_NothingSelectedNNPickA")}</p>
+            </>
+          ) : (
+            <>
               <div className="mapping-panel-head">
-                <h2 id="mapping-title">
-                  {selectedZone === null
-                    ? t("Shell_Configuration")
-                    : t(ZONE_TITLES[selectedZone])}
-                </h2>
-                <span
-                  className={
-                    zoneRows.length === 0 ? "mapping-count muted" : "mapping-count accent"
-                  }
-                >
-                  {zoneRows.length === 0
-                    ? t("Main_NotMapped")
-                    : plural("Count_Mapping", zoneRows.length, [zoneRows.length])}
+                <h2 id="mapping-title">{t(ZONE_TITLES[selectedZone])}</h2>
+                <span className={zoneRows.length === 0 ? "mapping-count muted" : "mapping-count accent"}>
+                  {zoneRows.length === 0 ? t("Main_NotMapped") : plural("Count_Mapping", zoneRows.length, [zoneRows.length])}
                 </span>
-                {selectedMode !== null && selectedZone !== null && selectedZone !== "unset" ? (
+                {selectedMode !== null && selectedZone !== "unset" ? (
                   <button
                     type="button"
                     className="mapping-add"
-                    disabled={busy}
+                    disabled={locked}
                     aria-label={t("Shell_AddANewBindingRow")}
                     onClick={() => void apply([{ op: "add_row", sheet: selectedMode.index }])}
                   >
@@ -723,8 +1170,6 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
                     className="quiet"
                     aria-label={t("Main_ShowEveryMappingHere")}
                     onClick={() => {
-                      // Avalonia clears the pick too, so the picture stops
-                      // ringing one part while the list shows them all.
                       setPickedInput(null);
                       setWholeZone(true);
                     }}
@@ -733,91 +1178,33 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
                   </button>
                 </p>
               ) : null}
-              {selectedZone === null && zoneRows.length === 0 ? (
-                <p className="empty-copy">{t("Main_NothingSelectedNNPickA")}</p>
-              ) : zoneRows.length === 0 ? (
+              {zoneRows.length === 0 ? (
                 <p className="empty-copy">{t("Main_NoInputYet")}</p>
-              ) : (
+              ) : cardsHere ? (
                 <div className="binding-list">
-                  {cardRows.map((row) => {
-                    const group = groupOf(row);
-                    return (
-                      <SentenceCard
-                        key={row.row}
-                        row={row}
-                        together={group.slice(1)}
-                        counts={counts}
-                        zoneId={zoneIdForRow(row)}
-                        selected={group.some((member) => member.row === visibleSelectedRow)}
-                        live={group.some((member) => liveRows.has(member.row))}
-                        onSelect={() => setSelectedRow(row.row)}
-                      />
-                    );
-                  })}
+                  {cardRows.map((row) => (row.row === activeRow?.row ? inspector(row, groupOf(row)) : card(row)))}
                 </div>
+              ) : (
+                <div className="binding-list">{cardRows.map((row) => inspector(row, groupOf(row)))}</div>
               )}
-              {activeRow !== null ? (
-                <>
-                  <div className="row-actions">
-                    <button type="button" disabled={busy || rows[0]?.row === activeRow.row} aria-label={t("Review_MoveItEarlier")} onClick={() => void apply([{ op: "move_row", from: activeRow.row, to: activeRow.row - 1 }], () => setSelectedRow(activeRow.row - 1))}>↑</button>
-                    <button type="button" disabled={busy || rows.at(-1)?.row === activeRow.row} aria-label={t("Review_MoveItLater")} onClick={() => void apply([{ op: "move_row", from: activeRow.row, to: activeRow.row + 1 }], () => setSelectedRow(activeRow.row + 1))}>↓</button>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => {
-                        // The card holds every output on these inputs, so its
-                        // trash takes the whole combo. Each output has its own.
-                        const group = activeGroup ?? [activeRow];
-                        const op: EditorOp =
-                          group.length > 1
-                            ? { op: "delete_rows", rows: group.map((member) => member.row) }
-                            : { op: "delete_row", row: activeRow.row };
-                        void apply([op], () => {
-                          setSelectedRow(null);
-                          setSelectedZone(null);
-                        });
-                      }}
-                    >
-                      {t("Shell_Delete")}
-                    </button>
-                  </div>
-                  <BindingInspector
-                    key={`${String(snapshot.revision)}-${String(activeRow.row)}`}
-                    row={activeRow.row}
-                    cells={activeRow.cells}
-                    members={activeGroup ?? [activeRow]}
-                    counts={counts}
-                    mappingNumber={Math.max(1, cardRows.findIndex((row) => row.row === activeRow.row) + 1)}
-                    disabled={busy}
-                    onSetCell={setCell}
-                    onSetInput={(column, value) =>
-                      setInput(activeRow.row, activeGroup ?? [activeRow], column, value)
-                    }
-                    onAddOutput={
-                      selectedMode === null
-                        ? undefined
-                        : () =>
-                            void apply(
-                              [{ op: "add_combo_output", sheet: selectedMode.index, from: activeRow.row }],
-                              () => setSelectedRow(activeRow.row),
-                            )
-                    }
-                    onRemoveOutput={(dropRow) => {
-                      const keep = (activeGroup ?? []).find((member) => member.row !== dropRow);
-                      if (keep === undefined) return;
-                      // Rows below the deleted one shift up, so the kept row
-                      // number moves with them and the card stays open.
-                      const kept = keep.row > dropRow ? keep.row - 1 : keep.row;
-                      void apply([{ op: "delete_row", row: dropRow }], () => setSelectedRow(kept));
-                    }}
-                  />
-                </>
-              ) : null}
-            </aside>
-          </div>
-        </div>
-      )}
+            </>
+          )}
+        </aside>
+      </div>
+    );
+  }
 
+  return (
+    <section className="editor-workspace" aria-labelledby="editor-title">
+      <h1 id="editor-title" className="visually-hidden">{title}</h1>
+      {snapshot.dirty ? (
+        <span className="visually-hidden" role="img" aria-label={t("Main_ThisProfileHasUnsavedChanges")}>*</span>
+      ) : null}
+      {chrome}
+      <div className="editor-plate">
+        {sidebar}
+        {main}
+      </div>
       <ProblemsDock
         issues={snapshot.issues}
         status={status}
@@ -827,6 +1214,25 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
           setMessage("");
         }}
         onMoveToNotes={moveIssueToNotes}
+      />
+      <ModesDialog
+        open={modesOpen}
+        snapshot={snapshot}
+        busy={locked}
+        armedDelete={armedDelete}
+        onClose={closeModes}
+        onApply={(ops, after) => void apply(ops, after)}
+        onMove={moveMode}
+        onDelete={deleteMode}
+        onSelect={selectMode}
+        canMove={(mode, delta) => adjacentMovableSheet(snapshot, mode.index, delta) !== null}
+      />
+      <SaveTemplateDialog
+        open={templateOpen}
+        suggested={fileName}
+        busy={locked}
+        onSave={(name) => void saveTemplate(name)}
+        onClose={() => setTemplateOpen(false)}
       />
     </section>
   );

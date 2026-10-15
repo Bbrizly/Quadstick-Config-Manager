@@ -41,7 +41,7 @@ async function open(connectWorks: boolean) {
       <Host client={client} first={first} />
     </I18nProvider>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Copy share link" }));
+  fireEvent.click(screen.getByRole("button", { name: "Copy a link to this profile's Google Sheet" }));
   await screen.findByRole("dialog", { name: "Set up Google Sheets" });
   return { client, shared };
 }

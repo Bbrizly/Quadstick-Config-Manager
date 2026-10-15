@@ -91,6 +91,8 @@ export type EditorOp =
 export type ThemeChoice = "system" | "light" | "dark";
 export type ModelChoice = "fps" | "original" | "singleton";
 export type PickerGrouping = "detailed" | "wide" | "flat";
+/** `AppSettings.CardSentenceStyle`: "Press X when you sip" or "Sip to X". */
+export type CardSentenceStyle = "press_when" | "input_to_output";
 
 export const INTERFACE_SCALES = [60, 70, 80, 90, 100, 125, 150, 200] as const;
 export type InterfaceScale = (typeof INTERFACE_SCALES)[number];
@@ -104,6 +106,9 @@ export interface AppSettings {
   readonly reduceMotion: boolean;
   readonly rememberWindow: boolean;
   readonly deviceCards: boolean;
+  readonly rowCards: boolean;
+  readonly compactCards: boolean;
+  readonly cardSentenceStyle: CardSentenceStyle;
   readonly pickerGrouping: PickerGrouping;
   readonly tutorialSeen: boolean;
   readonly usageAnalytics: boolean;
@@ -121,6 +126,9 @@ export interface SettingsPatch {
   readonly reduceMotion?: boolean;
   readonly rememberWindow?: boolean;
   readonly deviceCards?: boolean;
+  readonly rowCards?: boolean;
+  readonly compactCards?: boolean;
+  readonly cardSentenceStyle?: CardSentenceStyle;
   readonly pickerGrouping?: PickerGrouping;
   readonly tutorialSeen?: boolean;
   readonly usageAnalytics?: boolean;

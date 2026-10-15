@@ -36,4 +36,5 @@ export { ERROR_CODES, INTERFACE_SCALES, USAGE_NOTICE_VERSION } from "./contracts
 export { MockQcmClient } from "./mockQcmClient";
 export { asQcmError, isQcmCommandError, QcmCommandError, type QcmClient } from "./qcmClient";
 export { resolveQcmClient, runningUnderTauri } from "./resolve";
-export { INPUTS, KNOWN_OUTPUTS, LEGACY_INPUTS, PICKER_INPUTS, REAR_JOYSTICK } from "./vocab";
+export { FUNCTIONS, INPUTS, KNOWN_OUTPUTS, LEGACY_INPUTS, PICKER_INPUTS, REAR_JOYSTICK } from "./vocab";
+export type { LibraryCard, TemplateEntry, TemplateReceipt } from "./libraryContracts";

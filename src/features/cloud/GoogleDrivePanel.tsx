@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { LiveRegion } from "../../components/primitives/LiveRegion";
+import { RunOnce } from "../../components/primitives/RunOnce";
 import { DrivePickerDialog } from "./DrivePickerDialog";
 import { RestoreAfterConnect } from "./HomeDriveButton";
 import { ShareSetupDialog } from "./ShareSetupDialog";
@@ -132,6 +134,10 @@ interface ProfileDriveActionsProps {
   readonly snapshot: EditorSnapshot;
   readonly onSnapshot: (snapshot: EditorSnapshot) => void;
   readonly onReview: (review: WorkbookImportReview) => void;
+  /** Where the buttons go (the editor's Share flyout); `null` while it is shut. */
+  readonly buttonsSlot?: HTMLElement | null;
+  /** A Home card's Copy share link / Open in Google Sheets, run once. */
+  readonly shareRequest?: { readonly n: number; readonly open: boolean } | undefined;
 }
 
 export function ProfileDriveActions({
@@ -139,6 +145,8 @@ export function ProfileDriveActions({
   snapshot,
   onSnapshot,
   onReview,
+  buttonsSlot,
+  shareRequest,
 }: ProfileDriveActionsProps) {
   const { t } = useI18n();
   const [busy, setBusy] = useState(false);
@@ -238,7 +246,7 @@ export function ProfileDriveActions({
     });
   };
 
-  const shareNow = async (): Promise<void> => {
+  const shareNow = async (open = false): Promise<void> => {
     if (share === undefined || backup === undefined || busy) return;
     setBusy(true);
     try {
@@ -251,6 +259,10 @@ export function ProfileDriveActions({
         return;
       }
       const shared = await share.call(client, current.sessionId, current.revision);
+      if (open && client.openExternalUrl !== undefined) {
+        await client.openExternalUrl(shared.url);
+        return;
+      }
       setShareUrl(shared.url);
       setMessage(t("Backup_LinkCopied"));
     } catch (reason) {
@@ -262,16 +274,29 @@ export function ProfileDriveActions({
 
   if (backup === undefined) return null;
 
-  return (
-    <section className="profile-drive-actions" aria-label={t("Settings_Backup")}>
-      <button type="button" disabled={busy} onClick={() => void backupNow()}>
-        {t("Main_BackingUpToGoogleDrive")}
-      </button>
+  // `ShareMenu`: copy the link, open the sheet; a backup now as well.
+  const buttons = (
+    <>
       {share === undefined ? null : (
-        <button type="button" disabled={busy} onClick={() => void shareNow()}>
+        <button type="button" className="menu-item" disabled={busy} aria-label={t("Main_CopyALinkToThis")} onClick={() => void shareNow()}>
           {t("Main_CopyShareLink")}
         </button>
       )}
+      {share === undefined || client.openExternalUrl === undefined ? null : (
+        <button type="button" className="menu-item" disabled={busy} aria-label={t("Main_OpenThisProfileSGoogle")} onClick={() => void shareNow(true)}>
+          {t("Main_OpenInGoogleSheets")}
+        </button>
+      )}
+      <button type="button" className="menu-item" disabled={busy} onClick={() => void backupNow()}>
+        {t("Main_BackingUpToGoogleDrive")}
+      </button>
+    </>
+  );
+
+  return (
+    <section className="profile-drive-actions" aria-label={t("Settings_Backup")}>
+      <RunOnce request={shareRequest} ready onRun={(next) => void shareNow(next.open)} />
+      {buttonsSlot === undefined ? buttons : buttonsSlot === null ? null : createPortal(buttons, buttonsSlot)}
 
       {conflict?.kind === "conflict" ? (
         <div className="drive-conflict" role="alert">

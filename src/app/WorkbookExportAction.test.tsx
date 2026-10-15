@@ -29,7 +29,9 @@ describe("TASK-040B editor XLSX export", () => {
     );
     await screen.findByRole("heading", { level: 1, name: "untitled.csv" });
 
-    fireEvent.click(screen.getByRole("button", { name: "Save .xlsx" }));
+    // In the Share flyout, beside the Drive actions.
+    fireEvent.click(screen.getByRole("button", { name: "Share this profile as a Google Sheet" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Save .xlsx" }));
 
     await waitFor(() => expect(client.exportCalls).toHaveLength(1));
     expect(client.exportCalls[0]?.revision).toBe(1);
@@ -47,7 +49,9 @@ describe("TASK-040B editor XLSX export", () => {
       })[0]!,
     );
     await screen.findByRole("heading", { level: 1, name: "untitled.csv" });
-    fireEvent.click(screen.getByRole("button", { name: "Save .xlsx" }));
+    // In the Share flyout, beside the Drive actions.
+    fireEvent.click(screen.getByRole("button", { name: "Share this profile as a Google Sheet" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Save .xlsx" }));
 
     await waitFor(() => expect(client.exportCalls).toHaveLength(1));
     expect(screen.queryByText(/Saved to/)).not.toBeInTheDocument();

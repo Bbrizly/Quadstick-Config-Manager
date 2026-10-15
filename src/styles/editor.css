@@ -1,9 +1,12 @@
 /* Avalonia editor chrome + workspace plate + tinted bindings */
 
+/* The window's height, so the problems bar stays on screen and each panel
+   scrolls inside itself (codex c51f41e: the dock could scroll away). */
 .editor-route {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 86px);
+  height: calc(100vh - 86px);
+  min-height: 0;
 }
 
 .editorchrome {
@@ -106,7 +109,7 @@
 
 .editor-plate {
   flex: 1;
-  min-height: 470px;
+  min-height: 0;
   margin: 14px 16px;
   border: var(--qcm-hairline) solid var(--qcm-border);
   border-radius: var(--qcm-radius-panel);
@@ -114,22 +117,35 @@
   overflow: hidden;
   display: grid;
   grid-template-columns: var(--qcm-sidebar-width) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
 }
 
+/* Avalonia EditorSidebar: one ScrollViewer over a DockPanel. The view keys
+   sit at the bottom while everything fits; when the parts list makes it too
+   tall, the whole sidebar scrolls instead of squeezing a part of it. */
 .modes-panel {
   display: flex;
   flex-direction: column;
+  min-height: 0;
   background: var(--qcm-sidebar-bg);
   border-right: var(--qcm-hairline) solid var(--qcm-border);
   padding: var(--qcm-space-lg);
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .modes-panel-body {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+}
+
+.modes-panel-body .mode-list {
+  flex: 1 1 auto;
+}
+
+.sidebar-view {
+  flex: none;
 }
 
 .device-workspace {
@@ -138,7 +154,9 @@
   /* The floor sits on the track: below 340 a mapping card's input box is
      squeezed to nothing by its label and its buttons. */
   grid-template-columns: minmax(0, 1.4fr) minmax(340px, 0.6fr);
+  grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
+  min-height: 0;
 }
 
 .device-canvas,
@@ -401,40 +419,32 @@
   gap: 4px;
 }
 
-/* Avalonia ModeList: one-line "1: Racing" rows, hairline edge, the picked one
-   tinted with a 2px accent edge. Renaming and moving belong to the picked
-   mode only, so the other rows stay one line. */
-.mode-row,
-.mode-structure-row {
+/* Avalonia ModeList: one plain line per mode, the picked one tinted with a
+   2px accent edge. Renaming and moving live behind the pencil. */
+.mode-row {
   display: grid;
-  gap: 6px;
-  padding: 0;
   border: var(--qcm-hairline) solid var(--qcm-border);
   border-radius: var(--qcm-radius-field);
   background: var(--qcm-surface);
   transition: background 100ms ease, border-color 100ms ease;
 }
 
-.mode-structure-row {
-  padding: 4px 10px;
-}
-
-.mode-row:hover,
-.mode-structure-row:hover {
+.mode-row:hover {
   border-color: var(--qcm-accent);
 }
 
 button.mode-select {
   display: flex;
   align-items: center;
-  gap: 0;
   width: 100%;
   min-width: 0;
   min-height: 30px;
-  padding: 2px 10px;
+  padding: 3px 10px;
   border: 0;
   border-radius: inherit;
   background: transparent;
+  font-size: var(--qcm-body-size);
+  font-weight: 400;
   text-align: start;
 }
 
@@ -442,29 +452,19 @@ button.mode-select:hover {
   background: transparent;
 }
 
+button.mode-select:disabled {
+  background: transparent;
+  color: var(--qcm-text-secondary);
+}
+
 .mode-row:has(.mode-select[aria-current="true"]) {
-  padding-bottom: 8px;
+  margin: -1px;
   background: var(--qcm-input-tint);
   border: 2px solid var(--qcm-accent);
 }
 
-.mode-row:not(:has(.mode-select[aria-current="true"])) :is(.mode-name-input, .mode-row-actions) {
-  display: none;
-}
-
-.mode-row .mode-name-input,
-.mode-row .mode-row-actions {
-  margin-inline: 8px;
-}
-
 .mode-number::after {
   content: ":\00a0";
-}
-
-.mode-name-input {
-  width: auto;
-  min-height: 36px;
-  padding: 4px 8px;
 }
 
 .mode-row-actions,
@@ -627,6 +627,12 @@ button.mode-select:hover {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+}
+
+.status-chip > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .status-ready {
@@ -754,4 +760,547 @@ button.problems-toggle.status-warning {
 
 button.problems-toggle.status-error {
   color: var(--qcm-error);
+}
+
+/* ---- Editor command bar (Avalonia editorchrome) ---- */
+.editorchrome .secondary {
+  font-size: var(--qcm-body-size);
+}
+
+/* FileNameBox: a 230px Fluent box, bold name, the ".csv" fixed inside it. */
+.filename-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 230px;
+}
+
+.filename-box input {
+  width: 100%;
+  height: var(--qcm-control-height);
+  padding: 4px 48px 4px 10px;
+  font-size: var(--qcm-subhead-size);
+  font-weight: 700;
+}
+
+.filename-suffix {
+  position: absolute;
+  right: 8px;
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-subhead-size);
+  pointer-events: none;
+}
+
+.unused-button {
+  min-height: 46px;
+  padding: 6px 16px;
+}
+
+.selection-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--qcm-space-sm);
+}
+
+button.command.danger svg {
+  color: var(--qcm-error);
+}
+
+/* ---- Flyouts (Flyout / MenuFlyout) ---- */
+.popover-root {
+  position: relative;
+  display: inline-flex;
+}
+
+.popover-panel {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 220px;
+  max-width: 380px;
+  padding: 6px;
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-control);
+  background: var(--qcm-surface);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.16);
+}
+
+.popover-panel.end {
+  left: auto;
+  right: 0;
+}
+
+.share-menu,
+.menu-list {
+  display: grid;
+  gap: 2px;
+}
+
+.share-menu:empty::after {
+  content: "—";
+  padding: 6px 10px;
+  color: var(--qcm-text-secondary);
+}
+
+button.menu-item {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: var(--qcm-radius-field);
+  background: transparent;
+  font-weight: 400;
+  text-align: start;
+  white-space: nowrap;
+}
+
+button.menu-item:hover {
+  background: var(--qcm-surface-subtle);
+}
+
+button.menu-item.danger {
+  color: var(--qcm-error);
+}
+
+.menu-separator {
+  width: 100%;
+  margin: 4px 0;
+  border: 0;
+  border-top: var(--qcm-hairline) solid var(--qcm-border);
+}
+
+.info-flyout {
+  display: grid;
+  gap: 6px;
+  max-width: 340px;
+  padding: 6px 8px;
+  font-size: var(--qcm-small-size);
+  white-space: pre-line;
+}
+
+.info-flyout p {
+  margin: 0;
+}
+
+.unused-flyout {
+  display: grid;
+  gap: 4px;
+  max-height: 420px;
+  width: 340px;
+  overflow: auto;
+  padding: 4px;
+}
+
+.unused-flyout > strong {
+  font-size: var(--qcm-subhead-size);
+}
+
+.unused-zone {
+  display: block;
+  margin: 8px 0 2px;
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+  font-weight: 700;
+}
+
+.unused-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+button.unused-chip {
+  min-width: 0;
+  min-height: 0;
+  padding: 3px 8px;
+  font-size: var(--qcm-small-size);
+  font-weight: 400;
+}
+
+/* ---- Sidebar (EditorSidebar) ---- */
+.modes-panel .panel-heading-row {
+  margin-bottom: 8px;
+}
+
+.panel-heading-actions {
+  display: inline-flex;
+  gap: 4px;
+}
+
+button.mode-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
+  padding: 2px;
+  border: 0;
+  background: transparent;
+}
+
+button.mode-help:hover {
+  background: transparent;
+}
+
+button.mode-help h2 {
+  font-size: var(--qcm-body-size);
+  font-weight: 700;
+}
+
+.mode-help-mark {
+  display: grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  border: 1px solid var(--qcm-text-secondary);
+  border-radius: 50%;
+  color: var(--qcm-text-secondary);
+  font-size: 11px;
+}
+
+.mode-list {
+  min-height: 112px;
+  max-height: 300px;
+  overflow: auto;
+  align-content: start;
+}
+
+.sidebar-config {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: var(--qcm-hairline) solid var(--qcm-border);
+}
+
+.sidebar-config h3 {
+  margin: 0;
+  font-size: var(--qcm-body-size);
+  font-weight: 700;
+}
+
+.model-picker {
+  width: 100%;
+}
+
+.device-status {
+  font-size: var(--qcm-body-size);
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--qcm-text-secondary);
+  border-radius: 50%;
+}
+
+.zone-list[hidden] {
+  display: none;
+}
+
+.zone-list .visualizer-extra-zones {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin: 0;
+}
+
+/* Avalonia `RailRow(compact)`: a one-line row, name left, count right. */
+.zone-list button.zone {
+  position: static;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  min-height: 0;
+  padding: 6px 10px !important;
+  border-radius: var(--qcm-radius-field);
+  text-align: start;
+}
+
+.zone-list button.zone strong {
+  font-size: var(--qcm-body-size);
+}
+
+.zone-list button.zone span {
+  font-size: var(--qcm-small-size);
+}
+
+.zone-list .accent-count {
+  color: var(--qcm-accent-text);
+}
+
+.sidebar-view {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: var(--qcm-hairline) solid var(--qcm-border);
+}
+
+.sidebar-view-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--qcm-small-size);
+}
+
+.sidebar-toggles {
+  display: grid;
+  grid-template-columns: 1fr 1fr 48px;
+  gap: 3px;
+}
+
+button.sidebar-toggle {
+  min-width: 0;
+  min-height: 52px;
+  padding: 4px 6px;
+  font-size: var(--qcm-sidebar-toggle-text);
+  font-weight: 700;
+}
+
+button.sidebar-toggle.format {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--qcm-accent-text);
+}
+
+button.sidebar-toggle.format.active {
+  background: var(--qcm-input-tint);
+}
+
+.sidebar-view .switchtrack {
+  margin-top: 0;
+}
+
+/* ---- Rows view (RowsPanel) ---- */
+.rows-canvas {
+  min-width: 0;
+  padding: 12px;
+  overflow: auto;
+}
+
+.rows-grid {
+  display: grid;
+}
+
+/* `BindingColumns`: number, output 2.6*, function 1.45*, inputs 2.95*, the
+   add/delete pair, note 1.4*, up, down. */
+.rows-grid-line {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 2.6fr) minmax(0, 1.45fr) minmax(0, 2.95fr) 96px minmax(0, 1.4fr) 48px 48px;
+  align-items: center;
+  column-gap: 8px;
+  padding: 4px 0;
+  border-bottom: var(--qcm-hairline) solid var(--qcm-border);
+}
+
+.rows-grid-head {
+  align-items: end;
+  padding-top: 0;
+}
+
+.rows-grid-head .tint-swatch {
+  overflow-wrap: break-word;
+}
+
+.rows-grid-line:focus {
+  outline: none;
+}
+
+.row-number {
+  position: relative;
+  padding-right: 4px;
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+  text-align: right;
+}
+
+button.row-select {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 2px 4px;
+}
+
+button.row-select[aria-pressed="true"] {
+  background: var(--qcm-accent);
+  color: var(--qcm-on-accent);
+}
+
+.row-live-pip {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--qcm-accent);
+}
+
+.cell-slot {
+  min-width: 0;
+}
+
+/* A cell: its column's tint, a 3px edge that turns warning or error when the
+   validator names this cell, so a problem never reflows the row. */
+.grid-cell {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  border: 3px solid transparent;
+  border-radius: 6px;
+}
+
+.grid-cell.tint-output {
+  background: var(--qcm-output-tint);
+}
+
+.grid-cell.tint-function {
+  background: var(--qcm-function-tint);
+}
+
+.grid-cell.tint-input {
+  background: var(--qcm-input-tint);
+}
+
+.grid-cell.issue-warning {
+  border-color: var(--qcm-warning);
+}
+
+.grid-cell.issue-error {
+  border-color: var(--qcm-error);
+}
+
+button.grid-cell-face {
+  flex: 1;
+  min-width: 0;
+  min-height: 46px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--qcm-text);
+  font-weight: 400;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button.grid-cell-face:hover {
+  background: rgb(255 255 255 / 0.25);
+}
+
+.grid-cell input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 4px 10px;
+  border: 0;
+  background: transparent;
+}
+
+.grid-cell.plain {
+  background: transparent;
+}
+
+.input-stack {
+  display: grid;
+  gap: 6px;
+}
+
+.input-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.row-buttons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.row-buttons.stacked {
+  flex-direction: column;
+}
+
+button.icon.round {
+  border-radius: 50%;
+}
+
+button.icon.danger svg {
+  color: var(--qcm-error);
+}
+
+button.icon.move:not(:disabled) {
+  background: var(--qcm-surface);
+}
+
+.note-box {
+  width: 100%;
+  min-height: 48px;
+  padding: 4px 10px;
+}
+
+.rows-empty {
+  margin: 12px 4px;
+}
+
+/* Custom output names: number, output 2.2*, your name 2.4*, delete, used. */
+.rows-grid-line.names-line {
+  grid-template-columns: 38px minmax(0, 2.2fr) minmax(0, 2.4fr) 48px minmax(0, 1.4fr);
+}
+
+.names-line .grid-cell.plain input {
+  border: var(--qcm-hairline) solid var(--qcm-field-border);
+  border-radius: var(--qcm-radius-field);
+}
+
+.names-used {
+  font-size: var(--qcm-small-size);
+}
+
+/* ---- Modes dialog ---- */
+.modes-dialog-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.modes-dialog-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.modes-dialog-row .mode-name-input {
+  min-height: 40px;
+  padding: 4px 8px;
+}
+
+.modes-dialog-name {
+  grid-column: 1 / 3;
+}
+
+.template-name {
+  width: 100%;
+  min-height: var(--qcm-control-height);
+  padding: 4px 10px;
+}
+
+/* Sentence card styles (CardSentenceStyle, CompactCards). */
+.sentence-as {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sentence-grid.compact .sentence-as {
+  flex-basis: 100%;
 }

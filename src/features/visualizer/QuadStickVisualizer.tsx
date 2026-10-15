@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import fpsPhoto from "../../QuadStick.App/Assets/QuadStickFPS.png";
@@ -7,6 +8,7 @@ import backPhoto from "../../QuadStick.App/Assets/QuadStickBack.png";
 import { useI18n, type MessageKey } from "../../i18n";
 import type { LiveSnapshot, QcmClient } from "../../platform";
 import {
+  COMBO_PLACES,
   PILL_H,
   PILL_W,
   SMALL_PILL_H,
@@ -53,12 +55,20 @@ interface QuadStickVisualizerProps {
   readonly modeNumber: number | null;
   readonly view: "device" | "parts" | "rows";
   readonly onSelectRow: (row: number) => void;
-  readonly onSelectZone: (zone: ZoneId) => void;
+  /** `null` is Main controls: the front photo with nothing picked. */
+  readonly onSelectZone: (zone: ZoneId | null) => void;
   readonly model?: QsModel;
   readonly onLiveRows?: (rows: ReadonlySet<number>) => void;
   /** The socket or hole pairing picked on the picture, when the parent narrows its list to it. */
   readonly pickedInput?: string | null;
   readonly onPickInput?: (input: string | null) => void;
+  /**
+   * Where the parts with no place on the photo are listed (Avalonia's
+   * `ZoneList`, in the sidebar). Without one they sit under the picture.
+   */
+  readonly zoneListSlot?: HTMLElement | null;
+  /** Whether the live reader hears a QuadStick, on the found and lost edges only. */
+  readonly onLiveHeard?: (heard: boolean) => void;
 }
 
 interface ZoneMeta {
@@ -262,19 +272,6 @@ function liveJoystickActive(frame: LiveSnapshot | null): boolean {
   return Math.abs(frame.status.motion.x) >= 0.12 || Math.abs(frame.status.motion.y) >= 0.12;
 }
 
-function liveText(frame: LiveSnapshot | null, t: ReturnType<typeof useI18n>["t"]): string {
-  if (frame === null || frame.status.kind === "stopped" || frame.status.kind === "searching") {
-    return t("DevicePage_NothingIsReadingTheStick");
-  }
-  if (frame.status.kind === "reading") {
-    const pressed = frame.status.motion.buttons;
-    return pressed.length === 0
-      ? t("DevicePage_ReadingProductNothingPressed", [frame.status.product])
-      : t("DevicePage_ReadingProductPressedNow", [frame.status.product, pressed.join(", ")]);
-  }
-  if (frame.status.kind === "xinputOnly") return t("Main_ThisEmulationModeIsNot");
-  return t("DevicePage_NothingIsReadingTheStick");
-}
 
 function zoneAccessibleName(
   zone: ZoneMeta,
@@ -362,10 +359,10 @@ export function QuadStickVisualizer({
   onLiveRows,
   pickedInput,
   onPickInput,
+  zoneListSlot,
+  onLiveHeard,
 }: QuadStickVisualizerProps) {
   const { t, plural } = useI18n();
-  const [practice, setPractice] = useState(false);
-  const [combos, setCombos] = useState(false);
   const [chosenCombo, setPickedCombo] = useState<string | null>(null);
   const [live, setLive] = useState<LiveSnapshot | null>(null);
   const [liveOutputs, setLiveOutputs] = useState<ReadonlySet<string>>(new Set());
@@ -375,8 +372,9 @@ export function QuadStickVisualizer({
   const diagram = diagramFor(model);
 
   const showBack = selectedZone === "jacks" || selectedZone === "other";
-  const showCombos =
-    !showBack && (combos || selectedZone === "combo") && diagram.zones.includes("combo");
+  // Avalonia: the photo follows the part picked on the left. Hole combos are
+  // drawn only while that row is the one picked.
+  const showCombos = !showBack && selectedZone === "combo" && diagram.zones.includes("combo");
 
   const rowsByZone = useMemo(() => {
     const map = new Map<ZoneId, BindingCells[]>();
@@ -409,6 +407,11 @@ export function QuadStickVisualizer({
     onLiveRows?.(liveRows);
   }, [liveRows, onLiveRows]);
 
+  const heard = live !== null && (live.status.kind === "reading" || live.status.kind === "xinputOnly");
+  useEffect(() => {
+    onLiveHeard?.(heard);
+  }, [heard, onLiveHeard]);
+
   const windowActive = useLiveInput(client, (frame) => {
     setLive(frame);
     if (frame !== null && frame.status.kind === "reading") {
@@ -421,10 +424,6 @@ export function QuadStickVisualizer({
     }
   });
 
-  // Entering the combo zone from outside (an issue link, a card) turns the
-  // combo view on and keeps it on, as clicking the toggle would. Adjusted
-  // during render rather than in an effect so it never costs a second pass.
-  if (selectedZone === "combo" && !combos) setCombos(true);
 
   // Avalonia auto-picks the first mapped pairing so hole rings appear immediately.
   // A parent that narrows its list owns the pick, so the rings and the list
@@ -495,7 +494,6 @@ export function QuadStickVisualizer({
 
   const selectCombo = (input: string): void => {
     setPickedCombo(input);
-    setCombos(true);
     onSelectZone("combo");
     onPickInput?.(input);
     const prefix = comboPrefix(input);
@@ -518,23 +516,12 @@ export function QuadStickVisualizer({
     hotspotRefs.current[next]?.focus();
   };
 
-  const togglePractice = (): void => {
-    setPractice((value) => !value);
-  };
-
-  const toggleCombos = (): void => {
-    const next = !showCombos;
-    setCombos(next);
-    if (!next) {
-      setPickedCombo(null);
-      onPickInput?.(null);
-      if (selectedZone === "combo") onSelectZone("mp_left");
-    }
-    setFocusedZone(0);
-  };
-
+  // Avalonia `MainControlsRow`: back to the front photo with nothing picked,
+  // so the panel asks which part rather than guessing one.
   const showFront = (): void => {
-    onSelectZone("mp_center");
+    onSelectZone(null);
+    onPickInput?.(null);
+    setPickedCombo(null);
     setFocusedZone(0);
   };
 
@@ -997,43 +984,90 @@ export function QuadStickVisualizer({
     0,
   );
 
+  const frontCount = rows.filter((row) =>
+    zonesForRow(row).some((zone) => diagram.hotspots.some((spot) => spot.zone === zone)),
+  ).length;
+  const frontSelected = selectedZone === null || diagram.hotspots.some((spot) => spot.zone === selectedZone);
+  const countText = (count: number): string =>
+    count === 0 ? t("Main_NotMapped") : plural("Count_Mapping", count, [count]);
+  // Avalonia `FillZoneList`: Main controls, then every part with no marker
+  // on the photo, then the parts this model has not got behind one card.
+  const zoneList = (
+    <div className="visualizer-extra-zones" role="group" aria-label={t("Main_Parts")}>
+      <button
+        type="button"
+        className={frontSelected ? "zone main-controls selected" : "zone main-controls"}
+        aria-pressed={frontSelected}
+        aria-label={t("Main_MainControlsCount", [countText(frontCount)])}
+        onClick={showFront}
+      >
+        <strong>{t("Main_MainControls")}</strong>
+        <span className={frontCount === 0 ? "muted" : "accent-count"}>{countText(frontCount)}</span>
+      </button>
+      {[
+        ...(diagram.zones.includes("combo") ? [ZONE_META.find((zone) => zone.id === "combo")!] : []),
+        ...extraOnModel,
+      ].map((zone) => {
+        const count = rowsByZone.get(zone.id)?.length ?? 0;
+        const selected = selectedZone === zone.id;
+        return (
+          <button
+            key={zone.id}
+            type="button"
+            className={selected ? "zone selected" : "zone"}
+            aria-pressed={selected}
+            onClick={() => (zone.id === "combo" ? selectCombo(firstMappedCombo(rowsByZone.get("combo") ?? []) ?? COMBO_PLACES[0]!.input) : selectZone(zone))}
+          >
+            <strong>{t(zone.titleKey)}</strong>
+            <span className={count === 0 ? "muted" : "accent-count"}>{countText(count)}</span>
+          </button>
+        );
+      })}
+      {foreignZones.length > 0 ? (
+        <details className="off-model-card">
+          <summary
+            aria-label={t("Main_NotOnYourModelNameParts", [
+              t("Main_NotOnYourModelName", [MODEL_SHORT[model]]),
+              plural("Count_Part", foreignZones.length, [foreignZones.length]),
+              plural("Count_Mapping", offModelTotal, [offModelTotal]),
+            ])}
+          >
+            <strong>{t("Main_NotOnYourModelName", [MODEL_SHORT[model]])}</strong>
+            <span className="muted">{plural("Count_Part", foreignZones.length, [foreignZones.length])}</span>
+            <span className="accent-count">{plural("Count_Mapping", offModelTotal, [offModelTotal])}</span>
+          </summary>
+          <p className="muted">{t("Main_TheseRowsAreKeptInThe")}</p>
+          {foreignZones.map((zone) => {
+            const count = rowsByZone.get(zone.id)?.length ?? 0;
+            return (
+              <button
+                key={zone.id}
+                type="button"
+                className={selectedZones.has(zone.id) ? "zone selected" : "zone"}
+                onClick={() => selectZone(zone)}
+              >
+                <strong>{t(zone.titleKey)}</strong>
+                <span>{plural("Count_Mapping", count, [count])}</span>
+                <span className="muted">{t("Main_NotOnModel")}</span>
+              </button>
+            );
+          })}
+        </details>
+      ) : null}
+    </div>
+  );
+
+
+
   return (
     <section
       className="quadstick-visualizer"
       aria-labelledby="quadstick-visualizer-title"
       data-window-active={windowActive ? undefined : "false"}
     >
-      <header className="visualizer-header">
-        <div>
-          <h2 id="quadstick-visualizer-title">{t("Tour_ThisIsYourQuadStickEach")}</h2>
-          <p>{modeNumber === null ? modeName : `${String(modeNumber)} · ${modeName}`}</p>
-        </div>
-        <div className="visualizer-header-actions">
-          {showBack ? (
-            <button type="button" className="combo-toggle" onClick={showFront}>
-              {t("Main_MainControls")}
-            </button>
-          ) : null}
-          {!showBack && diagram.zones.includes("combo") ? (
-            <button
-              type="button"
-              className={showCombos ? "combo-toggle active" : "combo-toggle"}
-              aria-pressed={showCombos}
-              onClick={toggleCombos}
-            >
-              {t("Main_Combos")}
-            </button>
-          ) : null}
-          <button
-            type="button"
-            className={practice ? "practice-toggle active" : "practice-toggle"}
-            aria-pressed={practice}
-            onClick={togglePractice}
-          >
-            {practice ? t("Main_UsingDeviceView") : t("DevicePage_JoystickTravel")}
-          </button>
-        </div>
-      </header>
+      <h2 id="quadstick-visualizer-title" className="visually-hidden">
+        {t("Tour_ThisIsYourQuadStickEach")} {modeNumber === null ? modeName : `${String(modeNumber)} · ${modeName}`}
+      </h2>
 
       {foreignZones.length > 0 ? (
         <p className="model-mismatch" role="status">
@@ -1080,133 +1114,12 @@ export function QuadStickVisualizer({
             {renderModeLights()}
             {renderComboHighlight()}
 
-            {practice && live?.status.kind === "reading"
-              ? (() => {
-                  const joy = diagram.hotspots.find((spot) => spot.zone === "joystick");
-                  if (joy === undefined) return null;
-                  const at = onPhoto(diagram, joy.pointX, joy.pointY);
-                  const homeX = diagram.photoX + at.x;
-                  const homeY = photoY + at.y;
-                  const reach = 20;
-                  const x = homeX + live.status.motion.x * reach;
-                  const y = homeY + live.status.motion.y * reach;
-                  return (
-                    <>
-                      <span
-                        className="live-stick-home"
-                        aria-hidden="true"
-                        style={{
-                          left: `${String((homeX / STAGE_W) * 100)}%`,
-                          top: `${String((homeY / stageH) * 100)}%`,
-                        }}
-                      />
-                      <span
-                        className="live-stick-dot halo"
-                        aria-hidden="true"
-                        style={{
-                          left: `${String((x / STAGE_W) * 100)}%`,
-                          top: `${String((y / stageH) * 100)}%`,
-                        }}
-                      />
-                      <span
-                        className="live-stick-dot core"
-                        aria-hidden="true"
-                        style={{
-                          left: `${String((x / STAGE_W) * 100)}%`,
-                          top: `${String((y / stageH) * 100)}%`,
-                        }}
-                      />
-                    </>
-                  );
-                })()
-              : null}
-
             {stageSpots.map((spot, index) => renderHotspot(spot, index, showCombos))}
           </StageViewbox>
         )}
       </div>
 
-      {extraOnModel.length > 0 || foreignZones.length > 0 ? (
-        <div className="visualizer-extra-zones" aria-label={t("Main_Parts")}>
-          {!showBack ? (
-            <button
-              type="button"
-              className="zone main-controls"
-              aria-label={t("Main_MainControlsCount", [
-                plural(
-                  "Count_Mapping",
-                  rows.filter((row) =>
-                    zonesForRow(row).some((zone) => diagram.zones.includes(zone) && zone !== "combo"),
-                  ).length,
-                  [
-                    rows.filter((row) =>
-                      zonesForRow(row).some((zone) => diagram.zones.includes(zone) && zone !== "combo"),
-                    ).length,
-                  ],
-                ),
-              ])}
-              onClick={showFront}
-            >
-              <strong>{t("Main_MainControls")}</strong>
-            </button>
-          ) : null}
-          {extraOnModel.map((zone) => {
-            const count = rowsByZone.get(zone.id)?.length ?? 0;
-            return (
-              <button
-                key={zone.id}
-                type="button"
-                className={selectedZones.has(zone.id) ? "zone selected" : "zone"}
-                onClick={() => selectZone(zone)}
-              >
-                <strong>{t(zone.titleKey)}</strong>
-                <span>
-                  {count === 0 ? t("Main_NotMapped") : plural("Count_Mapping", count, [count])}
-                </span>
-              </button>
-            );
-          })}
-          {foreignZones.length > 0 ? (
-            <details className="off-model-card">
-              <summary
-                aria-label={t("Main_NotOnYourModelNameParts", [
-                  t("Main_NotOnYourModelName", [MODEL_SHORT[model]]),
-                  plural("Count_Part", foreignZones.length, [foreignZones.length]),
-                  plural("Count_Mapping", offModelTotal, [offModelTotal]),
-                ])}
-              >
-                <strong>{t("Main_NotOnYourModelName", [MODEL_SHORT[model]])}</strong>
-                <span className="muted">
-                  {plural("Count_Part", foreignZones.length, [foreignZones.length])}
-                </span>
-                <span className="accent-count">
-                  {plural("Count_Mapping", offModelTotal, [offModelTotal])}
-                </span>
-              </summary>
-              <p className="muted">{t("Main_TheseRowsAreKeptInThe")}</p>
-              {foreignZones.map((zone) => {
-                const count = rowsByZone.get(zone.id)?.length ?? 0;
-                return (
-                  <button
-                    key={zone.id}
-                    type="button"
-                    className={selectedZones.has(zone.id) ? "zone selected" : "zone"}
-                    onClick={() => selectZone(zone)}
-                  >
-                    <strong>{t(zone.titleKey)}</strong>
-                    <span>{plural("Count_Mapping", count, [count])}</span>
-                    <span className="muted">{t("Main_NotOnModel")}</span>
-                  </button>
-                );
-              })}
-            </details>
-          ) : null}
-        </div>
-      ) : null}
-
-      <output className="practice-status" aria-live="polite">
-        {live?.status.kind === "reading" ? liveText(live, t) : t("Main_WhatALitRowMeans")}
-      </output>
+      {zoneListSlot === undefined ? zoneList : zoneListSlot === null ? null : createPortal(zoneList, zoneListSlot)}
     </section>
   );
 }

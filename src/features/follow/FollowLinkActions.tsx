@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { Dialog } from "../../components/primitives/Dialog";
 import { LiveRegion } from "../../components/primitives/LiveRegion";
+import { RunOnce } from "../../components/primitives/RunOnce";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import { asQcmError, type EditorSnapshot, type ProfileChange, type QcmClient } from "../../platform";
@@ -11,6 +13,14 @@ export interface FollowLinkActionsProps {
   readonly client: QcmClient;
   readonly snapshot: EditorSnapshot;
   readonly onSnapshot: (snapshot: EditorSnapshot) => void;
+  /**
+   * Where the two buttons go (the editor's Share flyout). `null` hides them
+   * while the flyout is shut; left out, they sit inline. Dialogs and messages
+   * stay here either way.
+   */
+  readonly buttonsSlot?: HTMLElement | null;
+  /** A Home card's menu choice, run once when this file is known to follow. */
+  readonly request?: { readonly n: number; readonly kind: "latest" | "forget" } | undefined;
 }
 
 interface Review {
@@ -26,7 +36,13 @@ const SHOWN_CHANGES = 12;
  * follows a Google Sheet (`MainWindow.Follow.cs`). Asking whether it follows
  * is local; the sheet is fetched only on the press.
  */
-export function FollowLinkActions({ client, snapshot, onSnapshot }: FollowLinkActionsProps) {
+export function FollowLinkActions({
+  client,
+  snapshot,
+  onSnapshot,
+  buttonsSlot,
+  request,
+}: FollowLinkActionsProps) {
   const { t } = useI18n();
   const [known, setKnown] = useState<{ readonly key: string; readonly follows: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -62,6 +78,7 @@ export function FollowLinkActions({ client, snapshot, onSnapshot }: FollowLinkAc
   }, [client, getState, sessionId, saveTarget, dirty]);
   const follows = saveTarget !== null && known?.key === stateKey && known.follows;
   const setFollows = (value: boolean): void => setKnown({ key: stateKey, follows: value });
+
 
   if (getState === undefined || check === undefined || replace === undefined) return null;
 
@@ -165,10 +182,11 @@ export function FollowLinkActions({ client, snapshot, onSnapshot }: FollowLinkAc
   // Held through the question, as `_gettingLatest` is: a second press cannot
   // start another download or replace the list being answered.
   const locked = busy || review !== null || askSave;
-  return (
-    <section className="profile-follow-actions" aria-label={t("Follow_CardNote")}>
+  const buttons = (
+    <>
       <button
         type="button"
+        className="menu-item"
         disabled={locked}
         aria-label={t("Follow_GetLatestHelp")}
         onClick={getLatest}
@@ -178,7 +196,7 @@ export function FollowLinkActions({ client, snapshot, onSnapshot }: FollowLinkAc
       {forget === undefined ? null : (
         <button
           type="button"
-          className="quiet"
+          className="menu-item"
           disabled={locked}
           aria-label={t("Follow_StopFollowingHelp")}
           onClick={stopFollowing}
@@ -186,6 +204,13 @@ export function FollowLinkActions({ client, snapshot, onSnapshot }: FollowLinkAc
           {t("Follow_StopFollowing")}
         </button>
       )}
+    </>
+  );
+  return (
+    <section className="profile-follow-actions" aria-label={t("Follow_CardNote")}>
+      {/* A card's request waits until this file is known to follow. */}
+      <RunOnce request={request} ready onRun={(next) => (next.kind === "latest" ? getLatest() : stopFollowing())} />
+      {buttonsSlot === undefined ? buttons : buttonsSlot === null ? null : createPortal(buttons, buttonsSlot)}
       <LiveRegion visuallyHidden={false}>{message}</LiveRegion>
 
       <Dialog

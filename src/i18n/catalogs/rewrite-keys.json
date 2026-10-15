@@ -8,6 +8,7 @@
   "Rewrite_ErrorProfile",
   "Rewrite_ErrorRequest",
   "Rewrite_ErrorStorage",
+  "Rewrite_MoreActionsFor",
   "Rewrite_PrimaryNavigation",
   "Rewrite_ProductName",
   "Rewrite_PseudoLocaleName",

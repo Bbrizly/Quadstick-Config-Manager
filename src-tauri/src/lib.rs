@@ -24,6 +24,7 @@ pub mod follow_shell;
 pub mod google_auth;
 pub mod google_commands;
 pub mod ipc;
+pub mod library_shell;
 pub mod preference_ipc;
 pub mod registry;
 pub mod shell;
@@ -119,6 +120,12 @@ pub fn registered_commands() -> &'static [&'static str] {
         "check_latest_from_link",
         "replace_with_latest",
         "restore_drive_backups",
+        "list_library_profiles",
+        "open_library_profile",
+        "delete_library_profile",
+        "list_templates",
+        "open_template",
+        "save_template",
     ]
 }
 
@@ -189,6 +196,7 @@ pub fn run() {
         })
         .plugin(navigation_guard())
         .manage(profiles)
+        .manage(library_shell::LibraryCards::default())
         .manage(workbook_shell::native_workbook_shell())
         .manage(device_shell::native_device_shell())
         .manage(
@@ -284,6 +292,12 @@ pub fn run() {
             controller::set_mac_gamepad,
             controller::subscribe_controller_bridge,
             controller::unsubscribe_controller_bridge,
+            commands::list_library_profiles,
+            commands::open_library_profile,
+            commands::delete_library_profile,
+            commands::list_templates,
+            commands::open_template,
+            commands::save_template,
         ])
         .build(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window")
@@ -312,7 +326,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 79);
+        assert_eq!(commands.len(), 85);
         for expected in [
             "import_sheets_link",
             "check_latest_from_link",

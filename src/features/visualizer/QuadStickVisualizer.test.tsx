@@ -90,10 +90,10 @@ describe("TASK-039 QuadStick visualizer", () => {
     expect(document.activeElement).toHaveTextContent(/Left/u);
   });
 
-  it("opens combo stage when Combos is pressed", () => {
+  it("opens the combo stage from Hole combos", () => {
     const client = new MockQcmClient();
     render(<Harness client={client} />);
-    fireEvent.click(screen.getByRole("button", { name: /^Combos$/u }));
+    fireEvent.click(screen.getByRole("button", { name: /^Hole combos/u }));
     expect(screen.getByRole("button", { name: /Left \+ Center/u })).toBeTruthy();
   });
 
@@ -109,7 +109,7 @@ describe("TASK-039 QuadStick visualizer", () => {
   it("auto-picks a combo pairing so hole rings appear", () => {
     const client = new MockQcmClient();
     render(<Harness client={client} />);
-    fireEvent.click(screen.getByRole("button", { name: /^Combos$/u }));
+    fireEvent.click(screen.getByRole("button", { name: /^Hole combos/u }));
     expect(document.querySelector(".combo-rings")).not.toBeNull();
   });
 

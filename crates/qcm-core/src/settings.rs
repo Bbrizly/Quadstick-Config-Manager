@@ -35,6 +35,16 @@ pub enum PickerGrouping {
     Flat,
 }
 
+/// How a simple mapping card reads (`AppSettings.CardSentenceStyle`): the
+/// output-first "Press X when you sip", or the input-first "Sip to X".
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CardSentenceStyle {
+    #[default]
+    PressWhen,
+    InputToOutput,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ThemeChoice {
@@ -165,6 +175,11 @@ pub struct AppSettings {
     pub reduce_motion: bool,
     pub remember_window: bool,
     pub device_cards: bool,
+    /// Rows view as sentence cards. Off by default: Rows opens as the sheet.
+    pub row_cards: bool,
+    /// Cards on one line: input, "to", output, the behaviour under it.
+    pub compact_cards: bool,
+    pub card_sentence_style: CardSentenceStyle,
     pub picker_grouping: PickerGrouping,
     pub tutorial_seen: bool,
     pub usage_analytics: bool,
@@ -188,6 +203,9 @@ impl Default for AppSettings {
             reduce_motion: false,
             remember_window: true,
             device_cards: true,
+            row_cards: false,
+            compact_cards: false,
+            card_sentence_style: CardSentenceStyle::PressWhen,
             picker_grouping: PickerGrouping::Detailed,
             tutorial_seen: false,
             usage_analytics: false,
@@ -211,6 +229,9 @@ pub struct AppSettingsDto {
     pub reduce_motion: bool,
     pub remember_window: bool,
     pub device_cards: bool,
+    pub row_cards: bool,
+    pub compact_cards: bool,
+    pub card_sentence_style: String,
     pub picker_grouping: String,
     pub tutorial_seen: bool,
     pub usage_analytics: bool,
@@ -234,6 +255,9 @@ pub struct SettingsPatch {
     pub reduce_motion: Option<bool>,
     pub remember_window: Option<bool>,
     pub device_cards: Option<bool>,
+    pub row_cards: Option<bool>,
+    pub compact_cards: Option<bool>,
+    pub card_sentence_style: Option<CardSentenceStyle>,
     pub picker_grouping: Option<PickerGrouping>,
     pub tutorial_seen: Option<bool>,
     pub usage_analytics: Option<bool>,
@@ -266,6 +290,15 @@ impl SettingsPatch {
         }
         if let Some(device_cards) = self.device_cards {
             next.device_cards = device_cards;
+        }
+        if let Some(row_cards) = self.row_cards {
+            next.row_cards = row_cards;
+        }
+        if let Some(compact_cards) = self.compact_cards {
+            next.compact_cards = compact_cards;
+        }
+        if let Some(style) = self.card_sentence_style {
+            next.card_sentence_style = style;
         }
         if let Some(grouping) = self.picker_grouping {
             next.picker_grouping = grouping;
@@ -349,6 +382,9 @@ impl<S: SettingsStore> Settings<S> {
             reduce_motion: self.current.reduce_motion,
             remember_window: self.current.remember_window,
             device_cards: self.current.device_cards,
+            row_cards: self.current.row_cards,
+            compact_cards: self.current.compact_cards,
+            card_sentence_style: sentence_style_wire(self.current.card_sentence_style).to_owned(),
             picker_grouping: grouping_wire(self.current.picker_grouping).to_owned(),
             tutorial_seen: self.current.tutorial_seen,
             usage_analytics: self.current.usage_analytics,
@@ -472,6 +508,23 @@ pub const fn grouping_wire(grouping: PickerGrouping) -> &'static str {
         PickerGrouping::Detailed => "detailed",
         PickerGrouping::Wide => "wide",
         PickerGrouping::Flat => "flat",
+    }
+}
+
+#[must_use]
+pub fn sentence_style_from_wire(value: &str) -> Option<CardSentenceStyle> {
+    match value {
+        "press_when" => Some(CardSentenceStyle::PressWhen),
+        "input_to_output" => Some(CardSentenceStyle::InputToOutput),
+        _ => None,
+    }
+}
+
+#[must_use]
+pub const fn sentence_style_wire(style: CardSentenceStyle) -> &'static str {
+    match style {
+        CardSentenceStyle::PressWhen => "press_when",
+        CardSentenceStyle::InputToOutput => "input_to_output",
     }
 }
 

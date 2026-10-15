@@ -10,7 +10,9 @@
   padding: 0 28px 32px;
   display: grid;
   gap: 30px;
-  line-height: 1.33;
+  /* Avalonia's TextBlock line box for Inter: two caption lines sit 27px
+     apart there, 33 here at 1.33. */
+  line-height: 1.2;
 }
 
 .homepanel {
@@ -247,4 +249,52 @@
   .sheets-row {
     grid-template-columns: 1fr;
   }
+}
+
+/* "Your profiles" (LibraryCards): the menu Avalonia opens on a right click
+   is also a button on the card, for anyone who cannot right click. */
+.library-card {
+  position: relative;
+  display: inline-flex;
+}
+
+.library-card .card {
+  padding-right: 44px;
+}
+
+.card-menu {
+  position: absolute;
+  top: 6px;
+  right: 20px;
+}
+
+.card-menu .icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border-color: transparent;
+  font-size: 18px;
+}
+
+.cardsub.edited {
+  opacity: 0.75;
+}
+
+.home-status {
+  margin: 0;
+  color: var(--qcm-error);
+  font-size: var(--qcm-body-size);
+}
+
+.template-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.template-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

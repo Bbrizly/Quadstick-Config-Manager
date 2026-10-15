@@ -16,6 +16,7 @@ import type {
 } from "./driveContracts";
 import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
+import type { LibraryCard, TemplateEntry, TemplateReceipt } from "./libraryContracts";
 import type { PreferenceCatalog } from "./preferenceContracts";
 import { asQcmError, type QcmClient } from "./qcmClient";
 import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
@@ -91,6 +92,14 @@ export class TauriQcmClient implements QcmClient {
   }
   newProfile(name: string): Promise<EditorSnapshot> { return call("new_profile", { name }); }
   chooseAndOpenProfile(): Promise<EditorSnapshot | null> { return call("choose_and_open_profile"); }
+  listLibraryProfiles(): Promise<readonly LibraryCard[]> { return call("list_library_profiles"); }
+  openLibraryProfile(id: string): Promise<EditorSnapshot> { return call("open_library_profile", { id }); }
+  deleteLibraryProfile(id: string): Promise<void> { return call("delete_library_profile", { id }); }
+  listTemplates(): Promise<readonly TemplateEntry[]> { return call("list_templates"); }
+  openTemplate(id: string): Promise<EditorSnapshot> { return call("open_template", { id }); }
+  saveTemplate(sessionId: string, expectedRevision: number, name: string): Promise<TemplateReceipt> {
+    return call("save_template", { sessionId, expectedRevision, name });
+  }
   getProfileSnapshot(sessionId: string): Promise<EditorSnapshot> { return call("get_profile_snapshot", { sessionId }); }
   applyEditorOps(sessionId: string, expectedRevision: number, ops: readonly EditorOp[]): Promise<EditorSnapshot> { return call("apply_editor_ops", { sessionId, expectedRevision, ops }); }
   undoEditor(sessionId: string, expectedRevision: number): Promise<EditorSnapshot> { return call("undo_editor", { sessionId, expectedRevision }); }
@@ -154,6 +163,8 @@ export class TauriQcmClient implements QcmClient {
 }
 
 export const TAURI_COMMANDS = [
+  "list_library_profiles", "open_library_profile", "delete_library_profile",
+  "list_templates", "open_template", "save_template",
   "get_app_snapshot", "get_settings", "update_settings", "new_profile", "choose_and_open_profile",
   "get_profile_snapshot", "apply_editor_ops", "undo_editor", "save_profile", "save_profile_as",
   "close_profile", "choose_and_import_workbook", "repair_workbook_tab", "accept_workbook_import",

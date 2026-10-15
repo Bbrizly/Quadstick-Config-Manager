@@ -48,16 +48,18 @@ interface SettingsPageProps {
   readonly client: QcmClient;
   readonly onThemeChange?: (theme: ThemePreference) => void;
   readonly extra?: ReactNode;
+  /** The tab it opens on: Help for the editor's `?` and F1. */
+  readonly initialTab?: SettingsTab;
 }
 
-export function SettingsPage({ client, onThemeChange, extra }: SettingsPageProps) {
+export function SettingsPage({ client, onThemeChange, extra, initialTab = "general" }: SettingsPageProps) {
   const { t, preference, setPreference } = useI18n();
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [update, setUpdate] = useState<UpdateResult | null>(null);
   const [feedback, setFeedback] = useState("");
-  const [tab, setTab] = useState<SettingsTab>("general");
+  const [tab, setTab] = useState<SettingsTab>(initialTab);
   const [scalePreview, setScalePreview] = useState<number | null>(null);
   const [scaleCountdown, setScaleCountdown] = useState(0);
   const scaleTimer = useRef<ReturnType<typeof setInterval> | null>(null);

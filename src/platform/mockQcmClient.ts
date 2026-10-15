@@ -43,6 +43,7 @@ import type {
   PendingRescue,
 } from "./contracts";
 import { ERROR_CODES, INTERFACE_SCALES } from "./contracts";
+import type { LibraryCard, TemplateEntry, TemplateReceipt } from "./libraryContracts";
 import { QcmCommandError, type QcmClient } from "./qcmClient";
 import { INPUTS, KNOWN_OUTPUTS, LEGACY_INPUTS } from "./vocab";
 
@@ -68,6 +69,9 @@ const DEFAULT_SETTINGS: AppSettings = {
   reduceMotion: false,
   rememberWindow: true,
   deviceCards: true,
+  rowCards: false,
+  compactCards: false,
+  cardSentenceStyle: "press_when",
   pickerGrouping: "detailed",
   tutorialSeen: true,
   usageAnalytics: false,
@@ -239,6 +243,9 @@ export class MockQcmClient implements QcmClient {
     this.#failNextSettingsWrite = true;
   }
   #failNextSettingsWrite = false;
+  #library = new Map<string, { name: string; editedMs: number; follows: boolean }>();
+  #templates = new Map<string, string>();
+  #nextCard = 1;
 
   /** Queue a pending crash report for startup-prompt tests. */
   queuePendingCrashReport(report: PendingCrashReport): void {
@@ -492,6 +499,76 @@ export class MockQcmClient implements QcmClient {
     const nameRow = grid[1];
     if (nameRow !== undefined) nameRow[0] = name;
     return Promise.resolve(this.#open({ kind: "new" }, null, name, grid));
+  }
+
+  /** Test and preview seam: put profiles in the mock's "Your profiles". */
+  seedLibrary(entries: readonly { readonly name: string; readonly editedMs?: number; readonly follows?: boolean }[]): void {
+    for (const entry of entries) {
+      const id = `lib-${String(this.#nextCard)}`;
+      this.#nextCard += 1;
+      this.#library.set(id, { name: entry.name, editedMs: entry.editedMs ?? Date.UTC(2026, 7, 22), follows: entry.follows ?? false });
+    }
+  }
+
+  listLibraryProfiles(): Promise<readonly LibraryCard[]> {
+    const modes = modesOf(TEMPLATE);
+    const cards = [...this.#library.entries()]
+      .toSorted((a, b) => a[1].name.localeCompare(b[1].name))
+      .map(([id, entry]) => ({
+        id,
+        name: entry.name,
+        title: entry.name === "Racing" ? "" : "Racing",
+        modes: modes.length,
+        bindings: modes.reduce((sum, mode) => sum + mode.bindingCount, 0),
+        modeNames: modes.map((mode) => mode.name),
+        editedMs: entry.editedMs,
+        follows: entry.follows,
+        readable: true,
+      }));
+    return Promise.resolve(cards);
+  }
+
+  openLibraryProfile(id: string): Promise<EditorSnapshot> {
+    const entry = this.#library.get(id);
+    if (entry === undefined) {
+      return Promise.reject(fail(ERROR_CODES.requestOutOfRange, "library card is not one of the values this setting takes.", "retry"));
+    }
+    const name = `${entry.name}.csv`;
+    const grid = clone(TEMPLATE);
+    const nameRow = grid[1];
+    if (nameRow !== undefined) nameRow[0] = name;
+    return Promise.resolve(this.#open({ kind: "local", name }, name, name, grid));
+  }
+
+  deleteLibraryProfile(id: string): Promise<void> {
+    this.#library.delete(id);
+    return Promise.resolve();
+  }
+
+  listTemplates(): Promise<readonly TemplateEntry[]> {
+    return Promise.resolve([...this.#templates.entries()].map(([id, name]) => ({ id, name })));
+  }
+
+  openTemplate(id: string): Promise<EditorSnapshot> {
+    const name = this.#templates.get(id);
+    if (name === undefined) {
+      return Promise.reject(fail(ERROR_CODES.requestOutOfRange, "library card is not one of the values this setting takes.", "retry"));
+    }
+    return this.newProfile(`${name}.csv`);
+  }
+
+  saveTemplate(sessionId: string, expectedRevision: number, name: string): Promise<TemplateReceipt> {
+    try {
+      this.#checked(sessionId, expectedRevision);
+    } catch (reason) {
+      return Promise.reject(reason as Error);
+    }
+    const bare = name.trim().replace(/[/\\:*?"<>|]/gu, "_").replace(/\.csv$/iu, "");
+    if (bare === "") return Promise.reject(fail(ERROR_CODES.requestOutOfRange, "template name is not one of the values this setting takes.", "retry"));
+    const id = `tpl-${String(this.#nextCard)}`;
+    this.#nextCard += 1;
+    this.#templates.set(id, bare);
+    return Promise.resolve({ name: `${bare}.csv` });
   }
 
   chooseAndOpenProfile(): Promise<EditorSnapshot | null> {
