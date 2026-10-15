@@ -9,7 +9,8 @@ namespace QuadStick.App;
 /// Modes are matched by name, and mappings within a mode as whole lines
 /// (output, behaviour, inputs, action name). An edited mapping therefore shows
 /// as one added and one removed, which is what it is. Anything else that
-/// differs (preferences, notes, the header) is one line saying so. An empty
+/// differs (preferences, notes, the header) is one line saying so, also when
+/// mappings changed beside it. An empty
 /// list means the two are the same profile.
 /// </remarks>
 public static class ProfileChanges
@@ -36,9 +37,43 @@ public static class ProfileChanges
                 lines.Add(string.Format(CultureInfo.CurrentCulture, Strings.Follow_ModeChanged, Label(sheet), added, removed));
         }
 
-        if (lines.Count == 0 && !SameCells(local, incoming))
+        // Said whether or not mappings changed too: a note or a preference
+        // changed beside a mapping is still a change the user is agreeing to.
+        if (lines.Count == 0 ? !SameCells(local, incoming) : !SameRest(local, incoming, mine, theirs))
             lines.Add(Strings.Follow_OtherChanged);
         return lines;
+    }
+
+    // Everything the lines above do not already say: each mapping row with
+    // its mapping cells blanked (the notes beside it stay), the header row of
+    // every mode both copies have, and every row outside a mode.
+    static bool SameRest(ProfileFile a, ProfileFile b,
+        Dictionary<string, ModeSheet> mine, Dictionary<string, ModeSheet> theirs) =>
+        Rest(a, theirs).SequenceEqual(Rest(b, mine), StringComparer.Ordinal);
+
+    static List<string> Rest(ProfileFile f, Dictionary<string, ModeSheet> other)
+    {
+        var mapping = new HashSet<int>();
+        var oneSided = new HashSet<int>();
+        foreach (var s in f.Document.Sheets)
+        {
+            foreach (var bind in s.Bindings) mapping.Add(bind.Row - 1);
+            // A mode only one copy has is already its own line: its three
+            // header rows (keyword, file name, label) are not said again.
+            if (!other.ContainsKey(s.Type + "|" + s.ModeName))
+                for (int h = 0; h < 3; h++) oneSided.Add(s.StartRow - 1 + h);
+        }
+        var rows = new List<string>();
+        for (int i = f.Document.HasVersionHeader ? 1 : 0; i < f.Grid.Count; i++)
+        {
+            if (oneSided.Contains(i)) continue;
+            var row = f.Grid[i];
+            if (mapping.Contains(i))
+                row = row.Select((c, col) => col < ProfileFile.NoteColumn || col == ProfileFile.ActionColumn ? "" : c).ToArray();
+            var line = string.Join("\u001f", row.Reverse().SkipWhile(c => c.Length == 0).Reverse());
+            if (line.Length > 0) rows.Add(line);
+        }
+        return rows;
     }
 
     // First sheet of each name wins; a profile with two modes of one name is

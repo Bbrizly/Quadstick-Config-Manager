@@ -230,9 +230,11 @@ public partial class MainWindow
             {
                 Directory.CreateDirectory(CrashGuard.RescueDir);
                 var name = Path.GetFileNameWithoutExtension(path);
+                // A fresh name every time and never overwrite: a rescue copy
+                // is the only copy of what was replaced.
                 File.Copy(path, Path.Combine(CrashGuard.RescueDir,
-                    $"{name}-before-latest-{DateTime.Now:yyyyMMdd-HHmmss}-{DateTime.Now.Ticks % 10000}.csv"),
-                    overwrite: true);
+                    $"{name}-before-latest-{DateTime.Now:yyyyMMdd-HHmmss}-{Guid.NewGuid():N}.csv"),
+                    overwrite: false);
             }
             ProfileFile.WriteAtomic(path, text);
         }

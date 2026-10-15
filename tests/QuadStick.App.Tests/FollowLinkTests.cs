@@ -175,6 +175,16 @@ public class FollowLinkTests
             var kept = Assert.Single(Directory.GetFiles(lib.Rescue, "game-before-latest-*.csv"));
             Assert.DoesNotContain("Driving", File.ReadAllText(kept));
             Assert.True(ShowsStatus(w, Strings.Follow_Replaced));
+
+            // A second replace in the same second keeps both rescue copies.
+            sheet.Csv = Profile("Walking", "Driving", "Flying");
+            getting = w.GetLatestAsync(lib.Path, http);
+            Press(await DialogAsync(w), Strings.Follow_Replace);
+            await getting;
+            var both = Directory.GetFiles(lib.Rescue, "game-before-latest-*.csv");
+            Assert.Equal(2, both.Length);
+            Assert.Contains(both, f => !File.ReadAllText(f).Contains("Driving"));
+            Assert.Contains(both, f => File.ReadAllText(f).Contains("Driving"));
         }
         finally { Close(w); }
     }
@@ -384,5 +394,19 @@ public class FollowLinkTests
         var lines = ProfileChanges.Between(a, b);
         Assert.Contains("New in the sheet: Driving", lines);
         Assert.Contains("No longer in the sheet: Flying", lines);
+        Assert.DoesNotContain(Strings.Follow_OtherChanged, lines);
+    }
+
+    // A note changed beside a changed mapping is still said: the question
+    // must not hide part of what a yes replaces.
+    [AvaloniaFact]
+    public void A_note_changed_beside_a_mapping_is_still_listed()
+    {
+        var two = Profile("Walking").Replace("right_sip\r\n", "right_sip\r\ndpad_S,normal,left_sip\r\n");
+        var a = ProfileFile.Load(two);
+        var b = ProfileFile.Load(two.Replace("right_sip", "left_puff").Replace("left_sip\r\n", "left_sip,,,,,,,,call Anna\r\n"));
+        var lines = ProfileChanges.Between(a, b);
+        Assert.Contains("Walking: 1 added, 1 removed", lines);
+        Assert.Contains(Strings.Follow_OtherChanged, lines);
     }
 }
