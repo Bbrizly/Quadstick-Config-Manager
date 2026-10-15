@@ -60,6 +60,32 @@ The normal rewrite gate regenerates catalogs and fails if committed generated ou
 
 TASK-038 does not make React a profile engine. The UI renders `EditorSnapshot`, sends typed `EditorOp` values with the revision it saw, and replaces its projection only with the returned Rust snapshot. Whole-mode duplicate/delete/reorder call the already-ported whole-sheet Rust semantics. A revision conflict uses the narrow read-only `get_profile_snapshot` domain command to re-fetch canonical state instead of retrying or reconstructing state in JavaScript. Undo also re-reads the canonical Rust session revision immediately before applying the inverse so a keyboard shortcut cannot race a pending React render. Raw-grid editing is an intentional advanced projection of the same session and still travels through `set_cell`.
 
+## Main sync (2026-10-15)
+
+`main` is merged up to `f3525fe`. Avalonia code comes from `main`; rewrite code from this branch. User-facing changes from `main` ported to React/Rust:
+
+| Main commit | Rewrite state |
+|---|---|
+| `f7e15b8`, `033c274` combo in one box, one-step undo | **DONE**: `comboGroups`, combo card, Rust `CopyInputs`/`DeleteRows`/`AddComboOutput`/`Group` ops under `ProfileFile::one_step` |
+| `3ad22ce` combo input not a duplicate | **N/A**: the rewrite has no duplicate-input mark yet |
+| `610b93f` mapping panel room | **DONE**: 340 px track floor, stacks under 720 px |
+| `8d35604` narrow to the socket picked | **DONE**: `parts.ts`, narrowed note, Show all |
+| `ddbf8b5` cog becomes Back | **DONE**: Settings has no Done button |
+| `94a77ec` drive label on Mac/Linux | **ALREADY**: `label_of` uses the mount folder name |
+| `a7c492f` upper-case profile names | **ALREADY**: `DeviceFileName::is_profile` is case-insensitive, covered by `device_library.rs` |
+| `a9f09a3` flush before the unplug wait | **DONE**: file + directory `sync_all` after rename, restore, delete (errors ignored, as on main) |
+| `9f151ee` console adapter modes | **DONE**: help on `enable_DS3_emulation` |
+| `1950d85`, `1cc0cd8`, `2b0552c`, `88eda16` wording | catalogs regenerated (the generator now reads `QuadStick.Format` RESX too); the rewrite has no Sheets-link import, function-number hints or output picker to show them yet |
+
+## Runtime cost while a game runs
+
+- Live input subscribes only while the window is visible and focused (DOM `visibilitychange`/`focus`/`blur`; Tauri window events would need an event permission the capability does not grant). Frames are coalesced to one React update per animation frame (`src/features/live/useLiveInput.ts`).
+- The native worker (`src-tauri/src/streaming.rs`) has no 4 ms or 50 ms polling. Without a device it sleeps on a condvar until the 1.5 s rescan (floor 250 ms); the last unsubscribe wakes and stops it, so nothing enumerates HID without a subscriber. A quiet open stick wakes twice a second (500 ms read timeout). A new subscriber gets the current state at once.
+- The mode-light glow animates `scale` (compositor only) instead of `filter`, and stops with the pips when the window is inactive.
+- Only the active catalog loads (English stays bundled): main JS chunk 2311 kB to 455 kB (gzip 683 to 137). No production source maps. Device photos recompressed losslessly (5.07 to 4.71 MB). `dist-ui` 9.2 MB to 7.6 MB.
+
+Not measured: real wakeups/CPU with a QuadStick plugged in and a game running. That needs the physical pass.
+
 ## Remaining validation debt
 
 - real QuadStick discovery/install/unplug/HID/reconnect rows;
