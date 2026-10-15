@@ -148,6 +148,19 @@ function modesOf(grid: readonly (readonly string[])[]): Mode[] {
   const modes: Mode[] = [];
   let counted = 0;
   grid.forEach((row, index) => {
+    // A device preferences file (prefs.csv): one Preferences sheet.
+    if (row[0] === "Preferences" && index === 0) {
+      modes.push({
+        index: modes.length,
+        number: null,
+        kind: "preferences",
+        name: "",
+        channel: "",
+        startRow: index + 1,
+        bindingCount: bindingsFrom(grid, index),
+      });
+      return;
+    }
     if (row[0] !== "Profile Name") return;
     counted += 1;
     modes.push({
@@ -1026,9 +1039,22 @@ export class MockQcmClient implements QcmClient {
   }
 
   #openDeviceCopy(device: MockDevice, name: string): EditorSnapshot {
-    const grid = clone(TEMPLATE);
+    const text = device.files.get(name) ?? "";
+    // A seeded prefs.csv is shown as written; everything else stays the
+    // template, since the mock does not parse profiles.
+    const isPrefs = text.startsWith("Preferences\n");
+    const grid = isPrefs
+      ? text
+          .split("\n")
+          .filter((line, index, lines) => line !== "" || index < lines.length - 1)
+          .map((line) => {
+            const cells = line.split(",");
+            while (cells.length < 11) cells.push("");
+            return cells;
+          })
+      : clone(TEMPLATE);
     const nameRow = grid[1];
-    if (nameRow !== undefined) nameRow[0] = name;
+    if (nameRow !== undefined && !isPrefs) nameRow[0] = name;
     return this.#open(
       { kind: "device", device: device.id, generation: device.generation, name },
       null,

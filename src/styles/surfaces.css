@@ -79,39 +79,229 @@
   gap: var(--qcm-space-xs);
 }
 
+/* Avalonia DevicePage: groups on the left in one list panel, the open
+   group's settings in a panel beside it, a save bar along the bottom. */
+.device-preferences-page {
+  max-width: none;
+  display: grid;
+  gap: 14px;
+}
+
+.device-page-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.device-page-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.device-page-copy h1 {
+  margin: 0 0 6px;
+  font-size: var(--qcm-section-size);
+  font-weight: 700;
+}
+
+.device-page-copy p {
+  margin: 0;
+  font-size: var(--qcm-small-size);
+}
+
+.device-page-actions {
+  display: flex;
+  gap: 10px;
+}
+
 .device-preference-layout {
   display: grid;
-  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
-  gap: var(--qcm-space-lg);
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
 }
 
 .device-preference-categories {
   display: grid;
-  gap: 4px;
+  gap: 0;
   align-content: start;
-}
-
-.device-preference-categories button {
-  text-align: left;
-  background: var(--qcm-surface);
-}
-
-.device-preference-categories button[aria-current="true"] {
-  background: var(--qcm-selection-tint);
-  color: var(--qcm-accent-text);
-  border-color: var(--qcm-accent);
-}
-
-.device-preference-row {
+  padding: 6px;
   border: var(--qcm-hairline) solid var(--qcm-border);
   border-radius: var(--qcm-radius-panel);
   background: var(--qcm-surface);
-  padding: var(--qcm-pad-card);
-  margin-bottom: var(--qcm-space-md);
+}
+
+.device-preference-categories button {
+  display: grid;
+  justify-items: start;
+  min-height: 0;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: var(--qcm-radius-field);
+  background: transparent;
+  font-weight: 400;
+  text-align: left;
+}
+
+.device-preference-categories button[aria-pressed="true"] {
+  background: var(--qcm-selection-tint);
+  font-weight: 700;
+}
+
+.category-name {
+  font-size: var(--qcm-body-size);
+}
+
+.category-count {
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+}
+
+.device-preference-main {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.device-preference-list {
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
+}
+
+.device-preference-row {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  align-items: center;
+  gap: 4px 16px;
+  padding: 14px 16px;
+  border-bottom: var(--qcm-hairline) solid var(--qcm-border);
+}
+
+.device-preference-row:last-child {
+  border-bottom: 0;
+}
+
+.device-preference-row h3 {
+  margin: 0;
+  font-size: var(--qcm-body-size);
+  font-weight: 700;
+}
+
+.device-preference-copy {
+  grid-column: 1 / -1;
+  max-width: 720px;
+  color: var(--qcm-text-secondary);
+  font-size: var(--qcm-small-size);
+}
+
+.device-preference-copy p {
+  margin: 0;
+}
+
+.device-save-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
+}
+
+.device-save-actions {
+  display: flex;
+  gap: 10px;
 }
 
 @media (max-width: 820px) {
   .device-preference-layout {
     grid-template-columns: 1fr;
   }
+}
+
+/* DeviceLinkWindow: 600 wide, the explanation with its "?", ports and the
+   two port buttons on one line, Close at least 140 wide. */
+.dialog-panel:has(.link-port-row) {
+  width: min(600px, 100%);
+}
+
+.link-explain {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+}
+
+.link-explain p {
+  margin: 0;
+}
+
+.link-port-row,
+.link-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.link-port {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.link-port select {
+  width: 100%;
+  min-height: var(--qcm-control-height);
+}
+
+button.link-close {
+  min-width: 140px;
+}
+
+/* The page is the window tall: the groups and the open group's settings
+   scroll inside themselves, the save bar stays put at the bottom. */
+.shell-main:has(> .device-preferences-page),
+.device-preferences-page {
+  min-height: 0;
+}
+
+.device-preferences-page {
+  box-sizing: border-box;
+  /* The shell's main area already pads 24 above and 32 below. */
+  height: calc(100vh - 86px - 56px);
+  margin: 0;
+  padding: 0;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+.device-preferences-page > .device-preference-layout {
+  min-height: 0;
+  height: 100%;
+}
+
+.device-preference-categories,
+.device-preference-main {
+  max-height: 100%;
+  overflow: auto;
+}
+
+/* Avalonia's slider is a long track; the number box is a spin field. */
+.preference-number-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preference-number-control input[type="range"] {
+  width: 285px;
+  accent-color: var(--qcm-focus);
+}
+
+.preference-number-control input[type="number"] {
+  width: 125px;
+  min-height: var(--qcm-control-height);
+  padding: 4px 10px;
 }

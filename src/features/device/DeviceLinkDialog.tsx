@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
+import { InfoButton } from "../editor/Popover";
 import { useI18n, type MessageKey } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
@@ -371,19 +372,19 @@ export function DeviceLinkDialog({
       title={t("Link_Title")}
       onClose={close}
       actions={
-        <button type="button" onClick={close}>
+        <button type="button" className="link-close" onClick={close}>
           {t("Link_Close")}
         </button>
       }
     >
-      <p>{t("Link_Explain")}</p>
-      <details>
-        <summary>{t("Link_Title")}</summary>
-        <p>{t("Link_ExplainMore")}</p>
-      </details>
-      <div className="feature-page-actions">
-        <label>
-          <span>{t("Link_Port")}</span>
+      {/* `MainWindow.Explain`: the sentence, and the rest behind its "?". */}
+      <div className="link-explain">
+        <p>{t("Link_Explain")}</p>
+        <InfoButton name={t("Link_Title")} title={t("Link_Title")} body={t("Link_ExplainMore")} />
+      </div>
+      {/* Ports, Refresh and Connect on one line, as the Avalonia window has them. */}
+      <div className="link-port-row">
+        <label className="link-port">
           <select
             aria-label={t("Link_Port")}
             value={portId}
@@ -410,7 +411,7 @@ export function DeviceLinkDialog({
           {t("Link_Connect")}
         </button>
       </div>
-      <div className="feature-page-actions">
+      <div className="link-actions">
         <button type="button" disabled={busy || !connected} onClick={() => void send()}>
           {t("Link_SendProfile")}
         </button>

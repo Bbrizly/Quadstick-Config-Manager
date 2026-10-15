@@ -37,6 +37,10 @@ export async function resolveQcmClient(): Promise<QcmClient> {
         { name: "Starfield", editedMs: now - 59 * day },
       ]);
     }
+    if (new URLSearchParams(window.location.search).has("device")) {
+      const { seedDevicePreview } = await import("./mockPreviews");
+      seedDevicePreview(mock);
+    }
     return mock;
   }
   const { TauriQcmClient } = await import("./tauriQcmClient");

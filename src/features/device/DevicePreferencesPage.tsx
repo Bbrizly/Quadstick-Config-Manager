@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Dialog } from "../../components/primitives/Dialog";
+import { DeviceLinkDialog } from "./DeviceLinkDialog";
 import { useI18n } from "../../i18n";
 import { useLiveInput } from "../live/useLiveInput";
 import { localizedErrorMessage } from "../../i18n/errors";
@@ -230,7 +231,7 @@ export function DevicePreferencesPage({
   onSnapshot,
   onClose,
 }: DevicePreferencesPageProps) {
-  const { t } = useI18n();
+  const { t, plural } = useI18n();
   const [catalog, setCatalog] = useState<PreferenceCatalog | null>(null);
   const [category, setCategory] = useState<string | null>(null);
   const [live, setLive] = useState<LiveSnapshot | null>(null);
@@ -239,6 +240,16 @@ export function DevicePreferencesPage({
   const [message, setMessage] = useState("");
 
   const rows = useMemo(() => rowsOf(snapshot), [snapshot]);
+  // What the file held when it was read, so the save bar can count changes
+  // (`RefreshDeviceSaveBar`). A reload or a save opens a new session.
+  const [baseline, setBaseline] = useState<{ readonly session: string; readonly values: ReadonlyMap<string, string> }>(
+    () => ({ session: snapshot.sessionId, values: new Map(rows.map((row) => [row.name, row.value])) }),
+  );
+  if (baseline.session !== snapshot.sessionId) {
+    setBaseline({ session: snapshot.sessionId, values: new Map(rows.map((row) => [row.name, row.value])) });
+  }
+  const changed = rows.filter((row) => baseline.values.get(row.name) !== row.value).length;
+  const [linkOpen, setLinkOpen] = useState(false);
   const rowByName = useMemo(() => new Map(rows.map((row) => [row.name, row])), [rows]);
   const definitions = useMemo(
     () => catalog?.definitions.filter((definition) => category === null || definition.category === category) ?? [],
@@ -360,39 +371,42 @@ export function DevicePreferencesPage({
     return parsed ?? 0;
   }, [rows]);
 
+  const countIn = (name: string): number =>
+    catalog?.definitions.filter((definition) => definition.category === name).length ?? 0;
+
   return (
     <section className="device-preferences-page" aria-labelledby="device-preferences-title">
-      <header className="feature-page-header">
-        <div>
+      {/* Avalonia DevicePage: the title and where the settings live on the
+          left, Reload / Manage files / Bluetooth or cable on the right. */}
+      <header className="device-page-head">
+        <div className="device-page-copy">
           <h1 id="device-preferences-title">{t("DevicePage_YourQuadStickSSettings")}</h1>
-          <p>{t("Prefs_DeviceWideSettings")}</p>
+          <p className="secondary">{t("DevicePage_TheseSettingsLiveInPrefs")}</p>
+          {/* Avalonia prints the drive's path here; paths never reach the
+              window in the rewrite, so the line is left out. */}
         </div>
-        <div className="feature-page-actions">
-          <button type="button" disabled={busy} onClick={() => void reset()}>
+        <div className="device-page-actions">
+          <button className="device-reload" type="button" disabled={busy} aria-label={t("DevicePage_ReadTheSettingsFromYour")} onClick={() => void reset()}>
             {t("DevicePage_Reload")}
           </button>
-          <button type="button" disabled={busy || !snapshot.dirty} onClick={() => void prepareSave()}>
-            {t("Main_Save")}
+          <button className="quiet" type="button" disabled={busy} onClick={onClose}>
+            {t("Shell_ManageFiles")}
           </button>
-          <button type="button" disabled={busy} onClick={onClose}>
-            {t("Main_Done")}
-          </button>
+          {client.console === undefined ? null : (
+            <button className="quiet" type="button" aria-label={t("Link_PageButtonName")} onClick={() => setLinkOpen(true)}>
+              {t("Link_PageButton")}
+            </button>
+          )}
         </div>
       </header>
 
       {message === "" ? null : <output className="feature-status">{message}</output>}
 
-      <section className="device-live-tuning" aria-labelledby="device-live-title">
-        <h2 id="device-live-title">{t("DevicePage_JoystickTravel")}</h2>
-        <AxisView frame={live} deadZone={deadZone} />
-        <output>{liveText(live, t)}</output>
-      </section>
-
       {catalog === null ? (
         <output className="feature-status">{t("Device_LookingForYourQuadStick")}</output>
       ) : (
         <div className="device-preference-layout">
-          <nav aria-label={t("Main_DeviceSettings")} className="device-preference-categories">
+          <nav aria-label={t("DevicePage_GroupsOfSettings")} className="device-preference-categories">
             {catalog.categories.map((name) => (
               <button
                 type="button"
@@ -400,58 +414,103 @@ export function DevicePreferencesPage({
                 aria-pressed={category === name}
                 onClick={() => setCategory(name)}
               >
-                {name}
+                <span className="category-name">{name}</span>
+                <span className="category-count">{plural("DevicePage_Setting", countIn(name), [countIn(name)])}</span>
               </button>
             ))}
           </nav>
-          <div className="device-preference-list">
-            {definitions.map((definition) => {
-              const row = rowByName.get(definition.name);
-              return (
-                <section key={definition.name} className="device-preference-row" aria-labelledby={`pref-${definition.name}`}>
-                  <div className="device-preference-copy">
-                    <h3 id={`pref-${definition.name}`}>{definition.label}</h3>
-                    <code>{definition.name}</code>
-                    {definition.description === "" ? null : <p>{definition.description}</p>}
-                    {definition.risk === "" ? null : <p>{definition.risk}</p>}
-                    {definition.alsoCalled === "" ? null : <small>{definition.alsoCalled}</small>}
-                    {definition.name === ADAPTER_MODE_PREFERENCE ? <AdapterModes /> : null}
-                  </div>
-                  {row === undefined ? (
-                    <button type="button" disabled={busy} onClick={() => addMissing(definition)}>
-                      {t("Main_Add")}
-                    </button>
-                  ) : (
+          <div className="device-preference-main">
+            {category === "Joystick" ? (
+              <section className="device-live-tuning" aria-labelledby="device-live-title">
+                <h2 id="device-live-title">{t("DevicePage_JoystickTravel")}</h2>
+                <AxisView frame={live} deadZone={deadZone} />
+                <output>{liveText(live, t)}</output>
+              </section>
+            ) : null}
+            <div className="device-preference-list">
+              {definitions.map((definition) => {
+                const row = rowByName.get(definition.name);
+                const range =
+                  definition.minimum !== null && definition.maximum !== null
+                    ? t("DevicePage_AnythingFromLoToHi", [definition.minimum, definition.maximum])
+                    : "";
+                const unit = definition.unit === "" ? "" : t("Prefs_MeasuredInDefUnit", [definition.unit]);
+                const called = definition.alsoCalled === "" ? "" : t("Prefs_QMPCallsItDefAlsoCalled", [definition.alsoCalled]);
+                const facts = [range, unit, called].filter(Boolean).join(" ");
+                return (
+                  <section key={definition.name} className="device-preference-row" aria-labelledby={`pref-${definition.name}`}>
+                    <h3 id={`pref-${definition.name}`} title={definition.name}>{definition.label}</h3>
+                    <div className="device-preference-control">
+                      {row === undefined ? (
+                        <button type="button" disabled={busy} onClick={() => addMissing(definition)}>
+                          {t("Main_Add")}
+                        </button>
+                      ) : (
+                        <PreferenceValue
+                          key={`${String(snapshot.revision)}-${definition.name}-${row.value}`}
+                          definition={definition}
+                          row={row.row}
+                          value={row.value}
+                          disabled={busy}
+                          onCommit={commitValue}
+                        />
+                      )}
+                    </div>
+                    <div className="device-preference-copy">
+                      {definition.description === "" ? null : <p>{definition.description}</p>}
+                      {facts === "" ? null : <p>{facts}</p>}
+                      {definition.risk === "" ? null : <p>{definition.risk}</p>}
+                      {definition.name === ADAPTER_MODE_PREFERENCE ? <AdapterModes /> : null}
+                    </div>
+                  </section>
+                );
+              })}
+              {rows.filter((row) => !catalog.definitions.some((definition) => definition.name === row.name)).map((row) => (
+                <section key={`unknown-${String(row.row)}`} className="device-preference-row">
+                  <h3>{row.name}</h3>
+                  <div className="device-preference-control">
                     <PreferenceValue
-                      key={`${String(snapshot.revision)}-${definition.name}-${row.value}`}
-                      definition={definition}
+                      key={`${String(snapshot.revision)}-unknown-${String(row.row)}-${row.value}`}
+                      definition={null}
                       row={row.row}
                       value={row.value}
                       disabled={busy}
                       onCommit={commitValue}
                     />
-                  )}
+                  </div>
+                  <div className="device-preference-copy">
+                    {row.description === "" ? null : <p>{row.description}</p>}
+                  </div>
                 </section>
-              );
-            })}
-            {rows.filter((row) => !catalog.definitions.some((definition) => definition.name === row.name)).map((row) => (
-              <section key={`unknown-${String(row.row)}`} className="device-preference-row">
-                <div className="device-preference-copy">
-                  <h3>{row.name}</h3>
-                  {row.description === "" ? null : <p>{row.description}</p>}
-                </div>
-                <PreferenceValue
-                  key={`${String(snapshot.revision)}-unknown-${String(row.row)}-${row.value}`}
-                  definition={null}
-                  row={row.row}
-                  value={row.value}
-                  disabled={busy}
-                  onCommit={commitValue}
-                />
-              </section>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
+      )}
+
+      {/* `DeviceSaveBar`: always here and the same size; its buttons grey out. */}
+      <div className="device-save-bar">
+        <span role="status">
+          {changed === 0 ? t("DevicePage_NoChangesYet") : plural("DevicePage_ChangedNotSavedYet", changed, [changed])}
+        </span>
+        <span className="device-save-actions">
+          <button type="button" disabled={busy || changed === 0} onClick={() => void reset()}>
+            {t("DevicePage_UndoChanges")}
+          </button>
+          <button
+            className="primary"
+            type="button"
+            disabled={busy || changed === 0}
+            aria-label={t("DevicePage_WriteTheChangedSettingsTo")}
+            onClick={() => void prepareSave()}
+          >
+            {t("DevicePage_SaveToYourQuadStick")}
+          </button>
+        </span>
+      </div>
+
+      {client.console === undefined || !linkOpen ? null : (
+        <DeviceLinkDialog client={client} console={client.console} open onClose={() => setLinkOpen(false)} />
       )}
 
       <Dialog
