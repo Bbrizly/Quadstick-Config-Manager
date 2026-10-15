@@ -75,7 +75,7 @@ TASK-038 does not make React a profile engine. The UI renders `EditorSnapshot`, 
 | `a7c492f` upper-case profile names | **ALREADY**: `DeviceFileName::is_profile` is case-insensitive, covered by `device_library.rs` |
 | `a9f09a3` flush before the unplug wait | **DONE**: file + directory `sync_all` after rename, restore, delete (errors ignored, as on main) |
 | `9f151ee` console adapter modes | **DONE**: help on `enable_DS3_emulation` |
-| `1950d85`, `1cc0cd8`, `2b0552c`, `88eda16` wording | catalogs regenerated (the generator now reads `QuadStick.Format` RESX too); the rewrite has no Sheets-link import, function-number hints or output picker to show them yet |
+| `1950d85`, `1cc0cd8`, `2b0552c`, `88eda16` wording | **DONE**: copy note after a community import; pad name and function-number sentences in the mapping inspector (`functionHelp.ts`) |
 
 ## Phase 2 (2026-10-15)
 

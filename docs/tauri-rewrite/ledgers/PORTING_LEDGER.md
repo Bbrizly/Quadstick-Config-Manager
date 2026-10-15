@@ -60,6 +60,7 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `DrivePickerWindow.cs` | Drive restore picker | features/cloud/DrivePickerDialog.tsx | REWRITE | `DrivePickerDialog.test.tsx` | 6 | PORTED (single pick, see B-061) |
 | `TokenStore.cs` (Linux `InMemoryTokenStore`) | Linux refresh token | google_auth.rs `PlatformTokenStore` | REWRITE | cfg path | 6 | PORTED |
 | `DuplicateUses.cs`, `MainWindow.DuplicateChip/WithDuplicateMark` | repeat marks | features/editor/duplicates.ts + DuplicateMark.tsx | REWRITE | `duplicates.test.tsx` | 6 | PORTED |
+| `FunctionParameters.cs` (hints), `OutputCatalog.OtherNames` | function-number help, pad names | features/editor/functionHelp.ts | REWRITE | `functionHelp.test.tsx` | 6 | PORTED |
 | `ProtocolRegistration.cs`, macOS URL activation | register/deliver `qcm://`, running-app handoff | tauri-plugin-deep-link + single-instance, `registry.rs` `LinkInbox` | REWRITE | `registry.rs` inbox tests, `RegistryLink.test.tsx` | 6 | PORTED |
 | `Telemetry.cs`, `TelemetryToken.cs` | analytics/feedback/crash send | src-tauri/telemetry.rs + diagnostics commands | REWRITE | `telemetry.rs` unit tests with a recording sink | 6 | PORTED: closed events, per-event allowlist, consent v2, kill switch, build-time token, off-thread batched PostHog `/batch/` send, durable install id; first-run notice dialog not yet ported |
 | `UpdateCheck.cs` | updater | browser check + open URL | REWRITE | GitHub latest | 6 | SOFT: check_for_update + open_external_url; install_update PARKED |

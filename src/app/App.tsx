@@ -80,6 +80,9 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [editor, setEditor] = useState<EditorSnapshot | null>(null);
   const [devicePreferences, setDevicePreferences] = useState<EditorSnapshot | null>(null);
   const [workbookReview, setWorkbookReview] = useState<WorkbookImportReview | null>(null);
+  // A community profile is an anonymous Sheets download (1950d85): saving can
+  // never reach that sheet, so the editor says it holds a copy.
+  const [reviewFromSheet, setReviewFromSheet] = useState(false);
   const [workbookBusy, setWorkbookBusy] = useState(false);
   const [workbookExportBusy, setWorkbookExportBusy] = useState(false);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
@@ -311,6 +314,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       const review = await choose.call(client);
       if (review !== null) {
         setWorkbookReview(review);
+        setReviewFromSheet(false);
         setMessage("");
       }
     } catch (reason) {
@@ -341,6 +345,8 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
       const opened = await accept.call(client, workbookReview.importId);
       setWorkbookReview(null);
       showEditor(opened);
+      if (reviewFromSheet) setMessage(t("Main_ImportIsACopy"));
+      setReviewFromSheet(false);
     } catch (reason) {
       showFailure(reason);
     } finally {
@@ -465,6 +471,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
             client={client}
             onReview={(review) => {
               setWorkbookReview(review);
+              setReviewFromSheet(false);
               setSettingsOpen(false);
               setMessage("");
             }}
@@ -517,6 +524,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
           onSnapshot={setEditor}
           onReview={(review) => {
             setWorkbookReview(review);
+            setReviewFromSheet(false);
             setMessage("");
           }}
         />
@@ -558,6 +566,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         client={client}
         onReview={(review) => {
           setWorkbookReview(review);
+          setReviewFromSheet(true);
           setMessage("");
         }}
       />

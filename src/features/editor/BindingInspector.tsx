@@ -4,6 +4,7 @@ import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
 import { tokenLabel } from "../visualizer/deviceSummary";
 import { DuplicateMark } from "./DuplicateMark";
+import { padName, parameterHint } from "./functionHelp";
 import { NO_DUPLICATES, type DuplicateCounts } from "./duplicates";
 
 export interface InspectorRow {
@@ -63,6 +64,10 @@ function OutputFields({
           </button>
         ) : null}
       </div>
+      {/* 88eda16: what the button is called on the pad in front of you. */}
+      {padName(draft[0] ?? "", t) === "" ? null : (
+        <p className="settings-caption output-pad-name">{padName(draft[0] ?? "", t)}</p>
+      )}
       <label className="editor-field function">
         <span>{t("Main_FunctionForRowBRow", [row, draft[1] ?? ""])}</span>
         <input
@@ -73,6 +78,12 @@ function OutputFields({
           onBlur={() => commit(1)}
         />
       </label>
+      {/* 1cc0cd8, 2b0552c: what each number does, then what blank means. */}
+      {parameterHint(draft[1] ?? "", t).map((line) => (
+        <p className="settings-caption function-number-help" key={line}>
+          {line}
+        </p>
+      ))}
     </div>
   );
 }
