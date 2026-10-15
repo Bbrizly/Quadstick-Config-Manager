@@ -3654,4 +3654,70 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>BluetoothまたはシリアルケーブルでQuadStickに接続</value>
   </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>リンクから最新版を取得</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>このプロファイルをインポート元のGoogleスプレッドシートから再度ダウンロードし、置き換える前に変更点を確認します</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>リンクを解除</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>このプロファイルのインポート元のGoogleスプレッドシートのフォローをやめます</value>
+  </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Googleスプレッドシートのリンクをフォロー中</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>このプロファイルはGoogleスプレッドシートのリンクからインポートされていないため、取得するものはありません。</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>先に変更を保存しますか?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>このプロファイルには未保存の変更があります。先に保存してからスプレッドシートと比較します。確認なしに置き換えることはありません。</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>すでに最新です。スプレッドシートはお使いのコピーと一致しています。</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>最新版を取得できませんでした: {0} お使いのコピーは変更されていません。</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>お使いのコピーを最新版で置き換えますか?</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Googleスプレッドシートはお使いのコピーと異なります。置き換える場合、お使いのコピーは先にrescueフォルダーに保存されます。</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>スプレッドシートで追加: {0}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>スプレッドシートから削除: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: 追加 {1}、削除 {2}</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>設定、名前、メモなど、ほかのセルが異なります。</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>このコンピューター上のコピーを読み込めなかったため、比較できません。</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>コピーを置き換える</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>自分のコピーを残す</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>お使いのコピーを残しました。何も変更されていません。</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>リンクの最新版で置き換えました。以前のコピーはrescueフォルダーにあります。</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>このプロファイルはリンクをフォローしなくなりました。</value>
+  </data>
 </root>

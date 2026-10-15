@@ -3656,4 +3656,70 @@
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>通过蓝牙或串口线缆连接 QuadStick</value>
   </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>从链接获取最新版本</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>从导入此配置文件的 Google 表格重新下载，在替换任何内容之前先查看有哪些变化</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>忘记链接</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>不再关注导入此配置文件的 Google 表格</value>
+  </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>关注一个 Google 表格链接</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>此配置文件不是从 Google 表格链接导入的，所以没有可获取的内容。</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>先保存您的更改？</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>此配置文件有未保存的更改。会先保存，再与表格比较。未经您同意不会替换任何内容。</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>已是最新。表格与您的副本一致。</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>无法获取最新版本：{0} 您的副本未被更改。</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>用最新版本替换您的副本？</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Google 表格与您的副本不同。如果替换，您的副本会先放入救援文件夹。</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>表格中新增：{0}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>表格中已没有：{0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}：新增 {1}，移除 {2}</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>其他单元格不同，例如偏好设置、名称或备注。</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>无法读取此电脑上的副本，因此无法比较。</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>替换我的副本</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>保留我的</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>已保留您的副本。没有任何更改。</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>已替换为链接中的最新版本。您的旧副本在救援文件夹中。</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>此配置文件不再关注其链接。</value>
+  </data>
 </root>

@@ -3656,4 +3656,70 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>Bluetooth 또는 시리얼 케이블로 QuadStick에 연결</value>
   </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>링크에서 최신 버전 가져오기</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>이 프로필을 가져온 Google 시트에서 다시 내려받고, 바꾸기 전에 무엇이 달라졌는지 확인합니다</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>링크 잊기</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>이 프로필을 가져온 Google 시트를 더 이상 따르지 않습니다</value>
+  </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Google 시트 링크를 따르는 중</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>이 프로필은 Google Sheets 링크에서 가져온 것이 아니므로 가져올 것이 없습니다.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>먼저 변경 사항을 저장하시겠습니까?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>이 프로필에 저장되지 않은 변경 사항이 있습니다. 먼저 저장한 다음 시트와 비교합니다. 확인 없이 바꾸지 않습니다.</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>이미 최신입니다. 시트가 사본과 같습니다.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>최신 버전을 가져오지 못했습니다: {0} 사본은 바뀌지 않았습니다.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>사본을 최신 버전으로 바꾸시겠습니까?</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Google 시트가 사본과 다릅니다. 바꾸면 사본은 먼저 복구 폴더로 옮겨집니다.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>시트에 새로 생김: {0}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>시트에서 없어짐: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1}개 추가, {2}개 제거</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>환경설정, 이름, 메모 같은 다른 셀이 다릅니다.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>이 컴퓨터의 사본을 읽을 수 없어 비교할 수 없습니다.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>내 사본 바꾸기</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>내 것 유지</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>사본을 유지했습니다. 아무것도 바뀌지 않았습니다.</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>링크의 최신 버전으로 바꿨습니다. 이전 사본은 복구 폴더에 있습니다.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>이 프로필은 더 이상 링크를 따르지 않습니다.</value>
+  </data>
 </root>

@@ -3656,4 +3656,70 @@
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>الاتصال بجهاز QuadStick عبر Bluetooth أو كابل تسلسلي</value>
   </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>جلب أحدث نسخة من الرابط</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>تنزيل هذا الملف الشخصي مرة أخرى من جدول Google الذي استُورد منه، ومعرفة ما تغيّر قبل استبدال أي شيء</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>نسيان الرابط</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>التوقف عن متابعة جدول Google الذي استُورد منه هذا الملف الشخصي</value>
+  </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>يتابع رابط جدول Google</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>لم يُستورد هذا الملف الشخصي من رابط Google Sheets، لذا لا يوجد ما يُجلب.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>هل تريد حفظ تغييراتك أولاً؟</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>يحتوي هذا الملف الشخصي على تغييرات غير محفوظة. ستُحفظ أولاً ثم تُقارن بالجدول. لن يُستبدل شيء دون موافقتك.</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>محدّث بالفعل. الجدول مطابق لنسختك.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>تعذّر جلب أحدث نسخة: {0} لم تتغير نسختك.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>هل تريد استبدال نسختك بأحدث نسخة؟</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>جدول Google مختلف عن نسختك. إذا استبدلتها، ستنتقل نسختك أولاً إلى مجلد الإنقاذ.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>جديد في الجدول: {0}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>لم يعد في الجدول: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: أُضيف {1}، وأُزيل {2}</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>هناك خلايا أخرى مختلفة، مثل التفضيلات أو الأسماء أو الملاحظات.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>تعذّرت قراءة نسختك على هذا الكمبيوتر، لذا لا يمكن مقارنتها.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>استبدال نسختي</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>الاحتفاظ بنسختي</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>تم الاحتفاظ بنسختك. لم يتغير شيء.</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>تم الاستبدال بأحدث نسخة من الرابط. نسختك القديمة في مجلد الإنقاذ.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>لم يعد هذا الملف الشخصي يتابع رابطه.</value>
+  </data>
 </root>

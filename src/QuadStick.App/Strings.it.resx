@@ -3656,4 +3656,70 @@ I giochi che non usano SDL non vedranno il gamepad. Per quelli, usa la modalità
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>Si connetta al QuadStick tramite Bluetooth o un cavo seriale</value>
   </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Prendi l'ultima versione dal link</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Scarica di nuovo questo profilo dal foglio Google da cui è stato importato e guarda cosa è cambiato prima di sostituire qualcosa</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Dimentica il link</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Smetti di seguire il foglio Google da cui è stato importato questo profilo</value>
+  </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Segue un link di Google Sheets</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>Questo profilo non è stato importato da un link di Google Sheets, quindi non c'è niente da prendere.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>Salvare prima le modifiche?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>Questo profilo ha modifiche non salvate. Vengono prima salvate, poi confrontate con il foglio. Nulla viene sostituito senza conferma.</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Già aggiornato. Il foglio corrisponde alla copia locale.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>Impossibile prendere l'ultima versione: {0} La copia locale non è stata modificata.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>Sostituire la copia con l'ultima versione?</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Il foglio Google è diverso dalla copia locale. Se la si sostituisce, la copia va prima nella cartella di salvataggio.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>Nuovo nel foglio: {0}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>Non più nel foglio: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} aggiunte, {2} rimosse</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>Altre celle sono diverse, come preferenze, nomi o note.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>Impossibile leggere la copia su questo computer, quindi non si può confrontare.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Sostituisci la mia copia</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Tieni la mia</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>La copia è stata mantenuta. Nulla è cambiato.</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Sostituito con l'ultima versione dal link. La copia precedente è nella cartella di salvataggio.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>Questo profilo non segue più il suo link.</value>
+  </data>
 </root>

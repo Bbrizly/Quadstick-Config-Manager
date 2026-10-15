@@ -3791,4 +3791,70 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>[Çóññéçt tó thé QúádŠtíçk óvér Blúétóóth ór á šéríál çáblé xxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>[Gét thé látéšt fróm thé líñk xxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>[Dówñlóád thíš prófílé ágáíñ fróm thé Góóglé Šhéét ít wáš ímpórtéd fróm, áñd šéé whát çháñgéd béfóré áñýthíñg íš répláçéd xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>[Fórgét thé líñk xxxxxx]</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>[Štóp fóllówíñg thé Góóglé Šhéét thíš prófílé wáš ímpórtéd fróm xxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>[Fóllówš á Góóglé Šhéét líñk xxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>[Thíš prófílé wáš ñót ímpórtéd fróm á Góóglé Šhéétš líñk, šó théré íš ñóthíñg tó gét. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>[Šávé ýóúr çháñgéš fíršt? xxxxxxxxx]</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>[Thíš prófílé háš çháñgéš thát áré ñót šávéd. Théý áré šávéd fíršt, théñ çómpáréd wíth thé šhéét. Ñóthíñg íš répláçéd úñléšš ýóú šáý šó. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>[Álréádý úp tó dáté. Thé šhéét mátçhéš ýóúr çópý. xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>[Çóúld ñót gét thé látéšt: {0} Ýóúr çópý wáš ñót çháñgéd. xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>[Répláçé ýóúr çópý wíth thé látéšt? xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>[Thé Góóglé Šhéét íš dífféréñt fróm ýóúr çópý. Íf ýóú répláçé ít, ýóúr çópý góéš tó thé réšçúé fóldér fíršt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>[Ñéw íñ thé šhéét: {0} xxxxxxxx]</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>[Ñó lóñgér íñ thé šhéét: {0} xxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>[{0}: {1} áddéd, {2} rémóvéd xxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>[Óthér çéllš díffér, šúçh áš préféréñçéš, ñáméš ór ñótéš. xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>[Ýóúr çópý óñ thíš çómpútér çóúld ñót bé réád, šó ít çáññót bé çómpáréd. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>[Répláçé mý çópý xxxxxx]</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>[Kéép míñé xxx]</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>[Képt ýóúr çópý. Ñóthíñg wáš çháñgéd. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>[Répláçéd wíth thé látéšt fróm thé líñk. Ýóúr óld çópý íš íñ thé réšçúé fóldér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>[Thíš prófílé ñó lóñgér fóllówš ítš líñk. xxxxxxxxxxxxxxxx]</value>
+  </data>
 </root>

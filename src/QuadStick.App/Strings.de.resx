@@ -3656,4 +3656,70 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>Über Bluetooth oder ein serielles Kabel mit dem QuadStick verbinden</value>
   </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Neueste Version vom Link holen</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Dieses Profil erneut aus dem Google Sheet laden, aus dem es importiert wurde, und vor dem Ersetzen sehen, was sich geändert hat</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Link vergessen</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Dem Google Sheet, aus dem dieses Profil importiert wurde, nicht mehr folgen</value>
+  </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Folgt einem Google-Sheet-Link</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>Dieses Profil wurde nicht über einen Google-Sheets-Link importiert, daher gibt es nichts zu holen.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>Änderungen zuerst speichern?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>Dieses Profil hat ungespeicherte Änderungen. Sie werden zuerst gespeichert und dann mit dem Sheet verglichen. Ersetzt wird nur, wenn Sie zustimmen.</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Bereits aktuell. Das Sheet stimmt mit Ihrer Kopie überein.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>Die neueste Version konnte nicht geholt werden: {0} Ihre Kopie wurde nicht verändert.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>Ihre Kopie durch die neueste Version ersetzen?</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Das Google Sheet unterscheidet sich von Ihrer Kopie. Wenn Sie ersetzen, kommt Ihre Kopie zuerst in den Rettungsordner.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>Neu im Sheet: {0}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>Nicht mehr im Sheet: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} hinzugefügt, {2} entfernt</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>Andere Zellen unterscheiden sich, etwa Einstellungen, Namen oder Notizen.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>Ihre Kopie auf diesem Computer konnte nicht gelesen werden und kann daher nicht verglichen werden.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Meine Kopie ersetzen</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Meine behalten</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>Ihre Kopie wurde behalten. Nichts wurde geändert.</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Durch die neueste Version vom Link ersetzt. Ihre alte Kopie liegt im Rettungsordner.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>Dieses Profil folgt seinem Link nicht mehr.</value>
+  </data>
 </root>

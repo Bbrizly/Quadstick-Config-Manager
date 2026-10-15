@@ -9,8 +9,10 @@ profiles is sold or shared with anyone.
 Four things use the network, and each one only after you ask for it.
 
 **Google Sheets and Drive.** When you paste a Sheets link, the app fetches that
-sheet and nothing else. When you turn on Google Drive backup, it saves your
-profiles to your own Drive under your own account.
+sheet and nothing else. A profile saved from that link remembers it on your
+computer, and the app fetches the same sheet again only when you press "Get the
+latest from the link", never on its own. When you turn on Google Drive backup,
+it saves your profiles to your own Drive under your own account.
 
 **The community profile list.** When you open Community profiles, the app asks
 quadstick.com for the shared list of game profiles, and Refresh in that window

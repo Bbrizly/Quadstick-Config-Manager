@@ -3656,4 +3656,70 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>Ligar ao QuadStick por Bluetooth ou cabo série</value>
   </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Obter a versão mais recente do link</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Baixar este perfil de novo da planilha Google de onde foi importado e ver o que mudou antes de substituir qualquer coisa</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Esquecer o link</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Deixar de seguir a planilha Google de onde este perfil foi importado</value>
+  </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Segue um link do Google Sheets</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>Este perfil não foi importado de um link do Google Sheets, então não há nada para obter.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>Salvar suas alterações primeiro?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>Este perfil tem alterações não salvas. Elas são salvas primeiro e depois comparadas com a planilha. Nada é substituído sem sua confirmação.</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Já está atualizado. A planilha é igual à sua cópia.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>Não foi possível obter a versão mais recente: {0} Sua cópia não foi alterada.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>Substituir sua cópia pela versão mais recente?</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>A planilha Google é diferente da sua cópia. Se você substituir, sua cópia vai primeiro para a pasta de resgate.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>Novo na planilha: {0}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>Não está mais na planilha: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} adicionadas, {2} removidas</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>Outras células são diferentes, como preferências, nomes ou notas.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>Não foi possível ler sua cópia neste computador, então ela não pode ser comparada.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Substituir minha cópia</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Manter a minha</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>Sua cópia foi mantida. Nada foi alterado.</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Substituído pela versão mais recente do link. Sua cópia anterior está na pasta de resgate.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>Este perfil não segue mais o link.</value>
+  </data>
 </root>

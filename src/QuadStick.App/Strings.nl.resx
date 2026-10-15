@@ -3656,4 +3656,70 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   <data name="Link_PageButtonName" xml:space="preserve">
     <value>Verbinden met de QuadStick via Bluetooth of een seriële kabel</value>
   </data>
+  <data name="Follow_GetLatest" xml:space="preserve">
+    <value>Nieuwste versie van de link halen</value>
+  </data>
+  <data name="Follow_GetLatestHelp" xml:space="preserve">
+    <value>Dit profiel opnieuw downloaden van het Google-spreadsheet waaruit het is geïmporteerd, en zien wat er veranderd is voordat er iets wordt vervangen</value>
+  </data>
+  <data name="Follow_StopFollowing" xml:space="preserve">
+    <value>Link vergeten</value>
+  </data>
+  <data name="Follow_StopFollowingHelp" xml:space="preserve">
+    <value>Het Google-spreadsheet waaruit dit profiel is geïmporteerd niet meer volgen</value>
+  </data>
+  <data name="Follow_CardNote" xml:space="preserve">
+    <value>Volgt een Google Sheets-link</value>
+  </data>
+  <data name="Follow_NotFollowed" xml:space="preserve">
+    <value>Dit profiel is niet geïmporteerd via een Google Sheets-link, dus er valt niets te halen.</value>
+  </data>
+  <data name="Follow_SaveFirstTitle" xml:space="preserve">
+    <value>Eerst uw wijzigingen opslaan?</value>
+  </data>
+  <data name="Follow_SaveFirstBody" xml:space="preserve">
+    <value>Dit profiel heeft niet-opgeslagen wijzigingen. Die worden eerst opgeslagen en daarna met het spreadsheet vergeleken. Er wordt niets vervangen zonder uw akkoord.</value>
+  </data>
+  <data name="Follow_UpToDate" xml:space="preserve">
+    <value>Al up-to-date. Het spreadsheet komt overeen met uw kopie.</value>
+  </data>
+  <data name="Follow_CouldNotGet" xml:space="preserve">
+    <value>Kon de nieuwste versie niet halen: {0} Uw kopie is niet gewijzigd.</value>
+  </data>
+  <data name="Follow_ReviewTitle" xml:space="preserve">
+    <value>Uw kopie vervangen door de nieuwste versie?</value>
+  </data>
+  <data name="Follow_ReviewBody" xml:space="preserve">
+    <value>Het Google-spreadsheet verschilt van uw kopie. Als u vervangt, gaat uw kopie eerst naar de reddingsmap.</value>
+  </data>
+  <data name="Follow_ModeAdded" xml:space="preserve">
+    <value>Nieuw in het spreadsheet: {0}</value>
+  </data>
+  <data name="Follow_ModeRemoved" xml:space="preserve">
+    <value>Niet meer in het spreadsheet: {0}</value>
+  </data>
+  <data name="Follow_ModeChanged" xml:space="preserve">
+    <value>{0}: {1} toegevoegd, {2} verwijderd</value>
+  </data>
+  <data name="Follow_OtherChanged" xml:space="preserve">
+    <value>Andere cellen verschillen, zoals voorkeuren, namen of notities.</value>
+  </data>
+  <data name="Follow_LocalUnreadable" xml:space="preserve">
+    <value>Uw kopie op deze computer kon niet worden gelezen en kan dus niet worden vergeleken.</value>
+  </data>
+  <data name="Follow_Replace" xml:space="preserve">
+    <value>Mijn kopie vervangen</value>
+  </data>
+  <data name="Follow_Keep" xml:space="preserve">
+    <value>Mijn kopie houden</value>
+  </data>
+  <data name="Follow_Kept" xml:space="preserve">
+    <value>Uw kopie is behouden. Er is niets gewijzigd.</value>
+  </data>
+  <data name="Follow_Replaced" xml:space="preserve">
+    <value>Vervangen door de nieuwste versie van de link. Uw oude kopie staat in de reddingsmap.</value>
+  </data>
+  <data name="Follow_Forgotten" xml:space="preserve">
+    <value>Dit profiel volgt zijn link niet meer.</value>
+  </data>
 </root>

@@ -52,6 +52,10 @@ public sealed class AppSettings
     // The Xbox controller bridge, Linux only. Runs while the app is open.
     public bool ControllerBridge = false;
     public Dictionary<string, DriveLink> DriveLinks = new(); // key: profile file path
+    // The Google Sheets link a saved profile was imported from, keyed by its
+    // file path. Only ever read when the user presses "Get the latest from
+    // the link": the app never checks it on its own.
+    public Dictionary<string, string> FollowLinks = new();
     // Profiles opened from outside the library folder, newest first. Without
     // this they leave no trace in the app: Save writes them back where they
     // came from and Home only ever lists the library.
@@ -144,6 +148,7 @@ public static class Settings
 [JsonSerializable(typeof(AppSettings))]
 [JsonSerializable(typeof(DriveLink))]
 [JsonSerializable(typeof(Dictionary<string, DriveLink>))]
+[JsonSerializable(typeof(Dictionary<string, string>))]
 internal partial class SettingsJsonContext : JsonSerializerContext { }
 
 public static class Theme
