@@ -632,7 +632,12 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                     type="button"
                     className="quiet"
                     aria-label={t("Main_ShowEveryMappingHere")}
-                    onClick={() => setWholeZone(true)}
+                    onClick={() => {
+                      // Avalonia clears the pick too, so the picture stops
+                      // ringing one part while the list shows them all.
+                      setPickedInput(null);
+                      setWholeZone(true);
+                    }}
                   >
                     {t("Main_ShowAllCount", [wholeZoneRows.length])}
                   </button>

@@ -586,3 +586,10 @@
 .combo-add-output {
   justify-self: start;
 }
+
+/* The mapping track keeps its 340 floor; stack before it would overflow. */
+@media (max-width: 720px) {
+  .device-workspace {
+    grid-template-columns: 1fr;
+  }
+}
