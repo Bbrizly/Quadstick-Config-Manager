@@ -94,12 +94,12 @@ public partial class MainWindow : Window
     DriveBackup? Backup()
     {
         if (_driveBackup != null) return _driveBackup;
-        if (!NetworkFeature.Enabled) return null;
+        if (!NetworkFeature.DriveAllowed) return null;
         if (!_settings.DriveBackup || !GoogleAuth.IsConfigured) return null;
         var store = TokenStore.Create();
         if (store.Load() is null) return null;
-        var auth = new GoogleAuth(store);
-        var client = new DriveClient(new HttpClientHandler(), auth.GetAccessTokenAsync);
+        var auth = new GoogleAuth(store, new GoogleOnlyHandler(new HttpClientHandler()));
+        var client = new DriveClient(new GoogleOnlyHandler(new HttpClientHandler()), auth.GetAccessTokenAsync);
         // Buttons are fixed Yes/Cancel, so the choice lives in the body text
         // (Yes = replace with mine / recreate). The engine runs off the UI
         // thread and dialogs build only on it, so prompts marshal through it.
@@ -121,8 +121,13 @@ public partial class MainWindow : Window
     public bool DriveConnected => Backup() is not null;
 
     // Fire-and-forget the push after a save. Never awaited on the save path.
-    void FireBackupPush(string path, string text) =>
+    void FireBackupPush(string path, string text)
+    {
+        // A host that allows Drive alone picks which profiles go there, by
+        // sharing them. A save of any other profile stays on this computer.
+        if (!NetworkFeature.Enabled && !_settings.DriveLinks.ContainsKey(path)) return;
         RunBackup(path, async b => (PushResult?)await b.PushAsync(path, text));
+    }
 
     // Fire-and-forget the retry when a linked profile opens.
     // Cell C1 of the file is the sheet it is backed up to. Called before any
@@ -233,10 +238,10 @@ public partial class MainWindow : Window
     // setting and rebuilds the engine.
     public async Task<bool> ConnectGoogleAsync(CancellationToken ct = default)
     {
-        if (!NetworkFeature.Enabled || !GoogleAuth.IsConfigured) return false;
+        if (!NetworkFeature.DriveAllowed || !GoogleAuth.IsConfigured) return false;
         try
         {
-            var auth = new GoogleAuth(TokenStore.Create());
+            var auth = new GoogleAuth(TokenStore.Create(), new GoogleOnlyHandler(new HttpClientHandler()));
             await auth.SignInAsync(uri => Launcher.LaunchUriAsync(uri), ct);
             _settings.DriveBackup = true;
             PersistSettings();
