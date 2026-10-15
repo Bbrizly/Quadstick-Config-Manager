@@ -90,11 +90,9 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         let request: ApplyEditorOpsRequest = parse(raw, "apply_editor_ops request")?;
         request.check()?;
         let session = session_id(&request.session_id)?;
-        let snapshot = self.sessions().apply_ops(
-            session,
-            request.expected_revision,
-            &request.ops,
-        )?;
+        let snapshot =
+            self.sessions()
+                .apply_ops(session, request.expected_revision, &request.ops)?;
         sync_autosave_draft(self, &snapshot);
         Ok(snapshot)
     }

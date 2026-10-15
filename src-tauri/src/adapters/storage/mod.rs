@@ -521,10 +521,10 @@ fn write_and_sync(path: &Path, bytes: &[u8]) -> io::Result<()> {
 /// call. Failures are ignored: the change is already made, and a flush that
 /// cannot open the folder must not report a finished write as failed.
 fn flush_entry(root: &Path, target: Option<&Path>) {
-    if let Some(target) = target {
-        if let Ok(file) = fs::OpenOptions::new().write(true).open(target) {
-            let _ = file.sync_all();
-        }
+    if let Some(file) =
+        target.and_then(|target| fs::OpenOptions::new().write(true).open(target).ok())
+    {
+        let _ = file.sync_all();
     }
     #[cfg(unix)]
     if let Ok(folder) = fs::File::open(root) {

@@ -187,7 +187,11 @@ impl ProfileFile {
                 return false;
             };
             // The insert shifts every row at or below it down by one.
-            let source = if from_row >= row { from_row + 1 } else { from_row };
+            let source = if from_row >= row {
+                from_row + 1
+            } else {
+                from_row
+            };
             added = Some(row);
             file.copy_inputs(source, &[row])
         });

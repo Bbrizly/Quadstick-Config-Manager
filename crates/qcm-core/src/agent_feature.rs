@@ -8,6 +8,6 @@ pub const ENABLED: bool = false;
 mod tests {
     #[test]
     fn agent_stays_off_like_avalonia() {
-        assert!(!super::ENABLED);
+        const { assert!(!super::ENABLED) };
     }
 }
