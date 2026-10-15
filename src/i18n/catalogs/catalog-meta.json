@@ -1,5 +1,5 @@
 {
-  "baselineKeyCount": 1163,
+  "baselineKeyCount": 1452,
   "locales": [
     "en",
     "ar",
@@ -17,18 +17,69 @@
   ],
   "rewriteKeyCount": 17,
   "sourceSha256": {
-    "ar": "53470f556886a00c1d969e6b37ed730742686de0c6495ffbdb55206fb526d814",
-    "de": "0438e1293e9ce9b34823937ad9552e5ef5275d7d9b8c711975fb5b7c141356f4",
-    "en": "41e7578699ab5f85fda169c6b06cbb0e27c810ea10ea0dca51bd9a8e77ac9531",
-    "es": "d101790606d2f2970209ea7081518a18e618f6b5accdedf11d6f4ecaa63d2875",
-    "fr": "0a9cba1c00e4cde7ea0fa92faf4f256a8d494040d66c5cf7a900879564265e29",
-    "hi": "d12b89c7c2f12ebd56f56a9d50a4bb5696b97b6edce74f27c46d927a13fbd865",
-    "it": "08f1c0419f756a79481aa2630262ee0099a8d6154db3a30b69365f0b3120e50d",
-    "ja": "d357aebda0520eef3ab5f99da36adf167607a8f4034a24b0cbbdef3d8d4be2e2",
-    "ko": "341e1ac3040ada67f3ed662252f0a0ce57a6d77d60814188a9ecee632bb4e135",
-    "nl": "4b368529527e8ab361cde4958a193b4041b919d389bb285c5742f382ba5be05a",
-    "pl": "af7e7bfe310fc531d0ffc40d3dec6b23320dc2f6459ab3e65662a8a3072ba4ce",
-    "pt": "e1a40f0ccc165079c66eb2c0bec09ab565e7f73568f638192b7081b2e9cdef21",
-    "zh-Hans": "d70f994f22a40464e18999009adc8b9d28d21f5d325707a0bcfa4f046148a1f1"
+    "ar": "46a3a5b703855ad6b49d0a99e630e10155b036ec7e5688db82d29c763af29fb3",
+    "ar-format": "919887181c7c8532067d11f829bb21209faa8b42d57d00b7a67576f8ba7cc228",
+    "de": "3f50e695327a7a7e521fe0464ba135941fba9440aec9824600ff074310eb1724",
+    "de-format": "eb76b3f941c4b30956e49b205aa503488cd5a0904f2a58818978134d84099c45",
+    "en": "aaa8c01fd8b9e05b28a5fc1ab16a163a12cc99bd7f6d7b9f950c523a54e98a62",
+    "en-format": "6404a6c8592321ac326a8b45b9d3f975c1f325d4809e23f252234c2bc79335d2",
+    "es": "37c7b38cd2adc0751c40e33f5affde4bc16b2bcb9dae3a3b0b2939ecef120443",
+    "es-format": "d23b9d5aa22f675c5770ae16e99c978c898457827f8c7f005c4b46937d8a9228",
+    "fr": "37fb45a7a86165c8cc0af45b55bc8a23fa4a126e9a404c1b65ac988e697d7ecd",
+    "fr-format": "a3d12d4a8a993d351e6299c53fea620997943b99b68ce7c10199ece5a6fd62fa",
+    "hi": "0c2f09ad66b1917881c4fe5bda6978bca7f11cfffb424ca5bcd4962b8e16cfb8",
+    "hi-format": "f4a4c83dcc9052d18b677cd561589b73d412b048af765a1c1ee096092a1bb969",
+    "it": "f7b8272889d73095654c68cb11d8fb92d1ea4d4ff8a1b82e4ad539ec10417e7b",
+    "it-format": "178c746e60b2316b2583a822d4d803e7c077fb61587e81aeeb6cf83b7a01daf3",
+    "ja": "8687eb61ddd90f2181a613fd2d1246e7fb3c670296fa5fb2bcf56f4dd657d6a3",
+    "ja-format": "7f778fa128a53316f24ce6220f52c184ac8b3d8794693d4c35593c4fd7a4f49f",
+    "ko": "cdcfcc5a1a1fdd7d68a5776266650c35bec9b19164f551ccc7eb0faef0353f79",
+    "ko-format": "72c1576864a42a3207a91673f0c3802335b1f9cc8dd309e324f8207cc1eb3eba",
+    "nl": "0f891c67a54ce885f19a0192208353e025404b454cca7c233ab82ffdc3aceaf7",
+    "nl-format": "8ac2361351d591936afd8a4930db0505c41e6c3257caffac1b433c34d86d2af3",
+    "pl": "270f9e60f359b19c4fdd74c7de7bf9e14ceb03fd11c91b35f904a8ee28fedf53",
+    "pl-format": "1d8138b7eeb053f780c7199d06460bcc1c9f2da90d60fd8235089bb5a9bd0605",
+    "pt": "f7e651840e86b1742718cda8bbf6456990b95c6991394695a365f62cac314512",
+    "pt-format": "420da43e55c0eb7fe9cf34f066b716efa3a23ec860c4aae5557eb19b289afc5f",
+    "zh-Hans": "f5d1a83ae25f3a2f17b30b41a7cd343290f55744a9951497e89cc4bd93688d2c",
+    "zh-Hans-format": "acb143b67598e2e540c0a11c5ec710a88949e817d9f826cc3de78ae93d0b75fc"
+  },
+  "staleEnglishFallback": {
+    "ar": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "de": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "es": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "fr": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "hi": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "it": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "ja": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "ko": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "nl": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "pl": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "pt": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ],
+    "zh-Hans": [
+      "Device_NoQuadStickDriveIsPlugged"
+    ]
   }
 }
