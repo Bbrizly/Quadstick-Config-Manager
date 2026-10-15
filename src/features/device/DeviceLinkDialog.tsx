@@ -103,6 +103,20 @@ export function DeviceLinkDialog({
   const [ask, setAsk] = useState<Ask | null>(null);
   const stopAsked = useRef(false);
   const latest = useRef<LiveSnapshot | null>(null);
+  // Closed while a send or a test runs, the port would go out from under it
+  // and the QuadStick would be left with the test file loaded and its
+  // thresholds moved (6934bbf). So a close waits: it stops the test, the
+  // device is put back, then the window goes.
+  const closeWhenDone = useRef(false);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+  const closeIfAsked = (): void => {
+    if (!closeWhenDone.current) return;
+    closeWhenDone.current = false;
+    onCloseRef.current();
+  };
 
   const say = (key: MessageKey, values?: readonly unknown[]): void => setStatus(t(key, values));
   const failed = (reason: unknown): void => setStatus(consoleFailureMessage(asQcmError(reason).payload, t));
@@ -153,7 +167,12 @@ export function DeviceLinkDialog({
       setAsk(null);
       return;
     }
-    if (!busy) onClose();
+    if (!busy) {
+      onClose();
+      return;
+    }
+    stopAsked.current = true;
+    closeWhenDone.current = true;
   }, [ask, busy, onClose]);
 
   const connect = async (): Promise<void> => {
@@ -176,6 +195,7 @@ export function DeviceLinkDialog({
       failed(reason);
     } finally {
       setBusy(false);
+      closeIfAsked();
     }
   };
 
@@ -205,6 +225,7 @@ export function DeviceLinkDialog({
       failed(reason);
     } finally {
       setBusy(false);
+      closeIfAsked();
     }
   };
 
@@ -308,6 +329,7 @@ export function DeviceLinkDialog({
     } else if (stopAsked.current) {
       say("Link_Cancelled");
     }
+    closeIfAsked();
   };
 
   const hasPorts = ports.length > 0;
@@ -340,7 +362,7 @@ export function DeviceLinkDialog({
       title={t("Link_Title")}
       onClose={close}
       actions={
-        <button type="button" disabled={busy} onClick={close}>
+        <button type="button" onClick={close}>
           {t("Link_Close")}
         </button>
       }

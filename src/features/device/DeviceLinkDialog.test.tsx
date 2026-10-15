@@ -73,7 +73,12 @@ function person(device: FakeConsole, puff: number, sip: number): LiveButtons {
   };
 }
 
-function open(device: FakeConsole, live: LiveButtons, onMeasured?: (p: number, s: number) => void) {
+function open(
+  device: FakeConsole,
+  live: LiveButtons,
+  onMeasured?: (p: number, s: number) => void,
+  onClose: () => void = () => undefined,
+) {
   const client = new MockQcmClient();
   return render(
     <I18nProvider initialPreference="en">
@@ -81,7 +86,7 @@ function open(device: FakeConsole, live: LiveButtons, onMeasured?: (p: number, s
         client={client}
         console={device}
         open
-        onClose={() => undefined}
+        onClose={onClose}
         timing={FAST}
         live={live}
         {...(onMeasured === undefined ? {} : { onMeasured })}
@@ -173,6 +178,49 @@ describe("DeviceLinkDialog", () => {
     ));
     expect(device.recorded).toBeNull();
     expect(device.commands.at(-1)).toBe("end");
+  });
+
+  // 6934bbf: closing mid-test would drop the port with the test file still
+  // loaded and the thresholds moved. The close waits for the device to be put
+  // back (the restart deletes the test file and boots), then happens.
+  it("closing mid-test puts the QuadStick back before the window goes", async () => {
+    const device = new FakeConsole();
+    let closed = 0;
+    open(device, person(device, 62, 37), undefined, () => {
+      closed += 1;
+      device.commands.push("closed");
+    });
+    await connect();
+    await measure();
+    await screen.findByText(/Puff as hard as you can/u, undefined, { timeout: 5_000 });
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(closed).toBe(0);
+    await waitFor(() => expect(closed).toBe(1));
+    expect(device.recorded).toBeNull();
+    expect(device.commands.slice(-2)).toEqual(["end", "closed"]);
+  });
+
+  it("closing mid-send waits for the send to finish", async () => {
+    const device = new FakeConsole();
+    device.pick = { pickId: "pick-1", name: "game.csv", isDefault: false, isPreferences: false };
+    let finish: () => void = () => undefined;
+    device.consoleSendProfile = (pickId: string) => {
+      device.commands.push(`send,${pickId}`);
+      return new Promise((resolve) => {
+        finish = () => resolve({ name: "game.csv", backup: null });
+      });
+    };
+    let closed = 0;
+    open(device, () => [], undefined, () => {
+      closed += 1;
+    });
+    await connect();
+    fireEvent.click(screen.getByRole("button", { name: "Send a profile…" }));
+    await waitFor(() => expect(device.commands.at(-1)).toBe("send,pick-1"));
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(closed).toBe(0);
+    act(() => finish());
+    await waitFor(() => expect(closed).toBe(1));
   });
 
   it("sends nothing to the QuadStick without a USB reading", async () => {
