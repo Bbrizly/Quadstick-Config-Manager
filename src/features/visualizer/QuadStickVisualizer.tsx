@@ -359,7 +359,7 @@ export function QuadStickVisualizer({
     onLiveRows?.(liveRows);
   }, [liveRows, onLiveRows]);
 
-  useLiveInput(client, (frame) => {
+  const windowActive = useLiveInput(client, (frame) => {
     setLive(frame);
     if (frame !== null && frame.status.kind === "reading") {
       const next = outputsFromMotion(frame.status.motion, previousOutputs.current);
@@ -948,7 +948,11 @@ export function QuadStickVisualizer({
   );
 
   return (
-    <section className="quadstick-visualizer" aria-labelledby="quadstick-visualizer-title">
+    <section
+      className="quadstick-visualizer"
+      aria-labelledby="quadstick-visualizer-title"
+      data-window-active={windowActive ? undefined : "false"}
+    >
       <header className="visualizer-header">
         <div>
           <h2 id="quadstick-visualizer-title">{t("Tour_ThisIsYourQuadStickEach")}</h2>

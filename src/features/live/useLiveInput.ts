@@ -75,9 +75,10 @@ export function useWindowActive(): boolean {
  * Live input for one view: subscribed only while the window is active,
  * coalesced to one update per animation frame. `onFrame(null)` means there is
  * no reading to draw (paused, or the stream failed), so the view must let go
- * of anything it shows as held.
+ * of anything it shows as held. Returns whether the window is active, so a
+ * view can stop its own idle animations with it.
  */
-export function useLiveInput(client: QcmClient, onFrame: (frame: LiveSnapshot | null) => void): void {
+export function useLiveInput(client: QcmClient, onFrame: (frame: LiveSnapshot | null) => void): boolean {
   const active = useWindowActive();
   const latest = useRef(onFrame);
   useEffect(() => {
@@ -111,4 +112,5 @@ export function useLiveInput(client: QcmClient, onFrame: (frame: LiveSnapshot | 
       subscription?.dispose();
     };
   }, [active, client]);
+  return active;
 }

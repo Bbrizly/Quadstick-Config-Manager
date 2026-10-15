@@ -90,17 +90,26 @@
   transform: translate(-50%, -50%);
   pointer-events: none;
   box-shadow: 0 0 10px currentColor;
+  /* Scale only: it stays on the compositor. The old filter: brightness()
+     repainted the photo under every light, every frame, for as long as the
+     editor was open. Inline opacity sets the halo, so it is not animated. */
   animation: mode-light-glow 1.8s ease-in-out infinite;
 }
 
 @keyframes mode-light-glow {
   0%,
   100% {
-    filter: brightness(1);
+    scale: 1;
   }
   50% {
-    filter: brightness(1.18);
+    scale: 1.12;
   }
+}
+
+/* Nobody is looking: no frames at all. */
+.quadstick-visualizer[data-window-active="false"] .mode-light,
+.quadstick-visualizer[data-window-active="false"] .gesture-pip {
+  animation: none;
 }
 
 .hotspot-group {
