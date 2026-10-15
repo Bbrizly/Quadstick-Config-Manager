@@ -72,6 +72,8 @@ than as a framework string the UI cannot switch on.
 | console_set_threshold | command | device memory only | puff flag + 0..=100 | REGISTERED |
 | console_strength_end | command | device restart | always deletes the test file, boots, drops the port | REGISTERED |
 | take_launch_profile_link | command | low | argv `qcm://profile/<id>` validated natively, handed out once | REGISTERED |
+| record_install_cancelled | command | low | one of four `cancelled_*` reasons, else out of range; telemetry only | REGISTERED |
+| open_privacy_policy | command | low | opens the one fixed policy URL; no URL from the window | REGISTERED |
 | open_registry_profile | command | network/read | id shape; registry index schema/size/dupes; snapshot SHA-256; opens unsaved, never writes a device | REGISTERED |
 | console_record_strength | command | analytics | puff/sip in 4..=95; `strength_measured` through the consent-gated sender | REGISTERED |
 | install_update | command | process/restart | safe app state + signature | PARKED |

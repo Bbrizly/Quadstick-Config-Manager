@@ -239,6 +239,21 @@ pub fn open_external_url(request: Value) -> Result<(), Failure> {
     })
 }
 
+/// The privacy policy the first-run notice and Settings link to. Fixed here
+/// so no URL crosses the boundary (`MainWindow.PrivacyPolicyUrl`).
+pub const PRIVACY_POLICY_URL: &str =
+    "https://bassamkamal.dev/Quadstick-Config-Manager/privacy.html";
+
+#[tauri::command]
+pub fn open_privacy_policy() -> Result<(), Failure> {
+    open::that(PRIVACY_POLICY_URL).map_err(|error| {
+        Box::new(QcmErrorDto::from(&QcmError::Internal(InternalError {
+            what: "open privacy policy",
+            detail: OsDetail::new(error.to_string()),
+        })))
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::{compare, normalize_tag};

@@ -7,6 +7,7 @@ import {
   asQcmError,
   type DevicePresenceSnapshot,
   type EditorSnapshot,
+  type InstallCancelReason,
   type InstallPlan,
   type InstallReceipt,
   type QcmClient,
@@ -28,6 +29,9 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
   const [stages, setStages] = useState<readonly string[]>([]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  // Once an attempt has gone native it was counted there; closing after a
+  // refused or failed attempt is not a cancelled device choice.
+  const [prepared, setPrepared] = useState(false);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -46,6 +50,7 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
         setReceipt(null);
         setStages([]);
         setMessage("");
+        setPrepared(false);
       })
       .catch((reason: unknown) => {
         if (active) setMessage(localizedErrorMessage(asQcmError(reason).payload, t));
@@ -55,12 +60,35 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
     };
   }, [client, open, t]);
 
+  // `InstallFlow.cs` counts a backed-out install as `install_failed` with a
+  // `cancelled_*` reason. Best effort: telemetry never blocks a close.
+  const reportCancel = (reason: InstallCancelReason): void => {
+    const record = client.recordInstallCancelled;
+    if (record === undefined) return;
+    void record.call(client, reason).catch(() => undefined);
+  };
+
+  const close = (): void => {
+    if (busy) return;
+    if (receipt === null) {
+      const kind = plan?.confirmation?.kind;
+      if (kind === "overwrite_default_csv") reportCancel("cancelled_default");
+      else if (kind === "overwrite_device_preferences") reportCancel("cancelled_preferences");
+      // Avalonia only asks which drive when there is more than one.
+      else if (plan === null && (presence?.devices.length ?? 0) > 1 && !prepared) {
+        reportCancel("cancelled_device");
+      }
+    }
+    onClose();
+  };
+
   const chooseDevice = async (): Promise<void> => {
     if (busy) return;
     setBusy(true);
     try {
       const next = await client.chooseDeviceFolder();
-      if (next !== null) {
+      if (next === null) reportCancel("cancelled_folder");
+      else {
         setPresence(next);
         setDeviceId(next.devices[0]?.deviceId ?? "");
         setPlan(null);
@@ -96,6 +124,7 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
       setReceipt(null);
       setStages([]);
       setMessage("");
+      setPrepared(true);
       const next = await client.prepareInstall(profile.sessionId, deviceId);
       if (next.confirmation === null) {
         await installPlan(next);
@@ -128,13 +157,11 @@ export function InstallProfileDialog({ client, profile, open, onClose }: Install
     <Dialog
       open={open}
       title={t("Install_InstallingProfile")}
-      onClose={() => {
-        if (!busy) onClose();
-      }}
+      onClose={close}
       actions={
         receipt === null ? (
           <>
-            <button type="button" disabled={busy} onClick={onClose}>
+            <button type="button" disabled={busy} onClick={close}>
               {t("Device_Cancel")}
             </button>
             {confirmation === null ? (

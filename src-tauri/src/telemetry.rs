@@ -130,6 +130,26 @@ impl InstallFailure {
             Self::IoError => "io_error",
         }
     }
+
+    /// The four reasons a window reports itself: the person backed out.
+    #[must_use]
+    pub fn cancelled_from_wire(name: &str) -> Option<Self> {
+        [
+            Self::CancelledDevice,
+            Self::CancelledFolder,
+            Self::CancelledDefault,
+            Self::CancelledPreferences,
+        ]
+        .into_iter()
+        .find(|reason| reason.wire() == name)
+    }
+
+    /// Device and folder choices come before `prepare_install`, which is
+    /// where the attempt is counted. Avalonia counts it first.
+    #[must_use]
+    pub const fn before_prepare(self) -> bool {
+        matches!(self, Self::CancelledDevice | Self::CancelledFolder)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -632,9 +652,38 @@ fn run_sender(
     }
 }
 
+/// Caps for anything read back off disk (`CrashReport.FromJson`).
+pub const MAX_CHAIN: usize = 20;
+pub const MAX_FRAMES: usize = 200;
+pub const MAX_NAME_CHARS: usize = 300;
+
+/// `CrashReport.Identifier`: the characters a qualified function name uses,
+/// everything else `_`. Rust's `::` is written as `.` first, so no colon,
+/// slash, space or `@` survives and a path or URL cannot reach the wire.
+#[must_use]
+pub fn identifier(text: &str) -> String {
+    text.replace("::", ".")
+        .chars()
+        .take(MAX_NAME_CHARS)
+        .map(|c| {
+            if c.is_alphanumeric()
+                || matches!(
+                    c,
+                    '.' | '_' | '+' | '-' | '<' | '>' | '`' | '[' | ']' | ',' | '|'
+                )
+            {
+                c
+            } else {
+                '_'
+            }
+        })
+        .collect()
+}
+
 /// `$exception` from a stored report's `chain`: type and frame function names
 /// only, never a message, file name or line. `None` when there is nothing to
-/// group on, so the caller keeps the file.
+/// group on, so the caller keeps the file. Every string is re-filtered: the
+/// file is in the user's own folder and anything could have edited it.
 #[must_use]
 pub fn exception_properties(report: &Value) -> Option<Map<String, Value>> {
     let chain = report.get("chain")?.as_array()?;
@@ -642,22 +691,24 @@ pub fn exception_properties(report: &Value) -> Option<Map<String, Value>> {
         return None;
     }
     let mut items = Vec::new();
-    for link in chain {
-        let kind = link
-            .get("type")
-            .and_then(Value::as_str)
-            .unwrap_or("Unknown");
+    for link in chain.iter().take(MAX_CHAIN) {
+        let kind = identifier(
+            link.get("type")
+                .and_then(Value::as_str)
+                .unwrap_or("Unknown"),
+        );
         let frames: Vec<Value> = link
             .get("frames")
             .and_then(Value::as_array)
             .map(|frames| {
                 frames
                     .iter()
+                    .take(MAX_FRAMES)
                     .map(|frame| {
                         json!({
                             "platform": "custom",
                             "lang": "rust",
-                            "function": frame.get("function").and_then(Value::as_str).unwrap_or(""),
+                            "function": identifier(frame.get("function").and_then(Value::as_str).unwrap_or("")),
                             "in_app": frame.get("inApp").and_then(Value::as_bool).unwrap_or(false),
                         })
                     })
@@ -671,24 +722,85 @@ pub fn exception_properties(report: &Value) -> Option<Map<String, Value>> {
             "stacktrace": { "type": "raw", "frames": frames },
         }));
     }
-    let first = chain[0]
-        .get("type")
-        .and_then(Value::as_str)
-        .unwrap_or("Unknown");
+    let first = identifier(
+        chain[0]
+            .get("type")
+            .and_then(Value::as_str)
+            .unwrap_or("Unknown"),
+    );
     let mut props = Telemetry::envelope();
     props.insert("$exception_list".into(), Value::Array(items));
     props.insert("$exception_type".into(), json!(first));
-    for (key, field) in [
-        ("os", "os"),
-        ("os_version", "osVersion"),
-        ("app_version", "app"),
-        ("is_debug", "isDebug"),
-    ] {
-        if let Some(value) = report.get(field) {
-            props.insert(key.into(), value.clone());
+    for (key, field) in [("os", "os"), ("app_version", "app")] {
+        if let Some(value) = report.get(field).and_then(Value::as_str) {
+            props.insert(key.into(), json!(identifier(value)));
         }
     }
+    if let Some(value) = report.get("osVersion").and_then(Value::as_str) {
+        let printable: String = value.chars().filter(|c| !c.is_control()).collect();
+        props.insert("os_version".into(), json!(truncate(&printable, 80)));
+    }
+    if let Some(value) = report.get("isDebug").and_then(Value::as_bool) {
+        props.insert("is_debug".into(), json!(value));
+    }
     Some(props)
+}
+
+/// The report a panic leaves on disk, shaped like `CrashPayload`: where, the
+/// app and OS, and a one-link chain of function names from the backtrace.
+/// The panic message and every file/line are dropped here, before the file
+/// is written, because a message can quote the user's own data.
+#[must_use]
+pub fn panic_report(backtrace: &str, utc: &str) -> Value {
+    let os = if cfg!(target_os = "windows") {
+        "windows"
+    } else if cfg!(target_os = "macos") {
+        "macos"
+    } else if cfg!(target_os = "linux") {
+        "linux"
+    } else {
+        "other"
+    };
+    json!({
+        "schema": 1,
+        "where": "panic",
+        "app": app_version(),
+        "os": os,
+        "osVersion": truncate(&os_description(), 80),
+        "isDebug": cfg!(debug_assertions),
+        "utc": utc,
+        "chain": [{ "type": "panic", "frames": backtrace_frames(backtrace) }],
+    })
+}
+
+/// Function names from `std::backtrace::Backtrace`'s text: the `N: name`
+/// lines, hash suffix removed. The `at file:line` lines are skipped.
+#[must_use]
+pub fn backtrace_frames(backtrace: &str) -> Vec<Value> {
+    backtrace
+        .lines()
+        .filter_map(|line| {
+            let (index, name) = line.trim_start().split_once(": ")?;
+            if index.is_empty() || !index.chars().all(|c| c.is_ascii_digit()) {
+                return None;
+            }
+            let name = name.trim();
+            let name = match name.rsplit_once("::h") {
+                Some((head, hash))
+                    if hash.len() == 16 && hash.chars().all(|c| c.is_ascii_hexdigit()) =>
+                {
+                    head
+                }
+                _ => name,
+            };
+            let function = identifier(name);
+            let in_app = ["qcm_", "qs_bridge"].iter().any(|prefix| {
+                function.starts_with(prefix) || function.starts_with(&format!("<{prefix}"))
+            });
+            Some(json!({ "function": function, "inApp": in_app }))
+        })
+        .take(MAX_FRAMES)
+        .collect()
 }
 
 fn app_version() -> String {
@@ -939,5 +1051,77 @@ mod tests {
         assert_ne!(a, b);
         assert_eq!(a.len(), 36);
         assert_eq!(&a[14..15], "4");
+    }
+
+    #[test]
+    fn a_panic_report_carries_function_names_and_never_files_or_messages() {
+        let backtrace = "   0: std::backtrace::Backtrace::force_capture\n\
+                         \x20            at /rustc/abc/library/std/src/backtrace.rs:312:9\n\
+                         \x20  1: qcm_tauri_lib::diagnostics::install_panic_hook::{{closure}}::h0123456789abcdef\n\
+                         \x20            at /Users/bassam/qcm/src-tauri/src/diagnostics.rs:285:25\n\
+                         \x20  2: <qcm_core::Foo as core::fmt::Debug>::fmt\n\
+                         \x20  3: main\n";
+        let report = panic_report(backtrace, "2026-10-15T00:00:00Z");
+        let text = report.to_string();
+        assert!(!text.contains("bassam"));
+        assert!(!text.contains(".rs"));
+        assert!(report.get("message").is_none());
+        let frames = report["chain"][0]["frames"].as_array().expect("frames");
+        assert_eq!(frames.len(), 4);
+        assert_eq!(
+            frames[0]["function"],
+            "std.backtrace.Backtrace.force_capture"
+        );
+        assert_eq!(frames[0]["inApp"], false);
+        assert_eq!(
+            frames[1]["function"],
+            "qcm_tauri_lib.diagnostics.install_panic_hook.__closure__"
+        );
+        assert_eq!(frames[1]["inApp"], true);
+        assert_eq!(
+            frames[2]["function"],
+            "<qcm_core.Foo_as_core.fmt.Debug>.fmt"
+        );
+        assert_eq!(frames[2]["inApp"], true);
+        assert_eq!(report["chain"][0]["type"], "panic");
+        let props = exception_properties(&report).expect("sendable");
+        assert_eq!(props["$exception_type"], "panic");
+    }
+
+    #[test]
+    fn a_hand_edited_report_cannot_put_a_path_on_the_wire() {
+        let report = json!({
+            "chain": [{ "type": "C:/Users/x/a.csv", "frames": [{ "function": "/home/x/b.csv" }] }],
+            "app": "https://example.com",
+        });
+        let text = Value::Object(exception_properties(&report).expect("sendable")).to_string();
+        assert!(!text.contains('/'));
+        assert!(!text.contains(':') || !text.contains("C:/"));
+    }
+
+    #[test]
+    fn only_the_four_cancel_reasons_come_from_a_window() {
+        for (wire, before) in [
+            ("cancelled_device", true),
+            ("cancelled_folder", true),
+            ("cancelled_default", false),
+            ("cancelled_preferences", false),
+        ] {
+            let reason = InstallFailure::cancelled_from_wire(wire).expect(wire);
+            assert_eq!(reason.wire(), wire);
+            assert_eq!(reason.before_prepare(), before);
+        }
+        for refused in [
+            "io_error",
+            "has_errors",
+            "no_profile",
+            "not_a_quadstick",
+            "",
+        ] {
+            assert!(
+                InstallFailure::cancelled_from_wire(refused).is_none(),
+                "{refused}"
+            );
+        }
     }
 }

@@ -7,6 +7,7 @@ import { Icon } from "../components/primitives/icons";
 import { GoogleDriveSettings, ProfileDriveActions } from "../features/cloud/GoogleDrivePanel";
 import { CommunityProfilesPage } from "../features/community/CommunityProfilesPage";
 import { CrashReportPrompt } from "../features/diagnostics/CrashReportPrompt";
+import { UsageNotice } from "../features/diagnostics/UsageNotice";
 import { DeviceLibraryPage } from "../features/device/DeviceLibraryPage";
 import { DevicePreferencesPage } from "../features/device/DevicePreferencesPage";
 import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
@@ -29,6 +30,7 @@ import {
   type PendingRescue,
   type QcmClient,
   type WorkbookImportReview,
+  USAGE_NOTICE_VERSION,
 } from "../platform";
 import {
   applyInterfaceScale,
@@ -91,6 +93,9 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   const [crashReport, setCrashReport] = useState<PendingCrashReport | null>(null);
   const [rescue, setRescue] = useState<PendingRescue | null>(null);
   const [tourOpen, setTourOpen] = useState(false);
+  // The usage notice comes before the crash prompt and the tour, so nobody
+  // is asked about a crash before being told what this app sends.
+  const [notice, setNotice] = useState<"checking" | "show" | "done">("checking");
 
   useEffect(() => applyThemePreference(themePreference), [themePreference]);
   useEffect(() => {
@@ -105,6 +110,23 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         if (!settings.tutorialSeen) setTourOpen(true);
       },
       () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
+  useEffect(() => {
+    let cancelled = false;
+    void client.getAppSnapshot().then(
+      (snapshot) => {
+        if (cancelled) return;
+        const ask = snapshot.capabilities.usageData
+          && snapshot.settings.telemetryNoticeVersion < USAGE_NOTICE_VERSION;
+        setNotice(ask ? "show" : "done");
+      },
+      () => {
+        if (!cancelled) setNotice("done");
+      },
     );
     return () => {
       cancelled = true;
@@ -543,7 +565,16 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         {content}
       </AppShell>
       <LiveRegion>{message}</LiveRegion>
-      {crashReport === null ? null : (
+      {notice === "show" ? (
+        <UsageNotice
+          client={client}
+          onAnswered={(saved) => {
+            setNotice("done");
+            if (!saved) setMessage(t("Main_CouldNotSaveThatPreference"));
+          }}
+        />
+      ) : null}
+      {crashReport === null || notice !== "done" ? null : (
         <CrashReportPrompt
           client={client}
           report={crashReport}
@@ -555,7 +586,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         />
       )}
       <TutorialTour
-        open={tourOpen}
+        open={tourOpen && notice === "done"}
         onDone={() => {
           setTourOpen(false);
           void client.getSettings().then((settings) => {

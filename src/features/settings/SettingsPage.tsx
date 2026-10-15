@@ -440,6 +440,36 @@ export function SettingsPage({ client, onThemeChange, extra }: SettingsPageProps
                   <span>{t("Settings_AskCrashes")}</span>
                 </label>
               </div>
+              <p className="settings-caption">
+                {settings.installId === ""
+                  ? t("Settings_NoInstallId")
+                  : t("Settings_InstallIdIs", [settings.installId])}
+              </p>
+              <div className="settings-field">
+                <button
+                  type="button"
+                  disabled={settings.installId === ""}
+                  aria-label={t("Settings_CopyInstallIdHelp")}
+                  onClick={() => {
+                    // Best effort, like the Avalonia clipboard write.
+                    void navigator.clipboard?.writeText(settings.installId).catch(() => undefined);
+                  }}
+                >
+                  {t("Settings_CopyInstallId")}
+                </button>
+                {client.openPrivacyPolicy === undefined ? null : (
+                  <button
+                    type="button"
+                    className="link-button"
+                    aria-label={t("Settings_PrivacyHelp")}
+                    onClick={() => {
+                      void client.openPrivacyPolicy?.().catch(() => undefined);
+                    }}
+                  >
+                    {t("Settings_Privacy")}
+                  </button>
+                )}
+              </div>
               {extra}
             </>
           ) : null}

@@ -109,6 +109,8 @@ export interface AppSettings {
   readonly usageAnalytics: boolean;
   readonly askAboutCrashes: boolean;
   readonly telemetryNoticeVersion: number;
+  /** Shown and copied in Settings > Advanced. Empty until one is made. */
+  readonly installId: string;
 }
 
 export interface SettingsPatch {
@@ -157,7 +159,19 @@ export interface Capabilities {
   readonly communityCatalog: boolean;
   readonly googleBackup: boolean;
   readonly agent: boolean;
+  /** False when `QSCM_TELEMETRY=0`: nothing is sent, so the notice never shows. */
+  readonly usageData: boolean;
 }
+
+/** The current usage-data notice (`Telemetry.NoticeVersion`). */
+export const USAGE_NOTICE_VERSION = 2;
+
+/** `install_failed` reasons a window reports when the person backs out. */
+export type InstallCancelReason =
+  | "cancelled_device"
+  | "cancelled_folder"
+  | "cancelled_default"
+  | "cancelled_preferences";
 
 export interface AppSnapshot {
   readonly version: string;

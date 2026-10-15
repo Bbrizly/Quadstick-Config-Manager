@@ -61,6 +61,15 @@ the library version, the .NET version, your operating system version, and
 whether the processor is Intel or ARM. If you are outside the United States,
 this means the data is stored outside your country.
 
+The new version of the app (the Tauri build) sends these itself instead of
+through PostHog's .NET library. Each event names the sender as
+`quadstick-config-manager` with the app version, and still tells PostHog not to
+work out a location. Its operating system version is only the system's name and
+the processor family (for example `macos aarch64`), and every request's
+User-Agent is the fixed text `QuadStickConfigManager`, with no version numbers.
+A crash report from it lists the function names of the crash, never its message,
+file names or line numbers.
+
 ## Turning it off
 
 Settings, then Advanced. Turning off usage data stops it immediately. Turning

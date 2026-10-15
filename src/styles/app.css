@@ -423,7 +423,8 @@ textarea:focus-visible {
   margin-top: var(--qcm-space-xl);
 }
 
-.crash-report-note {
+.crash-report-note,
+.usage-notice-body {
   white-space: pre-wrap;
   margin: 0 0 var(--qcm-space-md);
   line-height: 1.45;
@@ -526,4 +527,14 @@ textarea:focus-visible {
     background: Highlight;
     border-color: Highlight;
   }
+}
+
+.link-button {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--qcm-accent-text);
+  text-decoration: underline;
+  cursor: pointer;
 }

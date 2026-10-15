@@ -6,7 +6,7 @@ import type {
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, EditorOp, EditorSnapshot,
   InstallPlan, InstallProgress, InstallReceipt, LiveSnapshot, QcmErrorPayload, SaveReceipt,
   SettingsPatch, Subscription, UpdateResult, PendingCrashReport, CrashReportChoice,
-  CrashResolveResult, PendingRescue,
+  CrashResolveResult, PendingRescue, InstallCancelReason,
 } from "./contracts";
 import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
@@ -23,6 +23,10 @@ export interface QcmClient {
   checkForUpdate?(currentVersion?: string): Promise<UpdateResult>;
   openExternalUrl?(url: string): Promise<void>;
   sendFeedback?(text: string): Promise<void>;
+  /** Open the fixed privacy policy page. No URL crosses the boundary. */
+  openPrivacyPolicy?(): Promise<void>;
+  /** Count a backed-out install like `InstallFlow.cs` does. */
+  recordInstallCancelled?(reason: InstallCancelReason): Promise<void>;
   getPendingCrashReport?(): Promise<PendingCrashReport | null>;
   resolveCrashReport?(reportId: string, choice: CrashReportChoice): Promise<CrashResolveResult>;
   getPendingRescue?(): Promise<PendingRescue | null>;

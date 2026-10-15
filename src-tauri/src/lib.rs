@@ -99,6 +99,8 @@ pub fn registered_commands() -> &'static [&'static str] {
         "console_record_strength",
         "take_launch_profile_link",
         "open_registry_profile",
+        "record_install_cancelled",
+        "open_privacy_policy",
     ]
 }
 
@@ -219,6 +221,8 @@ pub fn run() {
             console_shell::console_record_strength,
             registry::take_launch_profile_link,
             registry::open_registry_profile,
+            commands::record_install_cancelled,
+            updates::open_privacy_policy,
         ])
         .build(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window")
@@ -245,7 +249,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 64);
+        assert_eq!(commands.len(), 66);
         for expected in [
             "import_community_profile",
             "open_community_sheet",

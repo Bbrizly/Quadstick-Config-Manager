@@ -4,7 +4,7 @@ export type {
   AppSettings, AppSnapshot, Capabilities, CloseDisposition, CloseOutcome, ConfirmationKind,
   ConfirmationRequirement, CrashReportChoice, CrashResolveResult, DeletePlan, DeleteReceipt,
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, DeviceProfileEntry,
-  DeviceSummary, EditorOp, EditorSnapshot, InstallPlan, InstallProgress, InstallReceipt,
+  DeviceSummary, EditorOp, EditorSnapshot, InstallCancelReason, InstallPlan, InstallProgress, InstallReceipt,
   InterfaceScale, Issue, IssueSeverity, LedColour, LiveMotion, LiveSnapshot, LiveStatus, Mode,
   ModelChoice, PendingCrashReport, PendingRescue, PickerGrouping, ProfileSource, QcmErrorPayload,
   RecoveryAction, SaveReceipt, SettingsPatch, Subscription, ThemeChoice, UpdateResult,
@@ -25,7 +25,7 @@ export type {
   WorkbookExportReceipt, WorkbookImportReview, WorkbookLimitation, WorkbookMode,
   WorkbookSkippedTab, WorkbookTabRename,
 } from "./workbookContracts";
-export { ERROR_CODES, INTERFACE_SCALES } from "./contracts";
+export { ERROR_CODES, INTERFACE_SCALES, USAGE_NOTICE_VERSION } from "./contracts";
 export { MockQcmClient } from "./mockQcmClient";
 export { asQcmError, isQcmCommandError, QcmCommandError, type QcmClient } from "./qcmClient";
 export { resolveQcmClient, runningUnderTauri } from "./resolve";

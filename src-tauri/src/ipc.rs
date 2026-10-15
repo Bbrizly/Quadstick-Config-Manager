@@ -317,6 +317,9 @@ pub struct CapabilitiesDto {
     pub google_backup: bool,
     /// The agent. Switched off in the shipped app too.
     pub agent: bool,
+    /// False when `QSCM_TELEMETRY=0`: nothing can be sent, so the first-run
+    /// usage notice is never shown.
+    pub usage_data: bool,
 }
 
 /// What closing actually did.

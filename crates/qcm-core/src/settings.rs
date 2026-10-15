@@ -213,6 +213,8 @@ pub struct AppSettingsDto {
     pub usage_analytics: bool,
     pub ask_about_crashes: bool,
     pub telemetry_notice_version: u32,
+    /// Shown and copied in Settings > Advanced. Empty until one is minted.
+    pub install_id: String,
 }
 
 /// A change to some settings and not the others.
@@ -344,13 +346,14 @@ impl<S: SettingsStore> Settings<S> {
             usage_analytics: self.current.usage_analytics,
             ask_about_crashes: self.current.ask_about_crashes,
             telemetry_notice_version: self.current.telemetry_notice_version,
+            install_id: self.current.install_id.clone(),
         }
     }
 
     /// The install id, minting and saving one if there is none. Not used until
     /// it is durable: sending under an id that never reached disk would mint
     /// a fresh identity next launch. Empty when minting or saving failed. Not
-    /// a revision change, since no window shows it.
+    /// a revision change: the caller re-reads the snapshot to show it.
     pub fn ensure_install_id(&mut self, mint: impl FnOnce() -> Option<String>) -> String {
         if !self.current.install_id.is_empty() {
             return self.current.install_id.clone();

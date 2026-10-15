@@ -56,6 +56,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
                 community_catalog: true,
                 google_backup: cfg!(any(target_os = "macos", target_os = "windows")),
                 agent: qcm_core::agent_feature::ENABLED,
+                usage_data: !crate::telemetry::global().disabled_by_environment(),
             },
             settings: self.settings().snapshot(),
         }
@@ -75,6 +76,8 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         let updated = self.settings().update(request.expected_revision, &patch)?;
         if patch.usage_analytics.is_some() {
             self.apply_telemetry_consent();
+            // A first yes mints the install id, which Settings shows.
+            return Ok(self.settings().snapshot());
         }
         Ok(updated)
     }

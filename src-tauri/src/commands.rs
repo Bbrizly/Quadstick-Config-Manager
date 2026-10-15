@@ -271,6 +271,30 @@ pub fn prepare_install(
     redact(plan)
 }
 
+/// The person backed out of an install: `InstallFlow.cs` reports these as
+/// `install_failed` with a `cancelled_*` reason. Only those four are taken.
+#[tauri::command]
+pub fn record_install_cancelled(request: Value) -> Result<bool, Failure> {
+    #[derive(serde::Deserialize)]
+    #[serde(rename_all = "camelCase", deny_unknown_fields)]
+    struct Request {
+        reason: String,
+    }
+    let request: Request = redact(parse(request, "record_install_cancelled request"))?;
+    let reason = InstallFailure::cancelled_from_wire(&request.reason).ok_or_else(|| {
+        Box::new(QcmErrorDto::from(&QcmError::Request(
+            qcm_core::error::RequestError::OutOfRange {
+                what: "install cancel reason",
+            },
+        )))
+    })?;
+    let telemetry = telemetry::global();
+    if reason.before_prepare() {
+        telemetry.install_attempted();
+    }
+    Ok(telemetry.install_failed(reason))
+}
+
 #[tauri::command]
 pub fn commit_install(
     state: State<'_, DeviceShellState>,

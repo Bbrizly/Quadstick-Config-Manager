@@ -9,6 +9,7 @@
 
 import type {
   AppSettings,
+  InstallCancelReason,
   AppSnapshot,
   CloseDisposition,
   CloseOutcome,
@@ -70,6 +71,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   usageAnalytics: false,
   askAboutCrashes: true,
   telemetryNoticeVersion: 0,
+  installId: "",
 };
 
 interface MockSession {
@@ -221,6 +223,20 @@ export class MockQcmClient implements QcmClient {
   #deviceRevision = 0;
   #pendingCrashReport: PendingCrashReport | null = null;
   #pendingRescue: PendingRescue | null = null;
+  #usageData = false;
+  readonly installCancels: InstallCancelReason[] = [];
+  privacyPolicyOpened = 0;
+
+  /** Behave like a build that can send usage data, so the notice shows. */
+  enableUsageData(): void {
+    this.#usageData = true;
+  }
+
+  /** Make the next settings write fail, like a full disk. */
+  failNextSettingsWrite(): void {
+    this.#failNextSettingsWrite = true;
+  }
+  #failNextSettingsWrite = false;
 
   /** Queue a pending crash report for startup-prompt tests. */
   queuePendingCrashReport(report: PendingCrashReport): void {
@@ -327,6 +343,7 @@ export class MockQcmClient implements QcmClient {
         communityCatalog: false,
         googleBackup: false,
         agent: false,
+        usageData: this.#usageData,
       },
       settings: this.#settings,
     });
@@ -352,7 +369,21 @@ export class MockQcmClient implements QcmClient {
         );
       }
     }
-    const next = { ...this.#settings, ...stripUndefined(patch) };
+    if (this.#failNextSettingsWrite) {
+      this.#failNextSettingsWrite = false;
+      return Promise.reject(fail(ERROR_CODES.storageFull, "Could not save settings.", "retry"));
+    }
+    // `ApplyTelemetryAnswer`: the toggle answers the current notice, and a
+    // first yes mints the install id.
+    const answered = patch.usageAnalytics === undefined
+      ? {}
+      : {
+          telemetryNoticeVersion: 2,
+          installId: patch.usageAnalytics && this.#settings.installId === ""
+            ? "00000000-0000-4000-8000-000000000001"
+            : this.#settings.installId,
+        };
+    const next = { ...this.#settings, ...stripUndefined(patch), ...answered };
     const changed = Object.keys(next).some(
       (key) =>
         key !== "revision" &&
@@ -376,6 +407,16 @@ export class MockQcmClient implements QcmClient {
         fail(ERROR_CODES.requestOutOfRange, "That URL is not allowed.", "retry"),
       );
     }
+    return Promise.resolve();
+  }
+
+  openPrivacyPolicy(): Promise<void> {
+    this.privacyPolicyOpened += 1;
+    return Promise.resolve();
+  }
+
+  recordInstallCancelled(reason: InstallCancelReason): Promise<void> {
+    this.installCancels.push(reason);
     return Promise.resolve();
   }
 

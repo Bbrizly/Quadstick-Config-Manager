@@ -282,13 +282,10 @@ pub fn acknowledge_crash_consent(ask_about_crashes: bool) {
 pub fn install_panic_hook() {
     let previous = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
-        let message = sanitize_path(&info.to_string());
-        let body = json!({
-            "schema": 1,
-            "where": "panic",
-            "message": message,
-        })
-        .to_string();
+        // Only on a panic, so the capture costs nothing while the app runs.
+        let backtrace = std::backtrace::Backtrace::force_capture().to_string();
+        let utc = chrono::Utc::now().format("%Y-%m-%dT%H:%M:%SZ").to_string();
+        let body = crate::telemetry::panic_report(&backtrace, &utc).to_string();
         let _ = write_pending_crash_report("panic", &body);
         previous(info);
     }));
