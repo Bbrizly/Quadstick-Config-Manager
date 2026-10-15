@@ -746,6 +746,17 @@ public class DeviceSettingsPageTests
         w.Close();
     }
 
+    // Drew: an adapter in the wrong mode looks like a dead stick, so the
+    // emulation row carries which mode each adapter wants.
+    [AvaloniaFact]
+    public void TheEmulationRowSaysWhichModeEachAdapterWants()
+    {
+        var w = Open(Header + "enable_DS3_emulation,0\n", "USB and compatibility");
+        Assert.Contains(Body(w).OfType<Button>(), b => (b.Content as string) == "?"
+            && AutomationProperties.GetName(b) == Strings.Prefs_Adapters && b.IsEffectivelyVisible);
+        w.Close();
+    }
+
     // Never out of sight, never rewritten: a device already running a mode that
     // hides its drive still shows that mode, because the picker's job is to
     // report what the device is on, not to tidy it.

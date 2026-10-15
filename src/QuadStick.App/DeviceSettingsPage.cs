@@ -70,6 +70,14 @@ public partial class MainWindow
     LiveInput? _liveInput;
     LiveState? _live;
 
+    /// <summary>What the stick is sending right now, or null with no reading.</summary>
+    internal LiveState? LiveReading => _live;
+
+    ControllerBridge? _bridge;
+    ControllerBridge.State? _bridgeState;
+    TextBlock? _bridgeStatus;
+    bool _bridgeStopsOnClose;
+
     public async Task ShowDevicePageAsync()
     {
         _file = null; // no profile is open on a page; a stale dirty file re-asks "leave?" on the next action
@@ -194,6 +202,204 @@ public partial class MainWindow
             : _live is { OutputsUnderstood: true } ? Strings.Main_WhatALitRowMeans
             : Strings.Main_ThisEmulationModeIsNot);
         DeviceHeaderStatus.Content = chip;
+    }
+
+    // ---- the Xbox controller bridge ----
+
+    /// <summary>Starts the bridge if it was left on. Called beside
+    /// <see cref="StartLiveInput"/>, so the tests and the render tool, which
+    /// never come through App startup, never spawn it.</summary>
+    public void StartBridgeIfOn()
+    {
+        if (Settings.Load().ControllerBridge) StartBridge();
+    }
+
+    void StartBridge()
+    {
+        if (_bridge is not null || ControllerBridge.FindBinary() is not { } path) return;
+        if (!_bridgeStopsOnClose)
+        {
+            Closed += (_, _) => StopBridge();
+            _bridgeStopsOnClose = true;
+        }
+        _bridgeState = ControllerBridge.State.Waiting;
+        try
+        {
+            _bridge = new ControllerBridge(path, state => Dispatcher.UIThread.Post(() =>
+            {
+                _bridgeState = state;
+                ShowBridgeState();
+            }));
+        }
+        catch (Exception e) when (e is System.ComponentModel.Win32Exception or IOException)
+        {
+            _bridgeState = ControllerBridge.State.Stopped;
+        }
+        ShowBridgeState();
+    }
+
+    void StopBridge()
+    {
+        _bridge?.Dispose();
+        _bridge = null;
+        _bridgeState = null;
+        ShowBridgeState();
+    }
+
+    void ShowBridgeState()
+    {
+        if (_bridgeStatus is null) return;
+        _bridgeStatus.Text = _bridgeState switch
+        {
+            ControllerBridge.State.Waiting => Strings.DevicePage_BridgeWaiting,
+            ControllerBridge.State.Bridging => Strings.DevicePage_BridgeOn,
+            ControllerBridge.State.NoAccess => Strings.DevicePage_BridgeNoAccess,
+            ControllerBridge.State.NoVirtualPad => Strings.DevicePage_BridgeNoPad,
+            ControllerBridge.State.Unsupported => Strings.DevicePage_BridgeUnsupported,
+            ControllerBridge.State.Stopped => Strings.DevicePage_BridgeStopped,
+            _ => "",
+        };
+        _bridgeStatus.IsVisible = _bridgeStatus.Text.Length > 0;
+        _bridgeStatus.Classes.Set("warn", _bridgeState is ControllerBridge.State.NoAccess
+            or ControllerBridge.State.NoVirtualPad or ControllerBridge.State.Stopped);
+    }
+
+    /// <summary>The switch, its one line, and what it is doing. Null where the
+    /// bridge cannot run, so nobody is offered a switch that does nothing.</summary>
+    Control? BridgeRow()
+    {
+        _bridgeStatus = null;
+        if (!ControllerBridge.Offered) return ControllerBridge.OnMac ? MacGamesRow() : null;
+        var toggle = new ToggleSwitch
+        {
+            IsChecked = _bridge is not null,
+            OnContent = null, OffContent = null,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        AutomationProperties.SetName(toggle, Strings.DevicePage_Bridge);
+        toggle.IsCheckedChanged += (_, _) =>
+        {
+            bool on = toggle.IsChecked == true;
+            var s = Settings.Load();
+            s.ControllerBridge = on;
+            Settings.Save(s);
+            if (on) StartBridge(); else StopBridge();
+        };
+        var title = new TextBlock
+        {
+            Text = Strings.DevicePage_Bridge, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        var top = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, Children = { toggle, title } };
+        _bridgeStatus = new TextBlock { FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap };
+        AutomationProperties.SetLiveSetting(_bridgeStatus, AutomationLiveSetting.Polite);
+        ShowBridgeState();
+        return new StackPanel
+        {
+            Spacing = 4, Margin = new Thickness(0, 12, 0, 0), MaxWidth = 720,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Children =
+            {
+                top,
+                Explain(Strings.DevicePage_BridgeLine, Strings.DevicePage_Bridge, Strings.DevicePage_BridgeHelp),
+                _bridgeStatus,
+            },
+        };
+    }
+
+    // No virtual pad on a Mac without Apple's entitlement. Two ways round it:
+    // mode 7 is a DualShock 4, which macOS takes as it is, and mode 0 becomes a
+    // gamepad for SDL games once SDL is told its layout (MacGamepad).
+    Control MacGamesRow()
+    {
+        var status = new TextBlock { FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap, IsVisible = false };
+        AutomationProperties.SetLiveSetting(status, AutomationLiveSetting.Polite);
+        void Say(string text, bool warn = false)
+        {
+            status.Text = text;
+            status.IsVisible = text.Length > 0;
+            status.Classes.Set("warn", warn);
+        }
+
+        Control control;
+        if (MacGamepad.Sandboxed)
+        {
+            // The store build cannot run launchctl, so the user runs the command.
+            Button Copy(string label, string command)
+            {
+                var b = new Button { Content = label };
+                b.Click += async (_, _) =>
+                {
+                    if (TopLevel.GetTopLevel(this)?.Clipboard is not { } c) return;
+                    await c.SetTextAsync(command);
+                    Say(Strings.DevicePage_MacPadCopied);
+                };
+                return b;
+            }
+            control = new StackPanel
+            {
+                Spacing = 6,
+                Children =
+                {
+                    new TextBlock { Text = Strings.DevicePage_MacPadStoreLine, FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap },
+                    new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal, Spacing = 10,
+                        Children = { Copy(Strings.DevicePage_MacPadCopy, MacGamepad.Command), Copy(Strings.DevicePage_MacPadCopyUndo, MacGamepad.UndoCommand) },
+                    },
+                },
+            };
+        }
+        else
+        {
+            var toggle = new ToggleSwitch
+            {
+                IsChecked = MacGamepad.IsOn, OnContent = null, OffContent = null,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            AutomationProperties.SetName(toggle, Strings.DevicePage_MacPad);
+            bool settling = false;
+            toggle.IsCheckedChanged += (_, _) =>
+            {
+                if (settling) return;
+                bool on = toggle.IsChecked == true;
+                if (MacGamepad.Run(on ? MacGamepad.Command : MacGamepad.UndoCommand))
+                {
+                    Say(on ? Strings.DevicePage_MacPadOn : "");
+                    return;
+                }
+                // Half a change is worse than none: take back whatever got made.
+                if (on) MacGamepad.Run(MacGamepad.UndoCommand);
+                settling = true;
+                toggle.IsChecked = MacGamepad.IsOn;
+                settling = false;
+                Say(Strings.DevicePage_MacPadFailed, warn: true);
+            };
+            control = new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 10,
+                Children =
+                {
+                    toggle,
+                    new TextBlock { Text = Strings.DevicePage_MacPad, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center },
+                },
+            };
+        }
+
+        return new StackPanel
+        {
+            Spacing = 4, Margin = new Thickness(0, 12, 0, 0), MaxWidth = 720,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Children =
+            {
+                new TextBlock { Text = Strings.DevicePage_MacGames, FontSize = Size("BodySize"), FontWeight = FontWeight.SemiBold },
+                Explain(Strings.DevicePage_MacGamesLine, Strings.DevicePage_MacGames, Strings.DevicePage_MacGamesHelp),
+                new Border { Height = 8 },
+                control,
+                Explain(Strings.DevicePage_MacPadLine, Strings.DevicePage_MacPad, Strings.DevicePage_MacPadHelp),
+                status,
+            },
+        };
     }
 
     void StopLiveInput()
@@ -398,13 +604,19 @@ public partial class MainWindow
         AutomationProperties.SetName(files, Strings.Shell_ManageTheProfileFilesOn);
         files.Click += async (_, _) => await ShowDeviceFilesAsync();
 
+        var link = new Button { Classes = { "quiet" }, Content = Strings.Link_PageButton };
+        AutomationProperties.SetName(link, Strings.Link_PageButtonName);
+        link.Click += async (_, _) => { StartLiveInput(); await new DeviceLinkWindow(this).ShowDialog(this); };
+
         var top = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
         top.Children.Add(heading);
         var buttons = new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 10,
-            Children = { reload, files },
+            Children = { reload, files, link },
         };
+        if (_deviceRoot is null && DriveAccessButton(() => LoadDeviceSettingsAsync(), t => { if (_deviceStatus is { } line) line.Text = t; }) is { } choose)
+            buttons.Children.Insert(0, choose);
         Grid.SetColumn(buttons, 1);
         top.Children.Add(buttons);
 
@@ -431,7 +643,9 @@ public partial class MainWindow
             HorizontalAlignment = HorizontalAlignment.Left,
         };
 
-        return new StackPanel { Children = { top, scope, _deviceStatus } };
+        var headerStack = new StackPanel { Children = { top, scope, _deviceStatus } };
+        if (BridgeRow() is { } bridge) headerStack.Children.Add(bridge);
+        return headerStack;
     }
 
     // One row per group, in the catalog's own order. A list and not a row of
@@ -645,6 +859,9 @@ public partial class MainWindow
 
         if (def.Description.Length > 0)
             stack.Children.Add(Caption(def.Description, "secondary"));
+        // Drew's adapter table: an adapter that gets the wrong mode just looks dead.
+        if (def.Name == "enable_DS3_emulation")
+            stack.Children.Add(Explain(Strings.Prefs_AdaptersLine, Strings.Prefs_Adapters, Strings.Prefs_AdaptersHelp));
 
         // Range, unit, and what the device falls back to, in one line. These
         // are facts about the number rather than help, so they read smaller

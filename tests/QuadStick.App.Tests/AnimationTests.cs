@@ -95,4 +95,34 @@ public class AnimationTests
         Assert.True(withSlide >= expected,
             $"only {withSlide} of {rowsAfter} surviving rows carry a slide transform (expected {expected}): AnimateGapClose is not wired to the delete path");
     }
+
+    // Reduce motion used to stop only the tutorial fade; rows still slid on
+    // every add and delete. The ghost is a no-op headless, so transforms are
+    // what this can see.
+    [AvaloniaFact]
+    public void Reduce_motion_stops_the_row_slides()
+    {
+        var (w, file) = OpenWithProfile("anim-reduced.csv");
+        try
+        {
+            w.SetReduceMotion(true);
+            var rowsPanel = w.GetVisualDescendants().OfType<StackPanel>().First(p => p.Name == "RowsPanel");
+
+            var del = w.GetVisualDescendants().OfType<Button>()
+                .First(b => (AutomationProperties.GetName(b) ?? "").StartsWith("Delete row "));
+            Ui.Click(del);
+            Dispatcher.UIThread.RunJobs();
+            Assert.DoesNotContain(rowsPanel.Children, c => c.RenderTransform is TranslateTransform);
+
+            w.AddRowForPreview();
+            Dispatcher.UIThread.RunJobs();
+            Assert.DoesNotContain(rowsPanel.Children, c => c.RenderTransform is TranslateTransform);
+        }
+        finally
+        {
+            w.SetReduceMotion(false); // the settings file is shared with every other test
+            file.Dirty = false;
+            w.Close();
+        }
+    }
 }

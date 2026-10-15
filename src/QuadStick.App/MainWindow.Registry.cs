@@ -29,7 +29,7 @@ public partial class MainWindow
 
             // Keep savePath null. A registry profile is an imported starting point;
             // QCM must ask where to save instead of overwriting a cache file.
-            OpenInEditor(file, savePath: null, ProfileSource.File);
+            OpenInEditor(file, savePath: null, ProfileSource.File, game: profile.GameId);
         }
         catch
         {

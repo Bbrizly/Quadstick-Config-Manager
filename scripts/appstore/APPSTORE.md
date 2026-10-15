@@ -63,6 +63,18 @@ not the store.
 Upload the .pkg with Transporter (App Store), then create the listing in
 App Store Connect.
 
+## Ship an update
+
+    scripts/store-mac.sh 1.8.4 "What's new"            # build, sign, upload
+    scripts/store-mac.sh 1.8.4 "What's new" --submit   # attach and send for review
+
+The second run waits for Apple to finish processing the upload. Once approved
+it goes live on its own. One time: App Store Connect > Users and Access >
+Integrations > App Store Connect API, make a key with the App Manager role,
+save it as `~/.appstoreconnect/private_keys/AuthKey_<id>.p8`, and put
+`export ASC_KEY_ID=<id> ASC_ISSUER_ID=<issuer id>` in `~/.zshrc`. The issuer id
+is shown above the keys list.
+
 ## Listing metadata
 
 - Name: `Quadstick: Config Manager` (pending Fred's OK)

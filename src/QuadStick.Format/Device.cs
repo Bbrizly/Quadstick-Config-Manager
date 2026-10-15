@@ -36,8 +36,13 @@ public static class Device
     // next cached lookup enumerates drives again.
     public static void InvalidateCandidateCache() => _cache = null;
 
+    /// <summary>Runs before every drive scan. The sandboxed Mac build sets it to
+    /// reopen drives the person picked on an earlier launch.</summary>
+    public static Action? BeforeScan { get; set; }
+
     public static List<string> FindCandidates()
     {
+        BeforeScan?.Invoke();
         var found = new List<string>();
         foreach (var d in DriveInfo.GetDrives())
         {
@@ -92,11 +97,38 @@ public static class Device
     // firmware's 1.5s and never drop it because the readback passed.
     public static readonly TimeSpan CacheFlushWait = TimeSpan.FromSeconds(2);
 
-    public sealed record InstallResult(string InstalledPath, string? BackupPath);
+    // That wait only counts once the bytes have left the computer. Windows
+    // writes a removable drive through; macOS and Linux keep a FAT write in
+    // their own cache for up to about 30s. So every write to the stick ends
+    // here. Flush(true) is fsync (F_FULLFSYNC on macOS) for the file, its
+    // directory entry and the FAT. sync() reaches the other half of a rename
+    // or a delete, which no file handle can.
+    public static void FlushToDevice(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                using var s = new FileStream(path, FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
+                s.Flush(flushToDisk: true);
+            }
+        }
+        // The file is already in place, so a failed open must not report the
+        // write as failed. sync() below still pushes it.
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        if (!OperatingSystem.IsWindows()) sync();
+    }
 
-    public static InstallResult Install(
-        ProfileFile file, string deviceRoot, string backupDir,
-        bool confirmDefaultCsv = false, bool confirmPreferencesCsv = false)
+    // Swapped by tests to see that each write reaches it.
+    internal static Action<string> Flush = FlushToDevice;
+
+    [System.Runtime.InteropServices.DllImport("libc")]
+    static extern void sync();
+
+    /// <summary>The file name an install would write, after every rule that
+    /// refuses one. Shared by the drive install and the console send, so the
+    /// two can never disagree about what is safe to put on somebody's device.</summary>
+    public static string InstallName(ProfileFile file, bool confirmDefaultCsv = false, bool confirmPreferencesCsv = false)
     {
         // Before the generic error dump, because this one has a single fix and
         // the user needs to read it. The device holds each root file name in a
@@ -128,10 +160,6 @@ public static class Device
             throw new InvalidOperationException(
                 Strings.Device_RefusingToOverwritePrefsCsv);
 
-        if (!IsInstallTarget(deviceRoot))
-            throw new InvalidOperationException(
-                Strings.Device_ThatFolderDoesNotLook);
-
         // The name comes out of cell A2 of a file that may have arrived from
         // anywhere: a download, a shared workbook, a community profile.
         // ValidateFileName already refuses separators, so the first test cannot
@@ -148,6 +176,40 @@ public static class Device
         if (name != Path.GetFileName(name) || name.Any(char.IsControl) || SafeFileName.IsReservedOnWindows(name))
             throw new InvalidOperationException(
                 string.Format(CultureInfo.CurrentCulture, Strings.Device_NameIsNotAPlain, name));
+
+        return name;
+    }
+
+    /// <summary>Keep what the device had, under the same name pattern a drive
+    /// install's backup uses.</summary>
+    public static string SaveBackup(string name, string text, string backupDir)
+    {
+        Directory.CreateDirectory(backupDir);
+        var path = BackupPathFor(name, backupDir);
+        File.WriteAllText(path, text);
+        return path;
+    }
+
+    static string BackupPathFor(string name, string backupDir)
+    {
+        var stamp = $"{DateTime.Now:yyyyMMdd-HHmmss-fff}";
+        var backup = Path.Combine(backupDir, $"{stamp}-{name}");
+        for (int n = 2; File.Exists(backup); n++)
+            backup = Path.Combine(backupDir, $"{stamp}-{n}-{name}");
+        return backup;
+    }
+
+    public sealed record InstallResult(string InstalledPath, string? BackupPath);
+
+    public static InstallResult Install(
+        ProfileFile file, string deviceRoot, string backupDir,
+        bool confirmDefaultCsv = false, bool confirmPreferencesCsv = false)
+    {
+        var name = InstallName(file, confirmDefaultCsv, confirmPreferencesCsv);
+
+        if (!IsInstallTarget(deviceRoot))
+            throw new InvalidOperationException(
+                Strings.Device_ThatFolderDoesNotLook);
 
         var target = Path.Combine(deviceRoot, name);
 
@@ -170,6 +232,7 @@ public static class Device
             try
             {
                 File.Move(tmp, target, overwrite: true);
+                Flush(target);
             }
             // Any failure, not just an IOException. The guard that matters is
             // the second one: the old file is gone, so whatever the exception
@@ -208,6 +271,7 @@ public static class Device
                 {
                     File.Copy(backup, back, overwrite: true);
                     File.Move(back, target, overwrite: true);
+                    Flush(target);
                 }
                 catch (Exception restore)
                 {
@@ -244,11 +308,7 @@ public static class Device
     static string BackupExisting(string path, string backupDir)
     {
         Directory.CreateDirectory(backupDir);
-        var name = Path.GetFileName(path);
-        var stamp = $"{DateTime.Now:yyyyMMdd-HHmmss-fff}";
-        var backup = Path.Combine(backupDir, $"{stamp}-{name}");
-        for (int n = 2; File.Exists(backup); n++)
-            backup = Path.Combine(backupDir, $"{stamp}-{n}-{name}");
+        var backup = BackupPathFor(Path.GetFileName(path), backupDir);
         File.Copy(path, backup, overwrite: false);
         return backup;
     }
@@ -297,6 +357,7 @@ public static class Device
         // have deleted nothing.
         var backup = BackupExisting(target, backupDir);
         File.Delete(target);
+        Flush(target);
         return new DeleteResult(target, backup);
     }
 
@@ -308,6 +369,13 @@ public static class Device
     // delete. Dot files are hidden by every OS that writes them, so the name is
     // enough. ponytail: name check only, sniffing the AppleDouble magic bytes
     // would force every caller to open the file first.
+    // Linux matches "*.csv" by case, and a name written 8.3-only shows as
+    // GTA5.CSV on a vfat mount. Missing it shifts every light pattern after it.
+    public static string[] ProfileFiles(string root) =>
+        Directory.GetFiles(root, "*.csv", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive })
+            .Where(p => IsProfileFileName(Path.GetFileName(p)))
+            .ToArray();
+
     public static bool IsProfileFileName(string fileName) =>
         !string.IsNullOrWhiteSpace(fileName)
         && fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)

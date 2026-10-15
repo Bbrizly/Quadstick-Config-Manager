@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using QuadStick.Format;
 
 namespace QuadStick.App;
 
@@ -36,6 +37,7 @@ public class App : Application
         Localization.Apply(settings.Language);
         Theme.RegisterInto(this);
         Theme.Apply(settings.Theme);
+        if (MacDriveAccess.Needed) Device.BeforeScan = MacDriveAccess.Restore;
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var window = StartWindow(desktop.Args);
@@ -62,6 +64,7 @@ public class App : Application
             // and a thread parked on a USB enumeration per test window is a
             // cost the suite should not pay.
             (window as MainWindow)?.StartLiveInput();
+            (window as MainWindow)?.StartBridgeIfOn();
 
             if (window is MainWindow qcm &&
                 RegistryDeepLink.TryGetProfileId(desktop.Args, out var profileId))

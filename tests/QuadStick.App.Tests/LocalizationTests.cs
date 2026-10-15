@@ -31,6 +31,16 @@ public class LocalizationTests
         // A language names itself in its own words, so someone who opened the
         // app in a language they cannot read can still find their own.
         ["Localization.cs"] = new[] { "\"English\"", "\"Pseudo (finds missed text)\"" },
+        // Shell commands, run by zsh or pasted into Terminal as they are.
+        ["MacGamepad.cs"] = new[]
+        {
+            "\"mkdir -p ~/Library/LaunchAgents && /usr/bin/plutil -convert xml1 -o ~/Library/LaunchAgents/\"",
+            "\" && launchctl setenv SDL_GAMECONTROLLERCONFIG $'\"",
+            "\"launchctl unsetenv SDL_GAMECONTROLLERCONFIG; rm -f ~/Library/LaunchAgents/\"",
+        },
+        // File bytes the firmware reads, like every profile: a translated
+        // "Profile Name" row is a profile the QuadStick does not load.
+        ["DeviceConsole.cs"] = new[] { "\"Profile Name,,Strength test,,,,,,,,\\n\"" },
         // A company's name, not a word.
         ["SettingsView.cs"] = new[] { "\"LinkedIn\"" },
         // A font stack, read by the text engine and not by anybody.

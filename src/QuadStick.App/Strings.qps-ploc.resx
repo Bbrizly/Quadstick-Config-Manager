@@ -635,7 +635,7 @@
     <value>[, ñó líñkéd Góóglé Šhéét íñ ítš héádér xxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Device_NoQuadStickDriveIsPlugged" xml:space="preserve">
-    <value>[Ñó QúádŠtíçk drívé íš plúggéd íñ. Ít múšt çóñtáíñ défáúlt.çšv. Íñ ÚŠB émúlátíóñ módé 6, ít dóéš ñót áppéár. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+    <value>[Ñó QúádŠtíçk drívé íš plúggéd íñ. Ít múšt çóñtáíñ défáúlt.çšv. ÚŠB émúlátíóñ módéš {0} hídé thé drívé, šó á QúádŠtíçk óñ óñé óf thóšé íš çóññéçtéd áñd pláýíñg bút çáññót bé šééñ héré. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Device_NumberFileNameNoLightPattern" xml:space="preserve">
     <value>[{0}. {1}: ñó líght páttérñ íš dóçúméñtéd fór thíš póšítíóñ xxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -790,6 +790,9 @@
   <data name="Install_InstallingTo" xml:space="preserve">
     <value>[Íñštállíñg tó xxxxx]</value>
   </data>
+  <data name="Install_LettingTheDeviceFinish" xml:space="preserve">
+    <value>[Léttíñg thé QúádŠtíçk fíñíšh wrítíñg… xxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Install_NoPreviousFile" xml:space="preserve">
     <value>[ñó prévíóúš fílé tó báçk úp xxxxxxxxxx]</value>
   </data>
@@ -804,6 +807,15 @@
   </data>
   <data name="Install_PrefsCsvHoldsTheDevice" xml:space="preserve">
     <value>[préfš.çšv hóldš thé dévíçé'š ówñ šéttíñgš, šó thíš çháñgéš hów thé QúádŠtíçk béhávéš íñ évérý prófílé óñ {0}. Thé préfš.çšv álréádý óñ thé drívé íš báçkéd úp fíršt. Çóñtíñúé? xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Install_SafeToUnplug" xml:space="preserve">
+    <value>[Šáfé tó úñplúg. xxxxxx]</value>
+  </data>
+  <data name="Install_SafeToUnplugAbout" xml:space="preserve">
+    <value>[Thé QúádŠtíçk hóldš thé lášt féw kílóbýtéš ít wáš šéñt íñ mémórý áñd wrítéš thém tó ítš flášh ábóút á šéçóñd áñd á hálf látér. Úñplúg ít íñšídé thát gáp áñd thé drívé lóšéš á blóçk óf ítš ówñ íñdéx, whíçh bréákš fíléš ýóú ñévér tóúçhéd, móšt óftéñ préfš.çšv. Wíñdówš théñ répórtš érrór 0x80070570 áñd ýóú hávé tó rúñ Érrór çhéçkíñg óñ thé drívé áñd pút thé fílé báçk. "Šáfélý rémóvé hárdwáré" dóéš ñót hélp, béçáúšé thé QúádŠtíçk dóéš ñót áñšwér thé çómmáñd Wíñdówš šéñdš tó flúšh á drívé. Wáítíñg dóéš. Thé ápp háš álréádý wáítéd, šó óñçé thíš líñé áppéárš thé wríté íš óñ thé flášh áñd thé QúádŠtíçk çáñ çómé óút. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Install_SafeToUnplugTitle" xml:space="preserve">
+    <value>[Whý ít wáítš béfóré šáýíñg thíš xxxxxxxxxxxx]</value>
   </data>
   <data name="Install_TargetDriveRoot" xml:space="preserve">
     <value>[Tárgét drívé: {0} xxxxxx]</value>
@@ -865,6 +877,18 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   </data>
   <data name="Main_AddARowToThe" xml:space="preserve">
     <value>[Ádd á rów tó thé çúštóm óútpút ñáméš táblé xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_AddAnotherOutput" xml:space="preserve">
+    <value>[Ádd áñóthér óútpút xxxxxxx]</value>
+  </data>
+  <data name="Main_AddAnotherOutputToMapping" xml:space="preserve">
+    <value>[Ádd áñóthér óútpút tó máppíñg {0}; thé óútpútš óñ óñé máppíñg áré préššéd tógéthér xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_RemoveThisOutputFromMapping" xml:space="preserve">
+    <value>[Rémóvé {0} fróm thíš máppíñg xxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_TheseArePressedTogether" xml:space="preserve">
+    <value>[Théšé áré préššéd tógéthér áš óñé çómbó. xxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_AddAnotherInput" xml:space="preserve">
     <value>[Ádd áñóthér íñpút xxxxxx]</value>
@@ -1225,6 +1249,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   <data name="Main_ImportedModesImportedFromPicks" xml:space="preserve">
     <value>[Ímpórtéd {0} fróm {1}. Šávé tó kéép ít áš á prófílé. xxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Main_ImportIsACopy" xml:space="preserve">
+    <value>[Thíš íš á çópý. Šávíñg wrítéš á fílé óñ thíš çómpútér, áñd thé Góóglé Šhéét ýóú ópéñéd štáýš áš ít wáš. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Main_ImportedModesImportedFromThe" xml:space="preserve">
     <value>[Ímpórtéd {0} fróm thé špréádšhéét. xxxxxxxxxxxxx]</value>
   </data>
@@ -1407,6 +1434,9 @@ Móšt prófíléš hávé júšt óñé módé, šó thíš líšt óftéñ šh
   </data>
   <data name="Main_NamesShownTip" xml:space="preserve">
     <value>[Whíçh çóñtróllér ñáméš thíš líšt ófférš. Thé QúádŠtíçk réádš bóth špéllíñgš áš thé šámé óútpút, šó hídíñg óñé hídéš ñó búttóñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Main_NarrowedToPart" xml:space="preserve">
+    <value>[Šhówíñg {0} óñlý. xxxxxx]</value>
   </data>
   <data name="Main_NewNameForThisTemplate" xml:space="preserve">
     <value>[Ñéw ñámé fór thíš témpláté xxxxxxxxxx]</value>
@@ -1839,6 +1869,12 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
   <data name="Main_ShareThisSheet" xml:space="preserve">
     <value>[Šháré thíš šhéét? xxxxxx]</value>
   </data>
+  <data name="Main_ShowAllCount" xml:space="preserve">
+    <value>[Šhów áll {0} xxxx]</value>
+  </data>
+  <data name="Main_ShowEveryMappingHere" xml:space="preserve">
+    <value>[Šhów évérý máppíñg óñ thíš párt óf thé dévíçé xxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Main_ShowsTheProblems" xml:space="preserve">
     <value>[{0}. Šhówš thé líšt óf próblémš. xxxxxxxxxxxx]</value>
   </data>
@@ -1965,7 +2001,7 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
     <value>[Théšé tábš wéré páššéd óvér:  xxxxxxxxxxx]</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>[Thíš ápp çáñ šéñd áñóñýmóúš úšágé dátá: whíçh šçrééñš gét úšéd, whéthér íñštállíñg tó á QúádŠtíçk wórkéd, áñd ñóthíñg élšé. Whílé ít íš óñ, thóšé évéñtš áré šéñt áš théý háppéñ.
+    <value>[Thíš ápp çáñ šéñd áñóñýmóúš úšágé dátá: whíçh šçrééñš gét úšéd, whéthér íñštállíñg tó á QúádŠtíçk wórkéd, hów lóñg ít tóók fróm ópéñíñg á prófílé tó íñštállíñg ít, whíçh gámé á prófílé fróm thé óñlíñé líbrárý íš fór, hów hárd ýóú çóúld šíp áñd púff íf ýóú rúñ thé štréñgth téšt, áñd ñóthíñg élšé. Whílé ít íš óñ, thóšé évéñtš áré šéñt áš théý háppéñ.
 
 Ñévér šéñt, whátévér ýóú píçk: ýóúr prófíléš, fílé ñáméš, fílé páthš, ýóúr Góóglé áççóúñt, áñd ýóúr ñámé ór máçhíñé ñámé. Ñóthíñg ýóú týpé íš šéñt éíthér, ápárt fróm thé féédbáçk bóx íñ Šéttíñgš, whíçh óñlý šéñdš whéñ ýóú préšš Šéñd óñ ít.
 
@@ -1973,7 +2009,7 @@ Píçk á párt óf thé QúádŠtíçk óñ thé léft tó šéé whát ít dó
 
 Whát íš šéñt góéš tó PóštHóg, óñ šérvérš íñ thé Úñítéd Štátéš.
 
-Ýóú çáñ çháñgé thíš áñý tímé íñ Šéttíñgš, úñdér Ádváñçéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+Ýóú çáñ çháñgé thíš áñý tímé íñ Šéttíñgš, úñdér Ádváñçéd. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Main_ThisEmulationModeIsNot" xml:space="preserve">
     <value>[Thé ápp háš ñót bééñ táúght tó réád thíš émúlátíóñ módé'š répórt, šó ñó rów wíll líght whílé thé QúádŠtíçk íš íñ ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
@@ -2353,6 +2389,27 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Names_YourNameForThisOutput" xml:space="preserve">
     <value>[Ýóúr ñámé fór thíš óútpút xxxxxxxxxx]</value>
   </data>
+  <data name="Outputs_AlsoBack" xml:space="preserve">
+    <value>[Víéw óñ áñ Xbóx pád xxxxxxx]</value>
+  </data>
+  <data name="Outputs_AlsoCapture" xml:space="preserve">
+    <value>[Thé Šháré búttóñ óñ áñ Xbóx pád xxxxxxxxxxxx]</value>
+  </data>
+  <data name="Outputs_AlsoGuide" xml:space="preserve">
+    <value>[Thé Xbóx búttóñ íñ thé míddlé óf thé pád xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Outputs_AlsoPsButton" xml:space="preserve">
+    <value>[Thé PŠ búttóñ íñ thé míddlé óf thé pád xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Outputs_AlsoSelect" xml:space="preserve">
+    <value>[Šháré óñ á PŠ4 pád, Çréáté óñ á PŠ5 pád xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Outputs_AlsoStart" xml:space="preserve">
+    <value>[Óptíóñš óñ á PláýŠtátíóñ pád, Méñú óñ áñ Xbóx pád xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Outputs_AlsoTouch" xml:space="preserve">
+    <value>[Thé tóúçhpád, préššéd líké á búttóñ xxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Outputs_DeviceSettings" xml:space="preserve">
     <value>[Dévíçé šéttíñgš xxxxxx]</value>
   </data>
@@ -2364,6 +2421,10 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   </data>
   <data name="Outputs_FunctionKeys2" xml:space="preserve">
     <value>[Fúñçtíóñ kéýš xxxxx]</value>
+  </data>
+  <data name="Outputs_GuiKeyOtherNames" xml:space="preserve">
+    <value>[wíñdówš wíñ štárt šúpér métá çómmáñd çmd ápplé flág xxxxxxxxxxxxxxxxxxxx]</value>
+    <comment>Not shown. Search words that find kb_left_gui and kb_right_gui, which every keyboard prints as something else. Add the names your language types, keep the English ones.</comment>
   </data>
   <data name="Outputs_ModeSwitching" xml:space="preserve">
     <value>[Módé šwítçhíñg xxxxx]</value>
@@ -2999,7 +3060,7 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
     <value>[Rédúçé mótíóñ xxxxx]</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>[Túrñš óff thé tútóríál fádé áñímátíóñ. xxxxxxxxxxxxxxx]</value>
+    <value>[Ñóthíñg šlídéš ór fádéš. Ñéw rówš štíll líght úp bríéflý. xxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>[Rémémbér wíñdów šížé áñd póšítíóñ xxxxxxxxxxxxx]</value>
@@ -3331,6 +3392,34 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   <data name="Shell_PlugInYourQuadStickTo" xml:space="preserve">
     <value>[Plúg íñ ýóúr QúádŠtíçk tó šéé ítš prófíléš. Íf thé drívé íš híddéñ, túrñ óff çóñtróllér émúlátíóñ áñd réçóññéçt ít. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Shell_PrefsAbout" xml:space="preserve">
+    <value>[préfš.çšv hóldš thé QúádŠtíçk'š ówñ šéttíñgš, thé óñéš thát ápplý áçróšš évérý prófílé. Thé dévíçé réádš ít át štártúp áñd whéñévér ít çháñgéš, áñd ít wíll réfúšé á çópý thát dóéš ñót bégíñ wíth thé wórd QúádŠtíçk ór thát íš míššíñg ítš fíršt féw líñéš. Thíš óñé dóéš, whíçh íš úšúállý whát íš léft áftér Wíñdówš répáírš thé drívé.
+
+Thé drívé gétš dámágéd whéñ á prófílé šwítçh çháñgéš thé ÚŠB émúlátíóñ módé. Thé QúádŠtíçk háš tó díšçóññéçt ítš drívé áñd réçóññéçt ít šó ýóúr çómpútér šééš thé ñéw çóñtróllér týpé, áñd Wíñdówš íš ñót tóld íñ ádváñçé, šó ítš réçórd óf thé drívé áñd thé drívé ítšélf çáñ éñd úp díšágrééíñg. Ít láñdš óñ préfš.çšv móré óftéñ tháñ áñýthíñg élšé. Šéttíñg thé šámé ÚŠB émúlátíóñ módé íñ évérý prófílé štópš thé šwítçh háppéñíñg át áll.
+
+Thíš ápp kéépš á çópý óf thé lášt véršíóñ thé dévíçé wóúld áççépt, tákéñ whéñévér ít šééš á góód óñé. Púttíñg ít báçk wrítéš thóšé éxáçt býtéš, áñd kéépš thé dámágéd fílé íñ ýóúr báçkúpš fóldér íñ çášé ít štíll hóldš šóméthíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_PrefsBroken" xml:space="preserve">
+    <value>[Thé QúádŠtíçk'š šéttíñgš fílé íš dámágéd. xxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_PrefsGone" xml:space="preserve">
+    <value>[Thé QúádŠtíçk'š šéttíñgš fílé íš ñó lóñgér óñ thé drívé. xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_PrefsNoCopy" xml:space="preserve">
+    <value>[Ñó šávéd çópý tó pút báçk. xxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_PrefsPutBack" xml:space="preserve">
+    <value>[Pút báçk thé çópý fróm {0} xxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_PrefsPutBackName" xml:space="preserve">
+    <value>[Pút thé šávéd çópý óf préfš.çšv báçk óñ thé QúádŠtíçk. Ít wáš šávéd óñ {0}. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_PrefsRestored" xml:space="preserve">
+    <value>[préfš.çšv pút báçk óñ {0}. xxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_PrefsTitle" xml:space="preserve">
+    <value>[Whát háppéñš tó thíš fílé xxxxxxxxxx]</value>
+  </data>
   <data name="Shell_Profile" xml:space="preserve">
     <value>[Prófílé xx]</value>
   </data>
@@ -3516,5 +3605,190 @@ Blúé, ÍÑPÚTŠ: whát ýóúr móúth dóéš. mp_… ñáméš áré móút
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>[Ýóú áré óñ {0}, whíçh íš thé látéšt. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_Bridge" xml:space="preserve">
+    <value>[Xbóx çóñtróllér brídgé xxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeLine" xml:space="preserve">
+    <value>[Létš gáméš thát óñlý táké áñ Xbóx çóñtróllér úšé á QúádŠtíçk íñ émúlátíóñ módé 2. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeHelp" xml:space="preserve">
+    <value>[Íñ émúlátíóñ módé 2 thé QúádŠtíçk íš á pláíñ gámépád, á kéýbóárd áñd á móúšé. Gáméš thát óñlý táké áñ Xbóx çóñtróllér dó ñót šéé thát gámépád. Whílé thíš šwítçh íš óñ áñd thíš ápp íš ópéñ, thé brídgé çópíéš thé gámépád óñtó á vírtúál Xbóx 360 çóñtróllér, áñd thé kéýbóárd, móúšé áñd drívé kéép wórkíñg. Ít çópíéš, ít dóéš ñót rémáp: thé prófílé óñ thé štíçk štíll déçídéš whát éáçh šíp áñd púff dóéš. Çlóšé thé ápp ór túrñ thé šwítçh óff, áñd évérý búttóñ óñ thé vírtúál çóñtróllér íš lét gó fíršt.
+
+Íf thé ápp šáýš ít íš ñót állówéd, íñštáll thé rúlé fílé thát çámé wíth thé dówñlóád, théñ úñplúg thé QúádŠtíçk áñd plúg ít báçk íñ:
+
+šúdó íñštáll -m644 70-qúádštíçk.rúléš /étç/údév/rúléš.d/
+šúdó údévádm çóñtról --rélóád
+šúdó údévádm tríggér xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeWaiting" xml:space="preserve">
+    <value>[Wáítíñg fór á QúádŠtíçk íñ émúlátíóñ módé 2. xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeOn" xml:space="preserve">
+    <value>[Óñ. Gáméš šéé áñ Xbóx 360 çóñtróllér. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeNoAccess" xml:space="preserve">
+    <value>[Thíš çómpútér dóéš ñót lét thé ápp réád thé QúádŠtíçk. Íñštáll thé rúlé fílé, théñ réplúg thé štíçk. Thé qúéštíóñ márk šáýš hów. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeNoPad" xml:space="preserve">
+    <value>[Thíš çómpútér dóéš ñót lét thé ápp máké á vírtúál çóñtróllér. Íñštáll thé rúlé fílé, théñ réplúg thé štíçk. Thé qúéštíóñ márk šáýš hów. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeStopped" xml:space="preserve">
+    <value>[Thé brídgé štóppéd. Túrñ thé šwítçh óff áñd óñ ágáíñ. xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_BridgeUnsupported" xml:space="preserve">
+    <value>[Thíš çómpútér çáññót máké á vírtúál çóñtróllér ýét. xxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>[Gáméš óñ á Máç xxxxx]</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>[Óñ á Máç, šét émúlátíóñ módé 7 íñ thé gámé prófílé'š préféréñçéš šhéét, áñd gáméš šéé á PláýŠtátíóñ 4 çóñtróllér. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>[Á Máç çáññót rúñ thé Xbóx çóñtróllér brídgé ýét, béçáúšé mákíñg á vírtúál çóñtróllér ñéédš á pérmíššíóñ fróm Ápplé. Módé 7 dóéš ñót ñééd ít: thé QúádŠtíçk répórtš ítšélf áš á DúálŠhóçk 4 wíréléšš çóñtróllér, whíçh máçÓŠ áñd Štéám šúppórt óvér ÚŠB.
+
+Módé 7 íš á gámépád óñlý. Théré íš ñó kéýbóárd, ñó móúšé áñd ñó drívé, šó thíš ápp çáññót šéé thé štíçk whílé ít íš óñ. Pút ít íñ thé gámé prófílé'š préféréñçéš šhéét, ñót íñ thé dévíçé šéttíñgš: šwítçhíñg tó áñóthér prófílé théñ bríñgš thé drívé, kéýbóárd áñd móúšé báçk. Šwítçhíñg módéš íñšídé thé šámé prófílé dóéš ñót. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>[Gámépád íñ módé 0 xxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>[Létš gáméš búílt óñ ŠDL, áš máñý Máç gáméš áré, šéé thé QúádŠtíçk áš á gámépád íñ émúlátíóñ módé 0, wíth thé kéýbóárd, móúšé áñd drívé štíll wórkíñg. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>[ŠDL íš thé çóñtróllér líbrárý máñý gáméš áré búílt óñ. Ít óñlý tréátš á dévíçé áš á gámépád whéñ ít kñówš ítš láýóút, áñd ñó çópý óf ŠDL kñówš thé QúádŠtíçk'š. Thíš téllš ít, fór évérý ápp ópéñéd fróm ñów óñ áñd ágáíñ át éáçh lógíñ, šó qúít áñd réópéñ á gámé thát íš álréádý rúññíñg. Ít ñéédš ñóthíñg fróm Ápplé áñd çháñgéš ñóthíñg óñ thé štíçk.
+
+Gáméš thát dó ñót úšé ŠDL wíll ñót šéé thé gámépád. Fór thóšé, úšé módé 7. Túrñíñg thíš óff tákéš thé çháñgé báçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>[Óñ. Gáméš ópéñéd fróm ñów óñ šéé á gámépád. xxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>[Thíš Máç díd ñót táké thé çháñgé, šó ñóthíñg wáš çháñgéd. xxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>[Thé Ápp Štóré véršíóñ çáññót máké thíš çháñgé ítšélf. Çópý thé çómmáñd, pášté ít íñtó Térmíñál áñd préšš Rétúrñ. Théñ qúít áñd réópéñ thé gámé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>[Çópý thé çómmáñd xxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>[Çópý thé úñdó çómmáñd xxxxxxxx]</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>[Çópíéd. Pášté ít íñtó Térmíñál áñd préšš Rétúrñ. xxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>[QúádŠtíçk plúggéd íñ bút ñót líštéd? Thé Máç Ápp Štóré véršíóñ çáñ ópéñ ítš drívé óñlý áftér ýóú çhóóšé ít óñçé. Áftér thát ít fíñdš ít óñ ítš ówñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_AdaptersLine" xml:space="preserve">
+    <value>[Pláýíñg thróúgh á çóñšólé ádáptér? Ít óñlý wórkš íñ thé módé ít éxpéçtš. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_Adapters" xml:space="preserve">
+    <value>[Módéš fór çóñšólé ádáptérš xxxxxxxxxx]</value>
+  </data>
+  <data name="Prefs_AdaptersHelp" xml:space="preserve">
+    <value>[Íf ýóú úšé áñ ádáptér tó pláý óñ á dífféréñt çóñšólé, thé QúádŠtíçk háš tó bé íñ thé ríght módé fór ít.
+
+Máýflášh Mágíç-X, Mágíç-Š áñd Mágíç-ÑŠ, áñd thé Bróók XÉ 2 áñd Bróók XB 3: módé 0.
+
+Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, wíth Títáñ Twó ádáptér túrñéd óñ. QMP çállš thát šéttíñg thé Títáñ 2 PŠ4 flág. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>[QúádŠtíçk óvér Blúétóóth ór çáblé xxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>[Réáçh á QúádŠtíçk thróúgh ítš ówñ çóñšólé: páíréd óvér Blúétóóth, ór wíth á šéríál çáblé. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>[Thíš wórkš wíth á QúádŠtíçk páíréd íñ ýóúr çómpútér'š Blúétóóth šéttíñgš whílé ítš Blúétóóth íš íñ ŠPP módé, ór wíth á 3.3V ÚŠB šéríál çáblé íñ thé dígítál íñpútš 1 áñd 2 jáçk. Whílé Blúétóóth íš íñ ŠPP módé thé QúádŠtíçk íš ñót á Blúétóóth gámépád; óvér ÚŠB ít štíll íš. Á prófílé thát úšéš dígítál_íñ_1 ór dígítál_íñ_2 šwítçhéš thé çáblé pórt óff. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>[Pórt x]</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>[Réfréšh xx]</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>[Çóññéçt xx]</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>[Ñó šéríál pórtš fóúñd. Páír thé QúádŠtíçk íñ ýóúr çómpútér'š Blúétóóth šéttíñgš, ór plúg thé çáblé íñ, théñ préšš Réfréšh. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>[Çóññéçtíñg… xxxx]</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>[Çóññéçtéd tó á QúádŠtíçk, fírmwáré {0}. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>[Šóméthíñg áñšwéréd óñ thát pórt, bút ít íš ñót á QúádŠtíçk. xxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>[Çóúld ñót ópéñ {0}: {1} xxxxxxxxx]</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>[Šéñd á prófílé… xxxxxx]</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>[Šéñdíñg {0}… xxxx]</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>[{0} íš óñ thé QúádŠtíçk áñd lóádéd. Whát ít hád béfóré íš šávéd át {1}. xxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>[{0} íš óñ thé QúádŠtíçk áñd lóádéd. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>[Répláçé préfš.çšv? xxxxxxx]</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>[préfš.çšv hóldš thé QúádŠtíçk'š ówñ šéttíñgš, šó ít çháñgéš évérý prófílé át óñçé. Thé çópý ít háš ñów íš šávéd fíršt. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>[Méášúré šíp áñd púff štréñgth xxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>[Méášúré štréñgth? xxxxxx]</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>[Thíš lóádš á téšt prófílé wíth óñlý hárd šíp áñd hárd púff óñ ít, áškš fór šévéñ púffš áñd šévéñ šípš, théñ réštártš thé QúádŠtíçk, whíçh pútš ýóúr ówñ prófílé áñd šéttíñgš báçk. Íf áñýthíñg góéš wróñg, úñplúg thé QúádŠtíçk áñd plúg ít báçk íñ. Thát pútš évérýthíñg báçk tóó. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>[Plúg thé QúádŠtíçk íñ bý ÚŠB áš wéll. Thé téšt wátçhéš ítš búttóñš óvér ÚŠB, áñd íñ Xbóx 360 módé (émúlátíóñ módé 3) ít çáññót šéé thém. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>[Háñdš óff thé móúthpíéçé whílé thé šéñšórš áré žéróéd. xxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>[Púff áš hárd áš ýóú çáñ. Trý {0} óf 7. xxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>[Šíp áš hárd áš ýóú çáñ. Trý {0} óf 7. xxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>[Štróñgéšt púff: {0} óf thé šéñšór'š ráñgé. Štróñgéšt šíp: {1}. Ýóúr hárd thréšhóld íš {2}. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>[úñdér {0}% xxxx]</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>[{0}% x]</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>[Štóppéd. Thé QúádŠtíçk wáš réštártéd, šó ýóúr ówñ prófílé áñd šéttíñgš áré báçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>[Štóp x]</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>[Çlóšé xx]</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>[Blúétóóth ór çáblé xxxxxxx]</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>[Çóññéçt tó thé QúádŠtíçk óvér Blúétóóth ór á šéríál çáblé xxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
 </root>

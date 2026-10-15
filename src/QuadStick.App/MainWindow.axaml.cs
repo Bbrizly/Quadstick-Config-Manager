@@ -751,6 +751,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         FlowDirection = Localization.Direction;
+        PickDriveFolder = PickDriveFolderAsync;
         InitializeComponent();
         var v = typeof(MainWindow).Assembly.GetName().Version;
         HomeVersionText.Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_VVMajorVMinor, v?.Major, v?.Minor, v?.Build);
@@ -968,7 +969,13 @@ public partial class MainWindow : Window
         // Settings can connect or disconnect Drive, and the Home button reads
         // that state. Without the refresh it keeps the old label until the user
         // navigates away from Home and back.
-        SettingsButton.Click += (_, _) => ShowSettingsPage();
+        // Same control opens Settings and leaves it. A second cog used to
+        // re-enter and could lose the return page; now it is Back.
+        SettingsButton.Click += (_, _) =>
+        {
+            if (SettingsPage.IsVisible) LeaveSettingsPage();
+            else ShowSettingsPage();
+        };
 
         // Ctrl (Windows/Linux) or Cmd (macOS) shortcuts, plus the bare F1 help
         // key. Ctrl-combos are safe to fire even while a field has focus
@@ -1723,6 +1730,19 @@ public partial class MainWindow : Window
             p.IsVisible = ReferenceEquals(p, page);
         foreach (var t in new[] { ShellHomeButton, ShellDeviceButton, ShellCommunityButton })
             if (ReferenceEquals(t, tab)) t.Classes.Add("active"); else t.Classes.Remove("active");
+        SyncSettingsChrome();
+    }
+
+    // Cog while Settings is open is Back: same leave path, icon and name swap
+    // so colour is never the only signal.
+    void SyncSettingsChrome()
+    {
+        bool on = SettingsPage.IsVisible;
+        ((PathIcon)SettingsButton.Content!).Data =
+            (Geometry)Application.Current!.FindResource(on ? "IconBack" : "IconSettings")!;
+        ToolTip.SetTip(SettingsButton, on ? Strings.Main_Back : Strings.Shell_Settings);
+        AutomationProperties.SetName(SettingsButton,
+            on ? Strings.Settings_BackHelp : Strings.Shell_OpenSettings);
     }
 
     SettingsView? _settingsView;
@@ -1742,7 +1762,7 @@ public partial class MainWindow : Window
         if (SettingsPageBody.Children.Count == 0)
             SettingsPageBody.Children.Add(SettingsView);
         ShowPage(SettingsPage, null);
-        SettingsView.FocusBack();
+        SettingsButton.Focus();
         UpdateLayout();
     }
 
@@ -1860,6 +1880,52 @@ public partial class MainWindow : Window
     // two QuadSticks, and grouping is only visible when it can.
     internal Func<IReadOnlyList<string>> FindDeviceRoots { get; set; } = () => Device.FindCandidatesCached();
 
+    // Test seam: a headless window has no folder picker to click.
+    internal Func<Task<string?>> PickDriveFolder { get; set; }
+
+    async Task<string?> PickDriveFolderAsync()
+    {
+        var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = Strings.Install_ChooseTheQuadStickDrive,
+            SuggestedStartLocation = await StorageProvider.TryGetFolderFromPathAsync("/Volumes"),
+        });
+        return folders.Count == 0 ? null : folders[0].Path.LocalPath;
+    }
+
+    // The Mac App Store build cannot read a QuadStick until the person picks
+    // its drive once (MacDriveAccess). True when the pick is a QuadStick and
+    // is now remembered for every launch after.
+    internal async Task<bool> ChooseDriveAsync(Action<string> say)
+    {
+        var root = await PickDriveFolder();
+        if (root is null) return false;
+        if (!Device.IsInstallTarget(root) || !MacDriveAccess.Remember(root))
+        {
+            say(Strings.Install_ThatFolderDoesNotLook);
+            return false;
+        }
+        Device.InvalidateCandidateCache();
+        RefreshHomeCards();
+        return true;
+    }
+
+    void SayOnHome(string text)
+    {
+        HomeStatusText.Text = text;
+        HomeStatusText.IsVisible = true;
+    }
+
+    // Only where it is needed: a normal build finds the drive on its own.
+    internal Button? DriveAccessButton(Func<Task> afterGranted, Action<string> say)
+    {
+        if (!MacDriveAccess.Needed) return null;
+        var b = new Button { Content = Strings.Install_ChooseTheQuadStickDrive };
+        AutomationProperties.SetHelpText(b, Strings.Shell_StoreBuildChooseDrive);
+        b.Click += async (_, _) => { if (await ChooseDriveAsync(say)) await afterGranted(); };
+        return b;
+    }
+
     void RefreshHomeCards()
     {
         // The Drive button is a live status light, refreshed on every home load.
@@ -1894,6 +1960,15 @@ public partial class MainWindow : Window
             .OrderBy(d => d.Root, StringComparer.OrdinalIgnoreCase)
             .ToArray();
         DeviceEmptyText.IsVisible = drives.Length == 0;
+        if (drives.Length == 0 && DriveAccessButton(() => Task.CompletedTask, SayOnHome) is { } choose)
+        {
+            DeviceCards.Children.Add(new TextBlock
+            {
+                Text = Strings.Shell_StoreBuildChooseDrive, TextWrapping = TextWrapping.Wrap,
+                Classes = { "secondary" }, FontSize = Size("BodySize"),
+            });
+            DeviceCards.Children.Add(choose);
+        }
 
         foreach (var (root, files) in drives)
         {
@@ -2008,8 +2083,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            return Directory.GetFiles(root, "*.csv")
-                .Where(p => Device.IsProfileFileName(Path.GetFileName(p)))
+            return Device.ProfileFiles(root)
                 .OrderBy(Path.GetFileName)
                 .ToArray();
         }
@@ -2335,9 +2409,10 @@ public partial class MainWindow : Window
     // worse than no source: it reads as a real measurement.
     // track is false only when a profile moves between windows it is already
     // open in (the language rebuild): the person did not open anything.
-    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source, bool track = true)
+    void OpenInEditor(ProfileFile file, string? savePath, ProfileSource source, bool track = true,
+                      string? game = null)
     {
-        if (track) Telemetry.Track(TelemetryEvent.ProfileOpened, source);
+        if (track) Telemetry.Opened(source, game);
         _file = file;
         _savePath = savePath;
         LoadDrafts(savePath);
@@ -3160,6 +3235,28 @@ public partial class MainWindow : Window
     static string Pair(string a, string b) =>
         string.Format(CultureInfo.CurrentCulture, Strings.Main_APlusB, a, b);
 
+    // Which part of a zone an input sits on, when the zone holds more than one.
+    // A mouthpiece hole is its own zone, so a click on it narrows the list to
+    // itself and nothing here is needed. Switch jacks and hole pairings are not:
+    // four sockets share one zone and five pairings share another, so a click on
+    // the picture picked a part the list beside it then ignored. Null means the
+    // zone is the part.
+    internal static string? PartOf(string input) => ZoneOf(input) switch
+    {
+        "jacks" => SwitchJacks.For(input)?.Port,
+        "combo" => ComboPrefix(input) is { Length: > 0 } c ? c : null,
+        _ => null,
+    };
+
+    // The name of that part in the reader's language, for the line that says
+    // the list is narrowed.
+    internal static string PartLabel(string input) => ZoneOf(input) switch
+    {
+        "jacks" => SwitchJacks.For(input) is { } j ? SwitchJacks.PortLabel(j.Port) : "",
+        "combo" => ComboPair(input),
+        _ => "",
+    };
+
     // Chip text: the short form, since the zone heading above it already says
     // which part it is on. Combos are the exception. Every pairing strips to
     // the same word, so a combo chip has to name its pairing.
@@ -3342,7 +3439,12 @@ public partial class MainWindow : Window
     void RebuildDeviceAfterEdit(int row, int col)
     {
         if (col >= 2 && _file is not null) // an input cell: its zone follows the new value
+        {
+            // The card that owns this cell may be holding a combo, whose other
+            // rows carry the same inputs. Move them with it.
+            if (_comboRows.TryGetValue(row, out var together)) SyncComboInputs(row, together);
             _selectedZone = ZoneOf(_file.GetCell(row, col));
+        }
         BuildDeviceView();
         BuildZoneDetail();
         RefreshIssues();
@@ -4879,6 +4981,45 @@ public partial class MainWindow : Window
         return p;
     }
 
+    // Rows that fire together. A button combo is two rows in the sheet, one
+    // output each, sharing the same inputs; the device has no other way to
+    // press two buttons off one sip. Drew Redepenning, 2026-09-19: combos are
+    // used often and the editor made you keep two cards in your head. The file
+    // shape does not change. These rows are edited in one card.
+    //
+    // Keyed on row number so the loop can ask about the row it is holding. A
+    // row with no inputs is a settings override and never joins a group.
+    // The rows each open card is editing as one, keyed on the row whose input
+    // cells are on screen. Rebuilt with the panel; empty when nothing is open.
+    readonly Dictionary<int, List<int>> _comboRows = new();
+
+    static Dictionary<int, List<Binding>> ComboGroups(IReadOnlyList<Binding>? bindings)
+    {
+        var groups = new Dictionary<int, List<Binding>>();
+        if (bindings is null) return groups;
+        var byInputs = new Dictionary<string, List<Binding>>(StringComparer.Ordinal);
+        foreach (var b in bindings)
+        {
+            var tokens = b.Inputs.Select(i => i.Trim()).Where(i => i.Length > 0).ToList();
+            if (tokens.Count == 0) { groups[b.Row] = new List<Binding> { b }; continue; }
+            // Order matters: the device walks several inputs on a row in
+            // sequence, so "sip then puff" is not "puff then sip".
+            var key = string.Join("\u001f", tokens);
+            if (!byInputs.TryGetValue(key, out var list)) byInputs[key] = list = new List<Binding>();
+            list.Add(b);
+        }
+        foreach (var list in byInputs.Values)
+            foreach (var b in list) groups[b.Row] = list;
+        return groups;
+    }
+
+    // The inputs live on the card, not on one row, so an edit to them has to
+    // land on every row the card is holding. Without this, renaming the input
+    // on a combo moves one output off it and leaves the other behind, and
+    // nothing on screen says the pair came apart.
+    void SyncComboInputs(int fromRow, IEnumerable<int> toRows) =>
+        _file?.CopyInputs(fromRow, toRows);
+
     void BuildZoneDetail()
     {
         // Read the width now rather than trust the last resize: the first build
@@ -4886,6 +5027,7 @@ public partial class MainWindow : Window
         _narrowCards = NarrowCards(ZoneDetailPanel.Bounds.Width);
         ZoneDetailPanel.Children.Clear();
         _rowPanels.Clear(); // device view owns the selection targets while visible
+        _comboRows.Clear(); // stale rows here would sync inputs onto another zone's mapping
         _livePips.Clear();
         UpdateLiveRows(); // against the mode about to be drawn, not the last one
         _dupes = DuplicateUses.In(CurrentSheet?.Bindings);
@@ -4904,6 +5046,17 @@ public partial class MainWindow : Window
         var byZone = BindingsByZone();
         byZone.TryGetValue(zone.Id, out var bindings);
         bindings = SortedLikeTheDiagram(bindings, zone.Id);
+
+        // Drew asked for this (2026-09-18): picking a socket or a hole pairing
+        // in the picture used to leave all four sockets in the list beside it,
+        // while picking a hole on the front narrowed to that hole. The count
+        // under the heading is what the list holds, and the line below it says
+        // it is narrowed and undoes it, so nothing is hidden silently.
+        int zoneCount = bindings?.Count ?? 0;
+        string? part = _pickedInput is { Length: > 0 } picked && ZoneOf(picked) == zone.Id
+            ? PartOf(picked) : null;
+        if (part is not null && bindings is { Count: > 0 })
+            bindings = bindings.Where(b => b.Inputs.Any(i => PartOf(i) == part)).ToList();
 
         int mappingCount = bindings?.Count ?? 0;
         var zoneTitle = new TextBlock
@@ -4951,6 +5104,9 @@ public partial class MainWindow : Window
         heading.Children.Add(meta);
         ZoneDetailPanel.Children.Add(heading);
 
+        if (part is not null && zoneCount > mappingCount)
+            ZoneDetailPanel.Children.Add(NarrowedRow(_pickedInput!, zoneCount));
+
         // The two zones that live on the back of the case get the panel drawn
         // out, because the numbering is the whole problem: nothing on the
         // hardware says which jack is digital_in_8.
@@ -4964,6 +5120,9 @@ public partial class MainWindow : Window
             int firstMapping = ZoneDetailPanel.Children.Count;
             var zoneInputs = Vocab.AllInputs.Where(i => ZoneOf(i) == zone.Id).OrderBy(GroupRank).ThenBy(x => x).ToList();
             bool cards = _settings.DeviceCards;
+            var combos = ComboGroups(bindings);
+            foreach (var group in combos.Values.Distinct())
+                if (group.Count > 1) _comboRows[group[0].Row] = group.Select(x => x.Row).ToList();
             int n = 0;
             foreach (var b in bindings)
             {
@@ -4971,8 +5130,13 @@ public partial class MainWindow : Window
                 // Card mode: a closed mapping is one readable sentence. Only
                 // the expanded one (at most one, accordion style) gets the
                 // full editor below.
-                if (cards && b.Row != _expandedMapping)
+                var combo = combos.TryGetValue(b.Row, out var g) ? g : new List<Binding> { b };
+                bool comboOpen = !cards || combo.Any(x => x.Row == _expandedMapping);
+                if (!comboOpen)
                 { ZoneDetailPanel.Children.Add(SentenceCard(zone, b, n)); continue; }
+                // One card for the whole combo, so the rows that fire together
+                // are not two cards apart. The rest of the group is inside it.
+                if (combo[0].Row != b.Row) { n--; continue; }
                 // One compact card per mapping. A header line carries the number
                 // and a small remove button; the body is three aligned label|field
                 // rows ("When you / Press / As") so a mapping reads like a short
@@ -5003,7 +5167,12 @@ public partial class MainWindow : Window
                     var card = del.FindAncestorOfType<Border>();
                     double gap = card is not null ? card.Bounds.Height + 14 : 0;
                     if (card is not null) GhostRowAway(card, ZoneOverlay); // snapshot while still attached
-                    _file!.DeleteRow(b.Row);
+                    // The card holds every output on these inputs, so its trash
+                    // takes the whole combo. Each output has its own trash.
+                    _file!.DeleteRows(combo.Select(x => x.Row));
+                    // Rows below shift up, so a kept row number would open a
+                    // mapping the user never asked for.
+                    _expandedMapping = -1;
                     BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                     // Counted off the panel as it was built rather than guessed
                     // from the zone: what sits above the cards has changed twice
@@ -5067,7 +5236,9 @@ public partial class MainWindow : Window
                         ? TokenField(b.Row, col, value, zoneInputs,
                             t => InputOptionLabel(t, zone.Id), name, InputTint)
                         : DeviceInputPicker(b.Row, col, value, name, zone.Id);
-                    var markedInput = WithDuplicateMark(inputBox, _dupes.Input(value));
+                    // The other rows of this combo share the input by design and are drawn
+                    // right here, so only a use outside the card counts.
+                    var markedInput = WithDuplicateMark(inputBox, _dupes.Input(value) - (combo.Count - 1));
                     Grid.SetColumn(markedInput, 0);
                     row.Children.Add(markedInput);
                     // Every committed input gets a trash. Removing the last one
@@ -5080,6 +5251,7 @@ public partial class MainWindow : Window
                         rmv.Click += (_, _) =>
                         {
                             _file!.RemoveInput(b.Row, idx);
+                            SyncComboInputs(b.Row, combo.Select(x => x.Row));
                             BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
                             SayIfNothingFiresIt(b.Row);
                             FocusZoneDetailSibling(zone.Id, bindings!.IndexOf(b));
@@ -5137,12 +5309,94 @@ public partial class MainWindow : Window
                 body.Children.Add(Labeled(Strings.Main_WhenYou2, inputsBox));
 
                 // ---- "Press" (game button) and "As" (how it presses) ----
-                body.Children.Add(Labeled(Strings.Main_PressVerb, WithDuplicateMark(
-                    OutputPicker(b, Outputs(),
-                        string.Format(CultureInfo.CurrentCulture, Strings.Main_GameButtonPressedByShortInput, ShortInput(zone, b)), OutputTint),
-                    _dupes.Output(b.Output))));
-                body.Children.Add(Labeled(Strings.Main_AsLabel, FunctionCombo(b, zone)));
-                body.Children.Add(Labeled(Strings.Main_NoteLabel, NoteBox(b.Row, NoteColumn, Strings.Main_NoteForThisMappingSaved)));
+                // One pair per output. Two outputs on the same inputs are a
+                // button combo, which is two rows in the file and one card
+                // here; each output keeps its own behaviour and its own note,
+                // because that is what the file holds.
+                if (combo.Count > 1)
+                    body.Children.Add(new TextBlock
+                    {
+                        Text = Strings.Main_TheseArePressedTogether,
+                        FontSize = Size("SmallSize"), Classes = { "muted" },
+                        TextWrapping = TextWrapping.Wrap,
+                    });
+                foreach (var m in combo)
+                {
+                    var pressRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+                    var picker = WithDuplicateMark(
+                        OutputPicker(m, Outputs(),
+                            string.Format(CultureInfo.CurrentCulture, Strings.Main_GameButtonPressedByShortInput, ShortInput(zone, m)), OutputTint),
+                        _dupes.Output(m.Output));
+                    Grid.SetColumn(picker, 0);
+                    pressRow.Children.Add(picker);
+                    if (combo.Count > 1)
+                    {
+                        // Named by what it removes, not by a number: every
+                        // output in the card would otherwise announce the same
+                        // thing and a screen reader user could not tell which
+                        // binding the button takes away.
+                        var dropOutput = IconButton("IconDelete",
+                            string.Format(CultureInfo.CurrentCulture, Strings.Main_RemoveThisOutputFromMapping,
+                                m.ActionName.Length > 0 ? m.ActionName : TokenLabel(m.Output)));
+                        dropOutput.Margin = new Avalonia.Thickness(8, 0, 0, 0);
+                        int dropRow = m.Row;
+                        int keepRow = combo.First(x => x.Row != dropRow).Row;
+                        dropOutput.Click += (_, _) =>
+                        {
+                            // Keep the card open on a row that survives, or the
+                            // combo closes under the click that edited it. Rows
+                            // below the deleted one shift up by one, so the
+                            // number has to move with them.
+                            int kept = keepRow > dropRow ? keepRow - 1 : keepRow;
+                            _file!.DeleteRow(dropRow);
+                            _expandedMapping = kept;
+                            BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                            AfterLayout(() =>
+                            {
+                                if (!_cellBorders.TryGetValue($"A{kept}", out var cell)) return;
+                                cell.BringIntoView();
+                                (cell.Child as Control)?.Focus();
+                            });
+                        };
+                        Grid.SetColumn(dropOutput, 1);
+                        pressRow.Children.Add(dropOutput);
+                    }
+                    body.Children.Add(Labeled(Strings.Main_PressVerb, pressRow));
+                    body.Children.Add(Labeled(Strings.Main_AsLabel, FunctionCombo(m, zone)));
+                    body.Children.Add(Labeled(Strings.Main_NoteLabel, NoteBox(m.Row, NoteColumn, Strings.Main_NoteForThisMappingSaved)));
+                }
+
+                // Drew Redepenning, 2026-09-19: a combo was two cards, and the
+                // plus was the shape he asked for. A new output copies the
+                // inputs rather than starting empty, so the rows stay a combo.
+                // No inputs yet means nothing to copy, so there is nothing to
+                // add an output to.
+                // No cap on outputs: eight is the limit on INPUT columns, and
+                // copying it here would have refused a ninth button on a combo
+                // the file is perfectly happy to hold.
+                if (b.Inputs.Count > 0)
+                {
+                    var addOutput = IconButton("IconAdd",
+                        string.Format(CultureInfo.CurrentCulture, Strings.Main_AddAnotherOutputToMapping, n));
+                    addOutput.HorizontalAlignment = HorizontalAlignment.Left;
+                    ToolTip.SetTip(addOutput, Strings.Main_AddAnotherOutput);
+                    int fromRow = b.Row;
+                    addOutput.Click += (_, _) =>
+                    {
+                        if (_file is null || CurrentSheet is null) return;
+                        int newRow = _file.AddBindingRow(CurrentSheet);
+                        SyncComboInputs(fromRow, new[] { newRow });
+                        _expandedMapping = fromRow;
+                        BuildDeviceView(); BuildZoneDetail(); RefreshIssues();
+                        AfterLayout(() =>
+                        {
+                            if (!_cellBorders.TryGetValue($"A{newRow}", out var cell)) return;
+                            cell.BringIntoView();
+                            (cell.Child as Control)?.Focus();
+                        });
+                    };
+                    body.Children.Add(addOutput);
+                }
 
                 ZoneDetailPanel.Children.Add(MappingCard(body));
             }
@@ -5161,7 +5415,11 @@ public partial class MainWindow : Window
             // Ordered by socket, top of the case down, so the first thing
             // offered on the jacks is the top jack rather than digital_in_1.
             // The USB-A data pins sort last: nothing plugs into them.
-            var freeHere = UnusedInputs(zone.Id).Where(i => ZoneOf(i) == zone.Id)
+            // "on this part" has to mean the part the list is narrowed to, or
+            // the jacks screen offers the bottom jack under the top jack's
+            // heading.
+            var freeHere = UnusedInputs(zone.Id)
+                .Where(i => ZoneOf(i) == zone.Id && (part is null || PartOf(i) == part))
                 .OrderBy(JackRank).ToList();
             if (freeHere.Count > 0)
             {
@@ -5244,6 +5502,36 @@ public partial class MainWindow : Window
     // A row on something that is not one of the part's gestures keeps its place
     // behind the ones that are. OrderBy is stable, so two rows on one gesture
     // stay in the order the file has them.
+    // Says the list is narrowed and takes it back. A list that quietly holds
+    // fewer rows than the zone has is the app knowing something and not saying
+    // it, which is how a mapping gets reported missing.
+    Control NarrowedRow(string picked, int zoneCount)
+    {
+        var said = new TextBlock
+        {
+            Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_NarrowedToPart, PartLabel(picked)),
+            FontSize = Size("SmallSize"), Classes = { "muted" },
+            TextWrapping = TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center,
+        };
+        var all = new Button
+        {
+            Content = new TextBlock
+            {
+                Text = string.Format(CultureInfo.CurrentCulture, Strings.Main_ShowAllCount, zoneCount),
+                FontSize = Size("SmallSize"),
+            },
+            Classes = { "quiet" },
+        };
+        AutomationProperties.SetName(all, Strings.Main_ShowEveryMappingHere);
+        all.Click += (_, _) => { _pickedInput = null; BuildDeviceView(); BuildZoneDetail(); };
+        return new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            Margin = new Thickness(0, 0, 16, 6),
+            Children = { said, all },
+        };
+    }
+
     List<Binding>? SortedLikeTheDiagram(List<Binding>? bindings, string zoneId)
     {
         if (bindings is null || bindings.Count < 2) return bindings;
@@ -5656,7 +5944,11 @@ public partial class MainWindow : Window
             Telemetry.Track(TelemetryEvent.FeatureUsed, AppFeature.SheetsImport);
             HomeStatusText.IsVisible = false; // the progress line has done its job
             OpenInEditor(imported, savePath: null, ProfileSource.Sheets);
-            Status(string.Format(CultureInfo.CurrentCulture, Strings.Main_ImportedModesImportedFromThe, Modes(imported)), StatusKind.Ready);
+            var line = string.Format(CultureInfo.CurrentCulture, Strings.Main_ImportedModesImportedFromThe, Modes(imported));
+            // The download is anonymous, so a save can never reach the user's
+            // sheet. Users have edited and then looked for the change in Drive.
+            // ponytail: an app-backed sheet is left out, since a save can relink to it.
+            Status(ours is null ? line + " " + Strings.Main_ImportIsACopy : line, StatusKind.Ready);
             // A published link hands back one tab and no way to ask for the
             // rest, so the review has to say that before it counts anything.
             // Without it, a profile missing four of its five modes would be
@@ -7252,7 +7544,8 @@ public partial class MainWindow : Window
     }
 
     // Motion is feedback, never a gate: every data change below lands
-    // synchronously and these overlays only show where it went. Fire and
+    // synchronously and these overlays only show where it went. Reduce motion
+    // skips all of it; the row tint above is colour, not motion, and stays. Fire and
     // forget, so headless tests (which never tick the render timer) see the
     // exact same resting state with or without the animation.
     //
@@ -7304,8 +7597,9 @@ public partial class MainWindow : Window
     }
 
     // A just-added row or card fades in while rising into place.
-    static void AnimateIn(Control c)
+    void AnimateIn(Control c)
     {
+        if (_reduceMotion) return;
         SlideFrom(c, 10);
         _ = Between(OpacityProperty, 0, 1).RunAsync(c);
     }
@@ -7313,8 +7607,9 @@ public partial class MainWindow : Window
     // After a delete, everything below the gap starts shifted down by the
     // deleted row's height and settles up into place, so the eye can track
     // what moved instead of seeing the list teleport.
-    static void AnimateGapClose(Panel panel, int fromChildIndex, double dy)
+    void AnimateGapClose(Panel panel, int fromChildIndex, double dy)
     {
+        if (_reduceMotion) return;
         dy = Math.Min(dy, 120); // a mass delete should settle, not fly
         if (dy <= 0 || fromChildIndex < 0) return;
         // ponytail: first 30 children only, offscreen rows need no theater
@@ -7330,6 +7625,7 @@ public partial class MainWindow : Window
     // Headless tests have no renderer; the try/catch makes this a no-op there.
     void GhostRowAway(Control row, Panel overlay)
     {
+        if (_reduceMotion) return;
         try
         {
             if (row.Bounds.Width <= 0 || row.Bounds.Height <= 0) return;
@@ -8068,17 +8364,38 @@ public partial class MainWindow : Window
 
         Button Item(string token)
         {
+            // The name on the pad, when the firmware's word is not printed on
+            // it anywhere. A PS5 owner hunting for Options finds "start" and
+            // gives up, which is the bug this line answers.
+            var also = OutputCatalog.OtherNames(token);
+            Control face = visualFor is null
+                ? new TextBlock
+                { Text = labelFor(token), FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap }
+                : visualFor(token);
+            if (also.Length > 0)
+                face = new StackPanel
+                {
+                    Children =
+                    {
+                        face,
+                        new TextBlock
+                        {
+                            Text = also, FontSize = Size("SmallSize"), Classes = { "muted" },
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                    },
+                };
             var it = new Button
             {
-                Content = visualFor is null
-                    ? new TextBlock
-                    { Text = labelFor(token), FontSize = Size("BodySize"), TextWrapping = TextWrapping.Wrap }
-                    : visualFor(token),
+                Content = face,
                 Classes = { "quiet" },
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Left,
             };
+            // Name stays the token, because the token is what the row gets.
+            // The pad's word for it is the description beside it.
             AutomationProperties.SetName(it, labelFor(token));
+            if (also.Length > 0) AutomationProperties.SetHelpText(it, also);
             it.Click += (_, _) => Commit(token);
             return it;
         }
@@ -8445,13 +8762,12 @@ public partial class MainWindow : Window
 
     // The numbers beside a function are where people guess, and a guess here is
     // silent: "greater_than 250" is a strength no input reaches, so the row
-    // simply never fires and nothing says why. Each line names one number, its
-    // unit, how far it goes, and what the device substitutes when it is left
-    // out. All of it read off firmware 2373, see FunctionParameters.
+    // simply never fires and nothing says why. Each line says what one number
+    // does, in what unit, and what the device substitutes when it is left out.
+    // All of it read off firmware 2373, see FunctionParameters.
     internal static string ParameterHint(string function)
     {
-        var spec = FunctionParameters.For(FunctionToken(function));
-        return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Sentence));
+        return string.Join("\n", FunctionParameters.Sentences(FunctionToken(function)));
     }
 
     // Everything the dot beside a function cell says: what the behaviour is,
@@ -8464,25 +8780,19 @@ public partial class MainWindow : Window
         return numbers.Length == 0 ? what : what + "\n\n" + numbers;
     }
 
-    // The same lines without the behaviour half. Once "tap" had to explain that
-    // a second number of 1 toggles rather than presses, the sentence that told
-    // you the range was two lines from the box it belonged to. The numbers stay
-    // under the box; what they do sits behind the question mark beside it.
-    internal static string ParameterSummary(string function)
-    {
-        var spec = FunctionParameters.For(FunctionToken(function));
-        return spec.Count == 0 ? "" : string.Join("\n", spec.Select(p => p.Summary));
-    }
+    // The line under the box. It says what the number does and what blank
+    // means, and leaves the range to the validator.
+    internal static string ParameterSummary(string function) => ParameterHint(function);
 
     // A screen reader gets the same sentences the sighted user reads under the
-    // box, because the ranges are the whole point of the field.
+    // box.
     internal static string ParameterAccessibleName(string function)
     {
         var spec = FunctionParameters.For(FunctionToken(function));
         return spec.Count == 0
             ? string.Format(CultureInfo.CurrentCulture, Strings.Main_FunctionTakesNoNumbers, function)
             : string.Format(CultureInfo.CurrentCulture, Strings.Main_NumbersForFunctionOptionalWhole, function)
-              + string.Join(" ", spec.Select(x => x.Sentence));
+              + string.Join(" ", FunctionParameters.Sentences(FunctionToken(function)));
     }
 
     // What to put in an empty box: the parameter names in order, so the shape
@@ -8663,7 +8973,7 @@ public partial class MainWindow : Window
         return picked;
     }
 
-    async Task<bool> ConfirmAsync(string title, string message)
+    internal async Task<bool> ConfirmAsync(string title, string message)
     {
         var yes = new Button { Content = Strings.Main_YesContinue, MinWidth = 140 };
         var no = new Button { Content = Strings.Main_Cancel, MinWidth = 140, IsDefault = true, IsCancel = true };

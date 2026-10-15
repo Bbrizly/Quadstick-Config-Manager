@@ -22,7 +22,10 @@ without internet.
 **Usage data, off unless you turn it on.** The first time you open the app it
 asks. If you say yes, it sends a small event when the app opens, when a profile
 is opened or saved, when installing to a QuadStick is tried and whether that
-worked, and when one of the optional features is used. Each event carries your
+worked, and when one of the optional features is used. A successful install also
+carries how many seconds passed since that profile was opened. A profile opened
+from the online library carries its game, as the library names it (for example
+`minecraft`). A profile you made yourself carries no game. Each event carries your
 operating system, the app version, and a random install ID. While this is on,
 those events are sent as they happen. You can turn it off any time in Settings,
 under Advanced.

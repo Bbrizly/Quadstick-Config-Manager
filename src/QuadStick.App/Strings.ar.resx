@@ -1965,7 +1965,7 @@
     <value>تم تجاوز هذه التبويبات:</value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>يمكن لهذا التطبيق إرسال بيانات استخدام مجهولة: أي الشاشات تُستخدم، وما إذا نجح التثبيت على جهاز QuadStick، ولا شيء آخر. طالما أن هذا مفعّل، تُرسل هذه الأحداث فور حدوثها.
+    <value>يمكن لهذا التطبيق إرسال بيانات استخدام مجهولة: أي الشاشات تُستخدم، وما إذا نجح التثبيت على جهاز QuadStick، والمدة من فتح ملف التعريف حتى تثبيته، وأي لعبة يخص ملف التعريف من المكتبة على الإنترنت، ومدى قوة الشفط والنفخ لديك إذا شغّلت اختبار القوة، ولا شيء آخر. طالما أن هذا مفعّل، تُرسل هذه الأحداث فور حدوثها.
 
 لا يُرسل أبدًا، مهما اخترت: ملفاتك الشخصية، وأسماء الملفات، ومسارات الملفات، وحساب Google الخاص بك، واسمك أو اسم جهازك. لا يُرسل أيضًا أي شيء تكتبه، باستثناء مربع الملاحظات في الإعدادات، الذي لا يُرسل إلا عند الضغط على "إرسال" فيه.
 
@@ -2999,7 +2999,7 @@
     <value>تقليل الحركة</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>يوقف حركة التلاشي في الشرح التوجيهي.</value>
+    <value>لا شيء ينزلق أو يتلاشى. تُضاء الصفوف الجديدة لحظة قصيرة.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>تذكّر حجم النافذة وموضعها</value>
@@ -3516,5 +3516,144 @@
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>أنت تستخدم {0}، وهو الأحدث.</value>
+  </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>الألعاب على Mac</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>على Mac، اضبط وضع محاكاة USB رقم 7 في ورقة التفضيلات لملف اللعبة، فترى الألعاب وحدة تحكم PlayStation 4.</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>لا يستطيع Mac تشغيل جسر وحدة تحكم Xbox بعد، لأن إنشاء وحدة تحكم افتراضية يحتاج إذنًا من Apple. الوضع 7 لا يحتاجه: يعرّف QuadStick نفسه كوحدة DualShock 4 لاسلكية، ويدعمها macOS وSteam عبر USB.
+
+الوضع 7 وحدة تحكم ألعاب فقط. لا لوحة مفاتيح ولا فأرة ولا محرك أقراص، لذلك لا يرى هذا التطبيق العصا ما دام مفعّلًا. ضعه في ورقة التفضيلات لملف اللعبة، لا في إعدادات الجهاز: عندها يعيد الانتقال إلى ملف آخر محرك الأقراص ولوحة المفاتيح والفأرة. أما تبديل الأوضاع داخل الملف نفسه فلا يفعل ذلك.</value>
+  </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>يد تحكم في الوضع 0</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>يتيح للألعاب المبنية على SDL، مثل كثير من ألعاب Mac، أن ترى QuadStick كيد تحكم في وضع المحاكاة 0، مع بقاء لوحة المفاتيح والفأرة ومحرك الأقراص تعمل.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL هي مكتبة أذرع التحكم التي تُبنى عليها ألعاب كثيرة. لا تعامل جهازًا كيد تحكم إلا إذا عرفت ترتيب أزراره، ولا تعرف أي نسخة من SDL ترتيب QuadStick. هذا الإعداد يخبرها به، لكل تطبيق يُفتح من الآن ومن جديد عند كل تسجيل دخول، لذا أغلق اللعبة التي تعمل الآن وافتحها من جديد. لا يحتاج إلى شيء من Apple ولا يغيّر شيئًا في العصا.
+
+الألعاب التي لا تستخدم SDL لن ترى يد التحكم. استخدم الوضع 7 لها. إيقاف هذا الإعداد يتراجع عن التغيير.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>مفعّل. الألعاب التي تُفتح من الآن ترى يد تحكم.</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>لم يقبل جهاز Mac هذا التغيير، لذلك لم يتغير شيء.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>لا تستطيع نسخة App Store إجراء هذا التغيير بنفسها. انسخ الأمر، والصقه في Terminal، واضغط Return. ثم أغلق اللعبة وافتحها من جديد.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>نسخ الأمر</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>نسخ أمر التراجع</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>تم النسخ. الصقه في Terminal واضغط Return.</value>
+  </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>هل QuadStick موصول لكنه غير ظاهر؟ لا يستطيع إصدار Mac App Store فتح محرك الأقراص إلا بعد أن تختاره مرة واحدة. بعد ذلك يجده تلقائيًا.</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>QuadStick عبر Bluetooth أو كابل</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>اتصل بجهاز QuadStick عبر وحدة التحكم الخاصة به: مقترنًا عبر Bluetooth، أو بكابل تسلسلي.</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>يعمل هذا مع جهاز QuadStick مقترن في إعدادات Bluetooth بحاسوبك بينما يكون Bluetooth فيه في وضع SPP، أو مع كابل USB تسلسلي بجهد 3.3V في مقبس المدخلين الرقميين 1 و2. وبينما يكون Bluetooth في وضع SPP، لا يكون QuadStick وحدة تحكم Bluetooth؛ أما عبر USB فيبقى كذلك. ملف التعريف الذي يستخدم digital_in_1 أو digital_in_2 يوقف منفذ الكابل.</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>المنفذ</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>تحديث</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>اتصال</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>لم يتم العثور على منافذ تسلسلية. اقرن QuadStick في إعدادات Bluetooth بحاسوبك، أو وصّل الكابل، ثم اضغط تحديث.</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>جارٍ الاتصال…</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>تم الاتصال بجهاز QuadStick، البرنامج الثابت {0}.</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>ردّ شيء ما على ذلك المنفذ، لكنه ليس QuadStick.</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>تعذّر فتح {0}: {1}</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>إرسال ملف تعريف…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>جارٍ إرسال {0}…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} موجود على QuadStick ومحمَّل. ما كان عليه قبل ذلك محفوظ في {1}.</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} موجود على QuadStick ومحمَّل.</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>استبدال prefs.csv؟</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>يحتوي prefs.csv على إعدادات QuadStick نفسه، لذا فهو يغيّر كل ملفات التعريف دفعة واحدة. تُحفظ النسخة الحالية أولًا.</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>قياس قوة الشفط والنفخ</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>قياس القوة؟</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>يحمّل هذا ملف تعريف اختبار فيه شفط قوي ونفخ قوي فقط، ويطلب منك سبع نفخات وسبع شفطات، ثم يعيد تشغيل QuadStick، فيعود ملف التعريف الخاص بك وإعداداتك. إذا حدث أي خطأ، افصل QuadStick ثم أعد توصيله. وهذا أيضًا يعيد كل شيء.</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>وصّل QuadStick عبر USB أيضًا. يراقب الاختبار أزراره عبر USB، وفي وضع Xbox 360 (وضع المحاكاة 3) لا يستطيع رؤيتها.</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>ارفع يديك عن قطعة الفم بينما تُصفَّر المستشعرات.</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>انفخ بأقوى ما تستطيع. المحاولة {0} من 7.</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>اشفط بأقوى ما تستطيع. المحاولة {0} من 7.</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>أقوى نفخة: {0} من نطاق المستشعر. أقوى شفطة: {1}. عتبتك القوية هي {2}.</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>أقل من {0}%</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>تم الإيقاف. أُعيد تشغيل QuadStick، لذا عاد ملف التعريف الخاص بك وإعداداتك.</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>إيقاف</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>إغلاق</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth أو كابل</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>الاتصال بجهاز QuadStick عبر Bluetooth أو كابل تسلسلي</value>
   </data>
 </root>

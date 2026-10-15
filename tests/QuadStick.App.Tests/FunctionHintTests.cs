@@ -44,15 +44,15 @@ public class FunctionHintTests
         "Outputs,Function,usb\n" +
         "x,greater_than 40,lip\n";
 
-    // The range and the default are the two facts he named. Both have to be on
-    // screen beside the box, in words.
+    // What the number does and the default have to be on screen beside the
+    // box, in words, and the 1-to-16383 range Drew asked to drop must not be.
     [AvaloniaFact]
-    public void The_editor_shows_the_range_and_the_default_beside_the_numbers()
+    public void The_editor_shows_what_the_number_does_and_the_default()
     {
         var w = Editor(Csv);
         var text = AllText(w);
-        Assert.Contains("Threshold: 1 to 100 percent", text, StringComparison.Ordinal);
-        Assert.Contains("Blank means 100 percent", text, StringComparison.Ordinal);
+        Assert.Contains("First number: The percentage where the output turns on. Default: 100 percent.", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("1 to 100", text, StringComparison.Ordinal);
         w.Close();
     }
 
@@ -71,18 +71,15 @@ public class FunctionHintTests
     public void A_function_that_already_has_values_still_explains_them()
     {
         var hint = MainWindow.ParameterHint("repeat 5 2000");
-        Assert.Contains("taps a second", hint, StringComparison.Ordinal);
-        Assert.Contains("First hold", hint, StringComparison.Ordinal);
-        Assert.Contains("Blank means 10 a second", hint, StringComparison.Ordinal);
+        Assert.Contains("presses per second", hint, StringComparison.Ordinal);
+        Assert.Contains("Second number: How long to hold", hint, StringComparison.Ordinal);
+        Assert.Contains("Default: 10 a second", hint, StringComparison.Ordinal);
     }
 
-    // Drew, 2026-09-05: the descriptions read long. What survived under the box
-    // is the range and the default, which is what somebody needs before typing.
-    // What the number does is a click away on the dot beside the box, and this
-    // is the pair: the short half on screen, the long half not on screen but
-    // reachable.
+    // Drew, 2026-09-19 and his sheet: plain words, each number named by its
+    // position, no range. The dot still carries them too.
     [AvaloniaFact]
-    public void The_behaviour_sentence_moves_off_the_screen_and_onto_the_dot()
+    public void The_box_says_what_each_number_does_in_plain_words()
     {
         var w = Editor(
             "Profile Name,,Solo\n" +
@@ -91,10 +88,11 @@ public class FunctionHintTests
             "x,tap 500 1,lip\n");
         var text = AllText(w);
 
-        Assert.Contains("Press: 1 to 16383 milliseconds", text, StringComparison.Ordinal);
-        Assert.Contains("Blank means 100 ms", text, StringComparison.Ordinal);
-        // The half that made the hint three lines tall.
-        Assert.DoesNotContain("the next turns it off", text, StringComparison.Ordinal);
+        Assert.Contains("Second number: How long the output presses for, in milliseconds.", text, StringComparison.Ordinal);
+        Assert.Contains("Default: 100 ms", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("16383", text, StringComparison.Ordinal);
+        // The half that was missing: what the number actually changes.
+        Assert.Contains("the next turns it off", text, StringComparison.Ordinal);
 
         var dot = w.GetVisualDescendants().OfType<Button>()
             .Single(b => (b.Content as string) == "?"
@@ -112,7 +110,7 @@ public class FunctionHintTests
     {
         var name = MainWindow.ParameterAccessibleName("tap");
         Assert.Contains("the next turns it off", name, StringComparison.Ordinal);
-        Assert.Contains("Blank means 100 ms", name, StringComparison.Ordinal);
+        Assert.Contains("Default: 100 ms", name, StringComparison.Ordinal);
     }
 
     // A function with no numbers still gets the dot, because the description
@@ -148,7 +146,7 @@ public class FunctionHintTests
         Assert.DoesNotContain("quickly press and release", AllText(w), StringComparison.Ordinal);
         Assert.Contains("quickly press and release", MainWindow.FunctionHelpBody("tap"), StringComparison.Ordinal);
         // Both halves, in the order somebody reads them.
-        Assert.Contains("Counts as a tap", MainWindow.FunctionHelpBody("tap"), StringComparison.Ordinal);
+        Assert.Contains("still count as a tap", MainWindow.FunctionHelpBody("tap"), StringComparison.Ordinal);
         w.Close();
     }
 

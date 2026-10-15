@@ -11,5 +11,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/QuadStick.App/QuadStick.App.csproj" />
+    <!-- One fake QuadStick console for both suites, so they test the same device. -->
+    <Compile Include="../QuadStick.Format.Tests/FakeQuadStick.cs" Link="FakeQuadStick.cs" />
   </ItemGroup>
 </Project>

@@ -492,6 +492,9 @@ public partial class MainWindow
             line.Children.Add(risk);
         }
 
+        if (def.Name == "enable_DS3_emulation")
+            line.Children.Add(Explain(Strings.Prefs_AdaptersLine, Strings.Prefs_Adapters, Strings.Prefs_AdaptersHelp));
+
         if (typedCell is not null) line.Children.Add(ExactValueButton(b.Row, col, def, typedCell));
         return line.Children.Count > 0 ? line : null;
     }

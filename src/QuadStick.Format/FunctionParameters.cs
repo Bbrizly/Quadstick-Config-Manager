@@ -20,21 +20,14 @@ public sealed record FunctionParameter(
     string Default,
     string What)
 {
-    /// <summary>The whole thing as one line, for a screen reader or the help
-    /// behind the field: "Rate: 1 to 1000 taps a second. Blank means 10 a
-    /// second. How fast it taps while you hold the input."</summary>
-    public string Sentence => Say(What);
-
-    /// <summary>Range and default only, no behaviour: "Rate: 1 to 1000 taps a
-    /// second. Blank means 10 a second." This is what sits under the box.
-    /// <see cref="What"/> is the half that grew long enough to bury the
-    /// numbers, so it moved behind the question mark beside it.</summary>
-    public string Summary => Say("");
-
-    string Say(string what) =>
-        string.Format(CultureInfo.CurrentCulture,
-            Unit.Length > 0 ? Strings.Fn_SentenceWithUnit : Strings.Fn_Sentence,
-            Label, Minimum, Maximum, Default, what, Unit).TrimEnd();
+    /// <summary>What the number does, then what the device uses without it:
+    /// "How long each press lasts, in milliseconds. Default: 100 ms." No range:
+    /// "1 to 16383" was the part a reader without a technical background could
+    /// not use, and the validator still flags a number past it (Drew
+    /// Redepenning's sheet, 2026-10-01). This is what sits under the box and
+    /// what a screen reader reads.</summary>
+    public string Sentence =>
+        string.Format(CultureInfo.CurrentCulture, Strings.Fn_Sentence, What, Default).Trim();
 }
 
 /// <summary>
@@ -187,6 +180,15 @@ public static class FunctionParameters
     /// that takes none, and for one this app has never heard of.</summary>
     public static IReadOnlyList<FunctionParameter> For(string function) =>
         Table.TryGetValue((function ?? "").Trim(), out var p) ? p : Array.Empty<FunctionParameter>();
+
+    /// <summary>One line per number. With two, each says which it is, because
+    /// "set it to 1" reads as either number in a two-number cell.</summary>
+    public static IEnumerable<string> Sentences(string function)
+    {
+        var spec = For(function);
+        return spec.Select((p, i) => spec.Count < 2 ? p.Sentence : string.Format(CultureInfo.CurrentCulture,
+            i == 0 ? Strings.Fn_FirstNumber : Strings.Fn_SecondNumber, p.Sentence));
+    }
 
     /// <summary>Every function the table covers, for the arity check.</summary>
     internal static IEnumerable<KeyValuePair<string, FunctionParameter[]>> All => Table;

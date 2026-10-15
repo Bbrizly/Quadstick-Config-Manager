@@ -381,6 +381,8 @@ public class SmokeTests
             new[] { "https://docs.google.com/spreadsheets/d/1AbCdEfGhIjKlMnOpQrStUvWxYz012345/export?format=xlsx" },
             handler.Urls);
         Assert.True(ShowsStatus(w, "Imported 2 modes"));
+        // A user edited an imported profile and expected the sheet to change.
+        Assert.True(ShowsStatus(w, "Google Sheet you opened stays as it was"));
         w.OpenFile.Dirty = false;
         w.Close();
     }

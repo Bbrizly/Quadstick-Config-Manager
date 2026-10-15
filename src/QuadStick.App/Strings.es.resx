@@ -1965,7 +1965,7 @@ Enviar lo convierte al formato propio del sistema de informes de fallos. Tambié
     <value>Estas pestañas se pasaron por alto: </value>
   </data>
   <data name="Main_ThisAppCanSendAnonymous" xml:space="preserve">
-    <value>Esta aplicación puede enviar datos de uso anónimos: qué pantallas se usan, si instalar en un QuadStick funcionó, y nada más. Mientras está activado, esos eventos se envían según ocurren.
+    <value>Esta aplicación puede enviar datos de uso anónimos: qué pantallas se usan, si instalar en un QuadStick funcionó, cuánto tardó desde abrir un perfil hasta instalarlo, para qué juego es un perfil de la biblioteca en línea, con qué fuerza pudo aspirar y soplar si hace la prueba de fuerza, y nada más. Mientras está activado, esos eventos se envían según ocurren.
 
 Nunca se envía, elija lo que elija: sus perfiles, nombres de archivos, rutas de archivos, su cuenta de Google, ni su nombre o el nombre de su equipo. Nada de lo que escribe se envía tampoco, salvo el cuadro de comentarios de Ajustes, que solo envía cuando pulsa Enviar en él.
 
@@ -2999,7 +2999,7 @@ Azul, INPUTS: lo que hace su boca. Los nombres mp_… son orificios de la boquil
     <value>Reducir el movimiento</value>
   </data>
   <data name="Settings_ReduceMotionCaption" xml:space="preserve">
-    <value>Desactiva la animación de fundido del tutorial.</value>
+    <value>Nada se desliza ni se funde. Las filas nuevas se resaltan un momento.</value>
   </data>
   <data name="Settings_RememberWindow" xml:space="preserve">
     <value>Recordar tamaño y posición de la ventana</value>
@@ -3516,5 +3516,144 @@ Azul, INPUTS: lo que hace su boca. Los nombres mp_… son orificios de la boquil
   </data>
   <data name="Update_YouAreOnCurrentWhich" xml:space="preserve">
     <value>Está en la versión {0}, que es la más reciente.</value>
+  </data>
+  <data name="DevicePage_MacGames" xml:space="preserve">
+    <value>Juegos en un Mac</value>
+  </data>
+  <data name="DevicePage_MacGamesLine" xml:space="preserve">
+    <value>En un Mac, pon el modo de emulación USB 7 en la hoja de preferencias del perfil del juego y los juegos verán un mando de PlayStation 4.</value>
+  </data>
+  <data name="DevicePage_MacGamesHelp" xml:space="preserve">
+    <value>Un Mac todavía no puede usar el puente de mando Xbox, porque crear un mando virtual necesita un permiso de Apple. El modo 7 no lo necesita: el QuadStick se presenta como un DualShock 4 inalámbrico, que macOS y Steam admiten por USB.
+
+El modo 7 es solo un mando. No hay teclado, ni ratón, ni unidad, así que esta app no ve el stick mientras está activo. Ponlo en la hoja de preferencias del perfil del juego, no en los ajustes del dispositivo: así, al cambiar a otro perfil vuelven la unidad, el teclado y el ratón. Cambiar de modo dentro del mismo perfil no lo hace.</value>
+  </data>
+  <data name="DevicePage_MacPad" xml:space="preserve">
+    <value>Mando en modo 0</value>
+  </data>
+  <data name="DevicePage_MacPadLine" xml:space="preserve">
+    <value>Permite que los juegos basados en SDL, como muchos juegos de Mac, vean el QuadStick como un mando en el modo de emulación 0, sin perder el teclado, el ratón ni la unidad.</value>
+  </data>
+  <data name="DevicePage_MacPadHelp" xml:space="preserve">
+    <value>SDL es la biblioteca de mandos en la que se basan muchos juegos. Solo trata un dispositivo como mando si conoce su disposición, y ninguna versión de SDL conoce la del QuadStick. Esto se la indica, para cada app que se abra a partir de ahora y otra vez en cada inicio de sesión, así que cierra y vuelve a abrir un juego que ya esté en marcha. No necesita nada de Apple ni cambia nada en el mando.
+
+Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desactivarlo deshace el cambio.</value>
+  </data>
+  <data name="DevicePage_MacPadOn" xml:space="preserve">
+    <value>Activado. Los juegos que se abran a partir de ahora ven un mando.</value>
+  </data>
+  <data name="DevicePage_MacPadFailed" xml:space="preserve">
+    <value>Este Mac no aceptó el cambio, así que no se cambió nada.</value>
+  </data>
+  <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
+    <value>La versión de la App Store no puede hacer este cambio por sí misma. Copia el comando, pégalo en Terminal y pulsa Retorno. Después cierra y vuelve a abrir el juego.</value>
+  </data>
+  <data name="DevicePage_MacPadCopy" xml:space="preserve">
+    <value>Copiar el comando</value>
+  </data>
+  <data name="DevicePage_MacPadCopyUndo" xml:space="preserve">
+    <value>Copiar el comando para deshacer</value>
+  </data>
+  <data name="DevicePage_MacPadCopied" xml:space="preserve">
+    <value>Copiado. Pégalo en Terminal y pulsa Retorno.</value>
+  </data>
+  <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
+    <value>¿El QuadStick está conectado pero no aparece? La versión de la Mac App Store solo puede abrir su unidad después de que la elija una vez. Después la encuentra sola.</value>
+  </data>
+  <data name="Link_Title" xml:space="preserve">
+    <value>QuadStick por Bluetooth o cable</value>
+  </data>
+  <data name="Link_Explain" xml:space="preserve">
+    <value>Conéctese a un QuadStick a través de su propia consola: emparejado por Bluetooth o con un cable serie.</value>
+  </data>
+  <data name="Link_ExplainMore" xml:space="preserve">
+    <value>Esto funciona con un QuadStick emparejado en los ajustes de Bluetooth de su equipo mientras su Bluetooth está en modo SPP, o con un cable serie USB de 3.3V en la toma de las entradas digitales 1 y 2. Mientras el Bluetooth está en modo SPP, el QuadStick no es un mando Bluetooth; por USB sigue siéndolo. Un perfil que usa digital_in_1 o digital_in_2 desactiva el puerto del cable.</value>
+  </data>
+  <data name="Link_Port" xml:space="preserve">
+    <value>Puerto</value>
+  </data>
+  <data name="Link_Refresh" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
+  <data name="Link_Connect" xml:space="preserve">
+    <value>Conectar</value>
+  </data>
+  <data name="Link_NoPorts" xml:space="preserve">
+    <value>No se encontraron puertos serie. Empareje el QuadStick en los ajustes de Bluetooth de su equipo, o conecte el cable, y luego pulse Actualizar.</value>
+  </data>
+  <data name="Link_Connecting" xml:space="preserve">
+    <value>Conectando…</value>
+  </data>
+  <data name="Link_Connected" xml:space="preserve">
+    <value>Conectado a un QuadStick, firmware {0}.</value>
+  </data>
+  <data name="Link_NotAQuadStick" xml:space="preserve">
+    <value>Algo respondió en ese puerto, pero no es un QuadStick.</value>
+  </data>
+  <data name="Link_CouldNotOpen" xml:space="preserve">
+    <value>No se pudo abrir {0}: {1}</value>
+  </data>
+  <data name="Link_SendProfile" xml:space="preserve">
+    <value>Enviar un perfil…</value>
+  </data>
+  <data name="Link_Sending" xml:space="preserve">
+    <value>Enviando {0}…</value>
+  </data>
+  <data name="Link_Sent" xml:space="preserve">
+    <value>{0} está en el QuadStick y cargado. Lo que tenía antes se guardó en {1}.</value>
+  </data>
+  <data name="Link_SentNew" xml:space="preserve">
+    <value>{0} está en el QuadStick y cargado.</value>
+  </data>
+  <data name="Link_OverwritePrefs" xml:space="preserve">
+    <value>¿Reemplazar prefs.csv?</value>
+  </data>
+  <data name="Link_OverwritePrefsMore" xml:space="preserve">
+    <value>prefs.csv contiene los ajustes propios del QuadStick, así que cambia todos los perfiles a la vez. Antes se guarda la copia actual.</value>
+  </data>
+  <data name="Link_Measure" xml:space="preserve">
+    <value>Medir la fuerza de aspirar y soplar</value>
+  </data>
+  <data name="Link_MeasureConfirmTitle" xml:space="preserve">
+    <value>¿Medir la fuerza?</value>
+  </data>
+  <data name="Link_MeasureConfirm" xml:space="preserve">
+    <value>Esto carga un perfil de prueba con solo aspiración fuerte y soplido fuerte, le pide siete soplidos y siete aspiraciones, y luego reinicia el QuadStick, lo que devuelve su propio perfil y sus ajustes. Si algo sale mal, desconecte el QuadStick y vuelva a conectarlo. Eso también lo devuelve todo.</value>
+  </data>
+  <data name="Link_NeedsUsb" xml:space="preserve">
+    <value>Conecte también el QuadStick por USB. La prueba observa sus botones por USB, y en modo Xbox 360 (modo de emulación 3) no puede verlos.</value>
+  </data>
+  <data name="Link_HandsOff" xml:space="preserve">
+    <value>Aparte las manos de la boquilla mientras se ponen a cero los sensores.</value>
+  </data>
+  <data name="Link_PuffNow" xml:space="preserve">
+    <value>Sople lo más fuerte que pueda. Intento {0} de 7.</value>
+  </data>
+  <data name="Link_SipNow" xml:space="preserve">
+    <value>Aspire lo más fuerte que pueda. Intento {0} de 7.</value>
+  </data>
+  <data name="Link_Result" xml:space="preserve">
+    <value>Soplido más fuerte: {0} del rango del sensor. Aspiración más fuerte: {1}. Su umbral fuerte es {2}.</value>
+  </data>
+  <data name="Link_UnderLowest" xml:space="preserve">
+    <value>menos de {0}%</value>
+  </data>
+  <data name="Link_PercentValue" xml:space="preserve">
+    <value>{0}%</value>
+  </data>
+  <data name="Link_Cancelled" xml:space="preserve">
+    <value>Detenido. El QuadStick se reinició, así que su propio perfil y sus ajustes han vuelto.</value>
+  </data>
+  <data name="Link_Stop" xml:space="preserve">
+    <value>Detener</value>
+  </data>
+  <data name="Link_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Link_PageButton" xml:space="preserve">
+    <value>Bluetooth o cable</value>
+  </data>
+  <data name="Link_PageButtonName" xml:space="preserve">
+    <value>Conectar con el QuadStick por Bluetooth o con un cable serie</value>
   </data>
 </root>

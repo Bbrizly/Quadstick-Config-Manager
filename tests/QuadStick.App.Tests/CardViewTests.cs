@@ -23,6 +23,15 @@ public class CardViewTests
         "x,normal,lip,,,,,,,,fire button\n" +
         "circle,turbo,lip\n");
 
+    // Two outputs on one input are a button combo and share a card. The
+    // accordion is about separate mappings, so it needs separate inputs.
+    static ProfileFile TwoSeparateMappings() => ProfileFile.Load(
+        "Profile Name,,Solo\n" +
+        "game.csv\n" +
+        "Outputs,Function,usb\n" +
+        "x,normal,lip,,,,,,,,fire button\n" +
+        "circle,turbo,lip_soft\n");
+
     static MainWindow OpenOnLip(ProfileFile file, bool cards = true, string zone = "lip")
     {
         var s = Settings.Load();
@@ -55,7 +64,7 @@ public class CardViewTests
     [AvaloniaFact]
     public void Cards_read_as_sentences_and_expand_one_at_a_time()
     {
-        var file = TwoLipMappings();
+        var file = TwoSeparateMappings();
         var w = OpenOnLip(file);
 
         Assert.StartsWith("Mapping 1: press X when you lip, as normal.",

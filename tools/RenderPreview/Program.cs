@@ -461,6 +461,34 @@ if (args.Contains("--models"))
 // describing a screen. Light theme only, since these go in an email.
 // The September round of Drew Redepenning's review: less on each settings
 // group, plainer words, and a picture that follows what is picked on the left.
+if (args.Contains("--drew3"))
+{
+    Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
+    Settings.Save(new AppSettings { TutorialSeen = true, RememberWindow = false, DeviceCards = false, Language = lang });
+
+    // Two outputs on one sip is Drew's own example of a combo, and the lip row
+    // takes numbers so the parameter line has something to say.
+    const string Combo = "Profile Name,,Gameplay\nmygame.csv\nOutputs,Function,usb\n"
+        + "x,normal,mp_center_sip\ncircle,normal,mp_center_sip\nkb_space,tap 500 1,lip\n";
+
+    Capture("1-combo-in-one-box", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combo));
+        w.SelectZoneForPreview("mp_center");
+    });
+
+    Capture("2-parameter-wording", w =>
+    {
+        w.Height = 1000;
+        w.LoadProfile(ProfileFile.Load(Combo));
+        w.SelectZoneForPreview("lip");
+    });
+
+    Console.WriteLine($"Drew's third set written to {outDir}");
+    return;
+}
+
 if (args.Contains("--drew2"))
 {
     Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
