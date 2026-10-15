@@ -879,22 +879,93 @@ fn xlsx_name(name: &str) -> String {
         }
     )
 }
-/// Avalonia `MainWindow.LibraryDir`: Documents/QuadStick Profiles. The
-/// rewrite has no library list of its own, so restore lands where the
-/// shipped app keeps profiles.
+/// Avalonia `MainWindow.LibraryDir`: `MyDocuments`/QuadStick Profiles, so a
+/// restore lands where the shipped app lists profiles. .NET 8 resolves
+/// `MyDocuments` per OS (`Environment.GetFolderPathCore.Unix.cs`):
+///
+/// - Windows: the Documents known folder (follows OneDrive redirection).
+/// - macOS: `NSDocumentDirectory`, which is `$HOME/Documents` (the container
+///   path under the sandbox, where `HOME` points too).
+/// - Linux: [`linux_documents_dir`], the .NET XDG lookup.
 #[must_use]
 pub fn library_dir() -> PathBuf {
     #[cfg(target_os = "windows")]
-    let documents =
-        std::env::var_os("USERPROFILE").map(|home| PathBuf::from(home).join("Documents"));
-    #[cfg(not(target_os = "windows"))]
-    let documents = std::env::var_os("XDG_DOCUMENTS_DIR")
-        .filter(|_| cfg!(target_os = "linux"))
+    let documents = dirs::document_dir()
+        .or_else(|| {
+            std::env::var_os("USERPROFILE").map(|home| PathBuf::from(home).join("Documents"))
+        })
+        .unwrap_or_else(std::env::temp_dir);
+    #[cfg(target_os = "linux")]
+    let documents = linux_documents_dir(
+        &dotnet_home(),
+        |key| std::env::var(key).ok(),
+        |path| std::fs::read_to_string(path).ok(),
+    );
+    #[cfg(not(any(target_os = "windows", target_os = "linux")))]
+    let documents = dotnet_home().join("Documents");
+    documents.join("QuadStick Profiles")
+}
+
+/// `PersistedFiles.GetHomeDirectory`: a non-empty `HOME`, else the password
+/// entry; .NET then uses `/` when both are missing.
+#[cfg(not(target_os = "windows"))]
+fn dotnet_home() -> PathBuf {
+    std::env::var_os("HOME")
+        .filter(|home| !home.is_empty())
         .map(PathBuf::from)
-        .or_else(|| std::env::var_os("HOME").map(|home| PathBuf::from(home).join("Documents")));
-    documents
-        .unwrap_or_else(std::env::temp_dir)
-        .join("QuadStick Profiles")
+        .or_else(std::env::home_dir)
+        .filter(|home| !home.as_os_str().is_empty())
+        .unwrap_or_else(|| PathBuf::from("/"))
+}
+
+/// .NET 8 `ReadXdgDirectory(home, "XDG_DOCUMENTS_DIR", "Documents")`: an
+/// absolute `XDG_DOCUMENTS_DIR`, else the first matching line of
+/// `user-dirs.dirs` under an absolute `XDG_CONFIG_HOME` or `$HOME/.config`
+/// (`$HOME/`-relative or absolute; other lines are skipped), else
+/// `$HOME/Documents`. `XDG_CONFIG_DIRS` is not searched, as in .NET.
+#[cfg_attr(not(any(target_os = "linux", test)), allow(dead_code))]
+fn linux_documents_dir(
+    home: &std::path::Path,
+    env: impl Fn(&str) -> Option<String>,
+    read: impl Fn(&std::path::Path) -> Option<String>,
+) -> PathBuf {
+    const KEY: &str = "XDG_DOCUMENTS_DIR";
+    if let Some(path) = env(KEY).filter(|path| path.starts_with('/')) {
+        return PathBuf::from(path);
+    }
+    let config = env("XDG_CONFIG_HOME")
+        .filter(|path| path.starts_with('/'))
+        .map_or_else(|| home.join(".config"), PathBuf::from);
+    if let Some(text) = read(&config.join("user-dirs.dirs")) {
+        for line in text.lines() {
+            if let Some(path) = xdg_line_value(line, KEY) {
+                return match path.strip_prefix("$HOME/") {
+                    Some(rest) => home.join(rest),
+                    None => PathBuf::from(path),
+                };
+            }
+        }
+    }
+    home.join("Documents")
+}
+
+/// One `KEY = "value"` line, parsed the way .NET does: the key must be at the
+/// start (after whitespace), the value quoted, `$HOME/`-relative or absolute,
+/// and at least one character long.
+fn xdg_line_value<'a>(line: &'a str, key: &str) -> Option<&'a str> {
+    let rest = line.trim_start().strip_prefix(key)?;
+    let rest = rest.trim_start().strip_prefix('=')?;
+    let rest = rest.trim_start().strip_prefix('"')?;
+    let body = rest.strip_prefix("$HOME/").unwrap_or(rest);
+    if !rest.starts_with("$HOME/") && !rest.starts_with('/') {
+        return None;
+    }
+    let end = body.find('"')?;
+    if end == 0 {
+        return None;
+    }
+    let value_len = rest.len() - body.len() + end;
+    Some(&rest[..value_len])
 }
 
 const MAX_BASE: usize = qcm_config::MAX_DEVICE_FILE_NAME_LENGTH - 4;
@@ -1040,8 +1111,85 @@ fn drive_internal(what: &'static str, error: impl std::fmt::Display) -> QcmError
 
 #[cfg(test)]
 mod tests {
-    use super::{safe_csv_name, safe_csv_name_free};
+    use super::{linux_documents_dir, safe_csv_name, safe_csv_name_free};
     use std::collections::BTreeSet;
+    use std::path::{Path, PathBuf};
+
+    /// The Linux lookup with a fake environment and one readable file at
+    /// the path the .NET rules pick (absolute XDG_CONFIG_HOME or ~/.config).
+    fn docs(env: &[(&str, &str)], file: Option<&str>) -> PathBuf {
+        let get = |key: &str| {
+            env.iter()
+                .find(|(k, _)| *k == key)
+                .map(|(_, v)| (*v).to_owned())
+        };
+        let config = get("XDG_CONFIG_HOME")
+            .filter(|v| v.starts_with('/'))
+            .unwrap_or_else(|| "/home/u/.config".to_owned());
+        let expected = Path::new(&config).join("user-dirs.dirs");
+        linux_documents_dir(Path::new("/home/u"), get, |path| {
+            (path == expected)
+                .then(|| file.map(str::to_owned))
+                .flatten()
+        })
+    }
+
+    // UNRESOLVED-FL1: .NET 8 MyDocuments on Linux (ReadXdgDirectory).
+    #[test]
+    fn linux_documents_follow_the_dotnet_xdg_lookup() {
+        assert_eq!(docs(&[], None), Path::new("/home/u/Documents"));
+        assert_eq!(
+            docs(&[("XDG_DOCUMENTS_DIR", "/data/docs")], None),
+            Path::new("/data/docs")
+        );
+        // A relative env value is ignored, the file is read instead.
+        assert_eq!(
+            docs(
+                &[("XDG_DOCUMENTS_DIR", "docs")],
+                Some("XDG_DOCUMENTS_DIR=\"$HOME/Dokumente\"\n")
+            ),
+            Path::new("/home/u/Dokumente")
+        );
+        assert_eq!(
+            docs(&[], Some("# c\n  XDG_DOCUMENTS_DIR = \"/abs/Docs\"\n")),
+            Path::new("/abs/Docs")
+        );
+        // `$HOME` alone, a relative value and an empty value do not count.
+        assert_eq!(
+            docs(
+                &[],
+                Some(
+                    "XDG_DOCUMENTS_DIR=\"$HOME\"\nXDG_DOCUMENTS_DIR=\"rel\"\nXDG_DOCUMENTS_DIR=\"\"\n"
+                )
+            ),
+            Path::new("/home/u/Documents")
+        );
+        // The first good line wins; other keys are skipped.
+        assert_eq!(
+            docs(
+                &[],
+                Some(
+                    "XDG_DESKTOP_DIR=\"$HOME/Desk\"\nXDG_DOCUMENTS_DIR=\"$HOME/A\"\nXDG_DOCUMENTS_DIR=\"$HOME/B\"\n"
+                )
+            ),
+            Path::new("/home/u/A")
+        );
+        // An absolute XDG_CONFIG_HOME moves the file; a relative one does not.
+        assert_eq!(
+            docs(
+                &[("XDG_CONFIG_HOME", "/cfg")],
+                Some("XDG_DOCUMENTS_DIR=\"$HOME/C\"\n")
+            ),
+            Path::new("/home/u/C")
+        );
+        assert_eq!(
+            docs(
+                &[("XDG_CONFIG_HOME", "cfg")],
+                Some("XDG_DOCUMENTS_DIR=\"$HOME/D\"\n")
+            ),
+            Path::new("/home/u/D")
+        );
+    }
 
     // SafeFileNameTests: what a sheet name becomes on disk.
     #[test]
