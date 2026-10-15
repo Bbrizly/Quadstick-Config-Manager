@@ -85,14 +85,31 @@ TASK-038 does not make React a profile engine. The UI renders `EditorSnapshot`, 
 | Serial port | **DONE** `serialport 4.10.1` (no libudev) in `console_shell.rs`, 115200 baud, opaque per-list port ids, macOS `tty.*` twin hidden; opened by Connect, dropped on close, failed connect and the strength-test restart |
 | DeviceLink window | **DONE** `DeviceLinkDialog.tsx` from the device page: ports, Connect, Send (backup, read-back, load, default/prefs questions), Measure (USB reading first, maxima 100, calibrate, 5..95 sweep, Stop, always delete + boot); `DeviceLinkWindowTests` ported |
 | Telemetry (`Telemetry.cs`) | **DONE** `src-tauri/src/telemetry.rs`: PostHog `/batch/`, same events/allowlist/consent v2/kill switch/build-time token, durable install id, `game`, `setup_seconds`, `strength_measured`, feedback flush, crash send from a `chain` |
-| Registry + `qcm://profile/<id>` | **DONE** `src-tauri/src/registry.rs` + App launch-link open; **BLOCKED** scheme registration/macOS delivery/second-launch forwarding: `tauri-plugin-deep-link` is not a dependency |
+| Registry + `qcm://profile/<id>` | **DONE** `src-tauri/src/registry.rs` + App launch-link open |
 
-Still open from this phase: the first-run usage notice dialog (consent today comes only from the Settings toggle, which records notice 2); `install_failed` `cancelled_*` reasons; showing the install id in Settings; PRIVACY.md wording for the Rust `$lib`/User-Agent; a chain in the Rust panic report so a crash can be sent.
+## Phase 3 (2026-10-15)
+
+| Area | Rewrite state |
+|---|---|
+| Usage notice (notice 2) | **DONE** `UsageNotice.tsx`: before the crash prompt and tour, No is default, skipped under `QSCM_TELEMETRY=0`, failed write is a no; fixed-URL privacy link |
+| Install id, cancel reasons, PRIVACY.md | **DONE** id + copy in Settings > Advanced; `cancelled_device/folder/default/preferences` from the install dialog; PRIVACY.md describes the Tauri sender (`$lib`, fixed User-Agent, OS + arch) |
+| Panic report | **DONE** `CrashPayload` shape with a chain of backtrace function names, no message/file/line; read-back re-filtered |
+| Deep links | **DONE** `tauri-plugin-deep-link 2.4.10` + `tauri-plugin-single-instance 2.4.5` (last releases on tauri 2.11): bundle scheme, runtime registration on Windows/Linux, macOS Apple events and second launches into one `LinkInbox`, pushed to the window on a channel |
+| Share setup | **DONE** `ShareSetupDialog.tsx` (connect, save, then the action) |
+| Controller bridge / Mac gamepad | **DONE** `controller.rs` + `ControllerRow.tsx` on the device page; bridge child process, Mac SDL LaunchAgent switch or copy commands in the store build |
+| Drive picker, Linux token | **DONE** `DrivePickerDialog.tsx` (one backup into the review); Linux keeps the Google token for the run (`InMemoryTokenStore` parity) |
+| Duplicate mark | **DONE** `duplicates.ts`, incl. the 3ad22ce combo rule |
+| Wording homes | **DONE** see the main-sync table |
+
+Gates at `6df8f9b` (local, macOS): `pnpm check` (143 tests), `cargo test --workspace` (451), clippy `-D warnings`, fmt, catalog regeneration clean, `pnpm tauri build --debug --no-bundle`.
+
+Still open: bundling `qs-bridge` beside the Linux app (Tauri `externalBin`); a Drive restore entry on Home and after first connect (the rewrite home has none yet); bulk Drive restore needs a local library folder; Linux builds of the new cfg paths are unverified here (CI); real-OS link click-through, bridge with a stick in mode 2, SDL game on a Mac.
 
 ## Runtime cost while a game runs
 
 - Console: nothing runs while the dialog is closed or idle. Ports are listed on open and on Refresh only. Live input is subscribed, and the 30 ms breath wait runs, only during a measurement.
 - Telemetry: off is a flag read. On and idle is one thread parked on a channel (no timer); an event opens a 5 s batch window.
+- Controller bridge: off, nothing runs. On, one thread is parked on the child's stdout; the bridge process itself checks stdin four times a second, as on Avalonia. Links and bridge state arrive on channels only when something changes.
 
 - Live input subscribes only while the window is visible and focused (DOM `visibilitychange`/`focus`/`blur`; Tauri window events would need an event permission the capability does not grant). Frames are coalesced to one React update per animation frame (`src/features/live/useLiveInput.ts`).
 - The native worker (`src-tauri/src/streaming.rs`) has no 4 ms or 50 ms polling. Without a device it sleeps on a condvar until the 1.5 s rescan (floor 250 ms); the last unsubscribe wakes and stops it, so nothing enumerates HID without a subscriber. A quiet open stick wakes twice a second (500 ms read timeout). A new subscriber gets the current state at once.
