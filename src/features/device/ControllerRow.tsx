@@ -16,12 +16,12 @@ const BRIDGE_TEXT: Record<BridgeState, MessageKey> = {
 const WARN: ReadonlySet<BridgeState> = new Set(["no_access", "no_virtual_pad", "stopped"]);
 
 /** `DeviceSettingsPage.Explain`: one line, and the long help behind it. */
-function Explain({ line, title, help }: { readonly line: MessageKey; readonly title: MessageKey; readonly help: MessageKey }) {
+function Explain({ line, heading, help }: { readonly line: MessageKey; readonly heading: MessageKey; readonly help: MessageKey }) {
   const { t } = useI18n();
   return (
     <details className="device-preference-adapters">
       <summary>{t(line)}</summary>
-      <h4>{t(title)}</h4>
+      <h4>{t(heading)}</h4>
       {t(help)
         .split(/\n\s*\n/u)
         .map((paragraph) => (
@@ -98,7 +98,7 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
           />
           <span>{t("DevicePage_Bridge")}</span>
         </label>
-        <Explain line="DevicePage_BridgeLine" title="DevicePage_Bridge" help="DevicePage_BridgeHelp" />
+        <Explain line="DevicePage_BridgeLine" heading="DevicePage_Bridge" help="DevicePage_BridgeHelp" />
         <LiveRegion visuallyHidden={false}>
           {text === "" ? null : (
             <span className={bridgeState !== null && WARN.has(bridgeState) ? "feature-error" : undefined}>{text}</span>
@@ -136,7 +136,7 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
   return (
     <section className="controller-row" aria-label={t("DevicePage_MacGames")}>
       <h3>{t("DevicePage_MacGames")}</h3>
-      <Explain line="DevicePage_MacGamesLine" title="DevicePage_MacGames" help="DevicePage_MacGamesHelp" />
+      <Explain line="DevicePage_MacGamesLine" heading="DevicePage_MacGames" help="DevicePage_MacGamesHelp" />
       {options.macSandboxed ? (
         <div>
           <p>{t("DevicePage_MacPadStoreLine")}</p>
@@ -158,7 +158,7 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
           <span>{t("DevicePage_MacPad")}</span>
         </label>
       )}
-      <Explain line="DevicePage_MacPadLine" title="DevicePage_MacPad" help="DevicePage_MacPadHelp" />
+      <Explain line="DevicePage_MacPadLine" heading="DevicePage_MacPad" help="DevicePage_MacPadHelp" />
       <LiveRegion visuallyHidden={false}>
         {macStatus.text === "" ? null : (
           <span className={macStatus.warn ? "feature-error" : undefined}>{macStatus.text}</span>
