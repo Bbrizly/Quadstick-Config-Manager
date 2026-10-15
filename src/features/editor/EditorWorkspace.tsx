@@ -15,7 +15,8 @@ import {
   type QcmClient,
 } from "../../platform";
 import { QuadStickVisualizer } from "../visualizer/QuadStickVisualizer";
-import { zonesForRow, type ZoneId } from "../visualizer/deviceSummary";
+import { zoneOf, zonesForRow, type ZoneId } from "../visualizer/deviceSummary";
+import { firstMappedCombo, partLabel, partOf } from "../visualizer/parts";
 import { BindingInspector } from "./BindingInspector";
 import { comboGroups } from "./combos";
 import { SentenceCard } from "./SentenceCard";
@@ -159,7 +160,25 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   );
   const [selectedSheet, setSelectedSheet] = useState(() => profileModes[0]?.index ?? 0);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
-  const [selectedZone, setSelectedZone] = useState<ZoneId | null>(null);
+  const [selectedZone, setSelectedZoneState] = useState<ZoneId | null>(null);
+  // The socket or hole pairing picked on the picture. Four jacks share one zone
+  // and five pairings share another, so the list narrows to the part picked.
+  const [pickedInput, setPickedInput] = useState<string | null>(null);
+  const [wholeZone, setWholeZone] = useState(false);
+  const setSelectedZone = useCallback(
+    (zone: ZoneId | null): void => {
+      if (zone !== selectedZone) {
+        setPickedInput(null);
+        setWholeZone(false);
+      }
+      setSelectedZoneState(zone);
+    },
+    [selectedZone],
+  );
+  const pickInput = useCallback((input: string | null): void => {
+    setPickedInput(input);
+    setWholeZone(false);
+  }, []);
   const [view, setView] = useState<EditorView>("device");
   const [raw, setRaw] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -193,10 +212,26 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
     (mode) => mode.index === selectedSheet && mode.kind === "mode",
   ) ?? profileModes[0] ?? null;
   const rows = useMemo(() => bindingRows(snapshot, selectedMode), [snapshot, selectedMode]);
-  const zoneRows = useMemo(() => {
+  const wholeZoneRows = useMemo(() => {
     if (selectedZone === null) return rows;
     return rows.filter((row) => zonesForRow(row).includes(selectedZone));
   }, [rows, selectedZone]);
+  // Avalonia lands the combo zone on a pairing, so it narrows from the start.
+  const effectivePick =
+    selectedZone === "combo" && (pickedInput === null || zoneOf(pickedInput) !== "combo")
+      ? firstMappedCombo(rows)
+      : pickedInput;
+  const part =
+    !wholeZone && effectivePick !== null && selectedZone !== null && zoneOf(effectivePick) === selectedZone
+      ? partOf(effectivePick)
+      : null;
+  const zoneRows = useMemo(() => {
+    if (part === null) return wholeZoneRows;
+    return wholeZoneRows.filter((row) =>
+      row.cells.slice(2, 10).some((cell) => partOf(cell.trim()) === part),
+    );
+  }, [part, wholeZoneRows]);
+  const narrowed = part !== null && effectivePick !== null && wholeZoneRows.length > zoneRows.length;
   const groups = useMemo(() => comboGroups(rows), [rows]);
   const groupOf = (row: BindingRow): readonly BindingRow[] => groups.get(row.row) ?? [row];
   const cardRows = zoneRows.filter((row) => groupOf(row)[0]?.row === row.row);
@@ -557,6 +592,8 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                 onSelectRow={setSelectedRow}
                 onSelectZone={setSelectedZone}
                 onLiveRows={setLiveRows}
+                pickedInput={pickedInput}
+                onPickInput={pickInput}
               />
             </section>
 
@@ -588,6 +625,19 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                   </button>
                 ) : null}
               </div>
+              {narrowed && effectivePick !== null ? (
+                <p className="narrowed-note">
+                  <span>{t("Main_NarrowedToPart", [partLabel(effectivePick, t)])}</span>
+                  <button
+                    type="button"
+                    className="quiet"
+                    aria-label={t("Main_ShowEveryMappingHere")}
+                    onClick={() => setWholeZone(true)}
+                  >
+                    {t("Main_ShowAllCount", [wholeZoneRows.length])}
+                  </button>
+                </p>
+              ) : null}
               {selectedZone === null && zoneRows.length === 0 ? (
                 <p className="empty-copy">{t("Main_NothingSelectedNNPickA")}</p>
               ) : zoneRows.length === 0 ? (

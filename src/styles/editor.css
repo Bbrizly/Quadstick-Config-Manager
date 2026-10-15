@@ -548,6 +548,16 @@
   }
 }
 
+.narrowed-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: var(--qcm-small-size);
+  color: var(--qcm-text-secondary);
+}
+
 .combo-note {
   margin: 0;
   font-size: var(--qcm-small-size);

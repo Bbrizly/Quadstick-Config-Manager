@@ -14,7 +14,6 @@ import {
   TOP_CALLOUT_GAP,
   comboHotspots,
   comboPoints,
-  COMBO_PLACES,
   deviceBottomLabelY,
   devicePhotoY,
   deviceStageHeight,
@@ -39,6 +38,7 @@ import {
   type ZoneId,
 } from "./deviceSummary";
 import { GestureTable } from "./GestureTable";
+import { comboPairTitle, comboPrefix, firstMappedCombo } from "./parts";
 import "./visualizer.css";
 
 export type VisualizerBinding = BindingCells;
@@ -55,6 +55,9 @@ interface QuadStickVisualizerProps {
   readonly onSelectZone: (zone: ZoneId) => void;
   readonly model?: QsModel;
   readonly onLiveRows?: (rows: ReadonlySet<number>) => void;
+  /** The socket or hole pairing picked on the picture, when the parent narrows its list to it. */
+  readonly pickedInput?: string | null;
+  readonly onPickInput?: (input: string | null) => void;
 }
 
 interface ZoneMeta {
@@ -78,14 +81,6 @@ const ZONE_META: readonly ZoneMeta[] = [
 ];
 
 const MOUTHPIECE_ZONES = new Set<ZoneId>(["mp_left", "mp_center", "mp_right", "side", "lip"]);
-
-const COMBO_PREFIXES = [
-  "mp_left_center_",
-  "mp_right_center_",
-  "mp_left_right_",
-  "mp_right_mode_",
-  "mp_triple_",
-] as const;
 
 const BACK_STAGE_W = 720;
 const BACK_STAGE_H = 285;
@@ -174,19 +169,6 @@ const PHOTOS: Record<QsModel, string> = {
 
 function photoFor(model: QsModel): string {
   return PHOTOS[model];
-}
-
-function comboPrefix(token: string): string {
-  return COMBO_PREFIXES.find((prefix) => token.startsWith(prefix)) ?? "";
-}
-
-function comboPairTitle(input: string, t: ReturnType<typeof useI18n>["t"]): string {
-  if (input.startsWith("mp_triple_")) return t("Main_AllThree");
-  if (input.startsWith("mp_left_center_")) return t("Main_APlusB", [t("Main_Left"), t("Main_Center")]);
-  if (input.startsWith("mp_right_center_")) return t("Main_APlusB", [t("Main_Right"), t("Main_Center")]);
-  if (input.startsWith("mp_right_mode_")) return t("Main_RightSideTube");
-  if (input.startsWith("mp_left_right_")) return t("Main_APlusB", [t("Main_Left"), t("Main_Right")]);
-  return t("Main_Combos");
 }
 
 function modelHasZone(diagram: DeviceDiagramSpec, zoneId: ZoneId): boolean {
@@ -325,11 +307,13 @@ export function QuadStickVisualizer({
   onSelectZone,
   model = "fps",
   onLiveRows,
+  pickedInput,
+  onPickInput,
 }: QuadStickVisualizerProps) {
   const { t, plural } = useI18n();
   const [practice, setPractice] = useState(false);
   const [combos, setCombos] = useState(false);
-  const [pickedCombo, setPickedCombo] = useState<string | null>(null);
+  const [chosenCombo, setPickedCombo] = useState<string | null>(null);
   const [live, setLive] = useState<LiveSnapshot | null>(null);
   const [liveOutputs, setLiveOutputs] = useState<ReadonlySet<string>>(new Set());
   const [focusedZone, setFocusedZone] = useState(0);
@@ -404,22 +388,25 @@ export function QuadStickVisualizer({
     };
   }, [client]);
 
-  useEffect(() => {
-    if (selectedZone === "combo" && !combos) setCombos(true);
-  }, [selectedZone, combos]);
+  // Entering the combo zone from outside (an issue link, a card) turns the
+  // combo view on and keeps it on, as clicking the toggle would. Adjusted
+  // during render rather than in an effect so it never costs a second pass.
+  if (selectedZone === "combo" && !combos) setCombos(true);
 
   // Avalonia auto-picks the first mapped pairing so hole rings appear immediately.
-  useEffect(() => {
-    if (!showCombos) return;
-    if (pickedCombo !== null && comboPrefix(pickedCombo) !== "") return;
-    const comboRows = rowsByZone.get("combo") ?? [];
-    const mapped = COMBO_PLACES.find((place) =>
-      comboRows.some((row) =>
-        row.cells.slice(2, 10).some((cell) => comboPrefix(cell.trim()) === comboPrefix(place.input)),
-      ),
-    );
-    setPickedCombo(mapped?.input ?? COMBO_PLACES[0]?.input ?? null);
-  }, [showCombos, pickedCombo, rowsByZone]);
+  // A parent that narrows its list owns the pick, so the rings and the list
+  // can never name two different pairings.
+  const chosen =
+    pickedInput === undefined
+      ? chosenCombo
+      : pickedInput !== null && comboPrefix(pickedInput) !== ""
+        ? pickedInput
+        : null;
+  const pickedCombo = useMemo(() => {
+    if (!showCombos) return chosen;
+    if (chosen !== null && comboPrefix(chosen) !== "") return chosen;
+    return firstMappedCombo(rowsByZone.get("combo") ?? []);
+  }, [showCombos, chosen, rowsByZone]);
 
   const photoY = devicePhotoY(diagram);
   const photoH = photoHeight(diagram);
@@ -458,12 +445,14 @@ export function QuadStickVisualizer({
 
   const selectZone = (zone: ZoneMeta): void => {
     onSelectZone(zone.id);
+    onPickInput?.(null);
     const first = rowsByZone.get(zone.id)?.[0];
     if (first !== undefined) onSelectRow(first.row);
   };
 
   const selectBackSocket = (zone: ZoneId, seed: string | null): void => {
     onSelectZone(zone);
+    onPickInput?.(seed);
     if (seed === null) return;
     const match = rows.find((row) =>
       row.cells.slice(2, 10).some((cell) => cell.trim() === seed),
@@ -475,6 +464,7 @@ export function QuadStickVisualizer({
     setPickedCombo(input);
     setCombos(true);
     onSelectZone("combo");
+    onPickInput?.(input);
     const prefix = comboPrefix(input);
     const comboRows = rowsByZone.get("combo") ?? [];
     const first = comboRows.find((row) =>
@@ -500,14 +490,13 @@ export function QuadStickVisualizer({
   };
 
   const toggleCombos = (): void => {
-    setCombos((value) => {
-      const next = !value;
-      if (!next) {
-        setPickedCombo(null);
-        if (selectedZone === "combo") onSelectZone("mp_left");
-      }
-      return next;
-    });
+    const next = !showCombos;
+    setCombos(next);
+    if (!next) {
+      setPickedCombo(null);
+      onPickInput?.(null);
+      if (selectedZone === "combo") onSelectZone("mp_left");
+    }
     setFocusedZone(0);
   };
 
