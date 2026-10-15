@@ -90,6 +90,11 @@ describe("TASK-038 editor workspace", () => {
       const current = await client.getProfileSnapshot(opened.sessionId);
       expect(current.modes.map((mode) => mode.name)).toEqual(["Second", "First"]);
     });
+    // Only the picked mode shows its controls: focus follows the moved mode
+    // rather than staying on a button its old row now hides.
+    await waitFor(() => {
+      expect(document.activeElement?.closest('[data-testid="mode-row-1"]')).not.toBeNull();
+    });
   });
 
   it("moves focus from an issue to the affected canonical row", async () => {

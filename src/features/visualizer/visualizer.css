@@ -61,7 +61,8 @@
 
 .visualizer-stage-scroll {
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   border-radius: var(--qcm-radius-panel);
   background: var(--qcm-surface);
 }
@@ -70,6 +71,9 @@
   position: relative;
   width: 100%;
   max-width: 910px;
+  /* Scale floor 0.6: below it the callout words stop being readable, so a
+     narrow window scrolls the picture sideways instead. */
+  min-width: 546px;
   margin-inline: auto;
   overflow: hidden;
 }

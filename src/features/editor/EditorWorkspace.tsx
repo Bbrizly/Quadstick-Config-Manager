@@ -159,6 +159,23 @@ function RawGrid({
   );
 }
 
+// Only the picked mode shows its controls, so a control that just moved or
+// copied a mode would be left focused inside a row that hides it. Focus
+// follows the mode instead: the same button if it is still usable, else
+// the mode itself.
+function focusModeControl(sheet: number, label: string | null): void {
+  requestAnimationFrame(() => {
+    const row = document.querySelector<HTMLElement>(`[data-testid="mode-row-${String(sheet)}"]`);
+    const same =
+      label === null
+        ? null
+        : [...(row?.querySelectorAll<HTMLButtonElement>(".mode-row-actions button") ?? [])].find(
+            (button) => button.getAttribute("aria-label") === label && !button.disabled,
+          );
+    (same ?? row?.querySelector<HTMLElement>(".mode-select"))?.focus();
+  });
+}
+
 export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = null }: EditorWorkspaceProps) {
   const { t, plural } = useI18n();
   const profileModes = useMemo(
@@ -400,6 +417,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
       setSelectedSheet(target);
       setSelectedRow(null);
       setSelectedZone(null);
+      focusModeControl(target, delta < 0 ? t("Review_MoveItEarlier") : t("Review_MoveItLater"));
     });
   };
 
@@ -564,7 +582,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
                       <div className="mode-row-actions">
                         <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, -1) === null} aria-label={t("Review_MoveItEarlier")} onClick={() => moveMode(mode, -1)}>↑</button>
                         <button type="button" disabled={busy || adjacentMovableSheet(snapshot, mode.index, 1) === null} aria-label={t("Review_MoveItLater")} onClick={() => moveMode(mode, 1)}>↓</button>
-                        <button type="button" disabled={busy} aria-label={t("Modes_MakeACopyOfName", [mode.name])} onClick={() => void apply([{ op: "duplicate_mode", sheet: mode.index, name: `${mode.name} copy` }], (next) => { const copy = next.modes.findLast((candidate) => candidate.kind === "mode"); if (copy !== undefined) setSelectedSheet(copy.index); setSelectedRow(null); setSelectedZone(null); })}>＋</button>
+                        <button type="button" disabled={busy} aria-label={t("Modes_MakeACopyOfName", [mode.name])} onClick={() => void apply([{ op: "duplicate_mode", sheet: mode.index, name: `${mode.name} copy` }], (next) => { const copy = next.modes.findLast((candidate) => candidate.kind === "mode"); if (copy !== undefined) { setSelectedSheet(copy.index); focusModeControl(copy.index, null); } setSelectedRow(null); setSelectedZone(null); })}>＋</button>
                         <button type="button" disabled={busy || profileModes.length <= 1} aria-label={armedDelete === mode.index ? t("Modes_ReallyDeleteName", [mode.name]) : t("Shell_Delete")} onClick={() => deleteMode(mode)}>×</button>
                       </div>
                     </li>
