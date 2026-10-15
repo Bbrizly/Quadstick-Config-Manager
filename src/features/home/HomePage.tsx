@@ -50,6 +50,7 @@ function editedNote(editedMs: number, now: number, t: (key: "Main_JustNow" | "Ma
   if (age < 2 * minute) return t("Main_JustNow");
   if (age < hour) return t("Main_IntAgeTotalMinutesMinAgo", [Math.floor(age / minute)]);
   if (age < day) return t("Main_IntAgeTotalHoursHAgo", [Math.floor(age / hour)]);
+  // English in Avalonia too (`EditedNote` has no resource for it).
   if (age < 2 * day) return "yesterday";
   if (age < 30 * day) return t("Main_IntAgeTotalDaysDaysAgo", [Math.floor(age / day)]);
   // "d MMM yyyy", in the reader's own month names.
@@ -107,6 +108,8 @@ export function HomePage({
   const [confirmDelete, setConfirmDelete] = useState<LibraryCard | null>(null);
   const [templates, setTemplates] = useState<readonly TemplateEntry[] | null>(null);
   const [pickedTemplate, setPickedTemplate] = useState<string | null>(null);
+  // Read once per visit to Home, as `RefreshHomeCards` does: no timer ticks
+  // the labels on while the page sits idle.
   const [now] = useState(() => Date.now());
 
   const refreshLibrary = useCallback((): void => {

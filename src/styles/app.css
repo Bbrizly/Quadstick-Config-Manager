@@ -50,6 +50,25 @@ select {
   color: var(--qcm-text);
 }
 
+/* Avalonia Fluent ComboBox: the native popup button gives way to the same
+   box as a text field, with Fluent's thin chevron at the right. */
+:where(select) {
+  appearance: none;
+  padding-right: 40px;
+  background-image: var(--qcm-select-chevron);
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px 8px;
+  text-align: start;
+}
+
+@media (forced-colors: active) {
+  :where(select) {
+    appearance: auto;
+    background-image: none;
+  }
+}
+
 :where(input[type="checkbox"], input[type="radio"]) {
   width: 20px;
   height: 20px;
@@ -373,10 +392,10 @@ textarea:focus-visible {
 .appearance-picker {
   min-width: 112px;
   min-height: var(--qcm-control-height);
-  padding: 0 var(--qcm-space-md);
+  padding: 0 36px 0 var(--qcm-space-md);
   border: var(--qcm-hairline) solid var(--qcm-border);
   border-radius: var(--qcm-radius-control);
-  background: var(--qcm-surface);
+  background-color: var(--qcm-surface);
   color: var(--qcm-text);
 }
 

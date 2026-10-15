@@ -62,10 +62,7 @@ describe("GATE_SOFT settings page", () => {
     const open = vi.spyOn(client, "openExternalUrl").mockResolvedValue();
     renderSettings(client);
 
-    await waitFor(() => {
-      expect(screen.getByRole("tab", { name: /Help/u })).toBeInTheDocument();
-    });
-    fireEvent.click(screen.getByRole("tab", { name: /Help/u }));
+    // Avalonia keeps the update check on General (`UpdateArea`).
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /Check for updates/u })).toBeInTheDocument();
     });
@@ -84,6 +81,11 @@ describe("GATE_SOFT settings page", () => {
   it("toggles show tutorial as the inverse of tutorialSeen", async () => {
     const client = new MockQcmClient();
     renderSettings(client);
+    // Advanced, as in Avalonia's `AdvancedTab`.
+    await waitFor(() => {
+      expect(screen.getByRole("tab", { name: /Advanced/u })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole("tab", { name: /Advanced/u }));
     await waitFor(() => {
       expect(screen.getByLabelText(/Show the tutorial next time/u)).toBeInTheDocument();
     });
@@ -92,6 +94,16 @@ describe("GATE_SOFT settings page", () => {
     fireEvent.click(box);
     await waitFor(async () => {
       expect((await client.getSettings()).tutorialSeen).toBe(false);
+    });
+  });
+
+  it("puts mapping card wording on General, like Avalonia", async () => {
+    const client = new MockQcmClient();
+    renderSettings(client);
+    const wording = await screen.findByLabelText(/Mapping card wording: choose output-first/u);
+    fireEvent.change(wording, { target: { value: "input_to_output" } });
+    await waitFor(async () => {
+      expect((await client.getSettings()).cardSentenceStyle).toBe("input_to_output");
     });
   });
 
@@ -105,7 +117,8 @@ describe("GATE_SOFT settings page", () => {
     await waitFor(() => {
       expect(document.documentElement.style.zoom).toBe("125%");
     });
-    fireEvent.click(screen.getByLabelText(/Reduce motion/u));
+    fireEvent.click(screen.getByRole("tab", { name: /Advanced/u }));
+    fireEvent.click(await screen.findByLabelText(/Reduce motion/u));
     await waitFor(() => {
       expect(document.documentElement.dataset["reduceMotion"]).toBe("true");
     });

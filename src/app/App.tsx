@@ -493,6 +493,10 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         key={settingsTab}
         client={client}
         initialTab={settingsTab}
+        onReplayTutorial={() => {
+          setSettingsOpen(false);
+          setTourOpen(true);
+        }}
         onThemeChange={setThemePreference}
         extra={
           <GoogleDriveSettings

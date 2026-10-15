@@ -543,10 +543,20 @@ export function EditorWorkspace({
   const moveMode = (mode: Mode, delta: -1 | 1): void => {
     const target = adjacentMovableSheet(snapshot, mode.index, delta);
     if (target === null) return;
+    const label = delta < 0 ? t("Modes_MoveNameUp", [mode.name]) : t("Modes_MoveNameDown", [mode.name]);
     void apply([{ op: "move_mode", sheet: mode.index, delta }], () => {
       setSelectedSheet(target);
       setSelectedRow(null);
       setSelectedZone(null);
+      // The moved row is rebuilt under the keyboard: focus follows it, onto
+      // the same button while it still works, else the mode's name box.
+      requestAnimationFrame(() => {
+        const row = document.querySelector<HTMLElement>(`[data-testid="modes-dialog-row-${String(target)}"]`);
+        const same = [...(row?.querySelectorAll<HTMLButtonElement>("button") ?? [])].find(
+          (button) => button.getAttribute("aria-label") === label && !button.disabled,
+        );
+        (same ?? row?.querySelector<HTMLElement>("input"))?.focus();
+      });
     });
   };
 

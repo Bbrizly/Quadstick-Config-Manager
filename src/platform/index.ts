@@ -6,7 +6,7 @@ export type {
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, DeviceProfileEntry,
   DeviceSummary, EditorOp, EditorSnapshot, InstallCancelReason, InstallPlan, InstallProgress, InstallReceipt,
   InterfaceScale, Issue, IssueSeverity, LedColour, LiveMotion, LiveSnapshot, LiveStatus, Mode,
-  ModelChoice, PendingCrashReport, PendingRescue, PickerGrouping, ProfileSource, QcmErrorPayload,
+  CardSentenceStyle, ModelChoice, PendingCrashReport, PendingRescue, PickerGrouping, ProfileSource, QcmErrorPayload,
   RecoveryAction, SaveReceipt, SettingsPatch, Subscription, ThemeChoice, UpdateResult,
 } from "./contracts";
 export type {

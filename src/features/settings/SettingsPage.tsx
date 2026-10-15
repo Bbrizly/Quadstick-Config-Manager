@@ -6,12 +6,14 @@ import {
   LOCALE_TAGS,
   useI18n,
   type LocalePreference,
+  type MessageKey,
 } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
 import {
   INTERFACE_SCALES,
   asQcmError,
   type AppSettings,
+  type CardSentenceStyle,
   type ModelChoice,
   type PickerGrouping,
   type QcmClient,
@@ -44,20 +46,52 @@ const GROUPING_OPTIONS: readonly PickerGrouping[] = ["detailed", "wide", "flat"]
 
 type SettingsTab = "general" | "advanced" | "help" | "contact";
 
+/** `MainWindow.HelpSections`: one ground truth for the quick guide. Two
+ * titles are English literals there too ("Renaming", "Keyboard"). */
+const HELP_SECTIONS: readonly (readonly [MessageKey | "Renaming" | "Keyboard", MessageKey])[] = [
+  ["Main_WhatIsAProfile", "Main_OneCSVFileThatTells"],
+  ["Main_TheThreeColumnsSameColors", "Main_YellowOUTPUTTheGameButton"],
+  ["Main_StartFromAWorkingProfile", "Main_NewProfileGivesYouThe"],
+  ["Main_CommunityProfiles", "Main_TheCommunityProfilesCardOn"],
+  ["Renaming", "Main_TheNameBoxAtThe"],
+  ["Main_DeviceSettings", "Main_PrefsCsvIsTheQuadStick"],
+  ["Main_InstallingSafely", "Main_PlugInTheQuadStickIt"],
+  ["Main_ManagingFilesOnYourQuadStick", "Main_TheManageFilesCardUnder"],
+  ["Main_QuadStickNotShowingUp", "Main_IfTheDeviceIsIn"],
+  ["Keyboard", "Main_TabMovesBetweenFieldsArrows"],
+  ["Main_FoundAProblem", "Main_SelectAProblemInThe"],
+];
+
 interface SettingsPageProps {
   readonly client: QcmClient;
   readonly onThemeChange?: (theme: ThemePreference) => void;
   readonly extra?: ReactNode;
   /** The tab it opens on: Help for the editor's `?` and F1. */
   readonly initialTab?: SettingsTab;
+  /** Help's Replay tutorial: leaves Settings and starts the tour. */
+  readonly onReplayTutorial?: () => void;
 }
 
-export function SettingsPage({ client, onThemeChange, extra, initialTab = "general" }: SettingsPageProps) {
+export function SettingsPage({ client, onThemeChange, extra, initialTab = "general", onReplayTutorial }: SettingsPageProps) {
   const { t, preference, setPreference } = useI18n();
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [update, setUpdate] = useState<UpdateResult | null>(null);
+  // `Settings_YouAreOn`, the line the update check then replaces.
+  const [version, setVersion] = useState("");
+  useEffect(() => {
+    let cancelled = false;
+    void client.getAppSnapshot().then(
+      (snapshot) => {
+        if (!cancelled) setVersion(snapshot.version);
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
   const [feedback, setFeedback] = useState("");
   const [tab, setTab] = useState<SettingsTab>(initialTab);
   const [scalePreview, setScalePreview] = useState<number | null>(null);
@@ -335,6 +369,54 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
               </div>
 
               <div className="settings-field">
+                <label>
+                  <span>{t("Settings_CardSentenceStyle")}</span>
+                  <select
+                    aria-label={t("Settings_CardSentenceStyleHelp")}
+                    value={settings.cardSentenceStyle}
+                    disabled={busy}
+                    onChange={(event) => {
+                      void patchSettings({ cardSentenceStyle: event.currentTarget.value as CardSentenceStyle });
+                    }}
+                  >
+                    <option value="press_when">{t("Settings_CardSentenceStyleCurrent")}</option>
+                    <option value="input_to_output">{t("Settings_CardSentenceStyleInputFirst")}</option>
+                  </select>
+                </label>
+                <p className="settings-caption">{t("Settings_CardSentenceStyleCaption")}</p>
+              </div>
+
+              {extra}
+
+              <div className="settings-field">
+                <span className="settings-label">{t("Settings_Updates")}</span>
+                <p className="settings-caption">{t("Settings_UpdatesCaption")}</p>
+                <div className="settings-buttons">
+                  <button
+                    type="button"
+                    disabled={busy || client.checkForUpdate === undefined}
+                    aria-label={t("Settings_CheckUpdates")}
+                    onClick={() => void checkUpdates()}
+                  >
+                    {busy ? t("Settings_Checking") : t("Settings_CheckUpdates")}
+                  </button>
+                  {update?.isNewer === true && update.downloadUrl !== null ? (
+                    <button type="button" disabled={busy} aria-label={t("Settings_OpenDownloadHelp")} onClick={() => void openDownload()}>
+                      {t("Settings_OpenDownload")}
+                    </button>
+                  ) : null}
+                </div>
+                <p className="muted settings-version" aria-live="polite">
+                  {update?.message ?? (version === "" ? "" : t("Settings_YouAreOn", [version]))}
+                </p>
+              </div>
+            </>
+          ) : null}
+
+          {tab === "advanced" ? (
+            <>
+              <h2 className="settings-heading">{t("Settings_TabAdvanced")}</h2>
+              <div className="settings-field">
                 <label className="checkbox-row">
                   <input
                     type="checkbox"
@@ -349,26 +431,6 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
                 <p className="settings-caption">{t("Settings_ReduceMotionCaption")}</p>
               </div>
 
-              <div className="settings-field">
-                <label className="checkbox-row">
-                  <input
-                    type="checkbox"
-                    checked={!settings.tutorialSeen}
-                    disabled={busy}
-                    aria-label={t("Settings_ShowTutorial")}
-                    onChange={(event) => {
-                      void patchSettings({ tutorialSeen: !event.currentTarget.checked });
-                    }}
-                  />
-                  <span>{t("Settings_ShowTutorial")}</span>
-                </label>
-              </div>
-            </>
-          ) : null}
-
-          {tab === "advanced" ? (
-            <>
-              <h2 className="settings-heading">{t("Settings_TabAdvanced")}</h2>
               <div className="settings-field">
                 <label>
                   <span>{t("Settings_Grouping")}</span>
@@ -388,32 +450,6 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
                   </select>
                 </label>
                 <p className="settings-caption">{t("Settings_GroupingCaption")}</p>
-              </div>
-              <div className="settings-field">
-                <label className="checkbox-row">
-                  <input
-                    type="checkbox"
-                    checked={settings.deviceCards}
-                    disabled={busy}
-                    onChange={(event) => {
-                      void patchSettings({ deviceCards: event.currentTarget.checked });
-                    }}
-                  />
-                  <span>{t("Main_MappingsReadAsSimpleSentence")}</span>
-                </label>
-              </div>
-              <div className="settings-field">
-                <label className="checkbox-row">
-                  <input
-                    type="checkbox"
-                    checked={settings.rememberWindow}
-                    disabled={busy}
-                    onChange={(event) => {
-                      void patchSettings({ rememberWindow: event.currentTarget.checked });
-                    }}
-                  />
-                  <span>{t("Settings_RememberWindow")}</span>
-                </label>
               </div>
               <h3 className="settings-heading">{t("Settings_Privacy_Heading")}</h3>
               <p className="settings-caption">{t("Settings_UsageCaption")}</p>
@@ -474,28 +510,52 @@ export function SettingsPage({ client, onThemeChange, extra, initialTab = "gener
                   </button>
                 )}
               </div>
-              {extra}
+              <div className="settings-field">
+                <label className="checkbox-row">
+                  <input
+                    type="checkbox"
+                    checked={settings.rememberWindow}
+                    disabled={busy}
+                    onChange={(event) => {
+                      void patchSettings({ rememberWindow: event.currentTarget.checked });
+                    }}
+                  />
+                  <span>{t("Settings_RememberWindow")}</span>
+                </label>
+              </div>
+              <div className="settings-field">
+                <label className="checkbox-row">
+                  <input
+                    type="checkbox"
+                    checked={!settings.tutorialSeen}
+                    disabled={busy}
+                    aria-label={t("Settings_ShowTutorial")}
+                    onChange={(event) => {
+                      void patchSettings({ tutorialSeen: !event.currentTarget.checked });
+                    }}
+                  />
+                  <span>{t("Settings_ShowTutorial")}</span>
+                </label>
+              </div>
             </>
           ) : null}
 
           {tab === "help" ? (
             <>
-              <h3 className="settings-heading">{t("Settings_Updates")}</h3>
-              <p className="settings-caption">{t("Settings_UpdatesCaption")}</p>
-              <div className="settings-field">
-                <button
-                  type="button"
-                  disabled={busy || client.checkForUpdate === undefined}
-                  onClick={() => void checkUpdates()}
-                >
-                  {busy ? t("Settings_Checking") : t("Settings_CheckUpdates")}
-                </button>
-                {update?.isNewer === true && update.downloadUrl !== null ? (
-                  <button type="button" disabled={busy} onClick={() => void openDownload()}>
-                    {t("Settings_OpenDownload")}
+              <h2 className="settings-heading">{t("Settings_QuickGuide")}</h2>
+              {onReplayTutorial === undefined ? null : (
+                <div className="settings-buttons">
+                  <button className="primary" type="button" aria-label={t("Settings_ReplayTutorialHelp")} onClick={onReplayTutorial}>
+                    {t("Settings_ReplayTutorial")}
                   </button>
-                ) : null}
-              </div>
+                </div>
+              )}
+              {HELP_SECTIONS.map(([title, body]) => (
+                <div className="help-section" key={title}>
+                  <h3 className="settings-heading">{typeof title === "string" && !title.includes("_") ? title : t(title as MessageKey)}</h3>
+                  <p className="help-body">{t(body)}</p>
+                </div>
+              ))}
             </>
           ) : null}
 

@@ -1,7 +1,10 @@
 /* Avalonia SettingsView: page + tab card + 560 field column */
 
+/* Avalonia's TextBlock line box (about 1.2 for Inter); the browser's 1.5
+   made every label and caption taller than the Avalonia page. */
 .settings-page {
-  margin: 22px 28px;
+  margin: 18px 28px 22px;
+  line-height: 1.2;
 }
 
 .settings-page-header {
@@ -9,7 +12,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--qcm-space-lg);
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .settings-title {
@@ -63,7 +66,7 @@ button.settings-tab[aria-selected="true"] {
   border: var(--qcm-hairline) solid var(--qcm-border);
   border-radius: var(--qcm-radius-panel);
   background: var(--qcm-surface);
-  padding: 16px 20px;
+  padding: 12px 20px 16px;
 }
 
 .settings-fields {
@@ -126,4 +129,49 @@ button.settings-tab[aria-selected="true"] {
   margin: 0;
   color: var(--qcm-text-secondary);
   font-size: var(--qcm-small-size);
+}
+
+/* Avalonia Field: label, control, caption 4px apart; fields 16px apart.
+   The label line is 15px body text, as SettingsView sets it. */
+.settings-field > label > span,
+.settings-label {
+  font-size: var(--qcm-body-size);
+}
+
+.settings-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.settings-connected {
+  margin: 0;
+  color: var(--qcm-success);
+  font-weight: 600;
+}
+
+.checkbox-row.disabled {
+  color: var(--qcm-text-secondary);
+  opacity: 0.6;
+}
+
+.settings-drive {
+  display: grid;
+  gap: 16px;
+}
+
+.settings-version {
+  margin: 0;
+}
+
+.help-section {
+  display: grid;
+  gap: 6px;
+}
+
+.help-body {
+  margin: 0;
+  font-size: var(--qcm-body-size);
+  line-height: 22px;
+  white-space: pre-line;
 }

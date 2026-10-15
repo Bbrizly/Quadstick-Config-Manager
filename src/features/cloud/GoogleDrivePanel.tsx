@@ -51,10 +51,14 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
     return () => { disposed = true; };
   }, [client, showFailure, status]);
 
-  if (status === undefined || connect === undefined || disconnect === undefined) return null;
+  // Avalonia `BackupArea`: the section is always there; a build without
+  // Google says so and greys the switch instead of leaving a gap.
+  const available = status !== undefined && connect !== undefined && disconnect !== undefined;
+  const configured = available && auth?.configured !== false && auth?.supported !== false;
+  const connected = auth?.connected === true;
 
   const connectNow = async (): Promise<void> => {
-    if (busy) return;
+    if (connect === undefined || busy) return;
     setBusy(true);
     setMessage(t("Settings_WaitingBrowser"));
     try {
@@ -71,7 +75,7 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
   };
 
   const disconnectNow = async (): Promise<void> => {
-    if (busy) return;
+    if (disconnect === undefined || busy) return;
     setBusy(true);
     try {
       setAuth(await disconnect.call(client));
@@ -85,29 +89,36 @@ export function GoogleDriveSettings({ client, onReview }: GoogleDriveSettingsPro
 
   return (
     <section className="settings-drive" aria-labelledby="settings-drive-title">
-      <h3 id="settings-drive-title">{t("Settings_Backup")}</h3>
-      <p>{auth?.configured === false ? t("Settings_BackupUnavailable") : t("Settings_BackupCaption")}</p>
-      {auth?.connected ? <p>{t("Settings_Connected")}</p> : null}
-      <div className="settings-drive-actions">
-        {auth?.connected ? (
-          <button type="button" disabled={busy} onClick={() => void disconnectNow()}>
-            {t("Rewrite_TurnOff")}
-          </button>
-        ) : (
-          <button type="button" disabled={busy || auth?.configured === false || auth?.supported === false} onClick={() => void connectNow()}>
-            {t("Settings_Reconnect")}
-          </button>
-        )}
-        {auth?.connected && list !== undefined ? (
-          <button
-            type="button"
-            disabled={busy}
-            aria-label={t("Settings_ImportDriveHelp")}
-            onClick={() => setPicker({ preCheck: false })}
-          >
-            {t("Settings_ImportDrive")}
+      <h3 id="settings-drive-title" className="settings-heading">{t("Settings_Backup")}</h3>
+      <div className="settings-field">
+        <label className={configured ? "checkbox-row" : "checkbox-row disabled"}>
+          <input
+            type="checkbox"
+            checked={connected}
+            disabled={!configured || busy}
+            aria-label={t("Settings_BackupToggle")}
+            onChange={(event) => void (event.currentTarget.checked ? connectNow() : disconnectNow())}
+          />
+          <span>{t("Settings_BackupToggle")}</span>
+        </label>
+        {connected ? <p className="settings-connected">{t("Settings_Connected")}</p> : null}
+        <p className="settings-caption">{configured ? t("Settings_BackupCaption") : t("Settings_BackupUnavailable")}</p>
+      </div>
+      {busy && !connected ? <p className="settings-caption">{t("Settings_WaitingBrowser")}</p> : null}
+      <div className="settings-buttons">
+        {configured && connected ? (
+          <button type="button" disabled={busy} aria-label={t("Settings_Reconnect")} onClick={() => void connectNow()}>
+            {t("Settings_ReconnectShort")}
           </button>
         ) : null}
+        <button
+          type="button"
+          disabled={busy || !connected || list === undefined}
+          aria-label={t("Settings_ImportDriveHelp")}
+          onClick={() => setPicker({ preCheck: false })}
+        >
+          {t("Settings_ImportDrive")}
+        </button>
       </div>
       <RestoreAfterConnect
         open={askRestore}
