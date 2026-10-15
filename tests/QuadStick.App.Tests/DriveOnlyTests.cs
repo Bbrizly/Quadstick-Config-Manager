@@ -78,6 +78,16 @@ public class DriveOnlyTests
         Assert.Single(inner.Hosts);   // only the Google one went out
     }
 
+    // Even to another Google host: the request carries the access token.
+    [Fact]
+    public async Task A_redirect_to_another_google_host_is_refused()
+    {
+        var inner = new Bouncer(new Uri("https://sheets.googleapis.com/v4/spreadsheets/x"));
+        using var http = new HttpClient(new GoogleOnlyHandler(inner));
+        await Assert.ThrowsAsync<HttpRequestException>(() => http.GetAsync("https://www.googleapis.com/drive/v3/files"));
+        Assert.Single(inner.Hosts);
+    }
+
     [Fact]
     public async Task A_redirect_within_google_is_followed()
     {

@@ -38,8 +38,9 @@ public static class NetworkFeature
 /// anywhere else by a bad URL, and a host that allows Drive alone can say so
 /// and have it be checked rather than promised.</summary>
 /// <remarks>Redirects are followed here, not by the handler underneath, so
-/// every hop is checked against the same list. Only GET is ever followed: a
-/// write that answers with a redirect is handed back as it is.</remarks>
+/// every hop is checked: same host only, so the token never travels. Only GET
+/// is ever followed: a write that answers with a redirect is handed back as
+/// it is.</remarks>
 public sealed class GoogleOnlyHandler : DelegatingHandler
 {
     static readonly FrozenSet<string> Allowed = new[]
@@ -75,7 +76,10 @@ public sealed class GoogleOnlyHandler : DelegatingHandler
                 || response.Headers.Location is not Uri location) return response;
             var next = location.IsAbsoluteUri ? location : new Uri(request.RequestUri!, location);
             response.Dispose();
-            if (!Allows(next)) Refuse();
+            // Same host only. The request carries the Google token, and a hop to
+            // another host, Google or not, is not where it was sent.
+            if (!Allows(next) || !string.Equals(next.Host, request.RequestUri!.Host, StringComparison.OrdinalIgnoreCase))
+                Refuse();
             var again = new HttpRequestMessage(HttpMethod.Get, next);
             foreach (var h in request.Headers) again.Headers.TryAddWithoutValidation(h.Key, h.Value);
             request = again;
