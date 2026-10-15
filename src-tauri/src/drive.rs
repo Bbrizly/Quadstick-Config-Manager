@@ -349,15 +349,18 @@ impl DriveService {
         // the moment that must still work.
         fs::create_dir_all(library)
             .map_err(|error| drive_internal("create profile library", error))?;
-        let mut on_disk: BTreeSet<String> = fs::read_dir(library)
-            .map(|entries| {
-                entries
-                    .filter_map(Result::ok)
-                    .map(|entry| entry.file_name().to_string_lossy().to_lowercase())
-                    .filter(|name| name.ends_with(".csv"))
-                    .collect()
-            })
-            .unwrap_or_default();
+        // A folder that cannot be listed is not an empty one: a collision
+        // there would be an overwrite.
+        let mut on_disk = BTreeSet::new();
+        for entry in
+            fs::read_dir(library).map_err(|error| drive_internal("list profile library", error))?
+        {
+            let entry = entry.map_err(|error| drive_internal("list profile library", error))?;
+            let name = entry.file_name().to_string_lossy().to_lowercase();
+            if name.ends_with(".csv") {
+                on_disk.insert(name);
+            }
+        }
         let mut batch: BTreeSet<String> = BTreeSet::new();
         let mut summary = RestoreSummaryDto::default();
         for (drive_id, name) in picks {
@@ -398,14 +401,35 @@ impl DriveService {
                 continue;
             };
             let dest = library.join(&file_name);
-            let temp = dest.with_extension("csv.qscm-tmp");
-            if fs::write(&temp, read.csv.as_bytes())
-                .and_then(|()| replace_file(&temp, &dest))
-                .is_err()
-            {
-                let _ = fs::remove_file(&temp);
-                fail(&mut summary, &report, RestoreReason::CouldNotWriteTheFile);
-                continue;
+            // Never over an existing file: created new, or not at all.
+            let written = fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&dest)
+                .map_err(|error| error.kind() == std::io::ErrorKind::AlreadyExists)
+                .and_then(|mut file| {
+                    use std::io::Write as _;
+                    file.write_all(read.csv.as_bytes())
+                        .and_then(|()| file.sync_all())
+                        .map_err(|_| {
+                            drop(file);
+                            let _ = fs::remove_file(&dest);
+                            false
+                        })
+                });
+            match written {
+                Ok(()) => {}
+                Err(true) => {
+                    summary.skipped.push(RestoreItemDto {
+                        name: report,
+                        reason: RestoreReason::AlreadyExists,
+                    });
+                    continue;
+                }
+                Err(false) => {
+                    fail(&mut summary, &report, RestoreReason::CouldNotWriteTheFile);
+                    continue;
+                }
             }
             // The same key the profile library gives this file when opened.
             let key = fs::canonicalize(&dest)
@@ -418,8 +442,12 @@ impl DriveService {
                 backup_dirty: false,
                 shared: false,
             };
+            let before = self.state().links.get(&key).cloned();
             if self.set_link(&key, link).is_err() {
-                self.state().links.remove(&key);
+                match before {
+                    Some(previous) => self.state().links.insert(key.clone(), previous),
+                    None => self.state().links.remove(&key),
+                };
                 let _ = fs::remove_file(&dest);
                 fail(&mut summary, &report, RestoreReason::CouldNotSaveTheLink);
                 continue;
