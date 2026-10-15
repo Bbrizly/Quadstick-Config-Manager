@@ -25,6 +25,8 @@
   /* Fluent text fields: white at 40% over whatever is behind, strong edge. */
   --qcm-field-bg: rgb(255 255 255 / 0.4);
   --qcm-field-border: #666666;
+  --qcm-disabled-bg: #cccccc;
+  --qcm-disabled-text: #7a7a7a;
 
   --qcm-title-size: 30px;
   --qcm-section-size: 22px;
@@ -94,6 +96,8 @@
   --qcm-live-tint: #4a3418;
   --qcm-field-bg: rgb(0 0 0 / 0.4);
   --qcm-field-border: #a2a4a7;
+  --qcm-disabled-bg: #4c5156;
+  --qcm-disabled-text: #939699;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -121,6 +125,8 @@
     --qcm-live-tint: #4a3418;
     --qcm-field-bg: rgb(0 0 0 / 0.4);
     --qcm-field-border: #a2a4a7;
+    --qcm-disabled-bg: #4c5156;
+    --qcm-disabled-text: #939699;
   }
 }
 
@@ -146,5 +152,7 @@
     --qcm-live-tint: Highlight;
     --qcm-field-bg: Field;
     --qcm-field-border: CanvasText;
+    --qcm-disabled-bg: Canvas;
+    --qcm-disabled-text: GrayText;
   }
 }

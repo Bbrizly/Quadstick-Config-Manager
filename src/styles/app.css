@@ -41,17 +41,16 @@ select {
 
 /* Avalonia Fluent TextBox and ComboBox: translucent fill, strong 1px edge,
    small corners. One rule so every field in the app reads the same. */
-select,
-textarea,
-input:not([type="checkbox"], [type="radio"], [type="range"]) {
+/* :where keeps this at zero specificity, so a component's own field look
+   (the raw grid's bare cells) still wins. */
+:where(select, textarea, input:not([type="checkbox"], [type="radio"], [type="range"])) {
   border: var(--qcm-hairline) solid var(--qcm-field-border);
   border-radius: var(--qcm-radius-field);
   background-color: var(--qcm-field-bg);
   color: var(--qcm-text);
 }
 
-input[type="checkbox"],
-input[type="radio"] {
+:where(input[type="checkbox"], input[type="radio"]) {
   width: 20px;
   height: 20px;
   margin: 0;
@@ -112,6 +111,21 @@ button.zone-rail-row:hover {
 button:active {
   transform: scale(0.985);
   transition-duration: 0s;
+}
+
+/* Fluent disabled: a flat grey plate, so a control that cannot be used never
+   looks like one that can (a disabled primary used to stay blue). */
+button:disabled,
+button:disabled:hover {
+  border-color: transparent;
+  background: var(--qcm-disabled-bg);
+  color: var(--qcm-disabled-text);
+  cursor: default;
+  transform: none;
+}
+
+button:disabled svg {
+  color: var(--qcm-disabled-text);
 }
 
 button.zone-callout:active,
@@ -425,7 +439,7 @@ textarea:focus-visible {
   width: min(560px, 100%);
   max-height: calc(100vh - 2 * var(--qcm-space-xl));
   overflow: auto;
-  padding: var(--qcm-space-xl);
+  padding: 0;
   border: var(--qcm-hairline) solid var(--qcm-border);
   border-radius: var(--qcm-radius-panel);
   background: var(--qcm-surface);
@@ -433,10 +447,36 @@ textarea:focus-visible {
   box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
 }
 
+/* Avalonia dialog chrome: a tinted title strip with an accent mark. */
+.dialog-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-bottom: var(--qcm-hairline) solid var(--qcm-border);
+  background: var(--qcm-surface-subtle);
+}
+
+.dialog-head::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  background: var(--qcm-accent);
+}
+
 .dialog-title {
-  margin: 0 0 var(--qcm-space-lg);
-  font-size: var(--qcm-section-size);
-  font-weight: 600;
+  margin: 0;
+  font-size: var(--qcm-subhead-size);
+  font-weight: 700;
+}
+
+.dialog-body {
+  padding: 20px 24px 24px;
 }
 
 .dialog-actions {

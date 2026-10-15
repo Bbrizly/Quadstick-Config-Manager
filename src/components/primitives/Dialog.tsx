@@ -57,11 +57,15 @@ export function Dialog({ open, title, onClose, children, actions }: DialogProps)
         aria-labelledby={titleId}
         tabIndex={-1}
       >
-        <h2 id={titleId} className="dialog-title">
-          {title}
-        </h2>
-        {children}
-        {actions === undefined ? null : <div className="dialog-actions">{actions}</div>}
+        <div className="dialog-head">
+          <h2 id={titleId} className="dialog-title">
+            {title}
+          </h2>
+        </div>
+        <div className="dialog-body">
+          {children}
+          {actions === undefined ? null : <div className="dialog-actions">{actions}</div>}
+        </div>
       </dialog>
     </div>
   );
