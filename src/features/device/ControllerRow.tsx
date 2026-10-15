@@ -77,9 +77,9 @@ export function ControllerRow({ controller }: { readonly controller: ControllerC
       if (busy) return;
       setBusy(true);
       try {
-        const running = await controller.setControllerBridge(on);
-        setOptions({ ...options, bridgeOn: running });
-        if (!running && !on) setBridgeState(null);
+        const saved = await controller.setControllerBridge(on);
+        setOptions({ ...options, bridgeOn: saved });
+        if (!saved) setBridgeState(null);
       } catch {
         setOptions({ ...options });
       } finally {

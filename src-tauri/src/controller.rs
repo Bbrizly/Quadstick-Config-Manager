@@ -164,16 +164,33 @@ impl BridgeRuntime {
                 }
             }
         }
-        // EOF: the bridge exited. "unsupported" is its own last word.
-        if !stopping.load(std::sync::atomic::Ordering::SeqCst) {
-            let mut inner = self.lock();
-            if let Some(mut running) = inner.running.take() {
-                let _ = running.child.wait();
+        // EOF: the bridge exited, or closed its stdout. Wait at most a second
+        // (as `ControllerBridge.cs` does), never holding the lock across a
+        // sleep, so a child that lingers stays in `running` and Stop still
+        // reaches it. "unsupported" is its own last word.
+        let deadline = Instant::now() + Duration::from_secs(1);
+        loop {
+            if stopping.load(std::sync::atomic::Ordering::SeqCst) {
+                return;
             }
-            drop(inner);
-            if last != Some(BridgeState::Unsupported) {
-                self.publish(Some(BridgeState::Stopped));
+            let exited = {
+                let mut inner = self.lock();
+                let done = inner
+                    .running
+                    .as_mut()
+                    .is_none_or(|running| !matches!(running.child.try_wait(), Ok(None)));
+                if done {
+                    inner.running = None;
+                }
+                done
+            };
+            if exited || Instant::now() >= deadline {
+                break;
             }
+            std::thread::sleep(Duration::from_millis(50));
+        }
+        if last != Some(BridgeState::Unsupported) {
+            self.publish(Some(BridgeState::Stopped));
         }
     }
 
@@ -348,7 +365,10 @@ fn internal(what: &'static str, detail: impl Into<String>) -> Failure {
 }
 
 #[tauri::command]
-pub fn get_controller_options(runtime: State<'_, BridgeRuntime>) -> ControllerOptionsDto {
+pub fn get_controller_options(
+    runtime: State<'_, BridgeRuntime>,
+    shell: State<'_, ShellState>,
+) -> ControllerOptionsDto {
     let kind = if bridge_offered() {
         "bridge"
     } else if cfg!(target_os = "macos") {
@@ -359,7 +379,9 @@ pub fn get_controller_options(runtime: State<'_, BridgeRuntime>) -> ControllerOp
     let sandboxed = kind == "mac" && mac_sandboxed();
     ControllerOptionsDto {
         kind,
-        bridge_on: runtime.is_running(),
+        // The switch shows what was saved, as the Avalonia toggle keeps its
+        // place after a failed start; the status line says it stopped.
+        bridge_on: kind == "bridge" && shell.controller_bridge_on(),
         bridge_state: runtime.state(),
         mac_on: kind == "mac" && mac_is_on(),
         mac_sandboxed: sandboxed,
@@ -368,7 +390,8 @@ pub fn get_controller_options(runtime: State<'_, BridgeRuntime>) -> ControllerOp
     }
 }
 
-/// The bridge switch: saved first, then started or stopped.
+/// The bridge switch: saved first, then started or stopped. Returns the saved
+/// switch; a start that fails says so through the `stopped` state.
 #[tauri::command]
 pub fn set_controller_bridge(
     runtime: State<'_, BridgeRuntime>,
@@ -389,7 +412,7 @@ pub fn set_controller_bridge(
     } else {
         runtime.stop();
     }
-    Ok(runtime.is_running())
+    Ok(on)
 }
 
 /// The Mac switch. Half a change is worse than none: a failed turn-on takes
