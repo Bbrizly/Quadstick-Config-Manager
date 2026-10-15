@@ -38,9 +38,10 @@ const USAGE_MULTIAXIS: u16 = 0x08;
 const USAGE_X: u16 = 0x30;
 const USAGE_Y: u16 = 0x31;
 // The live worker owns the blocking read. Keep its timeout short enough that
-// disposing the last subscription closes the handle promptly, while still long
-// enough to avoid a busy loop when the stick is idle.
-const READ_TIMEOUT_MS: i32 = 100;
+// disposing the last subscription closes the handle promptly, while long enough
+// that a stick at rest costs two wakeups a second, not ten. A report still
+// returns the read at once; only silence waits this long.
+const READ_TIMEOUT_MS: i32 = 500;
 
 #[derive(Debug, Default)]
 struct DeviceMap {

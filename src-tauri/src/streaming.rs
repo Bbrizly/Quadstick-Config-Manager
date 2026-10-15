@@ -157,17 +157,21 @@ impl LiveRuntime {
             .next_id
             .fetch_add(1, Ordering::Relaxed)
             .saturating_add(1);
-        let (should_start, last) = {
+        let should_start = {
             let mut control = self.shared.control();
-            control.listeners.insert(id, channel.clone());
+            // Sent under the lock `send_live` updates `last` under, so this
+            // window either gets the newest state here or is on the list the
+            // newest state goes to, and an older state never lands after it.
+            if let Some(last) = &control.last {
+                let _ = channel.send(last.clone());
+            }
+            control.listeners.insert(id, channel);
             let start = !control.worker_running;
             control.worker_running = true;
-            (start, control.last.clone())
+            start
         };
         if should_start {
             (self.shared.spawn)(Arc::clone(&self.shared));
-        } else if let Some(last) = last {
-            let _ = channel.send(last);
         }
         SubscriptionDto {
             subscription_id: format!("live-{id}"),
@@ -275,24 +279,27 @@ fn run_live_worker<P: LiveInputPort>(shared: &Arc<LiveShared>, port: P) {
     }
 }
 
-fn listener_snapshot(shared: &LiveShared) -> Vec<(u64, Channel<LiveSnapshotDto>)> {
-    shared
-        .control()
-        .listeners
-        .iter()
-        .map(|(&id, channel)| (id, channel.clone()))
-        .collect()
-}
-
 fn send_live(shared: &LiveShared, snapshot: LiveSnapshotDto) {
-    let failed: Vec<u64> = listener_snapshot(shared)
+    // Cache and list in one lock, so a window subscribing meanwhile is either
+    // on this list or handed this snapshot by `subscribe`.
+    let listeners: Vec<(u64, Channel<LiveSnapshotDto>)> = {
+        let mut state = shared.control();
+        state.last = Some(snapshot.clone());
+        state
+            .listeners
+            .iter()
+            .map(|(&id, channel)| (id, channel.clone()))
+            .collect()
+    };
+    let failed: Vec<u64> = listeners
         .into_iter()
         .filter_map(|(id, channel)| channel.send(snapshot.clone()).err().map(|_| id))
         .collect();
-    let mut state = shared.control();
-    state.last = Some(snapshot);
-    for id in failed {
-        state.listeners.remove(&id);
+    if !failed.is_empty() {
+        let mut state = shared.control();
+        for id in failed {
+            state.listeners.remove(&id);
+        }
     }
 }
 
