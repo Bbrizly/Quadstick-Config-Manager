@@ -127,6 +127,13 @@ impl<P: LiveInputPort, C: Clock> LiveInputManager<P, C> {
         self.running
     }
 
+    /// Whether a device is open. Its read blocks on its own, so a worker with a
+    /// session open needs no sleep of its own between polls.
+    #[must_use]
+    pub const fn has_session(&self) -> bool {
+        self.session.is_some()
+    }
+
     /// What the window was last told, without draining the stream.
     #[must_use]
     pub fn status(&self) -> LiveStatus {
