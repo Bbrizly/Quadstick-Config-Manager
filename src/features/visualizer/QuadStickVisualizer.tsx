@@ -761,7 +761,12 @@ export function QuadStickVisualizer({
     const pointX = diagram.photoX + at.x;
     const pointY = photoY + at.y;
     const calloutHeight = spot.bottom ? SMALL_PILL_H : PILL_H;
-    const labelTop = spot.bottom ? bottomY : calloutBottom - calloutHeight;
+    // Top callouts hang from their bottom edge, 10 units above the photo, so
+    // a callout taller than the 116 Avalonia reserves grows up into the empty
+    // band above rather than down over the top of the photo.
+    const place = spot.bottom
+      ? { top: `${String((bottomY / stageH) * 100)}%` }
+      : { bottom: `${String(((stageH - calloutBottom) / stageH) * 100)}%` };
     const lineY = spot.bottom ? bottomY : calloutBottom;
 
     if (comboMode) {
@@ -816,7 +821,7 @@ export function QuadStickVisualizer({
             tabIndex={focusedZone === index ? 0 : -1}
             style={{
               left: `${String((spot.labelX / STAGE_W) * 100)}%`,
-              top: `${String((labelTop / stageH) * 100)}%`,
+              ...place,
               width: `${String((PILL_W / STAGE_W) * 100)}%`,
               minHeight: `${String((calloutHeight / stageH) * 100)}%`,
             }}
@@ -876,7 +881,7 @@ export function QuadStickVisualizer({
           tabIndex={focusedZone === index ? 0 : -1}
           style={{
             left: `${String((spot.labelX / STAGE_W) * 100)}%`,
-            top: `${String((labelTop / stageH) * 100)}%`,
+            ...place,
             width: `${String((PILL_W / STAGE_W) * 100)}%`,
             minHeight: `${String((calloutHeight / stageH) * 100)}%`,
           }}

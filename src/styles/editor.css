@@ -181,12 +181,13 @@
 .add-row {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 9px;
 }
 
 .editor-actions .add-row {
   min-height: var(--qcm-command-button);
   padding: 8px 16px;
+  font-weight: 600;
 }
 
 .mapping-panel h2 {
@@ -1099,12 +1100,14 @@ button.sidebar-toggle.format.active {
 }
 
 .rows-grid-head {
-  align-items: end;
+  /* Avalonia's header cells stretch to the row: one height, tops level. */
+  align-items: stretch;
   padding-top: 0;
 }
 
 .rows-grid-head .tint-swatch {
   overflow-wrap: break-word;
+  line-height: 1.15;
 }
 
 .rows-grid-line:focus {

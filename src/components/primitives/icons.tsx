@@ -67,6 +67,39 @@ const PATHS: Record<IconName, string> = {
   format: "M5 4v3h5.5v12h3V7H19V4H5z",
 };
 
+// Each glyph's own bounds (SVG getBBox of the path). Avalonia's PathIcon
+// stretches the geometry's bounds to fill the icon box, so a 26 px command
+// icon is 26 px of glyph, not 26 px of a 24-unit square with margins.
+const BOXES: Record<IconName, string> = {
+  home: "2 3 20 17",
+  device: "2 5 20 14",
+  community: "2 5 20 14",
+  settings: "2.27 2 19.45 20",
+  add: "5 5 14 14",
+  delete: "5 3 14 18",
+  folder: "1 5 22 15",
+  template: "3 2 16 20",
+  help: "2 2 20 20",
+  files: "4 3 18 18",
+  link: "5.4 5.4 13.2 13.2",
+  install: "5 3 14 17",
+  save: "3 3 18 18",
+  undo: "4 1 16 20",
+  share: "3.82 1.86 17.18 20.24",
+  back: "4 4 16 16",
+  viewDevice: "2 6 20 12.8",
+  viewRail: "2.5 5.5 18.5 13",
+  viewSheet: "3 3 18 18",
+  check: "3.4 5.6 17.6 13.4",
+  warning: "1 2 22 19",
+  error: "2 2 20 20",
+  edit: "3 4 17.46 17",
+  clear: "5.7 4.3 12.6 12.6",
+  chevron: "8.6 6 7.4 12",
+  drag: "3 6 18 12",
+  format: "5 4 14 15",
+};
+
 export interface IconProps {
   readonly name: IconName;
   readonly size?: number;
@@ -79,7 +112,7 @@ export function Icon({ name, size = 24, className }: IconProps) {
       className={className}
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox={BOXES[name]}
       fill="currentColor"
       aria-hidden="true"
       focusable="false"

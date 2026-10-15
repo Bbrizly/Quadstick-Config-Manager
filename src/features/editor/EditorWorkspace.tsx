@@ -421,20 +421,23 @@ export function EditorWorkspace({
     setBusy(true);
     try {
       const current = await client.getProfileSnapshot(snapshot.sessionId);
+      // Avalonia keeps Undo enabled and says when there is nothing to take back.
       if (!current.canUndo) {
         onSnapshot(current);
+        setMessage("");
+        setStatusOverride({ kind: "info", text: t("Main_NothingToUndo") });
         return;
       }
       const next = await client.undoEditor(current.sessionId, current.revision);
       onSnapshot(next);
       setMessage("");
-      setStatusOverride(null);
+      setStatusOverride({ kind: "ready", text: t("Main_ChangeUndone") });
     } catch (reason) {
       await refreshAfterConflict(reason);
     } finally {
       setBusy(false);
     }
-  }, [busy, client, onSnapshot, refreshAfterConflict, snapshot.sessionId]);
+  }, [busy, client, onSnapshot, refreshAfterConflict, snapshot.sessionId, t]);
 
   const save = useCallback(async (): Promise<void> => {
     if (busy) return;
@@ -694,7 +697,7 @@ export function EditorWorkspace({
         <button
           className="command"
           type="button"
-          disabled={locked || !snapshot.canUndo}
+          disabled={locked}
           aria-label={t("Shell_UndoTheLastChangeShortcut")}
           title={t("Shell_UndoCtrlZ")}
           onClick={() => void undo()}
@@ -710,7 +713,9 @@ export function EditorWorkspace({
             aria-label={onCustomNames ? t("Main_AddARowToThe") : t("Shell_AddANewBindingRow")}
             onClick={addRowCommand}
           >
-            {onCustomNames ? t("Main_AddName") : t("Shell_AddRow")}
+            {/* `AddRowContent`: the icon carries the "+", so the label drops it. */}
+            <Icon name="add" size={16} />
+            <span>{(onCustomNames ? t("Main_AddName") : t("Shell_AddRow")).replace(/^\+ /u, "")}</span>
           </button>
         )}
         <button

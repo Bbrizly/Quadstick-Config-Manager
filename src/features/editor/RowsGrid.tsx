@@ -306,7 +306,7 @@ export function RowsGrid({
                     if (free !== undefined) setOpenInput({ row, col: free });
                   }}
                 >
-                  <Icon name="add" size={20} />
+                  <Icon name="add" size={16} />
                 </button>
               ) : null}
               <button
@@ -317,7 +317,7 @@ export function RowsGrid({
                 aria-label={t("Main_DeleteRowBRow", [row])}
                 onClick={() => onDeleteRow(row)}
               >
-                <Icon name="delete" size={20} />
+                <Icon name="delete" size={16} />
               </button>
             </span>
             <span role="cell" className="cell-slot">
