@@ -37,7 +37,9 @@ export function WorkbookImportReviewDialog({
 
   const lost = review.skipped.filter((tab) => tab.kind === "unreadable_a1");
   const helpers = review.skipped.filter((tab) => tab.kind === "helper");
-  const clean = review.limitation === null && lost.length === 0 && review.errorCount === 0;
+  const singleTab = review.singleTab === true;
+  const clean =
+    review.limitation === null && !singleTab && lost.length === 0 && review.errorCount === 0;
 
   return (
     <Dialog
@@ -64,6 +66,13 @@ export function WorkbookImportReviewDialog({
       <div className="workbook-review">
         <h2>{clean ? t("Review_YourSheetCameInClean") : t("Review_WeReadYourSheet")}</h2>
         <p>{review.name}</p>
+
+        {singleTab ? (
+          <section aria-labelledby="workbook-single-tab-heading">
+            <h3 id="workbook-single-tab-heading">{t("Review_OnlyPartOfTheSpreadsheet")}</h3>
+            <p>{t("Main_ThisLinkIsAPublished")}</p>
+          </section>
+        ) : null}
 
         {review.limitation !== null ? (
           <section aria-labelledby="workbook-limit-heading">

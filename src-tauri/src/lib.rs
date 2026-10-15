@@ -18,6 +18,9 @@ pub mod device_shell;
 pub mod diagnostics;
 pub mod drive;
 pub mod drive_commands;
+pub mod follow;
+pub mod follow_commands;
+pub mod follow_shell;
 pub mod google_auth;
 pub mod google_commands;
 pub mod ipc;
@@ -110,6 +113,11 @@ pub fn registered_commands() -> &'static [&'static str] {
         "set_mac_gamepad",
         "subscribe_controller_bridge",
         "unsubscribe_controller_bridge",
+        "import_sheets_link",
+        "get_follow_state",
+        "forget_follow_link",
+        "check_latest_from_link",
+        "replace_with_latest",
     ]
 }
 
@@ -186,6 +194,9 @@ pub fn run() {
             community::CommunityService::native()
                 .expect("failed to build native Community HTTP client"),
         )
+        .manage(follow_commands::SheetsState::new(Arc::new(
+            follow::NativeSheetFetcher::new().expect("failed to build native Sheets client"),
+        )))
         .manage(google)
         .manage(drive)
         .manage(console_shell::native_console_shell())
@@ -263,6 +274,11 @@ pub fn run() {
             registry::unsubscribe_profile_links,
             controller::get_controller_options,
             controller::set_controller_bridge,
+            follow_commands::import_sheets_link,
+            follow_commands::get_follow_state,
+            follow_commands::forget_follow_link,
+            follow_commands::check_latest_from_link,
+            follow_commands::replace_with_latest,
             controller::set_mac_gamepad,
             controller::subscribe_controller_bridge,
             controller::unsubscribe_controller_bridge,
@@ -294,8 +310,11 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 73);
+        assert_eq!(commands.len(), 78);
         for expected in [
+            "import_sheets_link",
+            "check_latest_from_link",
+            "replace_with_latest",
             "import_community_profile",
             "open_community_sheet",
             "get_google_auth_status",

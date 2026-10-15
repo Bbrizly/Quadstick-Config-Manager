@@ -14,6 +14,7 @@ import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
   DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,
 } from "./driveContracts";
+import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
 import type { PreferenceCatalog } from "./preferenceContracts";
 import { asQcmError, type QcmClient } from "./qcmClient";
@@ -102,6 +103,11 @@ export class TauriQcmClient implements QcmClient {
   cancelWorkbookImport(importId: string): Promise<void> { return call("cancel_workbook_import", { importId }); }
   exportProfileXlsx(sessionId: string, expectedRevision: number): Promise<WorkbookExportReceipt | null> { return call("export_profile_xlsx", { sessionId, expectedRevision }); }
   getPreferenceCatalog(): Promise<PreferenceCatalog> { return call("get_preference_catalog"); }
+  importSheetsLink(url: string): Promise<SheetsImport> { return call("import_sheets_link", { url }); }
+  getFollowState(sessionId: string): Promise<FollowState> { return call("get_follow_state", { sessionId }); }
+  forgetFollowLink(sessionId: string): Promise<FollowState> { return call("forget_follow_link", { sessionId }); }
+  checkLatestFromLink(sessionId: string, expectedRevision: number): Promise<LatestCheck> { return call("check_latest_from_link", { sessionId, expectedRevision }); }
+  replaceWithLatest(planId: string): Promise<LatestReplace> { return call("replace_with_latest", { planId }); }
   takeLaunchProfileLink(): Promise<string | null> { return call("take_launch_profile_link"); }
   async subscribeProfileLinks(onLink: (profileId: string) => void): Promise<Subscription> {
     const channel = new Channel<string>(onLink);
@@ -168,4 +174,6 @@ export const TAURI_COMMANDS = [
   "take_launch_profile_link", "open_registry_profile", "subscribe_profile_links",
   "unsubscribe_profile_links", "get_controller_options", "set_controller_bridge", "set_mac_gamepad",
   "subscribe_controller_bridge", "unsubscribe_controller_bridge",
+  "import_sheets_link", "get_follow_state", "forget_follow_link", "check_latest_from_link",
+  "replace_with_latest",
 ] as const;

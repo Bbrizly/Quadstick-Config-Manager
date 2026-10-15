@@ -343,6 +343,35 @@ impl<S: LocalProfileStore> ProfileSessions<S> {
         }
     }
 
+    /// Read a clean local profile again after its file was replaced (Get the
+    /// latest). The old session closes and a new one opens, so an edit sent
+    /// against the old id or revision fails instead of landing on the new
+    /// bytes, matching the legacy window's fresh `OpenInEditor`.
+    pub fn reopen_local(
+        &mut self,
+        session: SessionId,
+        expected_revision: u64,
+    ) -> Result<EditorSnapshot, QcmError> {
+        let target = {
+            let open = self.session(session)?;
+            check_revision(open.revision(), expected_revision)?;
+            if open.dirty() {
+                return Err(ProfileError::RevisionConflict {
+                    expected: expected_revision,
+                    actual: open.revision(),
+                }
+                .into());
+            }
+            open.target()
+                .cloned()
+                .ok_or(QcmError::Profile(ProfileError::NeedsSaveTarget))?
+        };
+        let text = self.store.read(&target)?;
+        self.open.remove(&session);
+        let file = ProfileFile::load(&text);
+        Ok(self.insert(ProfileOrigin::Local(target.clone()), Some(target), file))
+    }
+
     fn session_mut(&mut self, session: SessionId) -> Result<&mut ProfileSession, QcmError> {
         self.open
             .get_mut(&session)

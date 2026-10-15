@@ -106,6 +106,13 @@ impl FakeProfileLibrary {
         }
     }
 
+    /// Change a file behind the app's back, as another program would.
+    pub fn set_text(&self, target: &LocalProfileRef, text: &str) {
+        if let Some(entry) = self.state().files.get_mut(&target.id().raw()) {
+            entry.text = Some(text.to_owned());
+        }
+    }
+
     pub fn fail_next_read(&self) {
         self.state().fail_next_read = true;
     }
@@ -163,6 +170,20 @@ impl LocalProfileStore for FakeProfileLibrary {
         entry.text = Some(text.to_owned());
         entry.writes += 1;
         Ok(LocalWriteReceipt { bytes: text.len() })
+    }
+
+    fn read_bytes(&self, target: &LocalProfileRef) -> Result<Option<Vec<u8>>, StorageError> {
+        let mut state = self.state();
+        if state.fail_next_read {
+            state.fail_next_read = false;
+            return Err(StorageError::PermissionDenied {
+                stage: StorageStage::ReadFile,
+            });
+        }
+        match state.files.get(&target.id().raw()) {
+            Some(entry) => Ok(entry.text.clone().map(String::into_bytes)),
+            None => Err(gone(target.display_name().as_str(), StorageStage::ReadFile)),
+        }
     }
 
     fn is_on_quadstick(&self, target: &LocalProfileRef) -> Result<bool, StorageError> {

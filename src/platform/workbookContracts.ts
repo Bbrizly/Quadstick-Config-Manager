@@ -38,6 +38,8 @@ export interface WorkbookImportReview {
   readonly renamed: readonly WorkbookTabRename[];
   readonly errorCount: number;
   readonly warningCount: number;
+  /** A published link gave one tab only (`Main_ThisLinkIsAPublished`). */
+  readonly singleTab?: boolean;
 }
 
 export interface WorkbookExportReceipt {

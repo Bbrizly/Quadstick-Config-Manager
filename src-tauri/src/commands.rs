@@ -171,6 +171,11 @@ pub fn accept_workbook_import(
 ) -> Result<EditorSnapshot, Failure> {
     let accepted = redact(workbook.accept_import(request))?;
     let opened = redact(profiles.open_workbook_copy(&accepted.name, &accepted.csv))?;
+    // Remembered against the file once it is saved, so Get the latest can
+    // ask the same sheet again later.
+    if let Some(link) = accepted.follow_link {
+        profiles.set_pending_follow(&opened.session_id, link);
+    }
     // A community profile is a Google Sheet import, as in the shipped app:
     // counted only once it actually opened.
     if accepted.source == ProfileSource::Sheets {

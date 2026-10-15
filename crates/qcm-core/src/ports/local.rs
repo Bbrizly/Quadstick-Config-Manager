@@ -101,6 +101,12 @@ pub trait LocalProfileStore {
     fn persistent_key(&self, target: &LocalProfileRef) -> Result<String, StorageError> {
         Ok(target.id().to_string())
     }
+
+    /// The raw bytes, `None` when nothing is there. Get the latest compares
+    /// and rescues the file as it is, even when it is not valid text.
+    fn read_bytes(&self, target: &LocalProfileRef) -> Result<Option<Vec<u8>>, StorageError> {
+        self.read(target).map(|text| Some(text.into_bytes()))
+    }
 }
 
 impl<T: LocalProfileStore + ?Sized> LocalProfileStore for &T {
@@ -120,6 +126,9 @@ impl<T: LocalProfileStore + ?Sized> LocalProfileStore for &T {
     fn persistent_key(&self, target: &LocalProfileRef) -> Result<String, StorageError> {
         (**self).persistent_key(target)
     }
+    fn read_bytes(&self, target: &LocalProfileRef) -> Result<Option<Vec<u8>>, StorageError> {
+        (**self).read_bytes(target)
+    }
 }
 
 impl<T: LocalProfileStore + ?Sized> LocalProfileStore for std::sync::Arc<T> {
@@ -138,5 +147,8 @@ impl<T: LocalProfileStore + ?Sized> LocalProfileStore for std::sync::Arc<T> {
     }
     fn persistent_key(&self, target: &LocalProfileRef) -> Result<String, StorageError> {
         (**self).persistent_key(target)
+    }
+    fn read_bytes(&self, target: &LocalProfileRef) -> Result<Option<Vec<u8>>, StorageError> {
+        (**self).read_bytes(target)
     }
 }

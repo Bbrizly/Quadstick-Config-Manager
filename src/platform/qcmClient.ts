@@ -13,6 +13,7 @@ import type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 import type {
   DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,
 } from "./driveContracts";
+import type { FollowState, LatestCheck, LatestReplace, SheetsImport } from "./followContracts";
 import type { GoogleAuthStatus } from "./googleContracts";
 import type { PreferenceCatalog } from "./preferenceContracts";
 import type { WorkbookExportReceipt, WorkbookImportReview } from "./workbookContracts";
@@ -48,6 +49,17 @@ export interface QcmClient {
   cancelWorkbookImport?(importId: string): Promise<void>;
   exportProfileXlsx?(sessionId: string, expectedRevision: number): Promise<WorkbookExportReceipt | null>;
   getPreferenceCatalog?(): Promise<PreferenceCatalog>;
+
+  /** Download a pasted Google Sheets link into the import review. Only on press. */
+  importSheetsLink?(url: string): Promise<SheetsImport>;
+  /** Whether this saved profile follows the link it was imported from. No network. */
+  getFollowState?(sessionId: string): Promise<FollowState>;
+  /** Forget the link on this computer. The sheet is not touched. */
+  forgetFollowLink?(sessionId: string): Promise<FollowState>;
+  /** Get the latest: download and compare. Nothing is replaced. */
+  checkLatestFromLink?(sessionId: string, expectedRevision: number): Promise<LatestCheck>;
+  /** The yes: old copy to the rescue folder, then the file is replaced. */
+  replaceWithLatest?(planId: string): Promise<LatestReplace>;
 
   /** The `qcm://profile/<id>` id this launch was given, once; null when none. */
   takeLaunchProfileLink?(): Promise<string | null>;

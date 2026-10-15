@@ -12,6 +12,8 @@ import { DeviceLibraryPage } from "../features/device/DeviceLibraryPage";
 import { DevicePreferencesPage } from "../features/device/DevicePreferencesPage";
 import { InstallProfileDialog } from "../features/device/InstallProfileDialog";
 import { EditorWorkspace } from "../features/editor/EditorWorkspace";
+import { FollowLinkActions } from "../features/follow/FollowLinkActions";
+import { sheetRefusalText } from "../features/follow/sheetText";
 import { HomePage } from "../features/home/HomePage";
 import { WorkbookImportReviewDialog } from "../features/import/WorkbookImportReview";
 import { SettingsPage } from "../features/settings/SettingsPage";
@@ -84,6 +86,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
   // never reach that sheet, so the editor says it holds a copy.
   const [reviewFromSheet, setReviewFromSheet] = useState(false);
   const [workbookBusy, setWorkbookBusy] = useState(false);
+  const [sheetsMessage, setSheetsMessage] = useState("");
   const [workbookExportBusy, setWorkbookExportBusy] = useState(false);
   const [closePromptOpen, setClosePromptOpen] = useState(false);
   // Which open session the close prompt is asking about. Device preferences
@@ -324,6 +327,30 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     }
   };
 
+  // The pasted link on Home: the same review as a workbook, then the profile
+  // remembers the link once it is saved (`ImportSheetsAsync`).
+  const importSheetsLink = async (url: string): Promise<void> => {
+    const importLink = client.importSheetsLink;
+    if (importLink === undefined || workbookBusy) return;
+    setWorkbookBusy(true);
+    setSheetsMessage(t("Main_DownloadingTheSpreadsheet"));
+    try {
+      const result = await importLink.call(client, url);
+      if (result.kind === "refused") {
+        setSheetsMessage(sheetRefusalText(result.refusal, t));
+        return;
+      }
+      setSheetsMessage("");
+      setWorkbookReview(result.review);
+      setReviewFromSheet(true);
+      setMessage("");
+    } catch (reason) {
+      setSheetsMessage(localizedErrorMessage(asQcmError(reason).payload, t));
+    } finally {
+      setWorkbookBusy(false);
+    }
+  };
+
   const repairWorkbookTab = async (tabIndex: number): Promise<void> => {
     const repair = client.repairWorkbookTab;
     if (repair === undefined || workbookReview === null || workbookBusy) return;
@@ -532,6 +559,7 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
             setMessage("");
           }}
         />
+        <FollowLinkActions client={client} snapshot={editor} onSnapshot={setEditor} />
         <EditorWorkspace client={client} snapshot={editor} onSnapshot={setEditor} />
       </section>
     );
@@ -544,6 +572,10 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
         onNewProfile={() => void newProfile()}
         onOpenProfile={() => void openProfile()}
         onImportWorkbook={() => void importWorkbook()}
+        {...(client.importSheetsLink === undefined
+          ? {}
+          : { onImportSheetsLink: (url: string) => void importSheetsLink(url) })}
+        sheetsMessage={sheetsMessage}
         onOpenCommunity={() => setActiveDestination("community")}
         onManageDevice={() => setActiveDestination("device")}
         onOpenHelp={() => {

@@ -146,6 +146,10 @@ struct PendingWorkbook {
     import: WorkbookImport,
     /// Where it came from, for the `profile_opened` source on accept.
     source: ProfileSource,
+    /// A pasted Sheets link, remembered against the file once it is saved.
+    follow_link: Option<String>,
+    /// Only one tab could be read (a published link).
+    single_tab: bool,
 }
 
 #[derive(Debug, Default)]
@@ -202,6 +206,35 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
             }));
         }
         let import = import_xlsx(&bytes).map_err(import_error)?;
+        Ok(self.register(display_name, import, source, None, false))
+    }
+
+    /// A Sheets link download, already read and refused or not by
+    /// `follow::usable`. Same review, same one-shot id.
+    pub fn import_sheet_download(
+        &self,
+        display_name: &str,
+        import: WorkbookImport,
+        follow_link: String,
+        single_tab: bool,
+    ) -> WorkbookImportReviewDto {
+        self.register(
+            display_name,
+            import,
+            ProfileSource::Sheets,
+            Some(follow_link),
+            single_tab,
+        )
+    }
+
+    fn register(
+        &self,
+        display_name: &str,
+        import: WorkbookImport,
+        source: ProfileSource,
+        follow_link: Option<String>,
+        single_tab: bool,
+    ) -> WorkbookImportReviewDto {
         let mut table = self.pending();
         if table.items.len() >= MAX_PENDING_IMPORTS
             && let Some(oldest) = table.items.keys().next().copied()
@@ -210,19 +243,16 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
         }
         table.next = table.next.saturating_add(1);
         let id = table.next;
-        table.items.insert(
-            id,
-            PendingWorkbook {
-                name: ProfileDisplayName::new(display_name),
-                import,
-                source,
-            },
-        );
-        table
-            .items
-            .get(&id)
-            .map(|pending| review(id, pending))
-            .ok_or_else(unknown_import)
+        let pending = PendingWorkbook {
+            name: ProfileDisplayName::new(display_name),
+            import,
+            source,
+            follow_link,
+            single_tab,
+        };
+        let shown = review(id, &pending);
+        table.items.insert(id, pending);
+        shown
     }
 
     pub fn repair_tab(&self, raw: Value) -> Result<WorkbookImportReviewDto, QcmError> {
@@ -264,6 +294,7 @@ impl<P: WorkbookPicker> WorkbookShell<P> {
             name: csv_name(pending.name.as_str()),
             csv: pending.import.csv,
             source: pending.source,
+            follow_link: pending.follow_link,
         })
     }
 
@@ -415,6 +446,7 @@ fn review(id: u64, pending: &PendingWorkbook) -> WorkbookImportReviewDto {
             .iter()
             .filter(|issue| issue.severity == qcm_config::Severity::Warning)
             .count(),
+        single_tab: pending.single_tab,
     }
 }
 
@@ -461,6 +493,7 @@ pub struct AcceptedWorkbook {
     pub name: String,
     pub csv: String,
     pub source: ProfileSource,
+    pub follow_link: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
@@ -494,6 +527,8 @@ pub struct WorkbookImportReviewDto {
     pub renamed: Vec<TabRename>,
     pub error_count: usize,
     pub warning_count: usize,
+    /// A published link gives one tab only; the review says so.
+    pub single_tab: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]

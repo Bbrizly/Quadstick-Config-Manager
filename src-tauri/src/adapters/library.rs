@@ -103,6 +103,19 @@ impl<V: crate::adapters::storage::volumes::VolumeSource> LocalProfileStore
         Ok(LocalWriteReceipt { bytes: text.len() })
     }
 
+    fn read_bytes(&self, target: &LocalProfileRef) -> Result<Option<Vec<u8>>, StorageError> {
+        let path = self.path_of(target, StorageStage::ReadFile)?;
+        match fs::read(&path) {
+            Ok(bytes) => Ok(Some(bytes)),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+            Err(error) => Err(map_io(
+                &error,
+                StorageStage::ReadFile,
+                TargetState::Unchanged,
+            )),
+        }
+    }
+
     fn is_on_quadstick(&self, target: &LocalProfileRef) -> Result<bool, StorageError> {
         let path = self.path_of(target, StorageStage::Revalidate)?;
         Ok(self

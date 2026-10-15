@@ -11,6 +11,10 @@ export interface HomePageProps {
   readonly onNewProfile: () => void;
   readonly onOpenProfile: () => void;
   readonly onImportWorkbook: () => void;
+  /** Download a pasted Sheets link. Absent where the native side has none. */
+  readonly onImportSheetsLink?: (url: string) => void;
+  /** What the last link import said, shown under the link box. */
+  readonly sheetsMessage?: string;
   readonly onOpenCommunity: () => void;
   readonly onManageDevice: () => void;
   readonly onOpenHelp: () => void;
@@ -51,6 +55,8 @@ export function HomePage({
   onNewProfile,
   onOpenProfile,
   onImportWorkbook,
+  onImportSheetsLink,
+  sheetsMessage = "",
   onOpenCommunity,
   onManageDevice,
   onOpenHelp,
@@ -250,12 +256,20 @@ export function HomePage({
             type="button"
             disabled={sheetUrl.trim() === "" || workbookBusy}
             aria-label={t("Shell_ImportTheProfileFromThe")}
-            onClick={onImportWorkbook}
+            onClick={() => {
+              if (onImportSheetsLink === undefined) onImportWorkbook();
+              else onImportSheetsLink(sheetUrl);
+            }}
           >
             <Icon name="link" size={18} />
             <span>{t("Shell_Import")}</span>
           </button>
         </div>
+        {sheetsMessage.length === 0 ? null : (
+          <p className="home-sheets-status" role="status">
+            {sheetsMessage}
+          </p>
+        )}
       </section>
 
       <p className="home-version">{t("Rewrite_ProductName")}</p>

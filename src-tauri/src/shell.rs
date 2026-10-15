@@ -1,6 +1,8 @@
 //! What the profile/settings commands actually do.
 
 use crate::adapters::picker::ProfilePicker;
+use crate::follow::FollowLinks;
+use crate::follow_shell::LatestTable;
 use crate::ipc::{
     AppSnapshotDto, ApplyEditorOpsRequest, CapabilitiesDto, CloseOutcomeDto, CloseProfileRequest,
     NewProfileRequest, SessionRequest, SessionRevisionRequest, UpdateSettingsRequest, parse,
@@ -10,9 +12,11 @@ use qcm_config::{EditorOp, ProfileFile};
 use qcm_core::error::{ProfileError, QcmError};
 use qcm_core::ports::local::LocalProfileStore;
 use qcm_core::ports::storage::{DeviceFileName, DeviceGeneration, StorageDeviceId};
+use qcm_core::profiles::SessionId;
 use qcm_core::profiles::{EditorSnapshot, ProfileSessions, SaveReceiptDto};
 use qcm_core::settings::{AppSettingsDto, Settings, SettingsStore};
 use serde_json::Value;
+use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 #[derive(Debug, Clone)]
@@ -27,6 +31,9 @@ pub struct Shell<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> {
     sessions: Mutex<ProfileSessions<Arc<L>>>,
     settings: Mutex<Settings<S>>,
     picker: P,
+    follow: FollowLinks,
+    pending_follow: Mutex<BTreeMap<SessionId, String>>,
+    latest: Mutex<LatestTable>,
 }
 
 impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
@@ -35,11 +42,32 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             sessions: Mutex::new(ProfileSessions::new(library)),
             settings: Mutex::new(Settings::load(settings)),
             picker,
+            follow: FollowLinks::in_memory(),
+            pending_follow: Mutex::new(BTreeMap::new()),
+            latest: Mutex::new(LatestTable::default()),
         }
     }
 
-    fn sessions(&self) -> MutexGuard<'_, ProfileSessions<Arc<L>>> {
+    /// Where followed links are kept. A new shell keeps them for the run only.
+    #[must_use]
+    pub fn with_follow_links(mut self, follow: FollowLinks) -> Self {
+        self.follow = follow;
+        self
+    }
+
+    pub(crate) fn sessions(&self) -> MutexGuard<'_, ProfileSessions<Arc<L>>> {
         self.sessions.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+    pub(crate) const fn follow_links(&self) -> &FollowLinks {
+        &self.follow
+    }
+    pub(crate) fn pending_follow(&self) -> MutexGuard<'_, BTreeMap<SessionId, String>> {
+        self.pending_follow
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+    }
+    pub(crate) fn latest_plans(&self) -> MutexGuard<'_, LatestTable> {
+        self.latest.lock().unwrap_or_else(PoisonError::into_inner)
     }
     fn settings(&self) -> MutexGuard<'_, Settings<S>> {
         self.settings.lock().unwrap_or_else(PoisonError::into_inner)
@@ -169,6 +197,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             .save(session, request.expected_revision)
             .map(|receipt| SaveReceiptDto::from(&receipt))?;
         crate::diagnostics::clear_autosave_draft();
+        self.remember_follow(session);
         Ok(receipt)
     }
     pub fn save_profile_as(&self, raw: Value) -> Result<Option<SaveReceiptDto>, QcmError> {
@@ -198,6 +227,7 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             .map(|receipt| Some(SaveReceiptDto::from(&receipt)))?;
         if receipt.is_some() {
             crate::diagnostics::clear_autosave_draft();
+            self.remember_follow(session);
         }
         Ok(receipt)
     }
@@ -205,6 +235,21 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         let request: CloseProfileRequest = parse(raw, "close_profile request")?;
         let session = session_id(&request.session_id)?;
         let close = request.close_request()?;
+        // A save on the way out still keeps the link, against the file the
+        // session points at before it closes.
+        let follow_key = self
+            .pending_follow()
+            .get(&session)
+            .cloned()
+            .and_then(|link| {
+                let sessions = self.sessions();
+                let open = sessions.session(session).ok()?;
+                let key = sessions
+                    .store()
+                    .persistent_key(open.save_target_ref()?)
+                    .ok()?;
+                Some((key, link))
+            });
         let outcome = self
             .sessions()
             .close(session, close)
@@ -214,6 +259,11 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
             CloseOutcomeDto::Closed | CloseOutcomeDto::SavedAndClosed { .. }
         ) {
             crate::diagnostics::clear_autosave_draft();
+            self.forget_pending_follow(session);
+        }
+        if let (CloseOutcomeDto::SavedAndClosed { .. }, Some((key, link))) = (&outcome, follow_key)
+        {
+            self.follow_links().set(&key, &link);
         }
         Ok(outcome)
     }
@@ -370,5 +420,7 @@ pub fn native_shell() -> ShellState {
     use crate::adapters::storage::volumes::PlatformVolumes;
     let library = Arc::new(FileSystemProfileLibrary::new(PlatformVolumes));
     let picker = NativeProfilePicker::new(Arc::clone(&library));
+    let follow = crate::diagnostics::app_data_dir().join("follow-links.json");
     Shell::new(library, picker, SettingsFile::default_location())
+        .with_follow_links(FollowLinks::file(follow))
 }

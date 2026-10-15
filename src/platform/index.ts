@@ -20,6 +20,9 @@ export type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 export type {
   DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,
 } from "./driveContracts";
+export type {
+  FollowState, LatestCheck, LatestReplace, ProfileChange, SheetRefusal, SheetsImport,
+} from "./followContracts";
 export type { GoogleAuthStatus } from "./googleContracts";
 export type {
   PreferenceCatalog, PreferenceDefinition, PreferenceEditorKind, PreferenceOption,

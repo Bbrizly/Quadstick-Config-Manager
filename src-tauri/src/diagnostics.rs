@@ -201,6 +201,11 @@ fn rescue_dir() -> PathBuf {
         .unwrap_or_else(|| default_app_data_dir().join("rescue"))
 }
 
+/// The rewrite's own data folder (rescue, pending reports, followed links).
+pub fn app_data_dir() -> PathBuf {
+    default_app_data_dir()
+}
+
 fn default_app_data_dir() -> PathBuf {
     #[cfg(target_os = "macos")]
     {
@@ -369,6 +374,48 @@ pub fn write_rescue_profile(stem: &str, csv_bytes: &[u8]) -> Result<PathBuf, Qcm
         })
     })?;
     Ok(path)
+}
+
+/// Get the latest: the copy that is about to be replaced. A fresh name every
+/// time and never an overwrite, since it is the only copy of what was replaced
+/// (`MainWindow.Follow.cs`, `7fc908a`).
+pub fn write_rescue_before_latest(stem: &str, bytes: &[u8]) -> Result<PathBuf, QcmError> {
+    use std::io::Write as _;
+    let failed = |error: std::io::Error| {
+        QcmError::Internal(qcm_core::error::InternalError {
+            what: "write rescue copy",
+            detail: qcm_core::error::OsDetail::new(error.to_string()),
+        })
+    };
+    let dir = rescue_dir();
+    fs::create_dir_all(&dir).map_err(failed)?;
+    let name = sanitize_rescue_stem(stem);
+    let stamp = chrono::Local::now().format("%Y%m%d-%H%M%S");
+    let mut nonce = [0u8; 8];
+    let _ = getrandom::fill(&mut nonce);
+    let nonce: String = nonce.iter().map(|b| format!("{b:02x}")).collect();
+    for attempt in 0u32..100 {
+        let path = dir.join(format!(
+            "{name}-before-latest-{stamp}-{nonce}-{attempt}.csv"
+        ));
+        match fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+        {
+            Ok(mut file) => {
+                if let Err(error) = file.write_all(bytes).and_then(|()| file.sync_all()) {
+                    drop(file);
+                    let _ = fs::remove_file(&path);
+                    return Err(failed(error));
+                }
+                return Ok(path);
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+            Err(error) => return Err(failed(error)),
+        }
+    }
+    Err(failed(std::io::Error::other("no free rescue name")))
 }
 
 const AUTOSAVE_DRAFT: &str = "autosave-draft.csv";
