@@ -1,6 +1,7 @@
 /** Native boundary: paths, device handles, workbook bytes, OAuth tokens and Drive ids do not cross it. */
 import type { CommunityCatalog } from "./communityContracts";
 import type { ConsoleClient } from "./consoleContracts";
+import type { ControllerClient } from "./controllerContracts";
 import type {
   AppSettings, AppSnapshot, CloseDisposition, CloseOutcome, DeletePlan, DeleteReceipt,
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, EditorOp, EditorSnapshot,
@@ -83,6 +84,8 @@ export interface QcmClient {
 
   /** Bluetooth/serial console. Absent where the platform has no serial ports. */
   console?: ConsoleClient;
+  /** Xbox controller bridge (Linux) and the Mac gamepad switch. */
+  controller?: ControllerClient;
 }
 
 export class QcmCommandError extends Error {

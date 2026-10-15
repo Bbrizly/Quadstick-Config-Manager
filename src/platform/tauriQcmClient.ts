@@ -2,6 +2,7 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
 import type { CommunityCatalog } from "./communityContracts";
 import type { ConsoleClient } from "./consoleContracts";
+import type { BridgeState, ControllerClient } from "./controllerContracts";
 import type {
   AppSettings, AppSnapshot, CloseDisposition, CloseOutcome, DeletePlan, DeleteReceipt,
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, EditorOp, EditorSnapshot,
@@ -48,6 +49,16 @@ export class TauriQcmClient implements QcmClient {
     consoleStrengthEnd: () => call("console_strength_end"),
     recordStrengthMeasured: async (puff, sip) => {
       await call<boolean>("console_record_strength", { puff, sip });
+    },
+  };
+  readonly controller: ControllerClient = {
+    getControllerOptions: () => call("get_controller_options"),
+    setControllerBridge: (on) => callArgs("set_controller_bridge", { on }),
+    setMacGamepad: (on) => callArgs("set_mac_gamepad", { on }),
+    subscribeControllerBridge: async (onState) => {
+      const channel = new Channel<BridgeState | null>(onState);
+      const native = await callArgs<NativeSubscription>("subscribe_controller_bridge", { onState: channel });
+      return disposal("unsubscribe_controller_bridge", native.subscriptionId);
     },
   };
   getAppSnapshot(): Promise<AppSnapshot> { return call("get_app_snapshot"); }
@@ -155,5 +166,6 @@ export const TAURI_COMMANDS = [
   "console_send_profile", "console_strength_begin", "console_calibrate", "console_set_threshold",
   "console_strength_end", "console_record_strength",
   "take_launch_profile_link", "open_registry_profile", "subscribe_profile_links",
-  "unsubscribe_profile_links",
+  "unsubscribe_profile_links", "get_controller_options", "set_controller_bridge", "set_mac_gamepad",
+  "subscribe_controller_bridge", "unsubscribe_controller_bridge",
 ] as const;

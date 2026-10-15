@@ -11,6 +11,7 @@ pub mod commands;
 pub mod community;
 pub mod community_commands;
 pub mod console_shell;
+pub mod controller;
 pub mod device_ipc;
 pub mod device_rename_ipc;
 pub mod device_shell;
@@ -104,6 +105,11 @@ pub fn registered_commands() -> &'static [&'static str] {
         "open_privacy_policy",
         "subscribe_profile_links",
         "unsubscribe_profile_links",
+        "get_controller_options",
+        "set_controller_bridge",
+        "set_mac_gamepad",
+        "subscribe_controller_bridge",
+        "unsubscribe_controller_bridge",
     ]
 }
 
@@ -165,6 +171,11 @@ pub fn run() {
             app.deep_link().on_open_url(|event| {
                 registry::deliver_links(event.urls().iter().map(tauri::Url::as_str));
             });
+            // `StartBridgeIfOn`: left on last time, so on again for this run.
+            controller::start_if_on(
+                &app.state::<controller::BridgeRuntime>(),
+                &app.state::<shell::ShellState>(),
+            );
             Ok(())
         })
         .plugin(navigation_guard())
@@ -179,6 +190,7 @@ pub fn run() {
         .manage(drive)
         .manage(console_shell::native_console_shell())
         .manage(streaming::LiveRuntime::new())
+        .manage(controller::BridgeRuntime::default())
         .manage(streaming::DeviceInvalidationHub::default())
         .invoke_handler(tauri::generate_handler![
             commands::get_app_snapshot,
@@ -249,11 +261,18 @@ pub fn run() {
             updates::open_privacy_policy,
             registry::subscribe_profile_links,
             registry::unsubscribe_profile_links,
+            controller::get_controller_options,
+            controller::set_controller_bridge,
+            controller::set_mac_gamepad,
+            controller::subscribe_controller_bridge,
+            controller::unsubscribe_controller_bridge,
         ])
         .build(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window")
-        .run(|_app, event| {
+        .run(|app, event| {
             if let tauri::RunEvent::Exit = event {
+                // Every button on the virtual pad is let go before it goes.
+                app.state::<controller::BridgeRuntime>().stop();
                 // Push what is queued so a short session is not a silent one.
                 telemetry::global().shutdown();
             }
@@ -275,7 +294,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 68);
+        assert_eq!(commands.len(), 73);
         for expected in [
             "import_community_profile",
             "open_community_sheet",

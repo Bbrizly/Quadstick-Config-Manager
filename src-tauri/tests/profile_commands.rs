@@ -669,7 +669,7 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 68);
+    assert_eq!(registered.len(), 73);
     for name in [
         "get_app_snapshot",
         "get_settings",
@@ -739,6 +739,11 @@ fn every_command_this_build_registers_is_on_the_list() {
         "open_privacy_policy",
         "subscribe_profile_links",
         "unsubscribe_profile_links",
+        "get_controller_options",
+        "set_controller_bridge",
+        "set_mac_gamepad",
+        "subscribe_controller_bridge",
+        "unsubscribe_controller_bridge",
     ] {
         assert!(registered.contains(&name), "{name}");
     }

@@ -13,6 +13,9 @@ export type {
   ConsoleClient, ConsoleConnectOutcome, ConsolePort, ConsoleProfilePick, ConsoleSent, StrengthSetup,
 } from "./consoleContracts";
 export { CONSOLE_ERROR_CODES } from "./consoleContracts";
+export type {
+  BridgeState, ControllerClient, ControllerOptions, MacGamepadResult,
+} from "./controllerContracts";
 export type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 export type {
   DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,

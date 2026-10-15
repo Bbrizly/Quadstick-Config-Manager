@@ -276,6 +276,7 @@ impl SettingsPatchDto {
             usage_analytics: self.usage_analytics,
             ask_about_crashes: self.ask_about_crashes,
             telemetry_notice_version: self.telemetry_notice_version,
+            controller_bridge: None,
         })
     }
 }

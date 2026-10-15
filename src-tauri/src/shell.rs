@@ -103,6 +103,20 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         telemetry.apply_consent(notice, usage, &id);
     }
 
+    /// The bridge switch as saved.
+    pub fn controller_bridge_on(&self) -> bool {
+        self.settings().current().controller_bridge
+    }
+
+    /// Save the bridge switch. Not a window patch, so no revision is needed.
+    pub fn set_controller_bridge(&self, on: bool) -> Result<(), QcmError> {
+        self.settings()
+            .update_native(&qcm_core::settings::SettingsPatch {
+                controller_bridge: Some(on),
+                ..Default::default()
+            })
+    }
+
     /// The durable install id, minted if needed. A crash report the person
     /// sends needs one even without usage consent.
     pub fn install_id_for_crash_report(&self) -> String {

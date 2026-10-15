@@ -547,3 +547,8 @@ textarea:focus-visible {
   margin: 0;
   font-size: 1rem;
 }
+
+.controller-row {
+  margin: var(--qcm-space-md) 0;
+  max-width: 720px;
+}

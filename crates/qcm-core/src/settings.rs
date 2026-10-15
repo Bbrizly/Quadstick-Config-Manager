@@ -174,6 +174,8 @@ pub struct AppSettings {
     /// crash report is sent. Never part of a patch: only
     /// [`Settings::ensure_install_id`] writes it.
     pub install_id: String,
+    /// The Linux Xbox controller bridge was left on (`AppSettings.ControllerBridge`).
+    pub controller_bridge: bool,
 }
 
 impl Default for AppSettings {
@@ -192,6 +194,7 @@ impl Default for AppSettings {
             ask_about_crashes: true,
             telemetry_notice_version: 0,
             install_id: String::new(),
+            controller_bridge: false,
         }
     }
 }
@@ -236,6 +239,8 @@ pub struct SettingsPatch {
     pub usage_analytics: Option<bool>,
     pub ask_about_crashes: Option<bool>,
     pub telemetry_notice_version: Option<u32>,
+    /// Native only: the bridge switch, never part of the window's patch.
+    pub controller_bridge: Option<bool>,
 }
 
 impl SettingsPatch {
@@ -276,6 +281,9 @@ impl SettingsPatch {
         }
         if let Some(telemetry_notice_version) = self.telemetry_notice_version {
             next.telemetry_notice_version = telemetry_notice_version;
+        }
+        if let Some(controller_bridge) = self.controller_bridge {
+            next.controller_bridge = controller_bridge;
         }
         next
     }
@@ -368,6 +376,17 @@ impl<S: SettingsStore> Settings<S> {
         }
         self.current = candidate;
         id
+    }
+
+    /// Save a field no window shows (the bridge switch). No revision change,
+    /// so an open Settings window's next patch is not refused as stale.
+    pub fn update_native(&mut self, patch: &SettingsPatch) -> Result<(), QcmError> {
+        let candidate = patch.onto(&self.current);
+        if candidate != self.current {
+            self.store.save(&candidate)?;
+            self.current = candidate;
+        }
+        Ok(())
     }
 
     /// Apply a patch made against `expected_revision`.

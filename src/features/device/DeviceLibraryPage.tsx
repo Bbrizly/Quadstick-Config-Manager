@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Dialog } from "../../components/primitives/Dialog";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
+import { ControllerRow } from "./ControllerRow";
 import { DeviceLinkDialog } from "./DeviceLinkDialog";
 import {
   asQcmError,
@@ -263,6 +264,7 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
           )}
         </div>
       </header>
+      {client.controller === undefined ? null : <ControllerRow controller={client.controller} />}
 
       {message === "" ? null : <output className="feature-status">{message}</output>}
 
