@@ -72,7 +72,7 @@ function snapshotTitle(snapshot: EditorSnapshot): string {
 }
 
 function LocalizedApp({ client }: { readonly client: QcmClient }) {
-  const { t } = useI18n();
+  const { t, plural } = useI18n();
   const [activeDestination, setActiveDestination] = useState<ShellDestination>("home");
   const [themePreference, setThemePreference] = useState<ThemePreference>("system");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -343,9 +343,13 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     setWorkbookBusy(true);
     try {
       const opened = await accept.call(client, workbookReview.importId);
+      const modes = workbookReview.modes.filter((mode) => mode.kind === "mode").length;
       setWorkbookReview(null);
       showEditor(opened);
-      if (reviewFromSheet) setMessage(t("Main_ImportIsACopy"));
+      if (reviewFromSheet) {
+        const line = t("Main_ImportedModesImportedFromThe", [plural("Count_Mode", modes, [modes])]);
+        setMessage(`${line} ${t("Main_ImportIsACopy")}`);
+      }
       setReviewFromSheet(false);
     } catch (reason) {
       showFailure(reason);

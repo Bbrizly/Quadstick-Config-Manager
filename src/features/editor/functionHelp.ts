@@ -80,13 +80,15 @@ export function padName(token: string, t: T): string {
       return t("Outputs_AlsoTouch");
     case "capture":
       return t("Outputs_AlsoCapture");
+    case "kb_left_gui":
+    case "kb_right_gui":
+      return t("Outputs_GuiKeyOtherNames");
     default:
       return PRINTED[token.trim()] ?? "";
   }
 }
 
-// Printed on the pad, so nothing to translate. The Windows-key words are
-// search terms only and never drawn, as in C#.
+// Printed on the pad, so nothing to translate.
 const PRINTED: Readonly<Record<string, string>> = {
   left_1: "L1", left_2: "L2", left_3: "L3",
   right_1: "R1", right_2: "R2", right_3: "R3",
