@@ -51,6 +51,11 @@ Statuses: UNASSESSED → ASSESSED → CONTRACTED → IMPLEMENTING → PORTED →
 | `CrashGuard.cs`, `CrashReport.cs` | rescue/report | core/native + React | SPLIT/REWRITE | crash/privacy | 6 | PORTED: draft + offer/open + panic hook + crash prompt |
 | `QuadStick.Format/DeviceConsole.cs` | serial/Bluetooth console protocol + strength sweep | qcm-core/console.rs | REWRITE | `device_console.rs` | 3 | PARITY-TESTED |
 | `DeviceLinkWindow.cs` | console window: ports, connect, send, strength test | src-tauri/console_shell.rs + React DeviceLinkDialog | SPLIT | shell unit + vitest | 6 | PORTED |
+| `MainWindow.Follow.cs` (follow-link) | pasted Sheets link import, follow, Get the latest, forget | src-tauri/follow.rs + follow_shell.rs + React FollowLinkActions | SPLIT | `tests/follow_link.rs` + vitest | 6 | PORTED |
+| `ProfileChanges.cs` (follow-link) | what a replace would change | qcm-config/profile_changes.rs | REWRITE | unit parity | 6 | PORTED |
+| `SheetsUrl.cs` (export URLs only) | link to xlsx/csv export | src-tauri/follow.rs `SheetLink` | REWRITE | unit | 6 | PORTED |
+| `SafeFileName.cs` (`ForCsv`) | Drive restore names | src-tauri/drive.rs `safe_csv_name*` | REWRITE | unit | 6 | PORTED |
+| `MainWindow.HostDrive.cs`, `NetworkFeature.cs` host gate, `TokenStore` host name | host executable embedding | none: the rewrite has no host build | D | none | — | ASSESSED (N/A) |
 | `ProfileRegistryClient.cs`, `MainWindow.Registry.cs` | Adaptive Profiles index + verified snapshot, open unsaved | src-tauri/registry.rs + App.tsx | REWRITE | `registry.rs` tests + `RegistryLink.test.tsx` | 6 | PORTED |
 | `RegistryDeepLink.cs` | `qcm://profile/<id>` parsing, argv launch | src-tauri/registry.rs | REWRITE | `registry.rs::links_match_the_canonical_shape_only` | 6 | PORTED |
 | `MainWindow.ShowTelemetryNoticeAsync`, `SettingsView.PrivacyArea` install id | first-run notice, install id copy | UsageNotice.tsx + SettingsPage.tsx | REWRITE | `UsageNotice.test.tsx` | 6 | PORTED |

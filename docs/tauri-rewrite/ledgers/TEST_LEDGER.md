@@ -45,6 +45,10 @@ Evidence paths are target placeholders until implemented.
 | T-041 | pad names, function-number help | `src/features/editor/functionHelp.test.tsx` | — | IMPLEMENTED |
 | T-035 | registry index/snapshot/link + running-app handoff | `src-tauri/src/registry.rs` tests + `src/app/RegistryLink.test.tsx` | click a website link on each OS | IMPLEMENTED |
 | T-030 | settings revision/closed value sets | `qcm-core/tests/settings.rs` + `src-tauri/tests/local_library.rs` | settings screen with a real file | IMPLEMENTED |
+| T-042 | follow a Sheets link (FollowLinkTests port) | `src-tauri/tests/follow_link.rs`, `qcm-config/src/profile_changes.rs`, `src-tauri/src/follow.rs`, `src/features/follow/FollowLinkActions.test.tsx` | a real shared and a published sheet | IMPLEMENTED |
+| T-043 | console close mid-test/mid-send (6934bbf) | `src/features/device/DeviceLinkDialog.test.tsx` | close mid-test on a stick | IMPLEMENTED |
+| T-044 | Drive Home button, restore offer, bulk restore | `HomeDriveButton.test.tsx`, `DrivePickerDialog.test.tsx`, `drive.rs` tests | real Drive restore on each OS | IMPLEMENTED |
+| T-045 | Linux bundle has qs-bridge and the udev rule | `.github/workflows/rewrite.yml` `linux-bundle` | install the deb, start the bridge | IMPLEMENTED (CI) |
 
 Critical behavior cannot move to PARITY-TESTED without at least one T row; storage/HID required parity also needs hardware evidence.
 

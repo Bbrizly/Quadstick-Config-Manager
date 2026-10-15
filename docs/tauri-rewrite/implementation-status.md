@@ -103,12 +103,30 @@ TASK-038 does not make React a profile engine. The UI renders `EditorSnapshot`, 
 
 Gates at `6df8f9b` (local, macOS): `pnpm check` (143 tests), `cargo test --workspace` (451), clippy `-D warnings`, fmt, catalog regeneration clean, `pnpm tauri build --debug --no-bundle`.
 
-Still open: bundling `qs-bridge` beside the Linux app (Tauri `externalBin`); a Drive restore entry on Home and after first connect (the rewrite home has none yet); bulk Drive restore needs a local library folder; Linux builds of the new cfg paths are unverified here (CI); real-OS link click-through, bridge with a stick in mode 2, SDL game on a Mac.
+Still open (closed in phase 4: `qs-bridge` bundling config, Drive restore on Home and after first connect, bulk restore): Linux builds of the new cfg paths are unverified here (CI); real-OS link click-through, bridge with a stick in mode 2, SDL game on a Mac.
+
+## Phase 4 (2026-10-15)
+
+Local `follow-link` (10 commits on main) is merged; its C# side is Avalonia and kept as is.
+
+| Area | Rewrite state |
+|---|---|
+| Pasted Sheets link (Home) | **DONE** `import_sheets_link`: workbook export, CSV fallback (said in the review), `SheetsUrl` port, same refusals as Import. Before this the Home link box opened the workbook file picker |
+| Follow / Get the latest / Forget | **DONE** `follow.rs`, `follow_shell.rs`, `FollowLinkActions.tsx`; `profile_changes.rs` (mappings and other cells); rescue copy never overwritten; reopen as a new session |
+| Console close (6934bbf) | **DONE** a close mid-run stops, puts the stick back, then closes |
+| Drive restore | **DONE** Home Drive button (arm, sign in, offer restore), offer after a Settings sign-in, bulk `restore_drive_backups` into Documents/QuadStick Profiles with Imported/Skipped/Failed |
+| qs-bridge on Linux | **CONFIG DONE, NEEDS CI** `tauri.linux.conf.json` externalBin + udev rule in deb/rpm, `scripts/stage-qs-bridge.sh`, CI job `linux-bundle` |
+| Host build pieces (Drive-only gate, token store name) | N/A: the rewrite has no host executable |
+
+Gates (local, macOS): `pnpm check` (159 tests), `cargo test --workspace` (471), clippy `-D warnings`, fmt, catalog regeneration clean, `pnpm tauri build --debug --no-bundle`.
+
+Still open: the Linux bundle job has not run; Get the latest is editor-only (no Home cards); the app's own Drive token is not used for its own sheets; restore folder on Linux/macOS vs .NET `MyDocuments` is UNRESOLVED-FL1; real Drive/Sheets runs on each OS.
 
 ## Runtime cost while a game runs
 
 - Console: nothing runs while the dialog is closed or idle. Ports are listed on open and on Refresh only. Live input is subscribed, and the 30 ms breath wait runs, only during a measurement.
 - Telemetry: off is a flag read. On and idle is one thread parked on a channel (no timer); an event opens a 5 s batch window.
+- Follow / Sheets: nothing until a press; asking whether a profile follows reads a local file. Home's Drive button reads the local token store once on mount; the only timer is the 4 s disarm after a first press.
 - Controller bridge: off, nothing runs. On, one thread is parked on the child's stdout; the bridge process itself checks stdin four times a second, as on Avalonia. Links and bridge state arrive on channels only when something changes.
 
 - Live input subscribes only while the window is visible and focused (DOM `visibilitychange`/`focus`/`blur`; Tauri window events would need an event permission the capability does not grant). Frames are coalesced to one React update per animation frame (`src/features/live/useLiveInput.ts`).

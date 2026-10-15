@@ -87,6 +87,11 @@ than as a framework string the UI cannot switch on.
 | qcm://profile-source-changed | event optional | low | watch source only | PLANNED |
 | live frames | Channel | HID stream | stream handle/bounded | PLANNED |
 | operation progress | Channel | low/medium | operation ID/stages | PLANNED |
+| import_sheets_link | command (async) | network on press | url in, review or typed refusal out; link kept native | IMPLEMENTED |
+| get_follow_state / forget_follow_link | command | local | session id; no path out | IMPLEMENTED |
+| check_latest_from_link | command (async) | network on press | session + revision; one at a time; returns changes + opaque plan id | IMPLEMENTED |
+| replace_with_latest | command | local write | opaque plan id; revision + bytes re-checked; new session snapshot | IMPLEMENTED |
+| restore_drive_backups | command (async) | Drive on press | opaque cloud refs (max 500); summary out, no paths | IMPLEMENTED |
 
 Forbidden APIs: generic read/write/list path, shell exec, arbitrary HTTP, arbitrary serial/HID commands.
 
