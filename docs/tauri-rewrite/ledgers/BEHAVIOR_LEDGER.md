@@ -57,6 +57,9 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-052 | C | consent is asked only through the Settings toggle, which records notice version 2 (as `ApplyTelemetryAnswer` does); the first-run notice dialog is not ported yet, so a fresh rewrite install sends nothing until the toggle | — | IMPLEMENTED (dialog pending) |
 | B-053 | C | install_failed reasons: `no_profile`, `has_errors`, `not_a_quadstick`, `io_error` (storage/device only) are native; the `cancelled_*` reasons happen in React dialogs and are not reported yet | — | PARTIAL |
 | B-054 | C | crash Send needs a stored `chain`; the Rust panic hook writes none, so a rewrite panic report is kept, not sent (Avalonia also refuses an empty chain) | `telemetry.rs::a_crash_report_needs_a_chain…` | IMPLEMENTED |
+| B-055 | A | registry: index schema 1, size caps (8 MiB/512 KiB/50k), id/slug/platform/source/Google-Sheet URL/sha checks, duplicates refused, snapshot SHA-256 verified, verified caches cover an outage, a link only opens unsaved in the editor with `game` for telemetry | `registry.rs` tests | PARITY-TESTED |
+| B-056 | A | deep link: canonical `qcm://profile/<id>` on the original spelling, no query/fragment/user/port/dot segments; first matching argv entry | `registry.rs` tests | PARITY-TESTED |
+| B-057 | D | `qcm` scheme registration (Windows per-user key, macOS Apple event, second-launch forwarding) | needs `tauri-plugin-deep-link` | UNRESOLVED: argv launch works only once the scheme is registered by the Store manifest |
 | B-049 | C | backups taken over the console use the rewrite's backup store and its location display, not a raw home path | `console_shell.rs` tests | IMPLEMENTED |
 
 Status moves to PARITY-TESTED/HARDWARE-VERIFIED only with linked TEST_LEDGER evidence.

@@ -185,6 +185,31 @@ function LocalizedApp({ client }: { readonly client: QcmClient }) {
     setMessage("");
   }, []);
 
+  // A website's "Open in QCM" link: resolve the registry id, fetch the
+  // reviewed snapshot and open it in the editor. It never writes a device.
+  useEffect(() => {
+    const take = client.takeLaunchProfileLink;
+    const open = client.openRegistryProfile;
+    if (take === undefined || open === undefined) return undefined;
+    let cancelled = false;
+    void take.call(client).then(
+      async (profileId) => {
+        if (cancelled || profileId === null) return;
+        setMessage(t("Community_LoadingTheCommunityList2"));
+        try {
+          const opened = await open.call(client, profileId);
+          if (!cancelled) showEditor(opened);
+        } catch {
+          if (!cancelled) setMessage(t("Community_TheCommunityListCouldNot"));
+        }
+      },
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [client, showEditor, t]);
+
   const finishEditorClose = useCallback((destination: ShellDestination): void => {
     setEditor(null);
     setDevicePreferences(null);

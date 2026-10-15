@@ -44,6 +44,10 @@ export interface QcmClient {
   exportProfileXlsx?(sessionId: string, expectedRevision: number): Promise<WorkbookExportReceipt | null>;
   getPreferenceCatalog?(): Promise<PreferenceCatalog>;
 
+  /** The `qcm://profile/<id>` id this launch was given, once; null when none. */
+  takeLaunchProfileLink?(): Promise<string | null>;
+  /** Open an Adaptive Profiles registry profile in the editor, unsaved. */
+  openRegistryProfile?(profileId: string): Promise<EditorSnapshot>;
   loadCommunityCatalog?(refresh: boolean): Promise<CommunityCatalog>;
   importCommunityProfile?(sheetId: string, csvName: string): Promise<WorkbookImportReview>;
   openCommunitySheet?(sheetId: string): Promise<void>;

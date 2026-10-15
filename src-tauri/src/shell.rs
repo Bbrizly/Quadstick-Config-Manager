@@ -294,6 +294,18 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
     }
 
     /// Crash/autosave recovery: dirty working copy with no save target.
+    /// A registry profile is an imported starting point: no save target, so
+    /// Save asks where instead of overwriting a cache file.
+    pub fn open_registry_copy(
+        &self,
+        profile_id: &str,
+        csv_text: &str,
+    ) -> Result<EditorSnapshot, QcmError> {
+        Ok(self
+            .sessions()
+            .open_community(&format!("registry:{profile_id}"), csv_text))
+    }
+
     pub fn open_unsaved_profile(&self, csv_text: &str) -> EditorSnapshot {
         self.sessions().open_unsaved(csv_text)
     }

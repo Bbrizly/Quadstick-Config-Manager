@@ -86,6 +86,8 @@ export class TauriQcmClient implements QcmClient {
   cancelWorkbookImport(importId: string): Promise<void> { return call("cancel_workbook_import", { importId }); }
   exportProfileXlsx(sessionId: string, expectedRevision: number): Promise<WorkbookExportReceipt | null> { return call("export_profile_xlsx", { sessionId, expectedRevision }); }
   getPreferenceCatalog(): Promise<PreferenceCatalog> { return call("get_preference_catalog"); }
+  takeLaunchProfileLink(): Promise<string | null> { return call("take_launch_profile_link"); }
+  openRegistryProfile(profileId: string): Promise<EditorSnapshot> { return call("open_registry_profile", { profileId }); }
   loadCommunityCatalog(refresh: boolean): Promise<CommunityCatalog> { return call("load_community_catalog", { refresh }); }
   importCommunityProfile(sheetId: string, csvName: string): Promise<WorkbookImportReview> { return call("import_community_profile", { sheetId, csvName }); }
   openCommunitySheet(sheetId: string): Promise<void> { return call("open_community_sheet", { sheetId }); }
@@ -141,4 +143,5 @@ export const TAURI_COMMANDS = [
   "list_console_ports", "connect_console", "close_console", "choose_console_profile",
   "console_send_profile", "console_strength_begin", "console_calibrate", "console_set_threshold",
   "console_strength_end", "console_record_strength",
+  "take_launch_profile_link", "open_registry_profile",
 ] as const;

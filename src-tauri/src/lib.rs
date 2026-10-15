@@ -20,6 +20,7 @@ pub mod google_auth;
 pub mod google_commands;
 pub mod ipc;
 pub mod preference_ipc;
+pub mod registry;
 pub mod shell;
 pub mod streaming;
 pub mod telemetry;
@@ -96,6 +97,8 @@ pub fn registered_commands() -> &'static [&'static str] {
         "console_set_threshold",
         "console_strength_end",
         "console_record_strength",
+        "take_launch_profile_link",
+        "open_registry_profile",
     ]
 }
 
@@ -121,6 +124,9 @@ fn navigation_guard<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
 
 pub fn run() {
     diagnostics::install_panic_hook();
+    // A `qcm://profile/<id>` link this launch was given (Windows passes it in
+    // argv). Read once; the window asks for it after it mounts.
+    registry::remember_launch_args();
     let google = Arc::new(
         google_auth::GoogleAuthService::native()
             .expect("failed to build native Google auth client"),
@@ -211,6 +217,8 @@ pub fn run() {
             console_shell::console_set_threshold,
             console_shell::console_strength_end,
             console_shell::console_record_strength,
+            registry::take_launch_profile_link,
+            registry::open_registry_profile,
         ])
         .build(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window")
@@ -237,7 +245,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 62);
+        assert_eq!(commands.len(), 64);
         for expected in [
             "import_community_profile",
             "open_community_sheet",
