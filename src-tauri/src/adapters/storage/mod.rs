@@ -375,7 +375,10 @@ impl<V: VolumeSource> DeviceStorage for FileSystemDeviceStorage<V> {
         let target = root.join(staged.target().as_str());
 
         match fs::rename(&entry.path, &target) {
-            Ok(()) => Ok(()),
+            Ok(()) => {
+                flush_entry(&root, Some(&target));
+                Ok(())
+            }
             Err(error) => {
                 // A rename that failed does not say by itself whether the old
                 // directory entry survived. Do not guess: look, and report only
@@ -451,7 +454,9 @@ impl<V: VolumeSource> DeviceStorage for FileSystemDeviceStorage<V> {
             // old file there or never ran, and it is never a partial write.
             let _ = fs::remove_file(&beside);
             map_io(&error, StorageStage::RestoreReplace, TargetState::Missing)
-        })
+        })?;
+        flush_entry(root, Some(&target));
+        Ok(())
     }
 
     fn delete_file(
@@ -476,7 +481,9 @@ impl<V: VolumeSource> DeviceStorage for FileSystemDeviceStorage<V> {
             } else {
                 map_io(&error, StorageStage::Delete, TargetState::Unchanged)
             }
-        })
+        })?;
+        flush_entry(root, None);
+        Ok(())
     }
 }
 
@@ -502,6 +509,29 @@ fn write_and_sync(path: &Path, bytes: &[u8]) -> io::Result<()> {
     file.write_all(bytes)?;
     file.flush()?;
     file.sync_all()
+}
+
+/// Push a rename or a delete out to the stick before the unplug wait starts.
+///
+/// `sync_all` on the written file covers its bytes, not the directory entry a
+/// rename or delete changes. Windows writes a removable drive through; macOS
+/// and Linux can hold a FAT directory update in cache for about 30 s, so a
+/// user who pulls the stick on "Safe to unplug" loses the swap. Syncing the
+/// file again and then its directory reaches that entry without any unsafe
+/// call. Failures are ignored: the change is already made, and a flush that
+/// cannot open the folder must not report a finished write as failed.
+fn flush_entry(root: &Path, target: Option<&Path>) {
+    if let Some(target) = target {
+        if let Ok(file) = fs::OpenOptions::new().write(true).open(target) {
+            let _ = file.sync_all();
+        }
+    }
+    #[cfg(unix)]
+    if let Ok(folder) = fs::File::open(root) {
+        let _ = folder.sync_all();
+    }
+    #[cfg(not(unix))]
+    let _ = root;
 }
 
 /// The off-device backup area.
