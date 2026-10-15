@@ -322,7 +322,7 @@ public sealed class DriveBackup
     public string? LinkedSheetUrl(string profilePath) =>
         _getSettings().DriveLinks.TryGetValue(profilePath, out var link) ? Url(link.SpreadsheetId) : null;
 
-    static string Url(string spreadsheetId) =>
+    internal static string Url(string spreadsheetId) =>
         $"https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit?usp=sharing";
 
     // "Copy share link", the spec's five step sequence. Returns the clipboard

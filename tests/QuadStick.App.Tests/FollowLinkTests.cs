@@ -189,6 +189,35 @@ public class FollowLinkTests
         finally { Close(w); }
     }
 
+    // The whole hand-off, as the client at home meets it: the exact link a
+    // host's share hands out, pasted into Import, saved, then the button.
+    [AvaloniaFact]
+    public async Task The_link_a_clinic_shares_is_one_the_home_app_imports_and_follows()
+    {
+        var link = DriveBackup.Url("1AbCdEfGhIjKlMnOpQrStUvWxYz012345");
+        using var lib = new Library(local: null, follow: false);
+        var sheet = new Sheet(Profile("Walking"));
+        using var http = new HttpClient(sheet);
+        var w = NewWindow();
+        try
+        {
+            await w.ImportSheetsAsync(link, http);
+            Assert.Contains(w.OpenFile!.Document.Sheets, m => m.ModeName == "Walking");
+            w.PickSavePathForTest = () => lib.Path;
+            Assert.True(await w.SaveProfileAsync());
+            Assert.Equal(link, w.FollowedLink(lib.Path));
+
+            sheet.Csv = Profile("Walking", "Driving");   // the clinician saved a change
+            var getting = w.GetLatestAsync(lib.Path, http);
+            var dialog = await DialogAsync(w);
+            Assert.Contains("Driving", Said(dialog));
+            Press(dialog, Strings.Follow_Replace);
+            await getting;
+            Assert.Contains("Driving", File.ReadAllText(lib.Path));
+        }
+        finally { Close(w); }
+    }
+
     [AvaloniaFact]
     public async Task Saying_keep_mine_changes_nothing()
     {
