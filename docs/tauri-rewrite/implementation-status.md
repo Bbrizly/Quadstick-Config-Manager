@@ -67,7 +67,7 @@ TASK-038 does not make React a profile engine. The UI renders `EditorSnapshot`, 
 | Main commit | Rewrite state |
 |---|---|
 | `f7e15b8`, `033c274` combo in one box, one-step undo | **DONE**: `comboGroups`, combo card, Rust `CopyInputs`/`DeleteRows`/`AddComboOutput`/`Group` ops under `ProfileFile::one_step` |
-| `3ad22ce` combo input not a duplicate | **N/A**: the rewrite has no duplicate-input mark yet |
+| `3ad22ce` combo input not a duplicate | **DONE**: `duplicates.ts`, the combo's own rows are subtracted |
 | `610b93f` mapping panel room | **DONE**: 340 px track floor, stacks under 720 px |
 | `8d35604` narrow to the socket picked | **DONE**: `parts.ts`, narrowed note, Show all |
 | `ddbf8b5` cog becomes Back | **DONE**: Settings has no Done button |

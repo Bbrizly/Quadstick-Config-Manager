@@ -1,6 +1,8 @@
 import { useI18n } from "../../i18n";
 import { OutputPrompt, promptSrc } from "../visualizer/OutputPrompt";
 import { humanize, tokenLabel, type BindingCells, type ZoneId } from "../visualizer/deviceSummary";
+import { DuplicateMark } from "./DuplicateMark";
+import { NO_DUPLICATES, type DuplicateCounts } from "./duplicates";
 
 export interface SentenceCardProps {
   readonly row: BindingCells;
@@ -9,6 +11,8 @@ export interface SentenceCardProps {
   readonly live?: boolean;
   /** The other rows of a button combo: same inputs, one output each, one card. */
   readonly together?: readonly BindingCells[];
+  /** This mode's repeat counts; a token used twice gets a mark. */
+  readonly counts?: DuplicateCounts;
   readonly onSelect: () => void;
 }
 
@@ -45,6 +49,7 @@ export function SentenceCard({
   selected,
   live = false,
   together = NO_ROWS,
+  counts = NO_DUPLICATES,
   onSelect,
 }: SentenceCardProps) {
   const { t } = useI18n();
@@ -60,8 +65,18 @@ export function SentenceCard({
   const outputLabel = outputs.map((entry) => entry.label).join(" + ");
   const inputLabels =
     inputs.length > 0 ? inputs.map((input) => cardInput(input, zoneId)) : [t("Main_NoInput")];
+  // The combo's other rows are drawn on this card, so they are not repeats.
+  const inputRepeats = inputs.map((input) => counts.input(input) - together.length);
   const functionLabel = fn.length > 0 ? humanize(fn) : "";
-  const spoken = `${t("Main_PressVerb")} ${outputLabel} ${t("Main_WhenYou")} ${inputLabels.join(", ")}`;
+  // The marks sit in the hidden visual grid, so the card's name carries them.
+  const repeats = [
+    ...outputs.map((entry) => ({ label: entry.label, count: counts.output(entry.token) })),
+    ...inputs.map((input, index) => ({ label: inputLabels[index] ?? input, count: inputRepeats[index] ?? 0 })),
+  ]
+    .filter((entry) => entry.count >= 2)
+    .map((entry) => `${entry.label}: ${t("Main_UsedNTimesInThisMode", [entry.count])}`);
+  const sentence = `${t("Main_PressVerb")} ${outputLabel} ${t("Main_WhenYou")} ${inputLabels.join(", ")}`;
+  const spoken = repeats.length === 0 ? sentence : `${sentence}. ${repeats.join(". ")}`;
 
   return (
     <button
@@ -94,14 +109,16 @@ export function SentenceCard({
               {promptSrc(entry.token) !== null ? (
                 <span className="visually-hidden">{entry.label}</span>
               ) : null}
+              <DuplicateMark count={counts.output(entry.token)} />
             </span>
           ))}
         </span>
         <span className="sentence-word">{t("Main_WhenYou")}</span>
         <span className="sentence-inputs">
-          {inputLabels.map((label) => (
+          {inputLabels.map((label, index) => (
             <span className="pill tint-input" key={label}>
               {label}
+              <DuplicateMark count={inputRepeats[index] ?? 0} />
             </span>
           ))}
         </span>

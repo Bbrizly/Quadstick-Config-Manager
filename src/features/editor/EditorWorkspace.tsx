@@ -19,6 +19,7 @@ import { zoneOf, zonesForRow, type ZoneId } from "../visualizer/deviceSummary";
 import { firstMappedCombo, partLabel, partOf } from "../visualizer/parts";
 import { BindingInspector } from "./BindingInspector";
 import { comboGroups } from "./combos";
+import { duplicateCounts } from "./duplicates";
 import { SentenceCard } from "./SentenceCard";
 import type { MessageKey } from "../../i18n";
 
@@ -233,6 +234,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
   }, [part, wholeZoneRows]);
   const narrowed = part !== null && effectivePick !== null && wholeZoneRows.length > zoneRows.length;
   const groups = useMemo(() => comboGroups(rows), [rows]);
+  const counts = useMemo(() => duplicateCounts(rows), [rows]);
   const groupOf = (row: BindingRow): readonly BindingRow[] => groups.get(row.row) ?? [row];
   const cardRows = zoneRows.filter((row) => groupOf(row)[0]?.row === row.row);
   const selectionBelongsToCurrentSheet = selectedMode?.index === selectedSheet;
@@ -656,6 +658,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                         key={row.row}
                         row={row}
                         together={group.slice(1)}
+                        counts={counts}
                         zoneId={zoneIdForRow(row)}
                         selected={group.some((member) => member.row === visibleSelectedRow)}
                         live={group.some((member) => liveRows.has(member.row))}
@@ -695,6 +698,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot }: EditorWorkspac
                     row={activeRow.row}
                     cells={activeRow.cells}
                     members={activeGroup ?? [activeRow]}
+                    counts={counts}
                     mappingNumber={Math.max(1, cardRows.findIndex((row) => row.row === activeRow.row) + 1)}
                     disabled={busy}
                     onSetCell={setCell}

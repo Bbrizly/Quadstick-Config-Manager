@@ -593,3 +593,17 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* DuplicateChip: the count itself, accent fill, never colour alone. */
+.duplicate-mark {
+  display: inline-block;
+  margin-inline-start: 6px;
+  padding: 0 8px;
+  border: 1px solid var(--qcm-accent);
+  border-radius: 10px;
+  background: var(--qcm-accent);
+  color: var(--qcm-on-accent);
+  font-weight: 700;
+  font-size: max(14px, 0.875rem);
+  vertical-align: middle;
+}

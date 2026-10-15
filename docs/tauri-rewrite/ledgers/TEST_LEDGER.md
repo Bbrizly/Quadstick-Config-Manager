@@ -41,6 +41,7 @@ Evidence paths are target placeholders until implemented.
 | T-037 | share setup steps | `src/features/cloud/ShareSetupDialog.test.tsx` | real Google connect | IMPLEMENTED |
 | T-038 | controller bridge + Mac gamepad | `src-tauri/src/controller.rs` tests + `src/features/device/ControllerRow.test.tsx` | real bridge on Linux with a stick in mode 2; SDL game on a Mac | IMPLEMENTED |
 | T-039 | Drive picker | `src/features/cloud/DrivePickerDialog.test.tsx` | real Drive list on each OS; Linux connect | IMPLEMENTED |
+| T-040 | duplicate mark incl. combo rule | `src/features/editor/duplicates.test.tsx` | — | IMPLEMENTED |
 | T-035 | registry index/snapshot/link + running-app handoff | `src-tauri/src/registry.rs` tests + `src/app/RegistryLink.test.tsx` | click a website link on each OS | IMPLEMENTED |
 | T-030 | settings revision/closed value sets | `qcm-core/tests/settings.rs` + `src-tauri/tests/local_library.rs` | settings screen with a real file | IMPLEMENTED |
 

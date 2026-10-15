@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
 import { tokenLabel } from "../visualizer/deviceSummary";
+import { DuplicateMark } from "./DuplicateMark";
+import { NO_DUPLICATES, type DuplicateCounts } from "./duplicates";
 
 export interface InspectorRow {
   readonly row: number;
@@ -16,12 +18,14 @@ function OutputFields({
   removeLabel,
   onSetCell,
   onRemove,
+  repeats,
 }: {
   readonly member: InspectorRow;
   readonly disabled: boolean;
   readonly removeLabel: string | null;
   readonly onSetCell: (row: number, column: number, value: string) => void;
   readonly onRemove: (() => void) | null;
+  readonly repeats: number;
 }) {
   const { t } = useI18n();
   const { row, cells } = member;
@@ -45,6 +49,7 @@ function OutputFields({
             onBlur={() => commit(0)}
           />
         </label>
+        <DuplicateMark count={repeats} />
         {onRemove !== null && removeLabel !== null ? (
           <button
             type="button"
@@ -87,6 +92,7 @@ export function BindingInspector({
   onSetInput,
   onAddOutput,
   onRemoveOutput,
+  counts = NO_DUPLICATES,
 }: {
   readonly row: number;
   readonly cells: readonly string[];
@@ -99,6 +105,7 @@ export function BindingInspector({
   readonly onSetInput?: (column: number, value: string) => void;
   readonly onAddOutput?: (() => void) | undefined;
   readonly onRemoveOutput?: (row: number) => void;
+  readonly counts?: DuplicateCounts;
 }) {
   const { t } = useI18n();
   const outputs = members ?? [{ row, cells }];
@@ -133,6 +140,7 @@ export function BindingInspector({
             removeLabel={combo ? t("Main_RemoveThisOutputFromMapping", [named]) : null}
             onSetCell={onSetCell}
             onRemove={combo && onRemoveOutput !== undefined ? () => onRemoveOutput(member.row) : null}
+            repeats={counts.output(output)}
           />
         );
       })}
@@ -162,6 +170,8 @@ export function BindingInspector({
                 onChange={(event) => setDraft((current) => current.with(column, event.currentTarget.value))}
                 onBlur={() => commitInput(column)}
               />
+              {/* 3ad22ce: the combo's own rows share this input by design. */}
+              <DuplicateMark count={counts.input(cells[column] ?? "") - (outputs.length - 1)} />
             </label>
           );
         })}
