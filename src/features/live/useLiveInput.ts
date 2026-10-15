@@ -53,7 +53,9 @@ export function createFrameCoalescer(
  * event permission the main capability deliberately does not grant.
  */
 export function useWindowActive(): boolean {
-  const [active, setActive] = useState(() => typeof document === "undefined" || document.visibilityState !== "hidden");
+  const [active, setActive] = useState(
+    () => typeof document === "undefined" || (document.visibilityState !== "hidden" && document.hasFocus()),
+  );
   useEffect(() => {
     const update = (): void => {
       setActive(document.visibilityState !== "hidden" && document.hasFocus());
