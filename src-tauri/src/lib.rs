@@ -9,6 +9,7 @@ pub mod adapters;
 pub mod commands;
 pub mod community;
 pub mod community_commands;
+pub mod console_shell;
 pub mod device_ipc;
 pub mod device_rename_ipc;
 pub mod device_shell;
@@ -84,6 +85,15 @@ pub fn registered_commands() -> &'static [&'static str] {
         "get_pending_rescue",
         "open_rescue_profile",
         "discard_pending_rescues",
+        "list_console_ports",
+        "connect_console",
+        "close_console",
+        "choose_console_profile",
+        "console_send_profile",
+        "console_strength_begin",
+        "console_calibrate",
+        "console_set_threshold",
+        "console_strength_end",
     ]
 }
 
@@ -128,6 +138,7 @@ pub fn run() {
         )
         .manage(google)
         .manage(drive)
+        .manage(console_shell::native_console_shell())
         .manage(streaming::LiveRuntime::new())
         .manage(streaming::DeviceInvalidationHub::default())
         .invoke_handler(tauri::generate_handler![
@@ -183,6 +194,15 @@ pub fn run() {
             diagnostics::get_pending_rescue,
             diagnostics::open_rescue_profile,
             diagnostics::discard_pending_rescues,
+            console_shell::list_console_ports,
+            console_shell::connect_console,
+            console_shell::close_console,
+            console_shell::choose_console_profile,
+            console_shell::console_send_profile,
+            console_shell::console_strength_begin,
+            console_shell::console_calibrate,
+            console_shell::console_set_threshold,
+            console_shell::console_strength_end,
         ])
         .run(tauri::generate_context!())
         .expect("failed to start the QuadStick Config Manager window");
@@ -203,7 +223,7 @@ mod tests {
     #[test]
     fn command_surface_is_auditable_and_keeps_secrets_unaddressable() {
         let commands = super::registered_commands();
-        assert_eq!(commands.len(), 52);
+        assert_eq!(commands.len(), 61);
         for expected in [
             "import_community_profile",
             "open_community_sheet",

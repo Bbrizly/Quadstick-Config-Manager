@@ -25,6 +25,8 @@ Current pinned foundation:
 | `serde`, `serde_json` | DTO/config serialization | native/core contracts |
 | `rfd` | native profile/device folder picker | called from Rust command; no WebView path API |
 | `hidapi = 2.6.6` | enumerate/open HID, read report descriptor and blocking reports | `src-tauri/src/adapters/hid.rs` only; HID path/handle stays native |
+| `serialport = 4.10.1` (no default features) | Bluetooth SPP / 3.3V cable console, 115200 baud | `src-tauri/src/console_shell.rs` only; opened by Connect, dropped on close; no libudev, so Linux needs no system library |
+| `chrono = 0.4.45` (`clock` only) | local wall-clock stamp for `write_file,2` | `src-tauri/src/console_shell.rs`; already in the lock through Tauri |
 | Vitest / RTL | frontend contract tests | dev-only |
 | `proptest` / cargo-fuzz | config assurance | test/fuzz only |
 
@@ -42,7 +44,7 @@ This is an **implementation decision, not the TASK-026 hardware verdict**. The a
 - Tailwind/large UI kits — avoid UI-framework lock-in.
 - Tauri filesystem/shell/http/opener/process/store/stronghold/updater plugins — generic WebView privilege violates the boundary.
 - heavyweight Google SDK — evaluate only when TASK-045 proves a focused native REST implementation is insufficient.
-- serial crate — OQ-001/TASK-029 resolved serial as no current app behavior.
+- ~~serial crate~~ — reversed 2026-10-15: main `f3525fe` shipped the Bluetooth/cable console (`DeviceConsole.cs`), so `serialport` is now in the table above.
 
 ## Evaluation checklist for every future dependency
 

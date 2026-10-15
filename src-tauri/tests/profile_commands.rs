@@ -669,7 +669,7 @@ fn no_command_takes_a_path() {
 #[test]
 fn every_command_this_build_registers_is_on_the_list() {
     let registered = qcm_tauri_lib::registered_commands();
-    assert_eq!(registered.len(), 52);
+    assert_eq!(registered.len(), 61);
     for name in [
         "get_app_snapshot",
         "get_settings",
@@ -723,6 +723,15 @@ fn every_command_this_build_registers_is_on_the_list() {
         "get_pending_rescue",
         "open_rescue_profile",
         "discard_pending_rescues",
+        "list_console_ports",
+        "connect_console",
+        "close_console",
+        "choose_console_profile",
+        "console_send_profile",
+        "console_strength_begin",
+        "console_calibrate",
+        "console_set_threshold",
+        "console_strength_end",
     ] {
         assert!(registered.contains(&name), "{name}");
     }

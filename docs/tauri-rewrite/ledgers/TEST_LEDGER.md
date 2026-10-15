@@ -34,6 +34,9 @@ Evidence paths are target placeholders until implemented.
 | T-027 | error redaction | `qcm-core/tests/redaction.rs` every family | bug-report screenshot review | IMPLEMENTED |
 | T-028 | session revision/atomic batch/close-dirty | `qcm-core/tests/profile_sessions.rs` on the fake library | leave prompt with a real save | IMPLEMENTED |
 | T-031 | frontend client contract + import boundary | `src/platform/mockQcmClient.test.ts` scenarios + `src/platform/importBoundary.test.ts` | browser run of the mock with no Tauri | IMPLEMENTED |
+| T-032 | console protocol (12 C# tests + half-line junk, boot, new-file, stopped sweep) | `crates/qcm-core/tests/device_console.rs` with `qcm_testkit::FakeConsole` | paired QuadStick over SPP and a 3.3V cable | IMPLEMENTED |
+| T-033 | console shell: opaque ports, mac tty/cu, confirm gate, strength steps, redaction | `src-tauri/src/console_shell.rs` unit tests | real port open/close | IMPLEMENTED |
+| T-034 | DeviceLink window (DeviceLinkWindowTests ported) | `src/features/device/DeviceLinkDialog.test.tsx` | sip/puff test with a person on a stick | IMPLEMENTED |
 | T-030 | settings revision/closed value sets | `qcm-core/tests/settings.rs` + `src-tauri/tests/local_library.rs` | settings screen with a real file | IMPLEMENTED |
 
 Critical behavior cannot move to PARITY-TESTED without at least one T row; storage/HID required parity also needs hardware evidence.

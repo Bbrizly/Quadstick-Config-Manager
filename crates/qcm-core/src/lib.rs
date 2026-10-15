@@ -14,6 +14,7 @@ pub mod agent_feature;
 pub mod cancel;
 pub mod clock;
 pub mod confirmation;
+pub mod console;
 pub mod devices;
 pub mod error;
 pub mod live;

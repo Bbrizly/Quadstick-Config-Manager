@@ -1,5 +1,6 @@
 /** Native boundary: paths, device handles, workbook bytes, OAuth tokens and Drive ids do not cross it. */
 import type { CommunityCatalog } from "./communityContracts";
+import type { ConsoleClient } from "./consoleContracts";
 import type {
   AppSettings, AppSnapshot, CloseDisposition, CloseOutcome, DeletePlan, DeleteReceipt,
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, EditorOp, EditorSnapshot,
@@ -69,6 +70,9 @@ export interface QcmClient {
   openDevicePreferences(deviceId: string, expectedGeneration: number): Promise<EditorSnapshot>;
   startLiveInput(onFrame: (frame: LiveSnapshot) => void): Promise<Subscription>;
   subscribeDevicesChanged(onChanged: (event: DeviceInvalidation) => void): Promise<Subscription>;
+
+  /** Bluetooth/serial console. Absent where the platform has no serial ports. */
+  console?: ConsoleClient;
 }
 
 export class QcmCommandError extends Error {

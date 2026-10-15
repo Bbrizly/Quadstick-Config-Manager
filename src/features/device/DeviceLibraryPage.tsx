@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Dialog } from "../../components/primitives/Dialog";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
+import { DeviceLinkDialog } from "./DeviceLinkDialog";
 import {
   asQcmError,
   type DeletePlan,
@@ -31,6 +32,8 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
   const [deletePlan, setDeletePlan] = useState<DeletePlan | null>(null);
   const [deleteDeviceId, setDeleteDeviceId] = useState<string | null>(null);
   const [renameFrom, setRenameFrom] = useState<string | null>(null);
+  const [linkOpen, setLinkOpen] = useState(false);
+  const closeLink = useCallback(() => setLinkOpen(false), []);
   const [renameTo, setRenameTo] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -249,6 +252,15 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
           <button type="button" disabled={busy} onClick={() => void chooseDevice()}>
             {t("Install_ChooseTheQuadStickDrive")}
           </button>
+          {client.console === undefined ? null : (
+            <button
+              type="button"
+              aria-label={t("Link_PageButtonName")}
+              onClick={() => setLinkOpen(true)}
+            >
+              {t("Link_PageButton")}
+            </button>
+          )}
         </div>
       </header>
 
@@ -447,6 +459,11 @@ export function DeviceLibraryPage({ client, onOpenProfile }: DeviceLibraryPagePr
       >
         <p>{deletePlan?.confirmation.summary}</p>
       </Dialog>
+
+      {/* Mounted only while open, so every opening starts disconnected. */}
+      {client.console === undefined || !linkOpen ? null : (
+        <DeviceLinkDialog client={client} console={client.console} open onClose={closeLink} />
+      )}
     </section>
   );
 }

@@ -48,6 +48,10 @@ Source definitions live in `05-behavior-inventory.md`. This ledger tracks contra
 | B-042 | E | Avalonia gallery | web tooling replacement | ASSESSED |
 | B-043 | E forbidden | generic JS filesystem | capability test absent | CONTRACTED |
 | B-044 | E forbidden | generic JS shell/process | capability test absent | CONTRACTED |
-| B-045 | D | production serial | OQ-001 resolution 2026-08-30 | CLOSED-DEFERRED: `System.IO.Ports` was never a dependency in any commit, and the only source hit is a test asserting its absence; do not implement without new evidence |
+| B-045 | A | serial/Bluetooth console (`DeviceConsole.cs`, main `f3525fe`): backspace prefix, `\r` line end, `\n>` prompt, 480-byte UTF-8-safe chunks, write_file 0/1/2 with two-digit year, read-back ignoring `\r`, silent preference = refused, load needs " OK", boot unanswered | `qcm-core/tests/device_console.rs` against `FakeConsole` | PARITY-TESTED (hardware pending). Supersedes the 2026-08-30 deferral: main shipped the feature |
+| B-046 | A | console send = drive install gates + backup + read-back before load; strength test sends its profile through the same path | `device_console.rs`, `console_shell.rs` tests | PARITY-TESTED |
+| B-047 | A | strength test: needs a USB reading first, maxima held at 100, calibrate, 5..95 sweep in <=7 tries each way, always delete test file + boot (Stop too), result "under 5%" below the sweep | `DeviceLinkDialog.test.tsx` | PARITY-TESTED (hardware pending) |
+| B-048 | C | console port list: macOS `/dev/tty.*` twin of a `/dev/cu.*` port is hidden (HidSharp listed both; `tty` blocks on open); QuadStick-named ports first as before | `console_shell.rs::the_quadstick_is_offered_first_and_only_once_on_a_mac` | IMPLEMENTED |
+| B-049 | C | backups taken over the console use the rewrite's backup store and its location display, not a raw home path | `console_shell.rs` tests | IMPLEMENTED |
 
 Status moves to PARITY-TESTED/HARDWARE-VERIFIED only with linked TEST_LEDGER evidence.

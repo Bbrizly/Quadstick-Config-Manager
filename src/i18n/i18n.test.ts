@@ -61,7 +61,8 @@ describe("TASK-037 localization migration", () => {
   });
 
   it("localizes every stable Rust error code by code, not fallback English", () => {
-    expect(LOCALIZED_ERROR_CODES).toHaveLength(35);
+    // 35 core codes plus the 8 console codes from `console_shell.rs`.
+    expect(LOCALIZED_ERROR_CODES).toHaveLength(43);
     const translated = localizedErrorMessage(
       {
         code: "QCM_DEVICE_STALE",

@@ -1,6 +1,7 @@
 /** The only frontend file allowed to import `@tauri-apps/*`. */
 import { Channel, invoke } from "@tauri-apps/api/core";
 import type { CommunityCatalog } from "./communityContracts";
+import type { ConsoleClient } from "./consoleContracts";
 import type {
   AppSettings, AppSnapshot, CloseDisposition, CloseOutcome, DeletePlan, DeleteReceipt,
   DeviceInvalidation, DeviceLibrarySnapshot, DevicePresenceSnapshot, EditorOp, EditorSnapshot,
@@ -33,6 +34,18 @@ function disposal(command: string, subscriptionId: string): Subscription {
 }
 
 export class TauriQcmClient implements QcmClient {
+  readonly console: ConsoleClient = {
+    listConsolePorts: () => call("list_console_ports"),
+    connectConsole: (portId) => call("connect_console", { portId }),
+    closeConsole: () => call("close_console"),
+    chooseConsoleProfile: () => call("choose_console_profile"),
+    consoleSendProfile: (pickId, confirmDefaultCsv, confirmPreferencesCsv) =>
+      call("console_send_profile", { pickId, confirmDefaultCsv, confirmPreferencesCsv }),
+    consoleStrengthBegin: () => call("console_strength_begin"),
+    consoleCalibrate: () => call("console_calibrate"),
+    consoleSetThreshold: (puff, value) => call("console_set_threshold", { puff, value }),
+    consoleStrengthEnd: () => call("console_strength_end"),
+  };
   getAppSnapshot(): Promise<AppSnapshot> { return call("get_app_snapshot"); }
   getSettings(): Promise<AppSettings> { return call("get_settings"); }
   updateSettings(expectedRevision: number, patch: SettingsPatch): Promise<AppSettings> { return call("update_settings", { expectedRevision, patch }); }
@@ -122,4 +135,7 @@ export const TAURI_COMMANDS = [
   "check_for_update", "open_external_url", "send_feedback",
   "get_pending_crash_report", "resolve_crash_report",
   "get_pending_rescue", "open_rescue_profile", "discard_pending_rescues",
+  "list_console_ports", "connect_console", "close_console", "choose_console_profile",
+  "console_send_profile", "console_strength_begin", "console_calibrate", "console_set_threshold",
+  "console_strength_end",
 ] as const;

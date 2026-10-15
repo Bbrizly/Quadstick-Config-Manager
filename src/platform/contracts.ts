@@ -294,6 +294,8 @@ export interface QcmErrorPayload {
   readonly operationId: string | null;
   readonly targetState: "unchanged" | "missing" | "replaced" | "restored" | "uncertain" | null;
   readonly backup: string | null;
+  /** Console failures only: the file or setting name the message is about. */
+  readonly subject?: string | null;
 }
 
 export const ERROR_CODES = {

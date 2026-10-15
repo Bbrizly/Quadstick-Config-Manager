@@ -9,6 +9,10 @@ export type {
   ModelChoice, PendingCrashReport, PendingRescue, PickerGrouping, ProfileSource, QcmErrorPayload,
   RecoveryAction, SaveReceipt, SettingsPatch, Subscription, ThemeChoice, UpdateResult,
 } from "./contracts";
+export type {
+  ConsoleClient, ConsoleConnectOutcome, ConsolePort, ConsoleProfilePick, ConsoleSent, StrengthSetup,
+} from "./consoleContracts";
+export { CONSOLE_ERROR_CODES } from "./consoleContracts";
 export type { RenameDeviceProfileReceipt } from "./deviceRenameContracts";
 export type {
   DriveBackupOutcome, DriveConflictChoice, DriveFile, DriveResolution, DriveShare,

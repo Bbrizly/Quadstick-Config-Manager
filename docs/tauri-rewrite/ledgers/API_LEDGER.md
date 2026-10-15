@@ -62,6 +62,15 @@ than as a framework string the UI cannot switch on.
 | check_for_update | command | network | GitHub latest (Soft) | REGISTERED |
 | open_external_url | command | open browser | https github.com /releases only | REGISTERED |
 | track_telemetry_event | command | analytics | allowlist + kill-switch | REGISTERED (Soft no-op without token) |
+| list_console_ports | command | serial metadata | ports become opaque per-list ids | REGISTERED |
+| connect_console | command | serial open | port id from the current list only; 115200 baud; `build` probe | REGISTERED |
+| close_console | command | serial lifecycle | none; drops the port | REGISTERED |
+| choose_console_profile | command | file-read via picker | native picker, 1 MiB cap, pick id only | REGISTERED |
+| console_send_profile | command | critical device-write over console | pick id + install gates + backup/readback before load | REGISTERED |
+| console_strength_begin | command | device-write over console | connected console; test profile through the send path | REGISTERED |
+| console_calibrate | command | device command | connected console | REGISTERED |
+| console_set_threshold | command | device memory only | puff flag + 0..=100 | REGISTERED |
+| console_strength_end | command | device restart | always deletes the test file, boots, drops the port | REGISTERED |
 | install_update | command | process/restart | safe app state + signature | PARKED |
 | subscribe_devices_changed | command+Channel | low | native invalidation producer only | REGISTERED |
 | unsubscribe_devices_changed | command | low | opaque subscription id | REGISTERED |
