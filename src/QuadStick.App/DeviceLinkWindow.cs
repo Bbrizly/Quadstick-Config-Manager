@@ -125,7 +125,25 @@ public class DeviceLinkWindow : Window
         FillPorts();
         Refresh();
         Opened += (_, _) => (_ports.ItemCount > 0 ? _connect : refresh).Focus();
+        // Closed while a send or a test is running, the port would go out
+        // from under it, and the QuadStick would be left with the test file
+        // loaded and its thresholds moved. So a close waits: it stops the
+        // test, the device is put back, then the window goes.
+        Closing += (_, e) =>
+        {
+            if (!_busy || e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown) return;
+            e.Cancel = true;
+            _stopAsked = true;
+            _closeWhenDone = true;
+        };
         Closed += (_, _) => _stream?.Dispose();
+    }
+
+    bool _closeWhenDone;
+
+    void CloseIfAsked()
+    {
+        if (_closeWhenDone && !_busy) Close();
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -196,7 +214,7 @@ public class DeviceLinkWindow : Window
             _stream?.Dispose(); _stream = null;
             _status.Text = string.Format(CultureInfo.CurrentCulture, Strings.Link_CouldNotOpen, port, ex.Message);
         }
-        finally { _busy = false; Refresh(); }
+        finally { _busy = false; Refresh(); CloseIfAsked(); }
     }
 
     // ---- sending a profile ----
@@ -240,7 +258,7 @@ public class DeviceLinkWindow : Window
                 : string.Format(CultureInfo.CurrentCulture, Strings.Link_SentNew, result.Name);
         }
         catch (Exception ex) { _status.Text = ex.Message; }
-        finally { _busy = false; Refresh(); }
+        finally { _busy = false; Refresh(); CloseIfAsked(); }
     }
 
     // ---- measuring strength ----
@@ -311,6 +329,7 @@ public class DeviceLinkWindow : Window
             StrengthMeasured?.Invoke(puff, sip);
         }
         else if (_stopAsked) _status.Text = Strings.Link_Cancelled;
+        CloseIfAsked();
     }
 
     int _try;

@@ -195,4 +195,29 @@ public class DeviceLinkWindowTests
             .SingleOrDefault(b => AutomationProperties.GetName(b) == Strings.Link_PageButtonName);
         Assert.NotNull(button);
     }
+    // Closing the window mid-test would drop the port with the test file still
+    // loaded and the thresholds moved. The close waits for the device to be
+    // put back, then happens.
+    [AvaloniaFact]
+    public async Task Closing_mid_test_puts_the_quadstick_back_before_the_window_goes()
+    {
+        var (w, device, dir) = Open();
+        var closed = false;
+        w.Closed += (_, _) => closed = true;
+        try
+        {
+            w.Show();
+            var run = w.MeasureNowAsync();
+            var give = DateTime.UtcNow.AddSeconds(10);
+            while (!w.PromptText.Contains("Puff", StringComparison.Ordinal) && DateTime.UtcNow < give)
+                await Task.Delay(5);
+            w.Close();
+            Assert.False(closed);
+            await run;
+            Assert.True(closed);
+            Assert.DoesNotContain(DeviceConsole.StrengthTestName, device.Files.Keys);
+            Assert.Equal("boot", device.Commands[^1]);
+        }
+        finally { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
+    }
 }
