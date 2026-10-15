@@ -27,7 +27,7 @@ Tasks are tracked on independent axes so hardware or credential debt is not conf
 | TASK-026 Rust HID backend spike | **PENDING PHYSICAL SPIKE** | N/A | **PENDING** Windows/macOS/Linux + modes | task is intrinsically physical |
 | TASK-027 descriptor-driven HID adapter | **DONE** | **PASS fixture/CI** | **PENDING** actual QuadStick/backend validation | `src-tauri/src/adapters/hid.rs` |
 | TASK-028 LiveInputManager | **DONE** | **PASS** | **PENDING** final live-device pass | `qcm-core/src/live/**` |
-| TASK-029 serial scope | **DONE — DEFERRED BY EVIDENCE** | **PASS audit** | N/A | no current serial behavior to port |
+| TASK-029 serial scope | **DONE** (deferral reversed: main `f3525fe` shipped the console) | **PASS** | **PENDING** SPP + 3.3V cable on a stick | `qcm-core/src/console.rs`, `src-tauri/src/console_shell.rs`, `DeviceLinkDialog.tsx` |
 | TASK-030 Tauri + React scaffold | **DONE** | **PASS** | N/A | `src-tauri/`, React/Vite root |
 | TASK-031 QcmClient + mock | **DONE** | **PASS** | N/A | `src/platform/**` |
 | TASK-032 profile/settings commands | **DONE** | **PASS** | N/A | Tauri command/IPC shell |
@@ -77,7 +77,22 @@ TASK-038 does not make React a profile engine. The UI renders `EditorSnapshot`, 
 | `9f151ee` console adapter modes | **DONE**: help on `enable_DS3_emulation` |
 | `1950d85`, `1cc0cd8`, `2b0552c`, `88eda16` wording | catalogs regenerated (the generator now reads `QuadStick.Format` RESX too); the rewrite has no Sheets-link import, function-number hints or output picker to show them yet |
 
+## Phase 2 (2026-10-15)
+
+| Area | Rewrite state |
+|---|---|
+| Console protocol (`DeviceConsole.cs`) | **DONE** `qcm-core::console` over any `Read + Write`; fake + all 12 C# tests + half-line junk, boot, new-file, stopped sweep (`device_console.rs`) |
+| Serial port | **DONE** `serialport 4.10.1` (no libudev) in `console_shell.rs`, 115200 baud, opaque per-list port ids, macOS `tty.*` twin hidden; opened by Connect, dropped on close, failed connect and the strength-test restart |
+| DeviceLink window | **DONE** `DeviceLinkDialog.tsx` from the device page: ports, Connect, Send (backup, read-back, load, default/prefs questions), Measure (USB reading first, maxima 100, calibrate, 5..95 sweep, Stop, always delete + boot); `DeviceLinkWindowTests` ported |
+| Telemetry (`Telemetry.cs`) | **DONE** `src-tauri/src/telemetry.rs`: PostHog `/batch/`, same events/allowlist/consent v2/kill switch/build-time token, durable install id, `game`, `setup_seconds`, `strength_measured`, feedback flush, crash send from a `chain` |
+| Registry + `qcm://profile/<id>` | **DONE** `src-tauri/src/registry.rs` + App launch-link open; **BLOCKED** scheme registration/macOS delivery/second-launch forwarding: `tauri-plugin-deep-link` is not a dependency |
+
+Still open from this phase: the first-run usage notice dialog (consent today comes only from the Settings toggle, which records notice 2); `install_failed` `cancelled_*` reasons; showing the install id in Settings; PRIVACY.md wording for the Rust `$lib`/User-Agent; a chain in the Rust panic report so a crash can be sent.
+
 ## Runtime cost while a game runs
+
+- Console: nothing runs while the dialog is closed or idle. Ports are listed on open and on Refresh only. Live input is subscribed, and the 30 ms breath wait runs, only during a measurement.
+- Telemetry: off is a flag read. On and idle is one thread parked on a channel (no timer); an event opens a 5 s batch window.
 
 - Live input subscribes only while the window is visible and focused (DOM `visibilitychange`/`focus`/`blur`; Tauri window events would need an event permission the capability does not grant). Frames are coalesced to one React update per animation frame (`src/features/live/useLiveInput.ts`).
 - The native worker (`src-tauri/src/streaming.rs`) has no 4 ms or 50 ms polling. Without a device it sleeps on a condvar until the 1.5 s rescan (floor 250 ms); the last unsubscribe wakes and stops it, so nothing enumerates HID without a subscriber. A quiet open stick wakes twice a second (500 ms read timeout). A new subscriber gets the current state at once.
