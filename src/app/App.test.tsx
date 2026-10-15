@@ -50,7 +50,8 @@ describe("TASK-036/037 app shell", () => {
     fireEvent.change(language, { target: { value: "ar" } });
     expect(document.documentElement).toHaveAttribute("lang", "ar");
     expect(document.documentElement).toHaveAttribute("dir", "rtl");
-    expect(screen.getByRole("button", { name: arCatalog.Shell_Home })).toBeInTheDocument();
+    // The Arabic catalog is its own chunk, so its strings land a tick later.
+    expect(await screen.findByRole("button", { name: arCatalog.Shell_Home })).toBeInTheDocument();
   });
 
   it("opens settings as an in-shell page and the cog becomes Back", async () => {

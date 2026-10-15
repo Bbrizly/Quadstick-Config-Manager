@@ -16,7 +16,7 @@ import pt from "./catalogs/pt.json";
 import pseudo from "./catalogs/qps-ploc.json";
 import rewriteKeys from "./catalogs/rewrite-keys.json";
 import zhHans from "./catalogs/zh-Hans.json";
-import { applyDocumentLocale, formatMessage, localeDirection, pluralCategory, resolveLocale } from "./index";
+import { applyDocumentLocale, formatMessage, loadCatalog, localeDirection, pluralCategory, resolveLocale } from "./index";
 import { LOCALIZED_ERROR_CODES, localizedErrorMessage } from "./errors";
 
 const catalogs = [en, ar, de, es, fr, hi, itCatalog, ja, ko, nl, pl, pt, zhHans, pseudo];
@@ -76,5 +76,16 @@ describe("TASK-037 localization migration", () => {
     );
     expect(translated).toBe(ar.Rewrite_ErrorDevice);
     expect(translated).not.toContain("drive is not");
+  });
+});
+
+describe("catalog loading", () => {
+  it("keeps English in the bundle and loads another locale on demand", async () => {
+
+    const english = await loadCatalog("en");
+    const german = await loadCatalog("de");
+    expect(german).not.toBe(english);
+    expect(await loadCatalog("de")).toBe(german);
+    expect(Object.keys(german).length).toBe(Object.keys(english).length);
   });
 });

@@ -8,20 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-import ar from "./catalogs/ar.json";
-import de from "./catalogs/de.json";
 import en from "./catalogs/en.json";
-import es from "./catalogs/es.json";
-import fr from "./catalogs/fr.json";
-import hi from "./catalogs/hi.json";
-import it from "./catalogs/it.json";
-import ja from "./catalogs/ja.json";
-import ko from "./catalogs/ko.json";
-import nl from "./catalogs/nl.json";
-import pl from "./catalogs/pl.json";
-import pt from "./catalogs/pt.json";
-import pseudo from "./catalogs/qps-ploc.json";
-import zhHans from "./catalogs/zh-Hans.json";
 
 export const LOCALE_TAGS = [
   "en",
@@ -44,22 +31,35 @@ export type LocalePreference = "system" | LocaleTag | "qps-ploc";
 export type MessageKey = keyof typeof en;
 export type TextDirection = "ltr" | "rtl";
 
-const CATALOGS: Record<LocaleTag | "qps-ploc", Record<string, string>> = {
-  en,
-  ar,
-  de,
-  es,
-  fr,
-  hi,
-  it,
-  ja,
-  ko,
-  nl,
-  pl,
-  pt,
-  "zh-Hans": zhHans,
-  "qps-ploc": pseudo,
-};
+type Catalog = Readonly<Record<string, string>>;
+type CatalogLocale = LocaleTag | "qps-ploc";
+
+// English ships in the main bundle, as the fallback every key resolves to.
+// Each other catalog is its own chunk, fetched only when it is the one in use:
+// thirteen of them were 1.9 MB of strings parsed on every start.
+const LOADERS = import.meta.glob<Catalog>(
+  [
+    "./catalogs/*.json",
+    "!./catalogs/en.json",
+    "!./catalogs/baseline-keys.json",
+    "!./catalogs/catalog-meta.json",
+    "!./catalogs/rewrite-keys.json",
+  ],
+  { import: "default" },
+);
+
+const CATALOGS = new Map<CatalogLocale, Catalog>([["en", en]]);
+
+/** The catalog for a locale, from its chunk the first time. */
+export async function loadCatalog(locale: CatalogLocale): Promise<Catalog> {
+  const cached = CATALOGS.get(locale);
+  if (cached !== undefined) return cached;
+  const load = LOADERS[`./catalogs/${locale}.json`];
+  if (load === undefined) return en;
+  const catalog = await load();
+  CATALOGS.set(locale, catalog);
+  return catalog;
+}
 
 export const LOCALE_NAMES: Readonly<Record<LocaleTag, string>> = {
   en: "English",
@@ -173,8 +173,20 @@ export function I18nProvider({ children, initialPreference = "system" }: I18nPro
     [preference, systemLocales],
   );
 
+  // Bumped when a catalog chunk lands, so the strings re-resolve.
+  const [, setLoaded] = useState(0);
+  const catalog = CATALOGS.get(locale);
+
   useEffect(() => {
     applyDocumentLocale(locale);
+    if (CATALOGS.has(locale)) return undefined;
+    let current = true;
+    void loadCatalog(locale).then(() => {
+      if (current) setLoaded((count) => count + 1);
+    });
+    return () => {
+      current = false;
+    };
   }, [locale]);
 
   useEffect(() => {
@@ -186,10 +198,10 @@ export function I18nProvider({ children, initialPreference = "system" }: I18nPro
 
   const t = useCallback(
     (key: MessageKey, values: readonly unknown[] = []) => {
-      const template = CATALOGS[locale][key] ?? CATALOGS.en[key] ?? String(key);
+      const template = catalog?.[key] ?? en[key] ?? String(key);
       return formatMessage(template, values, locale === "qps-ploc" ? "en" : locale);
     },
-    [locale],
+    [catalog, locale],
   );
 
   const plural = useCallback(
