@@ -3857,4 +3857,7 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>[Thíš prófílé ñó lóñgér fóllówš ítš líñk. xxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>[Thíš prófílé çháñgéd whílé thé šhéét wáš dówñlóádíñg, šó ñóthíñg wáš répláçéd. Šávé ít, théñ gét thé látéšt ágáíñ. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
 </root>

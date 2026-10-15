@@ -3722,4 +3722,7 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>Ten profil nie śledzi już swojego linku.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Ten profil zmienił się podczas pobierania arkusza, więc nic nie zostało zastąpione. Zapisz go, a potem pobierz najnowszą wersję ponownie.</value>
+  </data>
 </root>

@@ -3722,4 +3722,7 @@ Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desact
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>Este perfil ya no sigue su enlace.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Este perfil cambió mientras se descargaba la hoja, así que no se reemplazó nada. Guárdelo y vuelva a obtener lo último.</value>
+  </data>
 </root>

@@ -3722,4 +3722,7 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>Dieses Profil folgt seinem Link nicht mehr.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Dieses Profil hat sich während des Herunterladens geändert, daher wurde nichts ersetzt. Speichern Sie es und holen Sie dann erneut die neueste Version.</value>
+  </data>
 </root>

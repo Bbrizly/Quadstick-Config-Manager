@@ -3720,4 +3720,7 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>このプロファイルはリンクをフォローしなくなりました。</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>スプレッドシートのダウンロード中にこのプロファイルが変更されたため、何も置き換えていません。保存してから、もう一度最新版を取得してください。</value>
+  </data>
 </root>

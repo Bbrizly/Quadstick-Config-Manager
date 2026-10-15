@@ -3722,4 +3722,7 @@ I giochi che non usano SDL non vedranno il gamepad. Per quelli, usa la modalità
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>Questo profilo non segue più il suo link.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Questo profilo è cambiato mentre il foglio veniva scaricato, quindi non è stato sostituito nulla. Salvarlo, poi prendere di nuovo l'ultima versione.</value>
+  </data>
 </root>

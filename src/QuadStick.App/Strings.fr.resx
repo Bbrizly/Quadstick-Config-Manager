@@ -3722,4 +3722,7 @@ Les jeux qui n'utilisent pas SDL ne verront pas la manette. Pour eux, utilisez l
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>Ce profil ne suit plus son lien.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Ce profil a changé pendant le téléchargement de la feuille, rien n'a donc été remplacé. Enregistrez-le, puis récupérez à nouveau la dernière version.</value>
+  </data>
 </root>

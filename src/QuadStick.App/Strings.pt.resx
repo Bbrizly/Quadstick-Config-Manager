@@ -3722,4 +3722,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>Este perfil não segue mais o link.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Este perfil mudou enquanto a planilha era baixada, então nada foi substituído. Salve-o e obtenha a versão mais recente de novo.</value>
+  </data>
 </root>

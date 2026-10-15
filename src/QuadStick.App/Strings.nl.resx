@@ -3722,4 +3722,7 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>Dit profiel volgt zijn link niet meer.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>Dit profiel is veranderd terwijl het spreadsheet werd gedownload, dus er is niets vervangen. Sla het op en haal daarna opnieuw de nieuwste versie.</value>
+  </data>
 </root>

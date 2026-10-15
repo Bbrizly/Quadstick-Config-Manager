@@ -252,6 +252,32 @@ public class FollowLinkTests
         finally { Close(w); }
     }
 
+    // The editor is not locked while the question is up. An edit made then
+    // was never in the list the user said yes to, so a yes does not cover it.
+    [AvaloniaFact]
+    public async Task An_edit_made_while_the_question_is_up_is_not_replaced()
+    {
+        var local = Profile("Walking");
+        using var lib = new Library(local, follow: true);
+        using var http = new HttpClient(new Sheet(Profile("Walking", "Driving")));
+        var w = NewWindow();
+        try
+        {
+            w.OpenPath(lib.Path);
+            var getting = w.GetLatestAsync(null, http);
+            var dialog = await DialogAsync(w);
+            w.OpenFile!.Dirty = true;          // typed into the editor behind it
+            Press(dialog, Strings.Follow_Replace);
+            await getting;
+
+            Assert.Equal(local, File.ReadAllText(lib.Path));
+            Assert.True(w.OpenFile!.Dirty);
+            Assert.DoesNotContain(w.OpenFile.Document.Sheets, s => s.ModeName == "Driving");
+            Assert.True(ShowsStatus(w, Strings.Follow_ChangedMeanwhile));
+        }
+        finally { Close(w); }
+    }
+
     // Opening Home, opening the profile, and going back makes no request. The
     // only thing that does is the press, and the press is on the card.
     [AvaloniaFact]

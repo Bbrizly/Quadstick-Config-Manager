@@ -204,9 +204,10 @@ public partial class MainWindow
         var incoming = got.File!;
         incoming.NormalizeForDeviceCsv(); // what lands on disk matches a save byte for byte
         ProfileFile? local = null;
+        string? onDisk = null;
         // A copy that cannot be read is still a copy: it is compared as
         // unreadable and still goes to the rescue folder before a replace.
-        try { local = ProfileFile.Load(await File.ReadAllTextAsync(path)); }
+        try { onDisk = await File.ReadAllTextAsync(path); local = ProfileFile.Load(onDisk); }
         catch { local = null; }
 
         var changes = ProfileChanges.Between(local, incoming);
@@ -214,6 +215,13 @@ public partial class MainWindow
 
         if (!await ConfirmLatestAsync(changes, got.Limitation))
         { Say(Strings.Follow_Kept, StatusKind.Info); return; }
+
+        // The download and the question both take time, and the editor is not
+        // locked while they do. What the user said yes to is the list above,
+        // compared against the copy as it was; an edit made since, or a file
+        // changed on disk since, was never shown in it and is not replaced.
+        if ((_savePath == path && _file is { Dirty: true }) || !SameOnDisk(path, onDisk))
+        { Say(Strings.Follow_ChangedMeanwhile, StatusKind.Warning); return; }
 
         var text = incoming.ToCsvText();
         try
@@ -243,6 +251,12 @@ public partial class MainWindow
 
         void Refused(string why) => Say(
             string.Format(CultureInfo.CurrentCulture, Strings.Follow_CouldNotGet, why), StatusKind.Warning);
+    }
+
+    static bool SameOnDisk(string path, string? before)
+    {
+        try { return File.ReadAllText(path) == before; }
+        catch { return before is null && !File.Exists(path); }
     }
 
     /// <summary>What the sheet would change, and the one question: replace?

@@ -3722,4 +3722,7 @@
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>यह प्रोफ़ाइल अब अपना लिंक फ़ॉलो नहीं करती।</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>शीट डाउनलोड होते समय यह प्रोफ़ाइल बदल गई, इसलिए कुछ नहीं बदला गया। इसे सेव करें, फिर नया वर्शन दोबारा लाएं।</value>
+  </data>
 </root>

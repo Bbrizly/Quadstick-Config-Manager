@@ -3857,4 +3857,7 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>This profile no longer follows its link.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>This profile changed while the sheet was downloading, so nothing was replaced. Save it, then get the latest again.</value>
+  </data>
 </root>

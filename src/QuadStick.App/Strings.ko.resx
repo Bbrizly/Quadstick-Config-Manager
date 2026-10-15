@@ -3722,4 +3722,7 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>이 프로필은 더 이상 링크를 따르지 않습니다.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>시트를 내려받는 동안 이 프로필이 바뀌어 아무것도 바꾸지 않았습니다. 저장한 다음 최신 버전을 다시 가져오십시오.</value>
+  </data>
 </root>

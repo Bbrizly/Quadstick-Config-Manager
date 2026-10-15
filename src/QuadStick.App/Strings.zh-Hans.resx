@@ -3722,4 +3722,7 @@
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>此配置文件不再关注其链接。</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>下载表格期间此配置文件发生了变化，因此没有替换任何内容。请先保存，然后再次获取最新版本。</value>
+  </data>
 </root>

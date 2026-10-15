@@ -3722,4 +3722,7 @@
   <data name="Follow_Forgotten" xml:space="preserve">
     <value>لم يعد هذا الملف الشخصي يتابع رابطه.</value>
   </data>
+  <data name="Follow_ChangedMeanwhile" xml:space="preserve">
+    <value>تغيّر هذا الملف الشخصي أثناء تنزيل الجدول، لذا لم يُستبدل شيء. احفظه، ثم اجلب أحدث نسخة مرة أخرى.</value>
+  </data>
 </root>
