@@ -3779,6 +3779,9 @@ Bróók ádáptérš fór thé PŠ5 (Bróók FGÇ 2, P5 áñd P5š): módé 4, w
   <data name="Link_Cancelled" xml:space="preserve">
     <value>[Štóppéd. Thé QúádŠtíçk wáš réštártéd, šó ýóúr ówñ prófílé áñd šéttíñgš áré báçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>[Thé QúádŠtíçk çóúld ñót bé réáçhéd tó réštárt ít, šó thé téšt prófílé máý štíll bé óñ ít. Úñplúg ít áñd plúg ít báçk íñ: thát pútš ýóúr ówñ prófílé áñd šéttíñgš báçk. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>[Štóp x]</value>
   </data>

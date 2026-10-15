@@ -3644,6 +3644,9 @@ Los juegos que no usan SDL no verán el mando. Para ellos, usa el modo 7. Desact
   <data name="Link_Cancelled" xml:space="preserve">
     <value>Detenido. El QuadStick se reinició, así que su propio perfil y sus ajustes han vuelto.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>No se pudo llegar al QuadStick para reiniciarlo, así que el perfil de prueba puede seguir en él. Desconéctelo y vuelva a conectarlo: eso devuelve su propio perfil y sus ajustes.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>Detener</value>
   </data>

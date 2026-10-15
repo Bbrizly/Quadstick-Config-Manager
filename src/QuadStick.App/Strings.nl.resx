@@ -3644,6 +3644,9 @@ Games die geen SDL gebruiken, zien de gamepad niet. Gebruik daarvoor modus 7. Ui
   <data name="Link_Cancelled" xml:space="preserve">
     <value>Gestopt. De QuadStick is opnieuw opgestart, dus uw eigen profiel en instellingen zijn terug.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>De QuadStick was niet bereikbaar om hem opnieuw op te starten, dus het testprofiel staat er misschien nog op. Haal hem los en sluit hem weer aan: dan zijn uw eigen profiel en instellingen terug.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>Stoppen</value>
   </data>

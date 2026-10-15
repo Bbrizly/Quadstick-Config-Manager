@@ -3644,6 +3644,9 @@ SDL을 쓰지 않는 게임은 게임패드를 보지 못합니다. 그런 게�
   <data name="Link_Cancelled" xml:space="preserve">
     <value>중지되었습니다. QuadStick이 다시 시작되어 사용자의 프로필과 설정이 돌아왔습니다.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>다시 시작하려고 QuadStick에 연결할 수 없어 테스트 프로필이 아직 남아 있을 수 있습니다. 뽑았다가 다시 꽂으십시오. 그러면 사용자의 프로필과 설정이 돌아옵니다.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>중지</value>
   </data>

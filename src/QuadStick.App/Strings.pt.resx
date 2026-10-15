@@ -3644,6 +3644,9 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
   <data name="Link_Cancelled" xml:space="preserve">
     <value>Parado. O QuadStick foi reiniciado, por isso o seu próprio perfil e as suas definições voltaram.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>Não foi possível alcançar o QuadStick para reiniciá-lo, então o perfil de teste pode continuar nele. Desconecte e conecte de novo: isso traz de volta o seu próprio perfil e as suas configurações.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>Parar</value>
   </data>

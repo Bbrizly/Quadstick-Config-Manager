@@ -3642,6 +3642,9 @@ SDL を使わないゲームにはゲームパッドが見えません。その�
   <data name="Link_Cancelled" xml:space="preserve">
     <value>停止しました。QuadStickが再起動されたため、お使いのプロファイルと設定は元に戻っています。</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>再起動のためにQuadStickに接続できなかったため、テスト用プロファイルが残っている可能性があります。いったん抜いて、もう一度差し込んでください。お使いのプロファイルと設定が元に戻ります。</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>停止</value>
   </data>

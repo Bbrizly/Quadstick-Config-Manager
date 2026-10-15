@@ -3779,6 +3779,9 @@ Brook adapters for the PS5 (Brook FGC 2, P5 and P5s): mode 4, with Titan Two ada
   <data name="Link_Cancelled" xml:space="preserve">
     <value>Stopped. The QuadStick was restarted, so your own profile and settings are back.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>The QuadStick could not be reached to restart it, so the test profile may still be on it. Unplug it and plug it back in: that puts your own profile and settings back.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>Stop</value>
   </data>

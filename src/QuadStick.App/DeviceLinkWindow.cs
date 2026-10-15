@@ -280,7 +280,7 @@ public class DeviceLinkWindow : Window
 
         _busy = true; _stopAsked = false; Refresh();
         int puff = StrengthSweep.Lowest - 1, sip = StrengthSweep.Lowest - 1, threshold = 0;
-        bool finished = false;
+        bool finished = false, putBack = true;
         try
         {
             var prefs = await Task.Run(() =>
@@ -313,7 +313,7 @@ public class DeviceLinkWindow : Window
             // settings back, and the test changed both. The test file goes
             // first, while the console is still there to take the command.
             try { await Task.Run(() => { console.Delete(DeviceConsole.StrengthTestName); console.Boot(); }); }
-            catch { /* unplugging does the same, and the confirm said so */ }
+            catch { putBack = false; } // the link is gone: say so below, never "back"
             _console = null;   // the restart drops the port
             _busy = false; Refresh();
         }
@@ -329,6 +329,8 @@ public class DeviceLinkWindow : Window
             StrengthMeasured?.Invoke(puff, sip);
         }
         else if (_stopAsked) _status.Text = Strings.Link_Cancelled;
+        if (!putBack)
+            _status.Text = (finished ? _status.Text + " " : "") + Strings.Link_NotPutBack;
         CloseIfAsked();
     }
 

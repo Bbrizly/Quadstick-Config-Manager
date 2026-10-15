@@ -3644,6 +3644,9 @@ Les jeux qui n'utilisent pas SDL ne verront pas la manette. Pour eux, utilisez l
   <data name="Link_Cancelled" xml:space="preserve">
     <value>Arrêté. Le QuadStick a été redémarré, votre propre profil et vos réglages sont donc revenus.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>Le QuadStick n'a pas pu être joint pour le redémarrer, le profil de test y est donc peut-être encore. Débranchez-le puis rebranchez-le : cela remet votre propre profil et vos réglages.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>Arrêter</value>
   </data>

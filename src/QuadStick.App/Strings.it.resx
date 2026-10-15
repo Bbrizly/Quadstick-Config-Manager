@@ -3644,6 +3644,9 @@ I giochi che non usano SDL non vedranno il gamepad. Per quelli, usa la modalità
   <data name="Link_Cancelled" xml:space="preserve">
     <value>Fermato. Il QuadStick è stato riavviato, quindi il suo profilo e le sue impostazioni sono tornati.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>Non è stato possibile raggiungere il QuadStick per riavviarlo, quindi il profilo di prova potrebbe essere ancora caricato. Lo scolleghi e lo ricolleghi: così tornano il suo profilo e le sue impostazioni.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>Ferma</value>
   </data>

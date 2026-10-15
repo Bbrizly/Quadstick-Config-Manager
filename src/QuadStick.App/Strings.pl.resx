@@ -3644,6 +3644,9 @@ Gry, które nie używają SDL, nie zobaczą gamepada. Dla nich użyj trybu 7. Wy
   <data name="Link_Cancelled" xml:space="preserve">
     <value>Zatrzymano. QuadStick został zrestartowany, więc Twój profil i ustawienia wróciły.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>Nie udało się połączyć z QuadStickiem, by go zrestartować, więc profil testowy może nadal być na nim. Odłącz go i podłącz ponownie: to przywraca Twój profil i ustawienia.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>Zatrzymaj</value>
   </data>

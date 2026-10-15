@@ -3644,6 +3644,9 @@ Spiele ohne SDL sehen das Gamepad nicht. Für sie Modus 7 verwenden. Ausschalten
   <data name="Link_Cancelled" xml:space="preserve">
     <value>Gestoppt. Der QuadStick wurde neu gestartet, daher sind Ihr eigenes Profil und Ihre Einstellungen wieder da.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>Der QuadStick war für den Neustart nicht erreichbar, daher ist das Testprofil vielleicht noch darauf. Ziehen Sie ihn ab und stecken Sie ihn wieder ein: Das bringt Ihr eigenes Profil und Ihre Einstellungen zurück.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>Stopp</value>
   </data>

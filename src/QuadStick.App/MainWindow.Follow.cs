@@ -268,10 +268,10 @@ public partial class MainWindow
         var replace = new Button { Content = Strings.Follow_Replace, MinWidth = 140 };
         var keep = new Button { Content = Strings.Follow_Keep, MinWidth = 140, IsDefault = true, IsCancel = true };
         var list = new StackPanel { Spacing = 4 };
-        foreach (var line in changes.Take(12))
+        // Every change is listed; a long one scrolls so the question stays on
+        // screen (the same 260 cap as the agent's write review).
+        foreach (var line in changes)
             list.Children.Add(new TextBlock { Text = "• " + line, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") });
-        if (changes.Count > 12)
-            list.Children.Add(new TextBlock { Text = "• …", FontSize = Size("BodySize") });
         var panel = new StackPanel
         {
             Margin = new Avalonia.Thickness(24),
@@ -281,7 +281,7 @@ public partial class MainWindow
             {
                 new TextBlock { Text = Strings.Follow_ReviewTitle, FontWeight = FontWeight.Bold, FontSize = Size("SubheadSize"), TextWrapping = TextWrapping.Wrap },
                 new TextBlock { Text = Strings.Follow_ReviewBody, TextWrapping = TextWrapping.Wrap, FontSize = Size("BodySize") },
-                list,
+                new ScrollViewer { MaxHeight = 260, Content = list, VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto },
             },
         };
         // A published link sees one tab. Replacing a five-mode profile with it

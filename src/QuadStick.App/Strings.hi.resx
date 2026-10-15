@@ -3644,6 +3644,9 @@
   <data name="Link_Cancelled" xml:space="preserve">
     <value>रुक गया। QuadStick रीस्टार्ट हो गया, इसलिए आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ गई हैं।</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>QuadStick को रीस्टार्ट करने के लिए उस तक नहीं पहुंचा जा सका, इसलिए टेस्ट प्रोफ़ाइल शायद अब भी उस पर है। इसे निकालकर फिर से लगाएं: इससे आपकी अपनी प्रोफ़ाइल और सेटिंग वापस आ जाती हैं।</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>रोकें</value>
   </data>

@@ -218,6 +218,31 @@ public class FollowLinkTests
         finally { Close(w); }
     }
 
+    // A big sheet edit lists every change, not the first dozen and a "...":
+    // the list scrolls, the question stays on screen.
+    [AvaloniaFact]
+    public async Task A_long_list_of_changes_is_shown_in_full_and_scrolls()
+    {
+        using var lib = new Library(Profile("Walking"), follow: true);
+        var modes = new[] { "Walking" }.Concat(Enumerable.Range(1, 30).Select(i => $"Mode{i:00}")).ToArray();
+        using var http = new HttpClient(new Sheet(Profile(modes)));
+        var w = NewWindow();
+        try
+        {
+            var getting = w.GetLatestAsync(lib.Path, http);
+            var dialog = await DialogAsync(w);
+            var said = Said(dialog);
+            for (int i = 1; i <= 30; i++) Assert.Contains($"Mode{i:00}", said);
+            Assert.DoesNotContain("\u2022 \u2026", said);
+            var scroll = Assert.Single(dialog.GetVisualDescendants().OfType<ScrollViewer>(),
+                s => s.GetVisualDescendants().OfType<TextBlock>().Any(t => t.Text?.Contains("Mode30") == true));
+            Assert.True(scroll.MaxHeight < 1000);
+            Press(dialog, Strings.Follow_Keep);
+            await getting;
+        }
+        finally { Close(w); }
+    }
+
     [AvaloniaFact]
     public async Task Saying_keep_mine_changes_nothing()
     {

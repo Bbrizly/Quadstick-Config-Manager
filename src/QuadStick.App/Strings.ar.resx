@@ -3644,6 +3644,9 @@
   <data name="Link_Cancelled" xml:space="preserve">
     <value>تم الإيقاف. أُعيد تشغيل QuadStick، لذا عاد ملف التعريف الخاص بك وإعداداتك.</value>
   </data>
+  <data name="Link_NotPutBack" xml:space="preserve">
+    <value>تعذّر الوصول إلى QuadStick لإعادة تشغيله، لذا قد يظل ملف تعريف الاختبار عليه. افصله ثم أعد توصيله: هذا يعيد ملف التعريف الخاص بك وإعداداتك.</value>
+  </data>
   <data name="Link_Stop" xml:space="preserve">
     <value>إيقاف</value>
   </data>
