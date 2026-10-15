@@ -24,7 +24,9 @@ export default defineConfig({
     outDir: "dist-ui",
     emptyOutDir: true,
     target: "es2023",
-    sourcemap: true,
+    // The shipped app has no devtools to read them, and they doubled the
+    // bundle on disk. Set QCM_SOURCEMAP=1 for a build you mean to debug.
+    sourcemap: process.env["QCM_SOURCEMAP"] === "1",
   },
   clearScreen: false,
   server: {
