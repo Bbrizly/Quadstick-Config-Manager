@@ -59,34 +59,34 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Device_DeclaredIsTooLongFor" xml:space="preserve">
-    <value>"{0}" é demasiado longo para o QuadStick carregar, portanto nada foi escrito. Um nome de perfil pode ter no máximo {1} caracteres, contando ".csv", e este tem {2}. Encurte o nome na célula A2 e instale novamente.</value>
+    <value>"{0}" é demais longo para o QuadStick carregar, portanto nada foi escrito. Um nome de perfil pode ter no máximo {1} caracteres, contando ".csv", e este tem {2}. Encurte o nome na célula A2 e instale novamente.</value>
   </data>
   <data name="Device_FileNameIsNoLongerOn" xml:space="preserve">
     <value>{0} já não está no dispositivo. Atualize a lista e tente novamente.</value>
   </data>
   <data name="Device_FileNameIsProtectedAndCannot" xml:space="preserve">
-    <value>{0} está protegido e não pode ser eliminado. Removê-lo pode deixar o dispositivo inutilizável.</value>
+    <value>{0} está protegido e não pode ser excluído. Removê-lo pode deixar o dispositivo inutilizável.</value>
   </data>
   <data name="Device_NameIsNotAPlain" xml:space="preserve">
-    <value>"{0}" não é um nome de ficheiro simples que o QuadStick consiga guardar, portanto nada foi escrito. Altere a célula A2 para um nome simples como "mygame.csv".</value>
+    <value>"{0}" não é um nome de arquivo simples que o QuadStick consiga salvar, portanto nada foi escrito. Altere a célula A2 para um nome simples como "mygame.csv".</value>
   </data>
   <data name="Device_OnlyAPlainFileName" xml:space="preserve">
-    <value>Só um nome de ficheiro simples na raiz do dispositivo pode ser eliminado, não um caminho.</value>
+    <value>Só um nome de arquivo simples na raiz do dispositivo pode ser excluído, não um caminho.</value>
   </data>
   <data name="Device_RefusingToOverwriteDefaultCsv" xml:space="preserve">
     <value>A recusar substituir default.csv sem confirmação explícita. Um default.csv incorreto pode desativar o acesso à unidade flash.</value>
   </data>
   <data name="Device_RefusingToOverwritePrefsCsv" xml:space="preserve">
-    <value>A recusar substituir prefs.csv sem confirmação explícita. prefs.csv contém as configurações gerais do dispositivo, e um ficheiro incorreto pode deixar o QuadStick inutilizável.</value>
+    <value>A recusar substituir prefs.csv sem confirmação explícita. prefs.csv contém as configurações gerais do dispositivo, e um arquivo incorreto pode deixar o QuadStick inutilizável.</value>
   </data>
   <data name="Device_ThatFileIsNotDirectly" xml:space="preserve">
-    <value>Esse ficheiro não está diretamente na raiz do dispositivo, portanto não foi eliminado.</value>
+    <value>Esse arquivo não está diretamente na raiz do dispositivo, portanto não foi excluído.</value>
   </data>
   <data name="Device_ThatFolderDoesNotLook" xml:space="preserve">
     <value>Essa pasta não parece ser uma unidade QuadStick (sem default.csv na raiz). Escolha o volume USB que aparece quando o dispositivo é ligado.</value>
   </data>
   <data name="Device_TheQuadStickWasDisconnectedWhile" xml:space="preserve">
-    <value>O QuadStick foi desconectado enquanto {0} estava a ser escrito. A sua versão anterior está segura em {1}. Ligue o dispositivo novamente, verifique se {2} ainda está nele, e instale novamente.</value>
+    <value>O QuadStick foi desconectado enquanto {0} estava sendo escrito. A sua versão anterior está segura em {1}. Conecte o dispositivo novamente, verifique se {2} ainda está nele, e instale novamente.</value>
   </data>
   <data name="Device_ThisProfileHasValidationErrors" xml:space="preserve">
     <value>Este perfil tem erros de validação e não pode ser instalado:
@@ -108,10 +108,10 @@
     <value>Conta como um toque</value>
   </data>
   <data name="Fn_FiresOnceYourInputIs" xml:space="preserve">
-    <value>A percentagem em que a saída liga.</value>
+    <value>A porcentagem em que a saída liga.</value>
   </data>
   <data name="Fn_FiresWhileYourInputStays" xml:space="preserve">
-    <value>A saída fica ligada enquanto a entrada estiver abaixo desta percentagem.</value>
+    <value>A saída fica ligada enquanto a entrada estiver abaixo desta porcentagem.</value>
   </data>
   <data name="Fn_FirstHold" xml:space="preserve">
     <value>Primeira retenção</value>
@@ -126,16 +126,16 @@
     <value>Segurar para manter ligado</value>
   </data>
   <data name="Fn_HoldsTheFirstTapThis" xml:space="preserve">
-    <value>Quanto tempo o botão fica premido normalmente antes de a repetição começar, em milissegundos.</value>
+    <value>Quanto tempo o botão fica pressionado normalmente antes de a repetição começar, em milissegundos.</value>
   </data>
   <data name="Fn_HoldsWhileYouHold" xml:space="preserve">
     <value>mantém-se enquanto você segura</value>
   </data>
   <data name="Fn_HowFarDownTheAnalog" xml:space="preserve">
-    <value>Quanto o valor desce de cada vez, em percentagem.</value>
+    <value>Quanto o valor desce de cada vez, em porcentagem.</value>
   </data>
   <data name="Fn_HowFarUpTheAnalog" xml:space="preserve">
-    <value>Quanto o valor sobe de cada vez, em percentagem.</value>
+    <value>Quanto o valor sobe de cada vez, em porcentagem.</value>
   </data>
   <data name="Fn_HowFastItTapsWhile" xml:space="preserve">
     <value>Quantos toques por segundo enquanto mantém a entrada.</value>
@@ -144,13 +144,13 @@
     <value>Quanto dura cada toque, em milissegundos.</value>
   </data>
   <data name="Fn_HowLongTheTapPresses" xml:space="preserve">
-    <value>Quanto tempo a saída fica premida, em milissegundos. Defina exatamente 1 e os toques alternam: um toque liga a saída, o seguinte desliga.</value>
+    <value>Quanto tempo a saída fica pressionada, em milissegundos. Defina exatamente 1 e os toques alternam: um toque liga a saída, o seguinte desliga.</value>
   </data>
   <data name="Fn_HowManyPressesOneActivation" xml:space="preserve">
     <value>Quantos toques de cada vez. 2 funciona como um toque duplo.</value>
   </data>
   <data name="Fn_KeepsSteppingThisOftenWhile" xml:space="preserve">
-    <value>De quanto em quanto tempo continua a mudar enquanto mantém, em milissegundos.</value>
+    <value>De quanto em quanto tempo continua mudando enquanto mantém, em milissegundos.</value>
   </data>
   <data name="Fn_KeepsTheOutputPressedThis" xml:space="preserve">
     <value>Quanto tempo a saída fica ligada depois de soltar, em milissegundos.</value>
@@ -177,7 +177,7 @@
     <value>Repetir a cada</value>
   </data>
   <data name="Fn_Sentence" xml:space="preserve">
-    <value>{0} Predefinição: {1}.</value>
+    <value>{0} Padrão: {1}.</value>
   </data>
   <data name="Fn_SecondNumber" xml:space="preserve">
     <value>Segundo número: {0}</value>
@@ -186,7 +186,7 @@
     <value>Primeiro número: {0}</value>
   </data>
   <data name="Fn_StopsFiringAgainOnceYour" xml:space="preserve">
-    <value>Uma percentagem mais alta em que volta a desligar. 25 75 liga acima de 25% e desliga acima de 75%.</value>
+    <value>Uma porcentagem mais alta em que volta a desligar. 25 75 liga acima de 25% e desliga acima de 75%.</value>
   </data>
   <data name="Fn_TapsASecond" xml:space="preserve">
     <value>toques por segundo</value>
@@ -204,16 +204,16 @@
     <value>Quanto esperar antes de soltar a saída que outra linha deixou presa, em milissegundos.</value>
   </data>
   <data name="Issue_0UsedToMeanNo" xml:space="preserve">
-    <value>0 costumava significar nenhuma zona morta, e o firmware de 2025 substitui-o por 129 contagens brutas, portanto o stick ganha uma pequena zona morta que este ficheiro nunca pediu</value>
+    <value>0 costumava significar nenhuma zona morta, e o firmware de 2025 substitui-o por 129 contagens brutas, portanto o stick ganha uma pequena zona morta que este arquivo nunca pediu</value>
   </data>
   <data name="Issue_5WasPCOnlyNo" xml:space="preserve">
-    <value>5 era "apenas PC, sem joystick" até 2025 e agora é o Nintendo Switch Pro Controller, portanto um QuadStick atualizado aparece para a consola ou PC como um controlador completamente diferente</value>
+    <value>5 era "apenas PC, sem joystick" até 2025 e agora é o Nintendo Switch Pro Controller, portanto um QuadStick atualizado aparece para o console ou PC como um controlador completamente diferente</value>
   </data>
   <data name="Issue_ADirectionSettingLeftAt" xml:space="preserve">
-    <value> (Uma configuração {0} deixada em 0 usa o valor partilhado sip_puff_ em vez disso.)</value>
+    <value> (Uma configuração {0} deixada em 0 usa o valor compartilhado sip_puff_ em vez disso.)</value>
   </data>
   <data name="Issue_APercentOver100Is" xml:space="preserve">
-    <value>. Uma percentagem acima de 100 é um nível que nenhum input alcança, portanto esta linha nunca dispara.</value>
+    <value>. Uma porcentagem acima de 100 é um nível que nenhum input alcança, portanto esta linha nunca dispara.</value>
   </data>
   <data name="Issue_ArgsIHasADecimal" xml:space="preserve">
     <value>"{0}" tem uma parte decimal. O dispositivo só lê números inteiros, portanto atua como "{1}".</value>
@@ -246,10 +246,10 @@
     <value>"{0}" não é um nome de output documentado (convenção PlayStation ou XBox).</value>
   </data>
   <data name="Issue_BluetoothOnlyKeyboardRow" xml:space="preserve">
-    <value>Este modo está em "{0}", e tem {1} linha de rato ou teclado, na linha {2}. O firmware de 2025 ou mais recente só envia rato e teclado por USB quando o canal inclui USB, portanto por cabo essa linha não faz nada enquanto a metade de gamepad do modo continua a funcionar. O firmware mais antigo enviava-os de qualquer forma.</value>
+    <value>Este modo está em "{0}", e tem {1} linha de mouse ou teclado, na linha {2}. O firmware de 2025 ou mais recente só envia mouse e teclado por USB quando o canal inclui USB, portanto por cabo essa linha não faz nada enquanto a metade de gamepad do modo continua funcionando. O firmware mais antigo enviava-os de qualquer forma.</value>
   </data>
   <data name="Issue_BluetoothOnlyKeyboardRows" xml:space="preserve">
-    <value>Este modo está em "{0}", e tem {1} linhas de rato ou teclado, a primeira na linha {2}. O firmware de 2025 ou mais recente só envia rato e teclado por USB quando o canal inclui USB, portanto por cabo essas linhas não fazem nada enquanto a metade de gamepad do modo continua a funcionar. O firmware mais antigo enviava-os de qualquer forma.</value>
+    <value>Este modo está em "{0}", e tem {1} linhas de mouse ou teclado, a primeira na linha {2}. O firmware de 2025 ou mais recente só envia mouse e teclado por USB quando o canal inclui USB, portanto por cabo essas linhas não fazem nada enquanto a metade de gamepad do modo continua funcionando. O firmware mais antigo enviava-os de qualquer forma.</value>
   </data>
   <data name="Issue_BothNeedsFirmwareFrom2025" xml:space="preserve">
     <value>"both" precisa de firmware de 2025 ou mais recente. Um QuadStick com firmware mais antigo não conhece esta palavra, executa este modo apenas por USB, e nada diz sobre a metade Bluetooth.</value>
@@ -267,13 +267,13 @@
     <value>DualShock 4 sem unidade USB</value>
   </data>
   <data name="Issue_ExpectedForThisConsoleSwitch" xml:space="preserve">
-    <value>Esperado para esta consola. Mude o QuadStick de volta para outro perfil para editar os seus ficheiros novamente.</value>
+    <value>Esperado para este console. Mude o QuadStick de volta para outro perfil para editar os seus arquivos novamente.</value>
   </data>
   <data name="Issue_FireItFromSomethingOther" xml:space="preserve">
     <value>Dispare-o a partir de algo diferente de push, ou a partir de uma combinação que o push não consegue segurar sozinho.</value>
   </data>
   <data name="Issue_Function0ForPIsPacked" xml:space="preserve">
-    <value>"{0}" lê 0 para {1} e segue-se um segundo número. Os dois números partilham uma palavra, por isso o dispositivo só usa {2} quando o 0 é a célula inteira. Aqui lê {1} como um 0 simples.</value>
+    <value>"{0}" lê 0 para {1} e segue-se um segundo número. Os dois números compartilham uma palavra, por isso o dispositivo só usa {2} quando o 0 é a célula inteira. Aqui lê {1} como um 0 simples.</value>
   </data>
   <data name="Issue_FunctionReads0ForP" xml:space="preserve">
     <value>"{0}" lê 0 para {1} como nenhum valor, portanto o dispositivo usa {2}.</value>
@@ -312,13 +312,13 @@
     <value>Mova o valor para a coluna B: "{0},{1}".</value>
   </data>
   <data name="Issue_NameDoesNothingOnCurrent" xml:space="preserve">
-    <value>"{0}" não faz nada no firmware atual: {1}. A linha é guardada exatamente como você a escreveu.</value>
+    <value>"{0}" não faz nada no firmware atual: {1}. A linha é salva exatamente como você a escreveu.</value>
   </data>
   <data name="Issue_NameIsANameWindows" xml:space="preserve">
-    <value>"{0}" é um nome que o Windows reserva para hardware, portanto não pode ser um ficheiro lá.</value>
+    <value>"{0}" é um nome que o Windows reserva para hardware, portanto não pode ser um arquivo lá.</value>
   </data>
   <data name="Issue_NameIsNotAValid" xml:space="preserve">
-    <value>"{0}" não é um nome de ficheiro de configuração válido.</value>
+    <value>"{0}" não é um nome de arquivo de configuração válido.</value>
   </data>
   <data name="Issue_NameIsTooLongSo" xml:space="preserve">
     <value>"{0}" é muito longo, então o QuadStick não conseguirá carregá-lo. Um nome de perfil pode ter no máximo {1} caracteres, contando ".csv", e este tem {2}.</value>
@@ -699,10 +699,10 @@
     <value>Esta planilha é maior que {0} linhas, muito maior que qualquer perfil, então paramos de ler no meio do caminho.</value>
   </data>
   <data name="DeviceConsole_NoAnswer" xml:space="preserve">
-    <value>O QuadStick não respondeu. Verifique se está emparelhado por Bluetooth ou se o cabo está ligado. Um perfil que usa digital_in_1 ou digital_in_2 desliga a porta do cabo.</value>
+    <value>O QuadStick não respondeu. Verifique se está emparelhado por Bluetooth ou se o cabo está conectado. Um perfil que usa digital_in_1 ou digital_in_2 desliga a porta do cabo.</value>
   </data>
   <data name="DeviceConsole_SettingRefused" xml:space="preserve">
-    <value>O QuadStick não aceitou a definição {0}.</value>
+    <value>O QuadStick não aceitou a configuração {0}.</value>
   </data>
   <data name="DeviceConsole_CouldNotOpen" xml:space="preserve">
     <value>O QuadStick não conseguiu abrir {0} para escrita. Nada nele foi alterado.</value>
@@ -714,9 +714,9 @@
     <value>{0} está no QuadStick, mas o QuadStick não conseguiu carregá-lo.</value>
   </data>
   <data name="DeviceConsole_ReadBackDiffers" xml:space="preserve">
-    <value>{0} lido de volta é diferente do que foi enviado, por isso não foi carregado. O que o QuadStick tinha antes foi guardado em {1}.</value>
+    <value>{0} lido de volta é diferente do que foi enviado, por isso não foi carregado. O que o QuadStick tinha antes foi salvo em {1}.</value>
   </data>
   <data name="DeviceConsole_NoEarlierFile" xml:space="preserve">
-    <value>(nada: não tinha nenhum ficheiro com esse nome)</value>
+    <value>(nada: não tinha nenhum arquivo com esse nome)</value>
   </data>
 </root>

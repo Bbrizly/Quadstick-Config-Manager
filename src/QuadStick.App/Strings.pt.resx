@@ -140,7 +140,7 @@
     <value>A planilha do Google deste perfil foi editada on-line desde o seu último backup. Escolha Sim para substituí-la pela sua cópia (as edições on-line ficam salvas no histórico de versões do Drive). Escolha Cancelar para manter a versão on-line e carregá-la no editor.</value>
   </data>
   <data name="Community_CheckYourInternetConnectionAnd" xml:space="preserve">
-    <value>Verifique sua conexão com a internet e pressione Atualizar. Todo o resto do app funciona sem esta lista.</value>
+    <value>Verifique sua conexão com a internet e pressione Atualizar. Todo o resto do aplicativo funciona sem esta lista.</value>
   </data>
   <data name="Community_CheckingQuadstickComForNew" xml:space="preserve">
     <value>Verificando quadstick.com em busca de novos perfis...</value>
@@ -269,10 +269,10 @@
     <value>{0} erros</value>
   </data>
   <data name="Count_File_one" xml:space="preserve">
-    <value>{0} ficheiro</value>
+    <value>{0} arquivo</value>
   </data>
   <data name="Count_File_other" xml:space="preserve">
-    <value>{0} ficheiros</value>
+    <value>{0} arquivos</value>
   </data>
   <data name="Count_Mapping_one" xml:space="preserve">
     <value>{0} mapeamento</value>
@@ -350,25 +350,25 @@
     <value>De {0} a {1}.</value>
   </data>
   <data name="DevicePage_ChangedNotSavedYet_one" xml:space="preserve">
-    <value>{0} definição alterada. Só ficará no seu QuadStick depois de carregar em Guardar.</value>
+    <value>{0} configuração alterada. Só ficará no seu QuadStick depois de carregar em Salvar.</value>
   </data>
   <data name="DevicePage_ChangedNotSavedYet_other" xml:space="preserve">
-    <value>{0} definições alteradas. Só ficarão no seu QuadStick depois de carregar em Guardar.</value>
+    <value>{0} configurações alteradas. Só ficarão no seu QuadStick depois de carregar em Salvar.</value>
   </data>
   <data name="DevicePage_ChangedPlugIn_one" xml:space="preserve">
-    <value>{0} definição alterada. Ligue o seu QuadStick para a guardar.</value>
+    <value>{0} configuração alterada. Ligue o seu QuadStick para a salvar.</value>
   </data>
   <data name="DevicePage_ChangedPlugIn_other" xml:space="preserve">
-    <value>{0} definições alteradas. Ligue o seu QuadStick para as guardar.</value>
+    <value>{0} configurações alteradas. Ligue o seu QuadStick para as salvar.</value>
   </data>
   <data name="DevicePage_ChangedSetting_one" xml:space="preserve">
-    <value>{0} definição alterada</value>
+    <value>{0} configuração alterada</value>
   </data>
   <data name="DevicePage_ChangedSetting_other" xml:space="preserve">
-    <value>{0} definições alteradas</value>
+    <value>{0} configurações alteradas</value>
   </data>
   <data name="DevicePage_CouldNotReadTheSettings" xml:space="preserve">
-    <value>Não foi possível ler as definições do seu QuadStick: {0}</value>
+    <value>Não foi possível ler as configurações do seu QuadStick: {0}</value>
   </data>
   <data name="DevicePage_DashedRingDeadZone" xml:space="preserve">
     <value>Círculo tracejado: a zona morta acaba a {0}% do curso. Círculo cheio: sinal completo a {1}%.</value>
@@ -383,13 +383,13 @@
     <value>O seu QuadStick foi encontrado em {0}.</value>
   </data>
   <data name="DevicePage_GroupsOfSettings" xml:space="preserve">
-    <value>Grupos de definições</value>
+    <value>Grupos de configurações</value>
   </data>
   <data name="DevicePage_HowFarTheStickHas" xml:space="preserve">
-    <value>Quanto o manípulo tem de se mover. O círculo tracejado é a zona morta, o círculo cheio é onde o sinal fica completo, e o ponto mostra onde o manípulo está agora.</value>
+    <value>Quanto a alavanca tem de se mover. O círculo tracejado é a zona morta, o círculo cheio é onde o sinal fica completo, e o ponto mostra onde a alavanca está agora.</value>
   </data>
   <data name="DevicePage_ItHasNoSettingsFileYet" xml:space="preserve">
-    <value>Ainda não tem ficheiro de definições, por isso estes são os valores a que recorre. Guardar cria um.</value>
+    <value>Ainda não tem arquivo de configurações, por isso estes são os valores a que recorre. Salvar cria um.</value>
   </data>
   <data name="DevicePage_JoystickTravel" xml:space="preserve">
     <value>Curso do joystick</value>
@@ -401,7 +401,7 @@
     <value>A procurar o seu QuadStick...</value>
   </data>
   <data name="DevicePage_ModesThatHideTheDrive" xml:space="preserve">
-    <value>O dispositivo arranca a partir deste ficheiro, por isso a aplicação não escreve no seu QuadStick nenhum dos modos que escondem a unidade. Defina-o num perfil de jogo.</value>
+    <value>O dispositivo inicia a partir deste arquivo, por isso a aplicação não escreve no seu QuadStick nenhum dos modos que escondem a unidade. Defina-o num perfil de jogo.</value>
   </data>
   <data name="DevicePage_MoreOptions" xml:space="preserve">
     <value>Mais opções</value>
@@ -416,13 +416,13 @@
     <value>Ainda sem alterações.</value>
   </data>
   <data name="DevicePage_NoQuadStickIsPluggedIn" xml:space="preserve">
-    <value>Não há nenhum QuadStick ligado, por isso estas são as definições que um QuadStick tem, não as do seu. Ligue um e carregue em Recarregar para ver e alterar as dele.</value>
+    <value>Não há nenhum QuadStick conectado, por isso estas são as configurações que um QuadStick tem, não as do seu. Conecte um e clique em Recarregar para ver e alterar as dele.</value>
   </data>
   <data name="DevicePage_NotInYourSettingsFile" xml:space="preserve">
-    <value>Não está no seu ficheiro de definições. O dispositivo usa {0} até o alterar.</value>
+    <value>Não está no seu arquivo de configurações. O dispositivo usa {0} até o alterar.</value>
   </data>
   <data name="DevicePage_NothingIsReadingTheStick" xml:space="preserve">
-    <value>O manípulo não está a ser lido. Ligue o QuadStick por USB e a posição dele aparece aqui.</value>
+    <value>A alavanca não está sendo lida. Conecte o QuadStick por USB e a posição dele aparece aqui.</value>
   </data>
   <data name="DevicePage_Off0" xml:space="preserve">
     <value>Desligado (0)</value>
@@ -431,46 +431,46 @@
     <value>Ligado (1)</value>
   </data>
   <data name="DevicePage_PlugInYourQuadStickTo" xml:space="preserve">
-    <value>Ligue o seu QuadStick para guardar isto.</value>
+    <value>Ligue o seu QuadStick para salvar isto.</value>
   </data>
   <data name="DevicePage_PutEverySettingBackTo" xml:space="preserve">
-    <value>Repor cada definição no valor que está no QuadStick</value>
+    <value>Repor cada configuração no valor que está no QuadStick</value>
   </data>
   <data name="DevicePage_ReadTheSettingsFromYour" xml:space="preserve">
-    <value>Ler outra vez as definições do seu QuadStick</value>
+    <value>Ler outra vez as configurações do seu QuadStick</value>
   </data>
   <data name="DevicePage_ReadingProductNothingPressed" xml:space="preserve">
-    <value>A ler um {0}. Nada está premido.</value>
+    <value>A ler um {0}. Nada está pressionado.</value>
   </data>
   <data name="DevicePage_ReadingProductPressedNow" xml:space="preserve">
-    <value>A ler um {0}. Premido agora: {1}.</value>
+    <value>A ler um {0}. Pressionado agora: {1}.</value>
   </data>
   <data name="DevicePage_Reload" xml:space="preserve">
     <value>Recarregar</value>
   </data>
   <data name="DevicePage_SaveToYourQuadStick" xml:space="preserve">
-    <value>Guardar no seu QuadStick</value>
+    <value>Salvar no seu QuadStick</value>
   </data>
   <data name="DevicePage_Setting_one" xml:space="preserve">
-    <value>{0} definição</value>
+    <value>{0} configuração</value>
   </data>
   <data name="DevicePage_Setting_other" xml:space="preserve">
-    <value>{0} definições</value>
+    <value>{0} configurações</value>
   </data>
   <data name="DevicePage_TheModeLightsOnThe" xml:space="preserve">
     <value>As luzes de modo na caixa</value>
   </data>
   <data name="DevicePage_TheSettingsYouChangedHere" xml:space="preserve">
-    <value>As definições que alterou aqui não foram escritas no QuadStick. Voltar a lê-lo perde-as.</value>
+    <value>As configurações que alterou aqui não foram escritas no QuadStick. Voltar a lê-lo perde-as.</value>
   </data>
   <data name="DevicePage_TheStickIsAtXY" xml:space="preserve">
-    <value>O manípulo está a {0}% na largura e a {1}% para cima.</value>
+    <value>A alavanca está em {0}% na largura e {1}% para cima.</value>
   </data>
   <data name="DevicePage_TheseSettingsHaveAProblem" xml:space="preserve">
-    <value>Estas definições têm um problema, por isso não foi escrito nada: </value>
+    <value>Estas configurações têm um problema, por isso não foi escrito nada: </value>
   </data>
   <data name="DevicePage_TheseSettingsLiveInPrefs" xml:space="preserve">
-    <value>Estas definições estão em prefs.csv no próprio QuadStick, por isso aplicam-se a todos os perfis que ele tem, não só a um jogo.</value>
+    <value>Estas configurações estão em prefs.csv no próprio QuadStick, por isso aplicam-se a todos os perfis que ele tem, não só a um jogo.</value>
   </data>
   <data name="DevicePage_ThisGroupChangesNothingYou" xml:space="preserve">
     <value>Este grupo não altera nada que possa apontar no dispositivo.</value>
@@ -485,10 +485,10 @@
     <value>Anular alterações</value>
   </data>
   <data name="DevicePage_WriteTheChangedSettingsTo" xml:space="preserve">
-    <value>Escrever as definições alteradas em prefs.csv no seu QuadStick</value>
+    <value>Escrever as configurações alteradas em prefs.csv no seu QuadStick</value>
   </data>
   <data name="DevicePage_YourQuadStickSSettings" xml:space="preserve">
-    <value>As definições do seu QuadStick</value>
+    <value>As configurações do seu QuadStick</value>
   </data>
   <data name="Device_Cancel" xml:space="preserve">
     <value>Cancelar</value>
@@ -554,7 +554,7 @@
     <value>Não foi possível ler esta unidade: {0}</value>
   </data>
   <data name="Device_DeleteFileFromGroup" xml:space="preserve">
-    <value>Eliminar {0} de {1}?</value>
+    <value>Excluir {0} de {1}?</value>
   </data>
   <data name="Device_DeleteFileNameFromThe" xml:space="preserve">
     <value>Excluir {0} do QuadStick em {1}</value>
@@ -683,7 +683,7 @@
     <value>o arquivo de configurações do próprio dispositivo</value>
   </data>
   <data name="Device_ThisComputerWouldNotGive" xml:space="preserve">
-    <value>Este computador não permitiu que o app acessasse a área de transferência, então o guia não foi copiado.</value>
+    <value>Este computador não permitiu que o aplicativo acessasse a área de transferência, então o guia não foi copiado.</value>
   </data>
   <data name="Device_ThisDriveHasNoCsv" xml:space="preserve">
     <value>Esta unidade não tem perfis .csv nela.</value>
@@ -731,7 +731,7 @@
     <value>Nada selecionado para importar.</value>
   </data>
   <data name="DrivePick_PickTheProfilesToCopy" xml:space="preserve">
-    <value>Escolha os perfis para copiar para este computador. Só as planilhas que este app fez backup são listadas. Os que já estão nos seus perfis aparecem esmaecidos.</value>
+    <value>Escolha os perfis para copiar para este computador. Só as planilhas que este aplicativo fez backup são listadas. Os que já estão nos seus perfis aparecem esmaecidos.</value>
   </data>
   <data name="DrivePick_YourGoogleDriveBackups" xml:space="preserve">
     <value>Seus backups do Google Drive</value>
@@ -824,9 +824,9 @@
     <value>Um joystick conectado aqui chega como </value>
   </data>
   <data name="Main_AModeIsOneFull" xml:space="preserve">
-    <value>Um modo é uma disposição completa das suas entradas. Um perfil pode ter vários e alterna entre eles enquanto joga, por exemplo uma disposição para andar e outra para conduzir. Para mudar de modo no jogo, atribua increment_mode ou decrement_mode a uma entrada. O perfil de fábrica coloca-os numa sucção e num sopro do tubo lateral, e é por isso que o tubo lateral muda de modo até que o reatribua.
+    <value>Um modo é um layout completo das suas entradas. Um perfil pode ter vários e alterna entre eles enquanto joga, por exemplo um layout para andar e outro para conduzir. Para mudar de modo no jogo, atribua increment_mode ou decrement_mode a uma entrada. O perfil de fábrica coloca-os numa sucção e num sopro do tubo lateral, e é por isso que o tubo lateral muda de modo até que o reatribua.
 
-Uma sucção longa e forte nesse mesmo tubo é outra coisa: abre a lista de ficheiros de jogo no dispositivo, não os modos deste ficheiro.
+Uma sucção longa e forte nesse mesmo tubo é outra coisa: abre a lista de arquivos de jogo no dispositivo, não os modos deste arquivo.
 
 A maioria dos perfis tem apenas um modo, por isso esta lista mostra muitas vezes uma única entrada. É normal.</value>
   </data>
@@ -837,7 +837,7 @@ A maioria dos perfis tem apenas um modo, por isso esta lista mostra muitas vezes
     <value>Uma aba de perfil começa com "Profile Name", "Preferences" ou "Infrared" na célula A1.</value>
   </data>
   <data name="Main_AQuickPressSendsOne" xml:space="preserve">
-    <value>Ativa apenas quando prime e solta rapidamente. Manter demasiado tempo não faz nada, por isso uma aspiração curta e uma longa podem fazer coisas diferentes.</value>
+    <value>Ativa apenas quando prime e solta rapidamente. Manter por tempo demais não faz nada, por isso uma aspiração curta e uma longa podem fazer coisas diferentes.</value>
   </data>
   <data name="Main_AShortActivationTapsIt" xml:space="preserve">
     <value>Uma ativação breve funciona como uma pressão normal. Se mantiver a entrada tempo suficiente, a saída fica fixa ligada, e uma ativação breve solta-a.</value>
@@ -939,7 +939,7 @@ A maioria dos perfis tem apenas um modo, por isso esta lista mostra muitas vezes
     <value> · backup pendente</value>
   </data>
   <data name="Main_BootFilesRefuseADriveHiding" xml:space="preserve">
-    <value>O dispositivo arranca a partir deste ficheiro, por isso um modo sem unidade não será escrito nele.</value>
+    <value>O dispositivo inicia a partir deste arquivo, por isso um modo sem unidade não será escrito nele.</value>
   </data>
   <data name="Main_Cancel" xml:space="preserve">
     <value>Cancelar</value>
@@ -1310,10 +1310,10 @@ A maioria dos perfis tem apenas um modo, por isso esta lista mostra muitas vezes
     <value>Carregada a versão on-line deste perfil. Sua cópia local anterior está na pasta de resgate.</value>
   </data>
   <data name="Main_MainControls" xml:space="preserve">
-    <value>Controlos principais</value>
+    <value>Controles principais</value>
   </data>
   <data name="Main_MainControlsCount" xml:space="preserve">
-    <value>Controlos principais. Os orifícios, o tubo lateral, o interruptor de lábio e o joystick. {0}</value>
+    <value>Controles principais. Os orifícios, o tubo lateral, o interruptor de lábio e o joystick. {0}</value>
   </data>
   <data name="Main_ManagingFilesOnYourQuadStick" xml:space="preserve">
     <value>Gerenciando arquivos no seu QuadStick</value>
@@ -1325,7 +1325,7 @@ A maioria dos perfis tem apenas um modo, por isso esta lista mostra muitas vezes
     <value>Mapear {0} para um novo mapeamento em {1}</value>
   </data>
   <data name="Main_MappingInputFirstSpoken" xml:space="preserve">
-    <value>Atribuição {0}: {1} para {2}{3}. Prima Enter para editar.</value>
+    <value>Atribuição {0}: {1} para {2}{3}. Pressione Enter para editar.</value>
   </data>
   <data name="Main_MappingNumber" xml:space="preserve">
     <value>Atribuição {0}</value>
@@ -1364,7 +1364,7 @@ A maioria dos perfis tem apenas um modo, por isso esta lista mostra muitas vezes
     <value>Configurações do modo</value>
   </data>
   <data name="Main_Mouse" xml:space="preserve">
-    <value>Rato</value>
+    <value>Mouse</value>
   </data>
   <data name="Main_Move" xml:space="preserve">
     <value>Mover</value>
@@ -1534,10 +1534,10 @@ Escolha uma peça do QuadStick à esquerda para ver o que ela faz neste modo, al
     <value>Números para {0}, opcional, números inteiros separados por espaços.</value>
   </data>
   <data name="Main_OneActivationLatchesItOn" xml:space="preserve">
-    <value>Premir uma vez para ligar, premir outra vez para desligar. A saída fica ativa mesmo depois de soltar a entrada.</value>
+    <value>Pressionar uma vez para ligar, pressionar outra vez para desligar. A saída fica ativa mesmo depois de soltar a entrada.</value>
   </data>
   <data name="Main_OneCSVFileThatTells" xml:space="preserve">
-    <value>Um ficheiro CSV que associa sucções, sopros, pressões do lábio e movimentos do joystick a botões de jogo. Um perfil tem uma ou mais folhas de modo, como andar, conduzir ou menus. Atribua increment_mode ou decrement_mode para mudar de modo durante o jogo; o perfil de fábrica coloca-os numa sucção e num sopro do tubo lateral.</value>
+    <value>Um arquivo CSV que associa sucções, sopros, pressões do lábio e movimentos do joystick a botões de jogo. Um perfil tem uma ou mais folhas de modo, como andar, conduzir ou menus. Atribua increment_mode ou decrement_mode para mudar de modo durante o jogo; o perfil de fábrica coloca-os numa sucção e num sopro do tubo lateral.</value>
   </data>
   <data name="Main_OneShortPressEachTime" xml:space="preserve">
     <value>Uma pressão rápida sempre que ativa a entrada, por mais tempo que a mantenha.</value>
@@ -1750,7 +1750,7 @@ Escolha uma peça do QuadStick à esquerda para ver o que ela faz neste modo, al
     <value>{0}, selecionada. Espaço seleciona, arrastar reordena</value>
   </data>
   <data name="Main_RowSendingNow" xml:space="preserve">
-    <value>{0}. O QuadStick está a enviar isto agora</value>
+    <value>{0}. O QuadStick está enviando isto agora</value>
   </data>
   <data name="Main_RowsThatPressAGame" xml:space="preserve">
     <value>Linhas que pressionam um botão do jogo, mas ainda não têm nada que as acione. Dê uma entrada a cada uma, ou exclua-a.</value>
@@ -1807,7 +1807,7 @@ Escolha uma peça do QuadStick à esquerda para ver o que ela faz neste modo, al
     <value>Enviar este relatório de falha</value>
   </data>
   <data name="Main_SendingNow" xml:space="preserve">
-    <value>O QuadStick está a enviar isto agora</value>
+    <value>O QuadStick está enviando isto agora</value>
   </data>
   <data name="Main_Sequence" xml:space="preserve">
     <value>sequência</value>
@@ -1932,7 +1932,7 @@ Escolha uma peça do QuadStick à esquerda para ver o que ela faz neste modo, al
 Enviar converte isso para o formato próprio do relator de falhas. Também adiciona seu ID de instalação anônimo, a versão da biblioteca de relatórios, as versões do seu .NET e do sistema operacional, e se o seu processador é Intel ou ARM.</value>
   </data>
   <data name="Main_TheCommunityProfilesCardOn" xml:space="preserve">
-    <value>O cartão Perfis da comunidade na tela inicial pesquisa a lista compartilhada de perfis de jogos. Abrir essa janela, e pressionar Atualizar nela, baixa a lista de quadstick.com. Nada sobre você é enviado, e a última lista fica guardada neste computador para que a janela ainda abra sem internet. Importar abre o perfil no editor, do mesmo modo que colar o link dele. Isso nunca grava no seu QuadStick: isso ainda exige o botão Instalar, e erros ainda bloqueiam isso.</value>
+    <value>O cartão Perfis da comunidade na tela inicial pesquisa a lista compartilhada de perfis de jogos. Abrir essa janela, e pressionar Atualizar nela, baixa a lista de quadstick.com. Nada sobre você é enviado, e a última lista fica salva neste computador para que a janela ainda abra sem internet. Importar abre o perfil no editor, do mesmo modo que colar o link dele. Isso nunca grava no seu QuadStick: isso ainda exige o botão Instalar, e erros ainda bloqueiam isso.</value>
   </data>
   <data name="Main_TheDeviceSFallbackFile" xml:space="preserve">
     <value> · o arquivo de reserva do dispositivo</value>
@@ -1959,7 +1959,7 @@ Enviar converte isso para o formato próprio do relator de falhas. Também adici
     <value>, depois</value>
   </data>
   <data name="Main_TheseRowsAreKeptInThe" xml:space="preserve">
-    <value>Estas linhas ficam no ficheiro e continuam a poder ser editadas. Escolha uma peça para abrir as suas atribuições.</value>
+    <value>Estas linhas ficam no arquivo e continuam podendo ser editadas. Escolha uma peça para abrir as suas atribuições.</value>
   </data>
   <data name="Main_TheseTabsWerePassedOver" xml:space="preserve">
     <value>Estas abas foram ignoradas:</value>
@@ -1991,7 +1991,7 @@ Você pode alterar isso a qualquer momento em Configurações, em Avançado.</va
     <value>Este perfil está no QuadStick. Use Instalar para gravá-lo de volta com segurança; Salvar como coloca uma cópia na sua biblioteca.</value>
   </data>
   <data name="Main_ThisProfileMapsPartsYour" xml:space="preserve">
-    <value>Este perfil atribui {0} que o seu {1} não tem. Estão na lista à esquerda e continuam a poder ser editadas.</value>
+    <value>Este perfil atribui {0} que o seu {1} não tem. Estão na lista à esquerda e continuam podendo ser editadas.</value>
   </data>
   <data name="Main_ThisRowSetsAQuadStick" xml:space="preserve">
     <value>Esta linha define uma configuração do QuadStick em vez de pressionar um botão. Ela se aplica enquanto este modo está em execução.</value>
@@ -2024,7 +2024,7 @@ Você pode alterar isso a qualquer momento em Configurações, em Avançado.</va
     <value>{0}, não usado neste modo</value>
   </data>
   <data name="Main_TurnsOffAnOutputThat" xml:space="preserve">
-    <value>Força uma saída a desligar. Útil para libertar um botão que outra linha ligou ou fixou.</value>
+    <value>Força uma saída a desligar. Útil para liberar um botão que outra linha ligou ou fixou.</value>
   </data>
   <data name="Main_TwoOrMoreHolesUsed" xml:space="preserve">
     <value>Dois ou mais furos usados ao mesmo tempo, os três juntos, ou o furo direito com o tubo lateral. Bom para ações que você nunca quer acionar por acidente.</value>
@@ -2093,7 +2093,7 @@ Você pode alterar isso a qualquer momento em Configurações, em Avançado.</va
     <value>Obriga a manter a entrada durante um tempo definido antes de a saída ativar. Assim distingue-se um toque rápido de uma pressão longa.</value>
   </data>
   <data name="Main_WhatALitRowMeans" xml:space="preserve">
-    <value>Uma linha acende enquanto o QuadStick envia a saída dessa linha. O dispositivo nunca diz que ficheiro ou que modo está a executar, por isso uma linha pode acender por causa de um perfil diferente do que está aberto aqui. As saídas de rato, teclado e infravermelhos saem por outra ligação e nunca acendem.</value>
+    <value>Uma linha acende enquanto o QuadStick envia a saída dessa linha. O dispositivo nunca diz que arquivo ou que modo está executando, por isso uma linha pode acender por causa de um perfil diferente do que está aberto aqui. As saídas de mouse, teclado e infravermelho saem por outra conexão e nunca acendem.</value>
   </data>
   <data name="Main_WhatIsAMode" xml:space="preserve">
     <value>O que é um modo?</value>
@@ -2171,10 +2171,10 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>{0}, {1} não usado. Abre esta parte na visualização do dispositivo.</value>
   </data>
   <data name="Modes_AModeIsAFull" xml:space="preserve">
-    <value>Um modo é uma disposição completa das suas entradas. Alterne entre eles enquanto joga com increment_mode e decrement_mode. O perfil de fábrica associa-os a um sopro e a uma sucção no tubo lateral, e é por isso que o tubo lateral muda de modo até que o reatribua.</value>
+    <value>Um modo é um layout completo das suas entradas. Alterne entre eles enquanto joga com increment_mode e decrement_mode. O perfil de fábrica associa-os a um sopro e a uma sucção no tubo lateral, e é por isso que o tubo lateral muda de modo até que o reatribua.</value>
   </data>
   <data name="Modes_AModeIsAFullLayout" xml:space="preserve">
-    <value>Um modo é uma disposição completa das suas entradas.</value>
+    <value>Um modo é um layout completo das suas entradas.</value>
   </data>
   <data name="Modes_AModeNeedsAName" xml:space="preserve">
     <value>Um modo precisa de um nome. O antigo ainda está lá.</value>
@@ -2195,7 +2195,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Fechar modos</value>
   </data>
   <data name="Modes_Connection" xml:space="preserve">
-    <value>Ligação</value>
+    <value>Conexão</value>
   </data>
   <data name="Modes_ConnectionClearedTheDeviceFalls" xml:space="preserve">
     <value>Conexão limpa. O dispositivo volta a usar o cabo USB.</value>
@@ -2207,7 +2207,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Conexão definida para {0}.</value>
   </data>
   <data name="Modes_DeleteName" xml:space="preserve">
-    <value>Eliminar {0}</value>
+    <value>Excluir {0}</value>
   </data>
   <data name="Modes_Done" xml:space="preserve">
     <value>Concluído</value>
@@ -2309,7 +2309,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Novo nome {0}</value>
   </data>
   <data name="Names_NoNamesYetClickAdd" xml:space="preserve">
-    <value>Ainda não há nomes. Clique em "Adicionar linha", escolha uma saída e digite a sua própria palavra para ela. Essa palavra aparece então no topo de todo seletor de saída, em Personalizado. O arquivo ainda guarda o botão real, então o QuadStick funciona da mesma forma.</value>
+    <value>Ainda não há nomes. Clique em "Adicionar linha", escolha uma saída e digite a sua própria palavra para ela. Essa palavra aparece então no topo de todo seletor de saída, em Personalizado. O arquivo ainda salva o botão real, então o QuadStick funciona da mesma forma.</value>
   </data>
   <data name="Names_NotUsedYet" xml:space="preserve">
     <value>ainda não usado</value>
@@ -2846,7 +2846,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Perguntar antes de enviar um relatório de falha</value>
   </data>
   <data name="Settings_BackHelp" xml:space="preserve">
-    <value>Voltar das Definições</value>
+    <value>Voltar das Configurações</value>
   </data>
   <data name="Settings_Backup" xml:space="preserve">
     <value>Backup do Google Drive</value>
@@ -2873,7 +2873,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Escolha se os cartões começam pela saída ou pela entrada. Isto muda apenas como os cartões se leem, não o que o QuadStick faz.</value>
   </data>
   <data name="Settings_CardSentenceStyleCurrent" xml:space="preserve">
-    <value>Premir X quando sugar</value>
+    <value>Pressionar X quando sugar</value>
   </data>
   <data name="Settings_CardSentenceStyleHelp" xml:space="preserve">
     <value>Redação dos cartões de atribuição: frases começadas pela saída ou pela entrada</value>
@@ -3023,7 +3023,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Revertendo em {0}s</value>
   </data>
   <data name="Settings_SaveSize" xml:space="preserve">
-    <value>Guardar tamanho</value>
+    <value>Salvar tamanho</value>
   </data>
   <data name="Settings_SaveSizeHelp" xml:space="preserve">
     <value>Manter este tamanho de interface</value>
@@ -3032,10 +3032,10 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Tamanho da interface</value>
   </data>
   <data name="Settings_ScaleCaption" xml:space="preserve">
-    <value>Torna todo o texto e controlos maiores ou menores.</value>
+    <value>Torna todo o texto e controles maiores ou menores.</value>
   </data>
   <data name="Settings_ScaleHelp" xml:space="preserve">
-    <value>Tamanho da interface, em percentagem</value>
+    <value>Tamanho da interface, em porcentagem</value>
   </data>
   <data name="Settings_SendFeedback" xml:space="preserve">
     <value>Enviar feedback</value>
@@ -3068,10 +3068,10 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Este aplicativo não se atualiza sozinho e nunca verifica por conta própria.</value>
   </data>
   <data name="Settings_UsageCaption" xml:space="preserve">
-    <value>Quais telas são usadas e se a instalação funcionou. Nunca os seus perfis, nomes de ficheiros, caminhos, nada do que digita, ou a sua conta Google.</value>
+    <value>Quais telas são usadas e se a instalação funcionou. Nunca os seus perfis, nomes de arquivos, caminhos, nada do que digita, ou a sua conta Google.</value>
   </data>
   <data name="Settings_UsageData" xml:space="preserve">
-    <value>Partilhar dados de uso anónimos</value>
+    <value>Compartilhar dados de uso anónimos</value>
   </data>
   <data name="Settings_WaitingBrowser" xml:space="preserve">
     <value>Aguardando o seu navegador...</value>
@@ -3089,10 +3089,10 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Cancelar</value>
   </data>
   <data name="Share_CloseWithoutSharing" xml:space="preserve">
-    <value>Fechar sem partilhar</value>
+    <value>Fechar sem compartilhar</value>
   </data>
   <data name="Share_CouldNotConnectToGoogle" xml:space="preserve">
-    <value>Não foi possível conectar ao Google. Verifique a sua ligação à internet e tente novamente.</value>
+    <value>Não foi possível conectar ao Google. Verifique a sua conexão à internet e tente novamente.</value>
   </data>
   <data name="Share_FinishLabelNotAvailableYetFinish" xml:space="preserve">
     <value>{0}. Ainda não disponível: conclua primeiro os passos acima.</value>
@@ -3104,13 +3104,13 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Ainda não concluído</value>
   </data>
   <data name="Share_SaveThisProfile" xml:space="preserve">
-    <value>Guardar este perfil</value>
+    <value>Salvar este perfil</value>
   </data>
   <data name="Share_SetUpGoogleSheets" xml:space="preserve">
     <value>Configurar o Google Sheets</value>
   </data>
   <data name="Share_SharingAProfilePutsIt" xml:space="preserve">
-    <value>Partilhar um perfil coloca-o numa Google Sheet no seu próprio Google Drive, e dá-lhe um link para essa folha. Ninguém pode vê-la até você enviar o link adiante.</value>
+    <value>Compartilhar um perfil coloca-o numa Google Sheet no seu próprio Google Drive, e dá a você um link para essa folha. Ninguém pode vê-la até você enviar o link adiante.</value>
   </data>
   <data name="Share_StepDone" xml:space="preserve">
     <value>Passo {0} de {1}, {2}, concluído</value>
@@ -3125,7 +3125,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Passo {0} de {1}, {2}, ainda não concluído</value>
   </data>
   <data name="Share_ThisProfileWasNotSaved" xml:space="preserve">
-    <value>Este perfil não foi guardado, portanto ainda não há nada para colocar numa folha.</value>
+    <value>Este perfil não foi salvo, portanto ainda não há nada para colocar numa folha.</value>
   </data>
   <data name="Share_TitleAlreadyDone" xml:space="preserve">
     <value>{0}. Já concluído.</value>
@@ -3137,7 +3137,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Adicionar uma nova linha de associação a este modo</value>
   </data>
   <data name="Shell_AddRenameReorderAndDelete" xml:space="preserve">
-    <value>Adicionar, renomear, reordenar e eliminar modos</value>
+    <value>Adicionar, renomear, reordenar e excluir modos</value>
   </data>
   <data name="Shell_AddRow" xml:space="preserve">
     <value>+ Adicionar linha</value>
@@ -3152,7 +3152,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Explorar perfis da comunidade</value>
   </data>
   <data name="Shell_BrowseTheCommunityListOf" xml:space="preserve">
-    <value>Explorar a lista da comunidade de perfis de jogos partilhados e importar um</value>
+    <value>Explorar a lista da comunidade de perfis de jogos compartilhados e importar um</value>
   </data>
   <data name="Shell_BuildOpenOrFindA" xml:space="preserve">
     <value>Criar, abrir ou encontrar uma configuração</value>
@@ -3182,13 +3182,13 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>.csv</value>
   </data>
   <data name="Shell_Delete" xml:space="preserve">
-    <value>Eliminar</value>
+    <value>Excluir</value>
   </data>
   <data name="Shell_DeleteTheSelectedMappings" xml:space="preserve">
-    <value>Eliminar as associações selecionadas</value>
+    <value>Excluir as associações selecionadas</value>
   </data>
   <data name="Shell_DeleteTheSelectedRows" xml:space="preserve">
-    <value>Eliminar as linhas selecionadas</value>
+    <value>Excluir as linhas selecionadas</value>
   </data>
   <data name="Shell_DescribeAChangeInPlain" xml:space="preserve">
     <value>Descreva uma alteração em palavras simples e ela será feita a este perfil. Nada é alterado até você aprovar.</value>
@@ -3203,16 +3203,16 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Dispensar</value>
   </data>
   <data name="Shell_EachOfTheseIsA" xml:space="preserve">
-    <value>Cada um destes é um ficheiro de jogo inteiro, não um modo. Com Selecionar ficheiros ativado, uma sucção longa e forte no tubo lateral abre esta lista no dispositivo: escolha um com o joystick e carregue-o com o interruptor de lábio, com uma sucção ou sopro central, ou com o botão de pressão. Os modos são as disposições dentro de um único ficheiro.</value>
+    <value>Cada um destes é um arquivo de jogo inteiro, não um modo. Com Selecionar arquivos ativado, uma sucção longa e forte no tubo lateral abre esta lista no dispositivo: escolha um com o joystick e selecione-o com o interruptor de lábio, com uma sucção ou sopro central, ou com o botão de pressão. Os modos são os layouts dentro de um único arquivo.</value>
   </data>
   <data name="Shell_EachOfTheseIsAWhole" xml:space="preserve">
-    <value>Cada um destes é um ficheiro de jogo inteiro, não um modo.</value>
+    <value>Cada um destes é um arquivo de jogo inteiro, não um modo.</value>
   </data>
   <data name="Shell_EditModes" xml:space="preserve">
     <value>Editar modos</value>
   </data>
   <data name="Shell_EditModesAddRenameReorder" xml:space="preserve">
-    <value>Editar modos: adicionar, renomear, reordenar e eliminar</value>
+    <value>Editar modos: adicionar, renomear, reordenar e excluir</value>
   </data>
   <data name="Shell_FixFirstProblem" xml:space="preserve">
     <value>Corrigir primeiro problema</value>
@@ -3260,13 +3260,13 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Listar os inputs que este modo ainda não usou</value>
   </data>
   <data name="Shell_ManageFiles" xml:space="preserve">
-    <value>Gerir ficheiros</value>
+    <value>Gerenciar arquivos</value>
   </data>
   <data name="Shell_ManageFilesOnYourQuadStick" xml:space="preserve">
-    <value>Gerir ficheiros no seu QuadStick</value>
+    <value>Gerenciar arquivos no seu QuadStick</value>
   </data>
   <data name="Shell_ManageTheProfileFilesOn" xml:space="preserve">
-    <value>Gerir os ficheiros de perfil no seu QuadStick: copiar, eliminar, e ver a ordem de seleção de ficheiros</value>
+    <value>Gerenciar os arquivos de perfil no seu QuadStick: copiar, excluir, e ver a ordem de seleção de arquivos</value>
   </data>
   <data name="Shell_Mode" xml:space="preserve">
     <value>Modo</value>
@@ -3296,13 +3296,13 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Abrir</value>
   </data>
   <data name="Shell_OpenAFile" xml:space="preserve">
-    <value>Abrir um ficheiro</value>
+    <value>Abrir um arquivo</value>
   </data>
   <data name="Shell_OpenAProfileCSVFile" xml:space="preserve">
-    <value>Abrir um ficheiro CSV de perfil a partir do seu computador</value>
+    <value>Abrir um arquivo CSV de perfil a partir do seu computador</value>
   </data>
   <data name="Shell_OpenAProfileFile" xml:space="preserve">
-    <value>Abrir um ficheiro de perfil</value>
+    <value>Abrir um arquivo de perfil</value>
   </data>
   <data name="Shell_OpenRecoveredWork" xml:space="preserve">
     <value>Abrir trabalho recuperado</value>
@@ -3338,7 +3338,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Nome do perfil. Edite para renomear; .csv é adicionado automaticamente</value>
   </data>
   <data name="Shell_ProfilesYouSaveWillShow" xml:space="preserve">
-    <value>Os perfis que guardar aparecerão aqui.</value>
+    <value>Os perfis que salvar aparecerão aqui.</value>
   </data>
   <data name="Shell_QuadStickConfigManagerGoTo" xml:space="preserve">
     <value>QuadStick Config Manager. Ir para o Início</value>
@@ -3347,25 +3347,25 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Linhas</value>
   </data>
   <data name="Shell_SaveAsATemplate" xml:space="preserve">
-    <value>Guardar como modelo</value>
+    <value>Salvar como modelo</value>
   </data>
   <data name="Shell_SaveCtrlS" xml:space="preserve">
-    <value>Guardar  (Ctrl+S)</value>
+    <value>Salvar  (Ctrl+S)</value>
   </data>
   <data name="Shell_SaveThisProfileAsA" xml:space="preserve">
-    <value>Guardar este perfil como um modelo reutilizável a partir do qual pode iniciar novos perfis</value>
+    <value>Salvar este perfil como um modelo reutilizável a partir do qual pode iniciar novos perfis</value>
   </data>
   <data name="Shell_SaveThisProfileShortcutControl" xml:space="preserve">
-    <value>Guardar este perfil. Atalho Control S</value>
+    <value>Salvar este perfil. Atalho Control S</value>
   </data>
   <data name="Shell_SeeTheMappingsOnA" xml:space="preserve">
     <value>Ver as associações numa imagem do QuadStick  (Ctrl+D)</value>
   </data>
   <data name="Shell_SeeTheRowsTheWay" xml:space="preserve">
-    <value>Ver as linhas da forma como a folha as guarda  (Ctrl+D)</value>
+    <value>Ver as linhas da forma como a folha as salva  (Ctrl+D)</value>
   </data>
   <data name="Shell_SelectRowsToMoveDeleteOrClear" xml:space="preserve">
-    <value>Selecione as linhas a mover, eliminar ou esvaziar</value>
+    <value>Selecione as linhas a mover, excluir ou esvaziar</value>
   </data>
   <data name="Shell_SelectWhichModeToEdit" xml:space="preserve">
     <value>Selecionar qual modo editar</value>
@@ -3377,10 +3377,10 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Configurações</value>
   </data>
   <data name="Shell_ShareAsAGoogleSheet" xml:space="preserve">
-    <value>Partilhar como uma Google Sheet</value>
+    <value>Compartilhar como uma Google Sheet</value>
   </data>
   <data name="Shell_ShareThisProfileAsA" xml:space="preserve">
-    <value>Partilhar este perfil como uma Google Sheet</value>
+    <value>Compartilhar este perfil como uma Google Sheet</value>
   </data>
   <data name="Shell_ShowOrHideTheList" xml:space="preserve">
     <value>Mostrar ou ocultar a lista de problemas</value>
@@ -3395,7 +3395,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Mostrar as partes como uma lista simples que percorre com as setas, com o mesmo editor à direita</value>
   </data>
   <data name="Shell_StartANewProfileFrom" xml:space="preserve">
-    <value>Iniciar um novo perfil a partir de um dos seus modelos guardados</value>
+    <value>Iniciar um novo perfil a partir de um dos seus modelos salvos</value>
   </data>
   <data name="Shell_StartAProfile" xml:space="preserve">
     <value>Iniciar um perfil</value>
@@ -3464,7 +3464,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Escolha uma parte para ver e alterar o que ela faz.</value>
   </data>
   <data name="Tour_SaveYourWorkToA" xml:space="preserve">
-    <value>Guarde o seu trabalho num ficheiro.</value>
+    <value>Salve o seu trabalho num arquivo.</value>
   </data>
   <data name="Tour_SetLightOrDarkTo" xml:space="preserve">
     <value>Defina claro ou escuro conforme os seus olhos.</value>
@@ -3482,10 +3482,10 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>Passo {0} de {1}</value>
   </data>
   <data name="Tour_ThisIsYourQuadStickEach" xml:space="preserve">
-    <value>Este é o seu QuadStick. Cada parte é um controlo que pode mapear.</value>
+    <value>Este é o seu QuadStick. Cada parte é um controle que pode mapear.</value>
   </data>
   <data name="Tour_ThisShowsYouHowTo" xml:space="preserve">
-    <value>Isto mostra-lhe como criar e instalar um perfil. Pode saltar a qualquer momento.</value>
+    <value>Isto mostra a você como criar e instalar um perfil. Pode saltar a qualquer momento.</value>
   </data>
   <data name="Tour_WhenItSReadySend" xml:space="preserve">
     <value>Quando estiver pronto, envie-o para o seu QuadStick.</value>
@@ -3503,7 +3503,7 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>O GitHub não indicou uma versão. Você está na versão {0}.</value>
   </data>
   <data name="Update_GitHubIsAskingUsTo" xml:space="preserve">
-    <value>O GitHub está a pedir que aguardemos antes de verificar novamente. Tente novamente dentro de alguns minutos.</value>
+    <value>O GitHub está pedindo que aguardemos antes de verificar novamente. Tente novamente dentro de alguns minutos.</value>
   </data>
   <data name="Update_GitHubSentSomethingWeCould" xml:space="preserve">
     <value>O GitHub enviou algo que não conseguimos ler. Você está na versão {0}.</value>
@@ -3524,20 +3524,20 @@ Azul, INPUTS: o que a sua boca faz. os nomes mp_… são os furos do bocal (mp_l
     <value>No Mac, defina o modo de emulação USB 7 na folha de preferências do perfil do jogo e os jogos verão um comando de PlayStation 4.</value>
   </data>
   <data name="DevicePage_MacGamesHelp" xml:space="preserve">
-    <value>Um Mac ainda não consegue executar a ponte de comando Xbox, porque criar um comando virtual precisa de uma permissão da Apple. O modo 7 não precisa: o QuadStick apresenta-se como um DualShock 4 wireless, que o macOS e o Steam suportam por USB.
+    <value>Um Mac ainda não consegue executar a ponte de controle Xbox, porque criar um controle virtual precisa de uma permissão da Apple. O modo 7 não precisa: o QuadStick apresenta-se como um DualShock 4 wireless, que o macOS e o Steam suportam por USB.
 
-O modo 7 é apenas um comando. Não há teclado, rato nem unidade, por isso esta app não vê o stick enquanto está ativo. Coloque-o na folha de preferências do perfil do jogo, não nas definições do dispositivo: mudar para outro perfil traz de volta a unidade, o teclado e o rato. Mudar de modo dentro do mesmo perfil não.</value>
+O modo 7 é apenas um comando. Não há teclado, mouse nem unidade, por isso este aplicativo não vê o stick enquanto está ativo. Coloque-o na folha de preferências do perfil do jogo, não nas configurações do dispositivo: mudar para outro perfil traz de volta a unidade, o teclado e o mouse. Mudar de modo dentro do mesmo perfil não.</value>
   </data>
   <data name="DevicePage_MacPad" xml:space="preserve">
     <value>Comando em modo 0</value>
   </data>
   <data name="DevicePage_MacPadLine" xml:space="preserve">
-    <value>Permite que jogos feitos com SDL, como muitos jogos de Mac, vejam o QuadStick como um comando no modo de emulação 0, sem perder o teclado, o rato e a unidade.</value>
+    <value>Permite que jogos feitos com SDL, como muitos jogos de Mac, vejam o QuadStick como um controle no modo de emulação 0, sem perder o teclado, o mouse e a unidade.</value>
   </data>
   <data name="DevicePage_MacPadHelp" xml:space="preserve">
-    <value>O SDL é a biblioteca de comandos em que muitos jogos se baseiam. Só trata um dispositivo como comando se conhecer a sua disposição, e nenhuma versão do SDL conhece a do QuadStick. Isto indica-lha, para cada app aberta a partir de agora e outra vez em cada início de sessão, por isso feche e volte a abrir um jogo que já esteja a correr. Não precisa de nada da Apple e não altera nada no comando.
+    <value>O SDL é a biblioteca de controles em que muitos jogos se baseiam. Só trata um dispositivo como controle se conhecer o seu layout, e nenhuma versão do SDL conhece a do QuadStick. Isto indica a você, para cada aplicativo aberto a partir de agora e outra vez em cada login, por isso feche e abra de novo um jogo que já esteja a correr. Não precisa de nada da Apple e não altera nada no comando.
 
-Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desligar anula a alteração.</value>
+Os jogos que não usam SDL não verão o controle. Para esses, use o modo 7. Desligar anula a alteração.</value>
   </data>
   <data name="DevicePage_MacPadOn" xml:space="preserve">
     <value>Ligado. Os jogos abertos a partir de agora veem um comando.</value>
@@ -3546,7 +3546,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
     <value>Este Mac não aceitou a alteração, por isso nada foi alterado.</value>
   </data>
   <data name="DevicePage_MacPadStoreLine" xml:space="preserve">
-    <value>A versão da App Store não consegue fazer esta alteração sozinha. Copie o comando, cole-o no Terminal e prima Return. Depois feche e volte a abrir o jogo.</value>
+    <value>A versão da App Store não consegue fazer esta alteração sozinha. Copie o comando, cole-o no Terminal e pressione Return. Depois feche e abra de novo o jogo.</value>
   </data>
   <data name="DevicePage_MacPadCopy" xml:space="preserve">
     <value>Copiar o comando</value>
@@ -3555,19 +3555,19 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
     <value>Copiar o comando para anular</value>
   </data>
   <data name="DevicePage_MacPadCopied" xml:space="preserve">
-    <value>Copiado. Cole-o no Terminal e prima Return.</value>
+    <value>Copiado. Cole-o no Terminal e pressione Return.</value>
   </data>
   <data name="Shell_StoreBuildChooseDrive" xml:space="preserve">
-    <value>QuadStick ligado mas não aparece? A versão da Mac App Store só consegue abrir a unidade depois de a escolher uma vez. Depois disso, encontra-a sozinha.</value>
+    <value>QuadStick conectado mas não aparece? A versão da Mac App Store só consegue abrir a unidade depois de a escolher uma vez. Depois disso, encontra-a sozinha.</value>
   </data>
   <data name="Link_Title" xml:space="preserve">
     <value>QuadStick por Bluetooth ou cabo</value>
   </data>
   <data name="Link_Explain" xml:space="preserve">
-    <value>Ligue-se a um QuadStick através da sua própria consola: emparelhado por Bluetooth ou com um cabo série.</value>
+    <value>Conecte-se a um QuadStick através do seu próprio console: emparelhado por Bluetooth ou com um cabo serial.</value>
   </data>
   <data name="Link_ExplainMore" xml:space="preserve">
-    <value>Isto funciona com um QuadStick emparelhado nas definições de Bluetooth do seu computador enquanto o Bluetooth dele está no modo SPP, ou com um cabo série USB de 3.3V na ficha das entradas digitais 1 e 2. Enquanto o Bluetooth está no modo SPP, o QuadStick não é um comando Bluetooth; por USB continua a ser. Um perfil que usa digital_in_1 ou digital_in_2 desliga a porta do cabo.</value>
+    <value>Isto funciona com um QuadStick emparelhado nas configurações de Bluetooth do seu computador enquanto o Bluetooth dele está no modo SPP, ou com um cabo serial USB de 3.3V no conector das entradas digitais 1 e 2. Enquanto o Bluetooth está no modo SPP, o QuadStick não é um controle Bluetooth; por USB continua sendo. Um perfil que usa digital_in_1 ou digital_in_2 desliga a porta do cabo.</value>
   </data>
   <data name="Link_Port" xml:space="preserve">
     <value>Porta</value>
@@ -3579,7 +3579,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
     <value>Ligar</value>
   </data>
   <data name="Link_NoPorts" xml:space="preserve">
-    <value>Não foram encontradas portas série. Emparelhe o QuadStick nas definições de Bluetooth do seu computador, ou ligue o cabo, e depois carregue em Atualizar.</value>
+    <value>Não foram encontradas portas seriais. Emparelhe o QuadStick nas configurações de Bluetooth do seu computador, ou conecte o cabo, e depois clique em Atualizar.</value>
   </data>
   <data name="Link_Connecting" xml:space="preserve">
     <value>A ligar…</value>
@@ -3600,7 +3600,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
     <value>A enviar {0}…</value>
   </data>
   <data name="Link_Sent" xml:space="preserve">
-    <value>{0} está no QuadStick e carregado. O que ele tinha antes foi guardado em {1}.</value>
+    <value>{0} está no QuadStick e carregado. O que ele tinha antes foi salvo em {1}.</value>
   </data>
   <data name="Link_SentNew" xml:space="preserve">
     <value>{0} está no QuadStick e carregado.</value>
@@ -3609,7 +3609,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
     <value>Substituir prefs.csv?</value>
   </data>
   <data name="Link_OverwritePrefsMore" xml:space="preserve">
-    <value>prefs.csv guarda as definições do próprio QuadStick, por isso altera todos os perfis de uma vez. A cópia atual é guardada primeiro.</value>
+    <value>prefs.csv salva as configurações do próprio QuadStick, por isso altera todos os perfis de uma vez. A cópia atual é salva primeiro.</value>
   </data>
   <data name="Link_Measure" xml:space="preserve">
     <value>Medir a força de aspirar e soprar</value>
@@ -3618,7 +3618,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
     <value>Medir a força?</value>
   </data>
   <data name="Link_MeasureConfirm" xml:space="preserve">
-    <value>Isto carrega um perfil de teste só com aspiração forte e sopro forte, pede sete sopros e sete aspirações, e depois reinicia o QuadStick, o que repõe o seu próprio perfil e as suas definições. Se algo correr mal, desligue o QuadStick e volte a ligá-lo. Isso também repõe tudo.</value>
+    <value>Isto carrega um perfil de teste só com aspiração forte e sopro forte, pede sete sopros e sete aspirações, e depois reinicia o QuadStick, o que restaura o seu próprio perfil e as suas configurações. Se algo der errado, desligue o QuadStick e ligue-o de novo. Isso também restaura tudo.</value>
   </data>
   <data name="Link_NeedsUsb" xml:space="preserve">
     <value>Ligue também o QuadStick por USB. O teste observa os botões dele por USB e, no modo Xbox 360 (modo de emulação 3), não os consegue ver.</value>
@@ -3642,7 +3642,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
     <value>{0}%</value>
   </data>
   <data name="Link_Cancelled" xml:space="preserve">
-    <value>Parado. O QuadStick foi reiniciado, por isso o seu próprio perfil e as suas definições voltaram.</value>
+    <value>Parado. O QuadStick foi reiniciado, por isso o seu próprio perfil e as suas configurações voltaram.</value>
   </data>
   <data name="Link_NotPutBack" xml:space="preserve">
     <value>Não foi possível alcançar o QuadStick para reiniciá-lo, então o perfil de teste pode continuar nele. Desconecte e conecte de novo: isso traz de volta o seu próprio perfil e as suas configurações.</value>
@@ -3657,7 +3657,7 @@ Os jogos que não usam SDL não verão o comando. Para esses, use o modo 7. Desl
     <value>Bluetooth ou cabo</value>
   </data>
   <data name="Link_PageButtonName" xml:space="preserve">
-    <value>Ligar ao QuadStick por Bluetooth ou cabo série</value>
+    <value>Ligar ao QuadStick por Bluetooth ou cabo serial</value>
   </data>
   <data name="Follow_GetLatest" xml:space="preserve">
     <value>Obter a versão mais recente do link</value>
