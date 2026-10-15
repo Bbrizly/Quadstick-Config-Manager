@@ -54,14 +54,10 @@
 }
 
 .editor-workspace {
-  display: grid;
-  gap: 0;
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  margin: 14px 16px;
-  border: var(--qcm-hairline) solid var(--qcm-border);
-  border-radius: var(--qcm-radius-panel);
-  background: var(--qcm-surface);
-  overflow: hidden;
+  min-height: 0;
 }
 
 .editor-toolbar {
@@ -109,7 +105,13 @@
 }
 
 .editor-plate {
+  flex: 1;
   min-height: 470px;
+  margin: 14px 16px;
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: var(--qcm-radius-panel);
+  background: var(--qcm-surface);
+  overflow: hidden;
   display: grid;
   grid-template-columns: var(--qcm-sidebar-width) minmax(0, 1fr);
   align-items: stretch;
@@ -385,15 +387,13 @@
 }
 
 .panel-heading-row h2,
-.inspector-panel h2,
-.issues-panel h2 {
+.inspector-panel h2 {
   margin: 0;
   font-size: var(--qcm-subhead-size);
 }
 
 .mode-list,
-.binding-list,
-.issues-panel ul {
+.binding-list {
   margin: var(--qcm-space-sm) 0 0;
   padding: 0;
   list-style: none;
@@ -555,18 +555,94 @@ button.mode-select:hover {
   background: var(--qcm-selection-tint);
 }
 
-.issues-panel {
-  margin: 0 16px 16px;
-  padding: var(--qcm-space-md);
-  border: var(--qcm-hairline) solid var(--qcm-border);
-  border-radius: var(--qcm-radius-cell);
-  background: var(--qcm-surface);
-  max-height: 150px;
-  overflow: auto;
+/* Avalonia ProblemsDock: a slim bar under the plate, the list above it on
+   demand, the status line beside the count. */
+.problems-dock {
+  display: grid;
+  gap: 8px;
+  margin: 0 16px 14px;
 }
 
-.issues-panel li {
-  margin: 0 0 6px;
+.problems-list {
+  height: 150px;
+  overflow: auto;
+  padding: 4px;
+  border: var(--qcm-hairline) solid var(--qcm-border);
+  border-radius: 6px;
+  background: var(--qcm-surface);
+}
+
+.problems-item {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  padding: 2px 0;
+}
+
+.problems-none {
+  margin: 4px;
+  color: var(--qcm-success);
+  font-size: var(--qcm-small-size);
+}
+
+.issue-link {
+  min-height: 0;
+  padding: 4px 6px;
+  border: 0;
+  background: transparent;
+  font-size: var(--qcm-small-size);
+  font-weight: 400;
+  text-align: start;
+  white-space: normal;
+}
+
+.issue-link.issue-warning {
+  color: var(--qcm-warning);
+}
+
+.issue-link.issue-error {
+  color: var(--qcm-error);
+}
+
+.problems-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.problems-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  white-space: pre;
+}
+
+.problems-status {
+  min-width: 0;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-ready {
+  color: var(--qcm-success);
+}
+
+.status-warning {
+  color: var(--qcm-warning);
+}
+
+.status-error {
+  color: var(--qcm-error);
+}
+
+.status-info {
+  color: var(--qcm-text-secondary);
 }
 
 .raw-grid {
@@ -665,4 +741,17 @@ button.mode-select:hover {
   font-weight: 700;
   font-size: max(14px, 0.875rem);
   vertical-align: middle;
+}
+
+/* The count wears its state's colour, over the quiet button's accent text. */
+button.problems-toggle.status-ready {
+  color: var(--qcm-success);
+}
+
+button.problems-toggle.status-warning {
+  color: var(--qcm-warning);
+}
+
+button.problems-toggle.status-error {
+  color: var(--qcm-error);
 }

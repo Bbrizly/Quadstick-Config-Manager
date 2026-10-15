@@ -89,3 +89,27 @@ fn repo(path: impl AsRef<Path>) -> PathBuf {
         .join("../..")
         .join(path)
 }
+
+/// The two-mode Racing profile the browser mock opens and `RenderPreview
+/// --compare` draws. Avalonia shows "4 warnings" for it; the C# oracle lists
+/// these four cells.
+#[test]
+fn compare_fixture_has_the_four_avalonia_warnings() {
+    let csv = "Profile Name,,Racing,,,,,,,,Comments\nuntitled.csv\n\
+        PlayStation Outputs,Function,usb\ncross,normal,sip\ncircle,normal,puff\n\n\
+        Profile Name,,Racing\n\nPlayStation Outputs,Function,usb\nsquare,normal,hard sip\n";
+    let (_, issues) = parse_and_validate(csv);
+    let cells: Vec<(&str, Severity, IssueKind)> = issues
+        .iter()
+        .map(|issue| (issue.cell.as_str(), issue.severity, issue.kind))
+        .collect();
+    assert_eq!(
+        cells,
+        vec![
+            ("A4", Severity::Warning, IssueKind::None),
+            ("C4", Severity::Warning, IssueKind::UnknownInput),
+            ("C5", Severity::Warning, IssueKind::UnknownInput),
+            ("C10", Severity::Warning, IssueKind::UnknownInput),
+        ]
+    );
+}

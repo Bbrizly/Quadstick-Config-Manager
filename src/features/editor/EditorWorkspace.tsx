@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { LiveRegion } from "../../components/primitives/LiveRegion";
 import { Icon } from "../../components/primitives/icons";
 import { useI18n } from "../../i18n";
 import { localizedErrorMessage } from "../../i18n/errors";
@@ -21,8 +20,12 @@ import { firstMappedCombo, partLabel, partOf } from "../visualizer/parts";
 import { BindingInspector } from "./BindingInspector";
 import { comboGroups } from "./combos";
 import { duplicateCounts } from "./duplicates";
+import { ProblemsDock, useValidationStatus, type EditorStatus } from "./ProblemsDock";
 import { SentenceCard } from "./SentenceCard";
 import type { MessageKey } from "../../i18n";
+
+/** Column K, where the device ignores what is written (`ProfileFile.NoteColumn`). */
+const NOTE_COLUMN = 10;
 
 const ZONE_TITLES: Record<ZoneId, MessageKey> = {
   joystick: "Main_Joystick",
@@ -208,6 +211,10 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
   const [busy, setBusy] = useState(false);
   const [armedDelete, setArmedDelete] = useState<number | null>(null);
   const [message, setMessage] = useState("");
+  // The status line beside the problems count: the last thing said, else the
+  // validation summary (`MainWindow.Status`).
+  const [statusOverride, setStatusOverride] = useState<EditorStatus | null>(null);
+  const validation = useValidationStatus(snapshot.issues);
   const [model, setModel] = useState<ModelChoice>("fps");
   const [liveRows, setLiveRows] = useState<ReadonlySet<number>>(() => new Set());
 
@@ -268,6 +275,9 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
   const activeGroup = selectedBinding === null ? null : groupOf(selectedBinding);
   const activeRow = activeGroup?.[0] ?? null;
 
+  const status: EditorStatus =
+    message !== "" ? { kind: "error", text: message } : statusOverride ?? validation;
+
   const showFailure = useCallback(
     (reason: unknown): void => {
       const error = asQcmError(reason);
@@ -303,6 +313,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
         const next = await client.applyEditorOps(snapshot.sessionId, snapshot.revision, ops);
         onSnapshot(next);
         setMessage("");
+        setStatusOverride(null);
         after?.(next);
       } catch (reason) {
         await refreshAfterConflict(reason);
@@ -369,7 +380,7 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
       if (receipt === null) return;
       const next = await client.getProfileSnapshot(snapshot.sessionId);
       onSnapshot(next);
-      setMessage(t("Main_SavedToSavePath", [receipt.name]));
+      setStatusOverride({ kind: "ready", text: t("Main_SavedToSavePath", [receipt.name]) });
     } catch (reason) {
       await refreshAfterConflict(reason);
     } finally {
@@ -395,6 +406,28 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [save, undo]);
+
+  const moveIssueToNotes = (issue: Issue): void => {
+    const row = issueRow(issue.cell);
+    const column = issue.cell.trim().toUpperCase().charCodeAt(0) - 65;
+    if (row === null || column < 2 || column > 9) return;
+    const cells = snapshot.grid[row - 1] ?? [];
+    const value = cells[column] ?? "";
+    if (value.trim() === "") return;
+    const existing = (cells[NOTE_COLUMN] ?? "").trim();
+    void apply(
+      [
+        {
+          op: "group",
+          ops: [
+            { op: "set_cell", row, col: NOTE_COLUMN, value: existing === "" ? value : `${existing}; ${value}` },
+            { op: "set_cell", row, col: column, value: "" },
+          ],
+        },
+      ],
+      () => setStatusOverride({ kind: "info", text: t("Main_MovedTheTextFromI", [issue.cell]) }),
+    );
+  };
 
   const focusIssue = (issue: Issue): void => {
     const row = issueRow(issue.cell);
@@ -785,25 +818,16 @@ export function EditorWorkspace({ client, snapshot, onSnapshot, toolbarSlot = nu
         </div>
       )}
 
-      <section className="issues-panel" aria-labelledby="issues-title">
-        <h2 id="issues-title">{t("Shell_ListOfValidationProblemsSelect")}</h2>
-        {snapshot.issues.length === 0 ? (
-          <p>{t("Main_NoProblemsReadyToSave")}</p>
-        ) : (
-          <ul>
-            {snapshot.issues.map((issue, index) => (
-              <li key={`${issue.cell}-${issue.kind}-${String(index)}`}>
-                <button type="button" className={`issue-link issue-${issue.severity}`} onClick={() => focusIssue(issue)}>
-                  <span>{t("Main_SeverityLabelBaseName", [t(issue.severity === "error" ? "Rewrite_SeverityError" : "Rewrite_SeverityWarning"), issue.cell])}</span>
-                  <span>{issue.message}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-      <LiveRegion>{message}</LiveRegion>
-      {message !== "" ? <output className="editor-message">{message}</output> : null}
+      <ProblemsDock
+        issues={snapshot.issues}
+        status={status}
+        onFocusIssue={focusIssue}
+        onStatus={(next) => {
+          setStatusOverride(next);
+          setMessage("");
+        }}
+        onMoveToNotes={moveIssueToNotes}
+      />
     </section>
   );
 }

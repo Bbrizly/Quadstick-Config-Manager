@@ -3,8 +3,9 @@
  *
  * It mirrors command semantics that UI code depends on: revisions, cancellation,
  * opaque device identity, stale generations, one-shot destructive plans and
- * explicitly-owned streams. It deliberately does not parse, validate or
- * normalize QuadStick CSV; Rust owns those rules.
+ * explicitly-owned streams. It does not parse or normalize QuadStick CSV, and
+ * validates only the two vocabulary rules (unknown output, unknown input) so
+ * the problems bar has something true to show; Rust owns the full rules.
  */
 
 import type {
@@ -43,6 +44,7 @@ import type {
 } from "./contracts";
 import { ERROR_CODES, INTERFACE_SCALES } from "./contracts";
 import { QcmCommandError, type QcmClient } from "./qcmClient";
+import { INPUTS, KNOWN_OUTPUTS, LEGACY_INPUTS } from "./vocab";
 
 const TEMPLATE: readonly (readonly string[])[] = [
   ["Profile Name", "", "Racing", "", "", "", "", "", "", "", "Comments"],
@@ -1044,8 +1046,45 @@ export class MockQcmClient implements QcmClient {
   }
 }
 
-function snapshot(session: MockSession): EditorSnapshot {
+/**
+ * A stand-in for the two vocabulary rules of the Rust validator, worded as it
+ * words them, so the browser mock shows the problems bar the app shows. The
+ * packaged app never runs this: its issues come from `qcm_config::validate`.
+ */
+function mockIssues(grid: readonly (readonly string[])[]): Issue[] {
   const issues: Issue[] = [];
+  for (const mode of modesOf(grid)) {
+    for (let offset = 0; offset < mode.bindingCount; offset += 1) {
+      const row = mode.startRow + 3 + offset;
+      const cells = grid[row - 1] ?? [];
+      const output = (cells[0] ?? "").trim();
+      if (output !== "" && !KNOWN_OUTPUTS.has(output)) {
+        issues.push({
+          severity: "warning",
+          cell: `A${String(row)}`,
+          kind: "none",
+          message: `"${output}" is not a documented output name (PlayStation or XBox convention).`,
+          fix: 'Pick an output from the editor\'s list, e.g. "x", "left_trigger", or "mouse_up".',
+        });
+      }
+      for (let column = 2; column < 10; column += 1) {
+        const input = (cells[column] ?? "").trim();
+        if (input === "" || INPUTS.has(input) || LEGACY_INPUTS.includes(input)) continue;
+        issues.push({
+          severity: "warning",
+          cell: `${String.fromCharCode(65 + column)}${String(row)}`,
+          kind: "unknown_input",
+          message: `"${input}" is not a documented input name, so the device ignores it.`,
+          fix: 'Pick an input from the Inputs dropdown list, e.g. "mp_left_sip" or "lip", or move the text to the notes column.',
+        });
+      }
+    }
+  }
+  return issues;
+}
+
+function snapshot(session: MockSession): EditorSnapshot {
+  const issues = mockIssues(session.grid);
   return {
     sessionId: session.id,
     revision: session.revision,
@@ -1056,7 +1095,7 @@ function snapshot(session: MockSession): EditorSnapshot {
     title: session.title,
     grid: clone(session.grid),
     issues,
-    errorCount: 0,
+    errorCount: issues.filter((issue) => issue.severity === "error").length,
     modes: modesOf(session.grid),
   };
 }

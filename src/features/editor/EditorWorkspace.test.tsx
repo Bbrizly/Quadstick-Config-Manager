@@ -115,8 +115,21 @@ describe("TASK-038 editor workspace", () => {
     };
     renderEditor(client, withIssue);
 
+    // Avalonia's bar: one line with the count, the list only on demand.
+    fireEvent.click(screen.getByRole("button", { name: /1 error.*Shows the list of problems/u }));
     fireEvent.click(screen.getByRole("button", { name: /Unknown output/u }));
     await waitFor(() => expect(screen.getByTestId("binding-row-4")).toHaveFocus());
+  });
+
+  it("shows the mock fixture's four warnings in the bottom bar, as Avalonia does", async () => {
+    const client = new MockQcmClient();
+    const opened = await client.newProfile("racing.csv");
+    renderEditor(client, opened);
+
+    expect(screen.getByRole("button", { name: /^4 warnings\s+\(click to view\)\. Shows/u })).toBeInTheDocument();
+    expect(screen.getByText("4 warnings. The device skips those rows, so this still installs.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /4 warnings/u }));
+    expect(screen.getAllByRole("listitem").filter((item) => item.closest(".problems-list"))).toHaveLength(4);
   });
 
   it("keeps the advanced grid a projection that edits through the same session", async () => {

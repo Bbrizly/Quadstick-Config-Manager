@@ -19,7 +19,15 @@ export type IconName =
   | "back"
   | "viewDevice"
   | "viewRail"
-  | "viewSheet";
+  | "viewSheet"
+  | "check"
+  | "warning"
+  | "error"
+  | "edit"
+  | "clear"
+  | "chevron"
+  | "drag"
+  | "format";
 
 const PATHS: Record<IconName, string> = {
   home: "M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z",
@@ -49,6 +57,14 @@ const PATHS: Record<IconName, string> = {
     "M4 5.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0 5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0 5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM9 6h12v2H9V6zm0 5h12v2H9v-2zm0 5h12v2H9v-2z",
   viewSheet:
     "M4 3h16a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1zm1 4v3h4V7H5zm6 0v3h3V7h-3zm5 0v3h3V7h-3zM5 12v3h4v-3H5zm6 0v3h3v-3h-3zm5 0v3h3v-3h-3zM5 17v2h4v-2H5zm6 0v2h3v-2h-3zm5 0v2h3v-2h-3z",
+  check: "M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z",
+  warning: "M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z",
+  error: "M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z",
+  edit: "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm16.71-9.96a1 1 0 000-1.41l-1.59-1.59a1 1 0 00-1.41 0l-1.24 1.24 3.75 3.75 1.24-1.24z",
+  clear: "M18.3 5.7L16.9 4.3 12 9.2 7.1 4.3 5.7 5.7 10.6 10.6 5.7 15.5 7.1 16.9 12 12 16.9 16.9 18.3 15.5 13.4 10.6z",
+  chevron: "M8.6 16.6 13.2 12 8.6 7.4 10 6l6 6-6 6z",
+  drag: "M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z",
+  format: "M5 4v3h5.5v12h3V7H19V4H5z",
 };
 
 export interface IconProps {
