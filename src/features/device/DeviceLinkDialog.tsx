@@ -108,6 +108,12 @@ export function DeviceLinkDialog({
   // thresholds moved (6934bbf). So a close waits: it stops the test, the
   // device is put back, then the window goes.
   const closeWhenDone = useRef(false);
+  // Set once the window has been told to close, so a picker or question that
+  // answers afterwards cannot start a send on a window that is gone.
+  const gone = useRef(false);
+  useEffect(() => {
+    if (open) gone.current = false;
+  }, [open]);
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -115,6 +121,7 @@ export function DeviceLinkDialog({
   const closeIfAsked = (): void => {
     if (!closeWhenDone.current) return;
     closeWhenDone.current = false;
+    gone.current = true;
     onCloseRef.current();
   };
 
@@ -168,6 +175,7 @@ export function DeviceLinkDialog({
       return;
     }
     if (!busy) {
+      gone.current = true;
       onClose();
       return;
     }
@@ -208,12 +216,13 @@ export function DeviceLinkDialog({
       failed(reason);
       return;
     }
-    if (pick === null) return;
+    if (pick === null || gone.current) return;
     // The same two questions a drive install asks, asked the same way.
     let yesDefault = false;
     let yesPrefs = false;
     if (pick.isDefault && !(yesDefault = await confirm(t("Install_OverwriteDefaultCsv"), t("Install_AWrongDefaultCsvCan")))) return;
     if (pick.isPreferences && !(yesPrefs = await confirm(t("Link_OverwritePrefs"), t("Link_OverwritePrefsMore")))) return;
+    if (gone.current) return;
 
     setBusy(true);
     say("Link_Sending", [pick.name ?? ""]);

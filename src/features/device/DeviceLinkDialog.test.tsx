@@ -203,11 +203,11 @@ describe("DeviceLinkDialog", () => {
   it("closing mid-send waits for the send to finish", async () => {
     const device = new FakeConsole();
     device.pick = { pickId: "pick-1", name: "game.csv", isDefault: false, isPreferences: false };
-    let finish: () => void = () => undefined;
+    const held: { finish: (() => void) | null } = { finish: null };
     device.consoleSendProfile = (pickId: string) => {
       device.commands.push(`send,${pickId}`);
       return new Promise((resolve) => {
-        finish = () => resolve({ name: "game.csv", backup: null });
+        held.finish = () => resolve({ name: "game.csv", backup: null });
       });
     };
     let closed = 0;
@@ -219,7 +219,7 @@ describe("DeviceLinkDialog", () => {
     await waitFor(() => expect(device.commands.at(-1)).toBe("send,pick-1"));
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(closed).toBe(0);
-    act(() => finish());
+    act(() => held.finish?.());
     await waitFor(() => expect(closed).toBe(1));
   });
 
