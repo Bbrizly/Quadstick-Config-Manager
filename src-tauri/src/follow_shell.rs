@@ -192,7 +192,14 @@ impl<L: LocalProfileStore, P: ProfilePicker, S: SettingsStore> Shell<L, P, S> {
         let open = sessions.session(session)?;
         if let Some(target) = open.save_target_ref() {
             let key = sessions.store().persistent_key(target)?;
-            self.follow_links().remove(&key);
+            if !self.follow_links().remove(&key) {
+                return Err(QcmError::Internal(qcm_core::error::InternalError {
+                    what: "forget followed link",
+                    detail: qcm_core::error::OsDetail::new(
+                        "the followed-links file could not be written".to_owned(),
+                    ),
+                }));
+            }
         }
         Ok(FollowStateDto { follows: false })
     }

@@ -162,11 +162,14 @@ export function FollowLinkActions({ client, snapshot, onSnapshot }: FollowLinkAc
   }
 
   const shown = review?.changes.slice(0, SHOWN_CHANGES) ?? [];
+  // Held through the question, as `_gettingLatest` is: a second press cannot
+  // start another download or replace the list being answered.
+  const locked = busy || review !== null || askSave;
   return (
     <section className="profile-follow-actions" aria-label={t("Follow_CardNote")}>
       <button
         type="button"
-        disabled={busy}
+        disabled={locked}
         aria-label={t("Follow_GetLatestHelp")}
         onClick={getLatest}
       >
@@ -176,7 +179,7 @@ export function FollowLinkActions({ client, snapshot, onSnapshot }: FollowLinkAc
         <button
           type="button"
           className="quiet"
-          disabled={busy}
+          disabled={locked}
           aria-label={t("Follow_StopFollowingHelp")}
           onClick={stopFollowing}
         >
