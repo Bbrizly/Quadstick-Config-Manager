@@ -131,6 +131,22 @@ struct Inner {
     console: Option<DeviceConsole<Box<dyn Link>>>,
     pick: Option<(String, ProfileFile)>,
     picks: u64,
+    /// The strength test file may be on the device and its ceilings moved.
+    /// Whatever lets go of the port puts the device back first.
+    testing: bool,
+}
+
+impl Inner {
+    /// Drop the link, restoring the device first if a test was left running.
+    fn let_go(&mut self) {
+        if std::mem::take(&mut self.testing)
+            && let Some(console) = self.console.as_mut()
+        {
+            let _ = console.delete(STRENGTH_TEST_NAME);
+            let _ = console.boot();
+        }
+        self.console = None;
+    }
 }
 
 pub struct ConsoleShell {
@@ -313,6 +329,7 @@ impl ConsoleShell {
                 console: None,
                 pick: None,
                 picks: 0,
+                testing: false,
             }),
         }
     }
@@ -357,7 +374,7 @@ impl ConsoleShell {
                 }))
             })?;
         // A new connect always lets go of the old link first.
-        inner.console = None;
+        inner.let_go();
         let port_label = scrub(&name);
         let link = match self.ports.open(&name) {
             Ok(link) => link,
@@ -385,7 +402,7 @@ impl ConsoleShell {
     /// Drop the port. Called when the window closes.
     pub fn close(&self) {
         let mut inner = self.inner();
-        inner.console = None;
+        inner.let_go();
         inner.pick = None;
     }
 
@@ -461,6 +478,8 @@ impl ConsoleShell {
         let mut inner = self.inner();
         let console = inner.console.as_mut().ok_or_else(not_connected)?;
         let before = console.preferences().map_err(|e| fail(&e))?;
+        inner.testing = true;
+        let console = inner.console.as_mut().ok_or_else(not_connected)?;
         console
             .send_profile(
                 &ProfileFile::load(STRENGTH_TEST_PROFILE),
@@ -506,11 +525,8 @@ impl ConsoleShell {
     /// are swallowed: unplugging does the same, and the confirm said so.
     pub fn strength_end(&self) {
         let mut inner = self.inner();
-        if let Some(console) = inner.console.as_mut() {
-            let _ = console.delete(STRENGTH_TEST_NAME);
-            let _ = console.boot();
-        }
-        inner.console = None;
+        inner.testing = true;
+        inner.let_go();
     }
 }
 
@@ -826,6 +842,24 @@ mod tests {
         assert!(fake.commands.iter().any(|c| c == "sip_maximum,100"));
         assert!(!fake.files.contains_key(STRENGTH_TEST_NAME));
         assert_eq!(fake.commands.last().map(String::as_str), Some("boot"));
+    }
+
+    #[test]
+    fn closing_mid_test_still_deletes_the_test_file_and_restarts() {
+        for leave in ["close", "connect"] {
+            let (shell, device) = rig();
+            connect(&shell);
+            shell.strength_begin().expect("begin");
+            if leave == "close" {
+                shell.close();
+            } else {
+                connect(&shell);
+            }
+            let guard = device.lock().expect("fake");
+            let fake = guard.as_ref().expect("device");
+            assert!(!fake.files.contains_key(STRENGTH_TEST_NAME), "{leave}");
+            assert!(fake.commands.iter().any(|c| c == "boot"), "{leave}");
+        }
     }
 
     #[test]

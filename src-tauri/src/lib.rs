@@ -316,6 +316,8 @@ pub fn run() {
             if let tauri::RunEvent::Exit = event {
                 // Every button on the virtual pad is let go before it goes.
                 app.state::<controller::BridgeRuntime>().stop();
+                // A strength test left running is undone before the port goes.
+                app.state::<Arc<console_shell::ConsoleShell>>().close();
                 // Push what is queued so a short session is not a silent one.
                 telemetry::global().shutdown();
             }
