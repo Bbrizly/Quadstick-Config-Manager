@@ -428,28 +428,14 @@ pub fn rename_template_card(
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
             return Ok(TemplateRenameDto::Taken { name: bare });
         }
-        // A volume without hard links: copy into a file that must not exist
-        // yet, then remove the old one. Still never replaces anything.
+        // A volume without hard links: check, then rename. This is what
+        // .NET's `File.Move` does there too (link, then a checked rename).
         Err(_) => {
-            use std::io::Write as _;
-            let bytes = fs::read(&old).map_err(|error| io_error(&error, StorageStage::ReadFile))?;
-            let mut file = match fs::OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&new)
-            {
-                Ok(file) => file,
-                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                    return Ok(TemplateRenameDto::Taken { name: bare });
-                }
-                Err(error) => return Err(io_error(&error, StorageStage::TempCreate)),
-            };
-            if let Err(error) = file.write_all(&bytes).and_then(|()| file.sync_all()) {
-                drop(file);
-                let _ = fs::remove_file(&new);
-                return Err(io_error(&error, StorageStage::TempWrite));
+            if new.exists() {
+                return Ok(TemplateRenameDto::Taken { name: bare });
             }
-            fs::remove_file(&old).map_err(|error| io_error(&error, StorageStage::Delete))?;
+            fs::rename(&old, &new)
+                .map_err(|error| io_error(&error, StorageStage::ReplaceBeforeDisplace))?;
         }
     }
     cards.forget(&request.id);
