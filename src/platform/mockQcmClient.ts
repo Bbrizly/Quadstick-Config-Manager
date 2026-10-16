@@ -119,7 +119,9 @@ interface MockDeletePlan {
   readonly confirmationId: string;
 }
 
-type PickerAnswer = { readonly cancelled: true } | { readonly cancelled: false; readonly name: string };
+type PickerAnswer =
+  | { readonly cancelled: true }
+  | { readonly cancelled: false; readonly name: string; readonly grid?: readonly (readonly string[])[] };
 type DevicePickerAnswer =
   | { readonly cancelled: true }
   | { readonly cancelled: false; readonly label: string };
@@ -277,6 +279,11 @@ export class MockQcmClient implements QcmClient {
 
   willOpen(name: string): void {
     this.#openAnswers.push({ cancelled: false, name });
+  }
+
+  /** The next open answers with this sheet instead of the template. */
+  willOpenGrid(name: string, grid: readonly (readonly string[])[]): void {
+    this.#openAnswers.push({ cancelled: false, name, grid });
   }
 
   willCancelOpen(): void {
@@ -635,7 +642,7 @@ export class MockQcmClient implements QcmClient {
     this.#dialogsOpened += 1;
     const answer = this.#openAnswers.shift() ?? { cancelled: false, name: "Racing.csv" };
     if (answer.cancelled) return Promise.resolve(null);
-    const grid = clone(TEMPLATE);
+    const grid = clone(answer.grid ?? TEMPLATE);
     const nameRow = grid[1];
     if (nameRow !== undefined) nameRow[0] = answer.name;
     return Promise.resolve(

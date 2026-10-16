@@ -98,3 +98,27 @@ export function seedDevicePreview(mock: MockQcmClient): void {
     subscribeControllerBridge: () => Promise.resolve({ dispose: () => undefined }),
   };
 }
+
+/**
+ * The largest profile the device takes: 16 modes of 128 mappings. `?big`
+ * opens it on the first Open, for timing the editor at its limit.
+ */
+export function bigProfileGrid(): string[][] {
+  const outputs = ["cross", "circle", "square", "triangle", "l1", "r1", "l2", "r2", "dpad_N", "dpad_S"];
+  const inputs = ["sip", "puff", "lip", "hard sip", "soft puff", "left_sip", "right_puff", "mp_left_sip"];
+  const pad = (row: string[]): string[] => {
+    while (row.length < 11) row.push("");
+    return row;
+  };
+  const grid: string[][] = [];
+  for (let mode = 0; mode < 16; mode += 1) {
+    if (mode > 0) grid.push(pad([]));
+    grid.push(pad(["Profile Name", "", `Mode ${String(mode + 1)}`, "", "", "", "", "", "", "", "Comments"]));
+    grid.push(pad([mode === 0 ? "big.csv" : ""]));
+    grid.push(pad(["PlayStation Outputs", "Function", "usb"]));
+    for (let row = 0; row < 128; row += 1) {
+      grid.push(pad([outputs[row % outputs.length]!, "normal", inputs[(row + mode) % inputs.length]!]));
+    }
+  }
+  return grid;
+}
