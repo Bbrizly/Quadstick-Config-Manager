@@ -47,6 +47,9 @@ import type { CustomNameDrafts, LibraryCard, TemplateEntry, TemplateReceipt, Tem
 import { QcmCommandError, type QcmClient } from "./qcmClient";
 import { INPUTS, KNOWN_OUTPUTS, LEGACY_INPUTS } from "./vocab";
 
+/** Avalonia `EmptyPrefs`: what a stick with no prefs.csv opens as. */
+const EMPTY_PREFERENCES = "Preferences\nprefs.csv\nPreference,Value,Units,Description\n";
+
 const TEMPLATE: readonly (readonly string[])[] = [
   ["Profile Name", "", "Racing", "", "", "", "", "", "", "", "Comments"],
   ["untitled.csv", "", "", "", "", "", "", "", "", "", ""],
@@ -1010,7 +1013,7 @@ export class MockQcmClient implements QcmClient {
     return Promise.resolve(this.#openDeviceCopy(device, name));
   }
 
-  openDevicePreferences(deviceId: string, expectedGeneration: number): Promise<EditorSnapshot> {
+  openDevicePreferences(deviceId: string, expectedGeneration: number, createIfMissing = false): Promise<EditorSnapshot> {
     let device: MockDevice;
     try {
       device = this.#device(deviceId, expectedGeneration);
@@ -1018,6 +1021,7 @@ export class MockQcmClient implements QcmClient {
       return Promise.reject(reason);
     }
     if (!device.files.has("prefs.csv")) {
+      if (createIfMissing) return Promise.resolve(this.#openDeviceCopy(device, "prefs.csv", EMPTY_PREFERENCES));
       return Promise.reject(
         fail(ERROR_CODES.storageFileNotFound, "prefs.csv is no longer on the QuadStick.", "refresh_devices"),
       );
@@ -1077,8 +1081,8 @@ export class MockQcmClient implements QcmClient {
     return snapshot(session);
   }
 
-  #openDeviceCopy(device: MockDevice, name: string): EditorSnapshot {
-    const text = device.files.get(name) ?? "";
+  #openDeviceCopy(device: MockDevice, name: string, missing?: string): EditorSnapshot {
+    const text = device.files.get(name) ?? missing ?? "";
     // A seeded prefs.csv is shown as written; everything else stays the
     // template, since the mock does not parse profiles.
     const isPrefs = text.startsWith("Preferences\n");

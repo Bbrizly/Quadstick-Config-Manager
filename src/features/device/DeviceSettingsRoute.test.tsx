@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { App } from "../../app/App";
+import type { PreferenceDefinition, QcmClient } from "../../platform";
 import { MockQcmClient } from "../../platform/mockQcmClient";
 
 const PREFS = "Preferences\nprefs.csv\nPreference,Value,Units,Description\nmouse_speed,100,,\n";
@@ -27,5 +28,25 @@ describe("device nav (ShowDevicePageAsync)", () => {
     const line = await screen.findByText(/No QuadStick is plugged in, so these are the settings/u);
     expect(line).toHaveClass("warn");
     expect(screen.getByRole("button", { name: "Choose the QuadStick drive" })).toBeEnabled();
+  });
+
+  it("with no prefs.csv on the stick offers an empty one to fill in, like Avalonia", async () => {
+    const client = new MockQcmClient();
+    client.plugDevice("QUADSTICK", {});
+    const definition: PreferenceDefinition = {
+      name: "mouse_speed", label: "Mouse speed", category: "Mouse", editor: "integer", default: "100",
+      minimum: 0, maximum: 200, unit: "", description: "", options: [], modeOverride: false, risk: "",
+      source: "", firmwareMayAddMore: false, alsoCalled: "", advanced: false,
+    };
+    const writable: { -readonly [K in keyof QcmClient]: QcmClient[K] } = client;
+    writable.getPreferenceCatalog = () => Promise.resolve({ categories: ["Mouse"], definitions: [definition] });
+    render(<App client={client} />);
+    fireEvent.click(screen.getByRole("button", { name: "Manage files on your QuadStick" }));
+    expect(await screen.findByText(/It has no settings file yet/u)).toBeInTheDocument();
+    const add = (await screen.findAllByRole("button", { name: "Add" }))[0]!;
+    expect(add).toBeEnabled();
+    fireEvent.click(add);
+    expect(await screen.findByText(/1 setting changed/u)).toBeInTheDocument();
+    expect(screen.getByText("Save to your QuadStick").closest("button")).toBeEnabled();
   });
 });

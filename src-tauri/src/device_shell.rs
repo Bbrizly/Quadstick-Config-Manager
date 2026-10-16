@@ -10,9 +10,9 @@ use crate::adapters::device_picker::{
 use crate::adapters::storage::{FileSystemBackupStore, FileSystemDeviceStorage};
 use crate::device_ipc::{
     CommitDeleteRequest, CommitInstallRequest, DeletePlanDto, DeleteReceiptDto, DeviceFileRequest,
-    DeviceGenerationRequest, DeviceLibrarySnapshotDto, DevicePresenceSnapshotDto,
-    DeviceProfileEntryDto, DeviceRequest, DeviceSummaryDto, InstallPlanDto, InstallReceiptDto,
-    OpenDeviceFile, confirmation_id, device_id, operation_id, optional_confirmation_id,
+    DeviceLibrarySnapshotDto, DevicePresenceSnapshotDto, DeviceProfileEntryDto, DeviceRequest,
+    DeviceSummaryDto, InstallPlanDto, InstallReceiptDto, OpenDeviceFile, confirmation_id,
+    device_id, operation_id, optional_confirmation_id,
 };
 use crate::device_rename_ipc::{RenameDeviceProfileReceiptDto, RenameDeviceProfileRequest};
 use crate::ipc::parse;
@@ -267,21 +267,44 @@ impl<S: DeviceStorage, B: BackupStore, C: Clock + Clone, P: DeviceFolderPicker>
     }
 
     pub fn open_device_preferences(&self, raw: Value) -> Result<OpenDeviceFile, QcmError> {
-        let request: DeviceGenerationRequest = parse(raw, "open_device_preferences request")?;
+        let request: OpenPreferencesRequest = parse(raw, "open_device_preferences request")?;
         let device = device_id(&request.device_id)?;
         let expected = DeviceGeneration::from_raw(request.expected_generation);
         let name = DeviceFileName::new(PREFERENCES_FILE_NAME)
             .map_err(|reason| StorageError::NameRejected { reason })?;
         let mut devices = self.devices();
         require_generation(&mut devices, device, expected)?;
-        let file = devices.read_preferences(device)?;
+        let csv_text = match devices.read_preferences(device) {
+            Ok(file) => file.csv_text,
+            // Avalonia `EmptyPrefs`: a stick with no settings file yet gets an
+            // empty one to fill in. Nothing is written until it is saved.
+            Err(QcmError::Storage(StorageError::FileNotFound { .. }))
+                if request.create_if_missing =>
+            {
+                EMPTY_PREFERENCES.to_owned()
+            }
+            Err(error) => return Err(error),
+        };
         Ok(OpenDeviceFile {
             device,
             generation: expected,
             name,
-            csv_text: file.csv_text,
+            csv_text,
         })
     }
+}
+
+/// Avalonia's `EmptyPrefs`: the Preferences sheet header and nothing else.
+const EMPTY_PREFERENCES: &str = "Preferences\nprefs.csv\nPreference,Value,Units,Description\n";
+
+#[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct OpenPreferencesRequest {
+    device_id: String,
+    expected_generation: u64,
+    /// With no prefs.csv on the stick, open an empty one instead of failing.
+    #[serde(default)]
+    create_if_missing: bool,
 }
 
 fn require_generation<S: DeviceStorage, B: BackupStore, C: Clock + Clone>(

@@ -337,7 +337,7 @@ export function DevicePreferencesPage({
     setBusy(true);
     try {
       await client.closeProfile(snapshot.sessionId, "discard");
-      const fresh = await client.openDevicePreferences(snapshot.source.device, snapshot.source.generation);
+      const fresh = await client.openDevicePreferences(snapshot.source.device, snapshot.source.generation, true);
       onSnapshot(fresh);
       setMessage("");
     } catch (reason) {
@@ -409,6 +409,8 @@ export function DevicePreferencesPage({
                 {status}
               </p>
             )
+          ) : status !== "" ? (
+            <p className="device-status" role="status">{status}</p>
           ) : deviceName === "" ? null : (
             <p className="device-status">{t("DevicePage_FoundYourQuadStickAtRoot", [deviceName])}</p>
           )}

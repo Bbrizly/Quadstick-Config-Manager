@@ -259,3 +259,46 @@ fn cancelling_the_folder_picker_changes_nothing() {
     assert!(selected.is_none());
     assert_eq!(before.devices, after.devices);
 }
+
+#[test]
+fn a_stick_with_no_settings_file_can_start_one() {
+    let (drive, device) = FakeQuadStick::with_device();
+    let clock = ManualClock::new();
+    let shell = shell(&drive, &clock);
+    let generation = drive.generation(device).unwrap().raw();
+
+    let missing = shell
+        .open_device_preferences(json!({
+            "deviceId": device.to_string(),
+            "expectedGeneration": generation
+        }))
+        .unwrap_err();
+    assert_eq!(code(&missing), ErrorCode::StorageFileNotFound);
+
+    let opened = shell
+        .open_device_preferences(json!({
+            "deviceId": device.to_string(),
+            "expectedGeneration": generation,
+            "createIfMissing": true
+        }))
+        .expect("an empty settings file");
+    let mut file = ProfileFile::load(&opened.csv_text);
+    assert!(file.document.is_device_preferences());
+    assert!(
+        drive.file(device, "prefs.csv").is_none(),
+        "nothing written yet"
+    );
+
+    file = ProfileFile::load(&format!("{}mouse_speed,5,,\n", opened.csv_text));
+    let plan = shell
+        .prepare_install(&device.to_string(), &file)
+        .expect("plan");
+    let confirmation = plan.confirmation.expect("prefs.csv asks first");
+    shell
+        .commit_install(json!({
+            "planId": plan.plan_id,
+            "confirmationId": confirmation.confirmation_id
+        }))
+        .expect("install");
+    assert!(drive.file(device, "prefs.csv").is_some());
+}

@@ -106,7 +106,8 @@ export interface QcmClient {
   commitDeleteDeviceProfile(planId: string, confirmationId: string): Promise<DeleteReceipt>;
   renameDeviceProfile?(deviceId: string, expectedGeneration: number, from: string, to: string): Promise<RenameDeviceProfileReceipt>;
   openDeviceProfile(deviceId: string, expectedGeneration: number, name: string): Promise<EditorSnapshot>;
-  openDevicePreferences(deviceId: string, expectedGeneration: number): Promise<EditorSnapshot>;
+  /** `createIfMissing`: a stick with no prefs.csv opens an empty one (Avalonia `EmptyPrefs`). */
+  openDevicePreferences(deviceId: string, expectedGeneration: number, createIfMissing?: boolean): Promise<EditorSnapshot>;
   startLiveInput(onFrame: (frame: LiveSnapshot) => void): Promise<Subscription>;
   subscribeDevicesChanged(onChanged: (event: DeviceInvalidation) => void): Promise<Subscription>;
 

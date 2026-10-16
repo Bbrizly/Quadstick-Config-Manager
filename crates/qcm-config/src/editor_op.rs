@@ -1013,6 +1013,27 @@ mod tests {
     }
 
     #[test]
+    fn an_empty_settings_file_takes_its_first_setting() {
+        let mut prefs =
+            ProfileFile::load("Preferences\nprefs.csv\nPreference,Value,Units,Description\n");
+        let sheet = &prefs.document.sheets[0];
+        let row = sheet.start_row + 3;
+        assert!(prefs.apply_editor_op(&EditorOp::AddRow { sheet: 0 }));
+        for (col, value) in [(0, "mouse_speed"), (1, "120")] {
+            assert!(prefs.apply_editor_op(&EditorOp::SetCell {
+                row,
+                col,
+                value: value.to_owned(),
+            }));
+        }
+        assert!(prefs.document.is_device_preferences());
+        let bindings = &prefs.document.sheets[0].bindings;
+        assert_eq!(bindings.len(), 1);
+        assert_eq!(bindings[0].output, "mouse_speed");
+        assert!(prefs.to_csv_text().contains("mouse_speed,120"));
+    }
+
+    #[test]
     fn combo_edits_undo_in_one_step() {
         let mut profile = ProfileFile::load(
             "Profile Name,,Mode\nfile.csv\nOutputs,Function,usb\ncross,normal,mp_left_sip\ncircle,normal,mp_left_sip\n",

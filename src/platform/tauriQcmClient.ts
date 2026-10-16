@@ -156,7 +156,7 @@ export class TauriQcmClient implements QcmClient {
   commitDeleteDeviceProfile(planId: string, confirmationId: string): Promise<DeleteReceipt> { return call("commit_delete_device_profile", { planId, confirmationId }); }
   renameDeviceProfile(deviceId: string, expectedGeneration: number, from: string, to: string): Promise<RenameDeviceProfileReceipt> { return call("rename_device_profile", { deviceId, expectedGeneration, from, to }); }
   openDeviceProfile(deviceId: string, expectedGeneration: number, name: string): Promise<EditorSnapshot> { return call("open_device_profile", { deviceId, expectedGeneration, name }); }
-  openDevicePreferences(deviceId: string, expectedGeneration: number): Promise<EditorSnapshot> { return call("open_device_preferences", { deviceId, expectedGeneration }); }
+  openDevicePreferences(deviceId: string, expectedGeneration: number, createIfMissing = false): Promise<EditorSnapshot> { return call("open_device_preferences", { deviceId, expectedGeneration, createIfMissing }); }
   async startLiveInput(onFrame: (frame: LiveSnapshot) => void): Promise<Subscription> {
     const channel = new Channel<LiveSnapshot>(onFrame);
     const native = await callArgs<NativeSubscription>("start_live_input", { onFrame: channel });

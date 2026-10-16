@@ -25,6 +25,8 @@ export function DeviceSettingsRoute({ client, snapshot, onSnapshot, onManageFile
   const [status, setStatus] = useState(snapshot === null ? t("DevicePage_LookingForYourQuadStick") : "");
   const [choices, setChoices] = useState<readonly DeviceSummary[] | null>(null);
   const [pick, setPick] = useState("");
+  // The session opened over a missing prefs.csv, so its line can say so.
+  const [missingFor, setMissingFor] = useState<string | null>(null);
   const snapshotRef = useRef(snapshot);
   useEffect(() => {
     snapshotRef.current = snapshot;
@@ -35,14 +37,25 @@ export function DeviceSettingsRoute({ client, snapshot, onSnapshot, onManageFile
       try {
         onSnapshot(await client.openDevicePreferences(device.deviceId, device.generation));
         setStatus("");
+        setMissingFor(null);
+        return;
       } catch (reason) {
         onSnapshot(null);
         const error = asQcmError(reason).payload;
-        setStatus(
-          error.code === "QCM_STORAGE_FILE_NOT_FOUND"
-            ? `${t("DevicePage_FoundYourQuadStickAtRoot", [device.displayName])} ${t("DevicePage_ItHasNoSettingsFileYet")}`
-            : t("DevicePage_CouldNotReadTheSettings", [localizedErrorMessage(error, t)]),
-        );
+        if (error.code !== "QCM_STORAGE_FILE_NOT_FOUND") {
+          setStatus(t("DevicePage_CouldNotReadTheSettings", [localizedErrorMessage(error, t)]));
+          return;
+        }
+      }
+      // No prefs.csv yet: Avalonia opens an empty one so settings can be
+      // added and saved, which writes the file.
+      try {
+        const empty = await client.openDevicePreferences(device.deviceId, device.generation, true);
+        setMissingFor(empty.sessionId);
+        setStatus(`${t("DevicePage_FoundYourQuadStickAtRoot", [device.displayName])} ${t("DevicePage_ItHasNoSettingsFileYet")}`);
+        onSnapshot(empty);
+      } catch (reason) {
+        setStatus(t("DevicePage_CouldNotReadTheSettings", [localizedErrorMessage(asQcmError(reason).payload, t)]));
       }
     },
     [client, onSnapshot, t],
@@ -95,7 +108,7 @@ export function DeviceSettingsRoute({ client, snapshot, onSnapshot, onManageFile
       <DevicePreferencesPage
         client={client}
         snapshot={snapshot}
-        status={status}
+        status={snapshot === null || snapshot.sessionId === missingFor ? status : ""}
         onSnapshot={onSnapshot}
         onReload={() => void load()}
         onManageFiles={onManageFiles}
